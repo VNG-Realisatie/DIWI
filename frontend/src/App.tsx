@@ -55,8 +55,7 @@ function App() {
       <AlertPopup />
       <ScopedCssBaseline>
       <BrowserRouter>
-      <BrowserRouter>
-                                <Routes>
+
                                     <Routes>
                                         <Route path="/" element={<Layout />}>
                                             <Route index element={<Home />} />
@@ -69,8 +68,6 @@ function App() {
                                             <Route path="*" element={<NoMatch />} />
                                         </Route>
                                     </Routes>
-                                </Routes>
-                            </BrowserRouter>
       </BrowserRouter>
       </ScopedCssBaseline>
       </AlertProvider>
