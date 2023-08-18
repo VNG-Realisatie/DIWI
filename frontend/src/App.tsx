@@ -6,7 +6,7 @@ import AlertPopup from "./components/AlertPopup";
 import { Layout } from "./components/Layout";
 import { Home } from "./pages/Home";
 import { Projects } from "./pages/Projects";
-import { Dashboard } from "./pages/Dashboard";
+import { CreateProject } from "./pages/CreateProject";
 import { NoMatch } from "./pages/NoMatch";
 import * as Paths from "./Paths";
 import { ProjectDetail } from "./pages/ProjectDetail";
@@ -73,8 +73,8 @@ function App() {
               <Route path="/" element={<Layout />}>
                 <Route index element={<Home />} />
                 <Route path={Paths.projects.path} element={<Projects />} />
+                <Route path={Paths.projectAdd.path} element={<CreateProject />} />
                 <Route path={Paths.projectDetail.path} element={<ProjectDetail />} />
-                <Route path={Paths.projectAdd.path} element={<Dashboard />} />
                 <Route path="*" element={<NoMatch />} />
               </Route>
             </Routes>

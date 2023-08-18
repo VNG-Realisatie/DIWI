@@ -34,6 +34,7 @@ export const Projects = () => {
           <Typography> Pijldatum: 12 Jan 2023</Typography>
         </Stack>
         <img src={mapImg} alt="maps" />
+        
       </Box>
     </Stack>
   );

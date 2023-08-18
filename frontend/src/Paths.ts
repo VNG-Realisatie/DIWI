@@ -17,7 +17,7 @@ function createPathObject(path: string): Path {
 export const root = createPathObject(config.baseurl);
 
 export const projects = createPathObject(config.baseurl + "projects");
-export const projectAdd = createPathObject(config.baseurl + "projects/add");
+export const projectAdd = createPathObject(config.baseurl + "project/create");
 export const projectDetail= createPathObject(config.baseurl + "projects/:id");
 
 export const dashboard = createPathObject(config.baseurl + "dashboard");
