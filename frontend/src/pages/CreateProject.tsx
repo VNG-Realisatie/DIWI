@@ -1,13 +1,5 @@
 import React, { useState } from "react";
-import {
-  Stepper,
-  Step,
-  StepLabel,
-  StepIcon,
-  Button,
-  Box,
-  Stack,
-} from "@mui/material";
+import { Stepper, Step, StepLabel, Button, Box, Stack } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import { ProjectInformationForm } from "../components/ProjectInformationForm";
@@ -36,6 +28,10 @@ interface CustomStepIconProps {
 export const CreateProject = () => {
   const [createProjectForm, setCreateProjectForm] = useState<any>(null);
   const [activeStep, setActiveStep] = useState<number>(0);
+  const handleSave=()=>{
+    //Todo add createendpoint here
+    console.log("Saved")
+  }
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -72,16 +68,13 @@ export const CreateProject = () => {
           sx={{ mr: 2 }}
           disabled={activeStep === 0}
         >
-          {" "}
           Vorig
         </Button>
         <Button
           variant="contained"
-          onClick={() => handleNext()}
-          disabled={activeStep === steps.length}
+          onClick={() => activeStep === steps.length?handleSave():handleNext()}
         >
-          {" "}
-          Volgende
+         {activeStep === steps.length? "Opslaan":"Volgende"} 
         </Button>
       </Stack>
     </Box>
