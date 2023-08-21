@@ -3,6 +3,8 @@ import { Stepper, Step, StepLabel, Button, Box, Stack } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import { ProjectInformationForm } from "../components/ProjectInformationForm";
+import { BlockHousesForm } from "../components/BlockHousesForm";
+import { SelectFromMapForm } from "../components/SelectFromMapForm";
 const CustomStepIcon: React.FC<CustomStepIconProps> = ({
   active,
   completed,
@@ -42,7 +44,8 @@ export const CreateProject = () => {
   };
   console.log(createProjectForm);
   return (
-    <Box mt={2} border="solid 1px #ddd" p={4}>
+    //Components for wizard steps 
+    <Box mt={2} border="solid 2px #ddd" p={4}>
       <Stepper activeStep={activeStep} alternativeLabel>
         {steps.map((label, index) => (
           <Step key={label}>
@@ -56,6 +59,19 @@ export const CreateProject = () => {
           createProjectForm={createProjectForm}
         />
       )}
+         {activeStep === 1 && (
+        <BlockHousesForm
+          setCreateProjectForm={setCreateProjectForm}
+          createProjectForm={createProjectForm}
+        />
+      )}
+           {activeStep === 2 && (
+        <SelectFromMapForm
+          setCreateProjectForm={setCreateProjectForm}
+          createProjectForm={createProjectForm}
+        />
+      )}
+      
       <Stack
         direction="row"
         alignItems="center"
@@ -72,7 +88,7 @@ export const CreateProject = () => {
         </Button>
         <Button
           variant="contained"
-          onClick={() => activeStep === steps.length?handleSave():handleNext()}
+          onClick={() => activeStep === steps.length?handleSave():handleNext()} // check last step save function
         >
          {activeStep === steps.length? "Opslaan":"Volgende"} 
         </Button>
