@@ -8,15 +8,14 @@ import {
 } from "@mui/material";
 import mapImg from "../assets/temp/map.png";
 import Search from "../components/Search";
-import { SearchItem, projects } from "../api/dummyData";
+import {  projects } from "../api/dummyData";
 import { ProjectList } from "../components/ProjectList";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { ProjectsTableView } from "../components/ProjectsTableView";
+import ProjectContext from "../context/ProjectContext";
 
 export const Projects = () => {
-  const [selectedProject, setSelectedProject] = useState<SearchItem | null>(
-    null
-  );
+  const {selectedProject}= useContext(ProjectContext)
   const [tableview, setTableView] = useState(false);
   const handleTableSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTableView(e.target.checked);
@@ -27,8 +26,6 @@ export const Projects = () => {
         <Search
           label="Zoeken..."
           searchList={projects}
-          setSearchParam={setSelectedProject}
-          searchParam={selectedProject}
         />
         <ProjectList
           projectList={selectedProject ? [selectedProject] : projects}

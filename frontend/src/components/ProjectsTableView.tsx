@@ -5,24 +5,31 @@ import {  GridRowParams } from '@mui/x-data-grid';
 import { projects } from "../api/dummyData";
 import { useNavigate } from "react-router-dom";
 
+//Todo Implement filterDataWithSelectedColumns here to get columns dynamic.
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 90 },
   {
     field: "name",
     headerName: "Name",
-    width: 300,
+    width: 200,
     editable: false,
   },
   {
     field: "geo",
     headerName: "Geography",
-    width: 300,
+    width: 200,
+    editable: false,
+  },
+  {
+    field: "organization",
+    headerName: "Organisatie",
+    width: 200,
     editable: false,
   },
   {
     field: "color",
     headerName: "Color",
-    width: 230,
+    width: 200,
     editable: false,
   },
 ];
