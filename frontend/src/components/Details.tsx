@@ -13,7 +13,7 @@ export const Details=({project}:Props)=>{
         }}
       >
          
-         {Object.entries(project).map(([property, value]) => (
+         {project&&Object.entries(project).map(([property, value]) => (
        <>
         <ListItem
           key={property}
