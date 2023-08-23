@@ -7,7 +7,7 @@ import mapImg from "../assets/temp/map.png";
 import ProjectContext from "../context/ProjectContext";
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import timeLineImg from "../assets/temp/timeline.png";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridEditCellValueParams } from "@mui/x-data-grid";
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 90 },
@@ -39,7 +39,11 @@ const columns: GridColDef[] = [
 export const ProjectDetail = () => {
   const { selectedProject } = useContext(ProjectContext);
   const[selectedType,setSelectedType]=useState<"map"|"characteristics"|"timeline">("map")
-  console.log(selectedProject)
+  const handleCellEditChange = (params: GridEditCellValueParams) => {
+    // Handle cell edit changes here
+    console.log('Cell value changed:', params);
+
+  };
   return (
     <Stack direction="column" justifyContent="space-between" maxHeight="81vh">
       <Stack
@@ -93,6 +97,7 @@ export const ProjectDetail = () => {
       </Stack>}
       {selectedType==="timeline"&&<img src={timeLineImg} alt="timeline"/>}
       {selectedType==="characteristics"&&  <DataGrid
+      editMode="row"
         rows={[selectedProject]}
         columns={columns}
         initialState={{
@@ -103,6 +108,10 @@ export const ProjectDetail = () => {
           },
         }}
         pageSizeOptions={[5]}
+        processRowUpdate={(updatedRow, originalRow) =>
+          //Add update endpoint here
+          console.log(updatedRow)
+        }
       />}
     </Stack>
   );
