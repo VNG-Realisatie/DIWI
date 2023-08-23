@@ -1,13 +1,15 @@
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import Search from "../components/Search";
 import { projects } from "../api/dummyData";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { Details } from "../components/Details";
 import mapImg from "../assets/temp/map.png";
 import ProjectContext from "../context/ProjectContext";
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 export const ProjectDetail = () => {
   const { selectedProject } = useContext(ProjectContext);
+  const[selectedType,setSelectedType]=useState<"map"|"characteristics"|"timeline">("map")
   return (
     <Stack direction="column" justifyContent="space-between" maxHeight="81vh">
       <Stack
@@ -43,9 +45,11 @@ export const ProjectDetail = () => {
         <Typography variant="h5">{selectedProject?.name}</Typography>
       </Stack>
       <Stack direction="row" justifyContent="flex-end">
-        Kaart | Eigenschappen | Tijdlijn
+        <Button onClick={()=>setSelectedType("map")}>Kaart</Button>
+        <Button onClick={()=>setSelectedType("characteristics")}>Eigenschappen</Button>
+        <Button onClick={()=>setSelectedType("timeline")}>Tijdlijn</Button>
       </Stack>
-      <Stack
+      {selectedType==="map"&&  <Stack
         direction="row"
         alignItems="flex-start"
         justifyContent="space-between"
@@ -54,10 +58,9 @@ export const ProjectDetail = () => {
           <Details project={selectedProject} />
         </Stack>
         <Stack width="80%">
-          {" "}
-          {<img src={mapImg} alt="maps" style={{ paddingTop: "8px" }} />}
+         <img src={mapImg} alt="maps" style={{ paddingTop: "8px" }} />
         </Stack>
-      </Stack>
+      </Stack>}
     </Stack>
   );
 };
