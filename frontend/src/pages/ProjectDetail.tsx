@@ -6,10 +6,40 @@ import { Details } from "../components/Details";
 import mapImg from "../assets/temp/map.png";
 import ProjectContext from "../context/ProjectContext";
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import timeLineImg from "../assets/temp/timeline.png";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
 
+const columns: GridColDef[] = [
+  { field: "id", headerName: "ID", width: 90 },
+  {
+    field: "name",
+    headerName: "Name",
+    width: 200,
+    editable: true,
+  },
+  {
+    field: "geo",
+    headerName: "Geography",
+    width: 200,
+    editable: true,
+  },
+  {
+    field: "organization",
+    headerName: "Organisatie",
+    width: 200,
+    editable: true,
+  },
+  {
+    field: "color",
+    headerName: "Color",
+    width: 200,
+    editable: true,
+  },
+];
 export const ProjectDetail = () => {
   const { selectedProject } = useContext(ProjectContext);
   const[selectedType,setSelectedType]=useState<"map"|"characteristics"|"timeline">("map")
+  console.log(selectedProject)
   return (
     <Stack direction="column" justifyContent="space-between" maxHeight="81vh">
       <Stack
@@ -61,6 +91,19 @@ export const ProjectDetail = () => {
          <img src={mapImg} alt="maps" style={{ paddingTop: "8px" }} />
         </Stack>
       </Stack>}
+      {selectedType==="timeline"&&<img src={timeLineImg} alt="timeline"/>}
+      {selectedType==="characteristics"&&  <DataGrid
+        rows={[selectedProject]}
+        columns={columns}
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: 10,
+            },
+          },
+        }}
+        pageSizeOptions={[5]}
+      />}
     </Stack>
   );
 };
