@@ -5,11 +5,11 @@ import { useContext, useState } from "react";
 import { Details } from "../components/Details";
 import mapImg from "../assets/temp/map.png";
 import ProjectContext from "../context/ProjectContext";
-import AddCircleIcon from '@mui/icons-material/AddCircle';
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 import timeLineImg from "../assets/temp/timeline.png";
-import { DataGrid, GridColDef, GridEditCellValueParams } from "@mui/x-data-grid";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
-import * as Paths from "../Paths"
+import * as Paths from "../Paths";
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 90 },
   {
@@ -39,10 +39,17 @@ const columns: GridColDef[] = [
 ];
 export const ProjectDetail = () => {
   const { selectedProject } = useContext(ProjectContext);
-  const[selectedType,setSelectedType]=useState<"map"|"characteristics"|"timeline">("map")
-const navigate=useNavigate();
+  const [selectedType, setSelectedType] = useState<
+    "map" | "characteristics" | "timeline"
+  >("map");
+  const navigate = useNavigate();
   return (
-    <Stack direction="column" justifyContent="space-between" maxHeight="81vh" position="relative">
+    <Stack
+      direction="column"
+      justifyContent="space-between"
+      maxHeight="81vh"
+      position="relative"
+    >
       <Stack
         direction="row"
         justifyContent="flex-start"
@@ -76,42 +83,54 @@ const navigate=useNavigate();
         <Typography variant="h5">{selectedProject?.name}</Typography>
       </Stack>
       <Stack direction="row" justifyContent="flex-end">
-        <Button onClick={()=>setSelectedType("map")}>Kaart</Button>
-        <Button onClick={()=>setSelectedType("characteristics")}>Eigenschappen</Button>
-        <Button onClick={()=>setSelectedType("timeline")}>Tijdlijn</Button>
+        <Button onClick={() => setSelectedType("map")}>Kaart</Button>
+        <Button onClick={() => setSelectedType("characteristics")}>
+          Eigenschappen
+        </Button>
+        <Button onClick={() => setSelectedType("timeline")}>Tijdlijn</Button>
       </Stack>
-      {selectedType==="map"&&  <Stack
-        direction="row"
-        alignItems="flex-start"
-        justifyContent="space-between"
-      >
-        <Stack width="20%" mr={0.5}>
-          <Details project={selectedProject} />
+      {selectedType === "map" && (
+        <Stack
+          direction="row"
+          alignItems="flex-start"
+          justifyContent="space-between"
+        >
+          <Stack width="20%" mr={0.5}>
+            <Details project={selectedProject} />
+          </Stack>
+          <Stack width="80%">
+            <img src={mapImg} alt="maps" style={{ paddingTop: "8px" }} />
+          </Stack>
         </Stack>
-        <Stack width="80%">
-         <img src={mapImg} alt="maps" style={{ paddingTop: "8px" }} />
-        </Stack>
-      </Stack>}
-      {selectedType==="timeline"&&<img src={timeLineImg} alt="timeline"/>}
-      {selectedType==="characteristics"&&  <DataGrid
-      editMode="row"
-        rows={[selectedProject]}
-        columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 10,
+      )}
+      {selectedType === "timeline" && <img src={timeLineImg} alt="timeline" />}
+      {selectedType === "characteristics" && (
+        <DataGrid
+          editMode="row"
+          rows={[selectedProject]}
+          columns={columns}
+          initialState={{
+            pagination: {
+              paginationModel: {
+                pageSize: 10,
+              },
             },
-          },
-        }}
-        pageSizeOptions={[5]}
-        processRowUpdate={(updatedRow, originalRow) =>
-          //Add update endpoint here
-          console.log(updatedRow)
-        }
-      />}
-      <Box position="absolute" right="30px" bottom="44px" sx={{cursor:"pointer"}} onClick={()=>navigate(Paths.projectAdd.path)}>
-        <AddCircleIcon color="info" sx={{fontSize:"58px"}}/>
+          }}
+          pageSizeOptions={[5]}
+          processRowUpdate={(updatedRow, originalRow) =>
+            //Add update endpoint here
+            console.log(updatedRow)
+          }
+        />
+      )}
+      <Box
+        position="absolute"
+        right="30px"
+        bottom="44px"
+        sx={{ cursor: "pointer" }}
+        onClick={() => navigate(Paths.projectAdd.path)}
+      >
+        <AddCircleIcon color="info" sx={{ fontSize: "58px" }} />
       </Box>
     </Stack>
   );
