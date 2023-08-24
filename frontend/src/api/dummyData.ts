@@ -188,3 +188,45 @@ export const statuses = [
   { id: 1, status: "Milestone" },
   { id: 2, status: "Document" },
 ];
+export type Policy = {
+  policy: {
+    id: number;
+    name: string;
+    data: {
+      characteristic: string;
+      goal: number|string;
+      time: string;
+      geo: string;
+      category: string;
+    };
+  };
+};
+export const policyGoals=[
+  {
+    id:1,name:"Totaal woningen",data:{
+      characteristic:"Test-1",
+      goal:12,
+      time:"01/01/2023",
+      geo:"Voorbeeld-1",
+      category:"Cat-1"
+    }
+  },
+  {
+    id:2,name:"Woningen voor starters",data:{
+      characteristic:"Test-2",
+      goal:2,
+      time:"03/06/2023",
+      geo:"Voorbeeld-2",
+      category:"Cat-2"
+    }
+  },
+  {
+    id:3,name:"Houtbouw woningen in Delfshaven",data:{
+      characteristic:"Test-3",
+      goal:3,
+      time:"30/04/2023",
+      geo:"Voorbeeld-3",
+      category:"Cat-3"
+    }
+  }
+]
