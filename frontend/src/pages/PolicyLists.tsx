@@ -69,7 +69,7 @@ export const PolicyLists = () => {
         <DialogTitle>Creëer een beleidsdoel</DialogTitle>
         <DialogContent>
           <TextField
-            label="Name"
+            label="Naam"
             name="name"
             value={dataPolicy.name}
             onChange={handleInputChange}
@@ -77,7 +77,7 @@ export const PolicyLists = () => {
             margin="normal"
           />
           <TextField
-            label="Characteristic"
+            label="Eigenschap"
             name="characteristic"
             value={dataPolicy.data.characteristic}
             onChange={handleInputChange}
@@ -85,7 +85,7 @@ export const PolicyLists = () => {
             margin="normal"
           />
           <TextField
-            label="Goal"
+            label="Doelstelling"
             name="goal"
             value={dataPolicy.data.goal}
             onChange={handleInputChange}
@@ -93,7 +93,7 @@ export const PolicyLists = () => {
             margin="normal"
           />
           <TextField
-            label="Time"
+            label="Tijd"
             name="time"
             value={dataPolicy.data.time}
             onChange={handleInputChange}
@@ -101,7 +101,7 @@ export const PolicyLists = () => {
             margin="normal"
           />
           <TextField
-            label="Geo"
+            label="Geografie"
             name="geo"
             value={dataPolicy.data.geo}
             onChange={handleInputChange}
@@ -109,7 +109,7 @@ export const PolicyLists = () => {
             margin="normal"
           />
           <TextField
-            label="Category"
+            label="Categorie"
             name="category"
             value={dataPolicy.data.category}
             onChange={handleInputChange}
