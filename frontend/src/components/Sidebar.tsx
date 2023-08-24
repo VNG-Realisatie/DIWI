@@ -79,7 +79,7 @@ export const SideBar=({open,handleDrawerClose}:SideBarProps)=>{
       </Typography>
 
       <Link
-        to={`/dashboard`}
+        to={Paths.policygoal.path}
         style={{ color: "#FFFFFF", textDecoration: "none" }}
       >
         <ListItemButton>

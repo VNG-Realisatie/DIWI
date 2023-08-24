@@ -11,6 +11,7 @@ import { NoMatch } from "./pages/NoMatch";
 import * as Paths from "./Paths";
 import { ProjectDetail } from "./pages/ProjectDetail";
 import { ProjectProvider } from "./context/ProjectContext";
+import { PolicyLists } from "./pages/PolicyLists";
 
 export const drawerWidth = 290;
 function App() {
@@ -73,9 +74,30 @@ function App() {
             <Routes>
               <Route path="/" element={<Layout />}>
                 <Route index element={<Home />} />
-                <Route path={Paths.projects.path} element={<ProjectProvider><Projects /></ProjectProvider>} />
-                <Route path={Paths.projectAdd.path} element={<CreateProject />} />
-                <Route path={Paths.projectDetail.path} element={<ProjectProvider><ProjectDetail /></ProjectProvider>} />
+                <Route
+                  path={Paths.projects.path}
+                  element={
+                    <ProjectProvider>
+                      <Projects />
+                    </ProjectProvider>
+                  }
+                />
+                <Route
+                  path={Paths.projectAdd.path}
+                  element={<CreateProject />}
+                />
+                <Route
+                  path={Paths.projectDetail.path}
+                  element={
+                    <ProjectProvider>
+                      <ProjectDetail />
+                    </ProjectProvider>
+                  }
+                />
+                <Route
+                  path={Paths.policygoal.path}
+                  element={<PolicyLists />}
+                />
                 <Route path="*" element={<NoMatch />} />
               </Route>
             </Routes>
