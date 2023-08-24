@@ -1,0 +1,30 @@
+{
+    "data": {
+        "id": "2",
+        "type": "Project",
+        "attributes": {
+            "name": "Project 2",
+            "amount": 40,
+            "huizenblokken": [
+                {
+                    "id": "4",
+                    "type": "Huizenblok"
+                }
+            ],
+            "start_date": "2024-01-01",
+            "end_date": null
+        }
+    },
+    "included": [
+        {
+            "id": "4",
+            "type": "Huizenblok",
+            "attributes": {
+                "name": "Blok 4",
+                "amount": 40,
+                "start_date": "2024-01-01",
+                "end_date": null
+            }
+        }
+    ]
+}
