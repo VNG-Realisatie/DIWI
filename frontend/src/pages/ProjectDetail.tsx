@@ -8,7 +8,8 @@ import ProjectContext from "../context/ProjectContext";
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import timeLineImg from "../assets/temp/timeline.png";
 import { DataGrid, GridColDef, GridEditCellValueParams } from "@mui/x-data-grid";
-
+import { useNavigate } from "react-router-dom";
+import * as Paths from "../Paths"
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 90 },
   {
@@ -39,13 +40,9 @@ const columns: GridColDef[] = [
 export const ProjectDetail = () => {
   const { selectedProject } = useContext(ProjectContext);
   const[selectedType,setSelectedType]=useState<"map"|"characteristics"|"timeline">("map")
-  const handleCellEditChange = (params: GridEditCellValueParams) => {
-    // Handle cell edit changes here
-    console.log('Cell value changed:', params);
-
-  };
+const navigate=useNavigate();
   return (
-    <Stack direction="column" justifyContent="space-between" maxHeight="81vh">
+    <Stack direction="column" justifyContent="space-between" maxHeight="81vh" position="relative">
       <Stack
         direction="row"
         justifyContent="flex-start"
@@ -113,6 +110,9 @@ export const ProjectDetail = () => {
           console.log(updatedRow)
         }
       />}
+      <Box position="absolute" right="30px" bottom="44px" sx={{cursor:"pointer"}} onClick={()=>navigate(Paths.projectAdd.path)}>
+        <AddCircleIcon color="info" sx={{fontSize:"58px"}}/>
+      </Box>
     </Stack>
   );
 };
