@@ -17,7 +17,7 @@ export const ExchangeData = () => {
         Importen:
       </Typography>
       <Stack mt={1} direction="row" alignItems="center" justifyContent="space-between" width="60%">
-        <DataCardItem text="Excel" link="" icon={Excel} isImport />
+        <DataCardItem text="Excel" link={Paths.importExcel.path} icon={Excel} isImport />
         <DataCardItem text="Squit" link="" icon={Roxit} isImport />
         <DataCardItem text="Systeem x" link="" icon={xlogo} isImport />
       </Stack>

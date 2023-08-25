@@ -25,6 +25,7 @@ export const dashboard = createPathObject(config.baseurl + "dashboard");
 export const wizard = createPathObject(config.baseurl + "admin/wizard");
 export const exchangedata = createPathObject(config.baseurl + "exchangedata");
 export const exportExcel = createPathObject(config.baseurl + "exchangedata/exportexcel");
+export const importExcel = createPathObject(config.baseurl + "exchangedata/importexcel");
 
 
 
