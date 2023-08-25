@@ -2,7 +2,8 @@ version: '3'
 
 services:
   frontend:
-    image: git.phinion.com/phinion/dependency_proxy/containers/nginx:1.24-alpine # Latest Stable Version
+    build:
+        context: frontend
     restart: unless-stopped
     env_file:
       - .env
