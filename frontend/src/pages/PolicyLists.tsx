@@ -10,6 +10,8 @@ import { policyGoals } from "../api/dummyData";
 import { PolicyCard } from "../components/PolicyCard";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { useState } from "react";
+import { ReactComponent as Dashboard } from "../assets/temp/dashboardvisual.svg";
+
 
 interface DataPolicy {
   id: number;
@@ -37,6 +39,8 @@ export const PolicyLists = () => {
       category: "",
     },
   });
+  const [selectedType, setSelectedType] = useState<
+  "input" | "dashboard">("input");
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -56,7 +60,14 @@ export const PolicyLists = () => {
   };
   console.log(dataPolicy);
   return (
-    <Stack display="flex">
+ <Stack>
+     <Stack direction="row" justifyContent="flex-end">
+        <Button onClick={() => setSelectedType("input")}>Invoer</Button>
+        <Button onClick={() => setSelectedType("dashboard")}>
+          Dashboard
+        </Button>
+      </Stack>
+    { selectedType==="input" &&<Stack display="flex">
       {policyGoals.map((p) => {
         return <PolicyCard key={p.id} policy={p} />;
       })}
@@ -130,6 +141,8 @@ export const PolicyLists = () => {
           </Button>
         </DialogContent>
       </Dialog>
-    </Stack>
+    </Stack>}
+    {selectedType==="dashboard"&& <Dashboard/>}
+ </Stack>
   );
 };
