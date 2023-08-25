@@ -1,9 +1,16 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import {  GridRowParams } from '@mui/x-data-grid';
+import { GridRowParams } from "@mui/x-data-grid";
 import { projects } from "../api/dummyData";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogTitle,
+  Stack,
+} from "@mui/material";
+import useAlert from "../hooks/useAlert";
 
 //Todo Implement filterDataWithSelectedColumns here to get columns dynamic.
 const columns: GridColDef[] = [
@@ -36,19 +43,34 @@ const columns: GridColDef[] = [
 
 const rows = projects;
 interface RowData {
-    id: number;
-  }
-
-export const ProjectsTableView = () => {
-    const navigate = useNavigate();
-    const handleRowClick = (params: GridRowParams) => {
-        const clickedRow: RowData = params.row as RowData;
-        navigate(`/projects/${clickedRow.id}`); 
-      };
-    
+  id: number;
+}
+type Props = {
+  showCheckBox?: boolean;
+};
+export const ProjectsTableView = ({ showCheckBox }: Props) => {
+  const navigate = useNavigate();
+  const [selectedRows, setSelectedRows] = useState<any[]>([]);
+  const [showDialog, setShowDialog] = useState(false);
+  const { setAlert } = useAlert();
+  const handleRowClick = (params: GridRowParams) => {
+    const clickedRow: RowData = params.row as RowData;
+    navigate(`/projects/${clickedRow.id}`);
+  };
+  const handleExport = (params: any) => {
+    const clickedRow: RowData = params.row as RowData;
+    if (selectedRows.includes(clickedRow.id)) {
+      setSelectedRows(selectedRows.filter((s) => s !== clickedRow.id));
+    } else {
+      setSelectedRows([...selectedRows, clickedRow.id]);
+    }
+  };
+  const handleClose = () => setShowDialog(false);
+  console.log(selectedRows);
   return (
-    <Box width="100%">
+    <Stack width="100%">
       <DataGrid
+        checkboxSelection={showCheckBox}
         rows={rows}
         columns={columns}
         initialState={{
@@ -59,8 +81,44 @@ export const ProjectsTableView = () => {
           },
         }}
         pageSizeOptions={[5]}
-        onRowClick={handleRowClick}
+        onRowClick={showCheckBox ? handleExport : handleRowClick}
       />
-    </Box>
+      <Dialog
+        open={showDialog}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">Weet je het zeker?</DialogTitle>
+
+        <DialogActions sx={{ px: 5, py: 3, ml: 15 }}>
+          <Button onClick={handleClose}>Annuleer</Button>
+          <Button
+            variant="contained"
+            onClick={() => {
+              handleClose();
+              setAlert(
+                "Gelukt! Je ontvangt de bevestiging via de mail.",
+                "success"
+              );
+            }}
+            autoFocus
+          >
+            Exporteer
+          </Button>
+        </DialogActions>
+      </Dialog>
+      {showCheckBox && (
+        <Button
+          sx={{ width: "130px", my: 2, ml: "auto" }}
+          variant="contained"
+          onClick={() => {
+            setShowDialog(true);
+          }}
+        >
+          Exporteren
+        </Button>
+      )}
+    </Stack>
   );
 };
