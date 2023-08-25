@@ -23,6 +23,7 @@ export const projectDetail= createPathObject(config.baseurl + "projects/:id");
 export const policygoal = createPathObject(config.baseurl + "policygoal");
 export const dashboard = createPathObject(config.baseurl + "dashboard");
 export const wizard = createPathObject(config.baseurl + "admin/wizard");
+export const exchangedata = createPathObject(config.baseurl + "exchangedata");
 
 
 

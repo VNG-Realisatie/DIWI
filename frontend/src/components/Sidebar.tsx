@@ -103,6 +103,14 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
         <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>
           Data uitwisselen
         </Typography>
+        <Link
+          to={Paths.exchangedata.path}
+          style={{ color: "#FFFFFF", textDecoration: "none" }}
+        >
+          <ListItemButton>
+            <ListItemText primary="Data uitwisselen" />
+          </ListItemButton>
+        </Link>
       </List>
     </Drawer>
   );

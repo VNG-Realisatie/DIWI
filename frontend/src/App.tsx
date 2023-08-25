@@ -13,6 +13,7 @@ import { ProjectDetail } from "./pages/ProjectDetail";
 import { ProjectProvider } from "./context/ProjectContext";
 import { PolicyLists } from "./pages/PolicyLists";
 import { DashboardProjects } from "./pages/DashboardProjects";
+import { ExchangeData } from "./pages/ExchangeData";
 
 export const drawerWidth = 290;
 function App() {
@@ -102,6 +103,10 @@ function App() {
                  <Route
                   path={Paths.dashboard.path}
                   element={<DashboardProjects />}
+                />
+                      <Route
+                  path={Paths.exchangedata.path}
+                  element={<ExchangeData />}
                 />
                 <Route path="*" element={<NoMatch />} />
               </Route>
