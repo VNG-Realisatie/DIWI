@@ -25,6 +25,7 @@ export const DataCardItem: React.FC<Props> = ({
       direction="column"
       alignItems="center"
       display="flex"
+      borderRadius="0px 0px 3px 3px"
       sx={{ cursor: "pointer" }}
       onClick={() => navigate(link)}
     >
