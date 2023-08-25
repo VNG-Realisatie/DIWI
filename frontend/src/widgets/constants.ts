@@ -1,6 +1,4 @@
-export const menuProjects= [
-    { text: "Project toevoegen", url: "project/create"},
-    { text: "Project kaart", url: "projectmap" },
-    { text: "Project eigenschappen", url: "projectproperties" },
-    { text: "Project tijdlijn", url: "projecttimeline" },
-  ]
+export const menuProjects = [
+  { text: "Individueel project", url: "projectmap" },
+  { text: "Project toevoegen", url: "project/create" },
+];

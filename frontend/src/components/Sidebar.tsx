@@ -86,6 +86,23 @@ export const SideBar=({open,handleDrawerClose}:SideBarProps)=>{
           <ListItemText primary="Beleidsdoelen" />
         </ListItemButton>
       </Link>
+
+      <Link
+        to={Paths.policygoal.path}
+        style={{ color: "#FFFFFF", textDecoration: "none" }}
+      >
+        <ListItemButton>
+          <ListItemText primary="Dashboard projecten" />
+        </ListItemButton>
+      </Link>
+      <Link
+        to={Paths.policygoal.path}
+        style={{ color: "#FFFFFF", textDecoration: "none" }}
+      >
+        <ListItemButton>
+          <ListItemText primary="Dashboard project" />
+        </ListItemButton>
+      </Link>
     </List>
     <List sx={{ ml: 3 }}>
       <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>
