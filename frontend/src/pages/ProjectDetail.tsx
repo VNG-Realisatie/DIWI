@@ -3,10 +3,10 @@ import Search from "../components/Search";
 import { projects } from "../api/dummyData";
 import { useContext, useState } from "react";
 import { Details } from "../components/Details";
-import mapImg from "../assets/temp/map.png";
+import { ReactComponent as Map } from "../assets/temp/map.svg";
 import ProjectContext from "../context/ProjectContext";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import timeLineImg from "../assets/temp/timeline.png";
+import {ReactComponent as TimeLineImg} from "../assets/temp/timeline.svg";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
@@ -98,12 +98,10 @@ export const ProjectDetail = () => {
           <Stack width="20%" mr={0.5}>
             <Details project={selectedProject} />
           </Stack>
-          <Stack width="80%">
-            <img src={mapImg} alt="maps" style={{ paddingTop: "8px" }} />
-          </Stack>
+          <Map  />
         </Stack>
       )}
-      {selectedType === "timeline" && <img src={timeLineImg} alt="timeline" />}
+      {selectedType === "timeline" && <TimeLineImg/>}
       {selectedType === "characteristics" && (
         <DataGrid
           editMode="row"
