@@ -6,7 +6,7 @@ import {
   Switch,
   Typography,
 } from "@mui/material";
-import mapImg from "../assets/temp/map.png";
+import { ReactComponent as Map } from "../assets/temp/map.svg";
 import Search from "../components/Search";
 import { projects } from "../api/dummyData";
 import { ProjectList } from "../components/ProjectList";
@@ -62,13 +62,13 @@ export const Projects = () => {
             />
           </FormControl>
         </Stack>
-        {!tableview && <img src={mapImg} alt="maps" />}
+        {!tableview && <Map  />}
         {tableview && <ProjectsTableView />}
       </Box>
       <Box
         position="absolute"
         right="30px"
-        bottom="44px"
+        bottom="80px"
         sx={{ cursor: "pointer" }}
         onClick={() => navigate(Paths.projectAdd.path)}
       >

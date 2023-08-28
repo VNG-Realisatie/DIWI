@@ -1,4 +1,4 @@
 export const menuProjects = [
-  { text: "Individueel project", url: "projectmap" },
+  { text: "Overzicht projecten", url: "projects" },
   { text: "Project toevoegen", url: "project/create" },
 ];

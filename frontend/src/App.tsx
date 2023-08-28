@@ -12,6 +12,10 @@ import * as Paths from "./Paths";
 import { ProjectDetail } from "./pages/ProjectDetail";
 import { ProjectProvider } from "./context/ProjectContext";
 import { PolicyLists } from "./pages/PolicyLists";
+import { DashboardProjects } from "./pages/DashboardProjects";
+import { ExchangeData } from "./pages/ExchangeData";
+import { ExportExcel } from "./pages/ExportExcel";
+import { ImportExcel } from "./pages/ImportExcel";
 
 export const drawerWidth = 290;
 function App() {
@@ -97,6 +101,22 @@ function App() {
                 <Route
                   path={Paths.policygoal.path}
                   element={<PolicyLists />}
+                />
+                 <Route
+                  path={Paths.dashboard.path}
+                  element={<DashboardProjects />}
+                />
+                      <Route
+                  path={Paths.exchangedata.path}
+                  element={<ExchangeData />}
+                />
+                               <Route
+                  path={Paths.importExcel.path}
+                  element={<ImportExcel />}
+                />
+                         <Route
+                  path={Paths.exportExcel.path}
+                  element={<ExportExcel />}
                 />
                 <Route path="*" element={<NoMatch />} />
               </Route>
