@@ -7,30 +7,41 @@ createdb vng-"$rand"
 
 psql -d vng-"$rand" < diwi_testset_simplified.sql
 
-psql_execute (){
-    psql -d vng-"$rand" --tuples-only -c "$@"
+psql_execute_arg (){
+    psql -d vng-"$rand" --tuples-only --no-align -c "$@"
+}
+
+psql_execute_file (){
+    psql -d vng-"$rand" --tuples-only --no-align -f "$@"
 }
 
 export_enum (){
-    psql_execute "select to_json( enum_range(null::diwi_testset_simplified.$1))" | jq  > enums/$1.json
+    psql_execute_arg "select to_json(enum_range(null::diwi_testset_simplified.$1))" | jq  > json/enums/"$1".json
 }
 
 export_enums(){
-    test -d enums && rm -r enums
-    mkdir enums
+    test -d json/enums && rm -r json/enums
+    mkdir json/enums
 
-    enums=($(psql_execute "select distinct t.typname from pg_enum as e inner join pg_type as t ON e.enumtypid = t.oid;"))
+    enums=($(psql_execute_arg "select distinct t.typname from pg_enum as e inner join pg_type as t ON e.enumtypid = t.oid;"))
 
     for enum in "${enums[@]}"
     do
         export_enum "$enum"
     done
-
-    cp -r enums ../frontend/src/api/
 }
 
-export_enums
+export_projects(){
+    psql_execute_file projects.sql | jq > json/projects.json
+}
 
+test -d json && rm -r json
+mkdir json
+
+export_enums
+export_projects
+
+cp -r json ../frontend/src/api
 
 dropdb vng-"$rand"
 
