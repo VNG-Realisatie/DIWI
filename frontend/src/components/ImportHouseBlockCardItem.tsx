@@ -20,11 +20,7 @@ export const ImportHouseBlockCardItem=(props:any)=>{
                                 </Grid>
                                 <Grid item sm={2}>
                                     <Typography
-                                        sx={{
-                                            border: "solid 1px #ddd",
-                                            p: 0.6,
-                                            fontWeight:600
-                                        }}
+                                        sx={columnTitleStyle}
                                     >
                                         StartDatum
                                     </Typography>
@@ -40,11 +36,7 @@ export const ImportHouseBlockCardItem=(props:any)=>{
                                 </Grid>
                                 <Grid item sm={2}>
                                     <Typography
-                                        sx={{
-                                            border: "solid 1px #ddd",
-                                            p: 0.6,
-                                            fontWeight:600
-                                        }}
+                                        sx={columnTitleStyle}
                                     >
                                         EindDatum
                                     </Typography>

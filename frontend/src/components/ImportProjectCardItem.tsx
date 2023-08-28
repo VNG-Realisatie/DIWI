@@ -1,4 +1,5 @@
 import {
+    Checkbox,
     FormControl,
     FormControlLabel,
     Grid,
@@ -12,13 +13,21 @@ import { ImportHouseBlockCardItem } from "./ImportHouseBlockCardItem";
 export const columnTitleStyle = {
     border: "solid 1px #ddd",
     p: 0.6,
-    fontWeight: 600,
+    color: "#FFFFFF",
+    backgroundColor: "#738092",
 };
 export const ImportProjectCardItem = (props: any) => {
     const [value, setValue] = useState("new");
     const { project } = props;
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setValue((event.target as HTMLInputElement).value);
+    };
+    const [checked, setChecked] = useState(false);
+
+    const handleSelectedProject = (
+        event: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        setChecked(event.target.checked);
     };
 
     return (
@@ -47,8 +56,11 @@ export const ImportProjectCardItem = (props: any) => {
                     />
                 </RadioGroup>
             </FormControl>
+
             <Stack>
+
                 <Grid container my={2}>
+
                     <Grid
                         item
                         sm={12}
@@ -59,8 +71,15 @@ export const ImportProjectCardItem = (props: any) => {
                         }}
                         display="flex"
                         justifyContent="space-between"
+                        alignItems="center"
                     >
+
                         Naam: {project.name}
+                        <Checkbox
+                    checked={checked}
+                    onChange={handleSelectedProject}
+                    inputProps={{ "aria-label": "controlled" }}
+                />
                     </Grid>
                     <Grid item sm={2}>
                         <Typography sx={columnTitleStyle}>Geo</Typography>
@@ -85,6 +104,7 @@ export const ImportProjectCardItem = (props: any) => {
                     })}
                 </Grid>
             </Stack>
+
         </Stack>
     );
 };
