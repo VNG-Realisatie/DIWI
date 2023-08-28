@@ -12,7 +12,7 @@ export const projects = [
                 name: "Huizenblok-1",
                 stardate: "10/02/2023",
                 finishDate: "10/04/2030",
-                mutationType: "Bouw",
+                mutationType: "bouw",
                 grossPlanCapacity: 100,
                 demolition: 20,
                 netPlanCapacity: 80,
@@ -34,11 +34,11 @@ export const projects = [
         organization: "organisatie",
         houseblocks: [
             {
-                id: 1,
+                id: 2,
                 name: "Huizenblok-1",
                 stardate: "01/12/2023",
                 finishDate: "10/04/2030",
-                mutationType: "Sloop",
+                mutationType: "sloop",
                 grossPlanCapacity: 100,
                 demolition: 20,
                 netPlanCapacity: 80,

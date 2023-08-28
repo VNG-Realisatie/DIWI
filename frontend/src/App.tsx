@@ -16,6 +16,7 @@ import { DashboardProjects } from "./pages/DashboardProjects";
 import { ExchangeData } from "./pages/ExchangeData";
 import { ExportExcel } from "./pages/ExportExcel";
 import { ImportExcel } from "./pages/ImportExcel";
+import { ImportedProjects } from "./pages/ImportedProjects";
 
 export const drawerWidth = 290;
 function App() {
@@ -117,6 +118,10 @@ function App() {
                          <Route
                   path={Paths.exportExcel.path}
                   element={<ExportExcel />}
+                />
+                           <Route
+                  path={Paths.importExcelProjects.path}
+                  element={<ImportedProjects />}
                 />
                 <Route path="*" element={<NoMatch />} />
               </Route>
