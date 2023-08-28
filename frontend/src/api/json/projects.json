@@ -1,0 +1,49 @@
+[
+  {
+    "id": 1,
+    "name": "Achterweg",
+    "woningblokken": [
+      {
+        "id": 1,
+        "naam": "50 meergezinswoningen",
+        "project_id": 1
+      },
+      {
+        "id": 1,
+        "naam": "50 meergezinswoningen",
+        "project_id": 1
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Brielseweg",
+    "woningblokken": [
+      {
+        "id": 2,
+        "naam": "200 eengezinswoningen",
+        "project_id": 2
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Carte Blanche Exclusief en Unique",
+    "woningblokken": []
+  },
+  {
+    "id": 4,
+    "name": "De Ruy",
+    "woningblokken": []
+  },
+  {
+    "id": 5,
+    "name": "Doornweg 6 /Blindeweg 15",
+    "woningblokken": []
+  },
+  {
+    "id": 6,
+    "name": "Dorpsweg 58",
+    "woningblokken": []
+  }
+]
