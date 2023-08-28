@@ -1,0 +1,6 @@
+.env
+.env.*
+!.env.example
+htpasswd
+/data/*
+!/data/.gitkeep

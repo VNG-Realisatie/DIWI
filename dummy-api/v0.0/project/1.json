@@ -1,0 +1,124 @@
+{
+    "data": {
+        "id": "1",
+        "type": "Project",
+        "attributes": {
+            "name": "Project Van Nelleweg",
+            "gemeente": "Rotterdam",
+            "wijk": "Spaanse Polder",
+            "buurt": "Spaanse Polder",
+            "amount": {
+                "type": "Range",
+                "minimum": 120,
+                "maximum": 130
+            },
+            "huizenblokken": [
+                {
+                    "id": "1",
+                    "type": "Huizenblok"
+                },
+                {
+                    "id": "2",
+                    "type": "Huizenblok"
+                },
+                {
+                    "id": "3",
+                    "type": "Huizenblok"
+                }
+            ],
+            "milestones": [
+                {
+                    "id": "1",
+                    "type": "Milestone"
+                }
+            ],
+            "documents": [
+                {
+                    "id": "1",
+                    "type": "Document"
+                }
+            ],
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    51.924,
+                    4.433
+                ]
+            },
+            "start_date": "1928-01-01",
+            "end_date": null
+        }
+    },
+    "included": [
+        {
+            "id": "1",
+            "type": "Huizenblok",
+            "attributes": {
+                "name": "Koffie",
+                "amount": 50,
+                "mutatiesoort": "transformatie",
+                "woningtype": {
+                    "eengezinswoning": null,
+                    "meergezinswoning": null
+                },
+                "doelgroep": {
+                    "studenten": {
+                        "type": "Range",
+                        "minimum": 20,
+                        "maximum": null
+                    }
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                        51.924,
+                        4.433
+                    ]
+                },
+                "start_date": "1928-01-01",
+                "end_date": null
+            }
+        },
+        {
+            "id": "2",
+            "type": "Huizenblok",
+            "attributes": {
+                "name": "Thee",
+                "amount": 50,
+                "start_date": "1928-01-01",
+                "end_date": null
+            }
+        },
+        {
+            "id": "3",
+            "type": "Huizenblok",
+            "attributes": {
+                "name": "Tabak",
+                "amount": {
+                    "type": "Range",
+                    "minimum": 20,
+                    "maximum": 30
+                },
+                "start_date": "1928-01-01",
+                "end_date": null
+            }
+        },
+        {
+            "id": "1",
+            "type": "Milestone",
+            "attributes": {
+                "name": "Start Bouw",
+                "date": "1928-01-01"
+            }
+        },
+        {
+            "id": "1",
+            "type": "Document",
+            "attributes": {
+                "name": "Overeenkomst",
+                "description": "Lorum ipsum dolor sit amet",
+                "date": "1928-01-01"
+            }
+        }
+    ]
+}
