@@ -2,18 +2,19 @@ import { Button, Stack } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
+import { ReactNode } from "react";
 
 type Props = {
   text: string;
   link: string;
-  icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
   isImport?: boolean;
+  children?: ReactNode;
 };
 export const DataCardItem: React.FC<Props> = ({
-  icon: Icon,
   text,
   link,
   isImport,
+  children
 }) => {
   const navigate = useNavigate();
   return (
@@ -29,7 +30,7 @@ export const DataCardItem: React.FC<Props> = ({
       onClick={() => navigate(link)}
     >
       <Stack mt={3}>
-        <Icon />
+        {children}
       </Stack>
       <Button
         fullWidth

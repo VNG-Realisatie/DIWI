@@ -1,32 +1,42 @@
 import { Button, Stack, Typography } from "@mui/material";
 import { DataCardItem } from "../components/DataCardItem";
-import { ReactComponent as Excel } from "../assets/excel.svg";
-import { ReactComponent as xlogo } from "../assets/xlogo.svg";
-import { ReactComponent as Roxit } from "../assets/roxit.svg";
-import { ReactComponent as NlMap } from "../assets/nl.svg";
-import * as Paths from "../Paths";
+import  excelIcon  from "../assets/excel.svg";
+import xLogoIcon from "../assets/xlogo.svg";
+import  roxitIcon from "../assets/roxit.svg";
+import  nlMapIcon from "../assets/nl.svg";
 
+import * as Paths from "../Paths";
 
 export const ExchangeData = () => {
   return (
     <Stack border="solid 1px #ddd" py={5} px={8} >
       <Typography fontSize="20px" fontWeight="600">
-        Data iutwisselen
+        Data uitwisselen
       </Typography>
       <Typography fontSize="16px" mt={2}>
-        Importen:
+        Importeren:
       </Typography>
-      <Stack mt={1} direction="row" alignItems="center" justifyContent="space-between" width="60%">
-        <DataCardItem text="Excel" link={Paths.importExcel.path} icon={Excel} isImport />
-        <DataCardItem text="Squit" link="" icon={Roxit} isImport />
-        <DataCardItem text="Systeem x" link="" icon={xlogo} isImport />
+      <Stack mt={1} direction="row" alignItems="flex-start" justifyContent="flex-start" flexWrap="wrap">
+        <DataCardItem text="Excel" link={Paths.importExcel.path}  isImport >
+            <img src={excelIcon} alt='excel'/>
+        </DataCardItem>
+        <DataCardItem text="Squit" link="" isImport >
+            <img src={roxitIcon} alt='excel'/>
+        </DataCardItem>
+        <DataCardItem text="Systeem x" link=""  isImport >
+            <img src={xLogoIcon} alt='excel'/>
+        </DataCardItem>
       </Stack>
       <Typography fontSize="16px" mt={2}>
         Exporteren:
       </Typography>
-      <Stack mt={1} direction="row" alignItems="center" justifyContent="space-between" width="39%">
-        <DataCardItem text="Excel" link={Paths.exportExcel.path} icon={Excel}  />
-        <DataCardItem text="Squit" link="" icon={NlMap}  />
+      <Stack mt={1} direction="row" alignItems="flex-start" justifyContent="flex-start" flexWrap="wrap">
+        <DataCardItem text="Excel" link={Paths.exportExcel.path}  >
+            <img src={excelIcon} alt='excel'/>
+        </DataCardItem>
+        <DataCardItem text="Squit" link="">
+            <img src={nlMapIcon} alt='excel'/>
+        </DataCardItem>
       </Stack>
       <Button sx={{width:"40%",mt:2}}  variant="outlined">Nieuwe data koppeling instellen</Button>
     </Stack>
