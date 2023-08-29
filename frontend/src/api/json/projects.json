@@ -4,13 +4,27 @@
     "name": "Achterweg",
     "woningblokken": [
       {
-        "id": 1,
-        "naam": "50 meergezinswoningen",
+        "id": 2,
+        "woningblok_naam_changelog_id": 2,
+        "naam": "200 eengezinswoningen",
+        "woningblok_mutatie_changelog_id": 2,
+        "bruto_plancapaciteit": 200,
+        "netto_plancapaciteit": 200,
+        "sloop": 0,
+        "mutatie_soort": "bouw",
+        "woningblok_state_id": 2,
         "project_id": 1
       },
       {
         "id": 1,
+        "woningblok_naam_changelog_id": 1,
         "naam": "50 meergezinswoningen",
+        "woningblok_mutatie_changelog_id": 1,
+        "bruto_plancapaciteit": 50,
+        "netto_plancapaciteit": 50,
+        "sloop": 0,
+        "mutatie_soort": "bouw",
+        "woningblok_state_id": 1,
         "project_id": 1
       }
     ]
@@ -20,8 +34,15 @@
     "name": "Brielseweg",
     "woningblokken": [
       {
-        "id": 2,
-        "naam": "200 eengezinswoningen",
+        "id": 51,
+        "woningblok_naam_changelog_id": 3,
+        "naam": "70 woningen",
+        "woningblok_mutatie_changelog_id": 51,
+        "bruto_plancapaciteit": 70,
+        "netto_plancapaciteit": 70,
+        "sloop": 0,
+        "mutatie_soort": "bouw",
+        "woningblok_state_id": 51,
         "project_id": 2
       }
     ]
@@ -29,21 +50,157 @@
   {
     "id": 3,
     "name": "Carte Blanche Exclusief en Unique",
-    "woningblokken": []
+    "woningblokken": [
+      {
+        "id": 78,
+        "woningblok_naam_changelog_id": 6,
+        "naam": "Carte Blanche Unique: Bouw 2 woningen ",
+        "woningblok_mutatie_changelog_id": 78,
+        "bruto_plancapaciteit": 2,
+        "netto_plancapaciteit": 2,
+        "sloop": 0,
+        "mutatie_soort": "bouw",
+        "woningblok_state_id": 78,
+        "project_id": 3
+      },
+      {
+        "id": 76,
+        "woningblok_naam_changelog_id": 4,
+        "naam": "Carte Blanche Exclusief: Sloop woning",
+        "woningblok_mutatie_changelog_id": 76,
+        "bruto_plancapaciteit": 0,
+        "netto_plancapaciteit": -1,
+        "sloop": 1,
+        "mutatie_soort": "sloop",
+        "woningblok_state_id": 76,
+        "project_id": 3
+      },
+      {
+        "id": 77,
+        "woningblok_naam_changelog_id": 5,
+        "naam": "Carte Blanche Exclusief: Bouw 2 woningen",
+        "woningblok_mutatie_changelog_id": 77,
+        "bruto_plancapaciteit": 2,
+        "netto_plancapaciteit": 2,
+        "sloop": 0,
+        "mutatie_soort": "bouw",
+        "woningblok_state_id": 77,
+        "project_id": 3
+      }
+    ]
   },
   {
     "id": 4,
     "name": "De Ruy",
-    "woningblokken": []
+    "woningblokken": [
+      {
+        "id": 80,
+        "woningblok_naam_changelog_id": null,
+        "naam": null,
+        "woningblok_mutatie_changelog_id": 80,
+        "bruto_plancapaciteit": 12,
+        "netto_plancapaciteit": 12,
+        "sloop": 0,
+        "mutatie_soort": "bouw",
+        "woningblok_state_id": 80,
+        "project_id": 4
+      },
+      {
+        "id": 79,
+        "woningblok_naam_changelog_id": null,
+        "naam": null,
+        "woningblok_mutatie_changelog_id": 79,
+        "bruto_plancapaciteit": 16,
+        "netto_plancapaciteit": 16,
+        "sloop": 0,
+        "mutatie_soort": "bouw",
+        "woningblok_state_id": 79,
+        "project_id": 4
+      },
+      {
+        "id": 81,
+        "woningblok_naam_changelog_id": null,
+        "naam": null,
+        "woningblok_mutatie_changelog_id": 81,
+        "bruto_plancapaciteit": 12,
+        "netto_plancapaciteit": 12,
+        "sloop": 0,
+        "mutatie_soort": "bouw",
+        "woningblok_state_id": 81,
+        "project_id": 4
+      }
+    ]
   },
   {
     "id": 5,
     "name": "Doornweg 6 /Blindeweg 15",
-    "woningblokken": []
+    "woningblokken": [
+      {
+        "id": 83,
+        "woningblok_naam_changelog_id": null,
+        "naam": null,
+        "woningblok_mutatie_changelog_id": 83,
+        "bruto_plancapaciteit": 2,
+        "netto_plancapaciteit": 2,
+        "sloop": 0,
+        "mutatie_soort": "bouw",
+        "woningblok_state_id": 83,
+        "project_id": 5
+      },
+      {
+        "id": 83,
+        "woningblok_naam_changelog_id": null,
+        "naam": null,
+        "woningblok_mutatie_changelog_id": 82,
+        "bruto_plancapaciteit": 2,
+        "netto_plancapaciteit": 2,
+        "sloop": 0,
+        "mutatie_soort": "bouw",
+        "woningblok_state_id": 83,
+        "project_id": 5
+      },
+      {
+        "id": 84,
+        "woningblok_naam_changelog_id": null,
+        "naam": null,
+        "woningblok_mutatie_changelog_id": 84,
+        "bruto_plancapaciteit": 3,
+        "netto_plancapaciteit": 3,
+        "sloop": 0,
+        "mutatie_soort": "bouw",
+        "woningblok_state_id": 84,
+        "project_id": 5
+      },
+      {
+        "id": 82,
+        "woningblok_naam_changelog_id": null,
+        "naam": null,
+        "woningblok_mutatie_changelog_id": null,
+        "bruto_plancapaciteit": null,
+        "netto_plancapaciteit": null,
+        "sloop": null,
+        "mutatie_soort": null,
+        "woningblok_state_id": 82,
+        "project_id": 5
+      }
+    ]
   },
   {
     "id": 6,
     "name": "Dorpsweg 58",
-    "woningblokken": []
+    "woningblokken": [
+      {
+        "id": 85,
+        "woningblok_naam_changelog_id": null,
+        "naam": null,
+        "woningblok_mutatie_changelog_id": 85,
+        "bruto_plancapaciteit": 2,
+        "netto_plancapaciteit": 2,
+        "sloop": 0,
+        "mutatie_soort": "bouw",
+        "woningblok_state_id": 85,
+        "project_id": 6
+      }
+    ]
   }
 ]
