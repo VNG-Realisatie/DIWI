@@ -19,12 +19,23 @@ WITH woningblokken AS (
         LEFT JOIN diwi_testset_simplified.woningblok_naam_changelog wnc ON wnc."woningblok_ID" = w."ID"
             AND wnc.change_end_date IS NULL
 ),
+actor_role AS (
+    SELECT
+        parc."project_ID",
+        actor_state."name" AS name,
+        parvs.value_label AS rol,
+        parc.change_end_date
+    FROM
+        diwi_testset_simplified.project_actor_rol_changelog parc
+    LEFT JOIN diwi_testset_simplified.project_actor_rol_value_state parvs ON parc."project_actor_rol_ID" = parvs."ID"
+        LEFT JOIN diwi_testset_simplified.actor_state actor_state ON actor_state."actor_ID" = parc."actor_ID"
+),
 current_milestone AS (
     SELECT
-        pfc.*        
+        pfc.*
     FROM
-        diwi_testset_simplified.project_fase_changelog pfc
-    LEFT JOIN diwi_testset_simplified.milestone sm ON pfc."start_milestone_ID" = sm."ID"
+        diwi_testset_simplified.project_fase_changelog AS pfc
+        LEFT JOIN diwi_testset_simplified.milestone sm ON pfc."start_milestone_ID" = sm."ID"
         LEFT JOIN diwi_testset_simplified.milestone_state sms ON sms."milestone_ID" = sm."ID"
         LEFT JOIN diwi_testset_simplified.milestone em ON pfc."end_milestone_iD" = em."ID"
         LEFT JOIN diwi_testset_simplified.milestone_state ems ON ems."milestone_ID" = em."ID"
@@ -39,11 +50,12 @@ projecten AS (
         os.naam AS "eigenaar",
         ps.confidentiality_level AS "vertrouwlijkheidsniveau",
         ppvs.value_label AS "priorisering",
-        pptc.plan_type AS "plan type",
+        project_plan_type_changelog.plan_type AS "plan type",
         milestone_start_state."date" AS "start datum",
         milestone_end_state."date" AS "eind datum",
         pgvs.value_label AS "rol gemeente",
         cm.project_fase AS "project fase",
+        actor_role."name" AS "project leider",
         -- extra id's for debugging, might not be needed for UI
         ps."ID" AS project_state_id,
         cm."ID" AS project_fase_changelog_id,
@@ -69,12 +81,13 @@ projecten AS (
         LEFT JOIN diwi_testset_simplified.project_priorisering_value ppv ON ppv."ID" = ppc."project_priorisering_value_ID"
         LEFT JOIN diwi_testset_simplified.project_priorisering_value_state ppvs ON ppvs."project_priorisering_value_ID" = ppv."ID"
         LEFT JOIN diwi_testset_simplified.project_duration_changelog pdc ON pdc."project_ID" = p."ID"
-        LEFT JOIN diwi_testset_simplified.project_plan_type_changelog pptc ON pptc."project_ID" = p."ID"
-        LEFT JOIN diwi_testset_simplified.milestone milestone_start ON milestone_start."ID" = pptc."start_milestone_ID"
+        LEFT JOIN diwi_testset_simplified.project_plan_type_changelog project_plan_type_changelog ON project_plan_type_changelog."project_ID" = p."ID"
+        LEFT JOIN diwi_testset_simplified.milestone milestone_start ON milestone_start."ID" = project_plan_type_changelog."start_milestone_ID"
         LEFT JOIN diwi_testset_simplified.milestone_state milestone_start_state ON milestone_start_state."milestone_ID" = milestone_start."ID"
-        LEFT JOIN diwi_testset_simplified.milestone milestone_end ON milestone_start."ID" = pptc."end_milestone_iD"
+        LEFT JOIN diwi_testset_simplified.milestone milestone_end ON milestone_start."ID" = project_plan_type_changelog."end_milestone_iD"
         LEFT JOIN diwi_testset_simplified.milestone_state milestone_end_state ON milestone_end_state."milestone_ID" = milestone_start."ID"
         LEFT JOIN current_milestone cm ON cm."project_ID" = p."ID"
+        LEFT JOIN actor_role ON actor_role."project_ID" = p."ID"
     WHERE
         pnc.change_end_date IS NULL
         AND ps.change_end_date IS NULL
@@ -84,10 +97,12 @@ projecten AS (
         AND ppc.change_end_date IS NULL
         AND ppvs.change_end_date IS NULL
         AND pdc.change_end_date IS NULL
-        AND pptc.change_end_date IS NULL
+        AND project_plan_type_changelog.change_end_date IS NULL
         AND milestone_start_state.change_end_date IS NULL
         AND milestone_end_state.change_end_date IS NULL
         AND cm.change_end_date IS NULL
+        AND actor_role.change_end_date IS NULL
+        AND actor_role.rol = 'projectleider'
 ),
 plannen AS (
     SELECT
@@ -102,7 +117,7 @@ plannen AS (
 projecten_with_woningblokken AS (
     SELECT
         to_jsonb (p) AS project,
-        COALESCE(json_agg(w.*) FILTER (WHERE w.id IS NOT NULL), '[]') AS woningblokken
+    COALESCE(json_agg(w.*) FILTER (WHERE w.id IS NOT NULL), '[]') AS woningblokken
 FROM
     projecten AS p
         LEFT JOIN woningblokken AS w ON w.project_id = p.id
