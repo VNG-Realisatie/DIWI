@@ -43,7 +43,7 @@ actor_role AS (
     LEFT JOIN diwi_testset_simplified.project_actor_rol_value_state parvs ON parc."project_actor_rol_ID" = parvs."ID"
         LEFT JOIN diwi_testset_simplified.actor_state actor_state ON actor_state."actor_ID" = parc."actor_ID"
 ),
-current_milestone AS (
+current_project_fase AS (
     SELECT
         pfc.*
     FROM
@@ -140,7 +140,7 @@ projecten AS (
         LEFT JOIN diwi_testset_simplified.milestone milestone_end ON milestone_start."ID" = project_plan_type_changelog."end_milestone_iD"
         LEFT JOIN diwi_testset_simplified.milestone_state milestone_end_state ON milestone_end_state."milestone_ID" = milestone_start."ID"
             AND milestone_end_state.change_end_date IS NULL
-        LEFT JOIN current_milestone cm ON cm."project_ID" = p."ID"
+        LEFT JOIN current_project_fase cm ON cm."project_ID" = p."ID"
             AND cm.change_end_date IS NULL
         LEFT JOIN actor_role ON actor_role."project_ID" = p."ID"
             AND actor_role.change_end_date IS NULL
