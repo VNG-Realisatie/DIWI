@@ -6,6 +6,8 @@ WITH woningblokken AS (
         wmc.netto_plancapaciteit AS netto_plancapaciteit,
         wmc.sloop AS sloop,
         wmc.mutatie_soort AS mutatie_soort,
+        bs.waarde_label AS buurt,
+        wijk_state.waarde_label AS wijk,
         -- extra id's for debugging, might not be needed for UI
         wnc."ID" AS woningblok_naam_changelog_id,
         wmc."ID" AS woningblok_mutatie_changelog_id,
@@ -19,6 +21,14 @@ WITH woningblokken AS (
             AND wmc.change_end_date IS NULL
         LEFT JOIN diwi_testset_simplified.woningblok_naam_changelog wnc ON wnc."woningblok_ID" = w."ID"
             AND wnc.change_end_date IS NULL
+        LEFT JOIN diwi_testset_simplified.woningblok_buurt_changelog wbc ON wbc."woningblok_ID" = w."ID"
+            AND wbc.change_end_date IS NULL
+        LEFT JOIN diwi_testset_simplified.buurt_state bs ON bs."buurt_ID" = wbc."buurt_ID"
+            AND bs.change_end_date IS NULL
+        LEFT JOIN diwi_testset_simplified.woningblok_wijk_changelog wwc ON wwc."woningblok_ID" = w."ID"
+            AND wwc.change_end_date IS NULL
+        LEFT JOIN diwi_testset_simplified.wijk_state wijk_state ON wijk_state."ID" = wwc."wijk_ID"
+            AND wijk_state.change_end_date IS NULL
         ORDER BY
             w."ID" ASC
 ),
