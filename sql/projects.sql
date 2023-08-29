@@ -46,7 +46,20 @@ current_milestone AS (
         sms.status = 'gerealiseerd'
         AND ems.status != 'gerealiseerd'
 ),
-
+current_programmering AS (
+    SELECT
+        ppc."ID",
+        ppc.programmering,
+        ppc."project_ID",
+        ppc.change_end_date
+    FROM
+        diwi_testset_simplified.project_programmering_changelog ppc
+        LEFT JOIN diwi_testset_simplified.milestone_state sms ON sms."milestone_ID" = ppc."start_milestone_ID"
+        LEFT JOIN diwi_testset_simplified.milestone_state ems ON ems."milestone_ID" = ppc."end_milestone_ID"
+    WHERE
+        sms.status = 'gerealiseerd'
+        AND ems.status != 'gerealiseerd'
+),
 current_planstatus AS (
     SELECT
         pppc."ID" AS "ID",
@@ -75,6 +88,7 @@ projecten AS (
         cm.project_fase AS "project fase",
         actor_role."name" AS "project leider",
         current_planstatus.planologische_planstatus AS "planologische plan status",
+        current_programmering.programmering AS "programmering",
         -- extra id's for debugging, might not be needed for UI
         ps."ID" AS project_state_id,
         cm."ID" AS project_fase_changelog_id,
@@ -123,6 +137,8 @@ projecten AS (
             AND actor_role.rol = 'projectleider'
         LEFT JOIN current_planstatus ON current_planstatus."project_ID" = p."ID"
             AND current_planstatus.change_end_date IS NULL
+        LEFT JOIN current_programmering ON current_programmering."project_ID" = p."ID"
+            AND current_programmering.change_end_date IS NULL
         ORDER BY
             p."ID" ASC
 ),
@@ -139,7 +155,7 @@ plannen AS (
 projecten_with_woningblokken AS (
     SELECT
         to_jsonb (p) AS project,
-        COALESCE(json_agg(w.*) FILTER (WHERE w.id IS NOT NULL), '[]') AS woningblokken
+    COALESCE(json_agg(w.*) FILTER (WHERE w.id IS NOT NULL), '[]') AS woningblokken
 FROM
     projecten AS p
         LEFT JOIN woningblokken AS w ON w.project_id = p.id
