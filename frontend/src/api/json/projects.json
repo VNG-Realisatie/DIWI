@@ -15,6 +15,7 @@
       "project_state_id": 1,
       "organization_state_id": 7,
       "vertrouwlijkheidsniveau": "extern_rapportage",
+      "planologische plan status": "4a_opgenomen_in_visie",
       "project_fase_changelog_id": 2,
       "project_name_changelog_id": 1,
       "project_gemeenterol_value_id": 1,
@@ -26,18 +27,6 @@
     },
     "woningblokken": [
       {
-        "id": 1,
-        "naam": "50 meergezinswoningen",
-        "bruto_plancapaciteit": 50,
-        "netto_plancapaciteit": 50,
-        "sloop": 0,
-        "mutatie_soort": "bouw",
-        "woningblok_naam_changelog_id": 1,
-        "woningblok_mutatie_changelog_id": 1,
-        "woningblok_state_id": 1,
-        "project_id": 1
-      },
-      {
         "id": 2,
         "naam": "200 eengezinswoningen",
         "bruto_plancapaciteit": 200,
@@ -47,6 +36,18 @@
         "woningblok_naam_changelog_id": 2,
         "woningblok_mutatie_changelog_id": 2,
         "woningblok_state_id": 2,
+        "project_id": 1
+      },
+      {
+        "id": 1,
+        "naam": "50 meergezinswoningen",
+        "bruto_plancapaciteit": 50,
+        "netto_plancapaciteit": 50,
+        "sloop": 0,
+        "mutatie_soort": "bouw",
+        "woningblok_naam_changelog_id": 1,
+        "woningblok_mutatie_changelog_id": 1,
+        "woningblok_state_id": 1,
         "project_id": 1
       }
     ]
@@ -67,6 +68,7 @@
       "project_state_id": 2,
       "organization_state_id": 8,
       "vertrouwlijkheidsniveau": "extern_rapportage",
+      "planologische plan status": "4a_opgenomen_in_visie",
       "project_fase_changelog_id": 7,
       "project_name_changelog_id": 2,
       "project_gemeenterol_value_id": 1,
@@ -107,6 +109,7 @@
       "project_state_id": 3,
       "organization_state_id": 9,
       "vertrouwlijkheidsniveau": "openbaar",
+      "planologische plan status": null,
       "project_fase_changelog_id": null,
       "project_name_changelog_id": 3,
       "project_gemeenterol_value_id": 2,
@@ -118,15 +121,15 @@
     },
     "woningblokken": [
       {
-        "id": 76,
-        "naam": "Carte Blanche Exclusief: Sloop woning",
-        "bruto_plancapaciteit": 0,
-        "netto_plancapaciteit": -1,
-        "sloop": 1,
-        "mutatie_soort": "sloop",
-        "woningblok_naam_changelog_id": 4,
-        "woningblok_mutatie_changelog_id": 76,
-        "woningblok_state_id": 76,
+        "id": 78,
+        "naam": "Carte Blanche Unique: Bouw 2 woningen ",
+        "bruto_plancapaciteit": 2,
+        "netto_plancapaciteit": 2,
+        "sloop": 0,
+        "mutatie_soort": "bouw",
+        "woningblok_naam_changelog_id": 6,
+        "woningblok_mutatie_changelog_id": 78,
+        "woningblok_state_id": 78,
         "project_id": 3
       },
       {
@@ -142,15 +145,15 @@
         "project_id": 3
       },
       {
-        "id": 78,
-        "naam": "Carte Blanche Unique: Bouw 2 woningen ",
-        "bruto_plancapaciteit": 2,
-        "netto_plancapaciteit": 2,
-        "sloop": 0,
-        "mutatie_soort": "bouw",
-        "woningblok_naam_changelog_id": 6,
-        "woningblok_mutatie_changelog_id": 78,
-        "woningblok_state_id": 78,
+        "id": 76,
+        "naam": "Carte Blanche Exclusief: Sloop woning",
+        "bruto_plancapaciteit": 0,
+        "netto_plancapaciteit": -1,
+        "sloop": 1,
+        "mutatie_soort": "sloop",
+        "woningblok_naam_changelog_id": 4,
+        "woningblok_mutatie_changelog_id": 76,
+        "woningblok_state_id": 76,
         "project_id": 3
       }
     ]
@@ -171,6 +174,7 @@
       "project_state_id": 4,
       "organization_state_id": 7,
       "vertrouwlijkheidsniveau": "openbaar",
+      "planologische plan status": "1a_onherroepelijk",
       "project_fase_changelog_id": 19,
       "project_name_changelog_id": 4,
       "project_gemeenterol_value_id": 1,
@@ -182,15 +186,15 @@
     },
     "woningblokken": [
       {
-        "id": 79,
+        "id": 81,
         "naam": null,
-        "bruto_plancapaciteit": 16,
-        "netto_plancapaciteit": 16,
+        "bruto_plancapaciteit": 12,
+        "netto_plancapaciteit": 12,
         "sloop": 0,
         "mutatie_soort": "bouw",
         "woningblok_naam_changelog_id": null,
-        "woningblok_mutatie_changelog_id": 79,
-        "woningblok_state_id": 79,
+        "woningblok_mutatie_changelog_id": 81,
+        "woningblok_state_id": 81,
         "project_id": 4
       },
       {
@@ -206,15 +210,15 @@
         "project_id": 4
       },
       {
-        "id": 81,
+        "id": 79,
         "naam": null,
-        "bruto_plancapaciteit": 12,
-        "netto_plancapaciteit": 12,
+        "bruto_plancapaciteit": 16,
+        "netto_plancapaciteit": 16,
         "sloop": 0,
         "mutatie_soort": "bouw",
         "woningblok_naam_changelog_id": null,
-        "woningblok_mutatie_changelog_id": 81,
-        "woningblok_state_id": 81,
+        "woningblok_mutatie_changelog_id": 79,
+        "woningblok_state_id": 79,
         "project_id": 4
       }
     ]
@@ -235,6 +239,7 @@
       "project_state_id": 5,
       "organization_state_id": 9,
       "vertrouwlijkheidsniveau": "extern_rapportage",
+      "planologische plan status": "3_in_voorbereiding",
       "project_fase_changelog_id": 23,
       "project_name_changelog_id": 5,
       "project_gemeenterol_value_id": 2,
@@ -246,27 +251,15 @@
     },
     "woningblokken": [
       {
-        "id": 82,
+        "id": 84,
         "naam": null,
-        "bruto_plancapaciteit": null,
-        "netto_plancapaciteit": null,
-        "sloop": null,
-        "mutatie_soort": null,
-        "woningblok_naam_changelog_id": null,
-        "woningblok_mutatie_changelog_id": null,
-        "woningblok_state_id": 82,
-        "project_id": 5
-      },
-      {
-        "id": 83,
-        "naam": null,
-        "bruto_plancapaciteit": 2,
-        "netto_plancapaciteit": 2,
+        "bruto_plancapaciteit": 3,
+        "netto_plancapaciteit": 3,
         "sloop": 0,
         "mutatie_soort": "bouw",
         "woningblok_naam_changelog_id": null,
-        "woningblok_mutatie_changelog_id": 83,
-        "woningblok_state_id": 83,
+        "woningblok_mutatie_changelog_id": 84,
+        "woningblok_state_id": 84,
         "project_id": 5
       },
       {
@@ -282,15 +275,27 @@
         "project_id": 5
       },
       {
-        "id": 84,
+        "id": 83,
         "naam": null,
-        "bruto_plancapaciteit": 3,
-        "netto_plancapaciteit": 3,
+        "bruto_plancapaciteit": 2,
+        "netto_plancapaciteit": 2,
         "sloop": 0,
         "mutatie_soort": "bouw",
         "woningblok_naam_changelog_id": null,
-        "woningblok_mutatie_changelog_id": 84,
-        "woningblok_state_id": 84,
+        "woningblok_mutatie_changelog_id": 83,
+        "woningblok_state_id": 83,
+        "project_id": 5
+      },
+      {
+        "id": 82,
+        "naam": null,
+        "bruto_plancapaciteit": null,
+        "netto_plancapaciteit": null,
+        "sloop": null,
+        "mutatie_soort": null,
+        "woningblok_naam_changelog_id": null,
+        "woningblok_mutatie_changelog_id": null,
+        "woningblok_state_id": 82,
         "project_id": 5
       }
     ]
@@ -311,6 +316,7 @@
       "project_state_id": 6,
       "organization_state_id": 9,
       "vertrouwlijkheidsniveau": "extern_rapportage",
+      "planologische plan status": "3_in_voorbereiding",
       "project_fase_changelog_id": 28,
       "project_name_changelog_id": 6,
       "project_gemeenterol_value_id": 2,
