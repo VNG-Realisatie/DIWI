@@ -1,3 +1,5 @@
+import { GridColDef } from "@mui/x-data-grid";
+
 export type SearchItem = { id: number; name: string; color: string } | null;
 export const projects = [
     {
@@ -76,6 +78,25 @@ export const projects = [
         color: "#9C27B0",
         geo: "geo",
         organization: "organisatie",
+        houseblocks: [
+            {
+                id: 3,
+                name: "Huizenblok-1",
+                stardate: "01/12/2023",
+                finishDate: "10/04/2030",
+                mutationType: "sloop",
+                grossPlanCapacity: 100,
+                demolition: 20,
+                netPlanCapacity: 80,
+                size: 57,
+                ownerOccupied: 2,
+                rentalPrivateHouse: 5,
+                rentalHousingCompany: 2,
+                price: 200000,
+                rentingPrice: 570,
+                houseType: "Single Family House",
+            },
+        ],
     },
     {
         id: 4,
@@ -290,5 +311,119 @@ export const policyGoals = [
             geo: "Voorbeeld-3",
             category: "Cat-3",
         },
+    },
+];
+export const projectColumns: GridColDef[] = [
+    { field: "id", headerName: "ID", width: 90 },
+    {
+        field: "name",
+        headerName: "Project name",
+        width: 200,
+        editable: true,
+    },
+    {
+        field: "geo",
+        headerName: "Geography",
+        width: 200,
+        editable: true,
+    },
+    {
+        field: "organization",
+        headerName: "Organisatie",
+        width: 200,
+        editable: true,
+    },
+    {
+        field: "color",
+        headerName: "Color",
+        width: 200,
+        editable: true,
+    },
+];
+export const houseBlockColumns: GridColDef[] = [
+    { field: "id", headerName: "ID", width: 90 },
+    {
+        field: "name",
+        headerName: "Huizen Groep Naam",
+        width: 140,
+        editable: false,
+    },
+    {
+        field: "stardate",
+        headerName: "Startdatum",
+        width: 100,
+        editable: false,
+    },
+    {
+        field: "finishDate",
+        headerName: "Einddatum",
+        width: 100,
+        editable: false,
+    },
+    {
+        field: "mutationType",
+        headerName: "Mutatiesoort",
+        width: 100,
+        editable: false,
+    },
+    {
+        field: "grossPlanCapacity",
+        headerName: "Bruto plancapaciteit",
+        width: 150,
+        editable: false,
+    },
+    {
+        field: "demolition",
+        headerName: "Sloop",
+        width: 100,
+        editable: false,
+    },
+    {
+        field: "netPlanCapacity",
+        headerName: "Netto Plancapaciteit",
+        width: 100,
+        editable: false,
+    },
+    {
+        field: "size",
+        headerName: "Grootte",
+        width: 100,
+        editable: false,
+    },
+    {
+        field: "ownerOccupied",
+        headerName: "Koopwoning",
+        width: 100,
+        editable: false,
+    },
+    {
+        field: "rentalPrivateHouse",
+        headerName: "Huurwoning Particuliere verhuurder",
+        width: 200,
+        editable: false,
+    },
+    {
+        field: "rentalHousingCompany",
+        headerName: "Huurwoning Woningcorporatie",
+        width: 200,
+        editable: false,
+    },
+    {
+        field: "price",
+        headerName: "Waarde",
+        width: 100,
+        editable: false,
+    },
+    {
+        field: "rentingPrice",
+        headerName: "Huurbedrag",
+        width: 100,
+        editable: false,
+    },
+    {
+        field: "houseType",
+        headerName: "Eengezinswoning",
+        width: 150,
+        editable: false,
     },
 ];

@@ -17,8 +17,9 @@ export const columnTitleStyle = {
     backgroundColor: "#738092",
 };
 export const ImportProjectCardItem = (props: any) => {
+    //ToDo Update props type after data defined
     const [value, setValue] = useState("new");
-    const { project } = props;
+    const { project, selectedProject, setSelectedProject } = props;
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setValue((event.target as HTMLInputElement).value);
     };
@@ -28,6 +29,15 @@ export const ImportProjectCardItem = (props: any) => {
         event: React.ChangeEvent<HTMLInputElement>
     ) => {
         setChecked(event.target.checked);
+        //Store selected project ids for import endpoint
+        if (event.target.checked) {
+            setSelectedProject([...selectedProject, project.id]);
+        } else {
+            const deselectedProjectList = selectedProject.filter(
+                (s: any) => s !== project.id
+            );
+            setSelectedProject(deselectedProjectList);
+        }
     };
 
     return (
@@ -56,11 +66,8 @@ export const ImportProjectCardItem = (props: any) => {
                     />
                 </RadioGroup>
             </FormControl>
-
             <Stack>
-
                 <Grid container my={2}>
-
                     <Grid
                         item
                         sm={12}
@@ -73,13 +80,12 @@ export const ImportProjectCardItem = (props: any) => {
                         justifyContent="space-between"
                         alignItems="center"
                     >
-
                         Naam: {project.name}
                         <Checkbox
-                    checked={checked}
-                    onChange={handleSelectedProject}
-                    inputProps={{ "aria-label": "controlled" }}
-                />
+                            checked={checked}
+                            onChange={handleSelectedProject}
+                            inputProps={{ "aria-label": "controlled" }}
+                        />
                     </Grid>
                     <Grid item sm={2}>
                         <Typography sx={columnTitleStyle}>Geo</Typography>
@@ -99,12 +105,11 @@ export const ImportProjectCardItem = (props: any) => {
                     </Grid>
                 </Grid>
                 <Grid container my={2}>
-                    {project.houseblocks.map((hb: any) => {
-                        return <ImportHouseBlockCardItem hb={hb} />;
+                    {project.houseblocks.map((hb: any, i: number) => {
+                        return <ImportHouseBlockCardItem hb={hb} key={i} />;
                     })}
                 </Grid>
             </Stack>
-
         </Stack>
     );
 };
