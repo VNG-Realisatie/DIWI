@@ -1,13 +1,14 @@
 WITH woningblokken AS (
     SELECT
         w."ID" AS id,
-        wnc."ID" AS woningblok_naam_changelog_id,
         wnc.naam AS "naam",
-        wmc."ID" AS woningblok_mutatie_changelog_id,
         wmc.bruto_plancapaciteit AS bruto_plancapaciteit,
         wmc.netto_plancapaciteit AS netto_plancapaciteit,
         wmc.sloop AS sloop,
         wmc.mutatie_soort AS mutatie_soort,
+        -- extra id's for debugging, might not be needed for UI
+        wnc."ID" AS woningblok_naam_changelog_id,
+        wmc."ID" AS woningblok_mutatie_changelog_id,
         ws."ID" AS woningblok_state_id,
         ws."project_ID" AS project_id
     FROM
@@ -18,6 +19,7 @@ WITH woningblokken AS (
             AND wmc.change_end_date IS NULL
         LEFT JOIN diwi_testset_simplified.woningblok_naam_changelog wnc ON wnc."woningblok_ID" = w."ID"
             AND wnc.change_end_date IS NULL
+    ORDER BY id
 ),
 actor_role AS (
     SELECT
