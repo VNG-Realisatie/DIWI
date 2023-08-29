@@ -1,17 +1,25 @@
 WITH woningblokken AS (
     SELECT
         w."ID" AS id,
+        wnc."ID" as woningblok_naam_changelog_id,
         wnc.naam AS "naam",
+        wmc."ID" AS woningblok_mutatie_changelog_id,
         wmc.bruto_plancapaciteit AS bruto_plancapaciteit,
         wmc.netto_plancapaciteit AS netto_plancapaciteit,
         wmc.sloop AS sloop,
         wmc.mutatie_soort AS mutatie_soort,
+        ws."ID" AS woningblok_state_id,
         ws."project_ID" AS project_id
     FROM
         diwi_testset_simplified.woningblok w
-        LEFT JOIN diwi_testset_simplified.woningblok_state ws ON w."ID" = ws."project_ID"
+        LEFT JOIN diwi_testset_simplified.woningblok_state ws ON w."ID" = ws."woningblok_ID"
         LEFT JOIN diwi_testset_simplified.woningblok_mutatie_changelog wmc ON wmc."woningblok_ID" = w."ID"
         LEFT JOIN diwi_testset_simplified.woningblok_naam_changelog wnc ON wnc."woningblok_ID" = w."ID"
+    WHERE
+        wnc.change_end_date IS NULL
+        AND ws.change_end_date IS NULL
+        AND wmc.change_end_date IS NULL
+        AND wnc.change_end_date IS NULL
 ),
 projecten AS (
     SELECT
