@@ -26,15 +26,19 @@ projecten AS (
         p."ID" AS id,
         pnc."name" AS "name",
         os.naam AS "eigenaar",
+        ps.confidentiality_level AS "vertrouwlijkheidsniveau",
         pgvs.value_label AS "rol gemeente",
-
+        ppvs.value_label AS "priorisering",
         ps."ID" AS project_state_id,
         pnc."ID" AS project_name_changelog_id,
         o."ID" AS organization_id,
         os."ID" AS organization_state_id,
         pgc."ID" AS project_gemeenterol_changelog_id,
         pgv."ID" AS project_gemeenterol_value_id,
-        pgvs."ID" AS project_gemeenterol_value_state_id
+        pgvs."ID" AS project_gemeenterol_value_state_id,
+        ppc."ID" AS project_priorisering_changelog_id,
+        ppv."ID" AS project_priorisering_value_id,
+        ppvs."ID" AS project_priorisering_value_state_id
     FROM
         diwi_testset_simplified.project AS p
         LEFT JOIN diwi_testset_simplified.project_name_changelog AS pnc ON pnc."project_ID" = p."ID"
@@ -44,6 +48,9 @@ projecten AS (
         LEFT JOIN diwi_testset_simplified.project_gemeenterol_changelog AS pgc ON pgc."project_ID" = p."ID"
         LEFT JOIN diwi_testset_simplified.project_gemeenterol_value AS pgv ON pgv."ID" = pgc."project_gemeenterol_value_ID"
         LEFT JOIN diwi_testset_simplified.project_gemeenterol_value_state AS pgvs ON pgvs."project_gemeenterol_value_ID" = pgv."ID"
+        LEFT JOIN diwi_testset_simplified.project_priorisering_changelog ppc ON ppc."project_ID" = p."ID"
+        LEFT JOIN diwi_testset_simplified.project_priorisering_value ppv ON ppv."ID" = ppc."project_priorisering_value_ID"
+        LEFT JOIN diwi_testset_simplified.project_priorisering_value_state ppvs ON ppvs."project_priorisering_value_ID" = ppv."ID"
     WHERE
         pnc.change_end_date IS NULL
         AND ps.change_end_date IS NULL

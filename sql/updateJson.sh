@@ -32,7 +32,7 @@ export_enums(){
 }
 
 export_projects(){
-    psql_execute_file projects.sql | jq > json/projects.json
+    psql_execute_file projects.sql | jq '.|=sort_by(.project.id)' > json/projects.json
 }
 
 test -d json && rm -r json
