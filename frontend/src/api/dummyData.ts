@@ -12,7 +12,7 @@ export const projects = [
             {
                 id: 1,
                 name: "Huizenblok-1",
-                stardate: "10/02/2023",
+                startdate: "10/02/2023",
                 finishDate: "10/04/2030",
                 mutationType: "bouw",
                 grossPlanCapacity: 100,
@@ -29,7 +29,7 @@ export const projects = [
             {
                 id: 1,
                 name: "Huizenblok-2",
-                stardate: "10/02/2023",
+                startdate: "10/02/2023",
                 finishDate: "02/01/2035",
                 mutationType: "bouw",
                 grossPlanCapacity: 25,
@@ -55,7 +55,7 @@ export const projects = [
             {
                 id: 2,
                 name: "Huizenblok-1",
-                stardate: "01/12/2023",
+                startdate: "01/12/2023",
                 finishDate: "10/04/2030",
                 mutationType: "sloop",
                 grossPlanCapacity: 100,
@@ -82,7 +82,7 @@ export const projects = [
             {
                 id: 3,
                 name: "Huizenblok-1",
-                stardate: "01/12/2023",
+                startdate: "01/12/2023",
                 finishDate: "10/04/2030",
                 mutationType: "sloop",
                 grossPlanCapacity: 100,
@@ -349,7 +349,7 @@ export const houseBlockColumns: GridColDef[] = [
         editable: false,
     },
     {
-        field: "stardate",
+        field: "startdate",
         headerName: "Startdatum",
         width: 100,
         editable: false,

@@ -1,4 +1,6 @@
 import {
+    Autocomplete,
+    Button,
     Checkbox,
     FormControl,
     FormControlLabel,
@@ -6,10 +8,12 @@ import {
     Radio,
     RadioGroup,
     Stack,
+    TextField,
     Typography,
 } from "@mui/material";
 import { useState } from "react";
 import { ImportHouseBlockCardItem } from "./ImportHouseBlockCardItem";
+import { SearchItem, projects } from "../api/dummyData";
 export const columnTitleStyle = {
     border: "solid 1px #ddd",
     p: 0.6,
@@ -17,11 +21,20 @@ export const columnTitleStyle = {
     backgroundColor: "#738092",
 };
 export const ImportProjectCardItem = (props: any) => {
+    const dummyProjects = projects;
     //ToDo Update props type after data defined
-    const [value, setValue] = useState("new");
-    const { project, selectedProject, setSelectedProject } = props;
+    const [projectType, setProjectType] = useState("new");
+    const [selectedOverwriteProject, setSelectedOverwriteProject] =
+        useState<SearchItem>();
+    const {
+        project,
+        selectedProject,
+        setSelectedProject,
+        overwriteProjectId,
+        setOverwriteProjectId,
+    } = props;
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setValue((event.target as HTMLInputElement).value);
+        setProjectType((event.target as HTMLInputElement).value);
     };
     const [checked, setChecked] = useState(false);
 
@@ -42,31 +55,83 @@ export const ImportProjectCardItem = (props: any) => {
 
     return (
         <Stack border="solid 2px #ddd" my={1} p={1}>
-            <FormControl>
-                <RadioGroup
-                    sx={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "flex-end",
+            <Stack spacing={2} direction="row" justifyContent="flex-end">
+                <FormControl>
+                    <RadioGroup
+                        sx={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "flex-end",
+                        }}
+                        aria-labelledby="demo-controlled-radio-buttons-group"
+                        name="controlled-radio-buttons-group"
+                        value={projectType}
+                        onChange={handleChange}
+                    >
+                        <FormControlLabel
+                            value="new"
+                            control={<Radio size="small" />}
+                            label="Nieuw project"
+                        />
+                        <FormControlLabel
+                            value="copy"
+                            control={<Radio size="small" />}
+                            label="Koppel aan:"
+                        />
+                    </RadioGroup>
+                </FormControl>
+
+                <Autocomplete
+                    disabled={projectType === "new"}
+                    sx={{ width: "200px" }}
+                    size="small"
+                    options={dummyProjects}
+                    getOptionLabel={(option: SearchItem) =>
+                        option ? option.name : ""
+                    }
+                    value={selectedOverwriteProject}
+                    onChange={(event: any, newValue: SearchItem) => {
+                        setSelectedOverwriteProject(newValue);
+                        if (newValue) {
+                            if (
+                                overwriteProjectId.projectId === undefined ||
+                                overwriteProjectId.projectId === null
+                            ) {
+                                setOverwriteProjectId([
+                                    ...overwriteProjectId,
+                                    {
+                                        projectId: project.id,
+                                        willBeOverWrittenId: newValue.id,
+                                    },
+                                ]);
+                            }
+                            if (overwriteProjectId.projectId === newValue.id) {
+                                const copyProject = { ...overwriteProjectId };
+                                copyProject.projectId = project.id;
+                                copyProject.willBeOverWrittenId = newValue.id;
+                                setOverwriteProjectId([
+                                    ...overwriteProjectId,
+                                    copyProject,
+                                ]);
+                            }
+                        } else {
+                            if (overwriteProjectId.projectId === project.id) {
+                                const deselected = overwriteProjectId.filter(
+                                    (o: any) => {
+                                        return o.id !== project.id;
+                                    }
+                                );
+                                setOverwriteProjectId(deselected);
+                            }
+                        }
                     }}
-                    aria-labelledby="demo-controlled-radio-buttons-group"
-                    name="controlled-radio-buttons-group"
-                    value={value}
-                    onChange={handleChange}
-                >
-                    <FormControlLabel
-                        value="new"
-                        control={<Radio size="small" />}
-                        label="Nieuw project"
-                    />
-                    <FormControlLabel
-                        value="copy"
-                        control={<Radio size="small" />}
-                        label="Koppel aan:"
-                    />
-                </RadioGroup>
-            </FormControl>
+                    renderInput={(params) => (
+                        <TextField {...params} label="Selecteer een project" />
+                    )}
+                />
+            </Stack>
             <Stack>
+                {/* List project properties */}
                 <Grid container my={2}>
                     <Grid
                         item
@@ -104,6 +169,7 @@ export const ImportProjectCardItem = (props: any) => {
                         </Typography>
                     </Grid>
                 </Grid>
+                {/* List huizen blok cards */}
                 <Grid container my={2}>
                     {project.houseblocks.map((hb: any, i: number) => {
                         return <ImportHouseBlockCardItem hb={hb} key={i} />;

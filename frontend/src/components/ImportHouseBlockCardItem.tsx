@@ -31,7 +31,7 @@ export const ImportHouseBlockCardItem=(props:any)=>{
                                             p: 0.5,
                                         }}
                                     >
-                                        {hb.stardate}
+                                        {hb.startdate}
                                     </Typography>
                                 </Grid>
                                 <Grid item sm={2}>
