@@ -293,7 +293,7 @@ CREATE FUNCTION diwi_testset_simplified.set_end_date_now() RETURNS trigger
         INSERT INTO diwi.project_priorisering_value_state SELECT NEW.*;
 	 END If;
 	 RETURN OLD;
-	END; 
+	END;
 	$$;
 
 
@@ -309,7 +309,7 @@ CREATE FUNCTION diwi_testset_simplified.set_start_date_now() RETURNS trigger
 	 DECLARE BEGIN
 	 NEW.change_start_date = NOW();
 	 RETURN NEW;
-	END; 
+	END;
 	$$;
 
 
@@ -628,6 +628,22 @@ CREATE TABLE diwi_testset_simplified.plan_conditie (
 ALTER TABLE diwi_testset_simplified.plan_conditie OWNER TO laurens;
 
 --
+-- Name: plan_conditie_buurt; Type: TABLE; Schema: diwi_testset_simplified; Owner: laurens
+--
+
+CREATE TABLE diwi_testset_simplified.plan_conditie_buurt (
+    "ID" integer NOT NULL,
+    "plan_conditie_ID" integer NOT NULL,
+    "buurt_ID" integer NOT NULL,
+    "change_user_ID" integer NOT NULL,
+    change_start_date timestamp with time zone NOT NULL,
+    change_end_date timestamp with time zone
+);
+
+
+ALTER TABLE diwi_testset_simplified.plan_conditie_buurt OWNER TO laurens;
+
+--
 -- Name: plan_conditie_doelgroep; Type: TABLE; Schema: diwi_testset_simplified; Owner: laurens
 --
 
@@ -650,9 +666,9 @@ ALTER TABLE diwi_testset_simplified.plan_conditie_doelgroep OWNER TO laurens;
 CREATE TABLE diwi_testset_simplified.plan_conditie_eigendom_en_waarde (
     "ID" integer NOT NULL,
     "plan_conditie_ID" integer NOT NULL,
-    eigendom_soort diwi_testset_simplified.eigendom_soort NOT NULL,
-    waarde integer,
-    huurbedrag integer,
+    eigendom_soort diwi_testset_simplified.eigendom_soort,
+    waarde money,
+    huurbedrag money,
     "change_user_ID" integer NOT NULL,
     change_start_date timestamp with time zone NOT NULL,
     change_end_date timestamp with time zone
@@ -660,6 +676,22 @@ CREATE TABLE diwi_testset_simplified.plan_conditie_eigendom_en_waarde (
 
 
 ALTER TABLE diwi_testset_simplified.plan_conditie_eigendom_en_waarde OWNER TO laurens;
+
+--
+-- Name: plan_conditie_gemeente; Type: TABLE; Schema: diwi_testset_simplified; Owner: laurens
+--
+
+CREATE TABLE diwi_testset_simplified.plan_conditie_gemeente (
+    "ID" integer NOT NULL,
+    "plan_conditie_ID" integer NOT NULL,
+    "gemeente_ID" integer NOT NULL,
+    "change_user_ID" integer NOT NULL,
+    change_start_date timestamp with time zone NOT NULL,
+    change_end_date timestamp with time zone
+);
+
+
+ALTER TABLE diwi_testset_simplified.plan_conditie_gemeente OWNER TO laurens;
 
 --
 -- Name: plan_conditie_geografie; Type: TABLE; Schema: diwi_testset_simplified; Owner: laurens
@@ -826,6 +858,22 @@ CREATE TABLE diwi_testset_simplified.plan_conditie_type_en_fysiek_voorkomen (
 ALTER TABLE diwi_testset_simplified.plan_conditie_type_en_fysiek_voorkomen OWNER TO laurens;
 
 --
+-- Name: plan_conditie_wijk; Type: TABLE; Schema: diwi_testset_simplified; Owner: laurens
+--
+
+CREATE TABLE diwi_testset_simplified.plan_conditie_wijk (
+    "ID" integer NOT NULL,
+    "plan_conditie_ID" integer NOT NULL,
+    "wijk_ID" integer NOT NULL,
+    "change_user_ID" integer NOT NULL,
+    change_start_date timestamp with time zone NOT NULL,
+    change_end_date timestamp with time zone
+);
+
+
+ALTER TABLE diwi_testset_simplified.plan_conditie_wijk OWNER TO laurens;
+
+--
 -- Name: plan_soort; Type: TABLE; Schema: diwi_testset_simplified; Owner: laurens
 --
 
@@ -869,7 +917,8 @@ CREATE TABLE diwi_testset_simplified.plan_state (
     "change_user_ID" integer NOT NULL,
     doel_soort diwi_testset_simplified.doel_soort NOT NULL,
     doel_richting diwi_testset_simplified.doel_richting NOT NULL,
-    doel_waarde double precision NOT NULL
+    doel_waarde double precision NOT NULL,
+    start_datum date NOT NULL
 );
 
 
@@ -1215,7 +1264,8 @@ CREATE TABLE diwi_testset_simplified.project_state (
     "change_user_ID" integer NOT NULL,
     change_start_date timestamp with time zone NOT NULL,
     change_end_date timestamp with time zone,
-    confidentiality_level diwi_testset_simplified.confidentiality NOT NULL
+    confidentiality_level diwi_testset_simplified.confidentiality NOT NULL,
+    project_colour text NOT NULL
 );
 
 
@@ -1387,8 +1437,8 @@ CREATE TABLE diwi_testset_simplified.woningblok_eigendom_en_waarde_changelog (
     change_start_date timestamp with time zone NOT NULL,
     change_end_date timestamp with time zone,
     eigendom_soort diwi_testset_simplified.eigendom_soort,
-    waarde integer,
-    huurbedrag integer
+    waarde money,
+    huurbedrag money
 );
 
 
@@ -1938,10 +1988,43 @@ INSERT INTO diwi_testset_simplified.organization_state VALUES
 -- Data for Name: plan; Type: TABLE DATA; Schema: diwi_testset_simplified; Owner: laurens
 --
 
+INSERT INTO diwi_testset_simplified.plan VALUES
+	(1),
+	(2),
+	(3),
+	(4),
+	(5),
+	(6),
+	(7),
+	(8),
+	(9),
+	(10);
 
 
 --
 -- Data for Name: plan_conditie; Type: TABLE DATA; Schema: diwi_testset_simplified; Owner: laurens
+--
+
+INSERT INTO diwi_testset_simplified.plan_conditie VALUES
+	(1),
+	(2),
+	(3),
+	(4),
+	(5),
+	(6),
+	(7),
+	(8),
+	(9),
+	(10),
+	(11),
+	(12),
+	(13),
+	(14),
+	(15);
+
+
+--
+-- Data for Name: plan_conditie_buurt; Type: TABLE DATA; Schema: diwi_testset_simplified; Owner: laurens
 --
 
 
@@ -1954,6 +2037,24 @@ INSERT INTO diwi_testset_simplified.organization_state VALUES
 
 --
 -- Data for Name: plan_conditie_eigendom_en_waarde; Type: TABLE DATA; Schema: diwi_testset_simplified; Owner: laurens
+--
+
+INSERT INTO diwi_testset_simplified.plan_conditie_eigendom_en_waarde VALUES
+	(1, 5, 'huurwoning_woningcorporatie', NULL, NULL, 11, '2023-08-28 11:53:13+02', NULL),
+	(3, 7, 'huurwoning_woningcorporatie', NULL, NULL, 11, '2023-08-28 11:53:13+02', NULL),
+	(4, 8, NULL, NULL, '€ 1.000,00', 11, '2023-08-28 11:53:13+02', NULL),
+	(5, 9, 'huurwoning_particuliere_verhuurder', NULL, NULL, 11, '2023-08-28 11:53:13+02', NULL),
+	(6, 10, NULL, '€ 190.000,00', NULL, 11, '2023-08-28 11:53:13+02', NULL),
+	(7, 11, 'koopwoning', NULL, NULL, 11, '2023-08-28 11:53:13+02', NULL),
+	(8, 12, NULL, '€ 250.000,00', NULL, 11, '2023-08-28 11:53:13+02', NULL),
+	(9, 13, 'koopwoning', NULL, NULL, 11, '2023-08-28 11:53:13+02', NULL),
+	(10, 14, NULL, '€ 500.000,00', NULL, 11, '2023-08-28 11:53:13+02', NULL),
+	(11, 15, 'koopwoning', NULL, NULL, 11, '2023-08-28 11:53:13+02', NULL),
+	(2, 6, NULL, NULL, '€ 647,19', 11, '2023-08-28 11:53:13+02', NULL);
+
+
+--
+-- Data for Name: plan_conditie_gemeente; Type: TABLE DATA; Schema: diwi_testset_simplified; Owner: laurens
 --
 
 
@@ -1986,6 +2087,10 @@ INSERT INTO diwi_testset_simplified.organization_state VALUES
 -- Data for Name: plan_conditie_maatwerk_categorie; Type: TABLE DATA; Schema: diwi_testset_simplified; Owner: laurens
 --
 
+INSERT INTO diwi_testset_simplified.plan_conditie_maatwerk_categorie VALUES
+	(1, 1, 4, 11, '2023-08-28 11:53:13+02', NULL),
+	(2, 3, 4, 11, '2023-08-28 11:53:13+02', NULL),
+	(3, 4, 7, 11, '2023-08-28 11:53:13+02', NULL);
 
 
 --
@@ -2010,10 +2115,34 @@ INSERT INTO diwi_testset_simplified.organization_state VALUES
 -- Data for Name: plan_conditie_state; Type: TABLE DATA; Schema: diwi_testset_simplified; Owner: laurens
 --
 
+INSERT INTO diwi_testset_simplified.plan_conditie_state VALUES
+	(1, 1, 1, 'doel_conditie', 11, '2023-08-28 11:53:13+02', NULL),
+	(2, 2, 3, 'doel_conditie', 11, '2023-08-28 11:53:13+02', NULL),
+	(3, 3, 3, 'plan_conditie', 11, '2023-08-28 11:53:13+02', NULL),
+	(4, 4, 4, 'doel_conditie', 11, '2023-08-28 11:53:13+02', NULL),
+	(5, 5, 5, 'doel_conditie', 11, '2023-08-28 11:53:13+02', NULL),
+	(6, 6, 6, 'doel_conditie', 11, '2023-08-28 11:53:13+02', NULL),
+	(7, 7, 6, 'plan_conditie', 11, '2023-08-28 11:53:13+02', NULL),
+	(8, 8, 7, 'doel_conditie', 11, '2023-08-28 11:53:13+02', NULL),
+	(9, 9, 7, 'plan_conditie', 11, '2023-08-28 11:53:13+02', NULL),
+	(10, 10, 8, 'doel_conditie', 11, '2023-08-28 11:53:13+02', NULL),
+	(11, 11, 8, 'plan_conditie', 11, '2023-08-28 11:53:13+02', NULL),
+	(12, 12, 9, 'doel_conditie', 11, '2023-08-28 11:53:13+02', NULL),
+	(13, 13, 9, 'plan_conditie', 11, '2023-08-28 11:53:13+02', NULL),
+	(14, 14, 10, 'doel_conditie', 11, '2023-08-28 11:53:13+02', NULL),
+	(15, 15, 10, 'plan_conditie', 11, '2023-08-28 11:53:13+02', NULL);
 
 
 --
 -- Data for Name: plan_conditie_type_en_fysiek_voorkomen; Type: TABLE DATA; Schema: diwi_testset_simplified; Owner: laurens
+--
+
+INSERT INTO diwi_testset_simplified.plan_conditie_type_en_fysiek_voorkomen VALUES
+	(1, 2, 'meergezinswoning', NULL, 11, '2023-08-28 11:53:13+02', NULL);
+
+
+--
+-- Data for Name: plan_conditie_wijk; Type: TABLE DATA; Schema: diwi_testset_simplified; Owner: laurens
 --
 
 
@@ -2022,18 +2151,48 @@ INSERT INTO diwi_testset_simplified.organization_state VALUES
 -- Data for Name: plan_soort; Type: TABLE DATA; Schema: diwi_testset_simplified; Owner: laurens
 --
 
+INSERT INTO diwi_testset_simplified.plan_soort VALUES
+	(1),
+	(2),
+	(3),
+	(4),
+	(5),
+	(6),
+	(7),
+	(8),
+	(9);
 
 
 --
 -- Data for Name: plan_soort_state; Type: TABLE DATA; Schema: diwi_testset_simplified; Owner: laurens
 --
 
+INSERT INTO diwi_testset_simplified.plan_soort_state VALUES
+	(1, 1, '1 Basiseisen', 11, '2023-08-28 11:53:13+02', NULL),
+	(2, 2, '2 Kwantitatieve woningbehoefte', 11, '2023-08-28 11:53:13+02', NULL),
+	(3, 3, '3 Kwalitatieve behoefte', 11, '2023-08-28 11:53:13+02', NULL),
+	(4, 4, '4 Geintegreerde mobiliteitsoplossingen', 11, '2023-08-28 11:53:13+02', NULL),
+	(5, 5, '5 Leegstand', 11, '2023-08-28 11:53:13+02', NULL),
+	(6, 6, '6 Provinciaal beleid', 11, '2023-08-28 11:53:13+02', NULL),
+	(7, 7, '7 Een vernieuwend woonconcept', 11, '2023-08-28 11:53:13+02', NULL),
+	(8, 8, '8 Duurzame en groene initiatieven', 11, '2023-08-28 11:53:13+02', NULL),
+	(9, 9, '9 Minimaal 10% groen en water', 11, '2023-08-28 11:53:13+02', NULL);
 
 
 --
 -- Data for Name: plan_state; Type: TABLE DATA; Schema: diwi_testset_simplified; Owner: laurens
 --
 
+INSERT INTO diwi_testset_simplified.plan_state VALUES
+	(3, 3, 3, 'Minimaal 80% meergezinswoningen in het centrum', '2030-01-01', '2023-08-28 11:53:13+02', NULL, 'openbaar', 10, 11, 'percentage', 'minimaal', 0.8, '2022-01-01'),
+	(1, 1, 1, 'Basiseis dorpse kwaliteit', '2030-01-01', '2023-08-28 11:53:13+02', NULL, 'openbaar', 10, 11, 'percentage', 'minimaal', 0.9, '2022-01-01'),
+	(2, 2, 2, 'Totaal aantal woningen', '2030-01-01', '2023-08-28 11:53:13+02', NULL, 'openbaar', 10, 11, 'aantal', 'minimaal', 500, '2022-01-01'),
+	(4, 4, 6, 'Binnen de provinciale BSD grens of ruimte voor ruimte', '2030-01-01', '2023-08-28 11:53:13+02', NULL, 'openbaar', 10, 11, 'percentage', 'minimaal', 1, '2022-01-01'),
+	(5, 5, 3, 'Minimaal 35% sociale huurwoningen', '2030-01-01', '2023-08-28 11:53:13+02', NULL, 'openbaar', 10, 11, 'percentage', 'minimaal', 0.35, '2022-01-01'),
+	(7, 7, 3, 'Minimaal 15% middeldure huurwoningen tot 1000 euro huur', '2030-01-01', '2023-08-28 11:53:13+02', NULL, 'openbaar', 10, 11, 'percentage', 'minimaal', 0.15, '2022-01-01'),
+	(6, 6, 3, 'Minimaal 65% van de sociale huurwoningen tot aftoppingsgrens', '2030-01-01', '2023-08-28 11:53:13+02', NULL, 'openbaar', 10, 11, 'percentage', 'minimaal', 0.65, '2022-01-01'),
+	(8, 8, 3, 'Minimaal 10% goedkope koopwoningen tot 190000 met antispeculatie en zelfbewoningsplicht', '2030-01-01', '2023-08-28 11:53:13+02', NULL, 'openbaar', 10, 11, 'percentage', 'minimaal', 0.1, '2022-01-01'),
+	(9, 9, 3, 'Minimaal 10% midddeldure koopwoningen tot 250000 met antispeculatie en zelfbewoningsplicht', '2030-01-01', '2023-08-28 11:53:13+02', NULL, 'openbaar', 10, 11, 'percentage', 'minimaal', 0.1, '2022-01-01');
 
 
 --
@@ -2317,12 +2476,12 @@ INSERT INTO diwi_testset_simplified.project_programmering_changelog VALUES
 --
 
 INSERT INTO diwi_testset_simplified.project_state VALUES
-	(3, 3, 9, 9, '2023-08-25 11:51:37+02', NULL, 'openbaar'),
-	(4, 4, 7, 7, '2023-08-25 11:51:37+02', NULL, 'openbaar'),
-	(1, 1, 7, 7, '2023-08-21 12:55:19+02', NULL, 'extern_rapportage'),
-	(2, 2, 8, 8, '2023-08-25 11:51:37+02', NULL, 'extern_rapportage'),
-	(5, 5, 9, 9, '2023-08-25 11:51:37+02', NULL, 'extern_rapportage'),
-	(6, 6, 9, 9, '2023-08-27 17:11:16+02', NULL, 'extern_rapportage');
+	(1, 1, 7, 7, '2023-08-21 12:55:19+02', NULL, 'extern_rapportage', 'FF3333'),
+	(2, 2, 8, 8, '2023-08-25 11:51:37+02', NULL, 'extern_rapportage', 'FF8000'),
+	(3, 3, 9, 9, '2023-08-25 11:51:37+02', NULL, 'openbaar', 'FFFF00'),
+	(4, 4, 7, 7, '2023-08-25 11:51:37+02', NULL, 'openbaar', '80FF00'),
+	(5, 5, 9, 9, '2023-08-25 11:51:37+02', NULL, 'extern_rapportage', '00FF00'),
+	(6, 6, 9, 9, '2023-08-27 17:11:16+02', NULL, 'extern_rapportage', '00FF80');
 
 
 --
@@ -2452,6 +2611,9 @@ INSERT INTO diwi_testset_simplified.woningblok VALUES
 --
 
 INSERT INTO diwi_testset_simplified.woningblok_duration_changelog VALUES
+	(1, 1, 1, 2, 7, '2023-08-21 12:55:19+02', NULL),
+	(2, 2, 1, 2, 7, '2023-08-21 12:55:19+02', NULL),
+	(51, 51, 8, 9, 8, '2023-08-25 11:51:37+02', NULL),
 	(76, 76, 15, 20, 9, '2023-08-25 11:51:37+02', NULL),
 	(77, 77, 15, 16, 9, '2023-08-25 11:51:37+02', NULL),
 	(78, 78, 15, 20, 9, '2023-08-25 11:51:37+02', NULL),
@@ -2461,10 +2623,7 @@ INSERT INTO diwi_testset_simplified.woningblok_duration_changelog VALUES
 	(82, 82, 31, 35, 9, '2023-08-25 11:51:37+02', NULL),
 	(83, 83, 31, 36, 9, '2023-08-25 11:51:37+02', NULL),
 	(84, 84, 31, 37, 9, '2023-08-25 11:51:37+02', NULL),
-	(85, 85, 38, 44, 9, '2023-08-27 17:11:16+02', NULL),
-	(1, 1, 1, 2, 7, '2023-08-21 12:55:19+02', NULL),
-	(2, 2, 1, 2, 7, '2023-08-21 12:55:19+02', NULL),
-	(51, 51, 8, 9, 8, '2023-08-25 11:51:37+02', NULL);
+	(85, 85, 38, 44, 9, '2023-08-27 17:11:16+02', NULL);
 
 
 --
@@ -2472,17 +2631,17 @@ INSERT INTO diwi_testset_simplified.woningblok_duration_changelog VALUES
 --
 
 INSERT INTO diwi_testset_simplified.woningblok_eigendom_en_waarde_changelog VALUES
-	(76, 76, 15, 20, 9, '2023-08-25 11:51:37+02', NULL, 'koopwoning', 500000, NULL),
-	(77, 77, 15, 16, 9, '2023-08-25 11:51:37+02', NULL, 'koopwoning', 500000, NULL),
-	(78, 78, 15, 20, 9, '2023-08-25 11:51:37+02', NULL, 'koopwoning', 500000, NULL),
-	(79, 79, 23, 29, 7, '2023-08-25 11:51:37+02', NULL, 'huurwoning_woningcorporatie', NULL, 673),
-	(80, 80, 23, 30, 7, '2023-08-25 11:51:37+02', NULL, 'huurwoning_particuliere_verhuurder', NULL, 850),
-	(81, 81, 23, 30, 7, '2023-08-25 11:51:37+02', NULL, 'huurwoning_particuliere_verhuurder', NULL, 1075),
-	(82, 82, 31, 35, 9, '2023-08-25 11:51:37+02', NULL, 'koopwoning', 500000, NULL),
-	(83, 83, 31, 36, 9, '2023-08-25 11:51:37+02', NULL, 'koopwoning', 500000, NULL),
-	(84, 84, 31, 37, 9, '2023-08-25 11:51:37+02', NULL, 'koopwoning', 500000, NULL),
-	(85, 85, 38, 41, 9, '2023-08-27 17:11:16+02', NULL, 'koopwoning', 355000, NULL),
-	(86, 85, 41, 44, 9, '2023-08-27 17:11:16+02', NULL, 'koopwoning', 500000, NULL);
+	(76, 76, 15, 20, 9, '2023-08-25 11:51:37+02', NULL, 'koopwoning', '€ 500.000,00', NULL),
+	(77, 77, 15, 16, 9, '2023-08-25 11:51:37+02', NULL, 'koopwoning', '€ 500.000,00', NULL),
+	(78, 78, 15, 20, 9, '2023-08-25 11:51:37+02', NULL, 'koopwoning', '€ 500.000,00', NULL),
+	(79, 79, 23, 29, 7, '2023-08-25 11:51:37+02', NULL, 'huurwoning_woningcorporatie', NULL, '€ 673,00'),
+	(80, 80, 23, 30, 7, '2023-08-25 11:51:37+02', NULL, 'huurwoning_particuliere_verhuurder', NULL, '€ 850,00'),
+	(81, 81, 23, 30, 7, '2023-08-25 11:51:37+02', NULL, 'huurwoning_particuliere_verhuurder', NULL, '€ 1.075,00'),
+	(82, 82, 31, 35, 9, '2023-08-25 11:51:37+02', NULL, 'koopwoning', '€ 500.000,00', NULL),
+	(83, 83, 31, 36, 9, '2023-08-25 11:51:37+02', NULL, 'koopwoning', '€ 500.000,00', NULL),
+	(84, 84, 31, 37, 9, '2023-08-25 11:51:37+02', NULL, 'koopwoning', '€ 500.000,00', NULL),
+	(85, 85, 38, 41, 9, '2023-08-27 17:11:16+02', NULL, 'koopwoning', '€ 355.000,00', NULL),
+	(86, 85, 41, 44, 9, '2023-08-27 17:11:16+02', NULL, 'koopwoning', '€ 500.000,00', NULL);
 
 
 --
@@ -2541,6 +2700,8 @@ INSERT INTO diwi_testset_simplified.woningblok_maatwerk_ordinaal_eigenschap_chan
 --
 
 INSERT INTO diwi_testset_simplified.woningblok_mutatie_changelog VALUES
+	(1, 1, 1, 2, 7, '2023-08-21 12:55:19+02', NULL, 'bouw', 50, 0, 50),
+	(2, 2, 1, 2, 7, '2023-08-21 12:55:19+02', NULL, 'bouw', 200, 0, 200),
 	(51, 51, 8, 9, 8, '2023-08-25 11:51:37+02', NULL, 'bouw', 70, 0, 70),
 	(76, 76, 15, 20, 9, '2023-08-25 11:51:37+02', NULL, 'sloop', 0, 1, -1),
 	(78, 78, 15, 20, 9, '2023-08-25 11:51:37+02', NULL, 'bouw', 2, 0, 2),
@@ -2551,9 +2712,7 @@ INSERT INTO diwi_testset_simplified.woningblok_mutatie_changelog VALUES
 	(81, 81, 23, 30, 7, '2023-08-25 11:51:37+02', NULL, 'bouw', 12, 0, 12),
 	(82, 83, 31, 35, 9, '2023-08-25 11:51:37+02', NULL, 'bouw', 2, 0, 2),
 	(83, 83, 31, 36, 9, '2023-08-25 11:51:37+02', NULL, 'bouw', 2, 0, 2),
-	(85, 85, 38, 44, 9, '2023-08-27 17:11:16+02', NULL, 'bouw', 2, 0, 2),
-	(1, 1, 1, 2, 7, '2023-08-21 12:55:19+02', NULL, 'bouw', 50, 0, 50),
-	(2, 2, 1, 2, 7, '2023-08-21 12:55:19+02', NULL, 'bouw', 200, 0, 200);
+	(85, 85, 38, 44, 9, '2023-08-27 17:11:16+02', NULL, 'bouw', 2, 0, 2);
 
 
 --
@@ -2594,6 +2753,8 @@ INSERT INTO diwi_testset_simplified.woningblok_state VALUES
 --
 
 INSERT INTO diwi_testset_simplified.woningblok_type_en_fysiek_voorkomen_changelog VALUES
+	(1, 1, 1, 2, 7, '2023-08-21 12:55:19+02', NULL, 'meergezinswoning', NULL),
+	(2, 2, 1, 2, 7, '2023-08-21 12:55:19+02', NULL, 'eengezinswoning', NULL),
 	(76, 76, 15, 20, 9, '2023-08-25 11:51:37+02', NULL, 'eengezinswoning', NULL),
 	(77, 77, 15, 16, 9, '2023-08-25 11:51:37+02', NULL, 'eengezinswoning', NULL),
 	(78, 78, 15, 20, 9, '2023-08-25 11:51:37+02', NULL, 'eengezinswoning', NULL),
@@ -2603,9 +2764,7 @@ INSERT INTO diwi_testset_simplified.woningblok_type_en_fysiek_voorkomen_changelo
 	(82, 82, 31, 35, 9, '2023-08-25 11:51:37+02', NULL, 'eengezinswoning', NULL),
 	(83, 83, 31, 36, 9, '2023-08-25 11:51:37+02', NULL, 'eengezinswoning', NULL),
 	(84, 84, 31, 37, 9, '2023-08-25 11:51:37+02', NULL, 'eengezinswoning', NULL),
-	(85, 85, 38, 44, 9, '2023-08-27 17:11:16+02', NULL, 'eengezinswoning', NULL),
-	(1, 1, 1, 2, 7, '2023-08-21 12:55:19+02', NULL, 'meergezinswoning', NULL),
-	(2, 2, 1, 2, 7, '2023-08-21 12:55:19+02', NULL, 'eengezinswoning', NULL);
+	(85, 85, 38, 44, 9, '2023-08-27 17:11:16+02', NULL, 'eengezinswoning', NULL);
 
 
 --
@@ -2613,6 +2772,8 @@ INSERT INTO diwi_testset_simplified.woningblok_type_en_fysiek_voorkomen_changelo
 --
 
 INSERT INTO diwi_testset_simplified.woningblok_wijk_changelog VALUES
+	(1, 1, 1, 2, 1, 7, '2023-08-21 12:55:19+02', NULL),
+	(2, 2, 1, 2, 1, 7, '2023-08-21 12:55:19+02', NULL),
 	(51, 51, 8, 9, 2, 8, '2023-08-25 11:51:37+02', NULL),
 	(76, 76, 15, 20, 1, 9, '2023-08-25 11:51:37+02', NULL),
 	(77, 77, 15, 16, 1, 9, '2023-08-25 11:51:37+02', NULL),
@@ -2623,9 +2784,7 @@ INSERT INTO diwi_testset_simplified.woningblok_wijk_changelog VALUES
 	(82, 82, 31, 35, 1, 9, '2023-08-25 11:51:37+02', NULL),
 	(83, 83, 31, 36, 1, 9, '2023-08-25 11:51:37+02', NULL),
 	(84, 84, 31, 37, 1, 9, '2023-08-25 11:51:37+02', NULL),
-	(85, 85, 38, 44, 1, 9, '2023-08-27 17:11:16+02', NULL),
-	(1, 1, 1, 2, 1, 7, '2023-08-21 12:55:19+02', NULL),
-	(2, 2, 1, 2, 1, 7, '2023-08-21 12:55:19+02', NULL);
+	(85, 85, 38, 44, 1, 9, '2023-08-27 17:11:16+02', NULL);
 
 
 --
@@ -2741,6 +2900,14 @@ ALTER TABLE ONLY diwi_testset_simplified.organization_state
 
 
 --
+-- Name: plan_conditie_buurt plan_conditie_buurt_pkey; Type: CONSTRAINT; Schema: diwi_testset_simplified; Owner: laurens
+--
+
+ALTER TABLE ONLY diwi_testset_simplified.plan_conditie_buurt
+    ADD CONSTRAINT plan_conditie_buurt_pkey PRIMARY KEY ("ID");
+
+
+--
 -- Name: plan_conditie_maatwerk_categorie plan_conditie_categorie_maatwerk_eigenschap_pkey; Type: CONSTRAINT; Schema: diwi_testset_simplified; Owner: laurens
 --
 
@@ -2762,6 +2929,14 @@ ALTER TABLE ONLY diwi_testset_simplified.plan_conditie_doelgroep
 
 ALTER TABLE ONLY diwi_testset_simplified.plan_conditie_eigendom_en_waarde
     ADD CONSTRAINT plan_conditie_eigendom_en_waarde_pkey PRIMARY KEY ("ID");
+
+
+--
+-- Name: plan_conditie_gemeente plan_conditie_gemeente_pkey; Type: CONSTRAINT; Schema: diwi_testset_simplified; Owner: laurens
+--
+
+ALTER TABLE ONLY diwi_testset_simplified.plan_conditie_gemeente
+    ADD CONSTRAINT plan_conditie_gemeente_pkey PRIMARY KEY ("ID");
 
 
 --
@@ -2842,6 +3017,14 @@ ALTER TABLE ONLY diwi_testset_simplified.plan_conditie_state
 
 ALTER TABLE ONLY diwi_testset_simplified.plan_conditie_type_en_fysiek_voorkomen
     ADD CONSTRAINT plan_conditie_type_en_fysiek_voorkomen_pkey PRIMARY KEY ("ID");
+
+
+--
+-- Name: plan_conditie_wijk plan_conditie_wijk_pkey; Type: CONSTRAINT; Schema: diwi_testset_simplified; Owner: laurens
+--
+
+ALTER TABLE ONLY diwi_testset_simplified.plan_conditie_wijk
+    ADD CONSTRAINT plan_conditie_wijk_pkey PRIMARY KEY ("ID");
 
 
 --
@@ -3477,6 +3660,30 @@ ALTER TABLE ONLY diwi_testset_simplified.organization_state
 
 
 --
+-- Name: plan_conditie_buurt fk_plan_conditie_buurt__buurt; Type: FK CONSTRAINT; Schema: diwi_testset_simplified; Owner: laurens
+--
+
+ALTER TABLE ONLY diwi_testset_simplified.plan_conditie_buurt
+    ADD CONSTRAINT fk_plan_conditie_buurt__buurt FOREIGN KEY ("buurt_ID") REFERENCES diwi_testset_simplified.buurt("ID") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: plan_conditie_buurt fk_plan_conditie_buurt__change_user; Type: FK CONSTRAINT; Schema: diwi_testset_simplified; Owner: laurens
+--
+
+ALTER TABLE ONLY diwi_testset_simplified.plan_conditie_buurt
+    ADD CONSTRAINT fk_plan_conditie_buurt__change_user FOREIGN KEY ("change_user_ID") REFERENCES diwi_testset_simplified."user"("ID") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: plan_conditie_buurt fk_plan_conditie_buurt__plan_conditie; Type: FK CONSTRAINT; Schema: diwi_testset_simplified; Owner: laurens
+--
+
+ALTER TABLE ONLY diwi_testset_simplified.plan_conditie_buurt
+    ADD CONSTRAINT fk_plan_conditie_buurt__plan_conditie FOREIGN KEY ("plan_conditie_ID") REFERENCES diwi_testset_simplified.plan_conditie("ID") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
 -- Name: plan_conditie_doelgroep fk_plan_conditie_doelgroep__change_user; Type: FK CONSTRAINT; Schema: diwi_testset_simplified; Owner: laurens
 --
 
@@ -3506,6 +3713,30 @@ ALTER TABLE ONLY diwi_testset_simplified.plan_conditie_eigendom_en_waarde
 
 ALTER TABLE ONLY diwi_testset_simplified.plan_conditie_eigendom_en_waarde
     ADD CONSTRAINT fk_plan_conditie_eigendom_en_waarde__plan_conditie FOREIGN KEY ("plan_conditie_ID") REFERENCES diwi_testset_simplified.plan_conditie("ID") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: plan_conditie_gemeente fk_plan_conditie_gemeente__change_user; Type: FK CONSTRAINT; Schema: diwi_testset_simplified; Owner: laurens
+--
+
+ALTER TABLE ONLY diwi_testset_simplified.plan_conditie_gemeente
+    ADD CONSTRAINT fk_plan_conditie_gemeente__change_user FOREIGN KEY ("change_user_ID") REFERENCES diwi_testset_simplified."user"("ID") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: plan_conditie_gemeente fk_plan_conditie_gemeente__gemeente; Type: FK CONSTRAINT; Schema: diwi_testset_simplified; Owner: laurens
+--
+
+ALTER TABLE ONLY diwi_testset_simplified.plan_conditie_gemeente
+    ADD CONSTRAINT fk_plan_conditie_gemeente__gemeente FOREIGN KEY ("gemeente_ID") REFERENCES diwi_testset_simplified.gemeente("ID") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: plan_conditie_gemeente fk_plan_conditie_gemeente__plan_conditie; Type: FK CONSTRAINT; Schema: diwi_testset_simplified; Owner: laurens
+--
+
+ALTER TABLE ONLY diwi_testset_simplified.plan_conditie_gemeente
+    ADD CONSTRAINT fk_plan_conditie_gemeente__plan_conditie FOREIGN KEY ("plan_conditie_ID") REFERENCES diwi_testset_simplified.plan_conditie("ID") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -3690,6 +3921,30 @@ ALTER TABLE ONLY diwi_testset_simplified.plan_conditie_type_en_fysiek_voorkomen
 
 ALTER TABLE ONLY diwi_testset_simplified.plan_conditie_type_en_fysiek_voorkomen
     ADD CONSTRAINT fk_plan_conditie_type_en_fysiek_voorkomen__plan_conditie FOREIGN KEY ("plan_conditie_ID") REFERENCES diwi_testset_simplified.plan_conditie("ID") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: plan_conditie_wijk fk_plan_conditie_wijk__change_user; Type: FK CONSTRAINT; Schema: diwi_testset_simplified; Owner: laurens
+--
+
+ALTER TABLE ONLY diwi_testset_simplified.plan_conditie_wijk
+    ADD CONSTRAINT fk_plan_conditie_wijk__change_user FOREIGN KEY ("change_user_ID") REFERENCES diwi_testset_simplified."user"("ID") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: plan_conditie_wijk fk_plan_conditie_wijk__plan_conditie; Type: FK CONSTRAINT; Schema: diwi_testset_simplified; Owner: laurens
+--
+
+ALTER TABLE ONLY diwi_testset_simplified.plan_conditie_wijk
+    ADD CONSTRAINT fk_plan_conditie_wijk__plan_conditie FOREIGN KEY ("plan_conditie_ID") REFERENCES diwi_testset_simplified.plan_conditie("ID") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: plan_conditie_wijk fk_plan_conditie_wijk__wijk; Type: FK CONSTRAINT; Schema: diwi_testset_simplified; Owner: laurens
+--
+
+ALTER TABLE ONLY diwi_testset_simplified.plan_conditie_wijk
+    ADD CONSTRAINT fk_plan_conditie_wijk__wijk FOREIGN KEY ("wijk_ID") REFERENCES diwi_testset_simplified.wijk("ID") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
