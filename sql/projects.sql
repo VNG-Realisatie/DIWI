@@ -19,7 +19,8 @@ WITH woningblokken AS (
             AND wmc.change_end_date IS NULL
         LEFT JOIN diwi_testset_simplified.woningblok_naam_changelog wnc ON wnc."woningblok_ID" = w."ID"
             AND wnc.change_end_date IS NULL
-    ORDER BY id
+        ORDER BY
+            w."ID" ASC
 ),
 actor_role AS (
     SELECT
@@ -105,6 +106,8 @@ projecten AS (
         AND cm.change_end_date IS NULL
         AND actor_role.change_end_date IS NULL
         AND actor_role.rol = 'projectleider'
+    ORDER BY
+        p."ID" ASC
 ),
 plannen AS (
     SELECT

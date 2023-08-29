@@ -118,18 +118,6 @@
     },
     "woningblokken": [
       {
-        "id": 78,
-        "naam": "Carte Blanche Unique: Bouw 2 woningen ",
-        "bruto_plancapaciteit": 2,
-        "netto_plancapaciteit": 2,
-        "sloop": 0,
-        "mutatie_soort": "bouw",
-        "woningblok_naam_changelog_id": 6,
-        "woningblok_mutatie_changelog_id": 78,
-        "woningblok_state_id": 78,
-        "project_id": 3
-      },
-      {
         "id": 76,
         "naam": "Carte Blanche Exclusief: Sloop woning",
         "bruto_plancapaciteit": 0,
@@ -151,6 +139,18 @@
         "woningblok_naam_changelog_id": 5,
         "woningblok_mutatie_changelog_id": 77,
         "woningblok_state_id": 77,
+        "project_id": 3
+      },
+      {
+        "id": 78,
+        "naam": "Carte Blanche Unique: Bouw 2 woningen ",
+        "bruto_plancapaciteit": 2,
+        "netto_plancapaciteit": 2,
+        "sloop": 0,
+        "mutatie_soort": "bouw",
+        "woningblok_naam_changelog_id": 6,
+        "woningblok_mutatie_changelog_id": 78,
+        "woningblok_state_id": 78,
         "project_id": 3
       }
     ]
@@ -246,15 +246,15 @@
     },
     "woningblokken": [
       {
-        "id": 83,
+        "id": 82,
         "naam": null,
-        "bruto_plancapaciteit": 2,
-        "netto_plancapaciteit": 2,
-        "sloop": 0,
-        "mutatie_soort": "bouw",
+        "bruto_plancapaciteit": null,
+        "netto_plancapaciteit": null,
+        "sloop": null,
+        "mutatie_soort": null,
         "woningblok_naam_changelog_id": null,
-        "woningblok_mutatie_changelog_id": 82,
-        "woningblok_state_id": 83,
+        "woningblok_mutatie_changelog_id": null,
+        "woningblok_state_id": 82,
         "project_id": 5
       },
       {
@@ -270,15 +270,15 @@
         "project_id": 5
       },
       {
-        "id": 82,
+        "id": 83,
         "naam": null,
-        "bruto_plancapaciteit": null,
-        "netto_plancapaciteit": null,
-        "sloop": null,
-        "mutatie_soort": null,
+        "bruto_plancapaciteit": 2,
+        "netto_plancapaciteit": 2,
+        "sloop": 0,
+        "mutatie_soort": "bouw",
         "woningblok_naam_changelog_id": null,
-        "woningblok_mutatie_changelog_id": null,
-        "woningblok_state_id": 82,
+        "woningblok_mutatie_changelog_id": 82,
+        "woningblok_state_id": 83,
         "project_id": 5
       },
       {
