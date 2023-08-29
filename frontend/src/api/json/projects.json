@@ -4,6 +4,9 @@
       "id": 1,
       "name": "Achterweg",
       "eigenaar": "projectleider_1",
+      "plan type": "herstructurering",
+      "eind datum": "2022-01-01",
+      "start datum": "2022-01-01",
       "priorisering": null,
       "rol gemeente": "initiatiefnemer",
       "organization_id": 7,
@@ -20,18 +23,6 @@
     },
     "woningblokken": [
       {
-        "id": 2,
-        "woningblok_naam_changelog_id": 2,
-        "naam": "200 eengezinswoningen",
-        "woningblok_mutatie_changelog_id": 2,
-        "bruto_plancapaciteit": 200,
-        "netto_plancapaciteit": 200,
-        "sloop": 0,
-        "mutatie_soort": "bouw",
-        "woningblok_state_id": 2,
-        "project_id": 1
-      },
-      {
         "id": 1,
         "woningblok_naam_changelog_id": 1,
         "naam": "50 meergezinswoningen",
@@ -42,6 +33,18 @@
         "mutatie_soort": "bouw",
         "woningblok_state_id": 1,
         "project_id": 1
+      },
+      {
+        "id": 2,
+        "woningblok_naam_changelog_id": 2,
+        "naam": "200 eengezinswoningen",
+        "woningblok_mutatie_changelog_id": 2,
+        "bruto_plancapaciteit": 200,
+        "netto_plancapaciteit": 200,
+        "sloop": 0,
+        "mutatie_soort": "bouw",
+        "woningblok_state_id": 2,
+        "project_id": 1
       }
     ]
   },
@@ -50,6 +53,9 @@
       "id": 2,
       "name": "Brielseweg",
       "eigenaar": "projectleider_2",
+      "plan type": "verdichting",
+      "eind datum": "2022-07-01",
+      "start datum": "2022-07-01",
       "priorisering": null,
       "rol gemeente": "initiatiefnemer",
       "organization_id": 8,
@@ -84,6 +90,9 @@
       "id": 3,
       "name": "Carte Blanche Exclusief en Unique",
       "eigenaar": "projectleider_3",
+      "plan type": null,
+      "eind datum": null,
+      "start datum": null,
       "priorisering": null,
       "rol gemeente": "kaderstellend",
       "organization_id": 9,
@@ -99,18 +108,6 @@
       "project_priorisering_value_state_id": null
     },
     "woningblokken": [
-      {
-        "id": 77,
-        "woningblok_naam_changelog_id": 5,
-        "naam": "Carte Blanche Exclusief: Bouw 2 woningen",
-        "woningblok_mutatie_changelog_id": 77,
-        "bruto_plancapaciteit": 2,
-        "netto_plancapaciteit": 2,
-        "sloop": 0,
-        "mutatie_soort": "bouw",
-        "woningblok_state_id": 77,
-        "project_id": 3
-      },
       {
         "id": 78,
         "woningblok_naam_changelog_id": 6,
@@ -134,6 +131,18 @@
         "mutatie_soort": "sloop",
         "woningblok_state_id": 76,
         "project_id": 3
+      },
+      {
+        "id": 77,
+        "woningblok_naam_changelog_id": 5,
+        "naam": "Carte Blanche Exclusief: Bouw 2 woningen",
+        "woningblok_mutatie_changelog_id": 77,
+        "bruto_plancapaciteit": 2,
+        "netto_plancapaciteit": 2,
+        "sloop": 0,
+        "mutatie_soort": "bouw",
+        "woningblok_state_id": 77,
+        "project_id": 3
       }
     ]
   },
@@ -142,6 +151,9 @@
       "id": 4,
       "name": "De Ruy",
       "eigenaar": "projectleider_1",
+      "plan type": "herstructurering",
+      "eind datum": "2020-01-01",
+      "start datum": "2020-01-01",
       "priorisering": null,
       "rol gemeente": "initiatiefnemer",
       "organization_id": 7,
@@ -158,15 +170,15 @@
     },
     "woningblokken": [
       {
-        "id": 81,
+        "id": 79,
         "woningblok_naam_changelog_id": null,
         "naam": null,
-        "woningblok_mutatie_changelog_id": 81,
-        "bruto_plancapaciteit": 12,
-        "netto_plancapaciteit": 12,
+        "woningblok_mutatie_changelog_id": 79,
+        "bruto_plancapaciteit": 16,
+        "netto_plancapaciteit": 16,
         "sloop": 0,
         "mutatie_soort": "bouw",
-        "woningblok_state_id": 81,
+        "woningblok_state_id": 79,
         "project_id": 4
       },
       {
@@ -182,15 +194,15 @@
         "project_id": 4
       },
       {
-        "id": 79,
+        "id": 81,
         "woningblok_naam_changelog_id": null,
         "naam": null,
-        "woningblok_mutatie_changelog_id": 79,
-        "bruto_plancapaciteit": 16,
-        "netto_plancapaciteit": 16,
+        "woningblok_mutatie_changelog_id": 81,
+        "bruto_plancapaciteit": 12,
+        "netto_plancapaciteit": 12,
         "sloop": 0,
         "mutatie_soort": "bouw",
-        "woningblok_state_id": 79,
+        "woningblok_state_id": 81,
         "project_id": 4
       }
     ]
@@ -200,6 +212,9 @@
       "id": 5,
       "name": "Doornweg 6 /Blindeweg 15",
       "eigenaar": "projectleider_3",
+      "plan type": "herstructurering",
+      "eind datum": "2020-01-01",
+      "start datum": "2020-01-01",
       "priorisering": null,
       "rol gemeente": "kaderstellend",
       "organization_id": 9,
@@ -215,18 +230,6 @@
       "project_priorisering_value_state_id": null
     },
     "woningblokken": [
-      {
-        "id": 82,
-        "woningblok_naam_changelog_id": null,
-        "naam": null,
-        "woningblok_mutatie_changelog_id": null,
-        "bruto_plancapaciteit": null,
-        "netto_plancapaciteit": null,
-        "sloop": null,
-        "mutatie_soort": null,
-        "woningblok_state_id": 82,
-        "project_id": 5
-      },
       {
         "id": 83,
         "woningblok_naam_changelog_id": null,
@@ -252,6 +255,18 @@
         "project_id": 5
       },
       {
+        "id": 82,
+        "woningblok_naam_changelog_id": null,
+        "naam": null,
+        "woningblok_mutatie_changelog_id": null,
+        "bruto_plancapaciteit": null,
+        "netto_plancapaciteit": null,
+        "sloop": null,
+        "mutatie_soort": null,
+        "woningblok_state_id": 82,
+        "project_id": 5
+      },
+      {
         "id": 84,
         "woningblok_naam_changelog_id": null,
         "naam": null,
@@ -270,6 +285,9 @@
       "id": 6,
       "name": "Dorpsweg 58",
       "eigenaar": "projectleider_3",
+      "plan type": "herstructurering",
+      "eind datum": "2020-01-01",
+      "start datum": "2020-01-01",
       "priorisering": null,
       "rol gemeente": "kaderstellend",
       "organization_id": 9,
