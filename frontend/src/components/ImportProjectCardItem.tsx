@@ -1,6 +1,5 @@
 import {
     Autocomplete,
-    Button,
     Checkbox,
     FormControl,
     FormControlLabel,
@@ -23,7 +22,7 @@ export const columnTitleStyle = {
 export const ImportProjectCardItem = (props: any) => {
     const dummyProjects = projects;
     //ToDo Update props type after data defined
-    const [projectType, setProjectType] = useState("new");
+
     const [selectedOverwriteProject, setSelectedOverwriteProject] =
         useState<SearchItem>();
     const {
@@ -32,9 +31,18 @@ export const ImportProjectCardItem = (props: any) => {
         setSelectedProject,
         overwriteProjectId,
         setOverwriteProjectId,
+        projectsType,
+        setProjectsType,
     } = props;
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setProjectType((event.target as HTMLInputElement).value);
+        const clearedData = projectsType.filter(
+            (o: any) => o.id !== project.id
+        );
+        clearedData.push({
+            id: project.id,
+            status: (event.target as HTMLInputElement).value,
+        });
+        setProjectsType(clearedData);
     };
     const [checked, setChecked] = useState(false);
 
@@ -53,6 +61,10 @@ export const ImportProjectCardItem = (props: any) => {
         }
     };
 
+    const selectedType = projectsType.find(
+        (o: any) => o.id === project.id
+    ).status;
+
     return (
         <Stack border="solid 2px #ddd" my={1} p={1}>
             <Stack spacing={2} direction="row" justifyContent="flex-end">
@@ -65,7 +77,7 @@ export const ImportProjectCardItem = (props: any) => {
                         }}
                         aria-labelledby="demo-controlled-radio-buttons-group"
                         name="controlled-radio-buttons-group"
-                        value={projectType}
+                        value={selectedType}
                         onChange={handleChange}
                     >
                         <FormControlLabel
@@ -83,7 +95,8 @@ export const ImportProjectCardItem = (props: any) => {
 
                 <Autocomplete
                     disabled={
-                        projectType === "new" ||
+                        projectsType.find((o: any) => o.id === project.id)
+                            .status === "new" ||
                         !selectedProject.includes(project.id)
                     }
                     sx={{ width: "200px" }}
@@ -92,11 +105,13 @@ export const ImportProjectCardItem = (props: any) => {
                     getOptionLabel={(option: SearchItem) =>
                         option ? option.name : ""
                     }
-                    value={selectedOverwriteProject!==undefined?selectedOverwriteProject:null}
+                    value={
+                        selectedOverwriteProject !== undefined
+                            ? selectedOverwriteProject
+                            : null
+                    }
                     onChange={(event: any, newValue: SearchItem) => {
                         setSelectedOverwriteProject(newValue);
-                        console.log(selectedProject);
-                        console.log(project.id);
 
                         if (newValue) {
                             const clearedData = overwriteProjectId.filter(
