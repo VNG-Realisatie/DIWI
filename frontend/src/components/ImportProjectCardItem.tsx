@@ -92,7 +92,7 @@ export const ImportProjectCardItem = (props: any) => {
                     getOptionLabel={(option: SearchItem) =>
                         option ? option.name : ""
                     }
-                    value={selectedOverwriteProject}
+                    value={selectedOverwriteProject!==undefined?selectedOverwriteProject:null}
                     onChange={(event: any, newValue: SearchItem) => {
                         setSelectedOverwriteProject(newValue);
                         console.log(selectedProject);
