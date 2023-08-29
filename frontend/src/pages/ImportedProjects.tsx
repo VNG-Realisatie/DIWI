@@ -2,8 +2,11 @@ import { projects } from "../api/dummyData";
 import { Button, Stack, Typography } from "@mui/material";
 import { ImportProjectCardItem } from "../components/ImportProjectCardItem";
 import { useState } from "react";
+import { SelectFromMapForm } from "../components/SelectFromMapForm";
+import { TimelineForm } from "../components/TimelineForm";
 
 export const ImportedProjects = () => {
+    const [createProjectForm, setCreateProjectForm] = useState<any>(null);
     const [selectedProject, setSelectedProject] = useState<Array<number> | []>(
         []
     );
@@ -40,7 +43,18 @@ export const ImportedProjects = () => {
                         />
                     );
                 })}
-            {currentPage === 2 && <>Page 2</>}
+            {currentPage === 2 && (
+                <Stack pb={5}>
+                    <SelectFromMapForm
+                        setCreateProjectForm={setCreateProjectForm}
+                        createProjectForm={createProjectForm}
+                    />
+                    <TimelineForm
+                        setCreateProjectForm={setCreateProjectForm}
+                        createProjectForm={createProjectForm}
+                    />
+                </Stack>
+            )}
             {currentPage === 3 && (
                 <Typography sx={{ mt: 4 }}>
                     Gelukt! Je ontvangt de bevestiging via de mail.
@@ -64,11 +78,21 @@ export const ImportedProjects = () => {
                     <Button
                         variant="contained"
                         disabled={selectedProject.length === 0}
-                        onClick={() =>
-                            projectsType.some((item) => item.status === "new")
-                                ? setCurrentPage(2)
-                                : setCurrentPage(3)
-                        }
+                        onClick={() => {
+                            if (currentPage === 2) {
+                                setCurrentPage(3);
+                            } else {
+                                if (
+                                    projectsType.some(
+                                        (item) => item.status === "new"
+                                    )
+                                ) {
+                                    setCurrentPage(2);
+                                } else {
+                                    setCurrentPage(3);
+                                }
+                            }
+                        }}
                     >
                         Volgende
                     </Button>
