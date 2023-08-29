@@ -17,6 +17,8 @@ import { ExchangeData } from "./pages/ExchangeData";
 import { ExportExcel } from "./pages/ExportExcel";
 import { ImportExcel } from "./pages/ImportExcel";
 import { ImportedProjects } from "./pages/ImportedProjects";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 export const drawerWidth = 290;
 function App() {
@@ -75,6 +77,7 @@ function App() {
       <AlertProvider>
         <AlertPopup />
         <ScopedCssBaseline>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Layout />}>
@@ -127,6 +130,7 @@ function App() {
               </Route>
             </Routes>
           </BrowserRouter>
+          </LocalizationProvider>
         </ScopedCssBaseline>
       </AlertProvider>
     </ThemeProvider>

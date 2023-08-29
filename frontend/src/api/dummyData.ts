@@ -427,3 +427,10 @@ export const houseBlockColumns: GridColDef[] = [
         editable: false,
     },
 ];
+export const projectLead=["Ali","Dirk","Emiel","Laurens"]
+export const vertrouwlijkheidsniveau=["Prive",
+    "Intern voor uitvoering",
+    "Intern rapportage",
+    "Extern rapportage",
+    "Openbaar"
+    ]

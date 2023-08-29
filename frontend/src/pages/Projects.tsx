@@ -76,12 +76,10 @@ export const Projects = () => {
                             horizontal: "left",
                         }}
                     >
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <StaticDatePicker
                                 defaultValue={dayjs("2022-04-17")}
                                 onChange={(newValue)=>setSelectedDate(newValue)}
                             />
-                        </LocalizationProvider>
                     </Popover>
                 </Stack>
                 <Stack direction="row" justifyContent="flex-end">
