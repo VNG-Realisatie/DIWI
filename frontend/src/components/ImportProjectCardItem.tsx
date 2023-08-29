@@ -82,7 +82,10 @@ export const ImportProjectCardItem = (props: any) => {
                 </FormControl>
 
                 <Autocomplete
-                    disabled={projectType === "new"}
+                    disabled={
+                        projectType === "new" ||
+                        !selectedProject.includes(project.id)
+                    }
                     sx={{ width: "200px" }}
                     size="small"
                     options={dummyProjects}
@@ -92,37 +95,23 @@ export const ImportProjectCardItem = (props: any) => {
                     value={selectedOverwriteProject}
                     onChange={(event: any, newValue: SearchItem) => {
                         setSelectedOverwriteProject(newValue);
+                        console.log(selectedProject);
+                        console.log(project.id);
+
                         if (newValue) {
-                            if (
-                                overwriteProjectId.projectId === undefined ||
-                                overwriteProjectId.projectId === null
-                            ) {
-                                setOverwriteProjectId([
-                                    ...overwriteProjectId,
-                                    {
-                                        projectId: project.id,
-                                        willBeOverWrittenId: newValue.id,
-                                    },
-                                ]);
-                            }
-                            if (overwriteProjectId.projectId === newValue.id) {
-                                const copyProject = { ...overwriteProjectId };
-                                copyProject.projectId = project.id;
-                                copyProject.willBeOverWrittenId = newValue.id;
-                                setOverwriteProjectId([
-                                    ...overwriteProjectId,
-                                    copyProject,
-                                ]);
-                            }
+                            const clearedData = overwriteProjectId.filter(
+                                (o: any) => o.projectId !== project.id
+                            );
+                            clearedData.push({
+                                projectId: project.id,
+                                willBeOverWrittenId: newValue.id,
+                            });
+                            setOverwriteProjectId(clearedData);
                         } else {
-                            if (overwriteProjectId.projectId === project.id) {
-                                const deselected = overwriteProjectId.filter(
-                                    (o: any) => {
-                                        return o.id !== project.id;
-                                    }
-                                );
-                                setOverwriteProjectId(deselected);
-                            }
+                            const clearedData = overwriteProjectId.filter(
+                                (o: any) => o.projectId !== project.id
+                            );
+                            setOverwriteProjectId(clearedData);
                         }
                     }}
                     renderInput={(params) => (
