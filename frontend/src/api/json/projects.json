@@ -6,11 +6,19 @@
       {
         "id": 1,
         "naam": "50 meergezinswoningen",
+        "bruto_plancapaciteit": 50,
+        "netto_plancapaciteit": 50,
+        "sloop": 0,
+        "mutatie_soort": "bouw",
         "project_id": 1
       },
       {
         "id": 1,
         "naam": "50 meergezinswoningen",
+        "bruto_plancapaciteit": 50,
+        "netto_plancapaciteit": 50,
+        "sloop": 0,
+        "mutatie_soort": "bouw",
         "project_id": 1
       }
     ]
@@ -22,6 +30,10 @@
       {
         "id": 2,
         "naam": "200 eengezinswoningen",
+        "bruto_plancapaciteit": 200,
+        "netto_plancapaciteit": 200,
+        "sloop": 0,
+        "mutatie_soort": "bouw",
         "project_id": 2
       }
     ]
