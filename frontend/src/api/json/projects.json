@@ -1,7 +1,18 @@
 [
   {
-    "id": 1,
-    "name": "Achterweg",
+    "project": {
+      "id": 1,
+      "name": "Achterweg",
+      "eigenaar": "projectleider_1",
+      "rol gemeente": "initiatiefnemer",
+      "organization_id": 7,
+      "project_state_id": 1,
+      "organization_state_id": 7,
+      "project_name_changelog_id": 1,
+      "project_gemeenterol_value_id": 1,
+      "project_gemeenterol_changelog_id": 1,
+      "project_gemeenterol_value_state_id": 1
+    },
     "woningblokken": [
       {
         "id": 2,
@@ -30,8 +41,19 @@
     ]
   },
   {
-    "id": 2,
-    "name": "Brielseweg",
+    "project": {
+      "id": 2,
+      "name": "Brielseweg",
+      "eigenaar": "projectleider_2",
+      "rol gemeente": "initiatiefnemer",
+      "organization_id": 8,
+      "project_state_id": 2,
+      "organization_state_id": 8,
+      "project_name_changelog_id": 2,
+      "project_gemeenterol_value_id": 1,
+      "project_gemeenterol_changelog_id": 2,
+      "project_gemeenterol_value_state_id": 1
+    },
     "woningblokken": [
       {
         "id": 51,
@@ -48,8 +70,19 @@
     ]
   },
   {
-    "id": 3,
-    "name": "Carte Blanche Exclusief en Unique",
+    "project": {
+      "id": 3,
+      "name": "Carte Blanche Exclusief en Unique",
+      "eigenaar": "projectleider_3",
+      "rol gemeente": "kaderstellend",
+      "organization_id": 9,
+      "project_state_id": 3,
+      "organization_state_id": 9,
+      "project_name_changelog_id": 3,
+      "project_gemeenterol_value_id": 2,
+      "project_gemeenterol_changelog_id": 3,
+      "project_gemeenterol_value_state_id": 2
+    },
     "woningblokken": [
       {
         "id": 78,
@@ -90,8 +123,19 @@
     ]
   },
   {
-    "id": 4,
-    "name": "De Ruy",
+    "project": {
+      "id": 4,
+      "name": "De Ruy",
+      "eigenaar": "projectleider_1",
+      "rol gemeente": "initiatiefnemer",
+      "organization_id": 7,
+      "project_state_id": 4,
+      "organization_state_id": 7,
+      "project_name_changelog_id": 4,
+      "project_gemeenterol_value_id": 1,
+      "project_gemeenterol_changelog_id": 4,
+      "project_gemeenterol_value_state_id": 1
+    },
     "woningblokken": [
       {
         "id": 80,
@@ -132,8 +176,19 @@
     ]
   },
   {
-    "id": 5,
-    "name": "Doornweg 6 /Blindeweg 15",
+    "project": {
+      "id": 5,
+      "name": "Doornweg 6 /Blindeweg 15",
+      "eigenaar": "projectleider_3",
+      "rol gemeente": "kaderstellend",
+      "organization_id": 9,
+      "project_state_id": 5,
+      "organization_state_id": 9,
+      "project_name_changelog_id": 5,
+      "project_gemeenterol_value_id": 2,
+      "project_gemeenterol_changelog_id": 5,
+      "project_gemeenterol_value_state_id": 2
+    },
     "woningblokken": [
       {
         "id": 83,
@@ -186,8 +241,19 @@
     ]
   },
   {
-    "id": 6,
-    "name": "Dorpsweg 58",
+    "project": {
+      "id": 6,
+      "name": "Dorpsweg 58",
+      "eigenaar": "projectleider_3",
+      "rol gemeente": "kaderstellend",
+      "organization_id": 9,
+      "project_state_id": 6,
+      "organization_state_id": 9,
+      "project_name_changelog_id": 6,
+      "project_gemeenterol_value_id": 2,
+      "project_gemeenterol_changelog_id": 6,
+      "project_gemeenterol_value_state_id": 2
+    },
     "woningblokken": [
       {
         "id": 85,
