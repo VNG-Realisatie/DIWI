@@ -59,11 +59,11 @@ WITH woningblokken AS (
         LEFT JOIN diwi_testset_simplified.milestone woningblok_milestone_start ON woningblok_milestone_start."ID" = woningblok_duration_changelog."start_milestone_ID"
         LEFT JOIN diwi_testset_simplified.milestone_state woningblok_milestone_start_state ON woningblok_milestone_start_state."milestone_ID" = woningblok_milestone_start."ID"
             AND woningblok_milestone_start_state.change_end_date IS NULL
-        LEFT JOIN diwi_testset_simplified.milestone woningblok_milestone_end ON woningblok_milestone_start."ID" = woningblok_duration_changelog."end_milestone_ID"
-        LEFT JOIN diwi_testset_simplified.milestone_state woningblok_milestone_end_state ON woningblok_milestone_end_state."milestone_ID" = woningblok_milestone_start."ID"
+        LEFT JOIN diwi_testset_simplified.milestone woningblok_milestone_end ON woningblok_milestone_end."ID" = woningblok_duration_changelog."end_milestone_ID"
+        LEFT JOIN diwi_testset_simplified.milestone_state woningblok_milestone_end_state ON woningblok_milestone_end_state."milestone_ID" = woningblok_milestone_end."ID"
             AND woningblok_milestone_end_state.change_end_date IS NULL
     ORDER BY
-        w."ID" ASC
+        w."ID" DESC
 ),
 actor_role AS (
     SELECT
@@ -170,8 +170,8 @@ projecten AS (
         LEFT JOIN diwi_testset_simplified.milestone milestone_start ON milestone_start."ID" = project_plan_type_changelog."start_milestone_ID"
         LEFT JOIN diwi_testset_simplified.milestone_state milestone_start_state ON milestone_start_state."milestone_ID" = milestone_start."ID"
             AND milestone_start_state.change_end_date IS NULL
-        LEFT JOIN diwi_testset_simplified.milestone milestone_end ON milestone_start."ID" = project_plan_type_changelog."end_milestone_ID"
-        LEFT JOIN diwi_testset_simplified.milestone_state milestone_end_state ON milestone_end_state."milestone_ID" = milestone_start."ID"
+        LEFT JOIN diwi_testset_simplified.milestone milestone_end ON milestone_end."ID" = project_plan_type_changelog."end_milestone_ID"
+        LEFT JOIN diwi_testset_simplified.milestone_state milestone_end_state ON milestone_end_state."milestone_ID" = milestone_end."ID"
             AND milestone_end_state.change_end_date IS NULL
         LEFT JOIN current_project_fase cm ON cm."project_ID" = p."ID"
             AND cm.change_end_date IS NULL
