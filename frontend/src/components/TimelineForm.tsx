@@ -37,7 +37,6 @@ export const TimelineForm = (props: any) => {
       <Typography variant="subtitle1" fontWeight="500">
         Opleverdatum*
       </Typography>
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DatePicker
           value={
             props.createProjectForm ? props.createProjectForm.opleverDatum : ""
@@ -49,7 +48,6 @@ export const TimelineForm = (props: any) => {
             })
           }
         />
-      </LocalizationProvider>
       <Stack
         direction="row"
         alignItems="flex-end"
@@ -91,9 +89,8 @@ export const TimelineForm = (props: any) => {
         />
         <Typography variant="body1">is</Typography>
 
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DatePicker
-        
+
           value={
             props.createProjectForm ? props.createProjectForm.statusDate : ""
           }
@@ -104,7 +101,6 @@ export const TimelineForm = (props: any) => {
             })
           }
         />
-      </LocalizationProvider>
       </Stack>
     </Box>
   );

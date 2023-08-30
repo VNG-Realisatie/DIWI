@@ -38,6 +38,7 @@ interface CustomStepIconProps {
 }
 export const CreateProject = () => {
   const [createProjectForm, setCreateProjectForm] = useState<any>(null);
+  const [createHouseBlockForm, setCreateHouseBlockForm] = useState<any>(null);
   const [activeStep, setActiveStep] = useState<number>(0);
   const handleSave = () => {
     //Todo add createendpoint here
@@ -54,7 +55,7 @@ export const CreateProject = () => {
   console.log(createProjectForm);
   return (
     //Components for wizard steps
-    <Box mt={2} border="solid 2px #ddd" p={4}>
+    <Box  mb={7} border="solid 2px #ddd" p={4}>
       <Stepper activeStep={activeStep} alternativeLabel>
         {steps.map((label, index) => (
           <Step key={label}>
@@ -70,8 +71,8 @@ export const CreateProject = () => {
       )}
       {activeStep === 1 && (
         <BlockHousesForm
-          setCreateProjectForm={setCreateProjectForm}
-          createProjectForm={createProjectForm}
+          setCreateProjectForm={setCreateHouseBlockForm}
+          createProjectForm={createHouseBlockForm}
         />
       )}
       {activeStep === 2 && (
