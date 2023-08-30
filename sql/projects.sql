@@ -16,6 +16,8 @@ WITH woningblokken AS (
         wgc.grootte AS grootte,
         CASE WHEN wdc.doelgroep IS NULL THEN NULL ELSE json_build_object(wdc.doelgroep, wmc.netto_plancapaciteit) END AS doelgroep,
         CASE WHEN wgpc.grondpositie IS NULL THEN NULL ELSE json_build_object(wgpc.grondpositie, wmc.netto_plancapaciteit) END AS grondpositie,
+        woningblok_milestone_start_state."date" AS "start datum",
+        woningblok_milestone_end_state."date" AS "eind datum",
         -- extra id's for debugging, might not be needed for UI
         wnc."ID" AS woningblok_naam_changelog_id,
         wmc."ID" AS woningblok_mutatie_changelog_id,
@@ -52,6 +54,14 @@ WITH woningblokken AS (
             AND wdc.change_end_date IS NULL
         LEFT JOIN diwi_testset_simplified.woningblok_grondpositie_changelog wgpc ON wgpc."woningblok_ID" = w."ID"
             AND wgpc.change_end_date IS NULL
+        LEFT JOIN diwi_testset_simplified.woningblok_duration_changelog woningblok_duration_changelog ON woningblok_duration_changelog."woningblok_ID" = w."ID"
+            AND woningblok_duration_changelog.change_end_date IS NULL
+        LEFT JOIN diwi_testset_simplified.milestone woningblok_milestone_start ON woningblok_milestone_start."ID" = woningblok_duration_changelog."start_milestone_ID"
+        LEFT JOIN diwi_testset_simplified.milestone_state woningblok_milestone_start_state ON woningblok_milestone_start_state."milestone_ID" = woningblok_milestone_start."ID"
+            AND woningblok_milestone_start_state.change_end_date IS NULL
+        LEFT JOIN diwi_testset_simplified.milestone woningblok_milestone_end ON woningblok_milestone_start."ID" = woningblok_duration_changelog."end_milestone_ID"
+        LEFT JOIN diwi_testset_simplified.milestone_state woningblok_milestone_end_state ON woningblok_milestone_end_state."milestone_ID" = woningblok_milestone_start."ID"
+            AND woningblok_milestone_end_state.change_end_date IS NULL
     ORDER BY
         w."ID" ASC
 ),
