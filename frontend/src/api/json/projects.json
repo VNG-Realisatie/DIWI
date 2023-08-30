@@ -37,7 +37,9 @@
         "buurt": null,
         "wijk": "rockanje",
         "fysiek_voorkomen": null,
-        "woning_type": "meergezinswoning",
+        "woning_type": {
+          "meergezinswoning": 50
+        },
         "eigendom_soort": null,
         "waarde": null,
         "huurbedrag": null,
@@ -64,7 +66,9 @@
         "buurt": null,
         "wijk": "rockanje",
         "fysiek_voorkomen": null,
-        "woning_type": "eengezinswoning",
+        "woning_type": {
+          "eengezinswoning": 200
+        },
         "eigendom_soort": null,
         "waarde": null,
         "huurbedrag": null,
@@ -178,7 +182,9 @@
         "buurt": null,
         "wijk": "rockanje",
         "fysiek_voorkomen": null,
-        "woning_type": "eengezinswoning",
+        "woning_type": {
+          "eengezinswoning": -1
+        },
         "eigendom_soort": "koopwoning",
         "waarde": "€ 500.000,00",
         "huurbedrag": null,
@@ -205,7 +211,9 @@
         "buurt": null,
         "wijk": "rockanje",
         "fysiek_voorkomen": null,
-        "woning_type": "eengezinswoning",
+        "woning_type": {
+          "eengezinswoning": 2
+        },
         "eigendom_soort": "koopwoning",
         "waarde": "€ 500.000,00",
         "huurbedrag": null,
@@ -232,7 +240,9 @@
         "buurt": null,
         "wijk": "rockanje",
         "fysiek_voorkomen": null,
-        "woning_type": "eengezinswoning",
+        "woning_type": {
+          "eengezinswoning": 2
+        },
         "eigendom_soort": "koopwoning",
         "waarde": "€ 500.000,00",
         "huurbedrag": null,
@@ -289,7 +299,9 @@
         "buurt": null,
         "wijk": "oostvoorne",
         "fysiek_voorkomen": null,
-        "woning_type": "meergezinswoning",
+        "woning_type": {
+          "meergezinswoning": 16
+        },
         "eigendom_soort": "huurwoning_woningcorporatie",
         "waarde": null,
         "huurbedrag": "€ 673,00",
@@ -316,7 +328,9 @@
         "buurt": null,
         "wijk": "oostvoorne",
         "fysiek_voorkomen": null,
-        "woning_type": "meergezinswoning",
+        "woning_type": {
+          "meergezinswoning": 12
+        },
         "eigendom_soort": "huurwoning_particuliere_verhuurder",
         "waarde": null,
         "huurbedrag": "€ 850,00",
@@ -343,7 +357,9 @@
         "buurt": null,
         "wijk": "oostvoorne",
         "fysiek_voorkomen": null,
-        "woning_type": "meergezinswoning",
+        "woning_type": {
+          "meergezinswoning": 12
+        },
         "eigendom_soort": "huurwoning_particuliere_verhuurder",
         "waarde": null,
         "huurbedrag": "€ 1.075,00",
@@ -400,7 +416,9 @@
         "buurt": null,
         "wijk": "rockanje",
         "fysiek_voorkomen": null,
-        "woning_type": "eengezinswoning",
+        "woning_type": {
+          "eengezinswoning": 2
+        },
         "eigendom_soort": "koopwoning",
         "waarde": "€ 500.000,00",
         "huurbedrag": null,
@@ -427,7 +445,9 @@
         "buurt": null,
         "wijk": "rockanje",
         "fysiek_voorkomen": null,
-        "woning_type": "eengezinswoning",
+        "woning_type": {
+          "eengezinswoning": 2
+        },
         "eigendom_soort": "koopwoning",
         "waarde": "€ 500.000,00",
         "huurbedrag": null,
@@ -454,7 +474,9 @@
         "buurt": null,
         "wijk": "rockanje",
         "fysiek_voorkomen": null,
-        "woning_type": "eengezinswoning",
+        "woning_type": {
+          "eengezinswoning": 3
+        },
         "eigendom_soort": "koopwoning",
         "waarde": "€ 500.000,00",
         "huurbedrag": null,
@@ -511,7 +533,9 @@
         "buurt": null,
         "wijk": "rockanje",
         "fysiek_voorkomen": null,
-        "woning_type": "eengezinswoning",
+        "woning_type": {
+          "eengezinswoning": 2
+        },
         "eigendom_soort": "koopwoning",
         "waarde": "€ 355.000,00",
         "huurbedrag": null,
@@ -538,7 +562,9 @@
         "buurt": null,
         "wijk": "rockanje",
         "fysiek_voorkomen": null,
-        "woning_type": "eengezinswoning",
+        "woning_type": {
+          "eengezinswoning": 2
+        },
         "eigendom_soort": "koopwoning",
         "waarde": "€ 500.000,00",
         "huurbedrag": null,
