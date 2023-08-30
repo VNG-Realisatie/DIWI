@@ -20,3 +20,9 @@ export const  planologischePlanStatus=[
     "4a_opgenomen_in_visie",
     "4b_niet_opgenomen_in_visie"
   ]
+  export const mutatiesoort=[
+    "bouw",
+    "sloop",
+    "transformatie",
+    "splitsing"
+  ]
