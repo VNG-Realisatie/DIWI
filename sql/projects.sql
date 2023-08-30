@@ -73,7 +73,7 @@ current_project_fase AS (
         diwi_testset_simplified.project_fase_changelog AS pfc
         LEFT JOIN diwi_testset_simplified.milestone sm ON pfc."start_milestone_ID" = sm."ID"
         LEFT JOIN diwi_testset_simplified.milestone_state sms ON sms."milestone_ID" = sm."ID"
-        LEFT JOIN diwi_testset_simplified.milestone em ON pfc."end_milestone_iD" = em."ID"
+        LEFT JOIN diwi_testset_simplified.milestone em ON pfc."end_milestone_ID" = em."ID"
         LEFT JOIN diwi_testset_simplified.milestone_state ems ON ems."milestone_ID" = em."ID"
     WHERE
         sms.status = 'gerealiseerd'
@@ -102,7 +102,7 @@ current_planstatus AS (
     FROM
         diwi_testset_simplified.project_planologische_planstatus_changelog pppc
         LEFT JOIN diwi_testset_simplified.milestone_state sms ON sms."milestone_ID" = pppc."start_milestone_ID"
-        LEFT JOIN diwi_testset_simplified.milestone_state ems ON ems."milestone_ID" = pppc."end_milestone_iD"
+        LEFT JOIN diwi_testset_simplified.milestone_state ems ON ems."milestone_ID" = pppc."end_milestone_ID"
     WHERE
         sms.status = 'gerealiseerd'
         AND ems.status != 'gerealiseerd'
@@ -160,7 +160,7 @@ projecten AS (
         LEFT JOIN diwi_testset_simplified.milestone milestone_start ON milestone_start."ID" = project_plan_type_changelog."start_milestone_ID"
         LEFT JOIN diwi_testset_simplified.milestone_state milestone_start_state ON milestone_start_state."milestone_ID" = milestone_start."ID"
             AND milestone_start_state.change_end_date IS NULL
-        LEFT JOIN diwi_testset_simplified.milestone milestone_end ON milestone_start."ID" = project_plan_type_changelog."end_milestone_iD"
+        LEFT JOIN diwi_testset_simplified.milestone milestone_end ON milestone_start."ID" = project_plan_type_changelog."end_milestone_ID"
         LEFT JOIN diwi_testset_simplified.milestone_state milestone_end_state ON milestone_end_state."milestone_ID" = milestone_start."ID"
             AND milestone_end_state.change_end_date IS NULL
         LEFT JOIN current_project_fase cm ON cm."project_ID" = p."ID"

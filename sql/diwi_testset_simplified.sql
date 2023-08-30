@@ -942,7 +942,7 @@ ALTER TABLE diwi_testset_simplified.project OWNER TO vng;
 CREATE TABLE diwi_testset_simplified.project_actor_rol_changelog (
     "ID" integer NOT NULL,
     "start_milestone_ID" integer NOT NULL,
-    "end_milestone_iD" integer NOT NULL,
+    "end_milestone_ID" integer NOT NULL,
     "project_ID" integer NOT NULL,
     "change_user_ID" integer NOT NULL,
     change_start_date timestamp with time zone NOT NULL,
@@ -1005,7 +1005,7 @@ ALTER TABLE diwi_testset_simplified.project_duration_changelog OWNER TO vng;
 CREATE TABLE diwi_testset_simplified.project_fase_changelog (
     "ID" integer NOT NULL,
     "start_milestone_ID" integer NOT NULL,
-    "end_milestone_iD" integer NOT NULL,
+    "end_milestone_ID" integer NOT NULL,
     "project_ID" integer NOT NULL,
     "change_user_ID" integer NOT NULL,
     change_start_date timestamp with time zone NOT NULL,
@@ -1023,7 +1023,7 @@ ALTER TABLE diwi_testset_simplified.project_fase_changelog OWNER TO vng;
 CREATE TABLE diwi_testset_simplified.project_gemeenterol_changelog (
     "ID" integer NOT NULL,
     "start_milestone_ID" integer NOT NULL,
-    "end_milestone_iD" integer NOT NULL,
+    "end_milestone_ID" integer NOT NULL,
     "project_ID" integer NOT NULL,
     "change_user_ID" integer NOT NULL,
     change_start_date timestamp with time zone NOT NULL,
@@ -1142,7 +1142,7 @@ ALTER TABLE diwi_testset_simplified.project_maatwerk_ordinaal_eigenschap_changel
 CREATE TABLE diwi_testset_simplified.project_name_changelog (
     "ID" integer NOT NULL,
     "start_milestone_ID" integer NOT NULL,
-    "end_milestone_iD" integer NOT NULL,
+    "end_milestone_ID" integer NOT NULL,
     "project_ID" integer NOT NULL,
     "change_user_ID" integer NOT NULL,
     change_start_date timestamp with time zone NOT NULL,
@@ -1160,7 +1160,7 @@ ALTER TABLE diwi_testset_simplified.project_name_changelog OWNER TO vng;
 CREATE TABLE diwi_testset_simplified.project_plan_type_changelog (
     "ID" integer NOT NULL,
     "start_milestone_ID" integer NOT NULL,
-    "end_milestone_iD" integer NOT NULL,
+    "end_milestone_ID" integer NOT NULL,
     "project_ID" integer NOT NULL,
     "change_user_ID" integer NOT NULL,
     change_start_date timestamp with time zone NOT NULL,
@@ -1178,7 +1178,7 @@ ALTER TABLE diwi_testset_simplified.project_plan_type_changelog OWNER TO vng;
 CREATE TABLE diwi_testset_simplified.project_planologische_planstatus_changelog (
     "ID" integer NOT NULL,
     "start_milestone_ID" integer NOT NULL,
-    "end_milestone_iD" integer NOT NULL,
+    "end_milestone_ID" integer NOT NULL,
     "project_ID" integer NOT NULL,
     "change_user_ID" integer NOT NULL,
     change_start_date timestamp with time zone NOT NULL,
@@ -1196,7 +1196,7 @@ ALTER TABLE diwi_testset_simplified.project_planologische_planstatus_changelog O
 CREATE TABLE diwi_testset_simplified.project_priorisering_changelog (
     "ID" integer NOT NULL,
     "start_milestone_ID" integer NOT NULL,
-    "end_milestone_iD" integer NOT NULL,
+    "end_milestone_ID" integer NOT NULL,
     "project_ID" integer NOT NULL,
     "change_user_ID" integer NOT NULL,
     change_start_date timestamp with time zone NOT NULL,
@@ -4016,7 +4016,7 @@ ALTER TABLE ONLY diwi_testset_simplified.project_actor_rol_changelog
 --
 
 ALTER TABLE ONLY diwi_testset_simplified.project_actor_rol_changelog
-    ADD CONSTRAINT fk_project_actor_rol_changelog__end_milestone FOREIGN KEY ("end_milestone_iD") REFERENCES diwi_testset_simplified.milestone("ID") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT fk_project_actor_rol_changelog__end_milestone FOREIGN KEY ("end_milestone_ID") REFERENCES diwi_testset_simplified.milestone("ID") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -4104,7 +4104,7 @@ ALTER TABLE ONLY diwi_testset_simplified.project_fase_changelog
 --
 
 ALTER TABLE ONLY diwi_testset_simplified.project_fase_changelog
-    ADD CONSTRAINT fk_project_fase_changelog__end_milestone FOREIGN KEY ("end_milestone_iD") REFERENCES diwi_testset_simplified.milestone("ID") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT fk_project_fase_changelog__end_milestone FOREIGN KEY ("end_milestone_ID") REFERENCES diwi_testset_simplified.milestone("ID") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -4136,7 +4136,7 @@ ALTER TABLE ONLY diwi_testset_simplified.project_gemeenterol_changelog
 --
 
 ALTER TABLE ONLY diwi_testset_simplified.project_gemeenterol_changelog
-    ADD CONSTRAINT fk_project_gemeenterol_changelog__end_milestone FOREIGN KEY ("end_milestone_iD") REFERENCES diwi_testset_simplified.milestone("ID") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT fk_project_gemeenterol_changelog__end_milestone FOREIGN KEY ("end_milestone_ID") REFERENCES diwi_testset_simplified.milestone("ID") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -4352,7 +4352,7 @@ ALTER TABLE ONLY diwi_testset_simplified.project_name_changelog
 --
 
 ALTER TABLE ONLY diwi_testset_simplified.project_name_changelog
-    ADD CONSTRAINT fk_project_name_changelog__end_milestone FOREIGN KEY ("end_milestone_iD") REFERENCES diwi_testset_simplified.milestone("ID") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT fk_project_name_changelog__end_milestone FOREIGN KEY ("end_milestone_ID") REFERENCES diwi_testset_simplified.milestone("ID") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -4384,7 +4384,7 @@ ALTER TABLE ONLY diwi_testset_simplified.project_plan_type_changelog
 --
 
 ALTER TABLE ONLY diwi_testset_simplified.project_plan_type_changelog
-    ADD CONSTRAINT fk_project_plan_type_changelog__end_milestone FOREIGN KEY ("end_milestone_iD") REFERENCES diwi_testset_simplified.milestone("ID") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT fk_project_plan_type_changelog__end_milestone FOREIGN KEY ("end_milestone_ID") REFERENCES diwi_testset_simplified.milestone("ID") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -4416,7 +4416,7 @@ ALTER TABLE ONLY diwi_testset_simplified.project_planologische_planstatus_change
 --
 
 ALTER TABLE ONLY diwi_testset_simplified.project_planologische_planstatus_changelog
-    ADD CONSTRAINT fk_project_planologische_planstatus_changelog__end_milestone FOREIGN KEY ("end_milestone_iD") REFERENCES diwi_testset_simplified.milestone("ID") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT fk_project_planologische_planstatus_changelog__end_milestone FOREIGN KEY ("end_milestone_ID") REFERENCES diwi_testset_simplified.milestone("ID") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -4448,7 +4448,7 @@ ALTER TABLE ONLY diwi_testset_simplified.project_priorisering_changelog
 --
 
 ALTER TABLE ONLY diwi_testset_simplified.project_priorisering_changelog
-    ADD CONSTRAINT fk_project_priorisering_changelog__end_milestone FOREIGN KEY ("end_milestone_iD") REFERENCES diwi_testset_simplified.milestone("ID") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT fk_project_priorisering_changelog__end_milestone FOREIGN KEY ("end_milestone_ID") REFERENCES diwi_testset_simplified.milestone("ID") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
