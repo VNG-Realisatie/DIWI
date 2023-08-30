@@ -191,7 +191,9 @@
         "woning_type": {
           "eengezinswoning": -1
         },
-        "eigendom_soort": "koopwoning",
+        "eigendom_soort": {
+          "koopwoning": -1
+        },
         "waarde": "€ 500.000,00",
         "huurbedrag": null,
         "grootte": null,
@@ -222,7 +224,9 @@
         "woning_type": {
           "eengezinswoning": 2
         },
-        "eigendom_soort": "koopwoning",
+        "eigendom_soort": {
+          "koopwoning": 2
+        },
         "waarde": "€ 500.000,00",
         "huurbedrag": null,
         "grootte": null,
@@ -253,7 +257,9 @@
         "woning_type": {
           "eengezinswoning": 2
         },
-        "eigendom_soort": "koopwoning",
+        "eigendom_soort": {
+          "koopwoning": 2
+        },
         "waarde": "€ 500.000,00",
         "huurbedrag": null,
         "grootte": null,
@@ -314,7 +320,9 @@
         "woning_type": {
           "meergezinswoning": 16
         },
-        "eigendom_soort": "huurwoning_woningcorporatie",
+        "eigendom_soort": {
+          "huurwoning_woningcorporatie": 16
+        },
         "waarde": null,
         "huurbedrag": "€ 673,00",
         "grootte": null,
@@ -345,7 +353,9 @@
         "woning_type": {
           "meergezinswoning": 12
         },
-        "eigendom_soort": "huurwoning_particuliere_verhuurder",
+        "eigendom_soort": {
+          "huurwoning_particuliere_verhuurder": 12
+        },
         "waarde": null,
         "huurbedrag": "€ 850,00",
         "grootte": null,
@@ -376,7 +386,9 @@
         "woning_type": {
           "meergezinswoning": 12
         },
-        "eigendom_soort": "huurwoning_particuliere_verhuurder",
+        "eigendom_soort": {
+          "huurwoning_particuliere_verhuurder": 12
+        },
         "waarde": null,
         "huurbedrag": "€ 1.075,00",
         "grootte": null,
@@ -437,7 +449,9 @@
         "woning_type": {
           "eengezinswoning": 2
         },
-        "eigendom_soort": "koopwoning",
+        "eigendom_soort": {
+          "koopwoning": 2
+        },
         "waarde": "€ 500.000,00",
         "huurbedrag": null,
         "grootte": null,
@@ -468,7 +482,9 @@
         "woning_type": {
           "eengezinswoning": 2
         },
-        "eigendom_soort": "koopwoning",
+        "eigendom_soort": {
+          "koopwoning": 2
+        },
         "waarde": "€ 500.000,00",
         "huurbedrag": null,
         "grootte": null,
@@ -499,7 +515,9 @@
         "woning_type": {
           "eengezinswoning": 3
         },
-        "eigendom_soort": "koopwoning",
+        "eigendom_soort": {
+          "koopwoning": 3
+        },
         "waarde": "€ 500.000,00",
         "huurbedrag": null,
         "grootte": null,
@@ -560,7 +578,9 @@
         "woning_type": {
           "eengezinswoning": 2
         },
-        "eigendom_soort": "koopwoning",
+        "eigendom_soort": {
+          "koopwoning": 2
+        },
         "waarde": "€ 355.000,00",
         "huurbedrag": null,
         "grootte": null,
@@ -591,7 +611,9 @@
         "woning_type": {
           "eengezinswoning": 2
         },
-        "eigendom_soort": "koopwoning",
+        "eigendom_soort": {
+          "koopwoning": 2
+        },
         "waarde": "€ 500.000,00",
         "huurbedrag": null,
         "grootte": null,

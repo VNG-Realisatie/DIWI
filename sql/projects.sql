@@ -10,7 +10,7 @@ WITH woningblokken AS (
         wijk_state.waarde_label AS wijk,
         CASE WHEN wtfvc.fysiek_voorkomen IS NULL THEN NULL ELSE json_build_object(wtfvc.fysiek_voorkomen, wmc.netto_plancapaciteit) END AS fysiek_voorkomen,
         CASE WHEN wtfvc.woning_type IS NULL THEN NULL ELSE json_build_object(wtfvc.woning_type, wmc.netto_plancapaciteit) END AS woning_type,
-        wewc.eigendom_soort AS eigendom_soort,
+        CASE WHEN wewc.eigendom_soort IS NULL THEN NULL ELSE json_build_object(wewc.eigendom_soort, wmc.netto_plancapaciteit) END AS eigendom_soort,
         wewc.waarde AS waarde,
         wewc.huurbedrag AS huurbedrag,
         wgc.grootte AS grootte,
