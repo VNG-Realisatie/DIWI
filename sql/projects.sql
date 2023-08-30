@@ -29,8 +29,8 @@ WITH woningblokken AS (
             AND wwc.change_end_date IS NULL
         LEFT JOIN diwi_testset_simplified.wijk_state wijk_state ON wijk_state."ID" = wwc."wijk_ID"
             AND wijk_state.change_end_date IS NULL
-        ORDER BY
-            w."ID" ASC
+    ORDER BY
+        w."ID" ASC
 ),
 actor_role AS (
     SELECT
@@ -40,7 +40,7 @@ actor_role AS (
         parc.change_end_date
     FROM
         diwi_testset_simplified.project_actor_rol_changelog parc
-    LEFT JOIN diwi_testset_simplified.project_actor_rol_value_state parvs ON parc."project_actor_rol_ID" = parvs."ID"
+        LEFT JOIN diwi_testset_simplified.project_actor_rol_value_state parvs ON parc."project_actor_rol_ID" = parvs."ID"
         LEFT JOIN diwi_testset_simplified.actor_state actor_state ON actor_state."actor_ID" = parc."actor_ID"
 ),
 current_project_fase AS (
@@ -149,8 +149,8 @@ projecten AS (
             AND current_planstatus.change_end_date IS NULL
         LEFT JOIN current_programmering ON current_programmering."project_ID" = p."ID"
             AND current_programmering.change_end_date IS NULL
-        ORDER BY
-            p."ID" ASC
+    ORDER BY
+        p."ID" ASC
 ),
 plannen AS (
     SELECT
@@ -160,14 +160,14 @@ plannen AS (
         plan_state.doel_waarde AS doel_waarde
     FROM
         diwi_testset_simplified.plan AS plan
-    INNER JOIN diwi_testset_simplified.plan_state AS plan_state ON plan_state."plan_ID" = plan."ID"
+        INNER JOIN diwi_testset_simplified.plan_state AS plan_state ON plan_state."plan_ID" = plan."ID"
 ),
 projecten_with_woningblokken AS (
     SELECT
         to_jsonb (p) AS project,
-    COALESCE(json_agg(w.*) FILTER (WHERE w.id IS NOT NULL), '[]') AS woningblokken
-FROM
-    projecten AS p
+        COALESCE(json_agg(w.*) FILTER (WHERE w.id IS NOT NULL), '[]') AS woningblokken
+    FROM
+        projecten AS p
         LEFT JOIN woningblokken AS w ON w.project_id = p.id
     GROUP BY
         project
