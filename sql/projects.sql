@@ -8,10 +8,23 @@ WITH woningblokken AS (
         wmc.mutatie_soort AS mutatie_soort,
         bs.waarde_label AS buurt,
         wijk_state.waarde_label AS wijk,
+        wtfvc.fysiek_voorkomen AS fysiek_voorkomen,
+        wtfvc.woning_type AS woning_type,
+        wewc.eigendom_soort AS eigendom_soort,
+        wewc.waarde AS waarde,
+        wewc.huurbedrag AS huurbedrag,
+        wgc.grootte AS grootte,
+        wdc.doelgroep AS doelgroep,
+        wgpc.grondpositie AS grondpositie,
         -- extra id's for debugging, might not be needed for UI
         wnc."ID" AS woningblok_naam_changelog_id,
         wmc."ID" AS woningblok_mutatie_changelog_id,
         ws."ID" AS woningblok_state_id,
+        wtfvc."ID" AS woningblok_type_en_fysiek_voorkomen_changelog_id,
+        wewc."ID" AS woningblok_eigendom_en_waarde_changelog_id,
+        wgc."ID" AS woningblok_grootte_changelog_id,
+        wdc."ID" AS woningblok_doelgroep_changelog_id,
+        wgpc."ID" AS woningblok_grondpositie_changelog_id,
         ws."project_ID" AS project_id
     FROM
         diwi_testset_simplified.woningblok w
@@ -29,6 +42,16 @@ WITH woningblokken AS (
             AND wwc.change_end_date IS NULL
         LEFT JOIN diwi_testset_simplified.wijk_state wijk_state ON wijk_state."ID" = wwc."wijk_ID"
             AND wijk_state.change_end_date IS NULL
+        LEFT JOIN diwi_testset_simplified.woningblok_type_en_fysiek_voorkomen_changelog wtfvc ON wtfvc."woningblok_ID" = w."ID"
+            AND wtfvc.change_end_date IS NULL
+        LEFT JOIN diwi_testset_simplified.woningblok_eigendom_en_waarde_changelog wewc ON wewc."woningblok_ID" = w."ID"
+            AND wewc.change_end_date IS NULL
+        LEFT JOIN diwi_testset_simplified.woningblok_grootte_changelog wgc ON wgc."woningblok_ID" = w."ID"
+            AND wgc.change_end_date IS NULL
+        LEFT JOIN diwi_testset_simplified.woningblok_doelgroep_changelog wdc ON wdc."woningblok_ID" = w."ID"
+            AND wdc.change_end_date IS NULL
+        LEFT JOIN diwi_testset_simplified.woningblok_grondpositie_changelog wgpc ON wgpc."woningblok_ID" = w."ID"
+            AND wgpc.change_end_date IS NULL
     ORDER BY
         w."ID" ASC
 ),
