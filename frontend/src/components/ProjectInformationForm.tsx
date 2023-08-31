@@ -62,18 +62,18 @@ export const ProjectInformationForm = (props: any) => {
                 Eigenaar
             </Typography>
             <TextField
-                id="engineer"
+                id="eigenaar"
                 size="small"
                 variant="outlined"
                 value={
                     props.createProjectForm
-                        ? props.createProjectForm.engineer
+                        ? props.createProjectForm.eigenaar
                         : ""
                 }
                 onChange={(e) =>
                     props.setCreateProjectForm({
                         ...props.createProjectForm,
-                        engineer: e.target.value,
+                        eigenaar: e.target.value,
                     })
                 }
                 fullWidth

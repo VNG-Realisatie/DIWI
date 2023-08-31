@@ -64,7 +64,6 @@ function App() {
     },
     palette: {
       primary: {
-        // TODO add colors later
         main: "#002C64",
       },
       secondary: {
