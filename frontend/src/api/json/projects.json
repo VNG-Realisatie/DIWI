@@ -5,7 +5,7 @@
       "name": "Achterweg",
       "eigenaar": "projectleider_1",
       "plan type": "herstructurering",
-      "eind datum": "2022-01-01",
+      "eind datum": "2030-01-01",
       "start datum": "2022-01-01",
       "priorisering": null,
       "project fase": "2_projectfase",
@@ -36,9 +36,26 @@
         "mutatie_soort": "bouw",
         "buurt": null,
         "wijk": "rockanje",
+        "fysiek_voorkomen": null,
+        "woning_type": {
+          "meergezinswoning": 50
+        },
+        "eigendom_soort": null,
+        "waarde": null,
+        "huurbedrag": null,
+        "grootte": null,
+        "doelgroep": null,
+        "grondpositie": null,
+        "start datum": "2022-01-01",
+        "eind datum": "2030-01-01",
         "woningblok_naam_changelog_id": 1,
         "woningblok_mutatie_changelog_id": 1,
         "woningblok_state_id": 1,
+        "woningblok_type_en_fysiek_voorkomen_changelog_id": 1,
+        "woningblok_eigendom_en_waarde_changelog_id": null,
+        "woningblok_grootte_changelog_id": null,
+        "woningblok_doelgroep_changelog_id": null,
+        "woningblok_grondpositie_changelog_id": null,
         "project_id": 1
       },
       {
@@ -50,9 +67,26 @@
         "mutatie_soort": "bouw",
         "buurt": null,
         "wijk": "rockanje",
+        "fysiek_voorkomen": null,
+        "woning_type": {
+          "eengezinswoning": 200
+        },
+        "eigendom_soort": null,
+        "waarde": null,
+        "huurbedrag": null,
+        "grootte": null,
+        "doelgroep": null,
+        "grondpositie": null,
+        "start datum": "2022-01-01",
+        "eind datum": "2030-01-01",
         "woningblok_naam_changelog_id": 2,
         "woningblok_mutatie_changelog_id": 2,
         "woningblok_state_id": 2,
+        "woningblok_type_en_fysiek_voorkomen_changelog_id": 2,
+        "woningblok_eigendom_en_waarde_changelog_id": null,
+        "woningblok_grootte_changelog_id": null,
+        "woningblok_doelgroep_changelog_id": null,
+        "woningblok_grondpositie_changelog_id": null,
         "project_id": 1
       }
     ]
@@ -63,7 +97,7 @@
       "name": "Brielseweg",
       "eigenaar": "projectleider_2",
       "plan type": "verdichting",
-      "eind datum": "2022-07-01",
+      "eind datum": "2030-07-01",
       "start datum": "2022-07-01",
       "priorisering": null,
       "project fase": "2_projectfase",
@@ -94,9 +128,24 @@
         "mutatie_soort": "bouw",
         "buurt": null,
         "wijk": "oostvoorne",
+        "fysiek_voorkomen": null,
+        "woning_type": null,
+        "eigendom_soort": null,
+        "waarde": null,
+        "huurbedrag": null,
+        "grootte": null,
+        "doelgroep": null,
+        "grondpositie": null,
+        "start datum": "2022-07-01",
+        "eind datum": "2030-07-01",
         "woningblok_naam_changelog_id": 3,
         "woningblok_mutatie_changelog_id": 51,
         "woningblok_state_id": 51,
+        "woningblok_type_en_fysiek_voorkomen_changelog_id": null,
+        "woningblok_eigendom_en_waarde_changelog_id": null,
+        "woningblok_grootte_changelog_id": null,
+        "woningblok_doelgroep_changelog_id": null,
+        "woningblok_grondpositie_changelog_id": null,
         "project_id": 2
       }
     ]
@@ -138,9 +187,28 @@
         "mutatie_soort": "sloop",
         "buurt": null,
         "wijk": "rockanje",
+        "fysiek_voorkomen": null,
+        "woning_type": {
+          "eengezinswoning": -1
+        },
+        "eigendom_soort": {
+          "koopwoning": -1
+        },
+        "waarde": "€ 500.000,00",
+        "huurbedrag": null,
+        "grootte": null,
+        "doelgroep": null,
+        "grondpositie": null,
+        "start datum": "2020-01-01",
+        "eind datum": "2022-01-01",
         "woningblok_naam_changelog_id": 4,
         "woningblok_mutatie_changelog_id": 76,
         "woningblok_state_id": 76,
+        "woningblok_type_en_fysiek_voorkomen_changelog_id": 76,
+        "woningblok_eigendom_en_waarde_changelog_id": 76,
+        "woningblok_grootte_changelog_id": null,
+        "woningblok_doelgroep_changelog_id": null,
+        "woningblok_grondpositie_changelog_id": null,
         "project_id": 3
       },
       {
@@ -152,9 +220,28 @@
         "mutatie_soort": "bouw",
         "buurt": null,
         "wijk": "rockanje",
+        "fysiek_voorkomen": null,
+        "woning_type": {
+          "eengezinswoning": 2
+        },
+        "eigendom_soort": {
+          "koopwoning": 2
+        },
+        "waarde": "€ 500.000,00",
+        "huurbedrag": null,
+        "grootte": null,
+        "doelgroep": null,
+        "grondpositie": null,
+        "start datum": "2020-01-01",
+        "eind datum": "2022-07-01",
         "woningblok_naam_changelog_id": 5,
         "woningblok_mutatie_changelog_id": 77,
         "woningblok_state_id": 77,
+        "woningblok_type_en_fysiek_voorkomen_changelog_id": 77,
+        "woningblok_eigendom_en_waarde_changelog_id": 77,
+        "woningblok_grootte_changelog_id": null,
+        "woningblok_doelgroep_changelog_id": null,
+        "woningblok_grondpositie_changelog_id": null,
         "project_id": 3
       },
       {
@@ -166,9 +253,28 @@
         "mutatie_soort": "bouw",
         "buurt": null,
         "wijk": "rockanje",
+        "fysiek_voorkomen": null,
+        "woning_type": {
+          "eengezinswoning": 2
+        },
+        "eigendom_soort": {
+          "koopwoning": 2
+        },
+        "waarde": "€ 500.000,00",
+        "huurbedrag": null,
+        "grootte": null,
+        "doelgroep": null,
+        "grondpositie": null,
+        "start datum": "2020-01-01",
+        "eind datum": "2022-01-01",
         "woningblok_naam_changelog_id": 6,
         "woningblok_mutatie_changelog_id": 78,
         "woningblok_state_id": 78,
+        "woningblok_type_en_fysiek_voorkomen_changelog_id": 78,
+        "woningblok_eigendom_en_waarde_changelog_id": 78,
+        "woningblok_grootte_changelog_id": null,
+        "woningblok_doelgroep_changelog_id": null,
+        "woningblok_grondpositie_changelog_id": null,
         "project_id": 3
       }
     ]
@@ -179,7 +285,7 @@
       "name": "De Ruy",
       "eigenaar": "projectleider_1",
       "plan type": "herstructurering",
-      "eind datum": "2020-01-01",
+      "eind datum": "2024-07-01",
       "start datum": "2020-01-01",
       "priorisering": null,
       "project fase": "4_realisatiefase",
@@ -210,9 +316,28 @@
         "mutatie_soort": "bouw",
         "buurt": null,
         "wijk": "oostvoorne",
+        "fysiek_voorkomen": null,
+        "woning_type": {
+          "meergezinswoning": 16
+        },
+        "eigendom_soort": {
+          "huurwoning_woningcorporatie": 16
+        },
+        "waarde": null,
+        "huurbedrag": "€ 673,00",
+        "grootte": null,
+        "doelgroep": null,
+        "grondpositie": null,
+        "start datum": "2020-01-01",
+        "eind datum": "2024-01-01",
         "woningblok_naam_changelog_id": null,
         "woningblok_mutatie_changelog_id": 79,
         "woningblok_state_id": 79,
+        "woningblok_type_en_fysiek_voorkomen_changelog_id": 79,
+        "woningblok_eigendom_en_waarde_changelog_id": 79,
+        "woningblok_grootte_changelog_id": null,
+        "woningblok_doelgroep_changelog_id": null,
+        "woningblok_grondpositie_changelog_id": null,
         "project_id": 4
       },
       {
@@ -224,9 +349,28 @@
         "mutatie_soort": "bouw",
         "buurt": null,
         "wijk": "oostvoorne",
+        "fysiek_voorkomen": null,
+        "woning_type": {
+          "meergezinswoning": 12
+        },
+        "eigendom_soort": {
+          "huurwoning_particuliere_verhuurder": 12
+        },
+        "waarde": null,
+        "huurbedrag": "€ 850,00",
+        "grootte": null,
+        "doelgroep": null,
+        "grondpositie": null,
+        "start datum": "2020-01-01",
+        "eind datum": "2024-07-01",
         "woningblok_naam_changelog_id": null,
         "woningblok_mutatie_changelog_id": 80,
         "woningblok_state_id": 80,
+        "woningblok_type_en_fysiek_voorkomen_changelog_id": 80,
+        "woningblok_eigendom_en_waarde_changelog_id": 80,
+        "woningblok_grootte_changelog_id": null,
+        "woningblok_doelgroep_changelog_id": null,
+        "woningblok_grondpositie_changelog_id": null,
         "project_id": 4
       },
       {
@@ -238,9 +382,28 @@
         "mutatie_soort": "bouw",
         "buurt": null,
         "wijk": "oostvoorne",
+        "fysiek_voorkomen": null,
+        "woning_type": {
+          "meergezinswoning": 12
+        },
+        "eigendom_soort": {
+          "huurwoning_particuliere_verhuurder": 12
+        },
+        "waarde": null,
+        "huurbedrag": "€ 1.075,00",
+        "grootte": null,
+        "doelgroep": null,
+        "grondpositie": null,
+        "start datum": "2020-01-01",
+        "eind datum": "2024-07-01",
         "woningblok_naam_changelog_id": null,
         "woningblok_mutatie_changelog_id": 81,
         "woningblok_state_id": 81,
+        "woningblok_type_en_fysiek_voorkomen_changelog_id": 81,
+        "woningblok_eigendom_en_waarde_changelog_id": 81,
+        "woningblok_grootte_changelog_id": null,
+        "woningblok_doelgroep_changelog_id": null,
+        "woningblok_grondpositie_changelog_id": null,
         "project_id": 4
       }
     ]
@@ -251,7 +414,7 @@
       "name": "Doornweg 6 /Blindeweg 15",
       "eigenaar": "projectleider_3",
       "plan type": "herstructurering",
-      "eind datum": "2020-01-01",
+      "eind datum": "2027-07-01",
       "start datum": "2020-01-01",
       "priorisering": null,
       "project fase": "3_vergunningsfase",
@@ -276,15 +439,34 @@
       {
         "id": 82,
         "naam": null,
-        "bruto_plancapaciteit": null,
-        "netto_plancapaciteit": null,
-        "sloop": null,
-        "mutatie_soort": null,
+        "bruto_plancapaciteit": 2,
+        "netto_plancapaciteit": 2,
+        "sloop": 0,
+        "mutatie_soort": "bouw",
         "buurt": null,
         "wijk": "rockanje",
+        "fysiek_voorkomen": null,
+        "woning_type": {
+          "eengezinswoning": 2
+        },
+        "eigendom_soort": {
+          "koopwoning": 2
+        },
+        "waarde": "€ 500.000,00",
+        "huurbedrag": null,
+        "grootte": null,
+        "doelgroep": null,
+        "grondpositie": null,
+        "start datum": "2020-01-01",
+        "eind datum": "2023-11-01",
         "woningblok_naam_changelog_id": null,
-        "woningblok_mutatie_changelog_id": null,
+        "woningblok_mutatie_changelog_id": 82,
         "woningblok_state_id": 82,
+        "woningblok_type_en_fysiek_voorkomen_changelog_id": 82,
+        "woningblok_eigendom_en_waarde_changelog_id": 82,
+        "woningblok_grootte_changelog_id": null,
+        "woningblok_doelgroep_changelog_id": null,
+        "woningblok_grondpositie_changelog_id": null,
         "project_id": 5
       },
       {
@@ -296,23 +478,28 @@
         "mutatie_soort": "bouw",
         "buurt": null,
         "wijk": "rockanje",
+        "fysiek_voorkomen": null,
+        "woning_type": {
+          "eengezinswoning": 2
+        },
+        "eigendom_soort": {
+          "koopwoning": 2
+        },
+        "waarde": "€ 500.000,00",
+        "huurbedrag": null,
+        "grootte": null,
+        "doelgroep": null,
+        "grondpositie": null,
+        "start datum": "2020-01-01",
+        "eind datum": "2025-07-01",
         "woningblok_naam_changelog_id": null,
         "woningblok_mutatie_changelog_id": 83,
         "woningblok_state_id": 83,
-        "project_id": 5
-      },
-      {
-        "id": 83,
-        "naam": null,
-        "bruto_plancapaciteit": 2,
-        "netto_plancapaciteit": 2,
-        "sloop": 0,
-        "mutatie_soort": "bouw",
-        "buurt": null,
-        "wijk": "rockanje",
-        "woningblok_naam_changelog_id": null,
-        "woningblok_mutatie_changelog_id": 82,
-        "woningblok_state_id": 83,
+        "woningblok_type_en_fysiek_voorkomen_changelog_id": 83,
+        "woningblok_eigendom_en_waarde_changelog_id": 83,
+        "woningblok_grootte_changelog_id": null,
+        "woningblok_doelgroep_changelog_id": null,
+        "woningblok_grondpositie_changelog_id": null,
         "project_id": 5
       },
       {
@@ -324,9 +511,28 @@
         "mutatie_soort": "bouw",
         "buurt": null,
         "wijk": "rockanje",
+        "fysiek_voorkomen": null,
+        "woning_type": {
+          "eengezinswoning": 3
+        },
+        "eigendom_soort": {
+          "koopwoning": 3
+        },
+        "waarde": "€ 500.000,00",
+        "huurbedrag": null,
+        "grootte": null,
+        "doelgroep": null,
+        "grondpositie": null,
+        "start datum": "2020-01-01",
+        "eind datum": "2027-07-01",
         "woningblok_naam_changelog_id": null,
         "woningblok_mutatie_changelog_id": 84,
         "woningblok_state_id": 84,
+        "woningblok_type_en_fysiek_voorkomen_changelog_id": 84,
+        "woningblok_eigendom_en_waarde_changelog_id": 84,
+        "woningblok_grootte_changelog_id": null,
+        "woningblok_doelgroep_changelog_id": null,
+        "woningblok_grondpositie_changelog_id": null,
         "project_id": 5
       }
     ]
@@ -337,7 +543,7 @@
       "name": "Dorpsweg 58",
       "eigenaar": "projectleider_3",
       "plan type": "herstructurering",
-      "eind datum": "2020-01-01",
+      "eind datum": "2026-07-01",
       "start datum": "2020-01-01",
       "priorisering": null,
       "project fase": "3_vergunningsfase",
@@ -368,9 +574,61 @@
         "mutatie_soort": "bouw",
         "buurt": null,
         "wijk": "rockanje",
+        "fysiek_voorkomen": null,
+        "woning_type": {
+          "eengezinswoning": 2
+        },
+        "eigendom_soort": {
+          "koopwoning": 2
+        },
+        "waarde": "€ 500.000,00",
+        "huurbedrag": null,
+        "grootte": null,
+        "doelgroep": null,
+        "grondpositie": null,
+        "start datum": "2020-01-01",
+        "eind datum": "2026-07-01",
         "woningblok_naam_changelog_id": null,
         "woningblok_mutatie_changelog_id": 85,
         "woningblok_state_id": 85,
+        "woningblok_type_en_fysiek_voorkomen_changelog_id": 85,
+        "woningblok_eigendom_en_waarde_changelog_id": 86,
+        "woningblok_grootte_changelog_id": null,
+        "woningblok_doelgroep_changelog_id": null,
+        "woningblok_grondpositie_changelog_id": null,
+        "project_id": 6
+      },
+      {
+        "id": 85,
+        "naam": null,
+        "bruto_plancapaciteit": 2,
+        "netto_plancapaciteit": 2,
+        "sloop": 0,
+        "mutatie_soort": "bouw",
+        "buurt": null,
+        "wijk": "rockanje",
+        "fysiek_voorkomen": null,
+        "woning_type": {
+          "eengezinswoning": 2
+        },
+        "eigendom_soort": {
+          "koopwoning": 2
+        },
+        "waarde": "€ 355.000,00",
+        "huurbedrag": null,
+        "grootte": null,
+        "doelgroep": null,
+        "grondpositie": null,
+        "start datum": "2020-01-01",
+        "eind datum": "2026-07-01",
+        "woningblok_naam_changelog_id": null,
+        "woningblok_mutatie_changelog_id": 85,
+        "woningblok_state_id": 85,
+        "woningblok_type_en_fysiek_voorkomen_changelog_id": 85,
+        "woningblok_eigendom_en_waarde_changelog_id": 85,
+        "woningblok_grootte_changelog_id": null,
+        "woningblok_doelgroep_changelog_id": null,
+        "woningblok_grondpositie_changelog_id": null,
         "project_id": 6
       }
     ]
