@@ -1,0 +1,1 @@
+SELECT json_agg(os) FROM diwi_testset_simplified.organization_state os WHERE os.change_end_date IS null

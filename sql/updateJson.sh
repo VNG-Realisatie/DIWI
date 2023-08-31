@@ -47,7 +47,9 @@ export_things(){
     # rol gemeente - see project_gemeenterol_value_state
     psql_execute_file gemeente_rol.sql | jq . > json/gemeente_rol.json
     # actor list (for project leider drop down)
+    psql_execute_file projectleider.sql | jq . > json/projectleider.json
     # organization list (for owner drop down)
+    psql_execute_file eigenaar.sql | jq . > json/eigenaar.json
 
 }
 
