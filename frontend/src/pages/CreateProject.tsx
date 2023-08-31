@@ -43,6 +43,7 @@ export const CreateProject = () => {
   const handleSave = () => {
     //Todo add createendpoint here
     console.log("Saved");
+    console.log(createHouseBlockForm)
   };
 
   const handleNext = () => {

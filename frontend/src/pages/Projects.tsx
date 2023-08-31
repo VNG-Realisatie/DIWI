@@ -47,7 +47,7 @@ export const Projects = () => {
                     projectList={selectedProject ? [selectedProject] : projects.map(p=>p.project)}
                 />
             </Box>
-            <Box>
+            <Box width="75%">
                 <Stack
                     direction="row"
                     alignItems="center"
@@ -95,7 +95,7 @@ export const Projects = () => {
                         />
                     </FormControl>
                 </Stack>
-                {!tableview && <Map />}
+                {!tableview && <Map style={{width:"100%"}}/>}
                 {tableview && <ProjectsTableView />}
             </Box>
             <Box

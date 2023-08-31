@@ -1,5 +1,6 @@
-import { Box, Stack, TextField, Typography } from "@mui/material";
+import { Box, InputLabel, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
 import mapform from "../assets/temp/formmap.png";
+import wijk from "../api/json/wijk.json"
 export const SelectFromMapForm = (props: any) => {
   return (
     <Box mt={4} position="relative">
@@ -40,37 +41,51 @@ export const SelectFromMapForm = (props: any) => {
           />
         </Stack>
         <Typography variant="subtitle1" fontWeight="500">
-          Kern
+          Buurt
         </Typography>
         <TextField
-          id="kern"
+          id="buurt"
           size="small"
           variant="outlined"
-          value={props.createProjectForm ? props.createProjectForm.kern : ""}
+          value={props.createProjectForm ? props.createProjectForm.buurt : ""}
           onChange={(e) =>
             props.setCreateProjectForm({
               ...props.createProjectForm,
-              kern: e.target.value,
+              buurt: e.target.value,
             })
           }
           fullWidth
         />
-        <Typography variant="subtitle1" fontWeight="500">
-          Wijk
-        </Typography>
-        <TextField
-          id="wijk"
-          size="small"
-          variant="outlined"
-          value={props.createProjectForm ? props.createProjectForm.wijk : ""}
-          onChange={(e) =>
-            props.setCreateProjectForm({
-              ...props.createProjectForm,
-              wijk: e.target.value,
-            })
-          }
-          fullWidth
-        />
+            <Stack>
+                            <InputLabel id="wijk">
+                                Wijk
+                            </InputLabel>
+                            <Select
+                                sx={{ width: "100%" }}
+                                labelId="wijk"
+                                id="fase"
+                                value={
+                                    props.createProjectForm
+                                        ? props.createProjectForm.wijk
+                                        : ""
+                                }
+                                label="Project Fase"
+                                onChange={(e) =>
+                                    props.setCreateProjectForm({
+                                        ...props.createProjectForm,
+                                        wijk: e.target.value,
+                                    })
+                                }
+                            >
+                                {wijk.map((m) => {
+                                    return (
+                                        <MenuItem key={m.ID} value={m.waarde_label}>
+                                            {m.waarde_label}
+                                        </MenuItem>
+                                    );
+                                })}
+                            </Select>
+                        </Stack>
       </Box>
       <img src={mapform} alt="mapform" width="100%"></img>
     </Box>
