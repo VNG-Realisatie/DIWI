@@ -35,6 +35,10 @@ export_projects(){
     psql_execute_file projects.sql | jq . > json/projects.json
 }
 
+export_plannen(){
+    psql_execute_file plannen.sql | jq . > json/plannen.json
+}
+
 export_things(){
     # regio
     # gemeente
@@ -58,6 +62,7 @@ mkdir json
 
 export_enums
 export_projects
+export_plannen
 export_things
 
 cp -r json ../frontend/src/api

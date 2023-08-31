@@ -197,16 +197,6 @@ projecten AS (
     ORDER BY
         p."ID" ASC
 ),
-plannen AS (
-    SELECT
-        plan."ID" AS plan_id,
-        plan_state.doel_soort AS doel_soort,
-        plan_state.doel_richting AS doel_richting,
-        plan_state.doel_waarde AS doel_waarde
-    FROM
-        diwi_testset_simplified.plan AS plan
-        INNER JOIN diwi_testset_simplified.plan_state AS plan_state ON plan_state."plan_ID" = plan."ID"
-),
 projecten_with_woningblokken AS (
     SELECT
         to_jsonb (p) AS project,
