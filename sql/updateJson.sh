@@ -35,11 +35,28 @@ export_projects(){
     psql_execute_file projects.sql | jq . > json/projects.json
 }
 
+export_things(){
+    # regio
+    # gemeente
+    psql_execute_file gemeente.sql | jq . > json/gemeente.json
+    # buurt
+    psql_execute_file buurt.sql | jq . > json/buurt.json
+    # wijk
+    psql_execute_file wijk.sql | jq . > json/wijk.json
+
+    # rol gemeente - see project_gemeenterol_value_state
+    psql_execute_file gemeente_rol.sql | jq . > json/gemeente_rol.json
+    # actor list (for project leider drop down)
+    # organization list (for owner drop down)
+
+}
+
 test -d json && rm -r json
 mkdir json
 
 export_enums
 export_projects
+export_things
 
 cp -r json ../frontend/src/api
 
