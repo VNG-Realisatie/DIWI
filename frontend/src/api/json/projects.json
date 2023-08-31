@@ -36,6 +36,7 @@
         "mutatie_soort": "bouw",
         "buurt": null,
         "wijk": "rockanje",
+        "gemeente": null,
         "fysiek_voorkomen": null,
         "woning_type": {
           "meergezinswoning": 50
@@ -67,6 +68,7 @@
         "mutatie_soort": "bouw",
         "buurt": null,
         "wijk": "rockanje",
+        "gemeente": null,
         "fysiek_voorkomen": null,
         "woning_type": {
           "eengezinswoning": 200
@@ -128,6 +130,7 @@
         "mutatie_soort": "bouw",
         "buurt": null,
         "wijk": "oostvoorne",
+        "gemeente": null,
         "fysiek_voorkomen": null,
         "woning_type": null,
         "eigendom_soort": null,
@@ -147,129 +150,6 @@
         "woningblok_doelgroep_changelog_id": null,
         "woningblok_grondpositie_changelog_id": null,
         "project_id": 2
-      }
-    ]
-  },
-  {
-    "project": {
-      "id": 3,
-      "name": "Carte Blanche Exclusief en Unique",
-      "eigenaar": "projectleider_3",
-      "plan type": null,
-      "eind datum": null,
-      "start datum": null,
-      "priorisering": null,
-      "project fase": null,
-      "rol gemeente": "kaderstellend",
-      "programmering": null,
-      "project leider": "projectleider_3",
-      "organization_id": 9,
-      "project_state_id": 3,
-      "organization_state_id": 9,
-      "vertrouwlijkheidsniveau": "openbaar",
-      "planologische plan status": null,
-      "project_fase_changelog_id": null,
-      "project_name_changelog_id": 3,
-      "project_gemeenterol_value_id": 2,
-      "project_priorisering_value_id": null,
-      "project_gemeenterol_changelog_id": 3,
-      "project_priorisering_changelog_id": null,
-      "project_gemeenterol_value_state_id": 2,
-      "project_priorisering_value_state_id": null
-    },
-    "woningblokken": [
-      {
-        "id": 76,
-        "naam": "Carte Blanche Exclusief: Sloop woning",
-        "bruto_plancapaciteit": 0,
-        "netto_plancapaciteit": -1,
-        "sloop": 1,
-        "mutatie_soort": "sloop",
-        "buurt": null,
-        "wijk": "rockanje",
-        "fysiek_voorkomen": null,
-        "woning_type": {
-          "eengezinswoning": -1
-        },
-        "eigendom_soort": null,
-        "waarde": null,
-        "huurbedrag": null,
-        "grootte": null,
-        "doelgroep": null,
-        "grondpositie": null,
-        "start datum": "2020-01-01",
-        "eind datum": "2022-01-01",
-        "woningblok_naam_changelog_id": 4,
-        "woningblok_mutatie_changelog_id": 76,
-        "woningblok_state_id": 76,
-        "woningblok_type_en_fysiek_voorkomen_changelog_id": 76,
-        "woningblok_eigendom_en_waarde_changelog_id": null,
-        "woningblok_grootte_changelog_id": null,
-        "woningblok_doelgroep_changelog_id": null,
-        "woningblok_grondpositie_changelog_id": null,
-        "project_id": 3
-      },
-      {
-        "id": 77,
-        "naam": "Carte Blanche Exclusief: Bouw 2 woningen",
-        "bruto_plancapaciteit": 2,
-        "netto_plancapaciteit": 2,
-        "sloop": 0,
-        "mutatie_soort": "bouw",
-        "buurt": null,
-        "wijk": "rockanje",
-        "fysiek_voorkomen": null,
-        "woning_type": {
-          "eengezinswoning": 2
-        },
-        "eigendom_soort": null,
-        "waarde": null,
-        "huurbedrag": null,
-        "grootte": null,
-        "doelgroep": null,
-        "grondpositie": null,
-        "start datum": "2020-01-01",
-        "eind datum": "2022-07-01",
-        "woningblok_naam_changelog_id": 5,
-        "woningblok_mutatie_changelog_id": 77,
-        "woningblok_state_id": 77,
-        "woningblok_type_en_fysiek_voorkomen_changelog_id": 77,
-        "woningblok_eigendom_en_waarde_changelog_id": null,
-        "woningblok_grootte_changelog_id": null,
-        "woningblok_doelgroep_changelog_id": null,
-        "woningblok_grondpositie_changelog_id": null,
-        "project_id": 3
-      },
-      {
-        "id": 78,
-        "naam": "Carte Blanche Unique: Bouw 2 woningen ",
-        "bruto_plancapaciteit": 2,
-        "netto_plancapaciteit": 2,
-        "sloop": 0,
-        "mutatie_soort": "bouw",
-        "buurt": null,
-        "wijk": "rockanje",
-        "fysiek_voorkomen": null,
-        "woning_type": {
-          "eengezinswoning": 2
-        },
-        "eigendom_soort": null,
-        "waarde": null,
-        "huurbedrag": null,
-        "grootte": null,
-        "doelgroep": null,
-        "grondpositie": null,
-        "start datum": "2020-01-01",
-        "eind datum": "2022-01-01",
-        "woningblok_naam_changelog_id": 6,
-        "woningblok_mutatie_changelog_id": 78,
-        "woningblok_state_id": 78,
-        "woningblok_type_en_fysiek_voorkomen_changelog_id": 78,
-        "woningblok_eigendom_en_waarde_changelog_id": null,
-        "woningblok_grootte_changelog_id": null,
-        "woningblok_doelgroep_changelog_id": null,
-        "woningblok_grondpositie_changelog_id": null,
-        "project_id": 3
       }
     ]
   },
@@ -310,6 +190,7 @@
         "mutatie_soort": "bouw",
         "buurt": null,
         "wijk": "oostvoorne",
+        "gemeente": null,
         "fysiek_voorkomen": null,
         "woning_type": {
           "meergezinswoning": 16
@@ -343,6 +224,7 @@
         "mutatie_soort": "bouw",
         "buurt": null,
         "wijk": "oostvoorne",
+        "gemeente": null,
         "fysiek_voorkomen": null,
         "woning_type": {
           "meergezinswoning": 12
@@ -376,6 +258,7 @@
         "mutatie_soort": "bouw",
         "buurt": null,
         "wijk": "oostvoorne",
+        "gemeente": null,
         "fysiek_voorkomen": null,
         "woning_type": {
           "meergezinswoning": 12
@@ -439,6 +322,7 @@
         "mutatie_soort": "bouw",
         "buurt": null,
         "wijk": "rockanje",
+        "gemeente": null,
         "fysiek_voorkomen": null,
         "woning_type": {
           "eengezinswoning": 2
@@ -472,6 +356,7 @@
         "mutatie_soort": "bouw",
         "buurt": null,
         "wijk": "rockanje",
+        "gemeente": null,
         "fysiek_voorkomen": null,
         "woning_type": {
           "eengezinswoning": 2
@@ -505,6 +390,7 @@
         "mutatie_soort": "bouw",
         "buurt": null,
         "wijk": "rockanje",
+        "gemeente": null,
         "fysiek_voorkomen": null,
         "woning_type": {
           "eengezinswoning": 3
@@ -568,6 +454,7 @@
         "mutatie_soort": "bouw",
         "buurt": null,
         "wijk": "rockanje",
+        "gemeente": null,
         "fysiek_voorkomen": null,
         "woning_type": {
           "eengezinswoning": 2
