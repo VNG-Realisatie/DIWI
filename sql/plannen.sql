@@ -1,7 +1,6 @@
 WITH
 plannen AS (
     SELECT
-        plan."ID" AS plan_id,
         plan_state.*
     FROM
         diwi_testset_simplified.plan AS plan
