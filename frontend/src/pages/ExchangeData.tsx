@@ -21,10 +21,10 @@ export const ExchangeData = () => {
             <img src={excelIcon} alt='excel'/>
         </DataCardItem>
         <DataCardItem text="Squit" link="" isImport >
-            <img src={roxitIcon} alt='excel'/>
+            <img src={roxitIcon} alt='squit'/>
         </DataCardItem>
         <DataCardItem text="Systeem x" link=""  isImport >
-            <img src={xLogoIcon} alt='excel'/>
+            <img src={xLogoIcon} alt='system'/>
         </DataCardItem>
       </Stack>
       <Typography fontSize="16px" mt={2}>
@@ -34,8 +34,8 @@ export const ExchangeData = () => {
         <DataCardItem text="Excel" link={Paths.exportExcel.path}  >
             <img src={excelIcon} alt='excel'/>
         </DataCardItem>
-        <DataCardItem text="Squit" link="">
-            <img src={nlMapIcon} alt='excel'/>
+        <DataCardItem text="Provincie" link="">
+            <img src={roxitIcon} alt='Provincie'/>
         </DataCardItem>
       </Stack>
       <Button sx={{width:"40%",mt:2}}  variant="outlined">Nieuwe data koppeling instellen</Button>

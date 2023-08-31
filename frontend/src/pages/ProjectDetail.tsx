@@ -97,10 +97,10 @@ export const ProjectDetail = () => {
           alignItems="flex-start"
           justifyContent="space-between"
         >
-          <Stack width="20%" mr={0.5} overflow="auto" height="63vh">
+          <Stack   overflow="auto" height="63vh">
            { <Details project={selectedProject} />}
           </Stack>
-          <Map  />
+          <Map  style={{width:"100%"}}/>
         </Stack>
       )}
       {selectedType === "timeline" && <TimeLineImg/>}
