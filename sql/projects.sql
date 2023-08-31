@@ -1,4 +1,18 @@
-WITH woningblokken AS (
+WITH
+current_woningblok_eigendom_en_waarde AS (
+    SELECT
+        wewc.*,
+        sms.date AS "milestone_start_date",
+        ems.date AS "milestone_end_date"
+    FROM
+        diwi_testset_simplified.woningblok_eigendom_en_waarde_changelog wewc
+        LEFT JOIN diwi_testset_simplified.milestone_state sms ON sms."milestone_ID" = wewc."start_milestone_ID"
+        LEFT JOIN diwi_testset_simplified.milestone_state ems ON ems."milestone_ID" = wewc."end_milestone_ID"
+    WHERE
+        sms.status = 'gerealiseerd'
+        AND ems.status != 'gerealiseerd'
+),
+woningblokken AS (
     SELECT
         w."ID" AS id,
         wnc.naam AS "naam",
@@ -46,7 +60,7 @@ WITH woningblokken AS (
             AND wijk_state.change_end_date IS NULL
         LEFT JOIN diwi_testset_simplified.woningblok_type_en_fysiek_voorkomen_changelog wtfvc ON wtfvc."woningblok_ID" = w."ID"
             AND wtfvc.change_end_date IS NULL
-        LEFT JOIN diwi_testset_simplified.woningblok_eigendom_en_waarde_changelog wewc ON wewc."woningblok_ID" = w."ID"
+        LEFT JOIN current_woningblok_eigendom_en_waarde AS wewc ON wewc."woningblok_ID" = w."ID"
             AND wewc.change_end_date IS NULL
         LEFT JOIN diwi_testset_simplified.woningblok_grootte_changelog wgc ON wgc."woningblok_ID" = w."ID"
             AND wgc.change_end_date IS NULL
@@ -63,7 +77,7 @@ WITH woningblokken AS (
         LEFT JOIN diwi_testset_simplified.milestone_state woningblok_milestone_end_state ON woningblok_milestone_end_state."milestone_ID" = woningblok_milestone_end."ID"
             AND woningblok_milestone_end_state.change_end_date IS NULL
     ORDER BY
-        w."ID" DESC
+        w."ID" ASC
 ),
 actor_role AS (
     SELECT
@@ -78,23 +92,22 @@ actor_role AS (
 ),
 current_project_fase AS (
     SELECT
-        pfc.*
+        pfc.*,
+        sms.date AS "milestone_start_date",
+        ems.date AS "milestone_end_date"
     FROM
         diwi_testset_simplified.project_fase_changelog AS pfc
-        LEFT JOIN diwi_testset_simplified.milestone sm ON pfc."start_milestone_ID" = sm."ID"
-        LEFT JOIN diwi_testset_simplified.milestone_state sms ON sms."milestone_ID" = sm."ID"
-        LEFT JOIN diwi_testset_simplified.milestone em ON pfc."end_milestone_ID" = em."ID"
-        LEFT JOIN diwi_testset_simplified.milestone_state ems ON ems."milestone_ID" = em."ID"
+        LEFT JOIN diwi_testset_simplified.milestone_state sms ON sms."milestone_ID" = pfc."start_milestone_ID"
+        LEFT JOIN diwi_testset_simplified.milestone_state ems ON ems."milestone_ID" = pfc."end_milestone_ID"
     WHERE
         sms.status = 'gerealiseerd'
         AND ems.status != 'gerealiseerd'
 ),
 current_programmering AS (
     SELECT
-        ppc."ID",
-        ppc.programmering,
-        ppc."project_ID",
-        ppc.change_end_date
+        ppc.*,
+        sms.date AS "milestone_start_date",
+        ems.date AS "milestone_end_date"
     FROM
         diwi_testset_simplified.project_programmering_changelog ppc
         LEFT JOIN diwi_testset_simplified.milestone_state sms ON sms."milestone_ID" = ppc."start_milestone_ID"
@@ -105,10 +118,9 @@ current_programmering AS (
 ),
 current_planstatus AS (
     SELECT
-        pppc."ID" AS "ID",
-        pppc."project_ID" AS "project_ID",
-        pppc.planologische_planstatus AS planologische_planstatus,
-        pppc.change_end_date
+        pppc.*,
+        sms.date AS "milestone_start_date",
+        ems.date AS "milestone_end_date"
     FROM
         diwi_testset_simplified.project_planologische_planstatus_changelog pppc
         LEFT JOIN diwi_testset_simplified.milestone_state sms ON sms."milestone_ID" = pppc."start_milestone_ID"
