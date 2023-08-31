@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { ReactComponent as Map } from "../assets/temp/map.svg";
 import Search from "../components/Search";
-import { projects } from "../api/dummyData";
+// import { projects } from "../api/dummyData";
 import { ProjectList } from "../components/ProjectList";
 import { useContext, useState } from "react";
 import { ProjectsTableView } from "../components/ProjectsTableView";
@@ -17,12 +17,11 @@ import ProjectContext from "../context/ProjectContext";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
-import { LocalizationProvider, StaticDatePicker } from "@mui/x-date-pickers";
+import {  StaticDatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 export const Projects = () => {
-    const { selectedProject } = useContext(ProjectContext);
+    const { selectedProject,projects } = useContext(ProjectContext);
     const [tableview, setTableView] = useState(false);
     const handleTableSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTableView(e.target.checked);
@@ -42,10 +41,10 @@ export const Projects = () => {
             maxHeight="81vh"
             position="relative"
         >
-            <Box width="20%" overflow="auto" p={0.3}>
-                <Search label="Zoeken..." searchList={projects} />
+            <Box width="25%" overflow="auto" p={0.3}>
+                <Search label="Zoeken..." searchList={projects.map(p=>p.project)} />
                 <ProjectList
-                    projectList={selectedProject ? [selectedProject] : projects}
+                    projectList={selectedProject ? [selectedProject] : projects.map(p=>p.project)}
                 />
             </Box>
             <Box>

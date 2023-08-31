@@ -1,6 +1,33 @@
 import { GridColDef } from "@mui/x-data-grid";
 
-export type SearchItem = { id: number; name: string; color: string } | null;
+export type SearchItem = { id: number; name: string } | null;
+export const colorArray = [
+    "#FF5733",
+    "#FFC300",
+    "#36DBCA",
+    "#5E35B1",
+    "#F4511E",
+    "#8E24AA",
+    "#D81B60",
+    "#3949AB",
+    "#039BE5",
+    "#00ACC1",
+    "#43A047",
+    "#C0CA33",
+    "#FB8C00",
+    "#F06292",
+    "#8BC34A",
+    "#03A9F4",
+    "#673AB7",
+    "#FF5252",
+    "#009688",
+    "#FFD600",
+    "#607D8B",
+    "#FBC02D",
+    "#795548",
+    "#9C27B0",
+    "#4CAF50",
+];
 export const projects = [
     {
         id: 1,
@@ -70,7 +97,6 @@ export const projects = [
                 houseType: "Single Family House",
             },
         ],
-
     },
     {
         id: 3,
@@ -427,10 +453,11 @@ export const houseBlockColumns: GridColDef[] = [
         editable: false,
     },
 ];
-export const projectLead=["Ali","Dirk","Emiel","Laurens"]
-export const vertrouwlijkheidsniveau=["Prive",
+export const projectLead = ["Ali", "Dirk", "Emiel", "Laurens"];
+export const vertrouwlijkheidsniveau = [
+    "Prive",
     "Intern voor uitvoering",
     "Intern rapportage",
     "Extern rapportage",
-    "Openbaar"
-    ]
+    "Openbaar",
+];

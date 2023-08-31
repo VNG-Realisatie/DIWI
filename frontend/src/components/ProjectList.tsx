@@ -1,9 +1,13 @@
 import { Box, List, ListItem, ListItemText } from "@mui/material";
 import * as Paths from "../Paths";
 import { Link } from "react-router-dom";
+import { ProjectType } from "../context/ProjectContext";
+import { colorArray } from "../api/dummyData";
+
 type Props = {
-    projectList: Array<{ id: number; name: string; color: string }>;
+    projectList: Array<ProjectType>;
 };
+
 export const ProjectList = ({ projectList }: Props) => {
     return (
         <List
@@ -12,11 +16,11 @@ export const ProjectList = ({ projectList }: Props) => {
                 width: "100%",
             }}
         >
-            {projectList.map((project) => {
+            {projectList.map((project,i) => {
                 return (
                     <Link
-                        to={`${Paths.projects.path}/${project.id}`}
-                        key={project.id}
+                        to={`${Paths.projects.path}/${project?.id}`}
+                        key={project?.id}
                         style={{ textDecoration: "none", color: "black" }}
                     >
                         <ListItem
@@ -32,13 +36,12 @@ export const ProjectList = ({ projectList }: Props) => {
                                 sx={{
                                     width: "12px",
                                     height: "12px",
-                                    backgroundColor: project.color,
+                                    backgroundColor: colorArray[i], // ToDo add color generator
                                     borderRadius: "50%",
                                 }}
                                 mr={1}
                             />
-
-                            <ListItemText primary={project.name} />
+                            <ListItemText primary={project?.name} />
                         </ListItem>
                     </Link>
                 );
