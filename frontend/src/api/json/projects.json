@@ -22,9 +22,7 @@
       "project_gemeenterol_value_id": 1,
       "project_priorisering_value_id": null,
       "project_gemeenterol_changelog_id": 1,
-      "project_priorisering_changelog_id": null,
-      "project_gemeenterol_value_state_id": 1,
-      "project_priorisering_value_state_id": null
+      "project_priorisering_changelog_id": null
     },
     "woningblokken": [
       {
@@ -116,9 +114,7 @@
       "project_gemeenterol_value_id": 1,
       "project_priorisering_value_id": null,
       "project_gemeenterol_changelog_id": 2,
-      "project_priorisering_changelog_id": null,
-      "project_gemeenterol_value_state_id": 1,
-      "project_priorisering_value_state_id": null
+      "project_priorisering_changelog_id": null
     },
     "woningblokken": [
       {
@@ -176,9 +172,7 @@
       "project_gemeenterol_value_id": 1,
       "project_priorisering_value_id": null,
       "project_gemeenterol_changelog_id": 4,
-      "project_priorisering_changelog_id": null,
-      "project_gemeenterol_value_state_id": 1,
-      "project_priorisering_value_state_id": null
+      "project_priorisering_changelog_id": null
     },
     "woningblokken": [
       {
@@ -308,9 +302,7 @@
       "project_gemeenterol_value_id": 2,
       "project_priorisering_value_id": null,
       "project_gemeenterol_changelog_id": 5,
-      "project_priorisering_changelog_id": null,
-      "project_gemeenterol_value_state_id": 2,
-      "project_priorisering_value_state_id": null
+      "project_priorisering_changelog_id": null
     },
     "woningblokken": [
       {
@@ -440,9 +432,7 @@
       "project_gemeenterol_value_id": 2,
       "project_priorisering_value_id": null,
       "project_gemeenterol_changelog_id": 6,
-      "project_priorisering_changelog_id": null,
-      "project_gemeenterol_value_state_id": 2,
-      "project_priorisering_value_state_id": null
+      "project_priorisering_changelog_id": null
     },
     "woningblokken": [
       {

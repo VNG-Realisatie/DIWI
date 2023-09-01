@@ -205,6 +205,68 @@ woningblokken AS (
     ORDER BY
         w."ID" ASC
 ),
+current_project_name AS (
+    SELECT
+        pnc.*,
+        sms.date AS "milestone_start_date",
+        ems.date AS "milestone_end_date"
+    FROM
+        diwi_testset_simplified.project_name_changelog pnc
+        LEFT JOIN diwi_testset_simplified.milestone_state sms ON sms."milestone_ID" = pnc."start_milestone_ID"
+        LEFT JOIN diwi_testset_simplified.milestone_state ems ON ems."milestone_ID" = pnc."end_milestone_ID"
+    WHERE
+        sms.status = 'gerealiseerd'
+        AND ems.status != 'gerealiseerd'
+        AND pnc.change_end_date IS NULL
+),
+current_project_gemeenterol AS (
+    SELECT
+        pgrc.*,
+        pgrvs.value_label,
+        sms.date AS "milestone_start_date",
+        ems.date AS "milestone_end_date"
+    FROM
+        diwi_testset_simplified.project_gemeenterol_changelog pgrc
+        LEFT JOIN diwi_testset_simplified.project_gemeenterol_value_state AS pgrvs ON pgrvs."project_gemeenterol_value_ID" = pgrc."project_gemeenterol_value_ID"
+            AND pgrvs.change_end_date IS NULL
+        LEFT JOIN diwi_testset_simplified.milestone_state sms ON sms."milestone_ID" = pgrc."start_milestone_ID"
+        LEFT JOIN diwi_testset_simplified.milestone_state ems ON ems."milestone_ID" = pgrc."end_milestone_ID"
+    WHERE
+        sms.status = 'gerealiseerd'
+        AND ems.status != 'gerealiseerd'
+        AND pgrc.change_end_date IS NULL
+),
+current_project_priorisering AS (
+    SELECT
+        ppc.*,
+        ppvs.value_label,
+        sms.date AS "milestone_start_date",
+        ems.date AS "milestone_end_date"
+    FROM
+        diwi_testset_simplified.project_priorisering_changelog ppc
+        LEFT JOIN diwi_testset_simplified.project_priorisering_value_state AS ppvs ON ppvs."project_priorisering_value_ID" = ppc."project_priorisering_value_ID"
+            AND ppvs.change_end_date IS NULL
+        LEFT JOIN diwi_testset_simplified.milestone_state sms ON sms."milestone_ID" = ppc."start_milestone_ID"
+        LEFT JOIN diwi_testset_simplified.milestone_state ems ON ems."milestone_ID" = ppc."end_milestone_ID"
+    WHERE
+        sms.status = 'gerealiseerd'
+        AND ems.status != 'gerealiseerd'
+        AND ppc.change_end_date IS NULL
+),
+current_project_plan_type AS (
+    SELECT
+        pptc.*,
+        sms.date AS "milestone_start_date",
+        ems.date AS "milestone_end_date"
+    FROM
+        diwi_testset_simplified.project_plan_type_changelog pptc
+        LEFT JOIN diwi_testset_simplified.milestone_state sms ON sms."milestone_ID" = pptc."start_milestone_ID"
+        LEFT JOIN diwi_testset_simplified.milestone_state ems ON ems."milestone_ID" = pptc."end_milestone_ID"
+    WHERE
+        sms.status = 'gerealiseerd'
+        AND ems.status != 'gerealiseerd'
+        AND pptc.change_end_date IS NULL
+),
 current_actor_role AS (
     SELECT
         parc.*,
@@ -274,11 +336,11 @@ projecten AS (
         pnc."name" AS "name",
         os.naam AS "eigenaar",
         ps.confidentiality_level AS "vertrouwlijkheidsniveau",
-        ppvs.value_label AS "priorisering",
-        project_plan_type_changelog.plan_type AS "plan type",
+        ppc.value_label AS "priorisering",
+        pptc.plan_type AS "plan type",
         milestone_start_state."date" AS "start datum",
         milestone_end_state."date" AS "eind datum",
-        pgvs.value_label AS "rol gemeente",
+        pgrc.value_label AS "rol gemeente",
         cm.project_fase AS "project fase",
         actor_role."name" AS "project leider",
         current_planstatus.planologische_planstatus AS "planologische plan status",
@@ -289,41 +351,31 @@ projecten AS (
         pnc."ID" AS project_name_changelog_id,
         os."organization_ID" AS organization_id,
         os."ID" AS organization_state_id,
-        pgc."ID" AS project_gemeenterol_changelog_id,
-        pgvs."project_gemeenterol_value_ID" AS project_gemeenterol_value_id,
-        pgvs."ID" AS project_gemeenterol_value_state_id,
+        pgrc."ID" AS project_gemeenterol_changelog_id,
+        pgrc."project_gemeenterol_value_ID" AS project_gemeenterol_value_id,
         ppc."ID" AS project_priorisering_changelog_id,
-        ppvs."project_priorisering_value_ID" AS project_priorisering_value_id,
-        ppvs."ID" AS project_priorisering_value_state_id
+        ppc."project_priorisering_value_ID" AS project_priorisering_value_id
     FROM
         diwi_testset_simplified.project AS p
-        LEFT JOIN diwi_testset_simplified.project_name_changelog AS pnc ON pnc."project_ID" = p."ID"
-            AND pnc.change_end_date IS NULL
         LEFT JOIN diwi_testset_simplified.project_state AS ps ON ps."project_ID" = p."ID"
             AND ps.change_end_date IS NULL
         LEFT JOIN diwi_testset_simplified.organization_state AS os ON os."organization_ID" = ps."owner_organization_ID"
             AND os.change_end_date IS NULL
-        LEFT JOIN diwi_testset_simplified.project_gemeenterol_changelog AS pgc ON pgc."project_ID" = p."ID"
-            AND pgc.change_end_date IS NULL
-        LEFT JOIN diwi_testset_simplified.project_gemeenterol_value_state AS pgvs ON pgvs."project_gemeenterol_value_ID" = pgc."project_gemeenterol_value_ID"
-            AND pgvs.change_end_date IS NULL
-        LEFT JOIN diwi_testset_simplified.project_priorisering_changelog ppc ON ppc."project_ID" = p."ID"
-            AND ppc.change_end_date IS NULL
-        LEFT JOIN diwi_testset_simplified.project_priorisering_value_state ppvs ON ppvs."project_priorisering_value_ID" = ppc."project_priorisering_value_ID"
-            AND ppvs.change_end_date IS NULL
-        LEFT JOIN diwi_testset_simplified.project_plan_type_changelog project_plan_type_changelog ON project_plan_type_changelog."project_ID" = p."ID"
-            AND project_plan_type_changelog.change_end_date IS NULL
+        LEFT JOIN current_project_name pnc ON pnc."project_ID" = p."ID"
+        LEFT JOIN current_project_gemeenterol pgrc ON pgrc."project_ID" = p."ID"
+        LEFT JOIN current_project_priorisering ppc ON ppc."project_ID" = p."ID"
+        LEFT JOIN current_project_plan_type pptc ON pptc."project_ID" = p."ID"
+        LEFT JOIN current_project_fase cm ON cm."project_ID" = p."ID"
+        LEFT JOIN current_actor_role actor_role ON actor_role."project_ID" = p."ID"
+            AND actor_role.rol = 'projectleider'
+        LEFT JOIN current_planstatus ON current_planstatus."project_ID" = p."ID"
+        LEFT JOIN current_programmering ON current_programmering."project_ID" = p."ID"
         LEFT JOIN diwi_testset_simplified.project_duration_changelog pdc ON pdc."project_ID" = p."ID"
             AND pdc.change_end_date IS NULL
         LEFT JOIN diwi_testset_simplified.milestone_state milestone_start_state ON milestone_start_state."milestone_ID" = pdc."start_milestone_ID"
             AND milestone_start_state.change_end_date IS NULL
         LEFT JOIN diwi_testset_simplified.milestone_state milestone_end_state ON milestone_end_state."milestone_ID" = pdc."end_milestone_ID"
             AND milestone_end_state.change_end_date IS NULL
-        LEFT JOIN current_project_fase cm ON cm."project_ID" = p."ID"
-        LEFT JOIN current_actor_role actor_role ON actor_role."project_ID" = p."ID"
-            AND actor_role.rol = 'projectleider'
-        LEFT JOIN current_planstatus ON current_planstatus."project_ID" = p."ID"
-        LEFT JOIN current_programmering ON current_programmering."project_ID" = p."ID"
     WHERE
         milestone_start_state.status = 'gerealiseerd'
         AND milestone_end_state.status != 'gerealiseerd'
