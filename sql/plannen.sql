@@ -3,11 +3,20 @@ plan_condities AS (
     SELECT
         pc."ID" as id,
         pcs."plan_ID" as plan_id,
-        pcs.conditie_type
+        pcs.conditie_type,
+        pcew.eigendom_soort,
+        pcew.waarde,
+        pcew.huurbedrag,
+        pctfv.woning_type,
+        pctfv.fysiek_voorkomen
     FROM
         diwi_testset_simplified.plan_conditie pc
         LEFT JOIN diwi_testset_simplified.plan_conditie_state pcs ON pcs."plan_conditie_ID" = pc."ID"
             AND pcs.change_end_date IS NULL
+        LEFT JOIN diwi_testset_simplified.plan_conditie_eigendom_en_waarde pcew ON pcew."plan_conditie_ID" = pc."ID"
+            AND pcew.change_end_date IS NULL
+        LEFT JOIN diwi_testset_simplified.plan_conditie_type_en_fysiek_voorkomen pctfv ON pctfv."plan_conditie_ID" = pc."ID"
+            AND pctfv.change_end_date IS NULL
     ORDER BY
         pc."ID" ASC
 ),
