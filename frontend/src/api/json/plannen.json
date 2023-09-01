@@ -19,7 +19,13 @@
       "owner_organization_ID": 10
     },
     "condities": [],
-    "doelen": []
+    "doelen": [
+      {
+        "id": 1,
+        "plan_id": 1,
+        "conditie_type": "doel_conditie"
+      }
+    ]
   },
   {
     "plan": {
@@ -62,8 +68,20 @@
       "confidentiality_level": "openbaar",
       "owner_organization_ID": 10
     },
-    "condities": [],
-    "doelen": []
+    "condities": [
+      {
+        "id": 3,
+        "plan_id": 3,
+        "conditie_type": "plan_conditie"
+      }
+    ],
+    "doelen": [
+      {
+        "id": 2,
+        "plan_id": 3,
+        "conditie_type": "doel_conditie"
+      }
+    ]
   },
   {
     "plan": {
@@ -85,7 +103,13 @@
       "owner_organization_ID": 10
     },
     "condities": [],
-    "doelen": []
+    "doelen": [
+      {
+        "id": 4,
+        "plan_id": 4,
+        "conditie_type": "doel_conditie"
+      }
+    ]
   },
   {
     "plan": {
@@ -107,7 +131,13 @@
       "owner_organization_ID": 10
     },
     "condities": [],
-    "doelen": []
+    "doelen": [
+      {
+        "id": 5,
+        "plan_id": 5,
+        "conditie_type": "doel_conditie"
+      }
+    ]
   },
   {
     "plan": {
@@ -128,8 +158,20 @@
       "confidentiality_level": "openbaar",
       "owner_organization_ID": 10
     },
-    "condities": [],
-    "doelen": []
+    "condities": [
+      {
+        "id": 7,
+        "plan_id": 6,
+        "conditie_type": "plan_conditie"
+      }
+    ],
+    "doelen": [
+      {
+        "id": 6,
+        "plan_id": 6,
+        "conditie_type": "doel_conditie"
+      }
+    ]
   },
   {
     "plan": {
@@ -150,8 +192,20 @@
       "confidentiality_level": "openbaar",
       "owner_organization_ID": 10
     },
-    "condities": [],
-    "doelen": []
+    "condities": [
+      {
+        "id": 9,
+        "plan_id": 7,
+        "conditie_type": "plan_conditie"
+      }
+    ],
+    "doelen": [
+      {
+        "id": 8,
+        "plan_id": 7,
+        "conditie_type": "doel_conditie"
+      }
+    ]
   },
   {
     "plan": {
@@ -172,8 +226,20 @@
       "confidentiality_level": "openbaar",
       "owner_organization_ID": 10
     },
-    "condities": [],
-    "doelen": []
+    "condities": [
+      {
+        "id": 11,
+        "plan_id": 8,
+        "conditie_type": "plan_conditie"
+      }
+    ],
+    "doelen": [
+      {
+        "id": 10,
+        "plan_id": 8,
+        "conditie_type": "doel_conditie"
+      }
+    ]
   },
   {
     "plan": {
@@ -194,7 +260,19 @@
       "confidentiality_level": "openbaar",
       "owner_organization_ID": 10
     },
-    "condities": [],
-    "doelen": []
+    "condities": [
+      {
+        "id": 13,
+        "plan_id": 9,
+        "conditie_type": "plan_conditie"
+      }
+    ],
+    "doelen": [
+      {
+        "id": 12,
+        "plan_id": 9,
+        "conditie_type": "doel_conditie"
+      }
+    ]
   }
 ]
