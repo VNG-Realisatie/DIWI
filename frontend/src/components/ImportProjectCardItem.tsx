@@ -156,20 +156,99 @@ export const ImportProjectCardItem = (props: any) => {
                             inputProps={{ "aria-label": "controlled" }}
                         />
                     </Grid>
-                    <Grid item sm={2}>
-                        <Typography sx={columnTitleStyle}>Geo</Typography>
+                 <Grid item sm={2}>
+                        <Typography sx={columnTitleStyle}>Eigenaar</Typography>
 
                         <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
-                            {project.geo}
+                            {project.eigenaar}
+                        </Typography>
+                    </Grid>
+                    <Grid item sm={2}>
+                        <Typography sx={columnTitleStyle}>Plan Type</Typography>
+
+                        <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
+                            {project["plan type"]}
                         </Typography>
                     </Grid>
                     <Grid item sm={2}>
                         <Typography sx={columnTitleStyle}>
-                            Organisatie
+                            Start Datum
                         </Typography>
 
                         <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
-                            {project.organization}
+                            {project["start datum"]}
+                        </Typography>
+                    </Grid>
+                    <Grid item sm={2}>
+                        <Typography sx={columnTitleStyle}>
+                            Eind Datum
+                        </Typography>
+
+                        <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
+                            {project["eind datum"]}
+                        </Typography>
+                    </Grid>
+                    <Grid item sm={2}>
+                        <Typography sx={columnTitleStyle}>
+                            Priorisering
+                        </Typography>
+
+                        <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
+                            {project["priorisering"]}
+                        </Typography>
+                    </Grid>
+                    <Grid item sm={2}>
+                        <Typography sx={columnTitleStyle}>
+                            Project Fase
+                        </Typography>
+
+                        <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
+                            {project["project fase"]}
+                        </Typography>
+                    </Grid>
+                    <Grid item sm={2}>
+                        <Typography sx={columnTitleStyle}>
+                            Rol Gemeente
+                        </Typography>
+
+                        <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
+                            {project["rol gemeente"]}
+                        </Typography>
+                    </Grid>
+                    <Grid item sm={2}>
+                        <Typography sx={columnTitleStyle}>
+                            Programmering
+                        </Typography>
+
+                        <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
+                            {project["programmering"]}
+                        </Typography>
+                    </Grid>
+                    <Grid item sm={2}>
+                        <Typography sx={columnTitleStyle}>
+                            Project Leider
+                        </Typography>
+
+                        <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
+                            {project["project leider"]}
+                        </Typography>
+                    </Grid>
+                    <Grid item sm={2}>
+                        <Typography sx={columnTitleStyle}>
+                            Vertrouwlijkheidsniveau
+                        </Typography>
+
+                        <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
+                            {project["vertrouwlijkheidsniveau"]}
+                        </Typography>
+                    </Grid>
+                    <Grid item sm={2}>
+                        <Typography sx={columnTitleStyle}>
+                            Planologische Plan Status
+                        </Typography>
+
+                        <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
+                            {project["planologische plan status"]}
                         </Typography>
                     </Grid>
                 </Grid>
