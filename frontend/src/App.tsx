@@ -4,7 +4,6 @@ import "./App.css";
 import { AlertProvider } from "./context/AlertContext";
 import AlertPopup from "./components/AlertPopup";
 import { Layout } from "./components/Layout";
-import { Home } from "./pages/Home";
 import { Projects } from "./pages/Projects";
 import { CreateProject } from "./pages/CreateProject";
 import { NoMatch } from "./pages/NoMatch";
@@ -64,7 +63,6 @@ function App() {
     },
     palette: {
       primary: {
-        // TODO add colors later
         main: "#002C64",
       },
       secondary: {
@@ -81,7 +79,9 @@ function App() {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Layout />}>
-                <Route index element={<Home />} />
+                <Route index element={<ProjectProvider>
+                      <Projects />
+                    </ProjectProvider>} />
                 <Route
                   path={Paths.projects.path}
                   element={

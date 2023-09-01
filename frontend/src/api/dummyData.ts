@@ -1,6 +1,33 @@
 import { GridColDef } from "@mui/x-data-grid";
 
-export type SearchItem = { id: number; name: string; color: string } | null;
+export type SearchItem = { id: number; name: string } | null;
+export const colorArray = [
+    "#FF5733",
+    "#FFC300",
+    "#36DBCA",
+    "#5E35B1",
+    "#F4511E",
+    "#8E24AA",
+    "#D81B60",
+    "#3949AB",
+    "#039BE5",
+    "#00ACC1",
+    "#43A047",
+    "#C0CA33",
+    "#FB8C00",
+    "#F06292",
+    "#8BC34A",
+    "#03A9F4",
+    "#673AB7",
+    "#FF5252",
+    "#009688",
+    "#FFD600",
+    "#607D8B",
+    "#FBC02D",
+    "#795548",
+    "#9C27B0",
+    "#4CAF50",
+];
 export const projects = [
     {
         id: 1,
@@ -70,7 +97,6 @@ export const projects = [
                 houseType: "Single Family House",
             },
         ],
-
     },
     {
         id: 3,
@@ -281,35 +307,35 @@ export type Policy = {
 export const policyGoals = [
     {
         id: 1,
-        name: "Totaal woningen",
+        name: "Totaal woningen gerealiseerd",
         data: {
-            characteristic: "Test-1",
-            goal: 12,
-            time: "01/01/2023",
-            geo: "Voorbeeld-1",
-            category: "Cat-1",
+            characteristic: "Totaal woningen",
+            goal: 500,
+            time: "01/01/2025",
+            geo: "Castricum",
+            category: "Regionale doelstelling",
         },
     },
     {
         id: 2,
-        name: "Woningen voor starters",
+        name: "Minimaal percentage ouderen woningen",
         data: {
-            characteristic: "Test-2",
-            goal: 2,
-            time: "03/06/2023",
-            geo: "Voorbeeld-2",
-            category: "Cat-2",
+            characteristic: "Doelgroep: Ouderen",
+            goal: "Minimaal 35%",
+            time: "01/01/2025",
+            geo: "NVT",
+            category: "Doelstelling van het Rijk",
         },
     },
     {
         id: 3,
-        name: "Houtbouw woningen in Delfshaven",
+        name: "Koopwoningen in Bakkum",
         data: {
-            characteristic: "Test-3",
-            goal: 3,
-            time: "30/04/2023",
-            geo: "Voorbeeld-3",
-            category: "Cat-3",
+            characteristic: "Koopwoning",
+            goal: 100,
+            time: "01/01/2030",
+            geo: "Bakkum",
+            category: "Doelstelling Gemeente",
         },
     },
 ];
@@ -427,10 +453,11 @@ export const houseBlockColumns: GridColDef[] = [
         editable: false,
     },
 ];
-export const projectLead=["Ali","Dirk","Emiel","Laurens"]
-export const vertrouwlijkheidsniveau=["Prive",
+export const projectLead = ["Ali", "Dirk", "Emiel", "Laurens"];
+export const vertrouwlijkheidsniveau = [
+    "Prive",
     "Intern voor uitvoering",
     "Intern rapportage",
     "Extern rapportage",
-    "Openbaar"
-    ]
+    "Openbaar",
+];

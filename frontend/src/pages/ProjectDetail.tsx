@@ -1,6 +1,6 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
 import Search from "../components/Search";
-import { projects } from "../api/dummyData";
+// import { projects } from "../api/dummyData";
 import { useContext, useState } from "react";
 import { Details } from "../components/Details";
 import { ReactComponent as Map } from "../assets/temp/map.svg";
@@ -10,6 +10,7 @@ import {ReactComponent as TimeLineImg} from "../assets/temp/timeline.svg";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
+import { colorArray } from "../api/dummyData";
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 90 },
   {
@@ -19,26 +20,27 @@ const columns: GridColDef[] = [
     editable: true,
   },
   {
-    field: "geo",
-    headerName: "Geography",
+    field: "eigenaar",
+    headerName: "Eigenaar",
     width: 200,
     editable: true,
   },
   {
-    field: "organization",
-    headerName: "Organisatie",
+    field: "plan type",
+    headerName: "Plan Type",
     width: 200,
     editable: true,
   },
   {
-    field: "color",
-    headerName: "Color",
+    field: "start datum",
+    headerName: "Start Datum",
     width: 200,
     editable: true,
   },
 ];
+//ToDo Update this component with exchangedata/importexcel/projects ImportedProjects.tsx
 export const ProjectDetail = () => {
-  const { selectedProject } = useContext(ProjectContext);
+  const { selectedProject,projects,id } = useContext(ProjectContext);
   const [selectedType, setSelectedType] = useState<
     "map" | "characteristics" | "timeline"
   >("map");
@@ -58,7 +60,7 @@ export const ProjectDetail = () => {
         <Box width="20%">
           <Search
             label="Zoeken..."
-            searchList={projects}
+            searchList={projects.map(p=>p.project)}
             isDetailSearch={true}
           />
         </Box>
@@ -78,7 +80,7 @@ export const ProjectDetail = () => {
         direction="row"
         alignItems="center"
         pl={2}
-        sx={{ backgroundColor: "#900A0A", color: "#FFFFFF", minHeight: "53px" }}
+        sx={{ backgroundColor: id&&colorArray[parseInt(id)-1], color: "#FFFFFF", minHeight: "53px" }}
       >
         <Typography variant="h5">{selectedProject?.name}</Typography>
       </Stack>
@@ -95,10 +97,10 @@ export const ProjectDetail = () => {
           alignItems="flex-start"
           justifyContent="space-between"
         >
-          <Stack width="20%" mr={0.5}>
-            <Details project={selectedProject} />
+          <Stack   overflow="auto" height="63vh">
+           { <Details project={selectedProject} />}
           </Stack>
-          <Map  />
+          <Map  style={{width:"100%"}}/>
         </Stack>
       )}
       {selectedType === "timeline" && <TimeLineImg/>}

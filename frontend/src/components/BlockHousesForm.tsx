@@ -157,14 +157,14 @@ export const BlockHousesForm = (props: any) => {
                         value={
                             props.createProjectForm
                                 ? props.createProjectForm[
-                                      "bruto plancapaciteit"
+                                      "bruto_plancapaciteit"
                                   ]
                                 : ""
                         }
                         onChange={(e) =>
                             props.setCreateProjectForm({
                                 ...props.createProjectForm,
-                                "bruto plancapaciteit": e.target.value,
+                                bruto_plancapaciteit: e.target.value,
                             })
                         }
                     />
@@ -180,14 +180,14 @@ export const BlockHousesForm = (props: any) => {
                         value={
                             props.createProjectForm
                                 ? props.createProjectForm[
-                                      "netto plancapaciteit"
+                                      "netto_plancapaciteit"
                                   ]
                                 : ""
                         }
                         onChange={(e) =>
                             props.setCreateProjectForm({
                                 ...props.createProjectForm,
-                                "netto plancapaciteit": e.target.value,
+                                netto_plancapaciteit: e.target.value,
                             })
                         }
                     />
@@ -244,13 +244,13 @@ export const BlockHousesForm = (props: any) => {
                         variant="outlined"
                         value={
                             props.createProjectForm
-                                ? props.createProjectForm.koopwoning
+                                ? props.createProjectForm.eigendom_soort
                                 : ""
                         }
                         onChange={(e) =>
                             props.setCreateProjectForm({
                                 ...props.createProjectForm,
-                                koopwoning: e.target.value,
+                                eigendom_soort: e.target.value,
                             })
                         }
                     />
@@ -327,14 +327,14 @@ export const BlockHousesForm = (props: any) => {
                                 id="fase"
                                 value={
                                     props.createProjectForm
-                                        ? props.createProjectForm.mutatiesoort
+                                        ? props.createProjectForm.mutatie_soort
                                         : ""
                                 }
                                 label="Project Fase"
                                 onChange={(e) =>
                                     props.setCreateProjectForm({
                                         ...props.createProjectForm,
-                                        mutatiesoort: e.target.value,
+                                        mutatie_soort: e.target.value,
                                     })
                                 }
                             >
@@ -463,8 +463,8 @@ export const BlockHousesForm = (props: any) => {
                                 onChange={(e) =>
                                     props.setCreateProjectForm({
                                         ...props.createProjectForm,
-                                        "intentie medewerking grondeigenaar":
-                                            e.target.value,
+                                            "intentie medewerking grondeigenaar":
+                                                e.target.value,
                                     })
                                 }
                             />
@@ -487,8 +487,8 @@ export const BlockHousesForm = (props: any) => {
                                 onChange={(e) =>
                                     props.setCreateProjectForm({
                                         ...props.createProjectForm,
-                                        "formele toestemming van grondeigenaar":
-                                            e.target.value,
+                                            "formele toestemming van grondeigenaar":
+                                                e.target.value,
                                     })
                                 }
                             />
@@ -538,7 +538,7 @@ export const BlockHousesForm = (props: any) => {
                                     onChange={(e) =>
                                         props.setCreateProjectForm({
                                             ...props.createProjectForm,
-                                            tussenwoning: e.target.value,
+                                                tussenwoning: e.target.value,
                                         })
                                     }
                                 />

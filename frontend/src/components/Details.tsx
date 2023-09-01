@@ -1,15 +1,8 @@
 import { List, ListItem, ListItemText } from "@mui/material";
-//DoTo this type will be updated after real data
-export type Project = {
-    id: number;
-    name: string;
-    color: string;
-    organization: string;
-    geo: string;
-    houseblocks?: any;
-};
+import { ProjectType } from "../context/ProjectContext";
+
 type Props = {
-    project: Project;
+    project: ProjectType|undefined;
 };
 export const Details = ({ project }: Props) => {
     return (
@@ -22,7 +15,19 @@ export const Details = ({ project }: Props) => {
             {project &&
                 Object.entries(project).map(([property, value]) => {
                     //To avoid mixed data type bug keep this. it will be removed after all data defined
-                    if (property !== "houseblocks") {
+                    if (
+                        property !== "organization_id" &&
+                        property !== "project_state_id" &&
+                        property !== "organization_state_id" &&
+                        property !== "project_fase_changelog_id" &&
+                        property !== "project_gemeenterol_value_id"&&
+                        property !== "project_name_changelog_id"&&
+                        property !== "project_priorisering_value_id"&&
+                        property !== "project_gemeenterol_changelog_id"&&
+                        property !== "project_priorisering_changelog_id" &&
+                        property !== "project_gemeenterol_value_state_id" &&
+                        property !== "project_priorisering_value_state_id"
+                    ) {
                         return (
                             <>
                                 <ListItem
@@ -36,7 +41,6 @@ export const Details = ({ project }: Props) => {
                                     <ListItemText primary={property} />
                                 </ListItem>
                                 <ListItem
-                                    key={value}
                                     sx={{
                                         border: "solid 1px #ddd",
                                     }}
