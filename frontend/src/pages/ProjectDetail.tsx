@@ -6,7 +6,6 @@ import { ReactComponent as Map } from "../assets/temp/map.svg";
 import ProjectContext from "../context/ProjectContext";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { ReactComponent as TimeLineImg } from "../assets/temp/timeline.svg";
-import { GridColDef } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
 import { colorArray } from "../api/dummyData";

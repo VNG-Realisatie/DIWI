@@ -35,7 +35,7 @@ export const ExchangeData = () => {
             <img src={excelIcon} alt='excel'/>
         </DataCardItem>
         <DataCardItem text="Provincie" link="">
-            <img src={roxitIcon} alt='Provincie'/>
+            <img src={nlMapIcon} alt='Provincie'/>
         </DataCardItem>
       </Stack>
       <Button sx={{width:"40%",mt:2}}  variant="outlined">Nieuwe data koppeling instellen</Button>
