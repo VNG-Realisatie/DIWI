@@ -1,10 +1,10 @@
 import { Box, Grid, Stack, TextField, Typography } from "@mui/material";
 import { useContext, useState } from "react";
-import { ImportHouseBlockCardItem } from "./ImportHouseBlockCardItem";
 import ProjectContext from "../context/ProjectContext";
 import { colorArray } from "../api/dummyData";
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
+import { ProjectHouseBlockCardItem } from "./ProjectHouseBlockCardItem";
 export const columnTitleStyle = {
     border: "solid 1px #ddd",
     p: 0.6,
@@ -135,7 +135,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
                 {/* List huizen blok cards */}
                 <Grid container my={2}>
                     {houseblocks.map((hb: any, i: number) => {
-                        return <ImportHouseBlockCardItem hb={hb} key={i} />;
+                        return <ProjectHouseBlockCardItem hb={hb} key={i} />;
                     })}
                 </Grid>
             </Stack>
