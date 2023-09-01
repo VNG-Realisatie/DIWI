@@ -15,6 +15,7 @@ import projectLead from "../api/json/projectleider.json";
 import projectFaseList from "../api/json/enums/project_phase.json";
 import planologischePlanStatus from "../api/json/enums/planologische_planstatus.json";
 import vertrouwlijkheidsniveau from "../api/json/enums/confidentiality.json";
+import priorityOption from "../api/json/priorisering.json";
 
 export const ProjectInformationForm = (props: any) => {
     //ToDo add props later
@@ -164,9 +165,9 @@ export const ProjectInformationForm = (props: any) => {
                             })
                         }
                     >
-                        <MenuItem value="laag">Laag</MenuItem>
-                        <MenuItem value="gemiddeld">Gemiddeld</MenuItem>
-                        <MenuItem value="hoog">Hoog</MenuItem>
+                         {priorityOption.map((v) => {
+                            return <MenuItem key={v.ID} value={v.value_label}>{v.value_label}</MenuItem>;
+                        })}
                     </Select>
                 </Stack>
                 <Stack>
