@@ -176,7 +176,7 @@ export const ImportProjectCardItem = (props: any) => {
                 {/* List huizen blok cards */}
                 <Grid container my={2}>
                     {project.houseblocks.map((hb: any, i: number) => {
-                        return <ImportHouseBlockCardItem hb={hb} key={i} />;
+                        return <ImportHouseBlockCardItem isImportCard hb={hb} key={i} />;
                     })}
                 </Grid>
             </Stack>

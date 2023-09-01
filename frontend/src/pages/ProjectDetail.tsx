@@ -11,6 +11,8 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
 import { colorArray } from "../api/dummyData";
+import { ImportProjectCardItem } from "../components/ImportProjectCardItem";
+import { ProjectsWithHouseBlock } from "../components/ProjectWithHouseBlock";
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 90 },
   {
@@ -104,25 +106,32 @@ export const ProjectDetail = () => {
         </Stack>
       )}
       {selectedType === "timeline" && <TimeLineImg/>}
-      {selectedType === "characteristics" && (
-        <DataGrid
-          editMode="row"
-          rows={[selectedProject]}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 10,
-              },
-            },
-          }}
-          pageSizeOptions={[5]}
-          processRowUpdate={(updatedRow, originalRow) =>
-            //Add update endpoint here
-            console.log(updatedRow)
-          }
-        />
-      )}
+      {selectedType === "characteristics" &&
+    //   (
+    //     <DataGrid
+    //       editMode="row"
+    //       rows={[selectedProject]}
+    //       columns={columns}
+    //       initialState={{
+    //         pagination: {
+    //           paginationModel: {
+    //             pageSize: 10,
+    //           },
+    //         },
+    //       }}
+    //       pageSizeOptions={[5]}
+    //       processRowUpdate={(updatedRow, originalRow) =>
+    //         //Add update endpoint here
+    //         console.log(updatedRow)
+    //       }
+    //     />
+    //   )
+            <ProjectsWithHouseBlock
+                project={selectedProject}
+                houseblocks={projects.filter(p=>selectedProject&&p.project&& p.project.id===selectedProject.id)[0].woningblokken}
+
+            />
+      }
       <Box
         position="absolute"
         right="30px"

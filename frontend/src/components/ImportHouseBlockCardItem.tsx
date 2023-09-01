@@ -2,8 +2,7 @@ import { Grid, Typography } from "@mui/material"
 import { columnTitleStyle } from "./ImportProjectCardItem";
 
 export const ImportHouseBlockCardItem=(props:any)=>{
-    const {hb}=props;
-
+    const {hb,isImportCard}=props;
    return <>
                                 <Grid
                                     item
@@ -16,7 +15,7 @@ export const ImportHouseBlockCardItem=(props:any)=>{
                                     display="flex"
                                     justifyContent="space-between"
                                 >
-                                    {hb.name}
+                                    {isImportCard?hb.name:hb.naam?hb.naam:"Geen Naam"}
                                 </Grid>
                                 <Grid item sm={2}>
                                     <Typography
@@ -31,7 +30,7 @@ export const ImportHouseBlockCardItem=(props:any)=>{
                                             p: 0.5,
                                         }}
                                     >
-                                        {hb.startdate}
+                                        {isImportCard?hb.startdate:hb["start datum"]}
                                     </Typography>
                                 </Grid>
                                 <Grid item sm={2}>
@@ -47,7 +46,7 @@ export const ImportHouseBlockCardItem=(props:any)=>{
                                             p: 0.5,
                                         }}
                                     >
-                                        {hb.finishDate}
+                                        {isImportCard?hb.finishDate:hb["eind datum"]}
                                     </Typography>
                                 </Grid>
                                 <Grid item sm={2}>
@@ -63,7 +62,7 @@ export const ImportHouseBlockCardItem=(props:any)=>{
                                             p: 0.5,
                                         }}
                                     >
-                                        {hb.mutationType}
+                                        {isImportCard?hb.mutationType:hb["mutatie_soort"]}
                                     </Typography>
                                 </Grid>
                                 <Grid item sm={2}>
@@ -79,7 +78,7 @@ export const ImportHouseBlockCardItem=(props:any)=>{
                                             p: 0.5,
                                         }}
                                     >
-                                        {hb.grossPlanCapacity}
+                                        {isImportCard?hb.grossPlanCapacity:hb["bruto_plancapaciteit"]}
                                     </Typography>
                                 </Grid>
                                 <Grid item sm={2}>
@@ -95,7 +94,7 @@ export const ImportHouseBlockCardItem=(props:any)=>{
                                             p: 0.5,
                                         }}
                                     >
-                                        {hb.demolition}
+                                        {isImportCard?hb.demolition:hb.sloop}
                                     </Typography>
                                 </Grid>
                                 <Grid item sm={2}>
@@ -111,7 +110,7 @@ export const ImportHouseBlockCardItem=(props:any)=>{
                                             p: 0.5,
                                         }}
                                     >
-                                        {hb.netPlanCapacity}
+                                        {isImportCard?hb.netPlanCapacity:hb["netto_plancapaciteit"]}
                                     </Typography>
                                 </Grid>
                                 <Grid item sm={2}>
@@ -127,14 +126,14 @@ export const ImportHouseBlockCardItem=(props:any)=>{
                                             p: 0.5,
                                         }}
                                     >
-                                        {hb.size}
+                                        {isImportCard?hb.size:hb.grootte}
                                     </Typography>
                                 </Grid>
                                 <Grid item sm={2}>
                                     <Typography
                                         sx={columnTitleStyle}
                                     >
-                                        Koopwoning
+                                      {isImportCard?"Koopwoning":"Buurt"}  Koopwoning
                                     </Typography>
 
                                     <Typography
@@ -143,14 +142,14 @@ export const ImportHouseBlockCardItem=(props:any)=>{
                                             p: 0.5,
                                         }}
                                     >
-                                        {hb.ownerOccupied}
+                                        {isImportCard?hb.ownerOccupied:hb.buurt}
                                     </Typography>
                                 </Grid>
                                 <Grid item sm={3}>
                                     <Typography
                                         sx={columnTitleStyle}
                                     >
-                                        Huurwoning Particuliere verhuurder
+                                        {isImportCard?"Huurwoning Particuliere verhuurder":"Wijk"}
                                     </Typography>
 
                                     <Typography
@@ -159,14 +158,14 @@ export const ImportHouseBlockCardItem=(props:any)=>{
                                             p: 0.5,
                                         }}
                                     >
-                                        {hb.rentalPrivateHouse}
+                                        {isImportCard?hb.rentalPrivateHouse:hb.wijk}
                                     </Typography>
                                 </Grid>
                                 <Grid item sm={3}>
                                     <Typography
                                         sx={columnTitleStyle}
                                     >
-                                        Huurwoning Woningcorporatie
+                                       {isImportCard?"Huurwoning Woningcorporatie":"Fysiek Voorkomen"}
                                     </Typography>
 
                                     <Typography
@@ -175,7 +174,7 @@ export const ImportHouseBlockCardItem=(props:any)=>{
                                             p: 0.5,
                                         }}
                                     >
-                                        {hb.rentalHousingCompany}
+                                        {isImportCard?hb.rentalHousingCompany:hb.fysiek_voorkomen}
                                     </Typography>
                                 </Grid>
                                 <Grid item sm={2}>
@@ -191,7 +190,7 @@ export const ImportHouseBlockCardItem=(props:any)=>{
                                             p: 0.5,
                                         }}
                                     >
-                                        {hb.price}
+                                        {isImportCard?hb.price:hb.waarde}
                                     </Typography>
                                 </Grid>
                                 <Grid item sm={2}>
@@ -207,7 +206,7 @@ export const ImportHouseBlockCardItem=(props:any)=>{
                                             p: 0.5,
                                         }}
                                     >
-                                        {hb.rentingPrice}
+                                        {isImportCard?hb.rentingPrice:hb.huurbedrag}
                                     </Typography>
                                 </Grid>
                                 <Grid item sm={2} mb={6}>
@@ -223,7 +222,7 @@ export const ImportHouseBlockCardItem=(props:any)=>{
                                             p: 0.5,
                                         }}
                                     >
-                                        {hb.houseType}
+                                        {isImportCard?hb.houseType:hb.grondpositie}
                                     </Typography>
                                 </Grid>
                             </>
