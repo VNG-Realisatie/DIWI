@@ -2720,9 +2720,9 @@ INSERT INTO diwi_testset_simplified.woningblok_mutatie_changelog VALUES
 --
 
 INSERT INTO diwi_testset_simplified.woningblok_naam_changelog VALUES
-	(1, 1, 1, 3, '50 meergezinswoningen', 7, '2023-08-21 12:55:19+02', NULL),
-	(2, 2, 1, 3, '200 eengezinswoningen', 7, '2023-08-21 12:55:19+02', NULL),
-	(3, 51, 8, 10, '70 woningen', 8, '2023-08-25 11:51:37+02', NULL),
+	(1, 1, 1, 2, '50 meergezinswoningen', 7, '2023-08-21 12:55:19+02', NULL),
+	(2, 2, 1, 2, '200 eengezinswoningen', 7, '2023-08-21 12:55:19+02', NULL),
+	(3, 51, 8, 9, '70 woningen', 8, '2023-08-25 11:51:37+02', NULL),
 	(6, 78, 15, 20, 'Carte Blanche Unique: Bouw 2 woningen ', 9, '2023-08-25 11:51:37+02', NULL),
 	(5, 77, 15, 16, 'Carte Blanche Exclusief: Bouw 2 woningen', 9, '2023-08-25 11:51:37+02', NULL),
 	(4, 76, 15, 20, 'Carte Blanche Exclusief: Sloop woning', 9, '2023-08-25 11:51:37+02', NULL);
