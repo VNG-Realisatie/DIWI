@@ -112,12 +112,11 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         }
     };
     const handleClose = () => setShowDialog(false);
-    console.log(selectedRows);
     return (
         <Stack
             width="100%"
             sx={{
-                maxWidth: "920px", // Adjust this width as needed
+                maxWidth: showCheckBox?"100%":"920px", // Adjust this width as needed
                 margin: "0 auto",
                 overflowX: "auto",
             }}

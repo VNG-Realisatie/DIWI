@@ -9,7 +9,7 @@ import * as Paths from "../Paths";
 
 export const ExchangeData = () => {
   return (
-    <Stack border="solid 1px #ddd" py={5} px={8} >
+    <Stack border="solid 1px #ddd" py={5} px={8} mb={10}>
       <Typography fontSize="20px" fontWeight="600">
         Data uitwisselen
       </Typography>
