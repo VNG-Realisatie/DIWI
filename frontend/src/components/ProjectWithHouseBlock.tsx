@@ -1,8 +1,10 @@
-import { Grid, Stack, Typography } from "@mui/material";
+import { Box, Grid, Stack, TextField, Typography } from "@mui/material";
 import { useContext, useState } from "react";
 import { ImportHouseBlockCardItem } from "./ImportHouseBlockCardItem";
 import ProjectContext from "../context/ProjectContext";
 import { colorArray } from "../api/dummyData";
+import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
 export const columnTitleStyle = {
     border: "solid 1px #ddd",
     p: 0.6,
@@ -12,6 +14,7 @@ export const columnTitleStyle = {
 
 export const ProjectsWithHouseBlock = (props: any) => {
     const { project, houseblocks } = props;
+    const[projectEditable,setProjectEditable]=useState(false);
 
     const { id } = useContext(ProjectContext);
     return (
@@ -31,102 +34,102 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         justifyContent="space-between"
                         alignItems="center"
                     >
-                        Naam: {project.name}
+                        Naam: {project.name}  <Box sx={{cursor:"pointer"}} >{!projectEditable&&<EditIcon onClick={()=>setProjectEditable(true)}/>}{projectEditable&&<SaveIcon onClick={()=>setProjectEditable(false)}/>}</Box>
                     </Grid>
                     <Grid item sm={2}>
                         <Typography sx={columnTitleStyle}>Eigenaar</Typography>
 
-                        <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
+                       {!projectEditable? <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
                             {project.eigenaar}
-                        </Typography>
+                        </Typography>:<TextField size="small" id="outlined-basic"  variant="outlined" />}
                     </Grid>
                     <Grid item sm={2}>
                         <Typography sx={columnTitleStyle}>Plan Type</Typography>
 
-                        <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
+                        {!projectEditable?<Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
                             {project["plan type"]}
-                        </Typography>
+                        </Typography>:<TextField size="small" id="outlined-basic" variant="outlined" />}
                     </Grid>
                     <Grid item sm={2}>
                         <Typography sx={columnTitleStyle}>
                             Start Datum
                         </Typography>
 
-                        <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
+                        {!projectEditable?<Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
                             {project["start datum"]}
-                        </Typography>
+                        </Typography>:<TextField size="small" id="outlined-basic" variant="outlined" />}
                     </Grid>
                     <Grid item sm={2}>
                         <Typography sx={columnTitleStyle}>
                             Eind Datum
                         </Typography>
 
-                        <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
+                        {!projectEditable?  <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
                             {project["eind datum"]}
-                        </Typography>
+                        </Typography>:<TextField size="small" id="outlined-basic"  variant="outlined" />}
                     </Grid>
                     <Grid item sm={2}>
                         <Typography sx={columnTitleStyle}>
                             Priorisering
                         </Typography>
 
-                        <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
+                        {!projectEditable? <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
                             {project["priorisering"]}
-                        </Typography>
+                        </Typography>:<TextField size="small" id="outlined-basic"  variant="outlined" />}
                     </Grid>
                     <Grid item sm={2}>
                         <Typography sx={columnTitleStyle}>
                             Project Fase
                         </Typography>
 
-                        <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
+                        {!projectEditable?  <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
                             {project["project fase"]}
-                        </Typography>
+                        </Typography>:<TextField size="small" id="outlined-basic"  variant="outlined" />}
                     </Grid>
                     <Grid item sm={2}>
                         <Typography sx={columnTitleStyle}>
                             Rol Gemeente
                         </Typography>
 
-                        <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
+                        {!projectEditable?  <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
                             {project["rol gemeente"]}
-                        </Typography>
+                        </Typography>:<TextField size="small" id="outlined-basic"  variant="outlined" />}
                     </Grid>
                     <Grid item sm={2}>
                         <Typography sx={columnTitleStyle}>
                             Programmering
                         </Typography>
 
-                        <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
+                        {!projectEditable?  <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
                             {project["programmering"]}
-                        </Typography>
+                        </Typography>:<TextField size="small" id="outlined-basic"  variant="outlined" />}
                     </Grid>
                     <Grid item sm={2}>
                         <Typography sx={columnTitleStyle}>
                             Project Leider
                         </Typography>
 
-                        <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
+                        {!projectEditable?   <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
                             {project["project leider"]}
-                        </Typography>
+                        </Typography>:<TextField size="small" id="outlined-basic"  variant="outlined" />}
                     </Grid>
                     <Grid item sm={2}>
                         <Typography sx={columnTitleStyle}>
                             Vertrouwlijkheidsniveau
                         </Typography>
 
-                        <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
+                        {!projectEditable?  <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
                             {project["vertrouwlijkheidsniveau"]}
-                        </Typography>
+                        </Typography>:<TextField size="small" id="outlined-basic"  variant="outlined" />}
                     </Grid>
                     <Grid item sm={2}>
                         <Typography sx={columnTitleStyle}>
                             Planologische Plan Status
                         </Typography>
 
-                        <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
+                        {!projectEditable?   <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
                             {project["planologische plan status"]}
-                        </Typography>
+                        </Typography>:<TextField size="small" id="outlined-basic"  variant="outlined" />}
                     </Grid>
                 </Grid>
                 {/* List huizen blok cards */}
