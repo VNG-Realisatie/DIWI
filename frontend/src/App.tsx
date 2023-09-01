@@ -120,7 +120,7 @@ function App() {
                 />
                          <Route
                   path={Paths.exportExcel.path}
-                  element={<ExportExcel />}
+                  element={<ProjectProvider><ExportExcel /></ProjectProvider>}
                 />
                            <Route
                   path={Paths.importExcelProjects.path}
