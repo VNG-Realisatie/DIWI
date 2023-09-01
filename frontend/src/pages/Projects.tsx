@@ -38,7 +38,7 @@ export const Projects = () => {
             direction="row"
             justifyContent="space-between"
         >
-            <Box  overflow="auto" p={0.3}>
+            <Box  overflow="auto" p={0.3} minWidth="25%">
                 <Search
                     label="Zoeken..."
                     searchList={projects.map((p) => p.project)}
@@ -51,7 +51,7 @@ export const Projects = () => {
                     }
                 />
             </Box>
-            <Stack direction="column">
+            <Stack direction="column" >
                 <Stack
                     direction="row"
                     alignItems="center"
