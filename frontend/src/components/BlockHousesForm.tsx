@@ -9,7 +9,7 @@ import {
     Typography,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
-import { mutatiesoort } from "../widgets/constants";
+import mutatiesoort from "../api/json/enums/mutatie_soort.json";
 
 export const BlockHousesForm = (props: any) => {
     return (
