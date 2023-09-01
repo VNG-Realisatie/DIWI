@@ -13,7 +13,7 @@ import { ProjectProvider } from "./context/ProjectContext";
 import { PolicyLists } from "./pages/PolicyLists";
 import { DashboardProjects } from "./pages/DashboardProjects";
 import { ExchangeData } from "./pages/ExchangeData";
-import { ExportExcel } from "./pages/ExportExcel";
+import { ExportProject } from "./pages/ExportProject";
 import { ImportExcel } from "./pages/ImportExcel";
 import { ImportedProjects } from "./pages/ImportedProjects";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -120,7 +120,11 @@ function App() {
                 />
                          <Route
                   path={Paths.exportExcel.path}
-                  element={<ExportExcel />}
+                  element={<ProjectProvider><ExportProject excelExport /></ProjectProvider>}
+                />
+                          <Route
+                  path={Paths.exportProvince.path}
+                  element={<ProjectProvider><ExportProject excelExport={false} /></ProjectProvider>}
                 />
                            <Route
                   path={Paths.importExcelProjects.path}

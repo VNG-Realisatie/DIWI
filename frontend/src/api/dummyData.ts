@@ -31,10 +31,22 @@ export const colorArray = [
 export const projects = [
     {
         id: 1,
-        name: "Project One",
-        color: "#FF5733",
-        geo: "geo",
-        organization: "organisatie",
+        name: "Achterweg",
+        color:colorArray[1],
+        eigenaar: "projectleider_1",
+        "plan type": "herstructurering",
+        "eind datum": "2030-01-01",
+        "start datum": "2022-01-01",
+        priorisering: null,
+        "project fase": "2_projectfase",
+        "rol gemeente": "initiatiefnemer",
+        programmering: true,
+        "project leider": "projectleider_1",
+        organization_id: 7,
+        project_state_id: 1,
+        organization_state_id: 7,
+        vertrouwlijkheidsniveau: "extern_rapportage",
+        "planologische plan status": "4a_opgenomen_in_visie",
         houseblocks: [
             {
                 id: 1,
@@ -74,10 +86,22 @@ export const projects = [
     },
     {
         id: 2,
-        name: "Project Two",
-        color: "#E91E63",
-        geo: "geo",
-        organization: "organisatie",
+        color:colorArray[2],
+        name: "Brielseweg",
+        eigenaar: "projectleider_2",
+        "plan type": "verdichting",
+        "eind datum": "2030-07-01",
+        "start datum": "2022-07-01",
+        priorisering: null,
+        "project fase": "2_projectfase",
+        "rol gemeente": "initiatiefnemer",
+        programmering: true,
+        "project leider": "projectleider_2",
+        organization_id: 8,
+        project_state_id: 2,
+        organization_state_id: 8,
+        vertrouwlijkheidsniveau: "extern_rapportage",
+        "planologische plan status": "4a_opgenomen_in_visie",
         houseblocks: [
             {
                 id: 2,
@@ -100,10 +124,22 @@ export const projects = [
     },
     {
         id: 3,
-        name: "Project Three",
-        color: "#9C27B0",
-        geo: "geo",
-        organization: "organisatie",
+        color:colorArray[3],
+        name: "De Ruy",
+        eigenaar: "projectleider_1",
+        "plan type": "herstructurering",
+        "eind datum": "2024-07-01",
+        "start datum": "2020-01-01",
+        priorisering: null,
+        "project fase": "4_realisatiefase",
+        "rol gemeente": "initiatiefnemer",
+        programmering: true,
+        "project leider": "projectleider_1",
+        organization_id: 7,
+        project_state_id: 4,
+        organization_state_id: 7,
+        vertrouwlijkheidsniveau: "openbaar",
+        "planologische plan status": "1a_onherroepelijk",
         houseblocks: [
             {
                 id: 3,
@@ -301,6 +337,7 @@ export type Policy = {
             time: string;
             geo: string;
             category: string;
+            doel_richting?:string;
         };
     };
 };
@@ -314,6 +351,7 @@ export const policyGoals = [
             time: "01/01/2025",
             geo: "Castricum",
             category: "Regionale doelstelling",
+            doel_ricting:"minimaal"
         },
     },
     {
@@ -325,6 +363,7 @@ export const policyGoals = [
             time: "01/01/2025",
             geo: "NVT",
             category: "Doelstelling van het Rijk",
+            doel_ricting:"minimaal"
         },
     },
     {
@@ -336,6 +375,7 @@ export const policyGoals = [
             time: "01/01/2030",
             geo: "Bakkum",
             category: "Doelstelling Gemeente",
+            doel_ricting:"minimaal"
         },
     },
 ];

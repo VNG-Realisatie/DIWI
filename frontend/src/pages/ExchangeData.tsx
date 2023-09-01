@@ -9,7 +9,7 @@ import * as Paths from "../Paths";
 
 export const ExchangeData = () => {
   return (
-    <Stack border="solid 1px #ddd" py={5} px={8} >
+    <Stack border="solid 1px #ddd" py={5} px={8} mb={10}>
       <Typography fontSize="20px" fontWeight="600">
         Data uitwisselen
       </Typography>
@@ -34,8 +34,8 @@ export const ExchangeData = () => {
         <DataCardItem text="Excel" link={Paths.exportExcel.path}  >
             <img src={excelIcon} alt='excel'/>
         </DataCardItem>
-        <DataCardItem text="Provincie" link="">
-            <img src={roxitIcon} alt='Provincie'/>
+        <DataCardItem text="Provincie" link={Paths.exportProvince.path}>
+            <img src={nlMapIcon} alt='Provincie'/>
         </DataCardItem>
       </Stack>
       <Button sx={{width:"40%",mt:2}}  variant="outlined">Nieuwe data koppeling instellen</Button>

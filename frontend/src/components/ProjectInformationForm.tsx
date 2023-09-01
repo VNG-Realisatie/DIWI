@@ -9,8 +9,13 @@ import {
 } from "@mui/material";
 import ColorSelector from "./ColorSelector";
 import { DatePicker } from "@mui/x-date-pickers";
-import { planologischePlanStatus, projectFaseList } from "../widgets/constants";
-import { projectLead, vertrouwlijkheidsniveau } from "../api/dummyData";
+
+import rolMunicipality from "../api/json/gemeente_rol.json";
+import projectLead from "../api/json/projectleider.json";
+import projectFaseList from "../api/json/enums/project_phase.json";
+import planologischePlanStatus from "../api/json/enums/planologische_planstatus.json";
+import vertrouwlijkheidsniveau from "../api/json/enums/confidentiality.json";
+import priorityOption from "../api/json/priorisering.json";
 
 export const ProjectInformationForm = (props: any) => {
     //ToDo add props later
@@ -160,9 +165,9 @@ export const ProjectInformationForm = (props: any) => {
                             })
                         }
                     >
-                        <MenuItem value="laag">Laag</MenuItem>
-                        <MenuItem value="gemiddeld">Gemiddeld</MenuItem>
-                        <MenuItem value="hoog">Hoog</MenuItem>
+                         {priorityOption.map((v) => {
+                            return <MenuItem key={v.ID} value={v.value_label}>{v.value_label}</MenuItem>;
+                        })}
                     </Select>
                 </Stack>
                 <Stack>
@@ -208,9 +213,9 @@ export const ProjectInformationForm = (props: any) => {
                             })
                         }
                     >
-                        <MenuItem value="actief">Actief</MenuItem>
-                        <MenuItem value="passief">Passief</MenuItem>
-                        <MenuItem value="initiatiefnemer">Initiatiefnemer</MenuItem>
+                         {rolMunicipality.map((municipality) => {
+                            return <MenuItem key={municipality.ID} value={municipality.value_label}>{municipality.value_label}</MenuItem>;
+                        })}
                     </Select>
                 </Stack>
                 <Stack>
@@ -256,7 +261,7 @@ export const ProjectInformationForm = (props: any) => {
                         }
                     >
                         {projectLead.map((lead) => {
-                            return <MenuItem key={lead} value={lead}>{lead}</MenuItem>;
+                            return <MenuItem key={lead.ID} value={lead.name}>{lead.name}</MenuItem>;
                         })}
                     </Select>
                 </Stack>

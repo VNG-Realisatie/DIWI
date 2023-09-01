@@ -49,7 +49,7 @@ export type ProjectType=null|{
     "project fase": string | null;
     "rol gemeente": string;
     programmering: boolean | null;
-    "project leider": string;
+    "project leider": string | null;
     organization_id?: number | null;
     project_state_id?: number | null;
     organization_state_id?: number | null;

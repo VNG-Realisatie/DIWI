@@ -1,0 +1,290 @@
+[
+  {
+    "ID": 1,
+    "buurt_ID": 1,
+    "wijk_ID": 1,
+    "waarde_label": "Rockanje",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 2,
+    "buurt_ID": 2,
+    "wijk_ID": 1,
+    "waarde_label": "Helhoek",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 3,
+    "buurt_ID": 3,
+    "wijk_ID": 1,
+    "waarde_label": "Strijpe",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 4,
+    "buurt_ID": 4,
+    "wijk_ID": 1,
+    "waarde_label": "Stuifakker",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 5,
+    "buurt_ID": 5,
+    "wijk_ID": 1,
+    "waarde_label": "Zuidhoek",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 6,
+    "buurt_ID": 6,
+    "wijk_ID": 1,
+    "waarde_label": "Nieuw gebied",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 7,
+    "buurt_ID": 7,
+    "wijk_ID": 1,
+    "waarde_label": "Verspreide huizen",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 8,
+    "buurt_ID": 8,
+    "wijk_ID": 2,
+    "waarde_label": "Oostvoorne",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 9,
+    "buurt_ID": 9,
+    "wijk_ID": 2,
+    "waarde_label": "De Waranda",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 10,
+    "buurt_ID": 10,
+    "wijk_ID": 2,
+    "waarde_label": "Kruiningergors",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 11,
+    "buurt_ID": 11,
+    "wijk_ID": 2,
+    "waarde_label": "Tinte",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 12,
+    "buurt_ID": 12,
+    "wijk_ID": 2,
+    "waarde_label": "Goudhoek",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 13,
+    "buurt_ID": 13,
+    "wijk_ID": 2,
+    "waarde_label": "Vogelenzang",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 14,
+    "buurt_ID": 14,
+    "wijk_ID": 2,
+    "waarde_label": "Duinoord",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 15,
+    "buurt_ID": 15,
+    "wijk_ID": 2,
+    "waarde_label": "Verspreide huizen in het Westen",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 16,
+    "buurt_ID": 16,
+    "wijk_ID": 2,
+    "waarde_label": "Verspreide huizen in het Oosten",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 17,
+    "buurt_ID": 17,
+    "wijk_ID": 3,
+    "waarde_label": "Buitenwater",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 18,
+    "buurt_ID": 18,
+    "wijk_ID": 4,
+    "waarde_label": "Brielle",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 19,
+    "buurt_ID": 19,
+    "wijk_ID": 4,
+    "waarde_label": "Spuilaan en omgeving",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 20,
+    "buurt_ID": 20,
+    "wijk_ID": 4,
+    "waarde_label": "De Kapel en omgeving",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 21,
+    "buurt_ID": 21,
+    "wijk_ID": 4,
+    "waarde_label": "Rugge",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 22,
+    "buurt_ID": 22,
+    "wijk_ID": 4,
+    "waarde_label": "Noord Meeuwenoord",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 23,
+    "buurt_ID": 23,
+    "wijk_ID": 4,
+    "waarde_label": "Kleine Goote",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 24,
+    "buurt_ID": 24,
+    "wijk_ID": 4,
+    "waarde_label": "Nieuwland",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 25,
+    "buurt_ID": 25,
+    "wijk_ID": 4,
+    "waarde_label": "Verspreide huizen",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 26,
+    "buurt_ID": 26,
+    "wijk_ID": 5,
+    "waarde_label": "Vierpolders",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 27,
+    "buurt_ID": 27,
+    "wijk_ID": 5,
+    "waarde_label": "Verspreide huizen",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 28,
+    "buurt_ID": 28,
+    "wijk_ID": 6,
+    "waarde_label": "Zwartewaal",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 29,
+    "buurt_ID": 29,
+    "wijk_ID": 6,
+    "waarde_label": "Tuindorp-Hofstede",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 30,
+    "buurt_ID": 30,
+    "wijk_ID": 6,
+    "waarde_label": "Zalmlaan",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 31,
+    "buurt_ID": 31,
+    "wijk_ID": 6,
+    "waarde_label": "Verspreide huizen",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 32,
+    "buurt_ID": 32,
+    "wijk_ID": 7,
+    "waarde_label": "Recreatiestrook Brielse Maas",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  }
+]
