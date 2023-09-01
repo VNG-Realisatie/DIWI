@@ -1,0 +1,92 @@
+[
+  {
+    "ID": 1,
+    "organization_ID": 1,
+    "parent_organization_ID": null,
+    "naam": "root",
+    "change_end_date": null,
+    "change_start_date": "2023-08-21T12:55:19+02:00",
+    "change_user_ID": 1
+  },
+  {
+    "ID": 2,
+    "organization_ID": 2,
+    "parent_organization_ID": 1,
+    "naam": "admin_groep",
+    "change_end_date": null,
+    "change_start_date": "2023-08-21T12:55:19+02:00",
+    "change_user_ID": 1
+  },
+  {
+    "ID": 3,
+    "organization_ID": 3,
+    "parent_organization_ID": 1,
+    "naam": "publiek",
+    "change_end_date": null,
+    "change_start_date": "2023-08-21T12:55:19+02:00",
+    "change_user_ID": 1
+  },
+  {
+    "ID": 4,
+    "organization_ID": 4,
+    "parent_organization_ID": 3,
+    "naam": "provincie",
+    "change_end_date": null,
+    "change_start_date": "2023-08-21T12:55:19+02:00",
+    "change_user_ID": 1
+  },
+  {
+    "ID": 5,
+    "organization_ID": 5,
+    "parent_organization_ID": 3,
+    "naam": "gemeente",
+    "change_end_date": null,
+    "change_start_date": "2023-08-21T12:55:19+02:00",
+    "change_user_ID": 1
+  },
+  {
+    "ID": 6,
+    "organization_ID": 6,
+    "parent_organization_ID": 5,
+    "naam": "uitvoering_afdeling",
+    "change_end_date": null,
+    "change_start_date": "2023-08-21T12:55:19+02:00",
+    "change_user_ID": 1
+  },
+  {
+    "ID": 7,
+    "organization_ID": 7,
+    "parent_organization_ID": 6,
+    "naam": "projectleider_1",
+    "change_end_date": null,
+    "change_start_date": "2023-08-21T12:55:19+02:00",
+    "change_user_ID": 1
+  },
+  {
+    "ID": 8,
+    "organization_ID": 8,
+    "parent_organization_ID": 6,
+    "naam": "projectleider_2",
+    "change_end_date": null,
+    "change_start_date": "2023-08-21T12:55:19+02:00",
+    "change_user_ID": 1
+  },
+  {
+    "ID": 9,
+    "organization_ID": 9,
+    "parent_organization_ID": 6,
+    "naam": "projectleider_3",
+    "change_end_date": null,
+    "change_start_date": "2023-08-21T12:55:19+02:00",
+    "change_user_ID": 1
+  },
+  {
+    "ID": 10,
+    "organization_ID": 10,
+    "parent_organization_ID": 6,
+    "naam": "uitvoering_management",
+    "change_end_date": null,
+    "change_start_date": "2023-08-21T12:55:19+02:00",
+    "change_user_ID": 1
+  }
+]
