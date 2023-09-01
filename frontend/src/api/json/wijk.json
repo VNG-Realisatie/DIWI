@@ -3,7 +3,7 @@
     "ID": 1,
     "wijk_ID": 1,
     "gemeente_ID": 1,
-    "waarde_label": "rockanje",
+    "waarde_label": "Rockanje",
     "change_user_ID": 11,
     "change_start_date": "2023-08-21T12:55:19+02:00",
     "change_end_date": null
@@ -12,9 +12,54 @@
     "ID": 2,
     "wijk_ID": 2,
     "gemeente_ID": 1,
-    "waarde_label": "oostvoorne",
+    "waarde_label": "Oostvoorne",
     "change_user_ID": 11,
     "change_start_date": "2023-08-25T11:51:37+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 3,
+    "wijk_ID": 3,
+    "gemeente_ID": 1,
+    "waarde_label": "Groot Water",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 6,
+    "wijk_ID": 6,
+    "gemeente_ID": 2,
+    "waarde_label": "Zwartewaal",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 5,
+    "wijk_ID": 5,
+    "gemeente_ID": 2,
+    "waarde_label": "Vierpolders",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 4,
+    "wijk_ID": 4,
+    "gemeente_ID": 2,
+    "waarde_label": "Brielle",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
+    "change_end_date": null
+  },
+  {
+    "ID": 7,
+    "wijk_ID": 7,
+    "gemeente_ID": 2,
+    "waarde_label": "Recreatiestrook Brielse Maas",
+    "change_user_ID": 11,
+    "change_start_date": "2023-09-01T12:15:38+02:00",
     "change_end_date": null
   }
 ]

@@ -1701,23 +1701,90 @@ INSERT INTO diwi_testset_simplified.actor VALUES
 --
 
 INSERT INTO diwi_testset_simplified.actor_state VALUES
-	(1, 1, 'projectleider_1', 11, '2023-08-21 12:55:19+02', NULL, 7),
-	(2, 2, 'projectleider_2', 11, '2023-08-21 12:55:19+02', NULL, 8),
-	(3, 3, 'projectleider_3', 11, '2023-08-21 12:55:19+02', NULL, 9),
-	(4, 4, 'woonbedrijf', 11, '2023-08-21 12:55:19+02', NULL, 5),
-	(5, 5, 'Truienbrijers Vastgoed', 9, '2023-08-25 11:51:37+02', NULL, NULL);
+	(5, 5, 'Vastgoed Onwikkelaar', 9, '2023-08-25 11:51:37+02', NULL, NULL),
+	(1, 1, 'Projectleider 1', 11, '2023-08-21 12:55:19+02', NULL, 7),
+	(2, 2, 'Projectleider 2', 11, '2023-08-21 12:55:19+02', NULL, 8),
+	(3, 3, 'Projectleider 3', 11, '2023-08-21 12:55:19+02', NULL, 9),
+	(4, 4, 'Woonbedrijf', 11, '2023-08-21 12:55:19+02', NULL, 5);
 
 
 --
 -- Data for Name: buurt; Type: TABLE DATA; Schema: diwi_testset_simplified; Owner: vng
 --
 
+INSERT INTO diwi_testset_simplified.buurt VALUES
+	(1),
+	(2),
+	(3),
+	(4),
+	(5),
+	(6),
+	(7),
+	(8),
+	(9),
+	(10),
+	(0),
+	(11),
+	(12),
+	(13),
+	(14),
+	(15),
+	(16),
+	(17),
+	(18),
+	(19),
+	(20),
+	(21),
+	(22),
+	(23),
+	(24),
+	(25),
+	(26),
+	(27),
+	(28),
+	(29),
+	(30),
+	(31),
+	(32);
 
 
 --
 -- Data for Name: buurt_state; Type: TABLE DATA; Schema: diwi_testset_simplified; Owner: vng
 --
 
+INSERT INTO diwi_testset_simplified.buurt_state VALUES
+	(1, 1, 1, 'Rockanje', 11, '2023-09-01 12:15:38+02', NULL),
+	(2, 2, 1, 'Helhoek', 11, '2023-09-01 12:15:38+02', NULL),
+	(3, 3, 1, 'Strijpe', 11, '2023-09-01 12:15:38+02', NULL),
+	(4, 4, 1, 'Stuifakker', 11, '2023-09-01 12:15:38+02', NULL),
+	(5, 5, 1, 'Zuidhoek', 11, '2023-09-01 12:15:38+02', NULL),
+	(6, 6, 1, 'Nieuw gebied', 11, '2023-09-01 12:15:38+02', NULL),
+	(7, 7, 1, 'Verspreide huizen', 11, '2023-09-01 12:15:38+02', NULL),
+	(8, 8, 2, 'Oostvoorne', 11, '2023-09-01 12:15:38+02', NULL),
+	(9, 9, 2, 'De Waranda', 11, '2023-09-01 12:15:38+02', NULL),
+	(10, 10, 2, 'Kruiningergors', 11, '2023-09-01 12:15:38+02', NULL),
+	(11, 11, 2, 'Tinte', 11, '2023-09-01 12:15:38+02', NULL),
+	(12, 12, 2, 'Goudhoek', 11, '2023-09-01 12:15:38+02', NULL),
+	(13, 13, 2, 'Vogelenzang', 11, '2023-09-01 12:15:38+02', NULL),
+	(14, 14, 2, 'Duinoord', 11, '2023-09-01 12:15:38+02', NULL),
+	(15, 15, 2, 'Verspreide huizen in het Westen', 11, '2023-09-01 12:15:38+02', NULL),
+	(16, 16, 2, 'Verspreide huizen in het Oosten', 11, '2023-09-01 12:15:38+02', NULL),
+	(17, 17, 3, 'Buitenwater', 11, '2023-09-01 12:15:38+02', NULL),
+	(18, 18, 4, 'Brielle', 11, '2023-09-01 12:15:38+02', NULL),
+	(19, 19, 4, 'Spuilaan en omgeving', 11, '2023-09-01 12:15:38+02', NULL),
+	(20, 20, 4, 'De Kapel en omgeving', 11, '2023-09-01 12:15:38+02', NULL),
+	(21, 21, 4, 'Rugge', 11, '2023-09-01 12:15:38+02', NULL),
+	(22, 22, 4, 'Noord Meeuwenoord', 11, '2023-09-01 12:15:38+02', NULL),
+	(23, 23, 4, 'Kleine Goote', 11, '2023-09-01 12:15:38+02', NULL),
+	(24, 24, 4, 'Nieuwland', 11, '2023-09-01 12:15:38+02', NULL),
+	(25, 25, 4, 'Verspreide huizen', 11, '2023-09-01 12:15:38+02', NULL),
+	(26, 26, 5, 'Vierpolders', 11, '2023-09-01 12:15:38+02', NULL),
+	(27, 27, 5, 'Verspreide huizen', 11, '2023-09-01 12:15:38+02', NULL),
+	(28, 28, 6, 'Zwartewaal', 11, '2023-09-01 12:15:38+02', NULL),
+	(29, 29, 6, 'Tuindorp-Hofstede', 11, '2023-09-01 12:15:38+02', NULL),
+	(30, 30, 6, 'Zalmlaan', 11, '2023-09-01 12:15:38+02', NULL),
+	(31, 31, 6, 'Verspreide huizen', 11, '2023-09-01 12:15:38+02', NULL),
+	(32, 32, 7, 'Recreatiestrook Brielse Maas', 11, '2023-09-01 12:15:38+02', NULL);
 
 
 --
@@ -1749,7 +1816,8 @@ INSERT INTO diwi_testset_simplified.actor_state VALUES
 --
 
 INSERT INTO diwi_testset_simplified.gemeente VALUES
-	(1);
+	(1),
+	(2);
 
 
 --
@@ -1757,7 +1825,8 @@ INSERT INTO diwi_testset_simplified.gemeente VALUES
 --
 
 INSERT INTO diwi_testset_simplified.gemeente_state VALUES
-	(1, 1, 'westvoorne', 11, '2023-08-21 12:55:19+02', NULL);
+	(2, 2, 'Brielle', 11, '2023-09-01 12:15:38+02', NULL),
+	(1, 1, 'Westvoorne', 11, '2023-08-21 12:55:19+02', NULL);
 
 
 --
@@ -1787,21 +1856,21 @@ INSERT INTO diwi_testset_simplified.maatwerk_categorie_waarde VALUES
 --
 
 INSERT INTO diwi_testset_simplified.maatwerk_categorie_waarde_state VALUES
-	(1, 1, 1, '1_centrum_stedelijk', 11, '2023-08-21 12:55:19+02', NULL),
-	(2, 2, 1, '2_stedelijk_buiten_centrum', 11, '2023-08-21 12:55:19+02', NULL),
-	(3, 3, 1, '3_groen_stedelijk', 11, '2023-08-21 12:55:19+02', NULL),
-	(4, 4, 1, '4_centrum_dorps', 11, '2023-08-21 12:55:19+02', NULL),
-	(5, 5, 1, '5_landelijk_wonen', 11, '2023-08-21 12:55:19+02', NULL),
-	(6, 6, 1, '6_werkgebied', 11, '2023-08-21 12:55:19+02', NULL),
-	(7, 7, 3, 'ja', 11, '2023-08-21 12:55:19+02', NULL),
-	(8, 8, 3, 'nee', 11, '2023-08-21 12:55:19+02', NULL),
-	(9, 9, 3, 'ruimte_voor_ruimte', 11, '2023-08-21 12:55:19+02', NULL),
-	(10, 10, 4, 'gemeente', 11, '2023-08-24 17:11:57+02', NULL),
-	(11, 11, 4, 'particulieren', 11, '2023-08-24 17:11:57+02', NULL),
-	(12, 12, 4, 'projectontwikkelaar', 11, '2023-08-24 17:11:57+02', NULL),
-	(13, 13, 4, 'woningbouwcorporatie', 11, '2023-08-24 17:11:57+02', NULL),
-	(14, 14, 4, 'meerdere', 11, '2023-08-24 17:11:57+02', NULL),
-	(15, 15, 4, 'anders', 11, '2023-08-24 17:11:57+02', NULL);
+	(1, 1, 1, '1 Centrum stedelijk', 11, '2023-08-21 12:55:19+02', NULL),
+	(2, 2, 1, '2 Stedelijk buiten centrum', 11, '2023-08-21 12:55:19+02', NULL),
+	(3, 3, 1, '3 Groen stedelijk', 11, '2023-08-21 12:55:19+02', NULL),
+	(4, 4, 1, '4 Centrum dorps', 11, '2023-08-21 12:55:19+02', NULL),
+	(5, 5, 1, '5 Landelijk wonen', 11, '2023-08-21 12:55:19+02', NULL),
+	(6, 6, 1, '6 Werkgebied', 11, '2023-08-21 12:55:19+02', NULL),
+	(7, 7, 3, 'Ja', 11, '2023-08-21 12:55:19+02', NULL),
+	(8, 8, 3, 'Nee', 11, '2023-08-21 12:55:19+02', NULL),
+	(9, 9, 3, 'Ruimte voor ruimte', 11, '2023-08-21 12:55:19+02', NULL),
+	(10, 10, 4, 'Gemeente', 11, '2023-08-24 17:11:57+02', NULL),
+	(11, 11, 4, 'Particulieren', 11, '2023-08-24 17:11:57+02', NULL),
+	(12, 12, 4, 'Projectontwikkelaar', 11, '2023-08-24 17:11:57+02', NULL),
+	(13, 13, 4, 'Woningbouwcorporatie', 11, '2023-08-24 17:11:57+02', NULL),
+	(14, 14, 4, 'Meerdere', 11, '2023-08-24 17:11:57+02', NULL),
+	(15, 15, 4, 'Anders', 11, '2023-08-24 17:11:57+02', NULL);
 
 
 --
@@ -1820,10 +1889,10 @@ INSERT INTO diwi_testset_simplified.maatwerk_eigenschap VALUES
 --
 
 INSERT INTO diwi_testset_simplified.maatwerk_eigenschap_state VALUES
-	(1, 'woonmilieu_abf-6', 'category', 11, '2023-08-21 12:55:19+02', NULL, 1, 'project'),
-	(2, 'categorie_woonvisie', 'ordinal', 11, '2023-08-21 12:55:19+02', NULL, 2, 'project'),
-	(3, 'regionale_planlijst', 'category', 11, '2023-08-21 12:55:19+02', NULL, 3, 'project'),
-	(4, 'opdrachtgever_type', 'category', 11, '2023-08-24 17:11:57+02', NULL, 4, 'project');
+	(1, 'Woonmilieu ABF-6', 'category', 11, '2023-08-21 12:55:19+02', NULL, 1, 'project'),
+	(2, 'Categorie woonvisie', 'ordinal', 11, '2023-08-21 12:55:19+02', NULL, 2, 'project'),
+	(3, 'Regionale planlijst', 'category', 11, '2023-08-21 12:55:19+02', NULL, 3, 'project'),
+	(4, 'Opdrachtgever Type', 'category', 11, '2023-08-24 17:11:57+02', NULL, 4, 'project');
 
 
 --
@@ -1973,15 +2042,15 @@ INSERT INTO diwi_testset_simplified.organization VALUES
 
 INSERT INTO diwi_testset_simplified.organization_state VALUES
 	(1, 1, NULL, 'root', NULL, '2023-08-21 12:55:19+02', 1),
-	(2, 2, 1, 'admin_groep', NULL, '2023-08-21 12:55:19+02', 1),
-	(3, 3, 1, 'publiek', NULL, '2023-08-21 12:55:19+02', 1),
-	(4, 4, 3, 'provincie', NULL, '2023-08-21 12:55:19+02', 1),
-	(5, 5, 3, 'gemeente', NULL, '2023-08-21 12:55:19+02', 1),
-	(6, 6, 5, 'uitvoering_afdeling', NULL, '2023-08-21 12:55:19+02', 1),
-	(7, 7, 6, 'projectleider_1', NULL, '2023-08-21 12:55:19+02', 1),
-	(8, 8, 6, 'projectleider_2', NULL, '2023-08-21 12:55:19+02', 1),
-	(9, 9, 6, 'projectleider_3', NULL, '2023-08-21 12:55:19+02', 1),
-	(10, 10, 6, 'uitvoering_management', NULL, '2023-08-21 12:55:19+02', 1);
+	(2, 2, 1, 'Admin groep', NULL, '2023-08-21 12:55:19+02', 1),
+	(3, 3, 1, 'Publiek', NULL, '2023-08-21 12:55:19+02', 1),
+	(4, 4, 3, 'Provincie', NULL, '2023-08-21 12:55:19+02', 1),
+	(5, 5, 3, 'Gemeente', NULL, '2023-08-21 12:55:19+02', 1),
+	(6, 6, 5, 'Uitvoering afdeling', NULL, '2023-08-21 12:55:19+02', 1),
+	(7, 7, 6, 'Projectleider 1', NULL, '2023-08-21 12:55:19+02', 1),
+	(8, 8, 6, 'Projectleider 2', NULL, '2023-08-21 12:55:19+02', 1),
+	(9, 9, 6, 'Projectleider 3', NULL, '2023-08-21 12:55:19+02', 1),
+	(10, 10, 6, 'Uitvoering management', NULL, '2023-08-21 12:55:19+02', 1);
 
 
 --
@@ -2239,8 +2308,8 @@ INSERT INTO diwi_testset_simplified.project_actor_rol_value VALUES
 --
 
 INSERT INTO diwi_testset_simplified.project_actor_rol_value_state VALUES
-	(1, 1, 11, '2023-08-21 12:55:19+02', NULL, 'projectleider'),
-	(2, 2, 11, '2023-08-21 12:55:19+02', NULL, 'opdrachtgever');
+	(1, 1, 11, '2023-08-21 12:55:19+02', NULL, 'Projectleider'),
+	(2, 2, 11, '2023-08-21 12:55:19+02', NULL, 'Opdrachtgever');
 
 
 --
@@ -2320,8 +2389,8 @@ INSERT INTO diwi_testset_simplified.project_gemeenterol_value VALUES
 --
 
 INSERT INTO diwi_testset_simplified.project_gemeenterol_value_state VALUES
-	(1, 'initiatiefnemer', 11, '2023-08-21 12:55:19+02', NULL, 1),
-	(2, 'kaderstellend', 11, '2023-08-25 11:51:37+02', NULL, 2);
+	(1, 'Initiatiefnemer', 11, '2023-08-21 12:55:19+02', NULL, 1),
+	(2, 'Kaderstellend', 11, '2023-08-25 11:51:37+02', NULL, 2);
 
 
 --
@@ -2378,12 +2447,12 @@ INSERT INTO diwi_testset_simplified.project_maatwerk_ordinaal_eigenschap_changel
 --
 
 INSERT INTO diwi_testset_simplified.project_name_changelog VALUES
-	(1, 1, 2, 1, 7, '2023-08-21 12:55:19+02', NULL, 'Achterweg'),
-	(2, 8, 9, 2, 8, '2023-08-25 11:51:37+02', NULL, 'Brielseweg'),
-	(3, 15, 16, 3, 9, '2023-08-25 11:51:37+02', NULL, 'Carte Blanche Exclusief en Unique'),
-	(4, 23, 30, 4, 7, '2023-08-25 11:51:37+02', NULL, 'De Ruy'),
-	(5, 31, 37, 5, 9, '2023-08-25 11:51:37+02', NULL, 'Doornweg 6 /Blindeweg 15'),
-	(6, 38, 44, 6, 9, '2023-08-27 17:11:16+02', NULL, 'Dorpsweg 58');
+	(1, 1, 2, 1, 7, '2023-08-21 12:55:19+02', NULL, 'Gemeentelijke ontwikkeling 1'),
+	(2, 8, 9, 2, 8, '2023-08-25 11:51:37+02', NULL, 'Gemeentelijke onwikkeling 2'),
+	(3, 15, 16, 3, 9, '2023-08-25 11:51:37+02', NULL, 'Projectonwikkelaar 1'),
+	(4, 23, 30, 4, 7, '2023-08-25 11:51:37+02', NULL, 'Gemeentelijke ontwikkeling 3'),
+	(5, 31, 37, 5, 9, '2023-08-25 11:51:37+02', NULL, 'Particuliere ontwikkeling 1'),
+	(6, 38, 44, 6, 9, '2023-08-27 17:11:16+02', NULL, 'Particuliere ontwikkeling 2');
 
 
 --
@@ -2446,10 +2515,9 @@ INSERT INTO diwi_testset_simplified.project_priorisering_value VALUES
 --
 
 INSERT INTO diwi_testset_simplified.project_priorisering_value_state VALUES
-	(2, 'Low', 1, 1, '2023-07-28 00:00:00+02', NULL, 1),
-	(4, 'High', 3, 1, '2023-07-28 00:00:00+02', NULL, 3),
-	(10, 'Medium', 2, 1, '2023-07-28 00:00:00+02', NULL, 2),
-	(3, 'Med', 2, 1, '2023-07-28 00:00:00+02', '2023-07-28 00:00:00+02', 2);
+	(1, 'Low', 1, 1, '2023-07-28 00:00:00+02', NULL, 1),
+	(2, 'Medium', 2, 1, '2023-07-28 00:00:00+02', NULL, 2),
+	(3, 'High', 3, 1, '2023-07-28 00:00:00+02', NULL, 3);
 
 
 --
@@ -2525,17 +2593,17 @@ INSERT INTO diwi_testset_simplified."user" VALUES
 --
 
 INSERT INTO diwi_testset_simplified.user_state VALUES
-	(1, 1, 1, '2023-08-21 12:55:19+02', NULL, 'admin_1'),
-	(2, 2, 1, '2023-08-21 12:55:19+02', NULL, 'publiek_1'),
-	(3, 3, 1, '2023-08-21 12:55:19+02', NULL, 'provincie_1'),
-	(4, 4, 1, '2023-08-21 12:55:19+02', NULL, 'algemene_gemeente_medewerker_1'),
-	(5, 5, 1, '2023-08-21 12:55:19+02', NULL, 'raadslid_1'),
-	(7, 7, 1, '2023-08-21 12:55:19+02', NULL, 'projectleider_1'),
-	(8, 8, 1, '2023-08-21 12:55:19+02', NULL, 'projectleider_2'),
-	(9, 9, 1, '2023-08-21 12:55:19+02', NULL, 'projectleider_3'),
-	(10, 10, 1, '2023-08-21 12:55:19+02', NULL, 'assistent_1_projectleider_3'),
-	(6, 6, 1, '2023-08-21 12:55:19+02', NULL, 'algemene_medewerker_uitvoering_1'),
-	(11, 11, 1, '2023-08-21 12:55:19+02', NULL, 'manager_uitvoering_1');
+	(1, 1, 1, '2023-08-21 12:55:19+02', NULL, 'Admin 1'),
+	(3, 3, 1, '2023-08-21 12:55:19+02', NULL, 'Provincie 1'),
+	(2, 2, 1, '2023-08-21 12:55:19+02', NULL, 'Publiek 1'),
+	(4, 4, 1, '2023-08-21 12:55:19+02', NULL, 'Algemene gemeente medewerker 1'),
+	(5, 5, 1, '2023-08-21 12:55:19+02', NULL, 'Raadslid 1'),
+	(6, 6, 1, '2023-08-21 12:55:19+02', NULL, 'Algemene medewerker uitvoering 1'),
+	(7, 7, 1, '2023-08-21 12:55:19+02', NULL, 'Projectleider 1'),
+	(8, 8, 1, '2023-08-21 12:55:19+02', NULL, 'Projectleider 2'),
+	(9, 9, 1, '2023-08-21 12:55:19+02', NULL, 'Projectleider 3'),
+	(10, 10, 1, '2023-08-21 12:55:19+02', NULL, 'Assistent 1 projectleider 3'),
+	(11, 11, 1, '2023-08-21 12:55:19+02', NULL, 'Manager uitvoering 1');
 
 
 --
@@ -2562,7 +2630,12 @@ INSERT INTO diwi_testset_simplified.user_to_organization VALUES
 
 INSERT INTO diwi_testset_simplified.wijk VALUES
 	(1),
-	(2);
+	(2),
+	(3),
+	(4),
+	(5),
+	(6),
+	(7);
 
 
 --
@@ -2570,8 +2643,13 @@ INSERT INTO diwi_testset_simplified.wijk VALUES
 --
 
 INSERT INTO diwi_testset_simplified.wijk_state VALUES
-	(1, 1, 1, 'rockanje', 11, '2023-08-21 12:55:19+02', NULL),
-	(2, 2, 1, 'oostvoorne', 11, '2023-08-25 11:51:37+02', NULL);
+	(1, 1, 1, 'Rockanje', 11, '2023-08-21 12:55:19+02', NULL),
+	(2, 2, 1, 'Oostvoorne', 11, '2023-08-25 11:51:37+02', NULL),
+	(3, 3, 1, 'Groot Water', 11, '2023-09-01 12:15:38+02', NULL),
+	(6, 6, 2, 'Zwartewaal', 11, '2023-09-01 12:15:38+02', NULL),
+	(5, 5, 2, 'Vierpolders', 11, '2023-09-01 12:15:38+02', NULL),
+	(4, 4, 2, 'Brielle', 11, '2023-09-01 12:15:38+02', NULL),
+	(7, 7, 2, 'Recreatiestrook Brielse Maas', 11, '2023-09-01 12:15:38+02', NULL);
 
 
 --
@@ -2703,6 +2781,7 @@ INSERT INTO diwi_testset_simplified.woningblok_mutatie_changelog VALUES
 	(1, 1, 1, 2, 7, '2023-08-21 12:55:19+02', NULL, 'bouw', 50, 0, 50),
 	(2, 2, 1, 2, 7, '2023-08-21 12:55:19+02', NULL, 'bouw', 200, 0, 200),
 	(51, 51, 8, 9, 8, '2023-08-25 11:51:37+02', NULL, 'bouw', 70, 0, 70),
+	(82, 82, 31, 35, 9, '2023-08-25 11:51:37+02', NULL, 'bouw', 2, 0, 2),
 	(76, 76, 15, 20, 9, '2023-08-25 11:51:37+02', NULL, 'sloop', 0, 1, -1),
 	(78, 78, 15, 20, 9, '2023-08-25 11:51:37+02', NULL, 'bouw', 2, 0, 2),
 	(84, 84, 31, 37, 9, '2023-08-25 11:51:37+02', NULL, 'bouw', 3, 0, 3),
@@ -2710,7 +2789,6 @@ INSERT INTO diwi_testset_simplified.woningblok_mutatie_changelog VALUES
 	(79, 79, 23, 29, 7, '2023-08-25 11:51:37+02', NULL, 'bouw', 16, 0, 16),
 	(80, 80, 23, 30, 7, '2023-08-25 11:51:37+02', NULL, 'bouw', 12, 0, 12),
 	(81, 81, 23, 30, 7, '2023-08-25 11:51:37+02', NULL, 'bouw', 12, 0, 12),
-	(82, 82, 31, 35, 9, '2023-08-25 11:51:37+02', NULL, 'bouw', 2, 0, 2),
 	(83, 83, 31, 36, 9, '2023-08-25 11:51:37+02', NULL, 'bouw', 2, 0, 2),
 	(85, 85, 38, 44, 9, '2023-08-27 17:11:16+02', NULL, 'bouw', 2, 0, 2);
 
@@ -2723,9 +2801,9 @@ INSERT INTO diwi_testset_simplified.woningblok_naam_changelog VALUES
 	(1, 1, 1, 2, '50 meergezinswoningen', 7, '2023-08-21 12:55:19+02', NULL),
 	(2, 2, 1, 2, '200 eengezinswoningen', 7, '2023-08-21 12:55:19+02', NULL),
 	(3, 51, 8, 9, '70 woningen', 8, '2023-08-25 11:51:37+02', NULL),
-	(6, 78, 15, 20, 'Carte Blanche Unique: Bouw 2 woningen ', 9, '2023-08-25 11:51:37+02', NULL),
-	(5, 77, 15, 16, 'Carte Blanche Exclusief: Bouw 2 woningen', 9, '2023-08-25 11:51:37+02', NULL),
-	(4, 76, 15, 20, 'Carte Blanche Exclusief: Sloop woning', 9, '2023-08-25 11:51:37+02', NULL);
+	(4, 76, 15, 20, 'Sloop woning', 9, '2023-08-25 11:51:37+02', NULL),
+	(6, 78, 15, 20, 'Bouw 2 woningen ', 9, '2023-08-25 11:51:37+02', NULL),
+	(5, 77, 15, 16, 'Bouw 2 woningen na sloop', 9, '2023-08-25 11:51:37+02', NULL);
 
 
 --
