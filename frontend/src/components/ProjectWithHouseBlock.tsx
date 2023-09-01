@@ -18,7 +18,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
 
     const { id } = useContext(ProjectContext);
     return (
-        <Stack border="solid 2px #ddd" my={1} p={1}>
+        <Stack  my={1} p={1} mb={10}>
             <Stack>
                 {/* List project properties */}
                 <Grid container my={2}>

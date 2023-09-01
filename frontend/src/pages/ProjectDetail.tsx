@@ -22,6 +22,8 @@ export const ProjectDetail = () => {
             direction="column"
             justifyContent="space-between"
             position="relative"
+            border="solid 1px #ddd"
+            mb={10}
         >
             <Stack
                 direction="row"
@@ -59,7 +61,7 @@ export const ProjectDetail = () => {
             >
                 <Typography variant="h5">{selectedProject?.name}</Typography>
             </Stack>
-            <Stack direction="row" justifyContent="flex-end">
+            <Stack direction="row" justifyContent="flex-end" border="solid 1px #ddd" p={0.5}>
                 <Button onClick={() => setSelectedType("map")}>Kaart</Button>
                 <Button onClick={() => setSelectedType("characteristics")}>
                     Eigenschappen
@@ -67,20 +69,26 @@ export const ProjectDetail = () => {
                 <Button onClick={() => setSelectedType("timeline")}>
                     Tijdlijn
                 </Button>
+                <Box
+                sx={{ cursor: "pointer" }}
+                onClick={() => navigate(Paths.projectAdd.path)}
+            >
+                <AddCircleIcon color="info" sx={{ fontSize: "45px" }} />
+            </Box>
             </Stack>
             {selectedType === "map" && (
                 <Stack
                     direction="row"
-                    alignItems="flex-start"
+                    alignItems="center"
                     justifyContent="space-between"
                 >
-                    <Stack overflow="auto" height="63vh">
+                    <Stack overflow="auto" height="70vh" >
                         {<Details project={selectedProject} />}
                     </Stack>
                     <Map style={{ width: "100%" }} />
                 </Stack>
             )}
-            {selectedType === "timeline" && <TimeLineImg />}
+            {selectedType === "timeline" && <TimeLineImg style={{ width: "100%"}}/>}
             {selectedType === "characteristics" && (
                 <ProjectsWithHouseBlock
                     project={selectedProject}
@@ -94,15 +102,7 @@ export const ProjectDetail = () => {
                     }
                 />
             )}
-            <Box
-                position="absolute"
-                right="30px"
-                bottom="44px"
-                sx={{ cursor: "pointer" }}
-                onClick={() => navigate(Paths.projectAdd.path)}
-            >
-                <AddCircleIcon color="info" sx={{ fontSize: "58px" }} />
-            </Box>
+
         </Stack>
     );
 };
