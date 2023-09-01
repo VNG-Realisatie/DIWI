@@ -34,7 +34,7 @@ export const ExchangeData = () => {
         <DataCardItem text="Excel" link={Paths.exportExcel.path}  >
             <img src={excelIcon} alt='excel'/>
         </DataCardItem>
-        <DataCardItem text="Provincie" link="">
+        <DataCardItem text="Provincie" link={Paths.exportProvince.path}>
             <img src={nlMapIcon} alt='Provincie'/>
         </DataCardItem>
       </Stack>

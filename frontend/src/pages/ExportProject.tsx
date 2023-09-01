@@ -1,13 +1,15 @@
 import {  Stack, Typography } from "@mui/material";
 import { DatePicker,  } from "@mui/x-date-pickers";
 import { ProjectsTableView } from "../components/ProjectsTableView";
-
-export const ExportExcel = () => {
+type Props={
+    excelExport:boolean
+}
+export const ExportProject = ({excelExport}:Props) => {
 
   return (
     <Stack pb={10}>
       <Typography fontSize="20px" fontWeight="600">
-        Exporteer naar provincie
+      {excelExport? "Exporteer naar excel":"Exporteer naar provincie"}
       </Typography>
       <Typography fontSize="16px" mt={2}>
         Kies peildatum:
