@@ -1,8 +1,9 @@
-import { Grid, Stack, TextField, Typography } from "@mui/material";
+import { Grid, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import { Policy } from "../api/dummyData";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
+import percentageOption from "../api/json/enums/doel_richting.json";
 export const PolicyCard = ({ policy }: Policy) => {
   const [editable, setEditable] = useState(false);
   const [percentageActive, setPercentageActive] = useState(false);
@@ -13,6 +14,7 @@ export const PolicyCard = ({ policy }: Policy) => {
   const [editedGoal, setEditedGoal] = useState(policy.data.goal);
   const [editedTime, setEditedTime] = useState(policy.data.time);
   const [editedGeo, setEditedGeo] = useState(policy.data.geo);
+  const [editedPercentage,setEditedPercentage]=useState(policy.data.doel_richting)
   const [editedCategory, setEditedCategory] = useState(policy.data.category);
   const characteristicActiveStyle = {
     backgroundColor: "#002C64",
@@ -30,6 +32,9 @@ export const PolicyCard = ({ policy }: Policy) => {
       setEditedCharacteristic(value);
     } else if (name === "goal") {
       setEditedGoal(value);
+    }else if (name === "doel_richting") {
+        setEditedPercentage(value);
+
     } else if (name === "time") {
       setEditedTime(value);
     } else if (name === "geo") {
@@ -148,9 +153,38 @@ export const PolicyCard = ({ policy }: Policy) => {
               variant="standard"
             />
           ) : (
-            <Stack>
+            <Stack direction="row">
               {/* Todo Add select option and percentage input later */}
-              SelectOption | ... %
+              <Select
+                                sx={{ width: "50%" }}
+                                labelId="mutatiesoort"
+                                id="fase"
+                                name="doel_richting"
+                                size="small"
+                                value={
+                                    editedPercentage
+                                }
+                                variant="standard"
+                                label="Project Fase"
+                                //@ts-ignore
+                                onChange={handleInputChange}
+                            >
+                                {percentageOption.map((m) => {
+                                    return (
+                                        <MenuItem key={m} value={m}>
+                                            {m}
+                                        </MenuItem>
+                                    );
+                                })}
+                            </Select>
+                            <TextField
+              sx={{ width: "50%" }}
+              color="secondary"
+              value={editedGoal}
+              name="goal"
+              onChange={handleInputChange}
+              variant="standard"
+            />
             </Stack>
           ))}
       </Grid>

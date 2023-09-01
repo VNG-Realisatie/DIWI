@@ -337,6 +337,7 @@ export type Policy = {
             time: string;
             geo: string;
             category: string;
+            doel_richting?:string;
         };
     };
 };
@@ -350,6 +351,7 @@ export const policyGoals = [
             time: "01/01/2025",
             geo: "Castricum",
             category: "Regionale doelstelling",
+            doel_ricting:"minimaal"
         },
     },
     {
@@ -361,6 +363,7 @@ export const policyGoals = [
             time: "01/01/2025",
             geo: "NVT",
             category: "Doelstelling van het Rijk",
+            doel_ricting:"minimaal"
         },
     },
     {
@@ -372,6 +375,7 @@ export const policyGoals = [
             time: "01/01/2030",
             geo: "Bakkum",
             category: "Doelstelling Gemeente",
+            doel_ricting:"minimaal"
         },
     },
 ];
