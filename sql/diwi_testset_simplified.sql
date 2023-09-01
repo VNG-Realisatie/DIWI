@@ -2447,7 +2447,7 @@ INSERT INTO diwi_testset_simplified.project_priorisering_value VALUES
 
 INSERT INTO diwi_testset_simplified.project_priorisering_value_state VALUES
 	(2, 'Low', 1, 1, '2023-07-28 00:00:00+02', NULL, 1),
-	(4, 'High', 3, 1, '2023-07-28 00:00:00+02', '2023-07-28 00:00:00+02', 3),
+	(4, 'High', 3, 1, '2023-07-28 00:00:00+02', NULL, 3),
 	(10, 'Medium', 2, 1, '2023-07-28 00:00:00+02', NULL, 2),
 	(3, 'Med', 2, 1, '2023-07-28 00:00:00+02', '2023-07-28 00:00:00+02', 2);
 
