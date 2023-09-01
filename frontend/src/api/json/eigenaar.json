@@ -12,7 +12,7 @@
     "ID": 2,
     "organization_ID": 2,
     "parent_organization_ID": 1,
-    "naam": "admin_groep",
+    "naam": "Admin groep",
     "change_end_date": null,
     "change_start_date": "2023-08-21T12:55:19+02:00",
     "change_user_ID": 1
@@ -21,7 +21,7 @@
     "ID": 3,
     "organization_ID": 3,
     "parent_organization_ID": 1,
-    "naam": "publiek",
+    "naam": "Publiek",
     "change_end_date": null,
     "change_start_date": "2023-08-21T12:55:19+02:00",
     "change_user_ID": 1
@@ -30,7 +30,7 @@
     "ID": 4,
     "organization_ID": 4,
     "parent_organization_ID": 3,
-    "naam": "provincie",
+    "naam": "Provincie",
     "change_end_date": null,
     "change_start_date": "2023-08-21T12:55:19+02:00",
     "change_user_ID": 1
@@ -39,7 +39,7 @@
     "ID": 5,
     "organization_ID": 5,
     "parent_organization_ID": 3,
-    "naam": "gemeente",
+    "naam": "Gemeente",
     "change_end_date": null,
     "change_start_date": "2023-08-21T12:55:19+02:00",
     "change_user_ID": 1
@@ -48,7 +48,7 @@
     "ID": 6,
     "organization_ID": 6,
     "parent_organization_ID": 5,
-    "naam": "uitvoering_afdeling",
+    "naam": "Uitvoering afdeling",
     "change_end_date": null,
     "change_start_date": "2023-08-21T12:55:19+02:00",
     "change_user_ID": 1
@@ -57,7 +57,7 @@
     "ID": 7,
     "organization_ID": 7,
     "parent_organization_ID": 6,
-    "naam": "projectleider_1",
+    "naam": "Projectleider 1",
     "change_end_date": null,
     "change_start_date": "2023-08-21T12:55:19+02:00",
     "change_user_ID": 1
@@ -66,7 +66,7 @@
     "ID": 8,
     "organization_ID": 8,
     "parent_organization_ID": 6,
-    "naam": "projectleider_2",
+    "naam": "Projectleider 2",
     "change_end_date": null,
     "change_start_date": "2023-08-21T12:55:19+02:00",
     "change_user_ID": 1
@@ -75,7 +75,7 @@
     "ID": 9,
     "organization_ID": 9,
     "parent_organization_ID": 6,
-    "naam": "projectleider_3",
+    "naam": "Projectleider 3",
     "change_end_date": null,
     "change_start_date": "2023-08-21T12:55:19+02:00",
     "change_user_ID": 1
@@ -84,7 +84,7 @@
     "ID": 10,
     "organization_ID": 10,
     "parent_organization_ID": 6,
-    "naam": "uitvoering_management",
+    "naam": "Uitvoering management",
     "change_end_date": null,
     "change_start_date": "2023-08-21T12:55:19+02:00",
     "change_user_ID": 1
