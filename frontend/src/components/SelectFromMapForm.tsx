@@ -1,6 +1,7 @@
 import { Box, InputLabel, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
 import mapform from "../assets/temp/formmap.png";
-import wijk from "../api/json/wijk.json"
+import wijk from "../api/json/wijk.json";
+import buurt from "../api/json/buurt.json";
 export const SelectFromMapForm = (props: any) => {
   return (
     <Box mt={4} position="relative">
@@ -43,19 +44,37 @@ export const SelectFromMapForm = (props: any) => {
         <Typography variant="subtitle1" fontWeight="500">
           Buurt
         </Typography>
-        <TextField
-          id="buurt"
-          size="small"
-          variant="outlined"
-          value={props.createProjectForm ? props.createProjectForm.buurt : ""}
-          onChange={(e) =>
-            props.setCreateProjectForm({
-              ...props.createProjectForm,
-              buurt: e.target.value,
-            })
-          }
-          fullWidth
-        />
+
+              <Stack>
+                            <InputLabel id="Buurt">
+                            Buurt
+                            </InputLabel>
+                            <Select
+                                sx={{ width: "100%" }}
+                                labelId="buurt"
+                                id="buurt"
+                                value={
+                                    props.createProjectForm
+                                        ? props.createProjectForm.buurt
+                                        : ""
+                                }
+                                label="Buurt"
+                                onChange={(e) =>
+                                    props.setCreateProjectForm({
+                                      ...props.createProjectForm,
+                                      buurt: e.target.value,
+                                    })
+                                  }
+                            >
+                                {buurt.map((m) => {
+                                    return (
+                                        <MenuItem key={m.ID} value={m.waarde_label}>
+                                            {m.waarde_label}
+                                        </MenuItem>
+                                    );
+                                })}
+                            </Select>
+                        </Stack>
             <Stack>
                             <InputLabel id="wijk">
                                 Wijk
@@ -63,13 +82,13 @@ export const SelectFromMapForm = (props: any) => {
                             <Select
                                 sx={{ width: "100%" }}
                                 labelId="wijk"
-                                id="fase"
+                                id="wijk"
                                 value={
                                     props.createProjectForm
                                         ? props.createProjectForm.wijk
                                         : ""
                                 }
-                                label="Project Fase"
+                                label="Wijk"
                                 onChange={(e) =>
                                     props.setCreateProjectForm({
                                         ...props.createProjectForm,
