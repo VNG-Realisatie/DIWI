@@ -15,6 +15,9 @@ export const Details = ({ project }: Props) => {
             {project &&
                 Object.entries(project).map(([property, value]) => {
                     //To avoid mixed data type bug keep this. it will be removed after all data defined
+                    if(property==="start datum"){
+                        console.log(value)
+                    }
                     if (
                         property !== "organization_id" &&
                         property !== "project_state_id" &&
@@ -45,7 +48,7 @@ export const Details = ({ project }: Props) => {
                                         border: "solid 1px #ddd",
                                     }}
                                 >
-                                    <ListItemText primary={value} />
+                                    <ListItemText primary={property==="start datum"||property==="eind datum"?"":value} />
                                 </ListItem>
                             </>
                         );
