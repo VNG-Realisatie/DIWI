@@ -13,7 +13,7 @@ import { ProjectProvider } from "./context/ProjectContext";
 import { PolicyLists } from "./pages/PolicyLists";
 import { DashboardProjects } from "./pages/DashboardProjects";
 import { ExchangeData } from "./pages/ExchangeData";
-import { ExportExcel } from "./pages/ExportExcel";
+import { ExportProject } from "./pages/ExportProject";
 import { ImportExcel } from "./pages/ImportExcel";
 import { ImportedProjects } from "./pages/ImportedProjects";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -21,120 +21,147 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 export const drawerWidth = 290;
 function App() {
-  const theme = createTheme({
-    typography: {
-      fontFamily: "Inter, Arial",
-      h6: {
-        fontWeight: 600,
-      },
-      caption: {
-        fontWeight: 500,
-        fontSize: "13px",
-        lineHeight: "120%",
-      },
-    },
-    components: {
-      MuiDrawer: {
-        styleOverrides: {
-          paper: {
-            width: drawerWidth,
-            backgroundColor: "#002C64",
-            color: "#FFFFFF",
-            boxSizing: "border-box",
-          },
+    const theme = createTheme({
+        typography: {
+            fontFamily: "Inter, Arial",
+            h6: {
+                fontWeight: 600,
+            },
+            caption: {
+                fontWeight: 500,
+                fontSize: "13px",
+                lineHeight: "120%",
+            },
         },
-      },
-      MuiAppBar: {
-        styleOverrides: {
-          root: {
-            backgroundColor: "#FFFFFF",
-            position: "fixed",
-          },
+        components: {
+            MuiDrawer: {
+                styleOverrides: {
+                    paper: {
+                        width: drawerWidth,
+                        backgroundColor: "#002C64",
+                        color: "#FFFFFF",
+                        boxSizing: "border-box",
+                    },
+                },
+            },
+            MuiAppBar: {
+                styleOverrides: {
+                    root: {
+                        backgroundColor: "#FFFFFF",
+                        position: "fixed",
+                    },
+                },
+            },
+            MuiListItemIcon: {
+                styleOverrides: {
+                    root: {
+                        color: "#FFFFFF",
+                        minWidth: "40px",
+                    },
+                },
+            },
         },
-      },
-      MuiListItemIcon: {
-        styleOverrides: {
-          root: {
-            color: "#FFFFFF",
-            minWidth: "40px",
-          },
+        palette: {
+            primary: {
+                main: "#002C64",
+            },
+            secondary: {
+                main: "#900A0A",
+            },
         },
-      },
-    },
-    palette: {
-      primary: {
-        main: "#002C64",
-      },
-      secondary: {
-        main: "#900A0A",
-      },
-    },
-  });
-  return (
-    <ThemeProvider theme={theme}>
-      <AlertProvider>
-        <AlertPopup />
-        <ScopedCssBaseline>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Layout />}>
-                <Route index element={<ProjectProvider>
-                      <Projects />
-                    </ProjectProvider>} />
-                <Route
-                  path={Paths.projects.path}
-                  element={
-                    <ProjectProvider>
-                      <Projects />
-                    </ProjectProvider>
-                  }
-                />
-                <Route
-                  path={Paths.projectAdd.path}
-                  element={<CreateProject />}
-                />
-                <Route
-                  path={Paths.projectDetail.path}
-                  element={
-                    <ProjectProvider>
-                      <ProjectDetail />
-                    </ProjectProvider>
-                  }
-                />
-                <Route
-                  path={Paths.policygoal.path}
-                  element={<PolicyLists />}
-                />
-                 <Route
-                  path={Paths.dashboard.path}
-                  element={<DashboardProjects />}
-                />
-                      <Route
-                  path={Paths.exchangedata.path}
-                  element={<ExchangeData />}
-                />
-                               <Route
-                  path={Paths.importExcel.path}
-                  element={<ImportExcel />}
-                />
-                         <Route
-                  path={Paths.exportExcel.path}
-                  element={<ExportExcel />}
-                />
-                           <Route
-                  path={Paths.importExcelProjects.path}
-                  element={<ImportedProjects />}
-                />
-                <Route path="*" element={<NoMatch />} />
-              </Route>
-            </Routes>
-          </BrowserRouter>
-          </LocalizationProvider>
-        </ScopedCssBaseline>
-      </AlertProvider>
-    </ThemeProvider>
-  );
+    });
+    return (
+        <ThemeProvider theme={theme}>
+            <AlertProvider>
+                <AlertPopup />
+                <ScopedCssBaseline>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <BrowserRouter>
+                            <Routes>
+                                <Route path="/" element={<Layout />}>
+                                    <Route
+                                        index
+                                        element={
+                                            <ProjectProvider>
+                                                <Projects />
+                                            </ProjectProvider>
+                                        }
+                                    />
+                                    <Route
+                                        path={Paths.projects.path}
+                                        element={
+                                            <ProjectProvider>
+                                                <Projects />
+                                            </ProjectProvider>
+                                        }
+                                    />
+                                    <Route
+                                        path={Paths.projectAdd.path}
+                                        element={
+                                            <ProjectProvider>
+                                                <CreateProject />
+                                            </ProjectProvider>
+                                        }
+                                    />
+                                    <Route
+                                        path={Paths.projectDetail.path}
+                                        element={
+                                            <ProjectProvider>
+                                                <ProjectDetail />
+                                            </ProjectProvider>
+                                        }
+                                    />
+                                    <Route
+                                        path={Paths.policygoal.path}
+                                        element={<PolicyLists />}
+                                    />
+                                    <Route
+                                        path={Paths.dashboard.path}
+                                        element={<DashboardProjects />}
+                                    />
+                                    <Route
+                                        path={Paths.exchangedata.path}
+                                        element={<ExchangeData />}
+                                    />
+                                    <Route
+                                        path={Paths.importExcel.path}
+                                        element={<ImportExcel excelImport/>}
+                                    />
+                                      <Route
+                                        path={Paths.importSquit.path}
+                                        element={<ImportExcel excelImport={false}/>}
+                                    />
+                                    <Route
+                                        path={Paths.exportExcel.path}
+                                        element={
+                                            <ProjectProvider>
+                                                <ExportProject excelExport />
+                                            </ProjectProvider>
+                                        }
+                                    />
+                                    <Route
+                                        path={Paths.exportProvince.path}
+                                        element={
+                                            <ProjectProvider>
+                                                <ExportProject
+                                                    excelExport={false}
+                                                />
+                                            </ProjectProvider>
+                                        }
+                                    />
+                                    <Route
+                                        path={Paths.importExcelProjects.path}
+                                        element={<ImportedProjects />}
+                                    />
+                                    <Route path="*" element={<NoMatch />} />
+                                </Route>
+                            </Routes>
+                        </BrowserRouter>
+                    </LocalizationProvider>
+                </ScopedCssBaseline>
+            </AlertProvider>
+        </ThemeProvider>
+    );
 }
 
 export default App;

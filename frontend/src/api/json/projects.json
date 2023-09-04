@@ -2,16 +2,16 @@
   {
     "project": {
       "id": 1,
-      "name": "Achterweg",
-      "eigenaar": "projectleider_1",
+      "name": "Gemeentelijke ontwikkeling 1",
+      "eigenaar": "Projectleider 1",
       "plan type": "herstructurering",
       "eind datum": "2030-01-01",
       "start datum": "2022-01-01",
       "priorisering": null,
       "project fase": "2_projectfase",
-      "rol gemeente": "initiatiefnemer",
+      "rol gemeente": "Initiatiefnemer",
       "programmering": true,
-      "project leider": "projectleider_1",
+      "project leider": null,
       "organization_id": 7,
       "project_state_id": 1,
       "organization_state_id": 7,
@@ -22,9 +22,7 @@
       "project_gemeenterol_value_id": 1,
       "project_priorisering_value_id": null,
       "project_gemeenterol_changelog_id": 1,
-      "project_priorisering_changelog_id": null,
-      "project_gemeenterol_value_state_id": 1,
-      "project_priorisering_value_state_id": null
+      "project_priorisering_changelog_id": null
     },
     "woningblokken": [
       {
@@ -35,7 +33,8 @@
         "sloop": 0,
         "mutatie_soort": "bouw",
         "buurt": null,
-        "wijk": "rockanje",
+        "wijk": "Rockanje",
+        "gemeente": null,
         "fysiek_voorkomen": null,
         "woning_type": {
           "meergezinswoning": 50
@@ -66,7 +65,8 @@
         "sloop": 0,
         "mutatie_soort": "bouw",
         "buurt": null,
-        "wijk": "rockanje",
+        "wijk": "Rockanje",
+        "gemeente": null,
         "fysiek_voorkomen": null,
         "woning_type": {
           "eengezinswoning": 200
@@ -94,16 +94,16 @@
   {
     "project": {
       "id": 2,
-      "name": "Brielseweg",
-      "eigenaar": "projectleider_2",
+      "name": "Gemeentelijke ontwikkeling 2",
+      "eigenaar": "Projectleider 2",
       "plan type": "verdichting",
       "eind datum": "2030-07-01",
       "start datum": "2022-07-01",
       "priorisering": null,
       "project fase": "2_projectfase",
-      "rol gemeente": "initiatiefnemer",
+      "rol gemeente": "Initiatiefnemer",
       "programmering": true,
-      "project leider": "projectleider_2",
+      "project leider": null,
       "organization_id": 8,
       "project_state_id": 2,
       "organization_state_id": 8,
@@ -114,9 +114,7 @@
       "project_gemeenterol_value_id": 1,
       "project_priorisering_value_id": null,
       "project_gemeenterol_changelog_id": 2,
-      "project_priorisering_changelog_id": null,
-      "project_gemeenterol_value_state_id": 1,
-      "project_priorisering_value_state_id": null
+      "project_priorisering_changelog_id": null
     },
     "woningblokken": [
       {
@@ -127,7 +125,8 @@
         "sloop": 0,
         "mutatie_soort": "bouw",
         "buurt": null,
-        "wijk": "oostvoorne",
+        "wijk": "Oostvoorne",
+        "gemeente": null,
         "fysiek_voorkomen": null,
         "woning_type": null,
         "eigendom_soort": null,
@@ -152,140 +151,17 @@
   },
   {
     "project": {
-      "id": 3,
-      "name": "Carte Blanche Exclusief en Unique",
-      "eigenaar": "projectleider_3",
-      "plan type": null,
-      "eind datum": null,
-      "start datum": null,
-      "priorisering": null,
-      "project fase": null,
-      "rol gemeente": "kaderstellend",
-      "programmering": null,
-      "project leider": "projectleider_3",
-      "organization_id": 9,
-      "project_state_id": 3,
-      "organization_state_id": 9,
-      "vertrouwlijkheidsniveau": "openbaar",
-      "planologische plan status": null,
-      "project_fase_changelog_id": null,
-      "project_name_changelog_id": 3,
-      "project_gemeenterol_value_id": 2,
-      "project_priorisering_value_id": null,
-      "project_gemeenterol_changelog_id": 3,
-      "project_priorisering_changelog_id": null,
-      "project_gemeenterol_value_state_id": 2,
-      "project_priorisering_value_state_id": null
-    },
-    "woningblokken": [
-      {
-        "id": 76,
-        "naam": "Carte Blanche Exclusief: Sloop woning",
-        "bruto_plancapaciteit": 0,
-        "netto_plancapaciteit": -1,
-        "sloop": 1,
-        "mutatie_soort": "sloop",
-        "buurt": null,
-        "wijk": "rockanje",
-        "fysiek_voorkomen": null,
-        "woning_type": {
-          "eengezinswoning": -1
-        },
-        "eigendom_soort": null,
-        "waarde": null,
-        "huurbedrag": null,
-        "grootte": null,
-        "doelgroep": null,
-        "grondpositie": null,
-        "start datum": "2020-01-01",
-        "eind datum": "2022-01-01",
-        "woningblok_naam_changelog_id": 4,
-        "woningblok_mutatie_changelog_id": 76,
-        "woningblok_state_id": 76,
-        "woningblok_type_en_fysiek_voorkomen_changelog_id": 76,
-        "woningblok_eigendom_en_waarde_changelog_id": null,
-        "woningblok_grootte_changelog_id": null,
-        "woningblok_doelgroep_changelog_id": null,
-        "woningblok_grondpositie_changelog_id": null,
-        "project_id": 3
-      },
-      {
-        "id": 77,
-        "naam": "Carte Blanche Exclusief: Bouw 2 woningen",
-        "bruto_plancapaciteit": 2,
-        "netto_plancapaciteit": 2,
-        "sloop": 0,
-        "mutatie_soort": "bouw",
-        "buurt": null,
-        "wijk": "rockanje",
-        "fysiek_voorkomen": null,
-        "woning_type": {
-          "eengezinswoning": 2
-        },
-        "eigendom_soort": null,
-        "waarde": null,
-        "huurbedrag": null,
-        "grootte": null,
-        "doelgroep": null,
-        "grondpositie": null,
-        "start datum": "2020-01-01",
-        "eind datum": "2022-07-01",
-        "woningblok_naam_changelog_id": 5,
-        "woningblok_mutatie_changelog_id": 77,
-        "woningblok_state_id": 77,
-        "woningblok_type_en_fysiek_voorkomen_changelog_id": 77,
-        "woningblok_eigendom_en_waarde_changelog_id": null,
-        "woningblok_grootte_changelog_id": null,
-        "woningblok_doelgroep_changelog_id": null,
-        "woningblok_grondpositie_changelog_id": null,
-        "project_id": 3
-      },
-      {
-        "id": 78,
-        "naam": "Carte Blanche Unique: Bouw 2 woningen ",
-        "bruto_plancapaciteit": 2,
-        "netto_plancapaciteit": 2,
-        "sloop": 0,
-        "mutatie_soort": "bouw",
-        "buurt": null,
-        "wijk": "rockanje",
-        "fysiek_voorkomen": null,
-        "woning_type": {
-          "eengezinswoning": 2
-        },
-        "eigendom_soort": null,
-        "waarde": null,
-        "huurbedrag": null,
-        "grootte": null,
-        "doelgroep": null,
-        "grondpositie": null,
-        "start datum": "2020-01-01",
-        "eind datum": "2022-01-01",
-        "woningblok_naam_changelog_id": 6,
-        "woningblok_mutatie_changelog_id": 78,
-        "woningblok_state_id": 78,
-        "woningblok_type_en_fysiek_voorkomen_changelog_id": 78,
-        "woningblok_eigendom_en_waarde_changelog_id": null,
-        "woningblok_grootte_changelog_id": null,
-        "woningblok_doelgroep_changelog_id": null,
-        "woningblok_grondpositie_changelog_id": null,
-        "project_id": 3
-      }
-    ]
-  },
-  {
-    "project": {
       "id": 4,
-      "name": "De Ruy",
-      "eigenaar": "projectleider_1",
+      "name": "Gemeentelijke ontwikkeling 3",
+      "eigenaar": "Projectleider 1",
       "plan type": "herstructurering",
       "eind datum": "2024-07-01",
       "start datum": "2020-01-01",
       "priorisering": null,
       "project fase": "4_realisatiefase",
-      "rol gemeente": "initiatiefnemer",
+      "rol gemeente": "Initiatiefnemer",
       "programmering": true,
-      "project leider": "projectleider_1",
+      "project leider": null,
       "organization_id": 7,
       "project_state_id": 4,
       "organization_state_id": 7,
@@ -296,9 +172,7 @@
       "project_gemeenterol_value_id": 1,
       "project_priorisering_value_id": null,
       "project_gemeenterol_changelog_id": 4,
-      "project_priorisering_changelog_id": null,
-      "project_gemeenterol_value_state_id": 1,
-      "project_priorisering_value_state_id": null
+      "project_priorisering_changelog_id": null
     },
     "woningblokken": [
       {
@@ -309,7 +183,8 @@
         "sloop": 0,
         "mutatie_soort": "bouw",
         "buurt": null,
-        "wijk": "oostvoorne",
+        "wijk": "Oostvoorne",
+        "gemeente": null,
         "fysiek_voorkomen": null,
         "woning_type": {
           "meergezinswoning": 16
@@ -342,7 +217,8 @@
         "sloop": 0,
         "mutatie_soort": "bouw",
         "buurt": null,
-        "wijk": "oostvoorne",
+        "wijk": "Oostvoorne",
+        "gemeente": null,
         "fysiek_voorkomen": null,
         "woning_type": {
           "meergezinswoning": 12
@@ -375,7 +251,8 @@
         "sloop": 0,
         "mutatie_soort": "bouw",
         "buurt": null,
-        "wijk": "oostvoorne",
+        "wijk": "Oostvoorne",
+        "gemeente": null,
         "fysiek_voorkomen": null,
         "woning_type": {
           "meergezinswoning": 12
@@ -405,16 +282,16 @@
   {
     "project": {
       "id": 5,
-      "name": "Doornweg 6 /Blindeweg 15",
-      "eigenaar": "projectleider_3",
+      "name": "Particuliere ontwikkeling 1",
+      "eigenaar": "Projectleider 3",
       "plan type": "herstructurering",
       "eind datum": "2027-07-01",
       "start datum": "2020-01-01",
       "priorisering": null,
       "project fase": "3_vergunningsfase",
-      "rol gemeente": "kaderstellend",
+      "rol gemeente": "Kaderstellend",
       "programmering": true,
-      "project leider": "projectleider_3",
+      "project leider": null,
       "organization_id": 9,
       "project_state_id": 5,
       "organization_state_id": 9,
@@ -425,9 +302,7 @@
       "project_gemeenterol_value_id": 2,
       "project_priorisering_value_id": null,
       "project_gemeenterol_changelog_id": 5,
-      "project_priorisering_changelog_id": null,
-      "project_gemeenterol_value_state_id": 2,
-      "project_priorisering_value_state_id": null
+      "project_priorisering_changelog_id": null
     },
     "woningblokken": [
       {
@@ -438,7 +313,8 @@
         "sloop": 0,
         "mutatie_soort": "bouw",
         "buurt": null,
-        "wijk": "rockanje",
+        "wijk": "Rockanje",
+        "gemeente": null,
         "fysiek_voorkomen": null,
         "woning_type": {
           "eengezinswoning": 2
@@ -471,7 +347,8 @@
         "sloop": 0,
         "mutatie_soort": "bouw",
         "buurt": null,
-        "wijk": "rockanje",
+        "wijk": "Rockanje",
+        "gemeente": null,
         "fysiek_voorkomen": null,
         "woning_type": {
           "eengezinswoning": 2
@@ -504,7 +381,8 @@
         "sloop": 0,
         "mutatie_soort": "bouw",
         "buurt": null,
-        "wijk": "rockanje",
+        "wijk": "Rockanje",
+        "gemeente": null,
         "fysiek_voorkomen": null,
         "woning_type": {
           "eengezinswoning": 3
@@ -534,16 +412,16 @@
   {
     "project": {
       "id": 6,
-      "name": "Dorpsweg 58",
-      "eigenaar": "projectleider_3",
+      "name": "Particuliere ontwikkeling 2",
+      "eigenaar": "Projectleider 3",
       "plan type": "herstructurering",
       "eind datum": "2026-07-01",
       "start datum": "2020-01-01",
       "priorisering": null,
       "project fase": "3_vergunningsfase",
-      "rol gemeente": "kaderstellend",
+      "rol gemeente": "Kaderstellend",
       "programmering": true,
-      "project leider": "projectleider_3",
+      "project leider": null,
       "organization_id": 9,
       "project_state_id": 6,
       "organization_state_id": 9,
@@ -554,9 +432,7 @@
       "project_gemeenterol_value_id": 2,
       "project_priorisering_value_id": null,
       "project_gemeenterol_changelog_id": 6,
-      "project_priorisering_changelog_id": null,
-      "project_gemeenterol_value_state_id": 2,
-      "project_priorisering_value_state_id": null
+      "project_priorisering_changelog_id": null
     },
     "woningblokken": [
       {
@@ -567,7 +443,8 @@
         "sloop": 0,
         "mutatie_soort": "bouw",
         "buurt": null,
-        "wijk": "rockanje",
+        "wijk": "Rockanje",
+        "gemeente": null,
         "fysiek_voorkomen": null,
         "woning_type": {
           "eengezinswoning": 2

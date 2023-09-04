@@ -9,19 +9,33 @@ import {
 } from "@mui/material";
 import ColorSelector from "./ColorSelector";
 import { DatePicker } from "@mui/x-date-pickers";
-import { planologischePlanStatus, projectFaseList } from "../widgets/constants";
-import { projectLead, vertrouwlijkheidsniveau } from "../api/dummyData";
+
+import rolMunicipality from "../api/json/gemeente_rol.json";
+import projectLead from "../api/json/projectleider.json";
+import projectFaseList from "../api/json/enums/project_phase.json";
+import planologischePlanStatus from "../api/json/enums/planologische_planstatus.json";
+import vertrouwlijkheidsniveau from "../api/json/enums/confidentiality.json";
+import priorityOption from "../api/json/priorisering.json";
+import eigenaarOption from "../api/json/eigenaar.json";
+import { useEffect } from "react";
 
 export const ProjectInformationForm = (props: any) => {
     //ToDo add props later
     const handleColorChange = (newColor: string) => {
-        console.log("Selected color:", newColor);
-        // You can perform any action with the selected color here
         props.setCreateProjectForm({
             ...props.createProjectForm,
             color: newColor,
         });
     };
+
+    useEffect(()=>{
+        props.setCreateProjectForm({
+            ...props.createProjectForm,
+            id:  Math.floor(Math.random() * 10000),
+        })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[])
+
     return (
         <Box mt={4}>
             <Typography variant="h6" fontWeight="600">
@@ -58,26 +72,7 @@ export const ProjectInformationForm = (props: any) => {
                     onColorChange={handleColorChange}
                 />
             </Stack>
-            <Typography variant="subtitle1" fontWeight="500">
-                Eigenaar
-            </Typography>
-            <TextField
-                id="eigenaar"
-                size="small"
-                variant="outlined"
-                value={
-                    props.createProjectForm
-                        ? props.createProjectForm.eigenaar
-                        : ""
-                }
-                onChange={(e) =>
-                    props.setCreateProjectForm({
-                        ...props.createProjectForm,
-                        eigenaar: e.target.value,
-                    })
-                }
-                fullWidth
-            />
+
             <Typography variant="subtitle1" fontWeight="500">
                 Plan Type
             </Typography>
@@ -98,6 +93,8 @@ export const ProjectInformationForm = (props: any) => {
                 }
                 fullWidth
             />
+
+            <Stack direction="row" justifyContent="space-between"  flexWrap="wrap">
             <Stack
                 direction="row"
                 justifyContent="flex-start"
@@ -108,6 +105,7 @@ export const ProjectInformationForm = (props: any) => {
                         Start Datum
                     </Typography>
                     <DatePicker
+                    sx={{ width: "185px" }}
                         value={
                             props.createProjectForm
                                 ? props.createProjectForm["start datum"]
@@ -126,6 +124,7 @@ export const ProjectInformationForm = (props: any) => {
                         Eind Datum
                     </Typography>
                     <DatePicker
+                           sx={{ width: "185px" }}
                         value={
                             props.createProjectForm
                                 ? props.createProjectForm["eind datum"]
@@ -140,7 +139,6 @@ export const ProjectInformationForm = (props: any) => {
                     />
                 </Stack>
             </Stack>
-            <Stack direction="row" justifyContent="space-between" flexWrap="wrap">
                 <Stack>
                     <InputLabel id="priority">Priorisering</InputLabel>
                     <Select
@@ -160,9 +158,9 @@ export const ProjectInformationForm = (props: any) => {
                             })
                         }
                     >
-                        <MenuItem value="laag">Laag</MenuItem>
-                        <MenuItem value="gemiddeld">Gemiddeld</MenuItem>
-                        <MenuItem value="hoog">Hoog</MenuItem>
+                         {priorityOption.map((v) => {
+                            return <MenuItem key={v.ID} value={v.value_label}>{v.value_label}</MenuItem>;
+                        })}
                     </Select>
                 </Stack>
                 <Stack>
@@ -208,9 +206,9 @@ export const ProjectInformationForm = (props: any) => {
                             })
                         }
                     >
-                        <MenuItem value="actief">Actief</MenuItem>
-                        <MenuItem value="passief">Passief</MenuItem>
-                        <MenuItem value="initiatiefnemer">Initiatiefnemer</MenuItem>
+                         {rolMunicipality.map((municipality) => {
+                            return <MenuItem key={municipality.ID} value={municipality.value_label}>{municipality.value_label}</MenuItem>;
+                        })}
                     </Select>
                 </Stack>
                 <Stack>
@@ -256,7 +254,7 @@ export const ProjectInformationForm = (props: any) => {
                         }
                     >
                         {projectLead.map((lead) => {
-                            return <MenuItem key={lead} value={lead}>{lead}</MenuItem>;
+                            return <MenuItem key={lead.ID} value={lead.name}>{lead.name}</MenuItem>;
                         })}
                     </Select>
                 </Stack>
@@ -305,6 +303,30 @@ export const ProjectInformationForm = (props: any) => {
                     >
                         {planologischePlanStatus.map((v) => {
                             return <MenuItem key={v} value={v}>{v}</MenuItem>;
+                        })}
+                    </Select>
+                </Stack>
+                <Stack>
+                    <InputLabel id="leider">Eigenaar</InputLabel>
+                    <Select
+                     sx={{ width: "370px" }}
+                        labelId="leider"
+                        id="eigenaar"
+                        value={
+                            props.createProjectForm
+                                ? props.createProjectForm["eigenaar"]
+                                : ""
+                        }
+                        label="Eigenaar"
+                        onChange={(e) =>
+                            props.setCreateProjectForm({
+                                ...props.createProjectForm,
+                                "eigenaar": e.target.value,
+                            })
+                        }
+                    >
+                        {eigenaarOption.map((lead) => {
+                            return <MenuItem key={lead.ID} value={lead.naam}>{lead.naam}</MenuItem>;
                         })}
                     </Select>
                 </Stack>

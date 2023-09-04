@@ -2,6 +2,7 @@ import { IconButton, Toolbar, Typography } from "@mui/material"
 import MenuIcon from "@mui/icons-material/Menu";
 import { styled } from "@mui/material/styles";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 import { drawerWidth } from "../App";
 
@@ -12,7 +13,7 @@ type Props={
 interface AppBarProps extends MuiAppBarProps {
     open?: boolean;
   }
-  
+
   const AppBar = styled(MuiAppBar, {
     shouldForwardProp: (prop) => prop !== "open",
   })<AppBarProps>(({ theme, open }) => ({
@@ -46,10 +47,12 @@ export const Header=({open,handleDrawerOpen}:Props)=>{
         variant="caption"
         noWrap
         component="div"
+        display="flex"
+        alignItems="center"
         ml="auto"
         color="#002C64"
       >
-        Gebruiker Rol{" "}
+        Gebruiker Rol <AccountCircleIcon sx={{ml:1}}/>
       </Typography>
     </Toolbar>
   </AppBar>
