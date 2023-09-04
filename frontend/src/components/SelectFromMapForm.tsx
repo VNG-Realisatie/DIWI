@@ -4,12 +4,13 @@ import {
     MenuItem,
     Select,
     Stack,
-    TextField,
     Typography,
 } from "@mui/material";
 import mapform from "../assets/temp/formmap.png";
 import wijk from "../api/json/wijk.json";
 import buurt from "../api/json/buurt.json";
+import gemeente from "../api/json/gemeente.json";
+
 export const SelectFromMapForm = (props: any) => {
     return (
         <Box mt={4} position="relative">
@@ -27,31 +28,33 @@ export const SelectFromMapForm = (props: any) => {
                 }}
                 p={2}
             >
-                <Typography variant="subtitle1" fontWeight="500">
-                    Regio{" "}
-                </Typography>
-                <Stack
-                    direction="row"
-                    alignItems="center"
-                    justifyContent="space-between"
-                >
-                    <TextField
-                        id="regio"
-                        size="small"
-                        variant="outlined"
+                <Stack>
+                    <InputLabel id="Gemeente">Gemeente</InputLabel>
+                    <Select
+                        sx={{ width: "100%" }}
+                        labelId="gemeente"
+                        id="gemeente"
                         value={
                             props.createProjectForm
-                                ? props.createProjectForm.regio
+                                ? props.createProjectForm.gemeente
                                 : ""
                         }
+                        label="Gemeente"
                         onChange={(e) =>
                             props.setCreateProjectForm({
                                 ...props.createProjectForm,
-                                regio: e.target.value,
+                                gemeente: e.target.value,
                             })
                         }
-                        fullWidth
-                    />
+                    >
+                        {gemeente.map((m) => {
+                            return (
+                                <MenuItem key={m.ID} value={m.waarde_label}>
+                                    {m.waarde_label}
+                                </MenuItem>
+                            );
+                        })}
+                    </Select>
                 </Stack>
                 <Stack>
                     <InputLabel id="Buurt">Buurt</InputLabel>
