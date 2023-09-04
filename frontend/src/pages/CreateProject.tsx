@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import {
     Stepper,
     Step,
@@ -15,9 +15,7 @@ import { BlockHousesForm } from "../components/BlockHousesForm";
 import { SelectFromMapForm } from "../components/SelectFromMapForm";
 import { TimelineForm } from "../components/TimelineForm";
 import useAlert from "../hooks/useAlert";
-import { useNavigate } from "react-router-dom";
-import * as Paths from "../Paths";
-import ProjectContext from "../context/ProjectContext";
+
 const CustomStepIcon: React.FC<CustomStepIconProps> = ({
     active,
     completed,
@@ -48,17 +46,10 @@ export const CreateProject = () => {
     const [activeStep, setActiveStep] = useState<number>(0);
 
     const { setAlert } = useAlert();
-    const navigate = useNavigate();
 
-    const { setProjects, projects } = useContext(ProjectContext);
     const handleSave = () => {
         //Todo add createendpoint here
-        setProjects([
-            ...projects,
-            { project: createProjectForm, woningblokken: createHouseBlockForm },
-        ]);
         setAlert("Project succesvol opgeslagen.", "success");
-        navigate(Paths.projects.path);
     };
 
     const handleNext = () => {
@@ -68,7 +59,7 @@ export const CreateProject = () => {
     const handleBack = () => {
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
-    console.log(createProjectForm);
+
     return (
         //Components for wizard steps
         <Box mb={7} border="solid 2px #ddd" p={4}>

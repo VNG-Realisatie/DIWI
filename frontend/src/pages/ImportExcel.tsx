@@ -6,24 +6,29 @@ import useAlert from "../hooks/useAlert";
 import { useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
 
-export const ImportExcel = () => {
+type Props={
+    excelImport:boolean;
+}
+export const ImportExcel = ({excelImport}:Props) => {
     const [uploaded, setUploaded] = useState(false);
     const { setAlert } = useAlert();
     const navigate = useNavigate();
     return (
         <Stack border="solid 1px #ddd" py={3} px={15}>
             <Typography fontSize="20px" fontWeight="600" sx={{ mt: 2 }}>
-                Importeren vanuit Excel
+              {excelImport?"Importeren vanuit Excel":"Importeren vanuit Squit"}
             </Typography>
             <Button
                 variant="outlined"
                 endIcon={<DownloadIcon />}
                 sx={{ my: 3, width: "310px" }}
+                href={require("../assets/Excel_Import.xlsx")}
+                download="Excel Import.xlsx"
             >
                 Download Excel template hier
             </Button>
             <Typography fontSize="16px" mt={2}>
-                Upload ingevulde Excel template.
+               {excelImport?"Upload ingevulde Excel template.":"Upload ingevulde Squit template."}
             </Typography>
             {!uploaded && (
                 <Stack

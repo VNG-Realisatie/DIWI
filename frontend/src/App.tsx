@@ -125,7 +125,11 @@ function App() {
                                     />
                                     <Route
                                         path={Paths.importExcel.path}
-                                        element={<ImportExcel />}
+                                        element={<ImportExcel excelImport/>}
+                                    />
+                                      <Route
+                                        path={Paths.importSquit.path}
+                                        element={<ImportExcel excelImport={false}/>}
                                     />
                                     <Route
                                         path={Paths.exportExcel.path}

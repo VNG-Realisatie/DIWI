@@ -16,7 +16,7 @@ import ProjectContext from "../context/ProjectContext";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
-import { StaticDatePicker } from "@mui/x-date-pickers";
+import { DateCalendar } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 
 export const Projects = () => {
@@ -33,6 +33,8 @@ export const Projects = () => {
     const [selectedDate, setSelectedDate] = useState<any>();
     const open = Boolean(anchorEl);
     const id = open ? "simple-popover" : undefined;
+
+    const convertedDate= selectedDate&&new Date(selectedDate).toISOString().split('T')[0];
     return (
         <Stack
             direction="row"
@@ -67,7 +69,7 @@ export const Projects = () => {
                             setAnchorEl(event.currentTarget);
                         }}
                     >
-                        Pijldatum: {"2022-04-17"}
+                        Pijldatum: {convertedDate?convertedDate:"2023-09-05"}
                     </Typography>
                     <Popover
                         id={id}
@@ -79,8 +81,8 @@ export const Projects = () => {
                             horizontal: "left",
                         }}
                     >
-                        <StaticDatePicker
-                            defaultValue={dayjs("2022-04-17")}
+                        <DateCalendar
+                            defaultValue={dayjs("2023-09-05")}
                             onChange={(newValue) => setSelectedDate(newValue)}
                         />
                     </Popover>
