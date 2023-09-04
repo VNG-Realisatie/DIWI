@@ -19,6 +19,8 @@ export const ImportExcel = () => {
                 variant="outlined"
                 endIcon={<DownloadIcon />}
                 sx={{ my: 3, width: "310px" }}
+                href={require("../assets/Excel_Import.xlsx")}
+                download="Excel Import.xlsx"
             >
                 Download Excel template hier
             </Button>
