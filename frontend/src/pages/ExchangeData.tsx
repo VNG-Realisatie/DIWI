@@ -20,7 +20,7 @@ export const ExchangeData = () => {
         <DataCardItem text="Excel" link={Paths.importExcel.path}  isImport >
             <img src={excelIcon} alt='excel'/>
         </DataCardItem>
-        <DataCardItem text="Squit" link={Paths.projects.path} isImport >
+        <DataCardItem text="Squit" link={Paths.importSquitProjects.path} isImport >
             <img src={roxitIcon} alt='squit'/>
         </DataCardItem>
         <DataCardItem text="Systeem x" link=""  isImport >

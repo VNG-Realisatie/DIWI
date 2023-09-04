@@ -151,7 +151,11 @@ function App() {
                                     />
                                     <Route
                                         path={Paths.importExcelProjects.path}
-                                        element={<ImportedProjects />}
+                                        element={<ImportedProjects type="Excel"/>}
+                                    />
+                                    <Route
+                                        path={Paths.importSquitProjects.path}
+                                        element={<ImportedProjects type="Squit"/>}
                                     />
                                     <Route path="*" element={<NoMatch />} />
                                 </Route>

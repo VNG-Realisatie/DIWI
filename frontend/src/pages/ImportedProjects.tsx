@@ -5,7 +5,10 @@ import { useState } from "react";
 import { SelectFromMapForm } from "../components/SelectFromMapForm";
 import { TimelineForm } from "../components/TimelineForm";
 
-export const ImportedProjects = () => {
+type Props = {
+    type: string
+}
+export const ImportedProjects = (props:Props) => {
     const [createProjectForm, setCreateProjectForm] = useState<any>(null);
     const [selectedProject, setSelectedProject] = useState<Array<number> | []>(
         []
@@ -26,7 +29,7 @@ export const ImportedProjects = () => {
     return (
         <Stack pb={10} direction="column">
             <Typography fontSize="20px" fontWeight="600" sx={{ mt: 2 }}>
-                Importeren vanuit Excel
+                Importeren vanuit {props.type}
             </Typography>
             {currentPage === 1 &&
                 importedDummyProjects.map((p) => {

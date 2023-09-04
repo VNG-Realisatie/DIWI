@@ -69,7 +69,7 @@ export const Projects = () => {
                             setAnchorEl(event.currentTarget);
                         }}
                     >
-                        Pijldatum: {convertedDate?convertedDate:"2023-09-05"}
+                        Peildatum: {convertedDate?convertedDate:"2023-09-05"}
                     </Typography>
                     <Popover
                         id={id}

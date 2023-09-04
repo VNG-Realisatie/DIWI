@@ -37,6 +37,7 @@ export const DataCardItem: React.FC<Props> = ({
         variant="contained"
         component="label"
         color="primary"
+        href={link}
         startIcon={!isImport ? <CloudDownloadIcon /> : <CloudUploadIcon />}
         sx={{ marginTop: "auto" }}
       >

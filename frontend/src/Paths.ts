@@ -29,6 +29,7 @@ export const exportProvince = createPathObject(config.baseurl + "exchangedata/ex
 export const importExcel = createPathObject(config.baseurl + "exchangedata/importexcel");
 export const importSquit = createPathObject(config.baseurl + "exchangedata/importsquit");
 export const importExcelProjects = createPathObject(config.baseurl + "exchangedata/importexcel/projects");
+export const importSquitProjects = createPathObject(config.baseurl + "exchangedata/importsquit/projects");
 
 
 
