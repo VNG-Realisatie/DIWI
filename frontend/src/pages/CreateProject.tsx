@@ -59,7 +59,7 @@ export const CreateProject = () => {
     const handleBack = () => {
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
-    console.log(createProjectForm);
+
     return (
         //Components for wizard steps
         <Box mb={7} border="solid 2px #ddd" p={4}>
