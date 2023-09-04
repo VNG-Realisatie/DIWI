@@ -57,34 +57,6 @@ export const SelectFromMapForm = (props: any) => {
                     </Select>
                 </Stack>
                 <Stack>
-                    <InputLabel id="Buurt">Buurt</InputLabel>
-                    <Select
-                        sx={{ width: "100%" }}
-                        labelId="buurt"
-                        id="buurt"
-                        value={
-                            props.createProjectForm
-                                ? props.createProjectForm.buurt
-                                : ""
-                        }
-                        label="Buurt"
-                        onChange={(e) =>
-                            props.setCreateProjectForm({
-                                ...props.createProjectForm,
-                                buurt: e.target.value,
-                            })
-                        }
-                    >
-                        {buurt.map((m) => {
-                            return (
-                                <MenuItem key={m.ID} value={m.waarde_label}>
-                                    {m.waarde_label}
-                                </MenuItem>
-                            );
-                        })}
-                    </Select>
-                </Stack>
-                <Stack>
                     <InputLabel id="wijk">Wijk</InputLabel>
                     <Select
                         sx={{ width: "100%" }}
@@ -104,6 +76,34 @@ export const SelectFromMapForm = (props: any) => {
                         }
                     >
                         {wijk.map((m) => {
+                            return (
+                                <MenuItem key={m.ID} value={m.waarde_label}>
+                                    {m.waarde_label}
+                                </MenuItem>
+                            );
+                        })}
+                    </Select>
+                </Stack>
+                <Stack>
+                    <InputLabel id="Buurt">Buurt</InputLabel>
+                    <Select
+                        sx={{ width: "100%" }}
+                        labelId="buurt"
+                        id="buurt"
+                        value={
+                            props.createProjectForm
+                                ? props.createProjectForm.buurt
+                                : ""
+                        }
+                        label="Buurt"
+                        onChange={(e) =>
+                            props.setCreateProjectForm({
+                                ...props.createProjectForm,
+                                buurt: e.target.value,
+                            })
+                        }
+                    >
+                        {buurt.map((m) => {
                             return (
                                 <MenuItem key={m.ID} value={m.waarde_label}>
                                     {m.waarde_label}

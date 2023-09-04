@@ -35,7 +35,7 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
         <Drawer variant="persistent" anchor="left" open={open}>
             <DrawerHeader>
                 <Typography sx={{ fontSize: "20px", fontWeight: "700" }} ml={1}>
-                    Gemeente Groningen
+                    Gemeente Voorne aan Zee
                 </Typography>
                 <IconButton onClick={handleDrawerClose}>
                     {theme.direction === "ltr" ? (

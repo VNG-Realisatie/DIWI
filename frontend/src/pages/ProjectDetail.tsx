@@ -46,7 +46,7 @@ export const ProjectDetail = () => {
                     p={1}
                 >
                     <Typography> Projecten overzicht: </Typography>
-                    <Typography> Pijldatum: 12 Jan 2023</Typography>
+                    <Typography> Peildatum: 12 Jan 2023</Typography>
                 </Stack>
             </Stack>
             <Stack
