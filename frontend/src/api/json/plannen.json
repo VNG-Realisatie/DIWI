@@ -19,7 +19,18 @@
       "owner_organization_ID": 10
     },
     "condities": [],
-    "doelen": []
+    "doelen": [
+      {
+        "id": 1,
+        "plan_id": 1,
+        "conditie_type": "doel_conditie",
+        "eigendom_soort": null,
+        "waarde": null,
+        "huurbedrag": null,
+        "woning_type": null,
+        "fysiek_voorkomen": null
+      }
+    ]
   },
   {
     "plan": {
@@ -62,8 +73,30 @@
       "confidentiality_level": "openbaar",
       "owner_organization_ID": 10
     },
-    "condities": [],
-    "doelen": []
+    "condities": [
+      {
+        "id": 3,
+        "plan_id": 3,
+        "conditie_type": "plan_conditie",
+        "eigendom_soort": null,
+        "waarde": null,
+        "huurbedrag": null,
+        "woning_type": null,
+        "fysiek_voorkomen": null
+      }
+    ],
+    "doelen": [
+      {
+        "id": 2,
+        "plan_id": 3,
+        "conditie_type": "doel_conditie",
+        "eigendom_soort": null,
+        "waarde": null,
+        "huurbedrag": null,
+        "woning_type": "meergezinswoning",
+        "fysiek_voorkomen": null
+      }
+    ]
   },
   {
     "plan": {
@@ -85,7 +118,18 @@
       "owner_organization_ID": 10
     },
     "condities": [],
-    "doelen": []
+    "doelen": [
+      {
+        "id": 4,
+        "plan_id": 4,
+        "conditie_type": "doel_conditie",
+        "eigendom_soort": null,
+        "waarde": null,
+        "huurbedrag": null,
+        "woning_type": null,
+        "fysiek_voorkomen": null
+      }
+    ]
   },
   {
     "plan": {
@@ -107,7 +151,18 @@
       "owner_organization_ID": 10
     },
     "condities": [],
-    "doelen": []
+    "doelen": [
+      {
+        "id": 5,
+        "plan_id": 5,
+        "conditie_type": "doel_conditie",
+        "eigendom_soort": "huurwoning_woningcorporatie",
+        "waarde": null,
+        "huurbedrag": null,
+        "woning_type": null,
+        "fysiek_voorkomen": null
+      }
+    ]
   },
   {
     "plan": {
@@ -128,8 +183,30 @@
       "confidentiality_level": "openbaar",
       "owner_organization_ID": 10
     },
-    "condities": [],
-    "doelen": []
+    "condities": [
+      {
+        "id": 7,
+        "plan_id": 6,
+        "conditie_type": "plan_conditie",
+        "eigendom_soort": "huurwoning_woningcorporatie",
+        "waarde": null,
+        "huurbedrag": null,
+        "woning_type": null,
+        "fysiek_voorkomen": null
+      }
+    ],
+    "doelen": [
+      {
+        "id": 6,
+        "plan_id": 6,
+        "conditie_type": "doel_conditie",
+        "eigendom_soort": null,
+        "waarde": null,
+        "huurbedrag": "€ 647,19",
+        "woning_type": null,
+        "fysiek_voorkomen": null
+      }
+    ]
   },
   {
     "plan": {
@@ -150,8 +227,30 @@
       "confidentiality_level": "openbaar",
       "owner_organization_ID": 10
     },
-    "condities": [],
-    "doelen": []
+    "condities": [
+      {
+        "id": 9,
+        "plan_id": 7,
+        "conditie_type": "plan_conditie",
+        "eigendom_soort": "huurwoning_particuliere_verhuurder",
+        "waarde": null,
+        "huurbedrag": null,
+        "woning_type": null,
+        "fysiek_voorkomen": null
+      }
+    ],
+    "doelen": [
+      {
+        "id": 8,
+        "plan_id": 7,
+        "conditie_type": "doel_conditie",
+        "eigendom_soort": null,
+        "waarde": null,
+        "huurbedrag": "€ 1.000,00",
+        "woning_type": null,
+        "fysiek_voorkomen": null
+      }
+    ]
   },
   {
     "plan": {
@@ -172,8 +271,30 @@
       "confidentiality_level": "openbaar",
       "owner_organization_ID": 10
     },
-    "condities": [],
-    "doelen": []
+    "condities": [
+      {
+        "id": 11,
+        "plan_id": 8,
+        "conditie_type": "plan_conditie",
+        "eigendom_soort": "koopwoning",
+        "waarde": null,
+        "huurbedrag": null,
+        "woning_type": null,
+        "fysiek_voorkomen": null
+      }
+    ],
+    "doelen": [
+      {
+        "id": 10,
+        "plan_id": 8,
+        "conditie_type": "doel_conditie",
+        "eigendom_soort": null,
+        "waarde": "€ 190.000,00",
+        "huurbedrag": null,
+        "woning_type": null,
+        "fysiek_voorkomen": null
+      }
+    ]
   },
   {
     "plan": {
@@ -194,7 +315,29 @@
       "confidentiality_level": "openbaar",
       "owner_organization_ID": 10
     },
-    "condities": [],
-    "doelen": []
+    "condities": [
+      {
+        "id": 13,
+        "plan_id": 9,
+        "conditie_type": "plan_conditie",
+        "eigendom_soort": "koopwoning",
+        "waarde": null,
+        "huurbedrag": null,
+        "woning_type": null,
+        "fysiek_voorkomen": null
+      }
+    ],
+    "doelen": [
+      {
+        "id": 12,
+        "plan_id": 9,
+        "conditie_type": "doel_conditie",
+        "eigendom_soort": null,
+        "waarde": "€ 250.000,00",
+        "huurbedrag": null,
+        "woning_type": null,
+        "fysiek_voorkomen": null
+      }
+    ]
   }
 ]
