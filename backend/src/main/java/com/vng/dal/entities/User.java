@@ -1,6 +1,6 @@
 package com.vng.dal.entities;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "user", schema = "diwi_testset_simplified")

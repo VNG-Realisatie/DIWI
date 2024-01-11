@@ -13,8 +13,7 @@
         <revision>1.7.1-SNAPSHOT</revision>
         <assertj.version>3.25.1</assertj.version>
         <jersey.version>2.25.1</jersey.version>
-        <hibernate.version>5.4.27.Final</hibernate.version>
-        <hibernate-types.version>2.21.1</hibernate-types.version>
+        <hibernate.version>6.4.1.Final</hibernate.version>
         <hibernate.validator.version>8.0.1.Final</hibernate.validator.version>
         <javax.validation.version>2.0.1.Final</javax.validation.version>
         <junit.platform.version>1.10.1</junit.platform.version>
@@ -150,9 +149,19 @@
             <artifactId>jersey-media-json-jackson</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>${hibernate.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.tool</groupId>
+            <artifactId>hibernate-tools-orm</artifactId>
+            <version>${hibernate.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.hypersistence</groupId>
+            <artifactId>hypersistence-utils-hibernate-62</artifactId>
+            <version>3.7.0</version>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -163,11 +172,6 @@
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
             <version>${javax.validation.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.vladmihalcea</groupId>
-            <artifactId>hibernate-types-52</artifactId>
-            <version>${hibernate-types.version}</version>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>

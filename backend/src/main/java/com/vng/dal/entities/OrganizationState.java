@@ -1,6 +1,7 @@
 package com.vng.dal.entities;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
 @Entity

@@ -1,8 +1,9 @@
 package com.vng.security;
 
+import io.hypersistence.utils.hibernate.type.basic.PostgreSQLEnumType;
+import jakarta.persistence.*;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -25,8 +26,8 @@ public class User {
     private boolean disabled = false;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "UserRole")
-    @Type(type = "pgsql_enum")
+    @Column(columnDefinition = "user_role")
+    @Type(PostgreSQLEnumType.class)
     private UserRole role;
 
     private LocalDateTime creationDate = LocalDateTime.now();

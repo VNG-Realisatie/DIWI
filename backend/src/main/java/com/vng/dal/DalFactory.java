@@ -1,15 +1,11 @@
 package com.vng.dal;
 
 import java.lang.reflect.Modifier;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.stream.Stream;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.metamodel.Metamodel;
-
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.metamodel.Metamodel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
@@ -65,7 +61,7 @@ public class DalFactory implements AutoCloseable {
                 "connection_pool_size", env.getOrDefault("connection_pool_size", "1"),
                 "hibernate.show_sql", env.getOrDefault("hibernate_show_sql", "true"));
 
-        standardServiceRegistryBuilder.applySettings(settings);
+        standardServiceRegistryBuilder.applySettings(new HashMap<>(settings));
 
         StandardServiceRegistry registry = standardServiceRegistryBuilder.build();
         MetadataSources sources = new MetadataSources(registry);
