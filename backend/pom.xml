@@ -23,10 +23,6 @@
         <nodejs.version>v8.11.4</nodejs.version>
         <yarn.version>v1.9.4</yarn.version>
         <mockito.version>5.8.0</mockito.version>
-        <node.install.dir>node.install.dir</node.install.dir>
-        <yarn.test.arguments>test-ci</yarn.test.arguments>
-        <yarn.install.arguments>--mutex file:/tmp/.yarn-mutex</yarn.install.arguments>
-        <yarn.build.arguments>build</yarn.build.arguments>
         <jts.version>1.16.1</jts.version>
         <args4j.version>2.33</args4j.version>
         <poi.version>4.1.2</poi.version>
@@ -234,8 +230,8 @@
         </dependency>
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
-            <artifactId> quartz </artifactId>
-            <version>2.5.0-rc1</version>
+            <artifactId>quartz</artifactId>
+            <version>2.3.2</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
