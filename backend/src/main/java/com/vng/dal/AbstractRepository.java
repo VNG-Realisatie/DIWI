@@ -27,7 +27,7 @@ public abstract class AbstractRepository {
     }
 
     public <T> void delete(T entity) {
-        session.delete(entity);
+        session.remove(entity);
     }
 
     public void flush() {

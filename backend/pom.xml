@@ -15,7 +15,7 @@
         <jersey.version>3.1.5</jersey.version>
         <hibernate.version>6.4.1.Final</hibernate.version>
         <hibernate.validator.version>8.0.1.Final</hibernate.validator.version>
-        <jakarta.validation.version>3.0.2</jakarta.validation.version>
+        <jakarta.validation.version>3.1.0-M1</jakarta.validation.version>
         <junit.platform.version>1.10.1</junit.platform.version>
         <junit.version>5.10.1</junit.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -191,7 +191,7 @@
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
-            <version>6.0.0</version>
+            <version>6.1.0-M1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -206,7 +206,7 @@
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>jakarta.el</artifactId>
-            <version>4.0.2</version>
+            <version>5.0.0-M1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
@@ -226,12 +226,12 @@
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-servlet-filter-adapter</artifactId>
-            <version>22.0.1</version>
+            <version>23.0.4</version>
         </dependency>
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-admin-client</artifactId>
-            <version>21.1.0</version>
+            <version>23.0.4</version>
         </dependency>
         <dependency>
             <groupId>com.opencsv</groupId>
@@ -375,7 +375,7 @@
                     <dependency>
                         <groupId>org.apache.maven.doxia</groupId>
                         <artifactId>doxia-site-renderer</artifactId>
-                        <version>1.9.2</version>
+                        <version>2.0.0-M16</version>
                         <exclusions>
                             <exclusion>
                                 <groupId>org.apache.struts</groupId>
