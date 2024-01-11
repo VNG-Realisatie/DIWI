@@ -8,39 +8,34 @@ import org.flywaydb.core.api.configuration.FluentConfiguration;
 public class Database {
     private static Logger logger = LogManager.getLogger();
 
-    public static void create(DbManipulator.DbInfo dbInfo) {
-        DbManipulator.createEmptyDbStatic(dbInfo.dbName, dbInfo.dbUser);
-        upgrade(System.getenv("hibernate_connection_url"), System.getenv("hibernate_connection_username"), System.getenv("hibernate_connection_password"));
-    }
-
     /**
      * Upgrade db to the latest schema.
      */
     public static void upgrade(String url, String username, String password) {
-        upgrade (url, username, password, null);
+        upgrade(url, username, password, null);
     }
 
     public static void upgrade(String url, String username, String password, String version) {
         logger.info("Upgrading db");
         FluentConfiguration configuration = Flyway
-                .configure()
-                .dataSource(url, username, password)
-                .baselineOnMigrate(true)
-                .outOfOrder(true);
+            .configure()
+            .dataSource(url, username, password)
+            .baselineOnMigrate(true)
+            .outOfOrder(true);
         if (version != null) {
-            configuration= configuration.target(version);
+            configuration = configuration.target(version);
         }
         Flyway flyway = configuration
-                .load();
+            .load();
         flyway.migrate();
         logger.info("Db upgrade complete");
     }
 
-    public static void repair(DbManipulator.DbInfo dbInfo) {
+    public static void repair(String url, String username, String password) {
         logger.info("Repairing db");
         Flyway flyway = Flyway.configure()
-                .dataSource("jdbc:postgresql://localhost:5432/" + dbInfo.dbName, dbInfo.dbUser, dbInfo.dbPassword)
-                .load();
+            .dataSource(url, username, password)
+            .load();
 
         // Start the migration
         flyway.repair();
@@ -48,11 +43,11 @@ public class Database {
 
     }
 
-    public static void baseline(DbManipulator.DbInfo dbInfo) {
+    public static void baseline(String url, String username, String password, String version) {
         Flyway flyway = Flyway.configure()
-                .dataSource("jdbc:postgresql://localhost:5432/" + dbInfo.dbName, dbInfo.dbUser, dbInfo.dbPassword)
-                .baselineVersion("1.6.0")
-                .load();
+            .dataSource(url, username, password)
+            .baselineVersion(version)
+            .load();
 
         flyway.baseline();
 
