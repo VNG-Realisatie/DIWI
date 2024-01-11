@@ -5,11 +5,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.annotation.PreDestroy;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.annotation.MultipartConfig;
-import javax.ws.rs.ApplicationPath;
+import jakarta.annotation.PreDestroy;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.ws.rs.ApplicationPath;
 
 import com.vng.config.ProjectConfig;
 import com.vng.dal.DalFactory;
@@ -37,7 +37,7 @@ public class VngApplication extends ResourceConfig {
 
     private VngDependencyInjection dependencyInjection;
 
-    public VngApplication(@javax.ws.rs.core.Context ServletConfig config) throws Exception {
+    public VngApplication(@jakarta.ws.rs.core.Context ServletConfig config) throws Exception {
         this.config = config;
 
         Map<String, String> env = System.getenv();

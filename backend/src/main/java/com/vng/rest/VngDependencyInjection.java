@@ -1,7 +1,7 @@
 package com.vng.rest;
 
-import javax.inject.Inject;
-import javax.ws.rs.container.ContainerRequestContext;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.container.ContainerRequestContext;
 
 import com.vng.config.ProjectConfig;
 import com.vng.dal.Dal;
@@ -14,16 +14,17 @@ import com.vng.services.KeycloakService;
 import com.vng.services.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.glassfish.hk2.api.Factory;
-import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import org.glassfish.jersey.internal.inject.AbstractBinder;
 import org.glassfish.jersey.process.internal.RequestScoped;
 import org.hibernate.Session;
+
+import java.util.function.Supplier;
 
 public class VngDependencyInjection extends AbstractBinder implements AutoCloseable {
 
     static Logger logger = LogManager.getLogger();
 
-    static class SessionFactory implements Factory<Session> {
+    static class SessionFactory implements Supplier<Session> {
 
         private DalFactory dalFactory;
 
@@ -33,17 +34,12 @@ public class VngDependencyInjection extends AbstractBinder implements AutoClosea
         }
 
         @Override
-        public Session provide() {
+        public Session get() {
             return dalFactory.constructDal().getSession();
-        }
-
-        @Override
-        public void dispose(Session instance) {
-            instance.close();
         }
     }
 
-    static class GenericRepoFactory implements Factory<GenericRepository> {
+    static class GenericRepoFactory implements Supplier<GenericRepository> {
 
         private DalFactory dalFactory;
 
@@ -52,18 +48,13 @@ public class VngDependencyInjection extends AbstractBinder implements AutoClosea
         }
 
         @Override
-        public GenericRepository provide() {
+        public GenericRepository get() {
             Dal dal = dalFactory.constructDal();
             return new GenericRepository(dal);
         }
-
-        @Override
-        public void dispose(GenericRepository t) {
-            t.close();
-        }
     }
 
-    public static class LoggedUserFactory implements Factory<LoggedUser> {
+    public static class LoggedUserFactory implements Supplier<LoggedUser> {
 
         private final ContainerRequestContext context;
 
@@ -73,12 +64,8 @@ public class VngDependencyInjection extends AbstractBinder implements AutoClosea
         }
 
         @Override
-        public LoggedUser provide() {
+        public LoggedUser get() {
             return (LoggedUser) context.getProperty("loggedUser");
-        }
-
-        @Override
-        public void dispose(LoggedUser t) {
         }
     }
 

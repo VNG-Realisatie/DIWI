@@ -2,7 +2,7 @@ package com.vng.security;
 
 import java.util.UUID;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import com.vng.dal.AbstractRepository;
 import org.hibernate.Session;

@@ -1,6 +1,6 @@
 package com.vng.services;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 @SuppressWarnings("serial")
 public class AddUserException extends Exception {
