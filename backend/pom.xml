@@ -19,8 +19,6 @@
         <junit.platform.version>1.10.1</junit.platform.version>
         <junit.version>5.10.1</junit.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <nodejs.version>v8.11.4</nodejs.version>
-        <yarn.version>v1.9.4</yarn.version>
         <mockito.version>5.8.0</mockito.version>
         <jts.version>1.16.1</jts.version>
         <args4j.version>2.33</args4j.version>
