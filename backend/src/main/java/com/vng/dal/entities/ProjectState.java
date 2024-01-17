@@ -1,5 +1,6 @@
 package com.vng.dal.entities;
 
+import com.vng.dal.CustomUuidGeneration;
 import com.vng.dal.entities.enums.Confidentiality;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcType;
@@ -16,6 +17,7 @@ public class ProjectState {
 
     @Id
     @GeneratedValue
+    @CustomUuidGeneration
     @Column(name = "id")
     private UUID id;
 

@@ -1,5 +1,6 @@
 package com.vng.dal.entities;
 
+import com.vng.dal.CustomUuidGeneration;
 import jakarta.persistence.*;
 
 import java.util.UUID;
@@ -12,6 +13,7 @@ public class Project {
 
     @Id
     @GeneratedValue
+    @CustomUuidGeneration
     @Column(name = "id")
     private UUID id;
 

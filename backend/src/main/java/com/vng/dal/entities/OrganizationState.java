@@ -1,5 +1,6 @@
 package com.vng.dal.entities;
 
+import com.vng.dal.CustomUuidGeneration;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ public class OrganizationState {
 
     @Id
     @GeneratedValue
+    @CustomUuidGeneration
     @Column(name = "id")
     private UUID id;
 
