@@ -7,15 +7,15 @@ import java.util.UUID;
 import static com.vng.dal.GenericRepository.VNG_SCHEMA_NAME;
 
 @Entity
-@Table(name = "user", schema = VNG_SCHEMA_NAME)
-public class User {
+@Table(name = "project", schema = VNG_SCHEMA_NAME)
+public class Project {
 
     @Id
     @GeneratedValue
     @Column(name = "id")
     private UUID id;
 
-    public User() {
+    public Project() {
     }
 
     public UUID getId() {
@@ -25,5 +25,4 @@ public class User {
     public void setId(UUID id) {
         this.id = id;
     }
-
 }
