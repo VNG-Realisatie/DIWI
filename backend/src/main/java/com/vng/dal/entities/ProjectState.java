@@ -1,7 +1,10 @@
 package com.vng.dal.entities;
 
 import com.vng.dal.CustomUuidGeneration;
+import com.vng.dal.entities.enums.Confidentiality;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -9,8 +12,8 @@ import java.util.UUID;
 import static com.vng.dal.GenericRepository.VNG_SCHEMA_NAME;
 
 @Entity
-@Table(name = "organization_state", schema = VNG_SCHEMA_NAME)
-public class OrganizationState {
+@Table(name = "project_state", schema = VNG_SCHEMA_NAME)
+public class ProjectState {
 
     @Id
     @GeneratedValue
@@ -19,15 +22,17 @@ public class OrganizationState {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organization_id")
-    private Organization organization;
+    @JoinColumn(name = "project_id")
+    private Project project;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_organization_id")
-    private Organization parentOrganization;
+    @JoinColumn(name = "owner_organization_id")
+    private Organization ownerOrganization;
 
-    @Column(name = "naam")
-    private String name;
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "confidentiality_level")
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    private Confidentiality confidentiality;
 
     @Column(name = "change_end_date")
     private LocalDateTime changeEndDate;
@@ -39,7 +44,10 @@ public class OrganizationState {
     @JoinColumn(name = "change_user_id")
     private User changeUser;
 
-    public OrganizationState() {
+    @Column(name = "project_color")
+    private String color;
+
+    public ProjectState() {
     }
 
     public UUID getId() {
@@ -50,28 +58,28 @@ public class OrganizationState {
         this.id = id;
     }
 
-    public Organization getOrganization() {
-        return organization;
+    public Project getProject() {
+        return project;
     }
 
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
+    public void setProject(Project project) {
+        this.project = project;
     }
 
-    public Organization getParentOrganization() {
-        return parentOrganization;
+    public Organization getOwnerOrganization() {
+        return ownerOrganization;
     }
 
-    public void setParentOrganization(Organization parentOrganization) {
-        this.parentOrganization = parentOrganization;
+    public void setOwnerOrganization(Organization ownerOrganization) {
+        this.ownerOrganization = ownerOrganization;
     }
 
-    public String getName() {
-        return name;
+    public Confidentiality getConfidentiality() {
+        return confidentiality;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setConfidentiality(Confidentiality confidentiality) {
+        this.confidentiality = confidentiality;
     }
 
     public LocalDateTime getChangeEndDate() {
@@ -96,5 +104,13 @@ public class OrganizationState {
 
     public void setChangeUser(User changeUser) {
         this.changeUser = changeUser;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 }

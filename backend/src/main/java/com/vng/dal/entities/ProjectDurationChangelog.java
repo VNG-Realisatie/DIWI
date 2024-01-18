@@ -9,8 +9,8 @@ import java.util.UUID;
 import static com.vng.dal.GenericRepository.VNG_SCHEMA_NAME;
 
 @Entity
-@Table(name = "organization_state", schema = VNG_SCHEMA_NAME)
-public class OrganizationState {
+@Table(name = "project_duration_changelog", schema = VNG_SCHEMA_NAME)
+public class ProjectDurationChangelog {
 
     @Id
     @GeneratedValue
@@ -19,15 +19,16 @@ public class OrganizationState {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organization_id")
-    private Organization organization;
+    @JoinColumn(name = "project_id")
+    private Project project;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_organization_id")
-    private Organization parentOrganization;
+    @JoinColumn(name = "start_milestone_id")
+    private Milestone startMilestone;
 
-    @Column(name = "naam")
-    private String name;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "end_milestone_id")
+    private Milestone endMilestone;
 
     @Column(name = "change_end_date")
     private LocalDateTime changeEndDate;
@@ -39,7 +40,7 @@ public class OrganizationState {
     @JoinColumn(name = "change_user_id")
     private User changeUser;
 
-    public OrganizationState() {
+    public ProjectDurationChangelog() {
     }
 
     public UUID getId() {
@@ -50,28 +51,28 @@ public class OrganizationState {
         this.id = id;
     }
 
-    public Organization getOrganization() {
-        return organization;
+    public Project getProject() {
+        return project;
     }
 
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
+    public void setProject(Project project) {
+        this.project = project;
     }
 
-    public Organization getParentOrganization() {
-        return parentOrganization;
+    public Milestone getStartMilestone() {
+        return startMilestone;
     }
 
-    public void setParentOrganization(Organization parentOrganization) {
-        this.parentOrganization = parentOrganization;
+    public void setStartMilestone(Milestone startMilestone) {
+        this.startMilestone = startMilestone;
     }
 
-    public String getName() {
-        return name;
+    public Milestone getEndMilestone() {
+        return endMilestone;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setEndMilestone(Milestone endMilestone) {
+        this.endMilestone = endMilestone;
     }
 
     public LocalDateTime getChangeEndDate() {

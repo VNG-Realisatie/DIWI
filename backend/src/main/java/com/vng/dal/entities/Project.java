@@ -8,8 +8,8 @@ import java.util.UUID;
 import static com.vng.dal.GenericRepository.VNG_SCHEMA_NAME;
 
 @Entity
-@Table(name = "organization", schema = VNG_SCHEMA_NAME)
-public class Organization {
+@Table(name = "project", schema = VNG_SCHEMA_NAME)
+public class Project {
 
     @Id
     @GeneratedValue
@@ -17,7 +17,7 @@ public class Organization {
     @Column(name = "id")
     private UUID id;
 
-    public Organization() {
+    public Project() {
     }
 
     public UUID getId() {

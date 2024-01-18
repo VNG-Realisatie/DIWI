@@ -3,16 +3,23 @@ package com.vng.dal;
 import java.util.Arrays;
 import java.util.List;
 
-import com.vng.dal.entities.Organization;
-import com.vng.dal.entities.OrganizationState;
-import com.vng.dal.entities.User;
+import com.vng.dal.entities.*;
 
 public class GenericRepository implements AutoCloseable {
 
+    public static final String VNG_SCHEMA_NAME = "diwi_testset";
+
     public static List<Class<? extends Object>> getEntities() {
         List<Class<? extends Object>> entities =
-            Arrays.asList(Organization.class,
+            Arrays.asList(
+                Milestone.class,
+                Organization.class,
                 OrganizationState.class,
+                Project.class,
+                ProjectState.class,
+                ProjectDurationChangelog.class,
+                ProjectNameChangelog.class,
+                ProjectPlanTypeChangelog.class,
                 User.class);
         return entities;
     }
