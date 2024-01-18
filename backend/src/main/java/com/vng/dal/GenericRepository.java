@@ -16,10 +16,20 @@ public class GenericRepository implements AutoCloseable {
                 Organization.class,
                 OrganizationState.class,
                 Project.class,
-                ProjectState.class,
                 ProjectDurationChangelog.class,
+                ProjectFaseChangelog.class,
+                ProjectGemeenteRolChangelog.class,
+                ProjectGemeenteRolValue.class,
+                ProjectGemeenteRolValueState.class,
                 ProjectNameChangelog.class,
+                ProjectPlanologischePlanstatusChangelog.class,
+                ProjectPlanologischePlanstatusChangelogValue.class,
                 ProjectPlanTypeChangelog.class,
+                ProjectPlanTypeChangelogValue.class,
+                ProjectPrioriseringChangelog.class,
+                ProjectPrioriseringValue.class,
+                ProjectPrioriseringValueState.class,
+                ProjectState.class,
                 User.class);
         return entities;
     }

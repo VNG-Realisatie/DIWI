@@ -1,23 +1,23 @@
 package com.vng.models;
 
 public class SelectModel {
-    private Long id;
+    private String id;
     private String name;
     private boolean active = true;
 
     public SelectModel() {
     }
 
-    public SelectModel(Long id, String name) {
+    public SelectModel(String id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

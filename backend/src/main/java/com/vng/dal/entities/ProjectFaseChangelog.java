@@ -1,6 +1,6 @@
 package com.vng.dal.entities;
 
-import com.vng.dal.entities.enums.Confidentiality;
+import com.vng.dal.entities.enums.ProjectPhase;
 import com.vng.dal.entities.superclasses.MilestoneChangeDataSuperclass;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -11,24 +11,17 @@ import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 import static com.vng.dal.GenericRepository.VNG_SCHEMA_NAME;
 
 @Entity
-@Table(name = "project_state", schema = VNG_SCHEMA_NAME)
+@Table(name = "project_fase_changelog", schema = VNG_SCHEMA_NAME)
 @Data
 @NoArgsConstructor
-public class ProjectState extends MilestoneChangeDataSuperclass {
+public class ProjectFaseChangelog extends MilestoneChangeDataSuperclass {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_organization_id")
-    private Organization ownerOrganization;
-
+    @Column(name = "project_fase")
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "confidentiality_level")
     @JdbcType(PostgreSQLEnumJdbcType.class)
-    private Confidentiality confidentiality;
-
-    @Column(name = "project_color")
-    private String color;
+    private ProjectPhase projectPhase;  //TODO - mapping doesn't work
 }

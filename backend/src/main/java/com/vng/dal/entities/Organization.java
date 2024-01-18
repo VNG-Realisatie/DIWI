@@ -1,30 +1,16 @@
 package com.vng.dal.entities;
 
-import com.vng.dal.CustomUuidGeneration;
+import com.vng.dal.entities.superclasses.IdSuperclass;
 import jakarta.persistence.*;
-
-import java.util.UUID;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import static com.vng.dal.GenericRepository.VNG_SCHEMA_NAME;
 
 @Entity
 @Table(name = "organization", schema = VNG_SCHEMA_NAME)
-public class Organization {
+@Data
+@NoArgsConstructor
+public class Organization extends IdSuperclass {
 
-    @Id
-    @GeneratedValue
-    @CustomUuidGeneration
-    @Column(name = "id")
-    private UUID id;
-
-    public Organization() {
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
 }
