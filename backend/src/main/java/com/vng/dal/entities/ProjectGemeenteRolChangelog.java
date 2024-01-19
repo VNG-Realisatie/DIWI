@@ -8,12 +8,16 @@ import lombok.NoArgsConstructor;
 import static com.vng.dal.GenericRepository.VNG_SCHEMA_NAME;
 
 @Entity
-@Table(name = "project_duration_changelog", schema = VNG_SCHEMA_NAME)
+@Table(name = "project_gemeenterol_changelog", schema = VNG_SCHEMA_NAME)
 @Data
 @NoArgsConstructor
-public class ProjectPlanTypeChangelog extends MilestoneChangeDataSuperclass {
+public class ProjectGemeenteRolChangelog extends MilestoneChangeDataSuperclass {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_priorisering")
+    private ProjectGemeenteRolValue value;
 }

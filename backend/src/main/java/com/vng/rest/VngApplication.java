@@ -5,6 +5,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
+import com.vng.resources.ProjectsResource;
 import jakarta.annotation.PreDestroy;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletContext;
@@ -77,6 +78,7 @@ public class VngApplication extends ResourceConfig {
         register(VngResource.class);
         register(AuthResource.class);
         register(UserResource.class);
+        register(ProjectsResource.class);
 
         // Flyway migrations
         Database.upgrade(System.getenv("hibernate_connection_url"), System.getenv("hibernate_connection_username"),

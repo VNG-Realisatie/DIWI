@@ -8,9 +8,9 @@ import lombok.NoArgsConstructor;
 import static com.vng.dal.GenericRepository.VNG_SCHEMA_NAME;
 
 @Entity
-@Table(name = "milestone", schema = VNG_SCHEMA_NAME)
+@Table(name = "project_priorisering_value", schema = VNG_SCHEMA_NAME)
 @Data
 @NoArgsConstructor
-public class Milestone extends IdSuperclass {
+public class ProjectPrioriseringValue extends IdSuperclass {
 
 }

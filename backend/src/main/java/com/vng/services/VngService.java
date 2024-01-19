@@ -27,7 +27,7 @@ public class VngService {
         // apply service logic
         //end TODO
 
-        return organizationList.stream().map(o -> new SelectModel(o.getId(), o.getName())).toList();
+        return organizationList.stream().map(o -> new SelectModel(o.getId().toString(), o.getName())).toList();
     }
 
 }
