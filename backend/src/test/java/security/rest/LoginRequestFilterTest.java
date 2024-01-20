@@ -1,23 +1,15 @@
 package security.rest;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.security.Principal;
 import java.util.Map;
-import java.util.UUID;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-import jakarta.ws.rs.container.ContainerRequestContext;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.keycloak.KeycloakSecurityContext;
 import org.keycloak.adapters.OidcKeycloakAccount;
 import org.keycloak.adapters.spi.KeycloakAccount;
@@ -28,11 +20,12 @@ import com.vng.config.ProjectConfig;
 import com.vng.dal.Dal;
 import com.vng.dal.DalFactory;
 import com.vng.security.LoginRequestFilter;
-import com.vng.security.SecurityRepository;
-import com.vng.security.User;
-import com.vng.security.UserRole;
 import com.vng.services.UserService;
 import com.vng.testutil.TestDb;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import jakarta.ws.rs.container.ContainerRequestContext;
 
 class LoginRequestFilterTest {
     // Class scope
