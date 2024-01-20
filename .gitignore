@@ -6,3 +6,4 @@ htpasswd
 !/data/.gitkeep
 
 sql/json/
+/.metadata/
