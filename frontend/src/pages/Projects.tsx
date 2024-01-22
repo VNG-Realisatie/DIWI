@@ -62,7 +62,7 @@ export const Projects = () => {
                     </FormControl>
                     <AddCircleIcon color="info" sx={{ fontSize: "45px", cursor: "pointer" }} onClick={() => navigate(Paths.projectAdd.path)} />
                 </Stack>
-                {!tableview && <NetherlandsMap />}
+                {!tableview && <NetherlandsMap height="500px" width="1000px" />}
                 {tableview && <ProjectsTableView />}
             </Stack>
         </Stack>
