@@ -17,7 +17,6 @@ import jakarta.ws.rs.core.MediaType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static com.vng.security.SecurityRoleConstants.Admin;
@@ -43,8 +42,7 @@ public class ProjectsResource {
     @Produces(MediaType.APPLICATION_JSON)
     public List<ProjectListModel> getAllProjects(@Context LoggedUser loggedUser, @BeanParam FilterPaginationSorting filtering) {
 
-        //TODO
-        return Arrays.asList(new ProjectListModel());
+        return repo.getProjectsTable();
 
     }
 
