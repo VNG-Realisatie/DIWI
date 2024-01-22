@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.vng</groupId>
@@ -391,8 +393,8 @@
                 <configuration>
                     <transformationSets>
                         <transformationSet>
-                            <dir>target</dir>
-                            <outputDir>target/checkstyle-junit</outputDir>
+                            <dir>${project.build.directory}</dir>
+                            <outputDir>${project.build.directory}/checkstyle-junit</outputDir>
                             <includes>
                                 <include>checkstyle-result.xml</include>
                             </includes>
@@ -502,6 +504,30 @@
             </activation>
             <build>
                 <directory>${alt.build.dir}</directory>
+            </build>
+        </profile>
+        <profile>
+            <id>skipTests</id>
+            <activation>
+                <property>
+                    <name>skipTests</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>xml-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>none</phase>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                </plugins>
             </build>
         </profile>
     </profiles>
