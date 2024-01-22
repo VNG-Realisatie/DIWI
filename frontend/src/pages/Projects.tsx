@@ -1,13 +1,4 @@
-import {
-    Box,
-    FormControl,
-    FormControlLabel,
-    Popover,
-    Stack,
-    Switch,
-    Typography,
-} from "@mui/material";
-import { ReactComponent as Map } from "../assets/temp/map.svg";
+import { Box, FormControl, FormControlLabel, Popover, Stack, Switch, Typography } from "@mui/material";
 import Search from "../components/Search";
 import { ProjectList } from "../components/ProjectList";
 import { useContext, useState } from "react";
@@ -18,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
 import { DateCalendar } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
+import NetherlandsMap from "../components/map/NetherlandsMap";
 
 export const Projects = () => {
     const { selectedProject, projects } = useContext(ProjectContext);
@@ -34,42 +26,22 @@ export const Projects = () => {
     const open = Boolean(anchorEl);
     const id = open ? "simple-popover" : undefined;
 
-    const convertedDate= selectedDate&&new Date(selectedDate).toISOString().split('T')[0];
+    const convertedDate = selectedDate && new Date(selectedDate).toISOString().split("T")[0];
     return (
-        <Stack
-            direction="row"
-            justifyContent="space-between"
-        >
-            <Box  overflow="auto" p={0.3} minWidth="25%">
-                <Search
-                    label="Zoeken..."
-                    searchList={projects.map((p) => p.project)}
-                />
-                <ProjectList
-                    projectList={
-                        selectedProject
-                            ? [selectedProject]
-                            : projects.map((p) => p.project)
-                    }
-                />
+        <Stack direction="row" justifyContent="space-between">
+            <Box overflow="auto" p={0.3} minWidth="25%">
+                <Search label="Zoeken..." searchList={projects.map((p) => p.project)} />
+                <ProjectList projectList={selectedProject ? [selectedProject] : projects.map((p) => p.project)} />
             </Box>
-            <Stack direction="column" >
-                <Stack
-                    direction="row"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    sx={{ backgroundColor: "#002C64", color: "#FFFFFF" }}
-                    p={1}
-                >
+            <Stack direction="column">
+                <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ backgroundColor: "#002C64", color: "#FFFFFF" }} p={1}>
                     <Typography> Projecten overzicht: </Typography>
                     <Typography
-                        onClick={(
-                            event: React.MouseEvent<HTMLButtonElement>
-                        ) => {
+                        onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
                             setAnchorEl(event.currentTarget);
                         }}
                     >
-                        Peildatum: {convertedDate?convertedDate:"2023-09-05"}
+                        Peildatum: {convertedDate ? convertedDate : "2023-09-05"}
                     </Typography>
                     <Popover
                         id={id}
@@ -81,32 +53,16 @@ export const Projects = () => {
                             horizontal: "left",
                         }}
                     >
-                        <DateCalendar
-                            defaultValue={dayjs("2023-09-05")}
-                            onChange={(newValue) => setSelectedDate(newValue)}
-                        />
+                        <DateCalendar defaultValue={dayjs("2023-09-05")} onChange={(newValue) => setSelectedDate(newValue)} />
                     </Popover>
                 </Stack>
                 <Stack direction="row" justifyContent="flex-end" alignItems="center" border="solid 1px #ddd" p={0.5}>
                     <FormControl component="fieldset" variant="standard">
-                        <FormControlLabel
-                            control={
-                                <Switch
-                                    checked={tableview}
-                                    onChange={handleTableSelect}
-                                    name="table"
-                                />
-                            }
-                            label="Tabel weergave "
-                        />
+                        <FormControlLabel control={<Switch checked={tableview} onChange={handleTableSelect} name="table" />} label="Tabel weergave " />
                     </FormControl>
-                    <AddCircleIcon
-                        color="info"
-                        sx={{ fontSize: "45px", cursor: "pointer" }}
-                        onClick={() => navigate(Paths.projectAdd.path)}
-                    />
+                    <AddCircleIcon color="info" sx={{ fontSize: "45px", cursor: "pointer" }} onClick={() => navigate(Paths.projectAdd.path)} />
                 </Stack>
-                {!tableview && <Map style={{ width: "100%" }} />}
+                {!tableview && <NetherlandsMap />}
                 {tableview && <ProjectsTableView />}
             </Stack>
         </Stack>
