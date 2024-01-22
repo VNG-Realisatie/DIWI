@@ -375,24 +375,32 @@
                 </executions>
                 <configuration>
                     <configLocation>checkstyle.xml</configLocation>
-                    <encoding>UTF-8</encoding>
                     <consoleOutput>true</consoleOutput>
-                    <failsOnError>true</failsOnError>
-                    <linkXRef>false</linkXRef>
                 </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.maven.doxia</groupId>
-                        <artifactId>doxia-site-renderer</artifactId>
-                        <version>2.0.0-M16</version>
-                        <exclusions>
-                            <exclusion>
-                                <groupId>org.apache.struts</groupId>
-                                <artifactId>struts-tiles</artifactId>
-                            </exclusion>
-                        </exclusions>
-                    </dependency>
-                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>xml-maven-plugin</artifactId>
+                <version>1.1.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>transform</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <transformationSets>
+                        <transformationSet>
+                            <dir>target</dir>
+                            <outputDir>target/checkstyle-junit</outputDir>
+                            <includes>
+                                <include>checkstyle-result.xml</include>
+                            </includes>
+                            <stylesheet>checkstyle2junit.xslt</stylesheet>
+                        </transformationSet>
+                    </transformationSets>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.owasp</groupId>
@@ -400,9 +408,7 @@
                 <version>5.3.2</version>
                 <configuration>
                     <cveValidForHours>12</cveValidForHours>
-
                     <format>xml</format>
-
                     <nodeAnalyzerEnabled>false</nodeAnalyzerEnabled>
                     <reportSets>
                         <reportSet>

@@ -1,0 +1,52 @@
+variables:
+  YARN_CACHE_FOLDER: ${CI_PROJECT_DIR}/.yarn/cache
+  MAVEN_OPTS: >-
+    -Dhttps.protocols=TLSv1.2
+    -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository
+    -Dorg.slf4j.simpleLogger.showDateTime=true
+    -Djava.awt.headless=true
+  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
+# To prevent all dependencies from being downloaded from the repo each build
+# we can configure cache folders. For some tools this requires configuring
+# cache folders for the tool.
+cache:
+  paths:
+    - .yarn/cache # The YARN_CACHE_FOLDER env var is also needed
+    - .m2/repository
+
+frontend:
+  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/node:20
+  stage: build
+  script:
+    - cd frontend
+    - yarn install
+    - yarn run lint:ci
+    - yarn run test:ci
+    - yarn build
+  artifacts:
+    when: always
+    reports:
+      junit:
+       - frontend/junit.xml
+       - frontend/eslint.xml
+
+backend:
+  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/maven:3.9-eclipse-temurin-17
+  stage: build
+  services:
+    - name: postgres:14
+  variables:
+    POSTGRES_USER: vng
+    POSTGRES_PASSWORD: vng
+    hibernate_connection_url: jdbc:postgresql://postgres:5432/impact-tool
+    hibernate_connection_username: impact-tool
+    hibernate_connection_password: impact-tool
+  script:
+    - cd backend
+    - mvn $MAVEN_CLI_OPTS package
+  artifacts:
+    when: always
+    reports:
+      junit:
+        - "backend/target/surefire-reports/TEST-*.xml"
+        - backend/target/checkstyle-junit/checkstyle-result.xml
