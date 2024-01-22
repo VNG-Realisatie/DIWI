@@ -1,4 +1,3 @@
-import { FeatureGroup, MapContainer, TileLayer } from "react-leaflet";
 import type { LatLngTuple } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
@@ -6,6 +5,7 @@ import L from "leaflet";
 import { MarkerItem } from "./MarkerItem";
 import { FullscreenControl } from "react-leaflet-fullscreen";
 import { EditControl } from "react-leaflet-draw";
+import { FeatureGroup, MapContainer, TileLayer } from "react-leaflet";
 type Props = {
     height: string;
     width: string;
