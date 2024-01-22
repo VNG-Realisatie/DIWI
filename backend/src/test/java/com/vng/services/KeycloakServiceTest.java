@@ -1,12 +1,10 @@
 package com.vng.services;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
-
 import com.vng.config.ProjectConfig;
 
 @Disabled

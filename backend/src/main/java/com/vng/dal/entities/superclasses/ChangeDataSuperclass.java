@@ -3,12 +3,14 @@ package com.vng.dal.entities.superclasses;
 import com.vng.dal.entities.User;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @MappedSuperclass
 @Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class ChangeDataSuperclass extends IdSuperclass {
 
