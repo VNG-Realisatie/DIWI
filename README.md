@@ -43,3 +43,4 @@ As the project is meant for Dutch municipalities there are lots of Dutch terms.
 | Peildatum | Reference date |
 | Gemeente  | Municipality   |
 | Buurt     | Neighbourhood  |
+| Eigenaar  | Owner          |
