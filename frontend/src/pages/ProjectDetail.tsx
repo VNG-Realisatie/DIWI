@@ -1,5 +1,4 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
-import Search from "../components/Search";
 import { useContext, useState } from "react";
 import { Details } from "../components/Details";
 import { ReactComponent as Map } from "../assets/temp/map.svg";
@@ -10,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
 import { colorArray } from "../api/dummyData";
 import { ProjectsWithHouseBlock } from "../components/ProjectWithHouseBlock";
+import BreadcrumbBar from "../components/header/BreadcrumbBar";
 
 export const ProjectDetail = () => {
     const { selectedProject, projects, id } = useContext(ProjectContext);
@@ -17,6 +17,7 @@ export const ProjectDetail = () => {
         "map" | "characteristics" | "timeline"
     >("map");
     const navigate = useNavigate();
+
     return (
         <Stack
             direction="column"
@@ -25,30 +26,7 @@ export const ProjectDetail = () => {
             border="solid 1px #ddd"
             mb={10}
         >
-            <Stack
-                direction="row"
-                justifyContent="flex-start"
-                alignItems="flex-start"
-            >
-                <Box width="20%">
-                    <Search
-                        label="Zoeken..."
-                        searchList={projects.map((p) => p.project)}
-                        isDetailSearch={true}
-                    />
-                </Box>
-                <Stack
-                    width="80%"
-                    direction="row"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    sx={{ backgroundColor: "#002C64", color: "#FFFFFF" }}
-                    p={1}
-                >
-                    <Typography> Projecten overzicht: </Typography>
-                    <Typography> Peildatum: 12 Jan 2023</Typography>
-                </Stack>
-            </Stack>
+            <BreadcrumbBar breadcrumb={["Projecten", selectedProject?.name ?? "Project"]} />
             <Stack
                 direction="row"
                 alignItems="center"
