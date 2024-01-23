@@ -3,7 +3,6 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
 import L from "leaflet";
 import { MarkerItem } from "./MarkerItem";
-import { FullscreenControl } from "react-leaflet-fullscreen";
 import { EditControl } from "react-leaflet-draw";
 import { FeatureGroup, MapContainer, TileLayer } from "react-leaflet";
 type Props = {
@@ -17,7 +16,6 @@ const NetherlandsMap = ({ height, width }: Props) => {
 
     return (
         <MapContainer center={center} zoom={12} style={{ height, width }}>
-            <FullscreenControl position="topleft" />
             <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
