@@ -68,7 +68,7 @@
   },
   "jest": {
     "transformIgnorePatterns": [
-      "/node_modules/(?!(react-leaflet|leaflet)/)"
+      "/node_modules/(?!(react-leaflet|leaflet|leaflet-draw)/)"
     ]
   }
 }
