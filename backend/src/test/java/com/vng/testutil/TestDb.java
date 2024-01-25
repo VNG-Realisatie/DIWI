@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.hibernate.Session;
 
+import com.vng.config.ProjectConfig;
 import com.vng.dal.Dal;
 import com.vng.dal.DalFactory;
 import com.vng.dal.Database;
@@ -31,7 +32,7 @@ public class TestDb implements AutoCloseable {
         username = env.get("hibernate_connection_username");
         password = env.get("hibernate_connection_password");
 
-        dalFactory = new DalFactory(env, GenericRepository.getEntities());
+        dalFactory = new DalFactory(new ProjectConfig(env), GenericRepository.getEntities());
 
         reset();
     }
@@ -60,7 +61,7 @@ public class TestDb implements AutoCloseable {
         }
         dalFactory.close();
 
-        dalFactory = new DalFactory(env, GenericRepository.getEntities());
+        dalFactory = new DalFactory(new ProjectConfig(env), GenericRepository.getEntities());
         Database.upgrade(getJdbcUrl(), getUsername(), getPassword(), version);
     }
 
