@@ -14,4 +14,4 @@ RUN --mount=type=cache,target=/root/.m2 \
 
 FROM tomcat:10-jdk17-temurin
 
-COPY --from=build-backend /src/target/vng.war /var/lib/tomcat9/webapps/ROOT.war
+COPY --from=build-backend /src/target/vng.war /var/lib/tomcat10/webapps/ROOT.war
