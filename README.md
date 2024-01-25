@@ -18,8 +18,8 @@ psql diwi < backend/src/main/resources/db/sql/diwi_baseline_20240117_114546.sql
 Or in docker:
 
 ```shell
-docker compose exec -T database psql --user diwi diwi < backend/src/main/resources/db/sql/vng_projects_testdata.sql
 docker compose exec -T database psql --user diwi diwi < backend/src/main/resources/db/sql/diwi_baseline_20240117_114546.sql
+docker compose exec -T database psql --user diwi diwi < backend/src/main/resources/db/sql/vng_projects_testdata.sql
 ```
 
 ## Deploy on production
