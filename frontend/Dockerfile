@@ -1,4 +1,4 @@
-FROM node:18-alpine as build-stage
+FROM git.phinion.com/phinion/dependency_proxy/containers/node:18-alpine as build-stage
 
 # Dependencies
 COPY ./yarn.lock ./yarn.lock
