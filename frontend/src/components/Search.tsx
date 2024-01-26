@@ -3,7 +3,7 @@ import Stack from "@mui/material/Stack";
 import Autocomplete from "@mui/material/Autocomplete";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
-import ProjectContext, { ProjectType } from "../context/ProjectContext";
+import ProjectContext from "../context/ProjectContext";
 import { Project } from "../api/projectsServices";
 
 type SearchProps = {
