@@ -1921,6 +1921,24 @@ CREATE TABLE diwi_testset.woningblok_naam_changelog (
 ALTER TABLE diwi_testset.woningblok_naam_changelog OWNER TO vng;
 
 --
+-- Name: woningblok_opleverdatum_changelog; Type: TABLE; Schema: diwi_testset; Owner: vng
+--
+
+CREATE TABLE diwi_testset.woningblok_opleverdatum_changelog (
+    "id" UUID NOT NULL,
+    "woningblok_id" UUID NOT NULL,
+    "start_milestone_id" UUID NOT NULL,
+    "end_milestone_id" UUID NOT NULL,
+    "verwachte_opleverdatum" date NOT NULL,
+    "change_user_id" UUID NOT NULL,
+    change_start_date timestamp with time zone NOT NULL,
+    change_end_date timestamp with time zone
+);
+
+
+ALTER TABLE diwi_testset.woningblok_opleverdatum_changelog OWNER TO vng;
+
+--
 -- Name: woningblok_programmering_changelog; Type: TABLE; Schema: diwi_testset; Owner: vng
 --
 
@@ -4763,6 +4781,38 @@ ALTER TABLE ONLY diwi_testset.woningblok_naam_changelog
 
 ALTER TABLE ONLY diwi_testset.woningblok_naam_changelog
     ADD CONSTRAINT fk_woningblok_naam_changelog__woningblok FOREIGN KEY ("woningblok_id") REFERENCES diwi_testset.woningblok("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: woningblok_opleverdatum_changelog fk_woningblok_opleverdatum_changelog__change_user; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
+--
+
+ALTER TABLE ONLY diwi_testset.woningblok_opleverdatum_changelog
+    ADD CONSTRAINT fk_woningblok_opleverdatum_changelog__change_user FOREIGN KEY ("change_user_id") REFERENCES diwi_testset."user"("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: woningblok_opleverdatum_changelog fk_woningblok_opleverdatum_changelog__end_milestone; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
+--
+
+ALTER TABLE ONLY diwi_testset.woningblok_opleverdatum_changelog
+    ADD CONSTRAINT fk_woningblok_opleverdatum_changelog__end_milestone FOREIGN KEY ("end_milestone_id") REFERENCES diwi_testset.milestone("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: woningblok_opleverdatum_changelog fk_woningblok_opleverdatum_changelog__start_milestone; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
+--
+
+ALTER TABLE ONLY diwi_testset.woningblok_opleverdatum_changelog
+    ADD CONSTRAINT fk_woningblok_opleverdatum_changelog__start_milestone FOREIGN KEY ("start_milestone_id") REFERENCES diwi_testset.milestone("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: woningblok_opleverdatum_changelog fk_woningblok_opleverdatum_changelog__woningblok; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
+--
+
+ALTER TABLE ONLY diwi_testset.woningblok_opleverdatum_changelog
+    ADD CONSTRAINT fk_woningblok_opleverdatum_changelog__woningblok FOREIGN KEY ("woningblok_id") REFERENCES diwi_testset.woningblok("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
