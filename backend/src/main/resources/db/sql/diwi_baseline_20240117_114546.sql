@@ -167,7 +167,8 @@ ALTER TYPE diwi_testset.maatwerk_object_soort OWNER TO vng;
 CREATE TYPE diwi_testset.milestone_status AS ENUM (
     'voorspeld',
     'gepland',
-    'gerealiseerd'
+    'gerealiseerd',
+    'afgebroken'
 );
 
 
