@@ -1,45 +1,7 @@
 import { PropsWithChildren, createContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Project, getProjects } from "../api/projectsServices";
-type HouseBlockType = {
-    id: number;
-    naam: string | null;
-    bruto_plancapaciteit: number;
-    netto_plancapaciteit: number;
-    sloop: number;
-    mutatie_soort: string;
-    buurt: null | string;
-    wijk: string;
-    fysiek_voorkomen: null | string;
-    woning_type: null | {
-        meergezinswoning?: number;
-        eengezinswoning?: number;
-    };
-    eigendom_soort:
-        | null
-        | number
-        | {
-              koopwoning: number;
-              huurwoning_woningcorporatie: number;
-              huurwoning_particuliere_verhuurder: number;
-          };
-    waarde: null | string;
-    huurbedrag: null | string;
-    grootte: null | number;
-    doelgroep: null | number;
-    grondpositie: null | number;
-    "start datum": string;
-    "eind datum": string;
-    woningblok_naam_changelog_id?: null | number;
-    woningblok_mutatie_changelog_id?: null | number;
-    woningblok_state_id?: null | number;
-    woningblok_type_en_fysiek_voorkomen_changelog_id?: null | number;
-    woningblok_eigendom_en_waarde_changelog_id?: null | number;
-    woningblok_grootte_changelog_id?: null | number;
-    woningblok_doelgroep_changelog_id?: null | number;
-    woningblok_grondpositie_changelog_id?: null | number;
-    project_id: number;
-};
+
 export type ProjectType = null | {
     id: any;
     name: string;
@@ -66,10 +28,7 @@ export type ProjectType = null | {
     project_gemeenterol_value_state_id?: number | null;
     project_priorisering_value_state_id?: number | null;
 };
-export type ProjectsType = {
-    project: ProjectType;
-    woningblokken: Array<HouseBlockType>;
-};
+
 type ProjectContextType = {
     selectedProject: Project | null;
     setSelectedProject(project: Project): void;
@@ -77,9 +36,11 @@ type ProjectContextType = {
     setProjects(project: Array<Project>): void;
     id: string | undefined;
 };
+
 const ProjectContext = createContext<ProjectContextType | null>(null) as React.Context<ProjectContextType>;
 
 export const ProjectProvider = ({ children }: PropsWithChildren) => {
+
     const { id } = useParams();
     const [projects, setProjects] = useState<Array<Project>>([]);
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -96,7 +57,7 @@ export const ProjectProvider = ({ children }: PropsWithChildren) => {
             .then((projects) => setProjects(projects))
             .catch((err) => console.log(err));
     }, []);
-    console.log(projects);
+
     return (
         <ProjectContext.Provider
             value={{

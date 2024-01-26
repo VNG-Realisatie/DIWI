@@ -9,7 +9,6 @@ const proxy = createProxyMiddleware({
             host: 'localhost',
             port: 8080
         };
-
     }
 });
 

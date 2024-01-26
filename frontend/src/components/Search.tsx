@@ -26,11 +26,11 @@ export default function Search({
                 size="small"
                 options={searchList}
                 disableClearable={isDetailSearch}
-                getOptionLabel={(option: Project) =>
+                getOptionLabel={(option) =>
                     option ? option.projectName : ""
                 }
                 value={selectedProject}
-                onChange={(event: any, newValue: Project|null) => {
+                onChange={(_, newValue: Project|null) => {
                     if (newValue !== null) {
                         setSelectedProject(newValue);
 

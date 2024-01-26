@@ -1,11 +1,11 @@
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { GridRowParams } from "@mui/x-data-grid";
-// import { projects } from "../api/dummyData";
 import { useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
 import { Box, Button, Chip, Dialog, DialogActions, DialogTitle, Stack, Typography } from "@mui/material";
 import useAlert from "../hooks/useAlert";
 import ProjectContext from "../context/ProjectContext";
+import { Project } from "../api/projectsServices";
 //Todo Implement filterDataWithSelectedColumns here to get columns dynamic.
 const columns: GridColDef[] = [
     {
@@ -13,7 +13,7 @@ const columns: GridColDef[] = [
         headerName: "projectName",
         editable: true,
         width: 120,
-        renderCell: (cellValues: any) => {
+        renderCell: (cellValues: GridRenderCellParams<Project>) => {
             return [
                 <Stack direction="row" spacing={1} alignItems="center">
                     <Box width="15px" height="15px" borderRadius="50%" sx={{ background: cellValues.row.projectColor }} />
@@ -50,7 +50,7 @@ const columns: GridColDef[] = [
         width: 400,
         align: "center",
 
-        renderCell: (cellValues: any) => {
+        renderCell: (cellValues: GridRenderCellParams<Project>) => {
             return [
                 <Stack direction="row" spacing={1}>
                     {cellValues.row.planType.map((pt: string) => {
@@ -66,7 +66,7 @@ const columns: GridColDef[] = [
         headerName: "municipalityRole",
         editable: true,
         width: 200,
-        renderCell: (cellValues: any) => {
+        renderCell: (cellValues: GridRenderCellParams<Project>) => {
             return [
                 <Stack direction="row" spacing={1}>
                     {cellValues.row.municipalityRole.map((pt: string) => {
@@ -96,7 +96,7 @@ const columns: GridColDef[] = [
         width: 300,
         align: "center",
 
-        renderCell: (cellValues: any) => {
+        renderCell: (cellValues: GridRenderCellParams<Project>) => {
             return [
                 <Stack direction="row" spacing={1}>
                     {cellValues.row.planningPlanStatus.map((pt: string) => {
@@ -111,11 +111,14 @@ const columns: GridColDef[] = [
 interface RowData {
     id: number;
 }
+
 type Props = {
     showCheckBox?: boolean;
 };
+
 export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const { projects } = useContext(ProjectContext);
+
     const rows = projects.map((p) => {
         return { ...p, id: p.projectId };
     });
@@ -124,11 +127,13 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const [selectedRows, setSelectedRows] = useState<any[]>([]);
     const [showDialog, setShowDialog] = useState(false);
     const { setAlert } = useAlert();
+
     const handleRowClick = (params: GridRowParams) => {
         const clickedRow: RowData = params.row as RowData;
         navigate(`/projects/${clickedRow.id}`);
     };
-    const handleExport = (params: any) => {
+
+    const handleExport = (params: GridRowParams) => {
         const clickedRow: RowData = params.row as RowData;
         if (selectedRows.includes(clickedRow.id)) {
             setSelectedRows(selectedRows.filter((s) => s !== clickedRow.id));
@@ -136,7 +141,9 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             setSelectedRows([...selectedRows, clickedRow.id]);
         }
     };
+
     const handleClose = () => setShowDialog(false);
+
     return (
         <Stack
             width="100%"
@@ -162,7 +169,6 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             />
             <Dialog open={showDialog} onClose={handleClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
                 <DialogTitle id="alert-dialog-title">Weet je het zeker?</DialogTitle>
-
                 <DialogActions sx={{ px: 5, py: 3, ml: 15 }}>
                     <Button onClick={handleClose}>Annuleer</Button>
                     <Button
