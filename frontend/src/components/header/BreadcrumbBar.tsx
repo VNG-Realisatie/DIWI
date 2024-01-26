@@ -1,46 +1,33 @@
-import React, { useContext } from 'react';
-import { Stack, Typography, Popover, Box } from '@mui/material';
-import { DateCalendar } from '@mui/x-date-pickers';
+import React from 'react';
+import { Stack, Typography, Box } from '@mui/material';
+import { Link, useLocation } from 'react-router-dom';
 import Search from '../Search';
-import dayjs from 'dayjs';
-import ProjectContext from '../../context/ProjectContext';
 
-interface BreadcrumbBarProps {
-  breadcrumb: string[];
+interface titleLink {
+    title: string;
+    link: string;
 }
 
-const BreadcrumbBar: React.FC<BreadcrumbBarProps> = ({ breadcrumb }) => {
-    const { projects } = useContext(ProjectContext);
-  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
-  const [selectedDate, setSelectedDate] = React.useState<any>();
+interface BreadcrumbBarProps {
+    pageTitle: string;
+    links?: titleLink[];
+}
 
-  const handleDateClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const open = Boolean(anchorEl);
-    const openid = open ? "simple-popover" : undefined;
-
-  const convertedDate = selectedDate?.toISOString().split('T')[0] ?? dayjs().toISOString().split('T')[0];
-
-  return (
-
-            <Stack
-                direction="row"
-                justifyContent="flex-start"
-                alignItems="flex-start"
-            >
-                <Box width="25%">
-                    <Search
-                        label="Zoeken..."
-                        searchList={projects.map((p) => p.project)}
-                        isDetailSearch={true}
-                    />
-                </Box>
+const BreadcrumbBar: React.FC<BreadcrumbBarProps> = ({ pageTitle, links }) => {
+    const location = useLocation();
+    return (
+        <Stack
+            direction="row"
+            justifyContent="flex-start"
+            alignItems="flex-start"
+        >
+            <Box width="25%">
+                <Search
+                    label="Zoeken..."
+                    searchList={[]}
+                    isDetailSearch={false}
+                />
+            </Box>
                 <Stack
                     width="75%"
                     direction="row"
@@ -50,27 +37,25 @@ const BreadcrumbBar: React.FC<BreadcrumbBarProps> = ({ breadcrumb }) => {
                     p={1}
                 >
 
-        <Typography>{breadcrumb.join(' / ')}</Typography>
-        <Typography onClick={handleDateClick}>Peildatum: {convertedDate}</Typography>
-        <Popover
-          id={openid}
-          open={open}
-          anchorEl={anchorEl}
-          onClose={handleClose}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'left',
-          }}
-        >
-            <DateCalendar defaultValue={selectedDate ? selectedDate : dayjs()}
-                onChange={(newValue) => {
-                setSelectedDate(newValue);
-                handleClose();
-    }} />
-        </Popover>
+                    <Typography>
+                    {pageTitle}:{' '}
+                    {links?.map((object, index) => (
+                        <React.Fragment key={index}>
+                            {index > 0 && ' / '}
+                            {object.link ? (
+                                <Link to={object.link}
+                                style={{ color: location.pathname !== object.link ? "#FFFFFF" : "#0288d1", textDecoration: "none"}}>
+                                    {object.title}
+                                </Link>
+                            ) : (
+                                <span>{object.title}</span>
+                            )}
+                        </React.Fragment>
+                    ))}
+                </Typography>
 
+                </Stack>
         </Stack>
-    </Stack>
   );
 };
 

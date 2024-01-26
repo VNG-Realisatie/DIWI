@@ -1,23 +1,16 @@
 import {
-    FormControl,
-    FormControlLabel,
-    Stack,
-    Switch,
+    Stack
 } from "@mui/material";
 import { ReactComponent as Map } from "../assets/temp/map.svg";
-import { useState } from "react";
 import { ProjectsTableView } from "../components/ProjectsTableView";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
 import BreadcrumbBar from "../components/header/BreadcrumbBar";
 
 export const Projects = () => {
-    const [tableview, setTableView] = useState(false);
-    const handleTableSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setTableView(e.target.checked);
-    };
     const navigate = useNavigate();
+    const location = useLocation();
 
     return (
         <Stack
@@ -27,29 +20,20 @@ export const Projects = () => {
             border="solid 1px #ddd"
             mb={10}
         >
-                <BreadcrumbBar breadcrumb={["Projecten"]} />
+                <BreadcrumbBar pageTitle="Projecten overzicht" links={[{title: "Kaart", link: Paths.projects.path}, {title: "Tabel", link: Paths.projectsTable.path}]} />
 
                 <Stack direction="row" justifyContent="flex-end" alignItems="center" border="solid 1px #ddd" p={0.5}>
-                    <FormControl component="fieldset" variant="standard">
-                        <FormControlLabel
-                            control={
-                                <Switch
-                                    checked={tableview}
-                                    onChange={handleTableSelect}
-                                    name="table"
-                                />
-                            }
-                            label="Tabel weergave "
-                        />
-                    </FormControl>
+
                     <AddCircleIcon
                         color="info"
                         sx={{ fontSize: "45px", cursor: "pointer" }}
                         onClick={() => navigate(Paths.projectAdd.path)}
                     />
                 </Stack>
-                {!tableview && <Map style={{ width: "100%" }} />}
-                {tableview && <ProjectsTableView />}
+                { ( location.pathname === Paths.projects.path ||
+                    location.pathname === Paths.root.path
+                    ) && <Map style={{ width: "100%" }} /> }
+                { location.pathname === Paths.projectsTable.path && <ProjectsTableView /> }
         </Stack>
     );
 };

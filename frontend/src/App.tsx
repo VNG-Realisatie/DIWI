@@ -96,6 +96,14 @@ function App() {
                                         }
                                     />
                                     <Route
+                                        path={Paths.projectsTable.path}
+                                        element={
+                                            <ProjectProvider>
+                                                <Projects />
+                                            </ProjectProvider>
+                                        }
+                                    />
+                                    <Route
                                         path={Paths.projectAdd.path}
                                         element={
                                             <ProjectProvider>
@@ -112,7 +120,27 @@ function App() {
                                         }
                                     />
                                     <Route
+                                        path={Paths.projectDetailCharacteristics.path}
+                                        element={
+                                            <ProjectProvider>
+                                                <ProjectDetail />
+                                            </ProjectProvider>
+                                        }
+                                    />
+                                    <Route
+                                        path={Paths.projectDetailTimeline.path}
+                                        element={
+                                            <ProjectProvider>
+                                                <ProjectDetail />
+                                            </ProjectProvider>
+                                        }
+                                    />
+                                    <Route
                                         path={Paths.policygoal.path}
+                                        element={<PolicyLists />}
+                                    />
+                                    <Route
+                                        path={Paths.policygoalDashboard.path}
                                         element={<PolicyLists />}
                                     />
                                     <Route
