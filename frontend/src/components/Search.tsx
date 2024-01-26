@@ -4,9 +4,10 @@ import Autocomplete from "@mui/material/Autocomplete";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import ProjectContext, { ProjectType } from "../context/ProjectContext";
+import { Project } from "../api/projectsServices";
 
 type SearchProps = {
-    searchList: Array<ProjectType>;
+    searchList: Array<Project>;
     label: string;
     isDetailSearch?: boolean;
 };
@@ -25,15 +26,15 @@ export default function Search({
                 size="small"
                 options={searchList}
                 disableClearable={isDetailSearch}
-                getOptionLabel={(option: ProjectType) =>
-                    option ? option.name : ""
+                getOptionLabel={(option: Project) =>
+                    option ? option.projectName : ""
                 }
                 value={selectedProject}
-                onChange={(event: any, newValue: ProjectType) => {
-                    if (newValue !== undefined) {
+                onChange={(event: any, newValue: Project|null) => {
+                    if (newValue !== null) {
                         setSelectedProject(newValue);
 
-                        isDetailSearch && navigate(`/projects/${newValue?.id}`);
+                        isDetailSearch && navigate(`/projects/${newValue?.projectId}`);
                     }
                 }}
                 renderInput={(params) => (

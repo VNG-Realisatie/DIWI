@@ -3,85 +3,108 @@ import { GridRowParams } from "@mui/x-data-grid";
 // import { projects } from "../api/dummyData";
 import { useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
-import {
-    Button,
-    Dialog,
-    DialogActions,
-    DialogTitle,
-    Stack,
-} from "@mui/material";
+import { Box, Button, Chip, Dialog, DialogActions, DialogTitle, Stack, Typography } from "@mui/material";
 import useAlert from "../hooks/useAlert";
 import ProjectContext from "../context/ProjectContext";
 //Todo Implement filterDataWithSelectedColumns here to get columns dynamic.
 const columns: GridColDef[] = [
-    { field: "id", headerName: "ID", width: 20 },
     {
-        field: "name",
-        headerName: "Name",
+        field: "projectName",
+        headerName: "projectName",
         editable: true,
-        width: 120
+        width: 120,
+        renderCell: (cellValues: any) => {
+            return [
+                <Stack direction="row" spacing={1} alignItems="center">
+                    <Box width="15px" height="15px" borderRadius="50%" sx={{ background: cellValues.row.projectColor }} />
+                    <Typography fontSize={14}>{cellValues.row.projectName}</Typography>
+                </Stack>,
+            ];
+        },
     },
     {
-        field: "eigenaar",
-        headerName: "Eigenaar",
-        editable: true,
-        width: 120
-    },
-    {
-        field: "plan type",
-        headerName: "Plan Type",
-        editable: true,
-        width: 120
-    },
-    {
-        field: "start datum",
-        headerName: "Start Datum",
+        field: "startDate",
+        headerName: "startDate",
         editable: true,
     },
     {
-        field: "eind datum",
-        headerName: "Eind Datum",
+        field: "endDate",
+        headerName: "endDate",
         editable: true,
     },
     {
-        field: "priorisering",
-        headerName: "Priorisering",
+        field: "priority",
+        headerName: "priority",
         editable: true,
     },
     {
-        field: "project fase",
-        headerName: "Project Fase",
+        field: "confidentialityLevel",
+        headerName: "confidentialityLevel",
         editable: true,
-        width: 140
+        width: 120,
     },
     {
-        field: "rol gemeente",
-        headerName: "Rol Gemeente",
+        field: "planType",
+        headerName: "planType",
         editable: true,
-        width: 120
+        width: 400,
+        align: "center",
+
+        renderCell: (cellValues: any) => {
+            return [
+                <Stack direction="row" spacing={1}>
+                    {cellValues.row.planType.map((pt: string) => {
+                        return <Chip size="small" label={pt} color="primary" />;
+                    })}
+                </Stack>,
+            ];
+        },
+    },
+
+    {
+        field: "municipalityRole",
+        headerName: "municipalityRole",
+        editable: true,
+        width: 200,
+        renderCell: (cellValues: any) => {
+            return [
+                <Stack direction="row" spacing={1}>
+                    {cellValues.row.municipalityRole.map((pt: string) => {
+                        return <Chip size="small" label={pt} color="primary" />;
+                    })}
+                </Stack>,
+            ];
+        },
+    },
+
+    {
+        field: "organizationName",
+        headerName: "organizationName",
+        editable: true,
+        width: 120,
     },
     {
-        field: "programmering",
-        headerName: "Programmering",
+        field: "projectPhase",
+        headerName: "projectPhase",
         editable: true,
+        width: 140,
     },
     {
-        field: "project leider",
-        headerName: "Project Leider",
+        field: "planningPlanStatus",
+        headerName: "planningPlanStatus",
         editable: true,
-        width: 120
-    },
-    {
-        field: "vertrouwlijkheidsniveau",
-        headerName: "Vertrouwlijkheidsniveau",
-        editable: true,
-        width: 140
-    },
-    {
-        field: "planologische plan status",
-        headerName: "Planologische Plan Status",
-        editable: true,
-        width: 180
+        width: 300,
+        align: "center",
+
+        renderCell: (cellValues: any) => {
+            return [
+                <Stack direction="row" spacing={1}>
+                    {cellValues.row.planningPlanStatus.map((pt: string) => {
+                        return <Chip size="small" label={pt} color="primary" />;
+                    })}
+                </Stack>,
+            ];
+        },
     },
 ];
 
@@ -93,7 +116,9 @@ type Props = {
 };
 export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const { projects } = useContext(ProjectContext);
-    const rows = projects.map((p) => p.project);
+    const rows = projects.map((p) => {
+        return { ...p, id: p.projectId };
+    });
 
     const navigate = useNavigate();
     const [selectedRows, setSelectedRows] = useState<any[]>([]);
@@ -116,7 +141,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         <Stack
             width="100%"
             sx={{
-                maxWidth: showCheckBox?"100%":"920px", // Adjust this width as needed
+                maxWidth: showCheckBox ? "100%" : "920px", // Adjust this width as needed
                 margin: "0 auto",
                 overflowX: "auto",
             }}
@@ -135,15 +160,8 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 pageSizeOptions={[5]}
                 onRowClick={showCheckBox ? handleExport : handleRowClick}
             />
-            <Dialog
-                open={showDialog}
-                onClose={handleClose}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-            >
-                <DialogTitle id="alert-dialog-title">
-                    Weet je het zeker?
-                </DialogTitle>
+            <Dialog open={showDialog} onClose={handleClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
+                <DialogTitle id="alert-dialog-title">Weet je het zeker?</DialogTitle>
 
                 <DialogActions sx={{ px: 5, py: 3, ml: 15 }}>
                     <Button onClick={handleClose}>Annuleer</Button>
@@ -151,10 +169,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                         variant="contained"
                         onClick={() => {
                             handleClose();
-                            setAlert(
-                                "Gelukt! Je ontvangt de bevestiging via de mail.",
-                                "success"
-                            );
+                            setAlert("Gelukt! Je ontvangt de bevestiging via de mail.", "success");
                         }}
                         autoFocus
                     >

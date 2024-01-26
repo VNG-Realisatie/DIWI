@@ -1,7 +1,6 @@
 import { PropsWithChildren, createContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-// import { projects } from "../api/dummyData";
-import projectData from "../api/json/projects.json";
+import { Project, getProjects } from "../api/projectsServices";
 type HouseBlockType = {
     id: number;
     naam: string | null;
@@ -10,17 +9,20 @@ type HouseBlockType = {
     sloop: number;
     mutatie_soort: string;
     buurt: null | string;
-    wijk:  string;
+    wijk: string;
     fysiek_voorkomen: null | string;
     woning_type: null | {
         meergezinswoning?: number;
         eengezinswoning?: number;
     };
-    eigendom_soort: null | number | {
-        koopwoning: number;
-        huurwoning_woningcorporatie:number;
-        huurwoning_particuliere_verhuurder:number;
-    };
+    eigendom_soort:
+        | null
+        | number
+        | {
+              koopwoning: number;
+              huurwoning_woningcorporatie: number;
+              huurwoning_particuliere_verhuurder: number;
+          };
     waarde: null | string;
     huurbedrag: null | string;
     grootte: null | number;
@@ -38,8 +40,8 @@ type HouseBlockType = {
     woningblok_grondpositie_changelog_id?: null | number;
     project_id: number;
 };
-export type ProjectType=null|{
-    id: number;
+export type ProjectType = null | {
+    id: any;
     name: string;
     eigenaar: string;
     "plan type": string | null;
@@ -63,33 +65,38 @@ export type ProjectType=null|{
     project_priorisering_changelog_id?: number | null;
     project_gemeenterol_value_state_id?: number | null;
     project_priorisering_value_state_id?: number | null;
-}
+};
 export type ProjectsType = {
     project: ProjectType;
     woningblokken: Array<HouseBlockType>;
 };
 type ProjectContextType = {
-    selectedProject: ProjectType|undefined;
-    setSelectedProject(project: ProjectType): void;
-    projects: Array<ProjectsType>;
-    setProjects(project: Array<ProjectsType>): void;
-    id:string|undefined;
+    selectedProject: Project | null;
+    setSelectedProject(project: Project): void;
+    projects: Array<Project>;
+    setProjects(project: Array<Project>): void;
+    id: string | undefined;
 };
-const ProjectContext = createContext<ProjectContextType| null>(null) as React.Context<ProjectContextType>
+const ProjectContext = createContext<ProjectContextType | null>(null) as React.Context<ProjectContextType>;
 
 export const ProjectProvider = ({ children }: PropsWithChildren) => {
     const { id } = useParams();
-    const findProjectByParamsId=projectData.find((p) => id && p.project.id === parseInt(id))?.project
-    const [projects, setProjects] = useState<Array<any>>(projectData);
-    const [selectedProject, setSelectedProject] = useState<ProjectType|undefined>(
-        findProjectByParamsId
-    );
+    const [projects, setProjects] = useState<Array<Project>>([]);
+    const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
     useEffect(() => {
-        setSelectedProject(
-            findProjectByParamsId
-        );
-    }, [findProjectByParamsId, id]);
+        if (id) {
+            const findProjectByParamsId = projects.find((p) => p.projectId === id);
+            findProjectByParamsId && setSelectedProject(findProjectByParamsId);
+        }
+    }, [id, projects]);
+
+    useEffect(() => {
+        getProjects()
+            .then((projects) => setProjects(projects))
+            .catch((err) => console.log(err));
+    }, []);
+    console.log(projects);
     return (
         <ProjectContext.Provider
             value={{
@@ -97,7 +104,7 @@ export const ProjectProvider = ({ children }: PropsWithChildren) => {
                 setSelectedProject,
                 projects,
                 setProjects,
-                id
+                id,
             }}
         >
             {children}
