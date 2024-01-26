@@ -433,6 +433,7 @@ ALTER TABLE diwi_testset.document_soort_state OWNER TO vng;
 CREATE TABLE diwi_testset.document_state (
     "id" UUID NOT NULL,
     "document_id" UUID NOT NULL,
+    "project_id" UUID NOT NULL,
     "milestone_id" UUID NOT NULL,
     naam text NOT NULL,
     notitie text,
@@ -2970,6 +2971,14 @@ ALTER TABLE ONLY diwi_testset.document_state
 
 ALTER TABLE ONLY diwi_testset.document_state
     ADD CONSTRAINT fk_document_state__document FOREIGN KEY ("document_id") REFERENCES diwi_testset.document("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: document_state fk_document_state__project; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
+--
+
+ALTER TABLE ONLY diwi_testset.document_state
+    ADD CONSTRAINT fk_document_state__project FOREIGN KEY ("project_id") REFERENCES diwi_testset.project("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
