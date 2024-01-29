@@ -64,6 +64,12 @@
         "elderly": "Ouderen",
         "disabilityAndCare": "Gehandicapter en zorg",
         "largeFamilies": "Grote gezinnen"
+      },
+      "selectMapForm":{
+        "title":"Teken het project in op de kaart",
+        "municipality":"Gemeente",
+        "neighbourhood":"Wijk",
+        "district":"Buurt"
       }
     }
   }
