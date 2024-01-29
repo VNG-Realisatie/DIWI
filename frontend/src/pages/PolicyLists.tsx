@@ -60,7 +60,6 @@ export const PolicyLists = () => {
     }
   };
   const location = useLocation();
-  console.log(dataPolicy);
   return (
  <Stack>
     <BreadcrumbBar pageTitle="Beleidsdoelen" links={[{ title: "Invoer", link: Paths.policygoal.path }, { title: "Dashboard", link: Paths.policygoalDashboard.path }]} />

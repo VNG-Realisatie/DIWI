@@ -40,17 +40,17 @@ const BreadcrumbBar: React.FC<BreadcrumbBarProps> = ({ pageTitle, links }) => {
                     <Typography>
                     {pageTitle}:{' '}
                     {links?.map((object, index) => (
-                        <React.Fragment key={index}>
+                        <>
                             {index > 0 && ' / '}
                             {object.link ? (
                                 <Link to={object.link}
-                                style={{ color: location.pathname !== object.link ? "#FFFFFF" : "#0288d1", textDecoration: "none"}}>
+                                      style={{ color: location.pathname !== object.link ? "#FFFFFF" : "#0288d1", textDecoration: "none" }}>
                                     {object.title}
                                 </Link>
                             ) : (
                                 <span>{object.title}</span>
                             )}
-                        </React.Fragment>
+                        </>
                     ))}
                 </Typography>
 
