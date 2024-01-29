@@ -30,7 +30,7 @@ export default function Search({
                     option ? option.projectName : ""
                 }
                 value={selectedProject}
-                onChange={(_, newValue: Project|null) => {
+                onChange={(_, newValue) => {
                     if (newValue !== null) {
                         setSelectedProject(newValue);
 
