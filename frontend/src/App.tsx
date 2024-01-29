@@ -18,6 +18,8 @@ import { ImportExcel } from "./pages/ImportExcel";
 import { ImportedProjects } from "./pages/ImportedProjects";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { nlNL } from "@mui/material/locale";
+
 import * as React from "react";
 export const drawerWidth = 290;
 
@@ -69,7 +71,7 @@ const theme = createTheme({
             main: "#900A0A",
         },
     },
-});
+} , nlNL);
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
     return (

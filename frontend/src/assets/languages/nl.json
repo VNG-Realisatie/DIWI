@@ -1,0 +1,29 @@
+{
+  "translation": {
+    "generic": {
+      "yes": "Ja",
+      "no": "Nee"
+    },
+    "createProject": {
+      "information": "Project informatie",
+      "houseBlocks": "Huizen blokken",
+      "signupOnTheMap": "Intekenen op de kaart",
+      "timeline": "Tijdline",
+      "informationForm": {
+        "title": "Vul de projectgegevens in",
+        "nameLabel": "Projectnaam en projectkleur*",
+        "planType": "Plan Type",
+        "startDate": "Start Datum",
+        "endDate": "Eind Datum",
+        "priority": "Priorisering",
+        "projectPhase": "Project Fase",
+        "roleMunicipality": "Rol Gemeente",
+        "programming": "Programmering",
+        "projectLeader": "Project Leider",
+        "confidentialityLevel": "Vertrouwlijkheidsniveau",
+        "planningPlanStatus": "Planologische Plan Status",
+        "owner": "Eigenaar"
+      }
+    }
+  }
+}
