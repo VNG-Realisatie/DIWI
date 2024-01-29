@@ -1,19 +1,22 @@
 package com.vng.config;
 
+import java.text.MessageFormat;
 import java.util.Map;
 
-import com.vng.security.MailConfig;
+import lombok.Data;
 
+@Data
 public class ProjectConfig {
-    protected String baseUrl;
-    private String kcResourceName;
-    private String kcAuthServerUrl;
-    private String kcRealmName;
-    private String kcSecret;
-    private MailConfig mailConfig;
-
-    protected ProjectConfig() {
-    }
+    private final String baseUrl;
+    private final String kcResourceName;
+    private final String kcAuthServerUrl;
+    private final String kcRealmName;
+    private final String kcSecret;
+//    private final MailConfig mailConfig;
+    private final String dbHost;
+    private final String dbName;
+    private final String  dbUser;
+    private final String  dbPass ;
 
     public ProjectConfig(Map<String, String> env) {
         this.baseUrl = env.get("BASE_URL");
@@ -22,32 +25,16 @@ public class ProjectConfig {
         this.kcRealmName = env.get("KC_REALM_NAME");
         this.kcResourceName = env.get("KC_RESOURCE_NAME");
         this.kcSecret = env.get("KC_SECRET");
-
-        this.mailConfig = new MailConfig(env);
+        this.dbHost = env.getOrDefault("DIWI_DB_HOST", "localhost");
+        this.dbName = env.getOrDefault("DIWI_DB_NAME", "diwi");
+        this.dbUser = env.getOrDefault("DIWI_DB_USERNAME", "diwi");
+        this.dbPass = env.getOrDefault("DIWI_DB_PASSWORD", "diwi");
+//        this.mailConfig = new MailConfig(env);
     }
 
-    public String getBaseUrl() {
-        return baseUrl;
+    public String getDbUrl() {
+        return  MessageFormat.format("jdbc:postgresql://{0}:5432/{1}", getDbHost(),
+                getDbName());
     }
 
-    public String getKcResourceName() {
-        return kcResourceName;
     }
-
-    public String getKcAuthServerUrl() {
-        return kcAuthServerUrl;
-    }
-
-    public String getKcSecret() {
-        return kcSecret;
-    }
-
-    public String getKcRealmName() {
-        return kcRealmName;
-    }
-
-    public MailConfig getMailConfig() {
-        return mailConfig;
-    }
-
-}

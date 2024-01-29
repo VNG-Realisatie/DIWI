@@ -1,61 +1,70 @@
 package com.vng.rest;
 
-import jakarta.inject.Inject;
-import jakarta.ws.rs.container.ContainerRequestContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.glassfish.hk2.api.Factory;
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import org.glassfish.jersey.process.internal.RequestScoped;
+import org.hibernate.Session;
 
 import com.vng.config.ProjectConfig;
 import com.vng.dal.Dal;
 import com.vng.dal.DalFactory;
 import com.vng.dal.GenericRepository;
 import com.vng.security.LoggedUser;
-import com.vng.security.MailService;
-import com.vng.services.VngService;
 import com.vng.services.KeycloakService;
+import com.vng.services.KeycloakService.KeycloakPermissionException;
 import com.vng.services.UserService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.glassfish.jersey.internal.inject.AbstractBinder;
-import org.glassfish.jersey.process.internal.RequestScoped;
-import org.hibernate.Session;
+import com.vng.services.VngService;
 
-import java.util.function.Supplier;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.container.ContainerRequestContext;
 
 public class VngDependencyInjection extends AbstractBinder implements AutoCloseable {
 
     static Logger logger = LogManager.getLogger();
 
-    static class SessionFactory implements Supplier<Session> {
-
+    static class SessionFactory implements Factory<Session> {
         private DalFactory dalFactory;
 
         public SessionFactory(DalFactory dalFactory) {
             this.dalFactory = dalFactory;
-
         }
 
         @Override
-        public Session get() {
+        public Session provide() {
             return dalFactory.constructDal().getSession();
+        }
+
+        @Override
+        public void dispose(Session instance) {
+            instance.close();
+
         }
     }
 
-    static class GenericRepoFactory implements Supplier<GenericRepository> {
-
+    static class GenericRepoFactory implements Factory<GenericRepository> {
         private DalFactory dalFactory;
 
         public GenericRepoFactory(DalFactory factory) {
             this.dalFactory = factory;
         }
 
+
         @Override
-        public GenericRepository get() {
+        public GenericRepository provide() {
             Dal dal = dalFactory.constructDal();
             return new GenericRepository(dal);
         }
+
+        @Override
+        public void dispose(GenericRepository instance) {
+            instance.close();
+
+        }
     }
 
-    public static class LoggedUserFactory implements Supplier<LoggedUser> {
-
+    public static class LoggedUserFactory implements Factory<LoggedUser> {
         private final ContainerRequestContext context;
 
         @Inject
@@ -64,8 +73,13 @@ public class VngDependencyInjection extends AbstractBinder implements AutoClosea
         }
 
         @Override
-        public LoggedUser get() {
+        public LoggedUser provide() {
             return (LoggedUser) context.getProperty("loggedUser");
+        }
+
+        @Override
+        public void dispose(LoggedUser instance) {
+          // nothing to dispose of in a LoggedUser
         }
     }
 
@@ -73,7 +87,7 @@ public class VngDependencyInjection extends AbstractBinder implements AutoClosea
     private ProjectConfig projectConfig;
     private KeycloakService keycloakService;
 
-    public VngDependencyInjection(DalFactory factory, ProjectConfig projectConfig) throws KeycloakService.KeycloakPermissionException {
+    public VngDependencyInjection(DalFactory factory, ProjectConfig projectConfig) throws KeycloakPermissionException {
         super();
         this.dalFactory = factory;
         this.projectConfig = projectConfig;
@@ -91,7 +105,7 @@ public class VngDependencyInjection extends AbstractBinder implements AutoClosea
         bindFactory(LoggedUserFactory.class).to(LoggedUser.class).in(RequestScoped.class);
 
         bind(new VngService(projectConfig)).to(VngService.class);
-        bind(new MailService(projectConfig.getMailConfig())).to(MailService.class);
+//        bind(new MailService(projectConfig.getMailConfig())).to(MailService.class);
 
         bind(UserService.class).to(UserService.class);
     }

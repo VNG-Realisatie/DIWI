@@ -4,6 +4,24 @@
 
 TBD
 
+## Setup the DB with the test data
+
+Note: This is still in development and subject to change.
+
+Essentially you need to run the following commands to import the test sets at the moment:
+
+```shell
+psql diwi < backend/src/main/resources/db/sql/vng_projects_testdata.sql
+psql diwi < backend/src/main/resources/db/sql/diwi_baseline_20240117_114546.sql
+```
+
+Or in docker:
+
+```shell
+docker compose exec -T database psql --user diwi diwi < backend/src/main/resources/db/sql/diwi_baseline_20240117_114546.sql
+docker compose exec -T database psql --user diwi diwi < backend/src/main/resources/db/sql/vng_projects_testdata.sql
+```
+
 ## Deploy on production
 
 TBD
