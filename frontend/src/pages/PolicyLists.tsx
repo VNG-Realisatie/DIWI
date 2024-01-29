@@ -11,6 +11,9 @@ import { PolicyCard } from "../components/PolicyCard";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { useState } from "react";
 import { ReactComponent as Dashboard } from "../assets/temp/dashboardvisual.svg";
+import BreadcrumbBar from "../components/header/BreadcrumbBar";
+import { useLocation } from "react-router-dom";
+import * as Paths from "../Paths";
 
 
 interface DataPolicy {
@@ -39,8 +42,6 @@ export const PolicyLists = () => {
       category: "",
     },
   });
-  const [selectedType, setSelectedType] = useState<
-  "input" | "dashboard">("input");
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -58,16 +59,11 @@ export const PolicyLists = () => {
       }));
     }
   };
-  console.log(dataPolicy);
+  const location = useLocation();
   return (
  <Stack>
-     <Stack direction="row" justifyContent="flex-end">
-        <Button onClick={() => setSelectedType("input")}>Invoer</Button>
-        <Button onClick={() => setSelectedType("dashboard")}>
-          Dashboard
-        </Button>
-      </Stack>
-    { selectedType==="input" &&<Stack display="flex">
+    <BreadcrumbBar pageTitle="Beleidsdoelen" links={[{ title: "Invoer", link: Paths.policygoal.path }, { title: "Dashboard", link: Paths.policygoalDashboard.path }]} />
+    { location.pathname === Paths.policygoal.path &&<Stack display="flex">
       {policyGoals.map((p) => {
         return <PolicyCard key={p.id} policy={p} />;
       })}
@@ -142,7 +138,7 @@ export const PolicyLists = () => {
         </DialogContent>
       </Dialog>
     </Stack>}
-    {selectedType==="dashboard"&& <Dashboard/>}
+    { location.pathname === Paths.policygoalDashboard.path && <Dashboard/>}
  </Stack>
   );
 };
