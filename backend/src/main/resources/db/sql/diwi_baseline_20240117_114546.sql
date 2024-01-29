@@ -167,7 +167,8 @@ ALTER TYPE diwi_testset.maatwerk_object_soort OWNER TO vng;
 CREATE TYPE diwi_testset.milestone_status AS ENUM (
     'voorspeld',
     'gepland',
-    'gerealiseerd'
+    'gerealiseerd',
+    'afgebroken'
 );
 
 
@@ -432,6 +433,7 @@ ALTER TABLE diwi_testset.document_soort_state OWNER TO vng;
 CREATE TABLE diwi_testset.document_state (
     "id" UUID NOT NULL,
     "document_id" UUID NOT NULL,
+    "project_id" UUID NOT NULL,
     "milestone_id" UUID NOT NULL,
     naam text NOT NULL,
     notitie text,
@@ -1919,6 +1921,24 @@ CREATE TABLE diwi_testset.woningblok_naam_changelog (
 ALTER TABLE diwi_testset.woningblok_naam_changelog OWNER TO vng;
 
 --
+-- Name: woningblok_opleverdatum_changelog; Type: TABLE; Schema: diwi_testset; Owner: vng
+--
+
+CREATE TABLE diwi_testset.woningblok_opleverdatum_changelog (
+    "id" UUID NOT NULL,
+    "woningblok_id" UUID NOT NULL,
+    "start_milestone_id" UUID NOT NULL,
+    "end_milestone_id" UUID NOT NULL,
+    "verwachte_opleverdatum" date NOT NULL,
+    "change_user_id" UUID NOT NULL,
+    change_start_date timestamp with time zone NOT NULL,
+    change_end_date timestamp with time zone
+);
+
+
+ALTER TABLE diwi_testset.woningblok_opleverdatum_changelog OWNER TO vng;
+
+--
 -- Name: woningblok_programmering_changelog; Type: TABLE; Schema: diwi_testset; Owner: vng
 --
 
@@ -2969,6 +2989,14 @@ ALTER TABLE ONLY diwi_testset.document_state
 
 ALTER TABLE ONLY diwi_testset.document_state
     ADD CONSTRAINT fk_document_state__document FOREIGN KEY ("document_id") REFERENCES diwi_testset.document("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: document_state fk_document_state__project; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
+--
+
+ALTER TABLE ONLY diwi_testset.document_state
+    ADD CONSTRAINT fk_document_state__project FOREIGN KEY ("project_id") REFERENCES diwi_testset.project("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -4753,6 +4781,38 @@ ALTER TABLE ONLY diwi_testset.woningblok_naam_changelog
 
 ALTER TABLE ONLY diwi_testset.woningblok_naam_changelog
     ADD CONSTRAINT fk_woningblok_naam_changelog__woningblok FOREIGN KEY ("woningblok_id") REFERENCES diwi_testset.woningblok("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: woningblok_opleverdatum_changelog fk_woningblok_opleverdatum_changelog__change_user; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
+--
+
+ALTER TABLE ONLY diwi_testset.woningblok_opleverdatum_changelog
+    ADD CONSTRAINT fk_woningblok_opleverdatum_changelog__change_user FOREIGN KEY ("change_user_id") REFERENCES diwi_testset."user"("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: woningblok_opleverdatum_changelog fk_woningblok_opleverdatum_changelog__end_milestone; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
+--
+
+ALTER TABLE ONLY diwi_testset.woningblok_opleverdatum_changelog
+    ADD CONSTRAINT fk_woningblok_opleverdatum_changelog__end_milestone FOREIGN KEY ("end_milestone_id") REFERENCES diwi_testset.milestone("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: woningblok_opleverdatum_changelog fk_woningblok_opleverdatum_changelog__start_milestone; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
+--
+
+ALTER TABLE ONLY diwi_testset.woningblok_opleverdatum_changelog
+    ADD CONSTRAINT fk_woningblok_opleverdatum_changelog__start_milestone FOREIGN KEY ("start_milestone_id") REFERENCES diwi_testset.milestone("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: woningblok_opleverdatum_changelog fk_woningblok_opleverdatum_changelog__woningblok; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
+--
+
+ALTER TABLE ONLY diwi_testset.woningblok_opleverdatum_changelog
+    ADD CONSTRAINT fk_woningblok_opleverdatum_changelog__woningblok FOREIGN KEY ("woningblok_id") REFERENCES diwi_testset.woningblok("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
