@@ -10,7 +10,23 @@ import * as Paths from "../Paths";
 import { colorArray } from "../api/dummyData";
 import { ProjectsWithHouseBlock } from "../components/ProjectWithHouseBlock";
 import NetherlandsMap from "../components/map/NetherlandsMap";
-
+export const dummyMapData = [
+    {
+        projectColor: "orange",
+        projectName: "test-01",
+        coordinate:[52.1434, 5.0013]
+    },
+    {
+        projectColor: "tomato",
+        projectName: "test-02",
+        coordinate:[52.2434, 5.2013]
+    },
+    {
+        projectColor: "green",
+        projectName: "test-03",
+        coordinate:[52.5434, 5.5013]
+    },
+];
 export const ProjectDetail = () => {
     const { selectedProject, projects, id } = useContext(ProjectContext);
     const [selectedType, setSelectedType] = useState<"map" | "characteristics" | "timeline">("map");
@@ -58,7 +74,7 @@ export const ProjectDetail = () => {
                     <Stack overflow="auto" height="70vh">
                         {<Details project={selectedProject} />}
                     </Stack>
-                    <NetherlandsMap height="640px" width="1000px" />
+                    <NetherlandsMap height="640px" width="1000px" mapData={dummyMapData} />
                 </Stack>
             )}
             {selectedType === "timeline" && <TimeLineImg style={{ width: "100%" }} />}

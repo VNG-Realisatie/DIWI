@@ -1,5 +1,4 @@
 import L, { LatLngTuple } from "leaflet";
-import { Marker, Popup } from "react-leaflet";
 type Props = {
     markerColor: string;
     position: LatLngTuple;
@@ -17,8 +16,6 @@ export const MarkerItem = ({ markerColor, position, popupText }: Props) => {
     };
     const icon = createCustomIcon(markerColor);
     return (
-        <Marker position={position} icon={icon}>
-            <Popup>{popupText}</Popup>
-        </Marker>
+      <></>
     );
 };

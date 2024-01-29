@@ -10,6 +10,7 @@ import * as Paths from "../Paths";
 import { DateCalendar } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import NetherlandsMap from "../components/map/NetherlandsMap";
+import { dummyMapData } from "./ProjectDetail";
 
 export const Projects = () => {
     const { selectedProject, projects } = useContext(ProjectContext);
@@ -62,7 +63,7 @@ export const Projects = () => {
                     </FormControl>
                     <AddCircleIcon color="info" sx={{ fontSize: "45px", cursor: "pointer" }} onClick={() => navigate(Paths.projectAdd.path)} />
                 </Stack>
-                {!tableview && <NetherlandsMap height="500px" width="1000px" />}
+                {!tableview && <NetherlandsMap height="500px" width="1000px" mapData={dummyMapData}/>}
                 {tableview && <ProjectsTableView />}
             </Stack>
         </Stack>
