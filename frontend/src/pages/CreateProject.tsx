@@ -64,16 +64,15 @@ export const CreateProject = () => {
                     <Typography>De wizard voor het maken van projectformulieren is voltooid. Klik op Opslaan om het proces te voltooien.</Typography>
                 </Stack>
             )}
-
             <Stack direction="row" alignItems="center" justifyContent="flex-end" py={2}>
                 <Button variant="contained" onClick={() => handleBack()} sx={{ mr: 2 }} disabled={activeStep === 0}>
-                    Vorig
+                    {t("generic.previous")}
                 </Button>
                 <Button
                     variant="contained"
                     onClick={() => (activeStep === steps.length ? handleSave() : handleNext())} // check last step save function
                 >
-                    {activeStep === steps.length ? "Opslaan" : "Volgende"}
+                    {activeStep === steps.length ? t("generic.save") : t("generic.next")}
                 </Button>
             </Stack>
         </Box>

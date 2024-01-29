@@ -2,7 +2,10 @@
   "translation": {
     "generic": {
       "yes": "Ja",
-      "no": "Nee"
+      "no": "Nee",
+      "save": "Opslaan",
+      "next": "Volgende",
+      "previous": "Vorig"
     },
     "createProject": {
       "information": "Project informatie",
@@ -23,6 +26,44 @@
         "confidentialityLevel": "Vertrouwlijkheidsniveau",
         "planningPlanStatus": "Planologische Plan Status",
         "owner": "Eigenaar"
+      },
+      "houseBlocksForm": {
+        "title": "Vul de huizenblokken in",
+        "nameLabel": "Naam",
+        "startDate": "Start Datum",
+        "endDate": "Eind Datum",
+        "mutationData": "Mutatie gegevens",
+        "grossPlanCapacity": "Bruto plancapaciteit",
+        "netPlanCapacity": "Netto Plancapaciteit",
+        "demolition": "Sloop",
+        "mutationType": "Mutatiesoort",
+        "size": "Grootte",
+        "ownershipAndValue": "Eigendom en waarde",
+        "ownerOccupiedHome": "Koopwoning",
+        "rentalPropertyPrivate": "Huurwoning Particuliere verhuurder",
+        "rentalPropertyHousingAssociation": "Huurwoning Woningcorporatie",
+        "value": "Waarde",
+        "rentalAmount": "Huurbedrag",
+        "groundPosition": "Grondpositie",
+        "noPermissionFromLandOwner": "Geen toestemming Grondeigenaar",
+        "intentionToCooperateWithTheLandowner": "Intentie medewerking Grondeigenaar",
+        "formalPermissionFromLandOwner": "Formele toestemming van Grondeigenaar",
+        "physicalApperance": "Fysiek voorkomen",
+        "terracedHouse": "Tussenwoning",
+        "cornerHouse": "Hoekwoning",
+        "semidetached": "Twee onder een kap",
+        "detached": "Vrijstaand",
+        "porticoApartment": "Portiekflat",
+        "galleryFlat": "Gallerijflat",
+        "singleFamilyHome": "Eengezinswoning",
+        "multiFamilyHome": "Meergezinswoning",
+        "goal": "Doel",
+        "regular": "Regulier",
+        "youngPeople": "Jongeren",
+        "students": "Studenten",
+        "elderly": "Ouderen",
+        "disabilityAndCare": "Gehandicapter en zorg",
+        "largeFamilies": "Grote gezinnen"
       }
     }
   }

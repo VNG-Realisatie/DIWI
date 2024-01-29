@@ -10,15 +10,17 @@ import {
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import mutatiesoort from "../api/json/enums/mutatie_soort.json";
+import { useTranslation } from "react-i18next";
 
 export const BlockHousesForm = (props: any) => {
+    const {t}=useTranslation();
     return (
         <Box mt={4}>
             <Typography variant="h6" fontWeight="600">
-                Vul de huizenblokken in
+            {t("createProject.houseBlocksForm.title")}
             </Typography>
             <Typography variant="subtitle1" fontWeight="500">
-                Naam
+            {t("createProject.houseBlocksForm.nameLabel")}
             </Typography>
             <Stack
                 direction="row"
@@ -26,7 +28,7 @@ export const BlockHousesForm = (props: any) => {
                 justifyContent="space-between"
             >
                 <TextField
-                    id="naam"
+                    id="name"
                     size="small"
                     variant="outlined"
                     value={
@@ -56,7 +58,7 @@ export const BlockHousesForm = (props: any) => {
             >
                 <Stack>
                     <Typography variant="subtitle1" fontWeight="500">
-                        Start Datum
+                    {t("createProject.houseBlocksForm.startDate")}
                     </Typography>
                     <DatePicker
                         value={
@@ -74,7 +76,7 @@ export const BlockHousesForm = (props: any) => {
                 </Stack>
                 <Stack>
                     <Typography variant="subtitle1" fontWeight="500">
-                        Eind Datum
+                    {t("createProject.houseBlocksForm.endDate")}
                     </Typography>
                     <DatePicker
                         value={
@@ -100,7 +102,7 @@ export const BlockHousesForm = (props: any) => {
             >
                 <Stack>
                     <Typography variant="subtitle1" fontWeight="600">
-                        Mutatie gegevens
+                    {t("createProject.houseBlocksForm.mutationData")}
                     </Typography>
                 </Stack>
                 <Stack
@@ -111,10 +113,10 @@ export const BlockHousesForm = (props: any) => {
                 >
                     <Stack>
                         <Typography variant="subtitle1" fontWeight="500">
-                            Bruto plancapaciteit
+                        {t("createProject.houseBlocksForm.grossPlanCapacity")}
                         </Typography>
                         <TextField
-                            id="brutoplan"
+                            id="grossPlan"
                             size="small"
                             variant="outlined"
                             value={
@@ -134,10 +136,10 @@ export const BlockHousesForm = (props: any) => {
                     </Stack>
                     <Stack>
                         <Typography variant="subtitle1" fontWeight="500">
-                            Netto Plancapaciteit
+                        {t("createProject.houseBlocksForm.netPlanCapacity")}
                         </Typography>
                         <TextField
-                            id="nettoplan"
+                            id="netplan"
                             size="small"
                             variant="outlined"
                             value={
@@ -157,10 +159,10 @@ export const BlockHousesForm = (props: any) => {
                     </Stack>
                     <Stack>
                         <Typography variant="subtitle1" fontWeight="500">
-                            Sloop
+                        {t("createProject.houseBlocksForm.demolition")}
                         </Typography>
                         <TextField
-                            id="sloop"
+                            id="demolition"
                             size="small"
                             variant="outlined"
                             value={
@@ -177,17 +179,17 @@ export const BlockHousesForm = (props: any) => {
                         />
                     </Stack>
                     <Stack>
-                        <InputLabel id="mutatiesoort">Mutatiesoort</InputLabel>
+                        <InputLabel id="mutationtype">  {t("createProject.houseBlocksForm.mutationType")}</InputLabel>
                         <Select
                             size="small"
-                            labelId="mutatiesoort"
+                            labelId="mutationtype"
                             id="fase"
                             value={
                                 props.createProjectForm
                                     ? props.createProjectForm.mutatie_soort
                                     : ""
                             }
-                            label="Project Fase"
+                            label=  {t("createProject.houseBlocksForm.mutationType")}
                             onChange={(e) =>
                                 props.setCreateProjectForm({
                                     ...props.createProjectForm,
@@ -208,10 +210,10 @@ export const BlockHousesForm = (props: any) => {
             </Stack>
             <Stack>
                 <Typography variant="subtitle1" fontWeight="500">
-                    Grootte
+                {t("createProject.houseBlocksForm.size")}
                 </Typography>
                 <TextField
-                    id="grootte"
+                    id="size"
                     size="small"
                     variant="outlined"
                     value={
@@ -241,7 +243,7 @@ export const BlockHousesForm = (props: any) => {
                 >
                     <Stack>
                         <Typography variant="subtitle1" fontWeight="600">
-                            Eigendom en waarde
+                        {t("createProject.houseBlocksForm.ownershipAndValue")}
                         </Typography>
                     </Stack>
                     <Stack
@@ -255,10 +257,10 @@ export const BlockHousesForm = (props: any) => {
                                     variant="subtitle1"
                                     fontWeight="500"
                                 >
-                                    Koopwoning
+                                      {t("createProject.houseBlocksForm.ownerOccupiedHome")}
                                 </Typography>
                                 <TextField
-                                    id="koopwoning"
+                                    id="ownerOccupiedHome"
                                     size="small"
                                     variant="outlined"
                                     value={
@@ -280,10 +282,10 @@ export const BlockHousesForm = (props: any) => {
                                     variant="subtitle1"
                                     fontWeight="500"
                                 >
-                                    Huurwoning Particuliere verhuurder
+                                     {t("createProject.houseBlocksForm.rentalPropertyPrivate")}
                                 </Typography>
                                 <TextField
-                                    id="huurwoningParticuliereverhuurder"
+                                    id="rentalPropertyPrivate"
                                     size="small"
                                     variant="outlined"
                                     value={
@@ -307,10 +309,10 @@ export const BlockHousesForm = (props: any) => {
                                     variant="subtitle1"
                                     fontWeight="500"
                                 >
-                                    Huurwoning Woningcorporatie
+                                     {t("createProject.houseBlocksForm.rentalPropertyHousingAssociation")}
                                 </Typography>
                                 <TextField
-                                    id="huurwoningWoningcorporatie"
+                                    id="rentalPropertyHousingAssociation"
                                     size="small"
                                     variant="outlined"
                                     value={
@@ -336,10 +338,10 @@ export const BlockHousesForm = (props: any) => {
                                     variant="subtitle1"
                                     fontWeight="500"
                                 >
-                                    Waarde
+                                     {t("createProject.houseBlocksForm.value")}
                                 </Typography>
                                 <TextField
-                                    id="waarde"
+                                    id="value"
                                     size="small"
                                     variant="outlined"
                                     InputProps={{
@@ -367,10 +369,10 @@ export const BlockHousesForm = (props: any) => {
                                     variant="subtitle1"
                                     fontWeight="500"
                                 >
-                                    Huurbedrag
+                                     {t("createProject.houseBlocksForm.rentalAmount")}
                                 </Typography>
                                 <TextField
-                                    id="huurbedrag"
+                                    id="rentalAmount"
                                     size="small"
                                     variant="outlined"
                                     InputProps={{
@@ -406,16 +408,16 @@ export const BlockHousesForm = (props: any) => {
                 >
                     <Stack>
                         <Typography variant="subtitle1" fontWeight="600">
-                            Grondpositie
+                        {t("createProject.houseBlocksForm.groundPosition")}
                         </Typography>
                     </Stack>
                     <Stack direction="column" justifyContent="space-between">
                         <Stack>
                             <Typography variant="subtitle1" fontWeight="500">
-                                Geen toestemming Grondeigenaar
+                            {t("createProject.houseBlocksForm.noPermissionFromLandOwner")}
                             </Typography>
                             <TextField
-                                id="geenToestemmingGrondeigenaar"
+                                id="noPermissionFromLandOwner"
                                 size="small"
                                 variant="outlined"
                                 value={
@@ -436,10 +438,10 @@ export const BlockHousesForm = (props: any) => {
                         </Stack>
                         <Stack>
                             <Typography variant="subtitle1" fontWeight="500">
-                                Intentie medewerking Grondeigenaar
+                            {t("createProject.houseBlocksForm.intentionToCooperateWithTheLandowner")}
                             </Typography>
                             <TextField
-                                id="intentieMedewerkingGrondeigenaar"
+                                id="intentionToCooperateWithTheLandowner"
                                 size="small"
                                 variant="outlined"
                                 value={
@@ -460,10 +462,10 @@ export const BlockHousesForm = (props: any) => {
                         </Stack>
                         <Stack>
                             <Typography variant="subtitle1" fontWeight="500">
-                                Formele toestemming van Grondeigenaar
+                            {t("createProject.houseBlocksForm.formalPermissionFromLandOwner")}
                             </Typography>
                             <TextField
-                                id="FormeleToestemmingVanGrondeigenaar"
+                                id="formalPermissionFromLandOwner"
                                 size="small"
                                 variant="outlined"
                                 value={
@@ -500,7 +502,7 @@ export const BlockHousesForm = (props: any) => {
                     p={2}
                 >
                     <Typography variant="subtitle1" fontWeight="600">
-                        Fysiek voorkomen
+                    {t("createProject.houseBlocksForm.physicalApperance")}
                     </Typography>
                     <Stack direction="row" justifyContent="space-between">
                         <Stack>
@@ -509,10 +511,10 @@ export const BlockHousesForm = (props: any) => {
                                     variant="subtitle1"
                                     fontWeight="500"
                                 >
-                                    Tussenwoning
+                                       {t("createProject.houseBlocksForm.terracedHouse")}
                                 </Typography>
                                 <TextField
-                                    id="tussenwoning"
+                                    id="terracedHouse"
                                     size="small"
                                     variant="outlined"
                                     value={
@@ -534,10 +536,10 @@ export const BlockHousesForm = (props: any) => {
                                     variant="subtitle1"
                                     fontWeight="500"
                                 >
-                                    Hoekwoning
+                                     {t("createProject.houseBlocksForm.cornerHouse")}
                                 </Typography>
                                 <TextField
-                                    id="hoekwoning"
+                                    id="cornerHouse"
                                     size="small"
                                     variant="outlined"
                                     value={
@@ -560,10 +562,10 @@ export const BlockHousesForm = (props: any) => {
                                     variant="subtitle1"
                                     fontWeight="500"
                                 >
-                                    Twee onder een kap
+                                    {t("createProject.houseBlocksForm.semidetached")}
                                 </Typography>
                                 <TextField
-                                    id="tweeondereenkap"
+                                    id="semidetached"
                                     size="small"
                                     variant="outlined"
                                     value={
@@ -586,10 +588,10 @@ export const BlockHousesForm = (props: any) => {
                                     variant="subtitle1"
                                     fontWeight="500"
                                 >
-                                    Vrijstaand
+                                       {t("createProject.houseBlocksForm.detached")}
                                 </Typography>
                                 <TextField
-                                    id="vrijstaand"
+                                    id="detached"
                                     size="small"
                                     variant="outlined"
                                     value={
@@ -612,10 +614,10 @@ export const BlockHousesForm = (props: any) => {
                                     variant="subtitle1"
                                     fontWeight="500"
                                 >
-                                    Portiekflat
+                                       {t("createProject.houseBlocksForm.porticoApartment")}
                                 </Typography>
                                 <TextField
-                                    id="portiekflat"
+                                    id="porticoApartment"
                                     size="small"
                                     variant="outlined"
                                     value={
@@ -638,10 +640,10 @@ export const BlockHousesForm = (props: any) => {
                                     variant="subtitle1"
                                     fontWeight="500"
                                 >
-                                    Gallerijflat
+                                      {t("createProject.houseBlocksForm.galleryFlat")}
                                 </Typography>
                                 <TextField
-                                    id="gallerijflat"
+                                    id="galleryFlat"
                                     size="small"
                                     variant="outlined"
                                     value={
@@ -665,10 +667,10 @@ export const BlockHousesForm = (props: any) => {
                                     variant="subtitle1"
                                     fontWeight="500"
                                 >
-                                    Eengezinswoning
+                                      {t("createProject.houseBlocksForm.singleFamilyHome")}
                                 </Typography>
                                 <TextField
-                                    id="eengezinswoning"
+                                    id="singleFamilyHome"
                                     size="small"
                                     variant="outlined"
                                     value={
@@ -690,10 +692,10 @@ export const BlockHousesForm = (props: any) => {
                                     variant="subtitle1"
                                     fontWeight="500"
                                 >
-                                    Meergezinswoning
+                                     {t("createProject.houseBlocksForm.multiFamilyHome")}
                                 </Typography>
                                 <TextField
-                                    id="meergezinswoning"
+                                    id="multiFamilyHome"
                                     size="small"
                                     variant="outlined"
                                     value={
@@ -723,15 +725,15 @@ export const BlockHousesForm = (props: any) => {
                     p={2}
                 >
                     <Typography variant="subtitle1" fontWeight="600">
-                        Doel
+                    {t("createProject.houseBlocksForm.goal")}
                     </Typography>
                     <Stack direction="row" spacing={1}>
                         <Stack>
                             <Typography variant="subtitle1" fontWeight="500">
-                                Regulier
+                            {t("createProject.houseBlocksForm.regular")}
                             </Typography>
                             <TextField
-                                id="regulier"
+                                id="regular"
                                 size="small"
                                 variant="outlined"
                                 value={
@@ -749,10 +751,10 @@ export const BlockHousesForm = (props: any) => {
                         </Stack>
                         <Stack>
                             <Typography variant="subtitle1" fontWeight="500">
-                                Jongeren
+                            {t("createProject.houseBlocksForm.youngPeople")}
                             </Typography>
                             <TextField
-                                id="jongeren"
+                                id="youngPeople"
                                 size="small"
                                 variant="outlined"
                                 value={
@@ -770,10 +772,10 @@ export const BlockHousesForm = (props: any) => {
                         </Stack>
                         <Stack>
                             <Typography variant="subtitle1" fontWeight="500">
-                                Studenten
+                            {t("createProject.houseBlocksForm.students")}
                             </Typography>
                             <TextField
-                                id=" sudenten"
+                                id=" students"
                                 size="small"
                                 variant="outlined"
                                 value={
@@ -792,10 +794,10 @@ export const BlockHousesForm = (props: any) => {
 
                         <Stack>
                             <Typography variant="subtitle1" fontWeight="500">
-                                Ouderen
+                            {t("createProject.houseBlocksForm.elderly")}
                             </Typography>
                             <TextField
-                                id="ouderen"
+                                id="elderly"
                                 size="small"
                                 variant="outlined"
                                 value={
@@ -813,10 +815,10 @@ export const BlockHousesForm = (props: any) => {
                         </Stack>
                         <Stack>
                             <Typography variant="subtitle1" fontWeight="500">
-                                Gehandicapter en zorg
+                            {t("createProject.houseBlocksForm.disabilityAndCare")}
                             </Typography>
                             <TextField
-                                id="gehandicapterenzorg"
+                                id="disabilityAndCare"
                                 size="small"
                                 variant="outlined"
                                 value={
@@ -836,7 +838,7 @@ export const BlockHousesForm = (props: any) => {
 
                         <Stack>
                             <Typography variant="subtitle1" fontWeight="500">
-                                Grote gezinnen
+                                {t("createProject.houseBlocksForm.largeFamilies")}
                             </Typography>
                             <TextField
                                 id="grotegezinnen"
