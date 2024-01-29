@@ -17,10 +17,14 @@ function createPathObject(path: string): Path {
 export const root = createPathObject(config.baseurl);
 
 export const projects = createPathObject(config.baseurl + "projects");
+export const projectsTable = createPathObject(config.baseurl + "projects/table");
 export const projectAdd = createPathObject(config.baseurl + "project/create");
 export const projectDetail= createPathObject(config.baseurl + "projects/:id");
+export const projectDetailCharacteristics = createPathObject(config.baseurl + "projects/:id/characteristics");
+export const projectDetailTimeline = createPathObject(config.baseurl + "projects/:id/timeline");
 
 export const policygoal = createPathObject(config.baseurl + "policygoal");
+export const policygoalDashboard = createPathObject(config.baseurl + "policygoal/dashboard");
 export const dashboard = createPathObject(config.baseurl + "dashboard");
 export const wizard = createPathObject(config.baseurl + "admin/wizard");
 export const exchangedata = createPathObject(config.baseurl + "exchangedata");
