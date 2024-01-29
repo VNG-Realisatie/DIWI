@@ -34,7 +34,7 @@ export const CreateProject = () => {
 
     const handleSave = () => {
         //Todo add createendpoint here
-        setAlert("Project succesvol opgeslagen.", "success");
+        setAlert(t("createProject.successfullySaved"), "success");
     };
 
     const handleNext = () => {
@@ -61,7 +61,7 @@ export const CreateProject = () => {
             {activeStep === 3 && <TimelineForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />}
             {activeStep === 4 && (
                 <Stack direction="row" justifyContent="center" p={5}>
-                    <Typography>De wizard voor het maken van projectformulieren is voltooid. Klik op Opslaan om het proces te voltooien.</Typography>
+                    <Typography> {t("createProject.completeMessage")}</Typography>
                 </Stack>
             )}
             <Stack direction="row" alignItems="center" justifyContent="flex-end" py={2}>

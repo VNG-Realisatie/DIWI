@@ -12,6 +12,8 @@
       "houseBlocks": "Huizen blokken",
       "signupOnTheMap": "Intekenen op de kaart",
       "timeline": "Tijdline",
+      "completeMessage":"De wizard voor het maken van projectformulieren is voltooid. Klik op Opslaan om het proces te voltooien.",
+      "successfullySaved":"Project succesvol opgeslagen.",
       "informationForm": {
         "title": "Vul de projectgegevens in",
         "nameLabel": "Projectnaam en projectkleur*",
@@ -70,6 +72,14 @@
         "municipality":"Gemeente",
         "neighbourhood":"Wijk",
         "district":"Buurt"
+      },
+      "timelineForm":{
+        "title":"Vul de gegevens voor de tijdlijn in",
+        "deliveryDate":"Opleverdatum*",
+        "houseBlock": "Huizen blok",
+        "expectedDelivery":"Verwachte oplevering",
+        "status":"Toestand",
+        "is":"is"
       }
     }
   }
