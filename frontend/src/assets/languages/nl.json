@@ -108,6 +108,21 @@
       "squit":"Squit",
       "province":"Provincie",
       "newData":"Nieuwe data koppeling instellen"
+    },
+    "policy":{
+      "name":"Naam:",
+      "characteristic":"Eigenschap",
+      "goal":"Doelstelling",
+      "number":"Aantal",
+      "percentage":"Percentage",
+      "time":"Tijd",
+      "geography":"Geografie",
+      "category":"Categorie"
+
+
+
+
+
     }
   }
 }
