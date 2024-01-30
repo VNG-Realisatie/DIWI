@@ -1,7 +1,11 @@
+CREATE COLLATION IF NOT EXISTS diwi_numeric (provider = icu, locale = 'en-u-kn-true');
+
 CREATE OR REPLACE FUNCTION get_active_and_future_projects_list (
   _now_ date,
   _offset_ int,
-  _limit_ int
+  _limit_ int,
+  _sortColumn_ text,
+  _sortDirection_ text
 )
 	RETURNS TABLE (
         projectId UUID,
@@ -59,7 +63,7 @@ SELECT * FROM (
         ),
         active_project_plan_types AS (
             SELECT
-                pptc.project_id, array_agg(pptcv.plan_type::TEXT) AS plan_types
+                pptc.project_id, array_agg(pptcv.plan_type::TEXT ORDER BY pptcv.plan_type::TEXT ASC) AS plan_types
             FROM
                 diwi_testset.project_plan_type_changelog pptc
                     JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pptc.start_milestone_id AND sms.change_end_date IS NULL
@@ -71,7 +75,7 @@ SELECT * FROM (
         ),
         active_project_planologische_planstatus AS (
             SELECT
-                pppc.project_id, array_agg(pppcv.planologische_planstatus::TEXT) AS planning_planstatus
+                pppc.project_id, array_agg(pppcv.planologische_planstatus::TEXT ORDER BY pppcv.planologische_planstatus::TEXT ASC) AS planning_planstatus
             FROM
                 diwi_testset.project_planologische_planstatus_changelog pppc
                     JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pppc.start_milestone_id AND sms.change_end_date IS NULL
@@ -84,8 +88,8 @@ SELECT * FROM (
         active_project_priorities AS (
             SELECT ppc.project_id,
                 CASE
-                    WHEN ppc.value_type = 'single_value' THEN array_agg(vs.ordinal_level || ' ' || vs.value_label)
-                    WHEN ppc.value_type = 'range' THEN array_agg(vsMin.ordinal_level || ' ' || vsMin.value_label) || array_agg(vsMax.ordinal_level || ' ' || vsMax.value_label)
+                    WHEN ppc.value_type = 'SINGLE_VALUE' THEN array_agg(vs.ordinal_level || ' ' || vs.value_label)
+                    WHEN ppc.value_type = 'RANGE' THEN array_agg(vsMin.ordinal_level || ' ' || vsMin.value_label) || array_agg(vsMax.ordinal_level || ' ' || vsMax.value_label)
                 END AS project_priorities
             FROM
                 diwi_testset.project_priorisering_changelog ppc
@@ -103,7 +107,7 @@ SELECT * FROM (
         ),
         active_project_gemeenterol AS (
             SELECT
-                pgc.project_id, array_agg(pgvs.value_label) AS municipality_role
+                pgc.project_id, array_agg(pgvs.value_label ORDER BY pgvs.value_label ASC) AS municipality_role
             FROM
                 diwi_testset.project_gemeenterol_changelog pgc
                     JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pgc.start_milestone_id AND sms.change_end_date IS NULL
@@ -177,7 +181,7 @@ SELECT * FROM (
                 GROUP BY pptc.project_id
             )
             SELECT
-                pptc.project_id, array_agg(pptcv.plan_type::TEXT) AS plan_types
+                pptc.project_id, array_agg(pptcv.plan_type::TEXT ORDER BY pptcv.plan_type::TEXT ASC) AS plan_types
             FROM
                 diwi_testset.project_plan_type_changelog pptc
                     JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pptc.start_milestone_id AND sms.change_end_date IS NULL
@@ -199,7 +203,7 @@ SELECT * FROM (
                 GROUP BY pppc.project_id
             )
             SELECT
-                pppc.project_id, array_agg(pppcv.planologische_planstatus::TEXT) AS planning_planstatus
+                pppc.project_id, array_agg(pppcv.planologische_planstatus::TEXT ORDER BY pppcv.planologische_planstatus::TEXT ASC) AS planning_planstatus
             FROM
                 diwi_testset.project_planologische_planstatus_changelog pppc
                     JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pppc.start_milestone_id AND sms.change_end_date IS NULL
@@ -223,8 +227,8 @@ SELECT * FROM (
             SELECT
                 ppc.project_id,
                 CASE
-                    WHEN ppc.value_type = 'single_value' THEN array_agg(vs.ordinal_level || ' ' || vs.value_label)
-                    WHEN ppc.value_type = 'range' THEN array_agg(vsMin.ordinal_level || ' ' || vsMin.value_label) || array_agg(vsMax.ordinal_level || ' ' || vsMax.value_label)
+                    WHEN ppc.value_type = 'SINGLE_VALUE' THEN array_agg(vs.ordinal_level || ' ' || vs.value_label)
+                    WHEN ppc.value_type = 'RANGE' THEN array_agg(vsMin.ordinal_level || ' ' || vsMin.value_label) || array_agg(vsMax.ordinal_level || ' ' || vsMax.value_label)
                     END AS project_priorities
             FROM
                 diwi_testset.project_priorisering_changelog ppc
@@ -252,7 +256,7 @@ SELECT * FROM (
                 GROUP BY pgc.project_id
             )
             SELECT
-                pgc.project_id, array_agg(pgvs.value_label) AS municipality_role
+                pgc.project_id, array_agg(pgvs.value_label ORDER BY pgvs.value_label ASC) AS municipality_role
             FROM
                 diwi_testset.project_gemeenterol_changelog pgc
                     JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pgc.start_milestone_id AND sms.change_end_date IS NULL
@@ -315,7 +319,7 @@ SELECT * FROM (
             LEFT JOIN future_project_gemeenterol fpg ON fpg.project_id = fp.id
 
 ) AS q
-    ORDER BY startDate ASC
+    ORDER BY projectName
     LIMIT _limit_ OFFSET _offset_;
 
 END;$$
