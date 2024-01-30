@@ -18,6 +18,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.vng.security.SecurityRoleConstants.Admin;
 
@@ -42,8 +43,18 @@ public class ProjectsResource {
     @Produces(MediaType.APPLICATION_JSON)
     public List<ProjectListModel> getAllProjects(@Context LoggedUser loggedUser, @BeanParam FilterPaginationSorting filtering) {
 
-        return repo.getProjectsTable();
+        return repo.getProjectsTable(filtering);
 
+    }
+
+    @GET
+    @Path("/table/size")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Map<String, Integer> getAllProjectsListSize(@Context LoggedUser loggedUser, @BeanParam FilterPaginationSorting filtering) {
+
+        Integer projectsCount = repo.getProjectsTableCount(filtering);
+
+        return Map.of("size", projectsCount);
     }
 
 }
