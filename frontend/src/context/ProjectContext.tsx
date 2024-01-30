@@ -53,11 +53,11 @@ export const ProjectProvider = ({ children }: PropsWithChildren) => {
     }, [id, projects]);
 
     useEffect(() => {
-        getProjects()
+        getProjects(1,10)
             .then((projects) => setProjects(projects))
             .catch((err) => console.log(err));
     }, []);
-
+console.log(projects)
     return (
         <ProjectContext.Provider
             value={{

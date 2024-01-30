@@ -16,7 +16,7 @@ export type Project = {
     planningPlanStatus: string[];
 };
 
-export async function getProjects(): Promise<Array<Project>> {
-    const response = await fetch(`${API_URI}/projects/table`);
+export async function getProjects(pageNumber:number,pageSize:number): Promise<Array<Project>> {
+    const response = await fetch(`${API_URI}/projects/table?pageNumber=${pageNumber}&pageSize=${pageSize}`);
     return await response.json();
 }
