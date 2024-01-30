@@ -81,6 +81,14 @@
         "status":"Toestand",
         "is":"is"
       }
+    },
+    "sidebar":{
+      "projects":"Projecten",
+      "dashboards":"Dashboards",
+      "users":"Gebruikers",
+      "dataExchange":"Data uitwisselen"
+
+
     }
   }
 }
