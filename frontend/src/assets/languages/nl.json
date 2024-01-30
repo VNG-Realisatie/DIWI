@@ -87,8 +87,11 @@
       "dashboards":"Dashboards",
       "users":"Gebruikers",
       "dataExchange":"Data uitwisselen"
-
-
+    },
+    "projects":{
+      "title":"Projecten overzicht",
+      "map":"Kaart",
+      "table":"Tabel"
     }
   }
 }
