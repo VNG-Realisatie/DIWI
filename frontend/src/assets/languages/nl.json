@@ -92,6 +92,12 @@
       "title":"Projecten overzicht",
       "map":"Kaart",
       "table":"Tabel"
+    },
+    "projectDetail":{
+      "title":"Project",
+      "map":"Kaart",
+      "characteristics":"Eigenschappen",
+      "timeline":"Tijdline"
     }
   }
 }
