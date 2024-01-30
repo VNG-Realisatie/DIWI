@@ -98,6 +98,16 @@
       "map":"Kaart",
       "characteristics":"Eigenschappen",
       "timeline":"Tijdline"
+    },
+    "exchangeData":{
+      "title":"Data uitwisselen",
+      "import":"Importeren:",
+      "export":"Exporteren:",
+      "excel":"Excel",
+      "system":"Systeem x",
+      "squit":"Squit",
+      "province":"Provincie",
+      "newData":"Nieuwe data koppeling instellen"
     }
   }
 }
