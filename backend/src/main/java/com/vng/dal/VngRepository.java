@@ -14,21 +14,26 @@ public class VngRepository extends AbstractRepository {
     }
 
     public List<ProjectListModel> getProjectsTable(FilterPaginationSorting filtering) {
-        Query q = session.createNativeQuery("SELECT * FROM get_active_and_future_projects_list(:now, :offset, :limit) ",
+        Query q = session.createNativeQuery("SELECT * FROM get_active_and_future_projects_list(:now, :offset, :limit, :sortColumn, :sortDirection) ",
                 ProjectListModel.class)
             .setTupleTransformer(new BeanTransformer<>(ProjectListModel.class))
             .setParameter("now", LocalDate.now())
             .setParameter("offset", filtering.getFirstResultIndex())
-            .setParameter("limit", filtering.getPageSize());
+            .setParameter("limit", filtering.getPageSize())
+            .setParameter("sortColumn", filtering.getSortColumn())
+            .setParameter("sortDirection", filtering.getSortDirection());
+
         return q.getResultList();
     }
 
     public Integer getProjectsTableCount(FilterPaginationSorting filtering) {
-        return session.createNativeQuery("SELECT COUNT(*) FROM get_active_and_future_projects_list(:now, :offset, :limit) ",
+        return session.createNativeQuery("SELECT COUNT(*) FROM get_active_and_future_projects_list(:now, :offset, :limit, :sortColumn, :sortDirection) ",
                 Integer.class)
             .setParameter("now", LocalDate.now())
             .setParameter("offset", 0)
             .setParameter("limit", Integer.MAX_VALUE)
+            .setParameter("sortColumn", filtering.getSortColumn())
+            .setParameter("sortDirection", filtering.getSortDirection())
             .uniqueResult();
     }
 
