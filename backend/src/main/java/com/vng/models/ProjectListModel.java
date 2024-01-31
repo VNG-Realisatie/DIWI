@@ -19,8 +19,11 @@ public class ProjectListModel {
     private String endDate;
     private String[] priority;
     private String projectPhase;
-    private String[] municipalityRole;  //project_gemeenterol_changelog_id => can return multiple valid values
+    private String[] municipalityRole;
     private String[] planningPlanStatus;
-//    private boolean programmering;    //ignore for now - is in housing tables
-//    private List<String> projectLeader;  // from -> project_actor...  //ignore for now
+    private Long totalValue;
+    private String[] municipality;
+    private String[] wijk;
+    private String[] buurt;
+
 }

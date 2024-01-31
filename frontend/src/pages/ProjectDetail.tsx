@@ -1,20 +1,21 @@
-import { Box, Button, Stack, Typography } from "@mui/material";
-import { useContext, useState } from "react";
+import { Box, Stack, Typography } from "@mui/material";
+import { useContext } from "react";
 import { Details } from "../components/Details";
 import { ReactComponent as Map } from "../assets/temp/map.svg";
 import ProjectContext from "../context/ProjectContext";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { ReactComponent as TimeLineImg } from "../assets/temp/timeline.svg";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
 import { colorArray } from "../api/dummyData";
+import { ProjectsWithHouseBlock } from "../components/ProjectWithHouseBlock";
+import BreadcrumbBar from "../components/header/BreadcrumbBar";
 
 export const ProjectDetail = () => {
-    const { selectedProject,  id } = useContext(ProjectContext);
-    const [selectedType, setSelectedType] = useState<
-        "map" | "characteristics" | "timeline"
-    >("map");
+    const { selectedProject, projects, id } = useContext(ProjectContext);
     const navigate = useNavigate();
+    const location = useLocation();
+
     return (
         <Stack
             direction="column"
@@ -23,7 +24,9 @@ export const ProjectDetail = () => {
             border="solid 1px #ddd"
             mb={10}
         >
-        {/* TODO ADD BREADCRUMB COMPONENT AFTER IT IS READY */}
+            <BreadcrumbBar pageTitle="Project" links={[{title: "Kaart", link: Paths.projectDetail.path.replace(":id", id ?? "1")},
+            {title: "Eigenschappen", link: Paths.projectDetailCharacteristics.path.replace(":id", id ?? "1")},
+            {title: "Tijdlijn", link: Paths.projectDetailTimeline.path.replace(":id", id ?? "1")}]} />
             <Stack
                 direction="row"
                 alignItems="center"
@@ -37,13 +40,6 @@ export const ProjectDetail = () => {
                 <Typography variant="h5">{selectedProject?.projectName}</Typography>
             </Stack>
             <Stack direction="row" justifyContent="flex-end" border="solid 1px #ddd" p={0.5}>
-                <Button onClick={() => setSelectedType("map")}>Kaart</Button>
-                <Button onClick={() => setSelectedType("characteristics")}>
-                    Eigenschappen
-                </Button>
-                <Button onClick={() => setSelectedType("timeline")}>
-                    Tijdlijn
-                </Button>
                 <Box
                 sx={{ cursor: "pointer" }}
                 onClick={() => navigate(Paths.projectAdd.path)}
@@ -51,7 +47,7 @@ export const ProjectDetail = () => {
                 <AddCircleIcon color="info" sx={{ fontSize: "45px" }} />
             </Box>
             </Stack>
-            {selectedType === "map" && (
+            {location.pathname === Paths.projectDetail.path.replace(":id", id ?? "1") && (
                 <Stack
                     direction="row"
                     alignItems="center"
@@ -63,9 +59,8 @@ export const ProjectDetail = () => {
                     <Map style={{ width: "100%" }} />
                 </Stack>
             )}
-            {selectedType === "timeline" && <TimeLineImg style={{ width: "100%"}}/>}
-            {/* TODO ADD LATER AFTER WONINGBLOCKS GET FROM ENDPOINT */}
-            {/* {selectedType === "characteristics" && (
+            {location.pathname === Paths.projectDetailTimeline.path.replace(":id", id ?? "1") && <TimeLineImg style={{ width: "100%"}}/>}
+            {location.pathname === Paths.projectDetailCharacteristics.path.replace(":id", id ?? "1") && (
                 <ProjectsWithHouseBlock
                     project={selectedProject}
                     houseblocks={

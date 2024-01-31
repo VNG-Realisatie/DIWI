@@ -9,3 +9,7 @@ sql/json/
 /.metadata/
 
 Servers/
+
+yarn.lock
+
+node_modules/

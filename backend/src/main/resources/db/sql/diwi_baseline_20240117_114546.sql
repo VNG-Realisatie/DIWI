@@ -30,8 +30,8 @@ ALTER SCHEMA diwi_testset OWNER TO vng;
 --
 
 CREATE TYPE diwi_testset.conditie_type AS ENUM (
-    'plan_conditie',
-    'doel_conditie'
+    'PLAN_CONDITIE',
+    'DOEL_CONDITIE'
 );
 
 
@@ -42,11 +42,11 @@ ALTER TYPE diwi_testset.conditie_type OWNER TO vng;
 --
 
 CREATE TYPE diwi_testset.confidentiality AS ENUM (
-    'prive',
-    'intern_uitvoering',
-    'intern_rapportage',
-    'extern_rapportage',
-    'openbaar'
+    'PRIVE',
+    'INTERN_UITVOERING',
+    'INTERN_RAPPORTAGE',
+    'EXTERN_RAPPORTAGE',
+    'OPENBAAR'
 );
 
 
@@ -57,8 +57,8 @@ ALTER TYPE diwi_testset.confidentiality OWNER TO vng;
 --
 
 CREATE TYPE diwi_testset.doel_richting AS ENUM (
-    'minimaal',
-    'maximaal'
+    'MINIMAAL',
+    'MAXIMAAL'
 );
 
 
@@ -69,8 +69,8 @@ ALTER TYPE diwi_testset.doel_richting OWNER TO vng;
 --
 
 CREATE TYPE diwi_testset.doel_soort AS ENUM (
-    'aantal',
-    'percentage'
+    'AANTAL',
+    'PERCENTAGE'
 );
 
 
@@ -81,12 +81,12 @@ ALTER TYPE diwi_testset.doel_soort OWNER TO vng;
 --
 
 CREATE TYPE diwi_testset.doelgroep AS ENUM (
-    'regulier',
-    'jongeren',
-    'studenten',
-    'ouderen',
-    'gehandicapten_en_zorg',
-    'grote_gezinnen'
+    'REGULIER',
+    'JONGEREN',
+    'STUDENTEN',
+    'OUDEREN',
+    'GEHANDICAPTEN_EN_ZORG',
+    'GROTE_GEZINNEN'
 );
 
 
@@ -97,9 +97,9 @@ ALTER TYPE diwi_testset.doelgroep OWNER TO vng;
 --
 
 CREATE TYPE diwi_testset.eigendom_soort AS ENUM (
-    'koopwoning',
-    'huurwoning_particuliere_verhuurder',
-    'huurwoning_woningcorporatie'
+    'KOOPWONING',
+    'HUURWONING_PARTICULIERE_VERHUURDER',
+    'HUURWONING_WONINGCORPORATIE'
 );
 
 
@@ -110,12 +110,12 @@ ALTER TYPE diwi_testset.eigendom_soort OWNER TO vng;
 --
 
 CREATE TYPE diwi_testset.fysiek_voorkomen AS ENUM (
-    'tussenwoning',
-    'hoekwoning',
-    'twee_onder_een_kap',
-    'vrijstaand',
-    'portiekflat',
-    'gallerijflat'
+    'TUSSENWONING',
+    'HOEKWONING',
+    'TWEE_ONDER_EEN_KAP',
+    'VRIJSTAAND',
+    'PORTIEKFLAT',
+    'GALLERIJFLAT'
 );
 
 
@@ -126,9 +126,9 @@ ALTER TYPE diwi_testset.fysiek_voorkomen OWNER TO vng;
 --
 
 CREATE TYPE diwi_testset.grondpositie AS ENUM (
-    'formele_toestemming_grondeigenaar',
-    'intentie_medewerking_grondeigenaar',
-    'geen_toestemming_grondeigenaar'
+    'FORMELE_TOESTEMMING_GRONDEIGENAAR',
+    'INTENTIE_MEDEWERKING_GRONDEIGENAAR',
+    'GEEN_TOESTEMMING_GRONDEIGENAAR'
 );
 
 
@@ -139,10 +139,10 @@ ALTER TYPE diwi_testset.grondpositie OWNER TO vng;
 --
 
 CREATE TYPE diwi_testset.maatwerk_eigenschap_type AS ENUM (
-    'boolean',
-    'category',
-    'ordinal',
-    'numeric'
+    'BOOLEAN',
+    'CATEGORY',
+    'ORDINAL',
+    'NUMERIC'
 );
 
 
@@ -153,8 +153,8 @@ ALTER TYPE diwi_testset.maatwerk_eigenschap_type OWNER TO vng;
 --
 
 CREATE TYPE diwi_testset.maatwerk_object_soort AS ENUM (
-    'project',
-    'woningblok'
+    'PROJECT',
+    'WONINGBLOK'
 );
 
 
@@ -165,9 +165,10 @@ ALTER TYPE diwi_testset.maatwerk_object_soort OWNER TO vng;
 --
 
 CREATE TYPE diwi_testset.milestone_status AS ENUM (
-    'voorspeld',
-    'gepland',
-    'gerealiseerd'
+    'VOORSPELD',
+    'GEPLAND',
+    'GEREALISEERD',
+    'AFGEBROKEN'
 );
 
 
@@ -178,10 +179,10 @@ ALTER TYPE diwi_testset.milestone_status OWNER TO vng;
 --
 
 CREATE TYPE diwi_testset.mutatie_soort AS ENUM (
-    'bouw',
-    'sloop',
-    'transformatie',
-    'splitsing'
+    'BOUW',
+    'SLOOP',
+    'TRANSFORMATIE',
+    'SPLITSING'
 );
 
 
@@ -192,12 +193,12 @@ ALTER TYPE diwi_testset.mutatie_soort OWNER TO vng;
 --
 
 CREATE TYPE diwi_testset.plan_type AS ENUM (
-    'pand_transformatie',
-    'transformatiegebied',
-    'herstructurering',
-    'verdichting',
-    'uitbreiding_uitleg',
-    'uitbreiding_overig'
+    'PAND_TRANSFORMATIE',
+    'TRANSFORMATIEGEBIED',
+    'HERSTRUCTURERING',
+    'VERDICHTING',
+    'UITBREIDING_UITLEG',
+    'UITBREIDING_OVERIG'
 );
 
 
@@ -208,15 +209,15 @@ ALTER TYPE diwi_testset.plan_type OWNER TO vng;
 --
 
 CREATE TYPE diwi_testset.planologische_planstatus AS ENUM (
-    '1a_onherroepelijk',
-    '1b_onherroepelijk_met_uitwerking_nodig',
-    '1c_onherroepelijk_met_b&w_nodig',
-    '2a_vastgesteld',
-    '2b_vastgesteld_met_uitwerking_nodig',
-    '2c_vastgesteld_met_b&w_nodig',
-    '3_in_voorbereiding',
-    '4a_opgenomen_in_visie',
-    '4b_niet_opgenomen_in_visie'
+    '_1A_ONHERROEPELIJK',
+    '_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG',
+    '_1C_ONHERROEPELIJK_MET_BW_NODIG',
+    '_2A_VASTGESTELD',
+    '_2B_VASTGESTELD_MET_UITWERKING_NODIG',
+    '_2C_VASTGESTELD_MET_BW_NODIG',
+    '_3_IN_VOORBEREIDING',
+    '_4A_OPGENOMEN_IN_VISIE',
+    '_4B_NIET_OPGENOMEN_IN_VISIE'
 );
 
 
@@ -227,11 +228,11 @@ ALTER TYPE diwi_testset.planologische_planstatus OWNER TO vng;
 --
 
 CREATE TYPE diwi_testset.project_phase AS ENUM (
-    '1_Initiatieffase',
-    '2_projectfase',
-    '3_vergunningsfase',
-    '4_realisatiefase',
-    '5_opleveringsfase'
+    '_1_INITIATIEFFASE',
+    '_2_PROJECTFASE',
+    '_3_VERGUNNINGSFASE',
+    '_4_REALISATIEFASE',
+    '_5_OPLEVERINGSFASE'
 );
 
 
@@ -242,12 +243,12 @@ ALTER TYPE diwi_testset.project_phase OWNER TO vng;
 --
 
 CREATE TYPE diwi_testset.software_module AS ENUM (
-    'admin_panel',
-    'beheer_portaal',
-    'dashboard_publiek',
-    'dashboard_provinciale_planmonitor',
-    'dashboard_gemeenteraad',
-    'dashboard_interne_uitvoering'
+    'ADMIN_PANEL',
+    'BEHEER_PORTAAL',
+    'DASHBOARD_PUBLIEK',
+    'DASHBOARD_PROVINCIALE_PLANMONITOR',
+    'DASHBOARD_GEMEENTERAAD',
+    'DASHBOARD_INTERNE_UITVOERING'
 );
 
 
@@ -258,10 +259,10 @@ ALTER TYPE diwi_testset.software_module OWNER TO vng;
 --
 
 CREATE TYPE diwi_testset.software_rights AS ENUM (
-    'admin',
-    'crud_to_own',
-    'crud_to_all',
-    'view_only'
+    'ADMIN',
+    'CRUD_TO_OWN',
+    'CRUD_TO_ALL',
+    'VIEW_ONLY'
 );
 
 
@@ -272,8 +273,8 @@ ALTER TYPE diwi_testset.software_rights OWNER TO vng;
 --
 
 CREATE TYPE diwi_testset.value_type AS ENUM (
-    'single_value',
-    'range'
+    'SINGLE_VALUE',
+    'RANGE'
 );
 
 
@@ -284,8 +285,8 @@ ALTER TYPE diwi_testset.value_type OWNER TO vng;
 --
 
 CREATE TYPE diwi_testset.woning_type AS ENUM (
-    'eengezinswoning',
-    'meergezinswoning'
+    'EENGEZINSWONING',
+    'MEERGEZINSWONING'
 );
 
 
@@ -432,6 +433,7 @@ ALTER TABLE diwi_testset.document_soort_state OWNER TO vng;
 CREATE TABLE diwi_testset.document_state (
     "id" UUID NOT NULL,
     "document_id" UUID NOT NULL,
+    "project_id" UUID NOT NULL,
     "milestone_id" UUID NOT NULL,
     naam text NOT NULL,
     notitie text,
@@ -1919,6 +1921,24 @@ CREATE TABLE diwi_testset.woningblok_naam_changelog (
 ALTER TABLE diwi_testset.woningblok_naam_changelog OWNER TO vng;
 
 --
+-- Name: woningblok_opleverdatum_changelog; Type: TABLE; Schema: diwi_testset; Owner: vng
+--
+
+CREATE TABLE diwi_testset.woningblok_opleverdatum_changelog (
+    "id" UUID NOT NULL,
+    "woningblok_id" UUID NOT NULL,
+    "start_milestone_id" UUID NOT NULL,
+    "end_milestone_id" UUID NOT NULL,
+    "verwachte_opleverdatum" date NOT NULL,
+    "change_user_id" UUID NOT NULL,
+    change_start_date timestamp with time zone NOT NULL,
+    change_end_date timestamp with time zone
+);
+
+
+ALTER TABLE diwi_testset.woningblok_opleverdatum_changelog OWNER TO vng;
+
+--
 -- Name: woningblok_programmering_changelog; Type: TABLE; Schema: diwi_testset; Owner: vng
 --
 
@@ -2969,6 +2989,14 @@ ALTER TABLE ONLY diwi_testset.document_state
 
 ALTER TABLE ONLY diwi_testset.document_state
     ADD CONSTRAINT fk_document_state__document FOREIGN KEY ("document_id") REFERENCES diwi_testset.document("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: document_state fk_document_state__project; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
+--
+
+ALTER TABLE ONLY diwi_testset.document_state
+    ADD CONSTRAINT fk_document_state__project FOREIGN KEY ("project_id") REFERENCES diwi_testset.project("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -4753,6 +4781,38 @@ ALTER TABLE ONLY diwi_testset.woningblok_naam_changelog
 
 ALTER TABLE ONLY diwi_testset.woningblok_naam_changelog
     ADD CONSTRAINT fk_woningblok_naam_changelog__woningblok FOREIGN KEY ("woningblok_id") REFERENCES diwi_testset.woningblok("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: woningblok_opleverdatum_changelog fk_woningblok_opleverdatum_changelog__change_user; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
+--
+
+ALTER TABLE ONLY diwi_testset.woningblok_opleverdatum_changelog
+    ADD CONSTRAINT fk_woningblok_opleverdatum_changelog__change_user FOREIGN KEY ("change_user_id") REFERENCES diwi_testset."user"("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: woningblok_opleverdatum_changelog fk_woningblok_opleverdatum_changelog__end_milestone; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
+--
+
+ALTER TABLE ONLY diwi_testset.woningblok_opleverdatum_changelog
+    ADD CONSTRAINT fk_woningblok_opleverdatum_changelog__end_milestone FOREIGN KEY ("end_milestone_id") REFERENCES diwi_testset.milestone("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: woningblok_opleverdatum_changelog fk_woningblok_opleverdatum_changelog__start_milestone; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
+--
+
+ALTER TABLE ONLY diwi_testset.woningblok_opleverdatum_changelog
+    ADD CONSTRAINT fk_woningblok_opleverdatum_changelog__start_milestone FOREIGN KEY ("start_milestone_id") REFERENCES diwi_testset.milestone("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: woningblok_opleverdatum_changelog fk_woningblok_opleverdatum_changelog__woningblok; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
+--
+
+ALTER TABLE ONLY diwi_testset.woningblok_opleverdatum_changelog
+    ADD CONSTRAINT fk_woningblok_opleverdatum_changelog__woningblok FOREIGN KEY ("woningblok_id") REFERENCES diwi_testset.woningblok("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
