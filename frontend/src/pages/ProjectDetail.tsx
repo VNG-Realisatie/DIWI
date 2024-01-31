@@ -60,7 +60,7 @@ export const ProjectDetail = () => {
                 </Stack>
             )}
             {location.pathname === Paths.projectDetailTimeline.path.replace(":id", id ?? "1") && <TimeLineImg style={{ width: "100%"}}/>}
-            {location.pathname === Paths.projectDetailCharacteristics.path.replace(":id", id ?? "1") && (
+            {/* {location.pathname === Paths.projectDetailCharacteristics.path.replace(":id", id ?? "1") && (
                 <ProjectsWithHouseBlock
                     project={selectedProject}
                     houseblocks={
@@ -72,7 +72,7 @@ export const ProjectDetail = () => {
                         )[0].woningblokken
                     }
                 />
-            )} */}
+            )}  */}
 
         </Stack>
     );
