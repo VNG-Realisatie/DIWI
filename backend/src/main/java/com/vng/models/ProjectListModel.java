@@ -3,10 +3,15 @@ package com.vng.models;
 import com.vng.dal.entities.enums.Confidentiality;
 import lombok.Data;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
 public class ProjectListModel {
+
+    public static final List<String> SORTABLE_COLUMNS = List.of("projectName", "confidentialityLevel", "organizationName", "planType",
+        "startDate", "endDate", "priority", "projectPhase", "municipalityRole", "planningPlanStatus", "totalValue", "municipality", "wijk", "buurt");
+    public static final String DEFAULT_SORT_COLUMN = "startDate";
 
     private UUID projectId;
     private UUID projectStateId;

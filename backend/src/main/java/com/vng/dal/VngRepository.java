@@ -32,8 +32,8 @@ public class VngRepository extends AbstractRepository {
             .setParameter("now", LocalDate.now())
             .setParameter("offset", 0)
             .setParameter("limit", Integer.MAX_VALUE)
-            .setParameter("sortColumn", filtering.getSortColumn())
-            .setParameter("sortDirection", filtering.getSortDirection())
+            .setParameter("sortColumn", null)
+            .setParameter("sortDirection", null)
             .uniqueResult();
     }
 
