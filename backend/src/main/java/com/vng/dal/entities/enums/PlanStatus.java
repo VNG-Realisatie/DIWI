@@ -1,13 +1,13 @@
 package com.vng.dal.entities.enums;
 
-public enum PlanStatus {    //TODO
-    _1a_onherroepelijk,
-    _1b_onherroepelijk_met_uitwerking_nodig;
-//    _1c_onherroepelijk_met_b&w_nodig,
-//    _2a_vastgesteld,
-//    _2b_vastgesteld_met_uitwerking_nodig,
-//    _2c_vastgesteld_met_b&w_nodig,
-//    _3_in_voorbereiding,
-//    _4a_opgenomen_in_visie,
-//    _4b_niet_opgenomen_in_visie;
+public enum PlanStatus {
+    _1A_ONHERROEPELIJK,
+    _1B_ONHERROEPELIJK_MET_UITWERKING_NODIG,
+    _1C_ONHERROEPELIJK_MET_BW_NODIG,
+    _2A_VASTGESTELD,
+    _2B_VASTGESTELD_MET_UITWERKING_NODIG,
+    _2C_VASTGESTELD_MET_BW_NODIG,
+    _3_IN_VOORBEREIDING,
+    _4A_OPGENOMEN_IN_VISIE,
+    _4B_NIET_OPGENOMEN_IN_VISIE;
 }
