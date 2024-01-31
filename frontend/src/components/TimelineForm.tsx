@@ -1,16 +1,18 @@
 import { Autocomplete, Box, Stack, TextField, Typography } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { HouseBlockItem, StatusType, houseBlocks, statuses } from "../api/dummyData";
+import { useTranslation } from "react-i18next";
 
 export const TimelineForm = (props: any) => {
+    const { t } = useTranslation();
     return (
         <Box mt={4} position="relative">
             <Typography variant="h6" fontWeight="600">
-                Vul de gegevens voor de tijdlijn in
+                {t("createProject.timelineForm.title")}
             </Typography>
 
             <Typography variant="subtitle1" fontWeight="500">
-                Opleverdatum*
+                {t("createProject.timelineForm.deliveryDate")}
             </Typography>
             <DatePicker
                 value={props.createProjectForm ? props.createProjectForm.opleverDatum : ""}
@@ -33,9 +35,9 @@ export const TimelineForm = (props: any) => {
                             houseBlock: newValue,
                         });
                     }}
-                    renderInput={(params) => <TextField {...params} label="Huizenblok" variant="standard" />}
+                    renderInput={(params) => <TextField {...params} label={t("createProject.timelineForm.houseBlock")} variant="standard" />}
                 />
-                <Typography variant="body1">Verwachte oplevering</Typography>
+                <Typography variant="body1">{t("createProject.timelineForm.expectedDelivery")}</Typography>
                 <Autocomplete
                     sx={{ width: "250px" }}
                     options={statuses}
@@ -47,9 +49,9 @@ export const TimelineForm = (props: any) => {
                             status: newValue,
                         });
                     }}
-                    renderInput={(params) => <TextField {...params} label="Toestand" variant="standard" />}
+                    renderInput={(params) => <TextField {...params} label={t("createProject.timelineForm.status")} variant="standard" />}
                 />
-                <Typography variant="body1">is</Typography>
+                <Typography variant="body1">{t("createProject.timelineForm.is")}</Typography>
 
                 <DatePicker
                     value={props.createProjectForm ? props.createProjectForm.statusDate : ""}

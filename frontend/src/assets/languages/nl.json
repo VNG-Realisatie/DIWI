@@ -1,0 +1,128 @@
+{
+  "translation": {
+    "generic": {
+      "yes": "Ja",
+      "no": "Nee",
+      "save": "Opslaan",
+      "next": "Volgende",
+      "previous": "Vorig"
+    },
+    "createProject": {
+      "information": "Project informatie",
+      "houseBlocks": "Huizen blokken",
+      "signupOnTheMap": "Intekenen op de kaart",
+      "timeline": "Tijdline",
+      "completeMessage":"De wizard voor het maken van projectformulieren is voltooid. Klik op Opslaan om het proces te voltooien.",
+      "successfullySaved":"Project succesvol opgeslagen.",
+      "informationForm": {
+        "title": "Vul de projectgegevens in",
+        "nameLabel": "Projectnaam en projectkleur*",
+        "planType": "Plan Type",
+        "startDate": "Start Datum",
+        "endDate": "Eind Datum",
+        "priority": "Priorisering",
+        "projectPhase": "Project Fase",
+        "roleMunicipality": "Rol Gemeente",
+        "programming": "Programmering",
+        "projectLeader": "Project Leider",
+        "confidentialityLevel": "Vertrouwlijkheidsniveau",
+        "planningPlanStatus": "Planologische Plan Status",
+        "owner": "Eigenaar"
+      },
+      "houseBlocksForm": {
+        "title": "Vul de huizenblokken in",
+        "nameLabel": "Naam",
+        "startDate": "Start Datum",
+        "endDate": "Eind Datum",
+        "mutationData": "Mutatie gegevens",
+        "grossPlanCapacity": "Bruto plancapaciteit",
+        "netPlanCapacity": "Netto Plancapaciteit",
+        "demolition": "Sloop",
+        "mutationType": "Mutatiesoort",
+        "size": "Grootte",
+        "ownershipAndValue": "Eigendom en waarde",
+        "ownerOccupiedHome": "Koopwoning",
+        "rentalPropertyPrivate": "Huurwoning Particuliere verhuurder",
+        "rentalPropertyHousingAssociation": "Huurwoning Woningcorporatie",
+        "value": "Waarde",
+        "rentalAmount": "Huurbedrag",
+        "groundPosition": "Grondpositie",
+        "noPermissionFromLandOwner": "Geen toestemming Grondeigenaar",
+        "intentionToCooperateWithTheLandowner": "Intentie medewerking Grondeigenaar",
+        "formalPermissionFromLandOwner": "Formele toestemming van Grondeigenaar",
+        "physicalApperance": "Fysiek voorkomen",
+        "terracedHouse": "Tussenwoning",
+        "cornerHouse": "Hoekwoning",
+        "semidetached": "Twee onder een kap",
+        "detached": "Vrijstaand",
+        "porticoApartment": "Portiekflat",
+        "galleryFlat": "Gallerijflat",
+        "singleFamilyHome": "Eengezinswoning",
+        "multiFamilyHome": "Meergezinswoning",
+        "goal": "Doel",
+        "regular": "Regulier",
+        "youngPeople": "Jongeren",
+        "students": "Studenten",
+        "elderly": "Ouderen",
+        "disabilityAndCare": "Gehandicapter en zorg",
+        "largeFamilies": "Grote gezinnen"
+      },
+      "selectMapForm":{
+        "title":"Teken het project in op de kaart",
+        "municipality":"Gemeente",
+        "neighbourhood":"Wijk",
+        "district":"Buurt"
+      },
+      "timelineForm":{
+        "title":"Vul de gegevens voor de tijdlijn in",
+        "deliveryDate":"Opleverdatum*",
+        "houseBlock": "Huizen blok",
+        "expectedDelivery":"Verwachte oplevering",
+        "status":"Toestand",
+        "is":"is"
+      }
+    },
+    "sidebar":{
+      "projects":"Projecten",
+      "dashboards":"Dashboards",
+      "users":"Gebruikers",
+      "dataExchange":"Data uitwisselen"
+    },
+    "projects":{
+      "title":"Projecten overzicht",
+      "map":"Kaart",
+      "table":"Tabel"
+    },
+    "projectDetail":{
+      "title":"Project",
+      "map":"Kaart",
+      "characteristics":"Eigenschappen",
+      "timeline":"Tijdline"
+    },
+    "exchangeData":{
+      "title":"Data uitwisselen",
+      "import":"Importeren:",
+      "export":"Exporteren:",
+      "excel":"Excel",
+      "system":"Systeem x",
+      "squit":"Squit",
+      "province":"Provincie",
+      "newData":"Nieuwe data koppeling instellen"
+    },
+    "policy":{
+      "name":"Naam:",
+      "characteristic":"Eigenschap",
+      "goal":"Doelstelling",
+      "number":"Aantal",
+      "percentage":"Percentage",
+      "time":"Tijd",
+      "geography":"Geografie",
+      "category":"Categorie"
+
+
+
+
+
+    }
+  }
+}

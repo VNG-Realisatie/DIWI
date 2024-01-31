@@ -10,23 +10,24 @@ import * as Paths from "../Paths";
 import { colorArray } from "../api/dummyData";
 import { ProjectsWithHouseBlock } from "../components/ProjectWithHouseBlock";
 import BreadcrumbBar from "../components/header/BreadcrumbBar";
+import { useTranslation } from "react-i18next";
 
 export const ProjectDetail = () => {
     const { selectedProject, projects, id } = useContext(ProjectContext);
     const navigate = useNavigate();
     const location = useLocation();
+    const { t } = useTranslation();
 
     return (
-        <Stack
-            direction="column"
-            justifyContent="space-between"
-            position="relative"
-            border="solid 1px #ddd"
-            mb={10}
-        >
-            <BreadcrumbBar pageTitle="Project" links={[{title: "Kaart", link: Paths.projectDetail.path.replace(":id", id ?? "1")},
-            {title: "Eigenschappen", link: Paths.projectDetailCharacteristics.path.replace(":id", id ?? "1")},
-            {title: "Tijdlijn", link: Paths.projectDetailTimeline.path.replace(":id", id ?? "1")}]} />
+        <Stack direction="column" justifyContent="space-between" position="relative" border="solid 1px #ddd" mb={10}>
+            <BreadcrumbBar
+                pageTitle={t("projectDetail.title")}
+                links={[
+                    { title: t("projectDetail.map"), link: Paths.projectDetail.path.replace(":id", id ?? "1") },
+                    { title: t("projectDetail.characteristics"), link: Paths.projectDetailCharacteristics.path.replace(":id", id ?? "1") },
+                    { title: t("projectDetail.timeline"), link: Paths.projectDetailTimeline.path.replace(":id", id ?? "1") },
+                ]}
+            />
             <Stack
                 direction="row"
                 alignItems="center"
@@ -40,20 +41,13 @@ export const ProjectDetail = () => {
                 <Typography variant="h5">{selectedProject?.projectName}</Typography>
             </Stack>
             <Stack direction="row" justifyContent="flex-end" border="solid 1px #ddd" p={0.5}>
-                <Box
-                sx={{ cursor: "pointer" }}
-                onClick={() => navigate(Paths.projectAdd.path)}
-            >
-                <AddCircleIcon color="info" sx={{ fontSize: "45px" }} />
-            </Box>
+                <Box sx={{ cursor: "pointer" }} onClick={() => navigate(Paths.projectAdd.path)}>
+                    <AddCircleIcon color="info" sx={{ fontSize: "45px" }} />
+                </Box>
             </Stack>
             {location.pathname === Paths.projectDetail.path.replace(":id", id ?? "1") && (
-                <Stack
-                    direction="row"
-                    alignItems="center"
-                    justifyContent="space-between"
-                >
-                    <Stack overflow="auto" height="70vh" >
+                <Stack direction="row" alignItems="center" justifyContent="space-between">
+                    <Stack overflow="auto" height="70vh">
                         {<Details project={selectedProject} />}
                     </Stack>
                     <Map style={{ width: "100%" }} />
@@ -63,14 +57,7 @@ export const ProjectDetail = () => {
             {/* {location.pathname === Paths.projectDetailCharacteristics.path.replace(":id", id ?? "1") && (
                 <ProjectsWithHouseBlock
                     project={selectedProject}
-                    houseblocks={
-                        projects.filter(
-                            (p) =>
-                                selectedProject &&
-                                p.project &&
-                                p.project.id === selectedProject.id
-                        )[0].woningblokken
-                    }
+                    houseblocks={projects.filter((p) => selectedProject && p.project && p.project.id === selectedProject.id)[0].woningblokken}
                 />
             )}  */}
 
