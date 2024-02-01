@@ -8,12 +8,11 @@ import { ReactComponent as TimeLineImg } from "../assets/temp/timeline.svg";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
 import { colorArray } from "../api/dummyData";
-import { ProjectsWithHouseBlock } from "../components/ProjectWithHouseBlock";
 import BreadcrumbBar from "../components/header/BreadcrumbBar";
 import { useTranslation } from "react-i18next";
 
 export const ProjectDetail = () => {
-    const { selectedProject, projects, id } = useContext(ProjectContext);
+    const { selectedProject, id } = useContext(ProjectContext);
     const navigate = useNavigate();
     const location = useLocation();
     const { t } = useTranslation();
@@ -53,14 +52,9 @@ export const ProjectDetail = () => {
                     <Map style={{ width: "100%" }} />
                 </Stack>
             )}
-            {location.pathname === Paths.projectDetailTimeline.path.replace(":id", id ?? "1") && <TimeLineImg style={{ width: "100%"}}/>}
-            {/* {location.pathname === Paths.projectDetailCharacteristics.path.replace(":id", id ?? "1") && (
-                <ProjectsWithHouseBlock
-                    project={selectedProject}
-                    houseblocks={projects.filter((p) => selectedProject && p.project && p.project.id === selectedProject.id)[0].woningblokken}
-                />
-            )}  */}
+            {location.pathname === Paths.projectDetailTimeline.path.replace(":id", id ?? "1") && <TimeLineImg style={{ width: "100%" }} />}
 
+        {/* TO DO add house blocks here later */}
         </Stack>
     );
 };
