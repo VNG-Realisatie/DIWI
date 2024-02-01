@@ -15,11 +15,10 @@ type Props = {
     mapData: Marker[];
 };
 
+//Dummy Coordinates for the center of the Netherlands
 const center: LatLngTuple = [52.1326, 5.2913];
 
 const NetherlandsMap = ({ height, width, mapData }: Props) => {
-    //Dummy Coordinates for the center of the Netherlands
-
     const mapRef = useRef<Map>();
 
     const mapZoom = 10;
@@ -43,11 +42,11 @@ const NetherlandsMap = ({ height, width, mapData }: Props) => {
         });
         map.setView(center, mapZoom);
 
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-            maxZoom: 19,
-        }).addTo(map);
+        L.tileLayer.wms("https://service.pdok.nl/kadaster/kadastralekaart/wms/v5_0", { layers: "Kadastralekaart", minZoom: 17 }).addTo(map);
 
-        // L.tileLayer.wms("https://service.pdok.nl/kadaster/kadastralekaart/wms/v5_0").addTo(map);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            maxZoom: 17,
+        }).addTo(map);
 
         //Get this from backend
         mapData.map((data) => {
