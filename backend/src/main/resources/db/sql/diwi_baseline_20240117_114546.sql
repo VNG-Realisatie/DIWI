@@ -243,8 +243,8 @@ ALTER TYPE diwi_testset.project_phase OWNER TO vng;
 --
 
 CREATE TYPE diwi_testset.project_rol AS ENUM (
-    'owner',
-    'projectleider'
+    'OWNER',
+    'PROJECT_LEIDER'
 );
 
 
