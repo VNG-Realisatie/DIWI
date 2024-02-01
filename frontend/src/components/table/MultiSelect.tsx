@@ -16,7 +16,6 @@ type Props = {
     currentRow: Project;
 };
 export const MultiSelect = ({ tagLimit, options, selected, defaultOptionValues, inputLabel, placeHolder, handleChange, width, currentRow }: Props) => {
-    console.log(currentRow.projectId);
     return (
         <Stack direction="row" spacing={1}>
             <Autocomplete

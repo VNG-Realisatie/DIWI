@@ -6,8 +6,12 @@ import { Box, Button, Dialog, DialogActions, DialogTitle, Stack, Typography } fr
 import useAlert from "../hooks/useAlert";
 import ProjectContext from "../context/ProjectContext";
 import { Project } from "../api/projectsServices";
-import { MultiSelect } from "./table/MultiSelect";
 import { useTranslation } from "react-i18next";
+import { PlanTypeCell } from "./table/PlanTypeCell";
+import { MunicipalityRoleCell } from "./table/MunicipalityRoleCell";
+import { PlanningPlanStatusCell } from "./table/PlanningPlanStatusCell";
+import { WijkCell } from "./table/WijkCell";
+import { BuurtCell } from "./table/BuurtCell";
 
 interface RowData {
     id: number;
@@ -16,57 +20,17 @@ interface RowData {
 type Props = {
     showCheckBox?: boolean;
 };
-interface OptionType {
+
+export interface OptionType {
     id: string;
     title: string;
 }
+export type SelectedOptionWithId = {
+    id: string;
+    option: OptionType[];
+};
 
 const confidentialityLevelOptions = ["PRIVE", "INTERN_UITVOERING", "INTERN_RAPPORTAGE", "EXTERN_RAPPORTAGE", "OPENBAAR"];
-const planTypeOptions: OptionType[] = [
-    { id: "PAND_TRANSFORMATIE", title: "PAND_TRANSFORMATIE" },
-    { id: "TRANSFORMATIEGEBIED", title: "TRANSFORMATIEGEBIED" },
-    { id: "HERSTRUCTURERING", title: "HERSTRUCTURERING" },
-    { id: "VERDICHTING", title: "VERDICHTING" },
-    { id: "UITBREIDING_UITLEG", title: "UITBREIDING_UITLEG" },
-    { id: "UITBREIDING_OVERIG", title: "UITBREIDING_OVERIG" },
-];
-const municipalityRolesOptions: OptionType[] = [
-    { id: "ACTIVE", title: "ACTIVE" },
-    { id: "PASSIVE", title: "PASSIVE" },
-    { id: "NOTHING", title: "NOTHING" },
-];
-const planningPlanStatus = [
-    { id: "_1A_ONHERROEPELIJK", title: "_1A_ONHERROEPELIJK" },
-    { id: "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG", title: "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG" },
-    { id: "_1C_ONHERROEPELIJK_MET_BW_NODIG", title: "_1C_ONHERROEPELIJK_MET_BW_NODIG" },
-    { id: "_2A_VASTGESTELD", title: "_2A_VASTGESTELD" },
-    { id: "_2B_VASTGESTELD_MET_UITWERKING_NODIG", title: "_2B_VASTGESTELD_MET_UITWERKING_NODIG" },
-    { id: "_2C_VASTGESTELD_MET_BW_NODIG", title: "_2C_VASTGESTELD_MET_BW_NODIG" },
-    { id: "_3_IN_VOORBEREIDING", title: "_3_IN_VOORBEREIDING" },
-    { id: "_4A_OPGENOMEN_IN_VISIE", title: "_4A_OPGENOMEN_IN_VISIE" },
-    { id: "_4B_NIET_OPGENOMEN_IN_VISIE", title: "_4B_NIET_OPGENOMEN_IN_VISIE" },
-];
-const wijkOptions=[
-    {id:"Centrum",title:"Centrum"},
-    {id:"Castricum-Noord",title:"Castricum-Noord"},
-    {id:"Castricum-Oost",title:"Castricum-Oost"},
-    {id:"Castricum-Zuid",title:"Castricum-Zuid"},
-    {id:"Bakkum",title:"Bakkum"},
-    {id:"Akersloot",title:"Akersloot"},
-    {id:"De Woude",title:"De Woude"},
-    {id:"Limmen",title:"Limmen"}
-]
-const buurtOptions=[
-    {id:"Centrum-Noord",title:"Centrum-Noord"},
-    {id:"Centrum-Zuid",title:"Centrum-Zuid"},
-    {id:"Oranjebuurt",title:"Oranjebuurt"},
-    {id:"Kooiweg",title:"Kooiweg"},
-    {id:"Noord-End",title:"Noord-End"},
-    {id:"Albert’s Hoeve",title:"Albert’s Hoeve"},
-    {id:"Beverwijkerstraat",title:"Beverwijkerstraat"},
-    {id:"Buitengebied",title:"Buitengebied"},
-    {id:"Bakkum-Noord",title:"Bakkum-Noord"}
-]
 
 export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const { projects } = useContext(ProjectContext);
@@ -77,13 +41,13 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
 
     const navigate = useNavigate();
     const { setAlert } = useAlert();
-    const {t}=useTranslation();
+    const { t } = useTranslation();
     const [selectedRows, setSelectedRows] = useState<any[]>([]);
-    const [selectedPlanTypes, setSelectedPlanTypes] = useState<OptionType[]>([]);
-    const [selectedMunicipality, setSelectedMunicipality] = useState<OptionType[]>([]);
-    const [selectedPlanStatus, setSelectedPlanStatus] = useState<OptionType[]>([]);
-    const [selectedWijk, setSelectedWijk] = useState<OptionType[]>([]);
-    const [selectedBuurt, setSelectedBuurt] = useState<OptionType[]>([]);
+    const [selectedPlanTypes, setSelectedPlanTypes] = useState<SelectedOptionWithId[]>([]);
+    const [selectedMunicipality, setSelectedMunicipality] = useState<SelectedOptionWithId[]>([]);
+    const [selectedPlanStatus, setSelectedPlanStatus] = useState<SelectedOptionWithId[]>([]);
+    const [selectedWijk, setSelectedWijk] = useState<SelectedOptionWithId[]>([]);
+    const [selectedBuurt, setSelectedBuurt] = useState<SelectedOptionWithId[]>([]);
     const [showDialog, setShowDialog] = useState(false);
 
     const handleExport = (params: GridRowParams) => {
@@ -96,26 +60,82 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     };
 
     const handleClose = () => setShowDialog(false);
-    const handlePlanTypeChange = (_: React.ChangeEvent<{}>, values: OptionType[]) => {
-        setSelectedPlanTypes(values);
-        //Add later update endpoint
+
+    const handlePlanTypeChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
+        const existingRecordIndex = selectedPlanTypes.findIndex((item) => item.id === id);
+
+        if (existingRecordIndex !== -1) {
+            const updatedSelectedPlanTypes = [...selectedPlanTypes];
+            updatedSelectedPlanTypes[existingRecordIndex] = { id, option: values };
+            setSelectedPlanTypes(updatedSelectedPlanTypes);
+        } else {
+            // If not exists, add a new record
+            setSelectedPlanTypes([...selectedPlanTypes, { id, option: values }]);
+        }
+        //Add update endpoint later
     };
-    const handleMunicipalityChange = (_: React.ChangeEvent<{}>, values: OptionType[]) => {
-        setSelectedMunicipality(values);
+
+    const handleMunicipalityChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
+        const existingRecordIndex = selectedMunicipality.findIndex((item) => item.id === id);
+
+        if (existingRecordIndex !== -1) {
+            const updatedMunicipality = [...selectedMunicipality];
+            updatedMunicipality[existingRecordIndex] = { id, option: values };
+            setSelectedMunicipality(updatedMunicipality);
+        } else {
+            // If not exists, add a new record
+            setSelectedMunicipality([...selectedMunicipality, { id, option: values }]);
+        }
+        //Add update endpoint later
     };
-    const handleStatusChange = (_: React.ChangeEvent<{}>, values: OptionType[]) => {
-        setSelectedPlanStatus(values);
+
+    const handleStatusChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
+        const existingRecordIndex = selectedPlanStatus.findIndex((item) => item.id === id);
+
+        if (existingRecordIndex !== -1) {
+            const updatedPlanStatus = [...selectedPlanStatus];
+            updatedPlanStatus[existingRecordIndex] = { id, option: values };
+            setSelectedPlanStatus(updatedPlanStatus);
+        } else {
+            // If not exists, add a new record
+            setSelectedPlanStatus([...selectedPlanStatus, { id, option: values }]);
+        }
+        //Add update endpoint later
     };
-    const handleWijkChange = (_: React.ChangeEvent<{}>, values: OptionType[]) => {
-        setSelectedWijk(values);
+
+    const handleWijkChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
+        const existingRecordIndex = selectedWijk.findIndex((item) => item.id === id);
+
+        if (existingRecordIndex !== -1) {
+            const updateWijk = [...selectedWijk];
+            updateWijk[existingRecordIndex] = { id, option: values };
+            setSelectedWijk(updateWijk);
+        } else {
+            // If not exists, add a new record
+            setSelectedWijk([...selectedWijk, { id, option: values }]);
+        }
+        //Add update endpoint later
     };
-    const handleBuurtChange = (_: React.ChangeEvent<{}>, values: OptionType[]) => {
-        setSelectedBuurt(values);
+
+    const handleBuurtChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
+        const existingRecordIndex = selectedBuurt.findIndex((item) => item.id === id);
+
+        if (existingRecordIndex !== -1) {
+            const updateBuurt = [...selectedBuurt];
+            updateBuurt[existingRecordIndex] = { id, option: values };
+            setSelectedBuurt(updateBuurt);
+        } else {
+            // If not exists, add a new record
+            setSelectedBuurt([...selectedBuurt, { id, option: values }]);
+        }
+        //Add update endpoint later
     };
+
     const createErrorReport = (params: GridPreProcessEditCellProps) => {
         const hasError = params.props.value.length < 3;
         return { ...params.props, error: hasError };
     };
+
     const columns: GridColDef[] = [
         {
             field: "projectName",
@@ -179,47 +199,27 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             align: "center",
 
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                const defaultPlanTypes = cellValues.row.planType.map((c) => ({ id: c, title: c }));
-                return [
-                    <MultiSelect
-                        currentRow={cellValues.row}
-                        selected={selectedPlanTypes}
-                        options={planTypeOptions}
-                        tagLimit={2}
-                        defaultOptionValues={defaultPlanTypes}
-                        inputLabel={ t("projects.tableColumns.planType")}
-                        placeHolder={ t("projects.tableColumns.selectPlanType")}
-                        handleChange={handlePlanTypeChange}
-                        width="500px"
-                    />,
-                ];
+                return [<PlanTypeCell cellValues={cellValues} selectedPlanTypes={selectedPlanTypes} handlePlanTypeChange={handlePlanTypeChange} />];
             },
             preProcessEditCellProps: createErrorReport,
         },
         {
             field: "priority",
-            headerName:  t("projects.tableColumns.priority"),
+            headerName: t("projects.tableColumns.priority"),
             editable: true,
             preProcessEditCellProps: createErrorReport,
         },
         {
             field: "municipalityRole",
-            headerName:  t("projects.tableColumns.municipalityRole"),
+            headerName: t("projects.tableColumns.municipalityRole"),
             editable: true,
             width: 320,
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                const defaultPlanTypes = cellValues.row.municipalityRole.map((c) => ({ id: c, title: c }));
                 return [
-                    <MultiSelect
-                        currentRow={cellValues.row}
-                        selected={selectedMunicipality}
-                        options={municipalityRolesOptions}
-                        tagLimit={2}
-                        defaultOptionValues={defaultPlanTypes}
-                        inputLabel={ t("projects.tableColumns.municipalityRole")}
-                        placeHolder={ t("projects.tableColumns.selectMunicipalityRole")}
-                        handleChange={handleMunicipalityChange}
-                        width="300px"
+                    <MunicipalityRoleCell
+                        cellValues={cellValues}
+                        selectedMunicipality={selectedMunicipality}
+                        handleMunicipalityChange={handleMunicipalityChange}
                     />,
                 ];
             },
@@ -240,78 +240,36 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             align: "center",
             preProcessEditCellProps: createErrorReport,
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                const defaultPlanTypes = cellValues.row.planningPlanStatus.map((c) => ({ id: c, title: c }));
-                return [
-                    <MultiSelect
-                        currentRow={cellValues.row}
-                        selected={selectedPlanStatus}
-                        options={planningPlanStatus}
-                        tagLimit={2}
-                        defaultOptionValues={defaultPlanTypes}
-                        inputLabel={t("projects.tableColumns.planningPlanStatus")}
-                        placeHolder={t("projects.tableColumns.selectPlanningPlanStatus")}
-                        handleChange={handleStatusChange}
-                        width="500px"
-                    />,
-                ];
+                return [<PlanningPlanStatusCell cellValues={cellValues} selectedPlanStatus={selectedPlanStatus} handleStatusChange={handleStatusChange} />];
             },
         },
         {
             field: "municipality",
-            headerName:  t("projects.tableColumns.municipality"),
+            headerName: t("projects.tableColumns.municipality"),
             editable: true,
             width: 140,
             preProcessEditCellProps: createErrorReport,
         },
         {
             field: "wijk",
-            headerName:  t("projects.tableColumns.wijk"),
+            headerName: t("projects.tableColumns.wijk"),
             editable: true,
             width: 320,
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                const defaultPlanTypes = cellValues.row.wijk?.map((c) => ({ id: c, title: c }));
-                return [
-                    <MultiSelect
-                        currentRow={cellValues.row}
-                        selected={selectedWijk}
-                        options={wijkOptions}
-                        tagLimit={2}
-                        defaultOptionValues={defaultPlanTypes}
-                        inputLabel={t("projects.tableColumns.wijk")}
-                        placeHolder={t("projects.tableColumns.selectWijk")}
-                        handleChange={handleWijkChange}
-                        width="300px"
-                    />,
-                ];
+                return [<WijkCell cellValues={cellValues} selectedWijk={selectedWijk} handleWijkChange={handleWijkChange} />];
             },
             preProcessEditCellProps: createErrorReport,
         },
         {
             field: "buurt",
-            headerName:  t("projects.tableColumns.buurt"),
+            headerName: t("projects.tableColumns.buurt"),
             editable: true,
             width: 320,
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                const defaultPlanTypes = cellValues.row.buurt?.map((c) => ({ id: c, title: c }));
-                return [
-                    <MultiSelect
-                        currentRow={cellValues.row}
-                        selected={selectedBuurt}
-                        options={buurtOptions}
-                        tagLimit={2}
-                        defaultOptionValues={defaultPlanTypes}
-                        inputLabel={t("projects.tableColumns.buurt")}
-                        placeHolder={t("projects.tableColumns.selectBuurt")}
-                        handleChange={handleBuurtChange}
-                        width="300px"
-                    />,
-                ];
+                return [<BuurtCell cellValues={cellValues} selectedBuurt={selectedBuurt} handleBuurtChange={handleBuurtChange} />];
             },
             preProcessEditCellProps: createErrorReport,
         },
-
-
-
     ];
     return (
         <Stack
