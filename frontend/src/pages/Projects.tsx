@@ -22,7 +22,6 @@ export const Projects = () => {
                     { title: t("projects.table"), link: Paths.projectsTable.path },
                 ]}
             />
-
             <Stack direction="row" justifyContent="flex-end" alignItems="center" border="solid 1px #ddd" p={0.5}>
                 <AddCircleIcon color="info" sx={{ fontSize: "45px", cursor: "pointer" }} onClick={() => navigate(Paths.projectAdd.path)} />
             </Stack>

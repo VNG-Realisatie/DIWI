@@ -57,7 +57,7 @@ export const ProjectProvider = ({ children }: PropsWithChildren) => {
             .then((projects) => setProjects(projects))
             .catch((err) => console.log(err));
     }, []);
-console.log(projects)
+
     return (
         <ProjectContext.Provider
             value={{

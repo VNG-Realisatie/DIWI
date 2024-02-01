@@ -1,14 +1,19 @@
-import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
+import {
+    DataGrid,
+    GridCellEditStopParams,
+    GridCellEditStopReasons,
+    GridColDef,
+    GridPreProcessEditCellProps,
+    GridRenderCellParams,
+    MuiEvent,
+} from "@mui/x-data-grid";
 import { GridRowParams } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
-import { Box, Button, Chip, Dialog, DialogActions, DialogTitle, MenuItem, Select, Stack, Typography } from "@mui/material";
+import { Autocomplete, Box, Button, Chip, Dialog, DialogActions, DialogTitle, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
 import useAlert from "../hooks/useAlert";
 import ProjectContext from "../context/ProjectContext";
 import { Project } from "../api/projectsServices";
-//Todo Implement filterDataWithSelectedColumns here to get columns dynamic.
-const confidentialityLevelOptions = ["prive", "intern_uitvoering", "intern_rapportage", "extern_rapportage", "openbaar"];
-const planTypeOptions = ["pand_transformatie", "transformatiegebied", "herstructurering", "verdichting", "uitbreiding_uitleg", "uitbreiding_overig"];
 
 interface RowData {
     id: number;
@@ -17,6 +22,20 @@ interface RowData {
 type Props = {
     showCheckBox?: boolean;
 };
+interface OptionType {
+    id: string;
+    title: string;
+}
+
+const confidentialityLevelOptions = ["PRIVE", "INTERN_UITVOERING", "INTERN_RAPPORTAGE", "EXTERN_RAPPORTAGE", "OPENBAAR"];
+const planTypeOptions: OptionType[] = [
+    { id: "PAND_TRANSFORMATIE", title: "PAND_TRANSFORMATIE" },
+    { id: "TRANSFORMATIEGEBIED", title: "TRANSFORMATIEGEBIED" },
+    { id: "HERSTRUCTURERING", title: "HERSTRUCTURERING" },
+    { id: "VERDICHTING", title: "VERDICHTING" },
+    { id: "UITBREIDING_UITLEG", title: "UITBREIDING_UITLEG" },
+    { id: "UITBREIDING_OVERIG", title: "UITBREIDING_OVERIG" },
+];
 
 export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const { projects } = useContext(ProjectContext);
@@ -27,14 +46,10 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
 
     const navigate = useNavigate();
     const [selectedRows, setSelectedRows] = useState<any[]>([]);
-    const[planTypeEdit,setPlanTypeEdit]=useState(false);
+    const [selectedPlanTypes, setSelectedPlanTypes] = useState<OptionType[]>([]);
     const [showDialog, setShowDialog] = useState(false);
     const { setAlert } = useAlert();
 
-    const handleRowClick = (params: GridRowParams) => {
-        const clickedRow: RowData = params.row as RowData;
-        navigate(`/projects/${clickedRow.id}`);
-    };
 
     const handleExport = (params: GridRowParams) => {
         const clickedRow: RowData = params.row as RowData;
@@ -46,6 +61,14 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     };
 
     const handleClose = () => setShowDialog(false);
+    const handlePlanTypeChange = (_: React.ChangeEvent<{}>, values: OptionType[]) => {
+        setSelectedPlanTypes(values);
+        //Add later update endpoint
+    };
+    const createErrorReport = (params: GridPreProcessEditCellProps) => {
+        const hasError = params.props.value.length < 3;
+        return { ...params.props, error: hasError };
+    };
     const columns: GridColDef[] = [
         {
             field: "projectName",
@@ -54,12 +77,13 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             width: 120,
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
                 return [
-                    <Stack direction="row" spacing={1} alignItems="center">
+                    <Stack direction="row" spacing={1} alignItems="center" onDoubleClick={() => navigate(`/projects/${cellValues.row.projectId}`)}>
                         <Box width="15px" height="15px" borderRadius="50%" sx={{ background: cellValues.row.projectColor }} />
                         <Typography fontSize={14}>{cellValues.row.projectName}</Typography>
                     </Stack>,
                 ];
             },
+            preProcessEditCellProps: createErrorReport,
         },
 
         {
@@ -67,64 +91,67 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             headerName: "organizationName",
             editable: true,
             width: 120,
+            preProcessEditCellProps: createErrorReport,
         },
         {
             field: "startDate",
             headerName: "startDate",
             editable: true,
+            type: "dateTime",
+            valueGetter: ({ value }) => value && new Date(value),
+            preProcessEditCellProps: createErrorReport,
         },
         {
             field: "endDate",
             headerName: "endDate",
             editable: true,
+            type: "dateTime",
+            valueGetter: ({ value }) => value && new Date(value),
+            preProcessEditCellProps: createErrorReport,
         },
         {
             field: "priority",
             headerName: "priority",
             editable: true,
+            preProcessEditCellProps: createErrorReport,
         },
         {
             field: "confidentialityLevel",
             headerName: "confidentialityLevel",
-            width: 200,
-            renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                return [
-                    <Stack direction="row" spacing={1}>
-                        <Select
-                            id="confidentialityLevel"
-                            value={cellValues.row.confidentialityLevel}
-                            onChange={() => console.log("TODO Later after endpoint")}
-                            size="small"
-                        >
-                            {confidentialityLevelOptions.map((c) => {
-                                return (
-                                    <MenuItem key={c} value={c}>
-                                        {c}
-                                    </MenuItem>
-                                );
-                            })}
-                        </Select>
-                    </Stack>,
-                ];
-            },
+            valueOptions: confidentialityLevelOptions,
+            type: "singleSelect",
+            editable: true,
+            width: 250,
+            preProcessEditCellProps: createErrorReport,
         },
         {
             field: "planType",
             headerName: "planType",
             // editable: true,
-            width: 400,
+            width: 500,
             align: "center",
 
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
+                const defaultPlanTypes = cellValues.row.planType.map((c) => ({ id: c, title: c }));
                 return [
-                    <Stack direction="row" spacing={1} >
-                        {!planTypeEdit&&cellValues.row.planType.map((pt: string) => {
-                            return <Chip size="small" label={pt} color="primary"  onClick={()=>setPlanTypeEdit(true)}/>;
-                        })}
-                        {planTypeEdit&&<>Edit me </>}
+                    <Stack direction="row" spacing={1}>
+                        <Autocomplete
+                            size="small"
+                            multiple
+                            limitTags={2}
+                            id="multiple-limit-tags"
+                            options={planTypeOptions}
+                            getOptionLabel={(option) => option.title}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                            value={selectedPlanTypes.length > 1 ? selectedPlanTypes : defaultPlanTypes}
+                            renderInput={(params) => <TextField {...params} label="Plan Type" placeholder="select a plan type" />}
+                            sx={{ width: "500px" }}
+                            onChange={handlePlanTypeChange}
+                        />
                     </Stack>,
                 ];
             },
+            preProcessEditCellProps: createErrorReport,
         },
 
         {
@@ -136,11 +163,12 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 return [
                     <Stack direction="row" spacing={1}>
                         {cellValues.row.municipalityRole.map((pt: string) => {
-                            return <Chip size="small" label={pt} color="primary" />;
+                            return <Chip key={pt} size="small" label={pt} color="primary" />;
                         })}
                     </Stack>,
                 ];
             },
+            preProcessEditCellProps: createErrorReport,
         },
 
         {
@@ -148,6 +176,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             headerName: "projectPhase",
             editable: true,
             width: 140,
+            preProcessEditCellProps: createErrorReport,
         },
         {
             field: "planningPlanStatus",
@@ -155,24 +184,22 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             editable: true,
             width: 300,
             align: "center",
-
+            preProcessEditCellProps: createErrorReport,
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
                 return [
                     <Stack direction="row" spacing={1}>
                         {cellValues.row.planningPlanStatus.map((pt: string) => {
-                            return <Chip size="small" label={pt} color="primary" />;
+                            return <Chip key={pt} size="small" label={pt} color="primary" />;
                         })}
                     </Stack>,
                 ];
             },
         },
     ];
-
     return (
         <Stack
             width="100%"
             sx={{
-                maxWidth: showCheckBox ? "100%" : "920px", // Adjust this width as needed
                 margin: "0 auto",
                 overflowX: "auto",
             }}
@@ -190,6 +217,10 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 }}
                 pageSizeOptions={[5]}
                 onRowClick={showCheckBox ? handleExport : () => {}}
+                processRowUpdate={
+                    (updatedRow, originalRow) => console.log(updatedRow)
+                    //todo add update endpoint later
+                }
             />
             <Dialog open={showDialog} onClose={handleClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
                 <DialogTitle id="alert-dialog-title">Weet je het zeker?</DialogTitle>
