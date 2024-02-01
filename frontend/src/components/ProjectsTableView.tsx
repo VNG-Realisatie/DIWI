@@ -7,6 +7,7 @@ import useAlert from "../hooks/useAlert";
 import ProjectContext from "../context/ProjectContext";
 import { Project } from "../api/projectsServices";
 import { MultiSelect } from "./table/MultiSelect";
+import { useTranslation } from "react-i18next";
 
 interface RowData {
     id: number;
@@ -75,6 +76,8 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     });
 
     const navigate = useNavigate();
+    const { setAlert } = useAlert();
+    const {t}=useTranslation();
     const [selectedRows, setSelectedRows] = useState<any[]>([]);
     const [selectedPlanTypes, setSelectedPlanTypes] = useState<OptionType[]>([]);
     const [selectedMunicipality, setSelectedMunicipality] = useState<OptionType[]>([]);
@@ -82,7 +85,6 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const [selectedWijk, setSelectedWijk] = useState<OptionType[]>([]);
     const [selectedBuurt, setSelectedBuurt] = useState<OptionType[]>([]);
     const [showDialog, setShowDialog] = useState(false);
-    const { setAlert } = useAlert();
 
     const handleExport = (params: GridRowParams) => {
         const clickedRow: RowData = params.row as RowData;
@@ -117,7 +119,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const columns: GridColDef[] = [
         {
             field: "projectName",
-            headerName: "projectName",
+            headerName: t("projects.tableColumns.projectName"),
             editable: true,
             width: 120,
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
@@ -132,7 +134,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         },
         {
             field: "totalValue",
-            headerName: "totalValue",
+            headerName: t("projects.tableColumns.totalValue"),
             editable: true,
             width: 120,
             preProcessEditCellProps: createErrorReport,
@@ -140,14 +142,14 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
 
         {
             field: "organizationName",
-            headerName: "organizationName",
+            headerName: t("projects.tableColumns.organizationName"),
             editable: true,
             width: 120,
             preProcessEditCellProps: createErrorReport,
         },
         {
             field: "confidentialityLevel",
-            headerName: "confidentialityLevel",
+            headerName: t("projects.tableColumns.confidentialityLevel"),
             valueOptions: confidentialityLevelOptions,
             type: "singleSelect",
             editable: true,
@@ -156,7 +158,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         },
         {
             field: "startDate",
-            headerName: "startDate",
+            headerName: t("projects.tableColumns.startDate"),
             editable: true,
             type: "dateTime",
             valueGetter: ({ value }) => value && new Date(value),
@@ -164,7 +166,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         },
         {
             field: "endDate",
-            headerName: "endDate",
+            headerName: t("projects.tableColumns.endDate"),
             editable: true,
             type: "dateTime",
             valueGetter: ({ value }) => value && new Date(value),
@@ -172,8 +174,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         },
         {
             field: "planType",
-            headerName: "planType",
-            // editable: true,
+            headerName: t("projects.tableColumns.planType"),
             width: 500,
             align: "center",
 
@@ -186,8 +187,8 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                         options={planTypeOptions}
                         tagLimit={2}
                         defaultOptionValues={defaultPlanTypes}
-                        inputLabel="Plan Type"
-                        placeHolder="Select type"
+                        inputLabel={ t("projects.tableColumns.planType")}
+                        placeHolder={ t("projects.tableColumns.selectPlanType")}
                         handleChange={handlePlanTypeChange}
                         width="500px"
                     />,
@@ -197,13 +198,13 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         },
         {
             field: "priority",
-            headerName: "priority",
+            headerName:  t("projects.tableColumns.priority"),
             editable: true,
             preProcessEditCellProps: createErrorReport,
         },
         {
             field: "municipalityRole",
-            headerName: "municipalityRole",
+            headerName:  t("projects.tableColumns.municipalityRole"),
             editable: true,
             width: 320,
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
@@ -215,8 +216,8 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                         options={municipalityRolesOptions}
                         tagLimit={2}
                         defaultOptionValues={defaultPlanTypes}
-                        inputLabel="Municipality Roles"
-                        placeHolder="Select role"
+                        inputLabel={ t("projects.tableColumns.municipalityRole")}
+                        placeHolder={ t("projects.tableColumns.selectMunicipalityRole")}
                         handleChange={handleMunicipalityChange}
                         width="300px"
                     />,
@@ -226,14 +227,14 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         },
         {
             field: "projectPhase",
-            headerName: "projectPhase",
+            headerName: t("projects.tableColumns.projectPhase"),
             editable: true,
             width: 140,
             preProcessEditCellProps: createErrorReport,
         },
         {
             field: "planningPlanStatus",
-            headerName: "planningPlanStatus",
+            headerName: t("projects.tableColumns.planningPlanStatus"),
             editable: true,
             width: 500,
             align: "center",
@@ -247,8 +248,8 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                         options={planningPlanStatus}
                         tagLimit={2}
                         defaultOptionValues={defaultPlanTypes}
-                        inputLabel="PlanningPlan Status"
-                        placeHolder="Select status"
+                        inputLabel={t("projects.tableColumns.planningPlanStatus")}
+                        placeHolder={t("projects.tableColumns.selectPlanningPlanStatus")}
                         handleChange={handleStatusChange}
                         width="500px"
                     />,
@@ -257,14 +258,14 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         },
         {
             field: "municipality",
-            headerName: "municipality",
+            headerName:  t("projects.tableColumns.municipality"),
             editable: true,
             width: 140,
             preProcessEditCellProps: createErrorReport,
         },
         {
             field: "wijk",
-            headerName: "wijk",
+            headerName:  t("projects.tableColumns.wijk"),
             editable: true,
             width: 320,
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
@@ -276,8 +277,8 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                         options={wijkOptions}
                         tagLimit={2}
                         defaultOptionValues={defaultPlanTypes}
-                        inputLabel="Wijk"
-                        placeHolder="Select wijk"
+                        inputLabel={t("projects.tableColumns.wijk")}
+                        placeHolder={t("projects.tableColumns.selectWijk")}
                         handleChange={handleWijkChange}
                         width="300px"
                     />,
@@ -287,7 +288,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         },
         {
             field: "buurt",
-            headerName: "buurt",
+            headerName:  t("projects.tableColumns.buurt"),
             editable: true,
             width: 320,
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
@@ -299,8 +300,8 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                         options={buurtOptions}
                         tagLimit={2}
                         defaultOptionValues={defaultPlanTypes}
-                        inputLabel="Buurt"
-                        placeHolder="Select buurt"
+                        inputLabel={t("projects.tableColumns.buurt")}
+                        placeHolder={t("projects.tableColumns.selectBuurt")}
                         handleChange={handleBuurtChange}
                         width="300px"
                     />,
