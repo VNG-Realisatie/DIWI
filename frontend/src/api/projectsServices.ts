@@ -13,6 +13,9 @@ export type Project = {
     priority: string[];
     projectPhase: string;
     municipalityRole: string[];
+    wijk:string[];
+    buurt:string[];
+    municipality:string[];
     planningPlanStatus: string[];
 };
 
