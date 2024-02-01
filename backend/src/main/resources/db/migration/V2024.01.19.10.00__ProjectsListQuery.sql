@@ -5,7 +5,10 @@ CREATE OR REPLACE FUNCTION get_active_and_future_projects_list (
   _offset_ int,
   _limit_ int,
   _sortColumn_ text,
-  _sortDirection_ text
+  _sortDirection_ text,
+  _filterColumn_ text,
+  _filterValues_ text[],
+  _filterCondition_ text
 )
 	RETURNS TABLE (
         projectId UUID,
@@ -14,8 +17,8 @@ CREATE OR REPLACE FUNCTION get_active_and_future_projects_list (
         projectColor TEXT,
         confidentialityLevel diwi_testset.confidentiality,
         organizationName TEXT,
-        startDate DATE,
-        endDate DATE,
+        startDate TEXT,
+        endDate TEXT,
         planType TEXT[],
         priority TEXT[],
         projectPhase diwi_testset.project_phase,
@@ -31,7 +34,24 @@ AS $$
 BEGIN
 RETURN QUERY
 
-SELECT * FROM (
+SELECT  q.projectId,
+        q.projectStateId,
+        q.projectName,
+        q.projectColor,
+        q.confidentialityLevel,
+        q.organizationName,
+        q.startDateStr             AS startDate,
+        q.endDateStr               AS endDate,
+        q.planType,
+        q.priority,
+        q.projectPhase,
+        q.planningPlanStatus,
+        q.municipalityRole,
+        q.totalValue,
+        q.municipality,
+        q.wijk,
+        q.buurt
+FROM (
 
     WITH
         active_projects AS (
@@ -434,7 +454,9 @@ SELECT * FROM (
            ps.confidentiality_level AS confidentialityLevel,
            os.naam                  AS organizationName,
            ap.startDate             AS startDate,
+           to_char( ap.startDate, 'DD-MM-YYYY') AS startDateStr,
            ap.endDate               AS endDate,
+           to_char( ap.endDate, 'DD-MM-YYYY') AS endDateStr,
            appt.plan_types          AS planType,
            app.project_priorities   AS priority,
            apf.project_fase         AS projectPhase,
@@ -468,7 +490,9 @@ SELECT * FROM (
            ps.confidentiality_level AS confidentialityLevel,
            os.naam                  AS organizationName,
            fp.startDate             AS startDate,
+           to_char( fp.startDate, 'DD-MM-YYYY') AS startDateStr,
            fp.endDate               AS endDate,
+           to_char( fp.endDate, 'DD-MM-YYYY') AS endDateStr,
            fppt.plan_types          AS planType,
            fpp.project_priorities   AS priority,
            fpf.project_fase         AS projectPhase,
@@ -494,6 +518,24 @@ SELECT * FROM (
             LEFT JOIN future_project_woningblok_wijk fpww ON fpww.project_id = fp.id
 
 ) AS q
+  WHERE
+        CASE
+            WHEN _filterCondition_ = 'CONTAINS' AND _filterColumn_  = 'projectName' THEN q.projectName ILIKE '%' || _filterValues_[1] || '%'
+            WHEN _filterCondition_ = 'CONTAINS' AND  _filterColumn_  = 'organizationName' THEN q.organizationName ILIKE '%' || _filterValues_[1] || '%'
+            WHEN _filterCondition_ = 'CONTAINS' AND  _filterColumn_  = 'startDate' THEN q.startDateStr ILIKE '%' || _filterValues_[1] || '%'
+            WHEN _filterCondition_ = 'CONTAINS' AND  _filterColumn_  = 'endDate' THEN q.endDateStr ILIKE '%' || _filterValues_[1] || '%'
+            WHEN _filterCondition_ = 'ANY_OF' AND  _filterColumn_  = 'confidentialityLevel' THEN q.confidentialityLevel = ANY(_filterValues_::diwi_testset.confidentiality[])
+            WHEN _filterCondition_ = 'ANY_OF' AND  _filterColumn_  = 'projectPhase' THEN q.projectPhase = ANY(_filterValues_::diwi_testset.project_phase[])
+            WHEN _filterCondition_ = 'ANY_OF' AND _filterColumn_ = 'planType' THEN q.planType && _filterValues_
+            WHEN _filterCondition_ = 'ANY_OF' AND _filterColumn_ = 'priority' THEN q.priority && _filterValues_
+            WHEN _filterCondition_ = 'ANY_OF' AND _filterColumn_ = 'planningPlanStatus' THEN q.planningPlanStatus && _filterValues_
+            WHEN _filterCondition_ = 'ANY_OF' AND _filterColumn_ = 'municipalityRole' THEN q.municipalityRole && _filterValues_
+            WHEN _filterCondition_ = 'ANY_OF' AND _filterColumn_ = 'municipality' THEN q.municipality && _filterValues_
+            WHEN _filterCondition_ = 'ANY_OF' AND _filterColumn_ = 'wijk' THEN q.wijk && _filterValues_
+            WHEN _filterCondition_ = 'ANY_OF' AND _filterColumn_ = 'buurt' THEN q.buurt && _filterValues_
+            WHEN _filterColumn_ IS NULL THEN 1 = 1
+        END
+
     ORDER BY
         CASE WHEN _sortColumn_ = 'projectName' AND _sortDirection_ = 'ASC' THEN q.projectName END ASC,
         CASE WHEN _sortColumn_ = 'organizationName' AND _sortDirection_ = 'ASC' THEN q.organizationName END ASC,

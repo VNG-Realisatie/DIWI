@@ -56,4 +56,11 @@ public abstract class AbstractRepository {
         return result;
     }
 
+    public String fromJavaListToSqlArrayLiteral(List<String> javaList) {
+        StringBuilder sqlString = new StringBuilder();
+        sqlString.append("{");
+        sqlString.append(String.join(",", javaList));
+        sqlString.append("}");
+        return sqlString.toString();
+    }
 }

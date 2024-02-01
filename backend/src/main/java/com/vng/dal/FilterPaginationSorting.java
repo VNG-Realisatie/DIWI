@@ -4,9 +4,21 @@ import jakarta.ws.rs.QueryParam;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 public class FilterPaginationSorting {
+
+    public enum FilterCondition {
+        CONTAINS,
+        ANY_OF;
+    }
+
+    public enum SortDirection {
+        ASC,
+        DESC;
+    }
 
     @QueryParam("pageNumber")
     private int pageNumber;
@@ -18,13 +30,16 @@ public class FilterPaginationSorting {
     private String sortColumn;
 
     @QueryParam("sortDirection")
-    private String sortDirection;
+    private SortDirection sortDirection;
 
     @QueryParam("filterColumn")
     private String filterColumn;
 
     @QueryParam("filterValue")
-    private String filterValue;
+    private List<String> filterValue;
+
+    @QueryParam("filterCondition")
+    private FilterCondition filterCondition;
 
     public boolean isValid() {
         return (this.pageNumber > 0 && this.pageSize > 0);
@@ -34,8 +49,7 @@ public class FilterPaginationSorting {
         return (pageNumber - 1) * pageSize;
     }
 
-
-    public String getSortDirection() {
-        return ("DESC".equalsIgnoreCase(sortDirection)) ? "DESC" : "ASC";
+    public SortDirection getSortDirection() {
+        return (sortDirection == null) ? SortDirection.ASC : sortDirection;
     }
 }

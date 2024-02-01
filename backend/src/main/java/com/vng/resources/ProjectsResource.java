@@ -43,7 +43,7 @@ public class ProjectsResource {
     @Produces(MediaType.APPLICATION_JSON)
     public List<ProjectListModel> getAllProjects(@Context LoggedUser loggedUser, @BeanParam FilterPaginationSorting filtering) {
 
-        if (!ProjectListModel.SORTABLE_COLUMNS.contains(filtering.getSortColumn())) {
+        if (filtering.getSortColumn() == null || !ProjectListModel.SORTABLE_COLUMNS.contains(filtering.getSortColumn())) {
             filtering.setSortColumn(ProjectListModel.DEFAULT_SORT_COLUMN);
         }
 
