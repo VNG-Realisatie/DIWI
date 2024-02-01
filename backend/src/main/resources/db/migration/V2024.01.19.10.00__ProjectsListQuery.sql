@@ -494,7 +494,37 @@ SELECT * FROM (
             LEFT JOIN future_project_woningblok_wijk fpww ON fpww.project_id = fp.id
 
 ) AS q
-    ORDER BY startDate
+    ORDER BY
+        CASE WHEN _sortColumn_ = 'projectName' AND _sortDirection_ = 'ASC' THEN q.projectName END ASC,
+        CASE WHEN _sortColumn_ = 'organizationName' AND _sortDirection_ = 'ASC' THEN q.organizationName END ASC,
+        CASE WHEN _sortColumn_ = 'totalValue' AND _sortDirection_ = 'ASC' THEN q.totalValue END ASC,
+        CASE WHEN _sortColumn_ = 'endDate' AND _sortDirection_ = 'ASC' THEN q.endDate END ASC,
+        CASE WHEN _sortColumn_ = 'startDate' AND _sortDirection_ = 'ASC' THEN q.startDate END ASC,
+        CASE WHEN _sortColumn_ = 'confidentialityLevel' AND _sortDirection_ = 'ASC' THEN q.confidentialityLevel END ASC,
+        CASE WHEN _sortColumn_ = 'projectPhase' AND _sortDirection_ = 'ASC' THEN q.projectPhase END ASC,
+        CASE WHEN _sortColumn_ = 'planType' AND _sortDirection_ = 'ASC' THEN q.planType END ASC,
+        CASE WHEN _sortColumn_ = 'priority' AND _sortDirection_ = 'ASC' THEN q.priority COLLATE "diwi_numeric" END ASC,
+        CASE WHEN _sortColumn_ = 'planningPlanStatus' AND _sortDirection_ = 'ASC' THEN q.planningPlanStatus END ASC,
+        CASE WHEN _sortColumn_ = 'municipalityRole' AND _sortDirection_ = 'ASC' THEN q.municipalityRole END ASC,
+        CASE WHEN _sortColumn_ = 'municipality' AND _sortDirection_ = 'ASC' THEN q.municipality END ASC,
+        CASE WHEN _sortColumn_ = 'wijk' AND _sortDirection_ = 'ASC' THEN q.wijk END ASC,
+        CASE WHEN _sortColumn_ = 'buurt' AND _sortDirection_ = 'ASC' THEN q.buurt END ASC,
+
+        CASE WHEN _sortColumn_ = 'projectName' AND _sortDirection_ = 'DESC' THEN q.projectName END DESC,
+        CASE WHEN _sortColumn_ = 'organizationName' AND _sortDirection_ = 'DESC' THEN q.organizationName END DESC,
+        CASE WHEN _sortColumn_ = 'totalValue' AND _sortDirection_ = 'DESC' THEN q.totalValue END DESC,
+        CASE WHEN _sortColumn_ = 'endDate' AND _sortDirection_ = 'DESC' THEN q.endDate END DESC,
+        CASE WHEN _sortColumn_ = 'startDate' AND _sortDirection_ = 'DESC' THEN q.startDate END DESC,
+        CASE WHEN _sortColumn_ = 'confidentialityLevel' AND _sortDirection_ = 'DESC' THEN q.confidentialityLevel END DESC,
+        CASE WHEN _sortColumn_ = 'projectPhase' AND _sortDirection_ = 'DESC' THEN q.projectPhase END DESC,
+        CASE WHEN _sortColumn_ = 'planType' AND _sortDirection_ = 'DESC' THEN q.planType END DESC,
+        CASE WHEN _sortColumn_ = 'priority' AND _sortDirection_ = 'DESC' THEN q.priority COLLATE "diwi_numeric" END DESC,
+        CASE WHEN _sortColumn_ = 'planningPlanStatus' AND _sortDirection_ = 'DESC' THEN q.planningPlanStatus END DESC,
+        CASE WHEN _sortColumn_ = 'municipalityRole' AND _sortDirection_ = 'DESC' THEN q.municipalityRole END DESC,
+        CASE WHEN _sortColumn_ = 'municipality' AND _sortDirection_ = 'DESC' THEN q.municipality END DESC,
+        CASE WHEN _sortColumn_ = 'wijk' AND _sortDirection_ = 'DESC' THEN q.wijk END DESC,
+        CASE WHEN _sortColumn_ = 'buurt' AND _sortDirection_ = 'DESC' THEN q.buurt END DESC
+
     LIMIT _limit_ OFFSET _offset_;
 
 END;$$
