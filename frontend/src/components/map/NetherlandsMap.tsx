@@ -1,7 +1,7 @@
-import type { LatLngTuple } from "leaflet";
+import type { LatLngTuple, Map } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 type Marker = {
     projectColor: string;
@@ -14,8 +14,13 @@ type Props = {
     width: string;
     mapData: Marker[];
 };
+
+const center: LatLngTuple = [52.1326, 5.2913];
+
 const NetherlandsMap = ({ height, width, mapData }: Props) => {
     //Dummy Coordinates for the center of the Netherlands
+
+    const mapRef = useRef<Map>();
 
     const mapZoom = 10;
 
@@ -26,20 +31,23 @@ const NetherlandsMap = ({ height, width, mapData }: Props) => {
         });
     }
     useEffect(() => {
-        const center: LatLngTuple = [52.1326, 5.2913];
-        let map = new L.Map("map");
-        map.on("click", (e) => map.setView(e.latlng, map.getZoom()));
+        if (mapRef.current) {
+            return;
+        }
+
+        mapRef.current = new L.Map("map");
+        const map = mapRef.current;
+
+        map.on("click", (e) => {
+            map.setView(e.latlng, map.getZoom());
+        });
         map.setView(center, mapZoom);
+
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
             maxZoom: 19,
         }).addTo(map);
 
-        let container = L.DomUtil.get("map");
-
-        if (container != null) {
-            //@ts-ignore
-            container._leaflet_id = null;
-        }
+        // L.tileLayer.wms("https://service.pdok.nl/kadaster/kadastralekaart/wms/v5_0").addTo(map);
 
         //Get this from backend
         mapData.map((data) => {
