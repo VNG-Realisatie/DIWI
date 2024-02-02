@@ -1,6 +1,8 @@
 import type { LatLngTuple, Map } from "leaflet";
 import "leaflet/dist/leaflet.css";
+import "leaflet-draw/dist/leaflet.draw.css";
 import L from "leaflet";
+import "leaflet-draw";
 import { useEffect, useRef } from "react";
 
 type Marker = {
@@ -34,7 +36,7 @@ const NetherlandsMap = ({ height, width, mapData }: Props) => {
             return;
         }
 
-        mapRef.current = new L.Map("map");
+        mapRef.current = L.map("map", { drawControl: true });
         const map = mapRef.current;
 
         map.setView(center, mapZoom);
@@ -44,6 +46,22 @@ const NetherlandsMap = ({ height, width, mapData }: Props) => {
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
             maxZoom: 17,
         }).addTo(map);
+        // Initialize Leaflet.draw control
+        const drawnItems = new L.FeatureGroup();
+        map.addLayer(drawnItems);
+
+        const drawControl = new L.Control.Draw({
+            edit: {
+                featureGroup: drawnItems,
+            },
+        });
+        map.addControl(drawControl);
+
+        // Handle draw events
+        map.on(L.Draw.Event.CREATED, function (event) {
+            const layer = event.layer;
+            drawnItems.addLayer(layer);
+        });
 
         //Get this from backend
         mapData.map((data) => {
