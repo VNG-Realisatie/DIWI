@@ -37,9 +37,6 @@ const NetherlandsMap = ({ height, width, mapData }: Props) => {
         mapRef.current = new L.Map("map");
         const map = mapRef.current;
 
-        map.on("click", (e) => {
-            map.setView(e.latlng, map.getZoom());
-        });
         map.setView(center, mapZoom);
 
         L.tileLayer.wms("https://service.pdok.nl/kadaster/kadastralekaart/wms/v5_0", { layers: "Kadastralekaart", minZoom: 17 }).addTo(map);
