@@ -74,6 +74,7 @@ public class VngApplication extends ResourceConfig {
         register(RolesAllowedDynamicFeature.class);
         register(MultiPartFeature.class);
         register(CORSFilter.class);
+        register(VngBadRequestException.class);
 
         // Then the end points
         register(VngResource.class);

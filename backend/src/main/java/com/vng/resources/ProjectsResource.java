@@ -4,6 +4,7 @@ import com.vng.dal.GenericRepository;
 import com.vng.dal.FilterPaginationSorting;
 import com.vng.dal.VngRepository;
 import com.vng.models.ProjectListModel;
+import com.vng.rest.VngBadRequestException;
 import com.vng.security.LoggedUser;
 import com.vng.services.VngService;
 import jakarta.annotation.security.RolesAllowed;
@@ -41,9 +42,14 @@ public class ProjectsResource {
     @GET
     @Path("/table")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ProjectListModel> getAllProjects(@Context LoggedUser loggedUser, @BeanParam FilterPaginationSorting filtering) {
+    public List<ProjectListModel> getAllProjects(@Context LoggedUser loggedUser, @BeanParam FilterPaginationSorting filtering)
+        throws VngBadRequestException {
 
-        if (filtering.getSortColumn() == null || !ProjectListModel.SORTABLE_COLUMNS.contains(filtering.getSortColumn())) {
+        if (filtering.getSortColumn() != null && !ProjectListModel.SORTABLE_COLUMNS.contains(filtering.getSortColumn())) {
+            throw new VngBadRequestException("Sort column not supported.");
+        }
+
+        if (filtering.getSortColumn() == null) {
             filtering.setSortColumn(ProjectListModel.DEFAULT_SORT_COLUMN);
         }
 
