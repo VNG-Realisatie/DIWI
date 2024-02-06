@@ -28,11 +28,6 @@ services:
       DIWI_DB_PASSWORD: ${DIWI_DB_PASSWORD?-define a password please}
     ports:
       - ${BACKEND_PORT:-8080}
-    volumes:
-      - ./dummy-api/v0.0/:/var/www/api/v0.0/:ro
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/conf.d/:/etc/nginx/conf.d/:ro
-      - ./htpasswd:/etc/nginx/htpasswd:ro
     depends_on:
       - keycloak
 
