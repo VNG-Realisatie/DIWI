@@ -1,11 +1,14 @@
 import { Stack } from "@mui/material";
-import { ReactComponent as Map } from "../assets/temp/map.svg";
+
 import { ProjectsTableView } from "../components/ProjectsTableView";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
+import { dummyMapData } from "./ProjectDetail";
+
 import BreadcrumbBar from "../components/header/BreadcrumbBar";
 import { useTranslation } from "react-i18next";
+import NetherlandsMap from "../components/map/NetherlandsMap";
 
 export const Projects = () => {
     const navigate = useNavigate();
@@ -25,7 +28,7 @@ export const Projects = () => {
             <Stack direction="row" justifyContent="flex-end" alignItems="center" border="solid 1px #ddd" p={0.5}>
                 <AddCircleIcon color="info" sx={{ fontSize: "45px", cursor: "pointer" }} onClick={() => navigate(Paths.projectAdd.path)} />
             </Stack>
-            {(location.pathname === Paths.projects.path || location.pathname === Paths.root.path) && <Map style={{ width: "100%" }} />}
+            {(location.pathname === Paths.projects.path || location.pathname === Paths.root.path) && <NetherlandsMap height="500px" width="1000px" mapData={dummyMapData}/>}
             {location.pathname === Paths.projectsTable.path && <ProjectsTableView />}
         </Stack>
     );

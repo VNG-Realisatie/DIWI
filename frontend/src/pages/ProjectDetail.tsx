@@ -1,7 +1,6 @@
 import { Box, Stack, Typography } from "@mui/material";
 import { useContext } from "react";
 import { Details } from "../components/Details";
-import { ReactComponent as Map } from "../assets/temp/map.svg";
 import ProjectContext from "../context/ProjectContext";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { ReactComponent as TimeLineImg } from "../assets/temp/timeline.svg";
@@ -10,6 +9,25 @@ import * as Paths from "../Paths";
 import { colorArray } from "../api/dummyData";
 import BreadcrumbBar from "../components/header/BreadcrumbBar";
 import { useTranslation } from "react-i18next";
+import NetherlandsMap from "../components/map/NetherlandsMap";
+
+export const dummyMapData = [
+    {
+        projectColor: "orange",
+        projectName: "test-01",
+        coordinate:[52.1434, 5.0013]
+    },
+    {
+        projectColor: "tomato",
+        projectName: "test-02",
+        coordinate:[52.2434, 5.2013]
+    },
+    {
+        projectColor: "green",
+        projectName: "test-03",
+        coordinate:[52.5434, 5.5013]
+    },
+];
 
 export const ProjectDetail = () => {
     const { selectedProject, id } = useContext(ProjectContext);
@@ -49,7 +67,7 @@ export const ProjectDetail = () => {
                     <Stack overflow="auto" height="70vh">
                         {<Details project={selectedProject} />}
                     </Stack>
-                    <Map style={{ width: "100%" }} />
+                    <NetherlandsMap height="640px" width="1000px" mapData={dummyMapData} />
                 </Stack>
             )}
             {location.pathname === Paths.projectDetailTimeline.path.replace(":id", id ?? "1") && <TimeLineImg style={{ width: "100%" }} />}
