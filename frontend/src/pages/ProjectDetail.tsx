@@ -9,6 +9,25 @@ import * as Paths from "../Paths";
 import { colorArray } from "../api/dummyData";
 import BreadcrumbBar from "../components/header/BreadcrumbBar";
 import { useTranslation } from "react-i18next";
+import NetherlandsMap from "../components/map/NetherlandsMap";
+
+export const dummyMapData = [
+    {
+        projectColor: "orange",
+        projectName: "test-01",
+        coordinate:[52.1434, 5.0013]
+    },
+    {
+        projectColor: "tomato",
+        projectName: "test-02",
+        coordinate:[52.2434, 5.2013]
+    },
+    {
+        projectColor: "green",
+        projectName: "test-03",
+        coordinate:[52.5434, 5.5013]
+    },
+];
 
 export const ProjectDetail = () => {
     const { selectedProject, id } = useContext(ProjectContext);
