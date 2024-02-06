@@ -16,6 +16,10 @@ services:
   backend:
     build:
       context: backend
+    develop:
+      watch:
+        - action: rebuild
+          path: backend
     restart: unless-stopped
     environment:
       DIWI_DB_HOST: ${DIWI_DB_HOST:-database}
