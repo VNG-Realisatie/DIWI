@@ -1,10 +1,10 @@
 import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
 import Autocomplete from "@mui/material/Autocomplete";
-import { ProjectType } from "../context/ProjectContext";
+import { Project } from "../api/projectsServices";
 
 type SearchProps = {
-    searchList: Array<ProjectType>;
+    searchList: Array<Project>;
     label: string;
     isDetailSearch?: boolean;
 };

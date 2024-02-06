@@ -91,7 +91,29 @@
     "projects":{
       "title":"Projecten overzicht",
       "map":"Kaart",
-      "table":"Tabel"
+      "table":"Tabel",
+      "tableColumns":{
+        "projectName":"Project naam",
+        "totalValue":"Totaal aantal",
+        "organizationName":"Eigenaar",
+        "confidentialityLevel":"Vertrouwlijkheidsniveau",
+        "startDate":"Start Datum",
+        "endDate":"Eind Datum",
+        "planType":"Plan Type",
+        "priority":"Priorisering",
+        "municipalityRole":"Rol Gemeente",
+        "projectLeader":"Project Leider",
+        "projectPhase":"Project Fase",
+        "planningPlanStatus":"Planologische Plan Status",
+        "municipality":"Gemeente",
+        "wijk":"Wijk",
+        "buurt":"Buurt",
+        "selectPlanType":"Selecteer plan type",
+        "selectMunicipalityRole":"Selecteer gemeente rol",
+        "selectPlanningPlanStatus":"Selecteer toestand",
+        "selectWijk":"Selecteer wijk",
+        "selectBuurt":"Selecteer buurt"
+      }
     },
     "projectDetail":{
       "title":"Project",
@@ -118,11 +140,6 @@
       "time":"Tijd",
       "geography":"Geografie",
       "category":"Categorie"
-
-
-
-
-
     }
   }
 }

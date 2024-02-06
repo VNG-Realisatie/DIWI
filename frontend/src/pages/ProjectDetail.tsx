@@ -8,12 +8,11 @@ import { ReactComponent as TimeLineImg } from "../assets/temp/timeline.svg";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
 import { colorArray } from "../api/dummyData";
-import { ProjectsWithHouseBlock } from "../components/ProjectWithHouseBlock";
 import BreadcrumbBar from "../components/header/BreadcrumbBar";
 import { useTranslation } from "react-i18next";
 
 export const ProjectDetail = () => {
-    const { selectedProject, projects, id } = useContext(ProjectContext);
+    const { selectedProject, id } = useContext(ProjectContext);
     const navigate = useNavigate();
     const location = useLocation();
     const { t } = useTranslation();
@@ -38,7 +37,7 @@ export const ProjectDetail = () => {
                     minHeight: "53px",
                 }}
             >
-                <Typography variant="h5">{selectedProject?.name}</Typography>
+                <Typography variant="h5">{selectedProject?.projectName}</Typography>
             </Stack>
             <Stack direction="row" justifyContent="flex-end" border="solid 1px #ddd" p={0.5}>
                 <Box sx={{ cursor: "pointer" }} onClick={() => navigate(Paths.projectAdd.path)}>
@@ -54,12 +53,8 @@ export const ProjectDetail = () => {
                 </Stack>
             )}
             {location.pathname === Paths.projectDetailTimeline.path.replace(":id", id ?? "1") && <TimeLineImg style={{ width: "100%" }} />}
-            {location.pathname === Paths.projectDetailCharacteristics.path.replace(":id", id ?? "1") && (
-                <ProjectsWithHouseBlock
-                    project={selectedProject}
-                    houseblocks={projects.filter((p) => selectedProject && p.project && p.project.id === selectedProject.id)[0].woningblokken}
-                />
-            )}
+
+        {/* TO DO add house blocks here later */}
         </Stack>
     );
 };
