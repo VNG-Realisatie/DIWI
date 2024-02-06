@@ -27,8 +27,8 @@ public class VngRepository extends AbstractRepository {
             .setParameter("sortColumn", filtering.getSortColumn())
             .setParameter("sortDirection", filtering.getSortDirection().name())
             .setParameter("filterColumn", filtering.getFilterColumn())
-            .setParameter("filterValue", fromJavaListToSqlArrayLiteral(filtering.getFilterValue()))
-            .setParameter("filterCondition", filtering.getFilterCondition().name());
+            .setParameter("filterValue", filtering.getFilterColumn() == null ? null :fromJavaListToSqlArrayLiteral(filtering.getFilterValue()))
+            .setParameter("filterCondition", filtering.getFilterColumn() == null ? null : filtering.getFilterCondition().name());
 
         return q.getResultList();
     }
@@ -43,8 +43,8 @@ public class VngRepository extends AbstractRepository {
             .setParameter("sortColumn", null)
             .setParameter("sortDirection", null)
             .setParameter("filterColumn", filtering.getFilterColumn())
-            .setParameter("filterValue", fromJavaListToSqlArrayLiteral(filtering.getFilterValue()))
-            .setParameter("filterCondition", filtering.getFilterCondition().name())
+            .setParameter("filterValue", filtering.getFilterColumn() == null ? null : fromJavaListToSqlArrayLiteral(filtering.getFilterValue()))
+            .setParameter("filterCondition", filtering.getFilterColumn() == null ? null :filtering.getFilterCondition().name())
             .uniqueResult();
     }
 
