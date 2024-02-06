@@ -5,18 +5,34 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
-import com.vng.resources.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
+import org.pac4j.core.config.Config;
+import org.pac4j.oidc.client.KeycloakOidcClient;
+import org.pac4j.oidc.config.KeycloakOidcConfiguration;
 
 import com.vng.config.ProjectConfig;
 import com.vng.dal.DalFactory;
 import com.vng.dal.Database;
 import com.vng.dal.GenericRepository;
+import com.vng.resources.AuthResource;
+import com.vng.resources.BuurtResource;
+import com.vng.resources.MunicipalityResource;
+import com.vng.resources.MunicipalityRoleResource;
+import com.vng.resources.PriorityResource;
+import com.vng.resources.ProjectsResource;
+import com.vng.resources.VngResource;
+import com.vng.resources.WijkResource;
+import com.vng.rest.pac4j.CallbackFilter;
+import com.vng.rest.pac4j.Constants;
+import com.vng.rest.pac4j.HttpActionAdapterImplementation;
+import com.vng.rest.pac4j.ProfileManagerFactoryImplementation;
+import com.vng.rest.pac4j.SecurityFilter;
+import com.vng.rest.pac4j.SessionStoreFactoryImplementation;
 import com.vng.security.LoginRequestFilter;
 import com.vng.security.UserResource;
 
@@ -64,6 +80,11 @@ public class VngApplication extends ResourceConfig {
         dependencyInjection = new VngDependencyInjection(dalFactory, projectConfig);
         register(dependencyInjection);
 
+
+        Config pac4jConfig = createPac4jConfig();
+        register(new SecurityFilter(pac4jConfig));
+        register(new CallbackFilter(projectConfig, pac4jConfig));
+
         // Filters and features
         register(JacksonFeature.class);
         register(LogRequestFilter.class);
@@ -88,6 +109,22 @@ public class VngApplication extends ResourceConfig {
         // Flyway migrations
         Database.upgrade(projectConfig.getDbUrl(), projectConfig.getDbUser(), projectConfig.getDbPass());
 
+    }
+
+    private Config createPac4jConfig() {
+        final KeycloakOidcConfiguration keycloakConfig = new KeycloakOidcConfiguration();
+        keycloakConfig.setBaseUri(projectConfig.getKcAuthServerUrl());
+        keycloakConfig.setRealm(projectConfig.getKcRealmName());
+        keycloakConfig.setClientId(projectConfig.getKcResourceName());
+        keycloakConfig.setSecret(projectConfig.getKcSecret());
+
+        KeycloakOidcClient client = new KeycloakOidcClient(keycloakConfig);
+        var oidcConfig = new Config(projectConfig.getBaseUrl() + Constants.REST_AUTH_CALLBACK, client);
+        oidcConfig.setSessionStoreFactory(new SessionStoreFactoryImplementation());
+        oidcConfig.setProfileManagerFactory(new ProfileManagerFactoryImplementation());
+        oidcConfig.setHttpActionAdapter(new HttpActionAdapterImplementation());
+
+        return oidcConfig;
     }
 
     @PreDestroy
