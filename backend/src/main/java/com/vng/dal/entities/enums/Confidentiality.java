@@ -1,9 +1,9 @@
 package com.vng.dal.entities.enums;
 
 public enum Confidentiality {
-    prive,
-    intern_uitvoering,
-    intern_rapportage,
-    extern_rapportage,
-    openbaar;
+    PRIVE,
+    INTERN_UITVOERING,
+    INTERN_RAPPORTAGE,
+    EXTERN_RAPPORTAGE,
+    OPENBAAR;
 }

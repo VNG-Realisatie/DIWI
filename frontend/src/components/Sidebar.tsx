@@ -14,6 +14,7 @@ import { menuProjects } from "../widgets/constants";
 import { Link } from "react-router-dom";
 
 import * as Paths from "../Paths";
+import { useTranslation } from "react-i18next";
 
 type SideBarProps = {
     open: boolean;
@@ -31,10 +32,12 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
     const theme = useTheme();
+    const {t}=useTranslation();
     return (
         <Drawer variant="persistent" anchor="left" open={open}>
             <DrawerHeader>
                 <Typography sx={{ fontSize: "20px", fontWeight: "700" }} ml={1}>
+                    {/* This will come from backend ignore for now  */}
                     Voorne aan Zee
                 </Typography>
                 <IconButton onClick={handleDrawerClose}>
@@ -49,7 +52,7 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
 
             <List sx={{ ml: 3 }}>
                 <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>
-                    Projecten
+              {t("sidebar.projects")}
                 </Typography>
                 {menuProjects.map((text, index) => (
                     <Link
@@ -65,7 +68,7 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
             </List>
             <List sx={{ ml: 3 }}>
                 <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>
-                    Dashboards
+                {t("sidebar.dashboards")}
                 </Typography>
 
                 <Link
@@ -87,13 +90,13 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
             </List>
             <List sx={{ ml: 3 }}>
                 <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>
-                    Gebruikers
+                {t("sidebar.users")}
                 </Typography>
             </List>
             <List sx={{ ml: 3 }}>
                 <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>
-                    Data uitwisselen
-                </Typography>
+                {t("sidebar.dataExchange")}
+                          </Typography>
                 <Link
                     to={Paths.exchangedata.path}
                     style={{ color: "#FFFFFF", textDecoration: "none" }}

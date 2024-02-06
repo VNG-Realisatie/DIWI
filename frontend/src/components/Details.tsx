@@ -1,8 +1,8 @@
 import { List, ListItem, ListItemText } from "@mui/material";
-import { ProjectType } from "../context/ProjectContext";
+import { Project } from "../api/projectsServices";
 
 type Props = {
-    project: ProjectType|undefined;
+    project: Project | null;
 };
 export const Details = ({ project }: Props) => {
     return (
@@ -15,22 +15,10 @@ export const Details = ({ project }: Props) => {
             {project &&
                 Object.entries(project).map(([property, value]) => {
                     //To avoid mixed data type bug keep this. it will be removed after all data defined
-                    if(property==="start datum"){
-                        console.log(value)
+                    if (property === "start datum") {
+                        console.log(value);
                     }
-                    if (
-                        property !== "organization_id" &&
-                        property !== "project_state_id" &&
-                        property !== "organization_state_id" &&
-                        property !== "project_fase_changelog_id" &&
-                        property !== "project_gemeenterol_value_id"&&
-                        property !== "project_name_changelog_id"&&
-                        property !== "project_priorisering_value_id"&&
-                        property !== "project_gemeenterol_changelog_id"&&
-                        property !== "project_priorisering_changelog_id" &&
-                        property !== "project_gemeenterol_value_state_id" &&
-                        property !== "project_priorisering_value_state_id"
-                    ) {
+                    if (property !== "projectId" && property !== "projectStateId" && property !== "organization_state_id") {
                         return (
                             <>
                                 <ListItem
@@ -48,7 +36,7 @@ export const Details = ({ project }: Props) => {
                                         border: "solid 1px #ddd",
                                     }}
                                 >
-                                    <ListItemText primary={property==="start datum"||property==="eind datum"?"":value} />
+                                    <ListItemText primary={value} />
                                 </ListItem>
                             </>
                         );

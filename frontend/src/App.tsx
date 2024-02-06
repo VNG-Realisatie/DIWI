@@ -18,6 +18,8 @@ import { ImportExcel } from "./pages/ImportExcel";
 import { ImportedProjects } from "./pages/ImportedProjects";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { nlNL } from "@mui/material/locale";
+
 import * as React from "react";
 export const drawerWidth = 290;
 
@@ -69,7 +71,7 @@ const theme = createTheme({
             main: "#900A0A",
         },
     },
-});
+} , nlNL);
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
     return (
@@ -106,6 +108,14 @@ function App() {
                             }
                         />
                         <Route
+                            path={Paths.projectsTable.path}
+                            element={
+                                <ProjectProvider>
+                                    <Projects />
+                                </ProjectProvider>
+                            }
+                        />
+                        <Route
                             path={Paths.projectAdd.path}
                             element={
                                 <ProjectProvider>
@@ -121,7 +131,24 @@ function App() {
                                 </ProjectProvider>
                             }
                         />
+                        <Route
+                            path={Paths.projectDetailCharacteristics.path}
+                            element={
+                                <ProjectProvider>
+                                    <ProjectDetail />
+                                </ProjectProvider>
+                            }
+                        />
+                        <Route
+                            path={Paths.projectDetailTimeline.path}
+                            element={
+                                <ProjectProvider>
+                                    <ProjectDetail />
+                                </ProjectProvider>
+                            }
+                        />
                         <Route path={Paths.policygoal.path} element={<PolicyLists />} />
+                        <Route path={Paths.policygoalDashboard.path} element={<PolicyLists />} />
                         <Route path={Paths.dashboard.path} element={<DashboardProjects />} />
                         <Route path={Paths.exchangedata.path} element={<ExchangeData />} />
                         <Route path={Paths.importExcel.path} element={<ImportExcel excelImport />} />

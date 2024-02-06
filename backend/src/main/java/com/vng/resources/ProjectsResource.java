@@ -4,6 +4,7 @@ import com.vng.dal.GenericRepository;
 import com.vng.dal.FilterPaginationSorting;
 import com.vng.dal.VngRepository;
 import com.vng.models.ProjectListModel;
+import com.vng.rest.VngBadRequestException;
 import com.vng.security.LoggedUser;
 import com.vng.services.VngService;
 import jakarta.annotation.security.RolesAllowed;
@@ -18,6 +19,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.vng.security.SecurityRoleConstants.Admin;
 
@@ -40,10 +42,29 @@ public class ProjectsResource {
     @GET
     @Path("/table")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ProjectListModel> getAllProjects(@Context LoggedUser loggedUser, @BeanParam FilterPaginationSorting filtering) {
+    public List<ProjectListModel> getAllProjects(@Context LoggedUser loggedUser, @BeanParam FilterPaginationSorting filtering)
+        throws VngBadRequestException {
 
-        return repo.getProjectsTable();
+        if (filtering.getSortColumn() != null && !ProjectListModel.SORTABLE_COLUMNS.contains(filtering.getSortColumn())) {
+            throw new VngBadRequestException("Sort column not supported.");
+        }
 
+        if (filtering.getSortColumn() == null) {
+            filtering.setSortColumn(ProjectListModel.DEFAULT_SORT_COLUMN);
+        }
+
+        return repo.getProjectsTable(filtering);
+
+    }
+
+    @GET
+    @Path("/table/size")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Map<String, Integer> getAllProjectsListSize(@Context LoggedUser loggedUser, @BeanParam FilterPaginationSorting filtering) {
+
+        Integer projectsCount = repo.getProjectsTableCount(filtering);
+
+        return Map.of("size", projectsCount);
     }
 
 }
