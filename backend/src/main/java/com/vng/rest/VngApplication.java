@@ -79,6 +79,7 @@ public class VngApplication extends ResourceConfig {
         register(AuthResource.class);
         register(UserResource.class);
         register(ProjectsResource.class);
+        register(MilestoneResource.class);
         register(MunicipalityResource.class);
         register(MunicipalityRoleResource.class);
         register(BuurtResource.class);

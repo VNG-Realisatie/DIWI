@@ -9,6 +9,8 @@ import com.vng.dal.entities.superclasses.ChangeDataSuperclass;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -32,6 +34,7 @@ public class MilestoneState extends ChangeDataSuperclass {
 	private LocalDate date;
 	
 	@Column(name = "status")
+	@Enumerated(EnumType.STRING)
 	private MilestoneStatus state;
 
 	@Column(name = "omschrijving")
