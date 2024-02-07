@@ -3,32 +3,27 @@ import { Project } from "../../api/projectsServices";
 import { MultiSelect } from "./MultiSelect";
 import { OptionType, SelectedOptionWithId } from "../ProjectsTableView";
 import { useTranslation } from "react-i18next";
+import { BuurtOption, getBuurtList } from "../../api/productTableServices";
+import { useEffect, useState } from "react";
 
 type Props = {
     cellValues: GridRenderCellParams<Project>;
     selectedBuurt: SelectedOptionWithId[];
     handleBuurtChange: (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => void;
 };
-//This will be updated later with endpoint response
-const buurtOptions = [
-    { id: "Centrum-Noord", title: "Centrum-Noord" },
-    { id: "Centrum-Zuid", title: "Centrum-Zuid" },
-    { id: "Oranjebuurt", title: "Oranjebuurt" },
-    { id: "Kooiweg", title: "Kooiweg" },
-    { id: "Noord-End", title: "Noord-End" },
-    { id: "Albert’s Hoeve", title: "Albert’s Hoeve" },
-    { id: "Beverwijkerstraat", title: "Beverwijkerstraat" },
-    { id: "Buitengebied", title: "Buitengebied" },
-    { id: "Bakkum-Noord", title: "Bakkum-Noord" },
-];
 
 export const BuurtCell = ({ cellValues, selectedBuurt, handleBuurtChange }: Props) => {
+const [buurtOptions,setBuurtOptions]=useState<BuurtOption[]>([])
+
     const { t } = useTranslation();
 
-    const defaultPlanTypes = cellValues.row.wijk?.map((c) => ({ id: c, title: c }));
+    const defaultPlanTypes = cellValues.row.wijk?.map((c) => ({ id: c, name: c }));
     const findSelected = selectedBuurt?.find((s) => s.id === cellValues.row.projectId);
     const selectedOption = findSelected ? findSelected.option : [];
 
+    useEffect(()=>{
+        getBuurtList().then(buurts=>setBuurtOptions(buurts))
+    },[])
     return (
         <MultiSelect
             currentRow={cellValues.row}

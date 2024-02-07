@@ -11,18 +11,18 @@ type Props = {
 };
 
 const planTypeOptions: OptionType[] = [
-    { id: "PAND_TRANSFORMATIE", title: "PAND_TRANSFORMATIE" },
-    { id: "TRANSFORMATIEGEBIED", title: "TRANSFORMATIEGEBIED" },
-    { id: "HERSTRUCTURERING", title: "HERSTRUCTURERING" },
-    { id: "VERDICHTING", title: "VERDICHTING" },
-    { id: "UITBREIDING_UITLEG", title: "UITBREIDING_UITLEG" },
-    { id: "UITBREIDING_OVERIG", title: "UITBREIDING_OVERIG" },
+    { id: "PAND_TRANSFORMATIE", name: "PAND_TRANSFORMATIE" },
+    { id: "TRANSFORMATIEGEBIED", name: "TRANSFORMATIEGEBIED" },
+    { id: "HERSTRUCTURERING", name: "HERSTRUCTURERING" },
+    { id: "VERDICHTING", name: "VERDICHTING" },
+    { id: "UITBREIDING_UITLEG", name: "UITBREIDING_UITLEG" },
+    { id: "UITBREIDING_OVERIG", name: "UITBREIDING_OVERIG" },
 ];
 
 export const PlanTypeCell = ({ cellValues, selectedPlanTypes, handlePlanTypeChange }: Props) => {
     const { t } = useTranslation();
 
-    const defaultPlanTypes = cellValues.row.planType.map((c) => ({ id: c, title: c }));
+    const defaultPlanTypes = cellValues.row.planType.map((c) => ({ id: c, name: c }));
     const findSelected = selectedPlanTypes.find((s) => s.id === cellValues.row.projectId);
     const selectedOption = findSelected ? findSelected.option : [];
 
