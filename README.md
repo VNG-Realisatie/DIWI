@@ -77,6 +77,26 @@ TBD
 
 ## Development
 
+### HTTP API guidelines
+
+We use the following query parameters for paginated queries:
+
+- pageNumber (1 based)
+- pageSize (must be larger than 0)
+
+We use the following query parameters for sorting
+
+- sortColumn
+- sortDirection (ASC or DESC)
+
+We use the following for filterings:
+
+- filterColumn
+- filterValue (This can be a list: filterValue=a&filterValue=b&filterValue=c)
+- filterCondition
+
+Also see FilterPaginationSorting.java
+
 ### How to query the tables for a specific 'peildatum'/reference date
 
 For querying for the current date you can just check if the end date of the table is `NULL`. e.g:
