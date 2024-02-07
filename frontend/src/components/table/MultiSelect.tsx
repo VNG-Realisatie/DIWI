@@ -1,5 +1,6 @@
 import { Autocomplete, Stack, TextField } from "@mui/material";
 import { Project } from "../../api/projectsServices";
+import { useTranslation } from "react-i18next";
 type OptionType = {
     id: string;
     name: string;
@@ -14,8 +15,24 @@ type Props = {
     handleChange: (_: React.ChangeEvent<{}>, values: OptionType[]) => void;
     width: string;
     currentRow: Project;
+    needTranslation?: boolean;
+    selectOptionType?: "planningPlanStatus" | "planTypeOptions" | "municipalityRolesOptions";
 };
-export const MultiSelect = ({ tagLimit, options, selected, defaultOptionValues, inputLabel, placeHolder, handleChange, width, currentRow }: Props) => {
+export const MultiSelect = ({
+    tagLimit,
+    options,
+    selected,
+    selectOptionType,
+    defaultOptionValues,
+    inputLabel,
+    placeHolder,
+    handleChange,
+    width,
+    currentRow,
+    needTranslation,
+}: Props) => {
+    const { t } = useTranslation();
+
     return (
         <Stack direction="row" spacing={1}>
             <Autocomplete
@@ -24,7 +41,7 @@ export const MultiSelect = ({ tagLimit, options, selected, defaultOptionValues, 
                 limitTags={tagLimit}
                 id="multiple-limit-tags"
                 options={options ? options : []}
-                getOptionLabel={(option) => option.name}
+                getOptionLabel={(option) => (needTranslation ? t(`projectTable.${selectOptionType}.${option.name}`) : option.name)}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
                 value={selected.length > 1 ? selected : defaultOptionValues}
                 renderInput={(params) => <TextField {...params} label={inputLabel} placeholder={placeHolder} />}

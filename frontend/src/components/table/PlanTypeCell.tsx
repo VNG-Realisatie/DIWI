@@ -3,21 +3,13 @@ import { Project } from "../../api/projectsServices";
 import { MultiSelect } from "./MultiSelect";
 import { OptionType, SelectedOptionWithId } from "../ProjectsTableView";
 import { useTranslation } from "react-i18next";
+import { planTypeOptions } from "./constants";
 
 type Props = {
     cellValues: GridRenderCellParams<Project>;
     selectedPlanTypes: SelectedOptionWithId[];
     handlePlanTypeChange: (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => void;
 };
-
-const planTypeOptions: OptionType[] = [
-    { id: "PAND_TRANSFORMATIE", name: "PAND_TRANSFORMATIE" },
-    { id: "TRANSFORMATIEGEBIED", name: "TRANSFORMATIEGEBIED" },
-    { id: "HERSTRUCTURERING", name: "HERSTRUCTURERING" },
-    { id: "VERDICHTING", name: "VERDICHTING" },
-    { id: "UITBREIDING_UITLEG", name: "UITBREIDING_UITLEG" },
-    { id: "UITBREIDING_OVERIG", name: "UITBREIDING_OVERIG" },
-];
 
 export const PlanTypeCell = ({ cellValues, selectedPlanTypes, handlePlanTypeChange }: Props) => {
     const { t } = useTranslation();
@@ -28,6 +20,8 @@ export const PlanTypeCell = ({ cellValues, selectedPlanTypes, handlePlanTypeChan
 
     return (
         <MultiSelect
+            needTranslation
+            selectOptionType="planTypeOptions"
             currentRow={cellValues.row}
             selected={selectedOption}
             options={planTypeOptions}

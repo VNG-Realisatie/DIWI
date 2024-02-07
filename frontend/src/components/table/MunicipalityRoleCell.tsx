@@ -3,19 +3,13 @@ import { Project } from "../../api/projectsServices";
 import { MultiSelect } from "./MultiSelect";
 import { OptionType, SelectedOptionWithId } from "../ProjectsTableView";
 import { useTranslation } from "react-i18next";
+import { municipalityRolesOptions } from "./constants";
 
 type Props = {
     cellValues: GridRenderCellParams<Project>;
     selectedMunicipalityRole: SelectedOptionWithId[];
     handleMunicipalityRoleChange: (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => void;
 };
-
-//This will be updated later with endpoint response
-const municipalityRolesOptions: OptionType[] = [
-    { id: "ACTIVE", name: "ACTIVE" },
-    { id: "PASSIVE", name: "PASSIVE" },
-    { id: "NOTHING", name: "NOTHING" },
-];
 
 export const MunicipalityRoleCell = ({ cellValues, selectedMunicipalityRole, handleMunicipalityRoleChange }: Props) => {
     const { t } = useTranslation();
@@ -26,6 +20,8 @@ export const MunicipalityRoleCell = ({ cellValues, selectedMunicipalityRole, han
 
     return (
         <MultiSelect
+            needTranslation
+            selectOptionType="municipalityRolesOptions"
             currentRow={cellValues.row}
             selected={selectedOption}
             options={municipalityRolesOptions}
