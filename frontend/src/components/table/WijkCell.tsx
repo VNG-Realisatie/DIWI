@@ -4,7 +4,7 @@ import { MultiSelect } from "./MultiSelect";
 import { OptionType, SelectedOptionWithId } from "../ProjectsTableView";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
-import { getWijkList } from "../../api/productTableServices";
+import { ProductTableOption, getWijkList } from "../../api/productTableServices";
 
 type Props = {
     cellValues: GridRenderCellParams<Project>;
@@ -13,7 +13,7 @@ type Props = {
 };
 
 export const WijkCell = ({ cellValues, selectedWijk, handleWijkChange }: Props) => {
-    const [wijkOptions,setWijkOptions]=useState<any>()
+    const [wijkOptions,setWijkOptions]=useState<ProductTableOption[]>([])
     const { t } = useTranslation();
 
     const defaultPlanTypes = cellValues.row.wijk?.map((c) => ({ id: c, name: c }));
