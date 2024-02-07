@@ -13,16 +13,16 @@ type Props = {
 };
 
 export const MunicipalityCell = ({ cellValues, selectedMunicipality, handleMunicipalityChange }: Props) => {
-    const [municipalityOptions,setMunicipalityOptions]=useState<any>()
+    const [municipalityOptions, setMunicipalityOptions] = useState<any>();
     const { t } = useTranslation();
 
     const defaultPlanTypes = cellValues.row.municipality?.map((c) => ({ id: c, name: c }));
     const findSelected = selectedMunicipality?.find((s) => s.id === cellValues.row.projectId);
     const selectedOption = findSelected ? findSelected.option : [];
 
-    useEffect(()=>{
-        getMunicipalityList().then(municipalities=>setMunicipalityOptions(municipalities))
-    },[])
+    useEffect(() => {
+        getMunicipalityList().then((municipalities) => setMunicipalityOptions(municipalities));
+    }, []);
 
     return (
         <MultiSelect

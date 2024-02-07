@@ -13,7 +13,7 @@ type Props = {
 };
 
 export const BuurtCell = ({ cellValues, selectedBuurt, handleBuurtChange }: Props) => {
-const [buurtOptions,setBuurtOptions]=useState<BuurtOption[]>([])
+    const [buurtOptions, setBuurtOptions] = useState<BuurtOption[]>([]);
 
     const { t } = useTranslation();
 
@@ -21,9 +21,9 @@ const [buurtOptions,setBuurtOptions]=useState<BuurtOption[]>([])
     const findSelected = selectedBuurt?.find((s) => s.id === cellValues.row.projectId);
     const selectedOption = findSelected ? findSelected.option : [];
 
-    useEffect(()=>{
-        getBuurtList().then(buurts=>setBuurtOptions(buurts))
-    },[])
+    useEffect(() => {
+        getBuurtList().then((buurts) => setBuurtOptions(buurts));
+    }, []);
     return (
         <MultiSelect
             currentRow={cellValues.row}

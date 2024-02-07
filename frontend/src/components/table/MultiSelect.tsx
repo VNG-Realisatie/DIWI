@@ -23,7 +23,7 @@ export const MultiSelect = ({ tagLimit, options, selected, defaultOptionValues, 
                 multiple
                 limitTags={tagLimit}
                 id="multiple-limit-tags"
-                options={options?options:[]}
+                options={options ? options : []}
                 getOptionLabel={(option) => option.name}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
                 value={selected.length > 1 ? selected : defaultOptionValues}
