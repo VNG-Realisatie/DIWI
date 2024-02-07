@@ -92,8 +92,8 @@ We use the following query parameters for sorting
 We use the following for filterings:
 
 - filterColumn
-- filterValue
-- filterCondition (This can be a list e.g: `filterValue[]=a&filterValue[]=b)
+- filterValue (This can be a list: filterValue=a&filterValue=b&filterValue=c)
+- filterCondition
 
 Also see FilterPaginationSorting.java
 
