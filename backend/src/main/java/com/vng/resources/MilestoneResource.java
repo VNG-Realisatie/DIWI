@@ -9,6 +9,8 @@ import com.vng.dal.GenericRepository;
 import com.vng.dal.VngRepository;
 import com.vng.models.LocalDateModel;
 import com.vng.models.MilestoneModel;
+import com.vng.rest.ResponseFactory;
+import com.vng.rest.VngBadRequestException;
 import com.vng.services.MilestoneService;
 
 import jakarta.inject.Inject;
@@ -37,18 +39,19 @@ public class MilestoneResource {
 	@GET
     @Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getMilestone(@PathParam("id") String id) throws JsonProcessingException {
+	public Response getMilestone(@PathParam("id") String id) throws VngBadRequestException {
 		UUID uuid = UUIDUtil.nilUUID();
 		try {
 			uuid = UUIDUtil.uuid(id);
 		}
 		catch (NumberFormatException e) {
-			return Response.status(Status.BAD_REQUEST).entity("The provided id is not a valid UUID").build();
+			throw new VngBadRequestException("The provided id is not a valid UUID");
 		}
+
 		var result = milestoneService.getCurrentState(repo, uuid);
 		
 		if (result == null) {
-			return Response.status(Status.NOT_FOUND).build();
+			return ResponseFactory.jsonNotFoundResponse();
 		}
 		
 		var output = new MilestoneModel();
@@ -58,11 +61,6 @@ public class MilestoneResource {
 		output.setDate(new LocalDateModel(result.getDate()));
 		output.setState(result.getState());
 		
-		var json = (new ObjectMapper())
-				.writer()
-				.withDefaultPrettyPrinter()
-				.writeValueAsString(output);
-		
-		return Response.status(Status.OK).entity(json).build();
+		return ResponseFactory.jsonSuccesResponse(output);
 	}
 }
