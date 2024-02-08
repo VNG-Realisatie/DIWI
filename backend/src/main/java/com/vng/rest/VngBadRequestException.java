@@ -18,6 +18,6 @@ public class VngBadRequestException extends Exception implements ExceptionMapper
 
     @Override
     public Response toResponse(VngBadRequestException exception) {
-    	return ResponseFactory.jsonClientErrorResponse(new ErrorResponse(exception.getMessage()));
+        return ResponseFactory.jsonClientErrorResponse(new ErrorResponse(exception.getMessage()));
     }
 }

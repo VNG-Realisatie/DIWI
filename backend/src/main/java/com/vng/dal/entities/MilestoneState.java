@@ -26,17 +26,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MilestoneState extends ChangeDataSuperclass {
 
-	@ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "milestone_id")
     private Milestone milestone;
 
-	@Column(name = "date")
-	private LocalDate date;
-	
-	@Column(name = "status")
-	@Enumerated(EnumType.STRING)
-	private MilestoneStatus state;
+    @Column(name = "date")
+    private LocalDate date;
 
-	@Column(name = "omschrijving")
-	private String description;
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private MilestoneStatus state;
+
+    @Column(name = "omschrijving")
+    private String description;
 }

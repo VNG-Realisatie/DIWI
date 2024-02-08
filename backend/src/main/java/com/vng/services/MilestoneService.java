@@ -21,13 +21,13 @@ public class MilestoneService {
     public MilestoneService(ProjectConfig projectConfig) {
         this.projectConfig = projectConfig;
     }
-    
+
     public MilestoneState getCurrentState(VngRepository repo, @NonNull UUID milestoneUuid) {
-    	String query = "FROM MilestoneState M WHERE M.changeEndDate IS NULL AND M.milestone.id = :uuid";
-    	MilestoneState result = repo.getSession()
-    		.createSelectionQuery(query, MilestoneState.class)
-    		.setParameter("uuid", milestoneUuid)
-    		.getSingleResultOrNull();
-    	return result;
+        String query = "FROM MilestoneState M WHERE M.changeEndDate IS NULL AND M.milestone.id = :uuid";
+        MilestoneState result = repo.getSession()
+                .createSelectionQuery(query, MilestoneState.class)
+                .setParameter("uuid", milestoneUuid)
+                .getSingleResultOrNull();
+        return result;
     }
 }

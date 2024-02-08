@@ -25,35 +25,35 @@ import jakarta.ws.rs.core.Response.Status;
 @Path("/milestone")
 public class MilestoneResource {
 
-	private VngRepository repo;
-	private MilestoneService milestoneService;
+    private VngRepository repo;
+    private MilestoneService milestoneService;
 
-	@Inject
-	public MilestoneResource(
-	    GenericRepository genericRepository,
-	    MilestoneService milestoneService) {
+    @Inject
+    public MilestoneResource(
+        GenericRepository genericRepository,
+        MilestoneService milestoneService) {
         this.repo = new VngRepository(genericRepository.getDal().getSession());
         this.milestoneService = milestoneService;
-	}
+    }
 
-	@GET
+    @GET
     @Path("/{id}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getMilestone(@PathParam("id") String id) throws VngBadRequestException {
-		UUID uuid = UUIDUtil.nilUUID();
-		try {
-			uuid = UUIDUtil.uuid(id);
-		}
-		catch (NumberFormatException e) {
-			throw new VngBadRequestException("The provided id is not a valid UUID");
-		}
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getMilestone(@PathParam("id") String id) throws VngBadRequestException {
+        UUID uuid = UUIDUtil.nilUUID();
+        try {
+            uuid = UUIDUtil.uuid(id);
+        }
+        catch (NumberFormatException e) {
+            throw new VngBadRequestException("The provided id is not a valid UUID");
+        }
 
-		var result = milestoneService.getCurrentState(repo, uuid);
-		
-		if (result == null) {
-			return ResponseFactory.jsonNotFoundResponse();
-		}
-		
-		return ResponseFactory.jsonSuccesResponse(new MilestoneModel(result));
-	}
+        var result = milestoneService.getCurrentState(repo, uuid);
+
+        if (result == null) {
+            return ResponseFactory.jsonNotFoundResponse();
+        }
+
+        return ResponseFactory.jsonSuccesResponse(new MilestoneModel(result));
+    }
 }
