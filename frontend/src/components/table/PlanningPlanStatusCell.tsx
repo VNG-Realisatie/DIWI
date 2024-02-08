@@ -17,14 +17,15 @@ export const PlanningPlanStatusCell = ({ cellValues, selectedPlanStatus, handleS
     const defaultPlanTypes = cellValues.row.planningPlanStatus.map((c) => ({ id: c, name: c }));
     const findSelected = selectedPlanStatus.find((s) => s.id === cellValues.row.projectId);
     const selectedOption = findSelected ? findSelected.option : [];
+    const translatedOption = planningPlanStatus.map((p) => {
+        return { id: p.id, name: t(`projectTable.planningPlanStatus.${p.name}`) };
+    });
 
     return (
         <MultiSelect
-            needTranslation
-            selectOptionType="planningPlanStatus"
             currentRow={cellValues.row}
             selected={selectedOption}
-            options={planningPlanStatus}
+            options={translatedOption}
             tagLimit={2}
             defaultOptionValues={defaultPlanTypes}
             inputLabel={t("projects.tableColumns.planningPlanStatus")}

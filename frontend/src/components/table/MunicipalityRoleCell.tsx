@@ -17,14 +17,15 @@ export const MunicipalityRoleCell = ({ cellValues, selectedMunicipalityRole, han
     const defaultPlanTypes = cellValues.row.municipalityRole.map((c) => ({ id: c, name: c }));
     const findSelected = selectedMunicipalityRole.find((s) => s.id === cellValues.row.projectId);
     const selectedOption = findSelected ? findSelected.option : [];
+    const translatedOption = municipalityRolesOptions.map((p) => {
+        return { id: p.id, name: t(`projectTable.municipalityRolesOptions.${p.name}`) };
+    });
 
     return (
         <MultiSelect
-            needTranslation
-            selectOptionType="municipalityRolesOptions"
             currentRow={cellValues.row}
             selected={selectedOption}
-            options={municipalityRolesOptions}
+            options={translatedOption}
             tagLimit={2}
             defaultOptionValues={defaultPlanTypes}
             inputLabel={t("projects.tableColumns.municipalityRole")}
