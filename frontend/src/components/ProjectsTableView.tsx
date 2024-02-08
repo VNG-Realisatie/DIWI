@@ -12,6 +12,7 @@ import { MunicipalityRoleCell } from "./table/MunicipalityRoleCell";
 import { PlanningPlanStatusCell } from "./table/PlanningPlanStatusCell";
 import { WijkCell } from "./table/WijkCell";
 import { BuurtCell } from "./table/BuurtCell";
+import { MunicipalityCell } from "./table/MunicipalityCell";
 
 interface RowData {
     id: number;
@@ -23,7 +24,7 @@ type Props = {
 
 export interface OptionType {
     id: string;
-    title: string;
+    name: string;
 }
 export type SelectedOptionWithId = {
     id: string;
@@ -45,6 +46,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const [selectedRows, setSelectedRows] = useState<any[]>([]);
     const [selectedPlanTypes, setSelectedPlanTypes] = useState<SelectedOptionWithId[]>([]);
     const [selectedMunicipality, setSelectedMunicipality] = useState<SelectedOptionWithId[]>([]);
+    const [selectedMunicipalityRole, setSelectedMunicipalityRole] = useState<SelectedOptionWithId[]>([]);
     const [selectedPlanStatus, setSelectedPlanStatus] = useState<SelectedOptionWithId[]>([]);
     const [selectedWijk, setSelectedWijk] = useState<SelectedOptionWithId[]>([]);
     const [selectedBuurt, setSelectedBuurt] = useState<SelectedOptionWithId[]>([]);
@@ -75,16 +77,16 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         //Add update endpoint later
     };
 
-    const handleMunicipalityChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
-        const existingRecordIndex = selectedMunicipality.findIndex((item) => item.id === id);
+    const handleMunicipalityRoleChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
+        const existingRecordIndex = selectedMunicipalityRole.findIndex((item) => item.id === id);
 
         if (existingRecordIndex !== -1) {
-            const updatedMunicipality = [...selectedMunicipality];
+            const updatedMunicipality = [...selectedMunicipalityRole];
             updatedMunicipality[existingRecordIndex] = { id, option: values };
-            setSelectedMunicipality(updatedMunicipality);
+            setSelectedMunicipalityRole(updatedMunicipality);
         } else {
             // If not exists, add a new record
-            setSelectedMunicipality([...selectedMunicipality, { id, option: values }]);
+            setSelectedMunicipalityRole([...selectedMunicipalityRole, { id, option: values }]);
         }
         //Add update endpoint later
     };
@@ -99,6 +101,20 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         } else {
             // If not exists, add a new record
             setSelectedPlanStatus([...selectedPlanStatus, { id, option: values }]);
+        }
+        //Add update endpoint later
+    };
+
+    const handleMunicipalityChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
+        const existingRecordIndex = selectedMunicipality.findIndex((item) => item.id === id);
+
+        if (existingRecordIndex !== -1) {
+            const updateMunicipality = [...selectedMunicipality];
+            updateMunicipality[existingRecordIndex] = { id, option: values };
+            setSelectedMunicipality(updateMunicipality);
+        } else {
+            // If not exists, add a new record
+            setSelectedMunicipality([...selectedMunicipality, { id, option: values }]);
         }
         //Add update endpoint later
     };
@@ -218,8 +234,8 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 return [
                     <MunicipalityRoleCell
                         cellValues={cellValues}
-                        selectedMunicipality={selectedMunicipality}
-                        handleMunicipalityChange={handleMunicipalityChange}
+                        selectedMunicipalityRole={selectedMunicipalityRole}
+                        handleMunicipalityRoleChange={handleMunicipalityRoleChange}
                     />,
                 ];
             },
@@ -247,7 +263,10 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             field: "municipality",
             headerName: t("projects.tableColumns.municipality"),
             editable: true,
-            width: 140,
+            width: 320,
+            renderCell: (cellValues: GridRenderCellParams<Project>) => {
+                return [<MunicipalityCell cellValues={cellValues} selectedMunicipality={selectedMunicipality} handleMunicipalityChange={handleMunicipalityChange} />];
+            },
             preProcessEditCellProps: createErrorReport,
         },
         {

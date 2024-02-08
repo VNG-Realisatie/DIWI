@@ -2,7 +2,7 @@ import { Autocomplete, Stack, TextField } from "@mui/material";
 import { Project } from "../../api/projectsServices";
 type OptionType = {
     id: string;
-    title: string;
+    name: string;
 };
 type Props = {
     tagLimit: number;
@@ -23,8 +23,8 @@ export const MultiSelect = ({ tagLimit, options, selected, defaultOptionValues, 
                 multiple
                 limitTags={tagLimit}
                 id="multiple-limit-tags"
-                options={options}
-                getOptionLabel={(option) => option.title}
+                options={options ? options : []}
+                getOptionLabel={(option) => option.name}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
                 value={selected.length > 1 ? selected : defaultOptionValues}
                 renderInput={(params) => <TextField {...params} label={inputLabel} placeholder={placeHolder} />}

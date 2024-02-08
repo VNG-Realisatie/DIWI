@@ -6,22 +6,22 @@ import { useTranslation } from "react-i18next";
 
 type Props = {
     cellValues: GridRenderCellParams<Project>;
-    selectedMunicipality: SelectedOptionWithId[];
-    handleMunicipalityChange: (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => void;
+    selectedMunicipalityRole: SelectedOptionWithId[];
+    handleMunicipalityRoleChange: (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => void;
 };
 
 //This will be updated later with endpoint response
 const municipalityRolesOptions: OptionType[] = [
-    { id: "ACTIVE", title: "ACTIVE" },
-    { id: "PASSIVE", title: "PASSIVE" },
-    { id: "NOTHING", title: "NOTHING" },
+    { id: "ACTIVE", name: "ACTIVE" },
+    { id: "PASSIVE", name: "PASSIVE" },
+    { id: "NOTHING", name: "NOTHING" },
 ];
 
-export const MunicipalityRoleCell = ({ cellValues, selectedMunicipality, handleMunicipalityChange }: Props) => {
+export const MunicipalityRoleCell = ({ cellValues, selectedMunicipalityRole, handleMunicipalityRoleChange }: Props) => {
     const { t } = useTranslation();
 
-    const defaultPlanTypes = cellValues.row.municipalityRole.map((c) => ({ id: c, title: c }));
-    const findSelected = selectedMunicipality.find((s) => s.id === cellValues.row.projectId);
+    const defaultPlanTypes = cellValues.row.municipalityRole.map((c) => ({ id: c, name: c }));
+    const findSelected = selectedMunicipalityRole.find((s) => s.id === cellValues.row.projectId);
     const selectedOption = findSelected ? findSelected.option : [];
 
     return (
@@ -33,7 +33,7 @@ export const MunicipalityRoleCell = ({ cellValues, selectedMunicipality, handleM
             defaultOptionValues={defaultPlanTypes}
             inputLabel={t("projects.tableColumns.municipalityRole")}
             placeHolder={t("projects.tableColumns.selectMunicipalityRole")}
-            handleChange={(_: React.ChangeEvent<{}>, values: OptionType[]) => handleMunicipalityChange(_, values, cellValues.row.projectId)}
+            handleChange={(_: React.ChangeEvent<{}>, values: OptionType[]) => handleMunicipalityRoleChange(_, values, cellValues.row.projectId)}
             width="300px"
         />
     );

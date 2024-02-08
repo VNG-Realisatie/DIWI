@@ -23,55 +23,58 @@ import { nlNL } from "@mui/material/locale";
 import * as React from "react";
 export const drawerWidth = 290;
 
-const theme = createTheme({
-    typography: {
-        fontFamily: "Inter, Arial",
-        h6: {
-            fontWeight: 600,
+const theme = createTheme(
+    {
+        typography: {
+            fontFamily: "Inter, Arial",
+            h6: {
+                fontWeight: 600,
+            },
+            caption: {
+                fontWeight: 500,
+                fontSize: "13px",
+                lineHeight: "120%",
+            },
         },
-        caption: {
-            fontWeight: 500,
-            fontSize: "13px",
-            lineHeight: "120%",
-        },
-    },
-    components: {
-        MuiDrawer: {
-            styleOverrides: {
-                paper: {
-                    width: drawerWidth,
-                    backgroundColor: "#002C64",
-                    color: "#FFFFFF",
-                    boxSizing: "border-box",
+        components: {
+            MuiDrawer: {
+                styleOverrides: {
+                    paper: {
+                        width: drawerWidth,
+                        backgroundColor: "#002C64",
+                        color: "#FFFFFF",
+                        boxSizing: "border-box",
+                    },
+                },
+            },
+            MuiAppBar: {
+                styleOverrides: {
+                    root: {
+                        backgroundColor: "#FFFFFF",
+                        position: "fixed",
+                    },
+                },
+            },
+            MuiListItemIcon: {
+                styleOverrides: {
+                    root: {
+                        color: "#FFFFFF",
+                        minWidth: "40px",
+                    },
                 },
             },
         },
-        MuiAppBar: {
-            styleOverrides: {
-                root: {
-                    backgroundColor: "#FFFFFF",
-                    position: "fixed",
-                },
+        palette: {
+            primary: {
+                main: "#002C64",
             },
-        },
-        MuiListItemIcon: {
-            styleOverrides: {
-                root: {
-                    color: "#FFFFFF",
-                    minWidth: "40px",
-                },
+            secondary: {
+                main: "#900A0A",
             },
         },
     },
-    palette: {
-        primary: {
-            main: "#002C64",
-        },
-        secondary: {
-            main: "#900A0A",
-        },
-    },
-} , nlNL);
+    nlNL
+);
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
     return (

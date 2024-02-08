@@ -3,30 +3,26 @@ import { Project } from "../../api/projectsServices";
 import { MultiSelect } from "./MultiSelect";
 import { OptionType, SelectedOptionWithId } from "../ProjectsTableView";
 import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
+import { ProductTableOption, getWijkList } from "../../api/productTableServices";
 
 type Props = {
     cellValues: GridRenderCellParams<Project>;
     selectedWijk: SelectedOptionWithId[];
     handleWijkChange: (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => void;
 };
-//This will be updated later with endpoint response
-const wijkOptions=[
-    {id:"Centrum",title:"Centrum"},
-    {id:"Castricum-Noord",title:"Castricum-Noord"},
-    {id:"Castricum-Oost",title:"Castricum-Oost"},
-    {id:"Castricum-Zuid",title:"Castricum-Zuid"},
-    {id:"Bakkum",title:"Bakkum"},
-    {id:"Akersloot",title:"Akersloot"},
-    {id:"De Woude",title:"De Woude"},
-    {id:"Limmen",title:"Limmen"}
-]
 
 export const WijkCell = ({ cellValues, selectedWijk, handleWijkChange }: Props) => {
+    const [wijkOptions, setWijkOptions] = useState<ProductTableOption[]>([]);
     const { t } = useTranslation();
 
-    const defaultPlanTypes = cellValues.row.wijk?.map((c) => ({ id: c, title: c }));
+    const defaultPlanTypes = cellValues.row.wijk?.map((c) => ({ id: c, name: c }));
     const findSelected = selectedWijk?.find((s) => s.id === cellValues.row.projectId);
     const selectedOption = findSelected ? findSelected.option : [];
+
+    useEffect(() => {
+        getWijkList().then((wijks) => setWijkOptions(wijks));
+    }, []);
 
     return (
         <MultiSelect
