@@ -1,6 +1,5 @@
 package com.vng.services;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;

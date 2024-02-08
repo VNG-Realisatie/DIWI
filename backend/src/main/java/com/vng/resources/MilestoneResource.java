@@ -2,12 +2,9 @@ package com.vng.resources;
 
 import java.util.UUID;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.uuid.impl.UUIDUtil;
 import com.vng.dal.GenericRepository;
 import com.vng.dal.VngRepository;
-import com.vng.models.LocalDateModel;
 import com.vng.models.MilestoneModel;
 import com.vng.rest.ResponseFactory;
 import com.vng.rest.VngBadRequestException;
@@ -20,7 +17,6 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
 
 @Path("/milestone")
 public class MilestoneResource {
