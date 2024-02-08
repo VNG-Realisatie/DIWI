@@ -13,16 +13,16 @@ type Props = {
 };
 
 export const WijkCell = ({ cellValues, selectedWijk, handleWijkChange }: Props) => {
-    const [wijkOptions,setWijkOptions]=useState<ProductTableOption[]>([])
+    const [wijkOptions, setWijkOptions] = useState<ProductTableOption[]>([]);
     const { t } = useTranslation();
 
     const defaultPlanTypes = cellValues.row.wijk?.map((c) => ({ id: c, name: c }));
     const findSelected = selectedWijk?.find((s) => s.id === cellValues.row.projectId);
     const selectedOption = findSelected ? findSelected.option : [];
 
-    useEffect(()=>{
-        getWijkList().then(wijks=>setWijkOptions(wijks))
-    },[])
+    useEffect(() => {
+        getWijkList().then((wijks) => setWijkOptions(wijks));
+    }, []);
 
     return (
         <MultiSelect
