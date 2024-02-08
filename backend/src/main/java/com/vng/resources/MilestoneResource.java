@@ -54,13 +54,6 @@ public class MilestoneResource {
 			return ResponseFactory.jsonNotFoundResponse();
 		}
 		
-		var output = new MilestoneModel();
-
-		output.setId(result.getMilestone().getId());
-		output.setDescription(result.getDescription());
-		output.setDate(new LocalDateModel(result.getDate()));
-		output.setState(result.getState());
-		
-		return ResponseFactory.jsonSuccesResponse(output);
+		return ResponseFactory.jsonSuccesResponse(new MilestoneModel(result));
 	}
 }
