@@ -326,7 +326,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             field: "projectPhase",
             headerName: t("projects.tableColumns.projectPhase"),
             editable: true,
-            width: 140,
+            width: 200,
             preProcessEditCellProps: createErrorReport,
         },
         {
