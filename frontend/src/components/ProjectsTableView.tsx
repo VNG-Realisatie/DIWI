@@ -23,7 +23,7 @@ import { PlanningPlanStatusCell } from "./table/PlanningPlanStatusCell";
 import { WijkCell } from "./table/WijkCell";
 import { BuurtCell } from "./table/BuurtCell";
 import { MunicipalityCell } from "./table/MunicipalityCell";
-import { planTypeOptions } from "./table/constants";
+import { confidentialityLevelOptions, planTypeOptions } from "./table/constants";
 import { filterTable } from "../api/projectsTableServices";
 
 interface RowData {
@@ -43,7 +43,6 @@ export type SelectedOptionWithId = {
     option: OptionType[];
 };
 
-const confidentialityLevelOptions = ["PRIVE", "INTERN_UITVOERING", "INTERN_RAPPORTAGE", "EXTERN_RAPPORTAGE", "OPENBAAR"];
 
 export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const location = useLocation();
@@ -262,7 +261,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         {
             field: "confidentialityLevel",
             headerName: t("projects.tableColumns.confidentialityLevel"),
-            valueOptions: confidentialityLevelOptions,
+            valueOptions: confidentialityLevelOptions.map(c=>c.id),
             type: "singleSelect",
             editable: true,
             width: 250,
