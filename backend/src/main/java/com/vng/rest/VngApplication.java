@@ -93,6 +93,9 @@ public class VngApplication extends ResourceConfig {
         register(RolesAllowedDynamicFeature.class);
         register(MultiPartFeature.class);
         register(CORSFilter.class);
+        
+        // Exceptions for the endpoints
+        register(VngNotFoundException.class);
         register(VngBadRequestException.class);
 
         // Then the end points
@@ -100,6 +103,7 @@ public class VngApplication extends ResourceConfig {
         register(AuthResource.class);
         register(UserResource.class);
         register(ProjectsResource.class);
+        register(MilestoneResource.class);
         register(MunicipalityResource.class);
         register(MunicipalityRoleResource.class);
         register(BuurtResource.class);

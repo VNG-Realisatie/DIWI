@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @MappedSuperclass
 @Data
@@ -15,10 +15,10 @@ import java.time.LocalDateTime;
 public class ChangeDataSuperclass extends IdSuperclass {
 
     @Column(name = "change_end_date")
-    private LocalDateTime changeEndDate;
+    private ZonedDateTime changeEndDate;
 
     @Column(name = "change_start_date")
-    private LocalDateTime changeStartDate;
+    private ZonedDateTime changeStartDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "change_user_id")
