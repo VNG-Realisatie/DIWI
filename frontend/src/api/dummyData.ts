@@ -31,8 +31,8 @@ export const colorArray = [
 export const projects = [
     {
         id: 1,
-        "name": "Gemeentelijke ontwikkeling 1",
-        color:colorArray[1],
+        name: "Gemeentelijke ontwikkeling 1",
+        color: colorArray[1],
         eigenaar: "projectleider_1",
         "plan type": "herstructurering",
         "eind datum": "2030-01-01",
@@ -86,8 +86,8 @@ export const projects = [
     },
     {
         id: 2,
-        color:colorArray[2],
-        "name": "Gemeentelijke ontwikkeling 2",
+        color: colorArray[2],
+        name: "Gemeentelijke ontwikkeling 2",
         eigenaar: "projectleider_2",
         "plan type": "verdichting",
         "eind datum": "2030-07-01",
@@ -124,8 +124,8 @@ export const projects = [
     },
     {
         id: 3,
-        color:colorArray[3],
-        "name": "Gemeentelijke ontwikkeling 3",
+        color: colorArray[3],
+        name: "Gemeentelijke ontwikkeling 3",
         eigenaar: "projectleider_1",
         "plan type": "herstructurering",
         "eind datum": "2024-07-01",
@@ -183,7 +183,7 @@ export type Policy = {
             time: string;
             geo: string;
             category: string;
-            doel_richting?:string;
+            doel_richting?: string;
         };
     };
 };
@@ -197,7 +197,7 @@ export const policyGoals = [
             time: "01/01/2025",
             geo: "Voorne aan Zee",
             category: "Regionale doelstelling",
-            doel_ricting:"minimaal"
+            doel_ricting: "minimaal",
         },
     },
     {
@@ -209,7 +209,7 @@ export const policyGoals = [
             time: "01/01/2025",
             geo: "NVT",
             category: "Doelstelling van het Rijk",
-            doel_ricting:"minimaal"
+            doel_ricting: "minimaal",
         },
     },
     {
@@ -221,7 +221,7 @@ export const policyGoals = [
             time: "01/01/2030",
             geo: "Voorne aan Zee",
             category: "Doelstelling Gemeente",
-            doel_ricting:"minimaal"
+            doel_ricting: "minimaal",
         },
     },
 ];
@@ -340,10 +340,4 @@ export const houseBlockColumns: GridColDef[] = [
     },
 ];
 export const projectLead = ["Ali", "Dirk", "Emiel", "Laurens"];
-export const vertrouwlijkheidsniveau = [
-    "Prive",
-    "Intern voor uitvoering",
-    "Intern rapportage",
-    "Extern rapportage",
-    "Openbaar",
-];
+export const vertrouwlijkheidsniveau = ["Prive", "Intern voor uitvoering", "Intern rapportage", "Extern rapportage", "Openbaar"];

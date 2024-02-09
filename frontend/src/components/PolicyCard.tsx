@@ -17,7 +17,7 @@ export const PolicyCard = ({ policy }: Policy) => {
     const [editedPercentage, setEditedPercentage] = useState(policy.data.doel_richting);
     const [editedCategory, setEditedCategory] = useState(policy.data.category);
 
-    const{t}=useTranslation();
+    const { t } = useTranslation();
     const characteristicActiveStyle = {
         backgroundColor: "#002C64",
         color: "#FFFFFF",

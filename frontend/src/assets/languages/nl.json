@@ -110,7 +110,7 @@
         "buurt": "Buurt",
         "selectPlanType": "Selecteer plan type",
         "selectMunicipalityRole": "Selecteer gemeente rol",
-        "selecMunicipality":"Selecteer gemeente",
+        "selecMunicipality": "Selecteer gemeente",
         "selectPlanningPlanStatus": "Selecteer toestand",
         "selectWijk": "Selecteer wijk",
         "selectBuurt": "Selecteer buurt"
@@ -143,7 +143,7 @@
       "category": "Categorie"
     },
     "projectTable": {
-      "planningPlanStatus":  {
+      "planningPlanStatus": {
         "_1A_ONHERROEPELIJK": "IRREVOCABLE",
         "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG": "IRREVOCABLE WITH ELABORATION NECESSARY",
         "_1C_ONHERROEPELIJK_MET_BW_NODIG": "IRREVOCABLE WITH BW REQUIRED",

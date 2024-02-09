@@ -1,6 +1,6 @@
 import { OptionType } from "../ProjectsTableView";
 
-export const planningPlanStatus:OptionType[] = [
+export const planningPlanStatus: OptionType[] = [
     { id: "_1A_ONHERROEPELIJK", name: "_1A_ONHERROEPELIJK" },
     { id: "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG", name: "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG" },
     { id: "_1C_ONHERROEPELIJK_MET_BW_NODIG", name: "_1C_ONHERROEPELIJK_MET_BW_NODIG" },

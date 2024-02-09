@@ -40,7 +40,6 @@ type ProjectContextType = {
 const ProjectContext = createContext<ProjectContextType | null>(null) as React.Context<ProjectContextType>;
 
 export const ProjectProvider = ({ children }: PropsWithChildren) => {
-
     const { id } = useParams();
     const [projects, setProjects] = useState<Array<Project>>([]);
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -53,7 +52,7 @@ export const ProjectProvider = ({ children }: PropsWithChildren) => {
     }, [id, projects]);
 
     useEffect(() => {
-        getProjects(1,10)
+        getProjects(1, 10)
             .then((projects) => setProjects(projects))
             .catch((err) => console.log(err));
     }, []);
