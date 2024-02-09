@@ -4,7 +4,7 @@ import { MultiSelect } from "./MultiSelect";
 import { OptionType, SelectedOptionWithId } from "../ProjectsTableView";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
-import { ProductTableOption, getWijkList } from "../../api/productTableServices";
+import { ProductTableOption, getWijkList } from "../../api/projectsTableServices";
 
 type Props = {
     cellValues: GridRenderCellParams<Project>;

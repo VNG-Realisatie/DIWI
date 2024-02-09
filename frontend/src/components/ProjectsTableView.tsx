@@ -23,7 +23,7 @@ import { WijkCell } from "./table/WijkCell";
 import { BuurtCell } from "./table/BuurtCell";
 import { MunicipalityCell } from "./table/MunicipalityCell";
 import { planTypeOptions } from "./table/constants";
-import { filterTable } from "../api/productTableServices";
+import { filterTable } from "../api/projectsTableServices";
 
 interface RowData {
     id: number;
