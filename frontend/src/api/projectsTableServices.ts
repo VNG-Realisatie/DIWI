@@ -17,6 +17,6 @@ export async function getWijkList(): Promise<Array<ProductTableOption>> {
     return getJson(`${API_URI}/wijk/list`);
 }
 
-export async function filterTable(query:string){
-return getJson(`${API_URI}/projects/table${query}`)
+export async function filterTable(query: string) {
+    return getJson(`${API_URI}/projects/table${query}`);
 }
