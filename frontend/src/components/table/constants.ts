@@ -1,6 +1,6 @@
 import { OptionType } from "../ProjectsTableView";
 
-export const planningPlanStatus:OptionType[] = [
+export const planningPlanStatus: OptionType[] = [
     { id: "_1A_ONHERROEPELIJK", name: "_1A_ONHERROEPELIJK" },
     { id: "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG", name: "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG" },
     { id: "_1C_ONHERROEPELIJK_MET_BW_NODIG", name: "_1C_ONHERROEPELIJK_MET_BW_NODIG" },
@@ -26,7 +26,15 @@ export const projectPhaseOptions: OptionType[] = [
     { id: "_2_PROJECTFASE", name: "_2_PROJECTFASE" },
     { id: "_3_VERGUNNINGSFASE", name: "_3_VERGUNNINGSFASE" },
     { id: "_4_REALISATIEFASE", name: "_4_REALISATIEFASE" },
-    { id: "_4_REALISATIEFASE,", name: "    _5_OPLEVERINGSFASE" },
+    { id: "_5_OPLEVERINGSFASE", name: "_5_OPLEVERINGSFASE" },
+];
+
+export const confidentialityLevelOptions: OptionType[] = [
+    { id: "PRIVE", name: "PRIVE" },
+    { id: "INTERN_UITVOERING", name: "INTERN_UITVOERING" },
+    { id: "INTERN_RAPPORTAGE", name: "INTERN_RAPPORTAGE" },
+    { id: "EXTERN_RAPPORTAGE", name: "EXTERN_RAPPORTAGE" },
+    { id: "OPENBAAR", name: "OPENBAAR" },
 ];
 
 export const municipalityRolesOptions: OptionType[] = [
