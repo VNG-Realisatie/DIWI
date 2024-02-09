@@ -23,7 +23,7 @@ import { PlanningPlanStatusCell } from "./table/PlanningPlanStatusCell";
 import { WijkCell } from "./table/WijkCell";
 import { BuurtCell } from "./table/BuurtCell";
 import { MunicipalityCell } from "./table/MunicipalityCell";
-import { confidentialityLevelOptions, planTypeOptions } from "./table/constants";
+import { confidentialityLevelOptions, planTypeOptions, projectPhaseOptions } from "./table/constants";
 import { filterTable } from "../api/projectsTableServices";
 
 interface RowData {
@@ -326,8 +326,13 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         {
             field: "projectPhase",
             headerName: t("projects.tableColumns.projectPhase"),
+            valueOptions: projectPhaseOptions.map(c=>{
+                return {value:c.id,label:t(`projectTable.projectPhaseOptions.${c.name}`)}
+            }),
+            type: "singleSelect",
             editable: true,
-            width: 200,
+            width: 250,
+            filterOperators: getGridSingleSelectOperators().filter((o) => o.value === "isAnyOf"),
             preProcessEditCellProps: createErrorReport,
         },
         {

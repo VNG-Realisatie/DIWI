@@ -169,6 +169,13 @@
         "EXTERN_RAPPORTAGE": "EXTERN RAPPORTAGE",
         "OPENBAAR": "OPENBAAR"
       },
+      "projectPhaseOptions":{
+        "_1_INITIATIEFFASE":"INITIATIEFFASE",
+        "_2_PROJECTFASE":"PROJECTFASE",
+        "_3_VERGUNNINGSFASE":"VERGUNNINGSFASE",
+        "_4_REALISATIEFASE":"REALISATIEFASE",
+        "_5_OPLEVERINGSFASE":"OPLEVERINGSFASE"
+      },
       "municipalityRolesOptions": {
         "ACTIVE": "Actief",
         "PASSIVE": "Passief",
