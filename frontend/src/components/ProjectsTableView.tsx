@@ -378,7 +378,12 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         },
     ];
 
-    const handleFilterModelChange = (newModel: GridFilterModel) => {
+    const handleFilterModelChange = (newModel: GridFilterModel, details: GridCallbackDetails) => {
+
+        if (details.reason === "deleteFilterItem") {
+            setFilterModel(undefined);
+        }
+
         if (newModel.items.length > 0) {
             setFilterModel(newModel);
         }
