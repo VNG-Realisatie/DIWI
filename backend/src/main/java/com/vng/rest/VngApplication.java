@@ -21,6 +21,7 @@ import com.vng.dal.Database;
 import com.vng.dal.GenericRepository;
 import com.vng.resources.AuthResource;
 import com.vng.resources.BuurtResource;
+import com.vng.resources.MilestoneResource;
 import com.vng.resources.MunicipalityResource;
 import com.vng.resources.MunicipalityRoleResource;
 import com.vng.resources.PriorityResource;
