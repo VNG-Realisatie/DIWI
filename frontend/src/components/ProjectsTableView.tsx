@@ -407,6 +407,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 checkboxSelection={showCheckBox}
                 rows={rows}
                 columns={columns}
+                rowHeight={70}
                 initialState={{
                     pagination: {
                         paginationModel: { page: 0, pageSize: 10 },
