@@ -1,11 +1,4 @@
-import {
-    Divider,
-    Drawer,
-    List,
-    ListItemButton,
-    ListItemText,
-    Typography,
-} from "@mui/material";
+import { Divider, Drawer, List, ListItemButton, ListItemText, Typography } from "@mui/material";
 import { styled, useTheme } from "@mui/material/styles";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
@@ -32,7 +25,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
     const theme = useTheme();
-    const {t}=useTranslation();
+    const { t } = useTranslation();
     return (
         <Drawer variant="persistent" anchor="left" open={open}>
             <DrawerHeader>
@@ -41,25 +34,15 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
                     Voorne aan Zee
                 </Typography>
                 <IconButton onClick={handleDrawerClose}>
-                    {theme.direction === "ltr" ? (
-                        <CloseIcon sx={{ color: "#FFFFFF" }} />
-                    ) : (
-                        <ChevronRightIcon sx={{ color: "#FFFFFF" }} />
-                    )}
+                    {theme.direction === "ltr" ? <CloseIcon sx={{ color: "#FFFFFF" }} /> : <ChevronRightIcon sx={{ color: "#FFFFFF" }} />}
                 </IconButton>
             </DrawerHeader>
             <Divider />
 
             <List sx={{ ml: 3 }}>
-                <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>
-              {t("sidebar.projects")}
-                </Typography>
+                <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>{t("sidebar.projects")}</Typography>
                 {menuProjects.map((text, index) => (
-                    <Link
-                        key={index}
-                        to={`/${text.url}`}
-                        style={{ color: "#FFFFFF", textDecoration: "none" }}
-                    >
+                    <Link key={index} to={`/${text.url}`} style={{ color: "#FFFFFF", textDecoration: "none" }}>
                         <ListItemButton onClick={handleDrawerClose}>
                             <ListItemText primary={text.text} />
                         </ListItemButton>
@@ -67,40 +50,25 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
                 ))}
             </List>
             <List sx={{ ml: 3 }}>
-                <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>
-                {t("sidebar.dashboards")}
-                </Typography>
+                <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>{t("sidebar.dashboards")}</Typography>
 
-                <Link
-                    to={Paths.policygoal.path}
-                    style={{ color: "#FFFFFF", textDecoration: "none" }}
-                >
+                <Link to={Paths.policygoal.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
                     <ListItemButton>
                         <ListItemText primary="Beleidsdoelen" />
                     </ListItemButton>
                 </Link>
-                <Link
-                    to={Paths.dashboard.path}
-                    style={{ color: "#FFFFFF", textDecoration: "none" }}
-                >
+                <Link to={Paths.dashboard.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
                     <ListItemButton>
                         <ListItemText primary="Dashboard projecten" />
                     </ListItemButton>
                 </Link>
             </List>
             <List sx={{ ml: 3 }}>
-                <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>
-                {t("sidebar.users")}
-                </Typography>
+                <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>{t("sidebar.users")}</Typography>
             </List>
             <List sx={{ ml: 3 }}>
-                <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>
-                {t("sidebar.dataExchange")}
-                          </Typography>
-                <Link
-                    to={Paths.exchangedata.path}
-                    style={{ color: "#FFFFFF", textDecoration: "none" }}
-                >
+                <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>{t("sidebar.dataExchange")}</Typography>
+                <Link to={Paths.exchangedata.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
                     <ListItemButton>
                         <ListItemText primary="Data uitwisselen" />
                     </ListItemButton>

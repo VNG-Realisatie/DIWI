@@ -265,7 +265,13 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             editable: true,
             width: 320,
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                return [<MunicipalityCell cellValues={cellValues} selectedMunicipality={selectedMunicipality} handleMunicipalityChange={handleMunicipalityChange} />];
+                return [
+                    <MunicipalityCell
+                        cellValues={cellValues}
+                        selectedMunicipality={selectedMunicipality}
+                        handleMunicipalityChange={handleMunicipalityChange}
+                    />,
+                ];
             },
             preProcessEditCellProps: createErrorReport,
         },

@@ -1,3 +1,10 @@
-export const Home =()=> {
-    return <> Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eligendi possimus quisquam quam eaque amet veritatis repellat assumenda minus odit similique ea unde ex, nulla nam ratione numquam quibusdam sed doloribus?Lorem ipsum dolor sit amet consectetur, adipisicing elit. Optio aspernatur ipsa unde libero totam alias, perspiciatis quod ex quisquam ad doloremque minus hic excepturi consequuntur sapiente incidunt quis consectetur eos.</>
-}
+export const Home = () => {
+    return (
+        <>
+            {" "}
+            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eligendi possimus quisquam quam eaque amet veritatis repellat assumenda minus odit
+            similique ea unde ex, nulla nam ratione numquam quibusdam sed doloribus?Lorem ipsum dolor sit amet consectetur, adipisicing elit. Optio aspernatur
+            ipsa unde libero totam alias, perspiciatis quod ex quisquam ad doloremque minus hic excepturi consequuntur sapiente incidunt quis consectetur eos.
+        </>
+    );
+};
