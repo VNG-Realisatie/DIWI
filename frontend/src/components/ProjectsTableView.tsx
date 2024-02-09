@@ -3,6 +3,7 @@ import {
     GridCallbackDetails,
     GridColDef,
     GridFilterModel,
+    GridLogicOperator,
     GridPaginationModel,
     GridPreProcessEditCellProps,
     GridRenderCellParams,
@@ -11,7 +12,7 @@ import {
 } from "@mui/x-data-grid";
 import { GridRowParams } from "@mui/x-data-grid";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useCallback,  useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Box, Button, Dialog, DialogActions, DialogTitle, Stack, Typography } from "@mui/material";
 import useAlert from "../hooks/useAlert";
 import { Project, getProjects } from "../api/projectsServices";
@@ -45,7 +46,6 @@ export type SelectedOptionWithId = {
 const confidentialityLevelOptions = ["PRIVE", "INTERN_UITVOERING", "INTERN_RAPPORTAGE", "EXTERN_RAPPORTAGE", "OPENBAAR"];
 
 export const ProjectsTableView = ({ showCheckBox }: Props) => {
-    // const { projects } = useContext(ProjectContext);
     const location = useLocation();
     const navigate = useNavigate();
     const { setAlert } = useAlert();
@@ -60,21 +60,70 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const [selectedWijk, setSelectedWijk] = useState<SelectedOptionWithId[]>([]);
     const [selectedBuurt, setSelectedBuurt] = useState<SelectedOptionWithId[]>([]);
     const [showDialog, setShowDialog] = useState(false);
-    const [filterModel, setFilterModel] = useState<GridFilterModel>({
-        items: [],
-    });
+    const [filterModel, setFilterModel] = useState<GridFilterModel>();
+    const [filterUrl, setFilterUrl] = useState("");
 
     const [paginationInfo, setPaginationInfo] = useState<GridPaginationModel>({ page: 1, pageSize: 10 });
 
+    const isFilteredUrl = useCallback(() => {
+        const queryParams = ["pageNumber", "pageSize", "filterColumn", "filterCondition", "filterValue"];
+        return queryParams.every((e) => location.search.includes(e));
+    }, [location.search]);
+
     useEffect(() => {
-        getProjects(paginationInfo.page, paginationInfo.pageSize)
-            .then((projects) => setProjects(projects))
-            .catch((err) => console.log(err));
-    }, [paginationInfo.page, paginationInfo.pageSize]);
+        if (isFilteredUrl()) {
+            filterTable(location.search).then((res) => setProjects(res));
+        } else {
+            getProjects(paginationInfo.page, paginationInfo.pageSize)
+                .then((projects) => {
+                    setProjects(projects);
+                })
+                .catch((err) => console.log(err));
+        }
+    }, [isFilteredUrl, location.search, paginationInfo.page, paginationInfo.pageSize]);
+
+    useEffect(() => {
+        if (isFilteredUrl()) {
+            const filterParams = location.search.split("&");
+            const filterValues = filterParams.map((f) => f.split("="));
+            const field = filterValues[2][1];
+            const operator = filterValues[3][1] === "ANY_OF" ? "isAnyOf" : "contains";
+            const values = filterValues.slice(4).map((v) => v[1]);
+            const filter = {
+                items: [{ field, operator, value: values }],
+                logicOperator: GridLogicOperator.And,
+            };
+            setFilterModel(filter);
+        }
+    }, [isFilteredUrl, location.search]);
 
     const rows = projects.map((p) => {
         return { ...p, id: p.projectId };
     });
+
+    const updateUrl = useCallback(() => {
+        let query = "";
+
+        if (filterModel) {
+            const converFilterType = filterModel.items[0].operator === "isAnyOf" ? "ANY_OF" : "CONTAINS";
+            const filterValues =
+                filterModel.items[0].operator === "isAnyOf"
+                    ? filterModel.items[0].value?.map((v: string) => `filterValue=${v}`).join("&")
+                    : `filterValue=${filterModel.items[0].value}`;
+            query = `filterColumn=${filterModel.items[0].field}&filterCondition=${converFilterType}&${filterValues}`;
+        }
+
+        const url = `?pageNumber=${paginationInfo.page}&pageSize=${paginationInfo.pageSize}&${query}`;
+        setFilterUrl(url);
+    }, [filterModel, paginationInfo.page, paginationInfo.pageSize]);
+
+    useEffect(() => {
+        updateUrl();
+    }, [updateUrl]);
+
+    useEffect(() => {
+        navigate(`/projects/table${filterUrl}`);
+    }, [filterUrl, navigate]);
 
     const handleExport = (params: GridRowParams) => {
         const clickedRow: RowData = params.row as RowData;
@@ -331,37 +380,9 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
 
     const handleFilterModelChange = (newModel: GridFilterModel) => {
         if (newModel.items.length > 0) {
-            const converFilterType = newModel.items[0].operator === "isAnyOf" ? "ANY_OF" : "CONTAINS";
-            const filterValues = newModel.items[0].operator === "isAnyOf"? newModel.items[0].value?.map((v: string) => `filterValue=${v}`).join("&"):`filterValue=${newModel.items[0].value}`;
-
-            if (converFilterType && filterValues!=="filterValue=undefined") {
-                const query = `?pageNumber=${paginationInfo.page === 0 ? 1 : paginationInfo.page}&pageSize=${paginationInfo.pageSize}&filterColumn=${
-                    newModel.items[0].field
-                }&filterCondition=${converFilterType}&${filterValues}`;
-                filterTable(query).then((res) => setProjects(res));
-            }
             setFilterModel(newModel);
-            filterValues!=="filterValue=undefined"&&  navigate(
-                `/projects/table?pageNumber=${paginationInfo.page === 0 ? 1 : paginationInfo.page}&pageSize=${paginationInfo.pageSize}&filterColumn=${
-                    newModel.items[0].field
-                }&filterCondition=${converFilterType}&${filterValues}`
-            );
         }
     };
-    // TODO Update filter model when there is a search param in url
-    console.log(filterModel)
-
-
-    const isFilteredUrl = useCallback(() => {
-        const queryParams = ["pageNumber", "pageSize", "filterColumn", "filterCondition", "filterValue"];
-        return queryParams.every((e)=>location.search.includes(e));
-    }, [location.search]);
-
-    useEffect(() => {
-        if (isFilteredUrl()) {
-            filterTable(location.search).then((res) => setProjects(res));
-        }
-    }, [isFilteredUrl, location.search]);
 
     return (
         <Stack
@@ -375,14 +396,16 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 checkboxSelection={showCheckBox}
                 rows={rows}
                 columns={columns}
+                initialState={{
+                    pagination: {
+                        paginationModel: { page: 0, pageSize: 10 },
+                    },
+                }}
                 pageSizeOptions={[5, 10, 25, 50, 100]}
                 onPaginationModelChange={(model: GridPaginationModel, _: GridCallbackDetails) => {
-                    if (model.page === 0) {
-                        setPaginationInfo({ page: 1, pageSize: model.pageSize });
-                    }
-                    setPaginationInfo(model);
+                    setPaginationInfo({ page: model.page + 1, pageSize: model.pageSize });
                 }}
-                paginationModel={paginationInfo}
+                paginationMode="server"
                 onRowClick={showCheckBox ? handleExport : () => {}}
                 processRowUpdate={
                     (updatedRow, originalRow) => console.log(updatedRow)
