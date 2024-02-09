@@ -261,7 +261,9 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         {
             field: "confidentialityLevel",
             headerName: t("projects.tableColumns.confidentialityLevel"),
-            valueOptions: confidentialityLevelOptions.map(c=>c.id),
+            valueOptions: confidentialityLevelOptions.map(c=>{
+                return {value:c.id,label:t(`projectTable.confidentialityLevelOptions.${c.name}`)}
+            }),
             type: "singleSelect",
             editable: true,
             width: 250,
