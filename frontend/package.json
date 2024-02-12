@@ -41,6 +41,7 @@
     "test:ci": "yarn test --testResultsProcessor=\"jest-junit\" --watchAll=false --ci --coverage",
     "eject": "react-scripts eject",
     "format": "prettier --fix --write src/",
+    "format:check": "prettier --check src/",
     "lint": "eslint --max-warnings 0 src/",
     "lint:ci": "eslint --max-warnings 0 --format junit --output-file eslint.xml src/"
   },
