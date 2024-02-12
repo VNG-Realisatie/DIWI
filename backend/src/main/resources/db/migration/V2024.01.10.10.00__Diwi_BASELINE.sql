@@ -239,6 +239,19 @@ CREATE TYPE diwi_testset.project_phase AS ENUM (
 ALTER TYPE diwi_testset.project_phase OWNER TO vng;
 
 --
+-- Name: project_rol; Type: TYPE; Schema: diwi_testset; Owner: vng
+--
+
+CREATE TYPE diwi_testset.project_rol AS ENUM (
+    'OWNER',
+    'PROJECT_LEIDER'
+);
+
+
+ALTER TYPE diwi_testset.project_rol OWNER TO vng;
+
+
+--
 -- Name: software_module; Type: TYPE; Schema: diwi_testset; Owner: vng
 --
 
@@ -438,7 +451,6 @@ CREATE TABLE diwi_testset.document_state (
     naam text NOT NULL,
     notitie text,
     file_path text,
-    "owner_organization_id" UUID NOT NULL,
     "change_user_id" UUID NOT NULL,
     change_start_date timestamp with time zone NOT NULL,
     change_end_date timestamp with time zone,
@@ -630,6 +642,55 @@ CREATE TABLE diwi_testset.organization_state (
 
 
 ALTER TABLE diwi_testset.organization_state OWNER TO vng;
+
+--
+-- Name: organization_to_project; Type: TABLE; Schema: diwi_testset; Owner: vng
+--
+
+CREATE TABLE diwi_testset.organization_to_project (
+                                                      "id" UUID NOT NULL,
+                                                      "organization_id" UUID NOT NULL,
+                                                      "project_id" UUID NOT NULL,
+                                                      "project_rol" diwi_testset.project_rol NOT NULL,
+                                                      change_end_date timestamp with time zone,
+                                                      change_start_date timestamp with time zone NOT NULL,
+                                                      "change_user_id" UUID NOT NULL
+);
+
+
+ALTER TABLE diwi_testset.organization_to_project OWNER TO vng;
+
+--
+-- Name: organization_to_plan; Type: TABLE; Schema: diwi_testset; Owner: vng
+--
+
+CREATE TABLE diwi_testset.organization_to_plan (
+                                                   "id" UUID NOT NULL,
+                                                   "organization_id" UUID NOT NULL,
+                                                   "plan_id" UUID NOT NULL,
+                                                   change_end_date timestamp with time zone,
+                                                   change_start_date timestamp with time zone NOT NULL,
+                                                   "change_user_id" UUID NOT NULL
+);
+
+
+ALTER TABLE diwi_testset.organization_to_plan OWNER TO vng;
+
+--
+-- Name: organization_to_document; Type: TABLE; Schema: diwi_testset; Owner: vng
+--
+
+CREATE TABLE diwi_testset.organization_to_document (
+                                                       "id" UUID NOT NULL,
+                                                       "organization_id" UUID NOT NULL,
+                                                       "document_id" UUID NOT NULL,
+                                                       change_end_date timestamp with time zone,
+                                                       change_start_date timestamp with time zone NOT NULL,
+                                                       "change_user_id" UUID NOT NULL
+);
+
+
+ALTER TABLE diwi_testset.organization_to_document OWNER TO vng;
 
 --
 -- Name: plan; Type: TABLE; Schema: diwi_testset; Owner: vng
@@ -1040,7 +1101,6 @@ CREATE TABLE diwi_testset.plan_state (
     change_start_date timestamp with time zone NOT NULL,
     change_end_date timestamp with time zone,
     confidentiality_level diwi_testset.confidentiality NOT NULL,
-    "owner_organization_id" UUID NOT NULL,
     "change_user_id" UUID NOT NULL,
     doel_soort diwi_testset.doel_soort NOT NULL,
     doel_richting diwi_testset.doel_richting NOT NULL,
@@ -1442,7 +1502,6 @@ ALTER TABLE diwi_testset.project_priorisering_value_state OWNER TO vng;
 CREATE TABLE diwi_testset.project_state (
     "id" UUID NOT NULL,
     "project_id" UUID NOT NULL,
-    "owner_organization_id" UUID NOT NULL,
     "change_user_id" UUID NOT NULL,
     change_start_date timestamp with time zone NOT NULL,
     change_end_date timestamp with time zone,
@@ -3008,14 +3067,6 @@ ALTER TABLE ONLY diwi_testset.document_state
 
 
 --
--- Name: document_state fk_document_state__owner_organisation; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
---
-
-ALTER TABLE ONLY diwi_testset.document_state
-    ADD CONSTRAINT fk_document_state__owner_organisation FOREIGN KEY ("owner_organization_id") REFERENCES diwi_testset.organization("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
 -- Name: document_state_soort_value fk_document_state_soort_value__document_state; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
 --
 
@@ -3086,6 +3137,69 @@ ALTER TABLE ONLY diwi_testset.organization_state
 ALTER TABLE ONLY diwi_testset.organization_state
     ADD CONSTRAINT fk_organization_state__parent_organization FOREIGN KEY ("parent_organization_id") REFERENCES diwi_testset.organization("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
 
+
+--
+-- Name: organization_state fk_organization_to_project__organization; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
+--
+
+ALTER TABLE ONLY diwi_testset.organization_to_project
+    ADD CONSTRAINT fk_organization_to_project__organization FOREIGN KEY ("organization_id") REFERENCES diwi_testset.organization("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+--
+-- Name: organization_state fk_organization_to_project__change_user; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
+--
+
+ALTER TABLE ONLY diwi_testset.organization_to_project
+    ADD CONSTRAINT fk_organization_to_project__change_user FOREIGN KEY ("change_user_id") REFERENCES diwi_testset."user"("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+--
+-- Name: organization_state fk_organization_to_project__project; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
+--
+
+ALTER TABLE ONLY diwi_testset.organization_to_project
+    ADD CONSTRAINT fk_organization_to_project__project FOREIGN KEY ("project_id") REFERENCES diwi_testset."project"("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+--
+-- Name: organization_state fk_organization_to_plan__organization; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
+--
+
+ALTER TABLE ONLY diwi_testset.organization_to_plan
+    ADD CONSTRAINT fk_organization_to_plan__organization FOREIGN KEY ("organization_id") REFERENCES diwi_testset.organization("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+--
+-- Name: organization_state fk_organization_to_plan__change_user; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
+--
+
+ALTER TABLE ONLY diwi_testset.organization_to_plan
+    ADD CONSTRAINT fk_organization_to_plan__change_user FOREIGN KEY ("change_user_id") REFERENCES diwi_testset."user"("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+--
+-- Name: organization_state fk_organization_to_plan__plan; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
+--
+
+ALTER TABLE ONLY diwi_testset.organization_to_plan
+    ADD CONSTRAINT fk_organization_to_plan__plan FOREIGN KEY ("plan_id") REFERENCES diwi_testset."plan"("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+--
+-- Name: organization_state fk_organization_to_document__organization; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
+--
+
+ALTER TABLE ONLY diwi_testset.organization_to_document
+    ADD CONSTRAINT fk_organization_to_document__organization FOREIGN KEY ("organization_id") REFERENCES diwi_testset.organization("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+--
+-- Name: organization_state fk_organization_to_document__change_user; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
+--
+
+ALTER TABLE ONLY diwi_testset.organization_to_document
+    ADD CONSTRAINT fk_organization_to_document__change_user FOREIGN KEY ("change_user_id") REFERENCES diwi_testset."user"("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+--
+-- Name: organization_state fk_organization_to_document__document; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
+--
+
+ALTER TABLE ONLY diwi_testset.organization_to_document
+    ADD CONSTRAINT fk_organization_to_document__document FOREIGN KEY ("document_id") REFERENCES diwi_testset."document"("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
 
 --
 -- Name: plan_conditie_doelgroep fk_plan_conditie_doelgroep__change_user; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
@@ -3461,14 +3575,6 @@ ALTER TABLE ONLY diwi_testset.plan_soort_state
 
 ALTER TABLE ONLY diwi_testset.plan_state
     ADD CONSTRAINT fk_plan_state__change_user FOREIGN KEY ("change_user_id") REFERENCES diwi_testset."user"("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
--- Name: plan_state fk_plan_state__owner_organization; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
---
-
-ALTER TABLE ONLY diwi_testset.plan_state
-    ADD CONSTRAINT fk_plan_state__owner_organization FOREIGN KEY ("owner_organization_id") REFERENCES diwi_testset.organization("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -4069,15 +4175,6 @@ ALTER TABLE ONLY diwi_testset.project_priorisering_value_state
 
 ALTER TABLE ONLY diwi_testset.project_state
     ADD CONSTRAINT fk_project_state__change_user FOREIGN KEY ("change_user_id") REFERENCES diwi_testset."user"("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
--- Name: project_state fk_project_state__owner_organization; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
---
-
-ALTER TABLE ONLY diwi_testset.project_state
-    ADD CONSTRAINT fk_project_state__owner_organization FOREIGN KEY ("owner_organization_id") REFERENCES diwi_testset.organization("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
-
 
 --
 -- Name: project_state fk_project_state__project; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng

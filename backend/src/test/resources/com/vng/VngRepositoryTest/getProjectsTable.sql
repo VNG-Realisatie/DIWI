@@ -25,14 +25,14 @@ INSERT INTO diwi_testset.project (id) VALUES ('466da5e2-c96f-4856-aa17-6b37a1c21
 INSERT INTO diwi_testset.project (id) VALUES ('54a0c192-3454-4f7a-becd-96d214461987');
 INSERT INTO diwi_testset.project (id) VALUES ('5c9fbb50-d8fd-480d-9e38-7f3b391d3110');
 
-INSERT INTO diwi_testset.project_state (id, project_id, owner_organization_id, change_user_id, change_start_date, change_end_date, confidentiality_level, project_colour)
-    VALUES ('d91019f7-f859-4469-b0be-f2515dbee563', '466da5e2-c96f-4856-aa17-6b37a1c21edc', '018d1d85-639f-701c-b73f-0f35f98409bc', '2122426c-6e70-419c-a054-f51dd24d798b', NOW() - interval '10 days', NULL, 'OPENBAAR', '#334455');
-INSERT INTO diwi_testset.project_state (id, project_id, owner_organization_id, change_user_id, change_start_date, change_end_date, confidentiality_level, project_colour)
-    VALUES ('e8a7bf18-3bf0-4917-afe2-49523f262cf5', '54a0c192-3454-4f7a-becd-96d214461987', '018d1d85-639f-701c-b73f-0f35f98409bc', '2122426c-6e70-419c-a054-f51dd24d798b', NOW() - interval '5 days', NOW() - interval '1 day', 'EXTERN_RAPPORTAGE', '#001122');
-INSERT INTO diwi_testset.project_state (id, project_id, owner_organization_id, change_user_id, change_start_date, change_end_date, confidentiality_level, project_colour)
-    VALUES ('c62e372c-e563-4a72-8f03-1132082577b9', '54a0c192-3454-4f7a-becd-96d214461987', '018d1d85-639f-701c-b73f-0f35f98409bc', '2122426c-6e70-419c-a054-f51dd24d798b', NOW() - interval '1 day', NULL, 'OPENBAAR', '#223344');
-INSERT INTO diwi_testset.project_state (id, project_id, owner_organization_id, change_user_id, change_start_date, change_end_date, confidentiality_level, project_colour)
-    VALUES ('e74d8d9b-bff6-4008-83ef-8b95e822bf83', '5c9fbb50-d8fd-480d-9e38-7f3b391d3110', '018d1d85-639f-701c-b73f-0f35f98409bc', '2122426c-6e70-419c-a054-f51dd24d798b', NOW() - interval '1 day', NULL, 'EXTERN_RAPPORTAGE', '#456456');
+INSERT INTO diwi_testset.project_state (id, project_id, change_user_id, change_start_date, change_end_date, confidentiality_level, project_colour)
+    VALUES ('d91019f7-f859-4469-b0be-f2515dbee563', '466da5e2-c96f-4856-aa17-6b37a1c21edc', '2122426c-6e70-419c-a054-f51dd24d798b', NOW() - interval '10 days', NULL, 'OPENBAAR', '#334455');
+INSERT INTO diwi_testset.project_state (id, project_id, change_user_id, change_start_date, change_end_date, confidentiality_level, project_colour)
+    VALUES ('e8a7bf18-3bf0-4917-afe2-49523f262cf5', '54a0c192-3454-4f7a-becd-96d214461987', '2122426c-6e70-419c-a054-f51dd24d798b', NOW() - interval '5 days', NOW() - interval '1 day', 'EXTERN_RAPPORTAGE', '#001122');
+INSERT INTO diwi_testset.project_state (id, project_id, change_user_id, change_start_date, change_end_date, confidentiality_level, project_colour)
+    VALUES ('c62e372c-e563-4a72-8f03-1132082577b9', '54a0c192-3454-4f7a-becd-96d214461987', '2122426c-6e70-419c-a054-f51dd24d798b', NOW() - interval '1 day', NULL, 'OPENBAAR', '#223344');
+INSERT INTO diwi_testset.project_state (id, project_id, change_user_id, change_start_date, change_end_date, confidentiality_level, project_colour)
+    VALUES ('e74d8d9b-bff6-4008-83ef-8b95e822bf83', '5c9fbb50-d8fd-480d-9e38-7f3b391d3110', '2122426c-6e70-419c-a054-f51dd24d798b', NOW() - interval '1 day', NULL, 'EXTERN_RAPPORTAGE', '#456456');
 
 INSERT INTO diwi_testset.project_duration_changelog (id, start_milestone_id, end_milestone_id, project_id, change_user_id, change_start_date, change_end_date)
     VALUES ('56e7e05f-8b42-4dcb-bc5a-98d99a5411fc', '292414eb-4a4e-405c-954b-e01bb355bc9b', '7c6bfe67-6618-4a6a-9507-2cd15f88c11f', '466da5e2-c96f-4856-aa17-6b37a1c21edc', '2122426c-6e70-419c-a054-f51dd24d798b', NOW() - interval '5 days', NOW() - interval '1 day');
