@@ -50,3 +50,26 @@ backend:
       junit:
         - "backend/target/surefire-reports/TEST-*.xml"
         - backend/target/checkstyle-junit/checkstyle-result.xml
+        
+test-backend:
+  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/maven:3.9-eclipse-temurin-17
+  stage: test
+  services:
+    - name: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/postgres:14
+  variables:
+    DIWI_DB_HOST: localhost
+    DIWI_DB_NAME: diwi_test
+    DIWI_DB_USERNAME: diwi
+    DIWI_DB_PASSWORD: diwi
+
+  script:
+    - mvn package
+  artifacts:
+    when: always
+    paths:
+      - "**/test-report.xml"
+    reports:
+      junit:
+        - "**/test-report.xml"
+        - "**/target/surefire-reports/TEST-*.xml"
+
