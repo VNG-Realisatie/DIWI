@@ -455,16 +455,26 @@ FROM (
         ),
         project_users AS (
             SELECT
-                ps.project_id as project_id,
-                otp.project_rol AS project_rol,
-                array_agg(array[us.last_name, us.first_name, LEFT(us.last_name, 1) || LEFT(us.first_name,1)]) AS users
-            FROM diwi_testset.project_state ps
-                JOIN diwi_testset.organization_to_project otp ON ps.project_id = otp.project_id AND otp.change_end_date IS NULL
-                JOIN diwi_testset.user_to_organization uto ON otp.organization_id = uto.organization_id
-                JOIN diwi_testset.user_state us ON uto.user_id = us.user_id AND us.change_end_date IS NULL
-            WHERE
-                ps.change_end_date IS NULL
-            GROUP BY ps.project_id, otp.project_rol
+                q.project_id    AS project_id,
+                q.project_rol   AS project_rol,
+                array_agg(array[q.user_id::TEXT, q.user_initials, q.user_last_name, q.user_first_name] ORDER BY q.user_initials, q.user_last_name, q.user_first_name) AS users,
+                array_agg(q.user_initials ORDER BY q.user_initials)      AS users_initials
+            FROM (
+                SELECT DISTINCT
+                    ps.project_id as project_id,
+                    otp.project_rol AS project_rol,
+                    us.user_id AS user_id,
+                    LEFT(us.last_name, 1) || LEFT(us.first_name,1) AS user_initials,
+                    us.last_name AS user_last_name,
+                    us.first_name AS user_first_name
+                FROM diwi_testset.project_state ps
+                    JOIN diwi_testset.organization_to_project otp ON ps.project_id = otp.project_id AND otp.change_end_date IS NULL
+                    JOIN diwi_testset.user_to_organization uto ON otp.organization_id = uto.organization_id
+                    JOIN diwi_testset.user_state us ON uto.user_id = us.user_id AND us.change_end_date IS NULL
+                WHERE
+                    ps.change_end_date IS NULL
+                ) AS q
+            GROUP BY q.project_id, q.project_rol
         )
 
     SELECT ap.id                    AS projectId,
@@ -473,6 +483,7 @@ FROM (
            ps.project_colour        AS projectColor,
            ps.confidentiality_level AS confidentialityLevel,
            owners.users                  AS projectOwners,
+           owners.users_initials         AS projectOwnersInitials,
            ap.startDate             AS startDate,
            to_char( ap.startDate, 'DD-MM-YYYY') AS startDateStr,
            ap.endDate               AS endDate,
@@ -486,7 +497,8 @@ FROM (
            apwm.municipality        AS municipality,
            apww.wijk                AS wijk,
            apwb.buurt               AS buurt,
-           leaders.users            AS projectLeaders
+           leaders.users            AS projectLeaders,
+           leaders.users_initials   AS projectLeadersInitials
     FROM
         active_projects ap
             LEFT JOIN diwi_testset.project_state ps ON ps.project_id = ap.id AND ps.change_end_date IS NULL
@@ -511,6 +523,7 @@ FROM (
            ps.project_colour        AS projectColor,
            ps.confidentiality_level AS confidentialityLevel,
            owners.users                  AS projectOwners,
+           owners.users_initials         AS projectOwnersInitials,
            fp.startDate             AS startDate,
            to_char( fp.startDate, 'DD-MM-YYYY') AS startDateStr,
            fp.endDate               AS endDate,
@@ -524,7 +537,8 @@ FROM (
            fpwm.municipality        AS municipality,
            fpww.wijk                AS wijk,
            fpwb.buurt               AS buurt,
-           leaders.users            AS projectLeaders
+           leaders.users            AS projectLeaders,
+           leaders.users_initials   AS projectLeadersInitials
     FROM
         future_projects fp
             LEFT JOIN diwi_testset.project_state ps ON ps.project_id = fp.id AND ps.change_end_date IS NULL
@@ -556,6 +570,8 @@ FROM (
             WHEN _filterCondition_ = 'ANY_OF' AND _filterColumn_ = 'municipality' THEN q.municipality && _filterValues_
             WHEN _filterCondition_ = 'ANY_OF' AND _filterColumn_ = 'wijk' THEN q.wijk && _filterValues_
             WHEN _filterCondition_ = 'ANY_OF' AND _filterColumn_ = 'buurt' THEN q.buurt && _filterValues_
+            WHEN _filterCondition_ = 'ANY_OF' AND _filterColumn_ = 'projectOwners' THEN q.projectOwnersInitials && _filterValues_
+            WHEN _filterCondition_ = 'ANY_OF' AND _filterColumn_ = 'projectLeaders' THEN q.projectLeadersInitials && _filterValues_
             WHEN _filterColumn_ IS NULL THEN 1 = 1
         END
 
@@ -573,6 +589,8 @@ FROM (
         CASE WHEN _sortColumn_ = 'municipality' AND _sortDirection_ = 'ASC' THEN q.municipality END ASC,
         CASE WHEN _sortColumn_ = 'wijk' AND _sortDirection_ = 'ASC' THEN q.wijk END ASC,
         CASE WHEN _sortColumn_ = 'buurt' AND _sortDirection_ = 'ASC' THEN q.buurt END ASC,
+        CASE WHEN _sortColumn_ = 'projectOwners' AND _sortDirection_ = 'ASC' THEN q.projectOwnersInitials END ASC,
+        CASE WHEN _sortColumn_ = 'projectLeaders' AND _sortDirection_ = 'ASC' THEN q.projectLeadersInitials END ASC,
 
         CASE WHEN _sortColumn_ = 'projectName' AND _sortDirection_ = 'DESC' THEN q.projectName END DESC,
         CASE WHEN _sortColumn_ = 'totalValue' AND _sortDirection_ = 'DESC' THEN q.totalValue END DESC,
@@ -586,7 +604,9 @@ FROM (
         CASE WHEN _sortColumn_ = 'municipalityRole' AND _sortDirection_ = 'DESC' THEN q.municipalityRole END DESC,
         CASE WHEN _sortColumn_ = 'municipality' AND _sortDirection_ = 'DESC' THEN q.municipality END DESC,
         CASE WHEN _sortColumn_ = 'wijk' AND _sortDirection_ = 'DESC' THEN q.wijk END DESC,
-        CASE WHEN _sortColumn_ = 'buurt' AND _sortDirection_ = 'DESC' THEN q.buurt END DESC
+        CASE WHEN _sortColumn_ = 'buurt' AND _sortDirection_ = 'DESC' THEN q.buurt END DESC,
+        CASE WHEN _sortColumn_ = 'projectOwners' AND _sortDirection_ = 'DESC' THEN q.projectOwnersInitials END DESC,
+        CASE WHEN _sortColumn_ = 'projectLeaders' AND _sortDirection_ = 'DESC' THEN q.projectLeadersInitials END DESC
 
     LIMIT _limit_ OFFSET _offset_;
 

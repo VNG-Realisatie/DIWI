@@ -21,8 +21,8 @@ import java.util.UUID;
 @Data
 public class ProjectListModel {
 
-    public static final List<String> SORTABLE_COLUMNS = List.of("projectName", "confidentialityLevel", "organizationName", "planType",
-        "startDate", "endDate", "priority", "projectPhase", "municipalityRole", "planningPlanStatus", "totalValue", "municipality", "wijk", "buurt");
+    public static final List<String> SORTABLE_COLUMNS = List.of("projectName", "projectOwners", "projectLeaders", "confidentialityLevel", "organizationName",
+        "planType", "startDate", "endDate", "priority", "projectPhase", "municipalityRole", "planningPlanStatus", "totalValue", "municipality", "wijk", "buurt");
     public static final String DEFAULT_SORT_COLUMN = "startDate";
 
     @Id
