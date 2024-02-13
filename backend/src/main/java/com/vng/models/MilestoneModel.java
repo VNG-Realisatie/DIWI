@@ -2,6 +2,7 @@ package com.vng.models;
 
 import java.util.UUID;
 
+import com.vng.dal.entities.Milestone;
 import com.vng.dal.entities.MilestoneState;
 import com.vng.dal.entities.enums.MilestoneStatus;
 
@@ -16,10 +17,11 @@ public class MilestoneModel {
     private LocalDateModel date;
     private String description;
 
-    public MilestoneModel(MilestoneState mileStoneState) {
-        this.setId(mileStoneState.getMilestone().getId());
-        this.setDescription(mileStoneState.getDescription());
-        this.setDate(new LocalDateModel(mileStoneState.getDate()));
-        this.setState(mileStoneState.getState());
+    public MilestoneModel(Milestone milestone) {
+        this.setId(milestone.getId());
+        MilestoneState milestoneState = milestone.getState().get(0);
+        this.setDescription(milestoneState.getDescription());
+        this.setDate(new LocalDateModel(milestoneState.getDate()));
+        this.setState(milestoneState.getState());
     }
 }

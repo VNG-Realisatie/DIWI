@@ -4,6 +4,7 @@ import static com.vng.dal.GenericRepository.VNG_SCHEMA_NAME;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.vng.dal.entities.enums.MilestoneStatus;
 import com.vng.dal.entities.superclasses.ChangeDataSuperclass;
 
@@ -26,7 +27,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MilestoneState extends ChangeDataSuperclass {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("state")
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "milestone_id")
     private Milestone milestone;
 

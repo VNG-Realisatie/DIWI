@@ -43,7 +43,7 @@ public class MilestoneResource {
             throw new VngBadRequestException("The provided id is not a valid UUID");
         }
 
-        var result = milestoneService.getCurrentState(repo, uuid);
+        var result = milestoneService.getCurrentData(repo, uuid);
 
         if (result == null) {
             throw new VngNotFoundException();

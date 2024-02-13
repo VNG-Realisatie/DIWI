@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.vng.config.ProjectConfig;
 import com.vng.dal.MilestoneRepository;
-import com.vng.dal.entities.MilestoneState;
+import com.vng.dal.entities.Milestone;
 
 import jakarta.inject.Inject;
 
@@ -20,7 +20,7 @@ public class MilestoneService {
         this.projectConfig = projectConfig;
     }
 
-    public MilestoneState getCurrentState(MilestoneRepository repo, UUID milestoneUuid) {
-        return repo.getCurrentState(milestoneUuid);
+    public Milestone getCurrentData(MilestoneRepository repo, UUID milestoneUuid) {
+        return repo.getCurrentData(milestoneUuid);
     }
 }
