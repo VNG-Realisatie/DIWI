@@ -15,6 +15,7 @@ import com.vng.security.LoggedUser;
 import com.vng.services.KeycloakService;
 import com.vng.services.KeycloakService.KeycloakPermissionException;
 import com.vng.services.MilestoneService;
+import com.vng.services.ProjectService;
 import com.vng.services.UserService;
 import com.vng.services.VngService;
 
@@ -106,6 +107,7 @@ public class VngDependencyInjection extends AbstractBinder implements AutoClosea
         bindFactory(LoggedUserFactory.class).to(LoggedUser.class).in(RequestScoped.class);
 
         bind(new MilestoneService(projectConfig)).to(MilestoneService.class);
+        bind(new ProjectService(projectConfig)).to(ProjectService.class);
         bind(new VngService(projectConfig)).to(VngService.class);
 //        bind(new MailService(projectConfig.getMailConfig())).to(MailService.class);
 

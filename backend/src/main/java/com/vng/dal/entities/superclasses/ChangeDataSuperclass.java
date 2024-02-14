@@ -25,7 +25,7 @@ public class ChangeDataSuperclass extends IdSuperclass {
     @Column(name = "change_start_date")
     private ZonedDateTime changeStartDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "change_user_id")
     private User changeUser;
 }

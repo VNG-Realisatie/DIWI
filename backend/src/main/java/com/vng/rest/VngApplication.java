@@ -25,6 +25,7 @@ import com.vng.resources.MilestoneResource;
 import com.vng.resources.MunicipalityResource;
 import com.vng.resources.MunicipalityRoleResource;
 import com.vng.resources.PriorityResource;
+import com.vng.resources.ProjectResource;
 import com.vng.resources.ProjectsResource;
 import com.vng.resources.VngResource;
 import com.vng.resources.WijkResource;
@@ -103,6 +104,7 @@ public class VngApplication extends ResourceConfig {
         register(VngResource.class);
         register(AuthResource.class);
         register(UserResource.class);
+        register(ProjectResource.class);
         register(ProjectsResource.class);
         register(MilestoneResource.class);
         register(MunicipalityResource.class);

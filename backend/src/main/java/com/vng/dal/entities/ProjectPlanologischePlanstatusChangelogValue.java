@@ -1,13 +1,12 @@
 package com.vng.dal.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.vng.dal.entities.enums.PlanStatus;
 import com.vng.dal.entities.superclasses.IdSuperclass;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.JdbcType;
-import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 import static com.vng.dal.GenericRepository.VNG_SCHEMA_NAME;
 
@@ -18,12 +17,12 @@ import static com.vng.dal.GenericRepository.VNG_SCHEMA_NAME;
 @NoArgsConstructor
 public class ProjectPlanologischePlanstatusChangelogValue extends IdSuperclass {
 
+    @JsonIgnoreProperties("value")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "planologische_planstatus_changelog_id")
-    private ProjectPlanTypeChangelog planStatusChangelog;
+    private ProjectPlanologischePlanstatusChangelog planStatusChangelog;
 
     @Enumerated(EnumType.STRING)
-    @JdbcType(PostgreSQLEnumJdbcType.class)
     @Column(name = "planologische_planstatus")
-    private PlanStatus planStatus;  //TODO: mapping doesn't work
+    private PlanStatus planStatus;
 }

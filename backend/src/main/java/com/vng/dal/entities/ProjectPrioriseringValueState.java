@@ -15,7 +15,7 @@ import static com.vng.dal.GenericRepository.VNG_SCHEMA_NAME;
 @NoArgsConstructor
 public class ProjectPrioriseringValueState extends ChangeDataSuperclass {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "project_priorisering_value_id")
     private ProjectPrioriseringValue value;
 
@@ -23,5 +23,5 @@ public class ProjectPrioriseringValueState extends ChangeDataSuperclass {
     private String valueLabel;
 
     @Column(name = "ordinal_level")
-    private String ordinalLevel;
+    private Integer ordinalLevel;
 }

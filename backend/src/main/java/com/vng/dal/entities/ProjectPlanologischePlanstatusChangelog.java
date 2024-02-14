@@ -8,6 +8,10 @@ import lombok.NoArgsConstructor;
 
 import static com.vng.dal.GenericRepository.VNG_SCHEMA_NAME;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "project_planologische_planstatus_changelog", schema = VNG_SCHEMA_NAME)
 @Data
@@ -15,7 +19,12 @@ import static com.vng.dal.GenericRepository.VNG_SCHEMA_NAME;
 @NoArgsConstructor
 public class ProjectPlanologischePlanstatusChangelog extends MilestoneChangeDataSuperclass {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("planologischePlanstatus")
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "project_id")
     private Project project;
+    
+    @JsonIgnoreProperties("planStatusChangelog")
+    @OneToMany(mappedBy="planStatusChangelog", fetch = FetchType.LAZY)
+    private List<ProjectPlanologischePlanstatusChangelogValue> value;
 }
