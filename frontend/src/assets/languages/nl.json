@@ -12,8 +12,8 @@
       "houseBlocks": "Huizen blokken",
       "signupOnTheMap": "Intekenen op de kaart",
       "timeline": "Tijdline",
-      "completeMessage":"De wizard voor het maken van projectformulieren is voltooid. Klik op Opslaan om het proces te voltooien.",
-      "successfullySaved":"Project succesvol opgeslagen.",
+      "completeMessage": "De wizard voor het maken van projectformulieren is voltooid. Klik op Opslaan om het proces te voltooien.",
+      "successfullySaved": "Project succesvol opgeslagen.",
       "informationForm": {
         "title": "Vul de projectgegevens in",
         "nameLabel": "Projectnaam en projectkleur*",
@@ -67,79 +67,120 @@
         "disabilityAndCare": "Gehandicapter en zorg",
         "largeFamilies": "Grote gezinnen"
       },
-      "selectMapForm":{
-        "title":"Teken het project in op de kaart",
-        "municipality":"Gemeente",
-        "neighbourhood":"Wijk",
-        "district":"Buurt"
+      "selectMapForm": {
+        "title": "Teken het project in op de kaart",
+        "municipality": "Gemeente",
+        "neighbourhood": "Wijk",
+        "district": "Buurt"
       },
-      "timelineForm":{
-        "title":"Vul de gegevens voor de tijdlijn in",
-        "deliveryDate":"Opleverdatum*",
+      "timelineForm": {
+        "title": "Vul de gegevens voor de tijdlijn in",
+        "deliveryDate": "Opleverdatum*",
         "houseBlock": "Huizen blok",
-        "expectedDelivery":"Verwachte oplevering",
-        "status":"Toestand",
-        "is":"is"
+        "expectedDelivery": "Verwachte oplevering",
+        "status": "Toestand",
+        "is": "is"
       }
     },
-    "sidebar":{
-      "projects":"Projecten",
-      "dashboards":"Dashboards",
-      "users":"Gebruikers",
-      "dataExchange":"Data uitwisselen"
+    "sidebar": {
+      "projects": "Projecten",
+      "dashboards": "Dashboards",
+      "users": "Gebruikers",
+      "dataExchange": "Data uitwisselen"
     },
-    "projects":{
-      "title":"Projecten overzicht",
-      "map":"Kaart",
-      "table":"Tabel",
-      "tableColumns":{
-        "projectName":"Project naam",
-        "totalValue":"Totaal aantal",
-        "organizationName":"Eigenaar",
-        "confidentialityLevel":"Vertrouwlijkheidsniveau",
-        "startDate":"Start Datum",
-        "endDate":"Eind Datum",
-        "planType":"Plan Type",
-        "priority":"Priorisering",
-        "municipalityRole":"Rol Gemeente",
-        "projectLeader":"Project Leider",
-        "projectPhase":"Project Fase",
-        "planningPlanStatus":"Planologische Plan Status",
-        "municipality":"Gemeente",
-        "wijk":"Wijk",
-        "buurt":"Buurt",
-        "selectPlanType":"Selecteer plan type",
-        "selectMunicipalityRole":"Selecteer gemeente rol",
-        "selectPlanningPlanStatus":"Selecteer toestand",
-        "selectWijk":"Selecteer wijk",
-        "selectBuurt":"Selecteer buurt"
+    "projects": {
+      "title": "Projecten overzicht",
+      "map": "Kaart",
+      "table": "Tabel",
+      "tableColumns": {
+        "projectName": "Project naam",
+        "totalValue": "Totaal aantal",
+        "organizationName": "Eigenaar",
+        "confidentialityLevel": "Vertrouwlijkheidsniveau",
+        "startDate": "Start Datum",
+        "endDate": "Eind Datum",
+        "planType": "Plan Type",
+        "priority": "Priorisering",
+        "municipalityRole": "Rol Gemeente",
+        "projectLeader": "Project Leider",
+        "projectPhase": "Project Fase",
+        "planningPlanStatus": "Planologische Plan Status",
+        "municipality": "Gemeente",
+        "wijk": "Wijk",
+        "buurt": "Buurt",
+        "selectPlanType": "Selecteer plan type",
+        "selectMunicipalityRole": "Selecteer gemeente rol",
+        "selecMunicipality": "Selecteer gemeente",
+        "selectPlanningPlanStatus": "Selecteer toestand",
+        "selectWijk": "Selecteer wijk",
+        "selectBuurt": "Selecteer buurt"
       }
     },
-    "projectDetail":{
-      "title":"Project",
-      "map":"Kaart",
-      "characteristics":"Eigenschappen",
-      "timeline":"Tijdline"
+    "projectDetail": {
+      "title": "Project",
+      "map": "Kaart",
+      "characteristics": "Eigenschappen",
+      "timeline": "Tijdline"
     },
-    "exchangeData":{
-      "title":"Data uitwisselen",
-      "import":"Importeren:",
-      "export":"Exporteren:",
-      "excel":"Excel",
-      "system":"Systeem x",
-      "squit":"Squit",
-      "province":"Provincie",
-      "newData":"Nieuwe data koppeling instellen"
+    "exchangeData": {
+      "title": "Data uitwisselen",
+      "import": "Importeren:",
+      "export": "Exporteren:",
+      "excel": "Excel",
+      "system": "Systeem x",
+      "squit": "Squit",
+      "province": "Provincie",
+      "newData": "Nieuwe data koppeling instellen"
     },
-    "policy":{
-      "name":"Naam:",
-      "characteristic":"Eigenschap",
-      "goal":"Doelstelling",
-      "number":"Aantal",
-      "percentage":"Percentage",
-      "time":"Tijd",
-      "geography":"Geografie",
-      "category":"Categorie"
+    "policy": {
+      "name": "Naam:",
+      "characteristic": "Eigenschap",
+      "goal": "Doelstelling",
+      "number": "Aantal",
+      "percentage": "Percentage",
+      "time": "Tijd",
+      "geography": "Geografie",
+      "category": "Categorie"
+    },
+    "projectTable": {
+      "planningPlanStatus": {
+        "_1A_ONHERROEPELIJK": "ONHERROEPELIJK",
+        "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG": "ONHERROEPELIJK MET UITWERKING NODIG",
+        "_1C_ONHERROEPELIJK_MET_BW_NODIG": "ONHERROEPELIJK MET BW NODIG",
+        "_2A_VASTGESTELD": "VASTGESTELD",
+        "_2B_VASTGESTELD_MET_UITWERKING_NODIG": "VASTGESTELD MET UITWERKING NODIG",
+        "_2C_VASTGESTELD_MET_BW_NODIG": "VASTGESTELD MET BW NODIG",
+        "_3_IN_VOORBEREIDING": "IN VOORBEREIDING",
+        "_4A_OPGENOMEN_IN_VISIE": "OPGENOMEN IN VISIE",
+        "_4B_NIET_OPGENOMEN_IN_VISIE": "NIET OPGENOMEN IN VISIE"
+      },
+      "planTypeOptions": {
+        "PAND_TRANSFORMATIE": "PAND TRANSFORMATIE",
+        "TRANSFORMATIEGEBIED": "TRANSFORMATIEGEBIED",
+        "HERSTRUCTURERING": "HERSTRUCTURERING",
+        "VERDICHTING": "VERDICHTING",
+        "UITBREIDING_UITLEG": "UITBREIDING UITLEG",
+        "UITBREIDING_OVERIG": "UITBREIDING OVERIG"
+      },
+      "confidentialityLevelOptions": {
+        "PRIVE": "PRIVE",
+        "INTERN_UITVOERING": "INTERN UITVOERING",
+        "INTERN_RAPPORTAGE": "INTERN RAPPORTAGE",
+        "EXTERN_RAPPORTAGE": "EXTERN RAPPORTAGE",
+        "OPENBAAR": "OPENBAAR"
+      },
+      "projectPhaseOptions": {
+        "_1_INITIATIEFFASE": "INITIATIEFFASE",
+        "_2_PROJECTFASE": "PROJECTFASE",
+        "_3_VERGUNNINGSFASE": "VERGUNNINGSFASE",
+        "_4_REALISATIEFASE": "REALISATIEFASE",
+        "_5_OPLEVERINGSFASE": "OPLEVERINGSFASE"
+      },
+      "municipalityRolesOptions": {
+        "ACTIVE": "Actief",
+        "PASSIVE": "Passief",
+        "NOTHING": "Geen"
+      }
     }
   }
 }

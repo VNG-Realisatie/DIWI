@@ -9,7 +9,6 @@ import * as Paths from "../Paths";
 import { useTranslation } from "react-i18next";
 
 export const ExchangeData = () => {
-
     const { t } = useTranslation();
 
     return (

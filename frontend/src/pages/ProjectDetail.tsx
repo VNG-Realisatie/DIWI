@@ -15,17 +15,17 @@ export const dummyMapData = [
     {
         projectColor: "orange",
         projectName: "test-01",
-        coordinate:[52.1434, 5.0013]
+        coordinate: [52.1434, 5.0013],
     },
     {
         projectColor: "tomato",
         projectName: "test-02",
-        coordinate:[52.2434, 5.2013]
+        coordinate: [52.2434, 5.2013],
     },
     {
         projectColor: "green",
         projectName: "test-03",
-        coordinate:[52.5434, 5.5013]
+        coordinate: [52.5434, 5.5013],
     },
 ];
 
@@ -67,12 +67,12 @@ export const ProjectDetail = () => {
                     <Stack overflow="auto" height="70vh">
                         {<Details project={selectedProject} />}
                     </Stack>
-                    <NetherlandsMap height="640px" width="1000px" mapData={dummyMapData} />
+                    <NetherlandsMap height="66vh" width="100%" mapData={dummyMapData} />
                 </Stack>
             )}
             {location.pathname === Paths.projectDetailTimeline.path.replace(":id", id ?? "1") && <TimeLineImg style={{ width: "100%" }} />}
 
-        {/* TO DO add house blocks here later */}
+            {/* TO DO add house blocks here later */}
         </Stack>
     );
 };

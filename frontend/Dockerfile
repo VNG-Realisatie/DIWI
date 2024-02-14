@@ -9,6 +9,7 @@ RUN yarn
 COPY ./src ./src
 COPY ./public ./public
 COPY ./tsconfig.json ./tsconfig.json
+COPY ./.editorconfig ./.editorconfig
 
 RUN yarn build
 

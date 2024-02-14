@@ -1,8 +1,1 @@
-[
-  "admin_panel",
-  "beheer_portaal",
-  "dashboard_publiek",
-  "dashboard_provinciale_planmonitor",
-  "dashboard_gemeenteraad",
-  "dashboard_interne_uitvoering"
-]
+["admin_panel", "beheer_portaal", "dashboard_publiek", "dashboard_provinciale_planmonitor", "dashboard_gemeenteraad", "dashboard_interne_uitvoering"]

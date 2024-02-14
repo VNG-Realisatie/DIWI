@@ -14,12 +14,12 @@ export type Project = {
     priority: string[];
     projectPhase: string;
     municipalityRole: string[];
-    wijk:string[];
-    buurt:string[];
-    municipality:string[];
+    wijk: string[];
+    buurt: string[];
+    municipality: string[];
     planningPlanStatus: string[];
 };
 
-export async function getProjects(pageNumber:number,pageSize:number): Promise<Array<Project>> {
+export async function getProjects(pageNumber: number, pageSize: number): Promise<Array<Project>> {
     return getJson(`${API_URI}/projects/table?pageNumber=${pageNumber}&pageSize=${pageSize}`);
 }

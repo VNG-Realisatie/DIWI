@@ -21,6 +21,7 @@ import com.vng.dal.Database;
 import com.vng.dal.GenericRepository;
 import com.vng.resources.AuthResource;
 import com.vng.resources.BuurtResource;
+import com.vng.resources.MilestoneResource;
 import com.vng.resources.MunicipalityResource;
 import com.vng.resources.MunicipalityRoleResource;
 import com.vng.resources.PriorityResource;
@@ -93,6 +94,9 @@ public class VngApplication extends ResourceConfig {
         register(RolesAllowedDynamicFeature.class);
         register(MultiPartFeature.class);
         register(CORSFilter.class);
+        
+        // Exceptions for the endpoints
+        register(VngNotFoundException.class);
         register(VngBadRequestException.class);
 
         // Then the end points
@@ -100,6 +104,7 @@ public class VngApplication extends ResourceConfig {
         register(AuthResource.class);
         register(UserResource.class);
         register(ProjectsResource.class);
+        register(MilestoneResource.class);
         register(MunicipalityResource.class);
         register(MunicipalityRoleResource.class);
         register(BuurtResource.class);
