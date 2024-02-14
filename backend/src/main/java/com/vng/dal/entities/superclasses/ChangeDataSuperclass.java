@@ -8,13 +8,18 @@ import lombok.NoArgsConstructor;
 
 import java.time.ZonedDateTime;
 
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+
 @MappedSuperclass
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
+@FilterDef(name = "current", defaultCondition = "change_end_date IS NULL")
 public class ChangeDataSuperclass extends IdSuperclass {
 
     @Column(name = "change_end_date")
+    @Filter(name = "current")
     private ZonedDateTime changeEndDate;
 
     @Column(name = "change_start_date")
