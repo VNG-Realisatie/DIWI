@@ -48,7 +48,8 @@ public class ProjectsDAO extends AbstractRepository {
     }
 
     public ProjectState getCurrentProjectState(UUID projectUuid) {
-        String statement = "FROM ProjectState ps WHERE ps.project.id = :projectUuid AND ps.changeEndDate IS NULL";
+        session.enableFilter(GenericRepository.CURRENT_DATA_FILTER);
+        String statement = "FROM ProjectState ps WHERE ps.project.id = :projectUuid";
         SelectionQuery<ProjectState> query = session
             .createSelectionQuery(statement, ProjectState.class)
             .setParameter("projectUuid", projectUuid);

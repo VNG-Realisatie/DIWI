@@ -16,8 +16,8 @@ public class MilestoneDAO extends AbstractRepository {
     }
 
     @Nullable
-    public Milestone getCurrentData(@NonNull UUID milestoneUuid) {
-        session.enableFilter("current");
+    public Milestone getCurrentMilestone(@NonNull UUID milestoneUuid) {
+        session.enableFilter(GenericRepository.CURRENT_DATA_FILTER);
         String statement = "FROM Milestone M WHERE M.id = :uuid";
         SelectionQuery<Milestone> query = session
             .createSelectionQuery(statement, Milestone.class)

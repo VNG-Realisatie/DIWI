@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import nl.vng.diwi.dal.GenericRepository;
+import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
@@ -15,6 +16,7 @@ import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
+@Filter(name = GenericRepository.CURRENT_DATA_FILTER)
 public class ProjectState extends ChangeDataSuperclass {
 
     @ManyToOne(fetch = FetchType.LAZY)

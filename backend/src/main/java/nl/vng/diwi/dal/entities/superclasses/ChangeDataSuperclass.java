@@ -1,5 +1,6 @@
 package nl.vng.diwi.dal.entities.superclasses;
 
+import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.entities.User;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -15,11 +16,11 @@ import org.hibernate.annotations.FilterDef;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-@FilterDef(name = "current", defaultCondition = "change_end_date IS NULL")
+@FilterDef(name = GenericRepository.CURRENT_DATA_FILTER, defaultCondition = "change_end_date IS NULL")
 public class ChangeDataSuperclass extends IdSuperclass {
 
     @Column(name = "change_end_date")
-    @Filter(name = "current")
+    @Filter(name = GenericRepository.CURRENT_DATA_FILTER)
     private ZonedDateTime changeEndDate;
 
     @Column(name = "change_start_date")

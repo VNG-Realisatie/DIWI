@@ -14,6 +14,6 @@ public class MilestoneService {
     }
 
     public Milestone getCurrentMilestone(VngRepository repo, UUID milestoneUuid) {
-        return repo.getMilestoneDAO().getCurrentData(milestoneUuid);
+        return repo.getMilestoneDAO().getCurrentMilestone(milestoneUuid);
     }
 }
