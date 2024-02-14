@@ -1,11 +1,8 @@
 package nl.vng.diwi.dal;
 
-import nl.vng.diwi.models.ProjectListModel;
 import nl.vng.diwi.models.SelectModel;
-import jakarta.persistence.Query;
 import org.hibernate.Session;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import static nl.vng.diwi.dal.GenericRepository.VNG_SCHEMA_NAME;
@@ -16,35 +13,22 @@ public class VngRepository extends AbstractRepository {
         super(session);
     }
 
-    public List<ProjectListModel> getProjectsTable(FilterPaginationSorting filtering) {
-        Query q = session.createNativeQuery("""
-                SELECT * FROM get_active_and_future_projects_list(:now, :offset, :limit, :sortColumn, :sortDirection,
-                    :filterColumn, CAST(:filterValue AS text[]), :filterCondition) """ , ProjectListModel.class)
-            .setParameter("now", LocalDate.now())
-            .setParameter("offset", filtering.getFirstResultIndex())
-            .setParameter("limit", filtering.getPageSize())
-            .setParameter("sortColumn", filtering.getSortColumn())
-            .setParameter("sortDirection", filtering.getSortDirection().name())
-            .setParameter("filterColumn", filtering.getFilterColumn())
-            .setParameter("filterValue", filtering.getFilterColumn() == null ? null :fromJavaListToSqlArrayLiteral(filtering.getFilterValue()))
-            .setParameter("filterCondition", filtering.getFilterColumn() == null ? null : filtering.getFilterCondition().name());
+    private ProjectsDAO projectsDAO;
 
-        return q.getResultList();
+    private MilestoneDAO milestoneDAO;
+
+    public ProjectsDAO getProjectsDAO() {
+        if (projectsDAO == null) {
+            projectsDAO = new ProjectsDAO(session);
+        }
+        return projectsDAO;
     }
 
-    public Integer getProjectsTableCount(FilterPaginationSorting filtering) {
-        return session.createNativeQuery("""
-                SELECT COUNT(*) FROM get_active_and_future_projects_list(:now, :offset, :limit, :sortColumn, :sortDirection,
-                :filterColumn, CAST(:filterValue AS text[]), :filterCondition) """, Integer.class)
-            .setParameter("now", LocalDate.now())
-            .setParameter("offset", 0)
-            .setParameter("limit", Integer.MAX_VALUE)
-            .setParameter("sortColumn", null)
-            .setParameter("sortDirection", null)
-            .setParameter("filterColumn", filtering.getFilterColumn())
-            .setParameter("filterValue", filtering.getFilterColumn() == null ? null : fromJavaListToSqlArrayLiteral(filtering.getFilterValue()))
-            .setParameter("filterCondition", filtering.getFilterColumn() == null ? null :filtering.getFilterCondition().name())
-            .uniqueResult();
+    public MilestoneDAO getMilestoneDAO() {
+        if (milestoneDAO == null) {
+            milestoneDAO = new MilestoneDAO(session);
+        }
+        return milestoneDAO;
     }
 
     public List<SelectModel> getMunicipalityRoles() {

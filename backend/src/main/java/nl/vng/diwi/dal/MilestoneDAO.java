@@ -9,9 +9,9 @@ import org.hibernate.query.SelectionQuery;
 import jakarta.annotation.Nullable;
 import lombok.NonNull;
 
-public class MilestoneRepository extends AbstractRepository {
+public class MilestoneDAO extends AbstractRepository {
 
-    public MilestoneRepository(Session session) {
+    public MilestoneDAO(Session session) {
         super(session);
     }
 
@@ -20,9 +20,8 @@ public class MilestoneRepository extends AbstractRepository {
         session.enableFilter("current");
         String statement = "FROM Milestone M WHERE M.id = :uuid";
         SelectionQuery<Milestone> query = session
-                .createSelectionQuery(statement, Milestone.class)
-                .setParameter("uuid", milestoneUuid)
-                ;
+            .createSelectionQuery(statement, Milestone.class)
+            .setParameter("uuid", milestoneUuid);
         return query.getSingleResultOrNull();
     }
 }
