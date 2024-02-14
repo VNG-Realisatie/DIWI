@@ -67,7 +67,7 @@ export const ProjectDetail = () => {
                     <Stack overflow="auto" height="70vh">
                         {<Details project={selectedProject} />}
                     </Stack>
-                    <NetherlandsMap height="640px" width="1000px" mapData={dummyMapData} />
+                    <NetherlandsMap height="66vh" width="100%" mapData={dummyMapData} />
                 </Stack>
             )}
             {location.pathname === Paths.projectDetailTimeline.path.replace(":id", id ?? "1") && <TimeLineImg style={{ width: "100%" }} />}

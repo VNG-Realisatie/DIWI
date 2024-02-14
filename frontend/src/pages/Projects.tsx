@@ -29,7 +29,7 @@ export const Projects = () => {
                 <AddCircleIcon color="info" sx={{ fontSize: "45px", cursor: "pointer" }} onClick={() => navigate(Paths.projectAdd.path)} />
             </Stack>
             {(location.pathname === Paths.projects.path || location.pathname === Paths.root.path) && (
-                <NetherlandsMap height="500px" width="1000px" mapData={dummyMapData} />
+                <NetherlandsMap height="70vh" width="100%" mapData={dummyMapData} />
             )}
             {location.pathname === Paths.projectsTable.path && <ProjectsTableView />}
         </Stack>

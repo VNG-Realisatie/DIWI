@@ -21,6 +21,22 @@ export const planTypeOptions: OptionType[] = [
     { id: "UITBREIDING_OVERIG", name: "UITBREIDING_OVERIG" },
 ];
 
+export const projectPhaseOptions: OptionType[] = [
+    { id: "_1_INITIATIEFFASE", name: "_1_INITIATIEFFASE" },
+    { id: "_2_PROJECTFASE", name: "_2_PROJECTFASE" },
+    { id: "_3_VERGUNNINGSFASE", name: "_3_VERGUNNINGSFASE" },
+    { id: "_4_REALISATIEFASE", name: "_4_REALISATIEFASE" },
+    { id: "_5_OPLEVERINGSFASE", name: "_5_OPLEVERINGSFASE" },
+];
+
+export const confidentialityLevelOptions: OptionType[] = [
+    { id: "PRIVE", name: "PRIVE" },
+    { id: "INTERN_UITVOERING", name: "INTERN_UITVOERING" },
+    { id: "INTERN_RAPPORTAGE", name: "INTERN_RAPPORTAGE" },
+    { id: "EXTERN_RAPPORTAGE", name: "EXTERN_RAPPORTAGE" },
+    { id: "OPENBAAR", name: "OPENBAAR" },
+];
+
 export const municipalityRolesOptions: OptionType[] = [
     { id: "ACTIVE", name: "ACTIVE" },
     { id: "PASSIVE", name: "PASSIVE" },

@@ -13,3 +13,5 @@ Servers/
 yarn.lock
 
 node_modules/
+
+*.orig

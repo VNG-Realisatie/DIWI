@@ -25,7 +25,7 @@ export const Layout = () => {
                 <Header open={open} handleDrawerOpen={handleDrawerOpen} />
                 <SideBar open={open} handleDrawerClose={handleDrawerClose} />
                 <Box minHeight="90px" />
-                <Box width="65%" m="auto">
+                <Box width="90%" m="auto">
                     <Outlet />
                 </Box>
             </Box>
