@@ -5,6 +5,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
+import com.vng.resources.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.jackson.JacksonFeature;
@@ -19,15 +20,6 @@ import com.vng.config.ProjectConfig;
 import com.vng.dal.DalFactory;
 import com.vng.dal.Database;
 import com.vng.dal.GenericRepository;
-import com.vng.resources.AuthResource;
-import com.vng.resources.BuurtResource;
-import com.vng.resources.MilestoneResource;
-import com.vng.resources.MunicipalityResource;
-import com.vng.resources.MunicipalityRoleResource;
-import com.vng.resources.PriorityResource;
-import com.vng.resources.ProjectsResource;
-import com.vng.resources.VngResource;
-import com.vng.resources.WijkResource;
 import com.vng.rest.pac4j.CallbackFilter;
 import com.vng.rest.pac4j.Constants;
 import com.vng.rest.pac4j.HttpActionAdapterImplementation;
@@ -94,12 +86,13 @@ public class VngApplication extends ResourceConfig {
         register(RolesAllowedDynamicFeature.class);
         register(MultiPartFeature.class);
         register(CORSFilter.class);
-        
+
         // Exceptions for the endpoints
         register(VngNotFoundException.class);
         register(VngBadRequestException.class);
 
         // Then the end points
+        register(VngOpenApiResource.class);
         register(VngResource.class);
         register(AuthResource.class);
         register(UserResource.class);
