@@ -57,17 +57,17 @@ java -jar ~/Downloads/lombok.jar
 
 Note: This is still in development and subject to change.
 
-Essentially you need to run the following commands to import the test sets at the moment:
+- Make sure the empty database exists / create it.
+- Start the backend (all the tables will be created through migration scripts).
+- Run the following command to import the test sets:
 
 ```shell
-psql diwi < backend/src/main/resources/db/sql/diwi_baseline_20240117_114546.sql
 psql diwi < backend/src/main/resources/db/sql/vng_projects_testdata.sql
 ```
 
 Or in docker:
 
 ```shell
-docker compose exec -T database psql --user diwi diwi < backend/src/main/resources/db/sql/diwi_baseline_20240117_114546.sql
 docker compose exec -T database psql --user diwi diwi < backend/src/main/resources/db/sql/vng_projects_testdata.sql
 ```
 
