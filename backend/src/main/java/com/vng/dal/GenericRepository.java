@@ -13,6 +13,7 @@ public class GenericRepository implements AutoCloseable {
         List<Class<? extends Object>> entities =
             Arrays.asList(
                 Milestone.class,
+                MilestoneState.class,
                 Organization.class,
                 OrganizationState.class,
                 Project.class,
