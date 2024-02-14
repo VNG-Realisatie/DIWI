@@ -39,3 +39,5 @@ export const login = createPathObject(config.baseurl + "rest/auth/login");
 export const loggedIn = createPathObject(config.baseurl + "rest/auth/loggedIn");
 export const logout = createPathObject(config.baseurl + "rest/auth/logout");
 export const home = createPathObject(config.baseurl + "home");
+
+export const swagger = createPathObject(config.baseurl + "swagger");
