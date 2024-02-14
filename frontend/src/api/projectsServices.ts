@@ -1,13 +1,16 @@
 import { getJson } from "../utils/requests";
 import { API_URI } from "../utils/urls";
 
+export type ProjectLeader = string[];
+export type ProjectOwner = string[];
 export type Project = {
     projectId: string;
     projectStateId: string;
     projectName: string;
     projectColor: string;
     confidentialityLevel: string;
-    organizationName: string;
+    projectLeaders: ProjectLeader[];
+    projectOwners: ProjectOwner[];
     planType: string[];
     startDate: string;
     endDate: string;

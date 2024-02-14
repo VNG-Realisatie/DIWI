@@ -15,7 +15,7 @@ import {
 } from "@mui/x-data-grid";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
-import { Box, Button, Dialog, DialogActions, DialogTitle, Stack, Typography } from "@mui/material";
+import { Avatar, AvatarGroup, Box, Button, Dialog, DialogActions, DialogTitle, Stack, Typography } from "@mui/material";
 import useAlert from "../hooks/useAlert";
 import { Project, getProjects } from "../api/projectsServices";
 import { useTranslation } from "react-i18next";
@@ -27,6 +27,7 @@ import { BuurtCell } from "./table/BuurtCell";
 import { MunicipalityCell } from "./table/MunicipalityCell";
 import { confidentialityLevelOptions, planTypeOptions, projectPhaseOptions } from "./table/constants";
 import { filterTable } from "../api/projectsTableServices";
+import { stringAvatar } from "../utils/stringAvatar";
 
 interface RowData {
     id: number;
@@ -252,11 +253,20 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         },
 
         {
-            field: "organizationName",
+            field: "projectOwners",
             headerName: t("projects.tableColumns.organizationName"),
-            editable: true,
-            width: 120,
+            editable: false,
+            width: 160,
             filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
+            renderCell: (cellValues: GridRenderCellParams<Project>) => {
+                return (
+                    <AvatarGroup max={3}>
+                        {cellValues.row.projectOwners.map((owner) => {
+                            return <Avatar {...stringAvatar(`${owner[2]} ${owner[3]}`)} />;
+                        })}
+                    </AvatarGroup>
+                );
+            },
             preProcessEditCellProps: createErrorReport,
         },
         {
@@ -320,6 +330,23 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                         selectedMunicipalityRole={selectedMunicipalityRole}
                         handleMunicipalityRoleChange={handleMunicipalityRoleChange}
                     />
+                );
+            },
+            preProcessEditCellProps: createErrorReport,
+        },
+        {
+            field: "projectLeaders",
+            headerName: t("projects.tableColumns.projectLeader"),
+            editable: false,
+            width: 160,
+            filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
+            renderCell: (cellValues: GridRenderCellParams<Project>) => {
+                return (
+                    <AvatarGroup max={3}>
+                        {cellValues.row.projectLeaders.map((leader) => {
+                            return <Avatar {...stringAvatar(`${leader[2]} ${leader[3]}`)} />;
+                        })}
+                    </AvatarGroup>
                 );
             },
             preProcessEditCellProps: createErrorReport,
