@@ -73,7 +73,7 @@ const theme = createTheme(
             },
         },
     },
-    nlNL
+    nlNL,
 );
 
 const Providers = ({ children }: { children: React.ReactNode }) => {

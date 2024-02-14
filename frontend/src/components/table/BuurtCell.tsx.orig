@@ -3,7 +3,11 @@ import { Project } from "../../api/projectsServices";
 import { MultiSelect } from "./MultiSelect";
 import { OptionType, SelectedOptionWithId } from "../ProjectsTableView";
 import { useTranslation } from "react-i18next";
-import { ProductTableOption, getBuurtList } from "../../api/projectsTableServices";
+<<<<<<< HEAD
+import {  ProductTableOption, getBuurtList } from "../../api/projectsTableServices";
+=======
+import { ProductTableOption, getBuurtList } from "../../api/productTableServices";
+>>>>>>> origin/develop
 import { useEffect, useState } from "react";
 
 type Props = {

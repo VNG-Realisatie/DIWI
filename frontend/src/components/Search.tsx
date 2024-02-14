@@ -9,20 +9,14 @@ type SearchProps = {
     isDetailSearch?: boolean;
 };
 
-export default function Search({
-    searchList,
-    label,
-    isDetailSearch,
-}: SearchProps) {
+export default function Search({ searchList, label, isDetailSearch }: SearchProps) {
     return (
         <Stack spacing={2}>
             <Autocomplete
                 size="small"
                 options={searchList}
                 disableClearable={isDetailSearch}
-                renderInput={(params) => (
-                    <TextField {...params} label={label} />
-                )}
+                renderInput={(params) => <TextField {...params} label={label} />}
             />
         </Stack>
     );

@@ -1,4 +1,3 @@
-
 import { createContext, PropsWithChildren, useState } from "react";
 import { AlertColor } from "@mui/material";
 
@@ -13,7 +12,7 @@ const ALERT_TIME = 5000;
 const AlertContext = createContext<AlertContextType>({
     text: "",
     type: "success",
-    setAlert: (text: string, type: AlertColor) => { },
+    setAlert: (text: string, type: AlertColor) => {},
 });
 
 export const AlertProvider = ({ children }: PropsWithChildren) => {

@@ -18,6 +18,22 @@ export const Layout = () => {
         setOpen(false);
     };
 
+<<<<<<< HEAD
+  return (
+    <>
+      <Box >
+        <CssBaseline />
+        <Header open={open} handleDrawerOpen={handleDrawerOpen} />
+        <SideBar open={open} handleDrawerClose={handleDrawerClose}/>
+        <Box minHeight="90px"/>
+          <Box width="90%" m="auto">
+          <Outlet />
+          </Box>
+      </Box>
+      <Footer />
+    </>
+  );
+=======
     return (
         <>
             <Box>
@@ -25,11 +41,12 @@ export const Layout = () => {
                 <Header open={open} handleDrawerOpen={handleDrawerOpen} />
                 <SideBar open={open} handleDrawerClose={handleDrawerClose} />
                 <Box minHeight="90px" />
-                <Box width="90%" m="auto">
+                <Box width="65%" m="auto">
                     <Outlet />
                 </Box>
             </Box>
             <Footer />
         </>
     );
+>>>>>>> origin/develop
 };

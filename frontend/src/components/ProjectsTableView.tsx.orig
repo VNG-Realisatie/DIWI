@@ -45,6 +45,7 @@ export type SelectedOptionWithId = {
     option: OptionType[];
 };
 
+
 export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const location = useLocation();
     const navigate = useNavigate();
@@ -233,12 +234,10 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             width: 120,
             filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                return (
-                    <Stack direction="row" spacing={1} alignItems="center" onDoubleClick={() => navigate(`/projects/${cellValues.row.projectId}`)}>
+                return <Stack direction="row" spacing={1} alignItems="center" onDoubleClick={() => navigate(`/projects/${cellValues.row.projectId}`)}>
                         <Box width="15px" height="15px" borderRadius="50%" sx={{ background: cellValues.row.projectColor }} />
                         <Typography fontSize={14}>{cellValues.row.projectName}</Typography>
                     </Stack>
-                );
             },
             preProcessEditCellProps: createErrorReport,
         },
@@ -262,8 +261,8 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         {
             field: "confidentialityLevel",
             headerName: t("projects.tableColumns.confidentialityLevel"),
-            valueOptions: confidentialityLevelOptions.map((c) => {
-                return { value: c.id, label: t(`projectTable.confidentialityLevelOptions.${c.name}`) };
+            valueOptions: confidentialityLevelOptions.map(c=>{
+                return {value:c.id,label:t(`projectTable.confidentialityLevelOptions.${c.name}`)}
             }),
             type: "singleSelect",
             editable: true,
@@ -297,7 +296,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             valueOptions: planTypeOptions.map((pt) => pt.id),
             type: "singleSelect",
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                return <PlanTypeCell cellValues={cellValues} selectedPlanTypes={selectedPlanTypes} handlePlanTypeChange={handlePlanTypeChange} />;
+                return <PlanTypeCell cellValues={cellValues} selectedPlanTypes={selectedPlanTypes} handlePlanTypeChange={handlePlanTypeChange} />
             },
             filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
             preProcessEditCellProps: createErrorReport,
@@ -314,21 +313,20 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             editable: true,
             width: 320,
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                return (
-                    <MunicipalityRoleCell
+                return  <MunicipalityRoleCell
                         cellValues={cellValues}
                         selectedMunicipalityRole={selectedMunicipalityRole}
                         handleMunicipalityRoleChange={handleMunicipalityRoleChange}
                     />
-                );
+
             },
             preProcessEditCellProps: createErrorReport,
         },
         {
             field: "projectPhase",
             headerName: t("projects.tableColumns.projectPhase"),
-            valueOptions: projectPhaseOptions.map((c) => {
-                return { value: c.id, label: t(`projectTable.projectPhaseOptions.${c.name}`) };
+            valueOptions: projectPhaseOptions.map(c=>{
+                return {value:c.id,label:t(`projectTable.projectPhaseOptions.${c.name}`)}
             }),
             type: "singleSelect",
             editable: true,
@@ -344,7 +342,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             align: "center",
             preProcessEditCellProps: createErrorReport,
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                return <PlanningPlanStatusCell cellValues={cellValues} selectedPlanStatus={selectedPlanStatus} handleStatusChange={handleStatusChange} />;
+                return <PlanningPlanStatusCell cellValues={cellValues} selectedPlanStatus={selectedPlanStatus} handleStatusChange={handleStatusChange} />
             },
         },
         {
@@ -353,9 +351,21 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             editable: true,
             width: 320,
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                return (
-                    <MunicipalityCell cellValues={cellValues} selectedMunicipality={selectedMunicipality} handleMunicipalityChange={handleMunicipalityChange} />
-                );
+<<<<<<< HEAD
+                return <MunicipalityCell
+                        cellValues={cellValues}
+                        selectedMunicipality={selectedMunicipality}
+                        handleMunicipalityChange={handleMunicipalityChange}
+                    />
+=======
+                return [
+                    <MunicipalityCell
+                        cellValues={cellValues}
+                        selectedMunicipality={selectedMunicipality}
+                        handleMunicipalityChange={handleMunicipalityChange}
+                    />,
+                ];
+>>>>>>> origin/develop
             },
             preProcessEditCellProps: createErrorReport,
         },
@@ -365,7 +375,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             editable: true,
             width: 320,
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                return <WijkCell cellValues={cellValues} selectedWijk={selectedWijk} handleWijkChange={handleWijkChange} />;
+                return <WijkCell cellValues={cellValues} selectedWijk={selectedWijk} handleWijkChange={handleWijkChange} />
             },
             preProcessEditCellProps: createErrorReport,
         },
@@ -375,13 +385,14 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             editable: true,
             width: 320,
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                return <BuurtCell cellValues={cellValues} selectedBuurt={selectedBuurt} handleBuurtChange={handleBuurtChange} />;
+                return <BuurtCell cellValues={cellValues} selectedBuurt={selectedBuurt} handleBuurtChange={handleBuurtChange} />
             },
             preProcessEditCellProps: createErrorReport,
         },
     ];
 
     const handleFilterModelChange = (newModel: GridFilterModel, details: GridCallbackDetails) => {
+
         if (details.reason === "deleteFilterItem") {
             setFilterModel(undefined);
         }
@@ -392,14 +403,14 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     };
     interface CustomToolbarProps {
         setFilterButtonEl: React.Dispatch<React.SetStateAction<HTMLButtonElement | null>>;
-    }
+      }
     function CustomToolbar({ setFilterButtonEl }: CustomToolbarProps) {
         return (
-            <GridToolbarContainer>
-                <GridToolbarFilterButton ref={setFilterButtonEl} />
-            </GridToolbarContainer>
+          <GridToolbarContainer>
+            <GridToolbarFilterButton ref={setFilterButtonEl} />
+          </GridToolbarContainer>
         );
-    }
+      }
     return (
         <Stack
             width="100%"
@@ -415,7 +426,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 rowHeight={70}
                 slots={{
                     toolbar: CustomToolbar,
-                }}
+                  }}
                 initialState={{
                     pagination: {
                         paginationModel: { page: 0, pageSize: 10 },

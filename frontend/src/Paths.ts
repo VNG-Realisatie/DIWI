@@ -19,7 +19,7 @@ export const root = createPathObject(config.baseurl);
 export const projects = createPathObject(config.baseurl + "projects");
 export const projectsTable = createPathObject(config.baseurl + "projects/table");
 export const projectAdd = createPathObject(config.baseurl + "project/create");
-export const projectDetail= createPathObject(config.baseurl + "projects/:id");
+export const projectDetail = createPathObject(config.baseurl + "projects/:id");
 export const projectDetailCharacteristics = createPathObject(config.baseurl + "projects/:id/characteristics");
 export const projectDetailTimeline = createPathObject(config.baseurl + "projects/:id/timeline");
 
@@ -34,8 +34,6 @@ export const importExcel = createPathObject(config.baseurl + "exchangedata/impor
 export const importSquit = createPathObject(config.baseurl + "exchangedata/importsquit");
 export const importExcelProjects = createPathObject(config.baseurl + "exchangedata/importexcel/projects");
 export const importSquitProjects = createPathObject(config.baseurl + "exchangedata/importsquit/projects");
-
-
 
 export const login = createPathObject(config.baseurl + "rest/auth/login");
 export const loggedIn = createPathObject(config.baseurl + "rest/auth/loggedIn");
