@@ -31,7 +31,7 @@
     "react-router-dom": "^6.15.0",
     "react-scripts": "5.0.1",
     "sass": "^1.65.1",
-    "swagger-ui-react": "^5.11.4",
+    "swagger-ui-react": "^4.12.0",
     "typescript": "^4.4.2",
     "web-vitals": "^2.1.0"
   },
@@ -76,7 +76,8 @@
   },
   "jest": {
     "transformIgnorePatterns": [
-      "/node_modules/(?!(@react-leaflet|react-leaflet|leaflet|leaflet-draw)/)"
+      "/node_modules/(?!(@react-leaflet|react-leaflet|leaflet|leaflet-draw)/)",
+      "/node_modules/(?!(swagger-ui-react|swagger-client|react-syntax-highlighter)/)"
     ]
   }
 }
