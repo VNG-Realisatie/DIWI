@@ -27,8 +27,8 @@ frontend:
     when: always
     reports:
       junit:
-       - frontend/junit.xml
-       - frontend/eslint.xml
+        - frontend/junit.xml
+        - frontend/eslint.xml
 
 backend:
   image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/maven:3.9-eclipse-temurin-17
@@ -36,11 +36,10 @@ backend:
   services:
     - name: postgres:14
   variables:
-    POSTGRES_USER: vng
-    POSTGRES_PASSWORD: vng
-    hibernate_connection_url: jdbc:postgresql://postgres:5432/impact-tool
-    hibernate_connection_username: impact-tool
-    hibernate_connection_password: impact-tool
+    POSTGRES_DB: diwi_test
+    POSTGRES_USER: diwi
+    POSTGRES_PASSWORD: diwi
+    DIWI_DB_HOST: postgres
   script:
     - cd backend
     - mvn $MAVEN_CLI_OPTS package

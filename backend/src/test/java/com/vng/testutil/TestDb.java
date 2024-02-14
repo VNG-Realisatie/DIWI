@@ -18,21 +18,18 @@ public class TestDb implements AutoCloseable {
     private DalFactory dalFactory;
     private Map<String, String> env;
 
-    private String jdbcUrl;
-    private String username;
-    private String password;
+    private ProjectConfig projectConfig;
+
 
     public TestDb() throws Exception {
         env = new HashMap<>(System.getenv());
-        env.putIfAbsent("hibernate_connection_url", "jdbc:postgresql://localhost:5432/vng_test");
-        env.putIfAbsent("hibernate_connection_password", "postgres");
-        env.putIfAbsent("hibernate_connection_username", "postgres");
+        env.putIfAbsent("DIWI_DB_HOST", "localhost");
+        env.putIfAbsent("DIWI_DB_NAME", "diwi_test");
+        env.putIfAbsent("DIWI_DB_USERNAME", "diwi");
+        env.putIfAbsent("DIWI_DB_PASSWORD", "diwi");
 
-        jdbcUrl = env.get("hibernate_connection_url");
-        username = env.get("hibernate_connection_username");
-        password = env.get("hibernate_connection_password");
-
-        dalFactory = new DalFactory(new ProjectConfig(env), GenericRepository.getEntities());
+        this.projectConfig = new ProjectConfig(env);
+        dalFactory = new DalFactory(projectConfig, GenericRepository.getEntities());
 
         reset();
     }
@@ -51,18 +48,19 @@ public class TestDb implements AutoCloseable {
                 Dal dal = dalFactory.constructDal();
                 Session session = dal.getSession();) {
             try (var transaction = dal.beginTransaction();) {
-                session.createNativeQuery("DROP SCHEMA IF EXISTS \"public\" CASCADE").executeUpdate();
+                session.createNativeMutationQuery("DROP SCHEMA IF EXISTS \"public\" CASCADE").executeUpdate();
+                session.createNativeMutationQuery("DROP SCHEMA IF EXISTS \"diwi_testset\" CASCADE").executeUpdate();
                 transaction.commit();
             }
             try (var transaction = dal.beginTransaction();) {
-                session.createNativeQuery("CREATE SCHEMA \"public\"").executeUpdate();
+                session.createNativeMutationQuery("CREATE SCHEMA \"public\"").executeUpdate();
                 transaction.commit();
             }
         }
         dalFactory.close();
 
         dalFactory = new DalFactory(new ProjectConfig(env), GenericRepository.getEntities());
-        Database.upgrade(getJdbcUrl(), getUsername(), getPassword(), version);
+        Database.upgrade(projectConfig.getDbUrl(), projectConfig.getDbUser(), projectConfig.getDbPass(), version);
     }
 
     public DalFactory getDalFactory() {
@@ -70,19 +68,7 @@ public class TestDb implements AutoCloseable {
     }
 
     public Connection getJdbcConnection() throws SQLException {
-        return DriverManager.getConnection(getJdbcUrl(), getUsername(), getPassword());
-    }
-
-    public String getJdbcUrl() {
-        return jdbcUrl;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
+        return DriverManager.getConnection(projectConfig.getDbUrl(), projectConfig.getDbUser(), projectConfig.getDbPass());
     }
 
 }

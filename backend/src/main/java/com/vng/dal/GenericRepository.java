@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.vng.dal.entities.*;
+import com.vng.models.ProjectListModel;
 
 public class GenericRepository implements AutoCloseable {
 
@@ -31,7 +32,8 @@ public class GenericRepository implements AutoCloseable {
                 ProjectPrioriseringValue.class,
                 ProjectPrioriseringValueState.class,
                 ProjectState.class,
-                User.class);
+                User.class,
+                ProjectListModel.class);
         return entities;
     }
 

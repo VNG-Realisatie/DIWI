@@ -20,7 +20,6 @@ public class VngRepository extends AbstractRepository {
         Query q = session.createNativeQuery("""
                 SELECT * FROM get_active_and_future_projects_list(:now, :offset, :limit, :sortColumn, :sortDirection,
                     :filterColumn, CAST(:filterValue AS text[]), :filterCondition) """ , ProjectListModel.class)
-            .setTupleTransformer(new BeanTransformer<>(ProjectListModel.class))
             .setParameter("now", LocalDate.now())
             .setParameter("offset", filtering.getFirstResultIndex())
             .setParameter("limit", filtering.getPageSize())

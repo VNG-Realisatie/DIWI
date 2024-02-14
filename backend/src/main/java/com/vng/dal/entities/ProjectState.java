@@ -22,10 +22,6 @@ public class ProjectState extends MilestoneChangeDataSuperclass {
     @JoinColumn(name = "project_id")
     private Project project;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_organization_id")
-    private Organization ownerOrganization;
-
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "confidentiality_level")
     @JdbcType(PostgreSQLEnumJdbcType.class)

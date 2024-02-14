@@ -12,6 +12,9 @@ INSERT INTO diwi_testset.organization (id) VALUES ('018d1d8f-4bcb-7b31-a392-25b5
 --
 
 INSERT INTO diwi_testset."user" (id) VALUES ('2122426c-6e70-419c-a054-f51dd24d798b');
+INSERT INTO diwi_testset."user" (id) VALUES ('72efb41f-e4ac-439d-8c95-c498cef4af40');
+INSERT INTO diwi_testset."user" (id) VALUES ('f0ee8f85-78a5-47a1-8eba-8a06a93f1eee');
+INSERT INTO diwi_testset."user" (id) VALUES ('9caa1a9f-dd1f-4937-8d49-880894282cc2');
 
 
 --
@@ -96,6 +99,18 @@ INSERT INTO diwi_testset.milestone_state (id, milestone_id, date, change_user_id
 
 INSERT INTO diwi_testset.organization_state (id, organization_id, parent_organization_id, naam, change_end_date, change_start_date, change_user_id) VALUES ('4872eac4-9911-47ef-b4d6-62e4e9223926', '018d1d85-639f-701c-b73f-0f35f98409bc', NULL, 'Org1', NULL, '2024-01-10 20:06:32+02', '2122426c-6e70-419c-a054-f51dd24d798b');
 
+
+--
+-- Data for Name: organization_to_project; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
+--
+
+INSERT INTO diwi_testset.organization_to_project (id, organization_id, project_id, project_rol, change_end_date, change_start_date, change_user_id) VALUES ('2cc51a2e-26c7-4915-9014-c281751bda7f', 'a0fd243b-667b-428e-a3f1-bb0fcee141d9', '466da5e2-c96f-4856-aa17-6b37a1c21edc', 'OWNER', NULL, '2024-01-01 20:06:32+02', '2122426c-6e70-419c-a054-f51dd24d798b');
+INSERT INTO diwi_testset.organization_to_project (id, organization_id, project_id, project_rol, change_end_date, change_start_date, change_user_id) VALUES ('ab0f94f4-76de-4bbe-966d-db6ecfafddc0', '018d1d85-639f-701c-b73f-0f35f98409bc', '466da5e2-c96f-4856-aa17-6b37a1c21edc', 'OWNER', NULL, '2024-01-01 20:06:32+02', '2122426c-6e70-419c-a054-f51dd24d798b');
+INSERT INTO diwi_testset.organization_to_project (id, organization_id, project_id, project_rol, change_end_date, change_start_date, change_user_id) VALUES ('fb7dbed2-d535-4410-86d5-1466a295786e', '018d1d85-639f-701c-b73f-0f35f98409bc', '54a0c192-3454-4f7a-becd-96d214461987', 'OWNER', NULL, '2024-01-01 20:06:32+02', '2122426c-6e70-419c-a054-f51dd24d798b');
+INSERT INTO diwi_testset.organization_to_project (id, organization_id, project_id, project_rol, change_end_date, change_start_date, change_user_id) VALUES ('874c8757-fe87-4891-bbd6-ff5a162c96dc', 'a0fd243b-667b-428e-a3f1-bb0fcee141d9', '5c9fbb50-d8fd-480d-9e38-7f3b391d3110', 'OWNER', NULL, '2024-01-01 20:06:32+02', '2122426c-6e70-419c-a054-f51dd24d798b');
+INSERT INTO diwi_testset.organization_to_project (id, organization_id, project_id, project_rol, change_end_date, change_start_date, change_user_id) VALUES ('0cd0aa8a-7290-4a7b-9b3e-2b2a34758bf1', 'a0fd243b-667b-428e-a3f1-bb0fcee141d9', '5c9fbb50-d8fd-480d-9e38-7f3b391d3110', 'PROJECT_LEIDER', NULL, '2024-01-01 20:06:32+02', '2122426c-6e70-419c-a054-f51dd24d798b');
+INSERT INTO diwi_testset.organization_to_project (id, organization_id, project_id, project_rol, change_end_date, change_start_date, change_user_id) VALUES ('f401be60-09d2-4dfa-b38d-d0468016c1d9', 'a0fd243b-667b-428e-a3f1-bb0fcee141d9', '54a0c192-3454-4f7a-becd-96d214461987', 'PROJECT_LEIDER', NULL, '2024-01-01 20:06:32+02', '2122426c-6e70-419c-a054-f51dd24d798b');
+INSERT INTO diwi_testset.organization_to_project (id, organization_id, project_id, project_rol, change_end_date, change_start_date, change_user_id) VALUES ('37dcb6db-24df-4368-8941-0319c174a239', '018d1d85-639f-701c-b73f-0f35f98409bc', '466da5e2-c96f-4856-aa17-6b37a1c21edc', 'PROJECT_LEIDER', NULL, '2024-01-01 20:06:32+02', '2122426c-6e70-419c-a054-f51dd24d798b');
 
 --
 -- Data for Name: project_duration_changelog; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
@@ -240,10 +255,29 @@ INSERT INTO diwi_testset.project_priorisering_value_state (id, value_label, ordi
 -- Data for Name: project_state; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
 --
 
-INSERT INTO diwi_testset.project_state (id, project_id, owner_organization_id, change_user_id, change_start_date, change_end_date, confidentiality_level, project_colour) VALUES ('e8a7bf18-3bf0-4917-afe2-49523f262cf5', '466da5e2-c96f-4856-aa17-6b37a1c21edc', '018d1d85-639f-701c-b73f-0f35f98409bc', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', '2024-01-07 20:06:32.023052+02', 'EXTERN_RAPPORTAGE', '#334455');
-INSERT INTO diwi_testset.project_state (id, project_id, owner_organization_id, change_user_id, change_start_date, change_end_date, confidentiality_level, project_colour) VALUES ('d91019f7-f859-4469-b0be-f2515dbee563', '466da5e2-c96f-4856-aa17-6b37a1c21edc', '018d1d85-639f-701c-b73f-0f35f98409bc', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-07 20:06:32.023052+02', NULL, 'OPENBAAR', '#334455');
-INSERT INTO diwi_testset.project_state (id, project_id, owner_organization_id, change_user_id, change_start_date, change_end_date, confidentiality_level, project_colour) VALUES ('c62e372c-e563-4a72-8f03-1132082577b9', '54a0c192-3454-4f7a-becd-96d214461987', '018d1d85-639f-701c-b73f-0f35f98409bc', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL, 'EXTERN_RAPPORTAGE', '#123123');
-INSERT INTO diwi_testset.project_state (id, project_id, owner_organization_id, change_user_id, change_start_date, change_end_date, confidentiality_level, project_colour) VALUES ('e74d8d9b-bff6-4008-83ef-8b95e822bf83', '5c9fbb50-d8fd-480d-9e38-7f3b391d3110', '018d1d85-639f-701c-b73f-0f35f98409bc', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL, 'EXTERN_RAPPORTAGE', '#456456');
+INSERT INTO diwi_testset.project_state (id, project_id, change_user_id, change_start_date, change_end_date, confidentiality_level, project_colour) VALUES ('e8a7bf18-3bf0-4917-afe2-49523f262cf5', '466da5e2-c96f-4856-aa17-6b37a1c21edc', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', '2024-01-07 20:06:32.023052+02', 'EXTERN_RAPPORTAGE', '#334455');
+INSERT INTO diwi_testset.project_state (id, project_id, change_user_id, change_start_date, change_end_date, confidentiality_level, project_colour) VALUES ('d91019f7-f859-4469-b0be-f2515dbee563', '466da5e2-c96f-4856-aa17-6b37a1c21edc', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-07 20:06:32.023052+02', NULL, 'OPENBAAR', '#334455');
+INSERT INTO diwi_testset.project_state (id, project_id, change_user_id, change_start_date, change_end_date, confidentiality_level, project_colour) VALUES ('c62e372c-e563-4a72-8f03-1132082577b9', '54a0c192-3454-4f7a-becd-96d214461987', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL, 'EXTERN_RAPPORTAGE', '#123123');
+INSERT INTO diwi_testset.project_state (id, project_id, change_user_id, change_start_date, change_end_date, confidentiality_level, project_colour) VALUES ('e74d8d9b-bff6-4008-83ef-8b95e822bf83', '5c9fbb50-d8fd-480d-9e38-7f3b391d3110', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL, 'EXTERN_RAPPORTAGE', '#456456');
+
+
+--
+-- Data for Name: user_state; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
+--
+
+INSERT INTO diwi_testset.user_state (id, user_id, change_user_id, change_start_date, change_end_date, identity_provider_id, last_name, first_name) VALUES ('31c34ed2-8750-4fdd-9d17-f7a8a0109535', 'f0ee8f85-78a5-47a1-8eba-8a06a93f1eee', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-01 20:06:32+02', NULL, 'ID2', 'White', 'Laura');
+INSERT INTO diwi_testset.user_state (id, user_id, change_user_id, change_start_date, change_end_date, identity_provider_id, last_name, first_name) VALUES ('b0d57e9a-54b3-4b47-8b66-79c760483083', '9caa1a9f-dd1f-4937-8d49-880894282cc2', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-01 20:06:32+02', NULL, 'ID3', 'Red', 'Mary');
+INSERT INTO diwi_testset.user_state (id, user_id, change_user_id, change_start_date, change_end_date, identity_provider_id, last_name, first_name) VALUES ('4ec6731b-1dbd-479c-954c-bf10d20871e2', '72efb41f-e4ac-439d-8c95-c498cef4af40', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-01 20:06:32+02', NULL, 'ID1', 'Storm', 'Charlie');
+
+
+--
+-- Data for Name: user_to_organization; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
+--
+
+INSERT INTO diwi_testset.user_to_organization (id, user_id, organization_id, change_user_id, change_start_date, change_end_date) VALUES ('1a18eee3-821e-4942-a7a9-3e6bbda1739a', '72efb41f-e4ac-439d-8c95-c498cef4af40', '018d1d85-639f-701c-b73f-0f35f98409bc', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-01 20:06:32+02', NULL);
+INSERT INTO diwi_testset.user_to_organization (id, user_id, organization_id, change_user_id, change_start_date, change_end_date) VALUES ('523f040f-76a5-454b-aafc-58a50f523728', 'f0ee8f85-78a5-47a1-8eba-8a06a93f1eee', '018d1d85-639f-701c-b73f-0f35f98409bc', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-01 20:06:32+02', NULL);
+INSERT INTO diwi_testset.user_to_organization (id, user_id, organization_id, change_user_id, change_start_date, change_end_date) VALUES ('82feaa13-97aa-4982-8463-b9ed3c2ed9de', 'f0ee8f85-78a5-47a1-8eba-8a06a93f1eee', 'a0fd243b-667b-428e-a3f1-bb0fcee141d9', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-01 20:06:32+02', NULL);
+INSERT INTO diwi_testset.user_to_organization (id, user_id, organization_id, change_user_id, change_start_date, change_end_date) VALUES ('2f3aa610-5390-484b-868f-6514e56dff73', '9caa1a9f-dd1f-4937-8d49-880894282cc2', 'a0fd243b-667b-428e-a3f1-bb0fcee141d9', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-01 20:06:32+02', NULL);
 
 
 --
