@@ -4,7 +4,6 @@ import com.vng.dal.entities.enums.Confidentiality;
 import io.hypersistence.utils.hibernate.type.array.StringArrayType;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
