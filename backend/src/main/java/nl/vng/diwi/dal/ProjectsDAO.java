@@ -1,6 +1,5 @@
 package nl.vng.diwi.dal;
 
-import jakarta.persistence.Query;
 import nl.vng.diwi.dal.entities.ProjectState;
 import nl.vng.diwi.models.ProjectListModel;
 import org.hibernate.Session;
@@ -17,7 +16,7 @@ public class ProjectsDAO extends AbstractRepository {
     }
 
     public List<ProjectListModel> getProjectsTable(FilterPaginationSorting filtering) {
-        Query q = session.createNativeQuery("""
+        SelectionQuery<ProjectListModel> q = session.createNativeQuery("""
                 SELECT * FROM get_active_and_future_projects_list(:now, :offset, :limit, :sortColumn, :sortDirection,
                     :filterColumn, CAST(:filterValue AS text[]), :filterCondition) """ , ProjectListModel.class)
             .setParameter("now", LocalDate.now())

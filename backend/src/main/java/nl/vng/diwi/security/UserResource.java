@@ -198,7 +198,7 @@ public class UserResource {
         }
 
         try (AutoCloseTransaction transaction = securityRepository.beginTransaction()) {
-            securityRepository.saveOrUpdate(siteUser);
+            securityRepository.persist(siteUser);
             transaction.commit();
             logger.info("User updated: {}", siteUser.getEmail());
         } catch (Exception ex) {
@@ -231,7 +231,6 @@ public class UserResource {
         }
 
         try (AutoCloseTransaction transaction = securityRepository.beginTransaction()) {
-            securityRepository.saveOrUpdate(user);
             securityRepository.delete(user);
             transaction.commit();
             logger.info("User deleted: {}", user.getEmail());

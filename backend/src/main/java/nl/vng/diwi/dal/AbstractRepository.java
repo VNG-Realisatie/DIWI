@@ -34,26 +34,19 @@ public abstract class AbstractRepository {
         session.flush();
     }
 
-    public <T> void saveOrUpdate(T entity) {
-        session.saveOrUpdate(entity);
-    }
-
     public <T> List<T> findAll(Class<T> clazz) {
-        List<T> entities = session.createQuery("FROM " + clazz.getName(), clazz).getResultList();
-        return entities;
+        return session.createQuery("FROM " + clazz.getName(), clazz).getResultList();
     }
 
     public <T> T findById(Class<T> clazz, Serializable id) {
-        T result = (T) session.get(clazz, id);
-        return result;
+        return (T) session.get(clazz, id);
     }
 
     public <T> T getReferenceById(Class<T> clazz, Serializable id) {
         if (id == null) {
             return null;
         }
-        T result = (T) session.getReference(clazz, id);
-        return result;
+        return (T) session.getReference(clazz, id);
     }
 
     public String fromJavaListToSqlArrayLiteral(List<String> javaList) {

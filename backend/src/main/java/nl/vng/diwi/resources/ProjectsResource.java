@@ -74,7 +74,7 @@ public class ProjectsResource {
     @Path("/{id}/update")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response updateProject(@PathParam("id") UUID projectUuid, ProjectUpdateModel projectUpdateModel)
+    public Response updateProject(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid, ProjectUpdateModel projectUpdateModel)
         throws VngNotFoundException, VngBadRequestException {
 
         Project project = repo.findById(Project.class, projectUuid);
@@ -88,10 +88,10 @@ public class ProjectsResource {
         }
 
         switch (projectUpdateModel.getProperty()) {
-            case projectColor -> projectService.updateProjectColor(repo, projectUuid, projectUpdateModel.getValue());
+            case projectColor -> projectService.updateProjectColor(repo, projectUuid, projectUpdateModel.getValue(), loggedUser.getUuid());
             case confidentialityLevel -> {
                 Confidentiality newConfidentiality = Confidentiality.valueOf(projectUpdateModel.getValue());
-                projectService.updateProjectConfidentialityLevel(repo, projectUuid, newConfidentiality);
+                projectService.updateProjectConfidentialityLevel(repo, projectUuid, newConfidentiality, loggedUser.getUuid());
             }
         }
 
