@@ -2,11 +2,15 @@ INSERT INTO diwi_testset."user" (id) VALUES ('2122426c-6e70-419c-a054-f51dd24d79
 
 INSERT INTO diwi_testset.organization (id) VALUES ('018d1d85-639f-701c-b73f-0f35f98409bc');
 
-INSERT INTO diwi_testset.milestone (id) VALUES ('292414eb-4a4e-405c-954b-e01bb355bc9b');
-INSERT INTO diwi_testset.milestone (id) VALUES ('07f3a0ad-f76a-4dd9-b4c6-6eb8113968e0');
-INSERT INTO diwi_testset.milestone (id) VALUES ('ee3cbe15-7a5d-42c6-a807-0a7593a24d4f');
-INSERT INTO diwi_testset.milestone (id) VALUES ('342887ab-2106-45c4-9565-a4b83f4d3362');
-INSERT INTO diwi_testset.milestone (id) VALUES ('7c6bfe67-6618-4a6a-9507-2cd15f88c11f');
+INSERT INTO diwi_testset.project (id) VALUES ('466da5e2-c96f-4856-aa17-6b37a1c21edc');
+INSERT INTO diwi_testset.project (id) VALUES ('54a0c192-3454-4f7a-becd-96d214461987');
+INSERT INTO diwi_testset.project (id) VALUES ('5c9fbb50-d8fd-480d-9e38-7f3b391d3110');
+
+INSERT INTO diwi_testset.milestone (id, project_id) VALUES ('292414eb-4a4e-405c-954b-e01bb355bc9b', '466da5e2-c96f-4856-aa17-6b37a1c21edc');
+INSERT INTO diwi_testset.milestone (id, project_id) VALUES ('07f3a0ad-f76a-4dd9-b4c6-6eb8113968e0', '466da5e2-c96f-4856-aa17-6b37a1c21edc');
+INSERT INTO diwi_testset.milestone (id, project_id) VALUES ('ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '54a0c192-3454-4f7a-becd-96d214461987');
+INSERT INTO diwi_testset.milestone (id, project_id) VALUES ('342887ab-2106-45c4-9565-a4b83f4d3362', '5c9fbb50-d8fd-480d-9e38-7f3b391d3110');
+INSERT INTO diwi_testset.milestone (id, project_id) VALUES ('7c6bfe67-6618-4a6a-9507-2cd15f88c11f', '5c9fbb50-d8fd-480d-9e38-7f3b391d3110');
 
 INSERT INTO diwi_testset.milestone_state (id, milestone_id, date, change_user_id, change_start_date, change_end_date, status, omschrijving)
     VALUES ('fad2d7e7-4d17-4216-b063-f028b49d81a2', '292414eb-4a4e-405c-954b-e01bb355bc9b', NOW() + interval '10 day', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-01 20:06:32+02', '2024-01-15 20:06:32+02', 'GEPLAND', 'M1');
@@ -20,10 +24,6 @@ INSERT INTO diwi_testset.milestone_state (id, milestone_id, date, change_user_id
     VALUES ('50164197-792e-41b8-928d-aaaa54ae2cf4', '342887ab-2106-45c4-9565-a4b83f4d3362', NOW() + interval '15 days', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL, 'GEPLAND', 'M4');
 INSERT INTO diwi_testset.milestone_state (id, milestone_id, date, change_user_id, change_start_date, change_end_date, status, omschrijving)
     VALUES ('dc7fa3d7-1be8-4917-8fe9-c99136a14420', '7c6bfe67-6618-4a6a-9507-2cd15f88c11f', NOW() + interval '20 days', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL, 'GEPLAND', 'M5');
-
-INSERT INTO diwi_testset.project (id) VALUES ('466da5e2-c96f-4856-aa17-6b37a1c21edc');
-INSERT INTO diwi_testset.project (id) VALUES ('54a0c192-3454-4f7a-becd-96d214461987');
-INSERT INTO diwi_testset.project (id) VALUES ('5c9fbb50-d8fd-480d-9e38-7f3b391d3110');
 
 INSERT INTO diwi_testset.project_state (id, project_id, change_user_id, change_start_date, change_end_date, confidentiality_level, project_colour)
     VALUES ('d91019f7-f859-4469-b0be-f2515dbee563', '466da5e2-c96f-4856-aa17-6b37a1c21edc', '2122426c-6e70-419c-a054-f51dd24d798b', NOW() - interval '10 days', NULL, 'OPENBAAR', '#334455');

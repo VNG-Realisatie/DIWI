@@ -16,14 +16,14 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class VngRepositoryTest {
+public class ProjectsDAOTest {
 
     private static DalFactory dalFactory;
     private static TestDb testDb;
     private Dal dal;
     private VngRepository repo;
 
-    private static final String PROJECT_TABLE_SCRIPT_PATH = "nl/vng/diwi/VngRepositoryTest/getProjectsTable.sql";
+    private static final String PROJECT_TABLE_SCRIPT_PATH = "nl/vng/diwi/ProjectsDAOTest/getProjectsTable.sql";
     private static final DateTimeFormatter DAY_MONTH_YEAR_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
     @BeforeAll
@@ -61,7 +61,7 @@ public class VngRepositoryTest {
         // There is 1 future project => M3 and M5
 
         try (var transaction = dal.beginTransaction()) {
-            Path scriptPath = Path.of(VngRepositoryTest.class.getClassLoader().getResource(PROJECT_TABLE_SCRIPT_PATH).getPath());
+            Path scriptPath = Path.of(ProjectsDAOTest.class.getClassLoader().getResource(PROJECT_TABLE_SCRIPT_PATH).getPath());
             String scriptSql = Files.readString(scriptPath);
 
             dal.getSession().createNativeMutationQuery(scriptSql).executeUpdate();
