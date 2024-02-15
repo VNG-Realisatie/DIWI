@@ -4,14 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import nl.vng.diwi.dal.entities.Project;
-import nl.vng.diwi.dal.entities.ProjectDurationChangelog;
-import nl.vng.diwi.dal.entities.ProjectFaseChangelog;
-import nl.vng.diwi.dal.entities.ProjectNameChangelog;
-import nl.vng.diwi.dal.entities.ProjectPlanTypeChangelog;
-import nl.vng.diwi.dal.entities.ProjectPlanologischePlanstatusChangelog;
-import nl.vng.diwi.dal.entities.ProjectPrioriseringChangelog;
-import nl.vng.diwi.dal.entities.ProjectState;
+import nl.vng.diwi.dal.entities.*;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;

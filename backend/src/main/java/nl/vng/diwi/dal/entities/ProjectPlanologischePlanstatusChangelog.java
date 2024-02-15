@@ -1,15 +1,16 @@
 package nl.vng.diwi.dal.entities;
 
+import java.util.List;
+
+import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import nl.vng.diwi.dal.GenericRepository;
-
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "project_planologische_planstatus_changelog", schema = GenericRepository.VNG_SCHEMA_NAME)

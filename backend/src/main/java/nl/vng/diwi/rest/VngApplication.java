@@ -24,8 +24,8 @@ import org.pac4j.oidc.config.KeycloakOidcConfiguration;
 
 import nl.vng.diwi.rest.pac4j.CallbackFilter;
 import nl.vng.diwi.rest.pac4j.Constants;
-import nl.vng.diwi.rest.pac4j.ProfileManagerFactoryImplementation;
 import nl.vng.diwi.rest.pac4j.HttpActionAdapterImplementation;
+import nl.vng.diwi.rest.pac4j.ProfileManagerFactoryImplementation;
 import nl.vng.diwi.rest.pac4j.SecurityFilter;
 import nl.vng.diwi.rest.pac4j.SessionStoreFactoryImplementation;
 
@@ -96,7 +96,6 @@ public class VngApplication extends ResourceConfig {
         register(VngResource.class);
         register(AuthResource.class);
         register(UserResource.class);
-        register(ProjectResource.class);
         register(ProjectsResource.class);
         register(MilestoneResource.class);
         register(MunicipalityResource.class);

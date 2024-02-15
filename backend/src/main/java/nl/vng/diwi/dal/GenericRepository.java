@@ -9,6 +9,7 @@ import nl.vng.diwi.models.ProjectListModel;
 public class GenericRepository implements AutoCloseable {
 
     public static final String VNG_SCHEMA_NAME = "diwi_testset";
+    public static final String CURRENT_DATA_FILTER = "current";
 
     public static List<Class<? extends Object>> getEntities() {
         List<Class<? extends Object>> entities =

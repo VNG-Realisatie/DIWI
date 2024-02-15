@@ -1,6 +1,7 @@
 package nl.vng.diwi.dal.entities.superclasses;
 
 import nl.vng.diwi.dal.entities.Milestone;
+
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
