@@ -424,7 +424,8 @@ CREATE TABLE diwi_testset.maatwerk_ordinaal_waarde_state (
 -- Name: milestone; Type: TABLE; Schema: diwi_testset; Owner: vng
 --
 CREATE TABLE diwi_testset.milestone (
-    "id" UUID NOT NULL
+    "id" UUID NOT NULL,
+    "project_id" UUID NOT NULL
 );
 
 --
@@ -2295,6 +2296,12 @@ ALTER TABLE ONLY diwi_testset.gemeente_state
 --
 ALTER TABLE ONLY diwi_testset.gemeente_state
     ADD CONSTRAINT fk_gemeente_state__gemeente FOREIGN KEY ("gemeente_id") REFERENCES diwi_testset.gemeente("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+--
+-- Name: milestone fk_milestone__project; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
+--
+ALTER TABLE ONLY diwi_testset.milestone
+    ADD CONSTRAINT fk_milestone__project FOREIGN KEY ("project_id") REFERENCES diwi_testset.project("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
 
 --
 -- Name: milestone_state fk_milestone_state__change_user; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
