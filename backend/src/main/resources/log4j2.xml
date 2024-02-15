@@ -20,7 +20,10 @@
         <!-- <Logger name="org.hibernate.SQL" level="debug"></Logger> -->
         <!-- <Logger name="org.hibernate.type.descriptor.sql" level="trace"></Logger> -->
 
-        <!--  To log debug messages from only our tool, uncomennt the following line. -->
+        <!--  To log debug messages from pac4j, to debug authentication, uncomment the following line. -->
+        <!-- <Logger name="org.pac4j" level="trace"></Logger> -->
+
+        <!--  To log debug messages from only our tool, uncomment the following line. -->
         <!-- <Logger name="com.vng" level="trace"></Logger> -->
 
         <Root level="info">

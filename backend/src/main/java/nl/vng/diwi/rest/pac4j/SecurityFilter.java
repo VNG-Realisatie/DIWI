@@ -3,11 +3,12 @@ package nl.vng.diwi.rest.pac4j;
 import java.io.IOException;
 
 import org.pac4j.core.config.Config;
-import org.pac4j.core.context.WebContextFactory;
 import org.pac4j.core.engine.DefaultSecurityLogic;
+import org.pac4j.jee.context.JEEFrameworkParameters;
 
 import jakarta.annotation.Priority;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
@@ -18,6 +19,9 @@ public class SecurityFilter implements ContainerRequestFilter {
 
     @Context
     private HttpServletRequest httpRequest;
+
+    @Context
+    private HttpServletResponse httpResponse;
 
     private Config pac4jConfig;
 
@@ -31,11 +35,9 @@ public class SecurityFilter implements ContainerRequestFilter {
             return;
         }
 
-        WebContextFactory webContextFactory = new WebContextFactoryImplementation(requestContext, httpRequest);
-        Config requestOidcConfig = pac4jConfig.withWebContextFactory(webContextFactory);
-
         DefaultSecurityLogic securityLogic = new DefaultSecurityLogic();
-        securityLogic.perform(requestOidcConfig, null, null, null, null, null);
+        securityLogic.perform(pac4jConfig, (ctx, sessionStore, profiles) -> "AUTH_GRANTED", null, null, null,
+                new JEEFrameworkParameters(httpRequest, httpResponse));
     }
 
 }
