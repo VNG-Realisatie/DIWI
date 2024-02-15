@@ -76,7 +76,7 @@
   },
   "jest": {
     "transformIgnorePatterns": [
-      "/node_modules/(?!(swagger-ui-react|swagger-client|react-syntax-highlighter)/)"
+      "/node_modules/(?!(@react-leaflet|react-leaflet|leaflet|leaflet-draw)/)"
     ]
   }
 }
