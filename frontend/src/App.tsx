@@ -19,8 +19,8 @@ import { ImportedProjects } from "./pages/ImportedProjects";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { nlNL } from "@mui/material/locale";
+import { useEffect } from "react";
 
-import * as React from "react";
 export const drawerWidth = 290;
 
 const theme = createTheme(
@@ -76,6 +76,17 @@ const theme = createTheme(
     nlNL,
 );
 
+function RequiresLogin() {
+    useEffect(function checkLoggedIn() {
+        fetch(Paths.loggedIn.path).then((response) => {
+            if (response.status === 401) {
+                document.location.href = Paths.login.path;
+            }
+        });
+    });
+    return <Layout />;
+}
+
 const Providers = ({ children }: { children: React.ReactNode }) => {
     return (
         <ThemeProvider theme={theme}>
@@ -93,7 +104,7 @@ function App() {
         <Providers>
             <BrowserRouter>
                 <Routes>
-                    <Route path="/" element={<Layout />}>
+                    <Route path="/" element={<RequiresLogin />}>
                         <Route
                             index
                             element={
