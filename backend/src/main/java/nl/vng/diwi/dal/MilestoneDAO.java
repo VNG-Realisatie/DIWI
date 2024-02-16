@@ -9,20 +9,19 @@ import org.hibernate.query.SelectionQuery;
 import jakarta.annotation.Nullable;
 import lombok.NonNull;
 
-public class MilestoneRepository extends AbstractRepository {
+public class MilestoneDAO extends AbstractRepository {
 
-    public MilestoneRepository(Session session) {
+    public MilestoneDAO(Session session) {
         super(session);
     }
 
     @Nullable
-    public Milestone getCurrentData(@NonNull UUID milestoneUuid) {
-        session.enableFilter("current");
+    public Milestone getCurrentMilestone(@NonNull UUID milestoneUuid) {
+        session.enableFilter(GenericRepository.CURRENT_DATA_FILTER);
         String statement = "FROM Milestone M WHERE M.id = :uuid";
         SelectionQuery<Milestone> query = session
-                .createSelectionQuery(statement, Milestone.class)
-                .setParameter("uuid", milestoneUuid)
-                ;
+            .createSelectionQuery(statement, Milestone.class)
+            .setParameter("uuid", milestoneUuid);
         return query.getSingleResultOrNull();
     }
 }

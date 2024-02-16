@@ -5,13 +5,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
-import nl.vng.diwi.config.ProjectConfig;
-import nl.vng.diwi.dal.DalFactory;
-import nl.vng.diwi.dal.Database;
-import nl.vng.diwi.dal.GenericRepository;
-import nl.vng.diwi.resources.*;
-import nl.vng.diwi.security.LoginRequestFilter;
-import nl.vng.diwi.security.UserResource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.jackson.JacksonFeature;
@@ -19,21 +12,29 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.pac4j.core.config.Config;
-import org.pac4j.oidc.client.KeycloakOidcClient;
-import org.pac4j.oidc.config.KeycloakOidcConfiguration;
-
-import nl.vng.diwi.rest.pac4j.CallbackFilter;
-import nl.vng.diwi.rest.pac4j.Constants;
-import nl.vng.diwi.rest.pac4j.HttpActionAdapterImplementation;
-import nl.vng.diwi.rest.pac4j.ProfileManagerFactoryImplementation;
-import nl.vng.diwi.rest.pac4j.SecurityFilter;
-import nl.vng.diwi.rest.pac4j.SessionStoreFactoryImplementation;
 
 import jakarta.annotation.PreDestroy;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.ws.rs.ApplicationPath;
+import nl.vng.diwi.config.ProjectConfig;
+import nl.vng.diwi.dal.DalFactory;
+import nl.vng.diwi.dal.Database;
+import nl.vng.diwi.dal.GenericRepository;
+import nl.vng.diwi.resources.AuthResource;
+import nl.vng.diwi.resources.BuurtResource;
+import nl.vng.diwi.resources.MilestoneResource;
+import nl.vng.diwi.resources.MunicipalityResource;
+import nl.vng.diwi.resources.MunicipalityRoleResource;
+import nl.vng.diwi.resources.PriorityResource;
+import nl.vng.diwi.resources.ProjectsResource;
+import nl.vng.diwi.resources.VngOpenApiResource;
+import nl.vng.diwi.resources.VngResource;
+import nl.vng.diwi.resources.WijkResource;
+import nl.vng.diwi.rest.pac4j.SecurityFilter;
+import nl.vng.diwi.security.LoginRequestFilter;
+import nl.vng.diwi.security.UserResource;
 
 @ApplicationPath("rest")
 @MultipartConfig(fileSizeThreshold = 0, maxFileSize = -1, maxRequestSize = -1)
@@ -73,10 +74,10 @@ public class VngApplication extends ResourceConfig {
         dependencyInjection = new VngDependencyInjection(dalFactory, projectConfig);
         register(dependencyInjection);
 
-
-        Config pac4jConfig = createPac4jConfig();
-        register(new SecurityFilter(pac4jConfig));
-        register(new CallbackFilter(projectConfig, pac4jConfig));
+        Config pac4jConfig = projectConfig.getPac4jConfig();
+        if (pac4jConfig != null) {
+            register(new SecurityFilter(pac4jConfig));
+        }
 
         // Filters and features
         register(JacksonFeature.class);
@@ -90,6 +91,7 @@ public class VngApplication extends ResourceConfig {
         // Exceptions for the endpoints
         register(VngNotFoundException.class);
         register(VngBadRequestException.class);
+        register(VngServerErrorException.class);
 
         // Then the end points
         register(VngOpenApiResource.class);
@@ -107,22 +109,6 @@ public class VngApplication extends ResourceConfig {
         // Flyway migrations
         Database.upgrade(projectConfig.getDbUrl(), projectConfig.getDbUser(), projectConfig.getDbPass());
 
-    }
-
-    private Config createPac4jConfig() {
-        final KeycloakOidcConfiguration keycloakConfig = new KeycloakOidcConfiguration();
-        keycloakConfig.setBaseUri(projectConfig.getKcAuthServerUrl());
-        keycloakConfig.setRealm(projectConfig.getKcRealmName());
-        keycloakConfig.setClientId(projectConfig.getKcResourceName());
-        keycloakConfig.setSecret(projectConfig.getKcSecret());
-
-        KeycloakOidcClient client = new KeycloakOidcClient(keycloakConfig);
-        var oidcConfig = new Config(projectConfig.getBaseUrl() + Constants.REST_AUTH_CALLBACK, client);
-        oidcConfig.setSessionStoreFactory(new SessionStoreFactoryImplementation());
-        oidcConfig.setProfileManagerFactory(new ProfileManagerFactoryImplementation());
-        oidcConfig.setHttpActionAdapter(new HttpActionAdapterImplementation());
-
-        return oidcConfig;
     }
 
     @PreDestroy

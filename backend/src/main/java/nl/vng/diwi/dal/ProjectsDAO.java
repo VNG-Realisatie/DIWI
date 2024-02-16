@@ -1,0 +1,58 @@
+package nl.vng.diwi.dal;
+
+import jakarta.persistence.Query;
+import nl.vng.diwi.dal.entities.ProjectState;
+import nl.vng.diwi.models.ProjectListModel;
+import org.hibernate.Session;
+import org.hibernate.query.SelectionQuery;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+
+public class ProjectsDAO extends AbstractRepository {
+
+    public ProjectsDAO (Session session) {
+        super(session);
+    }
+
+    public List<ProjectListModel> getProjectsTable(FilterPaginationSorting filtering) {
+        Query q = session.createNativeQuery("""
+                SELECT * FROM get_active_and_future_projects_list(:now, :offset, :limit, :sortColumn, :sortDirection,
+                    :filterColumn, CAST(:filterValue AS text[]), :filterCondition) """ , ProjectListModel.class)
+            .setParameter("now", LocalDate.now())
+            .setParameter("offset", filtering.getFirstResultIndex())
+            .setParameter("limit", filtering.getPageSize())
+            .setParameter("sortColumn", filtering.getSortColumn())
+            .setParameter("sortDirection", filtering.getSortDirection().name())
+            .setParameter("filterColumn", filtering.getFilterColumn())
+            .setParameter("filterValue", filtering.getFilterColumn() == null ? null :fromJavaListToSqlArrayLiteral(filtering.getFilterValue()))
+            .setParameter("filterCondition", filtering.getFilterColumn() == null ? null : filtering.getFilterCondition().name());
+
+        return q.getResultList();
+    }
+
+    public Integer getProjectsTableCount(FilterPaginationSorting filtering) {
+        return session.createNativeQuery("""
+                SELECT COUNT(*) FROM get_active_and_future_projects_list(:now, :offset, :limit, :sortColumn, :sortDirection,
+                :filterColumn, CAST(:filterValue AS text[]), :filterCondition) """, Integer.class)
+            .setParameter("now", LocalDate.now())
+            .setParameter("offset", 0)
+            .setParameter("limit", Integer.MAX_VALUE)
+            .setParameter("sortColumn", null)
+            .setParameter("sortDirection", null)
+            .setParameter("filterColumn", filtering.getFilterColumn())
+            .setParameter("filterValue", filtering.getFilterColumn() == null ? null : fromJavaListToSqlArrayLiteral(filtering.getFilterValue()))
+            .setParameter("filterCondition", filtering.getFilterColumn() == null ? null :filtering.getFilterCondition().name())
+            .uniqueResult();
+    }
+
+    public ProjectState getCurrentProjectState(UUID projectUuid) {
+        session.enableFilter(GenericRepository.CURRENT_DATA_FILTER);
+        String statement = "FROM ProjectState ps WHERE ps.project.id = :projectUuid";
+        SelectionQuery<ProjectState> query = session
+            .createSelectionQuery(statement, ProjectState.class)
+            .setParameter("projectUuid", projectUuid);
+        return query.getSingleResultOrNull();
+    }
+}

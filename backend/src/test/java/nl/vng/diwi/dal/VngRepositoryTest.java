@@ -68,7 +68,7 @@ public class VngRepositoryTest {
             transaction.commit();
         }
 
-        List<ProjectListModel> projects = repo.getProjectsTable(filtering);
+        List<ProjectListModel> projects = repo.getProjectsDAO().getProjectsTable(filtering);
 
         //There are 3 projects. One in the past, one ongoing, one in the future. Only the ongoing and future ones are returned.
         assertThat(projects.size()).isEqualTo(2);

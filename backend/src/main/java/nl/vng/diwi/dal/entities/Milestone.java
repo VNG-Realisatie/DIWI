@@ -25,7 +25,7 @@ public class Milestone extends IdSuperclass {
 
     @JsonIgnoreProperties("milestone")
     @OneToMany(mappedBy="milestone", fetch = FetchType.LAZY)
-    @Filter(name = "current", condition = "change_end_date IS NULL")
+    @Filter(name = GenericRepository.CURRENT_DATA_FILTER, condition = "change_end_date IS NULL")
     private List<MilestoneState> state;
 
 }

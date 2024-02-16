@@ -2,9 +2,7 @@ package nl.vng.diwi.rest;
 
 import nl.vng.diwi.config.ProjectConfig;
 import nl.vng.diwi.security.LoggedUser;
-import nl.vng.diwi.services.KeycloakService;
-import nl.vng.diwi.services.UserService;
-import nl.vng.diwi.services.VngService;
+import nl.vng.diwi.services.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.hk2.api.Factory;
@@ -15,7 +13,6 @@ import org.hibernate.Session;
 import nl.vng.diwi.dal.Dal;
 import nl.vng.diwi.dal.DalFactory;
 import nl.vng.diwi.dal.GenericRepository;
-import nl.vng.diwi.services.MilestoneService;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.container.ContainerRequestContext;
@@ -104,7 +101,8 @@ public class VngDependencyInjection extends AbstractBinder implements AutoClosea
         bindFactory(new GenericRepoFactory(dalFactory)).to(GenericRepository.class).in(RequestScoped.class);
         bindFactory(LoggedUserFactory.class).to(LoggedUser.class).in(RequestScoped.class);
 
-        bind(new MilestoneService(projectConfig)).to(MilestoneService.class);
+        bind(new MilestoneService()).to(MilestoneService.class);
+        bind(new ProjectService()).to(ProjectService.class);
         bind(new VngService(projectConfig)).to(VngService.class);
 //        bind(new MailService(projectConfig.getMailConfig())).to(MailService.class);
 

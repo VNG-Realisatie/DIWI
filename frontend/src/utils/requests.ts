@@ -1,3 +1,5 @@
+import * as Paths from "../Paths";
+
 export async function dbFetch(input: RequestInfo | URL, init?: RequestInit | undefined) {
     const options = { ...init };
 
@@ -8,7 +10,7 @@ export async function dbFetch(input: RequestInfo | URL, init?: RequestInit | und
 
     return fetch(input, options).then((response) => {
         if (response.status === 401) {
-            window.location.href = "/sd/login";
+            window.location.href = Paths.login.path;
         }
         return response;
     });
