@@ -1,11 +1,14 @@
 package nl.vng.diwi.dal.entities;
 
+import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import nl.vng.diwi.dal.GenericRepository;
 
 @Entity
 @Table(name = "project_name_changelog", schema = GenericRepository.VNG_SCHEMA_NAME)
@@ -14,7 +17,8 @@ import nl.vng.diwi.dal.GenericRepository;
 @NoArgsConstructor
 public class ProjectNameChangelog extends MilestoneChangeDataSuperclass {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("name")
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "project_id")
     private Project project;
 

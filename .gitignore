@@ -14,4 +14,8 @@ yarn.lock
 
 node_modules/
 
+end-to-end-tests/results.xml
+
+.ucdetector_reports/
+
 *.orig

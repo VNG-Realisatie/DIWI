@@ -11,22 +11,23 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "organization_state", schema = GenericRepository.VNG_SCHEMA_NAME)
+@Table(name = "user_state", schema = GenericRepository.VNG_SCHEMA_NAME)
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-public class OrganizationState extends ChangeDataSuperclass {
+public class UserState extends ChangeDataSuperclass {
 
     @JsonIgnoreProperties("state")
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "organization_id")
-    private Organization organization;
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "parent_organization_id")
-    private Organization parentOrganization;
+    @Column(name = "first_name")
+    private String firstName;
 
-    @Column(name = "naam")
-    private String name;
+    @Column(name = "last_name")
+    private String lastName;
 
+    @Column(name = "identity_provider_id")
+    private String identityProviderId;
 }

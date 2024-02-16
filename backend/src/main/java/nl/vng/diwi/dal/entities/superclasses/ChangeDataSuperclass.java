@@ -1,16 +1,17 @@
 package nl.vng.diwi.dal.entities.superclasses;
 
+import java.time.ZonedDateTime;
+
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.entities.User;
+
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import java.time.ZonedDateTime;
-
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
 
 @MappedSuperclass
 @Data
@@ -26,7 +27,7 @@ public class ChangeDataSuperclass extends IdSuperclass {
     @Column(name = "change_start_date")
     private ZonedDateTime changeStartDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "change_user_id")
     private User changeUser;
 }
