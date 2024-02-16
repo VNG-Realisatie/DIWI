@@ -93,7 +93,7 @@ public class ProjectTimelineModel extends DatedDataModelSuperClass {
             }
             if (item.getValue() != null) {
                 data.setData(item.getValue().getState().get(0).getValueLabel());
-                data.setWeight(item.getValue().getState().get(0).getOrdinalLevel());
+                data.setLevel(item.getValue().getState().get(0).getOrdinalLevel());
             }
             data.setStartDate(item.getStartMilestone());
             data.setEndDate(item.getEndMilestone());

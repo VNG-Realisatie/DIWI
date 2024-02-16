@@ -6,23 +6,23 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper=true)
 public class DatedWeightedRangeOrValueModel<T> extends DatedDataModel<T> {
-    private Integer weightMin;
-    private Integer weightMax;
-    private Integer weight;
+    private Integer levelMin;
+    private Integer levelMax;
+    private Integer level;
     private T dataMin;
     private T dataMax;
 
-    public void setMin(int weight, T data) {
-        this.weight = null;
+    public void setMin(int level, T data) {
+        this.level = null;
         super.setData(null);
-        weightMin = weight;
+        levelMin = level;
         dataMin = data;
     }
 
-    public void setMax(int weight, T data) {
-        this.weight = null;
+    public void setMax(int level, T data) {
+        this.level = null;
         super.setData(null);
-        weightMax = weight;
+        levelMax = level;
         dataMax = data;
     }
 }
