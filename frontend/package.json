@@ -76,7 +76,10 @@
   },
   "jest": {
     "transformIgnorePatterns": [
-      "/node_modules/(?!(@react-leaflet|react-leaflet|leaflet|leaflet-draw|swagger-ui-react|swagger-client)/)"
-    ]
+      "node_modules/(?!(react-leaflet|leaflet|leaflet-draw|swagger-ui-react|swagger-client|react-syntax-highlighter)/)"
+    ],
+    "moduleNameMapper": {
+      "^\\@swagger-api/apidom-reference": "<rootDir>/node_modules/@swagger-api/apidom-reference/dist/apidom-reference.browser.min.js"
+    }
   }
 }
