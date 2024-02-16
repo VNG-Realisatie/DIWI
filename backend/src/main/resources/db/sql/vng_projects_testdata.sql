@@ -281,8 +281,8 @@ INSERT INTO diwi_testset.wijk_state (id, wijk_id, gemeente_id, waarde_label, cha
 -- Data for Name: woningblok; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
 --
 
-INSERT INTO diwi_testset.woningblok (id) VALUES ('8c401741-8c23-4cfd-ab49-b3b710758be2');
-INSERT INTO diwi_testset.woningblok (id) VALUES ('16dbf29e-bd3e-419e-9b2c-0bfd834c0d19');
+INSERT INTO diwi_testset.woningblok (id, project_id) VALUES ('8c401741-8c23-4cfd-ab49-b3b710758be2', '466da5e2-c96f-4856-aa17-6b37a1c21edc');
+INSERT INTO diwi_testset.woningblok (id, project_id) VALUES ('16dbf29e-bd3e-419e-9b2c-0bfd834c0d19', '54a0c192-3454-4f7a-becd-96d214461987');
 
 
 --
@@ -338,6 +338,6 @@ INSERT INTO diwi_testset.woningblok_mutatie_changelog (id, woningblok_id, start_
 -- Data for Name: woningblok_state; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
 --
 
-INSERT INTO diwi_testset.woningblok_state (id, woningblok_id, project_id, change_user_id, change_start_date, change_end_date) VALUES ('4a91c837-6932-49d5-bbae-acfc0308a78a', '8c401741-8c23-4cfd-ab49-b3b710758be2', '466da5e2-c96f-4856-aa17-6b37a1c21edc', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL);
-INSERT INTO diwi_testset.woningblok_state (id, woningblok_id, project_id, change_user_id, change_start_date, change_end_date) VALUES ('4a62d2dd-64b0-476e-87eb-5f9069f2d618', '16dbf29e-bd3e-419e-9b2c-0bfd834c0d19', '54a0c192-3454-4f7a-becd-96d214461987', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL);
+INSERT INTO diwi_testset.woningblok_state (id, woningblok_id, change_user_id, change_start_date, change_end_date) VALUES ('4a91c837-6932-49d5-bbae-acfc0308a78a', '8c401741-8c23-4cfd-ab49-b3b710758be2', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL);
+INSERT INTO diwi_testset.woningblok_state (id, woningblok_id, change_user_id, change_start_date, change_end_date) VALUES ('4a62d2dd-64b0-476e-87eb-5f9069f2d618', '16dbf29e-bd3e-419e-9b2c-0bfd834c0d19', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL);
 

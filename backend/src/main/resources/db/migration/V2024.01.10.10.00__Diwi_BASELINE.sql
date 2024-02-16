@@ -291,7 +291,8 @@ CREATE TABLE diwi_testset.buurt_state (
 -- Name: document; Type: TABLE; Schema: diwi_testset; Owner: vng
 --
 CREATE TABLE diwi_testset.document (
-    "id" UUID NOT NULL
+    "id" UUID NOT NULL,
+    "project_id" UUID NOT NULL
 );
 
 --
@@ -319,7 +320,6 @@ CREATE TABLE diwi_testset.document_soort_state (
 CREATE TABLE diwi_testset.document_state (
     "id" UUID NOT NULL,
     "document_id" UUID NOT NULL,
-    "project_id" UUID NOT NULL,
     "milestone_id" UUID NOT NULL,
     naam text NOT NULL,
     notitie text,
@@ -1176,7 +1176,8 @@ CREATE TABLE diwi_testset.wijk_state (
 -- Name: woningblok; Type: TABLE; Schema: diwi_testset; Owner: vng
 --
 CREATE TABLE diwi_testset.woningblok (
-    "id" UUID NOT NULL
+    "id" UUID NOT NULL,
+    "project_id" UUID NOT NULL
 );
 
 --
@@ -1492,7 +1493,6 @@ CREATE TABLE diwi_testset.woningblok_programmering_changelog (
 CREATE TABLE diwi_testset.woningblok_state (
     "id" UUID NOT NULL,
     "woningblok_id" UUID NOT NULL,
-    "project_id" UUID NOT NULL,
     "change_user_id" UUID NOT NULL,
     change_start_date timestamp with time zone NOT NULL,
     change_end_date timestamp with time zone
@@ -2238,6 +2238,12 @@ ALTER TABLE ONLY diwi_testset.buurt_state
     ADD CONSTRAINT fk_buurt_state__wijk FOREIGN KEY ("wijk_id") REFERENCES diwi_testset.wijk("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
 
 --
+-- Name: document fk_document__project; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
+--
+ALTER TABLE ONLY diwi_testset.document
+    ADD CONSTRAINT fk_document__project FOREIGN KEY ("project_id") REFERENCES diwi_testset.project("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+--
 -- Name: document_soort_state fk_document_soort_state__document_soort; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
 --
 ALTER TABLE ONLY diwi_testset.document_soort_state
@@ -2260,12 +2266,6 @@ ALTER TABLE ONLY diwi_testset.document_state
 --
 ALTER TABLE ONLY diwi_testset.document_state
     ADD CONSTRAINT fk_document_state__document FOREIGN KEY ("document_id") REFERENCES diwi_testset.document("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
-
---
--- Name: document_state fk_document_state__project; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
---
-ALTER TABLE ONLY diwi_testset.document_state
-    ADD CONSTRAINT fk_document_state__project FOREIGN KEY ("project_id") REFERENCES diwi_testset.project("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
 
 --
 -- Name: document_state fk_document_state__milestone; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
@@ -3584,6 +3584,12 @@ ALTER TABLE ONLY diwi_testset.maatwerk_ordinaal_waarde_state
     ADD CONSTRAINT fk_woningblok_maatwerk_ordinale_waarde_state__ordinale_waarde FOREIGN KEY ("ordinaal_waarde_id") REFERENCES diwi_testset.maatwerk_ordinaal_waarde("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
 
 --
+-- Name: woningblok fk_woningblok__project; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
+--
+ALTER TABLE ONLY diwi_testset.woningblok
+    ADD CONSTRAINT fk_woningblok__project FOREIGN KEY ("project_id") REFERENCES diwi_testset.project("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
+
+--
 -- Name: woningblok_mutatie_changelog fk_woningblok_mutatie_changelog__change_user; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
 --
 ALTER TABLE ONLY diwi_testset.woningblok_mutatie_changelog
@@ -3690,12 +3696,6 @@ ALTER TABLE ONLY diwi_testset.woningblok_programmering_changelog
 --
 ALTER TABLE ONLY diwi_testset.woningblok_state
     ADD CONSTRAINT fk_woningblok_state__change_user FOREIGN KEY ("change_user_id") REFERENCES diwi_testset."user"("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
-
---
--- Name: woningblok_state fk_woningblok_state__project; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
---
-ALTER TABLE ONLY diwi_testset.woningblok_state
-    ADD CONSTRAINT fk_woningblok_state__project FOREIGN KEY ("project_id") REFERENCES diwi_testset.project("id") MATCH FULL ON UPDATE CASCADE ON DELETE CASCADE;
 
 --
 -- Name: woningblok_state fk_woningblok_state__woningblok; Type: FK CONSTRAINT; Schema: diwi_testset; Owner: vng
