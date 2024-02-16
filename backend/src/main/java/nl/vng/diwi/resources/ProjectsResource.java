@@ -1,30 +1,33 @@
 package nl.vng.diwi.resources;
 
-import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.Response;
-import nl.vng.diwi.dal.GenericRepository;
-import nl.vng.diwi.dal.FilterPaginationSorting;
-import nl.vng.diwi.dal.VngRepository;
-import nl.vng.diwi.dal.entities.Project;
-import nl.vng.diwi.dal.entities.enums.Confidentiality;
-import nl.vng.diwi.models.ProjectListModel;
-import nl.vng.diwi.models.ProjectUpdateModel;
-import nl.vng.diwi.rest.VngBadRequestException;
-import nl.vng.diwi.rest.VngNotFoundException;
-import nl.vng.diwi.security.LoggedUser;
-import nl.vng.diwi.services.ProjectService;
-import jakarta.annotation.security.RolesAllowed;
-import jakarta.inject.Inject;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.MediaType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import static nl.vng.diwi.security.SecurityRoleConstants.Admin;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static nl.vng.diwi.security.SecurityRoleConstants.Admin;
+import nl.vng.diwi.dal.FilterPaginationSorting;
+import nl.vng.diwi.dal.GenericRepository;
+import nl.vng.diwi.dal.VngRepository;
+import nl.vng.diwi.dal.entities.Project;
+import nl.vng.diwi.dal.entities.enums.Confidentiality;
+import nl.vng.diwi.models.ProjectListModel;
+import nl.vng.diwi.models.ProjectTimelineModel;
+import nl.vng.diwi.models.ProjectUpdateModel;
+import nl.vng.diwi.rest.VngBadRequestException;
+import nl.vng.diwi.rest.VngNotFoundException;
+import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.services.ProjectService;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @Path("/projects")
 @RolesAllowed({Admin})
@@ -40,6 +43,20 @@ public class ProjectsResource {
         ProjectService projectService) {
         this.repo = new VngRepository(genericRepository.getDal().getSession());
         this.projectService = projectService;
+    }
+
+    @GET
+    @Path("/{id}/timeline")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Object getCurrentProjectTimeline(@PathParam("id") UUID projectUuid) throws VngNotFoundException {
+
+        Project project = projectService.getCurrentProject(repo, projectUuid);
+
+        if (project == null) {
+            throw new VngNotFoundException();
+        }
+
+        return new ProjectTimelineModel(project);
     }
 
     @GET

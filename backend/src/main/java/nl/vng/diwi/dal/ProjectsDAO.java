@@ -1,19 +1,36 @@
 package nl.vng.diwi.dal;
 
-import jakarta.persistence.Query;
-import nl.vng.diwi.dal.entities.ProjectState;
-import nl.vng.diwi.models.ProjectListModel;
-import org.hibernate.Session;
-import org.hibernate.query.SelectionQuery;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+
+import nl.vng.diwi.dal.entities.Project;
+import nl.vng.diwi.dal.entities.ProjectState;
+import nl.vng.diwi.models.ProjectListModel;
+
+import org.hibernate.Session;
+import org.hibernate.query.SelectionQuery;
+
+import jakarta.annotation.Nullable;
+import jakarta.persistence.Query;
+
+import lombok.NonNull;
 
 public class ProjectsDAO extends AbstractRepository {
 
     public ProjectsDAO (Session session) {
         super(session);
+    }
+
+    @Nullable
+    public Project getCurrentProject(@NonNull UUID projectUuid) {
+        session.enableFilter(GenericRepository.CURRENT_DATA_FILTER);
+        String statement = "FROM Project P WHERE P.id = :uuid";
+        SelectionQuery<Project> query = session
+                .createSelectionQuery(statement, Project.class)
+                .setParameter("uuid", projectUuid)
+                ;
+        return query.getSingleResultOrNull();
     }
 
     public List<ProjectListModel> getProjectsTable(FilterPaginationSorting filtering) {

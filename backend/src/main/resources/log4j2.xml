@@ -24,7 +24,7 @@
         <!-- <Logger name="org.pac4j" level="trace"></Logger> -->
 
         <!--  To log debug messages from only our tool, uncomment the following line. -->
-        <!-- <Logger name="com.vng" level="trace"></Logger> -->
+        <!-- <Logger name="nl.vng.diwi" level="trace"></Logger> -->
 
         <Root level="info">
             <AppenderRef ref="STDOUT" />
