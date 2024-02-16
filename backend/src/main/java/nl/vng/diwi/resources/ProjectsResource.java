@@ -12,7 +12,7 @@ import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.Project;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.models.ProjectListModel;
-import nl.vng.diwi.models.ProjectModel;
+import nl.vng.diwi.models.ProjectTimelineModel;
 import nl.vng.diwi.models.ProjectUpdateModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
@@ -46,9 +46,9 @@ public class ProjectsResource {
     }
 
     @GET
-    @Path("/{id}")
+    @Path("/{id}/timeline")
     @Produces(MediaType.APPLICATION_JSON)
-    public Object getCurrentProject(@PathParam("id") UUID projectUuid) throws VngNotFoundException {
+    public Object getCurrentProjectTimeline(@PathParam("id") UUID projectUuid) throws VngNotFoundException {
 
         Project project = projectService.getCurrentProject(repo, projectUuid);
 
@@ -56,7 +56,7 @@ public class ProjectsResource {
             throw new VngNotFoundException();
         }
 
-        return new ProjectModel(project);
+        return new ProjectTimelineModel(project);
     }
 
     @GET

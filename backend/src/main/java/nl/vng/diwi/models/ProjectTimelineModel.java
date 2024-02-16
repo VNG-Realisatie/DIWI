@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper=true)
-public class ProjectModel extends DatedDataModelSuperClass {
+public class ProjectTimelineModel extends DatedDataModelSuperClass {
     private UUID projectId;
     private List<DatedDataModel<String>> projectName = new ArrayList<>();
     private String projectColor;
@@ -33,7 +33,7 @@ public class ProjectModel extends DatedDataModelSuperClass {
     private String[] wijk;
     private String[] buurt;
 
-    public ProjectModel(Project project) {
+    public ProjectTimelineModel(Project project) {
         projectId = project.getId();
         ProjectState projectState = project.getState().get(0);
         projectColor = projectState.getColor();
