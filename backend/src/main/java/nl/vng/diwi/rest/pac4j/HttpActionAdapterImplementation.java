@@ -25,7 +25,7 @@ public final class HttpActionAdapterImplementation implements HttpActionAdapter 
         var response = webContext.getNativeResponse();
 
         int code = action.getCode();
-        if (code > 400) {
+        if (code >= 400) {
             try {
                 response.sendError(code);
                 return null;
