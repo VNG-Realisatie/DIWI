@@ -11,7 +11,6 @@ services:
       - ./dummy-api/v0.0/:/var/www/api/v0.0/:ro
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/conf.d/:/etc/nginx/conf.d/:ro
-      - ./htpasswd:/etc/nginx/htpasswd:ro
 
   backend:
     build:
@@ -22,10 +21,15 @@ services:
           path: backend
     restart: unless-stopped
     environment:
+      BASE_URL: ${BASE_URL:-http://localhost:${MAIN_PORT}}
       DIWI_DB_HOST: ${DIWI_DB_HOST:-database}
       DIWI_DB_NAME: ${DIWI_DB_NAME:-diwi}
       DIWI_DB_USERNAME: ${DIWI_DB_USERNAME:-diwi}
-      DIWI_DB_PASSWORD: ${DIWI_DB_PASSWORD?-define a password please}
+      DIWI_DB_PASSWORD: ${DIWI_DB_PASSWORD:?define a password please}
+      KC_REALM_NAME: ${KC_REALM_NAME:?oidc config needed}
+      KC_AUTH_SERVER_URL: ${KC_AUTH_SERVER_URL:?oidc config needed}
+      KC_SECRET: ${KC_SECRET:?oidc config needed}
+      KC_RESOURCE_NAME: ${KC_RESOURCE_NAME:?oidc config needed}
     ports:
       - ${BACKEND_PORT:-8080}
     depends_on:
@@ -37,7 +41,7 @@ services:
     environment:
       POSTGRES_DB: ${DIWI_DB_NAME:-diwi}
       POSTGRES_USER: ${DIWI_DB_USERNAME:-diwi}
-      POSTGRES_PASSWORD: ${DIWI_DB_PASSWORD?-define a password please}
+      POSTGRES_PASSWORD: ${DIWI_DB_PASSWORD:?define a password please}
     ports:
       - ${DATABASE_PORT:-5432}
     volumes:
@@ -52,10 +56,10 @@ services:
       KC_PROXY: edge
       KC_DB_URL_HOST: keycloak_database
       KC_DB_USERNAME: ${KEYCLOAK_DB_USERNAME:-keycloak}
-      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD?-define a password please}
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:?define a password please}
       KC_HOSTNAME_STRICT: false
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD?-define a password please}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?define a password please}
     ports:
       - ${KEYCLOAK_PORT:-8080}
     depends_on:

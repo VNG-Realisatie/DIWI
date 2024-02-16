@@ -23,10 +23,17 @@ public class TestDb implements AutoCloseable {
 
     public TestDb() throws Exception {
         env = new HashMap<>(System.getenv());
+        env.putIfAbsent("BASE_URL", "http://localhost");
+
         env.putIfAbsent("DIWI_DB_HOST", "localhost");
         env.putIfAbsent("DIWI_DB_NAME", "diwi_test");
         env.putIfAbsent("DIWI_DB_USERNAME", "diwi");
         env.putIfAbsent("DIWI_DB_PASSWORD", "diwi");
+
+        env.putIfAbsent("KC_AUTH_SERVER_URL", "http://localhost");
+        env.putIfAbsent("KC_REALM_NAME", "");
+        env.putIfAbsent("KC_RESOURCE_NAME", "");
+        env.putIfAbsent("KC_SECRET", "");
 
         this.projectConfig = new ProjectConfig(env);
         dalFactory = new DalFactory(projectConfig, GenericRepository.getEntities());

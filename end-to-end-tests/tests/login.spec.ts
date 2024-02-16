@@ -6,9 +6,9 @@ test("test", async ({ page }) => {
     await page.getByLabel("Username or email").click();
     await page.getByLabel("Username or email").fill("admin");
     await page.getByLabel("Username or email").press("Enter");
-    await page.getByLabel("Password").click();
-    await page.getByLabel("Password").fill("admin");
-    await page.getByLabel("Password").press("Enter");
+    await page.getByLabel("Password", { exact: true }).click();
+    await page.getByLabel("Password", { exact: true }).fill("admin");
+    await page.getByLabel("Password", { exact: true }).press("Enter");
 
     await expect(page).toHaveURL("http://localhost:3000");
 });
