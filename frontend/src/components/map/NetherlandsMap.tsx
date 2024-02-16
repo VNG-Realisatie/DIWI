@@ -3,7 +3,7 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
 import L from "leaflet";
 import "leaflet-draw";
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useRef } from "react";
 
 type Marker = {
     projectColor: string;
@@ -22,6 +22,7 @@ const center: LatLngTuple = [52.1326, 5.2913];
 
 const NetherlandsMap = ({ height, width, mapData }: Props) => {
     const mapRef = useRef<Map>();
+    const id = useId();
 
     const mapZoom = 10;
 
@@ -36,7 +37,7 @@ const NetherlandsMap = ({ height, width, mapData }: Props) => {
             return;
         }
 
-        mapRef.current = L.map("map");
+        mapRef.current = L.map(id);
         const map = mapRef.current;
 
         map.setView(center, mapZoom);
@@ -69,9 +70,9 @@ const NetherlandsMap = ({ height, width, mapData }: Props) => {
                 .addTo(map)
                 .bindPopup(data.projectName);
         });
-    }, [mapData]);
+    }, [mapData, id]);
 
-    return <div id="map" style={{ width, height }}></div>;
+    return <div id={id} style={{ width, height }}></div>;
 };
 
 export default NetherlandsMap;

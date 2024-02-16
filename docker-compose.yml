@@ -4,6 +4,10 @@ services:
   frontend:
     build:
       context: frontend
+    develop:
+      watch:
+        - action: rebuild
+          path: frontend
     restart: unless-stopped
     ports:
       - ${MAIN_PORT:-80}:80
