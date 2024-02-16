@@ -22,7 +22,6 @@ import { nlNL } from "@mui/material/locale";
 import { Swagger } from "./pages/Swagger";
 import { useEffect } from "react";
 
-
 export const drawerWidth = 290;
 
 const theme = createTheme(
