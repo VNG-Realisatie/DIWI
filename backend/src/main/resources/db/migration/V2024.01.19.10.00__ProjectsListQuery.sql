@@ -151,57 +151,57 @@ FROM (
         ),
         active_project_woningblok_totalvalue AS (
             SELECT
-                ws.project_id, SUM(COALESCE(wmc.netto_plancapaciteit, 0)) AS total_value
+                w.project_id, SUM(COALESCE(wmc.netto_plancapaciteit, 0)) AS total_value
             FROM
                 diwi_testset.woningblok_mutatie_changelog wmc
                     JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wmc.start_milestone_id AND sms.change_end_date IS NULL
                     JOIN diwi_testset.milestone_state ems ON ems.milestone_id = wmc.end_milestone_id AND ems.change_end_date IS NULL
-                    JOIN diwi_testset.woningblok_state ws ON wmc.woningblok_id = ws.woningblok_id AND ws.change_end_date IS NULL
+                    JOIN diwi_testset.woningblok w ON wmc.woningblok_id = w.id
             WHERE
                 sms.date <= _now_ AND _now_ < ems.date AND wmc.change_end_date IS NULL
-            GROUP BY ws.project_id
+            GROUP BY w.project_id
         ),
         active_project_woningblok_wijk AS (
             SELECT
-                ws.project_id, array_agg(wijks.waarde_label ORDER BY wijks.waarde_label ASC) AS wijk
+                w.project_id, array_agg(wijks.waarde_label ORDER BY wijks.waarde_label ASC) AS wijk
             FROM
                 diwi_testset.woningblok_gemeente_indeling_changelog wgic
                     JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wgic.start_milestone_id AND sms.change_end_date IS NULL
                     JOIN diwi_testset.milestone_state ems ON ems.milestone_id = wgic.end_milestone_id AND ems.change_end_date IS NULL
                     JOIN diwi_testset.woningblok_gemeente_indeling_changelog_wijk wgicw ON wgicw.woningblok_gemeente_indeling_changelog_id = wgic.id
                     JOIN diwi_testset.wijk_state wijks ON wijks.wijk_id = wgicw.wijk_id AND wijks.change_end_date IS NULL
-                    JOIN diwi_testset.woningblok_state ws ON wgic.woningblok_id = ws.woningblok_id AND ws.change_end_date IS NULL
+                    JOIN diwi_testset.woningblok w ON wgic.woningblok_id = w.id
             WHERE
                 sms.date <= _now_ AND _now_ < ems.date AND wgic.change_end_date IS NULL
-            GROUP BY ws.project_id
+            GROUP BY w.project_id
         ),
         active_project_woningblok_buurt AS (
             SELECT
-                ws.project_id, array_agg(buurts.waarde_label ORDER BY buurts.waarde_label ASC) AS buurt
+                w.project_id, array_agg(buurts.waarde_label ORDER BY buurts.waarde_label ASC) AS buurt
             FROM
                 diwi_testset.woningblok_gemeente_indeling_changelog wgic
                     JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wgic.start_milestone_id AND sms.change_end_date IS NULL
                     JOIN diwi_testset.milestone_state ems ON ems.milestone_id = wgic.end_milestone_id AND ems.change_end_date IS NULL
                     JOIN diwi_testset.woningblok_gemeente_indeling_changelog_buurt wgicb ON wgicb.woningblok_gemeente_indeling_changelog_id = wgic.id
                     JOIN diwi_testset.buurt_state buurts ON buurts.buurt_id = wgicb.buurt_id AND buurts.change_end_date IS NULL
-                    JOIN diwi_testset.woningblok_state ws ON wgic.woningblok_id = ws.woningblok_id AND ws.change_end_date IS NULL
+                    JOIN diwi_testset.woningblok w ON wgic.woningblok_id = w.id
             WHERE
                 sms.date <= _now_ AND _now_ < ems.date AND wgic.change_end_date IS NULL
-            GROUP BY ws.project_id
+            GROUP BY w.project_id
         ),
         active_project_woningblok_municipality AS (
             SELECT
-                ws.project_id, array_agg(gemeentes.waarde_label ORDER BY gemeentes.waarde_label ASC) AS municipality
+                w.project_id, array_agg(gemeentes.waarde_label ORDER BY gemeentes.waarde_label ASC) AS municipality
             FROM
                 diwi_testset.woningblok_gemeente_indeling_changelog wgic
                     JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wgic.start_milestone_id AND sms.change_end_date IS NULL
                     JOIN diwi_testset.milestone_state ems ON ems.milestone_id = wgic.end_milestone_id AND ems.change_end_date IS NULL
                     JOIN diwi_testset.woningblok_gemeente_indeling_changelog_gemeente wgicg ON wgicg.woningblok_gemeente_indeling_changelog_id = wgic.id
                     JOIN diwi_testset.gemeente_state gemeentes ON gemeentes.gemeente_id = wgicg.gemeente_id AND gemeentes.change_end_date IS NULL
-                    JOIN diwi_testset.woningblok_state ws ON wgic.woningblok_id = ws.woningblok_id AND ws.change_end_date IS NULL
+                    JOIN diwi_testset.woningblok w ON wgic.woningblok_id = w.id
             WHERE
                 sms.date <= _now_ AND _now_ < ems.date AND wgic.change_end_date IS NULL
-            GROUP BY ws.project_id
+            GROUP BY w.project_id
         ),
         future_projects AS (
             SELECT
@@ -355,103 +355,103 @@ FROM (
         future_project_woningblok_totalvalue AS (
             WITH fp_woningblok_mutatie_changelog_mindate AS (
                 SELECT
-                    ws.project_id, MIN(sms.date) AS mindate
+                    w.project_id, MIN(sms.date) AS mindate
                 FROM
                     diwi_testset.woningblok_mutatie_changelog wmc
                         JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wmc.start_milestone_id AND sms.change_end_date IS NULL
-                        JOIN diwi_testset.woningblok_state ws ON wmc.woningblok_id = ws.woningblok_id AND ws.change_end_date IS NULL
+                        JOIN diwi_testset.woningblok w ON wmc.woningblok_id = w.id
                 WHERE
                     sms.date > _now_ AND wmc.change_end_date IS NULL
-                GROUP BY ws.project_id
+                GROUP BY w.project_id
             )
             SELECT
-                ws.project_id, SUM(COALESCE(wmc.netto_plancapaciteit, 0)) AS total_value
+                w.project_id, SUM(COALESCE(wmc.netto_plancapaciteit, 0)) AS total_value
             FROM
                 diwi_testset.woningblok_mutatie_changelog wmc
                     JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wmc.start_milestone_id AND sms.change_end_date IS NULL
-                    JOIN diwi_testset.woningblok_state ws ON wmc.woningblok_id = ws.woningblok_id AND ws.change_end_date IS NULL
-                    JOIN fp_woningblok_mutatie_changelog_mindate info ON info.project_id = ws.project_id AND info.mindate = sms.date
+                    JOIN diwi_testset.woningblok w ON wmc.woningblok_id = w.id
+                    JOIN fp_woningblok_mutatie_changelog_mindate info ON info.project_id = w.project_id AND info.mindate = sms.date
             WHERE
                 sms.date > _now_ AND wmc.change_end_date IS NULL
-            GROUP BY ws.project_id
+            GROUP BY w.project_id
         ),
         future_project_woningblok_municipality AS (
             WITH fp_woningblok_gemeente_indeling_changelog_gemeente_minddate AS (
                 SELECT
-                    ws.project_id, MIN(sms.date) AS mindate
+                    w.project_id, MIN(sms.date) AS mindate
                 FROM
                     diwi_testset.woningblok_gemeente_indeling_changelog wgic
                         JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wgic.start_milestone_id AND sms.change_end_date IS NULL
-                        JOIN diwi_testset.woningblok_state ws ON wgic.woningblok_id = ws.woningblok_id AND ws.change_end_date IS NULL
+                        JOIN diwi_testset.woningblok w ON wgic.woningblok_id = w.id
                         JOIN diwi_testset.woningblok_gemeente_indeling_changelog_gemeente wgicg ON wgicg.woningblok_gemeente_indeling_changelog_id = wgic.id
                 WHERE
                     sms.date > _now_ AND wgic.change_end_date IS NULL
-                GROUP BY ws.project_id
+                GROUP BY w.project_id
             )
             SELECT
-                ws.project_id, array_agg(gemeentes.waarde_label ORDER BY gemeentes.waarde_label ASC) AS municipality
+                w.project_id, array_agg(gemeentes.waarde_label ORDER BY gemeentes.waarde_label ASC) AS municipality
             FROM
                 diwi_testset.woningblok_gemeente_indeling_changelog wgic
                     JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wgic.start_milestone_id AND sms.change_end_date IS NULL
-                    JOIN diwi_testset.woningblok_state ws ON wgic.woningblok_id = ws.woningblok_id AND ws.change_end_date IS NULL
-                    JOIN fp_woningblok_gemeente_indeling_changelog_gemeente_minddate info ON info.project_id = ws.project_id AND info.mindate = sms.date
+                    JOIN diwi_testset.woningblok w ON wgic.woningblok_id = w.id
+                    JOIN fp_woningblok_gemeente_indeling_changelog_gemeente_minddate info ON info.project_id = w.project_id AND info.mindate = sms.date
                     JOIN diwi_testset.woningblok_gemeente_indeling_changelog_gemeente wgicg ON wgicg.woningblok_gemeente_indeling_changelog_id = wgic.id
                     JOIN diwi_testset.gemeente_state gemeentes ON gemeentes.gemeente_id = wgicg.gemeente_id AND gemeentes.change_end_date IS NULL
             WHERE
                 sms.date > _now_ AND wgic.change_end_date IS NULL
-            GROUP BY ws.project_id
+            GROUP BY w.project_id
         ),
         future_project_woningblok_wijk AS (
             WITH fp_woningblok_gemeente_indeling_changelog_wijk_mindate AS (
                 SELECT
-                    ws.project_id, MIN(sms.date) AS mindate
+                    w.project_id, MIN(sms.date) AS mindate
                 FROM
                     diwi_testset.woningblok_gemeente_indeling_changelog wgic
                         JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wgic.start_milestone_id AND sms.change_end_date IS NULL
-                        JOIN diwi_testset.woningblok_state ws ON wgic.woningblok_id = ws.woningblok_id AND ws.change_end_date IS NULL
+                        JOIN diwi_testset.woningblok w ON wgic.woningblok_id = w.id
                         JOIN diwi_testset.woningblok_gemeente_indeling_changelog_wijk wgicw ON wgicw.woningblok_gemeente_indeling_changelog_id = wgic.id
                 WHERE
                     sms.date > _now_ AND wgic.change_end_date IS NULL
-                GROUP BY ws.project_id
+                GROUP BY w.project_id
             )
             SELECT
-                ws.project_id, array_agg(wijks.waarde_label ORDER BY wijks.waarde_label ASC) AS wijk
+                w.project_id, array_agg(wijks.waarde_label ORDER BY wijks.waarde_label ASC) AS wijk
             FROM
                 diwi_testset.woningblok_gemeente_indeling_changelog wgic
                     JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wgic.start_milestone_id AND sms.change_end_date IS NULL
-                    JOIN diwi_testset.woningblok_state ws ON wgic.woningblok_id = ws.woningblok_id AND ws.change_end_date IS NULL
-                    JOIN fp_woningblok_gemeente_indeling_changelog_wijk_mindate info ON info.project_id = ws.project_id AND info.mindate = sms.date
+                    JOIN diwi_testset.woningblok w ON wgic.woningblok_id = w.id
+                    JOIN fp_woningblok_gemeente_indeling_changelog_wijk_mindate info ON info.project_id = w.project_id AND info.mindate = sms.date
                     JOIN diwi_testset.woningblok_gemeente_indeling_changelog_wijk wgick ON wgick.woningblok_gemeente_indeling_changelog_id = wgic.id
                     JOIN diwi_testset.wijk_state wijks ON wijks.wijk_id = wgick.wijk_id AND wijks.change_end_date IS NULL
             WHERE
                 sms.date > _now_ AND wgic.change_end_date IS NULL
-            GROUP BY ws.project_id
+            GROUP BY w.project_id
         ),
         future_project_woningblok_buurt AS (
             WITH fp_woningblok_gemeente_indeling_changelog_buurt_mindate AS (
                 SELECT
-                    ws.project_id, MIN(sms.date) AS mindate
+                    w.project_id, MIN(sms.date) AS mindate
                 FROM
                     diwi_testset.woningblok_gemeente_indeling_changelog wgic
                         JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wgic.start_milestone_id AND sms.change_end_date IS NULL
-                        JOIN diwi_testset.woningblok_state ws ON wgic.woningblok_id = ws.woningblok_id AND ws.change_end_date IS NULL
+                        JOIN diwi_testset.woningblok w ON wgic.woningblok_id = w.id
                         JOIN diwi_testset.woningblok_gemeente_indeling_changelog_buurt wgicb ON wgicb.woningblok_gemeente_indeling_changelog_id = wgic.id
                 WHERE
                     sms.date > _now_ AND wgic.change_end_date IS NULL
-                GROUP BY ws.project_id
+                GROUP BY w.project_id
             )
             SELECT
-                ws.project_id, array_agg(buurts.waarde_label ORDER BY buurts.waarde_label ASC) AS buurt
+                w.project_id, array_agg(buurts.waarde_label ORDER BY buurts.waarde_label ASC) AS buurt
             FROM
                 diwi_testset.woningblok_gemeente_indeling_changelog wgic
                     JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wgic.start_milestone_id AND sms.change_end_date IS NULL
-                    JOIN diwi_testset.woningblok_state ws ON wgic.woningblok_id = ws.woningblok_id AND ws.change_end_date IS NULL
-                    JOIN fp_woningblok_gemeente_indeling_changelog_buurt_mindate info ON info.project_id = ws.project_id AND info.mindate = sms.date
+                    JOIN diwi_testset.woningblok w ON wgic.woningblok_id = w.id
+                    JOIN fp_woningblok_gemeente_indeling_changelog_buurt_mindate info ON info.project_id = w.project_id AND info.mindate = sms.date
                     JOIN diwi_testset.woningblok_gemeente_indeling_changelog_buurt wgicb ON wgicb.woningblok_gemeente_indeling_changelog_id = wgic.id
                     JOIN diwi_testset.buurt_state buurts ON buurts.buurt_id = wgicb.buurt_id AND buurts.change_end_date IS NULL
             WHERE
                 sms.date > _now_ AND wgic.change_end_date IS NULL
-            GROUP BY ws.project_id
+            GROUP BY w.project_id
         ),
         project_users AS (
             SELECT

@@ -12,7 +12,6 @@ import org.hibernate.Session;
 import org.hibernate.query.SelectionQuery;
 
 import jakarta.annotation.Nullable;
-import jakarta.persistence.Query;
 
 import lombok.NonNull;
 
@@ -34,7 +33,7 @@ public class ProjectsDAO extends AbstractRepository {
     }
 
     public List<ProjectListModel> getProjectsTable(FilterPaginationSorting filtering) {
-        Query q = session.createNativeQuery("""
+        SelectionQuery<ProjectListModel> q = session.createNativeQuery("""
                 SELECT * FROM get_active_and_future_projects_list(:now, :offset, :limit, :sortColumn, :sortDirection,
                     :filterColumn, CAST(:filterValue AS text[]), :filterCondition) """ , ProjectListModel.class)
             .setParameter("now", LocalDate.now())
