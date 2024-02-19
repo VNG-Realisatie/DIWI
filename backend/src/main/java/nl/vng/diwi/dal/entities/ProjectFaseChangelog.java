@@ -10,6 +10,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 @Entity
 @Table(name = "project_fase_changelog", schema = GenericRepository.VNG_SCHEMA_NAME)
@@ -25,5 +27,6 @@ public class ProjectFaseChangelog extends MilestoneChangeDataSuperclass {
 
     @Column(name = "project_fase")
     @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
     private ProjectPhase projectPhase;
 }
