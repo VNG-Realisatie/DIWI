@@ -12,7 +12,6 @@ import org.hibernate.Session;
 import org.hibernate.query.SelectionQuery;
 
 import jakarta.annotation.Nullable;
-import jakarta.persistence.Query;
 
 import lombok.NonNull;
 
