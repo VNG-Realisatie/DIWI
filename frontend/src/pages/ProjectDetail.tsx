@@ -10,6 +10,7 @@ import { colorArray } from "../api/dummyData";
 import BreadcrumbBar from "../components/header/BreadcrumbBar";
 import { useTranslation } from "react-i18next";
 import NetherlandsMap from "../components/map/NetherlandsMap";
+import { ProjectsWithHouseBlock } from "../components/ProjectWithHouseBlock";
 
 export const dummyMapData = [
     {
@@ -73,6 +74,11 @@ export const ProjectDetail = () => {
             {location.pathname === Paths.projectDetailTimeline.path.replace(":id", id ?? "1") && <TimeLineImg style={{ width: "100%" }} />}
 
             {/* TO DO add house blocks here later */}
+            {location.pathname === Paths.projectDetailCharacteristics.path.replace(":id", id ?? "1") && (
+                <ProjectsWithHouseBlock
+                // houseblocks={projects.filter((p) => selectedProject && p.project && p.project.id === selectedProject.id)[0].woningblokken}
+                />
+            )}
         </Stack>
     );
 };

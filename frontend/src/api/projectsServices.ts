@@ -4,6 +4,7 @@ import { API_URI } from "../utils/urls";
 export type ProjectLeader = string[];
 export type ProjectOwner = string[];
 export type Project = {
+    totalValue: number;
     projectId: string;
     projectStateId: string;
     projectName: string;
