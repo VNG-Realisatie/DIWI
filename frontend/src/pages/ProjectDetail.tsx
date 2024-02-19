@@ -1,15 +1,15 @@
 import { Box, Stack, Typography } from "@mui/material";
 import { useContext } from "react";
-import { Details } from "../components/Details";
 import ProjectContext from "../context/ProjectContext";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import { ReactComponent as TimeLineImg } from "../assets/temp/timeline.svg";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
 import { colorArray } from "../api/dummyData";
 import BreadcrumbBar from "../components/header/BreadcrumbBar";
 import { useTranslation } from "react-i18next";
-import NetherlandsMap from "../components/map/NetherlandsMap";
+import ProjectTimeline from "../components/ProjectTimeline";
+import { useState, useEffect } from "react";
+import { getProjectTimeline } from "../api/projectTimeLine";
 
 export const dummyMapData = [
     {
@@ -34,6 +34,18 @@ export const ProjectDetail = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { t } = useTranslation();
+    const [projectData, setProjectData] = useState(null);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        if (id) {
+            getProjectTimeline(id)
+                .then((timelineData) => setProjectData(timelineData))
+                .catch((error) => {
+                    setError(error);
+                });
+        }
+    }, [id]);
 
     return (
         <Stack direction="column" justifyContent="space-between" position="relative" border="solid 1px #ddd" mb={10}>
@@ -62,17 +74,7 @@ export const ProjectDetail = () => {
                     <AddCircleIcon color="info" sx={{ fontSize: "45px" }} />
                 </Box>
             </Stack>
-            {location.pathname === Paths.projectDetail.path.replace(":id", id ?? "1") && (
-                <Stack direction="row" alignItems="center" justifyContent="space-between">
-                    <Stack overflow="auto" height="70vh">
-                        {<Details project={selectedProject} />}
-                    </Stack>
-                    <NetherlandsMap height="66vh" width="100%" mapData={dummyMapData} />
-                </Stack>
-            )}
-            {location.pathname === Paths.projectDetailTimeline.path.replace(":id", id ?? "1") && <TimeLineImg style={{ width: "100%" }} />}
-
-            {/* TO DO add house blocks here later */}
+            <ProjectTimeline />
         </Stack>
     );
 };
