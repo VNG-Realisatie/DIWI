@@ -19,6 +19,7 @@ import { ImportedProjects } from "./pages/ImportedProjects";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { nlNL } from "@mui/material/locale";
+import { Swagger } from "./pages/Swagger";
 import { useEffect } from "react";
 
 export const drawerWidth = 290;
@@ -185,6 +186,7 @@ function App() {
                         />
                         <Route path={Paths.importExcelProjects.path} element={<ImportedProjects type="Excel" />} />
                         <Route path={Paths.importSquitProjects.path} element={<ImportedProjects type="Squit" />} />
+                        <Route path={Paths.swagger.path} element={<Swagger />} />
                         <Route path="*" element={<NoMatch />} />
                     </Route>
                 </Routes>
