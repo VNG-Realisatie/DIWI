@@ -21,27 +21,38 @@ const ProjectTimeline = ({ projectData }: any) => {
         const startDate = new Date(projectData.startDate);
         const endDate = new Date(projectData.endDate);
 
+        const testStartDate = new Date("2024-05-01");
+        const testEndDate = new Date("2024-10-01");
+
+        const adjustedStartDate = d3.timeMonth.floor(testStartDate);
+
         // Monthly scale
-        const xScaleMonthly = d3.scaleTime().domain([startDate, endDate]).range([0, width]);
+        const xScaleMonthly = d3.scaleTime().domain([adjustedStartDate, testEndDate]).range([0, width]);
 
         const axisMonthly = d3.axisBottom(xScaleMonthly).ticks(d3.timeMonth.every(1));
 
         // svg.append("g").call(axisMonthly);
 
-        svg.append("rect")
-            .attr("x", 0)
-            .attr("y", height - margin.bottom)
-            .attr("width", width)
-            .attr("height", 20)
-            .attr("fill", "lightgrey")
-            .attr("opacity", 0.3);
+        // Append a group for month text
+        const monthTextGroup = svg
+            .append("g")
+            .attr("class", "month-text-group")
+            .attr("transform", `translate(0, ${height - margin.bottom + 15})`);
 
-        svg.append("text")
-            .attr("x", 5)
-            .attr("y", height - margin.bottom + 15)
-            .text(() => {
-                return d3.timeFormat("%b %Y")(startDate);
-            });
+        // Append a rectangle for the background
+        monthTextGroup.append("rect").attr("width", width).attr("height", 30).attr("fill", "lightgrey").attr("opacity", 0.3);
+
+        const dateRange = d3.timeMonth.range(adjustedStartDate, testEndDate);
+        console.log(dateRange);
+
+        monthTextGroup
+            .selectAll(".month-text")
+            .data(d3.timeMonth.range(adjustedStartDate, testEndDate, 1))
+            .enter()
+            .append("text")
+            .attr("class", "month-text")
+            .attr("x", (d: any, i: number) => xScaleMonthly(d) + i * 60)
+            .text((d: any) => d3.timeFormat("%b %Y")(d));
 
         const projectNameArray = projectData.projectName || [];
         const projectPhaseArray = projectData.projectPhase || [];
@@ -61,9 +72,9 @@ const ProjectTimeline = ({ projectData }: any) => {
                 .append("title")
                 .text((d: any) => d.data);
         };
-        const projectNameMargin = 20;
+        const projectNameMargin = 60;
         createRectangles(projectNameArray, "steelblue", projectNameMargin, "projectNameRect");
-        const projectPhaseMargin = 40;
+        const projectPhaseMargin = 80;
         createRectangles(projectPhaseArray, "orange", projectPhaseMargin, "projectPhaseRect");
     }, [projectData]);
 
