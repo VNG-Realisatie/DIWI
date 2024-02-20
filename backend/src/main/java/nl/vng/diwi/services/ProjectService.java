@@ -109,7 +109,7 @@ public class ProjectService {
             }
 
             if (Objects.equals(oldProjectNameChangelog.getName(), newName)) {
-                logger.error("Trying to update the project {} with the same project phase value that is already has {}.", projectUuid, newName);
+                logger.info("Trying to update the project {} with the same project phase value that it already has {}.", projectUuid, newName);
                 return;
             }
             repo.persist(oldProjectNameChangelog);
@@ -150,7 +150,7 @@ public class ProjectService {
                 Set<PlanStatus> oldProjectPlanStatuses = oldPlanStatusChangelog.getValue().stream()
                     .map(ProjectPlanologischePlanstatusChangelogValue::getPlanStatus).collect(Collectors.toSet());
                 if (Objects.equals(oldProjectPlanStatuses, newProjectPlanStatuses)) {
-                    logger.error("Trying to update the project {} with the same plan statuses that it already has {}.", projectUuid, newProjectPlanStatuses);
+                    logger.info("Trying to update the project {} with the same plan statuses that it already has {}.", projectUuid, newProjectPlanStatuses);
                     return;
                 }
                 repo.persist(oldPlanStatusChangelog);
@@ -191,7 +191,7 @@ public class ProjectService {
             }
             if (oldProjectFaseChangelog != null) {
                 if (Objects.equals(oldProjectFaseChangelog.getProjectPhase(), newProjectPhase)) {
-                    logger.error("Trying to update the project {} with the same project phase value that is already has {}.", projectUuid, newProjectPhase);
+                    logger.info("Trying to update the project {} with the same project phase value that it already has {}.", projectUuid, newProjectPhase);
                     return;
                 }
                 repo.persist(oldProjectFaseChangelog);

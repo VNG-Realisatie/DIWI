@@ -42,20 +42,22 @@ public class ProjectUpdateModel {
             case name -> errorMessage = (value == null || value.isBlank()) ?
                 "New project name value is not valid." : null; //TODO
             case planningPlanStatus -> {
-                if (values != null)
+                if (values != null) {
                     for (String planningPlanStatusValue : values) {
                         if (!EnumUtils.isValidEnum(PlanStatus.class, planningPlanStatusValue)) {
                             errorMessage = "New planning plan status value is not valid.";
                         }
                     }
+                }
             }
             case planType -> {
-                if (values != null)
+                if (values != null) {
                     for (String planType : values) {
                         if (!EnumUtils.isValidEnum(PlanType.class, planType)) {
                             errorMessage = "New plan type value is not valid.";
                         }
                     }
+                }
             }
             case projectColor -> errorMessage = (value == null || !value.matches(COLOR_REGEX)) ?
                 "New color is not valid." : null;
