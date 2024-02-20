@@ -18,6 +18,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import nl.vng.diwi.dal.GenericRepository;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 @Entity
 @Table(name = "milestone_state", schema = GenericRepository.VNG_SCHEMA_NAME)
@@ -36,6 +38,7 @@ public class MilestoneState extends ChangeDataSuperclass {
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
     private MilestoneStatus state;
 
     @Column(name = "omschrijving")
