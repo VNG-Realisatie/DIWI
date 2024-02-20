@@ -47,6 +47,7 @@ export const ProjectDetail = () => {
         }
     }, [id]);
 
+    console.log(projectData);
     return (
         <Stack direction="column" justifyContent="space-between" position="relative" border="solid 1px #ddd" mb={10}>
             <BreadcrumbBar
@@ -74,7 +75,7 @@ export const ProjectDetail = () => {
                     <AddCircleIcon color="info" sx={{ fontSize: "45px" }} />
                 </Box>
             </Stack>
-            <ProjectTimeline />
+            {projectData && <ProjectTimeline projectData={projectData} />}
         </Stack>
     );
 };
