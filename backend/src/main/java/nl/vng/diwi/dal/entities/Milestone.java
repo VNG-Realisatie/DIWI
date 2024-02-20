@@ -2,16 +2,13 @@ package nl.vng.diwi.dal.entities;
 
 import java.util.List;
 
+import jakarta.persistence.*;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.entities.superclasses.IdSuperclass;
 import org.hibernate.annotations.Filter;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -22,6 +19,10 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class Milestone extends IdSuperclass {
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
+    private Project project;
 
     @JsonIgnoreProperties("milestone")
     @OneToMany(mappedBy="milestone", fetch = FetchType.LAZY)
