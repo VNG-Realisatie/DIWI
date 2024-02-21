@@ -5,9 +5,10 @@ const ProjectTimeline = ({ projectData }: any) => {
     const svgRef = useRef(null);
 
     useEffect(() => {
-        const width = 800;
+        const width = 1400;
         const height = 200;
         const margin = { top: 40, right: 20, bottom: 120, left: 20 };
+        const rectHeight = 80;
 
         if (!projectData) return;
 
@@ -24,23 +25,16 @@ const ProjectTimeline = ({ projectData }: any) => {
         const testStartDate = new Date("2024-05-01");
         const testEndDate = new Date("2024-10-01");
 
-        const adjustedStartDate = d3.timeMonth.floor(testStartDate);
+        const adjustedStartDate = d3.timeMonth.floor(startDate);
 
         // Monthly scale
         const xScaleMonthly = d3.scaleTime().domain([adjustedStartDate, testEndDate]).range([0, width]);
 
-        const axisMonthly = d3.axisBottom(xScaleMonthly).ticks(d3.timeMonth.every(1));
-
-        // svg.append("g").call(axisMonthly);
-
         // Append a group for month text
-        const monthTextGroup = svg
-            .append("g")
-            .attr("class", "month-text-group")
-            .attr("transform", `translate(0, ${height - margin.bottom + 15})`);
+        const monthTextGroup = svg.append("g").attr("class", "month-text-group");
 
         // Append a rectangle for the background
-        monthTextGroup.append("rect").attr("width", width).attr("height", 30).attr("fill", "lightgrey").attr("opacity", 0.3);
+        monthTextGroup.append("rect").attr("width", width).attr("height", 20).attr("fill", "lightgrey").attr("opacity", 0.3);
 
         const dateRange = d3.timeMonth.range(adjustedStartDate, testEndDate);
         console.log(dateRange);
@@ -51,31 +45,46 @@ const ProjectTimeline = ({ projectData }: any) => {
             .enter()
             .append("text")
             .attr("class", "month-text")
-            .attr("x", (d: any, i: number) => xScaleMonthly(d) + i * 60)
+            .attr("x", (d: any, i: number) => xScaleMonthly(d) + i * 10)
+            .attr("y", 15)
             .text((d: any) => d3.timeFormat("%b %Y")(d));
 
         const projectNameArray = projectData.projectName || [];
         const projectPhaseArray = projectData.projectPhase || [];
 
-        const createRectangles = (data: any, color: any, yOffset: any, className: any) => {
+        const createPhaseRectangles = (data: any, color: any, className: any) => {
             svg.selectAll(`.${className}`)
                 .data(data)
                 .enter()
                 .append("rect")
                 .attr("class", className)
-                .attr("x", (d: any, i: number) => xScaleMonthly(new Date(d.startDate)) + i * 1.1)
-                .attr("y", height - margin.bottom + yOffset)
+                .attr("x", (d: any, i: number) => xScaleMonthly(new Date(d.startDate)) + i * 1.01)
+                .attr("y", 30)
                 .attr("width", (d: any) => xScaleMonthly(new Date(d.endDate)) - xScaleMonthly(new Date(d.startDate)))
-                .attr("height", 20)
+                .attr("height", rectHeight)
                 .attr("fill", color)
                 .attr("opacity", 0.7)
                 .append("title")
                 .text((d: any) => d.data);
         };
-        const projectNameMargin = 60;
-        createRectangles(projectNameArray, "steelblue", projectNameMargin, "projectNameRect");
-        const projectPhaseMargin = 80;
-        createRectangles(projectPhaseArray, "orange", projectPhaseMargin, "projectPhaseRect");
+
+        const createRectangles = (data: any, color: any, className: any) => {
+            svg.selectAll(`.${className}`)
+                .data(data)
+                .enter()
+                .append("rect")
+                .attr("class", className)
+                .attr("x", (d: any) => xScaleMonthly(new Date(d.startDate)))
+                .attr("y", (d: any, i: number) => 120 + i * rectHeight)
+                .attr("width", (d: any) => xScaleMonthly(new Date(d.endDate)) - xScaleMonthly(new Date(d.startDate)))
+                .attr("height", rectHeight)
+                .attr("fill", color)
+                .attr("opacity", 0.7)
+                .append("title")
+                .text((d: any) => d.data);
+        };
+        createPhaseRectangles(projectPhaseArray, "orange", "projectPhaseRect");
+        createRectangles(projectNameArray, "steelblue", "projectNameRect");
     }, [projectData]);
 
     return <svg ref={svgRef}></svg>;
