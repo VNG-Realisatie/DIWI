@@ -6,10 +6,7 @@ import java.util.*;
 import nl.vng.diwi.dal.AutoCloseTransaction;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.*;
-import nl.vng.diwi.dal.entities.enums.Confidentiality;
-import nl.vng.diwi.dal.entities.enums.MilestoneStatus;
-import nl.vng.diwi.dal.entities.enums.PlanStatus;
-import nl.vng.diwi.dal.entities.enums.ProjectPhase;
+import nl.vng.diwi.dal.entities.enums.*;
 import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
@@ -95,7 +92,7 @@ public class ProjectService {
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             ProjectNameChangelog oldProjectNameChangelogAfterUpdate = new ProjectNameChangelog();
-            ProjectNameChangelog newProjectNameChangelog = new ProjectNameChangelog();;
+            ProjectNameChangelog newProjectNameChangelog = new ProjectNameChangelog();
             newProjectNameChangelog.setProject(project);
             newProjectNameChangelog.setName(newName);
 
@@ -168,7 +165,53 @@ public class ProjectService {
             }
             transaction.commit();
         }
+    }
 
+    public void updateProjectPlanTypes(VngRepository repo, UUID projectUuid, Set<PlanType> newProjectPlanTypes, UUID loggedInUserUuid)
+        throws VngServerErrorException, VngNotFoundException, VngBadRequestException {
+
+        Project project = getCurrentProjectAndPerformPreliminaryUpdateChecks(repo, projectUuid);
+
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+            ProjectPlanTypeChangelog oldPlanTypeChangelogAfterUpdate = new ProjectPlanTypeChangelog();
+            ProjectPlanTypeChangelog newPlanTypeChangelog = null;
+            if (newProjectPlanTypes != null && !newProjectPlanTypes.isEmpty()) {
+                newPlanTypeChangelog = new ProjectPlanTypeChangelog();
+                newPlanTypeChangelog.setProject(project);
+            }
+            ProjectPlanTypeChangelog oldPlanTypeChangelog = prepareChangelogValuesToUpdate(repo, project, project.getPlanType(), newPlanTypeChangelog,
+                oldPlanTypeChangelogAfterUpdate, loggedInUserUuid);
+            if (newPlanTypeChangelog != null) {
+                repo.persist(newPlanTypeChangelog);
+                for (PlanType newPlanTypeValue : newProjectPlanTypes) {
+                    ProjectPlanTypeChangelogValue newChangelogValue = new ProjectPlanTypeChangelogValue();
+                    newChangelogValue.setPlanTypeChangelog(newPlanTypeChangelog);
+                    newChangelogValue.setPlanType(newPlanTypeValue);
+                    repo.persist(newChangelogValue);
+                }
+            }
+            if (oldPlanTypeChangelog != null) {
+                Set<PlanType> oldProjectPlanTypes = oldPlanTypeChangelog.getValue().stream()
+                    .map(ProjectPlanTypeChangelogValue::getPlanType).collect(Collectors.toSet());
+                if (Objects.equals(oldProjectPlanTypes, newProjectPlanTypes)) {
+                    logger.info("Trying to update the project {} with the same plan types that it already has {}.", projectUuid, newProjectPlanTypes);
+                    return;
+                }
+                repo.persist(oldPlanTypeChangelog);
+                if (oldPlanTypeChangelogAfterUpdate.getStartMilestone() != null) {
+                    //it is a current project && it had a non-null changelog before the update
+                    oldPlanTypeChangelogAfterUpdate.setProject(project);
+                    repo.persist(oldPlanTypeChangelogAfterUpdate);
+                    for (PlanType oldPlanTypeValue : oldProjectPlanTypes) {
+                        ProjectPlanTypeChangelogValue oldChangelogValue = new ProjectPlanTypeChangelogValue();
+                        oldChangelogValue.setPlanTypeChangelog(oldPlanTypeChangelogAfterUpdate);
+                        oldChangelogValue.setPlanType(oldPlanTypeValue);
+                        repo.persist(oldChangelogValue);
+                    }
+                }
+            }
+            transaction.commit();
+        }
     }
 
     public void updateProjectPhase(VngRepository repo, UUID projectUuid, ProjectPhase newProjectPhase, UUID loggedInUserUuid)
@@ -276,7 +319,7 @@ public class ProjectService {
         Project project = repo.getProjectsDAO().getCurrentProject(projectUuid);
 
         if (project == null) {
-            logger.error("Project with uuid {} not found.", project.getId());
+            logger.error("Project with uuid {} not found.", projectUuid);
             throw new VngNotFoundException("Project not found");
         }
 
@@ -290,7 +333,7 @@ public class ProjectService {
             throw new VngServerErrorException("Project milestones are invalid.");
         }
 
-        if (project.getDuration().get(0).getEndMilestone().getState().get(0).getDate().isBefore(LocalDate.now())) {
+        if (!project.getDuration().get(0).getEndMilestone().getState().get(0).getDate().isAfter(LocalDate.now())) {
             logger.error("Project with uuid {} is in the past, it cannot be updated.", projectUuid);
             throw new VngBadRequestException("Cannot update past projects");
         }

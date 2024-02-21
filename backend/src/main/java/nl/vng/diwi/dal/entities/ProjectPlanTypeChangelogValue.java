@@ -10,6 +10,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 @Entity
 @Table(name = "project_plan_type_changelog_value", schema = GenericRepository.VNG_SCHEMA_NAME)
@@ -25,6 +27,7 @@ public class ProjectPlanTypeChangelogValue extends IdSuperclass {
 
     @Column(name = "plan_type")
     @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
     private PlanType planType;
-    
+
 }
