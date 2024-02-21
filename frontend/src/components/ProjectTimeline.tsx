@@ -1,11 +1,12 @@
 import React, { useRef, useEffect } from "react";
 import * as d3 from "d3";
+import { Box } from "@mui/material";
 
 const ProjectTimeline = ({ projectData }: any) => {
     const svgRef = useRef(null);
 
     useEffect(() => {
-        const width = 1400;
+        const width = 3000;
         const height = 200;
         const margin = { top: 40, right: 20, bottom: 120, left: 20 };
         const rectHeight = 80;
@@ -49,8 +50,8 @@ const ProjectTimeline = ({ projectData }: any) => {
             .attr("y", 15)
             .text((d: any) => d3.timeFormat("%b %Y")(d));
 
-        const projectNameArray = projectData.projectName || [];
-        const projectPhaseArray = projectData.projectPhase || [];
+        const projectNames = projectData.projectName || []; //huisblokken ???
+        const projectPhases = projectData.projectPhase || [];
 
         const createPhaseRectangles = (data: any, color: any, className: any) => {
             svg.selectAll(`.${className}`)
@@ -83,11 +84,15 @@ const ProjectTimeline = ({ projectData }: any) => {
                 .append("title")
                 .text((d: any) => d.data);
         };
-        createPhaseRectangles(projectPhaseArray, "orange", "projectPhaseRect");
-        createRectangles(projectNameArray, "steelblue", "projectNameRect");
+        createPhaseRectangles(projectPhases, "orange", "projectPhaseRect");
+        createRectangles(projectNames, "steelblue", "projectNameRect");
     }, [projectData]);
 
-    return <svg ref={svgRef}></svg>;
+    return (
+        <Box sx={{ overflow: "scroll" }}>
+            <svg ref={svgRef}></svg>
+        </Box>
+    );
 };
 
 export default ProjectTimeline;
