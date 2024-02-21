@@ -30,7 +30,7 @@ import nl.vng.diwi.resources.MunicipalityRoleResource;
 import nl.vng.diwi.resources.PriorityResource;
 import nl.vng.diwi.resources.ProjectsResource;
 import nl.vng.diwi.resources.VngOpenApiResource;
-import nl.vng.diwi.resources.VngResource;
+import nl.vng.diwi.resources.OrganizationResource;
 import nl.vng.diwi.resources.WijkResource;
 import nl.vng.diwi.rest.pac4j.SecurityFilter;
 import nl.vng.diwi.security.LoginRequestFilter;
@@ -95,7 +95,7 @@ public class VngApplication extends ResourceConfig {
 
         // Then the end points
         register(VngOpenApiResource.class);
-        register(VngResource.class);
+        register(OrganizationResource.class);
         register(AuthResource.class);
         register(UserResource.class);
         register(ProjectsResource.class);
