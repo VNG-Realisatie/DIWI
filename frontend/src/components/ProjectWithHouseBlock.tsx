@@ -8,6 +8,7 @@ import FormatColorFillIcon from "@mui/icons-material/FormatColorFill";
 import { updateProject } from "../api/projectsServices";
 import CloseIcon from "@mui/icons-material/Close";
 import useAlert from "../hooks/useAlert";
+import { useTranslation } from "react-i18next";
 // import { ProjectHouseBlockCardItem } from "./ProjectHouseBlockCardItem";
 export const columnTitleStyle = {
     border: "solid 1px #ddd",
@@ -40,6 +41,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
     };
 
     const { setAlert } = useAlert();
+    const { t } = useTranslation();
 
     const handleTotalValueChange = (event: ChangeEvent<HTMLInputElement>) => {
         setTotalValue(event.target.value);
@@ -63,10 +65,18 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         alignItems="center"
                     >
                         {editForm !== "name" ? (
-                            <Typography onClick={() => setEditForm("name")}> Naam: {name ? name : selectedProject?.projectName}</Typography>
+                            <Typography onClick={() => setEditForm("name")}>
+                                {t("projects.tableColumns.projectName")}: {name ? name : selectedProject?.projectName}
+                            </Typography>
                         ) : (
                             <Stack direction="row" alignItems="center" spacing={1}>
-                                <TextField size="small" sx={{ border: "solid 1px white" }} label="Naam" value={name} onChange={handleNameChange} />
+                                <TextField
+                                    size="small"
+                                    sx={{ border: "solid 1px white" }}
+                                    label={t("projects.tableColumns.projectName")}
+                                    value={name}
+                                    onChange={handleNameChange}
+                                />
                                 <Tooltip title="Cancel Changes">
                                     <IconButton
                                         color="error"
@@ -92,7 +102,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         </Box>
                     </Grid>
                     <Grid item sm={1}>
-                        <Typography sx={columnTitleStyle}>Totaal Aantal</Typography>
+                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.totalValue")}</Typography>
 
                         {!projectEditable ? (
                             <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>{totalValue ? totalValue : selectedProject?.totalValue}</Typography>
@@ -101,7 +111,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         )}
                     </Grid>
                     <Grid item sm={1}>
-                        <Typography sx={columnTitleStyle}>Eigenaar</Typography>
+                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.organizationName")}</Typography>
 
                         {!projectEditable ? (
                             <AvatarGroup max={3}>
@@ -114,7 +124,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         )}
                     </Grid>
                     <Grid item sm={4}>
-                        <Typography sx={columnTitleStyle}>Plan Type</Typography>
+                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.planType")}</Typography>
 
                         {!projectEditable ? (
                             <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
@@ -127,7 +137,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         )}
                     </Grid>
                     <Grid item sm={1}>
-                        <Typography sx={columnTitleStyle}>Start Datum</Typography>
+                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.startDate")}</Typography>
 
                         {!projectEditable ? (
                             <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>{selectedProject?.startDate}</Typography>
@@ -136,7 +146,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         )}
                     </Grid>
                     <Grid item sm={1}>
-                        <Typography sx={columnTitleStyle}>Eind Datum</Typography>
+                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.endDate")}</Typography>
 
                         {!projectEditable ? (
                             <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>{selectedProject?.endDate}</Typography>
@@ -145,7 +155,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         )}
                     </Grid>
                     <Grid item sm={2}>
-                        <Typography sx={columnTitleStyle}>Priorisering</Typography>
+                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.priority")}</Typography>
 
                         {!projectEditable ? (
                             <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
@@ -158,7 +168,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         )}
                     </Grid>
                     <Grid item sm={2}>
-                        <Typography sx={columnTitleStyle}>Project Fase</Typography>
+                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.projectPhase")}</Typography>
 
                         {!projectEditable ? (
                             <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>{selectedProject?.projectPhase}</Typography>
@@ -167,7 +177,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         )}
                     </Grid>
                     <Grid item sm={2}>
-                        <Typography sx={columnTitleStyle}>Rol Gemeente</Typography>
+                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.municipalityRole")}</Typography>
 
                         {!projectEditable ? (
                             <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
@@ -180,7 +190,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         )}
                     </Grid>
                     <Grid item sm={2}>
-                        <Typography sx={columnTitleStyle}>Vertrouwlijkheidsniveau</Typography>
+                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.confidentialityLevel")}</Typography>
 
                         {!projectEditable ? (
                             <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>{selectedProject?.confidentialityLevel}</Typography>
@@ -189,7 +199,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         )}
                     </Grid>
                     <Grid item sm={1}>
-                        <Typography sx={columnTitleStyle}>Project Leider</Typography>
+                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.projectLeader")}</Typography>
 
                         {!projectEditable ? (
                             <Box sx={{ border: "solid 1px #ddd", overflow: "hidden" }}>
@@ -204,7 +214,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         )}
                     </Grid>
                     <Grid item sm={4}>
-                        <Typography sx={columnTitleStyle}>Planologische Plan Status</Typography>
+                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.planningPlanStatus")}</Typography>
 
                         {!projectEditable ? (
                             <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
@@ -217,11 +227,11 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         )}
                     </Grid>
                     <Grid item sm={2}>
-                        <Typography sx={columnTitleStyle}>Regio</Typography>
+                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.municipality")}</Typography>
 
                         {!projectEditable ? (
                             <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
-                                {selectedProject?.municipality.map((municipality: string) => {
+                                {selectedProject?.municipality?.map((municipality: string) => {
                                     return <>{municipality},</>;
                                 })}
                             </Typography>
@@ -230,11 +240,11 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         )}
                     </Grid>
                     <Grid item sm={2}>
-                        <Typography sx={columnTitleStyle}>Buurt</Typography>
+                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.buurt")}</Typography>
 
                         {!projectEditable ? (
                             <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
-                                {selectedProject?.buurt.map((buurt: string) => {
+                                {selectedProject?.buurt?.map((buurt: string) => {
                                     return <>{buurt},</>;
                                 })}
                             </Typography>
@@ -243,11 +253,11 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         )}
                     </Grid>
                     <Grid item sm={2}>
-                        <Typography sx={columnTitleStyle}>Wijk</Typography>
+                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.wijk")}</Typography>
 
                         {!projectEditable ? (
                             <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
-                                {selectedProject?.wijk.map((wijk: string) => {
+                                {selectedProject?.wijk?.map((wijk: string) => {
                                     return <>{wijk},</>;
                                 })}
                             </Typography>
