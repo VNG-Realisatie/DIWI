@@ -1,12 +1,12 @@
 import React, { useRef, useEffect } from "react";
 import * as d3 from "d3";
 
-const ProjectTimelineSvg = ({ projectData, dateRange, timeFormat }: any) => {
+const ProjectTimelineSvg = ({ projectData, dateRange, timeFormat, width }: any) => {
     const svgRef = useRef(null);
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
+
     useEffect(() => {
-        const width = 2000;
         const height = 200;
         const margin = { top: 0, right: 20, bottom: 120, left: 20 };
         const rectHeight = 80;

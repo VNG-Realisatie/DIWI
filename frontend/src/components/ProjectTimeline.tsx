@@ -12,6 +12,7 @@ const ProjectTimeline = ({ projectData }: any) => {
     const [timeScaleIndex, setTimeScaleIndex] = useState(1);
     const [dateRange, setDateRange] = useState<Date[]>([]);
     const [timeFormat, setTimeFormat] = useState("");
+    const [width, setWidth] = useState(1);
 
     const handleScaleIncrease = () => {
         setTimeScaleIndex(timeScaleIndex + 1);
@@ -30,14 +31,17 @@ const ProjectTimeline = ({ projectData }: any) => {
             let adjustedStartDate = d3.timeDay.floor(startDate);
             range = d3.timeWeek.range(adjustedStartDate, testEndDate, 1);
             setTimeFormat("%d %B");
+            setWidth(range.length * 100);
         } else if (timeScaleIndex === 1) {
             let adjustedStartDate = d3.timeMonth.floor(startDate);
             range = d3.timeMonth.range(adjustedStartDate, testEndDate, 1);
             setTimeFormat("%b %Y");
+            setWidth(range.length * 200);
         } else if (timeScaleIndex === 2) {
             let adjustedStartDate = d3.timeYear.floor(startDate);
             range = d3.timeYear.range(adjustedStartDate, testEndDate, 1);
             setTimeFormat("%Y");
+            setWidth(range.length * 300);
         }
         setDateRange(range || []);
     }, [timeScaleIndex]);
@@ -55,7 +59,7 @@ const ProjectTimeline = ({ projectData }: any) => {
                 </Box>
             </Box>
             <Box sx={{ overflow: "scroll" }}>
-                <ProjectTimelineSvg projectData={projectData} dateRange={dateRange} timeFormat={timeFormat} />
+                <ProjectTimelineSvg projectData={projectData} dateRange={dateRange} timeFormat={timeFormat} width={width} />
             </Box>
         </>
     );
