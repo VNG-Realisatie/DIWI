@@ -19,8 +19,8 @@ CREATE OR REPLACE FUNCTION get_active_and_future_projects_list (
         projectId UUID,
         projectStateId UUID,
         projectName TEXT,
-        projectOwners TEXT[][],
-        projectLeaders TEXT[][],
+        projectOwnersArray TEXT[][],
+        projectLeadersArray TEXT[][],
         projectColor TEXT,
         confidentialityLevel diwi_testset.confidentiality,
         startDate TEXT,
@@ -43,8 +43,8 @@ RETURN QUERY
 SELECT  q.projectId,
         q.projectStateId,
         q.projectName,
-        q.projectOwners,
-        q.projectLeaders,
+        q.projectOwners            AS projectOwnersArray,
+        q.projectLeaders           AS projectLeadersArray,
         q.projectColor,
         q.confidentialityLevel,
         q.startDateStr             AS startDate,
@@ -457,7 +457,7 @@ FROM (
             SELECT
                 q.project_id    AS project_id,
                 q.project_rol   AS project_rol,
-                array_agg(array[q.user_id::TEXT, q.user_initials, q.user_last_name, q.user_first_name] ORDER BY q.user_initials, q.user_last_name, q.user_first_name) AS users,
+                array_agg(array[q.organization_id::TEXT, q.organization_name, q.user_id::TEXT, q.user_initials, q.user_last_name, q.user_first_name]) AS users,
                 array_agg(q.user_initials ORDER BY q.user_initials)      AS users_initials
             FROM (
                 SELECT DISTINCT
@@ -466,9 +466,12 @@ FROM (
                     us.user_id AS user_id,
                     LEFT(us.last_name, 1) || LEFT(us.first_name,1) AS user_initials,
                     us.last_name AS user_last_name,
-                    us.first_name AS user_first_name
+                    us.first_name AS user_first_name,
+                    os.organization_id AS organization_id,
+                    os.naam AS organization_name
                 FROM diwi_testset.project_state ps
                     JOIN diwi_testset.organization_to_project otp ON ps.project_id = otp.project_id AND otp.change_end_date IS NULL
+                    JOIN diwi_testset.organization_state os ON otp.organization_id = os.organization_id AND os.change_end_date IS NULL
                     JOIN diwi_testset.user_to_organization uto ON otp.organization_id = uto.organization_id
                     JOIN diwi_testset.user_state us ON uto.user_id = us.user_id AND us.change_end_date IS NULL
                 WHERE

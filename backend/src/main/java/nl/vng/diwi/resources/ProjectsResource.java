@@ -76,7 +76,7 @@ public class ProjectsResource {
             filtering.setSortColumn(ProjectListModel.DEFAULT_SORT_COLUMN);
         }
 
-        return repo.getProjectsDAO().getProjectsTable(filtering);
+        return projectService.getProjectsTable(repo, filtering);
 
     }
 

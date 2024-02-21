@@ -4,10 +4,12 @@ import java.time.LocalDate;
 import java.util.*;
 
 import nl.vng.diwi.dal.AutoCloseTransaction;
+import nl.vng.diwi.dal.FilterPaginationSorting;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.*;
 import nl.vng.diwi.dal.entities.enums.*;
 import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
+import nl.vng.diwi.models.ProjectListModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 
@@ -27,6 +29,12 @@ public class ProjectService {
 
     public Project getCurrentProject(VngRepository repo, UUID uuid) {
         return repo.getProjectsDAO().getCurrentProject(uuid);
+    }
+
+    public List<ProjectListModel> getProjectsTable(VngRepository repo, FilterPaginationSorting filtering) {
+        List<ProjectListModel> projectsTable = repo.getProjectsDAO().getProjectsTable(filtering);
+        projectsTable.forEach(ProjectListModel::processProjectOwnersAndLeadersArrays);
+        return projectsTable;
     }
 
     public void updateProjectColor(VngRepository repo, UUID projectUuid, String newColor, UUID loggedInUserUuid)
