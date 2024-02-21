@@ -1,10 +1,13 @@
-import { Avatar, AvatarGroup, Box, Grid, Stack, TextField, Typography } from "@mui/material";
-import { useContext, useState } from "react";
+import { Avatar, AvatarGroup, Box, Grid, IconButton, Stack, TextField, Tooltip, Typography } from "@mui/material";
+import { ChangeEvent, useContext, useState } from "react";
 import ProjectContext from "../context/ProjectContext";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import { stringAvatar } from "../utils/stringAvatar";
 import FormatColorFillIcon from "@mui/icons-material/FormatColorFill";
+import { updateProject } from "../api/projectsServices";
+import CloseIcon from "@mui/icons-material/Close";
+import useAlert from "../hooks/useAlert";
 // import { ProjectHouseBlockCardItem } from "./ProjectHouseBlockCardItem";
 export const columnTitleStyle = {
     border: "solid 1px #ddd",
@@ -14,9 +17,34 @@ export const columnTitleStyle = {
 };
 
 export const ProjectsWithHouseBlock = (props: any) => {
-    const { selectedProject } = useContext(ProjectContext);
+    const { selectedProject, id } = useContext(ProjectContext);
     const [projectEditable, setProjectEditable] = useState(false);
     const [openColorDialog, setOpenColorDialog] = useState(false);
+    const [name, setName] = useState<string | undefined>();
+    const [editForm, setEditForm] = useState("");
+    const [totalValue, setTotalValue] = useState<string | undefined>();
+    const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
+        setName(event.target.value);
+    };
+    const handleSaveName = () => {
+        const updatedData = {
+            property: "name",
+            value: name,
+        };
+        id &&
+            updateProject(id, updatedData).then((_) => {
+                //Ask Daniela to support res
+                setAlert("Project name updated", "success");
+            });
+        setEditForm("");
+    };
+
+    const { setAlert } = useAlert();
+
+    const handleTotalValueChange = (event: ChangeEvent<HTMLInputElement>) => {
+        setTotalValue(event.target.value);
+    };
+
     return (
         <Stack my={1} p={1} mb={10}>
             <Stack>
@@ -34,7 +62,29 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         justifyContent="space-between"
                         alignItems="center"
                     >
-                        Naam: {selectedProject?.projectName}{" "}
+                        {editForm !== "name" ? (
+                            <Typography onClick={() => setEditForm("name")}> Naam: {name ? name : selectedProject?.projectName}</Typography>
+                        ) : (
+                            <Stack direction="row" alignItems="center" spacing={1}>
+                                <TextField size="small" sx={{ border: "solid 1px white" }} label="Naam" value={name} onChange={handleNameChange} />
+                                <Tooltip title="Cancel Changes">
+                                    <IconButton
+                                        color="error"
+                                        onClick={() => {
+                                            setEditForm("");
+                                            setName(selectedProject?.projectName);
+                                        }}
+                                    >
+                                        <CloseIcon />
+                                    </IconButton>
+                                </Tooltip>
+                                <Tooltip title="Save Changes">
+                                    <IconButton color="info" onClick={handleSaveName}>
+                                        <SaveIcon />
+                                    </IconButton>
+                                </Tooltip>
+                            </Stack>
+                        )}
                         <Box sx={{ cursor: "pointer" }}>
                             <FormatColorFillIcon sx={{ mr: 2 }} onClick={() => setOpenColorDialog(true)} />
                             {!projectEditable && <EditIcon onClick={() => setProjectEditable(true)} />}
@@ -45,9 +95,9 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         <Typography sx={columnTitleStyle}>Totaal Aantal</Typography>
 
                         {!projectEditable ? (
-                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>{selectedProject?.totalValue}</Typography>
+                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>{totalValue ? totalValue : selectedProject?.totalValue}</Typography>
                         ) : (
-                            <TextField size="small" id="outlined-basic" variant="outlined" />
+                            <TextField value={totalValue} size="small" id="total-value" variant="outlined" onChange={handleTotalValueChange} />
                         )}
                     </Grid>
                     <Grid item sm={1}>
