@@ -1,11 +1,12 @@
 import React, { useRef, useEffect } from "react";
 import * as d3 from "d3";
 
-const ProjectTimelineSvg = ({ projectData, timeScaleIndex }: any) => {
+const ProjectTimelineSvg = ({ projectData, dateRange, timeFormat }: any) => {
     const svgRef = useRef(null);
-
+    const svg = d3.select(svgRef.current);
+    svg.selectAll("*").remove();
     useEffect(() => {
-        const width = 3000;
+        const width = 2000;
         const height = 200;
         const margin = { top: 0, right: 20, bottom: 120, left: 20 };
         const rectHeight = 80;
@@ -28,7 +29,7 @@ const ProjectTimelineSvg = ({ projectData, timeScaleIndex }: any) => {
         const adjustedStartDate = d3.timeMonth.floor(startDate);
 
         // Monthly scale
-        const xScaleMonthly = d3.scaleTime().domain([adjustedStartDate, testEndDate]).range([0, width]);
+        const xScale = d3.scaleTime().domain([adjustedStartDate, testEndDate]).range([0, width]);
 
         // Append a group for month text
         const monthTextGroup = svg.append("g").attr("class", "month-text-group");
@@ -36,18 +37,15 @@ const ProjectTimelineSvg = ({ projectData, timeScaleIndex }: any) => {
         // Append a rectangle for the background
         monthTextGroup.append("rect").attr("width", width).attr("height", 20).attr("fill", "lightgrey").attr("opacity", 0.3);
 
-        const dateRange = d3.timeMonth.range(adjustedStartDate, testEndDate);
-        console.log(dateRange);
-
         monthTextGroup
             .selectAll(".month-text")
-            .data(d3.timeMonth.range(adjustedStartDate, testEndDate, 1))
+            .data(dateRange)
             .enter()
             .append("text")
             .attr("class", "month-text")
-            .attr("x", (d: any, i: number) => xScaleMonthly(d) + i * 10)
+            .attr("x", (d: any, i: number) => xScale(d) + i * 10)
             .attr("y", 15)
-            .text((d: any) => d3.timeFormat("%b %Y")(d));
+            .text((d: any) => d3.timeFormat(timeFormat)(d));
 
         const projectNames = projectData.projectName || []; //huisblokken ???
         const projectPhases = projectData.projectPhase || [];
@@ -58,9 +56,9 @@ const ProjectTimelineSvg = ({ projectData, timeScaleIndex }: any) => {
                 .enter()
                 .append("rect")
                 .attr("class", className)
-                .attr("x", (d: any, i: number) => xScaleMonthly(new Date(d.startDate)) + i * 1.01)
+                .attr("x", (d: any, i: number) => xScale(new Date(d.startDate)) + i * 1.01)
                 .attr("y", 30)
-                .attr("width", (d: any) => xScaleMonthly(new Date(d.endDate)) - xScaleMonthly(new Date(d.startDate)))
+                .attr("width", (d: any) => xScale(new Date(d.endDate)) - xScale(new Date(d.startDate)))
                 .attr("height", rectHeight)
                 .attr("fill", color)
                 .attr("opacity", 0.7)
@@ -74,9 +72,9 @@ const ProjectTimelineSvg = ({ projectData, timeScaleIndex }: any) => {
                 .enter()
                 .append("rect")
                 .attr("class", className)
-                .attr("x", (d: any) => xScaleMonthly(new Date(d.startDate)))
+                .attr("x", (d: any) => xScale(new Date(d.startDate)))
                 .attr("y", (d: any, i: number) => 120 + i * rectHeight)
-                .attr("width", (d: any) => xScaleMonthly(new Date(d.endDate)) - xScaleMonthly(new Date(d.startDate)))
+                .attr("width", (d: any) => xScale(new Date(d.endDate)) - xScale(new Date(d.startDate)))
                 .attr("height", rectHeight)
                 .attr("fill", color)
                 .attr("opacity", 0.7)
@@ -85,7 +83,7 @@ const ProjectTimelineSvg = ({ projectData, timeScaleIndex }: any) => {
         };
         createPhaseRectangles(projectPhases, "orange", "projectPhaseRect");
         createRectangles(projectNames, "steelblue", "projectNameRect");
-    }, [projectData]);
+    }, [projectData, dateRange, timeFormat]);
 
     return <svg ref={svgRef}></svg>;
 };
