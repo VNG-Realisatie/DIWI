@@ -54,33 +54,21 @@ export const ProjectsWithHouseBlock = (props: any) => {
 
     return (
         <Stack my={1} p={1} mb={10}>
+            <Box sx={{ cursor: "pointer" }} position="absolute" right={10} top={55} zIndex={9999}>
+                <FormatColorFillIcon sx={{ mr: 2, color: "#FFFFFF" }} onClick={() => setOpenColorDialog(true)} />
+                {!projectEditable && <EditIcon sx={{ color: "#FFFFFF" }} onClick={() => setProjectEditable(true)} />}
+                {projectEditable && <SaveIcon sx={{ color: "#FFFFFF" }} onClick={() => setProjectEditable(false)} />}
+            </Box>
             <Stack>
                 {/* List project properties */}
                 <Grid container my={2}>
-                    <Grid
-                        item
-                        xs={12}
-                        sx={{
-                            backgroundColor: selectedProject?.projectColor,
-                            color: "#FFFFFF",
-                            p: 1,
-                        }}
-                        display="flex"
-                        justifyContent="space-between"
-                        alignItems="center"
-                    >
+                    <Grid item xs={6} md={1}>
+                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.projectName")}</Typography>
                         {!projectEditable ? (
-                            <Typography>
-                                {t("projects.tableColumns.projectName")}: {name ? name : selectedProject?.projectName}
-                            </Typography>
+                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>{name ? name : selectedProject?.projectName}</Typography>
                         ) : (
                             <ProjectNameEditForm name={name} setName={setName} />
                         )}
-                        <Box sx={{ cursor: "pointer" }}>
-                            <FormatColorFillIcon sx={{ mr: 2 }} onClick={() => setOpenColorDialog(true)} />
-                            {!projectEditable && <EditIcon onClick={() => setProjectEditable(true)} />}
-                            {projectEditable && <SaveIcon onClick={() => setProjectEditable(false)} />}
-                        </Box>
                     </Grid>
                     <Grid item xs={6} md={1}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.totalValue")}</Typography>

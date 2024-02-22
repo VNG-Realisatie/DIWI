@@ -6,7 +6,6 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { ReactComponent as TimeLineImg } from "../assets/temp/timeline.svg";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
-import { colorArray } from "../api/dummyData";
 import BreadcrumbBar from "../components/header/BreadcrumbBar";
 import { useTranslation } from "react-i18next";
 import NetherlandsMap from "../components/map/NetherlandsMap";
@@ -51,7 +50,7 @@ export const ProjectDetail = () => {
                 alignItems="center"
                 pl={2}
                 sx={{
-                    backgroundColor: id && colorArray[parseInt(id) - 1],
+                    backgroundColor: selectedProject?.projectColor,
                     color: "#FFFFFF",
                     minHeight: "53px",
                 }}
