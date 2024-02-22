@@ -83,7 +83,7 @@ const ProjectTimelineSvg = ({ projectData, dateRange, timeFormat, width }: any) 
         };
         createPhaseRectangles(projectPhases, "orange", "projectPhaseRect");
         createRectangles(projectNames, "steelblue", "projectNameRect");
-    }, [projectData, dateRange, timeFormat]);
+    }, [projectData, dateRange, timeFormat, width]);
 
     return <svg ref={svgRef}></svg>;
 };

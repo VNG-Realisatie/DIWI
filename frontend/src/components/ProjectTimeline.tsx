@@ -12,54 +12,54 @@ const ProjectTimeline = ({ projectData }: any) => {
     const [timeScaleIndex, setTimeScaleIndex] = useState(1);
     const [dateRange, setDateRange] = useState<Date[]>([]);
     const [timeFormat, setTimeFormat] = useState("");
-    const [width, setWidth] = useState(1);
+    const [svgWidth, setSvgWidth] = useState(0);
 
-    const handleScaleIncrease = () => {
-        setTimeScaleIndex(timeScaleIndex + 1);
+    const handleScaleChange = (increment: number) => {
+        setTimeScaleIndex((prevIndex) => prevIndex + increment);
     };
 
-    const handleScaleDecrease = () => {
-        setTimeScaleIndex(timeScaleIndex - 1);
-    };
+    const calculateDateRange = (scaleIndex: number, startDate: Date, endDate: Date) => {
+        let adjustedStartDate;
+        let range;
 
-    const startDate = new Date(projectData.startDate);
-    const endDate = new Date(projectData.endDate);
+        if (scaleIndex === 0) {
+            adjustedStartDate = d3.timeDay.floor(startDate);
+            range = d3.timeWeek.range(adjustedStartDate, endDate, 1);
+            setTimeFormat("%d %B");
+            setSvgWidth(range.length * 200);
+        } else if (scaleIndex === 1) {
+            adjustedStartDate = d3.timeMonth.floor(startDate);
+            range = d3.timeMonth.range(adjustedStartDate, endDate, 1);
+            setTimeFormat("%b %Y");
+            setSvgWidth(range.length * 300);
+        } else if (scaleIndex === 2) {
+            adjustedStartDate = d3.timeYear.floor(startDate);
+            range = d3.timeYear.range(adjustedStartDate, endDate, 1);
+            setTimeFormat("%Y");
+            setSvgWidth(range.length * 300);
+        }
+
+        setDateRange(range || []);
+    };
 
     useEffect(() => {
-        let range;
-        if (timeScaleIndex === 0) {
-            let adjustedStartDate = d3.timeDay.floor(startDate);
-            range = d3.timeWeek.range(adjustedStartDate, testEndDate, 1);
-            setTimeFormat("%d %B");
-            setWidth(range.length * 100);
-        } else if (timeScaleIndex === 1) {
-            let adjustedStartDate = d3.timeMonth.floor(startDate);
-            range = d3.timeMonth.range(adjustedStartDate, testEndDate, 1);
-            setTimeFormat("%b %Y");
-            setWidth(range.length * 200);
-        } else if (timeScaleIndex === 2) {
-            let adjustedStartDate = d3.timeYear.floor(startDate);
-            range = d3.timeYear.range(adjustedStartDate, testEndDate, 1);
-            setTimeFormat("%Y");
-            setWidth(range.length * 300);
-        }
-        setDateRange(range || []);
-    }, [timeScaleIndex]);
+        calculateDateRange(timeScaleIndex, new Date(projectData.startDate), testEndDate);
+    }, [timeScaleIndex, projectData.startDate]);
 
     return (
         <>
             <Box sx={{ backgroundColor: "grey", height: "20px" }}>
                 <Box sx={{ display: "flex", justifyContent: "end" }}>
-                    <Button size="small" variant="contained" onClick={handleScaleDecrease} disabled={timeScaleIndex === 0}>
+                    <Button size="small" variant="contained" onClick={() => handleScaleChange(-1)} disabled={timeScaleIndex === 0}>
                         <RemoveIcon />
                     </Button>
-                    <Button size="small" variant="contained" onClick={handleScaleIncrease} disabled={timeScaleIndex === 2}>
+                    <Button size="small" variant="contained" onClick={() => handleScaleChange(1)} disabled={timeScaleIndex === 2}>
                         <AddIcon />
                     </Button>
                 </Box>
             </Box>
             <Box sx={{ overflow: "scroll" }}>
-                <ProjectTimelineSvg projectData={projectData} dateRange={dateRange} timeFormat={timeFormat} width={width} />
+                <ProjectTimelineSvg projectData={projectData} dateRange={dateRange} timeFormat={timeFormat} width={svgWidth} />
             </Box>
         </>
     );
