@@ -4,7 +4,6 @@ import {
     Box,
     Checkbox,
     Grid,
-    IconButton,
     ListItemText,
     MenuItem,
     OutlinedInput,
@@ -12,7 +11,6 @@ import {
     SelectChangeEvent,
     Stack,
     TextField,
-    Tooltip,
     Typography,
 } from "@mui/material";
 import { ChangeEvent, useContext, useState } from "react";
@@ -21,9 +19,6 @@ import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import { stringAvatar } from "../utils/stringAvatar";
 import FormatColorFillIcon from "@mui/icons-material/FormatColorFill";
-import { updateProject } from "../api/projectsServices";
-import CloseIcon from "@mui/icons-material/Close";
-import useAlert from "../hooks/useAlert";
 import { useTranslation } from "react-i18next";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from "dayjs";
@@ -31,6 +26,7 @@ import { convertDayjsToString } from "../utils/convertDayjsToString";
 import { formatDate } from "../utils/formatDate";
 import { planTypeOptions, projectPhaseOptions } from "./table/constants";
 // import { ProjectHouseBlockCardItem } from "./ProjectHouseBlockCardItem";
+
 export const columnTitleStyle = {
     border: "solid 1px #ddd",
     p: 0.6,
@@ -39,11 +35,10 @@ export const columnTitleStyle = {
 };
 
 export const ProjectsWithHouseBlock = (props: any) => {
-    const { selectedProject, id } = useContext(ProjectContext);
+    const { selectedProject } = useContext(ProjectContext);
     const [projectEditable, setProjectEditable] = useState(false);
     const [openColorDialog, setOpenColorDialog] = useState(false);
     const [name, setName] = useState<string | undefined>();
-    const [editForm, setEditForm] = useState("");
     const [totalValue, setTotalValue] = useState<string | undefined>();
     const [startDate, setStartDate] = useState<Dayjs | null>();
     const [endDate, setEndDate] = useState<Dayjs | null>();
@@ -52,18 +47,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
     const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
         setName(event.target.value);
     };
-    const handleSaveForm = () => {
-        const updatedData = {
-            property: "name",
-            value: name,
-        };
-        id &&
-            updateProject(id, updatedData).then((_) => {
-                //Ask Daniela to support res
-                setAlert("Project name updated", "success");
-            });
-        setEditForm("");
-    };
+
     const handleStartDateChange = (newValue: Dayjs | null) => setStartDate(newValue);
     const handleEndDateChange = (newValue: Dayjs | null) => setEndDate(newValue);
     const handleProjectPhaseChange = (event: SelectChangeEvent) => {
@@ -79,7 +63,6 @@ export const ProjectsWithHouseBlock = (props: any) => {
         );
     };
 
-    const { setAlert } = useAlert();
     const { t } = useTranslation();
 
     const handleTotalValueChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -96,8 +79,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
             },
         },
     };
-    console.log(planType);
-    console.log(selectedProject?.planType);
+
     return (
         <Stack my={1} p={1} mb={10}>
             <Stack>
@@ -116,7 +98,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         alignItems="center"
                     >
                         {!projectEditable ? (
-                            <Typography onClick={() => setEditForm("name")}>
+                            <Typography>
                                 {t("projects.tableColumns.projectName")}: {name ? name : selectedProject?.projectName}
                             </Typography>
                         ) : (
@@ -140,9 +122,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.totalValue")}</Typography>
 
                         {!projectEditable ? (
-                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }} onClick={() => setEditForm("totalValue")}>
-                                {totalValue ? totalValue : selectedProject?.totalValue}
-                            </Typography>
+                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>{totalValue ? totalValue : selectedProject?.totalValue}</Typography>
                         ) : (
                             <TextField
                                 value={totalValue ? totalValue : selectedProject?.totalValue}
@@ -291,9 +271,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.confidentialityLevel")}</Typography>
 
                         {!projectEditable ? (
-                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }} onClick={() => setEditForm("confidentialityLevel")}>
-                                {selectedProject?.confidentialityLevel}
-                            </Typography>
+                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>{selectedProject?.confidentialityLevel}</Typography>
                         ) : (
                             <TextField size="small" id="outlined-basic" variant="outlined" />
                         )}
