@@ -1,5 +1,5 @@
-import { Avatar, AvatarGroup, Box, Grid, Stack, TextField, Typography } from "@mui/material";
-import { useContext, useState } from "react";
+import { Avatar, AvatarGroup, Box, Grid, Popover, Stack, TextField, Typography } from "@mui/material";
+import { MouseEvent, useContext, useState } from "react";
 import ProjectContext from "../../../context/ProjectContext";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
@@ -20,8 +20,14 @@ import { PlanStatusEditForm } from "./PlanStatusEditForm";
 import { MunicipalityEditForm } from "./MunicipalityEditForm";
 import { BuurtEditForm } from "./BuurtEditForm";
 import { WijkEditForm } from "./WijkEditForm";
+import { defaultColors } from "../../ColorSelector";
+import { BlockPicker, ColorResult } from "react-color";
 // import { ProjectHouseBlockCardItem } from "./ProjectHouseBlockCardItem";
 
+type Props = {
+    selectedProjectColor: string;
+    setSelectedProjectColor: (color: string) => void;
+};
 export const columnTitleStyle = {
     border: "solid 1px #ddd",
     p: 0.6,
@@ -29,7 +35,7 @@ export const columnTitleStyle = {
     backgroundColor: "#738092",
 };
 
-export const ProjectsWithHouseBlock = (props: any) => {
+export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjectColor }: Props) => {
     const { selectedProject } = useContext(ProjectContext);
     const [projectEditable, setProjectEditable] = useState(false);
     const [openColorDialog, setOpenColorDialog] = useState(false);
@@ -46,16 +52,34 @@ export const ProjectsWithHouseBlock = (props: any) => {
     const [selectedBuurt, setSelectedBuurt] = useState<string[]>([]);
     const [selectedWijk, setSelectedWijk] = useState<string[]>([]);
 
+    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const handleStartDateChange = (newValue: Dayjs | null) => setStartDate(newValue);
 
     const handleEndDateChange = (newValue: Dayjs | null) => setEndDate(newValue);
 
     const { t } = useTranslation();
+    const handleColorChange = (newColor: ColorResult) => {
+        const newColorString = `rgba(${newColor.rgb.r}, ${newColor.rgb.g}, ${newColor.rgb.b}, ${newColor.rgb.a})`;
+        setSelectedProjectColor(newColorString);
+    };
+    const handleButtonClick = (event: MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+    const open = Boolean(anchorEl);
 
     return (
         <Stack my={1} p={1} mb={10}>
             <Box sx={{ cursor: "pointer" }} position="absolute" right={10} top={55} zIndex={9999}>
-                <FormatColorFillIcon sx={{ mr: 2, color: "#FFFFFF" }} onClick={() => setOpenColorDialog(true)} />
+                <FormatColorFillIcon
+                    sx={{ mr: 2, color: "#FFFFFF" }}
+                    onClick={(event: any) => {
+                        setOpenColorDialog(true);
+                        handleButtonClick(event);
+                    }}
+                />
                 {!projectEditable && <EditIcon sx={{ color: "#FFFFFF" }} onClick={() => setProjectEditable(true)} />}
                 {projectEditable && <SaveIcon sx={{ color: "#FFFFFF" }} onClick={() => setProjectEditable(false)} />}
             </Box>
@@ -291,7 +315,19 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         return <ProjectHouseBlockCardItem hb={hb} key={i} />;
                     })}
                 </Grid> */}
-                {openColorDialog && <>Add here later color dialog</>}
+                {openColorDialog && (
+                    <Popover
+                        open={open}
+                        anchorEl={anchorEl}
+                        onClose={handleClose}
+                        anchorOrigin={{
+                            vertical: "bottom",
+                            horizontal: "center",
+                        }}
+                    >
+                        <BlockPicker colors={defaultColors} color={selectedProjectColor} onChange={handleColorChange} />
+                    </Popover>
+                )}
             </Stack>
         </Stack>
     );

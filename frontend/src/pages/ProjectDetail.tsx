@@ -1,5 +1,5 @@
 import { Box, Stack, Typography } from "@mui/material";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { Details } from "../components/Details";
 import ProjectContext from "../context/ProjectContext";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
@@ -34,6 +34,7 @@ export const ProjectDetail = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { t } = useTranslation();
+    const [selectedProjectColor, setSelectedProjectColor] = useState<string>();
 
     return (
         <Stack direction="column" justifyContent="space-between" position="relative" border="solid 1px #ddd" mb={10}>
@@ -50,7 +51,7 @@ export const ProjectDetail = () => {
                 alignItems="center"
                 pl={2}
                 sx={{
-                    backgroundColor: selectedProject?.projectColor,
+                    backgroundColor: selectedProjectColor ? selectedProjectColor : selectedProject?.projectColor,
                     color: "#FFFFFF",
                     minHeight: "53px",
                 }}
@@ -75,7 +76,9 @@ export const ProjectDetail = () => {
             {/* TO DO add house blocks here later */}
             {location.pathname === Paths.projectDetailCharacteristics.path.replace(":id", id ?? "1") && (
                 <ProjectsWithHouseBlock
-                // houseblocks={projects.filter((p) => selectedProject && p.project && p.project.id === selectedProject.id)[0].woningblokken}
+                    selectedProjectColor={selectedProjectColor ? selectedProjectColor : ""}
+                    setSelectedProjectColor={setSelectedProjectColor}
+                    // houseblocks={projects.filter((p) => selectedProject && p.project && p.project.id === selectedProject.id)[0].woningblokken}
                 />
             )}
         </Stack>

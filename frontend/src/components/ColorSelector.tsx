@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { ChromePicker, ColorResult } from "react-color";
+import { FC, MouseEvent, useState } from "react";
+import { BlockPicker, ColorResult } from "react-color";
 import { Box, Button, Popover } from "@mui/material";
 
 interface ColorSelectorProps {
@@ -7,8 +7,9 @@ interface ColorSelectorProps {
     onColorChange: (color: string) => void;
     selectedColor: any;
 }
-
-const ColorSelector: React.FC<ColorSelectorProps> = ({ defaultColor, onColorChange, selectedColor }) => {
+export const defaultColors = ["#FFE3DC", "#AEBD93", "#FFE066", "#49DCB1", "#94D1BE", "#DE2130", "#8B2635", "#976880", "#F18F01", "#768948"];
+const ColorSelector: FC<ColorSelectorProps> = ({ defaultColor, onColorChange, selectedColor }) => {
+    console.log(defaultColor);
     const [color, setColor] = useState<string>(defaultColor);
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
@@ -20,7 +21,7 @@ const ColorSelector: React.FC<ColorSelectorProps> = ({ defaultColor, onColorChan
         }
     };
 
-    const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleButtonClick = (event: MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };
 
@@ -38,7 +39,7 @@ const ColorSelector: React.FC<ColorSelectorProps> = ({ defaultColor, onColorChan
                     sx={{
                         width: "30px",
                         height: "30px",
-                        backgroundColor: selectedColor && selectedColor.color ? selectedColor.color : "blue",
+                        backgroundColor: selectedColor?.color ? selectedColor.color : color,
                         borderRadius: "5px",
                     }}
                     mr={1}
@@ -53,7 +54,7 @@ const ColorSelector: React.FC<ColorSelectorProps> = ({ defaultColor, onColorChan
                     horizontal: "left",
                 }}
             >
-                <ChromePicker color={color} onChange={handleColorChange} />
+                <BlockPicker colors={defaultColors} color={color} onChange={handleColorChange} />
             </Popover>
         </div>
     );
