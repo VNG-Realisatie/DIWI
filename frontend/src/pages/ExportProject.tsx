@@ -1,6 +1,6 @@
 import { Stack, Typography } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
-import { ProjectsTableView } from "../components/ProjectsTableView";
+import { ProjectsTableView } from "../components/project/ProjectsTableView";
 type Props = {
     excelExport: boolean;
 };

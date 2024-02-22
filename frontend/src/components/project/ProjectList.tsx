@@ -1,8 +1,8 @@
 import { Box, List, ListItem, ListItemText } from "@mui/material";
-import * as Paths from "../Paths";
+import * as Paths from "../../Paths";
 import { Link } from "react-router-dom";
-import { ProjectType } from "../context/ProjectContext";
-import { colorArray } from "../api/dummyData";
+import { ProjectType } from "../../context/ProjectContext";
+import { colorArray } from "../../api/dummyData";
 
 type Props = {
     projectList: Array<ProjectType>;

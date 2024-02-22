@@ -1,14 +1,14 @@
 import { Box, InputLabel, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
-import ColorSelector from "./ColorSelector";
+import ColorSelector from "../ColorSelector";
 import { DatePicker } from "@mui/x-date-pickers";
 
-import rolMunicipality from "../api/json/gemeente_rol.json";
-import projectLead from "../api/json/projectleider.json";
-import projectFaseList from "../api/json/enums/project_phase.json";
-import planologischePlanStatus from "../api/json/enums/planologische_planstatus.json";
-import vertrouwlijkheidsniveau from "../api/json/enums/confidentiality.json";
-import priorityOption from "../api/json/priorisering.json";
-import eigenaarOption from "../api/json/eigenaar.json";
+import rolMunicipality from "../../api/json/gemeente_rol.json";
+import projectLead from "../../api/json/projectleider.json";
+import projectFaseList from "../../api/json/enums/project_phase.json";
+import planologischePlanStatus from "../../api/json/enums/planologische_planstatus.json";
+import vertrouwlijkheidsniveau from "../../api/json/enums/confidentiality.json";
+import priorityOption from "../../api/json/priorisering.json";
+import eigenaarOption from "../../api/json/eigenaar.json";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 

@@ -14,18 +14,18 @@ import {
     Typography,
 } from "@mui/material";
 import { ChangeEvent, useContext, useEffect, useState } from "react";
-import ProjectContext from "../context/ProjectContext";
+import ProjectContext from "../../context/ProjectContext";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
-import { stringAvatar } from "../utils/stringAvatar";
+import { stringAvatar } from "../../utils/stringAvatar";
 import FormatColorFillIcon from "@mui/icons-material/FormatColorFill";
 import { useTranslation } from "react-i18next";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from "dayjs";
-import { convertDayjsToString } from "../utils/convertDayjsToString";
-import { formatDate } from "../utils/formatDate";
-import { confidentialityLevelOptions, planTypeOptions, planningPlanStatus, projectPhaseOptions } from "./table/constants";
-import { getBuurtList, getMunicipalityList, getMunicipalityRoleList } from "../api/projectsTableServices";
+import { convertDayjsToString } from "../../utils/convertDayjsToString";
+import { formatDate } from "../../utils/formatDate";
+import { confidentialityLevelOptions, planTypeOptions, planningPlanStatus, projectPhaseOptions } from "../table/constants";
+import { getBuurtList, getMunicipalityList, getMunicipalityRoleList, getWijkList } from "../../api/projectsTableServices";
 import { OptionType } from "./ProjectsTableView";
 // import { ProjectHouseBlockCardItem } from "./ProjectHouseBlockCardItem";
 
@@ -51,9 +51,11 @@ export const ProjectsWithHouseBlock = (props: any) => {
     const [municipalityRolesOptions, setMunicipalityRolesOptions] = useState<OptionType[]>();
     const [municipalityOptions, setMunicipalityOptions] = useState<OptionType[]>();
     const [buurtOptions, setBuurtOptions] = useState<OptionType[]>();
+    const [wijkOptions, setWijkOptions] = useState<OptionType[]>();
     const [selectedMunicipalityRole, setSelectedMunicipalityRole] = useState<string[]>([]);
     const [selectedMunicipality, setSelectedMunicipality] = useState<string[]>([]);
     const [selectedBuurt, setSelectedBuurt] = useState<string[]>([]);
+    const [selectedWijk, setSelectedWijk] = useState<string[]>([]);
     const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
         setName(event.target.value);
     };
@@ -111,6 +113,15 @@ export const ProjectsWithHouseBlock = (props: any) => {
             typeof value === "string" ? value.split(",") : value,
         );
     };
+    const handleWijkChange = (event: SelectChangeEvent<typeof selectedWijk>) => {
+        const {
+            target: { value },
+        } = event;
+        setSelectedWijk(
+            // On autofill we get a stringified value.
+            typeof value === "string" ? value.split(",") : value,
+        );
+    };
 
     const { t } = useTranslation();
 
@@ -137,6 +148,9 @@ export const ProjectsWithHouseBlock = (props: any) => {
     }, []);
     useEffect(() => {
         getBuurtList().then((buurten) => setBuurtOptions(buurten));
+    }, []);
+    useEffect(() => {
+        getWijkList().then((wijken) => setWijkOptions(wijken));
     }, []);
 
     return (
@@ -527,12 +541,39 @@ export const ProjectsWithHouseBlock = (props: any) => {
 
                         {!projectEditable ? (
                             <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
-                                {selectedProject?.wijk?.map((wijk: string) => {
-                                    return <span key={wijk}>{wijk},</span>;
-                                })}
+                                {selectedWijk.length > 0
+                                    ? selectedWijk.map((wijk: string) => {
+                                          return <span key={wijk}>{wijk},</span>;
+                                      })
+                                    : selectedProject?.wijk?.map((wijk: string) => {
+                                          return <span key={wijk}>{wijk},</span>;
+                                      })}
                             </Typography>
                         ) : (
-                            <TextField size="small" id="outlined-basic" variant="outlined" />
+                            <Select
+                                fullWidth
+                                size="small"
+                                id="wijk-checkbox"
+                                multiple
+                                value={selectedWijk.length > 0 ? selectedWijk : selectedProject?.wijk ? selectedProject?.wijk : []}
+                                onChange={handleWijkChange}
+                                input={<OutlinedInput />}
+                                renderValue={(selected) => selected.join(", ")}
+                                MenuProps={MenuProps}
+                            >
+                                {wijkOptions?.map((wijk) => (
+                                    <MenuItem key={wijk.id} value={wijk.name}>
+                                        <Checkbox
+                                            checked={
+                                                selectedWijk.length > 0
+                                                    ? selectedWijk.indexOf(wijk.name) > -1
+                                                    : selectedProject?.wijk && selectedProject.wijk.indexOf(wijk.name) > -1
+                                            }
+                                        />
+                                        <ListItemText primary={wijk.name} />
+                                    </MenuItem>
+                                ))}
+                            </Select>
                         )}
                     </Grid>
                 </Grid>

@@ -1,4 +1,4 @@
-import { OptionType } from "../ProjectsTableView";
+import { OptionType } from "../project/ProjectsTableView";
 
 export const planningPlanStatus: OptionType[] = [
     { id: "_1A_ONHERROEPELIJK", name: "_1A_ONHERROEPELIJK" },

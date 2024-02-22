@@ -1,7 +1,7 @@
 import { GridRenderCellParams } from "@mui/x-data-grid";
 import { Project } from "../../api/projectsServices";
 import { MultiSelect } from "./MultiSelect";
-import { OptionType, SelectedOptionWithId } from "../ProjectsTableView";
+import { OptionType, SelectedOptionWithId } from "../project/ProjectsTableView";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { getMunicipalityRoleList } from "../../api/projectsTableServices";

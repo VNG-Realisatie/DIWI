@@ -10,7 +10,7 @@ import { colorArray } from "../api/dummyData";
 import BreadcrumbBar from "../components/header/BreadcrumbBar";
 import { useTranslation } from "react-i18next";
 import NetherlandsMap from "../components/map/NetherlandsMap";
-import { ProjectsWithHouseBlock } from "../components/ProjectWithHouseBlock";
+import { ProjectsWithHouseBlock } from "../components/project/ProjectWithHouseBlock";
 
 export const dummyMapData = [
     {

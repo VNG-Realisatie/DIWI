@@ -1,5 +1,5 @@
 import { Box, Grid, TextField, Typography } from "@mui/material";
-import { columnTitleStyle } from "./ImportProjectCardItem";
+import { columnTitleStyle } from "../ImportProjectCardItem";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import { useState } from "react";
