@@ -3,7 +3,8 @@ import { Project } from "../../api/projectsServices";
 import { MultiSelect } from "./MultiSelect";
 import { OptionType, SelectedOptionWithId } from "../ProjectsTableView";
 import { useTranslation } from "react-i18next";
-import { municipalityRolesOptions } from "./constants";
+import { useEffect, useState } from "react";
+import { getMunicipalityRoleList } from "../../api/projectsTableServices";
 
 type Props = {
     cellValues: GridRenderCellParams<Project>;
@@ -12,20 +13,22 @@ type Props = {
 };
 
 export const MunicipalityRoleCell = ({ cellValues, selectedMunicipalityRole, handleMunicipalityRoleChange }: Props) => {
+    const [municipalityRolesOptions, setMunicipalityRolesOptions] = useState<OptionType[]>();
     const { t } = useTranslation();
 
     const defaultPlanTypes = cellValues.row.municipalityRole.map((c) => ({ id: c, name: c }));
     const findSelected = selectedMunicipalityRole.find((s) => s.id === cellValues.row.projectId);
     const selectedOption = findSelected ? findSelected.option : [];
-    const translatedOption = municipalityRolesOptions.map((p) => {
-        return { id: p.id, name: t(`projectTable.municipalityRolesOptions.${p.name}`) };
-    });
+
+    useEffect(() => {
+        getMunicipalityRoleList().then((roles) => setMunicipalityRolesOptions(roles));
+    }, []);
 
     return (
         <MultiSelect
             currentRow={cellValues.row}
             selected={selectedOption}
-            options={translatedOption}
+            options={municipalityRolesOptions ? municipalityRolesOptions : []}
             tagLimit={2}
             defaultOptionValues={defaultPlanTypes}
             inputLabel={t("projects.tableColumns.municipalityRole")}

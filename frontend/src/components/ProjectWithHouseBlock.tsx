@@ -13,7 +13,7 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-import { ChangeEvent, useContext, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
 import ProjectContext from "../context/ProjectContext";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
@@ -25,6 +25,8 @@ import dayjs, { Dayjs } from "dayjs";
 import { convertDayjsToString } from "../utils/convertDayjsToString";
 import { formatDate } from "../utils/formatDate";
 import { planTypeOptions, projectPhaseOptions } from "./table/constants";
+import { getMunicipalityRoleList } from "../api/projectsTableServices";
+import { OptionType } from "./ProjectsTableView";
 // import { ProjectHouseBlockCardItem } from "./ProjectHouseBlockCardItem";
 
 export const columnTitleStyle = {
@@ -44,6 +46,8 @@ export const ProjectsWithHouseBlock = (props: any) => {
     const [endDate, setEndDate] = useState<Dayjs | null>();
     const [projectPhase, setProjectPhase] = useState<string>();
     const [planType, setPlanType] = useState<string[]>([]);
+    const [municipalityRolesOptions, setMunicipalityRolesOptions] = useState<OptionType[]>();
+    const [selectedMunicipalityRole, setSelectedMunicipalityRole] = useState<string[]>([]);
     const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
         setName(event.target.value);
     };
@@ -58,6 +62,15 @@ export const ProjectsWithHouseBlock = (props: any) => {
             target: { value },
         } = event;
         setPlanType(
+            // On autofill we get a stringified value.
+            typeof value === "string" ? value.split(",") : value,
+        );
+    };
+    const handleMunicipalityRoleChange = (event: SelectChangeEvent<typeof planType>) => {
+        const {
+            target: { value },
+        } = event;
+        setSelectedMunicipalityRole(
             // On autofill we get a stringified value.
             typeof value === "string" ? value.split(",") : value,
         );
@@ -79,6 +92,10 @@ export const ProjectsWithHouseBlock = (props: any) => {
             },
         },
     };
+
+    useEffect(() => {
+        getMunicipalityRoleList().then((roles) => setMunicipalityRolesOptions(roles));
+    }, []);
 
     return (
         <Stack my={1} p={1} mb={10}>
@@ -263,12 +280,39 @@ export const ProjectsWithHouseBlock = (props: any) => {
 
                         {!projectEditable ? (
                             <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
-                                {selectedProject?.municipalityRole.map((mr: string) => {
-                                    return <span key={mr}>{mr}</span>;
-                                })}
+                                {selectedMunicipalityRole.length > 0
+                                    ? selectedMunicipalityRole.map((mr: string) => {
+                                          return <span key={mr}>{mr}</span>;
+                                      })
+                                    : selectedProject?.municipalityRole.map((mr: string) => {
+                                          return <span key={mr}>{mr}</span>;
+                                      })}
                             </Typography>
                         ) : (
-                            <TextField size="small" id="outlined-basic" variant="outlined" />
+                            <Select
+                                fullWidth
+                                size="small"
+                                id="plan-type-checkbox"
+                                multiple
+                                value={selectedMunicipalityRole.length > 0 ? selectedMunicipalityRole : selectedProject?.municipalityRole}
+                                onChange={handleMunicipalityRoleChange}
+                                input={<OutlinedInput />}
+                                renderValue={(selected) => selected.join(", ")}
+                                MenuProps={MenuProps}
+                            >
+                                {municipalityRolesOptions?.map((municipality) => (
+                                    <MenuItem key={municipality.id} value={municipality.name}>
+                                        <Checkbox
+                                            checked={
+                                                selectedMunicipalityRole.length > 0
+                                                    ? selectedMunicipalityRole.indexOf(municipality.name) > -1
+                                                    : selectedProject?.municipalityRole && selectedProject.municipalityRole.indexOf(municipality.name) > -1
+                                            }
+                                        />
+                                        <ListItemText primary={municipality.name} />
+                                    </MenuItem>
+                                ))}
+                            </Select>
                         )}
                     </Grid>
                     <Grid item xs={12} md={2}>

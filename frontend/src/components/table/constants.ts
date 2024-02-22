@@ -36,9 +36,3 @@ export const confidentialityLevelOptions: OptionType[] = [
     { id: "EXTERN_RAPPORTAGE", name: "EXTERN_RAPPORTAGE" },
     { id: "OPENBAAR", name: "OPENBAAR" },
 ];
-
-export const municipalityRolesOptions: OptionType[] = [
-    { id: "ACTIVE", name: "ACTIVE" },
-    { id: "PASSIVE", name: "PASSIVE" },
-    { id: "NOTHING", name: "NOTHING" },
-];
