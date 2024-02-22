@@ -1,4 +1,20 @@
-import { Avatar, AvatarGroup, Box, Grid, IconButton, Stack, TextField, Tooltip, Typography } from "@mui/material";
+import {
+    Avatar,
+    AvatarGroup,
+    Box,
+    Checkbox,
+    Grid,
+    IconButton,
+    ListItemText,
+    MenuItem,
+    OutlinedInput,
+    Select,
+    SelectChangeEvent,
+    Stack,
+    TextField,
+    Tooltip,
+    Typography,
+} from "@mui/material";
 import { ChangeEvent, useContext, useState } from "react";
 import ProjectContext from "../context/ProjectContext";
 import EditIcon from "@mui/icons-material/Edit";
@@ -9,6 +25,11 @@ import { updateProject } from "../api/projectsServices";
 import CloseIcon from "@mui/icons-material/Close";
 import useAlert from "../hooks/useAlert";
 import { useTranslation } from "react-i18next";
+import { DatePicker } from "@mui/x-date-pickers";
+import dayjs, { Dayjs } from "dayjs";
+import { convertDayjsToString } from "../utils/convertDayjsToString";
+import { formatDate } from "../utils/formatDate";
+import { planTypeOptions, projectPhaseOptions } from "./table/constants";
 // import { ProjectHouseBlockCardItem } from "./ProjectHouseBlockCardItem";
 export const columnTitleStyle = {
     border: "solid 1px #ddd",
@@ -24,10 +45,14 @@ export const ProjectsWithHouseBlock = (props: any) => {
     const [name, setName] = useState<string | undefined>();
     const [editForm, setEditForm] = useState("");
     const [totalValue, setTotalValue] = useState<string | undefined>();
+    const [startDate, setStartDate] = useState<Dayjs | null>();
+    const [endDate, setEndDate] = useState<Dayjs | null>();
+    const [projectPhase, setProjectPhase] = useState<string>();
+    const [planType, setPlanType] = useState<string[]>([]);
     const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
         setName(event.target.value);
     };
-    const handleSaveName = () => {
+    const handleSaveForm = () => {
         const updatedData = {
             property: "name",
             value: name,
@@ -39,6 +64,20 @@ export const ProjectsWithHouseBlock = (props: any) => {
             });
         setEditForm("");
     };
+    const handleStartDateChange = (newValue: Dayjs | null) => setStartDate(newValue);
+    const handleEndDateChange = (newValue: Dayjs | null) => setEndDate(newValue);
+    const handleProjectPhaseChange = (event: SelectChangeEvent) => {
+        setProjectPhase(event.target.value as string);
+    };
+    const handlePlanTypeChange = (event: SelectChangeEvent<typeof planType>) => {
+        const {
+            target: { value },
+        } = event;
+        setPlanType(
+            // On autofill we get a stringified value.
+            typeof value === "string" ? value.split(",") : value,
+        );
+    };
 
     const { setAlert } = useAlert();
     const { t } = useTranslation();
@@ -47,6 +86,18 @@ export const ProjectsWithHouseBlock = (props: any) => {
         setTotalValue(event.target.value);
     };
 
+    const ITEM_HEIGHT = 48;
+    const ITEM_PADDING_TOP = 8;
+    const MenuProps = {
+        PaperProps: {
+            style: {
+                maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+                width: 250,
+            },
+        },
+    };
+    console.log(planType);
+    console.log(selectedProject?.planType);
     return (
         <Stack my={1} p={1} mb={10}>
             <Stack>
@@ -54,7 +105,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
                 <Grid container my={2}>
                     <Grid
                         item
-                        sm={12}
+                        xs={12}
                         sx={{
                             backgroundColor: selectedProject?.projectColor,
                             color: "#FFFFFF",
@@ -64,7 +115,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         justifyContent="space-between"
                         alignItems="center"
                     >
-                        {editForm !== "name" ? (
+                        {!projectEditable ? (
                             <Typography onClick={() => setEditForm("name")}>
                                 {t("projects.tableColumns.projectName")}: {name ? name : selectedProject?.projectName}
                             </Typography>
@@ -74,25 +125,9 @@ export const ProjectsWithHouseBlock = (props: any) => {
                                     size="small"
                                     sx={{ border: "solid 1px white" }}
                                     label={t("projects.tableColumns.projectName")}
-                                    value={name}
+                                    value={name ? name : selectedProject?.projectName}
                                     onChange={handleNameChange}
                                 />
-                                <Tooltip title="Cancel Changes">
-                                    <IconButton
-                                        color="error"
-                                        onClick={() => {
-                                            setEditForm("");
-                                            setName(selectedProject?.projectName);
-                                        }}
-                                    >
-                                        <CloseIcon />
-                                    </IconButton>
-                                </Tooltip>
-                                <Tooltip title="Save Changes">
-                                    <IconButton color="info" onClick={handleSaveName}>
-                                        <SaveIcon />
-                                    </IconButton>
-                                </Tooltip>
                             </Stack>
                         )}
                         <Box sx={{ cursor: "pointer" }}>
@@ -101,16 +136,24 @@ export const ProjectsWithHouseBlock = (props: any) => {
                             {projectEditable && <SaveIcon onClick={() => setProjectEditable(false)} />}
                         </Box>
                     </Grid>
-                    <Grid item sm={1}>
+                    <Grid item xs={6} md={1}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.totalValue")}</Typography>
 
                         {!projectEditable ? (
-                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>{totalValue ? totalValue : selectedProject?.totalValue}</Typography>
+                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }} onClick={() => setEditForm("totalValue")}>
+                                {totalValue ? totalValue : selectedProject?.totalValue}
+                            </Typography>
                         ) : (
-                            <TextField value={totalValue} size="small" id="total-value" variant="outlined" onChange={handleTotalValueChange} />
+                            <TextField
+                                value={totalValue ? totalValue : selectedProject?.totalValue}
+                                size="small"
+                                id="total-value"
+                                variant="outlined"
+                                onChange={handleTotalValueChange}
+                            />
                         )}
                     </Grid>
-                    <Grid item sm={1}>
+                    <Grid item xs={6} md={1}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.organizationName")}</Typography>
 
                         {!projectEditable ? (
@@ -128,33 +171,73 @@ export const ProjectsWithHouseBlock = (props: any) => {
 
                         {!projectEditable ? (
                             <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
-                                {selectedProject?.planType.map((pt: string) => {
-                                    return <>{pt},</>;
-                                })}
+                                {planType.length > 0
+                                    ? planType.map((pt: string) => {
+                                          return <>{t(`projectTable.planTypeOptions.${pt}`)},</>;
+                                      })
+                                    : selectedProject?.planType.map((pt: string) => {
+                                          return <>{t(`projectTable.planTypeOptions.${pt}`)},</>;
+                                      })}
                             </Typography>
                         ) : (
-                            <TextField size="small" id="outlined-basic" variant="outlined" />
+                            <Select
+                                fullWidth
+                                id="plan-type-checkbox"
+                                multiple
+                                value={planType.length > 0 ? planType : selectedProject?.planType}
+                                onChange={handlePlanTypeChange}
+                                input={<OutlinedInput />}
+                                renderValue={(selected) => selected.join(", ")}
+                                MenuProps={MenuProps}
+                            >
+                                {planTypeOptions.map((pt) => (
+                                    <MenuItem key={pt.id} value={pt.id}>
+                                        <Checkbox
+                                            checked={
+                                                planType.length > 0
+                                                    ? planType.indexOf(pt.id) > -1
+                                                    : selectedProject?.planType && selectedProject.planType.indexOf(pt.id) > -1
+                                            }
+                                        />
+                                        <ListItemText primary={t(`projectTable.planTypeOptions.${pt.name}`)} />
+                                    </MenuItem>
+                                ))}
+                            </Select>
                         )}
                     </Grid>
-                    <Grid item sm={1}>
+                    <Grid item xs={6} md={1.1}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.startDate")}</Typography>
 
                         {!projectEditable ? (
-                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>{selectedProject?.startDate}</Typography>
+                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
+                                {startDate ? convertDayjsToString(startDate) : selectedProject?.startDate}
+                            </Typography>
                         ) : (
-                            <TextField size="small" id="outlined-basic" variant="outlined" />
+                            <DatePicker
+                                format="DD-MM-YYYY"
+                                slotProps={{ textField: { size: "small" } }}
+                                value={startDate ? startDate : dayjs(formatDate(selectedProject?.startDate))}
+                                onChange={handleStartDateChange}
+                            />
                         )}
                     </Grid>
-                    <Grid item sm={1}>
+                    <Grid item xs={6} md={1.1}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.endDate")}</Typography>
 
                         {!projectEditable ? (
-                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>{selectedProject?.endDate}</Typography>
+                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
+                                {endDate ? convertDayjsToString(endDate) : selectedProject?.endDate}
+                            </Typography>
                         ) : (
-                            <TextField size="small" id="outlined-basic" variant="outlined" />
+                            <DatePicker
+                                format="DD-MM-YYYY"
+                                slotProps={{ textField: { size: "small" } }}
+                                value={endDate ? endDate : dayjs(formatDate(selectedProject?.endDate))}
+                                onChange={handleEndDateChange}
+                            />
                         )}
                     </Grid>
-                    <Grid item sm={2}>
+                    <Grid item xs={12} md={2}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.priority")}</Typography>
 
                         {!projectEditable ? (
@@ -167,16 +250,31 @@ export const ProjectsWithHouseBlock = (props: any) => {
                             <TextField size="small" id="outlined-basic" variant="outlined" />
                         )}
                     </Grid>
-                    <Grid item sm={2}>
+                    <Grid item xs={12} md={2}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.projectPhase")}</Typography>
 
                         {!projectEditable ? (
-                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>{selectedProject?.projectPhase}</Typography>
+                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
+                                {t(`projectTable.projectPhaseOptions.${projectPhase ? projectPhase : selectedProject?.projectPhase}`)}
+                            </Typography>
                         ) : (
-                            <TextField size="small" id="outlined-basic" variant="outlined" />
+                            <Select
+                                fullWidth
+                                id="project-phase-select"
+                                value={projectPhase ? projectPhase : selectedProject?.projectPhase}
+                                onChange={handleProjectPhaseChange}
+                            >
+                                {projectPhaseOptions.map((ppo) => {
+                                    return (
+                                        <MenuItem key={ppo.id} value={ppo.id}>
+                                            {t(`projectTable.projectPhaseOptions.${ppo.name}`)}
+                                        </MenuItem>
+                                    );
+                                })}
+                            </Select>
                         )}
                     </Grid>
-                    <Grid item sm={2}>
+                    <Grid item xs={12} md={2}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.municipalityRole")}</Typography>
 
                         {!projectEditable ? (
@@ -189,16 +287,18 @@ export const ProjectsWithHouseBlock = (props: any) => {
                             <TextField size="small" id="outlined-basic" variant="outlined" />
                         )}
                     </Grid>
-                    <Grid item sm={2}>
+                    <Grid item xs={12} md={2}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.confidentialityLevel")}</Typography>
 
                         {!projectEditable ? (
-                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>{selectedProject?.confidentialityLevel}</Typography>
+                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }} onClick={() => setEditForm("confidentialityLevel")}>
+                                {selectedProject?.confidentialityLevel}
+                            </Typography>
                         ) : (
                             <TextField size="small" id="outlined-basic" variant="outlined" />
                         )}
                     </Grid>
-                    <Grid item sm={1}>
+                    <Grid item xs={12} md={1}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.projectLeader")}</Typography>
 
                         {!projectEditable ? (
@@ -213,7 +313,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
                             <TextField size="small" id="outlined-basic" variant="outlined" />
                         )}
                     </Grid>
-                    <Grid item sm={4}>
+                    <Grid item xs={12} md={4}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.planningPlanStatus")}</Typography>
 
                         {!projectEditable ? (
@@ -226,7 +326,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
                             <TextField size="small" id="outlined-basic" variant="outlined" />
                         )}
                     </Grid>
-                    <Grid item sm={2}>
+                    <Grid item xs={12} md={2}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.municipality")}</Typography>
 
                         {!projectEditable ? (
@@ -239,7 +339,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
                             <TextField size="small" id="outlined-basic" variant="outlined" />
                         )}
                     </Grid>
-                    <Grid item sm={2}>
+                    <Grid item xs={12} md={2}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.buurt")}</Typography>
 
                         {!projectEditable ? (
@@ -252,7 +352,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
                             <TextField size="small" id="outlined-basic" variant="outlined" />
                         )}
                     </Grid>
-                    <Grid item sm={2}>
+                    <Grid item xs={12} md={2}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.wijk")}</Typography>
 
                         {!projectEditable ? (
