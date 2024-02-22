@@ -24,7 +24,7 @@ import { DatePicker } from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from "dayjs";
 import { convertDayjsToString } from "../utils/convertDayjsToString";
 import { formatDate } from "../utils/formatDate";
-import { planTypeOptions, projectPhaseOptions } from "./table/constants";
+import { confidentialityLevelOptions, planTypeOptions, projectPhaseOptions } from "./table/constants";
 import { getMunicipalityRoleList } from "../api/projectsTableServices";
 import { OptionType } from "./ProjectsTableView";
 // import { ProjectHouseBlockCardItem } from "./ProjectHouseBlockCardItem";
@@ -45,6 +45,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
     const [startDate, setStartDate] = useState<Dayjs | null>();
     const [endDate, setEndDate] = useState<Dayjs | null>();
     const [projectPhase, setProjectPhase] = useState<string>();
+    const [confidentialityLevel, setConfidentialityLevel] = useState<string>();
     const [planType, setPlanType] = useState<string[]>([]);
     const [municipalityRolesOptions, setMunicipalityRolesOptions] = useState<OptionType[]>();
     const [selectedMunicipalityRole, setSelectedMunicipalityRole] = useState<string[]>([]);
@@ -56,6 +57,9 @@ export const ProjectsWithHouseBlock = (props: any) => {
     const handleEndDateChange = (newValue: Dayjs | null) => setEndDate(newValue);
     const handleProjectPhaseChange = (event: SelectChangeEvent) => {
         setProjectPhase(event.target.value as string);
+    };
+    const handleConfidentialityLevelChange = (event: SelectChangeEvent) => {
+        setConfidentialityLevel(event.target.value as string);
     };
     const handlePlanTypeChange = (event: SelectChangeEvent<typeof planType>) => {
         const {
@@ -319,9 +323,25 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.confidentialityLevel")}</Typography>
 
                         {!projectEditable ? (
-                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>{selectedProject?.confidentialityLevel}</Typography>
+                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
+                                {confidentialityLevel ? confidentialityLevel : selectedProject?.confidentialityLevel}
+                            </Typography>
                         ) : (
-                            <TextField size="small" id="outlined-basic" variant="outlined" />
+                            <Select
+                                fullWidth
+                                size="small"
+                                id="project-phase-select"
+                                value={confidentialityLevel ? confidentialityLevel : selectedProject?.confidentialityLevel}
+                                onChange={handleConfidentialityLevelChange}
+                            >
+                                {confidentialityLevelOptions.map((ppo) => {
+                                    return (
+                                        <MenuItem key={ppo.id} value={ppo.id}>
+                                            {t(`projectTable.confidentialityLevelOptions.${ppo.name}`)}
+                                        </MenuItem>
+                                    );
+                                })}
+                            </Select>
                         )}
                     </Grid>
                     <Grid item xs={12} md={1}>
