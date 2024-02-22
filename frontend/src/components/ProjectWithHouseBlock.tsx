@@ -143,6 +143,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
                                 })}
                             </AvatarGroup>
                         ) : (
+                            // TODO implement later
                             <TextField size="small" id="outlined-basic" variant="outlined" />
                         )}
                     </Grid>
@@ -162,6 +163,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         ) : (
                             <Select
                                 fullWidth
+                                size="small"
                                 id="plan-type-checkbox"
                                 multiple
                                 value={planType.length > 0 ? planType : selectedProject?.planType}
@@ -227,6 +229,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
                                 })}
                             </Typography>
                         ) : (
+                            // TODO Implement later
                             <TextField size="small" id="outlined-basic" variant="outlined" />
                         )}
                     </Grid>
@@ -240,6 +243,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         ) : (
                             <Select
                                 fullWidth
+                                size="small"
                                 id="project-phase-select"
                                 value={projectPhase ? projectPhase : selectedProject?.projectPhase}
                                 onChange={handleProjectPhaseChange}
