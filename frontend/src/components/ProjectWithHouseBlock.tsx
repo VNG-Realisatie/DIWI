@@ -138,8 +138,8 @@ export const ProjectsWithHouseBlock = (props: any) => {
 
                         {!projectEditable ? (
                             <AvatarGroup max={3}>
-                                {selectedProject?.projectOwners.map((owner: any[]) => {
-                                    return <Avatar {...stringAvatar(`${owner[2]} ${owner[3]}`)} />;
+                                {selectedProject?.projectOwners.map((owner: any[], id: number) => {
+                                    return <Avatar key={id} {...stringAvatar(`${owner[2]} ${owner[3]}`)} />;
                                 })}
                             </AvatarGroup>
                         ) : (
@@ -153,10 +153,10 @@ export const ProjectsWithHouseBlock = (props: any) => {
                             <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
                                 {planType.length > 0
                                     ? planType.map((pt: string) => {
-                                          return <>{t(`projectTable.planTypeOptions.${pt}`)},</>;
+                                          return <span key={pt}>{t(`projectTable.planTypeOptions.${pt}`)},</span>;
                                       })
                                     : selectedProject?.planType.map((pt: string) => {
-                                          return <>{t(`projectTable.planTypeOptions.${pt}`)},</>;
+                                          return <span key={pt}>{t(`projectTable.planTypeOptions.${pt}`)},</span>;
                                       })}
                             </Typography>
                         ) : (
@@ -223,7 +223,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         {!projectEditable ? (
                             <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
                                 {selectedProject?.priority.map((p: string) => {
-                                    return <>{p},</>;
+                                    return <span key={p}>{p},</span>;
                                 })}
                             </Typography>
                         ) : (
@@ -260,7 +260,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         {!projectEditable ? (
                             <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
                                 {selectedProject?.municipalityRole.map((mr: string) => {
-                                    return <>{mr}</>;
+                                    return <span key={mr}>{mr}</span>;
                                 })}
                             </Typography>
                         ) : (
@@ -282,8 +282,8 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         {!projectEditable ? (
                             <Box sx={{ border: "solid 1px #ddd", overflow: "hidden" }}>
                                 <AvatarGroup max={3}>
-                                    {selectedProject?.projectLeaders.map((leader: any[]) => {
-                                        return <Avatar {...stringAvatar(`${leader[2]} ${leader[3]}`)} />;
+                                    {selectedProject?.projectLeaders.map((leader: any[], id: number) => {
+                                        return <Avatar key={id} {...stringAvatar(`${leader[2]} ${leader[3]}`)} />;
                                     })}
                                 </AvatarGroup>
                             </Box>
@@ -297,7 +297,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         {!projectEditable ? (
                             <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
                                 {selectedProject?.planningPlanStatus.map((pp: string) => {
-                                    return <>{pp}</>;
+                                    return <span key={pp}>{pp}</span>;
                                 })}
                             </Typography>
                         ) : (
@@ -310,7 +310,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         {!projectEditable ? (
                             <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
                                 {selectedProject?.municipality?.map((municipality: string) => {
-                                    return <>{municipality},</>;
+                                    return <span key={municipality}>{municipality},</span>;
                                 })}
                             </Typography>
                         ) : (
@@ -323,7 +323,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         {!projectEditable ? (
                             <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
                                 {selectedProject?.buurt?.map((buurt: string) => {
-                                    return <>{buurt},</>;
+                                    return <span key={buurt}>{buurt},</span>;
                                 })}
                             </Typography>
                         ) : (
@@ -336,7 +336,7 @@ export const ProjectsWithHouseBlock = (props: any) => {
                         {!projectEditable ? (
                             <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
                                 {selectedProject?.wijk?.map((wijk: string) => {
-                                    return <>{wijk},</>;
+                                    return <span key={wijk}>{wijk},</span>;
                                 })}
                             </Typography>
                         ) : (
