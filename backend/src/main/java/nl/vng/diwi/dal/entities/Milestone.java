@@ -1,5 +1,6 @@
 package nl.vng.diwi.dal.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.*;
@@ -9,13 +10,11 @@ import org.hibernate.annotations.Filter;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "milestone", schema = GenericRepository.VNG_SCHEMA_NAME)
-@Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class Milestone extends IdSuperclass {
@@ -27,6 +26,21 @@ public class Milestone extends IdSuperclass {
     @JsonIgnoreProperties("milestone")
     @OneToMany(mappedBy="milestone", fetch = FetchType.LAZY)
     @Filter(name = GenericRepository.CURRENT_DATA_FILTER, condition = "change_end_date IS NULL")
-    private List<MilestoneState> state;
+    private List<MilestoneState> state = new ArrayList<>();
 
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
+    }
+
+    public List<MilestoneState> getState() {
+        return state;
+    }
+
+    public void setState(List<MilestoneState> state) {
+        this.state = state;
+    }
 }
