@@ -11,6 +11,7 @@ import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.Project;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
+import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.models.ProjectListModel;
 import nl.vng.diwi.models.ProjectTimelineModel;
@@ -75,7 +76,7 @@ public class ProjectsResource {
             filtering.setSortColumn(ProjectListModel.DEFAULT_SORT_COLUMN);
         }
 
-        return repo.getProjectsDAO().getProjectsTable(filtering);
+        return projectService.getProjectsTable(repo, filtering);
 
     }
 
@@ -117,6 +118,11 @@ public class ProjectsResource {
                 Set<PlanStatus> planStatuses = (projectUpdateModel.getValues() != null) ?
                     projectUpdateModel.getValues().stream().map(PlanStatus::valueOf).collect(Collectors.toSet()) : new HashSet<>();
                 projectService.updateProjectPlanStatus(repo, projectUuid, planStatuses, loggedUser.getUuid());
+            }
+            case planType -> {
+                Set<PlanType> planTypes = (projectUpdateModel.getValues() != null) ?
+                    projectUpdateModel.getValues().stream().map(PlanType::valueOf).collect(Collectors.toSet()) : new HashSet<>();
+                projectService.updateProjectPlanTypes(repo, projectUuid, planTypes, loggedUser.getUuid());
             }
             case projectPhase -> projectService.updateProjectPhase(repo, projectUuid, ProjectPhase.valueOf(projectUpdateModel.getValue()), loggedUser.getUuid());
         }

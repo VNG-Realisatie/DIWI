@@ -27,8 +27,7 @@ public class ProjectsDAO extends AbstractRepository {
         String statement = "FROM Project P WHERE P.id = :uuid";
         SelectionQuery<Project> query = session
                 .createSelectionQuery(statement, Project.class)
-                .setParameter("uuid", projectUuid)
-                ;
+                .setParameter("uuid", projectUuid);
         return query.getSingleResultOrNull();
     }
 

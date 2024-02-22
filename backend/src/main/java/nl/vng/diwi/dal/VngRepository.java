@@ -16,6 +16,8 @@ public class VngRepository extends AbstractRepository {
 
     private MilestoneDAO milestoneDAO;
 
+    private OrganizationsDAO organizationDAO;
+
     public ProjectsDAO getProjectsDAO() {
         if (projectsDAO == null) {
             projectsDAO = new ProjectsDAO(session);
@@ -28,6 +30,13 @@ public class VngRepository extends AbstractRepository {
             milestoneDAO = new MilestoneDAO(session);
         }
         return milestoneDAO;
+    }
+
+    public OrganizationsDAO getOrganizationDAO() {
+        if (organizationDAO == null) {
+            organizationDAO = new OrganizationsDAO(session);
+        }
+        return organizationDAO;
     }
 
     public List<SelectModel> getMunicipalityRoles() {

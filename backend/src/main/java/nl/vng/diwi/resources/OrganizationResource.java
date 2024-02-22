@@ -14,35 +14,35 @@ import jakarta.ws.rs.core.MediaType;
 
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.VngRepository;
-import nl.vng.diwi.models.SelectModel;
+import nl.vng.diwi.models.OrganizationModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import nl.vng.diwi.security.LoggedUser;
-import nl.vng.diwi.services.VngService;
+import nl.vng.diwi.services.OrganizationsService;
 
-@Path("/vng")
+@Path("/organizations")
 @RolesAllowed({Admin})
-public class VngResource {
+public class OrganizationResource {
     private static final Logger logger = LogManager.getLogger();
 
     private final VngRepository repo;
-    private final VngService vngService;
+    private final OrganizationsService organizationsService;
 
     @Inject
-    public VngResource(
+    public OrganizationResource(
         GenericRepository genericRepository,
-        VngService vngService) {
+        OrganizationsService organizationsService) {
         this.repo = new VngRepository(genericRepository.getDal().getSession());
-        this.vngService = vngService;
+        this.organizationsService = organizationsService;
     }
 
     @GET
-    @Path("/organizations/all")
+    @Path("/list")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<SelectModel> getAllOrganizationStates(@Context LoggedUser loggedUser) {
+    public List<OrganizationModel> getAllOrganization(@Context LoggedUser loggedUser) {
 
-        return vngService.getAllOrganizationStates(repo);
+        return organizationsService.getAllOrganizations(repo);
 
     }
 
