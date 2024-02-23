@@ -14,4 +14,8 @@ public class CustomUuidGenerator implements IdentifierGenerator {
         // @TODO: add code to inject the instanceID in the UUID here...
         return UUIDUtil.uuid(uuid);
     }
+
+    public static UUID generateUUIDv7() {
+        return Generators.timeBasedEpochGenerator().generate();
+    }
 }

@@ -3,7 +3,6 @@ package nl.vng.diwi.services;
 import java.time.LocalDate;
 import java.util.*;
 
-import nl.vng.diwi.dal.AutoCloseTransaction;
 import nl.vng.diwi.dal.FilterPaginationSorting;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.*;
@@ -40,55 +39,78 @@ public class ProjectService {
     public void updateProjectColor(VngRepository repo, UUID projectUuid, String newColor, UUID loggedInUserUuid)
         throws VngNotFoundException {
 
-        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            ProjectState oldProjectState = repo.getProjectsDAO().getCurrentProjectState(projectUuid);
-            if (oldProjectState == null) {
-                logger.error("Active projectState was not found for projectUuid {}.", projectUuid);
-                throw new VngNotFoundException();
-            }
+        ProjectState oldProjectState = repo.getProjectsDAO().getCurrentProjectState(projectUuid);
+        if (oldProjectState == null) {
+            logger.error("Active projectState was not found for projectUuid {}.", projectUuid);
+            throw new VngNotFoundException();
+        }
 
-            if (!Objects.equals(oldProjectState.getColor(), newColor)) {
-                ZonedDateTime now = ZonedDateTime.now();
-                oldProjectState.setChangeEndDate(now);
+        if (!Objects.equals(oldProjectState.getColor(), newColor)) {
+            ZonedDateTime now = ZonedDateTime.now();
+            oldProjectState.setChangeEndDate(now);
 
-                ProjectState newProjectState = new ProjectState();
-                newProjectState.setProject(oldProjectState.getProject());
-                newProjectState.setConfidentiality(oldProjectState.getConfidentiality());
-                newProjectState.setColor(newColor);
-                newProjectState.setChangeStartDate(now);
-                newProjectState.setChangeUser(repo.findById(User.class, loggedInUserUuid));
+            ProjectState newProjectState = new ProjectState();
+            newProjectState.setProject(oldProjectState.getProject());
+            newProjectState.setConfidentiality(oldProjectState.getConfidentiality());
+            newProjectState.setColor(newColor);
+            newProjectState.setChangeStartDate(now);
+            newProjectState.setChangeUser(repo.findById(User.class, loggedInUserUuid));
 
-                repo.persist(oldProjectState);
-                repo.persist(newProjectState);
-                transaction.commit();
-            }
+            repo.persist(oldProjectState);
+            repo.persist(newProjectState);
         }
     }
 
     public void updateProjectConfidentialityLevel(VngRepository repo, UUID projectUuid, Confidentiality newConfidentiality, UUID loggedInUserUuid)
         throws VngNotFoundException {
 
-        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            ProjectState oldProjectState = repo.getProjectsDAO().getCurrentProjectState(projectUuid);
-            if (oldProjectState == null) {
-                logger.error("Active projectState was not found for projectUuid {}.", projectUuid);
-                throw new VngNotFoundException();
+        ProjectState oldProjectState = repo.getProjectsDAO().getCurrentProjectState(projectUuid);
+        if (oldProjectState == null) {
+            logger.error("Active projectState was not found for projectUuid {}.", projectUuid);
+            throw new VngNotFoundException();
+        }
+
+        if (!Objects.equals(oldProjectState.getConfidentiality(), newConfidentiality)) {
+            ZonedDateTime now = ZonedDateTime.now();
+            oldProjectState.setChangeEndDate(now);
+
+            ProjectState newProjectState = new ProjectState();
+            newProjectState.setProject(oldProjectState.getProject());
+            newProjectState.setConfidentiality(newConfidentiality);
+            newProjectState.setColor(oldProjectState.getColor());
+            newProjectState.setChangeStartDate(now);
+            newProjectState.setChangeUser(repo.getReferenceById(User.class, loggedInUserUuid));
+
+            repo.persist(oldProjectState);
+            repo.persist(newProjectState);
+        }
+    }
+
+
+    public void updateProjectOrganizations(VngRepository repo, UUID projectUuid, ProjectRole projectRole, UUID organizationToAdd, UUID organizationToRemove, UUID loggedInUserUuid)
+        throws VngNotFoundException {
+
+        Project project = repo.getReferenceById(Project.class, projectUuid);
+        if (project == null) {
+            logger.error("Project with id {} was not found.", projectUuid);
+            throw new VngNotFoundException();
+        }
+
+        if (organizationToAdd != null) {
+            UUID organizationToProjectUuid = repo.getOrganizationDAO().findOrganizationForProject(projectUuid, organizationToAdd, projectRole);
+            if (organizationToProjectUuid != null) {
+                logger.info("Trying to add to project {} a {} organization {} which is already associated with this project.", projectUuid, projectRole, organizationToAdd);
+            } else {
+                repo.getOrganizationDAO().addOrganizationToProject(projectUuid, organizationToAdd, projectRole, loggedInUserUuid);
             }
+        }
 
-            if (!Objects.equals(oldProjectState.getConfidentiality(), newConfidentiality)) {
-                ZonedDateTime now = ZonedDateTime.now();
-                oldProjectState.setChangeEndDate(now);
-
-                ProjectState newProjectState = new ProjectState();
-                newProjectState.setProject(oldProjectState.getProject());
-                newProjectState.setConfidentiality(newConfidentiality);
-                newProjectState.setColor(oldProjectState.getColor());
-                newProjectState.setChangeStartDate(now);
-                newProjectState.setChangeUser(repo.getReferenceById(User.class, loggedInUserUuid));
-
-                repo.persist(oldProjectState);
-                repo.persist(newProjectState);
-                transaction.commit();
+        if (organizationToRemove != null) {
+            UUID organizationToProjectUuid = repo.getOrganizationDAO().findOrganizationForProject(projectUuid, organizationToRemove, projectRole);
+            if (organizationToProjectUuid == null) {
+                logger.info("Trying to remove from project {} a {} organization {} which is not associated with this project.", projectUuid, projectRole, organizationToRemove);
+            } else {
+                repo.getOrganizationDAO().removeOrganizationFromProject(projectUuid, organizationToRemove, projectRole);
             }
         }
     }
@@ -98,33 +120,30 @@ public class ProjectService {
 
         Project project = getCurrentProjectAndPerformPreliminaryUpdateChecks(repo, projectUuid);
 
-        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            ProjectNameChangelog oldProjectNameChangelogAfterUpdate = new ProjectNameChangelog();
-            ProjectNameChangelog newProjectNameChangelog = new ProjectNameChangelog();
-            newProjectNameChangelog.setProject(project);
-            newProjectNameChangelog.setName(newName);
+        ProjectNameChangelog oldProjectNameChangelogAfterUpdate = new ProjectNameChangelog();
+        ProjectNameChangelog newProjectNameChangelog = new ProjectNameChangelog();
+        newProjectNameChangelog.setProject(project);
+        newProjectNameChangelog.setName(newName);
 
-            ProjectNameChangelog oldProjectNameChangelog = prepareChangelogValuesToUpdate(repo, project, project.getName(), newProjectNameChangelog,
-                oldProjectNameChangelogAfterUpdate, loggedInUserUuid);
+        ProjectNameChangelog oldProjectNameChangelog = prepareChangelogValuesToUpdate(repo, project, project.getName(), newProjectNameChangelog,
+            oldProjectNameChangelogAfterUpdate, loggedInUserUuid);
 
-            repo.persist(newProjectNameChangelog);
-            if (oldProjectNameChangelog == null) {
-                logger.error("Project with uuid {} has missing name changelog value", projectUuid);
-                throw new VngServerErrorException("Project name changelog is invalid.");
-            }
+        repo.persist(newProjectNameChangelog);
+        if (oldProjectNameChangelog == null) {
+            logger.error("Project with uuid {} has missing name changelog value", projectUuid);
+            throw new VngServerErrorException("Project name changelog is invalid.");
+        }
 
-            if (Objects.equals(oldProjectNameChangelog.getName(), newName)) {
-                logger.info("Trying to update the project {} with the same project phase value that it already has {}.", projectUuid, newName);
-                return;
-            }
-            repo.persist(oldProjectNameChangelog);
-            if (oldProjectNameChangelogAfterUpdate.getStartMilestone() != null) {
-                //it is a current project && it had a non-null changelog before the update
-                oldProjectNameChangelogAfterUpdate.setProject(project);
-                oldProjectNameChangelogAfterUpdate.setName(oldProjectNameChangelog.getName());
-                repo.persist(oldProjectNameChangelogAfterUpdate);
-            }
-            transaction.commit();
+        if (Objects.equals(oldProjectNameChangelog.getName(), newName)) {
+            logger.info("Trying to update the project {} with the same project phase value that it already has {}.", projectUuid, newName);
+            return;
+        }
+        repo.persist(oldProjectNameChangelog);
+        if (oldProjectNameChangelogAfterUpdate.getStartMilestone() != null) {
+            //it is a current project && it had a non-null changelog before the update
+            oldProjectNameChangelogAfterUpdate.setProject(project);
+            oldProjectNameChangelogAfterUpdate.setName(oldProjectNameChangelog.getName());
+            repo.persist(oldProjectNameChangelogAfterUpdate);
         }
     }
 
@@ -133,45 +152,42 @@ public class ProjectService {
 
         Project project = getCurrentProjectAndPerformPreliminaryUpdateChecks(repo, projectUuid);
 
-        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            ProjectPlanologischePlanstatusChangelog oldPlanStatusChangelogAfterUpdate = new ProjectPlanologischePlanstatusChangelog();
-            ProjectPlanologischePlanstatusChangelog newPlanStatusChangelog = null;
-            if (newProjectPlanStatuses != null && !newProjectPlanStatuses.isEmpty()) {
-                newPlanStatusChangelog = new ProjectPlanologischePlanstatusChangelog();
-                newPlanStatusChangelog.setProject(project);
+        ProjectPlanologischePlanstatusChangelog oldPlanStatusChangelogAfterUpdate = new ProjectPlanologischePlanstatusChangelog();
+        ProjectPlanologischePlanstatusChangelog newPlanStatusChangelog = null;
+        if (newProjectPlanStatuses != null && !newProjectPlanStatuses.isEmpty()) {
+            newPlanStatusChangelog = new ProjectPlanologischePlanstatusChangelog();
+            newPlanStatusChangelog.setProject(project);
+        }
+        ProjectPlanologischePlanstatusChangelog oldPlanStatusChangelog = prepareChangelogValuesToUpdate(repo, project, project.getPlanologischePlanstatus(), newPlanStatusChangelog,
+            oldPlanStatusChangelogAfterUpdate, loggedInUserUuid);
+        if (newPlanStatusChangelog != null) {
+            repo.persist(newPlanStatusChangelog);
+            for (PlanStatus newPlanStatusValue : newProjectPlanStatuses) {
+                ProjectPlanologischePlanstatusChangelogValue newChangelogValue = new ProjectPlanologischePlanstatusChangelogValue();
+                newChangelogValue.setPlanStatusChangelog(newPlanStatusChangelog);
+                newChangelogValue.setPlanStatus(newPlanStatusValue);
+                repo.persist(newChangelogValue);
             }
-            ProjectPlanologischePlanstatusChangelog oldPlanStatusChangelog = prepareChangelogValuesToUpdate(repo, project, project.getPlanologischePlanstatus(), newPlanStatusChangelog,
-                oldPlanStatusChangelogAfterUpdate, loggedInUserUuid);
-            if (newPlanStatusChangelog != null) {
-                repo.persist(newPlanStatusChangelog);
-                for (PlanStatus newPlanStatusValue : newProjectPlanStatuses) {
-                    ProjectPlanologischePlanstatusChangelogValue newChangelogValue = new ProjectPlanologischePlanstatusChangelogValue();
-                    newChangelogValue.setPlanStatusChangelog(newPlanStatusChangelog);
-                    newChangelogValue.setPlanStatus(newPlanStatusValue);
-                    repo.persist(newChangelogValue);
+        }
+        if (oldPlanStatusChangelog != null) {
+            Set<PlanStatus> oldProjectPlanStatuses = oldPlanStatusChangelog.getValue().stream()
+                .map(ProjectPlanologischePlanstatusChangelogValue::getPlanStatus).collect(Collectors.toSet());
+            if (Objects.equals(oldProjectPlanStatuses, newProjectPlanStatuses)) {
+                logger.info("Trying to update the project {} with the same plan statuses that it already has {}.", projectUuid, newProjectPlanStatuses);
+                return;
+            }
+            repo.persist(oldPlanStatusChangelog);
+            if (oldPlanStatusChangelogAfterUpdate.getStartMilestone() != null) {
+                //it is a current project && it had a non-null changelog before the update
+                oldPlanStatusChangelogAfterUpdate.setProject(project);
+                repo.persist(oldPlanStatusChangelogAfterUpdate);
+                for (PlanStatus oldPlanStatusValue : oldProjectPlanStatuses) {
+                    ProjectPlanologischePlanstatusChangelogValue oldChangelogValue = new ProjectPlanologischePlanstatusChangelogValue();
+                    oldChangelogValue.setPlanStatusChangelog(oldPlanStatusChangelogAfterUpdate);
+                    oldChangelogValue.setPlanStatus(oldPlanStatusValue);
+                    repo.persist(oldChangelogValue);
                 }
             }
-            if (oldPlanStatusChangelog != null) {
-                Set<PlanStatus> oldProjectPlanStatuses = oldPlanStatusChangelog.getValue().stream()
-                    .map(ProjectPlanologischePlanstatusChangelogValue::getPlanStatus).collect(Collectors.toSet());
-                if (Objects.equals(oldProjectPlanStatuses, newProjectPlanStatuses)) {
-                    logger.info("Trying to update the project {} with the same plan statuses that it already has {}.", projectUuid, newProjectPlanStatuses);
-                    return;
-                }
-                repo.persist(oldPlanStatusChangelog);
-                if (oldPlanStatusChangelogAfterUpdate.getStartMilestone() != null) {
-                    //it is a current project && it had a non-null changelog before the update
-                    oldPlanStatusChangelogAfterUpdate.setProject(project);
-                    repo.persist(oldPlanStatusChangelogAfterUpdate);
-                    for (PlanStatus oldPlanStatusValue : oldProjectPlanStatuses) {
-                        ProjectPlanologischePlanstatusChangelogValue oldChangelogValue = new ProjectPlanologischePlanstatusChangelogValue();
-                        oldChangelogValue.setPlanStatusChangelog(oldPlanStatusChangelogAfterUpdate);
-                        oldChangelogValue.setPlanStatus(oldPlanStatusValue);
-                        repo.persist(oldChangelogValue);
-                    }
-                }
-            }
-            transaction.commit();
         }
     }
 
@@ -180,45 +196,42 @@ public class ProjectService {
 
         Project project = getCurrentProjectAndPerformPreliminaryUpdateChecks(repo, projectUuid);
 
-        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            ProjectPlanTypeChangelog oldPlanTypeChangelogAfterUpdate = new ProjectPlanTypeChangelog();
-            ProjectPlanTypeChangelog newPlanTypeChangelog = null;
-            if (newProjectPlanTypes != null && !newProjectPlanTypes.isEmpty()) {
-                newPlanTypeChangelog = new ProjectPlanTypeChangelog();
-                newPlanTypeChangelog.setProject(project);
+        ProjectPlanTypeChangelog oldPlanTypeChangelogAfterUpdate = new ProjectPlanTypeChangelog();
+        ProjectPlanTypeChangelog newPlanTypeChangelog = null;
+        if (newProjectPlanTypes != null && !newProjectPlanTypes.isEmpty()) {
+            newPlanTypeChangelog = new ProjectPlanTypeChangelog();
+            newPlanTypeChangelog.setProject(project);
+        }
+        ProjectPlanTypeChangelog oldPlanTypeChangelog = prepareChangelogValuesToUpdate(repo, project, project.getPlanType(), newPlanTypeChangelog,
+            oldPlanTypeChangelogAfterUpdate, loggedInUserUuid);
+        if (newPlanTypeChangelog != null) {
+            repo.persist(newPlanTypeChangelog);
+            for (PlanType newPlanTypeValue : newProjectPlanTypes) {
+                ProjectPlanTypeChangelogValue newChangelogValue = new ProjectPlanTypeChangelogValue();
+                newChangelogValue.setPlanTypeChangelog(newPlanTypeChangelog);
+                newChangelogValue.setPlanType(newPlanTypeValue);
+                repo.persist(newChangelogValue);
             }
-            ProjectPlanTypeChangelog oldPlanTypeChangelog = prepareChangelogValuesToUpdate(repo, project, project.getPlanType(), newPlanTypeChangelog,
-                oldPlanTypeChangelogAfterUpdate, loggedInUserUuid);
-            if (newPlanTypeChangelog != null) {
-                repo.persist(newPlanTypeChangelog);
-                for (PlanType newPlanTypeValue : newProjectPlanTypes) {
-                    ProjectPlanTypeChangelogValue newChangelogValue = new ProjectPlanTypeChangelogValue();
-                    newChangelogValue.setPlanTypeChangelog(newPlanTypeChangelog);
-                    newChangelogValue.setPlanType(newPlanTypeValue);
-                    repo.persist(newChangelogValue);
+        }
+        if (oldPlanTypeChangelog != null) {
+            Set<PlanType> oldProjectPlanTypes = oldPlanTypeChangelog.getValue().stream()
+                .map(ProjectPlanTypeChangelogValue::getPlanType).collect(Collectors.toSet());
+            if (Objects.equals(oldProjectPlanTypes, newProjectPlanTypes)) {
+                logger.info("Trying to update the project {} with the same plan types that it already has {}.", projectUuid, newProjectPlanTypes);
+                return;
+            }
+            repo.persist(oldPlanTypeChangelog);
+            if (oldPlanTypeChangelogAfterUpdate.getStartMilestone() != null) {
+                //it is a current project && it had a non-null changelog before the update
+                oldPlanTypeChangelogAfterUpdate.setProject(project);
+                repo.persist(oldPlanTypeChangelogAfterUpdate);
+                for (PlanType oldPlanTypeValue : oldProjectPlanTypes) {
+                    ProjectPlanTypeChangelogValue oldChangelogValue = new ProjectPlanTypeChangelogValue();
+                    oldChangelogValue.setPlanTypeChangelog(oldPlanTypeChangelogAfterUpdate);
+                    oldChangelogValue.setPlanType(oldPlanTypeValue);
+                    repo.persist(oldChangelogValue);
                 }
             }
-            if (oldPlanTypeChangelog != null) {
-                Set<PlanType> oldProjectPlanTypes = oldPlanTypeChangelog.getValue().stream()
-                    .map(ProjectPlanTypeChangelogValue::getPlanType).collect(Collectors.toSet());
-                if (Objects.equals(oldProjectPlanTypes, newProjectPlanTypes)) {
-                    logger.info("Trying to update the project {} with the same plan types that it already has {}.", projectUuid, newProjectPlanTypes);
-                    return;
-                }
-                repo.persist(oldPlanTypeChangelog);
-                if (oldPlanTypeChangelogAfterUpdate.getStartMilestone() != null) {
-                    //it is a current project && it had a non-null changelog before the update
-                    oldPlanTypeChangelogAfterUpdate.setProject(project);
-                    repo.persist(oldPlanTypeChangelogAfterUpdate);
-                    for (PlanType oldPlanTypeValue : oldProjectPlanTypes) {
-                        ProjectPlanTypeChangelogValue oldChangelogValue = new ProjectPlanTypeChangelogValue();
-                        oldChangelogValue.setPlanTypeChangelog(oldPlanTypeChangelogAfterUpdate);
-                        oldChangelogValue.setPlanType(oldPlanTypeValue);
-                        repo.persist(oldChangelogValue);
-                    }
-                }
-            }
-            transaction.commit();
         }
     }
 
@@ -227,33 +240,30 @@ public class ProjectService {
 
         Project project = getCurrentProjectAndPerformPreliminaryUpdateChecks(repo, projectUuid);
 
-        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            ProjectFaseChangelog oldProjectFaseChangelogAfterUpdate = new ProjectFaseChangelog();
-            ProjectFaseChangelog newProjectFaseChangelog = null;
-            if (newProjectPhase != null) {
-                newProjectFaseChangelog = new ProjectFaseChangelog();
-                newProjectFaseChangelog.setProject(project);
-                newProjectFaseChangelog.setProjectPhase(newProjectPhase);
+        ProjectFaseChangelog oldProjectFaseChangelogAfterUpdate = new ProjectFaseChangelog();
+        ProjectFaseChangelog newProjectFaseChangelog = null;
+        if (newProjectPhase != null) {
+            newProjectFaseChangelog = new ProjectFaseChangelog();
+            newProjectFaseChangelog.setProject(project);
+            newProjectFaseChangelog.setProjectPhase(newProjectPhase);
+        }
+        ProjectFaseChangelog oldProjectFaseChangelog = prepareChangelogValuesToUpdate(repo, project, project.getPhase(), newProjectFaseChangelog,
+            oldProjectFaseChangelogAfterUpdate, loggedInUserUuid);
+        if (newProjectFaseChangelog != null) {
+            repo.persist(newProjectFaseChangelog);
+        }
+        if (oldProjectFaseChangelog != null) {
+            if (Objects.equals(oldProjectFaseChangelog.getProjectPhase(), newProjectPhase)) {
+                logger.info("Trying to update the project {} with the same project phase value that it already has {}.", projectUuid, newProjectPhase);
+                return;
             }
-            ProjectFaseChangelog oldProjectFaseChangelog = prepareChangelogValuesToUpdate(repo, project, project.getPhase(), newProjectFaseChangelog,
-                oldProjectFaseChangelogAfterUpdate, loggedInUserUuid);
-            if (newProjectFaseChangelog != null) {
-                repo.persist(newProjectFaseChangelog);
+            repo.persist(oldProjectFaseChangelog);
+            if (oldProjectFaseChangelogAfterUpdate.getStartMilestone() != null) {
+                //it is a current project && it had a non-null changelog before the update
+                oldProjectFaseChangelogAfterUpdate.setProject(project);
+                oldProjectFaseChangelogAfterUpdate.setProjectPhase(oldProjectFaseChangelog.getProjectPhase());
+                repo.persist(oldProjectFaseChangelogAfterUpdate);
             }
-            if (oldProjectFaseChangelog != null) {
-                if (Objects.equals(oldProjectFaseChangelog.getProjectPhase(), newProjectPhase)) {
-                    logger.info("Trying to update the project {} with the same project phase value that it already has {}.", projectUuid, newProjectPhase);
-                    return;
-                }
-                repo.persist(oldProjectFaseChangelog);
-                if (oldProjectFaseChangelogAfterUpdate.getStartMilestone() != null) {
-                    //it is a current project && it had a non-null changelog before the update
-                    oldProjectFaseChangelogAfterUpdate.setProject(project);
-                    oldProjectFaseChangelogAfterUpdate.setProjectPhase(oldProjectFaseChangelog.getProjectPhase());
-                    repo.persist(oldProjectFaseChangelogAfterUpdate);
-                }
-            }
-            transaction.commit();
         }
     }
 
@@ -367,7 +377,6 @@ public class ProjectService {
         if (milestone == null) {
             milestone = new Milestone();
             milestone.setProject(project);
-            repo.persist(milestone);
 
             MilestoneState milestoneState = new MilestoneState();
             milestoneState.setMilestone(milestone);
@@ -376,7 +385,9 @@ public class ProjectService {
             milestoneState.setChangeStartDate(ZonedDateTime.now());
             milestoneState.setState(MilestoneStatus.GEPLAND);
             milestoneState.setDescription(milestoneDate.toString());
+            milestone.getState().add(milestoneState);
 
+            repo.persist(milestone);
             repo.persist(milestoneState);
         }
 
