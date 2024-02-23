@@ -2,6 +2,7 @@ package nl.vng.diwi.models;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,7 +26,7 @@ public class ProjectSnapshotModel extends DatedDataModelSuperClass {
     private String projectColor;
     private Confidentiality confidentialityLevel;
     private List<PlanType> planType = new ArrayList<>();
-    private WeightedRangeOrValueModel<String> priority;
+    private List<PriorityModel> priority = Arrays.asList(new PriorityModel[3]);
     private ProjectPhase projectPhase;
     private List<String> municipalityRole = new ArrayList<>();
     private List<PlanStatus> planningPlanStatus = new ArrayList<>();
@@ -41,7 +42,7 @@ public class ProjectSnapshotModel extends DatedDataModelSuperClass {
         projectColor = timeline.getProjectColor();
         confidentialityLevel = timeline.getConfidentialityLevel();
         planType = retrieveSnapshotItem(timeline.getPlanType()).getData();
-        priority = retrieveWeightedRangeOrValueSnapshotItem(timeline.getPriority());
+        this.setPriority(retrieveWeightedRangeOrValueSnapshotItem(timeline.getPriority()));
         projectPhase = retrieveSnapshotItem(timeline.getProjectPhase()).getData();
         municipalityRole = retrieveSnapshotItem(timeline.getMunicipalityRole()).getData();
         planningPlanStatus = retrieveSnapshotItem(timeline.getPlanningPlanStatus()).getData();
@@ -140,12 +141,14 @@ public class ProjectSnapshotModel extends DatedDataModelSuperClass {
         this.planType = planType;
     }
 
-    public WeightedRangeOrValueModel<String> getPriority() {
-        return priority;
+    public List<PriorityModel> getPriority() {
+        return priority;        
     }
 
     public void setPriority(WeightedRangeOrValueModel<String> priority) {
-        this.priority = priority;
+        this.priority.set(0, new PriorityModel(priority.getLevelMin(), priority.getDataMin()));
+        this.priority.set(1, new PriorityModel(priority.getLevel(), priority.getData()));
+        this.priority.set(2, new PriorityModel(priority.getLevelMax(), priority.getDataMax()));
     }
 
     public ProjectPhase getProjectPhase() {
