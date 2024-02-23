@@ -1,11 +1,16 @@
 package nl.vng.diwi.models;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import nl.vng.diwi.models.interfaces.WeightedRangeModelInterface;
+import nl.vng.diwi.models.interfaces.WeightedValueModelInterface;
 
-@Data
-@NoArgsConstructor
-public class WeightedRangeOrValueModel<T> {
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+
+@ToString
+@RequiredArgsConstructor
+@EqualsAndHashCode
+public class WeightedRangeOrValueModel<T> implements WeightedValueModelInterface<T>, WeightedRangeModelInterface<T> {
     private Integer levelMin;
     private Integer levelMax;
     private Integer level;
@@ -22,17 +27,65 @@ public class WeightedRangeOrValueModel<T> {
         data = datedData.getData();
     }
 
-    public void setMin(int level, T data) {
+    public void setMin(Integer level, T data) {
         this.level = null;
         this.data = null;
         levelMin = level;
         dataMin = data;
     }
 
-    public void setMax(int level, T data) {
+    public void setMax(Integer level, T data) {
         this.level = null;
         this.data = null;
         levelMax = level;
         dataMax = data;
+    }
+
+    public Integer getLevelMin() {
+        return levelMin;
+    }
+
+    public void setLevelMin(Integer levelMin) {
+        this.levelMin = levelMin;
+    }
+
+    public Integer getLevelMax() {
+        return levelMax;
+    }
+
+    public void setLevelMax(Integer levelMax) {
+        this.levelMax = levelMax;
+    }
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
+    }
+
+    public T getDataMin() {
+        return dataMin;
+    }
+
+    public void setDataMin(T dataMin) {
+        this.dataMin = dataMin;
+    }
+
+    public T getDataMax() {
+        return dataMax;
+    }
+
+    public void setDataMax(T dataMax) {
+        this.dataMax = dataMax;
+    }
+
+    public T getData() {
+        return data;
+    }
+
+    public void setData(T data) {
+        this.data = data;
     }
 }

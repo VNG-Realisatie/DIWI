@@ -11,7 +11,7 @@
       "information": "Project informatie",
       "houseBlocks": "Huizen blokken",
       "signupOnTheMap": "Intekenen op de kaart",
-      "timeline": "Tijdline",
+      "timeline": "Tijdlijn",
       "completeMessage": "De wizard voor het maken van projectformulieren is voltooid. Klik op Opslaan om het proces te voltooien.",
       "successfullySaved": "Project succesvol opgeslagen.",
       "informationForm": {
@@ -120,7 +120,7 @@
       "title": "Project",
       "map": "Kaart",
       "characteristics": "Eigenschappen",
-      "timeline": "Tijdline"
+      "timeline": "Tijdlijn"
     },
     "exchangeData": {
       "title": "Data uitwisselen",

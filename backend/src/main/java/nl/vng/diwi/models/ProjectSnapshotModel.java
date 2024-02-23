@@ -12,12 +12,12 @@ import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.models.superclasses.DatedDataModelSuperClass;
 
-import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
-@Data
-@NoArgsConstructor
+@ToString
+@RequiredArgsConstructor
 @EqualsAndHashCode(callSuper=true)
 public class ProjectSnapshotModel extends DatedDataModelSuperClass {
     private UUID projectId;
@@ -98,5 +98,109 @@ public class ProjectSnapshotModel extends DatedDataModelSuperClass {
         }
 
         return output;
+    }
+
+    public UUID getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(UUID projectId) {
+        this.projectId = projectId;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
+
+    public String getProjectColor() {
+        return projectColor;
+    }
+
+    public void setProjectColor(String projectColor) {
+        this.projectColor = projectColor;
+    }
+
+    public Confidentiality getConfidentialityLevel() {
+        return confidentialityLevel;
+    }
+
+    public void setConfidentialityLevel(Confidentiality confidentialityLevel) {
+        this.confidentialityLevel = confidentialityLevel;
+    }
+
+    public List<PlanType> getPlanType() {
+        return planType;
+    }
+
+    public void setPlanType(List<PlanType> planType) {
+        this.planType = planType;
+    }
+
+    public WeightedRangeOrValueModel<String> getPriority() {
+        return priority;
+    }
+
+    public void setPriority(WeightedRangeOrValueModel<String> priority) {
+        this.priority = priority;
+    }
+
+    public ProjectPhase getProjectPhase() {
+        return projectPhase;
+    }
+
+    public void setProjectPhase(ProjectPhase projectPhase) {
+        this.projectPhase = projectPhase;
+    }
+
+    public String[] getMunicipalityRole() {
+        return municipalityRole;
+    }
+
+    public void setMunicipalityRole(String[] municipalityRole) {
+        this.municipalityRole = municipalityRole;
+    }
+
+    public List<PlanStatus> getPlanningPlanStatus() {
+        return planningPlanStatus;
+    }
+
+    public void setPlanningPlanStatus(List<PlanStatus> planningPlanStatus) {
+        this.planningPlanStatus = planningPlanStatus;
+    }
+
+    public Long getTotalValue() {
+        return totalValue;
+    }
+
+    public void setTotalValue(Long totalValue) {
+        this.totalValue = totalValue;
+    }
+
+    public String[] getMunicipality() {
+        return municipality;
+    }
+
+    public void setMunicipality(String[] municipality) {
+        this.municipality = municipality;
+    }
+
+    public String[] getWijk() {
+        return wijk;
+    }
+
+    public void setWijk(String[] wijk) {
+        this.wijk = wijk;
+    }
+
+    public String[] getBuurt() {
+        return buurt;
+    }
+
+    public void setBuurt(String[] buurt) {
+        this.buurt = buurt;
     }
 }

@@ -3,13 +3,22 @@ package nl.vng.diwi.models.superclasses;
 import nl.vng.diwi.dal.entities.Milestone;
 import nl.vng.diwi.models.LocalDateModel;
 import nl.vng.diwi.models.MilestoneModel;
+import nl.vng.diwi.models.interfaces.DatedDataModelInterface;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
-@Data
-abstract public class DatedDataModelSuperClass {
+@ToString
+@RequiredArgsConstructor
+@EqualsAndHashCode
+abstract public class DatedDataModelSuperClass implements DatedDataModelInterface {
     private LocalDateModel startDate;
     private LocalDateModel endDate;
+
+    public LocalDateModel getStartDate() {
+        return startDate;
+    }
 
     public void setStartDate(MilestoneModel milestone) {
         startDate = milestone.getDate();
@@ -21,6 +30,10 @@ abstract public class DatedDataModelSuperClass {
 
     public void setStartDate(Milestone milestone) {
         startDate = (new MilestoneModel(milestone)).getDate();
+    }
+
+    public LocalDateModel getEndDate() {
+        return endDate;
     }
 
     public void setEndDate(MilestoneModel milestone) {
