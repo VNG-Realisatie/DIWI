@@ -41,52 +41,50 @@ public class ProjectUpdateModel {
             return "Property is missing";
         }
 
-        switch (property) {
-            case confidentialityLevel:
-                return (value == null || !EnumUtils.isValidEnum(Confidentiality.class, value)) ? "New confidentiality level value is not valid." : null;
-            case name:
-                return (value == null || value.isBlank()) ? "New project name value is not valid." : null; //TODO
-            case planningPlanStatus:
+        return switch (property) {
+            case confidentialityLevel ->
+                (value == null || !EnumUtils.isValidEnum(Confidentiality.class, value)) ? "New confidentiality level value is not valid." : null;
+            case name -> (value == null || value.isBlank()) ? "New project name value is not valid." : null; // TODO
+            case planningPlanStatus -> {
                 if (values != null) {
                     for (String planningPlanStatusValue : values) {
                         if (!EnumUtils.isValidEnum(PlanStatus.class, planningPlanStatusValue)) {
-                            return "New planning plan status value is not valid.";
+                            yield "New planning plan status value is not valid.";
                         }
                     }
                 }
-                return null;
-            case planType:
+                yield null;
+            }
+            case planType -> {
                 if (values != null) {
                     for (String planType : values) {
                         if (!EnumUtils.isValidEnum(PlanType.class, planType)) {
-                            return "New plan type value is not valid.";
+                            yield "New plan type value is not valid.";
                         }
                     }
                 }
-                return null;
-            case projectColor:
-                return (value == null || !value.matches(COLOR_REGEX)) ? "New color is not valid." : null;
-            case projectPhase:
-                return (value == null || !EnumUtils.isValidEnum(ProjectPhase.class, value)) ? "New project phase value is not valid." : null;
-            case projectLeaders:
-            case projectOwners:
+                yield null;
+            }
+            case projectColor -> (value == null || !value.matches(COLOR_REGEX)) ? "New color is not valid." : null;
+            case projectPhase -> (value == null || !EnumUtils.isValidEnum(ProjectPhase.class, value)) ? "New project phase value is not valid." : null;
+            case projectLeaders, projectOwners -> {
                 if (add != null) {
                     try {
                         UUID.fromString(add);
                     } catch (IllegalArgumentException ex) {
-                        return "UUID provided for 'add' field is not valid.";
+                        yield "UUID provided for 'add' field is not valid.";
                     }
                 }
                 if (remove != null) {
                     try {
                         UUID.fromString(remove);
                     } catch (IllegalArgumentException ex) {
-                        return "UUID provided for 'remove' field is not valid.";
+                        yield "UUID provided for 'remove' field is not valid.";
                     }
                 }
-                return null;
-            default:
-                return "Unknown project property";
-        }
+                yield null;
+            }
+        };
+
     }
 }
