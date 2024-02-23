@@ -1,6 +1,8 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { useEffect, useState, useContext } from "react";
 import { ScopedCssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import "./App.css";
+import AlertContext from "./context/AlertContext";
 import { AlertProvider } from "./context/AlertContext";
 import AlertPopup from "./components/AlertPopup";
 import { Layout } from "./components/Layout";
@@ -20,7 +22,6 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { nlNL } from "@mui/material/locale";
 import { Swagger } from "./pages/Swagger";
-import { useEffect } from "react";
 
 export const drawerWidth = 290;
 
@@ -78,14 +79,23 @@ const theme = createTheme(
 );
 
 function RequiresLogin() {
-    useEffect(function checkLoggedIn() {
-        fetch(Paths.loggedIn.path).then((response) => {
-            if (response.status === 401) {
-                document.location.href = Paths.login.path;
-            }
-        });
-    });
-    return <Layout />;
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const { setAlert } = useContext(AlertContext);
+
+    useEffect(() => {
+        fetch(Paths.loggedIn.path)
+            .then((response) => {
+                if (response.status === 200) {
+                    setIsLoggedIn(true);
+                } else if (response.status === 401) {
+                    document.location.href = Paths.login.path;
+                }
+            })
+            .catch((error) => {
+                setAlert(error.message, "error");
+            });
+    }, []);
+    return isLoggedIn ? <Layout /> : null;
 }
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
