@@ -12,9 +12,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "project", schema = GenericRepository.VNG_SCHEMA_NAME)
+@ToString
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class Project extends IdSuperclass {
@@ -57,6 +59,11 @@ public class Project extends IdSuperclass {
     @OneToMany(mappedBy="project", fetch = FetchType.LAZY)
     @Filter(name = GenericRepository.CURRENT_DATA_FILTER, condition = "change_end_date IS NULL")
     private List<ProjectPrioriseringChangelog> priority;
+
+    @JsonIgnoreProperties("project")
+    @OneToMany(mappedBy="project", fetch = FetchType.LAZY)
+    @Filter(name = GenericRepository.CURRENT_DATA_FILTER, condition = "change_end_date IS NULL")
+    private List<ProjectGemeenteRolChangelog> municipalityRole;
 
     public List<Milestone> getMilestones() {
         return milestones;
@@ -120,5 +127,13 @@ public class Project extends IdSuperclass {
 
     public void setPriority(List<ProjectPrioriseringChangelog> priority) {
         this.priority = priority;
+    }
+
+    public List<ProjectGemeenteRolChangelog> getMunicipalityRole() {
+        return municipalityRole;
+    }
+
+    public void setMunicipalityRole(List<ProjectGemeenteRolChangelog> municipalityRole) {
+        this.municipalityRole = municipalityRole;
     }
 }

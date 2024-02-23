@@ -27,7 +27,7 @@ public class ProjectSnapshotModel extends DatedDataModelSuperClass {
     private List<PlanType> planType = new ArrayList<>();
     private WeightedRangeOrValueModel<String> priority;
     private ProjectPhase projectPhase;
-    private String[] municipalityRole;
+    private List<String> municipalityRole = new ArrayList<>();
     private List<PlanStatus> planningPlanStatus = new ArrayList<>();
     private Long totalValue;
     private String[] municipality;
@@ -43,7 +43,7 @@ public class ProjectSnapshotModel extends DatedDataModelSuperClass {
         planType = retrieveSnapshotItem(timeline.getPlanType()).getData();
         priority = retrieveWeightedRangeOrValueSnapshotItem(timeline.getPriority());
         projectPhase = retrieveSnapshotItem(timeline.getProjectPhase()).getData();
-        // municipalityRole
+        municipalityRole = retrieveSnapshotItem(timeline.getMunicipalityRole()).getData();
         planningPlanStatus = retrieveSnapshotItem(timeline.getPlanningPlanStatus()).getData();
         // totalValue
         // municipality
@@ -156,11 +156,11 @@ public class ProjectSnapshotModel extends DatedDataModelSuperClass {
         this.projectPhase = projectPhase;
     }
 
-    public String[] getMunicipalityRole() {
+    public List<String> getMunicipalityRole() {
         return municipalityRole;
     }
 
-    public void setMunicipalityRole(String[] municipalityRole) {
+    public void setMunicipalityRole(List<String> municipalityRole) {
         this.municipalityRole = municipalityRole;
     }
 
