@@ -227,7 +227,7 @@ public class ProjectServiceTest {
         Project project = repo.persist(new Project());
         ProjectState projectState = new ProjectState();
         projectState.setProject(project);
-        projectState.setChangeUser(user);
+        projectState.setCreateUser(user);
         projectState.setConfidentiality(Confidentiality.OPENBAAR);
         projectState.setChangeStartDate(ZonedDateTime.now());
         projectState.setColor("#123456");
@@ -242,7 +242,7 @@ public class ProjectServiceTest {
         repo.persist(milestone);
         MilestoneState milestoneState = new MilestoneState();
         milestoneState.setMilestone(milestone);
-        milestoneState.setChangeUser(user);
+        milestoneState.setCreateUser(user);
         milestoneState.setDate(date);
         milestoneState.setChangeStartDate(ZonedDateTime.now());
         milestoneState.setState(MilestoneStatus.GEPLAND);
@@ -255,7 +255,7 @@ public class ProjectServiceTest {
                                                                     Milestone endMilestone, User user) {
         ProjectDurationChangelog durationChangelog = new ProjectDurationChangelog();
         durationChangelog.setProject(project);
-        durationChangelog.setChangeUser(user);
+        durationChangelog.setCreateUser(user);
         durationChangelog.setStartMilestone(startMilestone);
         durationChangelog.setEndMilestone(endMilestone);
         durationChangelog.setChangeStartDate(ZonedDateTime.now());
@@ -267,7 +267,7 @@ public class ProjectServiceTest {
                                                                     Milestone endMilestone, User user) {
         ProjectNameChangelog nameChangelog = new ProjectNameChangelog();
         nameChangelog.setProject(project);
-        nameChangelog.setChangeUser(user);
+        nameChangelog.setCreateUser(user);
         nameChangelog.setStartMilestone(startMilestone);
         nameChangelog.setEndMilestone(endMilestone);
         nameChangelog.setChangeStartDate(ZonedDateTime.now());
@@ -280,7 +280,7 @@ public class ProjectServiceTest {
                                                             Milestone endMilestone, User user) {
         ProjectFaseChangelog faseChangelog = new ProjectFaseChangelog();
         faseChangelog.setProject(project);
-        faseChangelog.setChangeUser(user);
+        faseChangelog.setCreateUser(user);
         faseChangelog.setStartMilestone(startMilestone);
         faseChangelog.setEndMilestone(endMilestone);
         faseChangelog.setChangeStartDate(ZonedDateTime.now());
@@ -295,7 +295,7 @@ public class ProjectServiceTest {
 
         ProjectPlanologischePlanstatusChangelog planStatusChangelog = new ProjectPlanologischePlanstatusChangelog();
         planStatusChangelog.setProject(project);
-        planStatusChangelog.setChangeUser(user);
+        planStatusChangelog.setCreateUser(user);
         planStatusChangelog.setStartMilestone(startMilestone);
         planStatusChangelog.setEndMilestone(endMilestone);
         planStatusChangelog.setChangeStartDate(ZonedDateTime.now());
