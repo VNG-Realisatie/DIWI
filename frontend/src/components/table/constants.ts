@@ -1,4 +1,4 @@
-import { OptionType } from "../ProjectsTableView";
+import { OptionType } from "../project/ProjectsTableView";
 
 export const planningPlanStatus: OptionType[] = [
     { id: "_1A_ONHERROEPELIJK", name: "_1A_ONHERROEPELIJK" },
@@ -35,10 +35,4 @@ export const confidentialityLevelOptions: OptionType[] = [
     { id: "INTERN_RAPPORTAGE", name: "INTERN_RAPPORTAGE" },
     { id: "EXTERN_RAPPORTAGE", name: "EXTERN_RAPPORTAGE" },
     { id: "OPENBAAR", name: "OPENBAAR" },
-];
-
-export const municipalityRolesOptions: OptionType[] = [
-    { id: "ACTIVE", name: "ACTIVE" },
-    { id: "PASSIVE", name: "PASSIVE" },
-    { id: "NOTHING", name: "NOTHING" },
 ];

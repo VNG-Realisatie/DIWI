@@ -1,9 +1,10 @@
-import { getJson } from "../utils/requests";
+import { getJson, postJson } from "../utils/requests";
 import { API_URI } from "../utils/urls";
 
 export type ProjectLeader = string[];
 export type ProjectOwner = string[];
 export type Project = {
+    totalValue: number;
     projectId: string;
     projectStateId: string;
     projectName: string;
@@ -25,4 +26,9 @@ export type Project = {
 
 export async function getProjects(pageNumber: number, pageSize: number): Promise<Array<Project>> {
     return getJson(`${API_URI}/projects/table?pageNumber=${pageNumber}&pageSize=${pageSize}`);
+}
+
+//TODO will be updated later after endpoint changed
+export async function updateProject(id: string, newData: any): Promise<any> {
+    return postJson(`${API_URI}/projects/${id}/update`, newData);
 }

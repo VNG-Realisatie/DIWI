@@ -16,18 +16,18 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
 import { Avatar, AvatarGroup, Box, Button, Dialog, DialogActions, DialogTitle, Stack, Typography } from "@mui/material";
-import useAlert from "../hooks/useAlert";
-import { Project, getProjects } from "../api/projectsServices";
+import useAlert from "../../hooks/useAlert";
+import { Project, getProjects } from "../../api/projectsServices";
 import { useTranslation } from "react-i18next";
-import { PlanTypeCell } from "./table/PlanTypeCell";
-import { MunicipalityRoleCell } from "./table/MunicipalityRoleCell";
-import { PlanningPlanStatusCell } from "./table/PlanningPlanStatusCell";
-import { WijkCell } from "./table/WijkCell";
-import { BuurtCell } from "./table/BuurtCell";
-import { MunicipalityCell } from "./table/MunicipalityCell";
-import { confidentialityLevelOptions, planTypeOptions, projectPhaseOptions } from "./table/constants";
-import { filterTable } from "../api/projectsTableServices";
-import { stringAvatar } from "../utils/stringAvatar";
+import { PlanTypeCell } from "../table/PlanTypeCell";
+import { MunicipalityRoleCell } from "../table/MunicipalityRoleCell";
+import { PlanningPlanStatusCell } from "../table/PlanningPlanStatusCell";
+import { WijkCell } from "../table/WijkCell";
+import { BuurtCell } from "../table/BuurtCell";
+import { MunicipalityCell } from "../table/MunicipalityCell";
+import { confidentialityLevelOptions, planTypeOptions, projectPhaseOptions } from "../table/constants";
+import { filterTable } from "../../api/projectsTableServices";
+import { stringAvatar } from "../../utils/stringAvatar";
 
 interface RowData {
     id: number;

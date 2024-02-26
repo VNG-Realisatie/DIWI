@@ -1,6 +1,6 @@
 import { Stack } from "@mui/material";
 
-import { ProjectsTableView } from "../components/ProjectsTableView";
+import { ProjectsTableView } from "../components/project/ProjectsTableView";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";

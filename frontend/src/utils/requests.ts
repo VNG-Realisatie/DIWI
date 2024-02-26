@@ -48,6 +48,9 @@ export async function postJson(url: string, data: any) {
     const res = await dbFetch(encodeURI(url), {
         method: "POST",
         body: body,
+        headers: {
+            "Content-Type": "application/json",
+        },
     });
 
     if (!res.ok) {

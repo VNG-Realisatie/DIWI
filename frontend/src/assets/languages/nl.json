@@ -175,11 +175,6 @@
         "_3_VERGUNNINGSFASE": "VERGUNNINGSFASE",
         "_4_REALISATIEFASE": "REALISATIEFASE",
         "_5_OPLEVERINGSFASE": "OPLEVERINGSFASE"
-      },
-      "municipalityRolesOptions": {
-        "ACTIVE": "Actief",
-        "PASSIVE": "Passief",
-        "NOTHING": "Geen"
       }
     }
   }
