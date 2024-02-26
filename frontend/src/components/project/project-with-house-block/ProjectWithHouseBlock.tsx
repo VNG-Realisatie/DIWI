@@ -11,7 +11,6 @@ import dayjs, { Dayjs } from "dayjs";
 import { convertDayjsToString } from "../../../utils/convertDayjsToString";
 import { formatDate } from "../../../utils/formatDate";
 import { ProjectNameEditForm } from "./ProjectNameEditForm";
-import { TotalValueEditForm } from "./TotalValueEditForm";
 import { PlanTypeEditForm } from "./PlanTypeEditForm";
 import { PhaseEditForm } from "./PhaseEditForm";
 import { MunicipalityRoleEditForm } from "./MunicipalityRoleEditForm";
@@ -40,7 +39,6 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
     const [projectEditable, setProjectEditable] = useState(false);
     const [openColorDialog, setOpenColorDialog] = useState(false);
     const [name, setName] = useState<string | undefined>();
-    const [totalValue, setTotalValue] = useState<string | undefined>();
     const [startDate, setStartDate] = useState<Dayjs | null>();
     const [endDate, setEndDate] = useState<Dayjs | null>();
     const [projectPhase, setProjectPhase] = useState<string | undefined>();
@@ -97,11 +95,7 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
                     <Grid item xs={6} md={1}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.totalValue")}</Typography>
 
-                        {!projectEditable ? (
-                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>{totalValue ? totalValue : selectedProject?.totalValue}</Typography>
-                        ) : (
-                            <TotalValueEditForm totalValue={totalValue} setTotalValue={setTotalValue} />
-                        )}
+                        <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>{selectedProject?.totalValue}</Typography>
                     </Grid>
                     <Grid item xs={6} md={1}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.organizationName")}</Typography>
