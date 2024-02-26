@@ -48,13 +48,14 @@ public class ProjectService {
         if (!Objects.equals(oldProjectState.getColor(), newColor)) {
             ZonedDateTime now = ZonedDateTime.now();
             oldProjectState.setChangeEndDate(now);
+            oldProjectState.setChangeUser(repo.findById(User.class, loggedInUserUuid));
 
             ProjectState newProjectState = new ProjectState();
             newProjectState.setProject(oldProjectState.getProject());
             newProjectState.setConfidentiality(oldProjectState.getConfidentiality());
             newProjectState.setColor(newColor);
             newProjectState.setChangeStartDate(now);
-            newProjectState.setChangeUser(repo.findById(User.class, loggedInUserUuid));
+            newProjectState.setCreateUser(repo.findById(User.class, loggedInUserUuid));
 
             repo.persist(oldProjectState);
             repo.persist(newProjectState);
@@ -73,13 +74,14 @@ public class ProjectService {
         if (!Objects.equals(oldProjectState.getConfidentiality(), newConfidentiality)) {
             ZonedDateTime now = ZonedDateTime.now();
             oldProjectState.setChangeEndDate(now);
+            oldProjectState.setChangeUser(repo.findById(User.class, loggedInUserUuid));
 
             ProjectState newProjectState = new ProjectState();
             newProjectState.setProject(oldProjectState.getProject());
             newProjectState.setConfidentiality(newConfidentiality);
             newProjectState.setColor(oldProjectState.getColor());
             newProjectState.setChangeStartDate(now);
-            newProjectState.setChangeUser(repo.getReferenceById(User.class, loggedInUserUuid));
+            newProjectState.setCreateUser(repo.getReferenceById(User.class, loggedInUserUuid));
 
             repo.persist(oldProjectState);
             repo.persist(newProjectState);
@@ -279,7 +281,7 @@ public class ProjectService {
 
         T oldProjectChangelog;
         if (newProjectChangelog != null) {
-            newProjectChangelog.setChangeUser(repo.getReferenceById(User.class, loggedInUserUuid));
+            newProjectChangelog.setCreateUser(repo.getReferenceById(User.class, loggedInUserUuid));
             newProjectChangelog.setChangeStartDate(zdtNow);
         }
 
@@ -304,7 +306,7 @@ public class ProjectService {
             if (oldProjectChangelog != null && !Objects.equals(oldProjectChangelog.getStartMilestone().getId(), todayMilestone.getId())) {
                 oldProjectChangelogAfterUpdate.setStartMilestone(oldProjectChangelog.getStartMilestone());
                 oldProjectChangelogAfterUpdate.setEndMilestone(todayMilestone);
-                oldProjectChangelogAfterUpdate.setChangeUser(oldProjectChangelog.getChangeUser());
+                oldProjectChangelogAfterUpdate.setCreateUser(oldProjectChangelog.getCreateUser());
                 oldProjectChangelogAfterUpdate.setChangeStartDate(zdtNow);
             }
 
@@ -315,6 +317,7 @@ public class ProjectService {
 
         if (oldProjectChangelog != null) {
             oldProjectChangelog.setChangeEndDate(zdtNow);
+            oldProjectChangelog.setChangeUser(repo.getReferenceById(User.class, loggedInUserUuid));
         }
 
         if (newProjectChangelog != null) {
@@ -381,7 +384,7 @@ public class ProjectService {
             MilestoneState milestoneState = new MilestoneState();
             milestoneState.setMilestone(milestone);
             milestoneState.setDate(milestoneDate);
-            milestoneState.setChangeUser(repo.getReferenceById(User.class, loggedInUserUuid));
+            milestoneState.setCreateUser(repo.getReferenceById(User.class, loggedInUserUuid));
             milestoneState.setChangeStartDate(ZonedDateTime.now());
             milestoneState.setState(MilestoneStatus.GEPLAND);
             milestoneState.setDescription(milestoneDate.toString());
