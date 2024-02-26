@@ -23,6 +23,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { nlNL } from "@mui/material/locale";
 import { Swagger } from "./pages/Swagger";
+import { diwiFetch } from "./utils/requests";
 
 export const drawerWidth = 290;
 
@@ -85,13 +86,9 @@ function RequiresLogin() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch(Paths.loggedIn.path)
-            .then((response) => {
-                if (response.status === 200) {
-                    setIsLoggedIn(true);
-                } else {
-                    navigate(Paths.login.path);
-                }
+        diwiFetch(Paths.loggedIn.path)
+            .then(() => {
+                setIsLoggedIn(true);
             })
             .catch((error) => {
                 setAlert(error.message, "error");
