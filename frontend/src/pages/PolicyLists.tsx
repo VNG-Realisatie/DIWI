@@ -3,7 +3,6 @@ import { policyGoals } from "../api/dummyData";
 import { PolicyCard } from "../components/PolicyCard";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { useState } from "react";
-import Dashboard from "../assets/temp/dashboardvisual.svg";
 import BreadcrumbBar from "../components/header/BreadcrumbBar";
 import { useLocation } from "react-router-dom";
 import * as Paths from "../Paths";
@@ -20,7 +19,7 @@ interface DataPolicy {
     };
 }
 
-//Todo Decide if i want to get polict context or as prop
+//Todo Decide if i want to get policy context or as prop
 export const PolicyLists = () => {
     const [showDialog, setShowDialog] = useState(false);
     const [dataPolicy, setDataPolicy] = useState<DataPolicy>({
@@ -102,7 +101,7 @@ export const PolicyLists = () => {
                     </Dialog>
                 </Stack>
             )}
-            {location.pathname === Paths.policygoalDashboard.path && <Dashboard />}
+            {location.pathname === Paths.policygoalDashboard.path && <>Dashboard visual will be here</>}
         </Stack>
     );
 };
