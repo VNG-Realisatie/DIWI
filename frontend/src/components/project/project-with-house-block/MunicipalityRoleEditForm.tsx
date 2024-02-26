@@ -19,7 +19,7 @@ export const MunicipalityRoleEditForm = ({ selectedMunicipalityRole, setSelected
         const {
             target: { value },
         } = event;
-        setSelectedMunicipalityRole(typeof value === "string" ? value.split(",") : value);
+        setSelectedMunicipalityRole(typeof value === "string" ? [value] : value);
     };
 
     useEffect(() => {
