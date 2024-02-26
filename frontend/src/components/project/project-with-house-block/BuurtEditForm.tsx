@@ -18,7 +18,7 @@ export const BuurtEditForm = ({ selectedBuurt, setSelectedBuurt }: Props) => {
         const {
             target: { value },
         } = event;
-        setSelectedBuurt(typeof value === "string" ? value.split(",") : value);
+        setSelectedBuurt(typeof value === "string" ? [value] : value);
     };
 
     useEffect(() => {
