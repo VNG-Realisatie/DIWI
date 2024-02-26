@@ -12,8 +12,10 @@ export const PhaseEditForm = ({ projectPhase, setProjectPhase }: Props) => {
     const { selectedProject } = useContext(ProjectContext);
     const { t } = useTranslation();
 
-    const handleProjectPhaseChange = (event: SelectChangeEvent) => {
-        setProjectPhase(event.target.value as string);
+    const handleProjectPhaseChange = (event: SelectChangeEvent<typeof projectPhase>) => {
+        if (event.target.value) {
+            setProjectPhase(event.target.value);
+        }
     };
 
     return (
