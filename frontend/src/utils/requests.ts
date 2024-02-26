@@ -1,6 +1,6 @@
 import * as Paths from "../Paths";
 
-export async function dbFetch(input: RequestInfo | URL, init?: RequestInit | undefined) {
+export async function diwiFetch(input: RequestInfo | URL, init?: RequestInit | undefined) {
     const options = { ...init };
 
     options.headers = {
@@ -17,7 +17,7 @@ export async function dbFetch(input: RequestInfo | URL, init?: RequestInit | und
 }
 
 export async function download(url: string, filename: string) {
-    const data = await dbFetch(url);
+    const data = await diwiFetch(url);
     const blob = await data.blob();
     const downloadedDataURL = URL.createObjectURL(blob);
 
@@ -33,7 +33,7 @@ export async function download(url: string, filename: string) {
 }
 
 export async function getJson(url: string) {
-    const res = await dbFetch(encodeURI(url));
+    const res = await diwiFetch(encodeURI(url));
 
     if (!res.ok) {
         throw Error(res.statusText);
@@ -45,7 +45,7 @@ export async function getJson(url: string) {
 export async function postJson(url: string, data: any) {
     const body = JSON.stringify(data);
 
-    const res = await dbFetch(encodeURI(url), {
+    const res = await diwiFetch(encodeURI(url), {
         method: "POST",
         body: body,
         headers: {
@@ -63,7 +63,7 @@ export async function postJson(url: string, data: any) {
 export async function putJson(url: string, data: any) {
     const body = JSON.stringify(data);
 
-    const res = await dbFetch(encodeURI(url), {
+    const res = await diwiFetch(encodeURI(url), {
         method: "PUT",
         body: body,
     });
@@ -76,7 +76,7 @@ export async function putJson(url: string, data: any) {
 }
 
 export async function deleteJson(url: string) {
-    const res = await dbFetch(encodeURI(url), {
+    const res = await diwiFetch(encodeURI(url), {
         method: "DELETE",
     });
 

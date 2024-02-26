@@ -77,6 +77,10 @@ TBD
 
 ## Development
 
+### Calling the backend from the front end
+
+To make sure we don't get redirect responses when we do `fetch` requests we need to use the wrapper `diwiFetch` from `src/utils/request.ts`.
+
 ### HTTP API guidelines
 
 We use the following query parameters for paginated queries:
