@@ -21,6 +21,7 @@ import { BuurtEditForm } from "./BuurtEditForm";
 import { WijkEditForm } from "./WijkEditForm";
 import { defaultColors } from "../../ColorSelector";
 import { BlockPicker, ColorResult } from "react-color";
+import { CellContainer } from "./CellContainer";
 // import { ProjectHouseBlockCardItem } from "./ProjectHouseBlockCardItem";
 
 type Props = {
@@ -87,7 +88,7 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
                     <Grid item xs={6} md={1}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.projectName")}</Typography>
                         {!projectEditable ? (
-                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>{name ? name : selectedProject?.projectName}</Typography>
+                            <CellContainer>{name ? name : selectedProject?.projectName}</CellContainer>
                         ) : (
                             <ProjectNameEditForm name={name} setName={setName} />
                         )}
@@ -95,7 +96,7 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
                     <Grid item xs={6} md={1}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.totalValue")}</Typography>
 
-                        <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>{selectedProject?.totalValue}</Typography>
+                        <CellContainer>{selectedProject?.totalValue}</CellContainer>
                     </Grid>
                     <Grid item xs={6} md={1}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.organizationName")}</Typography>
@@ -132,9 +133,7 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.startDate")}</Typography>
 
                         {!projectEditable ? (
-                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
-                                {startDate ? convertDayjsToString(startDate) : selectedProject?.startDate}
-                            </Typography>
+                            <CellContainer>{startDate ? convertDayjsToString(startDate) : selectedProject?.startDate}</CellContainer>
                         ) : (
                             <DatePicker
                                 format="DD-MM-YYYY"
@@ -148,9 +147,7 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.endDate")}</Typography>
 
                         {!projectEditable ? (
-                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
-                                {endDate ? convertDayjsToString(endDate) : selectedProject?.endDate}
-                            </Typography>
+                            <CellContainer>{endDate ? convertDayjsToString(endDate) : selectedProject?.endDate}</CellContainer>
                         ) : (
                             <DatePicker
                                 format="DD-MM-YYYY"
@@ -164,11 +161,11 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.priority")}</Typography>
 
                         {!projectEditable ? (
-                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
+                            <CellContainer>
                                 {selectedProject?.priority.map((p: string) => {
                                     return <span key={p}>{p},</span>;
                                 })}
-                            </Typography>
+                            </CellContainer>
                         ) : (
                             // TODO Implement later
                             <TextField size="small" id="outlined-basic" variant="outlined" />
@@ -178,9 +175,9 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.projectPhase")}</Typography>
 
                         {!projectEditable ? (
-                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
+                            <CellContainer>
                                 {t(`projectTable.projectPhaseOptions.${projectPhase ? projectPhase : selectedProject?.projectPhase}`)}
-                            </Typography>
+                            </CellContainer>
                         ) : (
                             <PhaseEditForm projectPhase={projectPhase} setProjectPhase={setProjectPhase} />
                         )}
@@ -189,7 +186,7 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.municipalityRole")}</Typography>
 
                         {!projectEditable ? (
-                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
+                            <CellContainer>
                                 {selectedMunicipalityRole.length > 0
                                     ? selectedMunicipalityRole.map((mr: string) => {
                                           return <span key={mr}>{mr}</span>;
@@ -197,7 +194,7 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
                                     : selectedProject?.municipalityRole.map((mr: string) => {
                                           return <span key={mr}>{mr}</span>;
                                       })}
-                            </Typography>
+                            </CellContainer>
                         ) : (
                             <MunicipalityRoleEditForm
                                 selectedMunicipalityRole={selectedMunicipalityRole}
@@ -209,11 +206,11 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.confidentialityLevel")}</Typography>
 
                         {!projectEditable ? (
-                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5 }}>
+                            <CellContainer>
                                 {confidentialityLevel
                                     ? t(`projectTable.confidentialityLevelOptions.${confidentialityLevel}`)
                                     : t(`projectTable.confidentialityLevelOptions.${selectedProject?.confidentialityLevel}`)}
-                            </Typography>
+                            </CellContainer>
                         ) : (
                             <ConfidentialityLevelEditForm confidentialityLevel={confidentialityLevel} setConfidentialityLevel={setConfidentialityLevel} />
                         )}
