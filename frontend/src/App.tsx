@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { ScopedCssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import "./App.css";
 import AlertContext from "./context/AlertContext";
@@ -81,20 +82,22 @@ const theme = createTheme(
 function RequiresLogin() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const { setAlert } = useContext(AlertContext);
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetch(Paths.loggedIn.path)
             .then((response) => {
                 if (response.status === 200) {
                     setIsLoggedIn(true);
-                } else if (response.status === 401) {
-                    document.location.href = Paths.login.path;
+                } else {
+                    navigate(Paths.login.path);
                 }
             })
             .catch((error) => {
                 setAlert(error.message, "error");
             });
-    }, []);
+    }, [setAlert, navigate]);
+
     return isLoggedIn ? <Layout /> : null;
 }
 
