@@ -18,7 +18,7 @@ export const MunicipalityEditForm = ({ selectedMunicipality, setSelectedMunicipa
         const {
             target: { value },
         } = event;
-        setSelectedMunicipality(typeof value === "string" ? value.split(",") : value);
+        setSelectedMunicipality(typeof value === "string" ? [value] : value);
     };
 
     useEffect(() => {
@@ -42,8 +42,8 @@ export const MunicipalityEditForm = ({ selectedMunicipality, setSelectedMunicipa
                     <Checkbox
                         checked={
                             selectedMunicipality.length > 0
-                                ? selectedMunicipality.indexOf(municipality.name) > -1
-                                : selectedProject?.municipality && selectedProject.municipality.indexOf(municipality.name) > -1
+                                ? selectedMunicipality.indexOf(municipality.name) !== -1
+                                : selectedProject?.municipality && selectedProject.municipality.indexOf(municipality.name) !== -1
                         }
                     />
                     <ListItemText primary={municipality.name} />
