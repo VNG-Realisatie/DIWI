@@ -28,6 +28,7 @@ export async function getProjects(pageNumber: number, pageSize: number): Promise
     return getJson(`${API_URI}/projects/table?pageNumber=${pageNumber}&pageSize=${pageSize}`);
 }
 
+//TODO will be updated later after endpoint changed
 export async function updateProject(id: string, newData: any): Promise<any> {
     return postJson(`${API_URI}/projects/${id}/update`, newData);
 }
