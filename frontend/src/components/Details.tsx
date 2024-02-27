@@ -1,4 +1,4 @@
-import { List, ListItem, ListItemText, Typography } from "@mui/material";
+import { List, ListItem, ListItemText } from "@mui/material";
 import { Project } from "../api/projectsServices";
 import { OrganizationUserAvatars } from "./OrganizationUserAvatars";
 import { useTranslation } from "react-i18next";
@@ -66,7 +66,7 @@ export const Details = ({ project }: Props) => {
                                                   <List>
                                                       {value.map((content) => {
                                                           if (typeof content === "string") {
-                                                              return <Typography>{getTranslatedText(property, content)}</Typography>;
+                                                              return <ListItem>{getTranslatedText(property, content)}</ListItem>;
                                                           }
                                                           return <></>;
                                                       })}
