@@ -1,8 +1,19 @@
 import { getJson, postJson } from "../utils/requests";
 import { API_URI } from "../utils/urls";
 
-export type ProjectLeader = string[];
-export type ProjectOwner = string[];
+export type User = {
+    uuid: string;
+    firstName: string;
+    lastName: string;
+    initials: string;
+};
+
+export type Organization = {
+    uuid: string;
+    name: string;
+    users: User[];
+};
+
 export type Project = {
     totalValue: number;
     projectId: string;
@@ -10,8 +21,8 @@ export type Project = {
     projectName: string;
     projectColor: string;
     confidentialityLevel: string;
-    projectLeaders: ProjectLeader[];
-    projectOwners: ProjectOwner[];
+    projectLeaders: Organization[];
+    projectOwners: Organization[];
     planType: string[];
     startDate: string;
     endDate: string;
