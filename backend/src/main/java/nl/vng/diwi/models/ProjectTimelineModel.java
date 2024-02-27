@@ -5,10 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import nl.vng.diwi.dal.entities.*;
-import nl.vng.diwi.dal.entities.enums.Confidentiality;
-import nl.vng.diwi.dal.entities.enums.PlanStatus;
-import nl.vng.diwi.dal.entities.enums.PlanType;
-import nl.vng.diwi.dal.entities.enums.ProjectPhase;
+import nl.vng.diwi.dal.entities.enums.*;
 import nl.vng.diwi.models.superclasses.DatedDataModelSuperClass;
 
 import lombok.Data;
@@ -28,6 +25,8 @@ public class ProjectTimelineModel extends DatedDataModelSuperClass {
     private List<DatedDataModel<ProjectPhase>> projectPhase = new ArrayList<>();
     private List<DatedDataModel<List<String>>> municipalityRole = new ArrayList<>();
     private List<DatedDataModel<List<PlanStatus>>> planningPlanStatus = new ArrayList<>();
+    private List<OrganizationModel> projectOwners = new ArrayList<>();
+    private List<OrganizationModel> projectLeaders = new ArrayList<>();
     private Long totalValue;
     private String[] municipality;
     private String[] wijk;
@@ -41,6 +40,13 @@ public class ProjectTimelineModel extends DatedDataModelSuperClass {
         ProjectDurationChangelog projectDuration = project.getDuration().get(0);
         this.setStartDate(projectDuration.getStartMilestone());
         this.setEndDate(projectDuration.getEndMilestone());
+        for (var item : project.getOrganizationProjectRoles()) {
+            if (item.getProjectRole() == ProjectRole.OWNER) {
+                projectOwners.add(new OrganizationModel(item.getOrganization()));
+            } else if (item.getProjectRole() == ProjectRole.PROJECT_LEIDER) {
+                projectLeaders.add(new OrganizationModel(item.getOrganization()));
+            }
+        }
         for (ProjectNameChangelog item : project.getName()) {
             DatedDataModel<String> data = new DatedDataModel<>();
             data.setData(item.getName());

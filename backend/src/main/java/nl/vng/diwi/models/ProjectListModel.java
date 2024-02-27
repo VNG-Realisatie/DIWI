@@ -1,15 +1,21 @@
 package nl.vng.diwi.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
-import io.hypersistence.utils.hibernate.type.array.StringArrayType;
-import jakarta.persistence.*;
+
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 import org.hibernate.type.SqlTypes;
 
-import java.util.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.uuid.impl.UUIDUtil;
+
+import io.hypersistence.utils.hibernate.type.array.StringArrayType;
+import jakarta.persistence.*;
 
 @Convert(
     attributeName = "multidimensional_array",
@@ -113,9 +119,9 @@ public class ProjectListModel {
 
     private OrganizationUserModel getOrganizationUserModelFromSqlArrayData(String[] sqlUserData) {
         OrganizationUserModel orgUser = new OrganizationUserModel();
-        orgUser.setOrganizationUuid(sqlUserData[0]);
+        orgUser.setOrganizationUuid(UUIDUtil.uuid(sqlUserData[0]));
         orgUser.setOrganizationName(sqlUserData[1]);
-        orgUser.setUuid(sqlUserData[2]);
+        orgUser.setUuid(UUIDUtil.uuid(sqlUserData[2]));
         orgUser.setInitials(sqlUserData[3]);
         orgUser.setLastName(sqlUserData[4]);
         orgUser.setFirstName(sqlUserData[5]);

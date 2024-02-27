@@ -1,5 +1,7 @@
 package nl.vng.diwi.models;
 
+import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,13 +10,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OrganizationUserModel {
 
-    String uuid;
+    UUID uuid;
     String firstName;
     String lastName;
     String initials;
 
     @JsonIgnore
-    String organizationUuid;
+    UUID organizationUuid;
     @JsonIgnore
     String organizationName;
 

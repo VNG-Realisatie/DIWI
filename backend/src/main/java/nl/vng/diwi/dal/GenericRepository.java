@@ -17,6 +17,7 @@ public class GenericRepository implements AutoCloseable {
                 Milestone.class,
                 MilestoneState.class,
                 Organization.class,
+                OrganizationProjectRole.class,
                 OrganizationState.class,
                 Project.class,
                 ProjectDurationChangelog.class,

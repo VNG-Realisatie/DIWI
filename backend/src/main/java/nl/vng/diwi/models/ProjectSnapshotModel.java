@@ -30,6 +30,8 @@ public class ProjectSnapshotModel extends DatedDataModelSuperClass {
     private ProjectPhase projectPhase;
     private List<String> municipalityRole = new ArrayList<>();
     private List<PlanStatus> planningPlanStatus = new ArrayList<>();
+    private List<OrganizationModel> projectOwners = new ArrayList<>();
+    private List<OrganizationModel> projectLeaders = new ArrayList<>();
     private Long totalValue;
     private String[] municipality;
     private String[] wijk;
@@ -46,6 +48,8 @@ public class ProjectSnapshotModel extends DatedDataModelSuperClass {
         projectPhase = retrieveSnapshotItem(timeline.getProjectPhase()).getData();
         municipalityRole = retrieveSnapshotItem(timeline.getMunicipalityRole()).getData();
         planningPlanStatus = retrieveSnapshotItem(timeline.getPlanningPlanStatus()).getData();
+        projectOwners = timeline.getProjectOwners();
+        projectLeaders = timeline.getProjectLeaders(); 
         // totalValue
         // municipality
         // wijk
@@ -205,5 +209,21 @@ public class ProjectSnapshotModel extends DatedDataModelSuperClass {
 
     public void setBuurt(String[] buurt) {
         this.buurt = buurt;
+    }
+
+    public List<OrganizationModel> getProjectOwners() {
+        return projectOwners;
+    }
+
+    public void setProjectOwners(List<OrganizationModel> projectOwners) {
+        this.projectOwners = projectOwners;
+    }
+
+    public List<OrganizationModel> getProjectLeaders() {
+        return projectLeaders;
+    }
+
+    public void setProjectLeaders(List<OrganizationModel> projectLeaders) {
+        this.projectLeaders = projectLeaders;
     }
 }

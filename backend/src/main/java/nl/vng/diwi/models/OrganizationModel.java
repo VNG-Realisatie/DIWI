@@ -5,17 +5,24 @@ import lombok.NoArgsConstructor;
 
 import java.util.*;
 
+import nl.vng.diwi.dal.entities.Organization;
+
 @Data
 @NoArgsConstructor
 public class OrganizationModel {
 
-    String uuid;
+    UUID uuid;
     String name;
     List<OrganizationUserModel> users = new ArrayList<>();
+    
+    public OrganizationModel(Organization organization) {
+        uuid = organization.getId();
+        // stub
+    }
 
     public static List<OrganizationModel> fromOrgUserModelListToOrgModelList(List<OrganizationUserModel> organizationUserList) {
 
-        Map<String, OrganizationModel> organizationUsersMap = new HashMap<>();
+        Map<UUID, OrganizationModel> organizationUsersMap = new HashMap<>();
         for (OrganizationUserModel orgUserModel : organizationUserList) {
             if (organizationUsersMap.containsKey(orgUserModel.getOrganizationUuid())) {
                 organizationUsersMap.get(orgUserModel.getOrganizationUuid()).getUsers().add(orgUserModel);
