@@ -34,6 +34,7 @@ import nl.vng.diwi.services.ProjectService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -132,26 +133,28 @@ public class ProjectsResource {
             throw new VngBadRequestException(validationError);
         }
 
+        LocalDate updateDate = LocalDate.now();
+
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             switch (projectUpdateModel.getProperty()) {
                 case confidentialityLevel -> {
                     Confidentiality newConfidentiality = Confidentiality.valueOf(projectUpdateModel.getValue());
                     projectService.updateProjectConfidentialityLevel(repo, projectUuid, newConfidentiality, loggedUser.getUuid());
                 }
-                case name -> projectService.updateProjectName(repo, projectUuid, projectUpdateModel.getValue(), loggedUser.getUuid());
+                case name -> projectService.updateProjectName(repo, projectUuid, projectUpdateModel.getValue(), loggedUser.getUuid(), updateDate);
                 case projectColor -> projectService.updateProjectColor(repo, projectUuid, projectUpdateModel.getValue(), loggedUser.getUuid());
                 case planningPlanStatus -> {
                     Set<PlanStatus> planStatuses = (projectUpdateModel.getValues() != null) ?
                         projectUpdateModel.getValues().stream().map(PlanStatus::valueOf).collect(Collectors.toSet()) : new HashSet<>();
-                    projectService.updateProjectPlanStatus(repo, projectUuid, planStatuses, loggedUser.getUuid());
+                    projectService.updateProjectPlanStatus(repo, projectUuid, planStatuses, loggedUser.getUuid(), updateDate);
                 }
                 case planType -> {
                     Set<PlanType> planTypes = (projectUpdateModel.getValues() != null) ?
                         projectUpdateModel.getValues().stream().map(PlanType::valueOf).collect(Collectors.toSet()) : new HashSet<>();
-                    projectService.updateProjectPlanTypes(repo, projectUuid, planTypes, loggedUser.getUuid());
+                    projectService.updateProjectPlanTypes(repo, projectUuid, planTypes, loggedUser.getUuid(), updateDate);
                 }
                 case projectPhase ->
-                    projectService.updateProjectPhase(repo, projectUuid, ProjectPhase.valueOf(projectUpdateModel.getValue()), loggedUser.getUuid());
+                    projectService.updateProjectPhase(repo, projectUuid, ProjectPhase.valueOf(projectUpdateModel.getValue()), loggedUser.getUuid(), updateDate);
                 case projectLeaders -> {
                     UUID organizationToAdd = (projectUpdateModel.getAdd() != null) ? UUID.fromString(projectUpdateModel.getAdd()) : null;
                     UUID organizationToRemove = (projectUpdateModel.getRemove() != null) ? UUID.fromString(projectUpdateModel.getRemove()) : null;
@@ -161,6 +164,11 @@ public class ProjectsResource {
                     UUID organizationToAdd = (projectUpdateModel.getAdd() != null) ? UUID.fromString(projectUpdateModel.getAdd()) : null;
                     UUID organizationToRemove = (projectUpdateModel.getRemove() != null) ? UUID.fromString(projectUpdateModel.getRemove()) : null;
                     projectService.updateProjectOrganizations(repo, projectUuid, ProjectRole.OWNER, organizationToAdd, organizationToRemove, loggedUser.getUuid());
+                }
+                case municipalityRole -> {
+                    UUID municipalityRoleToAdd = (projectUpdateModel.getAdd() != null) ? UUID.fromString(projectUpdateModel.getAdd()) : null;
+                    UUID municipalityRoleToRemove = (projectUpdateModel.getRemove() != null) ? UUID.fromString(projectUpdateModel.getRemove()) : null;
+                    projectService.updateProjectMunicipalityRoles(repo, projectUuid, municipalityRoleToAdd, municipalityRoleToRemove, loggedUser.getUuid(), updateDate);
                 }
             }
 
