@@ -62,7 +62,7 @@ public class ProjectsResource {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Object getCurrentProjectSnapshot(@PathParam("id") UUID projectUuid) throws VngNotFoundException {
+    public ProjectSnapshotModel getCurrentProjectSnapshot(@PathParam("id") UUID projectUuid) throws VngNotFoundException {
 
         Project project = projectService.getCurrentProject(repo, projectUuid);
 
@@ -76,7 +76,7 @@ public class ProjectsResource {
     @GET
     @Path("/{id}/timeline")
     @Produces(MediaType.APPLICATION_JSON)
-    public Object getCurrentProjectTimeline(@PathParam("id") UUID projectUuid) throws VngNotFoundException {
+    public ProjectTimelineModel getCurrentProjectTimeline(@PathParam("id") UUID projectUuid) throws VngNotFoundException {
 
         Project project = projectService.getCurrentProject(repo, projectUuid);
 
