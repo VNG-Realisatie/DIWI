@@ -26,7 +26,7 @@ public class ProjectTimelineModel extends DatedDataModelSuperClass {
     private List<DatedDataModel<List<PlanType>>> planType = new ArrayList<>();
     private List<DatedWeightedRangeOrValueModel<String>> priority = new ArrayList<>();
     private List<DatedDataModel<ProjectPhase>> projectPhase = new ArrayList<>();
-    private String[] municipalityRole;
+    private List<DatedDataModel<List<String>>> municipalityRole = new ArrayList<>();
     private List<DatedDataModel<List<PlanStatus>>> planningPlanStatus = new ArrayList<>();
     private Long totalValue;
     private String[] municipality;
@@ -65,6 +65,17 @@ public class ProjectTimelineModel extends DatedDataModelSuperClass {
             data.setStartDate(item.getStartMilestone());
             data.setEndDate(item.getEndMilestone());
             planType.add(data);
+        }
+        for (ProjectGemeenteRolChangelog item : project.getMunicipalityRole()) {
+            List<String> values = new ArrayList<>();
+            for (var value : item.getValue().getState()) {
+                values.add(value.getValueLabel());
+            }
+            DatedDataModel<List<String>> data = new DatedDataModel<>();
+            data.setData(values);
+            data.setStartDate(item.getStartMilestone());
+            data.setEndDate(item.getEndMilestone());
+            municipalityRole.add(data);
         }
         for (ProjectPlanologischePlanstatusChangelog item : project.getPlanologischePlanstatus()) {
             List<PlanStatus> values = new ArrayList<>();

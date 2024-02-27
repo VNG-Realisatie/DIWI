@@ -23,6 +23,7 @@ import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.dal.entities.enums.ProjectRole;
 import nl.vng.diwi.models.ProjectListModel;
+import nl.vng.diwi.models.ProjectSnapshotModel;
 import nl.vng.diwi.models.ProjectTimelineModel;
 import nl.vng.diwi.models.ProjectUpdateModel;
 import nl.vng.diwi.rest.VngBadRequestException;
@@ -56,6 +57,20 @@ public class ProjectsResource {
         ProjectService projectService) {
         this.repo = new VngRepository(genericRepository.getDal().getSession());
         this.projectService = projectService;
+    }
+
+    @GET
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Object getCurrentProjectSnapshot(@PathParam("id") UUID projectUuid) throws VngNotFoundException {
+
+        Project project = projectService.getCurrentProject(repo, projectUuid);
+
+        if (project == null) {
+            throw new VngNotFoundException();
+        }
+
+        return new ProjectSnapshotModel(project);
     }
 
     @GET

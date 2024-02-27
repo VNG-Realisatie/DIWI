@@ -2,7 +2,6 @@ package nl.vng.diwi.models;
 
 import nl.vng.diwi.models.interfaces.WeightedRangeModelInterface;
 import nl.vng.diwi.models.interfaces.WeightedValueModelInterface;
-import nl.vng.diwi.models.superclasses.DatedDataModelSuperClass;
 
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -10,14 +9,23 @@ import lombok.ToString;
 
 @ToString
 @RequiredArgsConstructor
-@EqualsAndHashCode(callSuper=true)
-public class DatedWeightedRangeOrValueModel<T> extends DatedDataModelSuperClass implements WeightedValueModelInterface<T>, WeightedRangeModelInterface<T> {
+@EqualsAndHashCode
+public class WeightedRangeOrValueModel<T> implements WeightedValueModelInterface<T>, WeightedRangeModelInterface<T> {
     private Integer levelMin;
     private Integer levelMax;
     private Integer level;
     private T dataMin;
     private T dataMax;
     private T data;
+    
+    public WeightedRangeOrValueModel(DatedWeightedRangeOrValueModel<T> datedData) {
+        levelMin = datedData.getLevelMin();
+        levelMax = datedData.getLevelMax();
+        level = datedData.getLevel();
+        dataMin = datedData.getDataMin();
+        dataMax = datedData.getDataMax();
+        data = datedData.getData();
+    }
 
     public void setMin(Integer level, T data) {
         this.level = null;
@@ -72,7 +80,7 @@ public class DatedWeightedRangeOrValueModel<T> extends DatedDataModelSuperClass 
     public void setDataMax(T dataMax) {
         this.dataMax = dataMax;
     }
-    
+
     public T getData() {
         return data;
     }
