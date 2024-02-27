@@ -1,9 +1,8 @@
-import { Avatar, AvatarGroup, Box, Grid, Popover, Stack, TextField, Typography } from "@mui/material";
+import { AvatarGroup, Box, Grid, Popover, Stack, TextField, Typography } from "@mui/material";
 import { MouseEvent, useContext, useState } from "react";
 import ProjectContext from "../../../context/ProjectContext";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
-import { stringAvatar } from "../../../utils/stringAvatar";
 import FormatColorFillIcon from "@mui/icons-material/FormatColorFill";
 import { useTranslation } from "react-i18next";
 import { DatePicker } from "@mui/x-date-pickers";
@@ -22,6 +21,7 @@ import { WijkEditForm } from "./WijkEditForm";
 import { defaultColors } from "../../ColorSelector";
 import { BlockPicker, ColorResult } from "react-color";
 import { CellContainer } from "./CellContainer";
+import { OrganizationUserAvatars } from "../../OrganizationUserAvatars";
 // import { ProjectHouseBlockCardItem } from "./ProjectHouseBlockCardItem";
 
 type Props = {
@@ -103,9 +103,7 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
 
                         {!projectEditable ? (
                             <AvatarGroup max={3}>
-                                {selectedProject?.projectOwners.map((owner: any[], id: number) => {
-                                    return <Avatar key={id} {...stringAvatar(`${owner[2]} ${owner[3]}`)} />;
-                                })}
+                                <OrganizationUserAvatars organizations={selectedProject?.projectOwners} />
                             </AvatarGroup>
                         ) : (
                             // TODO implement later
@@ -221,9 +219,7 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
                         {!projectEditable ? (
                             <Box sx={{ border: "solid 1px #ddd", overflow: "hidden" }}>
                                 <AvatarGroup max={3}>
-                                    {selectedProject?.projectLeaders.map((leader: any[], id: number) => {
-                                        return <Avatar key={id} {...stringAvatar(`${leader[2]} ${leader[3]}`)} />;
-                                    })}
+                                    <OrganizationUserAvatars organizations={selectedProject?.projectLeaders} />
                                 </AvatarGroup>
                             </Box>
                         ) : (

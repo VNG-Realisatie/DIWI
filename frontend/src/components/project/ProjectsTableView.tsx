@@ -15,7 +15,7 @@ import {
 } from "@mui/x-data-grid";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
-import { Avatar, AvatarGroup, Box, Button, Dialog, DialogActions, DialogTitle, Stack, Typography } from "@mui/material";
+import { AvatarGroup, Box, Button, Dialog, DialogActions, DialogTitle, Stack, Typography } from "@mui/material";
 import useAlert from "../../hooks/useAlert";
 import { Project, getProjects } from "../../api/projectsServices";
 import { useTranslation } from "react-i18next";
@@ -27,7 +27,7 @@ import { BuurtCell } from "../table/BuurtCell";
 import { MunicipalityCell } from "../table/MunicipalityCell";
 import { confidentialityLevelOptions, planTypeOptions, projectPhaseOptions } from "../table/constants";
 import { filterTable } from "../../api/projectsTableServices";
-import { stringAvatar } from "../../utils/stringAvatar";
+import { OrganizationUserAvatars } from "../OrganizationUserAvatars";
 
 interface RowData {
     id: number;
@@ -261,9 +261,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
                 return (
                     <AvatarGroup max={3}>
-                        {cellValues.row.projectOwners.map((owner) => {
-                            return <Avatar {...stringAvatar(`${owner[2]} ${owner[3]}`)} />;
-                        })}
+                        <OrganizationUserAvatars organizations={cellValues?.row.projectOwners} />
                     </AvatarGroup>
                 );
             },
@@ -343,9 +341,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
                 return (
                     <AvatarGroup max={3}>
-                        {cellValues.row.projectLeaders.map((leader) => {
-                            return <Avatar {...stringAvatar(`${leader[2]} ${leader[3]}`)} />;
-                        })}
+                        <OrganizationUserAvatars organizations={cellValues?.row.projectLeaders} />
                     </AvatarGroup>
                 );
             },

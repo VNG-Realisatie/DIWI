@@ -36,7 +36,8 @@ export const Details = ({ project }: Props) => {
                                         border: "solid 1px #ddd",
                                     }}
                                 >
-                                    <ListItemText primary={value} />
+                                    {/* Temporary hack, should show all data when we start working on map */}
+                                    {typeof value === "string" ? <ListItemText primary={value} /> : null}
                                 </ListItem>
                             </>
                         );
