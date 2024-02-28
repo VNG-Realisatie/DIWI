@@ -8,6 +8,7 @@ import { useState } from "react";
 
 import { diwiFetch } from "../utils/requests";
 import * as Paths from "../Paths";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
     open: boolean;
@@ -35,16 +36,20 @@ const AppBar = styled(MuiAppBar, {
 }));
 export const Header = ({ open, handleDrawerOpen }: Props) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+    const navigate = useNavigate();
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
+
     const handleClose = () => {
         setAnchorEl(null);
     };
+
     const handleLogout = () => {
         setAnchorEl(null);
         diwiFetch(Paths.logout.path)
-            .then((res) => console.log(res))
+            .then((res) => navigate(Paths.logout.path))
             .catch((err) => console.log(err));
     };
     const openProfile = Boolean(anchorEl);
