@@ -17,22 +17,14 @@ const ProjectTimelineSvg = ({ projectData, dateRange, timeFormat, width }: any) 
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`);
+        //using 1st and last elements of dateRange
+        const xScale = d3
+            .scaleTime()
+            .domain([dateRange[0], dateRange[dateRange.length - 1]])
+            .range([0, width]);
 
-        const startDate = new Date(projectData.startDate);
-        const endDate = new Date(projectData.endDate);
-
-        const testStartDate = new Date("2024-05-01");
-        const testEndDate = new Date("2024-10-01");
-
-        const adjustedStartDate = d3.timeMonth.floor(startDate);
-
-        // Monthly scale
-        const xScale = d3.scaleTime().domain([adjustedStartDate, testEndDate]).range([0, width]);
-
-        // Append a group for month text
         const monthTextGroup = svg.append("g").attr("class", "month-text-group");
 
-        // Append a rectangle for the background
         monthTextGroup.append("rect").attr("width", width).attr("height", 20).attr("fill", "lightgrey").attr("opacity", 0.3);
 
         const projectFasenTitle = svg.append("g");
@@ -46,7 +38,7 @@ const ProjectTimelineSvg = ({ projectData, dateRange, timeFormat, width }: any) 
             .enter()
             .append("text")
             .attr("class", "month-text")
-            .attr("x", (d: any, i: number) => xScale(d) + i * 10)
+            .attr("x", (d: any, i: number) => xScale(d) + 5)
             .attr("y", 15)
             .text((d: any) => d3.timeFormat(timeFormat)(d));
 
@@ -60,20 +52,22 @@ const ProjectTimelineSvg = ({ projectData, dateRange, timeFormat, width }: any) 
             .attr("x2", (d: any) => xScale(d))
             .attr("y1", 0)
             .attr("y2", 20)
-            .attr("stroke", "white")
+            .attr("stroke", "grey")
             .attr("stroke-width", 3);
-        const projectNames = projectData.projectName || []; //huisblokken ???
+
+        const projectNames = projectData.projectName || []; //currently represents huisblokken
         const projectPhases = projectData.projectPhase || [];
 
+        //move functions to helpers later
         const createPhaseRectangles = (data: any, color: any, className: any) => {
             svg.selectAll(`.${className}`)
                 .data(data)
                 .enter()
                 .append("rect")
                 .attr("class", className)
-                .attr("x", (d: any, i: number) => xScale(new Date(d.startDate)) + i * 1.01)
+                .attr("x", (d: any, i: number) => xScale(new Date(d.startDate)))
                 .attr("y", 40)
-                .attr("width", (d: any) => xScale(new Date(d.endDate)) - xScale(new Date(d.startDate)))
+                .attr("width", (d: any) => xScale(new Date(d.endDate)) - xScale(new Date(d.startDate)) + 10) //+ 10 adjusts width so it looks closer to the month end
                 .attr("height", rectHeight)
                 .attr("fill", color)
                 .attr("opacity", 0.7)
@@ -81,15 +75,15 @@ const ProjectTimelineSvg = ({ projectData, dateRange, timeFormat, width }: any) 
                 .text((d: any) => d.data);
         };
 
-        const createRectangles = (data: any, color: any, className: any) => {
+        const createHouseBlockRectangles = (data: any, color: any, className: any) => {
             svg.selectAll(`.${className}`)
                 .data(data)
                 .enter()
                 .append("rect")
                 .attr("class", className)
                 .attr("x", (d: any) => xScale(new Date(d.startDate)))
-                .attr("y", (d: any, i: number) => 120 + i * rectHeight)
-                .attr("width", (d: any) => xScale(new Date(d.endDate)) - xScale(new Date(d.startDate)))
+                .attr("y", (_, i: number) => 120 + i * rectHeight)
+                .attr("width", (d: any) => xScale(new Date(d.endDate)) - xScale(new Date(d.startDate)) + 10) //+ 10 adjusts width so it looks closer to the month end
                 .attr("height", rectHeight)
                 .attr("fill", color)
                 .attr("opacity", 0.7)
@@ -97,7 +91,7 @@ const ProjectTimelineSvg = ({ projectData, dateRange, timeFormat, width }: any) 
                 .text((d: any) => d.data);
         };
         createPhaseRectangles(projectPhases, "orange", "projectPhaseRect");
-        createRectangles(projectNames, "steelblue", "projectNameRect");
+        createHouseBlockRectangles(projectNames, "steelblue", "projectNameRect");
     }, [projectData, dateRange, timeFormat, width]);
 
     return <svg ref={svgRef}></svg>;
