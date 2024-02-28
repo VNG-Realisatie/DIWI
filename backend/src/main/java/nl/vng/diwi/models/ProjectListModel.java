@@ -2,6 +2,11 @@ package nl.vng.diwi.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
+import nl.vng.diwi.dal.entities.enums.PlanStatus;
+import nl.vng.diwi.dal.entities.enums.PlanType;
+import nl.vng.diwi.dal.entities.enums.ProjectPhase;
+import nl.vng.diwi.models.superclasses.ProjectSnapshotModelSuperclass;
+
 import io.hypersistence.utils.hibernate.type.array.StringArrayType;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcType;
@@ -16,7 +21,7 @@ import java.util.*;
     converter = StringArrayType.class
 )
 @Entity
-public class ProjectListModel {
+public class ProjectListModel extends ProjectSnapshotModelSuperclass {
 
     public static final List<String> SORTABLE_COLUMNS = List.of("projectName", "projectOwners", "projectLeaders", "confidentialityLevel", "organizationName",
         "planType", "startDate", "endDate", "priority", "projectPhase", "municipalityRole", "planningPlanStatus", "totalValue", "municipality", "wijk", "buurt");
@@ -53,7 +58,7 @@ public class ProjectListModel {
 
     @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(columnDefinition = "text[]")
-    private List<String> planType;
+    private List<PlanType> planType;
 
     private String startDate;
 
@@ -63,7 +68,9 @@ public class ProjectListModel {
     @Column(columnDefinition = "text[]")
     private List<String> priority;
 
-    private String projectPhase;
+    @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    private ProjectPhase projectPhase;
 
     @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(columnDefinition = "text[]")
@@ -71,7 +78,7 @@ public class ProjectListModel {
 
     @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(columnDefinition = "text[]")
-    private List<String> planningPlanStatus;
+    private List<PlanStatus> planningPlanStatus;
 
     private Long totalValue;
 
@@ -194,11 +201,11 @@ public class ProjectListModel {
         this.confidentialityLevel = confidentialityLevel;
     }
 
-    public List<String> getPlanType() {
+    public List<PlanType> getPlanType() {
         return planType;
     }
 
-    public void setPlanType(List<String> planType) {
+    public void setPlanType(List<PlanType> planType) {
         this.planType = planType;
     }
 
@@ -226,11 +233,11 @@ public class ProjectListModel {
         this.priority = priority;
     }
 
-    public String getProjectPhase() {
+    public ProjectPhase getProjectPhase() {
         return projectPhase;
     }
 
-    public void setProjectPhase(String projectPhase) {
+    public void setProjectPhase(ProjectPhase projectPhase) {
         this.projectPhase = projectPhase;
     }
 
@@ -242,11 +249,11 @@ public class ProjectListModel {
         this.municipalityRole = municipalityRole;
     }
 
-    public List<String> getPlanningPlanStatus() {
+    public List<PlanStatus> getPlanningPlanStatus() {
         return planningPlanStatus;
     }
 
-    public void setPlanningPlanStatus(List<String> planningPlanStatus) {
+    public void setPlanningPlanStatus(List<PlanStatus> planningPlanStatus) {
         this.planningPlanStatus = planningPlanStatus;
     }
 
