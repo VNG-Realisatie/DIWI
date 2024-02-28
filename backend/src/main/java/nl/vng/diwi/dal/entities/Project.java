@@ -65,6 +65,11 @@ public class Project extends IdSuperclass {
     @Filter(name = GenericRepository.CURRENT_DATA_FILTER, condition = "change_end_date IS NULL")
     private List<ProjectGemeenteRolChangelog> municipalityRole;
 
+    @JsonIgnoreProperties("project")
+    @OneToMany(mappedBy="project", fetch = FetchType.LAZY)
+    @Filter(name = GenericRepository.CURRENT_DATA_FILTER, condition = "change_end_date IS NULL")
+    private List<OrganizationProjectRole> organizationProjectRoles;
+
     public List<Milestone> getMilestones() {
         return milestones;
     }
@@ -135,5 +140,13 @@ public class Project extends IdSuperclass {
 
     public void setMunicipalityRole(List<ProjectGemeenteRolChangelog> municipalityRole) {
         this.municipalityRole = municipalityRole;
+    }
+
+    public List<OrganizationProjectRole> getOrganizationProjectRoles() {
+        return organizationProjectRoles;
+    }
+
+    public void setOrganizationProjectRoles(List<OrganizationProjectRole> organizationProjectRoles) {
+        this.organizationProjectRoles = organizationProjectRoles;
     }
 }
