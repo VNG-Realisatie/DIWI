@@ -36,12 +36,12 @@ public class ProjectService {
         return projectsTable;
     }
 
-    public void updateProjectColor(VngRepository repo, UUID projectUuid, String newColor, UUID loggedInUserUuid)
+    public void updateProjectColor(VngRepository repo, Project project, String newColor, UUID loggedInUserUuid)
         throws VngNotFoundException {
 
-        ProjectState oldProjectState = repo.getProjectsDAO().getCurrentProjectState(projectUuid);
+        ProjectState oldProjectState = repo.getProjectsDAO().getCurrentProjectState(project.getId());
         if (oldProjectState == null) {
-            logger.error("Active projectState was not found for projectUuid {}.", projectUuid);
+            logger.error("Active projectState was not found for projectUuid {}.", project.getId());
             throw new VngNotFoundException();
         }
 
@@ -62,12 +62,12 @@ public class ProjectService {
         }
     }
 
-    public void updateProjectConfidentialityLevel(VngRepository repo, UUID projectUuid, Confidentiality newConfidentiality, UUID loggedInUserUuid)
+    public void updateProjectConfidentialityLevel(VngRepository repo, Project project, Confidentiality newConfidentiality, UUID loggedInUserUuid)
         throws VngNotFoundException {
 
-        ProjectState oldProjectState = repo.getProjectsDAO().getCurrentProjectState(projectUuid);
+        ProjectState oldProjectState = repo.getProjectsDAO().getCurrentProjectState(project.getId());
         if (oldProjectState == null) {
-            logger.error("Active projectState was not found for projectUuid {}.", projectUuid);
+            logger.error("Active projectState was not found for projectUuid {}.", project.getId());
             throw new VngNotFoundException();
         }
 
@@ -89,14 +89,10 @@ public class ProjectService {
     }
 
 
-    public void updateProjectOrganizations(VngRepository repo, UUID projectUuid, ProjectRole projectRole, UUID organizationToAdd, UUID organizationToRemove, UUID loggedInUserUuid)
-        throws VngNotFoundException {
+    public void updateProjectOrganizations(VngRepository repo, Project project, ProjectRole projectRole, UUID organizationToAdd,
+                                           UUID organizationToRemove, UUID loggedInUserUuid) {
 
-        Project project = repo.getReferenceById(Project.class, projectUuid);
-        if (project == null) {
-            logger.error("Project with id {} was not found.", projectUuid);
-            throw new VngNotFoundException();
-        }
+        UUID projectUuid = project.getId();
 
         if (organizationToAdd != null) {
             UUID organizationToProjectUuid = repo.getOrganizationDAO().findOrganizationForProject(projectUuid, organizationToAdd, projectRole);
@@ -117,11 +113,9 @@ public class ProjectService {
         }
     }
 
-    public void updateProjectName(VngRepository repo, UUID projectUuid, String newName, UUID loggedInUserUuid, LocalDate updateDate)
+    public void updateProjectName(VngRepository repo, Project project, String newName, UUID loggedInUserUuid, LocalDate updateDate)
         throws VngNotFoundException, VngServerErrorException, VngBadRequestException {
         //name is mandatory for the entire duration of the project
-
-        Project project = getCurrentProjectAndPerformPreliminaryUpdateChecks(repo, projectUuid);
 
         ProjectNameChangelog oldProjectNameChangelogAfterUpdate = new ProjectNameChangelog();
         ProjectNameChangelog newProjectNameChangelog = new ProjectNameChangelog();
@@ -133,12 +127,12 @@ public class ProjectService {
 
         repo.persist(newProjectNameChangelog);
         if (oldProjectNameChangelog == null) {
-            logger.error("Project with uuid {} has missing name changelog value", projectUuid);
+            logger.error("Project with uuid {} has missing name changelog value", project.getId());
             throw new VngServerErrorException("Project name changelog is invalid.");
         }
 
         if (Objects.equals(oldProjectNameChangelog.getName(), newName)) {
-            logger.info("Trying to update the project {} with the same project phase value that it already has {}.", projectUuid, newName);
+            logger.info("Trying to update the project {} with the same project phase value that it already has {}.", project.getId(), newName);
             return;
         }
         repo.persist(oldProjectNameChangelog);
@@ -151,11 +145,10 @@ public class ProjectService {
     }
 
 
-    public void updateProjectMunicipalityRoles(VngRepository repo, UUID projectUuid, UUID municipalityRoleToAdd, UUID municipalityRoleToRemove, UUID loggedInUserUuid, LocalDate updateDate)
+    public void updateProjectMunicipalityRoles(VngRepository repo, Project project, UUID municipalityRoleToAdd, UUID municipalityRoleToRemove, UUID loggedInUserUuid, LocalDate updateDate)
         throws VngServerErrorException, VngBadRequestException, VngNotFoundException {
         //a project can have multiple active changelog entries for municipality roles
 
-        Project project = getCurrentProjectAndPerformPreliminaryUpdateChecks(repo, projectUuid);
         LocalDate projectStartDate = project.getDuration().get(0).getStartMilestone().getState().get(0).getDate();
         if (projectStartDate.isAfter(updateDate)) {
             updateDate = projectStartDate;
@@ -167,7 +160,7 @@ public class ProjectService {
             List<ProjectGemeenteRolChangelog> changelogs = project.getMunicipalityRole().stream().filter(mrc -> mrc.getValue().getId().equals(municipalityRoleToAdd) && !mrc.getStartMilestone().getState().get(0).getDate().isAfter(finalUpdateDate)
                 && mrc.getEndMilestone().getState().get(0).getDate().isAfter(finalUpdateDate)).toList();
             if (!changelogs.isEmpty()) {
-                logger.info("Trying to add to project {} a municipality role {} which is already associated with this project.", projectUuid, municipalityRoleToAdd);
+                logger.info("Trying to add to project {} a municipality role {} which is already associated with this project.", project.getId(), municipalityRoleToAdd);
                 return;
             } else {
                 ProjectGemeenteRolChangelog newChangelog = new ProjectGemeenteRolChangelog();
@@ -191,7 +184,7 @@ public class ProjectService {
                 .filter(mrc -> mrc.getValue().getId().equals(municipalityRoleToRemove) && !mrc.getStartMilestone().getState().get(0).getDate().isAfter(finalUpdateDate)
                 && mrc.getEndMilestone().getState().get(0).getDate().isAfter(finalUpdateDate)).toList();
             if (changelogs.isEmpty()) {
-                logger.info("Trying to remove from project {} a municipality role {} which is not associated with this project.", projectUuid, municipalityRoleToRemove);
+                logger.info("Trying to remove from project {} a municipality role {} which is not associated with this project.", project.getId(), municipalityRoleToRemove);
             } else {
                 ProjectGemeenteRolChangelog changelog = changelogs.get(0);
                 changelog.setChangeEndDate(ZonedDateTime.now());
@@ -201,10 +194,8 @@ public class ProjectService {
         }
     }
 
-    public void updateProjectPlanStatus(VngRepository repo, UUID projectUuid, Set<PlanStatus> newProjectPlanStatuses, UUID loggedInUserUuid, LocalDate updateDate)
+    public void updateProjectPlanStatus(VngRepository repo, Project project, Set<PlanStatus> newProjectPlanStatuses, UUID loggedInUserUuid, LocalDate updateDate)
         throws VngServerErrorException, VngNotFoundException, VngBadRequestException {
-
-        Project project = getCurrentProjectAndPerformPreliminaryUpdateChecks(repo, projectUuid);
 
         ProjectPlanologischePlanstatusChangelog oldPlanStatusChangelogAfterUpdate = new ProjectPlanologischePlanstatusChangelog();
         ProjectPlanologischePlanstatusChangelog newPlanStatusChangelog = null;
@@ -227,7 +218,7 @@ public class ProjectService {
             Set<PlanStatus> oldProjectPlanStatuses = oldPlanStatusChangelog.getValue().stream()
                 .map(ProjectPlanologischePlanstatusChangelogValue::getPlanStatus).collect(Collectors.toSet());
             if (Objects.equals(oldProjectPlanStatuses, newProjectPlanStatuses)) {
-                logger.info("Trying to update the project {} with the same plan statuses that it already has {}.", projectUuid, newProjectPlanStatuses);
+                logger.info("Trying to update the project {} with the same plan statuses that it already has {}.", project.getId(), newProjectPlanStatuses);
                 return;
             }
             repo.persist(oldPlanStatusChangelog);
@@ -245,10 +236,8 @@ public class ProjectService {
         }
     }
 
-    public void updateProjectPlanTypes(VngRepository repo, UUID projectUuid, Set<PlanType> newProjectPlanTypes, UUID loggedInUserUuid, LocalDate updateDate)
+    public void updateProjectPlanTypes(VngRepository repo, Project project, Set<PlanType> newProjectPlanTypes, UUID loggedInUserUuid, LocalDate updateDate)
         throws VngServerErrorException, VngNotFoundException, VngBadRequestException {
-
-        Project project = getCurrentProjectAndPerformPreliminaryUpdateChecks(repo, projectUuid);
 
         ProjectPlanTypeChangelog oldPlanTypeChangelogAfterUpdate = new ProjectPlanTypeChangelog();
         ProjectPlanTypeChangelog newPlanTypeChangelog = null;
@@ -271,7 +260,7 @@ public class ProjectService {
             Set<PlanType> oldProjectPlanTypes = oldPlanTypeChangelog.getValue().stream()
                 .map(ProjectPlanTypeChangelogValue::getPlanType).collect(Collectors.toSet());
             if (Objects.equals(oldProjectPlanTypes, newProjectPlanTypes)) {
-                logger.info("Trying to update the project {} with the same plan types that it already has {}.", projectUuid, newProjectPlanTypes);
+                logger.info("Trying to update the project {} with the same plan types that it already has {}.", project.getId(), newProjectPlanTypes);
                 return;
             }
             repo.persist(oldPlanTypeChangelog);
@@ -289,10 +278,8 @@ public class ProjectService {
         }
     }
 
-    public void updateProjectPhase(VngRepository repo, UUID projectUuid, ProjectPhase newProjectPhase, UUID loggedInUserUuid, LocalDate updateDate)
+    public void updateProjectPhase(VngRepository repo, Project project, ProjectPhase newProjectPhase, UUID loggedInUserUuid, LocalDate updateDate)
         throws VngServerErrorException, VngNotFoundException, VngBadRequestException {
-
-        Project project = getCurrentProjectAndPerformPreliminaryUpdateChecks(repo, projectUuid);
 
         ProjectFaseChangelog oldProjectFaseChangelogAfterUpdate = new ProjectFaseChangelog();
         ProjectFaseChangelog newProjectFaseChangelog = null;
@@ -308,7 +295,7 @@ public class ProjectService {
         }
         if (oldProjectFaseChangelog != null) {
             if (Objects.equals(oldProjectFaseChangelog.getProjectPhase(), newProjectPhase)) {
-                logger.info("Trying to update the project {} with the same project phase value that it already has {}.", projectUuid, newProjectPhase);
+                logger.info("Trying to update the project {} with the same project phase value that it already has {}.", project.getId(), newProjectPhase);
                 return;
             }
             repo.persist(oldProjectFaseChangelog);
@@ -379,7 +366,7 @@ public class ProjectService {
         return oldProjectChangelog;
     }
 
-    private Project getCurrentProjectAndPerformPreliminaryUpdateChecks(VngRepository repo, UUID projectUuid) throws VngNotFoundException, VngServerErrorException, VngBadRequestException {
+    public Project getCurrentProjectAndPerformPreliminaryUpdateChecks(VngRepository repo, UUID projectUuid) throws VngNotFoundException, VngServerErrorException, VngBadRequestException {
         Project project = repo.getProjectsDAO().getCurrentProject(projectUuid);
 
         if (project == null) {
