@@ -1,7 +1,8 @@
 import { List, ListItem, ListItemText } from "@mui/material";
-import { Project } from "../api/projectsServices";
+import { Organization, Project } from "../api/projectsServices";
 import { OrganizationUserAvatars } from "./OrganizationUserAvatars";
 import { useTranslation } from "react-i18next";
+import { Fragment } from "react";
 
 type Props = {
     project: Project | null;
@@ -40,9 +41,8 @@ export const Details = ({ project }: Props) => {
                     }
                     if (property !== "projectId" && property !== "projectStateId" && property !== "organization_state_id") {
                         return (
-                            <>
+                            <Fragment key={property}>
                                 <ListItem
-                                    key={property}
                                     sx={{
                                         backgroundColor: "#738092",
                                         color: "#FFFFFF",
@@ -60,23 +60,22 @@ export const Details = ({ project }: Props) => {
                                     {typeof value === "string" && <ListItemText primary={getTranslatedText(property, value)} />}
                                     {typeof value === "object" &&
                                         (property === "projectOwners" || property === "projectLeaders"
-                                            ? //@ts-ignore
-                                              value.length > 0 && <OrganizationUserAvatars organizations={value} />
+                                            ? value.length > 0 && <OrganizationUserAvatars organizations={value as Organization[]} />
                                             : value.length > 0 && (
                                                   <List>
                                                       {value.map((content) => {
                                                           if (typeof content === "string") {
-                                                              return <ListItem>{getTranslatedText(property, content)}</ListItem>;
+                                                              return <ListItem key={content}>{getTranslatedText(property, content)}</ListItem>;
                                                           }
                                                           return <></>;
                                                       })}
                                                   </List>
                                               ))}
                                 </ListItem>
-                            </>
+                            </Fragment>
                         );
                     }
-                    return <></>;
+                    return <Fragment key={property} />;
                 })}
         </List>
     );
