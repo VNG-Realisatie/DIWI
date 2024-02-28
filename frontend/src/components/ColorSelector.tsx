@@ -9,7 +9,6 @@ interface ColorSelectorProps {
 }
 export const defaultColors = ["#FFE3DC", "#AEBD93", "#FFE066", "#49DCB1", "#94D1BE", "#DE2130", "#8B2635", "#976880", "#F18F01", "#768948"];
 const ColorSelector: FC<ColorSelectorProps> = ({ defaultColor, onColorChange, selectedColor }) => {
-    console.log(defaultColor);
     const [color, setColor] = useState<string>(defaultColor);
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
