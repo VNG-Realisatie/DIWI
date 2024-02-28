@@ -60,19 +60,45 @@ const ProjectTimelineSvg = ({ projectData, dateRange, timeFormat, width }: any) 
 
         //move functions to helpers later
         const createPhaseRectangles = (data: any, color: any, className: any) => {
-            svg.selectAll(`.${className}`)
+            const phaseRectangles = svg
+                .selectAll(`.${className}`)
                 .data(data)
                 .enter()
-                .append("rect")
+                .append("g")
                 .attr("class", className)
-                .attr("x", (d: any, i: number) => xScale(new Date(d.startDate)))
-                .attr("y", 40)
-                .attr("width", (d: any) => xScale(new Date(d.endDate)) - xScale(new Date(d.startDate)) + 10) //+ 10 adjusts width so it looks closer to the month end
+                .attr("transform", (d: any) => `translate(${xScale(new Date(d.startDate))}, 40)`);
+
+            phaseRectangles
+                .append("rect")
+                .attr("width", (d: any) => xScale(new Date(d.endDate)) - xScale(new Date(d.startDate)) + 10) // + 10 adjusts width
                 .attr("height", rectHeight)
                 .attr("fill", color)
                 .attr("opacity", 0.7)
                 .append("title")
                 .text((d: any) => d.data);
+
+            // Draggable lines at the beginning and end of phase rectangles
+            phaseRectangles
+                .append("line")
+                .attr("class", "drag-handle")
+                .attr("x1", 0)
+                .attr("y1", 0)
+                .attr("x2", 0)
+                .attr("y2", rectHeight)
+                .attr("stroke", "black")
+                .attr("stroke-width", 2)
+                .attr("cursor", "ew-resize"); // Set cursor to indicate draggable
+
+            phaseRectangles
+                .append("line")
+                .attr("class", "drag-handle")
+                .attr("x1", (d: any) => xScale(new Date(d.endDate)) - xScale(new Date(d.startDate)) + 10)
+                .attr("y1", 0)
+                .attr("x2", (d: any) => xScale(new Date(d.endDate)) - xScale(new Date(d.startDate)) + 10)
+                .attr("y2", rectHeight)
+                .attr("stroke", "black")
+                .attr("stroke-width", 2)
+                .attr("cursor", "ew-resize"); // Set cursor to indicate draggable
         };
 
         const createHouseBlockRectangles = (data: any, color: any, className: any) => {
@@ -92,6 +118,27 @@ const ProjectTimelineSvg = ({ projectData, dateRange, timeFormat, width }: any) 
         };
         createPhaseRectangles(projectPhases, "orange", "projectPhaseRect");
         createHouseBlockRectangles(projectNames, "steelblue", "projectNameRect");
+
+        const drag = d3.drag().on("drag", handleDrag);
+
+        function handleDrag(e: any) {
+            e.subject.x = e.x;
+            update();
+        }
+
+        function update() {
+            d3.select("svg")
+                .selectAll("drag-handle")
+                .attr("x", (d: any) => d.x);
+        }
+
+        function initDrag() {
+            const dragHandles = d3.select<SVGSVGElement, unknown>("svg").selectAll<SVGSVGElement, any>(".drag-handle");
+            dragHandles.call(drag as any);
+        }
+
+        initDrag();
+        // svg.selectAll(".drag-handle").call(dragHandle);
     }, [projectData, dateRange, timeFormat, width]);
 
     return <svg ref={svgRef}></svg>;
