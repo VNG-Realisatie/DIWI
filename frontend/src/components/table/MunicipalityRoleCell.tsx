@@ -16,7 +16,7 @@ export const MunicipalityRoleCell = ({ cellValues, selectedMunicipalityRole, han
     const [municipalityRolesOptions, setMunicipalityRolesOptions] = useState<OptionType[]>();
     const { t } = useTranslation();
 
-    const defaultPlanTypes = cellValues.row.municipalityRole.map((c) => ({ id: c, name: c }));
+    const defaultPlanTypes = cellValues.row.municipalityRole?.map((c) => ({ id: c, name: c }));
     const findSelected = selectedMunicipalityRole.find((s) => s.id === cellValues.row.projectId);
     const selectedOption = findSelected ? findSelected.option : [];
 
@@ -30,7 +30,7 @@ export const MunicipalityRoleCell = ({ cellValues, selectedMunicipalityRole, han
             selected={selectedOption}
             options={municipalityRolesOptions ? municipalityRolesOptions : []}
             tagLimit={2}
-            defaultOptionValues={defaultPlanTypes}
+            defaultOptionValues={defaultPlanTypes ? defaultPlanTypes : []}
             inputLabel={t("projects.tableColumns.municipalityRole")}
             placeHolder={t("projects.tableColumns.selectMunicipalityRole")}
             handleChange={(_: React.ChangeEvent<{}>, values: OptionType[]) => handleMunicipalityRoleChange(_, values, cellValues.row.projectId)}

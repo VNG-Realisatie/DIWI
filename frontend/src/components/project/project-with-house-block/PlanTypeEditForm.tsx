@@ -17,7 +17,7 @@ export const PlanTypeEditForm = ({ planType, setPlanType }: Props) => {
         const {
             target: { value },
         } = event;
-        setPlanType(typeof value === "string" ? value.split(",") : value);
+        setPlanType(typeof value === "string" ? [value] : value);
     };
     return (
         <Select
@@ -25,7 +25,7 @@ export const PlanTypeEditForm = ({ planType, setPlanType }: Props) => {
             size="small"
             id="plan-type-checkbox"
             multiple
-            value={planType.length > 0 ? planType : selectedProject?.planType}
+            value={planType.length > 0 ? planType : selectedProject?.planType ? selectedProject?.planType : []}
             onChange={handlePlanTypeChange}
             input={<OutlinedInput />}
             renderValue={(selected) => selected.join(", ")}

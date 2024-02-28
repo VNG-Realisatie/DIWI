@@ -18,7 +18,7 @@ export const WijkEditForm = ({ selectedWijk, setSelectedWijk }: Props) => {
         const {
             target: { value },
         } = event;
-        setSelectedWijk(typeof value === "string" ? value.split(",") : value);
+        setSelectedWijk(typeof value === "string" ? [value] : value);
     };
 
     useEffect(() => {

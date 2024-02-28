@@ -189,7 +189,7 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
                                     ? selectedMunicipalityRole.map((mr: string) => {
                                           return <span key={mr}>{mr}</span>;
                                       })
-                                    : selectedProject?.municipalityRole.map((mr: string) => {
+                                    : selectedProject?.municipalityRole?.map((mr: string) => {
                                           return <span key={mr}>{mr}</span>;
                                       })}
                             </CellContainer>
@@ -236,7 +236,7 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
                                     ? planStatus.map((pp: string) => {
                                           return <span key={pp}>{t(`projectTable.planningPlanStatus.${pp}`)}</span>;
                                       })
-                                    : selectedProject?.planningPlanStatus.map((pp: string) => {
+                                    : selectedProject?.planningPlanStatus?.map((pp: string) => {
                                           return <span key={pp}>{t(`projectTable.planningPlanStatus.${pp}`)}</span>;
                                       })}
                             </Typography>

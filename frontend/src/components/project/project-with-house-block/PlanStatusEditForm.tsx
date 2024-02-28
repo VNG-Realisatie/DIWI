@@ -18,7 +18,7 @@ export const PlanStatusEditForm = ({ planStatus, setPlanStatus }: Props) => {
         const {
             target: { value },
         } = event;
-        setPlanStatus(typeof value === "string" ? value.split(",") : value);
+        setPlanStatus(typeof value === "string" ? [value] : value);
     };
     return (
         <Select
@@ -26,7 +26,7 @@ export const PlanStatusEditForm = ({ planStatus, setPlanStatus }: Props) => {
             size="small"
             id="plan-status-checkbox"
             multiple
-            value={planStatus.length > 0 ? planStatus : selectedProject?.planningPlanStatus}
+            value={planStatus.length > 0 ? planStatus : selectedProject?.planningPlanStatus ? selectedProject?.planningPlanStatus : []}
             onChange={handlePlanStatusChange}
             input={<OutlinedInput />}
             renderValue={(selected) => selected.join(", ")}

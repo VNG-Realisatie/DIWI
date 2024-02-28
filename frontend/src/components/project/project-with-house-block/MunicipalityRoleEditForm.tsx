@@ -32,7 +32,7 @@ export const MunicipalityRoleEditForm = ({ selectedMunicipalityRole, setSelected
             size="small"
             id="municipality-role-checkbox"
             multiple
-            value={selectedMunicipalityRole.length > 0 ? selectedMunicipalityRole : selectedProject?.municipalityRole}
+            value={selectedMunicipalityRole.length > 0 ? selectedMunicipalityRole : selectedProject?.municipalityRole ? selectedProject?.municipalityRole : []}
             onChange={handleMunicipalityRoleChange}
             input={<OutlinedInput />}
             renderValue={(selected) => selected.join(", ")}
