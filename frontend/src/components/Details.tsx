@@ -1,10 +1,30 @@
 import { List, ListItem, ListItemText } from "@mui/material";
 import { Project } from "../api/projectsServices";
+import { OrganizationUserAvatars } from "./OrganizationUserAvatars";
+import { useTranslation } from "react-i18next";
 
 type Props = {
     project: Project | null;
 };
 export const Details = ({ project }: Props) => {
+    const { t } = useTranslation();
+
+    const getTranslatedText = (property: string, content: string) => {
+        if (property === "confidentialityLevel") {
+            return t(`projectTable.confidentialityLevelOptions.${content}`);
+        }
+        if (property === "planType") {
+            return t(`projectTable.planTypeOptions.${content}`);
+        }
+        if (property === "projectPhase") {
+            return t(`projectTable.projectPhaseOptions.${content}`);
+        }
+        if (property === "planningPlanStatus") {
+            return t(`projectTable.planningPlanStatus.${content}`);
+        } else {
+            return content;
+        }
+    };
     return (
         <List
             sx={{
@@ -37,7 +57,21 @@ export const Details = ({ project }: Props) => {
                                     }}
                                 >
                                     {/* Temporary hack, should show all data when we start working on map */}
-                                    {typeof value === "string" ? <ListItemText primary={value} /> : null}
+                                    {typeof value === "string" && <ListItemText primary={getTranslatedText(property, value)} />}
+                                    {typeof value === "object" &&
+                                        (property === "projectOwners" || property === "projectLeaders"
+                                            ? //@ts-ignore
+                                              value.length > 0 && <OrganizationUserAvatars organizations={value} />
+                                            : value.length > 0 && (
+                                                  <List>
+                                                      {value.map((content) => {
+                                                          if (typeof content === "string") {
+                                                              return <ListItem>{getTranslatedText(property, content)}</ListItem>;
+                                                          }
+                                                          return <></>;
+                                                      })}
+                                                  </List>
+                                              ))}
                                 </ListItem>
                             </>
                         );
