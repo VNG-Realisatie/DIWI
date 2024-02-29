@@ -2,8 +2,6 @@ package nl.vng.diwi.models.superclasses;
 
 import java.time.LocalDate;
 
-import nl.vng.diwi.models.interfaces.DatedDataModelInterface;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -15,7 +13,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode
-abstract public class DatedDataModelSuperClass implements DatedDataModelInterface {
+abstract public class DatedDataModelSuperClass {
 
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)

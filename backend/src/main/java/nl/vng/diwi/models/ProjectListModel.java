@@ -1,130 +1,83 @@
 package nl.vng.diwi.models;
 
-import java.time.LocalDate;
+import com.fasterxml.uuid.impl.UUIDUtil;
+import lombok.Data;
+
+import lombok.EqualsAndHashCode;
+import nl.vng.diwi.dal.entities.enums.PlanStatus;
+
+import nl.vng.diwi.dal.entities.enums.PlanType;
+import nl.vng.diwi.models.superclasses.ProjectSnapshotModelSuperclass;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import nl.vng.diwi.dal.entities.enums.Confidentiality;
-import nl.vng.diwi.dal.entities.enums.PlanStatus;
-import nl.vng.diwi.dal.entities.enums.PlanType;
-import nl.vng.diwi.dal.entities.enums.ProjectPhase;
-import nl.vng.diwi.models.superclasses.ProjectSnapshotModelSuperclass;
-
-import org.hibernate.annotations.JdbcType;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.dialect.PostgreSQLEnumJdbcType;
-import org.hibernate.type.SqlTypes;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.uuid.impl.UUIDUtil;
-
-import io.hypersistence.utils.hibernate.type.array.StringArrayType;
-import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-
-@Convert(
-    attributeName = "multidimensional_array",
-    converter = StringArrayType.class
-)
-@Entity
-@ToString
-@RequiredArgsConstructor
-@EqualsAndHashCode(callSuper=true)
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class ProjectListModel extends ProjectSnapshotModelSuperclass {
 
     public static final List<String> SORTABLE_COLUMNS = List.of("projectName", "projectOwners", "projectLeaders", "confidentialityLevel", "organizationName",
         "planType", "startDate", "endDate", "priority", "projectPhase", "municipalityRole", "planningPlanStatus", "totalValue", "municipality", "wijk", "buurt");
     public static final String DEFAULT_SORT_COLUMN = "startDate";
 
-    @Id
-    private UUID projectId;
-
     private UUID projectStateId;
 
-    private String projectName;
+    private List<SelectModel> municipality;
 
-    @JsonIgnore
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(columnDefinition = "text[][]")
-    private String[][] projectOwnersArray;
+    private List<SelectModel> wijk;
 
-    @JsonIgnore
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(columnDefinition = "text[][]")
-    private String[][] projectLeadersArray;
+    private List<SelectModel> buurt;
 
-    @Transient
-    private List<OrganizationModel> projectOwners = new ArrayList<>();
+    public ProjectListModel(ProjectListSqlModel sqlModel) {
+        this.setProjectId(sqlModel.getProjectId());
+        this.projectStateId = sqlModel.getProjectStateId();
+        this.setProjectName(sqlModel.getProjectName());
+        this.setProjectOwners(getOrganizationModelListFromSqlArray(sqlModel.getProjectOwnersArray()));
+        this.setProjectLeaders(getOrganizationModelListFromSqlArray(sqlModel.getProjectLeadersArray()));
+        this.setProjectColor(sqlModel.getProjectColor());
+        this.setConfidentialityLevel(sqlModel.getConfidentialityLevel());
+        this.setPlanType((sqlModel.getPlanType() == null) ? new ArrayList<>() : sqlModel.getPlanType().stream().map(PlanType::valueOf).toList());
+        this.setStartDate(sqlModel.getStartDate());
+        this.setEndDate(sqlModel.getEndDate());
+        this.setPriority(new PriorityModel(getSelectModelListFromSqlArray(sqlModel.getPriority())));
+        this.setProjectPhase(sqlModel.getProjectPhase());
+        this.setMunicipalityRole(getSelectModelListFromSqlArray(sqlModel.getMunicipalityRole()));
+        this.setPlanningPlanStatus((sqlModel.getPlanningPlanStatus() == null) ? new ArrayList<>() : sqlModel.getPlanningPlanStatus().stream().map(PlanStatus::valueOf).toList());
+        this.setTotalValue(sqlModel.getTotalValue());
+        this.municipality = getSelectModelListFromSqlArray(sqlModel.getMunicipality());
+        this.wijk = getSelectModelListFromSqlArray(sqlModel.getWijk());
+        this.buurt = getSelectModelListFromSqlArray(sqlModel.getBuurt());
 
-    @Transient
-    private List<OrganizationModel> projectLeaders = new ArrayList<>();
+        Collections.sort(this.getMunicipalityRole());
+        Collections.sort(this.municipality);
+        Collections.sort(this.wijk);
+        Collections.sort(this.buurt);
 
-    private String projectColor;
+    }
 
-    @Enumerated(EnumType.STRING)
-    @JdbcType(PostgreSQLEnumJdbcType.class)
-    private Confidentiality confidentialityLevel;
+    public List<SelectModel> getSelectModelListFromSqlArray(String[][] sqlArray) {
+        List<SelectModel> result = new ArrayList<>();
+        if (sqlArray != null) {
+            for (String[] sqlSelectModel : sqlArray) {
+                result.add(new SelectModel(UUID.fromString(sqlSelectModel[0]), sqlSelectModel[1]));
+            }
+        }
+        return result;
+    }
 
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(columnDefinition = "text[]")
-    private List<PlanType> planType;
-
-    private LocalDate startDate;
-
-    private LocalDate endDate;
-
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(columnDefinition = "text[]")
-    private List<String> priority;
-
-    @Enumerated(EnumType.STRING)
-    @JdbcType(PostgreSQLEnumJdbcType.class)
-    private ProjectPhase projectPhase;
-
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(columnDefinition = "text[]")
-    private List<String> municipalityRole;
-
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(columnDefinition = "text[]")
-    private List<PlanStatus> planningPlanStatus;
-
-    private Long totalValue;
-
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(columnDefinition = "text[]")
-    private List<String> municipality;
-
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(columnDefinition = "text[]")
-    private List<String> wijk;
-
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(columnDefinition = "text[]")
-    private List<String> buurt;
-
-    public void processProjectOwnersAndLeadersArrays() {
-
-        if (projectOwnersArray != null) {
+    public List<OrganizationModel> getOrganizationModelListFromSqlArray(String[][] organizationUserArray) {
+        List<OrganizationModel> result = new ArrayList<>();
+        if (organizationUserArray != null) {
             List<OrganizationUserModel> orgOwners = new ArrayList<>();
-            for (String[] owner : projectOwnersArray) {
+            for (String[] owner : organizationUserArray) {
                 OrganizationUserModel organizationUserModel = getOrganizationUserModelFromSqlArrayData(owner);
                 orgOwners.add(organizationUserModel);
             }
-            this.projectOwners.addAll(OrganizationModel.fromOrgUserModelListToOrgModelList(orgOwners));
+            result.addAll(OrganizationModel.fromOrgUserModelListToOrgModelList(orgOwners));
         }
-
-        if (projectLeadersArray != null) {
-            List<OrganizationUserModel> orgLeaders = new ArrayList<>();
-            for (String[] leader : projectLeadersArray) {
-                OrganizationUserModel organizationUserModel = getOrganizationUserModelFromSqlArrayData(leader);
-                orgLeaders.add(organizationUserModel);
-            }
-            this.projectLeaders.addAll(OrganizationModel.fromOrgUserModelListToOrgModelList(orgLeaders));
-        }
+        return result;
     }
 
     private OrganizationUserModel getOrganizationUserModelFromSqlArrayData(String[] sqlUserData) {
@@ -138,163 +91,4 @@ public class ProjectListModel extends ProjectSnapshotModelSuperclass {
         return orgUser;
     }
 
-    public UUID getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(UUID projectId) {
-        this.projectId = projectId;
-    }
-
-    public UUID getProjectStateId() {
-        return projectStateId;
-    }
-
-    public void setProjectStateId(UUID projectStateId) {
-        this.projectStateId = projectStateId;
-    }
-
-    public String getProjectName() {
-        return projectName;
-    }
-
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
-    }
-
-    public String[][] getProjectOwnersArray() {
-        return projectOwnersArray;
-    }
-
-    public void setProjectOwnersArray(String[][] projectOwnersArray) {
-        this.projectOwnersArray = projectOwnersArray;
-    }
-
-    public String[][] getProjectLeadersArray() {
-        return projectLeadersArray;
-    }
-
-    public void setProjectLeadersArray(String[][] projectLeadersArray) {
-        this.projectLeadersArray = projectLeadersArray;
-    }
-
-    public List<OrganizationModel> getProjectOwners() {
-        return projectOwners;
-    }
-
-    public void setProjectOwners(List<OrganizationModel> projectOwners) {
-        this.projectOwners = projectOwners;
-    }
-
-    public List<OrganizationModel> getProjectLeaders() {
-        return projectLeaders;
-    }
-
-    public void setProjectLeaders(List<OrganizationModel> projectLeaders) {
-        this.projectLeaders = projectLeaders;
-    }
-
-    public String getProjectColor() {
-        return projectColor;
-    }
-
-    public void setProjectColor(String projectColor) {
-        this.projectColor = projectColor;
-    }
-
-    public Confidentiality getConfidentialityLevel() {
-        return confidentialityLevel;
-    }
-
-    public void setConfidentialityLevel(Confidentiality confidentialityLevel) {
-        this.confidentialityLevel = confidentialityLevel;
-    }
-
-    public List<PlanType> getPlanType() {
-        return planType;
-    }
-
-    public void setPlanType(List<PlanType> planType) {
-        this.planType = planType;
-    }
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
-
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
-    }
-
-    public List<String> getPriority() {
-        return priority;
-    }
-
-    public void setPriority(List<String> priority) {
-        this.priority = priority;
-    }
-
-    public ProjectPhase getProjectPhase() {
-        return projectPhase;
-    }
-
-    public void setProjectPhase(ProjectPhase projectPhase) {
-        this.projectPhase = projectPhase;
-    }
-
-    public List<String> getMunicipalityRole() {
-        return municipalityRole;
-    }
-
-    public void setMunicipalityRole(List<String> municipalityRole) {
-        this.municipalityRole = municipalityRole;
-    }
-
-    public List<PlanStatus> getPlanningPlanStatus() {
-        return planningPlanStatus;
-    }
-
-    public void setPlanningPlanStatus(List<PlanStatus> planningPlanStatus) {
-        this.planningPlanStatus = planningPlanStatus;
-    }
-
-    public Long getTotalValue() {
-        return totalValue;
-    }
-
-    public void setTotalValue(Long totalValue) {
-        this.totalValue = totalValue;
-    }
-
-    public List<String> getMunicipality() {
-        return municipality;
-    }
-
-    public void setMunicipality(List<String> municipality) {
-        this.municipality = municipality;
-    }
-
-    public List<String> getWijk() {
-        return wijk;
-    }
-
-    public void setWijk(List<String> wijk) {
-        this.wijk = wijk;
-    }
-
-    public List<String> getBuurt() {
-        return buurt;
-    }
-
-    public void setBuurt(List<String> buurt) {
-        this.buurt = buurt;
-    }
 }
