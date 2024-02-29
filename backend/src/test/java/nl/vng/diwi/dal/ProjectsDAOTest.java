@@ -85,11 +85,11 @@ public class ProjectsDAOTest {
         assertThat(currentProject.getMunicipalityRole().size()).isEqualTo(2);
         assertThat(currentProject.getMunicipalityRole().get(0)).isEqualTo("Role 1 new");
         assertThat(currentProject.getMunicipalityRole().get(1)).isEqualTo("Role 3");
-        assertThat(currentProject.getProjectPhase()).isEqualTo(ProjectPhase._1_INITIATIEFFASE.name());
+        assertThat(currentProject.getProjectPhase()).isEqualTo(ProjectPhase._1_INITIATIEFFASE);
         //Test that only the changelog value with milestones corresponding to the present moment are selected and values are sorted alphabetically
         assertThat(currentProject.getPlanType().size()).isEqualTo(2);
-        assertThat(currentProject.getPlanType().get(0)).isEqualTo(PlanType.HERSTRUCTURERING.name());
-        assertThat(currentProject.getPlanType().get(1)).isEqualTo(PlanType.PAND_TRANSFORMATIE.name());
+        assertThat(currentProject.getPlanType().get(0)).isEqualTo(PlanType.HERSTRUCTURERING);
+        assertThat(currentProject.getPlanType().get(1)).isEqualTo(PlanType.PAND_TRANSFORMATIE);
         assertThat(currentProject.getMunicipality().size()).isEqualTo(2);
         assertThat(currentProject.getMunicipality().get(0)).isEqualTo("Gemeente 1");
         assertThat(currentProject.getMunicipality().get(1)).isEqualTo("Gemeente 2");
@@ -107,7 +107,7 @@ public class ProjectsDAOTest {
         assertThat(futureProject.getProjectPhase()).isNull();
         //Test that only the changelog values with the start milestone at the beginning of the project are selected
         assertThat(futureProject.getPlanType().size()).isEqualTo(1);
-        assertThat(futureProject.getPlanType().get(0)).isEqualTo(PlanType.UITBREIDING_OVERIG.name());
+        assertThat(futureProject.getPlanType().get(0)).isEqualTo(PlanType.UITBREIDING_OVERIG);
         assertThat(futureProject.getMunicipality().size()).isEqualTo(1);
         assertThat(futureProject.getMunicipality().get(0)).isEqualTo("Gemeente 1");
     }
