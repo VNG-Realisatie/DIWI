@@ -1,4 +1,4 @@
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Stack, Tooltip, Typography } from "@mui/material";
 import { useContext, useState } from "react";
 import { Details } from "../components/Details";
 import ProjectContext from "../context/ProjectContext";
@@ -10,6 +10,8 @@ import BreadcrumbBar from "../components/header/BreadcrumbBar";
 import { useTranslation } from "react-i18next";
 import NetherlandsMap from "../components/map/NetherlandsMap";
 import { ProjectsWithHouseBlock } from "../components/project/project-with-house-block/ProjectWithHouseBlock";
+import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
+import DeleteProjectDialog from "../components/project/DeleteProjectDialog";
 
 export const dummyMapData = [
     {
@@ -36,6 +38,8 @@ export const ProjectDetail = () => {
     const { t } = useTranslation();
     const [selectedProjectColor, setSelectedProjectColor] = useState<string>();
 
+    const [isDeleteConfirmationOpen, setDeteleConfirmationOpen] = useState<boolean>(false);
+
     return (
         <Stack direction="column" justifyContent="space-between" position="relative" border="solid 1px #ddd" mb={10}>
             <BreadcrumbBar
@@ -57,6 +61,25 @@ export const ProjectDetail = () => {
                 }}
             >
                 <Typography variant="h5">{selectedProject?.projectName}</Typography>
+                {selectedProject && (
+                    <Tooltip placement="top" title={t("Delete project")}>
+                        {/* change tooltip title */}
+                        <DeleteForeverOutlinedIcon
+                            sx={{ ml: 3, color: "#FFFFFF", cursor: "pointer" }}
+                            onClick={() => {
+                                setDeteleConfirmationOpen(!isDeleteConfirmationOpen);
+                            }}
+                        />
+                    </Tooltip>
+                )}
+                {isDeleteConfirmationOpen && selectedProject && (
+                    <DeleteProjectDialog
+                        setIsOpen={setDeteleConfirmationOpen}
+                        isOpen={isDeleteConfirmationOpen}
+                        projectName={selectedProject.projectName}
+                        projectId={selectedProject.projectId}
+                    />
+                )}
             </Stack>
             <Stack direction="row" justifyContent="flex-end" border="solid 1px #ddd" p={0.5}>
                 <Box sx={{ cursor: "pointer" }} onClick={() => navigate(Paths.projectAdd.path)}>
