@@ -1,5 +1,6 @@
 package nl.vng.diwi.models;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 import nl.vng.diwi.dal.entities.Milestone;
@@ -14,14 +15,14 @@ import lombok.NoArgsConstructor;
 public class MilestoneModel {
     private UUID id;
     private MilestoneStatus state;
-    private LocalDateModel date;
+    private LocalDate date;
     private String description;
 
     public MilestoneModel(Milestone milestone) {
         this.setId(milestone.getId());
         MilestoneState milestoneState = milestone.getState().get(0);
         this.setDescription(milestoneState.getDescription());
-        this.setDate(new LocalDateModel(milestoneState.getDate()));
+        this.setDate(milestoneState.getDate());
         this.setState(milestoneState.getState());
     }
 }

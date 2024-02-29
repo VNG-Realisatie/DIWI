@@ -17,6 +17,7 @@ public class ProjectUpdateModel {
 
     public enum ProjectProperty {
         confidentialityLevel,
+        municipalityRole,
         name,
         planningPlanStatus,
         planType,
@@ -67,7 +68,7 @@ public class ProjectUpdateModel {
             }
             case projectColor -> (value == null || !value.matches(COLOR_REGEX)) ? "New color is not valid." : null;
             case projectPhase -> (value == null || !EnumUtils.isValidEnum(ProjectPhase.class, value)) ? "New project phase value is not valid." : null;
-            case projectLeaders, projectOwners -> {
+            case municipalityRole, projectLeaders, projectOwners -> {
                 if (add != null) {
                     try {
                         UUID.fromString(add);

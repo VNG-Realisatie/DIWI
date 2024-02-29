@@ -99,13 +99,13 @@ public class ProjectsDAOTest {
         assertThat(futureProject.getProjectColor()).isEqualTo("#456456");
         assertThat(futureProject.getStartDate()).isEqualTo(LocalDate.now().plusDays(10).format(DAY_MONTH_YEAR_FORMATTER));
         assertThat(futureProject.getEndDate()).isEqualTo(LocalDate.now().plusDays(20).format(DAY_MONTH_YEAR_FORMATTER));
-        //Test that the name changelog closest to the present moment is selected
+        //Test that the name changelog at the project start milestone
         assertThat(futureProject.getProjectName()).isEqualTo("Future project Phase 1");
-        //Test that only the gemeenterol_changelog values with the change_end_date null and with the closest milestone to the beginning of the project are selected
+        //Test that only the gemeenterol_changelog values with the change_end_date null and with the start milestone at the beginning of the project are selected
         assertThat(futureProject.getMunicipalityRole().size()).isEqualTo(1);
         assertThat(futureProject.getMunicipalityRole().get(0)).isEqualTo("Role 2");
-        assertThat(futureProject.getProjectPhase()).isEqualTo(ProjectPhase._1_INITIATIEFFASE.name());
-        //Test that only the changelog values with the closest milestone to the beginning of the project are selected
+        assertThat(futureProject.getProjectPhase()).isNull();
+        //Test that only the changelog values with the start milestone at the beginning of the project are selected
         assertThat(futureProject.getPlanType().size()).isEqualTo(1);
         assertThat(futureProject.getPlanType().get(0)).isEqualTo(PlanType.UITBREIDING_OVERIG.name());
         assertThat(futureProject.getMunicipality().size()).isEqualTo(1);

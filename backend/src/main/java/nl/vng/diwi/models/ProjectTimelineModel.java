@@ -5,10 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import nl.vng.diwi.dal.entities.*;
-import nl.vng.diwi.dal.entities.enums.Confidentiality;
-import nl.vng.diwi.dal.entities.enums.PlanStatus;
-import nl.vng.diwi.dal.entities.enums.PlanType;
-import nl.vng.diwi.dal.entities.enums.ProjectPhase;
+import nl.vng.diwi.dal.entities.enums.*;
 import nl.vng.diwi.models.superclasses.DatedDataModelSuperClass;
 
 import lombok.Data;
@@ -26,8 +23,10 @@ public class ProjectTimelineModel extends DatedDataModelSuperClass {
     private List<DatedDataModel<List<PlanType>>> planType = new ArrayList<>();
     private List<DatedWeightedRangeOrValueModel<String>> priority = new ArrayList<>();
     private List<DatedDataModel<ProjectPhase>> projectPhase = new ArrayList<>();
-    private List<DatedDataModel<List<String>>> municipalityRole = new ArrayList<>();
+    private List<DatedDataModel<String>> municipalityRole = new ArrayList<>();
     private List<DatedDataModel<List<PlanStatus>>> planningPlanStatus = new ArrayList<>();
+    private List<OrganizationModel> projectOwners = new ArrayList<>();
+    private List<OrganizationModel> projectLeaders = new ArrayList<>();
     private Long totalValue;
     private String[] municipality;
     private String[] wijk;
@@ -39,20 +38,33 @@ public class ProjectTimelineModel extends DatedDataModelSuperClass {
         projectColor = projectState.getColor();
         confidentialityLevel = projectState.getConfidentiality();
         ProjectDurationChangelog projectDuration = project.getDuration().get(0);
-        this.setStartDate(projectDuration.getStartMilestone());
-        this.setEndDate(projectDuration.getEndMilestone());
+        MilestoneModel projectStartMilestone = new MilestoneModel(projectDuration.getStartMilestone());
+        MilestoneModel projectEndMilestone = new MilestoneModel(projectDuration.getEndMilestone());
+        this.setStartDate(projectStartMilestone.getDate());
+        this.setEndDate(projectEndMilestone.getDate());
+        for (var item : project.getOrganizationProjectRoles()) {
+            if (item.getProjectRole() == ProjectRole.OWNER) {
+                projectOwners.add(new OrganizationModel(item.getOrganization()));
+            } else if (item.getProjectRole() == ProjectRole.PROJECT_LEIDER) {
+                projectLeaders.add(new OrganizationModel(item.getOrganization()));
+            }
+        }
         for (ProjectNameChangelog item : project.getName()) {
             DatedDataModel<String> data = new DatedDataModel<>();
             data.setData(item.getName());
-            data.setStartDate(item.getStartMilestone());
-            data.setEndDate(item.getEndMilestone());
+            MilestoneModel startMilestone = new MilestoneModel(item.getStartMilestone());
+            MilestoneModel endMilestone = new MilestoneModel(item.getEndMilestone());
+            data.setStartDate(startMilestone.getDate());
+            data.setEndDate(endMilestone.getDate());
             projectName.add(data);
         }
         for (ProjectFaseChangelog item : project.getPhase()) {
             DatedDataModel<ProjectPhase> data = new DatedDataModel<>();
             data.setData(item.getProjectPhase());
-            data.setStartDate(item.getStartMilestone());
-            data.setEndDate(item.getEndMilestone());
+            MilestoneModel startMilestone = new MilestoneModel(item.getStartMilestone());
+            MilestoneModel endMilestone = new MilestoneModel(item.getEndMilestone());
+            data.setStartDate(startMilestone.getDate());
+            data.setEndDate(endMilestone.getDate());
             projectPhase.add(data);
         }
         for (ProjectPlanTypeChangelog item : project.getPlanType()) {
@@ -62,19 +74,19 @@ public class ProjectTimelineModel extends DatedDataModelSuperClass {
             }
             DatedDataModel<List<PlanType>> data = new DatedDataModel<>();
             data.setData(values);
-            data.setStartDate(item.getStartMilestone());
-            data.setEndDate(item.getEndMilestone());
+            MilestoneModel startMilestone = new MilestoneModel(item.getStartMilestone());
+            MilestoneModel endMilestone = new MilestoneModel(item.getEndMilestone());
+            data.setStartDate(startMilestone.getDate());
+            data.setEndDate(endMilestone.getDate());
             planType.add(data);
         }
         for (ProjectGemeenteRolChangelog item : project.getMunicipalityRole()) {
-            List<String> values = new ArrayList<>();
-            for (var value : item.getValue().getState()) {
-                values.add(value.getValueLabel());
-            }
-            DatedDataModel<List<String>> data = new DatedDataModel<>();
-            data.setData(values);
-            data.setStartDate(item.getStartMilestone());
-            data.setEndDate(item.getEndMilestone());
+            DatedDataModel<String> data = new DatedDataModel<>();
+            data.setData(item.getValue().getState().get(0).getValueLabel());
+            MilestoneModel startMilestone = new MilestoneModel(item.getStartMilestone());
+            MilestoneModel endMilestone = new MilestoneModel(item.getEndMilestone());
+            data.setStartDate(startMilestone.getDate());
+            data.setEndDate(endMilestone.getDate());
             municipalityRole.add(data);
         }
         for (ProjectPlanologischePlanstatusChangelog item : project.getPlanologischePlanstatus()) {
@@ -84,8 +96,10 @@ public class ProjectTimelineModel extends DatedDataModelSuperClass {
             }
             DatedDataModel<List<PlanStatus>> data = new DatedDataModel<>();
             data.setData(values);
-            data.setStartDate(item.getStartMilestone());
-            data.setEndDate(item.getEndMilestone());
+            MilestoneModel startMilestone = new MilestoneModel(item.getStartMilestone());
+            MilestoneModel endMilestone = new MilestoneModel(item.getEndMilestone());
+            data.setStartDate(startMilestone.getDate());
+            data.setEndDate(endMilestone.getDate());
             planningPlanStatus.add(data);
         }
         for (ProjectPrioriseringChangelog item : project.getPriority()) {
@@ -106,8 +120,10 @@ public class ProjectTimelineModel extends DatedDataModelSuperClass {
                 data.setData(item.getValue().getState().get(0).getValueLabel());
                 data.setLevel(item.getValue().getState().get(0).getOrdinalLevel());
             }
-            data.setStartDate(item.getStartMilestone());
-            data.setEndDate(item.getEndMilestone());
+            MilestoneModel startMilestone = new MilestoneModel(item.getStartMilestone());
+            MilestoneModel endMilestone = new MilestoneModel(item.getEndMilestone());
+            data.setStartDate(startMilestone.getDate());
+            data.setEndDate(endMilestone.getDate());
             priority.add(data);
         }
     }

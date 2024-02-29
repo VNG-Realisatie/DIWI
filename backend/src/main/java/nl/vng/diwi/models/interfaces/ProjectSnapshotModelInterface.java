@@ -1,21 +1,22 @@
 package nl.vng.diwi.models.interfaces;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
-//import nl.vng.diwi.models.LocalDateModel;
+import nl.vng.diwi.models.OrganizationModel;
 //import nl.vng.diwi.models.PriorityModel;
 
 public interface ProjectSnapshotModelInterface {
     public UUID getProjectId();
     public void setProjectId(UUID projectId);
-    public Object/*LocalDateModel*/ getStartDate();
-    //public void setStartDate(LocalDateModel startDate);
-    public Object/*LocalDateModel*/ getEndDate();
-    //public void setEndDate(LocalDateModel endDate);
+    public LocalDate getStartDate();
+    public void setStartDate(LocalDate startDate);
+    public LocalDate getEndDate();
+    public void setEndDate(LocalDate endDate);
     public String getProjectName();
     public void setProjectName(String projectName);
     public String getProjectColor();
@@ -30,4 +31,8 @@ public interface ProjectSnapshotModelInterface {
     public void setMunicipalityRole(List<String> municipalityRole);
     public List<PlanStatus> getPlanningPlanStatus();
     public void setPlanningPlanStatus(List<PlanStatus> planningPlanStatus);
+    public List<OrganizationModel> getProjectOwners();
+    public void setProjectOwners(List<OrganizationModel> projectOwners);
+    public List<OrganizationModel> getProjectLeaders();
+    public void setProjectLeaders(List<OrganizationModel> projectLeaders);
 }

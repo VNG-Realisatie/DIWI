@@ -215,100 +215,50 @@ FROM (
                 sms.date > _now_
         ),
         future_project_names AS (
-            WITH fp_names_mindate AS (
-                SELECT
-                    pnc.project_id, MIN(sms.date) AS mindate
-                FROM
-                    diwi_testset.project_name_changelog pnc
-                        JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pnc.start_milestone_id AND sms.change_end_date IS NULL
-                WHERE
-                    sms.date > _now_ AND pnc.change_end_date IS NULL
-                GROUP BY pnc.project_id
-            )
             SELECT
                 pnc.project_id, pnc.name
             FROM
                 diwi_testset.project_name_changelog pnc
+                    JOIN diwi_testset.project_duration_changelog pdc ON pdc.project_id = pnc.project_id AND pdc.start_milestone_id = pnc.start_milestone_id AND pdc.change_end_date IS NULL
                     JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pnc.start_milestone_id AND sms.change_end_date IS NULL
-                    JOIN fp_names_mindate info ON info.project_id = pnc.project_id AND info.mindate = sms.date
             WHERE
                 sms.date > _now_ AND pnc.change_end_date IS NULL
         ),
         future_project_fases AS (
-            WITH fp_fases_mindate AS (
-                SELECT
-                    pfc.project_id, MIN(sms.date) as mindate
-                FROM
-                    diwi_testset.project_fase_changelog pfc
-                        JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pfc.start_milestone_id AND sms.change_end_date IS NULL
-                WHERE
-                    sms.date > _now_ AND pfc.change_end_date IS NULL
-                GROUP BY pfc.project_id
-            )
             SELECT
                 pfc.project_id, pfc.project_fase
             FROM
                 diwi_testset.project_fase_changelog pfc
+                    JOIN diwi_testset.project_duration_changelog pdc ON pdc.project_id = pfc.project_id AND pdc.start_milestone_id = pfc.start_milestone_id AND pdc.change_end_date IS NULL
                     JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pfc.start_milestone_id AND sms.change_end_date IS NULL
-                    JOIN fp_fases_mindate info ON info.project_id = pfc.project_id AND info.mindate = sms.date
             WHERE
                 sms.date > _now_ AND pfc.change_end_date IS NULL
         ),
         future_project_plan_types AS (
-            WITH fp_project_plantypes_mindate AS (
-                SELECT
-                    pptc.project_id, MIN(sms.date) as mindate
-                FROM
-                    diwi_testset.project_plan_type_changelog pptc
-                        JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pptc.start_milestone_id AND sms.change_end_date IS NULL
-                WHERE
-                    sms.date > _now_ AND pptc.change_end_date IS NULL
-                GROUP BY pptc.project_id
-            )
             SELECT
                 pptc.project_id, array_agg(pptcv.plan_type::TEXT ORDER BY pptcv.plan_type::TEXT ASC) AS plan_types
             FROM
                 diwi_testset.project_plan_type_changelog pptc
+                    JOIN diwi_testset.project_duration_changelog pdc ON pdc.project_id = pptc.project_id AND pdc.start_milestone_id = pptc.start_milestone_id AND pdc.change_end_date IS NULL
                     JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pptc.start_milestone_id AND sms.change_end_date IS NULL
-                    JOIN fp_project_plantypes_mindate info ON info.project_id = pptc.project_id AND info.mindate = sms.date
                     JOIN diwi_testset.project_plan_type_changelog_value pptcv ON pptc.id = pptcv.changelog_id
             WHERE
                 sms.date > _now_ AND pptc.change_end_date IS NULL
             GROUP BY  pptc.project_id
         ),
         future_project_planologische_planstatus AS (
-            WITH fp_project_planologische_planstatus_mindate AS (
-                SELECT
-                    pppc.project_id, MIN(sms.date) as mindate
-                FROM
-                    diwi_testset.project_planologische_planstatus_changelog pppc
-                        JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pppc.start_milestone_id AND sms.change_end_date IS NULL
-                WHERE
-                    sms.date > _now_ AND pppc.change_end_date IS NULL
-                GROUP BY pppc.project_id
-            )
             SELECT
                 pppc.project_id, array_agg(pppcv.planologische_planstatus::TEXT ORDER BY pppcv.planologische_planstatus::TEXT ASC) AS planning_planstatus
             FROM
                 diwi_testset.project_planologische_planstatus_changelog pppc
+                    JOIN diwi_testset.project_duration_changelog pdc ON pdc.project_id = pppc.project_id AND pdc.start_milestone_id = pppc.start_milestone_id AND pdc.change_end_date IS NULL
                     JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pppc.start_milestone_id AND sms.change_end_date IS NULL
-                    JOIN fp_project_planologische_planstatus_mindate info ON info.project_id = pppc.project_id AND info.mindate = sms.date
                     JOIN diwi_testset.project_planologische_planstatus_changelog_value pppcv ON pppc.id = pppcv.planologische_planstatus_changelog_id
             WHERE
                 sms.date > _now_ AND pppc.change_end_date IS NULL
             GROUP BY  pppc.project_id
         ),
         future_project_priorities AS (
-            WITH fp_project_priorities_mindate AS (
-                SELECT
-                    ppc.project_id, MIN(sms.date) as mindate
-                FROM
-                    diwi_testset.project_priorisering_changelog ppc
-                        JOIN diwi_testset.milestone_state sms ON sms.milestone_id = ppc.start_milestone_id AND sms.change_end_date IS NULL
-                WHERE
-                    sms.date > _now_ AND ppc.change_end_date IS NULL
-                GROUP BY ppc.project_id
-            )
             SELECT
                 ppc.project_id,
                 CASE
@@ -317,8 +267,8 @@ FROM (
                     END AS project_priorities
             FROM
                 diwi_testset.project_priorisering_changelog ppc
+                    JOIN diwi_testset.project_duration_changelog pdc ON pdc.project_id = ppc.project_id AND pdc.start_milestone_id = ppc.start_milestone_id AND pdc.change_end_date IS NULL
                     JOIN diwi_testset.milestone_state sms ON sms.milestone_id = ppc.start_milestone_id AND sms.change_end_date IS NULL
-                    JOIN fp_project_priorities_mindate info ON info.project_id = ppc.project_id AND info.mindate = sms.date
                     LEFT JOIN diwi_testset.project_priorisering_value_state vs
                         ON ppc.project_priorisering_value_id = vs.project_priorisering_value_id AND vs.change_end_date IS NULL
                     LEFT JOIN diwi_testset.project_priorisering_value_state vsMin
@@ -330,22 +280,12 @@ FROM (
             GROUP BY ppc.project_id, ppc.value_type
         ),
         future_project_gemeenterol AS (
-            WITH fp_project_gemeenterol_mindate AS (
-                SELECT
-                    pgc.project_id, MIN(sms.date) as mindate
-                FROM
-                    diwi_testset.project_gemeenterol_changelog pgc
-                        JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pgc.start_milestone_id AND sms.change_end_date IS NULL
-                WHERE
-                    sms.date > _now_ AND pgc.change_end_date IS NULL
-                GROUP BY pgc.project_id
-            )
             SELECT
                 pgc.project_id, array_agg(pgvs.value_label ORDER BY pgvs.value_label ASC) AS municipality_role
             FROM
                 diwi_testset.project_gemeenterol_changelog pgc
+                    JOIN diwi_testset.project_duration_changelog pdc ON pdc.project_id = pgc.project_id AND pdc.start_milestone_id = pgc.start_milestone_id AND pdc.change_end_date IS NULL
                     JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pgc.start_milestone_id AND sms.change_end_date IS NULL
-                    JOIN fp_project_gemeenterol_mindate info ON info.project_id = pgc.project_id AND info.mindate = sms.date
                     JOIN diwi_testset.project_gemeenterol_value_state pgvs
                         ON pgvs.project_gemeenterol_value_id = pgc.project_gemeenterol_value_id AND pgvs.change_end_date IS NULL
             WHERE
@@ -353,48 +293,25 @@ FROM (
             GROUP BY  pgc.project_id
         ),
         future_project_woningblok_totalvalue AS (
-            WITH fp_woningblok_mutatie_changelog_mindate AS (
-                SELECT
-                    w.project_id, MIN(sms.date) AS mindate
-                FROM
-                    diwi_testset.woningblok_mutatie_changelog wmc
-                        JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wmc.start_milestone_id AND sms.change_end_date IS NULL
-                        JOIN diwi_testset.woningblok w ON wmc.woningblok_id = w.id
-                WHERE
-                    sms.date > _now_ AND wmc.change_end_date IS NULL
-                GROUP BY w.project_id
-            )
             SELECT
                 w.project_id, SUM(COALESCE(wmc.netto_plancapaciteit, 0)) AS total_value
             FROM
                 diwi_testset.woningblok_mutatie_changelog wmc
-                    JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wmc.start_milestone_id AND sms.change_end_date IS NULL
                     JOIN diwi_testset.woningblok w ON wmc.woningblok_id = w.id
-                    JOIN fp_woningblok_mutatie_changelog_mindate info ON info.project_id = w.project_id AND info.mindate = sms.date
+                    JOIN diwi_testset.project_duration_changelog pdc ON pdc.project_id = w.project_id AND pdc.start_milestone_id = wmc.start_milestone_id AND pdc.change_end_date IS NULL
+                    JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wmc.start_milestone_id AND sms.change_end_date IS NULL
             WHERE
                 sms.date > _now_ AND wmc.change_end_date IS NULL
             GROUP BY w.project_id
         ),
         future_project_woningblok_municipality AS (
-            WITH fp_woningblok_gemeente_indeling_changelog_gemeente_minddate AS (
-                SELECT
-                    w.project_id, MIN(sms.date) AS mindate
-                FROM
-                    diwi_testset.woningblok_gemeente_indeling_changelog wgic
-                        JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wgic.start_milestone_id AND sms.change_end_date IS NULL
-                        JOIN diwi_testset.woningblok w ON wgic.woningblok_id = w.id
-                        JOIN diwi_testset.woningblok_gemeente_indeling_changelog_gemeente wgicg ON wgicg.woningblok_gemeente_indeling_changelog_id = wgic.id
-                WHERE
-                    sms.date > _now_ AND wgic.change_end_date IS NULL
-                GROUP BY w.project_id
-            )
             SELECT
                 w.project_id, array_agg(gemeentes.waarde_label ORDER BY gemeentes.waarde_label ASC) AS municipality
             FROM
                 diwi_testset.woningblok_gemeente_indeling_changelog wgic
-                    JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wgic.start_milestone_id AND sms.change_end_date IS NULL
                     JOIN diwi_testset.woningblok w ON wgic.woningblok_id = w.id
-                    JOIN fp_woningblok_gemeente_indeling_changelog_gemeente_minddate info ON info.project_id = w.project_id AND info.mindate = sms.date
+                    JOIN diwi_testset.project_duration_changelog pdc ON pdc.project_id = w.project_id AND pdc.start_milestone_id = wgic.start_milestone_id AND pdc.change_end_date IS NULL
+                    JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wgic.start_milestone_id AND sms.change_end_date IS NULL
                     JOIN diwi_testset.woningblok_gemeente_indeling_changelog_gemeente wgicg ON wgicg.woningblok_gemeente_indeling_changelog_id = wgic.id
                     JOIN diwi_testset.gemeente_state gemeentes ON gemeentes.gemeente_id = wgicg.gemeente_id AND gemeentes.change_end_date IS NULL
             WHERE
@@ -402,25 +319,13 @@ FROM (
             GROUP BY w.project_id
         ),
         future_project_woningblok_wijk AS (
-            WITH fp_woningblok_gemeente_indeling_changelog_wijk_mindate AS (
-                SELECT
-                    w.project_id, MIN(sms.date) AS mindate
-                FROM
-                    diwi_testset.woningblok_gemeente_indeling_changelog wgic
-                        JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wgic.start_milestone_id AND sms.change_end_date IS NULL
-                        JOIN diwi_testset.woningblok w ON wgic.woningblok_id = w.id
-                        JOIN diwi_testset.woningblok_gemeente_indeling_changelog_wijk wgicw ON wgicw.woningblok_gemeente_indeling_changelog_id = wgic.id
-                WHERE
-                    sms.date > _now_ AND wgic.change_end_date IS NULL
-                GROUP BY w.project_id
-            )
             SELECT
                 w.project_id, array_agg(wijks.waarde_label ORDER BY wijks.waarde_label ASC) AS wijk
             FROM
                 diwi_testset.woningblok_gemeente_indeling_changelog wgic
-                    JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wgic.start_milestone_id AND sms.change_end_date IS NULL
                     JOIN diwi_testset.woningblok w ON wgic.woningblok_id = w.id
-                    JOIN fp_woningblok_gemeente_indeling_changelog_wijk_mindate info ON info.project_id = w.project_id AND info.mindate = sms.date
+                    JOIN diwi_testset.project_duration_changelog pdc ON pdc.project_id = w.project_id AND pdc.start_milestone_id = wgic.start_milestone_id AND pdc.change_end_date IS NULL
+                    JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wgic.start_milestone_id AND sms.change_end_date IS NULL
                     JOIN diwi_testset.woningblok_gemeente_indeling_changelog_wijk wgick ON wgick.woningblok_gemeente_indeling_changelog_id = wgic.id
                     JOIN diwi_testset.wijk_state wijks ON wijks.wijk_id = wgick.wijk_id AND wijks.change_end_date IS NULL
             WHERE
@@ -428,25 +333,13 @@ FROM (
             GROUP BY w.project_id
         ),
         future_project_woningblok_buurt AS (
-            WITH fp_woningblok_gemeente_indeling_changelog_buurt_mindate AS (
-                SELECT
-                    w.project_id, MIN(sms.date) AS mindate
-                FROM
-                    diwi_testset.woningblok_gemeente_indeling_changelog wgic
-                        JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wgic.start_milestone_id AND sms.change_end_date IS NULL
-                        JOIN diwi_testset.woningblok w ON wgic.woningblok_id = w.id
-                        JOIN diwi_testset.woningblok_gemeente_indeling_changelog_buurt wgicb ON wgicb.woningblok_gemeente_indeling_changelog_id = wgic.id
-                WHERE
-                    sms.date > _now_ AND wgic.change_end_date IS NULL
-                GROUP BY w.project_id
-            )
             SELECT
                 w.project_id, array_agg(buurts.waarde_label ORDER BY buurts.waarde_label ASC) AS buurt
             FROM
                 diwi_testset.woningblok_gemeente_indeling_changelog wgic
-                    JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wgic.start_milestone_id AND sms.change_end_date IS NULL
                     JOIN diwi_testset.woningblok w ON wgic.woningblok_id = w.id
-                    JOIN fp_woningblok_gemeente_indeling_changelog_buurt_mindate info ON info.project_id = w.project_id AND info.mindate = sms.date
+                    JOIN diwi_testset.project_duration_changelog pdc ON pdc.project_id = w.project_id AND pdc.start_milestone_id = wgic.start_milestone_id AND pdc.change_end_date IS NULL
+                    JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wgic.start_milestone_id AND sms.change_end_date IS NULL
                     JOIN diwi_testset.woningblok_gemeente_indeling_changelog_buurt wgicb ON wgicb.woningblok_gemeente_indeling_changelog_id = wgic.id
                     JOIN diwi_testset.buurt_state buurts ON buurts.buurt_id = wgicb.buurt_id AND buurts.change_end_date IS NULL
             WHERE

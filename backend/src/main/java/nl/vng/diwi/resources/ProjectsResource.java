@@ -22,6 +22,7 @@ import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.dal.entities.enums.ProjectRole;
+import nl.vng.diwi.models.OrganizationModel;
 import nl.vng.diwi.models.ProjectListModel;
 import nl.vng.diwi.models.ProjectSnapshotModel;
 import nl.vng.diwi.models.ProjectTimelineModel;
@@ -34,9 +35,12 @@ import nl.vng.diwi.services.ProjectService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -62,7 +66,7 @@ public class ProjectsResource {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Object getCurrentProjectSnapshot(@PathParam("id") UUID projectUuid) throws VngNotFoundException {
+    public ProjectSnapshotModel getCurrentProjectSnapshot(@PathParam("id") UUID projectUuid) throws VngNotFoundException {
 
         Project project = projectService.getCurrentProject(repo, projectUuid);
 
@@ -122,51 +126,193 @@ public class ProjectsResource {
     public Response updateProject(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid, ProjectUpdateModel projectUpdateModel)
         throws VngNotFoundException, VngBadRequestException, VngServerErrorException {
 
+        String validationError = projectUpdateModel.validate();
+        if (validationError != null) {
+            throw new VngBadRequestException(validationError);
+        }
+        LocalDate updateDate = LocalDate.now();
+
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+            Project project = projectService.getCurrentProjectAndPerformPreliminaryUpdateChecks(repo, projectUuid);
+            updateProjectProperty(project, projectUpdateModel, loggedUser, updateDate);
+            transaction.commit();
+        }
+
+        return Response.status(Response.Status.OK).build(); //TODO: return updated project??
+    }
+
+    @POST
+    @Path("/update")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public ProjectSnapshotModel updateProject(@Context LoggedUser loggedUser, ProjectSnapshotModel projectSnapshotModelToUpdate)
+        throws VngNotFoundException, VngBadRequestException, VngServerErrorException {
+
+        UUID projectUuid = projectSnapshotModelToUpdate.getProjectId();
         Project project = repo.findById(Project.class, projectUuid);
         if (project == null) {
             throw new VngNotFoundException();
         }
 
-        String validationError = projectUpdateModel.validate();
-        if (validationError != null) {
-            throw new VngBadRequestException(validationError);
-        }
+        ProjectSnapshotModel projectSnapshotModelCurrent = new ProjectSnapshotModel(project);
 
-        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            switch (projectUpdateModel.getProperty()) {
+        List<ProjectUpdateModel> projectUpdateModelList = new ArrayList<>();
+        for (ProjectUpdateModel.ProjectProperty projectProperty : ProjectUpdateModel.ProjectProperty.values()) {
+            switch (projectProperty) {
                 case confidentialityLevel -> {
-                    Confidentiality newConfidentiality = Confidentiality.valueOf(projectUpdateModel.getValue());
-                    projectService.updateProjectConfidentialityLevel(repo, projectUuid, newConfidentiality, loggedUser.getUuid());
+                    Confidentiality newConfidentiality = projectSnapshotModelToUpdate.getConfidentialityLevel();
+                    if (!Objects.equals(newConfidentiality, projectSnapshotModelCurrent.getConfidentialityLevel())) {
+                        ProjectUpdateModel newUpdateModel = new ProjectUpdateModel();
+                        newUpdateModel.setProperty(ProjectUpdateModel.ProjectProperty.confidentialityLevel);
+                        newUpdateModel.setValue((newConfidentiality == null) ? null : projectSnapshotModelToUpdate.getConfidentialityLevel().name());
+                        projectUpdateModelList.add(newUpdateModel);
+                    }
                 }
-                case name -> projectService.updateProjectName(repo, projectUuid, projectUpdateModel.getValue(), loggedUser.getUuid());
-                case projectColor -> projectService.updateProjectColor(repo, projectUuid, projectUpdateModel.getValue(), loggedUser.getUuid());
+                case name -> {
+                    if (!Objects.equals(projectSnapshotModelToUpdate.getProjectName(), projectSnapshotModelCurrent.getProjectName())) {
+                        ProjectUpdateModel newUpdateModel = new ProjectUpdateModel();
+                        newUpdateModel.setProperty(ProjectUpdateModel.ProjectProperty.name);
+                        newUpdateModel.setValue(projectSnapshotModelToUpdate.getProjectName());
+                        projectUpdateModelList.add(newUpdateModel);
+                    }
+                }
+                case projectColor -> {
+                    if (!Objects.equals(projectSnapshotModelToUpdate.getProjectColor(), projectSnapshotModelCurrent.getProjectColor())) {
+                        ProjectUpdateModel newUpdateModel = new ProjectUpdateModel();
+                        newUpdateModel.setProperty(ProjectUpdateModel.ProjectProperty.projectColor);
+                        newUpdateModel.setValue(projectSnapshotModelToUpdate.getProjectColor());
+                        projectUpdateModelList.add(newUpdateModel);
+                    }
+                }
                 case planningPlanStatus -> {
-                    Set<PlanStatus> planStatuses = (projectUpdateModel.getValues() != null) ?
-                        projectUpdateModel.getValues().stream().map(PlanStatus::valueOf).collect(Collectors.toSet()) : new HashSet<>();
-                    projectService.updateProjectPlanStatus(repo, projectUuid, planStatuses, loggedUser.getUuid());
+                    List<PlanStatus> currentPlanStatuses = projectSnapshotModelCurrent.getPlanningPlanStatus();
+                    List<PlanStatus> toUpdatePlanStatuses = projectSnapshotModelToUpdate.getPlanningPlanStatus();
+                    if (currentPlanStatuses.size() != toUpdatePlanStatuses.size() || !currentPlanStatuses.containsAll(toUpdatePlanStatuses)) {
+                        ProjectUpdateModel newUpdateModel = new ProjectUpdateModel();
+                        newUpdateModel.setProperty(ProjectUpdateModel.ProjectProperty.planningPlanStatus);
+                        newUpdateModel.setValues(toUpdatePlanStatuses.stream().map(PlanStatus::name).toList());
+                        projectUpdateModelList.add(newUpdateModel);
+                    }
                 }
                 case planType -> {
-                    Set<PlanType> planTypes = (projectUpdateModel.getValues() != null) ?
-                        projectUpdateModel.getValues().stream().map(PlanType::valueOf).collect(Collectors.toSet()) : new HashSet<>();
-                    projectService.updateProjectPlanTypes(repo, projectUuid, planTypes, loggedUser.getUuid());
+                    List<PlanType> currentPlanTypes = projectSnapshotModelCurrent.getPlanType();
+                    List<PlanType> toUpdatePlanTypes = projectSnapshotModelToUpdate.getPlanType();
+                    if (currentPlanTypes.size() != toUpdatePlanTypes.size() || !currentPlanTypes.containsAll(toUpdatePlanTypes)) {
+                        ProjectUpdateModel newUpdateModel = new ProjectUpdateModel();
+                        newUpdateModel.setProperty(ProjectUpdateModel.ProjectProperty.planType);
+                        newUpdateModel.setValues(toUpdatePlanTypes.stream().map(PlanType::name).toList());
+                        projectUpdateModelList.add(newUpdateModel);
+                    }
                 }
-                case projectPhase ->
-                    projectService.updateProjectPhase(repo, projectUuid, ProjectPhase.valueOf(projectUpdateModel.getValue()), loggedUser.getUuid());
+                case municipalityRole -> {
+                    //TODO
+                }
                 case projectLeaders -> {
-                    UUID organizationToAdd = (projectUpdateModel.getAdd() != null) ? UUID.fromString(projectUpdateModel.getAdd()) : null;
-                    UUID organizationToRemove = (projectUpdateModel.getRemove() != null) ? UUID.fromString(projectUpdateModel.getRemove()) : null;
-                    projectService.updateProjectOrganizations(repo, projectUuid, ProjectRole.PROJECT_LEIDER, organizationToAdd, organizationToRemove, loggedUser.getUuid());
+                    List<UUID> currentLeadersUuids = projectSnapshotModelCurrent.getProjectLeaders().stream().map(OrganizationModel::getUuid).toList();
+                    List<UUID> toUpdateLeadersUuids = projectSnapshotModelToUpdate.getProjectLeaders().stream().map(OrganizationModel::getUuid).toList();
+                    currentLeadersUuids.forEach(uuid -> {
+                        if (!toUpdateLeadersUuids.contains(uuid)) {
+                            ProjectUpdateModel newUpdateModel = new ProjectUpdateModel();
+                            newUpdateModel.setProperty(ProjectUpdateModel.ProjectProperty.projectOwners);
+                            newUpdateModel.setRemove(uuid.toString());
+                            projectUpdateModelList.add(newUpdateModel);
+                        }
+                    });
+                    toUpdateLeadersUuids.forEach(uuid -> {
+                        if (!currentLeadersUuids.contains(uuid)) {
+                            ProjectUpdateModel newUpdateModel = new ProjectUpdateModel();
+                            newUpdateModel.setProperty(ProjectUpdateModel.ProjectProperty.projectOwners);
+                            newUpdateModel.setAdd(uuid.toString());
+                            projectUpdateModelList.add(newUpdateModel);
+                        }
+                    });
                 }
                 case projectOwners -> {
-                    UUID organizationToAdd = (projectUpdateModel.getAdd() != null) ? UUID.fromString(projectUpdateModel.getAdd()) : null;
-                    UUID organizationToRemove = (projectUpdateModel.getRemove() != null) ? UUID.fromString(projectUpdateModel.getRemove()) : null;
-                    projectService.updateProjectOrganizations(repo, projectUuid, ProjectRole.OWNER, organizationToAdd, organizationToRemove, loggedUser.getUuid());
+                    List<UUID> currentOwnersUuids = projectSnapshotModelCurrent.getProjectOwners().stream().map(OrganizationModel::getUuid).toList();
+                    List<UUID> toUpdateOwnersUuids = projectSnapshotModelToUpdate.getProjectOwners().stream().map(OrganizationModel::getUuid).toList();
+                    currentOwnersUuids.forEach(uuid -> {
+                        if (!toUpdateOwnersUuids.contains(uuid)) {
+                            ProjectUpdateModel newUpdateModel = new ProjectUpdateModel();
+                            newUpdateModel.setProperty(ProjectUpdateModel.ProjectProperty.projectOwners);
+                            newUpdateModel.setRemove(uuid.toString());
+                            projectUpdateModelList.add(newUpdateModel);
+                        }
+                    });
+                    toUpdateOwnersUuids.forEach(uuid -> {
+                        if (!currentOwnersUuids.contains(uuid)) {
+                            ProjectUpdateModel newUpdateModel = new ProjectUpdateModel();
+                            newUpdateModel.setProperty(ProjectUpdateModel.ProjectProperty.projectOwners);
+                            newUpdateModel.setAdd(uuid.toString());
+                            projectUpdateModelList.add(newUpdateModel);
+                        }
+                    });
                 }
+                case projectPhase -> {
+                    if (!Objects.equals(projectSnapshotModelToUpdate.getProjectPhase(), projectSnapshotModelCurrent.getProjectPhase())) {
+                        ProjectUpdateModel newUpdateModel = new ProjectUpdateModel();
+                        newUpdateModel.setProperty(ProjectUpdateModel.ProjectProperty.projectPhase);
+                        newUpdateModel.setValue(projectSnapshotModelToUpdate.getProjectPhase().name());
+                        projectUpdateModelList.add(newUpdateModel);
+                    }
+                }
+                default -> throw new VngServerErrorException(String.format("Project property not implemented %s ", projectProperty));
             }
-
-            transaction.commit();
         }
 
-        return Response.status(Response.Status.OK).build(); //TODO: return updated project??
+        LocalDate updateDate = LocalDate.now();
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+            projectService.getCurrentProjectAndPerformPreliminaryUpdateChecks(repo, project.getId());
+            for (ProjectUpdateModel projectUpdateModel : projectUpdateModelList) {
+                String validationError = projectUpdateModel.validate();
+                if (validationError != null) {
+                    throw new VngBadRequestException(validationError);
+                }
+                updateProjectProperty(project, projectUpdateModel, loggedUser, updateDate);
+            }
+            transaction.commit();
+            repo.getSession().clear();
+        }
+
+        return new ProjectSnapshotModel(repo.findById(Project.class, projectUuid));
+    }
+
+    private void updateProjectProperty(Project project, ProjectUpdateModel projectUpdateModel, LoggedUser loggedUser, LocalDate updateDate)
+        throws VngNotFoundException, VngServerErrorException, VngBadRequestException {
+
+        switch (projectUpdateModel.getProperty()) {
+            case confidentialityLevel -> {
+                Confidentiality newConfidentiality = Confidentiality.valueOf(projectUpdateModel.getValue());
+                projectService.updateProjectConfidentialityLevel(repo, project, newConfidentiality, loggedUser.getUuid());
+            }
+            case name -> projectService.updateProjectName(repo, project, projectUpdateModel.getValue(), loggedUser.getUuid(), updateDate);
+            case projectColor -> projectService.updateProjectColor(repo, project, projectUpdateModel.getValue(), loggedUser.getUuid());
+            case planningPlanStatus -> {
+                Set<PlanStatus> planStatuses = (projectUpdateModel.getValues() != null) ?
+                    projectUpdateModel.getValues().stream().map(PlanStatus::valueOf).collect(Collectors.toSet()) : new HashSet<>();
+                projectService.updateProjectPlanStatus(repo, project, planStatuses, loggedUser.getUuid(), updateDate);
+            }
+            case planType -> {
+                Set<PlanType> planTypes = (projectUpdateModel.getValues() != null) ?
+                    projectUpdateModel.getValues().stream().map(PlanType::valueOf).collect(Collectors.toSet()) : new HashSet<>();
+                projectService.updateProjectPlanTypes(repo, project, planTypes, loggedUser.getUuid(), updateDate);
+            }
+            case projectPhase ->
+                projectService.updateProjectPhase(repo, project, ProjectPhase.valueOf(projectUpdateModel.getValue()), loggedUser.getUuid(), updateDate);
+            case projectLeaders -> {
+                UUID organizationToAdd = (projectUpdateModel.getAdd() != null) ? UUID.fromString(projectUpdateModel.getAdd()) : null;
+                UUID organizationToRemove = (projectUpdateModel.getRemove() != null) ? UUID.fromString(projectUpdateModel.getRemove()) : null;
+                projectService.updateProjectOrganizations(repo, project, ProjectRole.PROJECT_LEIDER, organizationToAdd, organizationToRemove, loggedUser.getUuid());
+            }
+            case projectOwners -> {
+                UUID organizationToAdd = (projectUpdateModel.getAdd() != null) ? UUID.fromString(projectUpdateModel.getAdd()) : null;
+                UUID organizationToRemove = (projectUpdateModel.getRemove() != null) ? UUID.fromString(projectUpdateModel.getRemove()) : null;
+                projectService.updateProjectOrganizations(repo, project, ProjectRole.OWNER, organizationToAdd, organizationToRemove, loggedUser.getUuid());
+            }
+            case municipalityRole -> {
+                UUID municipalityRoleToAdd = (projectUpdateModel.getAdd() != null) ? UUID.fromString(projectUpdateModel.getAdd()) : null;
+                UUID municipalityRoleToRemove = (projectUpdateModel.getRemove() != null) ? UUID.fromString(projectUpdateModel.getRemove()) : null;
+                projectService.updateProjectMunicipalityRoles(repo, project, municipalityRoleToAdd, municipalityRoleToRemove, loggedUser.getUuid(), updateDate);
+            }
+        }
     }
 }

@@ -1,26 +1,38 @@
 package nl.vng.diwi.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.models.superclasses.ProjectSnapshotModelSuperclass;
 
-import io.hypersistence.utils.hibernate.type.array.StringArrayType;
-import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 import org.hibernate.type.SqlTypes;
 
-import java.util.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.uuid.impl.UUIDUtil;
+
+import io.hypersistence.utils.hibernate.type.array.StringArrayType;
+import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 @Convert(
     attributeName = "multidimensional_array",
     converter = StringArrayType.class
 )
 @Entity
+@ToString
+@RequiredArgsConstructor
+@EqualsAndHashCode(callSuper=true)
 public class ProjectListModel extends ProjectSnapshotModelSuperclass {
 
     public static final List<String> SORTABLE_COLUMNS = List.of("projectName", "projectOwners", "projectLeaders", "confidentialityLevel", "organizationName",
@@ -60,9 +72,9 @@ public class ProjectListModel extends ProjectSnapshotModelSuperclass {
     @Column(columnDefinition = "text[]")
     private List<PlanType> planType;
 
-    private String startDate;
+    private LocalDate startDate;
 
-    private String endDate;
+    private LocalDate endDate;
 
     @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(columnDefinition = "text[]")
@@ -94,9 +106,6 @@ public class ProjectListModel extends ProjectSnapshotModelSuperclass {
     @Column(columnDefinition = "text[]")
     private List<String> buurt;
 
-    public ProjectListModel() {
-    }
-
     public void processProjectOwnersAndLeadersArrays() {
 
         if (projectOwnersArray != null) {
@@ -120,9 +129,9 @@ public class ProjectListModel extends ProjectSnapshotModelSuperclass {
 
     private OrganizationUserModel getOrganizationUserModelFromSqlArrayData(String[] sqlUserData) {
         OrganizationUserModel orgUser = new OrganizationUserModel();
-        orgUser.setOrganizationUuid(sqlUserData[0]);
+        orgUser.setOrganizationUuid(UUIDUtil.uuid(sqlUserData[0]));
         orgUser.setOrganizationName(sqlUserData[1]);
-        orgUser.setUuid(sqlUserData[2]);
+        orgUser.setUuid(UUIDUtil.uuid(sqlUserData[2]));
         orgUser.setInitials(sqlUserData[3]);
         orgUser.setLastName(sqlUserData[4]);
         orgUser.setFirstName(sqlUserData[5]);
@@ -209,19 +218,19 @@ public class ProjectListModel extends ProjectSnapshotModelSuperclass {
         this.planType = planType;
     }
 
-    public String getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(String startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public String getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(String endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 
