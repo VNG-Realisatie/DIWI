@@ -92,9 +92,6 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
     };
 
     const open = Boolean(anchorEl);
-
-    console.log(selectedProject);
-
     return (
         <Stack my={1} p={1} mb={10}>
             <Box sx={{ cursor: "pointer" }} position="absolute" right={10} top={55} zIndex={9999}>
