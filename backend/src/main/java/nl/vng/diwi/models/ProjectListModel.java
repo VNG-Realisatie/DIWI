@@ -4,9 +4,6 @@ import com.fasterxml.uuid.impl.UUIDUtil;
 import lombok.Data;
 
 import lombok.EqualsAndHashCode;
-import nl.vng.diwi.dal.entities.enums.PlanStatus;
-
-import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.models.superclasses.ProjectSnapshotModelSuperclass;
 
 import java.util.ArrayList;
@@ -38,13 +35,13 @@ public class ProjectListModel extends ProjectSnapshotModelSuperclass {
         this.setProjectLeaders(getOrganizationModelListFromSqlArray(sqlModel.getProjectLeadersArray()));
         this.setProjectColor(sqlModel.getProjectColor());
         this.setConfidentialityLevel(sqlModel.getConfidentialityLevel());
-        this.setPlanType((sqlModel.getPlanType() == null) ? new ArrayList<>() : sqlModel.getPlanType().stream().map(PlanType::valueOf).toList());
+        this.setPlanType(sqlModel.getPlanType());
         this.setStartDate(sqlModel.getStartDate());
         this.setEndDate(sqlModel.getEndDate());
         this.setPriority(new PriorityModel(getSelectModelListFromSqlArray(sqlModel.getPriority())));
         this.setProjectPhase(sqlModel.getProjectPhase());
         this.setMunicipalityRole(getSelectModelListFromSqlArray(sqlModel.getMunicipalityRole()));
-        this.setPlanningPlanStatus((sqlModel.getPlanningPlanStatus() == null) ? new ArrayList<>() : sqlModel.getPlanningPlanStatus().stream().map(PlanStatus::valueOf).toList());
+        this.setPlanningPlanStatus(sqlModel.getPlanningPlanStatus());
         this.setTotalValue(sqlModel.getTotalValue());
         this.municipality = getSelectModelListFromSqlArray(sqlModel.getMunicipality());
         this.wijk = getSelectModelListFromSqlArray(sqlModel.getWijk());

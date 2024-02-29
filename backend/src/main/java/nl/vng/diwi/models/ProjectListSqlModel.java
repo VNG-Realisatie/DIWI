@@ -50,7 +50,7 @@ public class ProjectListSqlModel {
 
     @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(columnDefinition = "text[]")
-    private List<String> planType;
+    private List<PlanType> planType;
 
     private LocalDate startDate;
 
@@ -70,7 +70,7 @@ public class ProjectListSqlModel {
 
     @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(columnDefinition = "text[]")
-    private List<String> planningPlanStatus;
+    private List<PlanStatus> planningPlanStatus;
 
     private Long totalValue;
 
@@ -145,11 +145,11 @@ public class ProjectListSqlModel {
         this.confidentialityLevel = confidentialityLevel;
     }
 
-    public List<String> getPlanType() {
+    public List<PlanType> getPlanType() {
         return planType;
     }
 
-    public void setPlanType(List<String> planType) {
+    public void setPlanType(List<PlanType> planType) {
         this.planType = planType;
     }
 
@@ -193,11 +193,11 @@ public class ProjectListSqlModel {
         this.municipalityRole = municipalityRole;
     }
 
-    public List<String> getPlanningPlanStatus() {
+    public List<PlanStatus> getPlanningPlanStatus() {
         return planningPlanStatus;
     }
 
-    public void setPlanningPlanStatus(List<String> planningPlanStatus) {
+    public void setPlanningPlanStatus(List<PlanStatus> planningPlanStatus) {
         this.planningPlanStatus = planningPlanStatus;
     }
 
