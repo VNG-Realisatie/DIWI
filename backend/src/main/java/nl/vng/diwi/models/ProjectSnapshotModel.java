@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.NoArgsConstructor;
 import nl.vng.diwi.dal.entities.Project;
 import nl.vng.diwi.models.superclasses.ProjectSnapshotModelSuperclass;
 
@@ -11,12 +12,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper=true)
+@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
 public class ProjectSnapshotModel extends ProjectSnapshotModelSuperclass {
-
-    private List<SelectModel> municipality;
-    private List<SelectModel> wijk;
-    private List<SelectModel> buurt;
 
     public ProjectSnapshotModel(Project project) {
         ProjectTimelineModel timeline = new ProjectTimelineModel(project);

@@ -17,6 +17,7 @@ import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -146,6 +147,9 @@ public class ProjectListSqlModel {
     }
 
     public List<PlanType> getPlanType() {
+        if (planType == null) {
+            return new ArrayList<>();
+        }
         return planType;
     }
 
@@ -194,6 +198,9 @@ public class ProjectListSqlModel {
     }
 
     public List<PlanStatus> getPlanningPlanStatus() {
+        if (planningPlanStatus == null) {
+            return new ArrayList<>();
+        }
         return planningPlanStatus;
     }
 

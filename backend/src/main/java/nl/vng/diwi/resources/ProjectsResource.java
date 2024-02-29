@@ -27,6 +27,7 @@ import nl.vng.diwi.models.ProjectListModel;
 import nl.vng.diwi.models.ProjectSnapshotModel;
 import nl.vng.diwi.models.ProjectTimelineModel;
 import nl.vng.diwi.models.ProjectUpdateModel;
+import nl.vng.diwi.models.SelectModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
@@ -205,7 +206,24 @@ public class ProjectsResource {
                     }
                 }
                 case municipalityRole -> {
-                    //TODO
+                    List<UUID> currentMunicipalityRolesIds = projectSnapshotModelCurrent.getMunicipalityRole().stream().map(SelectModel::getId).toList();
+                    List<UUID> toUpdateMunicipalityRolesIds = projectSnapshotModelToUpdate.getMunicipalityRole().stream().map(SelectModel::getId).toList();
+                    currentMunicipalityRolesIds.forEach(id -> {
+                        if (!toUpdateMunicipalityRolesIds.contains(id)) {
+                            ProjectUpdateModel newUpdateModel = new ProjectUpdateModel();
+                            newUpdateModel.setProperty(ProjectUpdateModel.ProjectProperty.municipalityRole);
+                            newUpdateModel.setRemove(id.toString());
+                            projectUpdateModelList.add(newUpdateModel);
+                        }
+                    });
+                    toUpdateMunicipalityRolesIds.forEach(id -> {
+                        if (!currentMunicipalityRolesIds.contains(id)) {
+                            ProjectUpdateModel newUpdateModel = new ProjectUpdateModel();
+                            newUpdateModel.setProperty(ProjectUpdateModel.ProjectProperty.municipalityRole);
+                            newUpdateModel.setAdd(id.toString());
+                            projectUpdateModelList.add(newUpdateModel);
+                        }
+                    });
                 }
                 case projectLeaders -> {
                     List<UUID> currentLeadersUuids = projectSnapshotModelCurrent.getProjectLeaders().stream().map(OrganizationModel::getUuid).toList();
@@ -213,7 +231,7 @@ public class ProjectsResource {
                     currentLeadersUuids.forEach(uuid -> {
                         if (!toUpdateLeadersUuids.contains(uuid)) {
                             ProjectUpdateModel newUpdateModel = new ProjectUpdateModel();
-                            newUpdateModel.setProperty(ProjectUpdateModel.ProjectProperty.projectOwners);
+                            newUpdateModel.setProperty(ProjectUpdateModel.ProjectProperty.projectLeaders);
                             newUpdateModel.setRemove(uuid.toString());
                             projectUpdateModelList.add(newUpdateModel);
                         }
@@ -221,7 +239,7 @@ public class ProjectsResource {
                     toUpdateLeadersUuids.forEach(uuid -> {
                         if (!currentLeadersUuids.contains(uuid)) {
                             ProjectUpdateModel newUpdateModel = new ProjectUpdateModel();
-                            newUpdateModel.setProperty(ProjectUpdateModel.ProjectProperty.projectOwners);
+                            newUpdateModel.setProperty(ProjectUpdateModel.ProjectProperty.projectLeaders);
                             newUpdateModel.setAdd(uuid.toString());
                             projectUpdateModelList.add(newUpdateModel);
                         }

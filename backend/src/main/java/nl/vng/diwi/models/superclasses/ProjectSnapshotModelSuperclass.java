@@ -33,5 +33,8 @@ abstract public class ProjectSnapshotModelSuperclass extends DatedDataModelSuper
     private List<OrganizationModel> projectLeaders = new ArrayList<>();
 
     private Long totalValue;
+    private List<SelectModel> municipality = new ArrayList<>();
+    private List<SelectModel> wijk = new ArrayList<>();
+    private List<SelectModel> buurt = new ArrayList<>();
 
 }
