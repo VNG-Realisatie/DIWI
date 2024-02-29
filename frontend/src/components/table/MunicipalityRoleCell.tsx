@@ -33,7 +33,9 @@ export const MunicipalityRoleCell = ({ cellValues, selectedMunicipalityRole, han
             defaultOptionValues={defaultPlanTypes ? defaultPlanTypes : []}
             inputLabel={t("projects.tableColumns.municipalityRole")}
             placeHolder={t("projects.tableColumns.selectMunicipalityRole")}
-            handleChange={(_: React.ChangeEvent<{}>, values: OptionType[]) => handleMunicipalityRoleChange(_, values, cellValues.row.projectId)}
+            handleChange={(_: React.ChangeEvent<{}>, values: OptionType[]) =>
+                cellValues.row.projectId && handleMunicipalityRoleChange(_, values, cellValues.row.projectId)
+            }
             width="300px"
         />
     );

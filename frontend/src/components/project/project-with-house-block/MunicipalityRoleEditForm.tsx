@@ -26,6 +26,16 @@ export const MunicipalityRoleEditForm = ({ selectedMunicipalityRole, setSelected
         getMunicipalityRoleList().then((roles) => setMunicipalityRolesOptions(roles));
     }, []);
 
+    const checkControl = (inputName: string) => {
+        if (selectedMunicipalityRole.length > 0) {
+            return selectedMunicipalityRole.indexOf(inputName) !== -1;
+        } else if (selectedProject) {
+            if (selectedProject.municipality !== null && selectedProject.municipality !== undefined) {
+                return selectedProject.municipality.indexOf(inputName) !== -1;
+            }
+        }
+    };
+
     return (
         <Select
             fullWidth
@@ -40,13 +50,7 @@ export const MunicipalityRoleEditForm = ({ selectedMunicipalityRole, setSelected
         >
             {municipalityRolesOptions?.map((municipality) => (
                 <MenuItem key={municipality.id} value={municipality.name}>
-                    <Checkbox
-                        checked={
-                            selectedMunicipalityRole.length > 0
-                                ? selectedMunicipalityRole.indexOf(municipality.name) > -1
-                                : selectedProject?.municipalityRole && selectedProject.municipalityRole.indexOf(municipality.name) > -1
-                        }
-                    />
+                    <Checkbox checked={checkControl(municipality.name)} />
                     <ListItemText primary={municipality.name} />
                 </MenuItem>
             ))}

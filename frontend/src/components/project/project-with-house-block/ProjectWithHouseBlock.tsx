@@ -40,7 +40,7 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
     const { selectedProject } = useContext(ProjectContext);
     const [projectEditable, setProjectEditable] = useState(false);
     const [openColorDialog, setOpenColorDialog] = useState(false);
-    const [name, setName] = useState<string | undefined>();
+    const [name, setName] = useState<string | null>();
     const [startDate, setStartDate] = useState<Dayjs | null>();
     const [endDate, setEndDate] = useState<Dayjs | null>();
     const [projectPhase, setProjectPhase] = useState<string | undefined>();
@@ -158,7 +158,7 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
                                     ? planType.map((pt: string) => {
                                           return <span key={pt}>{t(`projectTable.planTypeOptions.${pt}`)},</span>;
                                       })
-                                    : selectedProject?.planType.map((pt: string) => {
+                                    : selectedProject?.planType?.map((pt: string) => {
                                           return <span key={pt}>{t(`projectTable.planTypeOptions.${pt}`)},</span>;
                                       })}
                             </Typography>
@@ -199,7 +199,7 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
 
                         {!projectEditable ? (
                             <CellContainer>
-                                {selectedProject?.priority.map((p: string) => {
+                                {selectedProject?.priority?.map((p: string) => {
                                     return <span key={p}>{p},</span>;
                                 })}
                             </CellContainer>

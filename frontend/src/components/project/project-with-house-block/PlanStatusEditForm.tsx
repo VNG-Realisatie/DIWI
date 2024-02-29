@@ -20,6 +20,17 @@ export const PlanStatusEditForm = ({ planStatus, setPlanStatus }: Props) => {
         } = event;
         setPlanStatus(typeof value === "string" ? [value] : value);
     };
+
+    const checkControl = (inputName: string) => {
+        if (planStatus.length > 0) {
+            return planStatus.indexOf(inputName) !== -1;
+        } else if (selectedProject) {
+            if (selectedProject.planningPlanStatus !== null && selectedProject.planningPlanStatus !== undefined) {
+                return selectedProject.planningPlanStatus.indexOf(inputName) !== -1;
+            }
+        }
+    };
+
     return (
         <Select
             fullWidth
@@ -34,13 +45,7 @@ export const PlanStatusEditForm = ({ planStatus, setPlanStatus }: Props) => {
         >
             {planningPlanStatus.map((pt) => (
                 <MenuItem key={pt.id} value={pt.id}>
-                    <Checkbox
-                        checked={
-                            planStatus.length > 0
-                                ? planStatus.indexOf(pt.id) > -1
-                                : selectedProject?.planningPlanStatus && selectedProject.planningPlanStatus.indexOf(pt.id) > -1
-                        }
-                    />
+                    <Checkbox checked={checkControl(pt.id)} />
                     <ListItemText primary={t(`projectTable.planningPlanStatus.${pt.name}`)} />
                 </MenuItem>
             ))}

@@ -30,10 +30,12 @@ export const BuurtCell = ({ cellValues, selectedBuurt, handleBuurtChange }: Prop
             selected={selectedOption}
             options={buurtOptions}
             tagLimit={2}
-            defaultOptionValues={defaultPlanTypes}
+            defaultOptionValues={defaultPlanTypes ? defaultPlanTypes : []}
             inputLabel={t("projects.tableColumns.buurt")}
             placeHolder={t("projects.tableColumns.selectBuurt")}
-            handleChange={(_: React.ChangeEvent<{}>, values: OptionType[]) => handleBuurtChange(_, values, cellValues.row.projectId)}
+            handleChange={(_: React.ChangeEvent<{}>, values: OptionType[]) =>
+                cellValues.row.projectId && handleBuurtChange(_, values, cellValues.row.projectId)
+            }
             width="300px"
         />
     );

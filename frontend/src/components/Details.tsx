@@ -60,8 +60,9 @@ export const Details = ({ project }: Props) => {
                                     {typeof value === "string" && <ListItemText primary={getTranslatedText(property, value)} />}
                                     {typeof value === "object" &&
                                         (property === "projectOwners" || property === "projectLeaders"
-                                            ? value?.length > 0 && <OrganizationUserAvatars organizations={value as Organization[]} />
-                                            : value?.length > 0 && (
+                                            ? value && value?.length > 0 && <OrganizationUserAvatars organizations={value as Organization[]} />
+                                            : value &&
+                                              value?.length > 0 && (
                                                   <List>
                                                       {value?.map((content) => {
                                                           if (typeof content === "string") {
