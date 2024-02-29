@@ -24,7 +24,7 @@ public class ProjectsDAOTest {
     private VngRepository repo;
 
     private static final String PROJECT_TABLE_SCRIPT_PATH = "nl/vng/diwi/ProjectsDAOTest/getProjectsTable.sql";
-    private static final DateTimeFormatter DAY_MONTH_YEAR_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    private static final DateTimeFormatter ISO8601_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @BeforeAll
     static void beforeAll() throws Exception {
@@ -77,8 +77,8 @@ public class ProjectsDAOTest {
         //Test that only the project_state with change_end_date = NULL is taken into account
         assertThat(currentProject.getConfidentialityLevel()).isEqualTo(Confidentiality.OPENBAAR);
         assertThat(currentProject.getProjectColor()).isEqualTo("#223344");
-        assertThat(currentProject.getStartDate()).isEqualTo(LocalDate.now().minusDays(5).format(DAY_MONTH_YEAR_FORMATTER));
-        assertThat(currentProject.getEndDate()).isEqualTo(LocalDate.now().plusDays(15).format(DAY_MONTH_YEAR_FORMATTER));
+        assertThat(currentProject.getStartDate()).isEqualTo(LocalDate.now().minusDays(5).format(ISO8601_FORMATTER));
+        assertThat(currentProject.getEndDate()).isEqualTo(LocalDate.now().plusDays(15).format(ISO8601_FORMATTER));
         //Test that the name changelog with the milestones corresponding to the present moment is selected
         assertThat(currentProject.getProjectName()).isEqualTo("Current project Phase 1");
         //Test that only the changelog value with milestones corresponding to the present moment are selected and the correct gemeenterol version is used
@@ -97,8 +97,8 @@ public class ProjectsDAOTest {
         ProjectListModel futureProject = projects.get(1);
         assertThat(futureProject.getConfidentialityLevel()).isEqualTo(Confidentiality.EXTERN_RAPPORTAGE);
         assertThat(futureProject.getProjectColor()).isEqualTo("#456456");
-        assertThat(futureProject.getStartDate()).isEqualTo(LocalDate.now().plusDays(10).format(DAY_MONTH_YEAR_FORMATTER));
-        assertThat(futureProject.getEndDate()).isEqualTo(LocalDate.now().plusDays(20).format(DAY_MONTH_YEAR_FORMATTER));
+        assertThat(futureProject.getStartDate()).isEqualTo(LocalDate.now().plusDays(10).format(ISO8601_FORMATTER));
+        assertThat(futureProject.getEndDate()).isEqualTo(LocalDate.now().plusDays(20).format(ISO8601_FORMATTER));
         //Test that the name changelog at the project start milestone
         assertThat(futureProject.getProjectName()).isEqualTo("Future project Phase 1");
         //Test that only the gemeenterol_changelog values with the change_end_date null and with the start milestone at the beginning of the project are selected
