@@ -8,11 +8,15 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
+import nl.vng.diwi.dal.entities.enums.PlanStatus;
+import nl.vng.diwi.dal.entities.enums.PlanType;
+import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 import org.hibernate.type.SqlTypes;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,17 +50,19 @@ public class ProjectListSqlModel {
 
     @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(columnDefinition = "text[]")
-    private List<String> planType;
+    private List<PlanType> planType;
 
-    private String startDate;
+    private LocalDate startDate;
 
-    private String endDate;
+    private LocalDate endDate;
 
     @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(columnDefinition = "text[][]")
     private String[][] priority;
 
-    private String projectPhase;
+    @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    private ProjectPhase projectPhase;
 
     @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(columnDefinition = "text[][]")
@@ -64,7 +70,7 @@ public class ProjectListSqlModel {
 
     @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(columnDefinition = "text[]")
-    private List<String> planningPlanStatus;
+    private List<PlanStatus> planningPlanStatus;
 
     private Long totalValue;
 
@@ -139,27 +145,27 @@ public class ProjectListSqlModel {
         this.confidentialityLevel = confidentialityLevel;
     }
 
-    public List<String> getPlanType() {
+    public List<PlanType> getPlanType() {
         return planType;
     }
 
-    public void setPlanType(List<String> planType) {
+    public void setPlanType(List<PlanType> planType) {
         this.planType = planType;
     }
 
-    public String getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(String startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public String getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(String endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 
@@ -171,11 +177,11 @@ public class ProjectListSqlModel {
         this.priority = priority;
     }
 
-    public String getProjectPhase() {
+    public ProjectPhase getProjectPhase() {
         return projectPhase;
     }
 
-    public void setProjectPhase(String projectPhase) {
+    public void setProjectPhase(ProjectPhase projectPhase) {
         this.projectPhase = projectPhase;
     }
 
@@ -187,11 +193,11 @@ public class ProjectListSqlModel {
         this.municipalityRole = municipalityRole;
     }
 
-    public List<String> getPlanningPlanStatus() {
+    public List<PlanStatus> getPlanningPlanStatus() {
         return planningPlanStatus;
     }
 
-    public void setPlanningPlanStatus(List<String> planningPlanStatus) {
+    public void setPlanningPlanStatus(List<PlanStatus> planningPlanStatus) {
         this.planningPlanStatus = planningPlanStatus;
     }
 
