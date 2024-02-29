@@ -1,9 +1,4 @@
-CREATE COLLATION IF NOT EXISTS diwi_numeric (provider = icu, locale = 'en-u-kn-true');
-
-ALTER TABLE diwi_testset.user_state
-    ADD COLUMN IF NOT EXISTS last_name TEXT NOT NULL;
-ALTER TABLE diwi_testset.user_state
-    ADD COLUMN IF NOT EXISTS first_name TEXT NOT NULL;
+DROP FUNCTION IF EXISTS get_active_and_future_projects_list;
 
 CREATE OR REPLACE FUNCTION get_active_and_future_projects_list (
   _now_ date,
@@ -26,14 +21,14 @@ CREATE OR REPLACE FUNCTION get_active_and_future_projects_list (
         startDate TEXT,
         endDate TEXT,
         planType TEXT[],
-        priority TEXT[],
+        priority TEXT[][],
         projectPhase diwi_testset.project_phase,
         planningPlanStatus TEXT[],
-        municipalityRole TEXT[],
+        municipalityRole TEXT[][],
         totalValue BIGINT,
-        municipality TEXT[],
-        wijk TEXT[],
-        buurt TEXT[]
+        municipality TEXT[][],
+        wijk TEXT[][],
+        buurt TEXT[][]
 	)
 	LANGUAGE plpgsql
 AS $$
@@ -50,14 +45,14 @@ SELECT  q.projectId,
         q.startDateStr             AS startDate,
         q.endDateStr               AS endDate,
         q.planType,
-        q.priority,
+        q.priorityModel            AS priority,
         q.projectPhase,
         q.planningPlanStatus,
-        q.municipalityRole,
+        q.municipalityRoleModel    AS municipalityRole,
         q.totalValue,
-        q.municipality,
-        q.wijk,
-        q.buurt
+        q.municipalityModel        AS municipality,
+        q.wijkModel                AS wijk,
+        q.buurtModel               AS burrt
 FROM (
 
     WITH
@@ -121,7 +116,12 @@ FROM (
                 CASE
                     WHEN ppc.value_type = 'SINGLE_VALUE' THEN array_agg(vs.ordinal_level || ' ' || vs.value_label)
                     WHEN ppc.value_type = 'RANGE' THEN array_agg(vsMin.ordinal_level || ' ' || vsMin.value_label) || array_agg(vsMax.ordinal_level || ' ' || vsMax.value_label)
-                END AS project_priorities
+                END AS project_priorities,
+                CASE
+                    WHEN ppc.value_type = 'SINGLE_VALUE' THEN  array_agg(array[vs.project_priorisering_value_id::text, vs.ordinal_level || ' ' || vs.value_label])
+                    WHEN ppc.value_type = 'RANGE' THEN array_agg(array[vsMin.project_priorisering_value_id::text, vsMin.ordinal_level || ' ' || vsMin.value_label]) ||
+                                array_agg(array[vsMax.project_priorisering_value_id::text, vsMax.ordinal_level || ' ' || vsMax.value_label])
+                END AS project_prioritiesModel
             FROM
                 diwi_testset.project_priorisering_changelog ppc
                     JOIN diwi_testset.milestone_state sms ON sms.milestone_id = ppc.start_milestone_id AND sms.change_end_date IS NULL
@@ -138,7 +138,9 @@ FROM (
         ),
         active_project_gemeenterol AS (
             SELECT
-                pgc.project_id, array_agg(pgvs.value_label ORDER BY pgvs.value_label ASC) AS municipality_role
+                pgc.project_id,
+                array_agg(array[pgvs.project_gemeenterol_value_id::TEXT, pgvs.value_label]) AS municipality_roleModel,
+                array_agg(pgvs.value_label ORDER BY pgvs.value_label ASC) AS municipality_role
             FROM
                 diwi_testset.project_gemeenterol_changelog pgc
                     JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pgc.start_milestone_id AND sms.change_end_date IS NULL
@@ -163,7 +165,9 @@ FROM (
         ),
         active_project_woningblok_wijk AS (
             SELECT
-                w.project_id, array_agg(wijks.waarde_label ORDER BY wijks.waarde_label ASC) AS wijk
+                w.project_id,
+                array_agg(array[wijks.wijk_id::TEXT, wijks.waarde_label]) AS wijkModel,
+                array_agg(wijks.waarde_label ORDER BY wijks.waarde_label ASC) AS wijk
             FROM
                 diwi_testset.woningblok_gemeente_indeling_changelog wgic
                     JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wgic.start_milestone_id AND sms.change_end_date IS NULL
@@ -177,7 +181,9 @@ FROM (
         ),
         active_project_woningblok_buurt AS (
             SELECT
-                w.project_id, array_agg(buurts.waarde_label ORDER BY buurts.waarde_label ASC) AS buurt
+                w.project_id,
+                array_agg(array[buurts.buurt_id::TEXT, buurts.waarde_label]) AS buurtModel,
+                array_agg(buurts.waarde_label ORDER BY buurts.waarde_label ASC) AS buurt
             FROM
                 diwi_testset.woningblok_gemeente_indeling_changelog wgic
                     JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wgic.start_milestone_id AND sms.change_end_date IS NULL
@@ -191,7 +197,9 @@ FROM (
         ),
         active_project_woningblok_municipality AS (
             SELECT
-                w.project_id, array_agg(gemeentes.waarde_label ORDER BY gemeentes.waarde_label ASC) AS municipality
+                w.project_id,
+                array_agg(array[gemeentes.gemeente_id::TEXT, gemeentes.waarde_label]) AS municipalityModel,
+                array_agg(gemeentes.waarde_label ORDER BY gemeentes.waarde_label ASC) AS municipality
             FROM
                 diwi_testset.woningblok_gemeente_indeling_changelog wgic
                     JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wgic.start_milestone_id AND sms.change_end_date IS NULL
@@ -264,7 +272,12 @@ FROM (
                 CASE
                     WHEN ppc.value_type = 'SINGLE_VALUE' THEN array_agg(vs.ordinal_level || ' ' || vs.value_label)
                     WHEN ppc.value_type = 'RANGE' THEN array_agg(vsMin.ordinal_level || ' ' || vsMin.value_label) || array_agg(vsMax.ordinal_level || ' ' || vsMax.value_label)
-                    END AS project_priorities
+                END AS project_priorities,
+                CASE
+                    WHEN ppc.value_type = 'SINGLE_VALUE' THEN  array_agg(array[vs.project_priorisering_value_id::text, vs.ordinal_level || ' ' || vs.value_label])
+                    WHEN ppc.value_type = 'RANGE' THEN array_agg(array[vsMin.project_priorisering_value_id::text, vsMin.ordinal_level || ' ' || vsMin.value_label]) ||
+                                                       array_agg(array[vsMax.project_priorisering_value_id::text, vsMax.ordinal_level || ' ' || vsMax.value_label])
+                END AS project_prioritiesModel
             FROM
                 diwi_testset.project_priorisering_changelog ppc
                     JOIN diwi_testset.project_duration_changelog pdc ON pdc.project_id = ppc.project_id AND pdc.start_milestone_id = ppc.start_milestone_id AND pdc.change_end_date IS NULL
@@ -281,7 +294,9 @@ FROM (
         ),
         future_project_gemeenterol AS (
             SELECT
-                pgc.project_id, array_agg(pgvs.value_label ORDER BY pgvs.value_label ASC) AS municipality_role
+                pgc.project_id,
+                array_agg(array[pgvs.project_gemeenterol_value_id::TEXT, pgvs.value_label]) AS municipality_roleModel,
+                array_agg(pgvs.value_label ORDER BY pgvs.value_label ASC) AS municipality_role
             FROM
                 diwi_testset.project_gemeenterol_changelog pgc
                     JOIN diwi_testset.project_duration_changelog pdc ON pdc.project_id = pgc.project_id AND pdc.start_milestone_id = pgc.start_milestone_id AND pdc.change_end_date IS NULL
@@ -306,7 +321,9 @@ FROM (
         ),
         future_project_woningblok_municipality AS (
             SELECT
-                w.project_id, array_agg(gemeentes.waarde_label ORDER BY gemeentes.waarde_label ASC) AS municipality
+                w.project_id,
+                array_agg(gemeentes.waarde_label ORDER BY gemeentes.waarde_label ASC) AS municipality,
+                array_agg(array[gemeentes.gemeente_id::TEXT, gemeentes.waarde_label]) AS municipalityModel
             FROM
                 diwi_testset.woningblok_gemeente_indeling_changelog wgic
                     JOIN diwi_testset.woningblok w ON wgic.woningblok_id = w.id
@@ -320,7 +337,9 @@ FROM (
         ),
         future_project_woningblok_wijk AS (
             SELECT
-                w.project_id, array_agg(wijks.waarde_label ORDER BY wijks.waarde_label ASC) AS wijk
+                w.project_id,
+                array_agg(wijks.waarde_label ORDER BY wijks.waarde_label ASC) AS wijk,
+                array_agg(array[wijks.wijk_id::TEXT, wijks.waarde_label]) AS wijkModel
             FROM
                 diwi_testset.woningblok_gemeente_indeling_changelog wgic
                     JOIN diwi_testset.woningblok w ON wgic.woningblok_id = w.id
@@ -334,7 +353,9 @@ FROM (
         ),
         future_project_woningblok_buurt AS (
             SELECT
-                w.project_id, array_agg(buurts.waarde_label ORDER BY buurts.waarde_label ASC) AS buurt
+                w.project_id,
+                array_agg(buurts.waarde_label ORDER BY buurts.waarde_label ASC) AS buurt,
+                array_agg(array[buurts.buurt_id::TEXT, buurts.waarde_label]) AS buurtModel
             FROM
                 diwi_testset.woningblok_gemeente_indeling_changelog wgic
                     JOIN diwi_testset.woningblok w ON wgic.woningblok_id = w.id
@@ -386,13 +407,18 @@ FROM (
            to_char( ap.endDate, 'DD-MM-YYYY') AS endDateStr,
            appt.plan_types          AS planType,
            app.project_priorities   AS priority,
+           app.project_prioritiesModel  AS priorityModel,
            apf.project_fase         AS projectPhase,
            appp.planning_planstatus AS planningPlanStatus,
            apg.municipality_role    AS municipalityRole,
+           apg.municipality_roleModel    AS municipalityRoleModel,
            apwv.total_value         AS totalValue,
            apwm.municipality        AS municipality,
+           apwm.municipalityModel   AS municipalityModel,
            apww.wijk                AS wijk,
+           apww.wijkModel           AS wijkModel,
            apwb.buurt               AS buurt,
+           apwb.buurtModel          AS buurtModel,
            leaders.users            AS projectLeaders,
            leaders.users_initials   AS projectLeadersInitials
     FROM
@@ -426,13 +452,18 @@ FROM (
            to_char( fp.endDate, 'DD-MM-YYYY') AS endDateStr,
            fppt.plan_types          AS planType,
            fpp.project_priorities   AS priority,
+           fpp.project_prioritiesModel  AS priorityModel,
            fpf.project_fase         AS projectPhase,
            fppp.planning_planstatus AS planningPlanStatus,
            fpg.municipality_role    AS municipalityRole,
+           fpg.municipality_roleModel    AS municipalityRoleModel,
            fpwv.total_value         AS totalValue,
            fpwm.municipality        AS municipality,
+           fpwm.municipalityModel   AS municipalityModel,
            fpww.wijk                AS wijk,
+           fpww.wijkModel           AS wijkModel,
            fpwb.buurt               AS buurt,
+           fpwb.buurtModel          AS buurtModel,
            leaders.users            AS projectLeaders,
            leaders.users_initials   AS projectLeadersInitials
     FROM

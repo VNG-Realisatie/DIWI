@@ -1,48 +1,26 @@
 package nl.vng.diwi.models;
 
-import nl.vng.diwi.models.interfaces.WeightedValueModelInterface;
-
-import com.fasterxml.jackson.annotation.JsonValue;
-
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
-public class PriorityModel implements WeightedValueModelInterface<String> {
-    private Integer level;
-    private String data;
-    @JsonValue
-    private String name;
+@NoArgsConstructor
+public class PriorityModel {
 
-    public PriorityModel(Integer level, String data) {
-        this.level = level;
-        this.data = data;
-        updateName();
-    }
-    private void updateName() {
-        if (level != null && data != null) {
-            name = new String();
-            name = name.concat(this.level.toString());
-            name = name.concat(" ");
-            name = name.concat(this.data);
-            name = name.trim();
+    private SelectModel value;
+    private SelectModel min;
+    private SelectModel max;
+
+    public PriorityModel(List<SelectModel> priorities) {
+        if (priorities != null) {
+            if (priorities.size() == 1) {
+                value = priorities.get(0);
+            } else if (priorities.size() == 2) {
+                min = priorities.get(0);
+                max = priorities.get(1);
+            }
         }
     }
-
-    public Integer getLevel() {
-        return level;
-    }
-    public void setLevel(Integer level) {
-        this.level = level;
-        updateName();
-    }
-    public String getData() {
-        return data;
-    }
-    public void setData(String data) {
-        this.data = data;
-        updateName();
-    }
-    public String getName() {
-        return name;
-    }    
 }

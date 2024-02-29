@@ -2,7 +2,6 @@ package nl.vng.diwi.models;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,16 +27,16 @@ public class ProjectSnapshotModel extends DatedDataModelSuperClass {
     private String projectColor;
     private Confidentiality confidentialityLevel;
     private List<PlanType> planType = new ArrayList<>();
-    private List<PriorityModel> priority = Arrays.asList(new PriorityModel[3]);
+    private PriorityModel priority = new PriorityModel();
     private ProjectPhase projectPhase;
-    private List<String> municipalityRole = new ArrayList<>();
+    private List<SelectModel> municipalityRole = new ArrayList<>();
     private List<PlanStatus> planningPlanStatus = new ArrayList<>();
     private List<OrganizationModel> projectOwners = new ArrayList<>();
     private List<OrganizationModel> projectLeaders = new ArrayList<>();
     private Long totalValue;
-    private String[] municipality;
-    private String[] wijk;
-    private String[] buurt;
+    private List<SelectModel> municipality;
+    private List<SelectModel> wijk;
+    private List<SelectModel> buurt;
 
     public ProjectSnapshotModel(Project project) {
         ProjectTimelineModel timeline = new ProjectTimelineModel(project);
@@ -68,13 +67,12 @@ public class ProjectSnapshotModel extends DatedDataModelSuperClass {
 
     }
 
-    private <T> WeightedRangeOrValueModel<T> retrieveWeightedRangeOrValueSnapshotItem(List<DatedWeightedRangeOrValueModel<T>> list, LocalDate snapshotTime) {
+    private <T> DatedPriorityModel retrieveWeightedRangeOrValueSnapshotItem(List<DatedPriorityModel> list, LocalDate snapshotTime) {
         if (list == null) {
             return null;
         }
 
         return list.stream().filter(item -> !item.getStartDate().isAfter(snapshotTime) && item.getEndDate().isAfter(snapshotTime))
-            .map(WeightedRangeOrValueModel::new)
             .findFirst().orElse(null);
     }
 
@@ -89,21 +87,19 @@ public class ProjectSnapshotModel extends DatedDataModelSuperClass {
             .findFirst().orElse(null);
     }
 
-    private <T> List<T> retrieveSnapshotItems(List<DatedDataModel<T>> list, LocalDate snapshotTime) {
+    private <T> List<SelectModel> retrieveSnapshotItems(List<DatedDataModel<T>> list, LocalDate snapshotTime) {
         if (list == null) {
             return new ArrayList<>();
         }
 
         return list.stream().filter(item -> !item.getStartDate().isAfter(snapshotTime) && item.getEndDate().isAfter(snapshotTime))
-            .map(DatedDataModel::getData)
+            .map(item -> new SelectModel(item.getId(), item.getData().toString()))
             .toList();
     }
 
-    public void setPriority(WeightedRangeOrValueModel<String> priority) {
-        if (priority != null) {
-            this.priority.set(0, new PriorityModel(priority.getLevelMin(), priority.getDataMin()));
-            this.priority.set(1, new PriorityModel(priority.getLevel(), priority.getData()));
-            this.priority.set(2, new PriorityModel(priority.getLevelMax(), priority.getDataMax()));
+    public void setPriority(DatedPriorityModel priorityWeightedModel) {
+        if (priorityWeightedModel != null) {
+            this.priority = priorityWeightedModel.getPriorityModel();
         }
     }
 

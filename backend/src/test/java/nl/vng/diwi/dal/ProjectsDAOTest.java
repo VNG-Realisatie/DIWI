@@ -4,6 +4,7 @@ import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.models.ProjectListModel;
+import nl.vng.diwi.models.ProjectListSqlModel;
 import nl.vng.diwi.testutil.TestDb;
 import org.junit.jupiter.api.*;
 
@@ -68,12 +69,12 @@ public class ProjectsDAOTest {
             transaction.commit();
         }
 
-        List<ProjectListModel> projects = repo.getProjectsDAO().getProjectsTable(filtering);
+        List<ProjectListSqlModel> projects = repo.getProjectsDAO().getProjectsTable(filtering);
 
         //There are 3 projects. One in the past, one ongoing, one in the future. Only the ongoing and future ones are returned.
         assertThat(projects.size()).isEqualTo(2);
 
-        ProjectListModel currentProject = projects.get(0);
+        ProjectListSqlModel currentProject = projects.get(0);
         //Test that only the project_state with change_end_date = NULL is taken into account
         assertThat(currentProject.getConfidentialityLevel()).isEqualTo(Confidentiality.OPENBAAR);
         assertThat(currentProject.getProjectColor()).isEqualTo("#223344");
@@ -82,19 +83,19 @@ public class ProjectsDAOTest {
         //Test that the name changelog with the milestones corresponding to the present moment is selected
         assertThat(currentProject.getProjectName()).isEqualTo("Current project Phase 1");
         //Test that only the changelog value with milestones corresponding to the present moment are selected and the correct gemeenterol version is used
-        assertThat(currentProject.getMunicipalityRole().size()).isEqualTo(2);
-        assertThat(currentProject.getMunicipalityRole().get(0)).isEqualTo("Role 1 new");
-        assertThat(currentProject.getMunicipalityRole().get(1)).isEqualTo("Role 3");
+        assertThat(currentProject.getMunicipalityRole().length).isEqualTo(2);
+        assertThat(currentProject.getMunicipalityRole()[0][1]).isEqualTo("Role 1 new");
+        assertThat(currentProject.getMunicipalityRole()[1][1]).isEqualTo("Role 3");
         assertThat(currentProject.getProjectPhase()).isEqualTo(ProjectPhase._1_INITIATIEFFASE.name());
         //Test that only the changelog value with milestones corresponding to the present moment are selected and values are sorted alphabetically
         assertThat(currentProject.getPlanType().size()).isEqualTo(2);
         assertThat(currentProject.getPlanType().get(0)).isEqualTo(PlanType.HERSTRUCTURERING.name());
         assertThat(currentProject.getPlanType().get(1)).isEqualTo(PlanType.PAND_TRANSFORMATIE.name());
-        assertThat(currentProject.getMunicipality().size()).isEqualTo(2);
-        assertThat(currentProject.getMunicipality().get(0)).isEqualTo("Gemeente 1");
-        assertThat(currentProject.getMunicipality().get(1)).isEqualTo("Gemeente 2");
+        assertThat(currentProject.getMunicipality().length).isEqualTo(2);
+        assertThat(currentProject.getMunicipality()[0][1]).isEqualTo("Gemeente 1");
+        assertThat(currentProject.getMunicipality()[1][1]).isEqualTo("Gemeente 2");
 
-        ProjectListModel futureProject = projects.get(1);
+        ProjectListSqlModel futureProject = projects.get(1);
         assertThat(futureProject.getConfidentialityLevel()).isEqualTo(Confidentiality.EXTERN_RAPPORTAGE);
         assertThat(futureProject.getProjectColor()).isEqualTo("#456456");
         assertThat(futureProject.getStartDate()).isEqualTo(LocalDate.now().plusDays(10).format(DAY_MONTH_YEAR_FORMATTER));
@@ -102,13 +103,13 @@ public class ProjectsDAOTest {
         //Test that the name changelog at the project start milestone
         assertThat(futureProject.getProjectName()).isEqualTo("Future project Phase 1");
         //Test that only the gemeenterol_changelog values with the change_end_date null and with the start milestone at the beginning of the project are selected
-        assertThat(futureProject.getMunicipalityRole().size()).isEqualTo(1);
-        assertThat(futureProject.getMunicipalityRole().get(0)).isEqualTo("Role 2");
+        assertThat(futureProject.getMunicipalityRole().length).isEqualTo(1);
+        assertThat(futureProject.getMunicipalityRole()[0][1]).isEqualTo("Role 2");
         assertThat(futureProject.getProjectPhase()).isNull();
         //Test that only the changelog values with the start milestone at the beginning of the project are selected
         assertThat(futureProject.getPlanType().size()).isEqualTo(1);
         assertThat(futureProject.getPlanType().get(0)).isEqualTo(PlanType.UITBREIDING_OVERIG.name());
-        assertThat(futureProject.getMunicipality().size()).isEqualTo(1);
-        assertThat(futureProject.getMunicipality().get(0)).isEqualTo("Gemeente 1");
+        assertThat(futureProject.getMunicipality().length).isEqualTo(1);
+        assertThat(futureProject.getMunicipality()[0][1]).isEqualTo("Gemeente 1");
     }
 }

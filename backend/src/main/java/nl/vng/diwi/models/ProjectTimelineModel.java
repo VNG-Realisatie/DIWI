@@ -21,7 +21,7 @@ public class ProjectTimelineModel extends DatedDataModelSuperClass {
     private String projectColor;
     private Confidentiality confidentialityLevel;
     private List<DatedDataModel<List<PlanType>>> planType = new ArrayList<>();
-    private List<DatedWeightedRangeOrValueModel<String>> priority = new ArrayList<>();
+    private List<DatedPriorityModel> priority = new ArrayList<>();
     private List<DatedDataModel<ProjectPhase>> projectPhase = new ArrayList<>();
     private List<DatedDataModel<String>> municipalityRole = new ArrayList<>();
     private List<DatedDataModel<List<PlanStatus>>> planningPlanStatus = new ArrayList<>();
@@ -74,6 +74,7 @@ public class ProjectTimelineModel extends DatedDataModelSuperClass {
         }
         for (ProjectGemeenteRolChangelog item : project.getMunicipalityRole()) {
             DatedDataModel<String> data = new DatedDataModel<>();
+            data.setId(item.getValue().getId());
             data.setData(item.getValue().getState().get(0).getValueLabel());
             data.setStartDate(item.getStartMilestone().getDate());
             data.setEndDate(item.getEndMilestone().getDate());
@@ -91,22 +92,21 @@ public class ProjectTimelineModel extends DatedDataModelSuperClass {
             planningPlanStatus.add(data);
         }
         for (ProjectPrioriseringChangelog item : project.getPriority()) {
-            DatedWeightedRangeOrValueModel<String> data = new DatedWeightedRangeOrValueModel<String>();
+            DatedPriorityModel data = new DatedPriorityModel();
             if (item.getMinValue() != null) {
-                data.setMin(
-                        item.getMinValue().getState().get(0).getOrdinalLevel(),
-                        item.getMinValue().getState().get(0).getValueLabel()
-                );
+                data.getPriorityModel().setMin(new SelectModel(item.getMinValue().getId(),
+                    DatedPriorityModel.getLabel(item.getMinValue().getState().get(0).getOrdinalLevel(),
+                        item.getMinValue().getState().get(0).getValueLabel())));
             }
             if (item.getMaxValue() != null) {
-                data.setMax(
-                        item.getMaxValue().getState().get(0).getOrdinalLevel(),
-                        item.getMaxValue().getState().get(0).getValueLabel()
-                );
+                data.getPriorityModel().setMax(new SelectModel(item.getMaxValue().getId(),
+                    DatedPriorityModel.getLabel(item.getMaxValue().getState().get(0).getOrdinalLevel(),
+                        item.getMaxValue().getState().get(0).getValueLabel())));
             }
             if (item.getValue() != null) {
-                data.setData(item.getValue().getState().get(0).getValueLabel());
-                data.setLevel(item.getValue().getState().get(0).getOrdinalLevel());
+                data.getPriorityModel().setValue(new SelectModel(item.getValue().getId(),
+                    DatedPriorityModel.getLabel(item.getValue().getState().get(0).getOrdinalLevel(),
+                        item.getValue().getState().get(0).getValueLabel())));
             }
             data.setStartDate(item.getStartMilestone().getDate());
             data.setEndDate(item.getEndMilestone().getDate());
