@@ -13,13 +13,15 @@ import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.models.superclasses.DatedDataModelSuperClass;
 
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 @ToString
 @RequiredArgsConstructor
-@EqualsAndHashCode(callSuper=true)
+@EqualsAndHashCode(callSuper = true)
+@Data
 public class ProjectSnapshotModel extends DatedDataModelSuperClass {
     private UUID projectId;
     private String projectName;
@@ -36,194 +38,73 @@ public class ProjectSnapshotModel extends DatedDataModelSuperClass {
     private String[] municipality;
     private String[] wijk;
     private String[] buurt;
-    
+
     public ProjectSnapshotModel(Project project) {
         ProjectTimelineModel timeline = new ProjectTimelineModel(project);
+        this.setStartDate(timeline.getStartDate());
+        this.setEndDate(timeline.getEndDate());
+        LocalDate snapshotTime = this.getStartDate().isAfter(LocalDate.now()) ? this.getStartDate() : LocalDate.now();
         projectId = timeline.getProjectId();
-        projectName = retrieveSnapshotItem(timeline.getProjectName()).getData();
+        projectName = retrieveSnapshotItem(timeline.getProjectName(), snapshotTime);
         projectColor = timeline.getProjectColor();
         confidentialityLevel = timeline.getConfidentialityLevel();
-        planType = retrieveSnapshotItem(timeline.getPlanType()).getData();
-        this.setPriority(retrieveWeightedRangeOrValueSnapshotItem(timeline.getPriority()));
-        projectPhase = retrieveSnapshotItem(timeline.getProjectPhase()).getData();
-        municipalityRole = retrieveSnapshotItem(timeline.getMunicipalityRole()).getData();
-        planningPlanStatus = retrieveSnapshotItem(timeline.getPlanningPlanStatus()).getData();
+        planType = retrieveSnapshotItem(timeline.getPlanType(), snapshotTime);
+        if (planType == null) {
+            planType = new ArrayList<>();
+        }
+        this.setPriority(retrieveWeightedRangeOrValueSnapshotItem(timeline.getPriority(), snapshotTime));
+        projectPhase = retrieveSnapshotItem(timeline.getProjectPhase(), snapshotTime);
+        municipalityRole = retrieveSnapshotItems(timeline.getMunicipalityRole(), snapshotTime);
+        planningPlanStatus = retrieveSnapshotItem(timeline.getPlanningPlanStatus(), snapshotTime);
+        if (planningPlanStatus == null) {
+            planningPlanStatus = new ArrayList<>();
+        }
         projectOwners = timeline.getProjectOwners();
-        projectLeaders = timeline.getProjectLeaders(); 
+        projectLeaders = timeline.getProjectLeaders();
         // totalValue
         // municipality
         // wijk
         // buurt
-        this.setStartDate(timeline.getStartDate());
-        this.setEndDate(timeline.getEndDate());
+
     }
 
-    private <T> WeightedRangeOrValueModel<T> retrieveWeightedRangeOrValueSnapshotItem(List<DatedWeightedRangeOrValueModel<T>> list) {
+    private <T> WeightedRangeOrValueModel<T> retrieveWeightedRangeOrValueSnapshotItem(List<DatedWeightedRangeOrValueModel<T>> list, LocalDate snapshotTime) {
         if (list == null) {
             return null;
         }
 
-        // we assume the oldest date is the first in the list, and the date is sorted.
-        // This could be a date in the future.
-        WeightedRangeOrValueModel<T> output = new WeightedRangeOrValueModel<T>(list.get(0));
-        LocalDateModel now = new LocalDateModel(LocalDate.now());
-        
-
-        for (var item : list) {
-            // if the date we check is in the future, return the cached data.
-            if (item.getStartDate().getDate().compareTo(now.getDate()) > 0) {
-                return output;
-            }
-            // otherwise cache the current data.
-            output = new WeightedRangeOrValueModel<T>(item);
-        }
-
-        return output;        
+        return list.stream().filter(item -> !item.getStartDate().isAfter(snapshotTime) && item.getEndDate().isAfter(snapshotTime))
+            .map(WeightedRangeOrValueModel::new)
+            .findFirst().orElse(null);
     }
 
-    
-    private <T> DatedDataModel<T> retrieveSnapshotItem(List<DatedDataModel<T>> list) {
+
+    private <T> T retrieveSnapshotItem(List<DatedDataModel<T>> list, LocalDate snapshotTime) {
         if (list == null) {
             return null;
         }
 
-        // we assume the oldest date is the first in the list, and the date is sorted.
-        // This could be a date in the future.
-        DatedDataModel<T> output = list.get(0);
-        LocalDateModel now = new LocalDateModel(LocalDate.now());
-        
+        return list.stream().filter(item -> !item.getStartDate().isAfter(snapshotTime) && item.getEndDate().isAfter(snapshotTime))
+            .map(DatedDataModel::getData)
+            .findFirst().orElse(null);
+    }
 
-        for (var item : list) {
-            // if the date we check is in the future, return the cached data.
-            if (item.getStartDate().getDate().compareTo(now.getDate()) > 0) {
-                return output;
-            }
-            // otherwise cache the current data.
-            output = item;
+    private <T> List<T> retrieveSnapshotItems(List<DatedDataModel<T>> list, LocalDate snapshotTime) {
+        if (list == null) {
+            return new ArrayList<>();
         }
 
-        return output;
-    }
-
-    public UUID getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(UUID projectId) {
-        this.projectId = projectId;
-    }
-
-    public String getProjectName() {
-        return projectName;
-    }
-
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
-    }
-
-    public String getProjectColor() {
-        return projectColor;
-    }
-
-    public void setProjectColor(String projectColor) {
-        this.projectColor = projectColor;
-    }
-
-    public Confidentiality getConfidentialityLevel() {
-        return confidentialityLevel;
-    }
-
-    public void setConfidentialityLevel(Confidentiality confidentialityLevel) {
-        this.confidentialityLevel = confidentialityLevel;
-    }
-
-    public List<PlanType> getPlanType() {
-        return planType;
-    }
-
-    public void setPlanType(List<PlanType> planType) {
-        this.planType = planType;
-    }
-
-    public List<PriorityModel> getPriority() {
-        return priority;        
+        return list.stream().filter(item -> !item.getStartDate().isAfter(snapshotTime) && item.getEndDate().isAfter(snapshotTime))
+            .map(DatedDataModel::getData)
+            .toList();
     }
 
     public void setPriority(WeightedRangeOrValueModel<String> priority) {
-        this.priority.set(0, new PriorityModel(priority.getLevelMin(), priority.getDataMin()));
-        this.priority.set(1, new PriorityModel(priority.getLevel(), priority.getData()));
-        this.priority.set(2, new PriorityModel(priority.getLevelMax(), priority.getDataMax()));
+        if (priority != null) {
+            this.priority.set(0, new PriorityModel(priority.getLevelMin(), priority.getDataMin()));
+            this.priority.set(1, new PriorityModel(priority.getLevel(), priority.getData()));
+            this.priority.set(2, new PriorityModel(priority.getLevelMax(), priority.getDataMax()));
+        }
     }
 
-    public ProjectPhase getProjectPhase() {
-        return projectPhase;
-    }
-
-    public void setProjectPhase(ProjectPhase projectPhase) {
-        this.projectPhase = projectPhase;
-    }
-
-    public List<String> getMunicipalityRole() {
-        return municipalityRole;
-    }
-
-    public void setMunicipalityRole(List<String> municipalityRole) {
-        this.municipalityRole = municipalityRole;
-    }
-
-    public List<PlanStatus> getPlanningPlanStatus() {
-        return planningPlanStatus;
-    }
-
-    public void setPlanningPlanStatus(List<PlanStatus> planningPlanStatus) {
-        this.planningPlanStatus = planningPlanStatus;
-    }
-
-    public Long getTotalValue() {
-        return totalValue;
-    }
-
-    public void setTotalValue(Long totalValue) {
-        this.totalValue = totalValue;
-    }
-
-    public String[] getMunicipality() {
-        return municipality;
-    }
-
-    public void setMunicipality(String[] municipality) {
-        this.municipality = municipality;
-    }
-
-    public String[] getWijk() {
-        return wijk;
-    }
-
-    public void setWijk(String[] wijk) {
-        this.wijk = wijk;
-    }
-
-    public String[] getBuurt() {
-        return buurt;
-    }
-
-    public void setBuurt(String[] buurt) {
-        this.buurt = buurt;
-    }
-
-    public List<OrganizationModel> getProjectOwners() {
-        return projectOwners;
-    }
-
-    public void setProjectOwners(List<OrganizationModel> projectOwners) {
-        this.projectOwners = projectOwners;
-    }
-
-    public List<OrganizationModel> getProjectLeaders() {
-        return projectLeaders;
-    }
-
-    public void setProjectLeaders(List<OrganizationModel> projectLeaders) {
-        this.projectLeaders = projectLeaders;
-    }
 }

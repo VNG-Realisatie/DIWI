@@ -83,7 +83,7 @@ public class ProjectServiceTest {
         }
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            projectService.updateProjectName(repo, projectUuid, "Name 1 - Update Test", userUuid, LocalDate.now());
+            projectService.updateProjectName(repo, repo.findById(Project.class, projectUuid), "Name 1 - Update Test", userUuid, LocalDate.now());
             transaction.commit();
             repo.getSession().clear();
         }
@@ -143,7 +143,7 @@ public class ProjectServiceTest {
         }
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            projectService.updateProjectPhase(repo, projectUuid, ProjectPhase._2_PROJECTFASE, userUuid, LocalDate.now());
+            projectService.updateProjectPhase(repo, repo.findById(Project.class, projectUuid), ProjectPhase._2_PROJECTFASE, userUuid, LocalDate.now());
             transaction.commit();
             repo.getSession().clear();
         }
@@ -191,7 +191,7 @@ public class ProjectServiceTest {
         }
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            projectService.updateProjectPlanStatus(repo, projectUuid, null, userUuid, LocalDate.now());
+            projectService.updateProjectPlanStatus(repo, repo.findById(Project.class, projectUuid), null, userUuid, LocalDate.now());
             transaction.commit();
             repo.getSession().clear();
         }
@@ -252,7 +252,7 @@ public class ProjectServiceTest {
         }
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            projectService.updateProjectMunicipalityRoles(repo, projectUuid, municipalityRoleUuid, null, userUuid, LocalDate.now());
+            projectService.updateProjectMunicipalityRoles(repo, repo.findById(Project.class, projectUuid), municipalityRoleUuid, null, userUuid, LocalDate.now());
             transaction.commit();
             repo.getSession().clear();
         }

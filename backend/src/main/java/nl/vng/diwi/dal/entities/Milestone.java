@@ -1,5 +1,6 @@
 package nl.vng.diwi.dal.entities;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,5 +43,9 @@ public class Milestone extends IdSuperclass {
 
     public void setState(List<MilestoneState> state) {
         this.state = state;
+    }
+
+    public LocalDate getDate() {
+        return this.state.get(0).getDate();
     }
 }
