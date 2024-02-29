@@ -3,7 +3,7 @@ import { ChangeEvent, useContext } from "react";
 import ProjectContext from "../../../context/ProjectContext";
 
 type Props = {
-    name?: string;
+    name?: string | null;
     setName: (name: string) => void;
 };
 export const ProjectNameEditForm = ({ name, setName }: Props) => {

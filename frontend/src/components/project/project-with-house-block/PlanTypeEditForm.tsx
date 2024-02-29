@@ -17,15 +17,26 @@ export const PlanTypeEditForm = ({ planType, setPlanType }: Props) => {
         const {
             target: { value },
         } = event;
-        setPlanType(typeof value === "string" ? value.split(",") : value);
+        setPlanType(typeof value === "string" ? [value] : value);
     };
+
+    const checkControl = (inputName: string) => {
+        if (planType.length > 0) {
+            return planType.indexOf(inputName) !== -1;
+        } else if (selectedProject) {
+            if (selectedProject.planType !== null && selectedProject.planType !== undefined) {
+                return selectedProject.planType.indexOf(inputName) !== -1;
+            }
+        }
+    };
+
     return (
         <Select
             fullWidth
             size="small"
             id="plan-type-checkbox"
             multiple
-            value={planType.length > 0 ? planType : selectedProject?.planType}
+            value={planType.length > 0 ? planType : selectedProject?.planType ? selectedProject?.planType : []}
             onChange={handlePlanTypeChange}
             input={<OutlinedInput />}
             renderValue={(selected) => selected.join(", ")}
@@ -33,9 +44,7 @@ export const PlanTypeEditForm = ({ planType, setPlanType }: Props) => {
         >
             {planTypeOptions.map((pt) => (
                 <MenuItem key={pt.id} value={pt.id}>
-                    <Checkbox
-                        checked={planType.length > 0 ? planType.indexOf(pt.id) > -1 : selectedProject?.planType && selectedProject.planType.indexOf(pt.id) > -1}
-                    />
+                    <Checkbox checked={checkControl(pt.id)} />
                     <ListItemText primary={t(`projectTable.planTypeOptions.${pt.name}`)} />
                 </MenuItem>
             ))}

@@ -14,7 +14,7 @@ type Props = {
 export const PlanningPlanStatusCell = ({ cellValues, selectedPlanStatus, handleStatusChange }: Props) => {
     const { t } = useTranslation();
 
-    const defaultPlanTypes = cellValues.row.planningPlanStatus.map((c) => ({ id: c, name: c }));
+    const defaultPlanTypes = cellValues.row.planningPlanStatus?.map((c) => ({ id: c, name: c }));
     const findSelected = selectedPlanStatus.find((s) => s.id === cellValues.row.projectId);
     const selectedOption = findSelected ? findSelected.option : [];
     const translatedOption = planningPlanStatus.map((p) => {
@@ -27,10 +27,12 @@ export const PlanningPlanStatusCell = ({ cellValues, selectedPlanStatus, handleS
             selected={selectedOption}
             options={translatedOption}
             tagLimit={2}
-            defaultOptionValues={defaultPlanTypes}
+            defaultOptionValues={defaultPlanTypes ? defaultPlanTypes : []}
             inputLabel={t("projects.tableColumns.planningPlanStatus")}
             placeHolder={t("projects.tableColumns.selectPlanningPlanStatus")}
-            handleChange={(_: React.ChangeEvent<{}>, values: OptionType[]) => handleStatusChange(_, values, cellValues.row.projectId)}
+            handleChange={(_: React.ChangeEvent<{}>, values: OptionType[]) =>
+                cellValues.row.projectId && handleStatusChange(_, values, cellValues.row.projectId)
+            }
             width="500px"
         />
     );

@@ -25,6 +25,16 @@ export const MunicipalityEditForm = ({ selectedMunicipality, setSelectedMunicipa
         getMunicipalityList().then((municipalities) => setMunicipalityOptions(municipalities));
     }, []);
 
+    const checkControl = (inputName: string) => {
+        if (selectedMunicipality.length > 0) {
+            return selectedMunicipality.indexOf(inputName) !== -1;
+        } else if (selectedProject) {
+            if (selectedProject.municipality !== null && selectedProject.municipality !== undefined) {
+                return selectedProject.municipality.indexOf(inputName) !== -1;
+            }
+        }
+    };
+
     return (
         <Select
             fullWidth
@@ -39,13 +49,7 @@ export const MunicipalityEditForm = ({ selectedMunicipality, setSelectedMunicipa
         >
             {municipalityOptions?.map((municipality) => (
                 <MenuItem key={municipality.id} value={municipality.name}>
-                    <Checkbox
-                        checked={
-                            selectedMunicipality.length > 0
-                                ? selectedMunicipality.indexOf(municipality.name) !== -1
-                                : selectedProject?.municipality && selectedProject.municipality.indexOf(municipality.name) !== -1
-                        }
-                    />
+                    <Checkbox checked={checkControl(municipality.name)} />
                     <ListItemText primary={municipality.name} />
                 </MenuItem>
             ))}
