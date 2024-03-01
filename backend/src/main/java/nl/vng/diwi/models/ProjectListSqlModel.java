@@ -7,6 +7,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
@@ -26,6 +30,9 @@ import java.util.UUID;
     converter = StringArrayType.class
 )
 @Entity
+@NoArgsConstructor
+@Getter
+@Setter
 public class ProjectListSqlModel {
 
     @Id
@@ -51,6 +58,7 @@ public class ProjectListSqlModel {
 
     @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(columnDefinition = "text[]")
+    @Getter(AccessLevel.NONE)
     private List<PlanType> planType;
 
     private LocalDate startDate;
@@ -71,6 +79,7 @@ public class ProjectListSqlModel {
 
     @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(columnDefinition = "text[]")
+    @Getter(AccessLevel.NONE)
     private List<PlanStatus> planningPlanStatus;
 
     private Long totalValue;
@@ -87,114 +96,11 @@ public class ProjectListSqlModel {
     @Column(columnDefinition = "text[][]")
     private String[][] buurt;
 
-    public ProjectListSqlModel() {
-    }
-
-    public UUID getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(UUID projectId) {
-        this.projectId = projectId;
-    }
-
-    public UUID getProjectStateId() {
-        return projectStateId;
-    }
-
-    public void setProjectStateId(UUID projectStateId) {
-        this.projectStateId = projectStateId;
-    }
-
-    public String getProjectName() {
-        return projectName;
-    }
-
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
-    }
-
-    public String[][] getProjectOwnersArray() {
-        return projectOwnersArray;
-    }
-
-    public void setProjectOwnersArray(String[][] projectOwnersArray) {
-        this.projectOwnersArray = projectOwnersArray;
-    }
-
-    public String[][] getProjectLeadersArray() {
-        return projectLeadersArray;
-    }
-
-    public void setProjectLeadersArray(String[][] projectLeadersArray) {
-        this.projectLeadersArray = projectLeadersArray;
-    }
-
-    public String getProjectColor() {
-        return projectColor;
-    }
-
-    public void setProjectColor(String projectColor) {
-        this.projectColor = projectColor;
-    }
-
-    public Confidentiality getConfidentialityLevel() {
-        return confidentialityLevel;
-    }
-
-    public void setConfidentialityLevel(Confidentiality confidentialityLevel) {
-        this.confidentialityLevel = confidentialityLevel;
-    }
-
     public List<PlanType> getPlanType() {
         if (planType == null) {
             return new ArrayList<>();
         }
         return planType;
-    }
-
-    public void setPlanType(List<PlanType> planType) {
-        this.planType = planType;
-    }
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
-
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
-    }
-
-    public String[][] getPriority() {
-        return priority;
-    }
-
-    public void setPriority(String[][] priority) {
-        this.priority = priority;
-    }
-
-    public ProjectPhase getProjectPhase() {
-        return projectPhase;
-    }
-
-    public void setProjectPhase(ProjectPhase projectPhase) {
-        this.projectPhase = projectPhase;
-    }
-
-    public String[][] getMunicipalityRole() {
-        return municipalityRole;
-    }
-
-    public void setMunicipalityRole(String[][] municipalityRole) {
-        this.municipalityRole = municipalityRole;
     }
 
     public List<PlanStatus> getPlanningPlanStatus() {
@@ -204,39 +110,4 @@ public class ProjectListSqlModel {
         return planningPlanStatus;
     }
 
-    public void setPlanningPlanStatus(List<PlanStatus> planningPlanStatus) {
-        this.planningPlanStatus = planningPlanStatus;
-    }
-
-    public Long getTotalValue() {
-        return totalValue;
-    }
-
-    public void setTotalValue(Long totalValue) {
-        this.totalValue = totalValue;
-    }
-
-    public String[][] getMunicipality() {
-        return municipality;
-    }
-
-    public void setMunicipality(String[][] municipality) {
-        this.municipality = municipality;
-    }
-
-    public String[][] getWijk() {
-        return wijk;
-    }
-
-    public void setWijk(String[][] wijk) {
-        this.wijk = wijk;
-    }
-
-    public String[][] getBuurt() {
-        return buurt;
-    }
-
-    public void setBuurt(String[][] buurt) {
-        this.buurt = buurt;
-    }
 }
