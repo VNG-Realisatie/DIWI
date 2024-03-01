@@ -2,11 +2,35 @@ import { List, ListItem, ListItemText } from "@mui/material";
 import { Organization, Project } from "../api/projectsServices";
 import { OrganizationUserAvatars } from "./OrganizationUserAvatars";
 import { useTranslation } from "react-i18next";
-import { Fragment } from "react";
+import { Fragment, ReactNode } from "react";
 
 type Props = {
     project: Project | null;
 };
+
+const DetailListItem = ({ children, property }: { children: ReactNode; property: string }) => {
+    return (
+        <>
+            <ListItem
+                sx={{
+                    backgroundColor: "#738092",
+                    color: "#FFFFFF",
+                    border: "solid 1px #ddd",
+                }}
+            >
+                <ListItemText primary={property} />
+            </ListItem>
+            <ListItem
+                sx={{
+                    border: "solid 1px #ddd",
+                }}
+            >
+                {children}
+            </ListItem>
+        </>
+    );
+};
+
 export const Details = ({ project }: Props) => {
     const { t } = useTranslation();
 
@@ -58,25 +82,18 @@ export const Details = ({ project }: Props) => {
                                 >
                                     {/* Temporary hack, should show all data when we start working on map */}
                                     {typeof value === "string" && <ListItemText primary={getTranslatedText(property, value)} />}
-                                    {typeof value === "object" &&
-                                        (property === "projectOwners" || property === "projectLeaders"
-                                            ? value.length > 0 && <OrganizationUserAvatars organizations={value as Organization[]} />
-                                            : value.length > 0 && (
-                                                  <List>
-                                                      {value.map((content) => {
-                                                          if (typeof content === "string") {
-                                                              return <ListItem key={content}>{getTranslatedText(property, content)}</ListItem>;
-                                                          }
-                                                          return <></>;
-                                                      })}
-                                                  </List>
-                                              ))}
                                 </ListItem>
                             </Fragment>
                         );
                     }
                     return <Fragment key={property} />;
                 })}
+            <DetailListItem property="projectOwners">
+                <OrganizationUserAvatars organizations={project?.projectOwners} />
+            </DetailListItem>
+            <DetailListItem property="projectLeaders">
+                <OrganizationUserAvatars organizations={project?.projectLeaders} />
+            </DetailListItem>
         </List>
     );
 };

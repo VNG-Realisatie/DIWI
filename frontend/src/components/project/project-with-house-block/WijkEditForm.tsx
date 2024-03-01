@@ -31,7 +31,7 @@ export const WijkEditForm = ({ selectedWijk, setSelectedWijk }: Props) => {
             size="small"
             id="wijk-checkbox"
             multiple
-            value={selectedWijk.length > 0 ? selectedWijk : selectedProject?.wijk ? selectedProject?.wijk : []}
+            value={selectedProject?.wijk?.map((w) => w.name) || []}
             onChange={handleWijkChange}
             input={<OutlinedInput />}
             renderValue={(selected) => selected.join(", ")}
@@ -43,7 +43,7 @@ export const WijkEditForm = ({ selectedWijk, setSelectedWijk }: Props) => {
                         checked={
                             selectedWijk.length > 0
                                 ? selectedWijk.indexOf(wijk.name) > -1
-                                : selectedProject?.wijk && selectedProject.wijk.indexOf(wijk.name) > -1
+                                : selectedProject?.wijk && selectedProject.wijk.findIndex((w) => w.name === wijk.name) > -1
                         }
                     />
                     <ListItemText primary={wijk.name} />

@@ -16,7 +16,7 @@ export const MunicipalityRoleCell = ({ cellValues, selectedMunicipalityRole, han
     const [municipalityRolesOptions, setMunicipalityRolesOptions] = useState<OptionType[]>();
     const { t } = useTranslation();
 
-    const defaultPlanTypes = cellValues.row.municipalityRole.map((c) => ({ id: c, name: c }));
+    const defaultPlanTypes = cellValues.row.municipalityRole || [];
     const findSelected = selectedMunicipalityRole.find((s) => s.id === cellValues.row.projectId);
     const selectedOption = findSelected ? findSelected.option : [];
 

@@ -16,7 +16,7 @@ export const MunicipalityCell = ({ cellValues, selectedMunicipality, handleMunic
     const [municipalityOptions, setMunicipalityOptions] = useState<ProductTableOption[]>([]);
     const { t } = useTranslation();
 
-    const defaultPlanTypes = cellValues.row.municipality?.map((c) => ({ id: c, name: c }));
+    const defaultPlanTypes = cellValues.row.municipality || [];
     const findSelected = selectedMunicipality?.find((s) => s.id === cellValues.row.projectId);
     const selectedOption = findSelected ? findSelected.option : [];
 

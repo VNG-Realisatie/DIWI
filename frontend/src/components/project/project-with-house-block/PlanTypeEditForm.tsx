@@ -34,7 +34,9 @@ export const PlanTypeEditForm = ({ planType, setPlanType }: Props) => {
             {planTypeOptions.map((pt) => (
                 <MenuItem key={pt.id} value={pt.id}>
                     <Checkbox
-                        checked={planType.length > 0 ? planType.indexOf(pt.id) > -1 : selectedProject?.planType && selectedProject.planType.indexOf(pt.id) > -1}
+                        checked={
+                            planType.length > 0 ? planType.indexOf(pt.id) > -1 : selectedProject?.planType && selectedProject.planType.indexOf(pt.name) !== -1
+                        }
                     />
                     <ListItemText primary={t(`projectTable.planTypeOptions.${pt.name}`)} />
                 </MenuItem>

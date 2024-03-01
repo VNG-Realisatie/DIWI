@@ -14,7 +14,7 @@ type Props = {
 export const PlanningPlanStatusCell = ({ cellValues, selectedPlanStatus, handleStatusChange }: Props) => {
     const { t } = useTranslation();
 
-    const defaultPlanTypes = cellValues.row.planningPlanStatus.map((c) => ({ id: c, name: c }));
+    const defaultPlanTypes = cellValues.row.planningPlanStatus?.map((c) => ({ id: c, name: c })) || [];
     const findSelected = selectedPlanStatus.find((s) => s.id === cellValues.row.projectId);
     const selectedOption = findSelected ? findSelected.option : [];
     const translatedOption = planningPlanStatus.map((p) => {
