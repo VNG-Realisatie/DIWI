@@ -4,7 +4,6 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.stream.Stream;
 
-import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.metamodel.Metamodel;
 import nl.vng.diwi.config.ProjectConfig;
 import org.apache.logging.log4j.LogManager;
