@@ -1,19 +1,19 @@
 package nl.vng.diwi.dal.entities;
 
+import lombok.Getter;
+import lombok.Setter;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.entities.superclasses.ChangeDataSuperclass;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "user_state", schema = GenericRepository.VNG_SCHEMA_NAME)
-@Data
-@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
 @NoArgsConstructor
 public class UserState extends ChangeDataSuperclass {
 

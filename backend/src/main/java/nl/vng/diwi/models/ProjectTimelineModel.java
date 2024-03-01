@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper=true)
+@EqualsAndHashCode(callSuper = true)
 public class ProjectTimelineModel extends DatedDataModelSuperClass {
     private UUID projectId;
     private List<DatedDataModel<String>> projectName = new ArrayList<>();

@@ -83,7 +83,7 @@ public class DalFactory implements AutoCloseable {
     }
 
     public Stream<String> getTableNames() {
-        Metamodel m = ((EntityManagerFactory) sessionFactory).getMetamodel();
+        Metamodel m = sessionFactory.getMetamodel();
         return m.getEntities().stream().filter(e -> {
             int modifiers = e.getJavaType().getModifiers();
             return !Modifier.isAbstract(modifiers);
