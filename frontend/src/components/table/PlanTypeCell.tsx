@@ -27,10 +27,12 @@ export const PlanTypeCell = ({ cellValues, selectedPlanTypes, handlePlanTypeChan
             selected={selectedOption}
             options={translatedOption}
             tagLimit={2}
-            defaultOptionValues={defaultPlanTypes}
+            defaultOptionValues={defaultPlanTypes ? defaultPlanTypes : []}
             inputLabel={t("projects.tableColumns.planType")}
             placeHolder={t("projects.tableColumns.selectPlanType")}
-            handleChange={(_: React.ChangeEvent<{}>, values: OptionType[]) => handlePlanTypeChange(_, values, cellValues.row.projectId)}
+            handleChange={(_: React.ChangeEvent<{}>, values: OptionType[]) =>
+                cellValues.row.projectId && handlePlanTypeChange(_, values, cellValues.row.projectId)
+            }
             width="500px"
         />
     );

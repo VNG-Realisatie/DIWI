@@ -16,14 +16,18 @@ export const ConfidentialityLevelEditForm = ({ confidentialityLevel, setConfiden
         setConfidentialityLevel(event.target.value as string);
     };
 
+    const confidentialityLevelInputValue = () => {
+        if (confidentialityLevel) {
+            return confidentialityLevel;
+        } else if (selectedProject) {
+            if (selectedProject.confidentialityLevel !== null && selectedProject.confidentialityLevel !== undefined) {
+                return selectedProject.confidentialityLevel;
+            }
+        }
+    };
+
     return (
-        <Select
-            fullWidth
-            size="small"
-            id="confidentiality-level-select"
-            value={confidentialityLevel ? confidentialityLevel : selectedProject?.confidentialityLevel}
-            onChange={handleConfidentialityLevelChange}
-        >
+        <Select fullWidth size="small" id="confidentiality-level-select" value={confidentialityLevelInputValue()} onChange={handleConfidentialityLevelChange}>
             {confidentialityLevelOptions.map((ppo) => {
                 return (
                     <MenuItem key={ppo.id} value={ppo.id}>

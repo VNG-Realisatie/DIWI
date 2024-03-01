@@ -18,14 +18,18 @@ export const PhaseEditForm = ({ projectPhase, setProjectPhase }: Props) => {
         }
     };
 
+    const projectPhaseInputValue = () => {
+        if (projectPhase) {
+            return projectPhase;
+        } else if (selectedProject) {
+            if (selectedProject.projectPhase !== null && selectedProject.projectPhase !== undefined) {
+                return selectedProject.projectPhase;
+            }
+        }
+    };
+
     return (
-        <Select
-            fullWidth
-            size="small"
-            id="project-phase-select"
-            value={projectPhase ? projectPhase : selectedProject?.projectPhase}
-            onChange={handleProjectPhaseChange}
-        >
+        <Select fullWidth size="small" id="project-phase-select" value={projectPhaseInputValue()} onChange={handleProjectPhaseChange}>
             {projectPhaseOptions.map((ppo) => {
                 return (
                     <MenuItem key={ppo.id} value={ppo.id}>

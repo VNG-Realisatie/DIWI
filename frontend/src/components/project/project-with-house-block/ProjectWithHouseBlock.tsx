@@ -1,8 +1,9 @@
-import { AvatarGroup, Box, Grid, Popover, Stack, TextField, Typography } from "@mui/material";
+import { AvatarGroup, Box, Grid, Popover, Stack, TextField, Tooltip, Typography } from "@mui/material";
 import { MouseEvent, useContext, useState } from "react";
 import ProjectContext from "../../../context/ProjectContext";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
+import ClearIcon from "@mui/icons-material/Clear";
 import FormatColorFillIcon from "@mui/icons-material/FormatColorFill";
 import { useTranslation } from "react-i18next";
 import { DatePicker } from "@mui/x-date-pickers";
@@ -39,7 +40,7 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
     const { selectedProject } = useContext(ProjectContext);
     const [projectEditable, setProjectEditable] = useState(false);
     const [openColorDialog, setOpenColorDialog] = useState(false);
-    const [name, setName] = useState<string | undefined>();
+    const [name, setName] = useState<string | null>();
     const [startDate, setStartDate] = useState<Dayjs | null>();
     const [endDate, setEndDate] = useState<Dayjs | null>();
     const [projectPhase, setProjectPhase] = useState<string | undefined>();
@@ -56,31 +57,69 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
 
     const handleEndDateChange = (newValue: Dayjs | null) => setEndDate(newValue);
 
+    const handleCancelChange = () => {
+        setProjectEditable(false);
+        setName(selectedProject?.projectName);
+        //todo owner will be added later
+        setPlanType([]);
+        setStartDate(null);
+        setEndDate(null);
+        //todo priority will be added later
+        setProjectPhase(undefined);
+        setSelectedMunicipalityRole([]);
+        setConfidentialityLevel(undefined);
+        //todo add projectleader later
+        setPlanStatus([]);
+        setSelectedMunicipality([]);
+        setSelectedBuurt([]);
+        setSelectedWijk([]);
+        selectedProject?.projectColor && setSelectedProjectColor(selectedProject?.projectColor);
+    };
+
     const { t } = useTranslation();
+
     const handleColorChange = (newColor: ColorResult) => {
         const newColorString = `rgba(${newColor.rgb.r}, ${newColor.rgb.g}, ${newColor.rgb.b}, ${newColor.rgb.a})`;
         setSelectedProjectColor(newColorString);
     };
+
     const handleButtonClick = (event: MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };
+
     const handleClose = () => {
         setAnchorEl(null);
     };
+
     const open = Boolean(anchorEl);
 
     return (
         <Stack my={1} p={1} mb={10}>
             <Box sx={{ cursor: "pointer" }} position="absolute" right={10} top={55} zIndex={9999}>
-                <FormatColorFillIcon
-                    sx={{ mr: 2, color: "#FFFFFF" }}
-                    onClick={(event: any) => {
-                        setOpenColorDialog(true);
-                        handleButtonClick(event);
-                    }}
-                />
-                {!projectEditable && <EditIcon sx={{ color: "#FFFFFF" }} onClick={() => setProjectEditable(true)} />}
-                {projectEditable && <SaveIcon sx={{ color: "#FFFFFF" }} onClick={() => setProjectEditable(false)} />}
+                <Tooltip placement="top" title={t("projectDetail.colorEdit")}>
+                    <FormatColorFillIcon
+                        sx={{ mr: 2, color: "#FFFFFF" }}
+                        onClick={(event: any) => {
+                            setOpenColorDialog(true);
+                            handleButtonClick(event);
+                        }}
+                    />
+                </Tooltip>
+                {!projectEditable && (
+                    <Tooltip placement="top" title={t("generic.edit")}>
+                        <EditIcon sx={{ color: "#FFFFFF" }} onClick={() => setProjectEditable(true)} />
+                    </Tooltip>
+                )}
+                {projectEditable && (
+                    <>
+                        <Tooltip placement="top" title={t("generic.cancelChanges")}>
+                            <ClearIcon sx={{ mr: 2, color: "#FFFFFF" }} onClick={handleCancelChange} />
+                        </Tooltip>
+                        <Tooltip placement="top" title={t("generic.saveChanges")}>
+                            <SaveIcon sx={{ color: "#FFFFFF" }} onClick={() => setProjectEditable(false)} />
+                        </Tooltip>
+                    </>
+                )}
             </Box>
             <Stack>
                 {/* List project properties */}

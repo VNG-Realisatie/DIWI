@@ -43,7 +43,7 @@ export const BuurtEditForm = ({ selectedBuurt, setSelectedBuurt }: Props) => {
                         checked={
                             selectedBuurt.length > 0
                                 ? selectedBuurt.indexOf(buurt.name) > -1
-                                : selectedProject?.buurt && selectedProject.buurt.indexOf(buurt.name) > -1
+                                : selectedProject?.buurt !== undefined && selectedProject?.buurt !== null && selectedProject.buurt.indexOf(buurt.name) > -1
                         }
                     />
                     <ListItemText primary={buurt.name} />

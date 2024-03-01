@@ -5,7 +5,10 @@
       "no": "Nee",
       "save": "Opslaan",
       "next": "Volgende",
-      "previous": "Vorig"
+      "previous": "Vorig",
+      "cancelChanges":"Stop veranderingen",
+      "saveChanges":"Opslaan veranderingen",
+      "edit":"Bewerken"
     },
     "createProject": {
       "information": "Project informatie",
@@ -120,7 +123,8 @@
       "title": "Project",
       "map": "Kaart",
       "characteristics": "Eigenschappen",
-      "timeline": "Tijdlijn"
+      "timeline": "Tijdlijn",
+      "colorEdit":"Kleur bewerken"
     },
     "exchangeData": {
       "title": "Data uitwisselen",
