@@ -8,6 +8,7 @@ import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import org.apache.commons.lang3.EnumUtils;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,7 +27,9 @@ public class ProjectUpdateModel {
         projectColor,
         projectLeaders,
         projectOwners,
-        projectPhase;
+        projectPhase,
+        startDate, //do not change the order - startDate and endDate must be the last ones
+        endDate;  //do not change the order - startDate and endDate must be the last ones
     }
 
     private ProjectProperty property;
@@ -61,6 +64,25 @@ public class ProjectUpdateModel {
         }
 
         return switch (property) {
+            case startDate -> {
+                try {
+                    LocalDate.parse(value);
+                } catch (Exception ex) {
+                    yield "Date provided is not valid.";
+                }
+                yield null;
+            }
+            case endDate -> {
+                try {
+                    LocalDate endDate = LocalDate.parse(value);
+                    if (!endDate.isAfter(LocalDate.now())) {
+                        yield "Project end date must be in the future.";
+                    }
+                } catch (Exception ex) {
+                    yield "Date provided is not valid.";
+                }
+                yield null;
+            }
             case confidentialityLevel ->
                 (value == null || !EnumUtils.isValidEnum(Confidentiality.class, value)) ? "New confidentiality level value is not valid." : null;
             case name -> (value == null || value.isBlank()) ? "New project name value is not valid." : null; // TODO

@@ -151,7 +151,7 @@ public class ProjectsResource {
         throws VngNotFoundException, VngBadRequestException, VngServerErrorException {
 
         UUID projectUuid = projectSnapshotModelToUpdate.getProjectId();
-        Project project = repo.findById(Project.class, projectUuid);
+        Project project = projectService.getCurrentProject(repo, projectUuid);
         if (project == null) {
             throw new VngNotFoundException();
         }
@@ -239,6 +239,18 @@ public class ProjectsResource {
                         projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectPhase, projectSnapshotModelToUpdate.getProjectPhase().name()));
                     }
                 }
+                case startDate -> {
+                    LocalDate newStartDate = projectSnapshotModelToUpdate.getStartDate();
+                    if (!Objects.equals(newStartDate, projectSnapshotModelCurrent.getStartDate())) {
+                        projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.startDate, (newStartDate == null) ? null : newStartDate.toString()));
+                    }
+                }
+                case endDate -> {
+                    LocalDate newEndDate = projectSnapshotModelToUpdate.getEndDate();
+                    if (!Objects.equals(newEndDate, projectSnapshotModelCurrent.getEndDate())) {
+                        projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.endDate, (newEndDate == null) ? null : newEndDate.toString()));
+                    }
+                }
                 default -> throw new VngServerErrorException(String.format("Project property not implemented %s ", projectProperty));
             }
         }
@@ -264,6 +276,8 @@ public class ProjectsResource {
         throws VngNotFoundException, VngServerErrorException, VngBadRequestException {
 
         switch (projectUpdateModel.getProperty()) {
+            case startDate -> projectService.updateProjectDuration(repo, project, LocalDate.parse(projectUpdateModel.getValue()), null, loggedUser.getUuid());
+            case endDate -> projectService.updateProjectDuration(repo, project, null, LocalDate.parse(projectUpdateModel.getValue()), loggedUser.getUuid());
             case confidentialityLevel -> {
                 Confidentiality newConfidentiality = Confidentiality.valueOf(projectUpdateModel.getValue());
                 projectService.updateProjectConfidentialityLevel(repo, project, newConfidentiality, loggedUser.getUuid());
