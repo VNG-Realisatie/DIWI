@@ -1,7 +1,5 @@
-
 import { getJson, postJson, deleteJson } from "../utils/requests";
 import { components } from "../types/schema";
-import { getJson, postJson } from "../utils/requests";
 import { API_URI } from "../utils/urls";
 
 export type Organization = components["schemas"]["OrganizationModel"];
