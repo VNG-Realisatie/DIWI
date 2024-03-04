@@ -23,6 +23,7 @@ import { defaultColors } from "../../ColorSelector";
 import { BlockPicker, ColorResult } from "react-color";
 import { CellContainer } from "./CellContainer";
 import { OrganizationUserAvatars } from "../../OrganizationUserAvatars";
+import { PlanStatusOptions, PlanTypeOptions } from "../../../types/enums";
 // import { ProjectHouseBlockCardItem } from "./ProjectHouseBlockCardItem";
 
 type Props = {
@@ -45,8 +46,8 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
     const [endDate, setEndDate] = useState<Dayjs | null>();
     const [projectPhase, setProjectPhase] = useState<string | undefined>();
     const [confidentialityLevel, setConfidentialityLevel] = useState<string | undefined>();
-    const [planType, setPlanType] = useState<string[]>([]);
-    const [planStatus, setPlanStatus] = useState<string[]>([]);
+    const [planType, setPlanType] = useState<PlanTypeOptions[]>([]);
+    const [planStatus, setPlanStatus] = useState<PlanStatusOptions[]>([]);
     const [selectedMunicipalityRole, setSelectedMunicipalityRole] = useState<string[]>([]);
     const [selectedMunicipality, setSelectedMunicipality] = useState<string[]>([]);
     const [selectedBuurt, setSelectedBuurt] = useState<string[]>([]);

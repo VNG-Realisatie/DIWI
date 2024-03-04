@@ -1,8 +1,8 @@
 import { List, ListItem, ListItemText } from "@mui/material";
-import { Organization, Project } from "../api/projectsServices";
-import { OrganizationUserAvatars } from "./OrganizationUserAvatars";
-import { useTranslation } from "react-i18next";
 import { Fragment, ReactNode } from "react";
+import { useTranslation } from "react-i18next";
+import { Project } from "../api/projectsServices";
+import { OrganizationUserAvatars } from "./OrganizationUserAvatars";
 
 type Props = {
     project: Project | null;

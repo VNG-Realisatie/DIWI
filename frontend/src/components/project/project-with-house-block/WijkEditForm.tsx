@@ -30,7 +30,7 @@ export const WijkEditForm = ({ selectedWijk, setSelectedWijk }: Props) => {
             return selectedWijk.indexOf(inputName) !== -1;
         } else if (selectedProject) {
             if (selectedProject.wijk !== null && selectedProject.wijk !== undefined) {
-                return selectedProject.wijk.indexOf(inputName) !== -1;
+                return selectedProject.wijk.findIndex((w) => w.name === inputName) !== -1;
             }
         }
     };

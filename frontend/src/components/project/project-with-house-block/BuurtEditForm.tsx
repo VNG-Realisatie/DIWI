@@ -1,9 +1,8 @@
 import { Checkbox, ListItemText, MenuItem, OutlinedInput, Select, SelectChangeEvent } from "@mui/material";
-import { MenuProps } from "../../../utils/menuProps";
-import { useContext, useEffect, useState } from "react";
-import ProjectContext from "../../../context/ProjectContext";
-import { OptionType } from "../ProjectsTableView";
+import { useEffect, useState } from "react";
 import { getBuurtList } from "../../../api/projectsTableServices";
+import { MenuProps } from "../../../utils/menuProps";
+import { OptionType } from "../ProjectsTableView";
 
 type Props = {
     selectedBuurt: string[];
@@ -12,7 +11,6 @@ type Props = {
 
 export const BuurtEditForm = ({ selectedBuurt, setSelectedBuurt }: Props) => {
     const [buurtOptions, setBuurtOptions] = useState<OptionType[]>();
-    const { selectedProject } = useContext(ProjectContext);
 
     const handleBuurtChange = (event: SelectChangeEvent<typeof selectedBuurt>) => {
         const {
@@ -31,7 +29,7 @@ export const BuurtEditForm = ({ selectedBuurt, setSelectedBuurt }: Props) => {
             size="small"
             id="buurt-checkbox"
             multiple
-            value={selectedBuurt.length > 0 ? selectedBuurt : selectedProject?.buurt ? selectedProject?.buurt : []}
+            value={selectedBuurt}
             onChange={handleBuurtChange}
             input={<OutlinedInput />}
             renderValue={(selected) => selected.join(", ")}
@@ -39,13 +37,7 @@ export const BuurtEditForm = ({ selectedBuurt, setSelectedBuurt }: Props) => {
         >
             {buurtOptions?.map((buurt) => (
                 <MenuItem key={buurt.id} value={buurt.name}>
-                    <Checkbox
-                        checked={
-                            selectedBuurt.length > 0
-                                ? selectedBuurt.indexOf(buurt.name) > -1
-                                : selectedProject?.buurt !== undefined && selectedProject?.buurt !== null && selectedProject.buurt.indexOf(buurt.name) > -1
-                        }
-                    />
+                    <Checkbox checked={selectedBuurt.indexOf(buurt.name) > -1} />
                     <ListItemText primary={buurt.name} />
                 </MenuItem>
             ))}
