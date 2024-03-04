@@ -23,6 +23,7 @@ import { defaultColors } from "../../ColorSelector";
 import { BlockPicker, ColorResult } from "react-color";
 import { CellContainer } from "./CellContainer";
 import { OrganizationUserAvatars } from "../../OrganizationUserAvatars";
+import { PlanStatusOptions, PlanTypeOptions } from "../../../types/enums";
 // import { ProjectHouseBlockCardItem } from "./ProjectHouseBlockCardItem";
 
 type Props = {
@@ -45,8 +46,8 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
     const [endDate, setEndDate] = useState<Dayjs | null>();
     const [projectPhase, setProjectPhase] = useState<string | undefined>();
     const [confidentialityLevel, setConfidentialityLevel] = useState<string | undefined>();
-    const [planType, setPlanType] = useState<string[]>([]);
-    const [planStatus, setPlanStatus] = useState<string[]>([]);
+    const [planType, setPlanType] = useState<PlanTypeOptions[]>([]);
+    const [planStatus, setPlanStatus] = useState<PlanStatusOptions[]>([]);
     const [selectedMunicipalityRole, setSelectedMunicipalityRole] = useState<string[]>([]);
     const [selectedMunicipality, setSelectedMunicipality] = useState<string[]>([]);
     const [selectedBuurt, setSelectedBuurt] = useState<string[]>([]);
@@ -158,7 +159,7 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
                                     ? planType.map((pt: string) => {
                                           return <span key={pt}>{t(`projectTable.planTypeOptions.${pt}`)},</span>;
                                       })
-                                    : selectedProject?.planType?.map((pt: string) => {
+                                    : selectedProject?.planType?.map((pt) => {
                                           return <span key={pt}>{t(`projectTable.planTypeOptions.${pt}`)},</span>;
                                       })}
                             </Typography>
@@ -199,9 +200,7 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
 
                         {!projectEditable ? (
                             <CellContainer>
-                                {selectedProject?.priority?.map((p: string) => {
-                                    return <span key={p}>{p},</span>;
-                                })}
+                                <span key={selectedProject?.priority?.value?.id}>{selectedProject?.priority?.value?.name},</span>
                             </CellContainer>
                         ) : (
                             // TODO Implement later
@@ -228,8 +227,8 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
                                     ? selectedMunicipalityRole.map((mr: string) => {
                                           return <span key={mr}>{mr}</span>;
                                       })
-                                    : selectedProject?.municipalityRole?.map((mr: string) => {
-                                          return <span key={mr}>{mr}</span>;
+                                    : selectedProject?.municipalityRole?.map((mr) => {
+                                          return <span key={mr.id}>{mr.name}</span>;
                                       })}
                             </CellContainer>
                         ) : (
@@ -275,7 +274,7 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
                                     ? planStatus.map((pp: string) => {
                                           return <span key={pp}>{t(`projectTable.planningPlanStatus.${pp}`)}</span>;
                                       })
-                                    : selectedProject?.planningPlanStatus?.map((pp: string) => {
+                                    : selectedProject?.planningPlanStatus?.map((pp) => {
                                           return <span key={pp}>{t(`projectTable.planningPlanStatus.${pp}`)}</span>;
                                       })}
                             </Typography>
@@ -292,8 +291,8 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
                                     ? selectedMunicipality.map((municipality: string) => {
                                           return <span key={municipality}>{municipality},</span>;
                                       })
-                                    : selectedProject?.municipality?.map((municipality: string) => {
-                                          return <span key={municipality}>{municipality},</span>;
+                                    : selectedProject?.municipality?.map((municipality) => {
+                                          return <span key={municipality.id}>{municipality.name},</span>;
                                       })}
                             </Typography>
                         ) : (
@@ -309,8 +308,8 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
                                     ? selectedBuurt.map((buurt: string) => {
                                           return <span key={buurt}>{buurt},</span>;
                                       })
-                                    : selectedProject?.buurt?.map((buurt: string) => {
-                                          return <span key={buurt}>{buurt},</span>;
+                                    : selectedProject?.buurt?.map((buurt) => {
+                                          return <span key={buurt.id}>{buurt.name},</span>;
                                       })}
                             </Typography>
                         ) : (
@@ -326,8 +325,8 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
                                     ? selectedWijk.map((wijk: string) => {
                                           return <span key={wijk}>{wijk},</span>;
                                       })
-                                    : selectedProject?.wijk?.map((wijk: string) => {
-                                          return <span key={wijk}>{wijk},</span>;
+                                    : selectedProject?.wijk?.map((wijk) => {
+                                          return <span key={wijk.id}>{wijk.name},</span>;
                                       })}
                             </Typography>
                         ) : (

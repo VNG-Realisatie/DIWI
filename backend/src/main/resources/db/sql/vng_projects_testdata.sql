@@ -3,9 +3,7 @@
 --
 
 INSERT INTO diwi_testset.organization (id) VALUES ('a0fd243b-667b-428e-a3f1-bb0fcee141d9');
-INSERT INTO diwi_testset.organization (id) VALUES ('018d187d-597f-7a5c-ad30-f380804274d3');
 INSERT INTO diwi_testset.organization (id) VALUES ('018d1d85-639f-701c-b73f-0f35f98409bc');
-INSERT INTO diwi_testset.organization (id) VALUES ('018d1d8f-4bcb-7b31-a392-25b5ef963c70');
 
 --
 -- Data for Name: user; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
@@ -55,9 +53,9 @@ INSERT INTO diwi_testset.milestone (id, project_id) VALUES ('07f3a0ad-f76a-4dd9-
 INSERT INTO diwi_testset.milestone (id, project_id) VALUES ('ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '54a0c192-3454-4f7a-becd-96d214461987');
 INSERT INTO diwi_testset.milestone (id, project_id) VALUES ('342887ab-2106-45c4-9565-a4b83f4d3362', '54a0c192-3454-4f7a-becd-96d214461987');
 INSERT INTO diwi_testset.milestone (id, project_id) VALUES ('7c6bfe67-6618-4a6a-9507-2cd15f88c11f', '54a0c192-3454-4f7a-becd-96d214461987');
-INSERT INTO diwi_testset.milestone (id, project_id) VALUES ('1c155b85-29e3-4fec-85a2-96bda344fe8a', '54a0c192-3454-4f7a-becd-96d214461987');
-INSERT INTO diwi_testset.milestone (id, project_id) VALUES ('529ca978-1d23-418a-a94c-bd219454a587', '54a0c192-3454-4f7a-becd-96d214461987');
-INSERT INTO diwi_testset.milestone (id, project_id) VALUES ('4237d087-3d45-4acf-a1a6-0a67b754608e', '54a0c192-3454-4f7a-becd-96d214461987');
+INSERT INTO diwi_testset.milestone (id, project_id) VALUES ('1c155b85-29e3-4fec-85a2-96bda344fe8a', '5c9fbb50-d8fd-480d-9e38-7f3b391d3110');
+INSERT INTO diwi_testset.milestone (id, project_id) VALUES ('529ca978-1d23-418a-a94c-bd219454a587', '5c9fbb50-d8fd-480d-9e38-7f3b391d3110');
+INSERT INTO diwi_testset.milestone (id, project_id) VALUES ('4237d087-3d45-4acf-a1a6-0a67b754608e', '5c9fbb50-d8fd-480d-9e38-7f3b391d3110');
 
 --
 -- Data for Name: gemeente; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
@@ -94,6 +92,7 @@ INSERT INTO diwi_testset.milestone_state (id, milestone_id, date, create_user_id
 --
 
 INSERT INTO diwi_testset.organization_state (id, organization_id, parent_organization_id, naam, change_end_date, change_start_date, create_user_id) VALUES ('4872eac4-9911-47ef-b4d6-62e4e9223926', '018d1d85-639f-701c-b73f-0f35f98409bc', NULL, 'Org1', NULL, '2024-01-10 20:06:32+02', '2122426c-6e70-419c-a054-f51dd24d798b');
+INSERT INTO diwi_testset.organization_state (id, organization_id, parent_organization_id, naam, change_end_date, change_start_date, create_user_id) VALUES ('1272eac4-9911-47ef-b4d6-62e4e0123999', 'a0fd243b-667b-428e-a3f1-bb0fcee141d9', NULL, 'Org2', NULL, '2024-01-10 20:06:32+02', '2122426c-6e70-419c-a054-f51dd24d798b');
 
 
 --

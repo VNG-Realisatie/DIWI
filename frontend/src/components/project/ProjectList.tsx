@@ -18,7 +18,7 @@ export const ProjectList = ({ projectList }: Props) => {
         >
             {projectList.map((project, i) => {
                 return (
-                    <Link to={`${Paths.projects.path}/${project?.id}`} key={project?.id} style={{ textDecoration: "none", color: "black" }}>
+                    <Link to={`${Paths.projects.path}/${project?.projectId}`} key={project?.projectId} style={{ textDecoration: "none", color: "black" }}>
                         <ListItem
                             sx={{
                                 border: "solid 1px #ddd",
@@ -37,7 +37,7 @@ export const ProjectList = ({ projectList }: Props) => {
                                 }}
                                 mr={1}
                             />
-                            <ListItemText primary={project?.name} />
+                            <ListItemText primary={project?.projectName} />
                         </ListItem>
                     </Link>
                 );

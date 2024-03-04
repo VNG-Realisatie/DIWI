@@ -37,10 +37,13 @@ type Props = {
     showCheckBox?: boolean;
 };
 
-export interface OptionType {
-    id: string;
+export interface GenericOptionType<Type> {
+    id: Type;
     name: string;
 }
+
+export type OptionType = GenericOptionType<string>;
+
 export type SelectedOptionWithId = {
     id: string;
     option: OptionType[];

@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import nl.vng.diwi.dal.entities.*;
-import nl.vng.diwi.models.ProjectListModel;
+import nl.vng.diwi.models.ProjectListSqlModel;
 
 public class GenericRepository implements AutoCloseable {
 
@@ -36,7 +36,7 @@ public class GenericRepository implements AutoCloseable {
                 ProjectState.class,
                 User.class,
                 UserState.class,
-                ProjectListModel.class);
+                ProjectListSqlModel.class);
         return entities;
     }
 

@@ -1,9 +1,8 @@
 import { Checkbox, ListItemText, MenuItem, OutlinedInput, Select, SelectChangeEvent } from "@mui/material";
+import { useEffect, useState } from "react";
 import { getMunicipalityRoleList } from "../../../api/projectsTableServices";
-import { useContext, useEffect, useState } from "react";
-import { OptionType } from "../ProjectsTableView";
 import { MenuProps } from "../../../utils/menuProps";
-import ProjectContext from "../../../context/ProjectContext";
+import { OptionType } from "../ProjectsTableView";
 
 type Props = {
     selectedMunicipalityRole: string[];
@@ -12,8 +11,6 @@ type Props = {
 
 export const MunicipalityRoleEditForm = ({ selectedMunicipalityRole, setSelectedMunicipalityRole }: Props) => {
     const [municipalityRolesOptions, setMunicipalityRolesOptions] = useState<OptionType[]>();
-
-    const { selectedProject } = useContext(ProjectContext);
 
     const handleMunicipalityRoleChange = (event: SelectChangeEvent<typeof selectedMunicipalityRole>) => {
         const {
@@ -29,10 +26,6 @@ export const MunicipalityRoleEditForm = ({ selectedMunicipalityRole, setSelected
     const checkControl = (inputName: string) => {
         if (selectedMunicipalityRole.length > 0) {
             return selectedMunicipalityRole.indexOf(inputName) !== -1;
-        } else if (selectedProject) {
-            if (selectedProject.municipality !== null && selectedProject.municipality !== undefined) {
-                return selectedProject.municipality.indexOf(inputName) !== -1;
-            }
         }
     };
 
@@ -42,7 +35,7 @@ export const MunicipalityRoleEditForm = ({ selectedMunicipalityRole, setSelected
             size="small"
             id="municipality-role-checkbox"
             multiple
-            value={selectedMunicipalityRole.length > 0 ? selectedMunicipalityRole : selectedProject?.municipalityRole ? selectedProject?.municipalityRole : []}
+            value={selectedMunicipalityRole}
             onChange={handleMunicipalityRoleChange}
             input={<OutlinedInput />}
             renderValue={(selected) => selected.join(", ")}

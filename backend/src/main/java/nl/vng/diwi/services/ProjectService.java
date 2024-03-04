@@ -9,6 +9,7 @@ import nl.vng.diwi.dal.entities.*;
 import nl.vng.diwi.dal.entities.enums.*;
 import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
 import nl.vng.diwi.models.ProjectListModel;
+import nl.vng.diwi.models.ProjectListSqlModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 
@@ -31,9 +32,9 @@ public class ProjectService {
     }
 
     public List<ProjectListModel> getProjectsTable(VngRepository repo, FilterPaginationSorting filtering) {
-        List<ProjectListModel> projectsTable = repo.getProjectsDAO().getProjectsTable(filtering);
-        projectsTable.forEach(ProjectListModel::processProjectOwnersAndLeadersArrays);
-        return projectsTable;
+        List<ProjectListSqlModel> projectsTable = repo.getProjectsDAO().getProjectsTable(filtering);
+        List<ProjectListModel> result = projectsTable.stream().map(ProjectListModel::new).toList();
+        return result;
     }
 
     public void updateProjectColor(VngRepository repo, Project project, String newColor, UUID loggedInUserUuid)

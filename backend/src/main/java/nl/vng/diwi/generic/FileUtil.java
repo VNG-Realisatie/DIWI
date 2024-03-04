@@ -142,7 +142,7 @@ public class FileUtil
     public static File UrlAsFile(URL url) throws UrlNotAFileUrlException
     {
         String urlString = url.toString();
-        if ((urlString.length() >= 6) && (urlString.substring(0, 6).equals("file:/")))
+        if ((urlString.startsWith("file:/")))
         {
             return new File(urlString.substring(5));
         }

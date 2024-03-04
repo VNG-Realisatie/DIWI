@@ -27,6 +27,8 @@ import nl.vng.diwi.models.ProjectListModel;
 import nl.vng.diwi.models.ProjectSnapshotModel;
 import nl.vng.diwi.models.ProjectTimelineModel;
 import nl.vng.diwi.models.ProjectUpdateModel;
+import nl.vng.diwi.models.ProjectUpdateModel.ProjectProperty;
+import nl.vng.diwi.models.SelectModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
@@ -80,7 +82,7 @@ public class ProjectsResource {
     @GET
     @Path("/{id}/timeline")
     @Produces(MediaType.APPLICATION_JSON)
-    public Object getCurrentProjectTimeline(@PathParam("id") UUID projectUuid) throws VngNotFoundException {
+    public ProjectTimelineModel getCurrentProjectTimeline(@PathParam("id") UUID projectUuid) throws VngNotFoundException {
 
         Project project = projectService.getCurrentProject(repo, projectUuid);
 
@@ -162,68 +164,59 @@ public class ProjectsResource {
                 case confidentialityLevel -> {
                     Confidentiality newConfidentiality = projectSnapshotModelToUpdate.getConfidentialityLevel();
                     if (!Objects.equals(newConfidentiality, projectSnapshotModelCurrent.getConfidentialityLevel())) {
-                        ProjectUpdateModel newUpdateModel = new ProjectUpdateModel();
-                        newUpdateModel.setProperty(ProjectUpdateModel.ProjectProperty.confidentialityLevel);
-                        newUpdateModel.setValue((newConfidentiality == null) ? null : projectSnapshotModelToUpdate.getConfidentialityLevel().name());
-                        projectUpdateModelList.add(newUpdateModel);
+                        projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.confidentialityLevel,
+                            (newConfidentiality == null) ? null : projectSnapshotModelToUpdate.getConfidentialityLevel().name()));
                     }
                 }
                 case name -> {
                     if (!Objects.equals(projectSnapshotModelToUpdate.getProjectName(), projectSnapshotModelCurrent.getProjectName())) {
-                        ProjectUpdateModel newUpdateModel = new ProjectUpdateModel();
-                        newUpdateModel.setProperty(ProjectUpdateModel.ProjectProperty.name);
-                        newUpdateModel.setValue(projectSnapshotModelToUpdate.getProjectName());
-                        projectUpdateModelList.add(newUpdateModel);
+                        projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.name, projectSnapshotModelToUpdate.getProjectName()));
                     }
                 }
                 case projectColor -> {
                     if (!Objects.equals(projectSnapshotModelToUpdate.getProjectColor(), projectSnapshotModelCurrent.getProjectColor())) {
-                        ProjectUpdateModel newUpdateModel = new ProjectUpdateModel();
-                        newUpdateModel.setProperty(ProjectUpdateModel.ProjectProperty.projectColor);
-                        newUpdateModel.setValue(projectSnapshotModelToUpdate.getProjectColor());
-                        projectUpdateModelList.add(newUpdateModel);
+                        projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectColor, projectSnapshotModelToUpdate.getProjectColor()));
                     }
                 }
                 case planningPlanStatus -> {
                     List<PlanStatus> currentPlanStatuses = projectSnapshotModelCurrent.getPlanningPlanStatus();
                     List<PlanStatus> toUpdatePlanStatuses = projectSnapshotModelToUpdate.getPlanningPlanStatus();
                     if (currentPlanStatuses.size() != toUpdatePlanStatuses.size() || !currentPlanStatuses.containsAll(toUpdatePlanStatuses)) {
-                        ProjectUpdateModel newUpdateModel = new ProjectUpdateModel();
-                        newUpdateModel.setProperty(ProjectUpdateModel.ProjectProperty.planningPlanStatus);
-                        newUpdateModel.setValues(toUpdatePlanStatuses.stream().map(PlanStatus::name).toList());
-                        projectUpdateModelList.add(newUpdateModel);
+                        projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.planningPlanStatus, toUpdatePlanStatuses.stream().map(PlanStatus::name).toList()));
                     }
                 }
                 case planType -> {
                     List<PlanType> currentPlanTypes = projectSnapshotModelCurrent.getPlanType();
                     List<PlanType> toUpdatePlanTypes = projectSnapshotModelToUpdate.getPlanType();
                     if (currentPlanTypes.size() != toUpdatePlanTypes.size() || !currentPlanTypes.containsAll(toUpdatePlanTypes)) {
-                        ProjectUpdateModel newUpdateModel = new ProjectUpdateModel();
-                        newUpdateModel.setProperty(ProjectUpdateModel.ProjectProperty.planType);
-                        newUpdateModel.setValues(toUpdatePlanTypes.stream().map(PlanType::name).toList());
-                        projectUpdateModelList.add(newUpdateModel);
+                        projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.planType, toUpdatePlanTypes.stream().map(PlanType::name).toList()));
                     }
                 }
                 case municipalityRole -> {
-                    //TODO
+                    List<UUID> currentMunicipalityRolesIds = projectSnapshotModelCurrent.getMunicipalityRole().stream().map(SelectModel::getId).toList();
+                    List<UUID> toUpdateMunicipalityRolesIds = projectSnapshotModelToUpdate.getMunicipalityRole().stream().map(SelectModel::getId).toList();
+                    currentMunicipalityRolesIds.forEach(id -> {
+                        if (!toUpdateMunicipalityRolesIds.contains(id)) {
+                            projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.municipalityRole, null, id.toString()));
+                        }
+                    });
+                    toUpdateMunicipalityRolesIds.forEach(id -> {
+                        if (!currentMunicipalityRolesIds.contains(id)) {
+                            projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.municipalityRole, id.toString(), null));
+                        }
+                    });
                 }
                 case projectLeaders -> {
                     List<UUID> currentLeadersUuids = projectSnapshotModelCurrent.getProjectLeaders().stream().map(OrganizationModel::getUuid).toList();
                     List<UUID> toUpdateLeadersUuids = projectSnapshotModelToUpdate.getProjectLeaders().stream().map(OrganizationModel::getUuid).toList();
                     currentLeadersUuids.forEach(uuid -> {
                         if (!toUpdateLeadersUuids.contains(uuid)) {
-                            ProjectUpdateModel newUpdateModel = new ProjectUpdateModel();
-                            newUpdateModel.setProperty(ProjectUpdateModel.ProjectProperty.projectOwners);
-                            newUpdateModel.setRemove(uuid.toString());
-                            projectUpdateModelList.add(newUpdateModel);
+                            projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectLeaders, null, uuid.toString()));
                         }
                     });
                     toUpdateLeadersUuids.forEach(uuid -> {
                         if (!currentLeadersUuids.contains(uuid)) {
-                            ProjectUpdateModel newUpdateModel = new ProjectUpdateModel();
-                            newUpdateModel.setProperty(ProjectUpdateModel.ProjectProperty.projectOwners);
-                            newUpdateModel.setAdd(uuid.toString());
-                            projectUpdateModelList.add(newUpdateModel);
+                            projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectLeaders, uuid.toString(), null));
                         }
                     });
                 }
@@ -232,27 +225,18 @@ public class ProjectsResource {
                     List<UUID> toUpdateOwnersUuids = projectSnapshotModelToUpdate.getProjectOwners().stream().map(OrganizationModel::getUuid).toList();
                     currentOwnersUuids.forEach(uuid -> {
                         if (!toUpdateOwnersUuids.contains(uuid)) {
-                            ProjectUpdateModel newUpdateModel = new ProjectUpdateModel();
-                            newUpdateModel.setProperty(ProjectUpdateModel.ProjectProperty.projectOwners);
-                            newUpdateModel.setRemove(uuid.toString());
-                            projectUpdateModelList.add(newUpdateModel);
+                            projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectOwners, null, uuid.toString()));
                         }
                     });
                     toUpdateOwnersUuids.forEach(uuid -> {
                         if (!currentOwnersUuids.contains(uuid)) {
-                            ProjectUpdateModel newUpdateModel = new ProjectUpdateModel();
-                            newUpdateModel.setProperty(ProjectUpdateModel.ProjectProperty.projectOwners);
-                            newUpdateModel.setAdd(uuid.toString());
-                            projectUpdateModelList.add(newUpdateModel);
+                            projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectOwners, uuid.toString(), null));
                         }
                     });
                 }
                 case projectPhase -> {
                     if (!Objects.equals(projectSnapshotModelToUpdate.getProjectPhase(), projectSnapshotModelCurrent.getProjectPhase())) {
-                        ProjectUpdateModel newUpdateModel = new ProjectUpdateModel();
-                        newUpdateModel.setProperty(ProjectUpdateModel.ProjectProperty.projectPhase);
-                        newUpdateModel.setValue(projectSnapshotModelToUpdate.getProjectPhase().name());
-                        projectUpdateModelList.add(newUpdateModel);
+                        projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectPhase, projectSnapshotModelToUpdate.getProjectPhase().name()));
                     }
                 }
                 default -> throw new VngServerErrorException(String.format("Project property not implemented %s ", projectProperty));
