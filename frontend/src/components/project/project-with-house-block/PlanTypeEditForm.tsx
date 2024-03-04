@@ -1,32 +1,28 @@
 import { Checkbox, ListItemText, MenuItem, OutlinedInput, Select, SelectChangeEvent } from "@mui/material";
-import { planTypeOptions } from "../../table/constants";
-import { MenuProps } from "../../../utils/menuProps";
-import { useContext } from "react";
-import ProjectContext from "../../../context/ProjectContext";
 import { useTranslation } from "react-i18next";
+import { PlanTypeOptions } from "../../../types/enums";
+import { MenuProps } from "../../../utils/menuProps";
+import { planTypeOptions } from "../../table/constants";
 
 type Props = {
-    planType: string[];
-    setPlanType: (planType: string[]) => void;
+    planType: PlanTypeOptions[];
+    setPlanType: (planType: PlanTypeOptions[]) => void;
 };
 export const PlanTypeEditForm = ({ planType, setPlanType }: Props) => {
     const { t } = useTranslation();
-    const { selectedProject } = useContext(ProjectContext);
 
     const handlePlanTypeChange = (event: SelectChangeEvent<typeof planType>) => {
         const {
             target: { value },
         } = event;
-        setPlanType(typeof value === "string" ? [value] : value);
+        if (typeof value !== "string") {
+            setPlanType(value);
+        }
     };
 
-    const checkControl = (inputName: string) => {
+    const checkControl = (inputName: PlanTypeOptions) => {
         if (planType.length > 0) {
             return planType.indexOf(inputName) !== -1;
-        } else if (selectedProject) {
-            if (selectedProject.planType !== null && selectedProject.planType !== undefined) {
-                return selectedProject.planType.indexOf(inputName) !== -1;
-            }
         }
     };
 
@@ -36,7 +32,7 @@ export const PlanTypeEditForm = ({ planType, setPlanType }: Props) => {
             size="small"
             id="plan-type-checkbox"
             multiple
-            value={planType.length > 0 ? planType : selectedProject?.planType ? selectedProject?.planType : []}
+            value={planType}
             onChange={handlePlanTypeChange}
             input={<OutlinedInput />}
             renderValue={(selected) => selected.join(", ")}

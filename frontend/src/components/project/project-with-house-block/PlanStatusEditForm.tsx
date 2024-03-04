@@ -4,10 +4,11 @@ import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import ProjectContext from "../../../context/ProjectContext";
 import { MenuProps } from "../../../utils/menuProps";
+import { PlanStatusOptions } from "../../../types/enums";
 
 type Props = {
-    planStatus: string[];
-    setPlanStatus: (status: string[]) => void;
+    planStatus: PlanStatusOptions[];
+    setPlanStatus: (status: PlanStatusOptions[]) => void;
 };
 
 export const PlanStatusEditForm = ({ planStatus, setPlanStatus }: Props) => {
@@ -18,10 +19,12 @@ export const PlanStatusEditForm = ({ planStatus, setPlanStatus }: Props) => {
         const {
             target: { value },
         } = event;
-        setPlanStatus(typeof value === "string" ? [value] : value);
+        if (typeof value !== "string") {
+            setPlanStatus(value);
+        }
     };
 
-    const checkControl = (inputName: string) => {
+    const checkControl = (inputName: PlanStatusOptions) => {
         if (planStatus.length > 0) {
             return planStatus.indexOf(inputName) !== -1;
         } else if (selectedProject) {
@@ -37,7 +40,7 @@ export const PlanStatusEditForm = ({ planStatus, setPlanStatus }: Props) => {
             size="small"
             id="plan-status-checkbox"
             multiple
-            value={planStatus.length > 0 ? planStatus : selectedProject?.planningPlanStatus ? selectedProject?.planningPlanStatus : []}
+            value={planStatus}
             onChange={handlePlanStatusChange}
             input={<OutlinedInput />}
             renderValue={(selected) => selected.join(", ")}
