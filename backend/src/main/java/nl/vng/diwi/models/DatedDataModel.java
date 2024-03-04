@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 import java.util.UUID;
 
 @Data
-@EqualsAndHashCode(callSuper=true)
+@EqualsAndHashCode(callSuper = true)
 public class DatedDataModel<T> extends DatedDataModelSuperClass {
 
     private UUID id;

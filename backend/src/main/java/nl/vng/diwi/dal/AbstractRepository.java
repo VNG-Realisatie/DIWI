@@ -39,14 +39,14 @@ public abstract class AbstractRepository {
     }
 
     public <T> T findById(Class<T> clazz, Serializable id) {
-        return (T) session.get(clazz, id);
+        return session.get(clazz, id);
     }
 
     public <T> T getReferenceById(Class<T> clazz, Serializable id) {
         if (id == null) {
             return null;
         }
-        return (T) session.getReference(clazz, id);
+        return session.getReference(clazz, id);
     }
 
     public String fromJavaListToSqlArrayLiteral(List<String> javaList) {
