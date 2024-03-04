@@ -6,8 +6,8 @@ import java.util.UUID;
 
 import nl.vng.diwi.dal.entities.Project;
 import nl.vng.diwi.dal.entities.ProjectState;
-import nl.vng.diwi.models.ProjectListModel;
 
+import nl.vng.diwi.models.ProjectListSqlModel;
 import org.hibernate.Session;
 import org.hibernate.query.SelectionQuery;
 
@@ -31,10 +31,10 @@ public class ProjectsDAO extends AbstractRepository {
         return query.getSingleResultOrNull();
     }
 
-    public List<ProjectListModel> getProjectsTable(FilterPaginationSorting filtering) {
-        SelectionQuery<ProjectListModel> q = session.createNativeQuery("""
+    public List<ProjectListSqlModel> getProjectsTable(FilterPaginationSorting filtering) {
+        SelectionQuery<ProjectListSqlModel> q = session.createNativeQuery("""
                 SELECT * FROM get_active_and_future_projects_list(:now, :offset, :limit, :sortColumn, :sortDirection,
-                    :filterColumn, CAST(:filterValue AS text[]), :filterCondition) """ , ProjectListModel.class)
+                    :filterColumn, CAST(:filterValue AS text[]), :filterCondition) """ , ProjectListSqlModel.class)
             .setParameter("now", LocalDate.now())
             .setParameter("offset", filtering.getFirstResultIndex())
             .setParameter("limit", filtering.getPageSize())

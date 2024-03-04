@@ -1,8 +1,7 @@
 import { Checkbox, ListItemText, MenuItem, OutlinedInput, Select, SelectChangeEvent } from "@mui/material";
-import { MenuProps } from "../../../utils/menuProps";
-import { useContext, useEffect, useState } from "react";
-import ProjectContext from "../../../context/ProjectContext";
+import { useEffect, useState } from "react";
 import { getMunicipalityList } from "../../../api/projectsTableServices";
+import { MenuProps } from "../../../utils/menuProps";
 import { OptionType } from "../ProjectsTableView";
 
 type Props = {
@@ -12,7 +11,6 @@ type Props = {
 
 export const MunicipalityEditForm = ({ selectedMunicipality, setSelectedMunicipality }: Props) => {
     const [municipalityOptions, setMunicipalityOptions] = useState<OptionType[]>();
-    const { selectedProject } = useContext(ProjectContext);
 
     const handleMunicipalityChange = (event: SelectChangeEvent<typeof selectedMunicipality>) => {
         const {
@@ -28,10 +26,6 @@ export const MunicipalityEditForm = ({ selectedMunicipality, setSelectedMunicipa
     const checkControl = (inputName: string) => {
         if (selectedMunicipality.length > 0) {
             return selectedMunicipality.indexOf(inputName) !== -1;
-        } else if (selectedProject) {
-            if (selectedProject.municipality !== null && selectedProject.municipality !== undefined) {
-                return selectedProject.municipality.indexOf(inputName) !== -1;
-            }
         }
     };
 
@@ -41,7 +35,7 @@ export const MunicipalityEditForm = ({ selectedMunicipality, setSelectedMunicipa
             size="small"
             id="municipality-checkbox"
             multiple
-            value={selectedMunicipality.length > 0 ? selectedMunicipality : selectedProject?.municipality ? selectedProject?.municipality : []}
+            value={selectedMunicipality}
             onChange={handleMunicipalityChange}
             input={<OutlinedInput />}
             renderValue={(selected) => selected.join(", ")}

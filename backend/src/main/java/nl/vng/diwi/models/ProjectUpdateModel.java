@@ -1,6 +1,7 @@
 package nl.vng.diwi.models;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Data
+@NoArgsConstructor
 public class ProjectUpdateModel {
 
     private static final String COLOR_REGEX = "^#[0-9a-fA-F]{6}$";
@@ -36,6 +38,22 @@ public class ProjectUpdateModel {
     private String add;
 
     private String remove;
+
+    public ProjectUpdateModel(ProjectProperty property, String add, String remove) {
+        this.property = property;
+        this.add = add;
+        this.remove = remove;
+    }
+
+    public ProjectUpdateModel(ProjectProperty property, String value) {
+        this.property = property;
+        this.value = value;
+    }
+
+    public ProjectUpdateModel(ProjectProperty property, List<String> values) {
+        this.property = property;
+        this.values = values;
+    }
 
     public String validate() {
         if (property == null) {
