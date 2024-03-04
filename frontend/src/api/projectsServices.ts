@@ -1,5 +1,5 @@
+import { getJson, postJson, deleteJson } from "../utils/requests";
 import { components } from "../types/schema";
-import { getJson, postJson } from "../utils/requests";
 import { API_URI } from "../utils/urls";
 
 export type Organization = components["schemas"]["OrganizationModel"];
@@ -13,4 +13,8 @@ export async function getProjects(pageNumber: number, pageSize: number): Promise
 //TODO will be updated later after endpoint changed
 export async function updateProject(id: string, newData: ProjectUpdate): Promise<any> {
     return postJson(`${API_URI}/projects/${id}/update`, newData);
+}
+
+export async function deleteProject(id: string | null) {
+    return deleteJson(`${API_URI}/projects/${id}/`);
 }
