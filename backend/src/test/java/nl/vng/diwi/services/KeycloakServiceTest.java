@@ -3,9 +3,9 @@ package nl.vng.diwi.services;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import nl.vng.diwi.services.KeycloakService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
+
 import nl.vng.diwi.config.ProjectConfig;
 
 @Disabled

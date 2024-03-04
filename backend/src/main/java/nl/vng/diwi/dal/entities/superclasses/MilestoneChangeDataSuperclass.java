@@ -1,15 +1,15 @@
 package nl.vng.diwi.dal.entities.superclasses;
 
+import lombok.Getter;
+import lombok.Setter;
 import nl.vng.diwi.dal.entities.Milestone;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @MappedSuperclass
-@Data
-@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
 @NoArgsConstructor
 public class MilestoneChangeDataSuperclass extends ChangeDataSuperclass {
 
