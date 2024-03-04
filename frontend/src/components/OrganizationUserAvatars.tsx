@@ -10,10 +10,7 @@ export const OrganizationUserAvatars = (props: { organizations?: Organization[] 
     return (
         <>
             {props.organizations.map((owner) => {
-                if (owner.users && owner.users.length > 0) {
-                    return owner.users.map((user) => <Avatar key={user.uuid} {...stringAvatar(`${user.firstName} ${user.lastName}`)} />);
-                }
-                return null;
+                return owner.users?.map((user) => <Avatar key={user.uuid} {...stringAvatar(`${user.firstName} ${user.lastName}`)} />);
             })}
         </>
     );
