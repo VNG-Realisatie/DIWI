@@ -12,9 +12,6 @@ export default function DeleteProjectDialog({ setIsOpen, isOpen, projectName, pr
             const res = await deleteProject(projectId);
 
             if (res.ok) {
-                {
-                    /*Alert should be updated and translated */
-                }
                 setAlert(t("projectDeletedSuccesMessage", { name: projectName }), "success");
             }
         } catch (error: any) {
