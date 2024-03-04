@@ -1,5 +1,7 @@
 package nl.vng.diwi.dal.entities;
 
+import lombok.Getter;
+import lombok.Setter;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.entities.enums.MutatieSoort;
 import nl.vng.diwi.dal.entities.superclasses.IdSuperclass;
@@ -7,12 +9,12 @@ import nl.vng.diwi.dal.entities.superclasses.IdSuperclass;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "woningblok_mutatie_changelog", schema = GenericRepository.VNG_SCHEMA_NAME)
-@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
 @NoArgsConstructor
 public class WoningblokMutatieChangelogSoortValue extends IdSuperclass {
 
@@ -24,21 +26,5 @@ public class WoningblokMutatieChangelogSoortValue extends IdSuperclass {
     @Column(name = "mutatie_soort")
     @Enumerated(EnumType.STRING)
     private MutatieSoort value;
-
-    public WoningblokMutatieChangelog getMutatieChangelog() {
-        return mutatieChangelog;
-    }
-
-    public void setMutatieChangelog(WoningblokMutatieChangelog mutatieChangelog) {
-        this.mutatieChangelog = mutatieChangelog;
-    }
-
-    public MutatieSoort getValue() {
-        return value;
-    }
-
-    public void setValue(MutatieSoort value) {
-        this.value = value;
-    }
 
 }
