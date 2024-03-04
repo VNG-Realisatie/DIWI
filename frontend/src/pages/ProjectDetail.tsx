@@ -62,8 +62,7 @@ export const ProjectDetail = () => {
             >
                 <Typography variant="h5">{selectedProject?.projectName}</Typography>
                 {selectedProject && (
-                    <Tooltip placement="top" title={t("Delete project")}>
-                        {/* change tooltip title */}
+                    <Tooltip placement="top" title={t("generic.delete")}>
                         <DeleteForeverOutlinedIcon
                             sx={{ ml: 3, color: "#FFFFFF", cursor: "pointer" }}
                             onClick={() => {
