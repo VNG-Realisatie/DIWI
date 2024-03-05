@@ -1,5 +1,5 @@
 import { Box, Stack, Tooltip, Typography } from "@mui/material";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { Details } from "../components/Details";
 import ProjectContext from "../context/ProjectContext";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
@@ -8,7 +8,6 @@ import * as Paths from "../Paths";
 import BreadcrumbBar from "../components/header/BreadcrumbBar";
 import { useTranslation } from "react-i18next";
 import ProjectTimeline from "../components/ProjectTimeline";
-import { useState, useEffect } from "react";
 import { getProjectTimeline } from "../api/projectTimeLine";
 import NetherlandsMap from "../components/map/NetherlandsMap";
 import { ProjectsWithHouseBlock } from "../components/project/project-with-house-block/ProjectWithHouseBlock";
@@ -108,9 +107,7 @@ export const ProjectDetail = () => {
                     <NetherlandsMap height="66vh" width="100%" mapData={dummyMapData} />
                 </Stack>
             )}
-            {location.pathname === Paths.projectDetailTimeline.path.replace(":id", id ?? "1") && <TimeLineImg style={{ width: "100%" }} />}
-
-            {/* TO DO add house blocks here later */}
+            {location.pathname === Paths.projectDetailTimeline.path.replace(":id", id ?? "1") && projectData && <ProjectTimeline projectData={projectData} />}
             {location.pathname === Paths.projectDetailCharacteristics.path.replace(":id", id ?? "1") && (
                 <ProjectsWithHouseBlock
                     selectedProjectColor={selectedProjectColor ? selectedProjectColor : ""}
@@ -118,7 +115,6 @@ export const ProjectDetail = () => {
                     // houseblocks={projects.filter((p) => selectedProject && p.project && p.project.id === selectedProject.id)[0].woningblokken}
                 />
             )}
-            {projectData && <ProjectTimeline projectData={projectData} />}
         </Stack>
     );
 };
