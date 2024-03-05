@@ -20,8 +20,8 @@ import lombok.NoArgsConstructor;
 public class MilestoneModel {
 
     private UUID id;
-
-    private MilestoneStatus state;
+    private UUID stateId;
+    private MilestoneStatus status;
 
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
@@ -32,9 +32,13 @@ public class MilestoneModel {
 
     public MilestoneModel(Milestone milestone) {
         this.setId(milestone.getId());
-        MilestoneState milestoneState = milestone.getState().get(0);
-        this.setDescription(milestoneState.getDescription());
-        this.setDate(milestoneState.getDate());
-        this.setState(milestoneState.getState());
+        MilestoneState milestoneState = milestone.getState().stream()
+            .filter(s -> s.getChangeEndDate() == null).findFirst().orElse(null);
+        if (milestoneState != null) {
+            this.setStateId(milestoneState.getId());
+            this.setDescription(milestoneState.getDescription());
+            this.setDate(milestoneState.getDate());
+            this.setStatus(milestoneState.getState());
+        }
     }
 }
