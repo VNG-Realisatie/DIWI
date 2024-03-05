@@ -9,7 +9,7 @@
       "cancelChanges":"Stop veranderingen",
       "saveChanges":"Opslaan veranderingen",
       "edit":"Bewerken",
-      "confirmDeletion": "Weet u zeker dat u {name} wilt verwijderen?",
+      "confirmDeletion": "Weet u zeker dat u {{name}} wilt verwijderen?",
       "delete" : "Verwijderen"
     },
     "createProject": {

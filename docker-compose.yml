@@ -40,7 +40,7 @@ services:
       - keycloak
 
   database:
-    image: git.phinion.com/phinion/dependency_proxy/containers/postgres:15
+    image: git.phinion.com/vng/dependency_proxy/containers/postgres:15
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${DIWI_DB_NAME:-diwi}
@@ -73,7 +73,7 @@ services:
     command: "start --import-realm --optimized"
 
   keycloak_database:
-    image: git.phinion.com/phinion/dependency_proxy/containers/postgres:15
+    image: git.phinion.com/vng/dependency_proxy/containers/postgres:15
     environment:
       POSTGRES_DB: keycloak
       POSTGRES_USER: ${KEYCLOAK_DB_USERNAME:-keycloak}
