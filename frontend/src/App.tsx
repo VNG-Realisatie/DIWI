@@ -1,6 +1,5 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
 import { ScopedCssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import "./App.css";
 import AlertContext from "./context/AlertContext";
@@ -82,20 +81,31 @@ const theme = createTheme(
 
 function RequiresLogin() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [redirected, setRedirected] = useState(false);
     const { setAlert } = useContext(AlertContext);
     const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         diwiFetch(Paths.loggedIn.path)
             .then(() => {
                 setIsLoggedIn(true);
+                console.log("trueee");
             })
             .catch((error) => {
                 setAlert(error.message, "error");
             });
-    }, [setAlert, navigate]);
+        if (!redirected && !isLoggedIn) {
+            const returnUrl = window.location.origin + location.pathname + location.search;
+            navigate(`${Paths.login.path}?returnUrl=${encodeURIComponent(returnUrl)}`);
+            setRedirected(true);
+        }
+    }, [setAlert, navigate, redirected, isLoggedIn, location.pathname, location.search]);
 
-    return isLoggedIn ? <Layout /> : null;
+    if (isLoggedIn) {
+        return <Layout />;
+    }
+    return null;
 }
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
