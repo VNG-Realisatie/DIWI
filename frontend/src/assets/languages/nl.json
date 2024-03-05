@@ -5,13 +5,18 @@
       "no": "Nee",
       "save": "Opslaan",
       "next": "Volgende",
-      "previous": "Vorig"
+      "previous": "Vorig",
+      "cancelChanges":"Stop veranderingen",
+      "saveChanges":"Opslaan veranderingen",
+      "edit":"Bewerken",
+      "confirmDeletion": "Weet u zeker dat u {name} wilt verwijderen?",
+      "delete" : "Verwijderen"
     },
     "createProject": {
       "information": "Project informatie",
       "houseBlocks": "Huizen blokken",
       "signupOnTheMap": "Intekenen op de kaart",
-      "timeline": "Tijdline",
+      "timeline": "Tijdlijn",
       "completeMessage": "De wizard voor het maken van projectformulieren is voltooid. Klik op Opslaan om het proces te voltooien.",
       "successfullySaved": "Project succesvol opgeslagen.",
       "informationForm": {
@@ -120,7 +125,8 @@
       "title": "Project",
       "map": "Kaart",
       "characteristics": "Eigenschappen",
-      "timeline": "Tijdline"
+      "timeline": "Tijdlijn",
+      "colorEdit":"Kleur bewerken"
     },
     "exchangeData": {
       "title": "Data uitwisselen",
@@ -175,11 +181,6 @@
         "_3_VERGUNNINGSFASE": "VERGUNNINGSFASE",
         "_4_REALISATIEFASE": "REALISATIEFASE",
         "_5_OPLEVERINGSFASE": "OPLEVERINGSFASE"
-      },
-      "municipalityRolesOptions": {
-        "ACTIVE": "Actief",
-        "PASSIVE": "Passief",
-        "NOTHING": "Geen"
       }
     }
   }

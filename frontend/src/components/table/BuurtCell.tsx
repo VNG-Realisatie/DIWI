@@ -1,7 +1,7 @@
 import { GridRenderCellParams } from "@mui/x-data-grid";
 import { Project } from "../../api/projectsServices";
 import { MultiSelect } from "./MultiSelect";
-import { OptionType, SelectedOptionWithId } from "../ProjectsTableView";
+import { OptionType, SelectedOptionWithId } from "../project/ProjectsTableView";
 import { useTranslation } from "react-i18next";
 import { ProductTableOption, getBuurtList } from "../../api/projectsTableServices";
 import { useEffect, useState } from "react";
@@ -17,7 +17,7 @@ export const BuurtCell = ({ cellValues, selectedBuurt, handleBuurtChange }: Prop
 
     const { t } = useTranslation();
 
-    const defaultPlanTypes = cellValues.row.wijk?.map((c) => ({ id: c, name: c }));
+    const defaultPlanTypes = cellValues.row.wijk || [];
     const findSelected = selectedBuurt?.find((s) => s.id === cellValues.row.projectId);
     const selectedOption = findSelected ? findSelected.option : [];
 
@@ -30,10 +30,12 @@ export const BuurtCell = ({ cellValues, selectedBuurt, handleBuurtChange }: Prop
             selected={selectedOption}
             options={buurtOptions}
             tagLimit={2}
-            defaultOptionValues={defaultPlanTypes}
+            defaultOptionValues={defaultPlanTypes ? defaultPlanTypes : []}
             inputLabel={t("projects.tableColumns.buurt")}
             placeHolder={t("projects.tableColumns.selectBuurt")}
-            handleChange={(_: React.ChangeEvent<{}>, values: OptionType[]) => handleBuurtChange(_, values, cellValues.row.projectId)}
+            handleChange={(_: React.ChangeEvent<{}>, values: OptionType[]) =>
+                cellValues.row.projectId && handleBuurtChange(_, values, cellValues.row.projectId)
+            }
             width="300px"
         />
     );

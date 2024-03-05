@@ -1,8 +1,21 @@
 # vng
 
-## Setup development environment
+## Development
 
-### Backend development
+### Generate types from backend api
+
+You can generate types from the backend by downloading the openapi.json file from e.g. http://localhost:3000/rest/openapi.json and putting it in the root folder of the repo.
+
+You can then execute the following yarn script"
+
+```shell
+cd frontend
+yarn && yarn run create-types
+```
+
+**!! The types have too many optional properties. e.g. projectId and projectName. They have to manually modified at the moment. !!**
+
+### Setup Backend development
 
 #### Install Eclipse for java EE
 
@@ -76,6 +89,10 @@ docker compose exec -T database psql --user diwi diwi < backend/src/main/resourc
 TBD
 
 ## Development
+
+### Calling the backend from the front end
+
+To make sure we don't get redirect responses when we do `fetch` requests we need to use the wrapper `diwiFetch` from `src/utils/request.ts`.
 
 ### HTTP API guidelines
 

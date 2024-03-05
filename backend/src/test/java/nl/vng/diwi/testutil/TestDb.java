@@ -42,7 +42,7 @@ public class TestDb implements AutoCloseable {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         dalFactory.close();
     }
 
@@ -51,15 +51,14 @@ public class TestDb implements AutoCloseable {
     }
 
     public void reset(String version) throws Exception {
-        try (
-                Dal dal = dalFactory.constructDal();
-                Session session = dal.getSession();) {
-            try (var transaction = dal.beginTransaction();) {
+        try (Dal dal = dalFactory.constructDal();
+             Session session = dal.getSession()) {
+            try (var transaction = dal.beginTransaction()) {
                 session.createNativeMutationQuery("DROP SCHEMA IF EXISTS \"public\" CASCADE").executeUpdate();
                 session.createNativeMutationQuery("DROP SCHEMA IF EXISTS \"diwi_testset\" CASCADE").executeUpdate();
                 transaction.commit();
             }
-            try (var transaction = dal.beginTransaction();) {
+            try (var transaction = dal.beginTransaction()) {
                 session.createNativeMutationQuery("CREATE SCHEMA \"public\"").executeUpdate();
                 transaction.commit();
             }

@@ -3,7 +3,10 @@ package nl.vng.diwi.resources;
 import java.net.URI;
 
 import org.pac4j.core.engine.DefaultCallbackLogic;
+import org.pac4j.core.engine.DefaultLogoutLogic;
 import org.pac4j.jee.context.JEEFrameworkParameters;
+import org.pac4j.oidc.exceptions.OidcMissingSessionStateException;
+import org.pac4j.oidc.exceptions.OidcStateMismatchException;
 
 import nl.vng.diwi.config.ProjectConfig;
 
@@ -40,9 +43,19 @@ public class AuthResource {
     @GET
     @Path("/callback")
     public Response callback() {
-        DefaultCallbackLogic callbackLogic = new DefaultCallbackLogic();
-        callbackLogic.perform(projectConfig.getPac4jConfig(), projectConfig.getBaseUrl(), null, null, new JEEFrameworkParameters(httpRequest, httpResponse));
-        return Response.ok().build();    }
+        try {
+            DefaultCallbackLogic callbackLogic = new DefaultCallbackLogic();
+            callbackLogic.perform(projectConfig.getPac4jConfig(), projectConfig.getBaseUrl(), null, null,
+                    new JEEFrameworkParameters(httpRequest, httpResponse));
+            return Response.ok().build();
+        } catch (OidcMissingSessionStateException | OidcStateMismatchException e) {
+            // In this case the Keycloak or the back end server might have restarted between
+            // the redirect to Keycloak and entering the password or the user might just have an used an old open tab to login and the state
+            // has gone stale
+            // Redirect to base URL to start a clean attempt
+            return Response.temporaryRedirect(URI.create(projectConfig.getBaseUrl())).build();
+        }
+    }
 
     @GET
     @Path("/loggedIn")
@@ -53,7 +66,11 @@ public class AuthResource {
     @GET
     @Path("/logout")
     public Response logout(@Context HttpServletRequest request) throws ServletException {
-        request.logout();
-        return Response.temporaryRedirect(URI.create(projectConfig.getBaseUrl())).build();
+        DefaultLogoutLogic logoutLogic = new DefaultLogoutLogic();
+
+        logoutLogic.perform(projectConfig.getPac4jConfig(), projectConfig.getBaseUrl(), null, true, true, projectConfig.isPac4jCentralLogout(),
+                new JEEFrameworkParameters(httpRequest, httpResponse));
+
+        return Response.ok().build();
     }
 }

@@ -1,37 +1,28 @@
 package nl.vng.diwi.models.superclasses;
 
-import nl.vng.diwi.dal.entities.Milestone;
-import nl.vng.diwi.models.LocalDateModel;
-import nl.vng.diwi.models.MilestoneModel;
+import java.time.LocalDate;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode
 abstract public class DatedDataModelSuperClass {
-    private LocalDateModel startDate;
-    private LocalDateModel endDate;
 
-    public void setStartDate(MilestoneModel milestone) {
-        startDate = milestone.getDate();
-    }
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private LocalDate startDate;
 
-    public void setStartDate(LocalDateModel date) {
-        startDate = date;
-    }
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private LocalDate endDate;
 
-    public void setStartDate(Milestone milestone) {
-        startDate = (new MilestoneModel(milestone)).getDate();
-    }
-
-    public void setEndDate(MilestoneModel milestone) {
-        endDate = milestone.getDate();
-    }
-
-    public void setEndDate(LocalDateModel date) {
-        endDate = date;
-    }
-
-    public void setEndDate(Milestone milestone) {
-        endDate = (new MilestoneModel(milestone)).getDate();
-    }
 }

@@ -1,5 +1,7 @@
 package nl.vng.diwi.dal.entities;
 
+import lombok.Getter;
+import lombok.Setter;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.superclasses.IdSuperclass;
@@ -7,14 +9,14 @@ import nl.vng.diwi.dal.entities.superclasses.IdSuperclass;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 @Entity
 @Table(name = "project_plan_type_changelog_value", schema = GenericRepository.VNG_SCHEMA_NAME)
-@Data
-@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
 @NoArgsConstructor
 public class ProjectPlanTypeChangelogValue extends IdSuperclass {
 
@@ -25,6 +27,7 @@ public class ProjectPlanTypeChangelogValue extends IdSuperclass {
 
     @Column(name = "plan_type")
     @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
     private PlanType planType;
-    
+
 }

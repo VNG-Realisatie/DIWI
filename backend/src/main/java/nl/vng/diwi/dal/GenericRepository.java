@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import nl.vng.diwi.dal.entities.*;
-import nl.vng.diwi.models.ProjectListModel;
+import nl.vng.diwi.models.ProjectListSqlModel;
 
 public class GenericRepository implements AutoCloseable {
 
@@ -17,6 +17,7 @@ public class GenericRepository implements AutoCloseable {
                 Milestone.class,
                 MilestoneState.class,
                 Organization.class,
+                OrganizationProjectRole.class,
                 OrganizationState.class,
                 Project.class,
                 ProjectDurationChangelog.class,
@@ -33,9 +34,12 @@ public class GenericRepository implements AutoCloseable {
                 ProjectPrioriseringValue.class,
                 ProjectPrioriseringValueState.class,
                 ProjectState.class,
+                Woningblok.class,
+                WoningblokMutatieChangelog.class,
+                WoningblokMutatieChangelogSoortValue.class,
                 User.class,
                 UserState.class,
-                ProjectListModel.class);
+                ProjectListSqlModel.class);
         return entities;
     }
 

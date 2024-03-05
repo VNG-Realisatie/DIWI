@@ -1,18 +1,18 @@
 package nl.vng.diwi.dal.entities.superclasses;
 
+import lombok.Getter;
+import lombok.Setter;
 import nl.vng.diwi.dal.entities.Milestone;
 
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @MappedSuperclass
-@Data
-@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
 @NoArgsConstructor
 public class StartEndMilestoneSuperclass extends IdSuperclass {
 

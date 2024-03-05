@@ -1,8 +1,8 @@
 import { Box, List, ListItem, ListItemText } from "@mui/material";
-import * as Paths from "../Paths";
+import * as Paths from "../../Paths";
 import { Link } from "react-router-dom";
-import { ProjectType } from "../context/ProjectContext";
-import { colorArray } from "../api/dummyData";
+import { ProjectType } from "../../context/ProjectContext";
+import { colorArray } from "../../api/dummyData";
 
 type Props = {
     projectList: Array<ProjectType>;
@@ -18,7 +18,7 @@ export const ProjectList = ({ projectList }: Props) => {
         >
             {projectList.map((project, i) => {
                 return (
-                    <Link to={`${Paths.projects.path}/${project?.id}`} key={project?.id} style={{ textDecoration: "none", color: "black" }}>
+                    <Link to={`${Paths.projects.path}/${project?.projectId}`} key={project?.projectId} style={{ textDecoration: "none", color: "black" }}>
                         <ListItem
                             sx={{
                                 border: "solid 1px #ddd",
@@ -37,7 +37,7 @@ export const ProjectList = ({ projectList }: Props) => {
                                 }}
                                 mr={1}
                             />
-                            <ListItemText primary={project?.name} />
+                            <ListItemText primary={project?.projectName} />
                         </ListItem>
                     </Link>
                 );

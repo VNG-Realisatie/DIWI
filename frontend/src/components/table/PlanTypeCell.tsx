@@ -1,7 +1,7 @@
 import { GridRenderCellParams } from "@mui/x-data-grid";
 import { Project } from "../../api/projectsServices";
 import { MultiSelect } from "./MultiSelect";
-import { OptionType, SelectedOptionWithId } from "../ProjectsTableView";
+import { OptionType, SelectedOptionWithId } from "../project/ProjectsTableView";
 import { useTranslation } from "react-i18next";
 import { planTypeOptions } from "./constants";
 
@@ -14,7 +14,7 @@ type Props = {
 export const PlanTypeCell = ({ cellValues, selectedPlanTypes, handlePlanTypeChange }: Props) => {
     const { t } = useTranslation();
 
-    const defaultPlanTypes = cellValues.row.planType.map((c) => ({ id: c, name: c }));
+    const defaultPlanTypes = cellValues.row.planType?.map((c) => ({ id: c, name: c })) || [];
     const findSelected = selectedPlanTypes.find((s) => s.id === cellValues.row.projectId);
     const selectedOption = findSelected ? findSelected.option : [];
     const translatedOption = planTypeOptions.map((p) => {
@@ -27,10 +27,12 @@ export const PlanTypeCell = ({ cellValues, selectedPlanTypes, handlePlanTypeChan
             selected={selectedOption}
             options={translatedOption}
             tagLimit={2}
-            defaultOptionValues={defaultPlanTypes}
+            defaultOptionValues={defaultPlanTypes ? defaultPlanTypes : []}
             inputLabel={t("projects.tableColumns.planType")}
             placeHolder={t("projects.tableColumns.selectPlanType")}
-            handleChange={(_: React.ChangeEvent<{}>, values: OptionType[]) => handlePlanTypeChange(_, values, cellValues.row.projectId)}
+            handleChange={(_: React.ChangeEvent<{}>, values: OptionType[]) =>
+                cellValues.row.projectId && handlePlanTypeChange(_, values, cellValues.row.projectId)
+            }
             width="500px"
         />
     );

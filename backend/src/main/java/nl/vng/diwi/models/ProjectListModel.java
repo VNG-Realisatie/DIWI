@@ -1,84 +1,91 @@
 package nl.vng.diwi.models;
 
-import nl.vng.diwi.dal.entities.enums.Confidentiality;
-import io.hypersistence.utils.hibernate.type.array.StringArrayType;
-import jakarta.persistence.*;
+import com.fasterxml.uuid.impl.UUIDUtil;
 import lombok.Data;
-import org.hibernate.annotations.JdbcType;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.dialect.PostgreSQLEnumJdbcType;
-import org.hibernate.type.SqlTypes;
 
+import lombok.EqualsAndHashCode;
+import nl.vng.diwi.models.superclasses.ProjectSnapshotModelSuperclass;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-@Convert(
-    attributeName = "multidimensional_array",
-    converter = StringArrayType.class
-)
-@Entity
 @Data
-public class ProjectListModel {
+@EqualsAndHashCode(callSuper = true)
+public class ProjectListModel extends ProjectSnapshotModelSuperclass {
 
     public static final List<String> SORTABLE_COLUMNS = List.of("projectName", "projectOwners", "projectLeaders", "confidentialityLevel", "organizationName",
         "planType", "startDate", "endDate", "priority", "projectPhase", "municipalityRole", "planningPlanStatus", "totalValue", "municipality", "wijk", "buurt");
     public static final String DEFAULT_SORT_COLUMN = "startDate";
 
-    @Id
-    private UUID projectId;
-
     private UUID projectStateId;
 
-    private String projectName;
+    private List<SelectModel> municipality;
 
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(columnDefinition = "text[][]")
-    private String[][] projectOwners;
+    private List<SelectModel> wijk;
 
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(columnDefinition = "text[][]")
-    private String[][] projectLeaders;
+    private List<SelectModel> buurt;
 
-    private String projectColor;
+    public ProjectListModel(ProjectListSqlModel sqlModel) {
+        this.setProjectId(sqlModel.getProjectId());
+        this.projectStateId = sqlModel.getProjectStateId();
+        this.setProjectName(sqlModel.getProjectName());
+        this.setProjectOwners(getOrganizationModelListFromSqlArray(sqlModel.getProjectOwnersArray()));
+        this.setProjectLeaders(getOrganizationModelListFromSqlArray(sqlModel.getProjectLeadersArray()));
+        this.setProjectColor(sqlModel.getProjectColor());
+        this.setConfidentialityLevel(sqlModel.getConfidentialityLevel());
+        this.setPlanType(sqlModel.getPlanType());
+        this.setStartDate(sqlModel.getStartDate());
+        this.setEndDate(sqlModel.getEndDate());
+        this.setPriority(new PriorityModel(getSelectModelListFromSqlArray(sqlModel.getPriority())));
+        this.setProjectPhase(sqlModel.getProjectPhase());
+        this.setMunicipalityRole(getSelectModelListFromSqlArray(sqlModel.getMunicipalityRole()));
+        this.setPlanningPlanStatus(sqlModel.getPlanningPlanStatus());
+        this.setTotalValue(sqlModel.getTotalValue());
+        this.municipality = getSelectModelListFromSqlArray(sqlModel.getMunicipality());
+        this.wijk = getSelectModelListFromSqlArray(sqlModel.getWijk());
+        this.buurt = getSelectModelListFromSqlArray(sqlModel.getBuurt());
 
-    @Enumerated(EnumType.STRING)
-    @JdbcType(PostgreSQLEnumJdbcType.class)
-    private Confidentiality confidentialityLevel;
+        Collections.sort(this.getMunicipalityRole());
+        Collections.sort(this.municipality);
+        Collections.sort(this.wijk);
+        Collections.sort(this.buurt);
 
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(columnDefinition = "text[]")
-    private List<String> planType;
+    }
 
-    private String startDate;
+    public List<SelectModel> getSelectModelListFromSqlArray(String[][] sqlArray) {
+        List<SelectModel> result = new ArrayList<>();
+        if (sqlArray != null) {
+            for (String[] sqlSelectModel : sqlArray) {
+                result.add(new SelectModel(UUID.fromString(sqlSelectModel[0]), sqlSelectModel[1]));
+            }
+        }
+        return result;
+    }
 
-    private String endDate;
+    public List<OrganizationModel> getOrganizationModelListFromSqlArray(String[][] organizationUserArray) {
+        List<OrganizationModel> result = new ArrayList<>();
+        if (organizationUserArray != null) {
+            List<OrganizationUserModel> orgOwners = new ArrayList<>();
+            for (String[] owner : organizationUserArray) {
+                OrganizationUserModel organizationUserModel = getOrganizationUserModelFromSqlArrayData(owner);
+                orgOwners.add(organizationUserModel);
+            }
+            result.addAll(OrganizationModel.fromOrgUserModelListToOrgModelList(orgOwners));
+        }
+        return result;
+    }
 
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(columnDefinition = "text[]")
-    private List<String> priority;
-
-    private String projectPhase;
-
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(columnDefinition = "text[]")
-    private List<String> municipalityRole;
-
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(columnDefinition = "text[]")
-    private List<String> planningPlanStatus;
-
-    private Long totalValue;
-
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(columnDefinition = "text[]")
-    private List<String> municipality;
-
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(columnDefinition = "text[]")
-    private List<String> wijk;
-
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(columnDefinition = "text[]")
-    private List<String> buurt;
+    private OrganizationUserModel getOrganizationUserModelFromSqlArrayData(String[] sqlUserData) {
+        OrganizationUserModel orgUser = new OrganizationUserModel();
+        orgUser.setOrganizationUuid(UUIDUtil.uuid(sqlUserData[0]));
+        orgUser.setOrganizationName(sqlUserData[1]);
+        orgUser.setUuid(UUIDUtil.uuid(sqlUserData[2]));
+        orgUser.setInitials(sqlUserData[3]);
+        orgUser.setLastName(sqlUserData[4]);
+        orgUser.setFirstName(sqlUserData[5]);
+        return orgUser;
+    }
 
 }

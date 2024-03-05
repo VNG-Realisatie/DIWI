@@ -5,6 +5,7 @@ export type ProductTableOption = {
     name: string;
     id: string;
 };
+
 export async function getMunicipalityList(): Promise<Array<ProductTableOption>> {
     return getJson(`${API_URI}/municipality/list`);
 }
@@ -19,4 +20,8 @@ export async function getWijkList(): Promise<Array<ProductTableOption>> {
 
 export async function filterTable(query: string) {
     return getJson(`${API_URI}/projects/table${query}`);
+}
+
+export async function getMunicipalityRoleList(): Promise<Array<ProductTableOption>> {
+    return getJson(`${API_URI}/municipalityrole/list`);
 }

@@ -34,6 +34,9 @@ public class SecurityFilter implements ContainerRequestFilter {
         if (Constants.REST_AUTH_CALLBACK.equals(requestContext.getUriInfo().getAbsolutePath().getPath())) {
             return;
         }
+        if (Constants.REST_AUTH_LOGOUT.equals(requestContext.getUriInfo().getAbsolutePath().getPath())) {
+            return;
+        }
 
         DefaultSecurityLogic securityLogic = new DefaultSecurityLogic();
         securityLogic.perform(pac4jConfig, (ctx, sessionStore, profiles) -> "AUTH_GRANTED", null, null, null,

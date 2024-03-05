@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Stepper, Step, StepLabel, Button, Box, Stack, Typography } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
-import { ProjectInformationForm } from "../components/ProjectInformationForm";
+import { ProjectInformationForm } from "../components/project/ProjectInformationForm";
 import { BlockHousesForm } from "../components/BlockHousesForm";
 import { SelectFromMapForm } from "../components/SelectFromMapForm";
 import { TimelineForm } from "../components/TimelineForm";

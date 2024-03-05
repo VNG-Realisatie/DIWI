@@ -1,6 +1,7 @@
-import { OptionType } from "../ProjectsTableView";
+import { PlanStatusOptions, PlanTypeOptions, ProjectPhaseOptions } from "../../types/enums";
+import { GenericOptionType, OptionType } from "../project/ProjectsTableView";
 
-export const planningPlanStatus: OptionType[] = [
+export const planningPlanStatus: GenericOptionType<PlanStatusOptions>[] = [
     { id: "_1A_ONHERROEPELIJK", name: "_1A_ONHERROEPELIJK" },
     { id: "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG", name: "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG" },
     { id: "_1C_ONHERROEPELIJK_MET_BW_NODIG", name: "_1C_ONHERROEPELIJK_MET_BW_NODIG" },
@@ -12,7 +13,7 @@ export const planningPlanStatus: OptionType[] = [
     { id: "_4B_NIET_OPGENOMEN_IN_VISIE", name: "_4B_NIET_OPGENOMEN_IN_VISIE" },
 ];
 
-export const planTypeOptions: OptionType[] = [
+export const planTypeOptions: GenericOptionType<PlanTypeOptions>[] = [
     { id: "PAND_TRANSFORMATIE", name: "PAND_TRANSFORMATIE" },
     { id: "TRANSFORMATIEGEBIED", name: "TRANSFORMATIEGEBIED" },
     { id: "HERSTRUCTURERING", name: "HERSTRUCTURERING" },
@@ -21,7 +22,7 @@ export const planTypeOptions: OptionType[] = [
     { id: "UITBREIDING_OVERIG", name: "UITBREIDING_OVERIG" },
 ];
 
-export const projectPhaseOptions: OptionType[] = [
+export const projectPhaseOptions: GenericOptionType<ProjectPhaseOptions>[] = [
     { id: "_1_INITIATIEFFASE", name: "_1_INITIATIEFFASE" },
     { id: "_2_PROJECTFASE", name: "_2_PROJECTFASE" },
     { id: "_3_VERGUNNINGSFASE", name: "_3_VERGUNNINGSFASE" },
@@ -35,10 +36,4 @@ export const confidentialityLevelOptions: OptionType[] = [
     { id: "INTERN_RAPPORTAGE", name: "INTERN_RAPPORTAGE" },
     { id: "EXTERN_RAPPORTAGE", name: "EXTERN_RAPPORTAGE" },
     { id: "OPENBAAR", name: "OPENBAAR" },
-];
-
-export const municipalityRolesOptions: OptionType[] = [
-    { id: "ACTIVE", name: "ACTIVE" },
-    { id: "PASSIVE", name: "PASSIVE" },
-    { id: "NOTHING", name: "NOTHING" },
 ];

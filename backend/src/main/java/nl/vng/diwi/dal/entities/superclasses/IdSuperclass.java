@@ -1,14 +1,16 @@
 package nl.vng.diwi.dal.entities.superclasses;
 
+import lombok.Getter;
+import lombok.Setter;
 import nl.vng.diwi.dal.CustomUuidGeneration;
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
 @MappedSuperclass
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class IdSuperclass {
 
@@ -17,4 +19,5 @@ public class IdSuperclass {
     @CustomUuidGeneration
     @Column(name = "id")
     private UUID id;
+
 }

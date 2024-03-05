@@ -36,6 +36,7 @@ public class ProjectConfig {
     private final String dbUser;
     private final String dbPass;
 
+    private final boolean pac4jCentralLogout;
     private final Config pac4jConfig;
 
     public ProjectConfig(Map<String, String> env) throws InvalidConfigException {
@@ -52,6 +53,8 @@ public class ProjectConfig {
             this.kcResourceName = null;
             this.kcSecret = null;
         }
+
+        this.pac4jCentralLogout = Boolean.parseBoolean(env.getOrDefault("PAC4J_CENTRAL_LOGOUT", "true"));
 
         this.dbHost = env.getOrDefault("DIWI_DB_HOST", "localhost");
         this.dbPort = env.getOrDefault("DIWI_DB_PORT", "5432");
