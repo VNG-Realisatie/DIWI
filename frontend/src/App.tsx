@@ -1,6 +1,5 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
 import { ScopedCssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import "./App.css";
 import AlertContext from "./context/AlertContext";
