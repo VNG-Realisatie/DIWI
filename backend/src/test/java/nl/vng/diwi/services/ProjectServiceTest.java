@@ -268,7 +268,7 @@ public class ProjectServiceTest {
         assertThat(newMunicipalityRoleChangelog.getValue().getId()).isEqualTo(municipalityRoleUuid);
     }
 
-    private Project createProject(VngRepository repo, User user) {
+    public static Project createProject(VngRepository repo, User user) {
         Project project = repo.persist(new Project());
         ProjectState projectState = new ProjectState();
         projectState.setProject(project);
@@ -280,7 +280,7 @@ public class ProjectServiceTest {
         return project;
     }
 
-    private Milestone createMilestone(VngRepository repo, Project project, LocalDate date, User user) {
+    public static Milestone createMilestone(VngRepository repo, Project project, LocalDate date, User user) {
 
         Milestone milestone = new Milestone();
         milestone.setProject(project);
@@ -296,7 +296,7 @@ public class ProjectServiceTest {
         return milestone;
     }
 
-    private ProjectDurationChangelog createProjectDurationChangelog(VngRepository repo, Project project, Milestone startMilestone,
+    public static ProjectDurationChangelog createProjectDurationChangelog(VngRepository repo, Project project, Milestone startMilestone,
                                                                     Milestone endMilestone, User user) {
         ProjectDurationChangelog durationChangelog = new ProjectDurationChangelog();
         durationChangelog.setProject(project);
@@ -308,7 +308,7 @@ public class ProjectServiceTest {
         return durationChangelog;
     }
 
-    private ProjectNameChangelog createProjectNameChangelog(VngRepository repo, Project project, String name, Milestone startMilestone,
+    public static ProjectNameChangelog createProjectNameChangelog(VngRepository repo, Project project, String name, Milestone startMilestone,
                                                                     Milestone endMilestone, User user) {
         ProjectNameChangelog nameChangelog = new ProjectNameChangelog();
         nameChangelog.setProject(project);
@@ -321,7 +321,7 @@ public class ProjectServiceTest {
         return nameChangelog;
     }
 
-    private ProjectFaseChangelog createProjectFaseChangelog(VngRepository repo, Project project, ProjectPhase fase, Milestone startMilestone,
+    public static ProjectFaseChangelog createProjectFaseChangelog(VngRepository repo, Project project, ProjectPhase fase, Milestone startMilestone,
                                                             Milestone endMilestone, User user) {
         ProjectFaseChangelog faseChangelog = new ProjectFaseChangelog();
         faseChangelog.setProject(project);
@@ -335,7 +335,7 @@ public class ProjectServiceTest {
     }
 
 
-    private ProjectPlanologischePlanstatusChangelog createProjectPlanStatusChangelog(VngRepository repo, Project project, Set<PlanStatus> planStatuses, Milestone startMilestone,
+    public static ProjectPlanologischePlanstatusChangelog createProjectPlanStatusChangelog(VngRepository repo, Project project, Set<PlanStatus> planStatuses, Milestone startMilestone,
                                                   Milestone endMilestone, User user) {
 
         ProjectPlanologischePlanstatusChangelog planStatusChangelog = new ProjectPlanologischePlanstatusChangelog();

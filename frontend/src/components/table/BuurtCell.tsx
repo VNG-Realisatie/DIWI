@@ -17,7 +17,7 @@ export const BuurtCell = ({ cellValues, selectedBuurt, handleBuurtChange }: Prop
 
     const { t } = useTranslation();
 
-    const defaultPlanTypes = cellValues.row.wijk?.map((c) => ({ id: c, name: c }));
+    const defaultPlanTypes = cellValues.row.wijk || [];
     const findSelected = selectedBuurt?.find((s) => s.id === cellValues.row.projectId);
     const selectedOption = findSelected ? findSelected.option : [];
 

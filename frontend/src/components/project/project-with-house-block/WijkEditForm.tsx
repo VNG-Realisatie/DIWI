@@ -30,7 +30,7 @@ export const WijkEditForm = ({ selectedWijk, setSelectedWijk }: Props) => {
             return selectedWijk.indexOf(inputName) !== -1;
         } else if (selectedProject) {
             if (selectedProject.wijk !== null && selectedProject.wijk !== undefined) {
-                return selectedProject.wijk.indexOf(inputName) !== -1;
+                return selectedProject.wijk.findIndex((w) => w.name === inputName) !== -1;
             }
         }
     };
@@ -41,7 +41,7 @@ export const WijkEditForm = ({ selectedWijk, setSelectedWijk }: Props) => {
             size="small"
             id="wijk-checkbox"
             multiple
-            value={selectedWijk.length > 0 ? selectedWijk : selectedProject?.wijk ? selectedProject?.wijk : []}
+            value={selectedProject?.wijk?.map((w) => w.name) || []}
             onChange={handleWijkChange}
             input={<OutlinedInput />}
             renderValue={(selected) => selected.join(", ")}

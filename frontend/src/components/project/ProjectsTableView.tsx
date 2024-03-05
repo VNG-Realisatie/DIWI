@@ -37,10 +37,13 @@ type Props = {
     showCheckBox?: boolean;
 };
 
-export interface OptionType {
-    id: string;
+export interface GenericOptionType<Type> {
+    id: Type;
     name: string;
 }
+
+export type OptionType = GenericOptionType<string>;
+
 export type SelectedOptionWithId = {
     id: string;
     option: OptionType[];
@@ -406,11 +409,19 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
 
     const handleFilterModelChange = (newModel: GridFilterModel, details: GridCallbackDetails) => {
         if (details.reason === "deleteFilterItem") {
-            setFilterModel(undefined);
-        }
+            if (newModel.items.some((item) => item.value == null)) {
+                const updatedFilterModel = {
+                    items: newModel.items.map((item) => ({
+                        ...item,
+                        value: item.value == null ? "" : item.value,
+                    })),
+                };
+                setFilterModel(updatedFilterModel);
+            }
 
-        if (newModel.items.length > 0) {
-            setFilterModel(newModel);
+            if (newModel.items.length > 0) {
+                setFilterModel(newModel);
+            }
         }
     };
     interface CustomToolbarProps {
@@ -454,6 +465,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                     (updatedRow, originalRow) => console.log(updatedRow)
                     //todo add update endpoint later
                 }
+                filterModel={filterModel}
                 onFilterModelChange={handleFilterModelChange}
             />
             <Dialog open={showDialog} onClose={handleClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">

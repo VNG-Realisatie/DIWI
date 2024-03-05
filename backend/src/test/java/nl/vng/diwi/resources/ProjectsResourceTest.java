@@ -1,0 +1,182 @@
+package nl.vng.diwi.resources;
+
+import nl.vng.diwi.dal.AutoCloseTransaction;
+import nl.vng.diwi.dal.Dal;
+import nl.vng.diwi.dal.DalFactory;
+import nl.vng.diwi.dal.GenericRepository;
+import nl.vng.diwi.dal.VngRepository;
+import nl.vng.diwi.dal.entities.Milestone;
+import nl.vng.diwi.dal.entities.Project;
+import nl.vng.diwi.dal.entities.ProjectNameChangelog;
+import nl.vng.diwi.dal.entities.User;
+import nl.vng.diwi.models.MilestoneModel;
+import nl.vng.diwi.models.ProjectSnapshotModel;
+import nl.vng.diwi.rest.VngBadRequestException;
+import nl.vng.diwi.rest.VngNotFoundException;
+import nl.vng.diwi.rest.VngServerErrorException;
+import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.services.ProjectService;
+import nl.vng.diwi.services.ProjectServiceTest;
+import nl.vng.diwi.testutil.TestDb;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class ProjectsResourceTest {
+
+    private static DalFactory dalFactory;
+    private static TestDb testDb;
+    private Dal dal;
+    private VngRepository repo;
+    private static ProjectsResource projectResource;
+
+    @BeforeAll
+    static void beforeAll() throws Exception {
+        testDb = new TestDb();
+        dalFactory = testDb.getDalFactory();
+        projectResource = new ProjectsResource(new GenericRepository(dalFactory.constructDal()), new ProjectService());
+    }
+
+    @AfterAll
+    static void afterAll() {
+        testDb.close();
+    }
+
+    @BeforeEach
+    void beforeEach() {
+        dal = dalFactory.constructDal();
+        repo = new VngRepository(dal.getSession());
+    }
+
+    @AfterEach
+    void afterEach() {
+        dal.close();
+    }
+
+    @Test
+    void updateProjectTest_currentProject() throws VngNotFoundException, VngServerErrorException, VngBadRequestException {
+
+        UUID userUuid;
+        UUID projectUuid;
+
+        //prepare project with name and duration changelog
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+            User user = repo.persist(new User());
+            userUuid = user.getId();
+            Project project = ProjectServiceTest.createProject(repo, user);
+            projectUuid = project.getId();
+            Milestone startMilestone = ProjectServiceTest.createMilestone(repo, project, LocalDate.now().minusDays(10), user);
+            Milestone middleMilestone = ProjectServiceTest.createMilestone(repo, project, LocalDate.now().plusDays(5), user);
+            Milestone endMilestone = ProjectServiceTest.createMilestone(repo, project, LocalDate.now().plusDays(10), user);
+            ProjectServiceTest.createProjectDurationChangelog(repo, project, startMilestone, endMilestone, user);
+            ProjectServiceTest.createProjectNameChangelog(repo, project, "Name 1", startMilestone, middleMilestone, user);
+            ProjectServiceTest.createProjectNameChangelog(repo, project, "Name 2", middleMilestone, endMilestone, user);
+            transaction.commit();
+            repo.getSession().clear();
+        }
+
+        //prepare update model with modified name and start date
+        ProjectSnapshotModel projectSnapshot = projectResource.getCurrentProjectSnapshot(projectUuid);
+        projectSnapshot.setProjectName("Name 1 updated");
+        projectSnapshot.setStartDate(LocalDate.now().minusDays(15));
+
+        //call update endpoint
+        LoggedUser loggedUser = new LoggedUser();
+        loggedUser.setUuid(userUuid);
+        projectResource.updateProject(loggedUser, projectSnapshot);
+        repo.getSession().clear();
+
+        //assert
+        repo.getSession().disableFilter(GenericRepository.CURRENT_DATA_FILTER);
+        Project updatedProject = repo.findById(Project.class, projectUuid);
+        List<ProjectNameChangelog> nameChangelogs = updatedProject.getName();
+
+        assertThat(nameChangelogs.size()).isEqualTo(4);
+
+        ProjectNameChangelog oldChangelog = nameChangelogs.stream().filter(c -> c.getName().equals("Name 1") && c.getChangeEndDate() != null).findFirst().orElse(null);
+        assertThat(oldChangelog).isNotNull();
+        assertThat(new MilestoneModel(oldChangelog.getStartMilestone()).getDate()).isEqualTo(LocalDate.now().minusDays(15));
+        assertThat(new MilestoneModel(oldChangelog.getEndMilestone()).getDate()).isEqualTo(LocalDate.now().plusDays(5));
+
+        ProjectNameChangelog oldChangelogV2 = nameChangelogs.stream().filter(c -> c.getName().equals("Name 1") && c.getChangeEndDate() == null).findFirst().orElse(null);
+        assertThat(oldChangelog).isNotNull();
+        assertThat(new MilestoneModel(oldChangelogV2.getStartMilestone()).getDate()).isEqualTo(LocalDate.now().minusDays(15));
+        assertThat(new MilestoneModel(oldChangelogV2.getEndMilestone()).getDate()).isEqualTo(LocalDate.now());
+
+        ProjectNameChangelog newChangelog = nameChangelogs.stream().filter(c -> c.getName().equals("Name 1 updated") && c.getChangeEndDate() == null).findFirst().orElse(null);
+        assertThat(newChangelog).isNotNull();
+        assertThat(new MilestoneModel(newChangelog.getStartMilestone()).getDate()).isEqualTo(LocalDate.now());
+        assertThat(new MilestoneModel(newChangelog.getEndMilestone()).getDate()).isEqualTo(LocalDate.now().plusDays(5));
+
+        ProjectNameChangelog futureNameChangelog = nameChangelogs.stream().filter(c -> c.getName().equals("Name 2") && c.getChangeEndDate() == null).findFirst().orElse(null);
+        assertThat(futureNameChangelog).isNotNull();
+        assertThat(new MilestoneModel(futureNameChangelog.getStartMilestone()).getDate()).isEqualTo(LocalDate.now().plusDays(5));
+        assertThat(new MilestoneModel(futureNameChangelog.getEndMilestone()).getDate()).isEqualTo(LocalDate.now().plusDays(10));
+    }
+
+
+    @Test
+    void updateProjectTest_futureProject() throws VngNotFoundException, VngServerErrorException, VngBadRequestException {
+
+        UUID userUuid;
+        UUID projectUuid;
+
+        //prepare project with name and duration changelog
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+            User user = repo.persist(new User());
+            userUuid = user.getId();
+            Project project = ProjectServiceTest.createProject(repo, user);
+            projectUuid = project.getId();
+            Milestone startMilestone = ProjectServiceTest.createMilestone(repo, project, LocalDate.now().plusDays(5), user);
+            Milestone middleMilestone = ProjectServiceTest.createMilestone(repo, project, LocalDate.now().plusDays(10), user);
+            Milestone endMilestone = ProjectServiceTest.createMilestone(repo, project, LocalDate.now().plusDays(15), user);
+            ProjectServiceTest.createProjectDurationChangelog(repo, project, startMilestone, endMilestone, user);
+            ProjectServiceTest.createProjectNameChangelog(repo, project, "Name 1", startMilestone, middleMilestone, user);
+            ProjectServiceTest.createProjectNameChangelog(repo, project, "Name 2", middleMilestone, endMilestone, user);
+            transaction.commit();
+            repo.getSession().clear();
+        }
+
+        //prepare update model with modified name and start date
+        ProjectSnapshotModel projectSnapshot = projectResource.getCurrentProjectSnapshot(projectUuid);
+        projectSnapshot.setProjectName("Name 1 updated");
+        projectSnapshot.setStartDate(LocalDate.now().minusDays(1));
+
+        //call update endpoint
+        LoggedUser loggedUser = new LoggedUser();
+        loggedUser.setUuid(userUuid);
+        projectResource.updateProject(loggedUser, projectSnapshot);
+        repo.getSession().clear();
+
+        //assert
+        repo.getSession().disableFilter(GenericRepository.CURRENT_DATA_FILTER);
+        Project updatedProject = repo.findById(Project.class, projectUuid);
+        List<ProjectNameChangelog> nameChangelogs = updatedProject.getName();
+
+        assertThat(nameChangelogs.size()).isEqualTo(3);
+
+        ProjectNameChangelog oldChangelog = nameChangelogs.stream().filter(c -> c.getName().equals("Name 1") && c.getChangeEndDate() != null).findFirst().orElse(null);
+        assertThat(oldChangelog).isNotNull();
+        assertThat(new MilestoneModel(oldChangelog.getStartMilestone()).getDate()).isEqualTo(LocalDate.now().minusDays(1));
+        assertThat(new MilestoneModel(oldChangelog.getEndMilestone()).getDate()).isEqualTo(LocalDate.now().plusDays(10));
+
+        ProjectNameChangelog newChangelog = nameChangelogs.stream().filter(c -> c.getName().equals("Name 1 updated") && c.getChangeEndDate() == null).findFirst().orElse(null);
+        assertThat(newChangelog).isNotNull();
+        assertThat(new MilestoneModel(newChangelog.getStartMilestone()).getDate()).isEqualTo(LocalDate.now().minusDays(1));
+        assertThat(new MilestoneModel(newChangelog.getEndMilestone()).getDate()).isEqualTo(LocalDate.now().plusDays(10));
+
+        ProjectNameChangelog futureNameChangelog = nameChangelogs.stream().filter(c -> c.getName().equals("Name 2") && c.getChangeEndDate() == null).findFirst().orElse(null);
+        assertThat(futureNameChangelog).isNotNull();
+        assertThat(new MilestoneModel(futureNameChangelog.getStartMilestone()).getDate()).isEqualTo(LocalDate.now().plusDays(10));
+        assertThat(new MilestoneModel(futureNameChangelog.getEndMilestone()).getDate()).isEqualTo(LocalDate.now().plusDays(15));
+    }
+
+}

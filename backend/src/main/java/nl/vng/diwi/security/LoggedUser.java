@@ -1,7 +1,14 @@
 package nl.vng.diwi.security;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.UUID;
 
+@NoArgsConstructor
+@Getter
+@Setter
 public class LoggedUser {
 
     private UUID uuid;
@@ -16,8 +23,6 @@ public class LoggedUser {
 
     private boolean disabled;
 
-    public LoggedUser() {
-    }
 
     /**
      * This constructor can be called only when a DB session is open
@@ -31,51 +36,4 @@ public class LoggedUser {
         this.disabled = user.isDisabled();
     }
 
-    public UUID getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public UserRole getRole() {
-        return role;
-    }
-
-    public void setRole(UserRole role) {
-        this.role = role;
-    }
-
-    public boolean isDisabled() {
-        return disabled;
-    }
-
-    public void setDisabled(boolean disabled) {
-        this.disabled = disabled;
-    }
 }
