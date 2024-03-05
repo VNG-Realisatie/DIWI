@@ -10,7 +10,8 @@ export async function diwiFetch(input: RequestInfo | URL, init?: RequestInit | u
 
     return fetch(input, options).then((response) => {
         if (response.status === 401) {
-            window.location.href = Paths.login.path;
+            const returnUrl = window.location.origin + window.location.pathname + window.location.search;
+            window.location.href = `${Paths.login.path}?returnUrl=${encodeURIComponent(returnUrl)}`;
         }
         return response;
     });

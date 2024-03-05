@@ -81,31 +81,20 @@ const theme = createTheme(
 
 function RequiresLogin() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [redirected, setRedirected] = useState(false);
     const { setAlert } = useContext(AlertContext);
     const navigate = useNavigate();
-    const location = useLocation();
 
     useEffect(() => {
         diwiFetch(Paths.loggedIn.path)
             .then(() => {
                 setIsLoggedIn(true);
-                console.log("trueee");
             })
             .catch((error) => {
                 setAlert(error.message, "error");
             });
-        if (!redirected && !isLoggedIn) {
-            const returnUrl = window.location.origin + location.pathname + location.search;
-            navigate(`${Paths.login.path}?returnUrl=${encodeURIComponent(returnUrl)}`);
-            setRedirected(true);
-        }
-    }, [setAlert, navigate, redirected, isLoggedIn, location.pathname, location.search]);
+    }, [setAlert, navigate]);
 
-    if (isLoggedIn) {
-        return <Layout />;
-    }
-    return null;
+    return isLoggedIn ? <Layout /> : null;
 }
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
