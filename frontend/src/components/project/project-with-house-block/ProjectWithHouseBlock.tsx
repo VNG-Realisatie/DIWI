@@ -1,5 +1,5 @@
 import { AvatarGroup, Box, Grid, Popover, Stack, TextField, Tooltip, Typography } from "@mui/material";
-import { MouseEvent, useContext, useEffect, useState } from "react";
+import { MouseEvent, useCallback, useContext, useEffect, useState } from "react";
 import ProjectContext from "../../../context/ProjectContext";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
@@ -94,33 +94,44 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
         setAnchorEl(null);
     };
 
-    useEffect(() => {
-        setSelectedBuurt(selectedProject?.buurt?.map((neighborhood) => neighborhood.name) ?? []);
-        setSelectedMunicipality(selectedProject?.municipality?.map((gemeente) => gemeente.name) ?? []);
-        setSelectedMunicipalityRole(selectedProject?.municipalityRole?.map((role) => role.name) ?? []);
-        setPlanType(selectedProject?.planType?.map((type) => type) ?? []);
-        setSelectedWijk(selectedProject?.wijk?.map((neighborhood) => neighborhood.name) ?? []);
-    }, [selectedProject]);
-
-    const open = Boolean(anchorEl);
-
-    const handleProjectEdit = () => {
+    const updateChanges = useCallback(() => {
         setName(selectedProject?.projectName);
         //add owner later
-        selectedProject?.planType && setPlanType(selectedProject?.planType);
-        setProjectEditable(true);
         setStartDate(dayjs(formatDate(selectedProject?.startDate)));
         setEndDate(dayjs(formatDate(selectedProject?.endDate)));
         setProjectPriority(""); //ToDo Fix type later
         setProjectPhase(selectedProject?.projectPhase);
-        selectedProject?.municipalityRole !== undefined &&
-            setSelectedMunicipalityRole(selectedProject?.municipalityRole.length > 0 ? selectedProject?.municipalityRole.map((r) => r.name) : []);
+        setSelectedBuurt(selectedProject?.buurt?.map((neighborhood) => neighborhood.name) ?? []);
+        setSelectedMunicipality(selectedProject?.municipality?.map((gemeente) => gemeente.name) ?? []);
+        setSelectedMunicipalityRole(selectedProject?.municipalityRole?.map((role) => role.name) ?? []);
         setConfidentialityLevel(selectedProject?.confidentialityLevel);
         //add leader later
-        selectedProject?.planningPlanStatus !== undefined && setPlanStatus(selectedProject.planningPlanStatus);
-        selectedProject?.municipality !== undefined && setSelectedMunicipality(selectedProject?.municipality?.map((m) => m.name));
-        selectedProject?.buurt !== undefined && setSelectedBuurt(selectedProject?.buurt?.map((m) => m.name));
-        selectedProject?.wijk !== undefined && setSelectedWijk(selectedProject?.wijk?.map((m) => m.name));
+        setPlanType(selectedProject?.planType?.map((type) => type) ?? []);
+        setPlanStatus(selectedProject?.planningPlanStatus?.map((type) => type) ?? []);
+        setSelectedWijk(selectedProject?.wijk?.map((neighborhood) => neighborhood.name) ?? []);
+    }, [
+        selectedProject?.buurt,
+        selectedProject?.confidentialityLevel,
+        selectedProject?.endDate,
+        selectedProject?.municipality,
+        selectedProject?.municipalityRole,
+        selectedProject?.planType,
+        selectedProject?.planningPlanStatus,
+        selectedProject?.projectName,
+        selectedProject?.projectPhase,
+        selectedProject?.startDate,
+        selectedProject?.wijk,
+    ]);
+
+    useEffect(() => {
+        updateChanges();
+    }, [updateChanges]);
+
+    const open = Boolean(anchorEl);
+
+    const handleProjectEdit = () => {
+        setProjectEditable(true);
+        updateChanges();
     };
     // const handleProjectSave = () => {
     //     console.log("add endpoint later");
