@@ -163,53 +163,50 @@ FROM (
                 sms.date <= _now_ AND _now_ < ems.date AND wmc.change_end_date IS NULL
             GROUP BY w.project_id
         ),
-        active_project_woningblok_wijk AS (
+        active_project_wijk AS (
             SELECT
-                w.project_id,
+                pgic.project_id,
                 array_agg(array[wijks.wijk_id::TEXT, wijks.waarde_label]) AS wijkModel,
                 array_agg(wijks.waarde_label ORDER BY wijks.waarde_label ASC) AS wijk
             FROM
-                diwi_testset.woningblok_gemeente_indeling_changelog wgic
-                    JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wgic.start_milestone_id AND sms.change_end_date IS NULL
-                    JOIN diwi_testset.milestone_state ems ON ems.milestone_id = wgic.end_milestone_id AND ems.change_end_date IS NULL
-                    JOIN diwi_testset.woningblok_gemeente_indeling_changelog_wijk wgicw ON wgicw.woningblok_gemeente_indeling_changelog_id = wgic.id
-                    JOIN diwi_testset.wijk_state wijks ON wijks.wijk_id = wgicw.wijk_id AND wijks.change_end_date IS NULL
-                    JOIN diwi_testset.woningblok w ON wgic.woningblok_id = w.id
+                diwi_testset.project_gemeente_indeling_changelog pgic
+                    JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pgic.start_milestone_id AND sms.change_end_date IS NULL
+                    JOIN diwi_testset.milestone_state ems ON ems.milestone_id = pgic.end_milestone_id AND ems.change_end_date IS NULL
+                    JOIN diwi_testset.project_gemeente_indeling_changelog_wijk pgicw ON pgicw.project_gemeente_indeling_changelog_id = pgic.id
+                    JOIN diwi_testset.wijk_state wijks ON wijks.wijk_id = pgicw.wijk_id AND wijks.change_end_date IS NULL
             WHERE
-                sms.date <= _now_ AND _now_ < ems.date AND wgic.change_end_date IS NULL
-            GROUP BY w.project_id
+                sms.date <= _now_ AND _now_ < ems.date AND pgic.change_end_date IS NULL
+            GROUP BY pgic.project_id
         ),
-        active_project_woningblok_buurt AS (
+        active_project_buurt AS (
             SELECT
-                w.project_id,
+                pgic.project_id,
                 array_agg(array[buurts.buurt_id::TEXT, buurts.waarde_label]) AS buurtModel,
                 array_agg(buurts.waarde_label ORDER BY buurts.waarde_label ASC) AS buurt
             FROM
-                diwi_testset.woningblok_gemeente_indeling_changelog wgic
-                    JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wgic.start_milestone_id AND sms.change_end_date IS NULL
-                    JOIN diwi_testset.milestone_state ems ON ems.milestone_id = wgic.end_milestone_id AND ems.change_end_date IS NULL
-                    JOIN diwi_testset.woningblok_gemeente_indeling_changelog_buurt wgicb ON wgicb.woningblok_gemeente_indeling_changelog_id = wgic.id
-                    JOIN diwi_testset.buurt_state buurts ON buurts.buurt_id = wgicb.buurt_id AND buurts.change_end_date IS NULL
-                    JOIN diwi_testset.woningblok w ON wgic.woningblok_id = w.id
+                diwi_testset.project_gemeente_indeling_changelog pgic
+                    JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pgic.start_milestone_id AND sms.change_end_date IS NULL
+                    JOIN diwi_testset.milestone_state ems ON ems.milestone_id = pgic.end_milestone_id AND ems.change_end_date IS NULL
+                    JOIN diwi_testset.project_gemeente_indeling_changelog_buurt pgicb ON pgicb.project_gemeente_indeling_changelog_id = pgic.id
+                    JOIN diwi_testset.buurt_state buurts ON buurts.buurt_id = pgicb.buurt_id AND buurts.change_end_date IS NULL
             WHERE
-                sms.date <= _now_ AND _now_ < ems.date AND wgic.change_end_date IS NULL
-            GROUP BY w.project_id
+                sms.date <= _now_ AND _now_ < ems.date AND pgic.change_end_date IS NULL
+            GROUP BY pgic.project_id
         ),
-        active_project_woningblok_municipality AS (
+        active_project_municipality AS (
             SELECT
-                w.project_id,
+                pgic.project_id,
                 array_agg(array[gemeentes.gemeente_id::TEXT, gemeentes.waarde_label]) AS municipalityModel,
                 array_agg(gemeentes.waarde_label ORDER BY gemeentes.waarde_label ASC) AS municipality
             FROM
-                diwi_testset.woningblok_gemeente_indeling_changelog wgic
-                    JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wgic.start_milestone_id AND sms.change_end_date IS NULL
-                    JOIN diwi_testset.milestone_state ems ON ems.milestone_id = wgic.end_milestone_id AND ems.change_end_date IS NULL
-                    JOIN diwi_testset.woningblok_gemeente_indeling_changelog_gemeente wgicg ON wgicg.woningblok_gemeente_indeling_changelog_id = wgic.id
-                    JOIN diwi_testset.gemeente_state gemeentes ON gemeentes.gemeente_id = wgicg.gemeente_id AND gemeentes.change_end_date IS NULL
-                    JOIN diwi_testset.woningblok w ON wgic.woningblok_id = w.id
+                diwi_testset.project_gemeente_indeling_changelog pgic
+                    JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pgic.start_milestone_id AND sms.change_end_date IS NULL
+                    JOIN diwi_testset.milestone_state ems ON ems.milestone_id = pgic.end_milestone_id AND ems.change_end_date IS NULL
+                    JOIN diwi_testset.project_gemeente_indeling_changelog_gemeente pgicg ON pgicg.project_gemeente_indeling_changelog_id = pgic.id
+                    JOIN diwi_testset.gemeente_state gemeentes ON gemeentes.gemeente_id = pgicg.gemeente_id AND gemeentes.change_end_date IS NULL
             WHERE
-                sms.date <= _now_ AND _now_ < ems.date AND wgic.change_end_date IS NULL
-            GROUP BY w.project_id
+                sms.date <= _now_ AND _now_ < ems.date AND pgic.change_end_date IS NULL
+            GROUP BY pgic.project_id
         ),
         future_projects AS (
             SELECT
@@ -319,53 +316,50 @@ FROM (
                 sms.date > _now_ AND wmc.change_end_date IS NULL
             GROUP BY w.project_id
         ),
-        future_project_woningblok_municipality AS (
+        future_project_municipality AS (
             SELECT
-                w.project_id,
+                pgic.project_id,
                 array_agg(gemeentes.waarde_label ORDER BY gemeentes.waarde_label ASC) AS municipality,
                 array_agg(array[gemeentes.gemeente_id::TEXT, gemeentes.waarde_label]) AS municipalityModel
             FROM
-                diwi_testset.woningblok_gemeente_indeling_changelog wgic
-                    JOIN diwi_testset.woningblok w ON wgic.woningblok_id = w.id
-                    JOIN diwi_testset.project_duration_changelog pdc ON pdc.project_id = w.project_id AND pdc.start_milestone_id = wgic.start_milestone_id AND pdc.change_end_date IS NULL
-                    JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wgic.start_milestone_id AND sms.change_end_date IS NULL
-                    JOIN diwi_testset.woningblok_gemeente_indeling_changelog_gemeente wgicg ON wgicg.woningblok_gemeente_indeling_changelog_id = wgic.id
-                    JOIN diwi_testset.gemeente_state gemeentes ON gemeentes.gemeente_id = wgicg.gemeente_id AND gemeentes.change_end_date IS NULL
+                diwi_testset.project_gemeente_indeling_changelog pgic
+                    JOIN diwi_testset.project_duration_changelog pdc ON pdc.project_id = pgic.project_id AND pdc.start_milestone_id = pgic.start_milestone_id AND pdc.change_end_date IS NULL
+                    JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pgic.start_milestone_id AND sms.change_end_date IS NULL
+                    JOIN diwi_testset.project_gemeente_indeling_changelog_gemeente pgicg ON pgicg.project_gemeente_indeling_changelog_id = pgic.id
+                    JOIN diwi_testset.gemeente_state gemeentes ON gemeentes.gemeente_id = pgicg.gemeente_id AND gemeentes.change_end_date IS NULL
             WHERE
-                sms.date > _now_ AND wgic.change_end_date IS NULL
-            GROUP BY w.project_id
+                sms.date > _now_ AND pgic.change_end_date IS NULL
+            GROUP BY pgic.project_id
         ),
-        future_project_woningblok_wijk AS (
+        future_project_wijk AS (
             SELECT
-                w.project_id,
+                pgic.project_id,
                 array_agg(wijks.waarde_label ORDER BY wijks.waarde_label ASC) AS wijk,
                 array_agg(array[wijks.wijk_id::TEXT, wijks.waarde_label]) AS wijkModel
             FROM
-                diwi_testset.woningblok_gemeente_indeling_changelog wgic
-                    JOIN diwi_testset.woningblok w ON wgic.woningblok_id = w.id
-                    JOIN diwi_testset.project_duration_changelog pdc ON pdc.project_id = w.project_id AND pdc.start_milestone_id = wgic.start_milestone_id AND pdc.change_end_date IS NULL
-                    JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wgic.start_milestone_id AND sms.change_end_date IS NULL
-                    JOIN diwi_testset.woningblok_gemeente_indeling_changelog_wijk wgick ON wgick.woningblok_gemeente_indeling_changelog_id = wgic.id
-                    JOIN diwi_testset.wijk_state wijks ON wijks.wijk_id = wgick.wijk_id AND wijks.change_end_date IS NULL
+                diwi_testset.project_gemeente_indeling_changelog pgic
+                    JOIN diwi_testset.project_duration_changelog pdc ON pdc.project_id = pgic.project_id AND pdc.start_milestone_id = pgic.start_milestone_id AND pdc.change_end_date IS NULL
+                    JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pgic.start_milestone_id AND sms.change_end_date IS NULL
+                    JOIN diwi_testset.project_gemeente_indeling_changelog_wijk pgick ON pgick.project_gemeente_indeling_changelog_id = pgic.id
+                    JOIN diwi_testset.wijk_state wijks ON wijks.wijk_id = pgick.wijk_id AND wijks.change_end_date IS NULL
             WHERE
-                sms.date > _now_ AND wgic.change_end_date IS NULL
-            GROUP BY w.project_id
+                sms.date > _now_ AND pgic.change_end_date IS NULL
+            GROUP BY pgic.project_id
         ),
-        future_project_woningblok_buurt AS (
+        future_project_buurt AS (
             SELECT
-                w.project_id,
+                pgic.project_id,
                 array_agg(buurts.waarde_label ORDER BY buurts.waarde_label ASC) AS buurt,
                 array_agg(array[buurts.buurt_id::TEXT, buurts.waarde_label]) AS buurtModel
             FROM
-                diwi_testset.woningblok_gemeente_indeling_changelog wgic
-                    JOIN diwi_testset.woningblok w ON wgic.woningblok_id = w.id
-                    JOIN diwi_testset.project_duration_changelog pdc ON pdc.project_id = w.project_id AND pdc.start_milestone_id = wgic.start_milestone_id AND pdc.change_end_date IS NULL
-                    JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wgic.start_milestone_id AND sms.change_end_date IS NULL
-                    JOIN diwi_testset.woningblok_gemeente_indeling_changelog_buurt wgicb ON wgicb.woningblok_gemeente_indeling_changelog_id = wgic.id
-                    JOIN diwi_testset.buurt_state buurts ON buurts.buurt_id = wgicb.buurt_id AND buurts.change_end_date IS NULL
+                diwi_testset.project_gemeente_indeling_changelog pgic
+                    JOIN diwi_testset.project_duration_changelog pdc ON pdc.project_id = pgic.project_id AND pdc.start_milestone_id = pgic.start_milestone_id AND pdc.change_end_date IS NULL
+                    JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pgic.start_milestone_id AND sms.change_end_date IS NULL
+                    JOIN diwi_testset.project_gemeente_indeling_changelog_buurt pgicb ON pgicb.project_gemeente_indeling_changelog_id = pgic.id
+                    JOIN diwi_testset.buurt_state buurts ON buurts.buurt_id = pgicb.buurt_id AND buurts.change_end_date IS NULL
             WHERE
-                sms.date > _now_ AND wgic.change_end_date IS NULL
-            GROUP BY w.project_id
+                sms.date > _now_ AND pgic.change_end_date IS NULL
+            GROUP BY pgic.project_id
         ),
         project_users AS (
             SELECT
@@ -431,9 +425,9 @@ FROM (
             LEFT JOIN active_project_priorities app ON app.project_id = ap.id
             LEFT JOIN active_project_gemeenterol apg ON apg.project_id = ap.id
             LEFT JOIN active_project_woningblok_totalvalue apwv ON apwv.project_id = ap.id
-            LEFT JOIN active_project_woningblok_municipality apwm ON apwm.project_id = ap.id
-            LEFT JOIN active_project_woningblok_buurt apwb ON apwb.project_id = ap.id
-            LEFT JOIN active_project_woningblok_wijk apww ON apww.project_id = ap.id
+            LEFT JOIN active_project_municipality apwm ON apwm.project_id = ap.id
+            LEFT JOIN active_project_buurt apwb ON apwb.project_id = ap.id
+            LEFT JOIN active_project_wijk apww ON apww.project_id = ap.id
             LEFT JOIN project_users leaders ON ps.project_id = leaders.project_id AND leaders.project_rol = 'PROJECT_LEIDER'
             LEFT JOIN project_users owners ON ps.project_id = owners.project_id AND owners.project_rol = 'OWNER'
 
@@ -476,9 +470,9 @@ FROM (
             LEFT JOIN future_project_priorities fpp ON fpp.project_id = fp.id
             LEFT JOIN future_project_gemeenterol fpg ON fpg.project_id = fp.id
             LEFT JOIN future_project_woningblok_totalvalue fpwv ON fpwv.project_id = fp.id
-            LEFT JOIN future_project_woningblok_municipality fpwm ON fpwm.project_id = fp.id
-            LEFT JOIN future_project_woningblok_buurt fpwb ON fpwb.project_id = fp.id
-            LEFT JOIN future_project_woningblok_wijk fpww ON fpww.project_id = fp.id
+            LEFT JOIN future_project_municipality fpwm ON fpwm.project_id = fp.id
+            LEFT JOIN future_project_buurt fpwb ON fpwb.project_id = fp.id
+            LEFT JOIN future_project_wijk fpww ON fpww.project_id = fp.id
             LEFT JOIN project_users leaders ON ps.project_id = leaders.project_id AND leaders.project_rol = 'PROJECT_LEIDER'
             LEFT JOIN project_users owners ON ps.project_id = owners.project_id AND owners.project_rol = 'OWNER'
 

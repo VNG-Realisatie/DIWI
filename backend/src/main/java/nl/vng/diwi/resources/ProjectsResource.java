@@ -71,13 +71,7 @@ public class ProjectsResource {
     @Produces(MediaType.APPLICATION_JSON)
     public ProjectSnapshotModel getCurrentProjectSnapshot(@PathParam("id") UUID projectUuid) throws VngNotFoundException {
 
-        Project project = projectService.getCurrentProject(repo, projectUuid);
-
-        if (project == null) {
-            throw new VngNotFoundException();
-        }
-
-        return new ProjectSnapshotModel(project);
+        return projectService.getProjectSnapshot(repo, projectUuid);
     }
 
     @GET
@@ -157,7 +151,7 @@ public class ProjectsResource {
             throw new VngNotFoundException();
         }
 
-        ProjectSnapshotModel projectSnapshotModelCurrent = new ProjectSnapshotModel(project);
+        ProjectSnapshotModel projectSnapshotModelCurrent = projectService.getProjectSnapshot(repo, projectUuid);
 
         List<ProjectUpdateModel> projectUpdateModelList = new ArrayList<>();
         for (ProjectUpdateModel.ProjectProperty projectProperty : ProjectUpdateModel.ProjectProperty.values()) {
@@ -279,7 +273,7 @@ public class ProjectsResource {
             repo.getSession().clear();
         }
 
-        return new ProjectSnapshotModel(repo.findById(Project.class, projectUuid));
+        return projectService.getProjectSnapshot(repo, projectUuid);
     }
 
     private void updateProjectProperty(Project project, ProjectUpdateModel projectUpdateModel, LoggedUser loggedUser, LocalDate updateDate)
