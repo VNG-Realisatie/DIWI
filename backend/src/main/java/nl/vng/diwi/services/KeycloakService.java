@@ -1,15 +1,9 @@
 package nl.vng.diwi.services;
 
 import jakarta.inject.Inject;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import nl.vng.diwi.config.ProjectConfig;
 
 public class KeycloakService implements AutoCloseable {
-    private static Logger logger = LogManager.getLogger();
-
 //    private final Keycloak keycloak;
 //    private final RealmResource realm;
 //    private final ProjectConfig config;
