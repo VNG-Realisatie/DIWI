@@ -23,6 +23,7 @@ import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.dal.entities.enums.ProjectRole;
 import nl.vng.diwi.models.OrganizationModel;
+import nl.vng.diwi.models.PriorityModel;
 import nl.vng.diwi.models.ProjectListModel;
 import nl.vng.diwi.models.ProjectSnapshotModel;
 import nl.vng.diwi.models.ProjectTimelineModel;
@@ -173,6 +174,15 @@ public class ProjectsResource {
                         projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.name, projectSnapshotModelToUpdate.getProjectName()));
                     }
                 }
+                case priority -> {
+                    if (!Objects.equals(projectSnapshotModelToUpdate.getPriority(), projectSnapshotModelCurrent.getPriority())) {
+                        PriorityModel priorityModelToUpdate = projectSnapshotModelToUpdate.getPriority();
+                        String value = (priorityModelToUpdate.getValue() == null) ? null : priorityModelToUpdate.getValue().getId().toString();
+                        UUID min = (priorityModelToUpdate.getMin() == null) ? null : priorityModelToUpdate.getMin().getId();
+                        UUID max = (priorityModelToUpdate.getMax() == null) ? null : priorityModelToUpdate.getMax().getId();
+                        projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.priority, value, min, max));
+                    }
+                }
                 case projectColor -> {
                     if (!Objects.equals(projectSnapshotModelToUpdate.getProjectColor(), projectSnapshotModelCurrent.getProjectColor())) {
                         projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectColor, projectSnapshotModelToUpdate.getProjectColor()));
@@ -197,12 +207,12 @@ public class ProjectsResource {
                     List<UUID> toUpdateMunicipalityRolesIds = projectSnapshotModelToUpdate.getMunicipalityRole().stream().map(SelectModel::getId).toList();
                     currentMunicipalityRolesIds.forEach(id -> {
                         if (!toUpdateMunicipalityRolesIds.contains(id)) {
-                            projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.municipalityRole, null, id.toString()));
+                            projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.municipalityRole, null, id));
                         }
                     });
                     toUpdateMunicipalityRolesIds.forEach(id -> {
                         if (!currentMunicipalityRolesIds.contains(id)) {
-                            projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.municipalityRole, id.toString(), null));
+                            projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.municipalityRole, id, null));
                         }
                     });
                 }
@@ -211,12 +221,12 @@ public class ProjectsResource {
                     List<UUID> toUpdateLeadersUuids = projectSnapshotModelToUpdate.getProjectLeaders().stream().map(OrganizationModel::getUuid).toList();
                     currentLeadersUuids.forEach(uuid -> {
                         if (!toUpdateLeadersUuids.contains(uuid)) {
-                            projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectLeaders, null, uuid.toString()));
+                            projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectLeaders, null, uuid));
                         }
                     });
                     toUpdateLeadersUuids.forEach(uuid -> {
                         if (!currentLeadersUuids.contains(uuid)) {
-                            projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectLeaders, uuid.toString(), null));
+                            projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectLeaders, uuid, null));
                         }
                     });
                 }
@@ -225,12 +235,12 @@ public class ProjectsResource {
                     List<UUID> toUpdateOwnersUuids = projectSnapshotModelToUpdate.getProjectOwners().stream().map(OrganizationModel::getUuid).toList();
                     currentOwnersUuids.forEach(uuid -> {
                         if (!toUpdateOwnersUuids.contains(uuid)) {
-                            projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectOwners, null, uuid.toString()));
+                            projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectOwners, null, uuid));
                         }
                     });
                     toUpdateOwnersUuids.forEach(uuid -> {
                         if (!currentOwnersUuids.contains(uuid)) {
-                            projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectOwners, uuid.toString(), null));
+                            projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectOwners, uuid, null));
                         }
                     });
                 }
@@ -294,21 +304,25 @@ public class ProjectsResource {
                     projectUpdateModel.getValues().stream().map(PlanType::valueOf).collect(Collectors.toSet()) : new HashSet<>();
                 projectService.updateProjectPlanTypes(repo, project, planTypes, loggedUser.getUuid(), updateDate);
             }
+            case priority -> {
+                UUID priorityValue = (projectUpdateModel.getValue() == null) ? null : UUID.fromString(projectUpdateModel.getValue());
+                projectService.updateProjectPriority(repo, project, priorityValue, projectUpdateModel.getMin(), projectUpdateModel.getMax(), loggedUser.getUuid(), updateDate);
+            }
             case projectPhase ->
                 projectService.updateProjectPhase(repo, project, ProjectPhase.valueOf(projectUpdateModel.getValue()), loggedUser.getUuid(), updateDate);
             case projectLeaders -> {
-                UUID organizationToAdd = (projectUpdateModel.getAdd() != null) ? UUID.fromString(projectUpdateModel.getAdd()) : null;
-                UUID organizationToRemove = (projectUpdateModel.getRemove() != null) ? UUID.fromString(projectUpdateModel.getRemove()) : null;
+                UUID organizationToAdd = projectUpdateModel.getAdd();
+                UUID organizationToRemove = projectUpdateModel.getRemove();
                 projectService.updateProjectOrganizations(repo, project, ProjectRole.PROJECT_LEIDER, organizationToAdd, organizationToRemove, loggedUser.getUuid());
             }
             case projectOwners -> {
-                UUID organizationToAdd = (projectUpdateModel.getAdd() != null) ? UUID.fromString(projectUpdateModel.getAdd()) : null;
-                UUID organizationToRemove = (projectUpdateModel.getRemove() != null) ? UUID.fromString(projectUpdateModel.getRemove()) : null;
+                UUID organizationToAdd = projectUpdateModel.getAdd();
+                UUID organizationToRemove = projectUpdateModel.getRemove();
                 projectService.updateProjectOrganizations(repo, project, ProjectRole.OWNER, organizationToAdd, organizationToRemove, loggedUser.getUuid());
             }
             case municipalityRole -> {
-                UUID municipalityRoleToAdd = (projectUpdateModel.getAdd() != null) ? UUID.fromString(projectUpdateModel.getAdd()) : null;
-                UUID municipalityRoleToRemove = (projectUpdateModel.getRemove() != null) ? UUID.fromString(projectUpdateModel.getRemove()) : null;
+                UUID municipalityRoleToAdd = projectUpdateModel.getAdd();
+                UUID municipalityRoleToRemove = projectUpdateModel.getRemove();
                 projectService.updateProjectMunicipalityRoles(repo, project, municipalityRoleToAdd, municipalityRoleToRemove, loggedUser.getUuid(), updateDate);
             }
         }

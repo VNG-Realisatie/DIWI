@@ -10,6 +10,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 @Entity
 @Table(name = "project_priorisering_changelog", schema = GenericRepository.VNG_SCHEMA_NAME)
@@ -25,6 +27,7 @@ public class ProjectPrioriseringChangelog extends MilestoneChangeDataSuperclass 
 
     @Column(name = "value_type")
     @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
     private ValueType valueType;
 
     @ManyToOne(fetch = FetchType.EAGER)

@@ -24,6 +24,7 @@ public class ProjectUpdateModel {
         name,
         planningPlanStatus,
         planType,
+        priority,
         projectColor,
         projectLeaders,
         projectOwners,
@@ -41,11 +42,15 @@ public class ProjectUpdateModel {
 
     private List<String> values;
 
-    private String add;
+    private UUID add;
 
-    private String remove;
+    private UUID remove;
 
-    public ProjectUpdateModel(ProjectProperty property, String add, String remove) {
+    private UUID min;
+
+    private UUID max;
+
+    public ProjectUpdateModel(ProjectProperty property, UUID add, UUID remove) {
         this.property = property;
         this.add = add;
         this.remove = remove;
@@ -61,73 +66,78 @@ public class ProjectUpdateModel {
         this.values = values;
     }
 
+    public ProjectUpdateModel(ProjectProperty property, String value, UUID min, UUID max) {
+        this.property = property;
+        this.value = value;
+        this.min = min;
+        this.max = max;
+    }
+
     public String validate() {
         if (property == null) {
             return "Property is missing";
         }
 
         return switch (property) {
-        case startDate -> {
-            try {
-                LocalDate.parse(value);
-            } catch (Exception ex) {
-                yield "Date provided is not valid.";
-            }
-            yield null;
-        }
-        case endDate -> {
-            try {
-                LocalDate endDate = LocalDate.parse(value);
-                if (!endDate.isAfter(LocalDate.now())) {
-                    yield "Project end date must be in the future.";
+            case startDate -> {
+                try {
+                    LocalDate.parse(value);
+                } catch (Exception ex) {
+                    yield "Date provided is not valid.";
                 }
-            } catch (Exception ex) {
-                yield "Date provided is not valid.";
+                yield null;
             }
-            yield null;
-        }
-        case confidentialityLevel ->
-            (value == null || !EnumUtils.isValidEnum(Confidentiality.class, value)) ? "New confidentiality level value is not valid." : null;
-        case name -> (value == null || value.isBlank()) ? "New project name value is not valid." : null; // TODO
-        case planningPlanStatus -> {
-            if (values != null) {
-                for (String planningPlanStatusValue : values) {
-                    if (!EnumUtils.isValidEnum(PlanStatus.class, planningPlanStatusValue)) {
-                        yield "New planning plan status value is not valid.";
+            case endDate -> {
+                try {
+                    LocalDate endDate = LocalDate.parse(value);
+                    if (!endDate.isAfter(LocalDate.now())) {
+                        yield "Project end date must be in the future.";
+                    }
+                } catch (Exception ex) {
+                    yield "Date provided is not valid.";
+                }
+                yield null;
+            }
+            case confidentialityLevel ->
+                (value == null || !EnumUtils.isValidEnum(Confidentiality.class, value)) ? "New confidentiality level value is not valid." : null;
+            case name -> (value == null || value.isBlank()) ? "New project name value is not valid." : null; // TODO
+            case planningPlanStatus -> {
+                if (values != null) {
+                    for (String planningPlanStatusValue : values) {
+                        if (!EnumUtils.isValidEnum(PlanStatus.class, planningPlanStatusValue)) {
+                            yield "New planning plan status value is not valid.";
+                        }
                     }
                 }
+                yield null;
             }
-            yield null;
-        }
-        case planType -> {
-            if (values != null) {
-                for (String planType : values) {
-                    if (!EnumUtils.isValidEnum(PlanType.class, planType)) {
-                        yield "New plan type value is not valid.";
+            case planType -> {
+                if (values != null) {
+                    for (String planType : values) {
+                        if (!EnumUtils.isValidEnum(PlanType.class, planType)) {
+                            yield "New plan type value is not valid.";
+                        }
                     }
                 }
+                yield null;
             }
-            yield null;
-        }
-        case projectColor -> (value == null || !value.matches(COLOR_REGEX)) ? "New color is not valid." : null;
-        case projectPhase -> (value == null || !EnumUtils.isValidEnum(ProjectPhase.class, value)) ? "New project phase value is not valid." : null;
-        case municipalityRole, projectLeaders, projectOwners -> {
-            if (add != null) {
-                try {
-                    UUID.fromString(add);
-                } catch (IllegalArgumentException ex) {
-                    yield "UUID provided for 'add' field is not valid.";
+            case priority -> {
+                if (value == null && min != null && max != null) {
+                    yield null;
                 }
-            }
-            if (remove != null) {
-                try {
-                    UUID.fromString(remove);
-                } catch (IllegalArgumentException ex) {
-                    yield "UUID provided for 'remove' field is not valid.";
+                if (value != null && min == null && max == null) {
+                    try {
+                        UUID.fromString(value);
+                    } catch (IllegalArgumentException ex) {
+                        yield "UUID provided for priority 'value' field is not valid.";
+                    }
+                    yield null;
                 }
+                yield "Invalid values for new priority. Provide either the 'value' field, or the 'min' and 'max' fields.";
             }
-            yield null;
-        }
+            case projectColor -> (value == null || !value.matches(COLOR_REGEX)) ? "New color is not valid." : null;
+            case projectPhase -> (value == null || !EnumUtils.isValidEnum(ProjectPhase.class, value)) ? "New project phase value is not valid." : null;
+            case municipalityRole, projectLeaders, projectOwners -> null;
         };
 
     }

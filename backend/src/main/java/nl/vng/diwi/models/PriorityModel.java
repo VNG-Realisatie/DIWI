@@ -1,12 +1,14 @@
 package nl.vng.diwi.models;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
 @NoArgsConstructor
+@EqualsAndHashCode
 public class PriorityModel {
 
     private SelectModel value;
@@ -23,4 +25,5 @@ public class PriorityModel {
             }
         }
     }
+
 }

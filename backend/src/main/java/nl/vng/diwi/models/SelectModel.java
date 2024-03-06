@@ -2,6 +2,7 @@ package nl.vng.diwi.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.UUID;
@@ -9,6 +10,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class SelectModel implements Comparable<SelectModel> {
 
     private UUID id;
@@ -19,4 +21,5 @@ public class SelectModel implements Comparable<SelectModel> {
     public int compareTo(SelectModel o) {
         return this.name.compareToIgnoreCase(o.getName());
     }
+
 }
