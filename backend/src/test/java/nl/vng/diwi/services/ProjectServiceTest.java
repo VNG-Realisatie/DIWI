@@ -25,8 +25,13 @@ public class ProjectServiceTest {
 
     private static DalFactory dalFactory;
     private static TestDb testDb;
+
     private Dal dal;
     private VngRepository repo;
+    private UUID userUuid;
+    private User user;
+    private Project project;
+    private UUID projectUuid;
 
     private static ProjectService projectService;
 
@@ -46,6 +51,15 @@ public class ProjectServiceTest {
     void beforeEach() {
         dal = dalFactory.constructDal();
         repo = new VngRepository(dal.getSession());
+
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+            user = repo.persist(new User());
+            userUuid = user.getId();
+
+            project = createProject(repo, user);
+            projectUuid = project.getId();
+            transaction.commit();
+        }
     }
 
     @AfterEach
@@ -64,12 +78,9 @@ public class ProjectServiceTest {
     @Test
     void updateProjectNameTest() throws VngServerErrorException, VngBadRequestException, VngNotFoundException {
 
-        UUID userUuid;
         UUID projectUuid;
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            User user = repo.persist(new User());
-            userUuid = user.getId();
             Project project = createProject(repo, user);
             projectUuid = project.getId();
             Milestone startMilestone = createMilestone(repo, project, LocalDate.now().minusDays(10), user);
@@ -125,14 +136,7 @@ public class ProjectServiceTest {
     @Test
     void updateProjectPhaseTest() throws VngServerErrorException, VngBadRequestException, VngNotFoundException {
 
-        UUID userUuid;
-        UUID projectUuid;
-
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            User user = repo.persist(new User());
-            userUuid = user.getId();
-            Project project = createProject(repo, user);
-            projectUuid = project.getId();
             Milestone startMilestone = createMilestone(repo, project, LocalDate.now().minusDays(10), user);
             Milestone middleMilestone = createMilestone(repo, project, LocalDate.now().plusDays(5), user);
             Milestone endMilestone = createMilestone(repo, project, LocalDate.now().plusDays(10), user);
@@ -174,14 +178,7 @@ public class ProjectServiceTest {
     @Test
     void updateProjectPlanStatus() throws VngServerErrorException, VngBadRequestException, VngNotFoundException {
 
-        UUID userUuid;
-        UUID projectUuid;
-
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            User user = repo.persist(new User());
-            userUuid = user.getId();
-            Project project = createProject(repo, user);
-            projectUuid = project.getId();
             Milestone startMilestone = createMilestone(repo, project, LocalDate.now().minusDays(10), user);
             Milestone endMilestone = createMilestone(repo, project, LocalDate.now().plusDays(10), user);
             createProjectDurationChangelog(repo, project, startMilestone, endMilestone, user);
@@ -231,16 +228,9 @@ public class ProjectServiceTest {
      */
     @Test
     void updateProjectMunicipalityRole() throws VngServerErrorException, VngBadRequestException, VngNotFoundException {
-
-        UUID userUuid;
-        UUID projectUuid;
         UUID municipalityRoleUuid;
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            User user = repo.persist(new User());
-            userUuid = user.getId();
-            Project project = createProject(repo, user);
-            projectUuid = project.getId();
             Milestone startMilestone = createMilestone(repo, project, LocalDate.now().minusDays(10), user);
             Milestone endMilestone = createMilestone(repo, project, LocalDate.now().plusDays(10), user);
             createProjectDurationChangelog(repo, project, startMilestone, endMilestone, user);
