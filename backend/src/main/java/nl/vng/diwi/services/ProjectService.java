@@ -50,6 +50,18 @@ public class ProjectService {
         return result;
     }
 
+    public void deleteProject(VngRepository repo, UUID projectUuid,  UUID loggedInUserUuid) {
+        var now = ZonedDateTime.now();
+        var user = repo.findById(User.class, loggedInUserUuid);
+
+        repo.getProjectsDAO().getCurrentProject(projectUuid);
+        var currentProjectState = repo.getProjectsDAO().getCurrentProjectState(projectUuid);
+
+        currentProjectState.setChangeEndDate(now);
+        currentProjectState.setChangeUser(user);
+
+    }
+
     public void updateProjectColor(VngRepository repo, Project project, String newColor, UUID loggedInUserUuid)
         throws VngNotFoundException {
 
@@ -538,4 +550,5 @@ public class ProjectService {
 
         return milestone;
     }
+
 }
