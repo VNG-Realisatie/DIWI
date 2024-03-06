@@ -1,5 +1,5 @@
 import { AvatarGroup, Box, Grid, Popover, Stack, TextField, Tooltip, Typography } from "@mui/material";
-import { MouseEvent, useContext, useState } from "react";
+import { MouseEvent, useContext, useEffect, useState } from "react";
 import ProjectContext from "../../../context/ProjectContext";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
@@ -91,6 +91,14 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
     const handleClose = () => {
         setAnchorEl(null);
     };
+
+    useEffect(() => {
+        setSelectedBuurt(selectedProject?.buurt?.map((neighborhood) => neighborhood.name) ?? []);
+        setSelectedMunicipality(selectedProject?.municipality?.map((gemeente) => gemeente.name) ?? []);
+        setSelectedMunicipalityRole(selectedProject?.municipalityRole?.map((role) => role.name) ?? []);
+        setPlanType(selectedProject?.planType?.map((type) => type) ?? []);
+        setSelectedWijk(selectedProject?.wijk?.map((neighborhood) => neighborhood.name) ?? []);
+    }, [selectedProject]);
 
     const open = Boolean(anchorEl);
     return (
