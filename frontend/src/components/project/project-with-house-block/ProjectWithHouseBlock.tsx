@@ -154,11 +154,11 @@ export const ProjectsWithHouseBlock = () => {
                             <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
                                 {planType.length > 0
                                     ? planType.map((pt: string) => {
-                                        return <span key={pt}>{t(`projectTable.planTypeOptions.${pt}`)},</span>;
-                                    })
+                                          return <span key={pt}>{t(`projectTable.planTypeOptions.${pt}`)},</span>;
+                                      })
                                     : selectedProject?.planType?.map((pt) => {
-                                        return <span key={pt}>{t(`projectTable.planTypeOptions.${pt}`)},</span>;
-                                    })}
+                                          return <span key={pt}>{t(`projectTable.planTypeOptions.${pt}`)},</span>;
+                                      })}
                             </Typography>
                         ) : (
                             <PlanTypeEditForm planType={planType} setPlanType={setPlanType} />
@@ -222,11 +222,11 @@ export const ProjectsWithHouseBlock = () => {
                             <CellContainer>
                                 {selectedMunicipalityRole.length > 0
                                     ? selectedMunicipalityRole.map((mr: string) => {
-                                        return <span key={mr}>{mr}</span>;
-                                    })
+                                          return <span key={mr}>{mr}</span>;
+                                      })
                                     : selectedProject?.municipalityRole?.map((mr) => {
-                                        return <span key={mr.id}>{mr.name}</span>;
-                                    })}
+                                          return <span key={mr.id}>{mr.name}</span>;
+                                      })}
                             </CellContainer>
                         ) : (
                             <MunicipalityRoleEditForm
@@ -269,11 +269,11 @@ export const ProjectsWithHouseBlock = () => {
                             <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
                                 {planStatus.length > 0
                                     ? planStatus.map((pp: string) => {
-                                        return <span key={pp}>{t(`projectTable.planningPlanStatus.${pp}`)}</span>;
-                                    })
+                                          return <span key={pp}>{t(`projectTable.planningPlanStatus.${pp}`)}</span>;
+                                      })
                                     : selectedProject?.planningPlanStatus?.map((pp) => {
-                                        return <span key={pp}>{t(`projectTable.planningPlanStatus.${pp}`)}</span>;
-                                    })}
+                                          return <span key={pp}>{t(`projectTable.planningPlanStatus.${pp}`)}</span>;
+                                      })}
                             </Typography>
                         ) : (
                             <PlanStatusEditForm planStatus={planStatus} setPlanStatus={setPlanStatus} />
@@ -286,11 +286,11 @@ export const ProjectsWithHouseBlock = () => {
                             <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
                                 {selectedMunicipality.length > 0
                                     ? selectedMunicipality.map((municipality: string) => {
-                                        return <span key={municipality}>{municipality},</span>;
-                                    })
+                                          return <span key={municipality}>{municipality},</span>;
+                                      })
                                     : selectedProject?.municipality?.map((municipality) => {
-                                        return <span key={municipality.id}>{municipality.name},</span>;
-                                    })}
+                                          return <span key={municipality.id}>{municipality.name},</span>;
+                                      })}
                             </Typography>
                         ) : (
                             <MunicipalityEditForm selectedMunicipality={selectedMunicipality} setSelectedMunicipality={setSelectedMunicipality} />
@@ -303,11 +303,11 @@ export const ProjectsWithHouseBlock = () => {
                             <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
                                 {selectedBuurt.length > 0
                                     ? selectedBuurt.map((buurt: string) => {
-                                        return <span key={buurt}>{buurt},</span>;
-                                    })
+                                          return <span key={buurt}>{buurt},</span>;
+                                      })
                                     : selectedProject?.buurt?.map((buurt) => {
-                                        return <span key={buurt.id}>{buurt.name},</span>;
-                                    })}
+                                          return <span key={buurt.id}>{buurt.name},</span>;
+                                      })}
                             </Typography>
                         ) : (
                             <BuurtEditForm selectedBuurt={selectedBuurt} setSelectedBuurt={setSelectedBuurt} />
@@ -320,11 +320,11 @@ export const ProjectsWithHouseBlock = () => {
                             <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
                                 {selectedWijk.length > 0
                                     ? selectedWijk.map((wijk: string) => {
-                                        return <span key={wijk}>{wijk},</span>;
-                                    })
+                                          return <span key={wijk}>{wijk},</span>;
+                                      })
                                     : selectedProject?.wijk?.map((wijk) => {
-                                        return <span key={wijk.id}>{wijk.name},</span>;
-                                    })}
+                                          return <span key={wijk.id}>{wijk.name},</span>;
+                                      })}
                             </Typography>
                         ) : (
                             <WijkEditForm selectedWijk={selectedWijk} setSelectedWijk={setSelectedWijk} />

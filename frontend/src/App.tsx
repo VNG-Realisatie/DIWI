@@ -12,6 +12,8 @@ import { NoMatch } from "./pages/NoMatch";
 import * as Paths from "./Paths";
 import { ProjectDetail } from "./pages/ProjectDetail";
 import { ProjectProvider } from "./context/ProjectContext";
+import { ReactComponent as TimeLineImg } from "./assets/temp/timeline.svg";
+import DetailsWithMap from "./components/DetailsWithMap";
 import { PolicyLists } from "./pages/PolicyLists";
 import { DashboardProjects } from "./pages/DashboardProjects";
 import { ExchangeData } from "./pages/ExchangeData";
@@ -152,7 +154,9 @@ function App() {
                             path={Paths.projectDetail.path}
                             element={
                                 <ProjectProvider>
-                                    <ProjectDetail />
+                                    <ProjectDetail>
+                                        <DetailsWithMap />
+                                    </ProjectDetail>
                                 </ProjectProvider>
                             }
                         />
@@ -170,7 +174,9 @@ function App() {
                             path={Paths.projectDetailTimeline.path}
                             element={
                                 <ProjectProvider>
-                                    <ProjectDetail />
+                                    <ProjectDetail>
+                                        <TimeLineImg style={{ width: "100%" }} />
+                                    </ProjectDetail>
                                 </ProjectProvider>
                             }
                         />
