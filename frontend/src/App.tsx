@@ -23,6 +23,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { nlNL } from "@mui/material/locale";
 import { Swagger } from "./pages/Swagger";
 import { diwiFetch } from "./utils/requests";
+import { ProjectsWithHouseBlock } from "./components/project/project-with-house-block/ProjectWithHouseBlock";
 
 export const drawerWidth = 290;
 
@@ -159,7 +160,9 @@ function App() {
                             path={Paths.projectDetailCharacteristics.path}
                             element={
                                 <ProjectProvider>
-                                    <ProjectDetail />
+                                    <ProjectDetail>
+                                        <ProjectsWithHouseBlock />
+                                    </ProjectDetail>
                                 </ProjectProvider>
                             }
                         />
