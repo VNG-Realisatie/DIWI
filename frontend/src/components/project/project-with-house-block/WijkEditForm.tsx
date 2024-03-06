@@ -1,7 +1,6 @@
 import { Checkbox, ListItemText, MenuItem, OutlinedInput, Select, SelectChangeEvent } from "@mui/material";
 import { MenuProps } from "../../../utils/menuProps";
 import { useEffect, useState } from "react";
-
 import { OptionType } from "../ProjectsTableView";
 import { getWijkList } from "../../../api/projectsTableServices";
 
