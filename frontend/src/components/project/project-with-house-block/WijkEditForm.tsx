@@ -1,7 +1,7 @@
 import { Checkbox, ListItemText, MenuItem, OutlinedInput, Select, SelectChangeEvent } from "@mui/material";
 import { MenuProps } from "../../../utils/menuProps";
-import { useContext, useEffect, useState } from "react";
-import ProjectContext from "../../../context/ProjectContext";
+import { useEffect, useState } from "react";
+
 import { OptionType } from "../ProjectsTableView";
 import { getWijkList } from "../../../api/projectsTableServices";
 
@@ -12,7 +12,6 @@ type Props = {
 
 export const WijkEditForm = ({ selectedWijk, setSelectedWijk }: Props) => {
     const [wijkOptions, setWijkOptions] = useState<OptionType[]>();
-    const { selectedProject } = useContext(ProjectContext);
 
     const handleWijkChange = (event: SelectChangeEvent<typeof selectedWijk>) => {
         const {
@@ -31,7 +30,7 @@ export const WijkEditForm = ({ selectedWijk, setSelectedWijk }: Props) => {
             size="small"
             id="wijk-checkbox"
             multiple
-            value={selectedProject?.wijk?.map((w) => w.name) || []}
+            value={selectedWijk}
             onChange={handleWijkChange}
             input={<OutlinedInput />}
             renderValue={(selected) => selected.join(", ")}

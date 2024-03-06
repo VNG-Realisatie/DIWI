@@ -95,6 +95,28 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
     };
 
     const open = Boolean(anchorEl);
+
+    const handleProjectEdit = () => {
+        setName(selectedProject?.projectName);
+        //add owner later
+        selectedProject?.planType && setPlanType(selectedProject?.planType);
+        setProjectEditable(true);
+        setStartDate(dayjs(formatDate(selectedProject?.startDate)));
+        setEndDate(dayjs(formatDate(selectedProject?.endDate)));
+        setProjectPriority(""); //ToDo Fix type later
+        setProjectPhase(selectedProject?.projectPhase);
+        selectedProject?.municipalityRole !== undefined &&
+            setSelectedMunicipalityRole(selectedProject?.municipalityRole.length > 0 ? selectedProject?.municipalityRole.map((r) => r.name) : []);
+        setConfidentialityLevel(selectedProject?.confidentialityLevel);
+        //add leader later
+        selectedProject?.planningPlanStatus !== undefined && setPlanStatus(selectedProject.planningPlanStatus);
+        selectedProject?.municipality !== undefined && setSelectedMunicipality(selectedProject?.municipality?.map((m) => m.name));
+        selectedProject?.buurt !== undefined && setSelectedBuurt(selectedProject?.buurt?.map((m) => m.name));
+        selectedProject?.wijk !== undefined && setSelectedWijk(selectedProject?.wijk?.map((m) => m.name));
+    };
+    // const handleProjectSave = () => {
+    //     console.log("add endpoint later");
+    // };
     return (
         <Stack my={1} p={1} mb={10}>
             <Box sx={{ cursor: "pointer" }} position="absolute" right={10} top={55} zIndex={9999}>
@@ -109,7 +131,7 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
                 </Tooltip>
                 {!projectEditable && (
                     <Tooltip placement="top" title={t("generic.edit")}>
-                        <EditIcon sx={{ color: "#FFFFFF" }} onClick={() => setProjectEditable(true)} />
+                        <EditIcon sx={{ color: "#FFFFFF" }} onClick={handleProjectEdit} />
                     </Tooltip>
                 )}
                 {projectEditable && (
@@ -174,12 +196,7 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
                         {!projectEditable ? (
                             <CellContainer>{startDate ? convertDayjsToString(startDate) : selectedProject?.startDate}</CellContainer>
                         ) : (
-                            <DatePicker
-                                format="DD-MM-YYYY"
-                                slotProps={{ textField: { size: "small" } }}
-                                value={startDate ? startDate : dayjs(formatDate(selectedProject?.startDate))}
-                                onChange={handleStartDateChange}
-                            />
+                            <DatePicker format="DD-MM-YYYY" slotProps={{ textField: { size: "small" } }} value={startDate} onChange={handleStartDateChange} />
                         )}
                     </Grid>
                     <Grid item xs={6} md={1.1}>
@@ -188,12 +205,7 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
                         {!projectEditable ? (
                             <CellContainer>{endDate ? convertDayjsToString(endDate) : selectedProject?.endDate}</CellContainer>
                         ) : (
-                            <DatePicker
-                                format="DD-MM-YYYY"
-                                slotProps={{ textField: { size: "small" } }}
-                                value={endDate ? endDate : dayjs(formatDate(selectedProject?.endDate))}
-                                onChange={handleEndDateChange}
-                            />
+                            <DatePicker format="DD-MM-YYYY" slotProps={{ textField: { size: "small" } }} value={endDate} onChange={handleEndDateChange} />
                         )}
                     </Grid>
                     <Grid item xs={12} md={2}>
