@@ -24,6 +24,7 @@ import { BlockPicker, ColorResult } from "react-color";
 import { CellContainer } from "./CellContainer";
 import { OrganizationUserAvatars } from "../../OrganizationUserAvatars";
 import { PlanStatusOptions, PlanTypeOptions } from "../../../types/enums";
+import { PriorityEditForm } from "./PriorityEditForm";
 // import { ProjectHouseBlockCardItem } from "./ProjectHouseBlockCardItem";
 
 type Props = {
@@ -52,6 +53,7 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
     const [selectedMunicipality, setSelectedMunicipality] = useState<string[]>([]);
     const [selectedBuurt, setSelectedBuurt] = useState<string[]>([]);
     const [selectedWijk, setSelectedWijk] = useState<string[]>([]);
+    const [projectPriority, setProjectPriority] = useState<string | undefined>();
 
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const handleStartDateChange = (newValue: Dayjs | null) => setStartDate(newValue);
@@ -199,11 +201,15 @@ export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjec
 
                         {!projectEditable ? (
                             <CellContainer>
-                                <span key={selectedProject?.priority?.value?.id}>{selectedProject?.priority?.value?.name},</span>
+                                <span key={projectPriority !== undefined ? projectPriority : selectedProject?.priority?.value?.id}>
+                                    {selectedProject?.priority?.value !== null
+                                        ? selectedProject?.priority?.value !== null
+                                        : `${selectedProject.priority.min?.name}-${selectedProject.priority.max?.name}`}
+                                </span>
                             </CellContainer>
                         ) : (
                             // TODO Implement later
-                            <TextField size="small" id="outlined-basic" variant="outlined" />
+                            <PriorityEditForm projectPriority={projectPriority} setProjectPriority={setProjectPriority} />
                         )}
                     </Grid>
                     <Grid item xs={12} md={2}>

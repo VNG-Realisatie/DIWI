@@ -6,11 +6,11 @@
       "save": "Opslaan",
       "next": "Volgende",
       "previous": "Vorig",
-      "cancelChanges":"Stop veranderingen",
-      "saveChanges":"Opslaan veranderingen",
-      "edit":"Bewerken",
+      "cancelChanges": "Stop veranderingen",
+      "saveChanges": "Opslaan veranderingen",
+      "edit": "Bewerken",
       "confirmDeletion": "Weet u zeker dat u {{name}} wilt verwijderen?",
-      "delete" : "Verwijderen"
+      "delete": "Verwijderen"
     },
     "createProject": {
       "information": "Project informatie",
@@ -126,7 +126,7 @@
       "map": "Kaart",
       "characteristics": "Eigenschappen",
       "timeline": "Tijdlijn",
-      "colorEdit":"Kleur bewerken"
+      "colorEdit": "Kleur bewerken"
     },
     "exchangeData": {
       "title": "Data uitwisselen",

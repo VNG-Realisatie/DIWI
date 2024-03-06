@@ -3,7 +3,7 @@ import { Project } from "../../api/projectsServices";
 import { MultiSelect } from "./MultiSelect";
 import { OptionType, SelectedOptionWithId } from "../project/ProjectsTableView";
 import { useTranslation } from "react-i18next";
-import { ProductTableOption, getBuurtList } from "../../api/projectsTableServices";
+import { ProjectTableOption, getBuurtList } from "../../api/projectsTableServices";
 import { useEffect, useState } from "react";
 
 type Props = {
@@ -13,7 +13,7 @@ type Props = {
 };
 
 export const BuurtCell = ({ cellValues, selectedBuurt, handleBuurtChange }: Props) => {
-    const [buurtOptions, setBuurtOptions] = useState<ProductTableOption[]>([]);
+    const [buurtOptions, setBuurtOptions] = useState<ProjectTableOption[]>([]);
 
     const { t } = useTranslation();
 

@@ -1,8 +1,6 @@
 import { Checkbox, ListItemText, MenuItem, OutlinedInput, Select, SelectChangeEvent } from "@mui/material";
 import { planningPlanStatus } from "../../table/constants";
-import { useContext } from "react";
 import { useTranslation } from "react-i18next";
-import ProjectContext from "../../../context/ProjectContext";
 import { MenuProps } from "../../../utils/menuProps";
 import { PlanStatusOptions } from "../../../types/enums";
 
@@ -13,7 +11,6 @@ type Props = {
 
 export const PlanStatusEditForm = ({ planStatus, setPlanStatus }: Props) => {
     const { t } = useTranslation();
-    const { selectedProject } = useContext(ProjectContext);
 
     const handlePlanStatusChange = (event: SelectChangeEvent<typeof planStatus>) => {
         const {
@@ -21,16 +18,6 @@ export const PlanStatusEditForm = ({ planStatus, setPlanStatus }: Props) => {
         } = event;
         if (typeof value !== "string") {
             setPlanStatus(value);
-        }
-    };
-
-    const checkControl = (inputName: PlanStatusOptions) => {
-        if (planStatus.length > 0) {
-            return planStatus.indexOf(inputName) !== -1;
-        } else if (selectedProject) {
-            if (selectedProject.planningPlanStatus !== null && selectedProject.planningPlanStatus !== undefined) {
-                return selectedProject.planningPlanStatus.indexOf(inputName) !== -1;
-            }
         }
     };
 
@@ -48,7 +35,7 @@ export const PlanStatusEditForm = ({ planStatus, setPlanStatus }: Props) => {
         >
             {planningPlanStatus.map((pt) => (
                 <MenuItem key={pt.id} value={pt.id}>
-                    <Checkbox checked={checkControl(pt.id)} />
+                    <Checkbox checked={planStatus.indexOf(pt.id) !== -1} />
                     <ListItemText primary={t(`projectTable.planningPlanStatus.${pt.name}`)} />
                 </MenuItem>
             ))}

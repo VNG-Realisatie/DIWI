@@ -37,7 +37,7 @@ export const BuurtEditForm = ({ selectedBuurt, setSelectedBuurt }: Props) => {
         >
             {buurtOptions?.map((buurt) => (
                 <MenuItem key={buurt.id} value={buurt.name}>
-                    <Checkbox checked={selectedBuurt.indexOf(buurt.name) > -1} />
+                    <Checkbox checked={selectedBuurt.indexOf(buurt.name) !== -1} />
                     <ListItemText primary={buurt.name} />
                 </MenuItem>
             ))}

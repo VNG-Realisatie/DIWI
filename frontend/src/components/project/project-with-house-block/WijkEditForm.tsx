@@ -25,16 +25,6 @@ export const WijkEditForm = ({ selectedWijk, setSelectedWijk }: Props) => {
         getWijkList().then((wijken) => setWijkOptions(wijken));
     }, []);
 
-    const checkControl = (inputName: string) => {
-        if (selectedWijk.length > 0) {
-            return selectedWijk.indexOf(inputName) !== -1;
-        } else if (selectedProject) {
-            if (selectedProject.wijk !== null && selectedProject.wijk !== undefined) {
-                return selectedProject.wijk.findIndex((w) => w.name === inputName) !== -1;
-            }
-        }
-    };
-
     return (
         <Select
             fullWidth
@@ -49,7 +39,7 @@ export const WijkEditForm = ({ selectedWijk, setSelectedWijk }: Props) => {
         >
             {wijkOptions?.map((wijk) => (
                 <MenuItem key={wijk.id} value={wijk.name}>
-                    <Checkbox checked={checkControl(wijk.name)} />
+                    <Checkbox checked={selectedWijk.indexOf(wijk.name) !== -1} />
                     <ListItemText primary={wijk.name} />
                 </MenuItem>
             ))}
