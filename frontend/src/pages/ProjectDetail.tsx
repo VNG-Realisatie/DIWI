@@ -1,15 +1,11 @@
 import { Box, Stack, Tooltip, Typography } from "@mui/material";
-import { useContext, useState } from "react";
-import { Details } from "../components/Details";
+import { useContext, useState, createContext, PropsWithChildren } from "react";
 import ProjectContext from "../context/ProjectContext";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import { ReactComponent as TimeLineImg } from "../assets/temp/timeline.svg";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
 import BreadcrumbBar from "../components/header/BreadcrumbBar";
 import { useTranslation } from "react-i18next";
-import NetherlandsMap from "../components/map/NetherlandsMap";
-import { ProjectsWithHouseBlock } from "../components/project/project-with-house-block/ProjectWithHouseBlock";
 import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
 import DeleteProjectDialog from "../components/project/DeleteProjectDialog";
 
@@ -31,12 +27,16 @@ export const dummyMapData = [
     },
 ];
 
-export const ProjectDetail = () => {
+const ProjectColorContext = createContext({
+    selectedProjectColor: "",
+    setSelectedProjectColor: (color: string) => {},
+});
+
+export const ProjectDetail = ({ children }: PropsWithChildren) => {
     const { selectedProject, id } = useContext(ProjectContext);
     const navigate = useNavigate();
-    const location = useLocation();
     const { t } = useTranslation();
-    const [selectedProjectColor, setSelectedProjectColor] = useState<string>();
+    const [selectedProjectColor, setSelectedProjectColor] = useState<string>("");
 
     const [isDeleteConfirmationOpen, setDeteleConfirmationOpen] = useState<boolean>(false);
 
@@ -85,24 +85,17 @@ export const ProjectDetail = () => {
                     <AddCircleIcon color="info" sx={{ fontSize: "45px" }} />
                 </Box>
             </Stack>
-            {location.pathname === Paths.projectDetail.path.replace(":id", id ?? "1") && (
-                <Stack direction="row" alignItems="center" justifyContent="space-between">
-                    <Stack overflow="auto" height="70vh">
-                        {<Details project={selectedProject} />}
-                    </Stack>
-                    <NetherlandsMap height="66vh" width="100%" mapData={dummyMapData} />
-                </Stack>
-            )}
-            {location.pathname === Paths.projectDetailTimeline.path.replace(":id", id ?? "1") && <TimeLineImg style={{ width: "100%" }} />}
 
-            {/* TO DO add house blocks here later */}
-            {location.pathname === Paths.projectDetailCharacteristics.path.replace(":id", id ?? "1") && (
-                <ProjectsWithHouseBlock
-                    selectedProjectColor={selectedProjectColor ? selectedProjectColor : ""}
-                    setSelectedProjectColor={setSelectedProjectColor}
-                    // houseblocks={projects.filter((p) => selectedProject && p.project && p.project.id === selectedProject.id)[0].woningblokken}
-                />
-            )}
+            <ProjectColorContext.Provider
+                value={{
+                    selectedProjectColor,
+                    setSelectedProjectColor,
+                }}
+            >
+                {children}
+            </ProjectColorContext.Provider>
         </Stack>
     );
 };
+
+export default ProjectColorContext;
