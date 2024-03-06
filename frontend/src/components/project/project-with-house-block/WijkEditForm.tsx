@@ -1,7 +1,6 @@
 import { Checkbox, ListItemText, MenuItem, OutlinedInput, Select, SelectChangeEvent } from "@mui/material";
 import { MenuProps } from "../../../utils/menuProps";
-import { useContext, useEffect, useState } from "react";
-import ProjectContext from "../../../context/ProjectContext";
+import { useEffect, useState } from "react";
 import { OptionType } from "../ProjectsTableView";
 import { getWijkList } from "../../../api/projectsTableServices";
 
@@ -12,7 +11,6 @@ type Props = {
 
 export const WijkEditForm = ({ selectedWijk, setSelectedWijk }: Props) => {
     const [wijkOptions, setWijkOptions] = useState<OptionType[]>();
-    const { selectedProject } = useContext(ProjectContext);
 
     const handleWijkChange = (event: SelectChangeEvent<typeof selectedWijk>) => {
         const {
@@ -25,23 +23,13 @@ export const WijkEditForm = ({ selectedWijk, setSelectedWijk }: Props) => {
         getWijkList().then((wijken) => setWijkOptions(wijken));
     }, []);
 
-    const checkControl = (inputName: string) => {
-        if (selectedWijk.length > 0) {
-            return selectedWijk.indexOf(inputName) !== -1;
-        } else if (selectedProject) {
-            if (selectedProject.wijk !== null && selectedProject.wijk !== undefined) {
-                return selectedProject.wijk.findIndex((w) => w.name === inputName) !== -1;
-            }
-        }
-    };
-
     return (
         <Select
             fullWidth
             size="small"
             id="wijk-checkbox"
             multiple
-            value={selectedProject?.wijk?.map((w) => w.name) || []}
+            value={selectedWijk}
             onChange={handleWijkChange}
             input={<OutlinedInput />}
             renderValue={(selected) => selected.join(", ")}
@@ -49,7 +37,7 @@ export const WijkEditForm = ({ selectedWijk, setSelectedWijk }: Props) => {
         >
             {wijkOptions?.map((wijk) => (
                 <MenuItem key={wijk.id} value={wijk.name}>
-                    <Checkbox checked={checkControl(wijk.name)} />
+                    <Checkbox checked={selectedWijk.indexOf(wijk.name) > -1} />
                     <ListItemText primary={wijk.name} />
                 </MenuItem>
             ))}
