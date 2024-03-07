@@ -14,7 +14,7 @@ import {
     getGridStringOperators,
 } from "@mui/x-data-grid";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { AvatarGroup, Box, Button, Dialog, DialogActions, DialogTitle, Stack, Typography } from "@mui/material";
 import useAlert from "../../hooks/useAlert";
 import { Project, getProjects } from "../../api/projectsServices";
@@ -28,6 +28,7 @@ import { MunicipalityCell } from "../table/MunicipalityCell";
 import { confidentialityLevelOptions, planTypeOptions, projectPhaseOptions } from "../table/constants";
 import { filterTable } from "../../api/projectsTableServices";
 import { OrganizationUserAvatars } from "../OrganizationUserAvatars";
+import ProjectContext from "../../context/ProjectContext";
 
 interface RowData {
     id: number;
@@ -50,6 +51,8 @@ export type SelectedOptionWithId = {
 };
 
 export const ProjectsTableView = ({ showCheckBox }: Props) => {
+    const { paginationInfo, setPaginationInfo } = useContext(ProjectContext);
+
     const location = useLocation();
     const navigate = useNavigate();
     const { setAlert } = useAlert();
@@ -66,8 +69,6 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const [showDialog, setShowDialog] = useState(false);
     const [filterModel, setFilterModel] = useState<GridFilterModel>();
     const [filterUrl, setFilterUrl] = useState("");
-
-    const [paginationInfo, setPaginationInfo] = useState<GridPaginationModel>({ page: 1, pageSize: 10 });
 
     const isFilteredUrl = useCallback(() => {
         const queryParams = ["pageNumber", "pageSize", "filterColumn", "filterCondition", "filterValue"];

@@ -203,7 +203,6 @@ export const ProjectsWithHouseBlock = () => {
     const handleProjectSave = () => {
         updateProjects(updatedProjectForm).then((res) => {
             setProjectEditable(false);
-            console.log(res);
         });
     };
     return (
