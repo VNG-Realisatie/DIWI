@@ -37,7 +37,7 @@ export const columnTitleStyle = {
 };
 
 export const ProjectsWithHouseBlock = () => {
-    const { selectedProject } = useContext(ProjectContext);
+    const { selectedProject, updateProject } = useContext(ProjectContext);
     const { selectedProjectColor, setSelectedProjectColor } = useContext(ProjectColorContext);
     const [projectEditable, setProjectEditable] = useState(false);
     const [openColorDialog, setOpenColorDialog] = useState(false);
@@ -203,6 +203,7 @@ export const ProjectsWithHouseBlock = () => {
     const handleProjectSave = () => {
         updateProjects(updatedProjectForm).then((res) => {
             setProjectEditable(false);
+            updateProject();
         });
     };
     return (

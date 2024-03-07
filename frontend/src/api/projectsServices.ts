@@ -11,6 +11,10 @@ export async function getProjects(pageNumber: number, pageSize: number): Promise
     return getJson(`${API_URI}/projects/table?pageNumber=${pageNumber}&pageSize=${pageSize}`);
 }
 
+export async function getProject(id: string): Promise<Project> {
+    return getJson(`${API_URI}/projects/${id}`);
+}
+
 export async function updateProjects(newData: any): Promise<any> {
     return postJson(`${API_URI}/projects/update`, newData);
 }
