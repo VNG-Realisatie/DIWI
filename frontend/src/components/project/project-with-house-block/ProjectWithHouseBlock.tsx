@@ -51,7 +51,7 @@ export const ProjectsWithHouseBlock = () => {
     const [selectedMunicipalityRole, setSelectedMunicipalityRole] = useState<SelectModel[]>([]);
     const [selectedMunicipality, setSelectedMunicipality] = useState<SelectModel[]>([]);
     const [selectedNeighbourhood, setSelectedNeighbourhood] = useState<SelectModel[]>([]);
-    const [selectedWijk, setSelectedWijk] = useState<string[]>([]);
+    const [selectedWijk, setSelectedWijk] = useState<SelectModel[]>([]);
     const [projectPriority, setProjectPriority] = useState<SelectModel | undefined>();
 
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -107,7 +107,7 @@ export const ProjectsWithHouseBlock = () => {
         //add leader later
         setPlanType(selectedProject?.planType?.map((type) => type) ?? []);
         setPlanStatus(selectedProject?.planningPlanStatus?.map((type) => type) ?? []);
-        setSelectedWijk(selectedProject?.wijk?.map((neighborhood) => neighborhood.name) ?? []);
+        setSelectedWijk(selectedProject?.wijk ?? []);
         setSelectedProjectColor(selectedProject?.projectColor ?? "");
     }, [
         selectedProject?.buurt,
@@ -196,12 +196,7 @@ export const ProjectsWithHouseBlock = () => {
         // ],
         totalValue: selectedProject?.totalValue,
         municipality: selectedMunicipality,
-        wijk: selectedWijk.map((wijk) => {
-            return {
-                id: selectedProject?.projectId,
-                name: wijk,
-            };
-        }),
+        wijk: selectedWijk,
         buurt: selectedNeighbourhood,
     };
 
@@ -432,8 +427,8 @@ export const ProjectsWithHouseBlock = () => {
                         {!projectEditable ? (
                             <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
                                 {selectedWijk.length > 0
-                                    ? selectedWijk.map((wijk: string) => {
-                                          return <span key={wijk}>{wijk},</span>;
+                                    ? selectedWijk.map((wijk: SelectModel) => {
+                                          return <span key={wijk.id}>{wijk.name},</span>;
                                       })
                                     : selectedProject?.wijk?.map((wijk) => {
                                           return <span key={wijk.id}>{wijk.name},</span>;
