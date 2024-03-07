@@ -112,13 +112,13 @@
         "planningPlanStatus": "Planologische Plan Status",
         "municipality": "Regio",
         "wijk": "Wijk",
-        "buurt": "Buurt",
+        "neighbourhood": "Buurt",
         "selectPlanType": "Selecteer plan type",
         "selectMunicipalityRole": "Selecteer gemeente rol",
         "selecMunicipality": "Selecteer gemeente",
         "selectPlanningPlanStatus": "Selecteer toestand",
         "selectWijk": "Selecteer wijk",
-        "selectBuurt": "Selecteer buurt"
+        "selectNeighbourhood": "Selecteer buurt"
       }
     },
     "projectDetail": {

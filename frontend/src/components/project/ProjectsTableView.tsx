@@ -23,7 +23,7 @@ import { PlanTypeCell } from "../table/PlanTypeCell";
 import { MunicipalityRoleCell } from "../table/MunicipalityRoleCell";
 import { PlanningPlanStatusCell } from "../table/PlanningPlanStatusCell";
 import { WijkCell } from "../table/WijkCell";
-import { BuurtCell } from "../table/BuurtCell";
+import { BuurtCell } from "../table/NeighbourhoodCell";
 import { MunicipalityCell } from "../table/MunicipalityCell";
 import { confidentialityLevelOptions, planTypeOptions, projectPhaseOptions } from "../table/constants";
 import { filterTable } from "../../api/projectsTableServices";
@@ -397,11 +397,11 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         },
         {
             field: "buurt",
-            headerName: t("projects.tableColumns.buurt"),
+            headerName: t("projects.tableColumns.neighbourhood"),
             editable: true,
             width: 320,
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                return <BuurtCell cellValues={cellValues} selectedBuurt={selectedBuurt} handleBuurtChange={handleBuurtChange} />;
+                return <BuurtCell cellValues={cellValues} selectedNeighbourhood={selectedBuurt} handleNeighbourhoodChange={handleBuurtChange} />;
             },
             preProcessEditCellProps: createErrorReport,
         },

@@ -10,7 +10,7 @@ export async function getMunicipalityList(): Promise<Array<ProjectTableOption>> 
     return getJson(`${API_URI}/municipality/list`);
 }
 
-export async function getBuurtList(): Promise<Array<ProjectTableOption>> {
+export async function getNeighbourhoodList(): Promise<Array<ProjectTableOption>> {
     return getJson(`${API_URI}/buurt/list`);
 }
 
