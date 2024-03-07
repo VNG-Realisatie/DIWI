@@ -1,5 +1,5 @@
 import { AvatarGroup, Box, Grid, Popover, Stack, TextField, Tooltip, Typography } from "@mui/material";
-import { MouseEvent, useCallback, useContext, useEffect, useState } from "react";
+import { MouseEvent, useCallback, useContext, useState } from "react";
 import ProjectContext from "../../../context/ProjectContext";
 import ProjectColorContext from "../../../pages/ProjectDetail";
 import EditIcon from "@mui/icons-material/Edit";
@@ -52,7 +52,7 @@ export const ProjectsWithHouseBlock = () => {
     const [selectedMunicipality, setSelectedMunicipality] = useState<SelectModel[]>([]);
     const [selectedNeighbourhood, setSelectedNeighbourhood] = useState<SelectModel[]>([]);
     const [selectedWijk, setSelectedWijk] = useState<SelectModel[]>([]);
-    const [projectPriority, setProjectPriority] = useState<SelectModel | undefined>();
+    const [projectPriority, setProjectPriority] = useState<SelectModel | null>();
 
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const handleStartDateChange = (newValue: Dayjs | null) => setStartDate(newValue);
@@ -61,27 +61,12 @@ export const ProjectsWithHouseBlock = () => {
 
     const handleCancelChange = () => {
         setProjectEditable(false);
-        setName(selectedProject?.projectName);
-        //todo owner will be added later
-        setPlanType([]);
-        setStartDate(null);
-        setEndDate(null);
-        //todo priority will be added later
-        setProjectPhase(undefined);
-        setSelectedMunicipalityRole([]);
-        setConfidentialityLevel(undefined);
-        //todo add projectleader later
-        setPlanStatus([]);
-        setSelectedMunicipality([]);
-        setSelectedNeighbourhood([]);
-        setSelectedWijk([]);
-        selectedProject?.projectColor && setSelectedProjectColor(selectedProject?.projectColor);
+        updateChanges();
     };
 
     const { t } = useTranslation();
 
     const handleColorChange = (newColor: ColorResult) => {
-        // const newColorString = `rgba(${newColor.rgb.r}, ${newColor.rgb.g}, ${newColor.rgb.b}, ${newColor.rgb.a})`;
         setSelectedProjectColor(newColor.hex);
     };
 
@@ -126,10 +111,6 @@ export const ProjectsWithHouseBlock = () => {
         setSelectedProjectColor,
     ]);
 
-    useEffect(() => {
-        updateChanges();
-    }, [updateChanges]);
-
     const open = Boolean(anchorEl);
 
     const handleProjectEdit = () => {
@@ -146,10 +127,7 @@ export const ProjectsWithHouseBlock = () => {
         confidentialityLevel: confidentialityLevel,
         planType: planType,
         priority: {
-            value: {
-                id: projectPriority?.id,
-                name: projectPriority?.name,
-            },
+            value: projectPriority,
             //Will be updated after multi select added
             // min: {
             //     id: selectedProject?.projectId,
@@ -247,8 +225,11 @@ export const ProjectsWithHouseBlock = () => {
                     </Grid>
                     <Grid item xs={6} md={1}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.totalValue")}</Typography>
-
-                        <CellContainer>{selectedProject?.totalValue}</CellContainer>
+                        {!projectEditable ? (
+                            <CellContainer>{selectedProject?.totalValue}</CellContainer>
+                        ) : (
+                            <TextField size="small" disabled value={selectedProject?.totalValue} />
+                        )}
                     </Grid>
                     <Grid item xs={6} md={1}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.organizationName")}</Typography>
@@ -259,7 +240,7 @@ export const ProjectsWithHouseBlock = () => {
                             </AvatarGroup>
                         ) : (
                             // TODO implement later
-                            <TextField size="small" id="organizationName" variant="outlined" />
+                            <TextField disabled size="small" id="organizationName" variant="outlined" />
                         )}
                     </Grid>
                     <Grid item sm={4}>
@@ -367,7 +348,7 @@ export const ProjectsWithHouseBlock = () => {
                             </Box>
                         ) : (
                             // TODO LATER
-                            <TextField size="small" id="outlined-basic" variant="outlined" />
+                            <TextField disabled size="small" id="outlined-basic" variant="outlined" />
                         )}
                     </Grid>
                     <Grid item xs={12} md={4}>

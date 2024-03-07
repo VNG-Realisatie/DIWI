@@ -17,6 +17,7 @@ export const MunicipalityEditForm = ({ selectedMunicipality, setSelectedMunicipa
 
     return (
         <Autocomplete
+            size="small"
             multiple
             id="tags-outlined"
             options={municipalityOptions ? municipalityOptions : []}

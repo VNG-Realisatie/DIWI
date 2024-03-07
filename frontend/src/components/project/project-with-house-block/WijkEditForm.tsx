@@ -17,8 +17,9 @@ export const WijkEditForm = ({ selectedWijk, setSelectedWijk }: Props) => {
 
     return (
         <Autocomplete
+            size="small"
             multiple
-            id="tags-outlined"
+            id="wijk-select"
             options={wijkOptions ? wijkOptions : []}
             getOptionLabel={(option) => option.name}
             value={selectedWijk}

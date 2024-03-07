@@ -18,6 +18,7 @@ export const NeighbourhoodEditForm = ({ selectedNeighbourhood, setSelectedNeighb
 
     return (
         <Autocomplete
+            size="small"
             multiple
             id="tags-outlined"
             options={neighbourhoodOptions ? neighbourhoodOptions : []}

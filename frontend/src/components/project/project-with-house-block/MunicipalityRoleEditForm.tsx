@@ -17,6 +17,7 @@ export const MunicipalityRoleEditForm = ({ selectedMunicipalityRole, setSelected
 
     return (
         <Autocomplete
+            size="small"
             multiple
             id="tags-outlined"
             options={municipalityRolesOptions ? municipalityRolesOptions : []}
