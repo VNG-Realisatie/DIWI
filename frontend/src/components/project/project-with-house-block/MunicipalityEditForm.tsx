@@ -1,46 +1,30 @@
-import { Checkbox, ListItemText, MenuItem, OutlinedInput, Select, SelectChangeEvent } from "@mui/material";
+import { Autocomplete, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import { getMunicipalityList } from "../../../api/projectsTableServices";
-import { MenuProps } from "../../../utils/menuProps";
-import { OptionType } from "../ProjectsTableView";
+import { SelectModel } from "../../../api/projectsServices";
 
 type Props = {
-    selectedMunicipality: string[];
-    setSelectedMunicipality: (sm: string[]) => void;
+    selectedMunicipality: SelectModel[];
+    setSelectedMunicipality: (sm: SelectModel[]) => void;
 };
 
 export const MunicipalityEditForm = ({ selectedMunicipality, setSelectedMunicipality }: Props) => {
-    const [municipalityOptions, setMunicipalityOptions] = useState<OptionType[]>();
-
-    const handleMunicipalityChange = (event: SelectChangeEvent<typeof selectedMunicipality>) => {
-        const {
-            target: { value },
-        } = event;
-        setSelectedMunicipality(typeof value === "string" ? [value] : value);
-    };
+    const [municipalityOptions, setMunicipalityOptions] = useState<SelectModel[]>();
 
     useEffect(() => {
         getMunicipalityList().then((municipalities) => setMunicipalityOptions(municipalities));
     }, []);
 
     return (
-        <Select
-            fullWidth
-            size="small"
-            id="municipality-checkbox"
+        <Autocomplete
             multiple
+            id="tags-outlined"
+            options={municipalityOptions ? municipalityOptions : []}
+            getOptionLabel={(option) => option.name}
             value={selectedMunicipality}
-            onChange={handleMunicipalityChange}
-            input={<OutlinedInput />}
-            renderValue={(selected) => selected.join(", ")}
-            MenuProps={MenuProps}
-        >
-            {municipalityOptions?.map((municipality) => (
-                <MenuItem key={municipality.id} value={municipality.name}>
-                    <Checkbox checked={selectedMunicipality.indexOf(municipality.name) !== -1} />
-                    <ListItemText primary={municipality.name} />
-                </MenuItem>
-            ))}
-        </Select>
+            filterSelectedOptions
+            onChange={(_: any, newValue: SelectModel[]) => setSelectedMunicipality(newValue)}
+            renderInput={(params) => <TextField {...params} />}
+        />
     );
 };
