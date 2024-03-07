@@ -1,6 +1,7 @@
 import { AvatarGroup, Box, Grid, Popover, Stack, TextField, Tooltip, Typography } from "@mui/material";
 import { MouseEvent, useCallback, useContext, useEffect, useState } from "react";
 import ProjectContext from "../../../context/ProjectContext";
+import ProjectColorContext from "../../../pages/ProjectDetail";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -27,10 +28,6 @@ import { PlanStatusOptions, PlanTypeOptions } from "../../../types/enums";
 import { PriorityEditForm } from "./PriorityEditForm";
 // import { ProjectHouseBlockCardItem } from "./ProjectHouseBlockCardItem";
 
-type Props = {
-    selectedProjectColor: string;
-    setSelectedProjectColor: (color: string) => void;
-};
 export const columnTitleStyle = {
     border: "solid 1px #ddd",
     p: 0.6,
@@ -38,8 +35,9 @@ export const columnTitleStyle = {
     backgroundColor: "#738092",
 };
 
-export const ProjectsWithHouseBlock = ({ selectedProjectColor, setSelectedProjectColor }: Props) => {
+export const ProjectsWithHouseBlock = () => {
     const { selectedProject } = useContext(ProjectContext);
+    const { selectedProjectColor, setSelectedProjectColor } = useContext(ProjectColorContext);
     const [projectEditable, setProjectEditable] = useState(false);
     const [openColorDialog, setOpenColorDialog] = useState(false);
     const [name, setName] = useState<string | null>();
