@@ -1,5 +1,6 @@
 package nl.vng.diwi.resources;
 
+import jakarta.ws.rs.QueryParam;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.security.LoggedUser;
@@ -16,6 +17,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.List;
+import java.util.UUID;
 
 @Path("/buurt")
 @RolesAllowed({SecurityRoleConstants.Admin})
@@ -32,9 +34,9 @@ public class BuurtResource {
     @GET
     @Path("/list")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<SelectModel> getAllBuurts(@Context LoggedUser loggedUser) {
+    public List<SelectModel> getAllBuurts(@Context LoggedUser loggedUser, @QueryParam("wijkId") List<UUID> wijkIds) {
 
-        return repo.getBuurts();
+        return repo.getBuurts(wijkIds);
 
     }
 

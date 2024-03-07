@@ -11,6 +11,7 @@ import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
 import nl.vng.diwi.models.MilestoneModel;
 import nl.vng.diwi.models.ProjectListModel;
 import nl.vng.diwi.models.ProjectListSqlModel;
+import nl.vng.diwi.models.ProjectSnapshotModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 
@@ -30,6 +31,17 @@ public class ProjectService {
 
     public Project getCurrentProject(VngRepository repo, UUID uuid) {
         return repo.getProjectsDAO().getCurrentProject(uuid);
+    }
+
+    public ProjectSnapshotModel getProjectSnapshot(VngRepository repo, UUID projectUuid) throws VngNotFoundException {
+
+        ProjectListSqlModel projectModel = repo.getProjectsDAO().getProjectByUuid(projectUuid);
+
+        if (projectModel == null) {
+            logger.error("Project with uuid {} was not found.", projectUuid);
+            throw new VngNotFoundException();
+        }
+        return new ProjectSnapshotModel(projectModel);
     }
 
     public List<ProjectListModel> getProjectsTable(VngRepository repo, FilterPaginationSorting filtering) {
