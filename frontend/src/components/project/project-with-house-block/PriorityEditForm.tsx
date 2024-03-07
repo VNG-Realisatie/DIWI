@@ -1,33 +1,29 @@
 import { useEffect, useState } from "react";
-import { ProjectTableOption, getPriorityList } from "../../../api/projectsTableServices";
-import { MenuItem, Select } from "@mui/material";
+import { getPriorityList } from "../../../api/projectsTableServices";
+import { Autocomplete, TextField } from "@mui/material";
 import { SelectModel } from "../../../api/projectsServices";
 
 type Props = {
-    projectPriority: SelectModel | undefined;
-    setProjectPriority: (priority: SelectModel | undefined) => void;
+    projectPriority: SelectModel | null | undefined;
+    setProjectPriority: (priority: SelectModel | null) => void;
 };
 export const PriorityEditForm = ({ projectPriority, setProjectPriority }: Props) => {
-    const [priorityOptionList, setPriorityOptionList] = useState<ProjectTableOption[]>();
+    const [priorityOptionList, setPriorityOptionList] = useState<SelectModel[]>();
+
     useEffect(() => {
         getPriorityList().then((priorityList) => setPriorityOptionList(priorityList));
     }, []);
-    const handlePriorityChange = (event: any) => {
-        if (event.target.value) {
-            setProjectPriority(event.target.value);
-        }
-    };
 
     return (
-        <Select fullWidth size="small" id="project-priority-select" value={projectPriority} onChange={handlePriorityChange}>
-            {priorityOptionList?.map((ppo) => {
-                return (
-                    //@ts-ignore
-                    <MenuItem key={ppo.id} value={ppo}>
-                        {ppo.name}
-                    </MenuItem>
-                );
-            })}
-        </Select>
+        <Autocomplete
+            id="priority-select"
+            size="small"
+            options={priorityOptionList ? priorityOptionList : []}
+            getOptionLabel={(option) => option.name}
+            value={projectPriority}
+            filterSelectedOptions
+            onChange={(_: any, newValue: SelectModel | null) => setProjectPriority(newValue)}
+            renderInput={(params) => <TextField {...params} />}
+        />
     );
 };
