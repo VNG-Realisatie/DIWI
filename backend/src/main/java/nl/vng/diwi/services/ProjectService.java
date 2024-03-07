@@ -50,11 +50,26 @@ public class ProjectService {
         return result;
     }
 
-    public void deleteProject(VngRepository repo, UUID projectUuid,  UUID loggedInUserUuid) {
+    public void deleteProject(VngRepository repo, UUID projectUuid, UUID loggedInUserUuid) {
         var now = ZonedDateTime.now();
         var user = repo.findById(User.class, loggedInUserUuid);
 
-        repo.getProjectsDAO().getCurrentProject(projectUuid);
+        var project = repo.getProjectsDAO().getCurrentProject(projectUuid);
+        project.getDuration()
+                .stream()
+                .filter(cl -> cl.getChangeEndDate() == null)
+                .forEach(cl -> {
+                    cl.setChangeEndDate(now);
+                    cl.setChangeUser(user);
+                });
+        project.getName()
+                .stream()
+                .filter(cl -> cl.getChangeEndDate() == null)
+                .forEach(cl -> {
+                    cl.setChangeEndDate(now);
+                    cl.setChangeUser(user);
+                });
+
         var currentProjectState = repo.getProjectsDAO().getCurrentProjectState(projectUuid);
 
         currentProjectState.setChangeEndDate(now);

@@ -10,7 +10,11 @@ import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.testutil.TestDb;
+
+import org.apache.commons.lang3.NotImplementedException;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import jakarta.persistence.Tuple;
 
@@ -265,13 +269,39 @@ public class ProjectServiceTest {
         assertThat(newMunicipalityRoleChangelog.getValue().getId()).isEqualTo(municipalityRoleUuid);
     }
 
-    @Test
-    void deleteProject() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = { "project_state",
+//            "project_actor_rol_changelog",
+            "project_duration_changelog",
+//            "project_fase_changelog",
+//            "project_gemeenterol_changelog",
+//            "project_maatwerk_boolean_changelog",
+//            "project_maatwerk_categorie_changelog",
+//            "project_maatwerk_numeriek_changelog",
+//            "project_maatwerk_ordinaal_changelog",
+            "project_name_changelog",
+//            "project_plan_type_changelog",
+//            "project_planologische_planstatus_changelog",
+//            "project_priorisering_changelog"
+    })
+    void deleteProject(String tableName) throws Exception {
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+            Milestone startMilestone = createMilestone(repo, project, LocalDate.now().minusDays(10), user);
+            Milestone endMilestone = createMilestone(repo, project, LocalDate.now().plusDays(10), user);
 
+            if (tableName.equals("project_name_changelog")) {
+                createProjectNameChangelog(repo, project, "", startMilestone, endMilestone, user);
+            } else if (tableName.equals("project_duration_changelog")) {
+                createProjectDurationChangelog(repo, project, startMilestone, endMilestone, user);
+            } else if (tableName.equals("project_state")) {
+                // No need to create this one. it is created in the before each method
+            } else {
+                throw new NotImplementedException();
+            }
             transaction.commit();
             repo.getSession().clear();
         }
+
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             projectService.deleteProject(repo, projectUuid, userUuid);
             transaction.commit();
@@ -280,14 +310,13 @@ public class ProjectServiceTest {
 
         List<Tuple> changelogs = repo
                 .getSession()
-                .createNativeQuery("""
-                        SELECT change_end_date, change_user_id FROM diwi_testset.project_state WHERE project_id = :projectUuid
-                        """, Tuple.class)
+                .createNativeQuery("SELECT change_end_date, change_user_id FROM diwi_testset." + tableName + " WHERE project_id = :projectUuid",
+                        Tuple.class)
                 .setParameter("projectUuid", projectUuid)
                 .list();
 
         assertThat(changelogs)
-                .hasSize(1); // Only project state at the moment
+                .hasSize(1); // Only one change log at a time
 
         assertThat(changelogs)
                 .extracting((t) -> t.get("change_end_date"))
