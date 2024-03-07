@@ -34,9 +34,9 @@ public class WijkResource {
     @GET
     @Path("/list")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<SelectModel> getAllWijks(@Context LoggedUser loggedUser, @QueryParam("gemeenteId") List<UUID> gemeeenteIds) {
+    public List<SelectModel> getAllWijks(@Context LoggedUser loggedUser, @QueryParam("gemeenteId") List<UUID> gemeenteIds) {
 
-        return repo.getWijks(gemeeenteIds);
+        return repo.getWijks(gemeenteIds);
 
     }
 
