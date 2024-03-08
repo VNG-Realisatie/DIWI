@@ -22,7 +22,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.time.ZonedDateTime;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ProjectService {
     private static final Logger logger = LogManager.getLogger();
