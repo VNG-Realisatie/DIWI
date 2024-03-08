@@ -8,8 +8,6 @@ import {
     GridPreProcessEditCellProps,
     GridRenderCellParams,
     GridRowParams,
-    GridToolbarContainer,
-    GridToolbarFilterButton,
     getGridSingleSelectOperators,
     getGridStringOperators,
 } from "@mui/x-data-grid";
@@ -424,16 +422,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             }
         }
     };
-    interface CustomToolbarProps {
-        setFilterButtonEl: React.Dispatch<React.SetStateAction<HTMLButtonElement | null>>;
-    }
-    function CustomToolbar({ setFilterButtonEl }: CustomToolbarProps) {
-        return (
-            <GridToolbarContainer>
-                <GridToolbarFilterButton ref={setFilterButtonEl} />
-            </GridToolbarContainer>
-        );
-    }
+
     return (
         <Stack
             width="100%"
@@ -447,9 +436,6 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 rows={rows}
                 columns={columns}
                 rowHeight={70}
-                slots={{
-                    toolbar: CustomToolbar,
-                }}
                 initialState={{
                     pagination: {
                         paginationModel: { page: 0, pageSize: 10 },
