@@ -460,6 +460,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 onPaginationModelChange={(model: GridPaginationModel, _: GridCallbackDetails) => {
                     setPaginationInfo({ page: model.page + 1, pageSize: model.pageSize });
                 }}
+                rowCount={rows.length}
                 paginationMode="server"
                 onRowClick={showCheckBox ? handleExport : () => {}}
                 processRowUpdate={
