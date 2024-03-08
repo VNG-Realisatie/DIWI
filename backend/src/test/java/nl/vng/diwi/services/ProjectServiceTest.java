@@ -273,7 +273,7 @@ public class ProjectServiceTest {
     @ValueSource(strings = { "project_state",
 //            "project_actor_rol_changelog",
             "project_duration_changelog",
-//            "project_fase_changelog",
+            "project_fase_changelog",
 //            "project_gemeenterol_changelog",
 //            "project_maatwerk_boolean_changelog",
 //            "project_maatwerk_categorie_changelog",
@@ -293,6 +293,8 @@ public class ProjectServiceTest {
                 createProjectNameChangelog(repo, project, "", startMilestone, endMilestone, user);
             } else if (tableName.equals("project_duration_changelog")) {
                 createProjectDurationChangelog(repo, project, startMilestone, endMilestone, user);
+            } else if (tableName.equals("project_fase_changelog")) {
+                createProjectFaseChangelog(repo, project, ProjectPhase._1_INITIATIEFFASE, startMilestone, endMilestone, user);
             } else if (tableName.equals("project_state")) {
                 // No need to create this one. it is created in the before each method
             } else {

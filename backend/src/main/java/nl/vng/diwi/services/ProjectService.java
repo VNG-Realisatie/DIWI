@@ -70,6 +70,14 @@ public class ProjectService {
                     cl.setChangeUser(user);
                 });
 
+        project.getPhase()
+                .stream()
+                .filter(cl -> cl.getChangeEndDate() == null)
+                .forEach(cl -> {
+                    cl.setChangeEndDate(now);
+                    cl.setChangeUser(user);
+                });
+
         var currentProjectState = repo.getProjectsDAO().getCurrentProjectState(projectUuid);
 
         currentProjectState.setChangeEndDate(now);
