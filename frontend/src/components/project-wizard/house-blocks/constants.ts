@@ -1,0 +1,2 @@
+export const mutationSelectOptions = ["BOUW", "SLOOP", "TRANSFORMATIE", "SPLITSING"];
+export const ownershipValueType = ["KOOPWONING", "HUURWONING_PARTICULIERE_VERHUURDER", "HUURWONING_WONINGCORPORATIE"];
