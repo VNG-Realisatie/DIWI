@@ -69,6 +69,13 @@ const theme = createTheme(
                     },
                 },
             },
+            MuiInputBase: {
+                styleOverrides: {
+                    input: {
+                        backgroundColor: "white", // Set the background color to white
+                    },
+                },
+            },
         },
         palette: {
             primary: {
