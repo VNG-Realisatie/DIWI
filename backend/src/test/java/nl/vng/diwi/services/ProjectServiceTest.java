@@ -283,7 +283,7 @@ public class ProjectServiceTest {
             "project_name_changelog",
             "project_plan_type_changelog",
             "project_planologische_planstatus_changelog",
-//            "project_planologische_planstatus_changelog",
+            "project_planologische_planstatus_changelog",
             "project_priorisering_changelog"
     })
     void deleteProject(String tableName) throws Exception {
