@@ -14,7 +14,7 @@ import {
     getGridStringOperators,
 } from "@mui/x-data-grid";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { AvatarGroup, Box, Button, Dialog, DialogActions, DialogTitle, Stack, Typography } from "@mui/material";
 import useAlert from "../../hooks/useAlert";
 import { Project, getProjects } from "../../api/projectsServices";
@@ -23,11 +23,12 @@ import { PlanTypeCell } from "../table/PlanTypeCell";
 import { MunicipalityRoleCell } from "../table/MunicipalityRoleCell";
 import { PlanningPlanStatusCell } from "../table/PlanningPlanStatusCell";
 import { WijkCell } from "../table/WijkCell";
-import { BuurtCell } from "../table/BuurtCell";
+import { BuurtCell } from "../table/NeighbourhoodCell";
 import { MunicipalityCell } from "../table/MunicipalityCell";
 import { confidentialityLevelOptions, planTypeOptions, projectPhaseOptions } from "../table/constants";
 import { filterTable } from "../../api/projectsTableServices";
 import { OrganizationUserAvatars } from "../OrganizationUserAvatars";
+import ProjectContext from "../../context/ProjectContext";
 
 interface RowData {
     id: number;
@@ -50,6 +51,8 @@ export type SelectedOptionWithId = {
 };
 
 export const ProjectsTableView = ({ showCheckBox }: Props) => {
+    const { paginationInfo, setPaginationInfo } = useContext(ProjectContext);
+
     const location = useLocation();
     const navigate = useNavigate();
     const { setAlert } = useAlert();
@@ -66,8 +69,6 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const [showDialog, setShowDialog] = useState(false);
     const [filterModel, setFilterModel] = useState<GridFilterModel>();
     const [filterUrl, setFilterUrl] = useState("");
-
-    const [paginationInfo, setPaginationInfo] = useState<GridPaginationModel>({ page: 1, pageSize: 10 });
 
     const isFilteredUrl = useCallback(() => {
         const queryParams = ["pageNumber", "pageSize", "filterColumn", "filterCondition", "filterValue"];
@@ -397,11 +398,11 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         },
         {
             field: "buurt",
-            headerName: t("projects.tableColumns.buurt"),
+            headerName: t("projects.tableColumns.neighbourhood"),
             editable: true,
             width: 320,
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                return <BuurtCell cellValues={cellValues} selectedBuurt={selectedBuurt} handleBuurtChange={handleBuurtChange} />;
+                return <BuurtCell cellValues={cellValues} selectedNeighbourhood={selectedBuurt} handleNeighbourhoodChange={handleBuurtChange} />;
             },
             preProcessEditCellProps: createErrorReport,
         },

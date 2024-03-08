@@ -1,5 +1,5 @@
 import { AvatarGroup, Box, Grid, Popover, Stack, TextField, Tooltip, Typography } from "@mui/material";
-import { MouseEvent, useContext, useEffect, useState } from "react";
+import { MouseEvent, useCallback, useContext, useState } from "react";
 import ProjectContext from "../../../context/ProjectContext";
 import ProjectColorContext from "../../../pages/ProjectDetail";
 import EditIcon from "@mui/icons-material/Edit";
@@ -18,13 +18,15 @@ import { MunicipalityRoleEditForm } from "./MunicipalityRoleEditForm";
 import { ConfidentialityLevelEditForm } from "./ConfidentialityLevelEditForm";
 import { PlanStatusEditForm } from "./PlanStatusEditForm";
 import { MunicipalityEditForm } from "./MunicipalityEditForm";
-import { BuurtEditForm } from "./BuurtEditForm";
+import { NeighbourhoodEditForm } from "./NeighbourhoodEditForm";
 import { WijkEditForm } from "./WijkEditForm";
 import { defaultColors } from "../../ColorSelector";
 import { BlockPicker, ColorResult } from "react-color";
 import { CellContainer } from "./CellContainer";
 import { OrganizationUserAvatars } from "../../OrganizationUserAvatars";
 import { PlanStatusOptions, PlanTypeOptions } from "../../../types/enums";
+import { PriorityEditForm } from "./PriorityEditForm";
+import { SelectModel, updateProjects } from "../../../api/projectsServices";
 // import { ProjectHouseBlockCardItem } from "./ProjectHouseBlockCardItem";
 
 export const columnTitleStyle = {
@@ -35,7 +37,7 @@ export const columnTitleStyle = {
 };
 
 export const ProjectsWithHouseBlock = () => {
-    const { selectedProject } = useContext(ProjectContext);
+    const { selectedProject, updateProject } = useContext(ProjectContext);
     const { selectedProjectColor, setSelectedProjectColor } = useContext(ProjectColorContext);
     const [projectEditable, setProjectEditable] = useState(false);
     const [openColorDialog, setOpenColorDialog] = useState(false);
@@ -46,10 +48,11 @@ export const ProjectsWithHouseBlock = () => {
     const [confidentialityLevel, setConfidentialityLevel] = useState<string | undefined>();
     const [planType, setPlanType] = useState<PlanTypeOptions[]>([]);
     const [planStatus, setPlanStatus] = useState<PlanStatusOptions[]>([]);
-    const [selectedMunicipalityRole, setSelectedMunicipalityRole] = useState<string[]>([]);
-    const [selectedMunicipality, setSelectedMunicipality] = useState<string[]>([]);
-    const [selectedBuurt, setSelectedBuurt] = useState<string[]>([]);
-    const [selectedWijk, setSelectedWijk] = useState<string[]>([]);
+    const [selectedMunicipalityRole, setSelectedMunicipalityRole] = useState<SelectModel[]>([]);
+    const [selectedMunicipality, setSelectedMunicipality] = useState<SelectModel[]>([]);
+    const [selectedNeighbourhood, setSelectedNeighbourhood] = useState<SelectModel[]>([]);
+    const [selectedWijk, setSelectedWijk] = useState<SelectModel[]>([]);
+    const [projectPriority, setProjectPriority] = useState<SelectModel | null>();
 
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const handleStartDateChange = (newValue: Dayjs | null) => setStartDate(newValue);
@@ -58,28 +61,13 @@ export const ProjectsWithHouseBlock = () => {
 
     const handleCancelChange = () => {
         setProjectEditable(false);
-        setName(selectedProject?.projectName);
-        //todo owner will be added later
-        setPlanType([]);
-        setStartDate(null);
-        setEndDate(null);
-        //todo priority will be added later
-        setProjectPhase(undefined);
-        setSelectedMunicipalityRole([]);
-        setConfidentialityLevel(undefined);
-        //todo add projectleader later
-        setPlanStatus([]);
-        setSelectedMunicipality([]);
-        setSelectedBuurt([]);
-        setSelectedWijk([]);
-        selectedProject?.projectColor && setSelectedProjectColor(selectedProject?.projectColor);
+        updateChanges();
     };
 
     const { t } = useTranslation();
 
     const handleColorChange = (newColor: ColorResult) => {
-        const newColorString = `rgba(${newColor.rgb.r}, ${newColor.rgb.g}, ${newColor.rgb.b}, ${newColor.rgb.a})`;
-        setSelectedProjectColor(newColorString);
+        setSelectedProjectColor(newColor.hex);
     };
 
     const handleButtonClick = (event: MouseEvent<HTMLButtonElement>) => {
@@ -90,15 +78,112 @@ export const ProjectsWithHouseBlock = () => {
         setAnchorEl(null);
     };
 
-    useEffect(() => {
-        setSelectedBuurt(selectedProject?.buurt?.map((neighborhood) => neighborhood.name) ?? []);
-        setSelectedMunicipality(selectedProject?.municipality?.map((gemeente) => gemeente.name) ?? []);
-        setSelectedMunicipalityRole(selectedProject?.municipalityRole?.map((role) => role.name) ?? []);
+    const updateChanges = useCallback(() => {
+        setName(selectedProject?.projectName);
+        //add owner later
+        setStartDate(dayjs(formatDate(selectedProject?.startDate)));
+        setEndDate(dayjs(formatDate(selectedProject?.endDate)));
+        setProjectPriority(selectedProject?.priority?.value); //ToDo Fix later when decided range select
+        setProjectPhase(selectedProject?.projectPhase);
+        setSelectedNeighbourhood(selectedProject?.buurt ?? []);
+        setSelectedMunicipality(selectedProject?.municipality ?? []);
+        setSelectedMunicipalityRole(selectedProject?.municipalityRole ?? []);
+        setConfidentialityLevel(selectedProject?.confidentialityLevel);
+        //add leader later
         setPlanType(selectedProject?.planType?.map((type) => type) ?? []);
-        setSelectedWijk(selectedProject?.wijk?.map((neighborhood) => neighborhood.name) ?? []);
-    }, [selectedProject]);
+        setPlanStatus(selectedProject?.planningPlanStatus?.map((type) => type) ?? []);
+        setSelectedWijk(selectedProject?.wijk ?? []);
+        setSelectedProjectColor(selectedProject?.projectColor ?? "");
+    }, [
+        selectedProject?.buurt,
+        selectedProject?.confidentialityLevel,
+        selectedProject?.endDate,
+        selectedProject?.municipality,
+        selectedProject?.municipalityRole,
+        selectedProject?.planType,
+        selectedProject?.planningPlanStatus,
+        selectedProject?.priority?.value,
+        selectedProject?.projectColor,
+        selectedProject?.projectName,
+        selectedProject?.projectPhase,
+        selectedProject?.startDate,
+        selectedProject?.wijk,
+        setSelectedProjectColor,
+    ]);
 
     const open = Boolean(anchorEl);
+
+    const handleProjectEdit = () => {
+        setProjectEditable(true);
+        updateChanges();
+    };
+
+    const updatedProjectForm = {
+        startDate: startDate,
+        endDate: endDate,
+        projectId: selectedProject?.projectId,
+        projectName: name,
+        projectColor: selectedProjectColor,
+        confidentialityLevel: confidentialityLevel,
+        planType: planType,
+        priority: {
+            value: projectPriority,
+            //Will be updated after multi select added
+            // min: {
+            //     id: selectedProject?.projectId,
+            //     name: null,
+            // },
+            //Will be updated after multi select added
+            // max: {
+            //     id: selectedProject?.projectId,
+            //     name: null,
+            // },
+        },
+        projectPhase: projectPhase,
+        planningPlanStatus: planStatus,
+        municipalityRole: selectedMunicipalityRole,
+        //Will be implemented later
+        // projectOwners: [
+        //     {
+        //         uuid: selectedProject?.projectId,
+        //         name: "string",
+        //         users: [
+        //             {
+        //                 uuid: selectedProject?.projectId,
+        //                 firstName: "firtname",
+        //                 lastName: "lastname",
+        //                 initials: "fl",
+        //             },
+        //         ],
+        //     },
+        // ],
+        //Will be implemented later
+        // projectLeaders: [
+        //     {
+        //         uuid: selectedProject?.projectId,
+        //         name: "string",
+        //         users: [
+        //             {
+        //                 uuid: selectedProject?.projectId,
+        //                 firstName: "firtname",
+        //                 lastName: "lastname",
+        //                 initials: "fl",
+        //             },
+        //         ],
+        //     },
+        // ],
+        totalValue: selectedProject?.totalValue,
+        municipality: selectedMunicipality,
+        wijk: selectedWijk,
+        buurt: selectedNeighbourhood,
+    };
+
+    const handleProjectSave = () => {
+        updateProjects(updatedProjectForm).then((res) => {
+            setProjectEditable(false);
+            updateProject();
+        });
+    };
     return (
         <Stack my={1} p={1} mb={10}>
             <Box sx={{ cursor: "pointer" }} position="absolute" right={10} top={55} zIndex={9999}>
@@ -113,7 +198,7 @@ export const ProjectsWithHouseBlock = () => {
                 </Tooltip>
                 {!projectEditable && (
                     <Tooltip placement="top" title={t("generic.edit")}>
-                        <EditIcon sx={{ color: "#FFFFFF" }} onClick={() => setProjectEditable(true)} />
+                        <EditIcon sx={{ color: "#FFFFFF" }} onClick={handleProjectEdit} />
                     </Tooltip>
                 )}
                 {projectEditable && (
@@ -122,7 +207,7 @@ export const ProjectsWithHouseBlock = () => {
                             <ClearIcon sx={{ mr: 2, color: "#FFFFFF" }} onClick={handleCancelChange} />
                         </Tooltip>
                         <Tooltip placement="top" title={t("generic.saveChanges")}>
-                            <SaveIcon sx={{ color: "#FFFFFF" }} onClick={() => setProjectEditable(false)} />
+                            <SaveIcon sx={{ color: "#FFFFFF" }} onClick={handleProjectSave} />
                         </Tooltip>
                     </>
                 )}
@@ -140,8 +225,11 @@ export const ProjectsWithHouseBlock = () => {
                     </Grid>
                     <Grid item xs={6} md={1}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.totalValue")}</Typography>
-
-                        <CellContainer>{selectedProject?.totalValue}</CellContainer>
+                        {!projectEditable ? (
+                            <CellContainer>{selectedProject?.totalValue}</CellContainer>
+                        ) : (
+                            <TextField size="small" disabled value={selectedProject?.totalValue} />
+                        )}
                     </Grid>
                     <Grid item xs={6} md={1}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.organizationName")}</Typography>
@@ -152,7 +240,7 @@ export const ProjectsWithHouseBlock = () => {
                             </AvatarGroup>
                         ) : (
                             // TODO implement later
-                            <TextField size="small" id="organizationName" variant="outlined" />
+                            <TextField disabled size="small" id="organizationName" variant="outlined" />
                         )}
                     </Grid>
                     <Grid item sm={4}>
@@ -178,12 +266,7 @@ export const ProjectsWithHouseBlock = () => {
                         {!projectEditable ? (
                             <CellContainer>{startDate ? convertDayjsToString(startDate) : selectedProject?.startDate}</CellContainer>
                         ) : (
-                            <DatePicker
-                                format="DD-MM-YYYY"
-                                slotProps={{ textField: { size: "small" } }}
-                                value={startDate ? startDate : dayjs(formatDate(selectedProject?.startDate))}
-                                onChange={handleStartDateChange}
-                            />
+                            <DatePicker format="DD-MM-YYYY" slotProps={{ textField: { size: "small" } }} value={startDate} onChange={handleStartDateChange} />
                         )}
                     </Grid>
                     <Grid item xs={6} md={1.1}>
@@ -192,12 +275,7 @@ export const ProjectsWithHouseBlock = () => {
                         {!projectEditable ? (
                             <CellContainer>{endDate ? convertDayjsToString(endDate) : selectedProject?.endDate}</CellContainer>
                         ) : (
-                            <DatePicker
-                                format="DD-MM-YYYY"
-                                slotProps={{ textField: { size: "small" } }}
-                                value={endDate ? endDate : dayjs(formatDate(selectedProject?.endDate))}
-                                onChange={handleEndDateChange}
-                            />
+                            <DatePicker format="DD-MM-YYYY" slotProps={{ textField: { size: "small" } }} value={endDate} onChange={handleEndDateChange} />
                         )}
                     </Grid>
                     <Grid item xs={12} md={2}>
@@ -205,11 +283,14 @@ export const ProjectsWithHouseBlock = () => {
 
                         {!projectEditable ? (
                             <CellContainer>
-                                <span key={selectedProject?.priority?.value?.id}>{selectedProject?.priority?.value?.name},</span>
+                                <span key={selectedProject?.priority?.value?.id}>
+                                    {selectedProject?.priority?.value?.name ??
+                                        `${selectedProject?.priority?.min?.name}-${selectedProject?.priority?.max?.name}`}
+                                </span>
                             </CellContainer>
                         ) : (
                             // TODO Implement later
-                            <TextField size="small" id="outlined-basic" variant="outlined" />
+                            <PriorityEditForm projectPriority={projectPriority} setProjectPriority={setProjectPriority} />
                         )}
                     </Grid>
                     <Grid item xs={12} md={2}>
@@ -229,8 +310,8 @@ export const ProjectsWithHouseBlock = () => {
                         {!projectEditable ? (
                             <CellContainer>
                                 {selectedMunicipalityRole.length > 0
-                                    ? selectedMunicipalityRole.map((mr: string) => {
-                                          return <span key={mr}>{mr}</span>;
+                                    ? selectedMunicipalityRole.map((mr: SelectModel) => {
+                                          return <span key={mr.id}>{mr.name}</span>;
                                       })
                                     : selectedProject?.municipalityRole?.map((mr) => {
                                           return <span key={mr.id}>{mr.name}</span>;
@@ -267,7 +348,7 @@ export const ProjectsWithHouseBlock = () => {
                             </Box>
                         ) : (
                             // TODO LATER
-                            <TextField size="small" id="outlined-basic" variant="outlined" />
+                            <TextField disabled size="small" id="outlined-basic" variant="outlined" />
                         )}
                     </Grid>
                     <Grid item xs={12} md={4}>
@@ -293,8 +374,8 @@ export const ProjectsWithHouseBlock = () => {
                         {!projectEditable ? (
                             <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
                                 {selectedMunicipality.length > 0
-                                    ? selectedMunicipality.map((municipality: string) => {
-                                          return <span key={municipality}>{municipality},</span>;
+                                    ? selectedMunicipality.map((municipality: SelectModel) => {
+                                          return <span key={municipality.id}>{municipality.name},</span>;
                                       })
                                     : selectedProject?.municipality?.map((municipality) => {
                                           return <span key={municipality.id}>{municipality.name},</span>;
@@ -305,20 +386,20 @@ export const ProjectsWithHouseBlock = () => {
                         )}
                     </Grid>
                     <Grid item xs={12} md={2}>
-                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.buurt")}</Typography>
+                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.neighbourhood")}</Typography>
 
                         {!projectEditable ? (
                             <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
-                                {selectedBuurt.length > 0
-                                    ? selectedBuurt.map((buurt: string) => {
-                                          return <span key={buurt}>{buurt},</span>;
+                                {selectedNeighbourhood.length > 0
+                                    ? selectedNeighbourhood.map((neighbourhood: SelectModel) => {
+                                          return <span key={neighbourhood.id}>{neighbourhood.name},</span>;
                                       })
-                                    : selectedProject?.buurt?.map((buurt) => {
-                                          return <span key={buurt.id}>{buurt.name},</span>;
+                                    : selectedProject?.buurt?.map((neighbourhood) => {
+                                          return <span key={neighbourhood.id}>{neighbourhood.name},</span>;
                                       })}
                             </Typography>
                         ) : (
-                            <BuurtEditForm selectedBuurt={selectedBuurt} setSelectedBuurt={setSelectedBuurt} />
+                            <NeighbourhoodEditForm selectedNeighbourhood={selectedNeighbourhood} setSelectedNeighbourhood={setSelectedNeighbourhood} />
                         )}
                     </Grid>
                     <Grid item xs={12} md={2}>
@@ -327,8 +408,8 @@ export const ProjectsWithHouseBlock = () => {
                         {!projectEditable ? (
                             <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
                                 {selectedWijk.length > 0
-                                    ? selectedWijk.map((wijk: string) => {
-                                          return <span key={wijk}>{wijk},</span>;
+                                    ? selectedWijk.map((wijk: SelectModel) => {
+                                          return <span key={wijk.id}>{wijk.name},</span>;
                                       })
                                     : selectedProject?.wijk?.map((wijk) => {
                                           return <span key={wijk.id}>{wijk.name},</span>;

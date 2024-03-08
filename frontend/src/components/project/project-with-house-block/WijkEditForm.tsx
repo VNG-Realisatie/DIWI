@@ -1,46 +1,31 @@
-import { Checkbox, ListItemText, MenuItem, OutlinedInput, Select, SelectChangeEvent } from "@mui/material";
-import { MenuProps } from "../../../utils/menuProps";
+import { Autocomplete, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
-import { OptionType } from "../ProjectsTableView";
 import { getWijkList } from "../../../api/projectsTableServices";
+import { SelectModel } from "../../../api/projectsServices";
 
 type Props = {
-    selectedWijk: string[];
-    setSelectedWijk: (wijk: string[]) => void;
+    selectedWijk: SelectModel[];
+    setSelectedWijk: (wijk: SelectModel[]) => void;
 };
 
 export const WijkEditForm = ({ selectedWijk, setSelectedWijk }: Props) => {
-    const [wijkOptions, setWijkOptions] = useState<OptionType[]>();
-
-    const handleWijkChange = (event: SelectChangeEvent<typeof selectedWijk>) => {
-        const {
-            target: { value },
-        } = event;
-        setSelectedWijk(typeof value === "string" ? [value] : value);
-    };
+    const [wijkOptions, setWijkOptions] = useState<SelectModel[]>();
 
     useEffect(() => {
         getWijkList().then((wijken) => setWijkOptions(wijken));
     }, []);
 
     return (
-        <Select
-            fullWidth
+        <Autocomplete
             size="small"
-            id="wijk-checkbox"
             multiple
+            id="wijk-select"
+            options={wijkOptions ? wijkOptions : []}
+            getOptionLabel={(option) => option.name}
             value={selectedWijk}
-            onChange={handleWijkChange}
-            input={<OutlinedInput />}
-            renderValue={(selected) => selected.join(", ")}
-            MenuProps={MenuProps}
-        >
-            {wijkOptions?.map((wijk) => (
-                <MenuItem key={wijk.id} value={wijk.name}>
-                    <Checkbox checked={selectedWijk.indexOf(wijk.name) > -1} />
-                    <ListItemText primary={wijk.name} />
-                </MenuItem>
-            ))}
-        </Select>
+            filterSelectedOptions
+            onChange={(_: any, newValue: SelectModel[]) => setSelectedWijk(newValue)}
+            renderInput={(params) => <TextField {...params} />}
+        />
     );
 };
