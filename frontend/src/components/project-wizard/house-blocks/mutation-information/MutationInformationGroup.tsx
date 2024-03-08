@@ -3,9 +3,9 @@ import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
 import { MutationInformations } from "../types";
 
-import { GrossPlanCapacityInput } from "./GrossPlanCapicityInput";
-import { NetPlanCapacityInput } from "./NetPlanCapicityInput";
-import { DemolitionPlanCapacityInput } from "./DemolitionPlanCapicityInput";
+import { GrossPlanCapacityInput } from "./GrossPlanCapacityInput";
+import { NetPlanCapacityInput } from "./NetPlanCapacityInput";
+import { DemolitionPlanCapacityInput } from "./DemolitionPlanCapacityInput";
 import { MutationKindSelect } from "./MutationKindSelect";
 
 export type MutationInformationProps = {
