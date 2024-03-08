@@ -64,6 +64,7 @@ public class ProjectService {
         endDateEntities.addAll(project.getPlanType());
         endDateEntities.addAll(project.getPlanologischePlanstatus());
         endDateEntities.addAll(project.getPriority());
+        endDateEntities.addAll(project.getMunicipalityRole());
 
         endDateEntities.stream()
                 .filter(cl -> cl.getChangeEndDate() == null)

@@ -275,11 +275,11 @@ public class ProjectServiceTest {
 //            "project_actor_rol_changelog", Not used yet
             "project_duration_changelog",
             "project_fase_changelog",
-//            "project_gemeenterol_changelog",
-//            "project_maatwerk_boolean_changelog",
-//            "project_maatwerk_categorie_changelog",
-//            "project_maatwerk_numeriek_changelog",
-//            "project_maatwerk_ordinaal_changelog",
+            "project_gemeenterol_changelog",
+//            "project_maatwerk_boolean_changelog", Not used yet
+//            "project_maatwerk_categorie_changelog", Not used yet
+//            "project_maatwerk_numeriek_changelog", Not used yet
+//            "project_maatwerk_ordinaal_changelog", Not used yet
             "project_name_changelog",
             "project_plan_type_changelog",
             "project_planologische_planstatus_changelog",
@@ -305,6 +305,9 @@ public class ProjectServiceTest {
                 createPriorityChangelog(repo, project, startMilestone, endMilestone, user);
             } else if (tableName.equals("project_planologische_planstatus_changelog")) {
                 createProjectPlanStatusChangelog(repo, project, Set.of(PlanStatus._1A_ONHERROEPELIJK), startMilestone, endMilestone, user);
+            }
+            else if (tableName.equals("project_gemeenterol_changelog")) {
+                createProjectGemeenteRolChangelog(repo, project, startMilestone, endMilestone, user);
             } else if (tableName.equals("project_state")) {
                 // No need to create this one. it is created in the before each method
             } else {
@@ -437,7 +440,6 @@ public class ProjectServiceTest {
             User user) {
         var changelogValue = new ProjectPrioriseringValue();
         repo.persist(changelogValue);
-
 
         var changelog = new ProjectPrioriseringChangelog();
         changelog.setProject(project);
