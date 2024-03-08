@@ -5,7 +5,7 @@ interface Props {
 }
 export const WizardCard = ({ children }: Props) => {
     return (
-        <Box p={2} bgcolor="#F0F0F0" width="100%">
+        <Box p={2} bgcolor="#F0F0F0" width="100%" height="100%">
             {children}
         </Box>
     );

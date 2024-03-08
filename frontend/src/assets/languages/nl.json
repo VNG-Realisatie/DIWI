@@ -182,6 +182,13 @@
         "_4_REALISATIEFASE": "REALISATIEFASE",
         "_5_OPLEVERINGSFASE": "OPLEVERINGSFASE"
       }
+    },
+    "wizard": {
+      "houseBlocks": {
+        "generalInformation": {
+          "title": "Algemene informatie"
+        }
+      }
     }
   }
 }
