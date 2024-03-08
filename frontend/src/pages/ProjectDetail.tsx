@@ -1,5 +1,5 @@
 import { Box, Stack, Tooltip, Typography } from "@mui/material";
-import { useContext, useState, createContext, PropsWithChildren } from "react";
+import { useContext, useState, createContext, PropsWithChildren, useEffect } from "react";
 import ProjectContext from "../context/ProjectContext";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { useNavigate } from "react-router-dom";
@@ -8,6 +8,7 @@ import BreadcrumbBar from "../components/header/BreadcrumbBar";
 import { useTranslation } from "react-i18next";
 import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
 import DeleteProjectDialog from "../components/project/DeleteProjectDialog";
+import { getProjectTimeline } from "../api/projectTimeLine";
 
 export const dummyMapData = [
     {
@@ -36,6 +37,8 @@ export const ProjectDetail = ({ children }: PropsWithChildren) => {
     const { selectedProject, id } = useContext(ProjectContext);
     const navigate = useNavigate();
     const { t } = useTranslation();
+    const [projectData, setProjectData] = useState(null);
+    const [error, setError] = useState(null);
     const [selectedProjectColor, setSelectedProjectColor] = useState<string>("");
 
     const [isDeleteConfirmationOpen, setDeteleConfirmationOpen] = useState<boolean>(false);
