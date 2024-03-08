@@ -21,7 +21,26 @@ export const BlockHousesForm = ({ projectForm, setProjectForm }: Props) => {
         netPlanCapacity: 0,
         demolition: 0,
     });
-    const [ownershipInformationForm, setOwershipInformationForm] = useState<OwnershipSingleValue[]>([]);
+    const [ownershipInformationForm, setOwershipInformationForm] = useState<OwnershipSingleValue[]>([
+        {
+            type: "KOOPWONING",
+            amount: null,
+            value: { value: null, min: null, max: null },
+            rentalValue: { value: null, min: null, max: null },
+        },
+        {
+            type: "HUURWONING_PARTICULIERE_VERHUURDER",
+            amount: null,
+            value: { value: null, min: null, max: null },
+            rentalValue: { value: null, min: null, max: null },
+        },
+        {
+            type: "HUURWONING_WONINGCORPORATIE",
+            amount: null,
+            value: { value: null, min: null, max: null },
+            rentalValue: { value: null, min: null, max: null },
+        },
+    ]);
     const { t } = useTranslation();
     return (
         <Box mt={4}>
