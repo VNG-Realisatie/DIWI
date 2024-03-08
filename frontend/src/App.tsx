@@ -1,6 +1,5 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
 import { ScopedCssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import "./App.css";
 import AlertContext from "./context/AlertContext";
@@ -13,6 +12,8 @@ import { NoMatch } from "./pages/NoMatch";
 import * as Paths from "./Paths";
 import { ProjectDetail } from "./pages/ProjectDetail";
 import { ProjectProvider } from "./context/ProjectContext";
+import { ReactComponent as TimeLineImg } from "./assets/temp/timeline.svg";
+import DetailsWithMap from "./components/DetailsWithMap";
 import { PolicyLists } from "./pages/PolicyLists";
 import { DashboardProjects } from "./pages/DashboardProjects";
 import { ExchangeData } from "./pages/ExchangeData";
@@ -24,6 +25,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { nlNL } from "@mui/material/locale";
 import { Swagger } from "./pages/Swagger";
 import { diwiFetch } from "./utils/requests";
+import { ProjectsWithHouseBlock } from "./components/project/project-with-house-block/ProjectWithHouseBlock";
 
 export const drawerWidth = 290;
 
@@ -152,7 +154,9 @@ function App() {
                             path={Paths.projectDetail.path}
                             element={
                                 <ProjectProvider>
-                                    <ProjectDetail />
+                                    <ProjectDetail>
+                                        <DetailsWithMap />
+                                    </ProjectDetail>
                                 </ProjectProvider>
                             }
                         />
@@ -160,7 +164,9 @@ function App() {
                             path={Paths.projectDetailCharacteristics.path}
                             element={
                                 <ProjectProvider>
-                                    <ProjectDetail />
+                                    <ProjectDetail>
+                                        <ProjectsWithHouseBlock />
+                                    </ProjectDetail>
                                 </ProjectProvider>
                             }
                         />
@@ -168,7 +174,9 @@ function App() {
                             path={Paths.projectDetailTimeline.path}
                             element={
                                 <ProjectProvider>
-                                    <ProjectDetail />
+                                    <ProjectDetail>
+                                        <TimeLineImg style={{ width: "100%" }} />
+                                    </ProjectDetail>
                                 </ProjectProvider>
                             }
                         />

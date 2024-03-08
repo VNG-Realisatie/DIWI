@@ -11,6 +11,7 @@ import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
 import nl.vng.diwi.models.MilestoneModel;
 import nl.vng.diwi.models.ProjectListModel;
 import nl.vng.diwi.models.ProjectListSqlModel;
+import nl.vng.diwi.models.ProjectSnapshotModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 
@@ -30,6 +31,17 @@ public class ProjectService {
 
     public Project getCurrentProject(VngRepository repo, UUID uuid) {
         return repo.getProjectsDAO().getCurrentProject(uuid);
+    }
+
+    public ProjectSnapshotModel getProjectSnapshot(VngRepository repo, UUID projectUuid) throws VngNotFoundException {
+
+        ProjectListSqlModel projectModel = repo.getProjectsDAO().getProjectByUuid(projectUuid);
+
+        if (projectModel == null) {
+            logger.error("Project with uuid {} was not found.", projectUuid);
+            throw new VngNotFoundException();
+        }
+        return new ProjectSnapshotModel(projectModel);
     }
 
     public List<ProjectListModel> getProjectsTable(VngRepository repo, FilterPaginationSorting filtering) {
@@ -110,7 +122,7 @@ public class ProjectService {
             if (organizationToProjectUuid == null) {
                 logger.info("Trying to remove from project {} a {} organization {} which is not associated with this project.", projectUuid, projectRole, organizationToRemove);
             } else {
-                repo.getOrganizationDAO().removeOrganizationFromProject(projectUuid, organizationToRemove, projectRole);
+                repo.getOrganizationDAO().removeOrganizationFromProject(projectUuid, organizationToRemove, projectRole, loggedInUserUuid);
             }
         }
     }
@@ -305,6 +317,46 @@ public class ProjectService {
                 oldProjectFaseChangelogAfterUpdate.setProject(project);
                 oldProjectFaseChangelogAfterUpdate.setProjectPhase(oldProjectFaseChangelog.getProjectPhase());
                 repo.persist(oldProjectFaseChangelogAfterUpdate);
+            }
+        }
+    }
+
+    public void updateProjectPriority(VngRepository repo, Project project, UUID priorityValue, UUID priorityMin, UUID priorityMax, UUID loggedInUserUuid, LocalDate updateDate) {
+
+        ProjectPrioriseringChangelog oldPriorityChangelogAfterUpdate = new ProjectPrioriseringChangelog();
+        ProjectPrioriseringChangelog newPriorityChangelog = null;
+        if (priorityValue != null || priorityMin != null || priorityMax != null) {
+            newPriorityChangelog = new ProjectPrioriseringChangelog();
+            newPriorityChangelog.setProject(project);
+            newPriorityChangelog.setValue((priorityValue != null) ? repo.getReferenceById(ProjectPrioriseringValue.class, priorityValue) : null);
+            newPriorityChangelog.setMinValue((priorityMin != null) ? repo.getReferenceById(ProjectPrioriseringValue.class, priorityMin) : null);
+            newPriorityChangelog.setMaxValue((priorityMax != null) ? repo.getReferenceById(ProjectPrioriseringValue.class, priorityMax) : null);
+            newPriorityChangelog.setValueType((priorityValue != null) ? ValueType.SINGLE_VALUE : ValueType.RANGE);
+        }
+        ProjectPrioriseringChangelog oldPriorityChangelog = prepareChangelogValuesToUpdate(repo, project, project.getPriority(), newPriorityChangelog,
+            oldPriorityChangelogAfterUpdate, loggedInUserUuid, updateDate);
+        if (newPriorityChangelog != null) {
+            repo.persist(newPriorityChangelog);
+        }
+        if (oldPriorityChangelog != null) {
+            UUID oldPriorityValue = (oldPriorityChangelog.getValue() == null) ? null : oldPriorityChangelog.getValue().getId();
+            UUID oldPriorityMinValue = (oldPriorityChangelog.getMinValue() == null) ? null : oldPriorityChangelog.getMinValue().getId();
+            UUID oldPriorityMaxValue = (oldPriorityChangelog.getMaxValue() == null) ? null : oldPriorityChangelog.getMaxValue().getId();
+            if (Objects.equals(oldPriorityValue, priorityValue) && Objects.equals(oldPriorityMinValue, priorityMin) &&
+                Objects.equals(oldPriorityMaxValue, priorityMax)) {
+                logger.info("Trying to update the project {} with the same project priority value {}, min value {} and max value {} that it already has.",
+                    project.getId(), priorityValue, priorityMin, priorityMax);
+                return;
+            }
+            repo.persist(oldPriorityChangelog);
+            if (oldPriorityChangelogAfterUpdate.getStartMilestone() != null) {
+                //it is a current project && it had a non-null changelog before the update
+                oldPriorityChangelogAfterUpdate.setProject(project);
+                oldPriorityChangelogAfterUpdate.setValue(oldPriorityChangelog.getValue());
+                oldPriorityChangelogAfterUpdate.setMinValue(oldPriorityChangelog.getMinValue());
+                oldPriorityChangelogAfterUpdate.setMaxValue(oldPriorityChangelog.getMaxValue());
+                oldPriorityChangelogAfterUpdate.setValueType(oldPriorityChangelog.getValueType());
+                repo.persist(oldPriorityChangelogAfterUpdate);
             }
         }
     }

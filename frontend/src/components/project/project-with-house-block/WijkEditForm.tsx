@@ -1,58 +1,31 @@
-import { Checkbox, ListItemText, MenuItem, OutlinedInput, Select, SelectChangeEvent } from "@mui/material";
-import { MenuProps } from "../../../utils/menuProps";
-import { useContext, useEffect, useState } from "react";
-import ProjectContext from "../../../context/ProjectContext";
-import { OptionType } from "../ProjectsTableView";
+import { Autocomplete, TextField } from "@mui/material";
+import { useEffect, useState } from "react";
 import { getWijkList } from "../../../api/projectsTableServices";
+import { SelectModel } from "../../../api/projectsServices";
 
 type Props = {
-    selectedWijk: string[];
-    setSelectedWijk: (wijk: string[]) => void;
+    selectedWijk: SelectModel[];
+    setSelectedWijk: (wijk: SelectModel[]) => void;
 };
 
 export const WijkEditForm = ({ selectedWijk, setSelectedWijk }: Props) => {
-    const [wijkOptions, setWijkOptions] = useState<OptionType[]>();
-    const { selectedProject } = useContext(ProjectContext);
-
-    const handleWijkChange = (event: SelectChangeEvent<typeof selectedWijk>) => {
-        const {
-            target: { value },
-        } = event;
-        setSelectedWijk(typeof value === "string" ? [value] : value);
-    };
+    const [wijkOptions, setWijkOptions] = useState<SelectModel[]>();
 
     useEffect(() => {
         getWijkList().then((wijken) => setWijkOptions(wijken));
     }, []);
 
-    const checkControl = (inputName: string) => {
-        if (selectedWijk.length > 0) {
-            return selectedWijk.indexOf(inputName) !== -1;
-        } else if (selectedProject) {
-            if (selectedProject.wijk !== null && selectedProject.wijk !== undefined) {
-                return selectedProject.wijk.findIndex((w) => w.name === inputName) !== -1;
-            }
-        }
-    };
-
     return (
-        <Select
-            fullWidth
+        <Autocomplete
             size="small"
-            id="wijk-checkbox"
             multiple
-            value={selectedProject?.wijk?.map((w) => w.name) || []}
-            onChange={handleWijkChange}
-            input={<OutlinedInput />}
-            renderValue={(selected) => selected.join(", ")}
-            MenuProps={MenuProps}
-        >
-            {wijkOptions?.map((wijk) => (
-                <MenuItem key={wijk.id} value={wijk.name}>
-                    <Checkbox checked={checkControl(wijk.name)} />
-                    <ListItemText primary={wijk.name} />
-                </MenuItem>
-            ))}
-        </Select>
+            id="wijk-select"
+            options={wijkOptions ? wijkOptions : []}
+            getOptionLabel={(option) => option.name}
+            value={selectedWijk}
+            filterSelectedOptions
+            onChange={(_: any, newValue: SelectModel[]) => setSelectedWijk(newValue)}
+            renderInput={(params) => <TextField {...params} />}
+        />
     );
 };

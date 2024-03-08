@@ -31,6 +31,15 @@ public class ProjectsDAO extends AbstractRepository {
         return query.getSingleResultOrNull();
     }
 
+    public ProjectListSqlModel getProjectByUuid(UUID projectUuid) {
+        SelectionQuery<ProjectListSqlModel> q = session.createNativeQuery(
+                "SELECT * FROM get_active_or_future_project_snapshot(:projectUuid, :now) " , ProjectListSqlModel.class)
+            .setParameter("now", LocalDate.now())
+            .setParameter("projectUuid", projectUuid);
+
+        return q.getSingleResultOrNull();
+    }
+
     public List<ProjectListSqlModel> getProjectsTable(FilterPaginationSorting filtering) {
         SelectionQuery<ProjectListSqlModel> q = session.createNativeQuery("""
                 SELECT * FROM get_active_and_future_projects_list(:now, :offset, :limit, :sortColumn, :sortDirection,

@@ -4,7 +4,7 @@ import { MultiSelect } from "./MultiSelect";
 import { OptionType, SelectedOptionWithId } from "../project/ProjectsTableView";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
-import { ProductTableOption, getMunicipalityList } from "../../api/projectsTableServices";
+import { ProjectTableOption, getMunicipalityList } from "../../api/projectsTableServices";
 
 type Props = {
     cellValues: GridRenderCellParams<Project>;
@@ -13,7 +13,7 @@ type Props = {
 };
 
 export const MunicipalityCell = ({ cellValues, selectedMunicipality, handleMunicipalityChange }: Props) => {
-    const [municipalityOptions, setMunicipalityOptions] = useState<ProductTableOption[]>([]);
+    const [municipalityOptions, setMunicipalityOptions] = useState<ProjectTableOption[]>([]);
     const { t } = useTranslation();
 
     const defaultPlanTypes = cellValues.row.municipality || [];

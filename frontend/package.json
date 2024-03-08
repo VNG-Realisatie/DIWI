@@ -50,7 +50,7 @@
     "format:check": "prettier --check src/",
     "lint": "eslint --max-warnings 0 src/",
     "lint:ci": "eslint --max-warnings 0 --format junit --output-file eslint.xml src/",
-    "create-types": "openapi-typescript ../openapi.json -o src/types/schema.d.ts"
+    "create-types": "echo 'This does not work yet and will cause typescript errors if not modified after generation. Press ctrl-c to cancel or enter to continue.' && read yes_or_no && openapi-typescript ../openapi.json -o src/types/schema.d.ts"
   },
   "eslintConfig": {
     "extends": [

@@ -48,20 +48,21 @@ public class OrganizationsDAO extends AbstractRepository {
 
     public void addOrganizationToProject(UUID projectUuid, UUID organizationToAdd, ProjectRole projectRole, UUID loggedInUserUuid) {
         session.createNativeMutationQuery(String.format("""
-                INSERT INTO %1$s.organization_to_project (id, organization_id, project_id, project_rol, change_start_date, change_user_id)
-                    VALUES (:id, :organizationId, :projectId, CAST(:projectRole AS %1$s.project_rol), NOW(), :changeUserId) """, GenericRepository.VNG_SCHEMA_NAME))
+                INSERT INTO %1$s.organization_to_project (id, organization_id, project_id, project_rol, change_start_date, create_user_id)
+                    VALUES (:id, :organizationId, :projectId, CAST(:projectRole AS %1$s.project_rol), NOW(), :createUserId) """, GenericRepository.VNG_SCHEMA_NAME))
             .setParameter("id", CustomUuidGenerator.generateUUIDv7())
             .setParameter("organizationId", organizationToAdd)
             .setParameter("projectId", projectUuid)
             .setParameter("projectRole", projectRole.name())
-            .setParameter("changeUserId", loggedInUserUuid)
+            .setParameter("createUserId", loggedInUserUuid)
             .executeUpdate();
     }
 
-    public void removeOrganizationFromProject(UUID projectUuid, UUID organizationToRemove, ProjectRole projectRole) {
+    public void removeOrganizationFromProject(UUID projectUuid, UUID organizationToRemove, ProjectRole projectRole, UUID loggedInUserUuid) {
         session.createNativeMutationQuery(String.format("""
                 UPDATE %1$s.organization_to_project
-                    SET change_end_date = NOW()
+                    SET change_end_date = NOW(),
+                    change_user_id = :changeUserId
                 WHERE organization_id = :organizationId
                     AND project_id = :projectId
                     AND project_rol = CAST(:projectRole AS %1$s.project_rol)
@@ -69,6 +70,7 @@ public class OrganizationsDAO extends AbstractRepository {
             .setParameter("organizationId", organizationToRemove)
             .setParameter("projectId", projectUuid)
             .setParameter("projectRole", projectRole.name())
+            .setParameter("changeUserId", loggedInUserUuid)
             .executeUpdate();
     }
 }

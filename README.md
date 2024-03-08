@@ -149,3 +149,4 @@ As the project is meant for Dutch municipalities there are lots of Dutch terms.
 | Buurt       | Neighbourhood  |
 | Eigenaar    | Owner          |
 | Beleidsdoel | Policy goal    |
+| Perceel     | Plot           |
