@@ -6,6 +6,7 @@ import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.MilestoneStatus;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
+import nl.vng.diwi.dal.entities.enums.ValueType;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
@@ -271,7 +272,7 @@ public class ProjectServiceTest {
 
     @ParameterizedTest
     @ValueSource(strings = { "project_state",
-//            "project_actor_rol_changelog",
+//            "project_actor_rol_changelog", Not used yet
             "project_duration_changelog",
             "project_fase_changelog",
 //            "project_gemeenterol_changelog",
@@ -280,9 +281,10 @@ public class ProjectServiceTest {
 //            "project_maatwerk_numeriek_changelog",
 //            "project_maatwerk_ordinaal_changelog",
             "project_name_changelog",
-//            "project_plan_type_changelog",
+            "project_plan_type_changelog",
+            "project_planologische_planstatus_changelog",
 //            "project_planologische_planstatus_changelog",
-//            "project_priorisering_changelog"
+            "project_priorisering_changelog"
     })
     void deleteProject(String tableName) throws Exception {
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
@@ -295,6 +297,14 @@ public class ProjectServiceTest {
                 createProjectDurationChangelog(repo, project, startMilestone, endMilestone, user);
             } else if (tableName.equals("project_fase_changelog")) {
                 createProjectFaseChangelog(repo, project, ProjectPhase._1_INITIATIEFFASE, startMilestone, endMilestone, user);
+            } else if (tableName.equals("project_plan_type_changelog")) {
+                createProjectPlanTypeChangelog(repo, project, startMilestone, endMilestone, user);
+            } else if (tableName.equals("project_gemeenterol_changelog")) {
+                createProjectGemeenteRolChangelog(repo, project, startMilestone, endMilestone, user);
+            } else if (tableName.equals("project_priorisering_changelog")) {
+                createPriorityChangelog(repo, project, startMilestone, endMilestone, user);
+            } else if (tableName.equals("project_planologische_planstatus_changelog")) {
+                createProjectPlanStatusChangelog(repo, project, Set.of(PlanStatus._1A_ONHERROEPELIJK), startMilestone, endMilestone, user);
             } else if (tableName.equals("project_state")) {
                 // No need to create this one. it is created in the before each method
             } else {
@@ -384,15 +394,61 @@ public class ProjectServiceTest {
 
     public static ProjectFaseChangelog createProjectFaseChangelog(VngRepository repo, Project project, ProjectPhase fase, Milestone startMilestone,
             Milestone endMilestone, User user) {
-        ProjectFaseChangelog faseChangelog = new ProjectFaseChangelog();
-        faseChangelog.setProject(project);
-        faseChangelog.setCreateUser(user);
-        faseChangelog.setStartMilestone(startMilestone);
-        faseChangelog.setEndMilestone(endMilestone);
-        faseChangelog.setChangeStartDate(ZonedDateTime.now());
-        faseChangelog.setProjectPhase(fase);
-        repo.persist(faseChangelog);
-        return faseChangelog;
+        ProjectFaseChangelog changelog = new ProjectFaseChangelog();
+        changelog.setProject(project);
+        changelog.setCreateUser(user);
+        changelog.setStartMilestone(startMilestone);
+        changelog.setEndMilestone(endMilestone);
+        changelog.setChangeStartDate(ZonedDateTime.now());
+        changelog.setProjectPhase(fase);
+        repo.persist(changelog);
+        return changelog;
+    }
+
+    private ProjectPlanTypeChangelog createProjectPlanTypeChangelog(VngRepository repo, Project project, Milestone startMilestone, Milestone endMilestone,
+            User user) {
+        var changelog = new ProjectPlanTypeChangelog();
+        changelog.setProject(project);
+        changelog.setCreateUser(user);
+        changelog.setStartMilestone(startMilestone);
+        changelog.setEndMilestone(endMilestone);
+        changelog.setChangeStartDate(ZonedDateTime.now());
+        repo.persist(changelog);
+        return changelog;
+    }
+
+    private ProjectGemeenteRolChangelog createProjectGemeenteRolChangelog(VngRepository repo, Project project, Milestone startMilestone, Milestone endMilestone,
+            User user) {
+        var value = new ProjectGemeenteRolValue();
+        repo.persist(value);
+
+        var changelog = new ProjectGemeenteRolChangelog();
+        changelog.setProject(project);
+        changelog.setCreateUser(user);
+        changelog.setStartMilestone(startMilestone);
+        changelog.setEndMilestone(endMilestone);
+        changelog.setChangeStartDate(ZonedDateTime.now());
+        changelog.setValue(value);
+        repo.persist(changelog);
+        return changelog;
+    }
+
+    private ProjectPrioriseringChangelog createPriorityChangelog(VngRepository repo, Project project, Milestone startMilestone, Milestone endMilestone,
+            User user) {
+        var changelogValue = new ProjectPrioriseringValue();
+        repo.persist(changelogValue);
+
+
+        var changelog = new ProjectPrioriseringChangelog();
+        changelog.setProject(project);
+        changelog.setCreateUser(user);
+        changelog.setStartMilestone(startMilestone);
+        changelog.setEndMilestone(endMilestone);
+        changelog.setChangeStartDate(ZonedDateTime.now());
+        changelog.setValue(changelogValue);
+        changelog.setValueType(ValueType.SINGLE_VALUE);
+        repo.persist(changelog);
+        return changelog;
     }
 
     public static ProjectPlanologischePlanstatusChangelog createProjectPlanStatusChangelog(VngRepository repo, Project project, Set<PlanStatus> planStatuses,
