@@ -1,4 +1,4 @@
-import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Stack, Typography } from "@mui/material";
+import { FormControl, FormControlLabel, Radio, RadioGroup, Stack, Typography } from "@mui/material";
 import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
 import { HouseBlock } from "../types";
@@ -21,7 +21,7 @@ export const Programming = ({ projectForm, setProjectForm }: ProgrammingProps) =
                     <RadioGroup
                         name="programming"
                         value={projectForm?.programming !== null ? (projectForm?.programming === true ? "yes" : "no") : null}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => setProjectForm({ ...projectForm, programming: e.target.value === "ali" })}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => setProjectForm({ ...projectForm, programming: e.target.value === "yes" })}
                     >
                         <FormControlLabel value="yes" control={<Radio />} label={t("generic.yes")} />
                         <FormControlLabel value="no" control={<Radio />} label={t("generic.no")} />

@@ -87,7 +87,7 @@
           "title": "Grondpositie",
           "noPermissionOwner": "Geen toestemming grondeigenaar",
           "intentionPermissionOwner": "Intentie medewerking grondeigenaar",
-          "": "Formele toestemming van grondeigenaar",
+          "formalPermissionOwner": "Formele toestemming van grondeigenaar",
           "situation": "Situatie",
           "value": "Aantal"
         },

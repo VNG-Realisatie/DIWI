@@ -36,14 +36,12 @@ export const CreateProject = () => {
             max: null,
         },
         programming: null,
-
         mutation: {
             mutationKind: [],
             grossPlanCapacity: 0,
             netPlanCapacity: 0,
             demolition: 0,
         },
-
         ownershipValue: [
             {
                 type: "KOOPWONING",
@@ -64,13 +62,11 @@ export const CreateProject = () => {
                 rentalValue: { value: null, min: null, max: null },
             },
         ],
-
         groundPosition: {
             noPermissionOwner: null,
             intentionPermissionOwner: null,
             formalPermissionOwner: null,
         },
-
         physicalAppeareance: {
             tussenwoning: null,
             tweeondereenkap: null,
@@ -79,14 +75,10 @@ export const CreateProject = () => {
             vrijstaand: null,
             gallerijflat: null,
         },
-
-        // huizen type
         houseType: {
             meergezinswoning: null,
             eengezinswoning: null,
         },
-
-        //doel
         purpose: {
             regular: null,
             youth: null,
