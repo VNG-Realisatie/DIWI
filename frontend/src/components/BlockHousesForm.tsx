@@ -32,7 +32,7 @@ export const BlockHousesForm = ({ projectDetailHouseBlock }: Props) => {
                     <OwnershipInformationGroup projectForm={projectForm} setProjectForm={setProjectForm} />
                 </Grid>
             </Grid>
-            <Grid container spacing={2} alignItems="stretch" mt={1}>
+            <Grid container spacing={2} alignItems="stretch" mt={0.5}>
                 <Grid item xs={12} md={4}>
                     <PhysicalAppeareanceGroup projectForm={projectForm} setProjectForm={setProjectForm} />
                 </Grid>
@@ -43,7 +43,7 @@ export const BlockHousesForm = ({ projectDetailHouseBlock }: Props) => {
                     <HouseTypeGroup projectForm={projectForm} setProjectForm={setProjectForm} />
                 </Grid>
             </Grid>
-            <Grid container spacing={2} alignItems="stretch" mt={1}>
+            <Grid container spacing={2} alignItems="stretch" mt={0.5}>
                 <Grid item xs={12} md={8}>
                     <GroundPositionGroup projectForm={projectForm} setProjectForm={setProjectForm} />
                 </Grid>

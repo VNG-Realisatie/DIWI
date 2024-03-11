@@ -1,9 +1,8 @@
-import { Dayjs } from "dayjs";
 import { MutationSelectOptions, OwnershipValueType } from "../../../types/enums";
 
 export type GeneralInformation = {
-    startDate: Dayjs | null | string;
-    endDate: Dayjs | null | string;
+    startDate: null | string;
+    endDate: null | string;
     houseblockName: string;
     size: {
         value: number | null;
@@ -51,8 +50,8 @@ export type OwnershipSingleValue = {
 };
 
 export type HouseBlock = {
-    startDate: Dayjs | null | string;
-    endDate: Dayjs | null | string;
+    startDate: null | string;
+    endDate: null | string;
     projectId?: string;
     houseblockId?: string;
     houseblockName: string;
@@ -61,22 +60,17 @@ export type HouseBlock = {
         min: number | null;
         max: number | null;
     };
-    programming: boolean | null; //true/false/null
+    programming: boolean | null;
 
     mutation: MutationInformations;
 
-    //eigendom en waarde/ ownership and value
     ownershipValue: OwnershipSingleValue[];
 
-    //grond positie
     groundPosition: GroundPositionInformations;
 
-    // fysiek voorkomen
     physicalAppeareance: PhysicalInformations;
 
-    // huizen type
     houseType: HouseTypeInformations;
 
-    //doel
     purpose: PurposeInformations;
 };
