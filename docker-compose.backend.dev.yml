@@ -23,7 +23,7 @@ services:
       DIWI_DB_USERNAME: ${DIWI_DB_USERNAME:-diwi}
       DIWI_DB_PASSWORD: ${DIWI_DB_PASSWORD:-diwi}
       KC_REALM_NAME: ${KC_REALM_NAME:-diwi-test-realm}
-      KC_AUTH_SERVER_URL: ${KC_AUTH_SERVER_URL:-http://localhost:${KEYCLOAK_PORT:-1780}}
+      KC_AUTH_SERVER_URL: ${KC_AUTH_SERVER_URL:-http://localhost:${KEYCLOAK_PORT}}
       KC_SECRET: ${KC_SECRET:-diwi-test-secret}
       KC_RESOURCE_NAME: ${KC_RESOURCE_NAME:-diwi-test-client}
     depends_on:
@@ -32,6 +32,10 @@ services:
   keycloak:
     build:
       context: keycloak
+    develop:
+      watch:
+        - action: rebuild
+          path: keycloak
     network_mode: host
     environment:
       <<: *common
@@ -49,7 +53,7 @@ services:
       - keycloak_database
     volumes:
       - ./keycloak/realm-import:/opt/keycloak/data/import
-    command: "start --import-realm --optimized --http-port=$${KEYCLOAK_PORT:-1780}"
+    command: "start --import-realm --optimized --http-port=$${KEYCLOAK_PORT}"
 
   keycloak_database:
     image: git.phinion.com/phinion/dependency_proxy/containers/postgres:15
