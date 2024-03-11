@@ -27,8 +27,8 @@ public class TestDb implements AutoCloseable {
 
         env.putIfAbsent("DIWI_DB_HOST", "localhost");
         env.putIfAbsent("DIWI_DB_NAME", "diwi_test");
-        env.putIfAbsent("DIWI_DB_USERNAME", "diwi");
-        env.putIfAbsent("DIWI_DB_PASSWORD", "diwi");
+        env.putIfAbsent("DIWI_DB_USERNAME", "postgres");
+        env.putIfAbsent("DIWI_DB_PASSWORD", "postgres");
 
         env.putIfAbsent("KC_AUTH_SERVER_URL", "http://localhost");
         env.putIfAbsent("KC_REALM_NAME", "");
