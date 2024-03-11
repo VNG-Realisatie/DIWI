@@ -19,6 +19,7 @@
       "timeline": "Tijdlijn",
       "completeMessage": "De wizard voor het maken van projectformulieren is voltooid. Klik op Opslaan om het proces te voltooien.",
       "successfullySaved": "Project succesvol opgeslagen.",
+      "nameIsRequried" : "Vul het veld projectnaam in",
       "informationForm": {
         "title": "Vul de projectgegevens in",
         "nameLabel": "Projectnaam en projectkleur*",

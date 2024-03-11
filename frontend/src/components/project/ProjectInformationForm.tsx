@@ -9,10 +9,9 @@ import planologischePlanStatus from "../../api/json/enums/planologische_planstat
 import vertrouwlijkheidsniveau from "../../api/json/enums/confidentiality.json";
 import priorityOption from "../../api/json/priorisering.json";
 import eigenaarOption from "../../api/json/eigenaar.json";
-import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
-export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm }: any) => {
+export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm, validationError }: any) => {
     const { t } = useTranslation();
     //ToDo add props later
     const handleColorChange = (newColor: string) => {
@@ -21,14 +20,6 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
             color: newColor,
         });
     };
-
-    useEffect(() => {
-        setCreateProjectForm({
-            ...createProjectForm,
-            id: Math.floor(Math.random() * 10000),
-        });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
 
     return (
         <Box mt={4}>
@@ -40,17 +31,20 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
             </Typography>
             <Stack direction="row" alignItems="center" justifyContent="space-between">
                 <TextField
+                    required
                     id="projectname"
                     size="small"
                     variant="outlined"
                     value={createProjectForm ? createProjectForm.name : ""}
                     sx={{ width: "97%" }}
-                    onChange={(e) =>
+                    onChange={(e) => {
                         setCreateProjectForm({
                             ...createProjectForm,
                             name: e.target.value,
-                        })
-                    }
+                        });
+                    }}
+                    error={validationError}
+                    helperText={validationError && t("createProject.nameIsRequried")}
                 />
                 <ColorSelector selectedColor={createProjectForm} defaultColor="rgba(255, 87, 51, 1)" onColorChange={handleColorChange} />
             </Stack>
