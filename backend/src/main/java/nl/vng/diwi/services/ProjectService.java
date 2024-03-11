@@ -64,6 +64,7 @@ public class ProjectService {
         endDateEntities.addAll(project.getPlanologischePlanstatus());
         endDateEntities.addAll(project.getPriority());
         endDateEntities.addAll(project.getMunicipalityRole());
+        endDateEntities.addAll(project.getState());
 
         endDateEntities.stream()
                 .filter(cl -> cl.getChangeEndDate() == null)
@@ -71,12 +72,6 @@ public class ProjectService {
                     cl.setChangeEndDate(now);
                     cl.setChangeUser(user);
                 });
-
-        var currentProjectState = repo.getProjectsDAO().getCurrentProjectState(projectUuid);
-
-        currentProjectState.setChangeEndDate(now);
-        currentProjectState.setChangeUser(user);
-
     }
 
     public void updateProjectColor(VngRepository repo, Project project, String newColor, UUID loggedInUserUuid)
