@@ -1,8 +1,8 @@
 import { Stack, Typography, TextField } from "@mui/material";
 import { t } from "i18next";
-import { PhysicalAppeareanceInformationProps } from "./PhysicalAppeareanceGroup";
+import { PurposeInformationProps } from "./PurposeGroup";
 type Props = {
-    state: PhysicalAppeareanceInformationProps;
+    state: PurposeInformationProps;
     value: string;
     translationPath: string;
 };

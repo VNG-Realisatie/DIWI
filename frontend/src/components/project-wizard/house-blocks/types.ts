@@ -18,17 +18,17 @@ export type MutationInformations = {
     netPlanCapacity: number | null;
     demolition: number | null;
 };
+
 export type PhysicalInformations = {
-    // total can be between 0 and net plan capacity
-    // can not be lower than 0, can be null
     [key: string]: number | null;
-    // tussenwoning: number | null;
-    // tweeondereenkap: number | null;
-    // portiekflat: number | null;
-    // hoekwoning: number | null;
-    // vrijstaand: number | null;
-    // gallerijflat: number | null;
 };
+export type PurposeInformations = {
+    [key: string]: number | null;
+};
+export type HouseTypeInformations = {
+    [key: string]: number | null;
+};
+
 export type OwnershipSingleValue = {
     type: OwnershipValueType;
     amount: number | null;
@@ -73,22 +73,8 @@ export type HouseBlock = {
     physicalAppeareance: PhysicalInformations;
 
     // huizen type
-    houseType: {
-        // total can be between 0 and net plan capacity
-        // can not be lower than 0, can be null
-        meergezinswoning: number | null;
-        eengezinswoning: number | null;
-    };
+    houseType: HouseTypeInformations;
 
     //doel
-    purpose: {
-        // total can be between 0 and net plan capacity
-        // can not be lower than 0, can be null
-        regular: number | null;
-        youth: number | null;
-        student: number | null;
-        elderly: number | null;
-        largeFamilies: number | null;
-        ghz: number | null;
-    };
+    purpose: PurposeInformations;
 };

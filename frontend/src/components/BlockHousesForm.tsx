@@ -1,10 +1,19 @@
 import { Box, Grid } from "@mui/material";
-import { HouseBlock, MutationInformations, OwnershipSingleValue, PhysicalInformations } from "./project-wizard/house-blocks/types";
+import {
+    HouseBlock,
+    HouseTypeInformations,
+    MutationInformations,
+    OwnershipSingleValue,
+    PhysicalInformations,
+    PurposeInformations,
+} from "./project-wizard/house-blocks/types";
 import { GeneralInformationGroup } from "./project-wizard/house-blocks/general-information/GeneralInformationGroup";
 import { MutationInformationGroup } from "./project-wizard/house-blocks/mutation-information/MutationInformationGroup";
 import { useState } from "react";
 import { OwnershipInformationGroup } from "./project-wizard/house-blocks/ownership-information/OwnershipInformationGroup";
 import { PhysicalAppeareanceGroup } from "./project-wizard/house-blocks/physical-appearence/PhysicalAppeareanceGroup";
+import { PurposeGroup } from "./project-wizard/house-blocks/purpose/PurposeGroup";
+import { HouseTypeGroup } from "./project-wizard/house-blocks/house-type/HouseTypeGroup";
 
 type Props = {
     projectForm: HouseBlock;
@@ -47,6 +56,19 @@ export const BlockHousesForm = ({ projectForm, setProjectForm }: Props) => {
         gallerijflat: null,
     });
 
+    const [purposeForm, setPurposeForm] = useState<PurposeInformations>({
+        regular: null,
+        youth: null,
+        student: null,
+        elderly: null,
+        largeFamilies: null,
+        ghz: null,
+    });
+    const [houseTypeForm, setHouseTypeForm] = useState<HouseTypeInformations>({
+        meergezinswoning: null,
+        eengezinswoning: null,
+    });
+
     return (
         <Box mt={4}>
             <Grid container spacing={2} alignItems="stretch">
@@ -66,8 +88,12 @@ export const BlockHousesForm = ({ projectForm, setProjectForm }: Props) => {
                 <Grid item xs={12} md={4}>
                     <PhysicalAppeareanceGroup projectForm={physicalAppearanceForm} setProjectForm={setPhysicalAppearanceForm} />
                 </Grid>
-                <Grid item xs={12} md={4}></Grid>
-                <Grid item xs={12} md={4}></Grid>
+                <Grid item xs={12} md={4}>
+                    <PurposeGroup projectForm={purposeForm} setProjectForm={setPurposeForm} />
+                </Grid>
+                <Grid item xs={12} md={4}>
+                    <HouseTypeGroup projectForm={houseTypeForm} setProjectForm={setHouseTypeForm} />
+                </Grid>
             </Grid>
 
             {/*

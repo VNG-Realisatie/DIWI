@@ -56,14 +56,33 @@
         "intentionToCooperateWithTheLandowner": "Intentie medewerking Grondeigenaar",
         "formalPermissionFromLandOwner": "Formele toestemming van Grondeigenaar",
         "physicalAppearance": {
-          "title":"Fysiek voorkomen",
-          "tussenwoning":"Tussenwoning",
-          "tweeondereenkap":"Twee onder een kap",
-          "portiekflat":"Portiekflat",
-          "hoekwoning":"Hoekwoning",
-          "vrijstaand":"Vrijstaand",
-          "gallerijflat":"Gallerijflat"
-
+          "title": "Fysiek voorkomen",
+          "tussenwoning": "Tussenwoning",
+          "tweeondereenkap": "Twee onder een kap",
+          "portiekflat": "Portiekflat",
+          "hoekwoning": "Hoekwoning",
+          "vrijstaand": "Vrijstaand",
+          "gallerijflat": "Gallerijflat",
+          "houseType": "Soort woning",
+          "value": "Aantal"
+        },
+        "purpose": {
+          "title": "Doel",
+          "regular": "Regulier",
+          "youth": "Jongeren",
+          "student": "Student",
+          "elderly": "Ouderen",
+          "ghz": "GHZ",
+          "largeFamilies": "Grote gezinnen",
+          "typeOfResidents": "Soorten bewoners",
+          "value": "Aantal"
+        },
+        "houseType": {
+          "title": "Woningtype",
+          "meergezinswoning": "Meergezinswoning",
+          "eengezinswoning": "Eengezinswoning",
+          "type":"Soort",
+          "value": "Aantal"
         },
         "terracedHouse": "Tussenwoning",
         "cornerHouse": "Hoekwoning",
@@ -80,7 +99,6 @@
         "elderly": "Ouderen",
         "disabilityAndCare": "Gehandicapter en zorg",
         "largeFamilies": "Grote gezinnen"
-
       },
       "selectMapForm": {
         "title": "Teken het project in op de kaart",
