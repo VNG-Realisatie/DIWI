@@ -16,6 +16,7 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -66,8 +67,16 @@ public class ProjectsResource {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public ProjectSnapshotModel getCurrentProjectSnapshot(@PathParam("id") UUID projectUuid) throws VngNotFoundException {
-
         return projectService.getProjectSnapshot(repo, projectUuid);
+    }
+
+    @DELETE
+    @Path("/{id}")
+    public void deleteProject(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid) throws VngNotFoundException {
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+            projectService.deleteProject(repo, projectUuid, loggedUser.getUuid());
+            transaction.commit();
+        }
     }
 
     @GET
