@@ -1,5 +1,17 @@
 package nl.vng.diwi.resources;
 
+import static nl.vng.diwi.security.SecurityRoleConstants.Admin;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.BeanParam;
@@ -35,26 +47,10 @@ import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.services.ProjectService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import static nl.vng.diwi.security.SecurityRoleConstants.Admin;
 
 @Path("/projects")
 @RolesAllowed({Admin})
 public class ProjectsResource {
-    private static final Logger logger = LogManager.getLogger();
-
     private final VngRepository repo;
     private final ProjectService projectService;
 

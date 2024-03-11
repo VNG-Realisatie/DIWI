@@ -7,6 +7,7 @@ import nl.vng.diwi.dal.FilterPaginationSorting;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.*;
 import nl.vng.diwi.dal.entities.enums.*;
+import nl.vng.diwi.dal.entities.superclasses.ChangeDataSuperclass;
 import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
 import nl.vng.diwi.models.MilestoneModel;
 import nl.vng.diwi.models.ProjectListModel;
@@ -20,7 +21,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.ZonedDateTime;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class ProjectService {
@@ -50,8 +50,32 @@ public class ProjectService {
         return result;
     }
 
+    public void deleteProject(VngRepository repo, UUID projectUuid, UUID loggedInUserUuid) {
+        var now = ZonedDateTime.now();
+        var user = repo.findById(User.class, loggedInUserUuid);
+
+        var project = repo.getProjectsDAO().getCurrentProject(projectUuid);
+
+        List<ChangeDataSuperclass> endDateEntities = new ArrayList<>();
+        endDateEntities.addAll(project.getDuration());
+        endDateEntities.addAll(project.getPhase());
+        endDateEntities.addAll(project.getName());
+        endDateEntities.addAll(project.getPlanType());
+        endDateEntities.addAll(project.getPlanologischePlanstatus());
+        endDateEntities.addAll(project.getPriority());
+        endDateEntities.addAll(project.getMunicipalityRole());
+        endDateEntities.addAll(project.getState());
+
+        endDateEntities.stream()
+                .filter(cl -> cl.getChangeEndDate() == null)
+                .forEach(cl -> {
+                    cl.setChangeEndDate(now);
+                    cl.setChangeUser(user);
+                });
+    }
+
     public void updateProjectColor(VngRepository repo, Project project, String newColor, UUID loggedInUserUuid)
-        throws VngNotFoundException {
+            throws VngNotFoundException {
 
         ProjectState oldProjectState = repo.getProjectsDAO().getCurrentProjectState(project.getId());
         if (oldProjectState == null) {
@@ -77,7 +101,7 @@ public class ProjectService {
     }
 
     public void updateProjectConfidentialityLevel(VngRepository repo, Project project, Confidentiality newConfidentiality, UUID loggedInUserUuid)
-        throws VngNotFoundException {
+            throws VngNotFoundException {
 
         ProjectState oldProjectState = repo.getProjectsDAO().getCurrentProjectState(project.getId());
         if (oldProjectState == null) {
@@ -102,16 +126,16 @@ public class ProjectService {
         }
     }
 
-
     public void updateProjectOrganizations(VngRepository repo, Project project, ProjectRole projectRole, UUID organizationToAdd,
-                                           UUID organizationToRemove, UUID loggedInUserUuid) {
+            UUID organizationToRemove, UUID loggedInUserUuid) {
 
         UUID projectUuid = project.getId();
 
         if (organizationToAdd != null) {
             UUID organizationToProjectUuid = repo.getOrganizationDAO().findOrganizationForProject(projectUuid, organizationToAdd, projectRole);
             if (organizationToProjectUuid != null) {
-                logger.info("Trying to add to project {} a {} organization {} which is already associated with this project.", projectUuid, projectRole, organizationToAdd);
+                logger.info("Trying to add to project {} a {} organization {} which is already associated with this project.", projectUuid, projectRole,
+                        organizationToAdd);
             } else {
                 repo.getOrganizationDAO().addOrganizationToProject(projectUuid, organizationToAdd, projectRole, loggedInUserUuid);
             }
@@ -120,7 +144,8 @@ public class ProjectService {
         if (organizationToRemove != null) {
             UUID organizationToProjectUuid = repo.getOrganizationDAO().findOrganizationForProject(projectUuid, organizationToRemove, projectRole);
             if (organizationToProjectUuid == null) {
-                logger.info("Trying to remove from project {} a {} organization {} which is not associated with this project.", projectUuid, projectRole, organizationToRemove);
+                logger.info("Trying to remove from project {} a {} organization {} which is not associated with this project.", projectUuid, projectRole,
+                        organizationToRemove);
             } else {
                 repo.getOrganizationDAO().removeOrganizationFromProject(projectUuid, organizationToRemove, projectRole, loggedInUserUuid);
             }
@@ -128,8 +153,8 @@ public class ProjectService {
     }
 
     public void updateProjectName(VngRepository repo, Project project, String newName, UUID loggedInUserUuid, LocalDate updateDate)
-        throws VngServerErrorException {
-        //name is mandatory for the entire duration of the project
+            throws VngServerErrorException {
+        // name is mandatory for the entire duration of the project
 
         ProjectNameChangelog oldProjectNameChangelogAfterUpdate = new ProjectNameChangelog();
         ProjectNameChangelog newProjectNameChangelog = new ProjectNameChangelog();
@@ -137,7 +162,7 @@ public class ProjectService {
         newProjectNameChangelog.setName(newName);
 
         ProjectNameChangelog oldProjectNameChangelog = prepareChangelogValuesToUpdate(repo, project, project.getName(), newProjectNameChangelog,
-            oldProjectNameChangelogAfterUpdate, loggedInUserUuid, updateDate);
+                oldProjectNameChangelogAfterUpdate, loggedInUserUuid, updateDate);
 
         repo.persist(newProjectNameChangelog);
         if (oldProjectNameChangelog == null) {
@@ -151,17 +176,16 @@ public class ProjectService {
         }
         repo.persist(oldProjectNameChangelog);
         if (oldProjectNameChangelogAfterUpdate.getStartMilestone() != null) {
-            //it is a current project && it had a non-null changelog before the update
+            // it is a current project && it had a non-null changelog before the update
             oldProjectNameChangelogAfterUpdate.setProject(project);
             oldProjectNameChangelogAfterUpdate.setName(oldProjectNameChangelog.getName());
             repo.persist(oldProjectNameChangelogAfterUpdate);
         }
     }
 
-
     public void updateProjectMunicipalityRoles(VngRepository repo, Project project, UUID municipalityRoleToAdd, UUID municipalityRoleToRemove,
-                                               UUID loggedInUserUuid, LocalDate updateDate) {
-        //a project can have multiple active changelog entries for municipality roles
+            UUID loggedInUserUuid, LocalDate updateDate) {
+        // a project can have multiple active changelog entries for municipality roles
 
         LocalDate projectStartDate = (new MilestoneModel(project.getDuration().get(0).getStartMilestone())).getDate();
         if (projectStartDate.isAfter(updateDate)) {
@@ -172,10 +196,13 @@ public class ProjectService {
         if (municipalityRoleToAdd != null) {
 
             List<ProjectGemeenteRolChangelog> changelogs = project.getMunicipalityRole().stream()
-                .filter(mrc -> mrc.getValue().getId().equals(municipalityRoleToAdd) && !(new MilestoneModel(mrc.getStartMilestone())).getDate().isAfter(finalUpdateDate)
-                    && (new MilestoneModel(mrc.getEndMilestone())).getDate().isAfter(finalUpdateDate)).toList();
+                    .filter(mrc -> mrc.getValue().getId().equals(municipalityRoleToAdd)
+                            && !(new MilestoneModel(mrc.getStartMilestone())).getDate().isAfter(finalUpdateDate)
+                            && (new MilestoneModel(mrc.getEndMilestone())).getDate().isAfter(finalUpdateDate))
+                    .toList();
             if (!changelogs.isEmpty()) {
-                logger.info("Trying to add to project {} a municipality role {} which is already associated with this project.", project.getId(), municipalityRoleToAdd);
+                logger.info("Trying to add to project {} a municipality role {} which is already associated with this project.", project.getId(),
+                        municipalityRoleToAdd);
                 return;
             } else {
                 ProjectGemeenteRolChangelog newChangelog = new ProjectGemeenteRolChangelog();
@@ -185,11 +212,11 @@ public class ProjectService {
                 newChangelog.setCreateUser(repo.getReferenceById(User.class, loggedInUserUuid));
                 newChangelog.setStartMilestone(getOrCreateMilestoneForProject(repo, project, updateDate, loggedInUserUuid));
                 UUID newEndMilestoneUuid = project.getMunicipalityRole().stream().filter(mrc -> mrc.getValue().getId().equals(municipalityRoleToAdd))
-                    .map(mr -> new MilestoneModel(mr.getStartMilestone()))
-                    .filter(mm -> mm.getDate().isAfter(finalUpdateDate))
-                    .min(Comparator.comparing(MilestoneModel::getDate))
-                    .map(MilestoneModel::getId)
-                    .orElse(project.getDuration().get(0).getEndMilestone().getId());
+                        .map(mr -> new MilestoneModel(mr.getStartMilestone()))
+                        .filter(mm -> mm.getDate().isAfter(finalUpdateDate))
+                        .min(Comparator.comparing(MilestoneModel::getDate))
+                        .map(MilestoneModel::getId)
+                        .orElse(project.getDuration().get(0).getEndMilestone().getId());
                 newChangelog.setEndMilestone(repo.getReferenceById(Milestone.class, newEndMilestoneUuid));
                 repo.persist(newChangelog);
             }
@@ -197,10 +224,13 @@ public class ProjectService {
 
         if (municipalityRoleToRemove != null) {
             List<ProjectGemeenteRolChangelog> changelogs = project.getMunicipalityRole().stream()
-                .filter(mrc -> mrc.getValue().getId().equals(municipalityRoleToRemove) && !(new MilestoneModel(mrc.getStartMilestone())).getDate().isAfter(finalUpdateDate)
-                    && (new MilestoneModel(mrc.getEndMilestone())).getDate().isAfter(finalUpdateDate)).toList();
+                    .filter(mrc -> mrc.getValue().getId().equals(municipalityRoleToRemove)
+                            && !(new MilestoneModel(mrc.getStartMilestone())).getDate().isAfter(finalUpdateDate)
+                            && (new MilestoneModel(mrc.getEndMilestone())).getDate().isAfter(finalUpdateDate))
+                    .toList();
             if (changelogs.isEmpty()) {
-                logger.info("Trying to remove from project {} a municipality role {} which is not associated with this project.", project.getId(), municipalityRoleToRemove);
+                logger.info("Trying to remove from project {} a municipality role {} which is not associated with this project.", project.getId(),
+                        municipalityRoleToRemove);
             } else {
                 ProjectGemeenteRolChangelog changelog = changelogs.get(0);
                 changelog.setChangeEndDate(ZonedDateTime.now());
@@ -210,7 +240,8 @@ public class ProjectService {
         }
     }
 
-    public void updateProjectPlanStatus(VngRepository repo, Project project, Set<PlanStatus> newProjectPlanStatuses, UUID loggedInUserUuid, LocalDate updateDate) {
+    public void updateProjectPlanStatus(VngRepository repo, Project project, Set<PlanStatus> newProjectPlanStatuses, UUID loggedInUserUuid,
+            LocalDate updateDate) {
 
         ProjectPlanologischePlanstatusChangelog oldPlanStatusChangelogAfterUpdate = new ProjectPlanologischePlanstatusChangelog();
         ProjectPlanologischePlanstatusChangelog newPlanStatusChangelog = null;
@@ -218,8 +249,9 @@ public class ProjectService {
             newPlanStatusChangelog = new ProjectPlanologischePlanstatusChangelog();
             newPlanStatusChangelog.setProject(project);
         }
-        ProjectPlanologischePlanstatusChangelog oldPlanStatusChangelog = prepareChangelogValuesToUpdate(repo, project, project.getPlanologischePlanstatus(), newPlanStatusChangelog,
-            oldPlanStatusChangelogAfterUpdate, loggedInUserUuid, updateDate);
+        ProjectPlanologischePlanstatusChangelog oldPlanStatusChangelog = prepareChangelogValuesToUpdate(repo, project, project.getPlanologischePlanstatus(),
+                newPlanStatusChangelog,
+                oldPlanStatusChangelogAfterUpdate, loggedInUserUuid, updateDate);
         if (newPlanStatusChangelog != null) {
             repo.persist(newPlanStatusChangelog);
             for (PlanStatus newPlanStatusValue : newProjectPlanStatuses) {
@@ -231,14 +263,14 @@ public class ProjectService {
         }
         if (oldPlanStatusChangelog != null) {
             Set<PlanStatus> oldProjectPlanStatuses = oldPlanStatusChangelog.getValue().stream()
-                .map(ProjectPlanologischePlanstatusChangelogValue::getPlanStatus).collect(Collectors.toSet());
+                    .map(ProjectPlanologischePlanstatusChangelogValue::getPlanStatus).collect(Collectors.toSet());
             if (Objects.equals(oldProjectPlanStatuses, newProjectPlanStatuses)) {
                 logger.info("Trying to update the project {} with the same plan statuses that it already has {}.", project.getId(), newProjectPlanStatuses);
                 return;
             }
             repo.persist(oldPlanStatusChangelog);
             if (oldPlanStatusChangelogAfterUpdate.getStartMilestone() != null) {
-                //it is a current project && it had a non-null changelog before the update
+                // it is a current project && it had a non-null changelog before the update
                 oldPlanStatusChangelogAfterUpdate.setProject(project);
                 repo.persist(oldPlanStatusChangelogAfterUpdate);
                 for (PlanStatus oldPlanStatusValue : oldProjectPlanStatuses) {
@@ -260,7 +292,7 @@ public class ProjectService {
             newPlanTypeChangelog.setProject(project);
         }
         ProjectPlanTypeChangelog oldPlanTypeChangelog = prepareChangelogValuesToUpdate(repo, project, project.getPlanType(), newPlanTypeChangelog,
-            oldPlanTypeChangelogAfterUpdate, loggedInUserUuid, updateDate);
+                oldPlanTypeChangelogAfterUpdate, loggedInUserUuid, updateDate);
         if (newPlanTypeChangelog != null) {
             repo.persist(newPlanTypeChangelog);
             for (PlanType newPlanTypeValue : newProjectPlanTypes) {
@@ -272,14 +304,14 @@ public class ProjectService {
         }
         if (oldPlanTypeChangelog != null) {
             Set<PlanType> oldProjectPlanTypes = oldPlanTypeChangelog.getValue().stream()
-                .map(ProjectPlanTypeChangelogValue::getPlanType).collect(Collectors.toSet());
+                    .map(ProjectPlanTypeChangelogValue::getPlanType).collect(Collectors.toSet());
             if (Objects.equals(oldProjectPlanTypes, newProjectPlanTypes)) {
                 logger.info("Trying to update the project {} with the same plan types that it already has {}.", project.getId(), newProjectPlanTypes);
                 return;
             }
             repo.persist(oldPlanTypeChangelog);
             if (oldPlanTypeChangelogAfterUpdate.getStartMilestone() != null) {
-                //it is a current project && it had a non-null changelog before the update
+                // it is a current project && it had a non-null changelog before the update
                 oldPlanTypeChangelogAfterUpdate.setProject(project);
                 repo.persist(oldPlanTypeChangelogAfterUpdate);
                 for (PlanType oldPlanTypeValue : oldProjectPlanTypes) {
@@ -302,7 +334,7 @@ public class ProjectService {
             newProjectFaseChangelog.setProjectPhase(newProjectPhase);
         }
         ProjectFaseChangelog oldProjectFaseChangelog = prepareChangelogValuesToUpdate(repo, project, project.getPhase(), newProjectFaseChangelog,
-            oldProjectFaseChangelogAfterUpdate, loggedInUserUuid, updateDate);
+                oldProjectFaseChangelogAfterUpdate, loggedInUserUuid, updateDate);
         if (newProjectFaseChangelog != null) {
             repo.persist(newProjectFaseChangelog);
         }
@@ -313,7 +345,7 @@ public class ProjectService {
             }
             repo.persist(oldProjectFaseChangelog);
             if (oldProjectFaseChangelogAfterUpdate.getStartMilestone() != null) {
-                //it is a current project && it had a non-null changelog before the update
+                // it is a current project && it had a non-null changelog before the update
                 oldProjectFaseChangelogAfterUpdate.setProject(project);
                 oldProjectFaseChangelogAfterUpdate.setProjectPhase(oldProjectFaseChangelog.getProjectPhase());
                 repo.persist(oldProjectFaseChangelogAfterUpdate);
@@ -321,7 +353,8 @@ public class ProjectService {
         }
     }
 
-    public void updateProjectPriority(VngRepository repo, Project project, UUID priorityValue, UUID priorityMin, UUID priorityMax, UUID loggedInUserUuid, LocalDate updateDate) {
+    public void updateProjectPriority(VngRepository repo, Project project, UUID priorityValue, UUID priorityMin, UUID priorityMax, UUID loggedInUserUuid,
+            LocalDate updateDate) {
 
         ProjectPrioriseringChangelog oldPriorityChangelogAfterUpdate = new ProjectPrioriseringChangelog();
         ProjectPrioriseringChangelog newPriorityChangelog = null;
@@ -334,7 +367,7 @@ public class ProjectService {
             newPriorityChangelog.setValueType((priorityValue != null) ? ValueType.SINGLE_VALUE : ValueType.RANGE);
         }
         ProjectPrioriseringChangelog oldPriorityChangelog = prepareChangelogValuesToUpdate(repo, project, project.getPriority(), newPriorityChangelog,
-            oldPriorityChangelogAfterUpdate, loggedInUserUuid, updateDate);
+                oldPriorityChangelogAfterUpdate, loggedInUserUuid, updateDate);
         if (newPriorityChangelog != null) {
             repo.persist(newPriorityChangelog);
         }
@@ -343,14 +376,14 @@ public class ProjectService {
             UUID oldPriorityMinValue = (oldPriorityChangelog.getMinValue() == null) ? null : oldPriorityChangelog.getMinValue().getId();
             UUID oldPriorityMaxValue = (oldPriorityChangelog.getMaxValue() == null) ? null : oldPriorityChangelog.getMaxValue().getId();
             if (Objects.equals(oldPriorityValue, priorityValue) && Objects.equals(oldPriorityMinValue, priorityMin) &&
-                Objects.equals(oldPriorityMaxValue, priorityMax)) {
+                    Objects.equals(oldPriorityMaxValue, priorityMax)) {
                 logger.info("Trying to update the project {} with the same project priority value {}, min value {} and max value {} that it already has.",
-                    project.getId(), priorityValue, priorityMin, priorityMax);
+                        project.getId(), priorityValue, priorityMin, priorityMax);
                 return;
             }
             repo.persist(oldPriorityChangelog);
             if (oldPriorityChangelogAfterUpdate.getStartMilestone() != null) {
-                //it is a current project && it had a non-null changelog before the update
+                // it is a current project && it had a non-null changelog before the update
                 oldPriorityChangelogAfterUpdate.setProject(project);
                 oldPriorityChangelogAfterUpdate.setValue(oldPriorityChangelog.getValue());
                 oldPriorityChangelogAfterUpdate.setMinValue(oldPriorityChangelog.getMinValue());
@@ -361,7 +394,8 @@ public class ProjectService {
         }
     }
 
-    public void updateProjectDuration(VngRepository repo, Project project, LocalDate newStartDate, LocalDate newEndDate, UUID loggedInUserUuid) throws VngServerErrorException, VngBadRequestException {
+    public void updateProjectDuration(VngRepository repo, Project project, LocalDate newStartDate, LocalDate newEndDate, UUID loggedInUserUuid)
+            throws VngServerErrorException, VngBadRequestException {
 
         ZonedDateTime zdtNow = ZonedDateTime.now();
         User loggedUser = repo.getReferenceById(User.class, loggedInUserUuid);
@@ -374,11 +408,11 @@ public class ProjectService {
             milestone = project.getDuration().get(0).getStartMilestone();
             MilestoneModel projectStartMilestone = new MilestoneModel(milestone);
             LocalDate nextMilestoneDate = project.getMilestones().stream()
-                .map(MilestoneModel::new)
-                .filter(mm -> !Objects.equals(mm.getId(), projectStartMilestone.getId()) && mm.getStateId() != null)
-                .map(MilestoneModel::getDate)
-                .min(LocalDate::compareTo)
-                .orElseThrow(() -> new VngServerErrorException("Project does not have active milestones"));
+                    .map(MilestoneModel::new)
+                    .filter(mm -> !Objects.equals(mm.getId(), projectStartMilestone.getId()) && mm.getStateId() != null)
+                    .map(MilestoneModel::getDate)
+                    .min(LocalDate::compareTo)
+                    .orElseThrow(() -> new VngServerErrorException("Project does not have active milestones"));
 
             if (nextMilestoneDate.isAfter(newStartDate)) {
                 oldMilestoneState = repo.findById(MilestoneState.class, projectStartMilestone.getStateId());
@@ -394,11 +428,11 @@ public class ProjectService {
             milestone = project.getDuration().get(0).getEndMilestone();
             MilestoneModel projectEndMilestone = new MilestoneModel(milestone);
             LocalDate previousMilestoneDate = project.getMilestones().stream()
-                .map(MilestoneModel::new)
-                .filter(mm -> !Objects.equals(mm.getId(), projectEndMilestone.getId()) && mm.getStateId() != null)
-                .map(MilestoneModel::getDate)
-                .max(LocalDate::compareTo)
-                .orElseThrow(() -> new VngServerErrorException("Project does not have active milestones"));
+                    .map(MilestoneModel::new)
+                    .filter(mm -> !Objects.equals(mm.getId(), projectEndMilestone.getId()) && mm.getStateId() != null)
+                    .map(MilestoneModel::getDate)
+                    .max(LocalDate::compareTo)
+                    .orElseThrow(() -> new VngServerErrorException("Project does not have active milestones"));
 
             if (previousMilestoneDate.isBefore(newEndDate)) {
                 oldMilestoneState = repo.findById(MilestoneState.class, projectEndMilestone.getStateId());
@@ -423,8 +457,9 @@ public class ProjectService {
         }
     }
 
-    private <T extends MilestoneChangeDataSuperclass> T prepareChangelogValuesToUpdate(VngRepository repo, Project project, List<T> changelogs, T newProjectChangelog,
-                                                                                       T oldProjectChangelogAfterUpdate, UUID loggedInUserUuid, LocalDate updateDate) {
+    private <T extends MilestoneChangeDataSuperclass> T prepareChangelogValuesToUpdate(VngRepository repo, Project project, List<T> changelogs,
+            T newProjectChangelog,
+            T oldProjectChangelogAfterUpdate, UUID loggedInUserUuid, LocalDate updateDate) {
 
         Milestone projectStartMilestone = project.getDuration().get(0).getStartMilestone();
         Milestone projectEndMilestone = project.getDuration().get(0).getEndMilestone();
@@ -444,8 +479,9 @@ public class ProjectService {
 
         LocalDate finalUpdateDate = updateDate;
         oldProjectChangelog = changelogs.stream()
-            .filter(pc -> !(new MilestoneModel(pc.getStartMilestone())).getDate().isAfter(finalUpdateDate) && (new MilestoneModel(pc.getEndMilestone())).getDate().isAfter(finalUpdateDate))
-            .findFirst().orElse(null);
+                .filter(pc -> !(new MilestoneModel(pc.getStartMilestone())).getDate().isAfter(finalUpdateDate)
+                        && (new MilestoneModel(pc.getEndMilestone())).getDate().isAfter(finalUpdateDate))
+                .findFirst().orElse(null);
 
         Milestone updateMilestone = getOrCreateMilestoneForProject(repo, project, updateDate, loggedInUserUuid);
 
@@ -471,11 +507,11 @@ public class ProjectService {
             } else {
                 LocalDate currentStartDate = (new MilestoneModel(newProjectChangelog.getStartMilestone())).getDate();
                 UUID newEndMilestoneUuid = changelogs.stream().map(MilestoneChangeDataSuperclass::getStartMilestone)
-                    .map(MilestoneModel::new)
-                    .filter(mm -> mm.getDate().isAfter(currentStartDate))
-                    .min(Comparator.comparing(MilestoneModel::getDate))
-                    .map(MilestoneModel::getId)
-                    .orElse(projectEndMilestone.getId());
+                        .map(MilestoneModel::new)
+                        .filter(mm -> mm.getDate().isAfter(currentStartDate))
+                        .min(Comparator.comparing(MilestoneModel::getDate))
+                        .map(MilestoneModel::getId)
+                        .orElse(projectEndMilestone.getId());
                 newProjectChangelog.setEndMilestone(repo.getReferenceById(Milestone.class, newEndMilestoneUuid));
             }
         }
@@ -483,7 +519,8 @@ public class ProjectService {
         return oldProjectChangelog;
     }
 
-    public Project getCurrentProjectAndPerformPreliminaryUpdateChecks(VngRepository repo, UUID projectUuid) throws VngNotFoundException, VngServerErrorException, VngBadRequestException {
+    public Project getCurrentProjectAndPerformPreliminaryUpdateChecks(VngRepository repo, UUID projectUuid)
+            throws VngNotFoundException, VngServerErrorException, VngBadRequestException {
         Project project = repo.getProjectsDAO().getCurrentProject(projectUuid);
 
         if (project == null) {
@@ -516,8 +553,8 @@ public class ProjectService {
         List<Milestone> projectMilestones = project.getMilestones();
 
         Milestone milestone = projectMilestones.stream()
-            .filter(m -> milestoneDate.equals((new MilestoneModel(m)).getDate()))
-            .findFirst().orElse(null);
+                .filter(m -> milestoneDate.equals((new MilestoneModel(m)).getDate()))
+                .findFirst().orElse(null);
 
         if (milestone == null) {
             milestone = new Milestone();
@@ -538,4 +575,5 @@ public class ProjectService {
 
         return milestone;
     }
+
 }

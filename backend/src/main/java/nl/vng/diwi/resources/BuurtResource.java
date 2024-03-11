@@ -13,8 +13,11 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import nl.vng.diwi.dal.GenericRepository;
+import nl.vng.diwi.dal.VngRepository;
+import nl.vng.diwi.models.SelectModel;
+import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.security.SecurityRoleConstants;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,8 +25,6 @@ import java.util.UUID;
 @Path("/buurt")
 @RolesAllowed({SecurityRoleConstants.Admin})
 public class BuurtResource {
-    private static final Logger logger = LogManager.getLogger();
-
     private final VngRepository repo;
 
     @Inject
