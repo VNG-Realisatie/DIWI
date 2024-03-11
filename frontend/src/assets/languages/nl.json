@@ -51,7 +51,6 @@
         "rentalPropertyHousingAssociation": "Huurwoning Woningcorporatie",
         "value": "Waarde",
         "rentalAmount": "Huurbedrag",
-        "groundPosition": "Grondpositie",
         "noPermissionFromLandOwner": "Geen toestemming Grondeigenaar",
         "intentionToCooperateWithTheLandowner": "Intentie medewerking Grondeigenaar",
         "formalPermissionFromLandOwner": "Formele toestemming van Grondeigenaar",
@@ -81,8 +80,19 @@
           "title": "Woningtype",
           "meergezinswoning": "Meergezinswoning",
           "eengezinswoning": "Eengezinswoning",
-          "type":"Soort",
+          "type": "Soort",
           "value": "Aantal"
+        },
+        "groundPosition": {
+          "title": "Grondpositie",
+          "noPermissionOwner": "Geen toestemming grondeigenaar",
+          "intentionPermissionOwner": "Intentie medewerking grondeigenaar",
+          "": "Formele toestemming van grondeigenaar",
+          "situation": "Situatie",
+          "value": "Aantal"
+        },
+        "programming": {
+          "title": "Programmering"
         },
         "terracedHouse": "Tussenwoning",
         "cornerHouse": "Hoekwoning",

@@ -22,10 +22,16 @@ export type MutationInformations = {
 export type PhysicalInformations = {
     [key: string]: number | null;
 };
+
 export type PurposeInformations = {
     [key: string]: number | null;
 };
+
 export type HouseTypeInformations = {
+    [key: string]: number | null;
+};
+
+export type GroundPositionInformations = {
     [key: string]: number | null;
 };
 
@@ -63,11 +69,7 @@ export type HouseBlock = {
     ownershipValue: OwnershipSingleValue[];
 
     //grond positie
-    groundPosition: {
-        noPermissionOwner: number | null;
-        intentionPermissionOwner: number | null;
-        formalPermissionOwner: number | null;
-    };
+    groundPosition: GroundPositionInformations;
 
     // fysiek voorkomen
     physicalAppeareance: PhysicalInformations;
