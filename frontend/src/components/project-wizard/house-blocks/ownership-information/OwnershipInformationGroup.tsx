@@ -1,4 +1,4 @@
-import { Grid, IconButton, Typography } from "@mui/material";
+import { Grid, IconButton, Stack, Typography } from "@mui/material";
 import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
 import { OwnershipSingleValue } from "../types";
@@ -35,11 +35,27 @@ export const OwnershipInformationGroup = ({ projectForm, setProjectForm }: Owner
         setProjectForm(updatedValues);
     };
 
+    const translationPath = "createProject.houseBlocksForm";
     return (
         <WizardCard>
             <Typography fontWeight={600} mb={2}>
-                {t("createProject.houseBlocksForm.ownershipAndValue")}
+                {t(`${translationPath}.ownershipAndValue`)}
             </Typography>
+            <Stack direction="row" alignItems="center" spacing={2} my={1}>
+                <Typography fontWeight={600} flex={4.2}>
+                    {t(`${translationPath}.type`)}
+                </Typography>
+                <Typography fontWeight={600} flex={2}>
+                    {t(`${translationPath}.amount`)}
+                </Typography>
+                <Typography fontWeight={600} flex={2}>
+                    {t(`${translationPath}.value`)}
+                </Typography>
+                <Typography fontWeight={600} flex={2}>
+                    {t(`${translationPath}.rent`)}
+                </Typography>
+                <Typography fontWeight={600} flex={2}></Typography>
+            </Stack>
             <Grid container>
                 {projectForm.map((ownership, index) => (
                     <OwnershipRowInputs index={index} handleRemoveRow={handleRemoveRow} handleInputChange={handleInputChange} ownership={ownership} />
