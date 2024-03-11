@@ -55,7 +55,16 @@
         "noPermissionFromLandOwner": "Geen toestemming Grondeigenaar",
         "intentionToCooperateWithTheLandowner": "Intentie medewerking Grondeigenaar",
         "formalPermissionFromLandOwner": "Formele toestemming van Grondeigenaar",
-        "physicalApperance": "Fysiek voorkomen",
+        "physicalAppearance": {
+          "title":"Fysiek voorkomen",
+          "tussenwoning":"Tussenwoning",
+          "tweeondereenkap":"Twee onder een kap",
+          "portiekflat":"Portiekflat",
+          "hoekwoning":"Hoekwoning",
+          "vrijstaand":"Vrijstaand",
+          "gallerijflat":"Gallerijflat"
+
+        },
         "terracedHouse": "Tussenwoning",
         "cornerHouse": "Hoekwoning",
         "semidetached": "Twee onder een kap",
@@ -71,6 +80,7 @@
         "elderly": "Ouderen",
         "disabilityAndCare": "Gehandicapter en zorg",
         "largeFamilies": "Grote gezinnen"
+
       },
       "selectMapForm": {
         "title": "Teken het project in op de kaart",

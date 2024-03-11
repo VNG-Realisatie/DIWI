@@ -1,14 +1,10 @@
-import { Box, Grid, InputAdornment, InputLabel, MenuItem, Select, Stack, TextField, Typography } from "@mui/material";
-import { DatePicker } from "@mui/x-date-pickers";
-import mutatiesoort from "../api/json/enums/mutatie_soort.json";
-import { useTranslation } from "react-i18next";
-import { HouseBlock, MutationInformations, OwnershipSingleValue } from "./project-wizard/house-blocks/types";
-import { PurposeGroup } from "./project-wizard/house-blocks/PurposeGroup";
-import { PhysicalAppeareanceGroup } from "./project-wizard/house-blocks/PhysicalAppeareanceGroup";
+import { Box, Grid } from "@mui/material";
+import { HouseBlock, MutationInformations, OwnershipSingleValue, PhysicalInformations } from "./project-wizard/house-blocks/types";
 import { GeneralInformationGroup } from "./project-wizard/house-blocks/general-information/GeneralInformationGroup";
 import { MutationInformationGroup } from "./project-wizard/house-blocks/mutation-information/MutationInformationGroup";
 import { useState } from "react";
 import { OwnershipInformationGroup } from "./project-wizard/house-blocks/ownership-information/OwnershipInformationGroup";
+import { PhysicalAppeareanceGroup } from "./project-wizard/house-blocks/physical-appearence/PhysicalAppeareanceGroup";
 
 type Props = {
     projectForm: HouseBlock;
@@ -41,7 +37,16 @@ export const BlockHousesForm = ({ projectForm, setProjectForm }: Props) => {
             rentalValue: { value: null, min: null, max: null },
         },
     ]);
-    const { t } = useTranslation();
+
+    const [physicalAppearanceForm, setPhysicalAppearanceForm] = useState<PhysicalInformations>({
+        tussenwoning: null,
+        tweeondereenkap: null,
+        portiekflat: null,
+        hoekwoning: null,
+        vrijstaand: null,
+        gallerijflat: null,
+    });
+
     return (
         <Box mt={4}>
             <Grid container spacing={2} alignItems="stretch">
@@ -56,6 +61,13 @@ export const BlockHousesForm = ({ projectForm, setProjectForm }: Props) => {
                 <Grid item xs={12}>
                     <OwnershipInformationGroup projectForm={ownershipInformationForm} setProjectForm={setOwershipInformationForm} />
                 </Grid>
+            </Grid>
+            <Grid container spacing={2} alignItems="stretch" mt={1}>
+                <Grid item xs={12} md={4}>
+                    <PhysicalAppeareanceGroup projectForm={physicalAppearanceForm} setProjectForm={setPhysicalAppearanceForm} />
+                </Grid>
+                <Grid item xs={12} md={4}></Grid>
+                <Grid item xs={12} md={4}></Grid>
             </Grid>
 
             {/*
