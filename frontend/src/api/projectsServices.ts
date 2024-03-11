@@ -24,5 +24,5 @@ export async function updateProject(id: string, newData: ProjectUpdate): Promise
 }
 
 export async function deleteProject(id: string | null) {
-    return deleteJson(`${API_URI}/projects/${id}/`);
+    return deleteJson(`${API_URI}/projects/${id}`);
 }
