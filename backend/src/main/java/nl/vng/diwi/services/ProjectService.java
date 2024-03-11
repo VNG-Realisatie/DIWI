@@ -50,11 +50,16 @@ public class ProjectService {
         return result;
     }
 
-    public void deleteProject(VngRepository repo, UUID projectUuid, UUID loggedInUserUuid) {
+    public void deleteProject(VngRepository repo, UUID projectUuid, UUID loggedInUserUuid) throws VngNotFoundException {
         var now = ZonedDateTime.now();
         var user = repo.findById(User.class, loggedInUserUuid);
 
         var project = repo.getProjectsDAO().getCurrentProject(projectUuid);
+
+        if (project == null) {
+            logger.error("Project with uuid {} was not found.", projectUuid);
+            throw new VngNotFoundException();
+        }
 
         List<ChangeDataSuperclass> endDateEntities = new ArrayList<>();
         endDateEntities.addAll(project.getDuration());
