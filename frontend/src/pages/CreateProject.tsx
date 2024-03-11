@@ -8,7 +8,6 @@ import { SelectFromMapForm } from "../components/SelectFromMapForm";
 import { TimelineForm } from "../components/TimelineForm";
 import useAlert from "../hooks/useAlert";
 import { useTranslation } from "react-i18next";
-import { HouseBlock } from "../components/project-wizard/house-blocks/types";
 
 const CustomStepIcon: React.FC<CustomStepIconProps> = ({ active, completed }) => {
     if (completed) {
@@ -26,68 +25,7 @@ interface CustomStepIconProps {
 }
 export const CreateProject = () => {
     const [createProjectForm, setCreateProjectForm] = useState<any>(null);
-    const [createHouseBlockForm, setCreateHouseBlockForm] = useState<HouseBlock>({
-        startDate: null,
-        endDate: null,
-        houseblockName: "",
-        size: {
-            value: null,
-            min: null,
-            max: null,
-        },
-        programming: null,
-        mutation: {
-            mutationKind: [],
-            grossPlanCapacity: 0,
-            netPlanCapacity: 0,
-            demolition: 0,
-        },
-        ownershipValue: [
-            {
-                type: "KOOPWONING",
-                amount: null,
-                value: { value: null, min: null, max: null },
-                rentalValue: { value: null, min: null, max: null },
-            },
-            {
-                type: "HUURWONING_PARTICULIERE_VERHUURDER",
-                amount: null,
-                value: { value: null, min: null, max: null },
-                rentalValue: { value: null, min: null, max: null },
-            },
-            {
-                type: "HUURWONING_WONINGCORPORATIE",
-                amount: null,
-                value: { value: null, min: null, max: null },
-                rentalValue: { value: null, min: null, max: null },
-            },
-        ],
-        groundPosition: {
-            noPermissionOwner: null,
-            intentionPermissionOwner: null,
-            formalPermissionOwner: null,
-        },
-        physicalAppeareance: {
-            tussenwoning: null,
-            tweeondereenkap: null,
-            portiekflat: null,
-            hoekwoning: null,
-            vrijstaand: null,
-            gallerijflat: null,
-        },
-        houseType: {
-            meergezinswoning: null,
-            eengezinswoning: null,
-        },
-        purpose: {
-            regular: null,
-            youth: null,
-            student: null,
-            elderly: null,
-            largeFamilies: null,
-            ghz: null,
-        },
-    });
+
     const [activeStep, setActiveStep] = useState<number>(0);
 
     const { setAlert } = useAlert();
@@ -118,7 +56,7 @@ export const CreateProject = () => {
                 ))}
             </Stepper>
             {activeStep === 0 && <ProjectInformationForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />}
-            {activeStep === 1 && <BlockHousesForm setProjectForm={setCreateHouseBlockForm} projectForm={createHouseBlockForm} />}
+            {activeStep === 1 && <BlockHousesForm />}
             {activeStep === 2 && <SelectFromMapForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />}
             {activeStep === 3 && <TimelineForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />}
             {activeStep === 4 && (

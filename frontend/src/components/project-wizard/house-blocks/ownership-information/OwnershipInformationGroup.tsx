@@ -1,38 +1,47 @@
 import { Grid, IconButton, Stack, Typography } from "@mui/material";
 import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
-import { OwnershipSingleValue } from "../types";
+import { HouseBlock } from "../types";
 import AddIcon from "@mui/icons-material/Add";
 import { OwnershipRowInputs } from "./OwnershipRowInputs";
 
 export type OwnershipInformationProps = {
-    projectForm: OwnershipSingleValue[];
-    setProjectForm(project: OwnershipSingleValue[]): void;
+    projectForm: HouseBlock;
+    setProjectForm(project: HouseBlock): void;
 };
 
 export const OwnershipInformationGroup = ({ projectForm, setProjectForm }: OwnershipInformationProps) => {
     const handleAddRow = () => {
-        setProjectForm([
+        setProjectForm({
             ...projectForm,
-            {
-                type: "",
-                amount: null,
-                value: { value: null, min: null, max: null },
-                rentalValue: { value: null, min: null, max: null },
-            },
-        ]);
+            ownershipValue: [
+                ...projectForm.ownershipValue,
+                {
+                    type: "",
+                    amount: null,
+                    value: { value: null, min: null, max: null },
+                    rentalValue: { value: null, min: null, max: null },
+                },
+            ],
+        });
     };
 
     const handleInputChange = (index: number, field: string, value: any) => {
-        const updatedValues = [...projectForm];
+        const updatedValues = [...projectForm.ownershipValue];
         (updatedValues[index] as any)[field] = value;
-        setProjectForm(updatedValues);
+        setProjectForm({
+            ...projectForm,
+            ownershipValue: updatedValues,
+        });
     };
 
     const handleRemoveRow = (index: number) => {
-        const updatedValues = [...projectForm];
+        const updatedValues = [...projectForm.ownershipValue];
         updatedValues.splice(index, 1);
-        setProjectForm(updatedValues);
+        setProjectForm({
+            ...projectForm,
+            ownershipValue: updatedValues,
+        });
     };
 
     const translationPath = "createProject.houseBlocksForm";
@@ -57,7 +66,7 @@ export const OwnershipInformationGroup = ({ projectForm, setProjectForm }: Owner
                 <Typography fontWeight={600} flex={2}></Typography>
             </Stack>
             <Grid container>
-                {projectForm.map((ownership, index) => (
+                {projectForm.ownershipValue.map((ownership, index) => (
                     <OwnershipRowInputs index={index} handleRemoveRow={handleRemoveRow} handleInputChange={handleInputChange} ownership={ownership} />
                 ))}
                 <IconButton onClick={handleAddRow}>

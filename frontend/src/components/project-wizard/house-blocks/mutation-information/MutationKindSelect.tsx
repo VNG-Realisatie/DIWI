@@ -13,7 +13,7 @@ export const MutationKindSelect = ({ projectForm, setProjectForm }: MutationInfo
                 labelId="mutationtype"
                 id="fase"
                 multiple
-                value={projectForm ? projectForm.mutationKind : []}
+                value={projectForm ? projectForm.mutation.mutationKind : []}
                 label={t("createProject.houseBlocksForm.mutationType")}
                 onChange={(event: SelectChangeEvent<MutationSelectOptions[]>) => {
                     const {
@@ -22,7 +22,10 @@ export const MutationKindSelect = ({ projectForm, setProjectForm }: MutationInfo
                     if (typeof value !== "string") {
                         setProjectForm({
                             ...projectForm,
-                            mutationKind: value,
+                            mutation: {
+                                ...projectForm.mutation,
+                                mutationKind: value,
+                            },
                         });
                     }
                 }}

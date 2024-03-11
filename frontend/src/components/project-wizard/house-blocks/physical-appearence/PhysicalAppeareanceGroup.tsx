@@ -1,12 +1,12 @@
 import { Stack, Typography } from "@mui/material";
 import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
-import { PhysicalInformations } from "../types";
+import { HouseBlock } from "../types";
 import { SingleNumberInput } from "./SingleNumberInput";
 
 export type PhysicalAppeareanceInformationProps = {
-    projectForm: PhysicalInformations;
-    setProjectForm(project: PhysicalInformations): void;
+    projectForm: HouseBlock;
+    setProjectForm(project: HouseBlock): void;
 };
 
 export const PhysicalAppeareanceGroup = ({ projectForm, setProjectForm }: PhysicalAppeareanceInformationProps) => {

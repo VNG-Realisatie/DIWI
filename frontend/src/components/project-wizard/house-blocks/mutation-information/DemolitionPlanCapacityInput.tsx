@@ -18,12 +18,12 @@ export const DemolitionPlanCapacityInput = ({ projectForm, setProjectForm }: Mut
                 id="demolitionPlan"
                 size="small"
                 variant="outlined"
-                value={projectForm ? projectForm.demolition : null}
+                value={projectForm ? projectForm.mutation.demolition : null}
                 onChange={(e) =>
                     projectForm &&
                     setProjectForm({
                         ...projectForm,
-                        demolition: +e.target.value,
+                        mutation: { ...projectForm.mutation, demolition: +e.target.value },
                     })
                 }
             />

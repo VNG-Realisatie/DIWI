@@ -1,12 +1,12 @@
 import { Stack, Typography } from "@mui/material";
 import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
-import { HouseTypeInformations } from "../types";
+import { HouseBlock } from "../types";
 import { SingleNumberInput } from "./SingleNumberInput";
 
 export type HouseTypeInformationProps = {
-    projectForm: HouseTypeInformations;
-    setProjectForm(project: HouseTypeInformations): void;
+    projectForm: HouseBlock;
+    setProjectForm(project: HouseBlock): void;
 };
 
 export const HouseTypeGroup = ({ projectForm, setProjectForm }: HouseTypeInformationProps) => {

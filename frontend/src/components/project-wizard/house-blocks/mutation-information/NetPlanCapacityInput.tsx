@@ -18,12 +18,12 @@ export const NetPlanCapacityInput = ({ projectForm, setProjectForm }: MutationIn
                 id="netPlan"
                 size="small"
                 variant="outlined"
-                value={projectForm ? projectForm.netPlanCapacity : null}
+                value={projectForm ? projectForm.mutation.netPlanCapacity : null}
                 onChange={(e) =>
                     projectForm &&
                     setProjectForm({
                         ...projectForm,
-                        netPlanCapacity: +e.target.value,
+                        mutation: { ...projectForm.mutation, netPlanCapacity: +e.target.value },
                     })
                 }
             />

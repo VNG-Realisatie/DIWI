@@ -23,12 +23,15 @@ export const SingleNumberInput = ({ state, value, translationPath }: Props) => {
                 id={value ? value : ""}
                 size="small"
                 variant="outlined"
-                value={state.projectForm ? state.projectForm[value] : null}
+                value={state.projectForm ? state.projectForm.groundPosition[value] : null}
                 onChange={(e) =>
                     state.projectForm &&
                     state.setProjectForm({
                         ...state.projectForm,
-                        [value]: +e.target.value,
+                        groundPosition: {
+                            ...state.projectForm.groundPosition,
+                            [value]: +e.target.value,
+                        },
                     })
                 }
             />

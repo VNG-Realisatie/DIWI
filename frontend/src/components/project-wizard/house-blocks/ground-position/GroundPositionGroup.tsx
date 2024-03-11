@@ -1,12 +1,12 @@
 import { Stack, Typography } from "@mui/material";
 import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
-import { GroundPositionInformations } from "../types";
+import { HouseBlock } from "../types";
 import { SingleNumberInput } from "./SingleNumberInput";
 
 export type GroundPositionInformationProps = {
-    projectForm: GroundPositionInformations;
-    setProjectForm(project: GroundPositionInformations): void;
+    projectForm: HouseBlock;
+    setProjectForm(project: HouseBlock): void;
 };
 
 export const GroundPositionGroup = ({ projectForm, setProjectForm }: GroundPositionInformationProps) => {

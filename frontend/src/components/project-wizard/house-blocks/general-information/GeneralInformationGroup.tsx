@@ -1,15 +1,15 @@
 import { Typography } from "@mui/material";
 import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
-import { GeneralInformation } from "../types";
+import { HouseBlock } from "../types";
 import { SizeInput } from "./SizeInput";
 import { NameInput } from "./NameInput";
 import { StartDatePicker } from "./StartDatePicker";
 import { EndDatePicker } from "./EndDatePicker";
 
 export type GeneralInformationProps = {
-    projectForm: GeneralInformation;
-    setProjectForm(project: GeneralInformation): void;
+    projectForm: HouseBlock;
+    setProjectForm(project: HouseBlock): void;
 };
 
 export const GeneralInformationGroup = ({ projectForm, setProjectForm }: GeneralInformationProps) => {
