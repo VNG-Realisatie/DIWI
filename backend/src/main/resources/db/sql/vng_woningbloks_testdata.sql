@@ -1,3 +1,4 @@
+-- Present woningblok
 INSERT INTO diwi_testset.woningblok_duration_changelog (id, woningblok_id, start_milestone_id, end_milestone_id, create_user_id, change_start_date)
     VALUES ('c8aa5543-734e-4282-8d00-c2ece87503d3', '16dbf29e-bd3e-419e-9b2c-0bfd834c0d19', 'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '342887ab-2106-45c4-9565-a4b83f4d3362', '2122426c-6e70-419c-a054-f51dd24d798b', NOW());
 
@@ -69,3 +70,26 @@ VALUES ('90530dc3-e1de-47fb-8308-3ae3bdced0a9', '16dbf29e-bd3e-419e-9b2c-0bfd834
         'RANGE', null, 'RANGE', null, 5, 'HUURWONING_WONINGCORPORATIE', '[10, 12]', '[8, 9]');
 
 
+-- Future woningblok
+INSERT INTO diwi_testset.woningblok (id, project_id) VALUES ('7f402e53-7faf-4e1f-a5a9-2249682eef7c', '54a0c192-3454-4f7a-becd-96d214461987');
+
+INSERT INTO diwi_testset.woningblok_duration_changelog (id, woningblok_id, start_milestone_id, end_milestone_id, create_user_id, change_start_date)
+    VALUES ('f34ba231-b2cf-41d8-abb8-306d511e7b9d', '7f402e53-7faf-4e1f-a5a9-2249682eef7c', '7c6bfe67-6618-4a6a-9507-2cd15f88c11f', '342887ab-2106-45c4-9565-a4b83f4d3362', '2122426c-6e70-419c-a054-f51dd24d798b', NOW());
+
+INSERT INTO diwi_testset.woningblok_naam_changelog (id, woningblok_id, start_milestone_id, end_milestone_id, naam, create_user_id, change_start_date)
+    VALUES ('8e4d8b73-5929-49b8-ade2-98ba20131e46', '7f402e53-7faf-4e1f-a5a9-2249682eef7c', '7c6bfe67-6618-4a6a-9507-2cd15f88c11f', '342887ab-2106-45c4-9565-a4b83f4d3362', 'Woningblok 2', '2122426c-6e70-419c-a054-f51dd24d798b', NOW());
+
+-- Past woningblok
+INSERT INTO diwi_testset.milestone (id, project_id) VALUES ('13fcd006-456a-48c3-883d-da89113e3f17', '54a0c192-3454-4f7a-becd-96d214461987');
+
+INSERT INTO diwi_testset.milestone_state (id, milestone_id, date, create_user_id, change_start_date, status, omschrijving)
+    VALUES ('d9aa3be7-23c3-475b-ac5a-5de6e2f3a866', '13fcd006-456a-48c3-883d-da89113e3f17', '2024-03-10', '2122426c-6e70-419c-a054-f51dd24d798b', NOW(), 'GEPLAND', 'Milestone 10 march');
+
+INSERT INTO diwi_testset.woningblok (id, project_id)
+    VALUES ('19950bd0-163d-421f-8022-a967edefef5c', '54a0c192-3454-4f7a-becd-96d214461987');
+
+INSERT INTO diwi_testset.woningblok_duration_changelog (id, woningblok_id, start_milestone_id, end_milestone_id, create_user_id, change_start_date)
+    VALUES ('c9e8c4e7-7d1b-44b0-87dc-67f74683a864', '19950bd0-163d-421f-8022-a967edefef5c', 'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '13fcd006-456a-48c3-883d-da89113e3f17', '2122426c-6e70-419c-a054-f51dd24d798b', NOW());
+
+INSERT INTO diwi_testset.woningblok_naam_changelog (id, woningblok_id, start_milestone_id, end_milestone_id, naam, create_user_id, change_start_date)
+    VALUES ('f8b7817c-ebac-4cb8-81cf-9751abf2bc43', '19950bd0-163d-421f-8022-a967edefef5c', 'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '13fcd006-456a-48c3-883d-da89113e3f17', 'Woningblok 3', '2122426c-6e70-419c-a054-f51dd24d798b', NOW());
