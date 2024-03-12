@@ -35,6 +35,7 @@ import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.dal.entities.enums.ProjectRole;
+import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.models.OrganizationModel;
 import nl.vng.diwi.models.PriorityModel;
 import nl.vng.diwi.models.ProjectListModel;
@@ -47,6 +48,7 @@ import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.services.HouseblockService;
 import nl.vng.diwi.services.ProjectService;
 
 @Path("/projects")
@@ -54,6 +56,7 @@ import nl.vng.diwi.services.ProjectService;
 public class ProjectsResource {
     private final VngRepository repo;
     private final ProjectService projectService;
+    private final HouseblockService houseblockService;
 
     @Inject
     public ProjectsResource(
@@ -61,6 +64,7 @@ public class ProjectsResource {
         ProjectService projectService) {
         this.repo = new VngRepository(genericRepository.getDal().getSession());
         this.projectService = projectService;
+        this.houseblockService = new HouseblockService();
     }
 
     @GET
@@ -119,6 +123,16 @@ public class ProjectsResource {
         Integer projectsCount = repo.getProjectsDAO().getProjectsTableCount(filtering);
 
         return Map.of("size", projectsCount);
+    }
+
+    @GET
+    @Path("/{id}/houseblocks")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public List<HouseblockSnapshotModel> getProjectHouseblocks(@PathParam("id") UUID projectUuid) {
+
+        return houseblockService.getProjectHouseblocks(repo, projectUuid);
+
     }
 
     @POST

@@ -105,6 +105,7 @@ Note: This is still in development and subject to change.
 
 ```shell
 psql diwi < backend/src/main/resources/db/sql/vng_projects_testdata.sql
+psql diwi < backend/src/main/resources/db/sql/vng_woningbloks_testdata.sql
 ```
 
 Or in docker:

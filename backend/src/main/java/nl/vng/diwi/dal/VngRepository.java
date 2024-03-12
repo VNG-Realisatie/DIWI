@@ -16,6 +16,8 @@ public class VngRepository extends AbstractRepository {
 
     private ProjectsDAO projectsDAO;
 
+    private HouseblockDAO houseblockDAO;
+
     private MilestoneDAO milestoneDAO;
 
     private OrganizationsDAO organizationDAO;
@@ -26,6 +28,14 @@ public class VngRepository extends AbstractRepository {
         }
         return projectsDAO;
     }
+
+    public HouseblockDAO getHouseblockDAO() {
+        if (houseblockDAO == null) {
+            houseblockDAO = new HouseblockDAO(session);
+        }
+        return houseblockDAO;
+    }
+
 
     public MilestoneDAO getMilestoneDAO() {
         if (milestoneDAO == null) {
