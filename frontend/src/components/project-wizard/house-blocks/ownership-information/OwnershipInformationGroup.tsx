@@ -1,7 +1,7 @@
 import { Grid, IconButton, Stack, Typography } from "@mui/material";
 import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
-import { HouseBlock } from "../types";
+import { HouseBlock, OwnershipSingleValue } from "../types";
 import AddIcon from "@mui/icons-material/Add";
 import { OwnershipRowInputs } from "./OwnershipRowInputs";
 
@@ -26,9 +26,9 @@ export const OwnershipInformationGroup = ({ projectForm, setProjectForm }: Owner
         });
     };
 
-    const handleInputChange = (index: number, field: string, value: any) => {
+    const handleInputChange = (index: number, value: OwnershipSingleValue) => {
         const updatedValues = [...projectForm.ownershipValue];
-        (updatedValues[index] as any)[field] = value;
+        updatedValues[index] = value;
         setProjectForm({
             ...projectForm,
             ownershipValue: updatedValues,

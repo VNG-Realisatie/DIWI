@@ -12,7 +12,7 @@ export type GeneralInformation = {
 };
 
 export type MutationInformations = {
-    mutationKind: MutationSelectOptions[] | []; // list of enum values: [BOUW, SLOOP, TRANSFORMATIE, SPLITSING]
+    mutationKind: MutationSelectOptions[];
     grossPlanCapacity: number | null;
     netPlanCapacity: number | null;
     demolition: number | null;
@@ -34,19 +34,17 @@ export type GroundPositionInformations = {
     [key: string]: number | null;
 };
 
+export type RangeValue = {
+    value: number | null;
+    min: number | null;
+    max: number | null;
+};
+
 export type OwnershipSingleValue = {
     type: OwnershipValueType;
     amount: number | null;
-    value: {
-        value: number | null;
-        min: number | null;
-        max: number | null;
-    };
-    rentalValue: {
-        value: number | null;
-        min: number | null;
-        max: number | null;
-    };
+    value: RangeValue;
+    rentalValue: RangeValue;
 };
 
 export type HouseBlock = {
@@ -55,11 +53,7 @@ export type HouseBlock = {
     projectId?: string;
     houseblockId?: string;
     houseblockName: string;
-    size: {
-        value: number | null;
-        min: number | null;
-        max: number | null;
-    };
+    size: RangeValue;
     programming: boolean | null;
 
     mutation: MutationInformations;
