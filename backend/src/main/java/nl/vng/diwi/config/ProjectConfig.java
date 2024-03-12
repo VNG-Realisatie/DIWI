@@ -71,6 +71,7 @@ public class ProjectConfig {
             keycloakConfig.setClientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST);
 
             KeycloakOidcClient client = new KeycloakOidcClient(keycloakConfig);
+            log.info("Discovery URL: {}", client.getConfiguration().getDiscoveryURI());
 
             var oidcConfig = new Config(this.getBaseUrl() + Constants.REST_AUTH_CALLBACK, client);
             oidcConfig.setProfileManagerFactory(ProfileManagerFactory.DEFAULT);
