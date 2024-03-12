@@ -4,8 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import nl.vng.diwi.dal.entities.*;
-import nl.vng.diwi.dal.entities.HouseblockSnapshotSqlModel;
-import nl.vng.diwi.models.ProjectListSqlModel;
 
 public class GenericRepository implements AutoCloseable {
 

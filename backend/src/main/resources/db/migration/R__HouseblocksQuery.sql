@@ -1,6 +1,7 @@
 DROP FUNCTION IF EXISTS get_active_or_future_houseblock_snapshots;
+DROP FUNCTION IF EXISTS get_houseblock_snapshots;
 
-CREATE OR REPLACE FUNCTION get_active_or_future_houseblock_snapshots (
+CREATE OR REPLACE FUNCTION get_houseblock_snapshots (
   _project_uuid_ uuid,
   _houseblock_uuid_ uuid,
   _now_ date
