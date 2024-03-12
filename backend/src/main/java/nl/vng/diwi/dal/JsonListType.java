@@ -78,7 +78,7 @@ public class JsonListType implements DynamicParameterizedType, UserType<ArrayLis
         try {
             return MAPPER.readValue(cellContent.getBytes(StandardCharsets.UTF_8), valueType);
         } catch (final Exception ex) {
-            throw new RuntimeException("Failed to convert String to MyJson: " + ex.getMessage(), ex);
+            throw new RuntimeException("Failed to convert String to JsonListType: " + ex.getMessage(), ex);
         }
     }
 
@@ -94,7 +94,7 @@ public class JsonListType implements DynamicParameterizedType, UserType<ArrayLis
             w.flush();
             st.setObject(i, w.toString(), Types.OTHER);
         } catch (final Exception ex) {
-            throw new RuntimeException("Failed to convert MyJson to String: " + ex.getMessage(), ex);
+            throw new RuntimeException("Failed to convert JsonListType to String: " + ex.getMessage(), ex);
         }
     }
 
