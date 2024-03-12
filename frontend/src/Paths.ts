@@ -19,6 +19,7 @@ export const root = createPathObject(config.baseurl);
 export const projects = createPathObject(config.baseurl + "projects");
 export const projectsTable = createPathObject(config.baseurl + "projects/table");
 export const projectAdd = createPathObject(config.baseurl + "project/create");
+export const projectUpdate = createPathObject(config.baseurl + "project/create/:id");
 export const projectDetail = createPathObject(config.baseurl + "projects/:id");
 export const projectDetailCharacteristics = createPathObject(config.baseurl + "projects/:id/characteristics");
 export const projectDetailTimeline = createPathObject(config.baseurl + "projects/:id/timeline");
