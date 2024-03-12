@@ -39,7 +39,7 @@ export const CreateProject = () => {
     const { t } = useTranslation();
 
     const handleSave = async () => {
-        if (!createProjectForm || !createProjectForm.name) {
+        if (!createProjectForm || !createProjectForm.projectName) {
             setValidationError(true);
             return;
         }
