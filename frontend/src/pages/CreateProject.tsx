@@ -29,7 +29,7 @@ export const CreateProject = () => {
     const [createProjectForm, setCreateProjectForm] = useState<any>(null);
 
     const [activeStep, setActiveStep] = useState<number>(0);
-    const [validationError, setValidationError] = useState(false);
+    const [, setValidationError] = useState(false);
 
     const { id } = useParams();
     const navigate = useNavigate();
