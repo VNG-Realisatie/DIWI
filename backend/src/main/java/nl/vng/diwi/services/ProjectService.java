@@ -2,6 +2,7 @@ package nl.vng.diwi.services;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.function.Consumer;
 
 import nl.vng.diwi.dal.FilterPaginationSorting;
 import nl.vng.diwi.dal.VngRepository;
@@ -10,6 +11,7 @@ import nl.vng.diwi.dal.entities.enums.*;
 import nl.vng.diwi.dal.entities.superclasses.ChangeDataSuperclass;
 import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
 import nl.vng.diwi.models.MilestoneModel;
+import nl.vng.diwi.models.OrganizationModel;
 import nl.vng.diwi.models.ProjectListModel;
 import nl.vng.diwi.dal.entities.ProjectListSqlModel;
 import nl.vng.diwi.models.ProjectSnapshotModel;
@@ -49,6 +51,106 @@ public class ProjectService {
         List<ProjectListModel> result = projectsTable.stream().map(ProjectListModel::new).toList();
         return result;
     }
+
+    public Project createProject(VngRepository repo, UUID loggedInUserUuid, ProjectSnapshotModel projectData, LocalDate updateDate)
+            throws VngServerErrorException, VngBadRequestException {
+        var user = repo.findById(User.class, loggedInUserUuid);
+        ZonedDateTime now = ZonedDateTime.now();
+
+        var project = new Project();
+//        repo.getProjectsDAO().
+        repo.persist(project);
+
+        var startMilestone = new Milestone();
+        startMilestone.setProject(project);
+        repo.persist(startMilestone);
+
+        var startMilestoneState = new MilestoneState();
+        startMilestoneState.setDate(projectData.getStartDate());
+        startMilestoneState.setMilestone(startMilestone);
+        startMilestoneState.setCreateUser(user);
+        startMilestoneState.setChangeStartDate(now);
+        startMilestoneState.setState(MilestoneStatus.GEPLAND);
+        repo.persist(startMilestoneState);
+
+        var endMilestone = new Milestone();
+        endMilestone.setProject(project);
+        repo.persist(endMilestone);
+
+        var endMilestoneState = new MilestoneState();
+        endMilestoneState.setDate(projectData.getEndDate());
+        endMilestoneState.setMilestone(endMilestone);
+        endMilestoneState.setCreateUser(user);
+        endMilestoneState.setChangeStartDate(now);
+        endMilestoneState.setState(MilestoneStatus.GEPLAND);
+        repo.persist(endMilestoneState);
+
+        Consumer<MilestoneChangeDataSuperclass> setChangelogValues = (MilestoneChangeDataSuperclass entity) -> {
+            entity.setStartMilestone(startMilestone);
+            entity.setEndMilestone(endMilestone);
+            entity.setCreateUser(user);
+            entity.setChangeStartDate(now);
+        };
+
+        var duration = new ProjectDurationChangelog();
+        setChangelogValues.accept(duration);
+        duration.setProject(project);
+        repo.persist(duration);
+
+        var name = new ProjectNameChangelog();
+        name.setProject(project);
+        name.setName(projectData.getProjectName());
+        name.setStartMilestone(startMilestone);
+        name.setEndMilestone(endMilestone);
+        name.setCreateUser(user);
+        name.setChangeStartDate(now);
+        repo.persist(name);
+
+        var state = new ProjectState();
+        state.setProject(project);
+        state.setCreateUser(user);
+        state.setChangeStartDate(now);
+        state.setConfidentiality(projectData.getConfidentialityLevel());
+        state.setColor(projectData.getProjectColor());
+        repo.persist(state);
+
+        var faseChangelog = new ProjectFaseChangelog();
+        faseChangelog.setProject(project);
+        faseChangelog.setStartMilestone(startMilestone);
+        faseChangelog.setEndMilestone(endMilestone);
+        faseChangelog.setCreateUser(user);
+        faseChangelog.setChangeStartDate(now);
+        faseChangelog.setProjectPhase(projectData.getProjectPhase());
+        repo.persist(faseChangelog);
+
+        var planStatus = new ProjectPlanologischePlanstatusChangelog();
+        planStatus.setProject(project);
+        planStatus.setStartMilestone(startMilestone);
+        planStatus.setEndMilestone(endMilestone);
+        planStatus.setCreateUser(user);
+        planStatus.setChangeStartDate(now);
+        repo.persist(planStatus);
+
+        if (projectData.getPlanningPlanStatus() != null) {
+            for (var planStatusEnum : projectData.getPlanningPlanStatus()) {
+                var planStatusValue = new ProjectPlanologischePlanstatusChangelogValue();
+                planStatusValue.setPlanStatus(planStatusEnum);
+                planStatusValue.setPlanStatusChangelog(planStatus);
+                repo.persist(planStatusValue);
+            }
+        }
+
+        for (var ownerData : projectData.getProjectOwners()) {
+            repo.getProjectsDAO().linkToOrganization(user, now, project, ProjectRole.OWNER, ownerData.getUuid());
+        }
+        for (var ownerData : projectData.getProjectLeaders()) {
+            repo.getProjectsDAO().linkToOrganization(user, now, project, ProjectRole.PROJECT_LEIDER, ownerData.getUuid());
+        }
+
+        return project;
+    }
+
+
 
     public void deleteProject(VngRepository repo, UUID projectUuid, UUID loggedInUserUuid) throws VngNotFoundException {
         var now = ZonedDateTime.now();
@@ -463,8 +565,7 @@ public class ProjectService {
     }
 
     private <T extends MilestoneChangeDataSuperclass> T prepareChangelogValuesToUpdate(VngRepository repo, Project project, List<T> changelogs,
-            T newProjectChangelog,
-            T oldProjectChangelogAfterUpdate, UUID loggedInUserUuid, LocalDate updateDate) {
+            T newProjectChangelog, T oldProjectChangelogAfterUpdate, UUID loggedInUserUuid, LocalDate updateDate) {
 
         Milestone projectStartMilestone = project.getDuration().get(0).getStartMilestone();
         Milestone projectEndMilestone = project.getDuration().get(0).getEndMilestone();

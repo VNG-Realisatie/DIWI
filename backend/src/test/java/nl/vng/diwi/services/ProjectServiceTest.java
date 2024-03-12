@@ -1,23 +1,6 @@
 package nl.vng.diwi.services;
 
-import nl.vng.diwi.dal.*;
-import nl.vng.diwi.dal.entities.*;
-import nl.vng.diwi.dal.entities.enums.Confidentiality;
-import nl.vng.diwi.dal.entities.enums.MilestoneStatus;
-import nl.vng.diwi.dal.entities.enums.PlanStatus;
-import nl.vng.diwi.dal.entities.enums.ProjectPhase;
-import nl.vng.diwi.dal.entities.enums.ValueType;
-import nl.vng.diwi.rest.VngBadRequestException;
-import nl.vng.diwi.rest.VngNotFoundException;
-import nl.vng.diwi.rest.VngServerErrorException;
-import nl.vng.diwi.testutil.TestDb;
-
-import org.apache.commons.lang3.NotImplementedException;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-
-import jakarta.persistence.Tuple;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -26,7 +9,52 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.apache.commons.lang3.NotImplementedException;
+import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import jakarta.persistence.Tuple;
+import nl.vng.diwi.dal.AutoCloseTransaction;
+import nl.vng.diwi.dal.Dal;
+import nl.vng.diwi.dal.DalFactory;
+import nl.vng.diwi.dal.GenericRepository;
+import nl.vng.diwi.dal.VngRepository;
+import nl.vng.diwi.dal.entities.Milestone;
+import nl.vng.diwi.dal.entities.MilestoneState;
+import nl.vng.diwi.dal.entities.Organization;
+import nl.vng.diwi.dal.entities.OrganizationState;
+import nl.vng.diwi.dal.entities.Project;
+import nl.vng.diwi.dal.entities.ProjectDurationChangelog;
+import nl.vng.diwi.dal.entities.ProjectFaseChangelog;
+import nl.vng.diwi.dal.entities.ProjectGemeenteRolChangelog;
+import nl.vng.diwi.dal.entities.ProjectGemeenteRolValue;
+import nl.vng.diwi.dal.entities.ProjectNameChangelog;
+import nl.vng.diwi.dal.entities.ProjectPlanTypeChangelog;
+import nl.vng.diwi.dal.entities.ProjectPlanologischePlanstatusChangelog;
+import nl.vng.diwi.dal.entities.ProjectPlanologischePlanstatusChangelogValue;
+import nl.vng.diwi.dal.entities.ProjectPrioriseringChangelog;
+import nl.vng.diwi.dal.entities.ProjectPrioriseringValue;
+import nl.vng.diwi.dal.entities.ProjectState;
+import nl.vng.diwi.dal.entities.User;
+import nl.vng.diwi.dal.entities.UserState;
+import nl.vng.diwi.dal.entities.UserToOrganization;
+import nl.vng.diwi.dal.entities.enums.Confidentiality;
+import nl.vng.diwi.dal.entities.enums.MilestoneStatus;
+import nl.vng.diwi.dal.entities.enums.PlanStatus;
+import nl.vng.diwi.dal.entities.enums.ProjectPhase;
+import nl.vng.diwi.dal.entities.enums.ValueType;
+import nl.vng.diwi.models.OrganizationModel;
+import nl.vng.diwi.models.ProjectSnapshotModel;
+import nl.vng.diwi.rest.VngBadRequestException;
+import nl.vng.diwi.rest.VngNotFoundException;
+import nl.vng.diwi.rest.VngServerErrorException;
+import nl.vng.diwi.testutil.TestDb;
 
 public class ProjectServiceTest {
 
@@ -51,7 +79,9 @@ public class ProjectServiceTest {
 
     @AfterAll
     static void afterAll() {
-        testDb.close();
+        if (testDb != null) {
+            testDb.close();
+        }
     }
 
     @BeforeEach
@@ -270,6 +300,88 @@ public class ProjectServiceTest {
         assertThat(newMunicipalityRoleChangelog.getValue().getId()).isEqualTo(municipalityRoleUuid);
     }
 
+    @Test
+    void createProject() throws Exception {
+        ZonedDateTime now = ZonedDateTime.now();
+        LocalDate today = LocalDate.now();
+
+        var organization = createOrganization(now);
+
+        ProjectSnapshotModel projectData = new ProjectSnapshotModel();
+        projectData.setProjectName("name");
+        projectData.setStartDate(today.plusDays(10));
+        projectData.setEndDate(today.plusDays(20));
+        projectData.setProjectColor("abcdef");
+        projectData.setConfidentialityLevel(Confidentiality.OPENBAAR);
+        projectData.setProjectPhase(ProjectPhase._3_VERGUNNINGSFASE);
+
+        projectData.setPlanningPlanStatus(List.of(PlanStatus._1A_ONHERROEPELIJK));
+
+        projectData.setProjectOwners(List.of(new OrganizationModel(organization)));
+        projectData.setProjectLeaders(List.of(new OrganizationModel(organization)));
+
+        Project project;
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+            project = projectService.createProject(repo, userUuid, projectData, today);
+
+            transaction.commit();
+            repo.getSession().clear();
+        }
+
+        try (var transaction = repo.beginTransaction()) {
+            ProjectSnapshotModel actual = projectService.getProjectSnapshot(repo, project.getId());
+
+            assertThat(actual)
+                    .usingRecursiveComparison(RecursiveComparisonConfiguration.builder()
+                            .withIgnoredFields(
+                                    "projectId", "projectStateId", // These were not set in the original object, so they won't match
+                                    "projectLeaders.name", "projectOwners.name", // The name is not needed when linking the new project to the organization
+                                    "projectLeaders.users", "projectOwners.users") // The users are extra information and not needed to send to the create
+                                                                                   // project endpoint
+                            .build())
+                    .isEqualTo(projectData);
+        }
+    }
+
+    private Organization createOrganization(ZonedDateTime now) {
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+
+            var organization = new Organization();
+            repo.persist(organization);
+
+            var organizationState = new OrganizationState();
+            organizationState.setOrganization(organization);
+            organizationState.setName("organization");
+            organizationState.setChangeStartDate(now);
+            organizationState.setCreateUser(user);
+            repo.persist(organizationState);
+
+            var orgUser = new User();
+            repo.persist(orgUser);
+
+            var orgUserState = new UserState();
+            orgUserState.setCreateUser(user);
+            orgUserState.setChangeStartDate(now);
+            orgUserState.setUser(orgUser);
+            orgUserState.setIdentityProviderId("");
+            orgUserState.setFirstName("a");
+            orgUserState.setLastName("b");
+            repo.persist(orgUserState);
+
+            var orgToUser = new UserToOrganization();
+            orgToUser.setUser(orgUser);
+            orgToUser.setOrganization(organization);
+            orgToUser.setCreateUser(user);
+            orgToUser.setChangeStartDate(now);
+            repo.persist(orgToUser);
+
+            transaction.commit();
+            repo.getSession().clear();
+
+            return organization;
+        }
+    }
+
     @ParameterizedTest
     @ValueSource(strings = { "project_state",
 //            "project_actor_rol_changelog", Not used yet
@@ -305,8 +417,7 @@ public class ProjectServiceTest {
                 createPriorityChangelog(repo, project, startMilestone, endMilestone, user);
             } else if (tableName.equals("project_planologische_planstatus_changelog")) {
                 createProjectPlanStatusChangelog(repo, project, Set.of(PlanStatus._1A_ONHERROEPELIJK), startMilestone, endMilestone, user);
-            }
-            else if (tableName.equals("project_gemeenterol_changelog")) {
+            } else if (tableName.equals("project_gemeenterol_changelog")) {
                 createProjectGemeenteRolChangelog(repo, project, startMilestone, endMilestone, user);
             } else if (tableName.equals("project_state")) {
                 // No need to create this one. it is created in the before each method
