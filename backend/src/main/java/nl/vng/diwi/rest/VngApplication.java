@@ -77,7 +77,7 @@ public class VngApplication extends ResourceConfig {
 
         Config pac4jConfig = projectConfig.getPac4jConfig();
         if (pac4jConfig != null) {
-            register(new SecurityFilter(pac4jConfig));
+            register(new SecurityFilter(projectConfig));
         }
 
         // Filters and features
