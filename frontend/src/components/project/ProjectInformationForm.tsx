@@ -177,7 +177,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         sx={{ width: "370px" }}
                         labelId="projectLeader"
                         id="project-leader"
-                        value={createProjectForm ? createProjectForm["project leider"] : ""}
+                        value={createProjectForm ? createProjectForm.projectLeaders : ""}
                         label={t("createProject.informationForm.projectLeader")}
                         onChange={(e) =>
                             setCreateProjectForm({
