@@ -15,7 +15,7 @@ import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.models.OrganizationModel;
 import nl.vng.diwi.models.OrganizationUserModel;
 import nl.vng.diwi.models.PriorityModel;
-import nl.vng.diwi.models.ProjectListSqlModel;
+import nl.vng.diwi.dal.entities.ProjectListSqlModel;
 import nl.vng.diwi.models.SelectModel;
 
 import lombok.Data;

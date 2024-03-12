@@ -11,7 +11,7 @@ import nl.vng.diwi.dal.entities.superclasses.ChangeDataSuperclass;
 import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
 import nl.vng.diwi.models.MilestoneModel;
 import nl.vng.diwi.models.ProjectListModel;
-import nl.vng.diwi.models.ProjectListSqlModel;
+import nl.vng.diwi.dal.entities.ProjectListSqlModel;
 import nl.vng.diwi.models.ProjectSnapshotModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;

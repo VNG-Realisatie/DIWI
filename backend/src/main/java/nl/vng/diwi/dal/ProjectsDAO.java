@@ -7,7 +7,7 @@ import java.util.UUID;
 import nl.vng.diwi.dal.entities.Project;
 import nl.vng.diwi.dal.entities.ProjectState;
 
-import nl.vng.diwi.models.ProjectListSqlModel;
+import nl.vng.diwi.dal.entities.ProjectListSqlModel;
 import org.hibernate.Session;
 import org.hibernate.query.SelectionQuery;
 
