@@ -8,6 +8,8 @@ import { SelectFromMapForm } from "../components/SelectFromMapForm";
 import { TimelineForm } from "../components/TimelineForm";
 import useAlert from "../hooks/useAlert";
 import { useTranslation } from "react-i18next";
+import { updateProject, createProject } from "../api/projectsServices";
+import { useParams, useNavigate } from "react-router-dom";
 
 const CustomStepIcon: React.FC<CustomStepIconProps> = ({ active, completed }) => {
     if (completed) {
@@ -27,18 +29,50 @@ export const CreateProject = () => {
     const [createProjectForm, setCreateProjectForm] = useState<any>(null);
 
     const [activeStep, setActiveStep] = useState<number>(0);
+    const [validationError, setValidationError] = useState(false);
+
+    const { id } = useParams();
+    const navigate = useNavigate();
 
     const { setAlert } = useAlert();
 
     const { t } = useTranslation();
 
-    const handleSave = () => {
-        //Todo add createendpoint here
-        setAlert(t("createProject.successfullySaved"), "success");
+    const handleSave = async () => {
+        if (!createProjectForm || !createProjectForm.projectName) {
+            setValidationError(true);
+            return;
+        }
+        try {
+            if (id) {
+                setValidationError(false);
+                const res = await updateProject(id, createProjectForm);
+                if (res.ok) {
+                    setAlert(t("createProject.successfullySaved"), "success");
+                    return true;
+                }
+            } else {
+                setValidationError(false);
+                const res = await createProject(createProjectForm);
+                if (res.ok) {
+                    const newId = res.data.id;
+                    navigate(`/project/create/${newId}`);
+                    setAlert(t("createProject.successfullySaved"), "success");
+                    return true;
+                }
+            }
+        } catch (error: any) {
+            setAlert(error.message, "error");
+            return false;
+        }
     };
 
-    const handleNext = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    const handleNext = async () => {
+        const res = await handleSave();
+        if (res) {
+            navigate(`/projects/${id}`); //before the next screen is implemented
+            // setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        }
     };
 
     const handleBack = () => {
@@ -65,14 +99,14 @@ export const CreateProject = () => {
                 </Stack>
             )}
             <Stack direction="row" alignItems="center" justifyContent="flex-end" py={2}>
+                <Button variant="outlined" onClick={() => handleSave()} sx={{ mr: 2 }}>
+                    {t("generic.save")}
+                </Button>
                 <Button variant="contained" onClick={() => handleBack()} sx={{ mr: 2 }} disabled={activeStep === 0}>
                     {t("generic.previous")}
                 </Button>
-                <Button
-                    variant="contained"
-                    onClick={() => (activeStep === steps.length ? handleSave() : handleNext())} // check last step save function
-                >
-                    {activeStep === steps.length ? t("generic.save") : t("generic.next")}
+                <Button variant="contained" onClick={() => handleNext()}>
+                    {t("generic.next")}
                 </Button>
             </Stack>
         </Box>

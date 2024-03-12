@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import nl.vng.diwi.dal.entities.*;
+import nl.vng.diwi.dal.entities.HouseblockSnapshotSqlModel;
 import nl.vng.diwi.models.ProjectListSqlModel;
 
 public class GenericRepository implements AutoCloseable {
@@ -39,7 +40,8 @@ public class GenericRepository implements AutoCloseable {
                 WoningblokMutatieChangelogSoortValue.class,
                 User.class,
                 UserState.class,
-                ProjectListSqlModel.class);
+                ProjectListSqlModel.class,
+                HouseblockSnapshotSqlModel.class);
         return entities;
     }
 

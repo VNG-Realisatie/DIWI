@@ -78,7 +78,7 @@ INSERT INTO diwi_testset.gemeente_state (id, gemeente_id, waarde_label, create_u
 --
 
 INSERT INTO diwi_testset.milestone_state (id, milestone_id, date, create_user_id, change_start_date, change_end_date, status, omschrijving) VALUES ('c7a00daa-0c52-4bb0-9915-78855da9997f', '292414eb-4a4e-405c-954b-e01bb355bc9b', '2024-01-10', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-15 20:06:32+02', NULL, 'GEPLAND', 'Milestone ian 10 - v2');
-INSERT INTO diwi_testset.milestone_state (id, milestone_id, date, create_user_id, change_start_date, change_end_date, status, omschrijving) VALUES ('fc8e4916-3442-4d7c-8f5f-34b477108040', 'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '2024-05-01', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL, 'GEPLAND', 'Milestone May 1');
+INSERT INTO diwi_testset.milestone_state (id, milestone_id, date, create_user_id, change_start_date, change_end_date, status, omschrijving) VALUES ('fc8e4916-3442-4d7c-8f5f-34b477108040', 'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '2024-03-01', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL, 'GEPLAND', 'Milestone May 1');
 INSERT INTO diwi_testset.milestone_state (id, milestone_id, date, create_user_id, change_start_date, change_end_date, status, omschrijving) VALUES ('50164197-792e-41b8-928d-aaaa54ae2cf4', '342887ab-2106-45c4-9565-a4b83f4d3362', '2024-05-30', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL, 'GEPLAND', 'Milestone May 30');
 INSERT INTO diwi_testset.milestone_state (id, milestone_id, date, create_user_id, change_start_date, change_end_date, status, omschrijving) VALUES ('dc7fa3d7-1be8-4917-8fe9-c99136a14420', '7c6bfe67-6618-4a6a-9507-2cd15f88c11f', '2024-05-15', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL, 'GEPLAND', 'Milestone May 15');
 INSERT INTO diwi_testset.milestone_state (id, milestone_id, date, create_user_id, change_start_date, change_end_date, status, omschrijving) VALUES ('5d6e237e-29c2-4890-b2e4-9b92533c56f6', '1c155b85-29e3-4fec-85a2-96bda344fe8a', '2024-05-05', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL, 'GEPLAND', 'Milestone May 5');
@@ -331,12 +331,4 @@ INSERT INTO diwi_testset.woningblok_mutatie_changelog (id, woningblok_id, start_
 INSERT INTO diwi_testset.woningblok_mutatie_changelog (id, woningblok_id, start_milestone_id, end_milestone_id, create_user_id, change_start_date, change_end_date, bruto_plancapaciteit, sloop, netto_plancapaciteit) VALUES ('b6389bbd-3ec7-4387-8e53-96c21fb50f52', '8c401741-8c23-4cfd-ab49-b3b710758be2', '292414eb-4a4e-405c-954b-e01bb355bc9b', '07f3a0ad-f76a-4dd9-b4c6-6eb8113968e0', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL, NULL, NULL, 20);
 INSERT INTO diwi_testset.woningblok_mutatie_changelog (id, woningblok_id, start_milestone_id, end_milestone_id, create_user_id, change_start_date, change_end_date, bruto_plancapaciteit, sloop, netto_plancapaciteit) VALUES ('82fbe354-97d9-462d-97d0-21a9efd0fbe2', '16dbf29e-bd3e-419e-9b2c-0bfd834c0d19', 'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '7c6bfe67-6618-4a6a-9507-2cd15f88c11f', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL, 0, 0, 25);
 INSERT INTO diwi_testset.woningblok_mutatie_changelog (id, woningblok_id, start_milestone_id, end_milestone_id, create_user_id, change_start_date, change_end_date, bruto_plancapaciteit, sloop, netto_plancapaciteit) VALUES ('fec2a70e-29c8-4138-a7a4-87b14b925567', '16dbf29e-bd3e-419e-9b2c-0bfd834c0d19', '7c6bfe67-6618-4a6a-9507-2cd15f88c11f', '342887ab-2106-45c4-9565-a4b83f4d3362', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL, 0, 0, 35);
-
-
---
--- Data for Name: woningblok_state; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
---
-
-INSERT INTO diwi_testset.woningblok_state (id, woningblok_id, create_user_id, change_start_date, change_end_date) VALUES ('4a91c837-6932-49d5-bbae-acfc0308a78a', '8c401741-8c23-4cfd-ab49-b3b710758be2', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL);
-INSERT INTO diwi_testset.woningblok_state (id, woningblok_id, create_user_id, change_start_date, change_end_date) VALUES ('4a62d2dd-64b0-476e-87eb-5f9069f2d618', '16dbf29e-bd3e-419e-9b2c-0bfd834c0d19', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL);
 

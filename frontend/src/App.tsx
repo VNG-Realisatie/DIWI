@@ -158,6 +158,14 @@ function App() {
                             }
                         />
                         <Route
+                            path={Paths.projectUpdate.path}
+                            element={
+                                <ProjectProvider>
+                                    <CreateProject />
+                                </ProjectProvider>
+                            }
+                        />
+                        <Route
                             path={Paths.projectDetail.path}
                             element={
                                 <ProjectProvider>
