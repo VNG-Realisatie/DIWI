@@ -69,6 +69,13 @@ const theme = createTheme(
                     },
                 },
             },
+            MuiInputBase: {
+                styleOverrides: {
+                    input: {
+                        backgroundColor: "white", // Set the background color to white
+                    },
+                },
+            },
         },
         palette: {
             primary: {
@@ -144,6 +151,14 @@ function App() {
                         />
                         <Route
                             path={Paths.projectAdd.path}
+                            element={
+                                <ProjectProvider>
+                                    <CreateProject />
+                                </ProjectProvider>
+                            }
+                        />
+                        <Route
+                            path={Paths.projectUpdate.path}
                             element={
                                 <ProjectProvider>
                                     <CreateProject />

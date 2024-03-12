@@ -1,9 +1,22 @@
 package nl.vng.diwi.resources;
 
+import static nl.vng.diwi.security.SecurityRoleConstants.Admin;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -22,6 +35,7 @@ import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.dal.entities.enums.ProjectRole;
+import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.models.OrganizationModel;
 import nl.vng.diwi.models.PriorityModel;
 import nl.vng.diwi.models.ProjectListModel;
@@ -34,29 +48,15 @@ import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.services.HouseblockService;
 import nl.vng.diwi.services.ProjectService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import static nl.vng.diwi.security.SecurityRoleConstants.Admin;
 
 @Path("/projects")
 @RolesAllowed({Admin})
 public class ProjectsResource {
-    private static final Logger logger = LogManager.getLogger();
-
     private final VngRepository repo;
     private final ProjectService projectService;
+    private final HouseblockService houseblockService;
 
     @Inject
     public ProjectsResource(
@@ -64,14 +64,23 @@ public class ProjectsResource {
         ProjectService projectService) {
         this.repo = new VngRepository(genericRepository.getDal().getSession());
         this.projectService = projectService;
+        this.houseblockService = new HouseblockService();
     }
 
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public ProjectSnapshotModel getCurrentProjectSnapshot(@PathParam("id") UUID projectUuid) throws VngNotFoundException {
-
         return projectService.getProjectSnapshot(repo, projectUuid);
+    }
+
+    @DELETE
+    @Path("/{id}")
+    public void deleteProject(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid) throws VngNotFoundException {
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+            projectService.deleteProject(repo, projectUuid, loggedUser.getUuid());
+            transaction.commit();
+        }
     }
 
     @GET
@@ -114,6 +123,16 @@ public class ProjectsResource {
         Integer projectsCount = repo.getProjectsDAO().getProjectsTableCount(filtering);
 
         return Map.of("size", projectsCount);
+    }
+
+    @GET
+    @Path("/{id}/houseblocks")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public List<HouseblockSnapshotModel> getProjectHouseblocks(@PathParam("id") UUID projectUuid) {
+
+        return houseblockService.getProjectHouseblocks(repo, projectUuid);
+
     }
 
     @POST

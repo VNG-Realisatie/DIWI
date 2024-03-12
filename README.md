@@ -2,6 +2,35 @@
 
 ## Development
 
+### Front end development
+
+You can start the back end and keycloak using docker.
+
+First login to git.phinion.com if needed. You need an access token with `read_registry` permissions. You only need to do this once.
+
+```shell
+docker login git.phinion.com
+```
+
+Then start the backend and keycloak:
+
+```shell
+./deploy.backend.dev.sh
+```
+
+Create a user with the username and password 'admin' in keycloak:
+
+```
+./addUsers.sh
+```
+
+Start the front end in a dev server as follows:
+
+```shell
+cd frontend
+yarn && yarn start
+```
+
 ### Generate types from backend api
 
 You can generate types from the backend by downloading the openapi.json file from e.g. http://localhost:3000/rest/openapi.json and putting it in the root folder of the repo.
@@ -76,6 +105,7 @@ Note: This is still in development and subject to change.
 
 ```shell
 psql diwi < backend/src/main/resources/db/sql/vng_projects_testdata.sql
+psql diwi < backend/src/main/resources/db/sql/vng_woningbloks_testdata.sql
 ```
 
 Or in docker:

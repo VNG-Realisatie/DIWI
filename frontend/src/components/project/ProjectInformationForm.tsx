@@ -9,26 +9,17 @@ import planologischePlanStatus from "../../api/json/enums/planologische_planstat
 import vertrouwlijkheidsniveau from "../../api/json/enums/confidentiality.json";
 import priorityOption from "../../api/json/priorisering.json";
 import eigenaarOption from "../../api/json/eigenaar.json";
-import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
-export const ProjectInformationForm = (props: any) => {
+export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm, validationError }: any) => {
     const { t } = useTranslation();
     //ToDo add props later
     const handleColorChange = (newColor: string) => {
-        props.setCreateProjectForm({
-            ...props.createProjectForm,
+        setCreateProjectForm({
+            ...createProjectForm,
             color: newColor,
         });
     };
-
-    useEffect(() => {
-        props.setCreateProjectForm({
-            ...props.createProjectForm,
-            id: Math.floor(Math.random() * 10000),
-        });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
 
     return (
         <Box mt={4}>
@@ -40,19 +31,22 @@ export const ProjectInformationForm = (props: any) => {
             </Typography>
             <Stack direction="row" alignItems="center" justifyContent="space-between">
                 <TextField
+                    required
                     id="projectname"
                     size="small"
                     variant="outlined"
-                    value={props.createProjectForm ? props.createProjectForm.name : ""}
+                    value={createProjectForm ? createProjectForm.projectName : ""}
                     sx={{ width: "97%" }}
-                    onChange={(e) =>
-                        props.setCreateProjectForm({
-                            ...props.createProjectForm,
-                            name: e.target.value,
-                        })
-                    }
+                    onChange={(e) => {
+                        setCreateProjectForm({
+                            ...createProjectForm,
+                            projectName: e.target.value,
+                        });
+                    }}
+                    error={validationError}
+                    helperText={validationError && t("createProject.nameIsRequried")}
                 />
-                <ColorSelector selectedColor={props.createProjectForm} defaultColor="rgba(255, 87, 51, 1)" onColorChange={handleColorChange} />
+                <ColorSelector selectedColor={createProjectForm} defaultColor="rgba(255, 87, 51, 1)" onColorChange={handleColorChange} />
             </Stack>
 
             <Typography variant="subtitle1" fontWeight="500">
@@ -62,17 +56,17 @@ export const ProjectInformationForm = (props: any) => {
                 id="plantype"
                 size="small"
                 variant="outlined"
-                value={props.createProjectForm ? props.createProjectForm["plan type"] : ""}
+                value={createProjectForm ? createProjectForm.planType : ""}
                 onChange={(e) =>
-                    props.setCreateProjectForm({
-                        ...props.createProjectForm,
-                        "plan type": e.target.value,
+                    setCreateProjectForm({
+                        ...createProjectForm,
+                        planType: [e.target.value],
                     })
                 }
                 fullWidth
             />
 
-            <Stack direction="row" justifyContent="space-between" flexWrap="wrap">
+            <Stack direction="row" justifyContent="space-between" flexWrap="wrap" gap="15px" mt="10px">
                 <Stack direction="row" justifyContent="flex-start" alignItems="center">
                     <Stack>
                         <Typography variant="subtitle1" fontWeight="500">
@@ -80,11 +74,11 @@ export const ProjectInformationForm = (props: any) => {
                         </Typography>
                         <DatePicker
                             sx={{ width: "185px" }}
-                            value={props.createProjectForm ? props.createProjectForm["start datum"] : ""}
+                            value={createProjectForm ? createProjectForm.startDate : ""}
                             onChange={(e) =>
-                                props.setCreateProjectForm({
-                                    ...props.createProjectForm,
-                                    "start datum": e,
+                                setCreateProjectForm({
+                                    ...createProjectForm,
+                                    startDate: e.target.value,
                                 })
                             }
                         />
@@ -95,11 +89,11 @@ export const ProjectInformationForm = (props: any) => {
                         </Typography>
                         <DatePicker
                             sx={{ width: "185px" }}
-                            value={props.createProjectForm ? props.createProjectForm["eind datum"] : ""}
+                            value={createProjectForm ? createProjectForm.endDate : ""}
                             onChange={(e) =>
-                                props.setCreateProjectForm({
-                                    ...props.createProjectForm,
-                                    "eind datum": e,
+                                setCreateProjectForm({
+                                    ...createProjectForm,
+                                    endDate: e.target.value,
                                 })
                             }
                         />
@@ -111,12 +105,12 @@ export const ProjectInformationForm = (props: any) => {
                         sx={{ width: "370px" }}
                         labelId="priority"
                         id="prio"
-                        value={props.createProjectForm ? props.createProjectForm.priorisering : ""}
+                        value={createProjectForm ? createProjectForm.priority : ""}
                         label={t("createProject.informationForm.priority")}
                         onChange={(e) =>
-                            props.setCreateProjectForm({
-                                ...props.createProjectForm,
-                                priorisering: e.target.value,
+                            setCreateProjectForm({
+                                ...createProjectForm,
+                                priority: e.target.value,
                             })
                         }
                     >
@@ -135,12 +129,12 @@ export const ProjectInformationForm = (props: any) => {
                         sx={{ width: "370px" }}
                         labelId="projectPhase"
                         id="fase"
-                        value={props.createProjectForm ? props.createProjectForm["project fase"] : ""}
+                        value={createProjectForm ? createProjectForm.projectPhase : ""}
                         label={t("createProject.informationForm.projectPhase")}
                         onChange={(e) =>
-                            props.setCreateProjectForm({
-                                ...props.createProjectForm,
-                                "project fase": e.target.value,
+                            setCreateProjectForm({
+                                ...createProjectForm,
+                                projectPhase: e.target.value,
                             })
                         }
                     >
@@ -159,12 +153,12 @@ export const ProjectInformationForm = (props: any) => {
                         sx={{ width: "370px" }}
                         labelId="role"
                         id="roleMunicipality"
-                        value={props.createProjectForm ? props.createProjectForm["rol gemeente"] : ""}
+                        value={createProjectForm ? createProjectForm.municipalityRole : ""}
                         label={t("createProject.informationForm.roleMunicipality")}
                         onChange={(e) =>
-                            props.setCreateProjectForm({
-                                ...props.createProjectForm,
-                                "rol gemeente": e.target.value,
+                            setCreateProjectForm({
+                                ...createProjectForm,
+                                municipalityRole: [e.target.value],
                             })
                         }
                     >
@@ -178,36 +172,17 @@ export const ProjectInformationForm = (props: any) => {
                     </Select>
                 </Stack>
                 <Stack>
-                    <InputLabel id="pro">{t("createProject.informationForm.programming")}</InputLabel>
-                    <Select
-                        sx={{ width: "370px" }}
-                        labelId="pro"
-                        id="programming"
-                        value={props.createProjectForm ? props.createProjectForm.programmering : ""}
-                        label={t("createProject.informationForm.programming")}
-                        onChange={(e) =>
-                            props.setCreateProjectForm({
-                                ...props.createProjectForm,
-                                programmering: e.target.value,
-                            })
-                        }
-                    >
-                        <MenuItem value="true">{t("generic.yes")}</MenuItem>
-                        <MenuItem value="false">{t("generic.no")}</MenuItem>
-                    </Select>
-                </Stack>
-                <Stack>
                     <InputLabel id="projectLeader">{t("createProject.informationForm.projectLeader")}</InputLabel>
                     <Select
                         sx={{ width: "370px" }}
                         labelId="projectLeader"
                         id="project-leader"
-                        value={props.createProjectForm ? props.createProjectForm["project leider"] : ""}
+                        value={createProjectForm ? createProjectForm.projectLeaders : ""}
                         label={t("createProject.informationForm.projectLeader")}
                         onChange={(e) =>
-                            props.setCreateProjectForm({
-                                ...props.createProjectForm,
-                                "project leider": e.target.value,
+                            setCreateProjectForm({
+                                ...createProjectForm,
+                                projectLeaders: [e.target.value],
                             })
                         }
                     >
@@ -226,12 +201,12 @@ export const ProjectInformationForm = (props: any) => {
                         sx={{ width: "370px" }}
                         labelId="confidentialityLevel"
                         id="i-confidentialityLevel"
-                        value={props.createProjectForm ? props.createProjectForm.vertrouwlijkheidsniveau : ""}
+                        value={createProjectForm ? createProjectForm.confidentialityLevel : ""}
                         label={t("createProject.informationForm.confidentialityLevel")}
                         onChange={(e) =>
-                            props.setCreateProjectForm({
-                                ...props.createProjectForm,
-                                vertrouwlijkheidsniveau: e.target.value,
+                            setCreateProjectForm({
+                                ...createProjectForm,
+                                confidentialityLevel: e.target.value,
                             })
                         }
                     >
@@ -250,12 +225,12 @@ export const ProjectInformationForm = (props: any) => {
                         sx={{ width: "370px" }}
                         labelId="planningPlanStatus"
                         id="planning-plan-status"
-                        value={props.createProjectForm ? props.createProjectForm["planologische plan status"] : ""}
+                        value={createProjectForm ? createProjectForm["planologische plan status"] : ""}
                         label={t("createProject.informationForm.planningPlanStatus")}
                         onChange={(e) =>
-                            props.setCreateProjectForm({
-                                ...props.createProjectForm,
-                                "planologische plan status": e.target.value,
+                            setCreateProjectForm({
+                                ...createProjectForm,
+                                planningPlanStatus: [e.target.value],
                             })
                         }
                     >
@@ -274,12 +249,12 @@ export const ProjectInformationForm = (props: any) => {
                         sx={{ width: "370px" }}
                         labelId="leader"
                         id="owner"
-                        value={props.createProjectForm ? props.createProjectForm["eigenaar"] : ""}
+                        value={createProjectForm ? createProjectForm.projectOwners : ""}
                         label={t("createProject.informationForm.owner")}
                         onChange={(e) =>
-                            props.setCreateProjectForm({
-                                ...props.createProjectForm,
-                                eigenaar: e.target.value,
+                            setCreateProjectForm({
+                                ...createProjectForm,
+                                projectOwners: [e.target.value],
                             })
                         }
                     >

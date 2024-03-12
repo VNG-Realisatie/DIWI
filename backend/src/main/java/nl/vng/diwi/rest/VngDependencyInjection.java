@@ -104,6 +104,7 @@ public class VngDependencyInjection extends AbstractBinder implements AutoClosea
         bind(new MilestoneService()).to(MilestoneService.class);
         bind(new ProjectService()).to(ProjectService.class);
         bind(new OrganizationsService()).to(OrganizationsService.class);
+        bind(new HouseblockService()).to(HouseblockService.class);
 //        bind(new MailService(projectConfig.getMailConfig())).to(MailService.class);
 
         bind(UserService.class).to(UserService.class);

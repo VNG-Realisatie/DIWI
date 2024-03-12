@@ -108,12 +108,6 @@ INSERT INTO diwi_testset.project_plan_type_changelog_value (id, changelog_id, pl
 INSERT INTO diwi_testset.woningblok (id, project_id) VALUES ('8c401741-8c23-4cfd-ab49-b3b710758be2', '54a0c192-3454-4f7a-becd-96d214461987');
 INSERT INTO diwi_testset.woningblok (id, project_id) VALUES ('16dbf29e-bd3e-419e-9b2c-0bfd834c0d19', '5c9fbb50-d8fd-480d-9e38-7f3b391d3110');
 
-INSERT INTO diwi_testset.woningblok_state (id, woningblok_id, create_user_id, change_start_date, change_end_date)
-    VALUES ('4a91c837-6932-49d5-bbae-acfc0308a78a', '8c401741-8c23-4cfd-ab49-b3b710758be2', '2122426c-6e70-419c-a054-f51dd24d798b', NOW() - interval '1 day', NULL);
-INSERT INTO diwi_testset.woningblok_state (id, woningblok_id, create_user_id, change_start_date, change_end_date)
-    VALUES ('4a62d2dd-64b0-476e-87eb-5f9069f2d618', '16dbf29e-bd3e-419e-9b2c-0bfd834c0d19', '2122426c-6e70-419c-a054-f51dd24d798b', NOW() - interval '1 day', NULL);
-
-
 INSERT INTO diwi_testset.project_gemeente_indeling_changelog (id, project_id, start_milestone_id, end_milestone_id, create_user_id, change_start_date, change_end_date)
     VALUES ('dbb45f99-d474-494f-bc40-797a0b07557d', '54a0c192-3454-4f7a-becd-96d214461987', '07f3a0ad-f76a-4dd9-b4c6-6eb8113968e0', '342887ab-2106-45c4-9565-a4b83f4d3362', '2122426c-6e70-419c-a054-f51dd24d798b', NOW() - interval '1 day', NULL);
 INSERT INTO diwi_testset.project_gemeente_indeling_changelog (id, project_id, start_milestone_id, end_milestone_id, create_user_id, change_start_date, change_end_date)

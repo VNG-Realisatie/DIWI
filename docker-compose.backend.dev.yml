@@ -32,6 +32,10 @@ services:
   keycloak:
     build:
       context: keycloak
+    develop:
+      watch:
+        - action: rebuild
+          path: keycloak
     network_mode: host
     environment:
       <<: *common
@@ -49,7 +53,7 @@ services:
       - keycloak_database
     volumes:
       - ./keycloak/realm-import:/opt/keycloak/data/import
-    command: "start --import-realm --optimized --http-port=$${KEYCLOAK_PORT:-1780}"
+    command: "start --import-realm --optimized --http-port=$${KEYCLOAK_PORT}"
 
   keycloak_database:
     image: git.phinion.com/phinion/dependency_proxy/containers/postgres:15
