@@ -27,9 +27,9 @@ interface CustomStepIconProps {
 }
 export const CreateProject = () => {
     const [createProjectForm, setCreateProjectForm] = useState<any>(null);
-    const [createHouseBlockForm, setCreateHouseBlockForm] = useState<any>(null);
+
     const [activeStep, setActiveStep] = useState<number>(0);
-    const [validationError, setValidationError] = useState(false);
+    const [, setValidationError] = useState(false);
 
     const { id } = useParams();
     const navigate = useNavigate();
@@ -89,10 +89,8 @@ export const CreateProject = () => {
                     </Step>
                 ))}
             </Stepper>
-            {activeStep === 0 && (
-                <ProjectInformationForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} validationError={validationError} />
-            )}
-            {activeStep === 1 && <BlockHousesForm setCreateProjectForm={setCreateHouseBlockForm} createProjectForm={createHouseBlockForm} />}
+            {activeStep === 0 && <ProjectInformationForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />}
+            {activeStep === 1 && <BlockHousesForm />}
             {activeStep === 2 && <SelectFromMapForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />}
             {activeStep === 3 && <TimelineForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />}
             {activeStep === 4 && (

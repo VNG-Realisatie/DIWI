@@ -1,10 +1,11 @@
-import { AvatarGroup, Box, Grid, Popover, Stack, TextField, Tooltip, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, AvatarGroup, Box, Grid, Popover, Stack, TextField, Tooltip, Typography } from "@mui/material";
 import { MouseEvent, useCallback, useContext, useState } from "react";
 import ProjectContext from "../../../context/ProjectContext";
 import ProjectColorContext from "../../../pages/ProjectDetail";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import ClearIcon from "@mui/icons-material/Clear";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import FormatColorFillIcon from "@mui/icons-material/FormatColorFill";
 import { useTranslation } from "react-i18next";
 import { DatePicker } from "@mui/x-date-pickers";
@@ -27,6 +28,8 @@ import { OrganizationUserAvatars } from "../../OrganizationUserAvatars";
 import { PlanStatusOptions, PlanTypeOptions } from "../../../types/enums";
 import { PriorityEditForm } from "./PriorityEditForm";
 import { SelectModel, updateProjects } from "../../../api/projectsServices";
+import { BlockHousesForm } from "../../BlockHousesForm";
+import { HouseBlock } from "../../project-wizard/house-blocks/types";
 // import { ProjectHouseBlockCardItem } from "./ProjectHouseBlockCardItem";
 
 export const columnTitleStyle = {
@@ -35,7 +38,156 @@ export const columnTitleStyle = {
     color: "#FFFFFF",
     backgroundColor: "#738092",
 };
-
+const dummyArray: HouseBlock[] = [
+    {
+        startDate: "2024-03-11",
+        endDate: "2024-04-11",
+        projectId: "project123",
+        houseblockId: "block456",
+        houseblockName: "Sample House Block",
+        size: {
+            value: 500,
+            min: 400,
+            max: 600,
+        },
+        programming: true,
+        mutation: {
+            mutationKind: ["BOUW", "SLOOP"],
+            grossPlanCapacity: 1000,
+            netPlanCapacity: 900,
+            demolition: 200,
+        },
+        ownershipValue: [
+            {
+                type: "KOOPWONING",
+                amount: 1,
+                value: {
+                    value: 500000,
+                    min: 400000,
+                    max: 600000,
+                },
+                rentalValue: {
+                    value: 2000,
+                    min: 1800,
+                    max: 2200,
+                },
+            },
+            {
+                type: "HUURWONING_PARTICULIERE_VERHUURDER",
+                amount: 2,
+                value: {
+                    value: 300000,
+                    min: 250000,
+                    max: 350000,
+                },
+                rentalValue: {
+                    value: 1500,
+                    min: 1300,
+                    max: 1700,
+                },
+            },
+        ],
+        groundPosition: {
+            noPermissionOwner: 10,
+            intentionPermissionOwner: 15,
+            formalPermissionOwner: null,
+        },
+        physicalAppeareance: {
+            tussenwoning: 5,
+            tweeondereenkap: 7,
+            portiekflat: 2,
+            hoekwoning: 5,
+            vrijstaand: 20,
+            gallerijflat: 10,
+        },
+        houseType: {
+            meergezinswoning: 8,
+            eengezinswoning: 12,
+        },
+        purpose: {
+            regular: 5,
+            youth: 8,
+            student: 12,
+            elderly: 9,
+            largeFamilies: 26,
+            ghz: 30,
+        },
+    },
+    {
+        startDate: "2024-03-11",
+        endDate: "2024-04-11",
+        projectId: "project12",
+        houseblockId: "block45",
+        houseblockName: "Sample House Block-2",
+        size: {
+            value: 300,
+            min: 400,
+            max: 600,
+        },
+        programming: true,
+        mutation: {
+            mutationKind: ["SLOOP"],
+            grossPlanCapacity: 1000,
+            netPlanCapacity: 900,
+            demolition: 200,
+        },
+        ownershipValue: [
+            {
+                type: "KOOPWONING",
+                amount: 1,
+                value: {
+                    value: 500000,
+                    min: 400000,
+                    max: 600000,
+                },
+                rentalValue: {
+                    value: 2000,
+                    min: 1800,
+                    max: 2200,
+                },
+            },
+            {
+                type: "HUURWONING_PARTICULIERE_VERHUURDER",
+                amount: 2,
+                value: {
+                    value: 300000,
+                    min: 250000,
+                    max: 350000,
+                },
+                rentalValue: {
+                    value: 1500,
+                    min: 1300,
+                    max: 1700,
+                },
+            },
+        ],
+        groundPosition: {
+            noPermissionOwner: 10,
+            intentionPermissionOwner: 15,
+            formalPermissionOwner: null,
+        },
+        physicalAppeareance: {
+            tussenwoning: 5,
+            tweeondereenkap: 7,
+            portiekflat: 2,
+            hoekwoning: 5,
+            vrijstaand: 20,
+            gallerijflat: 10,
+        },
+        houseType: {
+            meergezinswoning: 8,
+            eengezinswoning: 12,
+        },
+        purpose: {
+            regular: 5,
+            youth: 8,
+            student: 12,
+            elderly: 9,
+            largeFamilies: 26,
+            ghz: 30,
+        },
+    },
+];
 export const ProjectsWithHouseBlock = () => {
     const { selectedProject, updateProject } = useContext(ProjectContext);
     const { selectedProjectColor, setSelectedProjectColor } = useContext(ProjectColorContext);
@@ -421,11 +573,25 @@ export const ProjectsWithHouseBlock = () => {
                     </Grid>
                 </Grid>
                 {/* List huizen blok cards */}
-                {/* <Grid container my={2}>
-                    {houseblocks.map((hb: any, i: number) => {
-                        return <ProjectHouseBlockCardItem hb={hb} key={i} />;
+                <Grid container my={2}>
+                    {dummyArray.map((hb: HouseBlock, i: number) => {
+                        return (
+                            <Accordion>
+                                <AccordionSummary
+                                    sx={{ backgroundColor: "#00A9F3", color: "#ffffff" }}
+                                    expandIcon={<ExpandMoreIcon sx={{ color: "#ffffff" }} />}
+                                    aria-controls="panel1-content"
+                                    id="panel1-header"
+                                >
+                                    {hb.houseblockName}
+                                </AccordionSummary>
+                                <AccordionDetails>
+                                    <BlockHousesForm projectDetailHouseBlock={hb} key={i} />
+                                </AccordionDetails>
+                            </Accordion>
+                        );
                     })}
-                </Grid> */}
+                </Grid>
                 {openColorDialog && (
                     <Popover
                         open={open}
