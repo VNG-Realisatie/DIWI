@@ -1,5 +1,5 @@
 import { Accordion, AccordionDetails, AccordionSummary, AvatarGroup, Box, Grid, Popover, Stack, TextField, Tooltip, Typography } from "@mui/material";
-import { MouseEvent, useCallback, useContext, useState } from "react";
+import { MouseEvent, useCallback, useContext, useEffect, useState } from "react";
 import ProjectContext from "../../../context/ProjectContext";
 import ProjectColorContext from "../../../pages/ProjectDetail";
 import EditIcon from "@mui/icons-material/Edit";
@@ -27,167 +27,16 @@ import { CellContainer } from "./CellContainer";
 import { OrganizationUserAvatars } from "../../OrganizationUserAvatars";
 import { PlanStatusOptions, PlanTypeOptions } from "../../../types/enums";
 import { PriorityEditForm } from "./PriorityEditForm";
-import { SelectModel, updateProjects } from "../../../api/projectsServices";
+import { SelectModel, getProjectHouseBlocks, updateProjects } from "../../../api/projectsServices";
 import { BlockHousesForm } from "../../BlockHousesForm";
 import { HouseBlock } from "../../project-wizard/house-blocks/types";
-// import { ProjectHouseBlockCardItem } from "./ProjectHouseBlockCardItem";
-
 export const columnTitleStyle = {
     border: "solid 1px #ddd",
     p: 0.6,
     color: "#FFFFFF",
     backgroundColor: "#738092",
 };
-const dummyArray: HouseBlock[] = [
-    {
-        startDate: "2024-03-11",
-        endDate: "2024-04-11",
-        projectId: "project123",
-        houseblockId: "block456",
-        houseblockName: "Sample House Block",
-        size: {
-            value: 500,
-            min: 400,
-            max: 600,
-        },
-        programming: true,
-        mutation: {
-            mutationKind: ["BOUW", "SLOOP"],
-            grossPlanCapacity: 1000,
-            netPlanCapacity: 900,
-            demolition: 200,
-        },
-        ownershipValue: [
-            {
-                type: "KOOPWONING",
-                amount: 1,
-                value: {
-                    value: 500000,
-                    min: 400000,
-                    max: 600000,
-                },
-                rentalValue: {
-                    value: 2000,
-                    min: 1800,
-                    max: 2200,
-                },
-            },
-            {
-                type: "HUURWONING_PARTICULIERE_VERHUURDER",
-                amount: 2,
-                value: {
-                    value: 300000,
-                    min: 250000,
-                    max: 350000,
-                },
-                rentalValue: {
-                    value: 1500,
-                    min: 1300,
-                    max: 1700,
-                },
-            },
-        ],
-        groundPosition: {
-            noPermissionOwner: 10,
-            intentionPermissionOwner: 15,
-            formalPermissionOwner: null,
-        },
-        physicalAppeareance: {
-            tussenwoning: 5,
-            tweeondereenkap: 7,
-            portiekflat: 2,
-            hoekwoning: 5,
-            vrijstaand: 20,
-            gallerijflat: 10,
-        },
-        houseType: {
-            meergezinswoning: 8,
-            eengezinswoning: 12,
-        },
-        purpose: {
-            regular: 5,
-            youth: 8,
-            student: 12,
-            elderly: 9,
-            largeFamilies: 26,
-            ghz: 30,
-        },
-    },
-    {
-        startDate: "2024-03-11",
-        endDate: "2024-04-11",
-        projectId: "project12",
-        houseblockId: "block45",
-        houseblockName: "Sample House Block-2",
-        size: {
-            value: 300,
-            min: 400,
-            max: 600,
-        },
-        programming: true,
-        mutation: {
-            mutationKind: ["SLOOP"],
-            grossPlanCapacity: 1000,
-            netPlanCapacity: 900,
-            demolition: 200,
-        },
-        ownershipValue: [
-            {
-                type: "KOOPWONING",
-                amount: 1,
-                value: {
-                    value: 500000,
-                    min: 400000,
-                    max: 600000,
-                },
-                rentalValue: {
-                    value: 2000,
-                    min: 1800,
-                    max: 2200,
-                },
-            },
-            {
-                type: "HUURWONING_PARTICULIERE_VERHUURDER",
-                amount: 2,
-                value: {
-                    value: 300000,
-                    min: 250000,
-                    max: 350000,
-                },
-                rentalValue: {
-                    value: 1500,
-                    min: 1300,
-                    max: 1700,
-                },
-            },
-        ],
-        groundPosition: {
-            noPermissionOwner: 10,
-            intentionPermissionOwner: 15,
-            formalPermissionOwner: null,
-        },
-        physicalAppeareance: {
-            tussenwoning: 5,
-            tweeondereenkap: 7,
-            portiekflat: 2,
-            hoekwoning: 5,
-            vrijstaand: 20,
-            gallerijflat: 10,
-        },
-        houseType: {
-            meergezinswoning: 8,
-            eengezinswoning: 12,
-        },
-        purpose: {
-            regular: 5,
-            youth: 8,
-            student: 12,
-            elderly: 9,
-            largeFamilies: 26,
-            ghz: 30,
-        },
-    },
-];
+
 export const ProjectsWithHouseBlock = () => {
     const { selectedProject, updateProject } = useContext(ProjectContext);
     const { selectedProjectColor, setSelectedProjectColor } = useContext(ProjectColorContext);
@@ -205,6 +54,7 @@ export const ProjectsWithHouseBlock = () => {
     const [selectedNeighbourhood, setSelectedNeighbourhood] = useState<SelectModel[]>([]);
     const [selectedWijk, setSelectedWijk] = useState<SelectModel[]>([]);
     const [projectPriority, setProjectPriority] = useState<SelectModel | null>();
+    const [houseBlocks, setHouseBlocks] = useState<HouseBlock[]>();
 
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const handleStartDateChange = (newValue: Dayjs | null) => setStartDate(newValue);
@@ -336,6 +186,10 @@ export const ProjectsWithHouseBlock = () => {
             updateProject();
         });
     };
+    const { id } = useContext(ProjectContext);
+    useEffect(() => {
+        id && getProjectHouseBlocks(id).then((res) => setHouseBlocks(res));
+    }, [id]);
     return (
         <Stack my={1} p={1} mb={10}>
             <Box sx={{ cursor: "pointer" }} position="absolute" right={10} top={55} zIndex={9999}>
@@ -574,9 +428,9 @@ export const ProjectsWithHouseBlock = () => {
                 </Grid>
                 {/* List huizen blok cards */}
                 <Grid container my={2}>
-                    {dummyArray.map((hb: HouseBlock, i: number) => {
+                    {houseBlocks?.map((hb: HouseBlock, i: number) => {
                         return (
-                            <Accordion>
+                            <Accordion sx={{ width: "100%" }}>
                                 <AccordionSummary
                                     sx={{ backgroundColor: "#00A9F3", color: "#ffffff" }}
                                     expandIcon={<ExpandMoreIcon sx={{ color: "#ffffff" }} />}
@@ -586,6 +440,15 @@ export const ProjectsWithHouseBlock = () => {
                                     {hb.houseblockName}
                                 </AccordionSummary>
                                 <AccordionDetails>
+                                    <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={2}>
+                                        <Tooltip placement="top" title={t("generic.cancelChanges")}>
+                                            <ClearIcon sx={{ cursor: "pointer" }} />
+                                        </Tooltip>
+                                        <Tooltip placement="top" title={t("generic.saveChanges")}>
+                                            {/* TODO integrate later updatehouseblock endpoint */}
+                                            <SaveIcon sx={{ cursor: "pointer" }} onClick={() => console.log(hb.houseblockId)} />
+                                        </Tooltip>
+                                    </Stack>
                                     <BlockHousesForm projectDetailHouseBlock={hb} key={i} />
                                 </AccordionDetails>
                             </Accordion>
