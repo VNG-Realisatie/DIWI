@@ -25,9 +25,10 @@ import { defaultColors } from "../../ColorSelector";
 import { BlockPicker, ColorResult } from "react-color";
 import { CellContainer } from "./CellContainer";
 import { OrganizationUserAvatars } from "../../OrganizationUserAvatars";
+import { OrganizationSelect } from "../../../widgets/OrganizationSelect";
 import { PlanStatusOptions, PlanTypeOptions } from "../../../types/enums";
 import { PriorityEditForm } from "./PriorityEditForm";
-import { SelectModel, getProjectHouseBlocks, updateProjects } from "../../../api/projectsServices";
+import { Organization, SelectModel, getProjectHouseBlocks, updateProjects } from "../../../api/projectsServices";
 import { BlockHousesForm } from "../../BlockHousesForm";
 import { HouseBlock } from "../../project-wizard/house-blocks/types";
 export const columnTitleStyle = {
@@ -43,6 +44,7 @@ export const ProjectsWithHouseBlock = () => {
     const [projectEditable, setProjectEditable] = useState(false);
     const [openColorDialog, setOpenColorDialog] = useState(false);
     const [name, setName] = useState<string | null>();
+    const [owner, setOwner] = useState<Organization[]>([]);
     const [startDate, setStartDate] = useState<Dayjs | null>();
     const [endDate, setEndDate] = useState<Dayjs | null>();
     const [projectPhase, setProjectPhase] = useState<string | undefined>();
@@ -83,6 +85,7 @@ export const ProjectsWithHouseBlock = () => {
     const updateChanges = useCallback(() => {
         setName(selectedProject?.projectName);
         //add owner later
+        setOwner(selectedProject?.projectOwners ?? []);
         setStartDate(dayjs(formatDate(selectedProject?.startDate)));
         setEndDate(dayjs(formatDate(selectedProject?.endDate)));
         setProjectPriority(selectedProject?.priority?.value); //ToDo Fix later when decided range select
@@ -97,6 +100,7 @@ export const ProjectsWithHouseBlock = () => {
         setSelectedWijk(selectedProject?.wijk ?? []);
         setSelectedProjectColor(selectedProject?.projectColor ?? "");
     }, [
+        selectedProject?.projectOwners,
         selectedProject?.buurt,
         selectedProject?.confidentialityLevel,
         selectedProject?.endDate,
@@ -237,17 +241,18 @@ export const ProjectsWithHouseBlock = () => {
                             <TextField size="small" disabled value={selectedProject?.totalValue} />
                         )}
                     </Grid>
-                    <Grid item xs={6} md={1}>
+                    <Grid item sm={2}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.organizationName")}</Typography>
 
-                        {!projectEditable ? (
+                        {/* {!projectEditable ? (
                             <AvatarGroup max={3}>
                                 <OrganizationUserAvatars organizations={selectedProject?.projectOwners} />
                             </AvatarGroup>
                         ) : (
                             // TODO implement later
                             <TextField disabled size="small" id="organizationName" variant="outlined" />
-                        )}
+                        )} */}
+                        <OrganizationSelect projectEditable={projectEditable} owner={owner} setOwner={setOwner} />
                     </Grid>
                     <Grid item sm={4}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.planType")}</Typography>
