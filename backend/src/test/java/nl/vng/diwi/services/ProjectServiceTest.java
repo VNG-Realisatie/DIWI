@@ -19,6 +19,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.persistence.Tuple;
 import nl.vng.diwi.dal.AutoCloseTransaction;
 import nl.vng.diwi.dal.Dal;
@@ -27,8 +32,6 @@ import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.Milestone;
 import nl.vng.diwi.dal.entities.MilestoneState;
-import nl.vng.diwi.dal.entities.Organization;
-import nl.vng.diwi.dal.entities.OrganizationState;
 import nl.vng.diwi.dal.entities.Project;
 import nl.vng.diwi.dal.entities.ProjectDurationChangelog;
 import nl.vng.diwi.dal.entities.ProjectFaseChangelog;
@@ -42,15 +45,13 @@ import nl.vng.diwi.dal.entities.ProjectPrioriseringChangelog;
 import nl.vng.diwi.dal.entities.ProjectPrioriseringValue;
 import nl.vng.diwi.dal.entities.ProjectState;
 import nl.vng.diwi.dal.entities.User;
-import nl.vng.diwi.dal.entities.UserState;
-import nl.vng.diwi.dal.entities.UserToOrganization;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.MilestoneStatus;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.dal.entities.enums.ValueType;
-import nl.vng.diwi.models.OrganizationModel;
 import nl.vng.diwi.models.ProjectSnapshotModel;
+import nl.vng.diwi.models.superclasses.ProjectMinimalSnapshotModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
@@ -305,9 +306,7 @@ public class ProjectServiceTest {
         ZonedDateTime now = ZonedDateTime.now();
         LocalDate today = LocalDate.now();
 
-        var organization = createOrganization(now);
-
-        ProjectSnapshotModel projectData = new ProjectSnapshotModel();
+        ProjectMinimalSnapshotModel projectData = new ProjectMinimalSnapshotModel();
         projectData.setProjectName("name");
         projectData.setStartDate(today.plusDays(10));
         projectData.setEndDate(today.plusDays(20));
@@ -315,70 +314,28 @@ public class ProjectServiceTest {
         projectData.setConfidentialityLevel(Confidentiality.OPENBAAR);
         projectData.setProjectPhase(ProjectPhase._3_VERGUNNINGSFASE);
 
-        projectData.setPlanningPlanStatus(List.of(PlanStatus._1A_ONHERROEPELIJK));
-
-        projectData.setProjectOwners(List.of(new OrganizationModel(organization)));
-        projectData.setProjectLeaders(List.of(new OrganizationModel(organization)));
-
         Project project;
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            project = projectService.createProject(repo, userUuid, projectData, today);
+            project = projectService.createProject(repo, userUuid, projectData, now);
 
             transaction.commit();
             repo.getSession().clear();
         }
 
         try (var transaction = repo.beginTransaction()) {
-            ProjectSnapshotModel actual = projectService.getProjectSnapshot(repo, project.getId());
+            var actual = projectService.getProjectSnapshot(repo, project.getId());
 
-            assertThat(actual)
+            assertThat(actual.getProjectId()).isNotNull();
+            assertThat(actual.getProjectStateId()).isNotNull();
+
+            // Creates a partial copy of the project snapshot using only the fields in the minimal snapshot
+            ProjectMinimalSnapshotModel minimalSnapshotActual = partialCopy(actual, ProjectMinimalSnapshotModel.class);
+
+            assertThat(minimalSnapshotActual)
                     .usingRecursiveComparison(RecursiveComparisonConfiguration.builder()
-                            .withIgnoredFields(
-                                    "projectId", "projectStateId", // These were not set in the original object, so they won't match
-                                    "projectLeaders.name", "projectOwners.name", // The name is not needed when linking the new project to the organization
-                                    "projectLeaders.users", "projectOwners.users") // The users are extra information and not needed to send to the create
-                                                                                   // project endpoint
+                            .withIgnoredFields("projectId", "projectStateId") // These were not set in the original object, so they won't match
                             .build())
                     .isEqualTo(projectData);
-        }
-    }
-
-    private Organization createOrganization(ZonedDateTime now) {
-        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-
-            var organization = new Organization();
-            repo.persist(organization);
-
-            var organizationState = new OrganizationState();
-            organizationState.setOrganization(organization);
-            organizationState.setName("organization");
-            organizationState.setChangeStartDate(now);
-            organizationState.setCreateUser(user);
-            repo.persist(organizationState);
-
-            var orgUser = new User();
-            repo.persist(orgUser);
-
-            var orgUserState = new UserState();
-            orgUserState.setCreateUser(user);
-            orgUserState.setChangeStartDate(now);
-            orgUserState.setUser(orgUser);
-            orgUserState.setIdentityProviderId("");
-            orgUserState.setFirstName("a");
-            orgUserState.setLastName("b");
-            repo.persist(orgUserState);
-
-            var orgToUser = new UserToOrganization();
-            orgToUser.setUser(orgUser);
-            orgToUser.setOrganization(organization);
-            orgToUser.setCreateUser(user);
-            orgToUser.setChangeStartDate(now);
-            repo.persist(orgToUser);
-
-            transaction.commit();
-            repo.getSession().clear();
-
-            return organization;
         }
     }
 
@@ -451,6 +408,11 @@ public class ProjectServiceTest {
         assertThat(changelogs)
                 .extracting((t) -> t.get("change_user_id"))
                 .containsOnly(userUuid);
+    }
+
+    private static <T> T partialCopy(ProjectSnapshotModel actual, Class<T> targetClass) throws JsonProcessingException, JsonMappingException {
+        ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return objectMapper.readValue(objectMapper.writeValueAsString(actual), targetClass);
     }
 
     public static Project createProject(VngRepository repo, User user) {

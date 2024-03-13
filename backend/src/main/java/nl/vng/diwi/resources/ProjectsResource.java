@@ -1,8 +1,7 @@
 package nl.vng.diwi.resources;
 
-import static nl.vng.diwi.security.SecurityRoleConstants.Admin;
-
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -12,8 +11,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -44,6 +43,7 @@ import nl.vng.diwi.models.ProjectTimelineModel;
 import nl.vng.diwi.models.ProjectUpdateModel;
 import nl.vng.diwi.models.ProjectUpdateModel.ProjectProperty;
 import nl.vng.diwi.models.SelectModel;
+import nl.vng.diwi.models.superclasses.ProjectMinimalSnapshotModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
@@ -52,7 +52,6 @@ import nl.vng.diwi.services.HouseblockService;
 import nl.vng.diwi.services.ProjectService;
 
 @Path("/projects")
-@RolesAllowed({ Admin })
 public class ProjectsResource {
     private final VngRepository repo;
     private final ProjectService projectService;
@@ -65,6 +64,31 @@ public class ProjectsResource {
         this.repo = new VngRepository(genericRepository.getDal().getSession());
         this.projectService = projectService;
         this.houseblockService = new HouseblockService();
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public ProjectMinimalSnapshotModel createProject(@Context LoggedUser loggedUser, ProjectMinimalSnapshotModel projectSnapshotModel)
+            throws VngServerErrorException, VngBadRequestException, VngNotFoundException {
+        String validationError = projectSnapshotModel.validate();
+        if (validationError != null) {
+            throw new VngBadRequestException(validationError);
+        }
+
+        ZonedDateTime now = ZonedDateTime.now();
+
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+            Project project = projectService.createProject(repo, loggedUser.getUuid(), projectSnapshotModel, now);
+            transaction.commit();
+
+            ProjectSnapshotModel projectSnapshot = projectService.getProjectSnapshot(repo, project.getId());
+
+            return projectSnapshot;
+        }
+        catch(ConstraintViolationException ex) {
+            throw new VngBadRequestException("Error saving new project due to invalid data", ex);
+        }
     }
 
     @GET
@@ -133,21 +157,6 @@ public class ProjectsResource {
 
         return houseblockService.getProjectHouseblocks(repo, projectUuid);
 
-    }
-
-    @POST
-    @Path("/")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public ProjectSnapshotModel createProject(@Context LoggedUser loggedUser, ProjectSnapshotModel projectSnapshotModel)
-            throws VngServerErrorException, VngBadRequestException, VngNotFoundException {
-
-        LocalDate updateDate = LocalDate.now();
-        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            Project project = projectService.createProject(repo, loggedUser.getUuid(), projectSnapshotModel,updateDate);
-            transaction.commit();
-            return projectService.getProjectSnapshot(repo, project.getId());
-        }
     }
 
     @POST

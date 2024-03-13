@@ -1,29 +1,54 @@
 package nl.vng.diwi.services;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
-import nl.vng.diwi.dal.FilterPaginationSorting;
-import nl.vng.diwi.dal.VngRepository;
-import nl.vng.diwi.dal.entities.*;
-import nl.vng.diwi.dal.entities.enums.*;
-import nl.vng.diwi.dal.entities.superclasses.ChangeDataSuperclass;
-import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
-import nl.vng.diwi.models.MilestoneModel;
-import nl.vng.diwi.models.OrganizationModel;
-import nl.vng.diwi.models.ProjectListModel;
-import nl.vng.diwi.dal.entities.ProjectListSqlModel;
-import nl.vng.diwi.models.ProjectSnapshotModel;
-import nl.vng.diwi.rest.VngBadRequestException;
-import nl.vng.diwi.rest.VngNotFoundException;
-
-import nl.vng.diwi.rest.VngServerErrorException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.time.ZonedDateTime;
-import java.util.stream.Collectors;
+import nl.vng.diwi.dal.FilterPaginationSorting;
+import nl.vng.diwi.dal.VngRepository;
+import nl.vng.diwi.dal.entities.Milestone;
+import nl.vng.diwi.dal.entities.MilestoneState;
+import nl.vng.diwi.dal.entities.Project;
+import nl.vng.diwi.dal.entities.ProjectDurationChangelog;
+import nl.vng.diwi.dal.entities.ProjectFaseChangelog;
+import nl.vng.diwi.dal.entities.ProjectGemeenteRolChangelog;
+import nl.vng.diwi.dal.entities.ProjectGemeenteRolValue;
+import nl.vng.diwi.dal.entities.ProjectListSqlModel;
+import nl.vng.diwi.dal.entities.ProjectNameChangelog;
+import nl.vng.diwi.dal.entities.ProjectPlanTypeChangelog;
+import nl.vng.diwi.dal.entities.ProjectPlanTypeChangelogValue;
+import nl.vng.diwi.dal.entities.ProjectPlanologischePlanstatusChangelog;
+import nl.vng.diwi.dal.entities.ProjectPlanologischePlanstatusChangelogValue;
+import nl.vng.diwi.dal.entities.ProjectPrioriseringChangelog;
+import nl.vng.diwi.dal.entities.ProjectPrioriseringValue;
+import nl.vng.diwi.dal.entities.ProjectState;
+import nl.vng.diwi.dal.entities.User;
+import nl.vng.diwi.dal.entities.enums.Confidentiality;
+import nl.vng.diwi.dal.entities.enums.MilestoneStatus;
+import nl.vng.diwi.dal.entities.enums.PlanStatus;
+import nl.vng.diwi.dal.entities.enums.PlanType;
+import nl.vng.diwi.dal.entities.enums.ProjectPhase;
+import nl.vng.diwi.dal.entities.enums.ProjectRole;
+import nl.vng.diwi.dal.entities.enums.ValueType;
+import nl.vng.diwi.dal.entities.superclasses.ChangeDataSuperclass;
+import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
+import nl.vng.diwi.models.MilestoneModel;
+import nl.vng.diwi.models.ProjectListModel;
+import nl.vng.diwi.models.ProjectSnapshotModel;
+import nl.vng.diwi.models.superclasses.ProjectMinimalSnapshotModel;
+import nl.vng.diwi.rest.VngBadRequestException;
+import nl.vng.diwi.rest.VngNotFoundException;
+import nl.vng.diwi.rest.VngServerErrorException;
 
 public class ProjectService {
     private static final Logger logger = LogManager.getLogger();
@@ -52,13 +77,11 @@ public class ProjectService {
         return result;
     }
 
-    public Project createProject(VngRepository repo, UUID loggedInUserUuid, ProjectSnapshotModel projectData, LocalDate updateDate)
+    public Project createProject(VngRepository repo, UUID loggedInUserUuid, ProjectMinimalSnapshotModel projectData, ZonedDateTime now)
             throws VngServerErrorException, VngBadRequestException {
         var user = repo.findById(User.class, loggedInUserUuid);
-        ZonedDateTime now = ZonedDateTime.now();
 
         var project = new Project();
-//        repo.getProjectsDAO().
         repo.persist(project);
 
         var startMilestone = new Milestone();
@@ -131,26 +154,8 @@ public class ProjectService {
         planStatus.setChangeStartDate(now);
         repo.persist(planStatus);
 
-        if (projectData.getPlanningPlanStatus() != null) {
-            for (var planStatusEnum : projectData.getPlanningPlanStatus()) {
-                var planStatusValue = new ProjectPlanologischePlanstatusChangelogValue();
-                planStatusValue.setPlanStatus(planStatusEnum);
-                planStatusValue.setPlanStatusChangelog(planStatus);
-                repo.persist(planStatusValue);
-            }
-        }
-
-        for (var ownerData : projectData.getProjectOwners()) {
-            repo.getProjectsDAO().linkToOrganization(user, now, project, ProjectRole.OWNER, ownerData.getUuid());
-        }
-        for (var ownerData : projectData.getProjectLeaders()) {
-            repo.getProjectsDAO().linkToOrganization(user, now, project, ProjectRole.PROJECT_LEIDER, ownerData.getUuid());
-        }
-
         return project;
     }
-
-
 
     public void deleteProject(VngRepository repo, UUID projectUuid, UUID loggedInUserUuid) throws VngNotFoundException {
         var now = ZonedDateTime.now();
