@@ -55,6 +55,7 @@ export const ProjectsWithHouseBlock = () => {
     const [selectedWijk, setSelectedWijk] = useState<SelectModel[]>([]);
     const [projectPriority, setProjectPriority] = useState<SelectModel | null>();
     const [houseBlocks, setHouseBlocks] = useState<HouseBlock[]>();
+    const [editHouseBlockId, setEditHouseBlockId] = useState("");
 
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const handleStartDateChange = (newValue: Dayjs | null) => setStartDate(newValue);
@@ -441,15 +442,24 @@ export const ProjectsWithHouseBlock = () => {
                                 </AccordionSummary>
                                 <AccordionDetails>
                                     <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={2}>
-                                        <Tooltip placement="top" title={t("generic.cancelChanges")}>
-                                            <ClearIcon sx={{ cursor: "pointer" }} />
-                                        </Tooltip>
-                                        <Tooltip placement="top" title={t("generic.saveChanges")}>
-                                            {/* TODO integrate later updatehouseblock endpoint */}
-                                            <SaveIcon sx={{ cursor: "pointer" }} onClick={() => console.log(hb.houseblockId)} />
-                                        </Tooltip>
+                                        {editHouseBlockId !== hb.houseblockId && (
+                                            <Tooltip placement="top" title={t("generic.edit")}>
+                                                <EditIcon sx={{ cursor: "pointer" }} onClick={() => hb.houseblockId && setEditHouseBlockId(hb.houseblockId)} />
+                                            </Tooltip>
+                                        )}
+                                        {editHouseBlockId === hb.houseblockId && (
+                                            <>
+                                                <Tooltip placement="top" title={t("generic.cancelChanges")}>
+                                                    <ClearIcon sx={{ cursor: "pointer" }} onClick={() => setEditHouseBlockId("")} />
+                                                </Tooltip>
+                                                <Tooltip placement="top" title={t("generic.saveChanges")}>
+                                                    {/* TODO integrate later updatehouseblock endpoint */}
+                                                    <SaveIcon sx={{ cursor: "pointer" }} onClick={() => console.log(hb.houseblockId)} />
+                                                </Tooltip>
+                                            </>
+                                        )}
                                     </Stack>
-                                    <BlockHousesForm projectDetailHouseBlock={hb} key={i} />
+                                    <BlockHousesForm projectDetailHouseBlock={hb} key={i} editable={true} editHouseBlockId={editHouseBlockId} />
                                 </AccordionDetails>
                             </Accordion>
                         );

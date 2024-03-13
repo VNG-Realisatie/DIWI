@@ -13,9 +13,11 @@ import { emptyHouseBlockForm } from "./project-wizard/house-blocks/constants";
 
 type Props = {
     projectDetailHouseBlock?: HouseBlock;
+    editable: boolean;
+    editHouseBlockId?: string;
 };
 
-export const BlockHousesForm = ({ projectDetailHouseBlock }: Props) => {
+export const BlockHousesForm = ({ projectDetailHouseBlock, editable, editHouseBlockId }: Props) => {
     const [projectForm, setProjectForm] = useState<HouseBlock>(projectDetailHouseBlock ? projectDetailHouseBlock : emptyHouseBlockForm);
     return (
         <Box mt={4}>
