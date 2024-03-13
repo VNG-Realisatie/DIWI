@@ -19,6 +19,7 @@
       "timeline": "Tijdlijn",
       "completeMessage": "De wizard voor het maken van projectformulieren is voltooid. Klik op Opslaan om het proces te voltooien.",
       "successfullySaved": "Project succesvol opgeslagen.",
+      "nameIsRequried" : "Vul het veld projectnaam in",
       "informationForm": {
         "title": "Vul de projectgegevens in",
         "nameLabel": "Projectnaam en projectkleur*",
@@ -45,17 +46,58 @@
         "demolition": "Sloop",
         "mutationType": "Mutatiesoort",
         "size": "Grootte",
+        "type":"Soort",
+        "amount":"Aantal",
+        "rent":"Huur",
         "ownershipAndValue": "Eigendom en waarde",
         "ownerOccupiedHome": "Koopwoning",
         "rentalPropertyPrivate": "Huurwoning Particuliere verhuurder",
         "rentalPropertyHousingAssociation": "Huurwoning Woningcorporatie",
         "value": "Waarde",
         "rentalAmount": "Huurbedrag",
-        "groundPosition": "Grondpositie",
         "noPermissionFromLandOwner": "Geen toestemming Grondeigenaar",
         "intentionToCooperateWithTheLandowner": "Intentie medewerking Grondeigenaar",
         "formalPermissionFromLandOwner": "Formele toestemming van Grondeigenaar",
-        "physicalApperance": "Fysiek voorkomen",
+        "physicalAppearance": {
+          "title": "Fysiek voorkomen",
+          "tussenwoning": "Tussenwoning",
+          "tweeondereenkap": "Twee onder een kap",
+          "portiekflat": "Portiekflat",
+          "hoekwoning": "Hoekwoning",
+          "vrijstaand": "Vrijstaand",
+          "gallerijflat": "Gallerijflat",
+          "houseType": "Soort woning",
+          "value": "Aantal"
+        },
+        "purpose": {
+          "title": "Doel",
+          "regular": "Regulier",
+          "youth": "Jongeren",
+          "student": "Student",
+          "elderly": "Ouderen",
+          "ghz": "GHZ",
+          "largeFamilies": "Grote gezinnen",
+          "typeOfResidents": "Soorten bewoners",
+          "value": "Aantal"
+        },
+        "houseType": {
+          "title": "Woningtype",
+          "meergezinswoning": "Meergezinswoning",
+          "eengezinswoning": "Eengezinswoning",
+          "type": "Soort",
+          "value": "Aantal"
+        },
+        "groundPosition": {
+          "title": "Grondpositie",
+          "noPermissionOwner": "Geen toestemming grondeigenaar",
+          "intentionPermissionOwner": "Intentie medewerking grondeigenaar",
+          "formalPermissionOwner": "Formele toestemming van grondeigenaar",
+          "situation": "Situatie",
+          "value": "Aantal"
+        },
+        "programming": {
+          "title": "Programmering"
+        },
         "terracedHouse": "Tussenwoning",
         "cornerHouse": "Hoekwoning",
         "semidetached": "Twee onder een kap",
@@ -181,6 +223,13 @@
         "_3_VERGUNNINGSFASE": "VERGUNNINGSFASE",
         "_4_REALISATIEFASE": "REALISATIEFASE",
         "_5_OPLEVERINGSFASE": "OPLEVERINGSFASE"
+      }
+    },
+    "wizard": {
+      "houseBlocks": {
+        "generalInformation": {
+          "title": "Algemene informatie"
+        }
       }
     }
   }

@@ -3,6 +3,7 @@ package nl.vng.diwi.models;
 import lombok.Data;
 
 import lombok.EqualsAndHashCode;
+import nl.vng.diwi.dal.entities.ProjectListSqlModel;
 import nl.vng.diwi.models.superclasses.ProjectSnapshotModelSuperclass;
 
 import java.util.List;
