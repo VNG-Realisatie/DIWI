@@ -113,7 +113,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             const query = queryString.stringify({
                 filterColumn: filterModel.items[0].value,
                 filterCondition: filterModel.items[0].operator === "isAnyOf" ? "ANY_OF" : "CONTAINS",
-                filterValue: filterModel.items[0].operator === "isAnyOf" ? filterModel.items[0].value?.join(",") : filterModel.items[2].value,
+                filterValue: filterModel.items[0].operator === "isAnyOf" ? filterModel.items[2].value?.join(",") : filterModel.items[2].value,
             });
             console.log(query);
             const url = `?pageNumber=${paginationInfo.page}&pageSize=${paginationInfo.pageSize}&${query}`;
