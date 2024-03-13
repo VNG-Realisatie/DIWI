@@ -31,6 +31,8 @@ cd frontend
 yarn && yarn start
 ```
 
+You shouldn't need any settings in the .env file other than `DIWI_DB_USERNAME` and `DIWI_DB_PASSWORD`. See `.env.backend.dev.example`.
+
 ### Generate types from backend api
 
 You can generate types from the backend by downloading the openapi.json file from e.g. http://localhost:3000/rest/openapi.json and putting it in the root folder of the repo.
@@ -116,7 +118,10 @@ docker compose exec -T database psql --user diwi diwi < backend/src/main/resourc
 
 ## Deploy on production
 
-TBD
+- Copy `.env.production.example` to `.env`
+- Set a secure password for the database in the .env file
+- Configure keycloak with a new client and enter the parameters in the .env file
+- Call `./deploy.sh`
 
 ## Development
 
