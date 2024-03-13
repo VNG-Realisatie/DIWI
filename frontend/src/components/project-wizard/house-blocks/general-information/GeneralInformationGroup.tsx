@@ -10,18 +10,20 @@ import { EndDatePicker } from "./EndDatePicker";
 export type GeneralInformationProps = {
     projectForm: HouseBlock;
     setProjectForm(project: HouseBlock): void;
+    edit: boolean;
+    editForm: boolean;
 };
 
-export const GeneralInformationGroup = ({ projectForm, setProjectForm }: GeneralInformationProps) => {
+export const GeneralInformationGroup = ({ projectForm, setProjectForm, edit, editForm }: GeneralInformationProps) => {
     return (
         <WizardCard>
             <Typography fontWeight={600} mb={2}>
                 {t("wizard.houseBlocks.generalInformation.title")}
             </Typography>
-            <NameInput projectForm={projectForm} setProjectForm={setProjectForm} />
-            <SizeInput projectForm={projectForm} setProjectForm={setProjectForm} />
-            <StartDatePicker projectForm={projectForm} setProjectForm={setProjectForm} />
-            <EndDatePicker projectForm={projectForm} setProjectForm={setProjectForm} />
+            <NameInput edit={edit} editForm={editForm} projectForm={projectForm} setProjectForm={setProjectForm} />
+            <SizeInput edit={edit} editForm={editForm} projectForm={projectForm} setProjectForm={setProjectForm} />
+            <StartDatePicker edit={edit} editForm={editForm} projectForm={projectForm} setProjectForm={setProjectForm} />
+            <EndDatePicker edit={edit} editForm={editForm} projectForm={projectForm} setProjectForm={setProjectForm} />
         </WizardCard>
     );
 };
