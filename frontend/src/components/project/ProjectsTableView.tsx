@@ -27,6 +27,7 @@ import { confidentialityLevelOptions, planTypeOptions, projectPhaseOptions } fro
 import { filterTable } from "../../api/projectsTableServices";
 import { OrganizationUserAvatars } from "../OrganizationUserAvatars";
 import ProjectContext from "../../context/ProjectContext";
+import queryString from "query-string";
 
 interface RowData {
     id: number;
@@ -87,13 +88,16 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
 
     useEffect(() => {
         if (isFilteredUrl()) {
-            const filterParams = location.search.split("&");
-            const filterValues = filterParams.map((f) => f.split("="));
-            const field = filterValues[2][1];
-            const operator = filterValues[3][1] === "ANY_OF" ? "isAnyOf" : "contains";
-            const values = filterValues.slice(4).map((v) => v[1]);
+            const filterValues = queryString.parse(location.search);
+
+            const filterItems = Object.entries(filterValues).map(([field, value]) => {
+                const operator = value === "ANY_OF" ? "isAnyOf" : "contains";
+
+                return { field, operator, value };
+            });
+            console.log(filterItems);
             const filter = {
-                items: [{ field, operator, value: values }],
+                items: filterItems,
                 logicOperator: GridLogicOperator.And,
             };
             setFilterModel(filter);
@@ -105,19 +109,16 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     });
 
     const updateUrl = useCallback(() => {
-        let query = "";
-
         if (filterModel) {
-            const converFilterType = filterModel.items[0].operator === "isAnyOf" ? "ANY_OF" : "CONTAINS";
-            const filterValues =
-                filterModel.items[0].operator === "isAnyOf"
-                    ? filterModel.items[0].value?.map((v: string) => `filterValue=${v}`).join("&")
-                    : `filterValue=${filterModel.items[0].value}`;
-            query = `filterColumn=${filterModel.items[0].field}&filterCondition=${converFilterType}&${filterValues}`;
+            const query = queryString.stringify({
+                filterColumn: filterModel.items[0].value,
+                filterCondition: filterModel.items[0].operator === "isAnyOf" ? "ANY_OF" : "CONTAINS",
+                filterValue: filterModel.items[0].operator === "isAnyOf" ? filterModel.items[0].value?.join(",") : filterModel.items[2].value,
+            });
+            console.log(query);
+            const url = `?pageNumber=${paginationInfo.page}&pageSize=${paginationInfo.pageSize}&${query}`;
+            setFilterUrl(url);
         }
-
-        const url = `?pageNumber=${paginationInfo.page}&pageSize=${paginationInfo.pageSize}&${query}`;
-        setFilterUrl(url);
     }, [filterModel, paginationInfo.page, paginationInfo.pageSize]);
 
     useEffect(() => {
