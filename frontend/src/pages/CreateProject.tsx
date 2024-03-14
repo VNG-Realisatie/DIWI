@@ -68,11 +68,12 @@ export const CreateProject = () => {
     };
 
     const handleNext = async () => {
-        const res = await handleSave();
-        if (res) {
-            navigate(`/projects/${id}`); //before the next screen is implemented
-            // setActiveStep((prevActiveStep) => prevActiveStep + 1);
-        }
+        // const res = await handleSave();
+        // if (res) {
+        //     navigate(`/projects/${id}`); //before the next screen is implemented
+        //     // setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        // }
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
     };
 
     const handleBack = () => {
@@ -90,7 +91,7 @@ export const CreateProject = () => {
                 ))}
             </Stepper>
             {activeStep === 0 && <ProjectInformationForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />}
-            {activeStep === 1 && <BlockHousesForm />}
+            {activeStep === 1 && <BlockHousesForm editForm={false} />}
             {activeStep === 2 && <SelectFromMapForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />}
             {activeStep === 3 && <TimelineForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />}
             {activeStep === 4 && (
