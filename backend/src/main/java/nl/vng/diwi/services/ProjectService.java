@@ -650,7 +650,7 @@ public class ProjectService {
         return project;
     }
 
-    private Milestone getOrCreateMilestoneForProject(VngRepository repo, Project project, LocalDate milestoneDate, UUID loggedInUserUuid) {
+    public Milestone getOrCreateMilestoneForProject(VngRepository repo, Project project, LocalDate milestoneDate, UUID loggedInUserUuid) {
 
         List<Milestone> projectMilestones = project.getMilestones();
 
