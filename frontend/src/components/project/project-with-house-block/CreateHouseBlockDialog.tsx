@@ -8,7 +8,7 @@ type Props = {
 };
 export const CreateHouseBlockDialog = ({ openHouseBlockDialog, setOpenHouseBlockDialog }: Props) => {
     return (
-        <Dialog open={openHouseBlockDialog} onClose={() => setOpenHouseBlockDialog(false)} fullScreen>
+        <Dialog open={openHouseBlockDialog} onClose={() => setOpenHouseBlockDialog(false)} maxWidth="xl">
             <DialogContent>
                 <BlockHousesForm editForm={false} />
             </DialogContent>
