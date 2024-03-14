@@ -28,7 +28,7 @@ export async function deleteProject(id: string | null) {
     return deleteJson(`${API_URI}/projects/${id}`);
 }
 
-export async function createProject(projectData: any): Promise<any> {
+export async function createProject(projectData: Project): Promise<Project> {
     return postJson(`${API_URI}/projects`, projectData);
 }
 

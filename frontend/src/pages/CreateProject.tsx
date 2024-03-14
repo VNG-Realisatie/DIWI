@@ -53,13 +53,10 @@ export const CreateProject = () => {
                 }
             } else {
                 setValidationError(false);
-                const res = await createProject(createProjectForm);
-                if (res.ok) {
-                    const newId = res.data.id;
-                    navigate(`/project/create/${newId}`);
-                    setAlert(t("createProject.successfullySaved"), "success");
-                    return true;
-                }
+                const project = await createProject(createProjectForm);
+
+                navigate(`/project/${project.projectId}`);
+                setAlert(t("createProject.successfullySaved"), "success");
             }
         } catch (error: any) {
             setAlert(error.message, "error");
