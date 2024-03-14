@@ -22,7 +22,6 @@ import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.services.HouseblockService;
 import nl.vng.diwi.services.ProjectService;
 
-import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
