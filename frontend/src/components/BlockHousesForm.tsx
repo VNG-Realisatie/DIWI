@@ -23,6 +23,8 @@ type Props = {
 export const BlockHousesForm = ({ projectDetailHouseBlock, editForm }: Props) => {
     const [projectForm, setProjectForm] = useState<HouseBlock>(projectDetailHouseBlock ? projectDetailHouseBlock : emptyHouseBlockForm);
     const [edit, setEdit] = useState(false);
+
+    const oldForm = projectDetailHouseBlock && { ...projectDetailHouseBlock };
     return (
         <Box mt={4}>
             {editForm && (
@@ -35,7 +37,13 @@ export const BlockHousesForm = ({ projectDetailHouseBlock, editForm }: Props) =>
                     {edit && (
                         <>
                             <Tooltip placement="top" title={t("generic.cancelChanges")}>
-                                <ClearIcon sx={{ cursor: "pointer" }} onClick={() => setEdit(false)} />
+                                <ClearIcon
+                                    sx={{ cursor: "pointer" }}
+                                    onClick={() => {
+                                        setEdit(false);
+                                        oldForm && setProjectForm(oldForm);
+                                    }}
+                                />
                             </Tooltip>
                             <Tooltip placement="top" title={t("generic.saveChanges")}>
                                 {/* TODO integrate later updatehouseblock endpoint */}
