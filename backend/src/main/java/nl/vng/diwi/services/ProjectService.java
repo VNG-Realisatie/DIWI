@@ -123,10 +123,7 @@ public class ProjectService {
         var name = new ProjectNameChangelog();
         name.setProject(project);
         name.setName(projectData.getProjectName());
-        name.setStartMilestone(startMilestone);
-        name.setEndMilestone(endMilestone);
-        name.setCreateUser(user);
-        name.setChangeStartDate(now);
+        setChangelogValues.accept(name);
         repo.persist(name);
 
         var state = new ProjectState();
@@ -139,19 +136,13 @@ public class ProjectService {
 
         var faseChangelog = new ProjectFaseChangelog();
         faseChangelog.setProject(project);
-        faseChangelog.setStartMilestone(startMilestone);
-        faseChangelog.setEndMilestone(endMilestone);
-        faseChangelog.setCreateUser(user);
-        faseChangelog.setChangeStartDate(now);
+        setChangelogValues.accept(faseChangelog);
         faseChangelog.setProjectPhase(projectData.getProjectPhase());
         repo.persist(faseChangelog);
 
         var planStatus = new ProjectPlanologischePlanstatusChangelog();
         planStatus.setProject(project);
-        planStatus.setStartMilestone(startMilestone);
-        planStatus.setEndMilestone(endMilestone);
-        planStatus.setCreateUser(user);
-        planStatus.setChangeStartDate(now);
+        setChangelogValues.accept(planStatus);
         repo.persist(planStatus);
 
         return project;
