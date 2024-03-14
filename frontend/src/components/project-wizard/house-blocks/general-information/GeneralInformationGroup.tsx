@@ -6,6 +6,7 @@ import { HouseBlockSize, SizeInput } from "./SizeInput";
 import { NameInput } from "./NameInput";
 import { StartDatePicker } from "./StartDatePicker";
 import { EndDatePicker } from "./EndDatePicker";
+import { Dayjs } from "dayjs";
 
 export type GeneralInformationProps = {
     projectForm: HouseBlock;
@@ -32,7 +33,12 @@ export const GeneralInformationGroup = ({ projectForm, setProjectForm, edit, edi
                 houseBlockSize={projectForm.size}
                 updateHouseBlockSize={(houseBlockSize: HouseBlockSize) => setProjectForm({ ...projectForm, size: houseBlockSize })}
             />
-            <StartDatePicker edit={edit} editForm={editForm} projectForm={projectForm} setProjectForm={setProjectForm} />
+            <StartDatePicker
+                edit={edit}
+                editForm={editForm}
+                houseBlockStartDate={projectForm.startDate}
+                updateHouseBlockStartDate={(e: Dayjs | null) => setProjectForm({ ...projectForm, startDate: e instanceof Date ? e.toISOString() : null })}
+            />
             <EndDatePicker edit={edit} editForm={editForm} projectForm={projectForm} setProjectForm={setProjectForm} />
         </WizardCard>
     );
