@@ -53,9 +53,14 @@ export async function postJson(url: string, data: any) {
             "Content-Type": "application/json",
         },
     });
-
     if (!res.ok) {
-        throw Error(res.statusText);
+        if (res.status === 400) {
+            const readableStream = await res.text();
+            const response = await JSON.parse(readableStream);
+            throw Error(response.error);
+        } else {
+            throw Error(res.statusText);
+        }
     }
 
     return res.json();
