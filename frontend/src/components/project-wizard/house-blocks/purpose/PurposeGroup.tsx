@@ -7,9 +7,11 @@ import { SingleNumberInput } from "./SingleNumberInput";
 export type PurposeInformationProps = {
     projectForm: HouseBlock;
     setProjectForm(project: HouseBlock): void;
+    edit: boolean;
+    editForm: boolean;
 };
 
-export const PurposeGroup = ({ projectForm, setProjectForm }: PurposeInformationProps) => {
+export const PurposeGroup = ({ projectForm, setProjectForm, edit, editForm }: PurposeInformationProps) => {
     const translationPath = "createProject.houseBlocksForm.purpose";
     return (
         <WizardCard>
@@ -24,12 +26,12 @@ export const PurposeGroup = ({ projectForm, setProjectForm }: PurposeInformation
                     {t(`${translationPath}.value`)}
                 </Typography>
             </Stack>
-            <SingleNumberInput state={{ projectForm, setProjectForm }} value="regular" translationPath={translationPath} />
-            <SingleNumberInput state={{ projectForm, setProjectForm }} value="youth" translationPath={translationPath} />
-            <SingleNumberInput state={{ projectForm, setProjectForm }} value="student" translationPath={translationPath} />
-            <SingleNumberInput state={{ projectForm, setProjectForm }} value="elderly" translationPath={translationPath} />
-            <SingleNumberInput state={{ projectForm, setProjectForm }} value="largeFamilies" translationPath={translationPath} />
-            <SingleNumberInput state={{ projectForm, setProjectForm }} value="ghz" translationPath={translationPath} />
+            <SingleNumberInput state={{ projectForm, setProjectForm, edit, editForm }} value="regular" translationPath={translationPath} />
+            <SingleNumberInput state={{ projectForm, setProjectForm, edit, editForm }} value="youth" translationPath={translationPath} />
+            <SingleNumberInput state={{ projectForm, setProjectForm, edit, editForm }} value="student" translationPath={translationPath} />
+            <SingleNumberInput state={{ projectForm, setProjectForm, edit, editForm }} value="elderly" translationPath={translationPath} />
+            <SingleNumberInput state={{ projectForm, setProjectForm, edit, editForm }} value="largeFamilies" translationPath={translationPath} />
+            <SingleNumberInput state={{ projectForm, setProjectForm, edit, editForm }} value="ghz" translationPath={translationPath} />
         </WizardCard>
     );
 };

@@ -7,9 +7,11 @@ import { SingleNumberInput } from "./SingleNumberInput";
 export type HouseTypeInformationProps = {
     projectForm: HouseBlock;
     setProjectForm(project: HouseBlock): void;
+    edit: boolean;
+    editForm: boolean;
 };
 
-export const HouseTypeGroup = ({ projectForm, setProjectForm }: HouseTypeInformationProps) => {
+export const HouseTypeGroup = ({ projectForm, setProjectForm, edit, editForm }: HouseTypeInformationProps) => {
     const translationPath = "createProject.houseBlocksForm.houseType";
     return (
         <WizardCard>
@@ -24,8 +26,8 @@ export const HouseTypeGroup = ({ projectForm, setProjectForm }: HouseTypeInforma
                     {t(`${translationPath}.value`)}
                 </Typography>
             </Stack>
-            <SingleNumberInput state={{ projectForm, setProjectForm }} value="meergezinswoning" translationPath={translationPath} />
-            <SingleNumberInput state={{ projectForm, setProjectForm }} value="eengezinswoning" translationPath={translationPath} />
+            <SingleNumberInput state={{ projectForm, setProjectForm, edit, editForm }} value="meergezinswoning" translationPath={translationPath} />
+            <SingleNumberInput state={{ projectForm, setProjectForm, edit, editForm }} value="eengezinswoning" translationPath={translationPath} />
         </WizardCard>
     );
 };

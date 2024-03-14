@@ -7,9 +7,11 @@ import { SingleNumberInput } from "./SingleNumberInput";
 export type GroundPositionInformationProps = {
     projectForm: HouseBlock;
     setProjectForm(project: HouseBlock): void;
+    edit: boolean;
+    editForm: boolean;
 };
 
-export const GroundPositionGroup = ({ projectForm, setProjectForm }: GroundPositionInformationProps) => {
+export const GroundPositionGroup = ({ projectForm, setProjectForm, edit, editForm }: GroundPositionInformationProps) => {
     const translationPath = "createProject.houseBlocksForm.groundPosition";
     return (
         <WizardCard>
@@ -24,9 +26,9 @@ export const GroundPositionGroup = ({ projectForm, setProjectForm }: GroundPosit
                     {t(`${translationPath}.value`)}
                 </Typography>
             </Stack>
-            <SingleNumberInput state={{ projectForm, setProjectForm }} value="noPermissionOwner" translationPath={translationPath} />
-            <SingleNumberInput state={{ projectForm, setProjectForm }} value="intentionPermissionOwner" translationPath={translationPath} />
-            <SingleNumberInput state={{ projectForm, setProjectForm }} value="formalPermissionOwner" translationPath={translationPath} />
+            <SingleNumberInput state={{ projectForm, setProjectForm, edit, editForm }} value="noPermissionOwner" translationPath={translationPath} />
+            <SingleNumberInput state={{ projectForm, setProjectForm, edit, editForm }} value="intentionPermissionOwner" translationPath={translationPath} />
+            <SingleNumberInput state={{ projectForm, setProjectForm, edit, editForm }} value="formalPermissionOwner" translationPath={translationPath} />
         </WizardCard>
     );
 };
