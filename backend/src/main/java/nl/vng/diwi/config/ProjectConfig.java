@@ -5,6 +5,8 @@ import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Map;
 
+import org.pac4j.core.authorization.authorizer.DefaultAuthorizers;
+import org.pac4j.core.authorization.authorizer.IsAuthenticatedAuthorizer;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.profile.factory.ProfileManagerFactory;
 import org.pac4j.jee.context.JEEContextFactory;
@@ -78,6 +80,7 @@ public class ProjectConfig {
             oidcConfig.setWebContextFactory(JEEContextFactory.INSTANCE);
             oidcConfig.setSessionStoreFactory(JEESessionStoreFactory.INSTANCE);
             oidcConfig.setHttpActionAdapter(new HttpActionAdapterImplementation());
+            oidcConfig.setAuthorizers(Map.of(DefaultAuthorizers.IS_AUTHENTICATED, new IsAuthenticatedAuthorizer()));
 
             this.pac4jConfig = oidcConfig;
         } else {
