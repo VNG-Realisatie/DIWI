@@ -2,6 +2,7 @@ package nl.vng.diwi.rest.pac4j;
 
 import java.io.IOException;
 
+import org.pac4j.core.authorization.authorizer.DefaultAuthorizers;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.engine.DefaultSecurityLogic;
 import org.pac4j.core.exception.TechnicalException;
@@ -47,7 +48,7 @@ public class SecurityFilter implements ContainerRequestFilter {
         Config pac4jConfig = config.getPac4jConfig();
         try {
             DefaultSecurityLogic securityLogic = new DefaultSecurityLogic();
-            securityLogic.perform(pac4jConfig, (ctx, sessionStore, profiles) -> "AUTH_GRANTED", null, null, null,
+            securityLogic.perform(pac4jConfig, (ctx, sessionStore, profiles) -> "AUTH_GRANTED", null, DefaultAuthorizers.IS_AUTHENTICATED, null,
                     new JEEFrameworkParameters(httpRequest, httpResponse));
         } catch (TechnicalException | NullPointerException e) {
             log.info("config: {}", config);
