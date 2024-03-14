@@ -1,75 +1,52 @@
 import { Stack, Typography, TextField, Box } from "@mui/material";
 import { t } from "i18next";
-import { PurposeInformationProps } from "./PurposeGroup";
 import { InputContainer } from "../InputContainer";
 type Props = {
-    state: PurposeInformationProps;
     value: string;
     translationPath: string;
+    property: number | null;
+    update: (propert: number | null) => void;
+    edit: boolean;
+    editForm: boolean;
 };
-export const SingleNumberInput = ({ state, value, translationPath }: Props) => {
+type SingleNumberEdit = {
+    value: string;
+    property: number | null;
+    update: (propert: number | null) => void;
+};
+const SingleNumberEditInput = ({ value, property, update }: SingleNumberEdit) => {
+    return (
+        <TextField
+            sx={{ flex: 1 }}
+            InputProps={{
+                inputProps: {
+                    min: 0,
+                },
+            }}
+            type="number"
+            id={value ? value : ""}
+            size="small"
+            variant="outlined"
+            value={property ? property : null}
+            onChange={(e) => update(+e.target.value)}
+        />
+    );
+};
+export const SingleNumberInput = ({ property, update, value, translationPath, edit, editForm }: Props) => {
     return (
         <Stack direction="row" alignItems="center" spacing={2} my={2}>
             <Typography variant="subtitle1" fontWeight="500" border="solid 1px #ddd" borderRadius="5px" p={0.6} flex={3}>
                 {t(`${translationPath}.${value}`)}
             </Typography>
-            {state.edit && state.editForm && (
-                <TextField
-                    sx={{ flex: 1 }}
-                    InputProps={{
-                        inputProps: {
-                            min: 0,
-                        },
-                    }}
-                    type="number"
-                    id={value ? value : ""}
-                    size="small"
-                    variant="outlined"
-                    value={state.projectForm ? state.projectForm.purpose[value] : null}
-                    onChange={(e) =>
-                        state.projectForm &&
-                        state.setProjectForm({
-                            ...state.projectForm,
-                            purpose: {
-                                ...state.projectForm.purpose,
-                                [value]: +e.target.value,
-                            },
-                        })
-                    }
-                />
-            )}
-            {!state.edit && state.editForm && (
+            {edit && editForm && <SingleNumberEditInput value={value} property={property} update={update} />}
+            {!edit && editForm && (
                 <Box sx={{ flex: 1 }}>
                     <InputContainer>
-                        <Typography>{state?.projectForm?.purpose[value]}</Typography>
+                        <Typography>{property}</Typography>
                     </InputContainer>
                 </Box>
             )}
-            {!state.edit && !state.editForm && (
-                <TextField
-                    sx={{ flex: 1 }}
-                    InputProps={{
-                        inputProps: {
-                            min: 0,
-                        },
-                    }}
-                    type="number"
-                    id={value ? value : ""}
-                    size="small"
-                    variant="outlined"
-                    value={state.projectForm ? state.projectForm.purpose[value] : null}
-                    onChange={(e) =>
-                        state.projectForm &&
-                        state.setProjectForm({
-                            ...state.projectForm,
-                            purpose: {
-                                ...state.projectForm.purpose,
-                                [value]: +e.target.value,
-                            },
-                        })
-                    }
-                />
-            )}
+            {!edit && !editForm && <SingleNumberEditInput value={value} property={property} update={update} />}
         </Stack>
     );
 };
