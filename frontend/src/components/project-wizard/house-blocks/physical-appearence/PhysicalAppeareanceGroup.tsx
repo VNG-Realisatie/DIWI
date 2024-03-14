@@ -26,13 +26,105 @@ export const PhysicalAppeareanceGroup = ({ projectForm, setProjectForm, edit, ed
                     {t(`${translationPath}.value`)}
                 </Typography>
             </Stack>
-            <SingleNumberInput state={{ projectForm, setProjectForm, edit, editForm }} value="tussenwoning" translationPath={translationPath} />
-            <SingleNumberInput state={{ projectForm, setProjectForm, edit, editForm }} value="tweeondereenkap" translationPath={translationPath} />
-            <SingleNumberInput state={{ projectForm, setProjectForm, edit, editForm }} value="portiekflat" translationPath={translationPath} />
-            <SingleNumberInput state={{ projectForm, setProjectForm, edit, editForm }} value="hoekwoning" translationPath={translationPath} />
-            <SingleNumberInput state={{ projectForm, setProjectForm, edit, editForm }} value="vrijstaand" translationPath={translationPath} />
             <SingleNumberInput
-                state={{ projectForm, setProjectForm, edit, editForm }}
+                property={projectForm?.physicalAppeareance.tussenwoning}
+                update={(e) =>
+                    projectForm &&
+                    setProjectForm({
+                        ...projectForm,
+                        physicalAppeareance: {
+                            ...projectForm.physicalAppeareance,
+                            tussenwoning: e,
+                        },
+                    })
+                }
+                edit={edit}
+                editForm={editForm}
+                value="tussenwoning"
+                translationPath={translationPath}
+            />
+            <SingleNumberInput
+                property={projectForm?.physicalAppeareance.tweeondereenkap}
+                update={(e) =>
+                    projectForm &&
+                    setProjectForm({
+                        ...projectForm,
+                        physicalAppeareance: {
+                            ...projectForm.physicalAppeareance,
+                            tweeondereenkap: e,
+                        },
+                    })
+                }
+                edit={edit}
+                editForm={editForm}
+                value="tweeondereenkap"
+                translationPath={translationPath}
+            />
+            <SingleNumberInput
+                property={projectForm?.physicalAppeareance.portiekflat}
+                update={(e) =>
+                    projectForm &&
+                    setProjectForm({
+                        ...projectForm,
+                        physicalAppeareance: {
+                            ...projectForm.physicalAppeareance,
+                            portiekflat: e,
+                        },
+                    })
+                }
+                edit={edit}
+                editForm={editForm}
+                value="portiekflat"
+                translationPath={translationPath}
+            />
+            <SingleNumberInput
+                property={projectForm?.physicalAppeareance.hoekwoning}
+                update={(e) =>
+                    projectForm &&
+                    setProjectForm({
+                        ...projectForm,
+                        physicalAppeareance: {
+                            ...projectForm.physicalAppeareance,
+                            hoekwoning: e,
+                        },
+                    })
+                }
+                edit={edit}
+                editForm={editForm}
+                value="hoekwoning"
+                translationPath={translationPath}
+            />
+            <SingleNumberInput
+                property={projectForm?.physicalAppeareance.vrijstaand}
+                update={(e) =>
+                    projectForm &&
+                    setProjectForm({
+                        ...projectForm,
+                        physicalAppeareance: {
+                            ...projectForm.physicalAppeareance,
+                            vrijstaand: e,
+                        },
+                    })
+                }
+                edit={edit}
+                editForm={editForm}
+                value="vrijstaand"
+                translationPath={translationPath}
+            />
+            <SingleNumberInput
+                property={projectForm?.physicalAppeareance.gallerijflat}
+                update={(e) =>
+                    projectForm &&
+                    setProjectForm({
+                        ...projectForm,
+                        physicalAppeareance: {
+                            ...projectForm.physicalAppeareance,
+                            gallerijflat: e,
+                        },
+                    })
+                }
+                edit={edit}
+                editForm={editForm}
                 value="gallerijflat"
                 translationPath="createProject.houseBlocksForm.physicalAppearance"
             />
