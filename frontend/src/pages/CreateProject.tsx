@@ -29,7 +29,7 @@ export const CreateProject = () => {
     const [createProjectForm, setCreateProjectForm] = useState<any>(null);
 
     const [activeStep, setActiveStep] = useState<number>(0);
-    const [, setValidationError] = useState(false);
+    const [validationError, setValidationError] = useState(false);
 
     const { id } = useParams();
     const navigate = useNavigate();
@@ -75,7 +75,7 @@ export const CreateProject = () => {
     const handleBack = () => {
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
-
+    console.log(createProjectForm);
     return (
         //Components for wizard steps
         <Box mb={7} border="solid 2px #ddd" p={4}>
@@ -86,7 +86,9 @@ export const CreateProject = () => {
                     </Step>
                 ))}
             </Stepper>
-            {activeStep === 0 && <ProjectInformationForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />}
+            {activeStep === 0 && (
+                <ProjectInformationForm validationError={validationError} setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />
+            )}
             {activeStep === 1 && <BlockHousesForm />}
             {activeStep === 2 && <SelectFromMapForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />}
             {activeStep === 3 && <TimelineForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />}
