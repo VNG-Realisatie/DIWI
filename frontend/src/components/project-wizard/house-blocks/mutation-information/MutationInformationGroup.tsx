@@ -11,18 +11,20 @@ import { MutationKindSelect } from "./MutationKindSelect";
 export type MutationInformationProps = {
     projectForm: HouseBlock;
     setProjectForm(project: HouseBlock): void;
+    edit: boolean;
+    editForm: boolean;
 };
 
-export const MutationInformationGroup = ({ projectForm, setProjectForm }: MutationInformationProps) => {
+export const MutationInformationGroup = ({ projectForm, setProjectForm, edit, editForm }: MutationInformationProps) => {
     return (
         <WizardCard>
             <Typography fontWeight={600} mb={2}>
                 {t("createProject.houseBlocksForm.mutationData")}
             </Typography>
-            <GrossPlanCapacityInput projectForm={projectForm} setProjectForm={setProjectForm} />
-            <DemolitionPlanCapacityInput projectForm={projectForm} setProjectForm={setProjectForm} />
-            <NetPlanCapacityInput projectForm={projectForm} setProjectForm={setProjectForm} />
-            <MutationKindSelect projectForm={projectForm} setProjectForm={setProjectForm} />
+            <GrossPlanCapacityInput edit={edit} editForm={editForm} projectForm={projectForm} setProjectForm={setProjectForm} />
+            <DemolitionPlanCapacityInput edit={edit} editForm={editForm} projectForm={projectForm} setProjectForm={setProjectForm} />
+            <NetPlanCapacityInput edit={edit} editForm={editForm} projectForm={projectForm} setProjectForm={setProjectForm} />
+            <MutationKindSelect edit={edit} editForm={editForm} projectForm={projectForm} setProjectForm={setProjectForm} />
         </WizardCard>
     );
 };

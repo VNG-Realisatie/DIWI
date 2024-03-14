@@ -58,7 +58,7 @@ export const BlockHousesForm = ({ projectDetailHouseBlock, editForm }: Props) =>
                     <GeneralInformationGroup projectForm={projectForm} setProjectForm={setProjectForm} edit={edit} editForm={editForm} />
                 </Grid>
                 <Grid item xs={12} md={4}>
-                    <MutationInformationGroup projectForm={projectForm} setProjectForm={setProjectForm} />
+                    <MutationInformationGroup projectForm={projectForm} setProjectForm={setProjectForm} edit={edit} editForm={editForm} />
                 </Grid>
             </Grid>
             <Grid container mt={2}>
