@@ -1,67 +1,144 @@
-import { Grid, Select, MenuItem, TextField, IconButton } from "@mui/material";
+import { Grid, Select, MenuItem, TextField, IconButton, Typography } from "@mui/material";
 import { ownershipValueOptions } from "../constants";
 import { OwnershipSingleValue } from "../types";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { OwnershipValueType } from "../../../../types/enums";
+import { InputContainer } from "../InputContainer";
 
 type Props = {
     ownership: OwnershipSingleValue;
     index: number;
     handleInputChange: (index: number, value: OwnershipSingleValue) => void;
     handleRemoveRow: (index: number) => void;
+    edit: boolean;
+    editForm: boolean;
 };
 
-export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handleRemoveRow }: Props) => {
+export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handleRemoveRow, edit, editForm }: Props) => {
     return (
         <Grid container spacing={2} mt={1}>
             <Grid item xs={4}>
-                <Select
-                    fullWidth
-                    size="small"
-                    id="demo-simple-select"
-                    value={ownership.type}
-                    label="Type"
-                    onChange={(e) => handleInputChange(index, { ...ownership, type: e.target.value as OwnershipValueType })}
-                >
-                    {ownershipValueOptions.map((type) => {
-                        return <MenuItem value={type}>{type}</MenuItem>;
-                    })}
-                </Select>
+                {edit && editForm && (
+                    <Select
+                        fullWidth
+                        size="small"
+                        id="demo-simple-select"
+                        value={ownership.type}
+                        label="Type"
+                        onChange={(e) => handleInputChange(index, { ...ownership, type: e.target.value as OwnershipValueType })}
+                    >
+                        {ownershipValueOptions.map((type) => {
+                            return <MenuItem value={type}>{type}</MenuItem>;
+                        })}
+                    </Select>
+                )}
+                {!edit && editForm && (
+                    <InputContainer>
+                        <Typography>{ownership?.type}</Typography>
+                    </InputContainer>
+                )}
+                {!edit && !editForm && (
+                    <Select
+                        fullWidth
+                        size="small"
+                        id="demo-simple-select"
+                        value={ownership.type}
+                        label="Type"
+                        onChange={(e) => handleInputChange(index, { ...ownership, type: e.target.value as OwnershipValueType })}
+                    >
+                        {ownershipValueOptions.map((type) => {
+                            return <MenuItem value={type}>{type}</MenuItem>;
+                        })}
+                    </Select>
+                )}
             </Grid>
             <Grid item xs={2}>
-                <TextField
-                    size="small"
-                    label="Amount"
-                    type="number"
-                    fullWidth
-                    value={ownership.amount}
-                    onChange={(e) => handleInputChange(index, { ...ownership, amount: parseInt(e.target.value) })}
-                />
+                {edit && editForm && (
+                    <TextField
+                        size="small"
+                        label="Amount"
+                        type="number"
+                        fullWidth
+                        value={ownership.amount}
+                        onChange={(e) => handleInputChange(index, { ...ownership, amount: parseInt(e.target.value) })}
+                    />
+                )}
+                {!edit && editForm && (
+                    <InputContainer>
+                        <Typography>{ownership?.amount}</Typography>
+                    </InputContainer>
+                )}
+                {!edit && !editForm && (
+                    <TextField
+                        size="small"
+                        label="Amount"
+                        type="number"
+                        fullWidth
+                        value={ownership.amount}
+                        onChange={(e) => handleInputChange(index, { ...ownership, amount: parseInt(e.target.value) })}
+                    />
+                )}
             </Grid>
             <Grid item xs={2}>
-                <TextField
-                    size="small"
-                    label="Value"
-                    type="number"
-                    fullWidth
-                    value={ownership.value.value}
-                    onChange={(e) => handleInputChange(index, { ...ownership, value: { min: null, max: null, value: parseInt(e.target.value) } })}
-                />
+                {edit && editForm && (
+                    <TextField
+                        size="small"
+                        label="Value"
+                        type="number"
+                        fullWidth
+                        value={ownership.value.value}
+                        onChange={(e) => handleInputChange(index, { ...ownership, value: { min: null, max: null, value: parseInt(e.target.value) } })}
+                    />
+                )}
+                {!edit && editForm && (
+                    <InputContainer>
+                        <Typography>{ownership?.value?.value}</Typography>
+                    </InputContainer>
+                )}
+                {!edit && !editForm && (
+                    <TextField
+                        size="small"
+                        label="Value"
+                        type="number"
+                        fullWidth
+                        value={ownership.value.value}
+                        onChange={(e) => handleInputChange(index, { ...ownership, value: { min: null, max: null, value: parseInt(e.target.value) } })}
+                    />
+                )}
             </Grid>
             <Grid item xs={2}>
-                <TextField
-                    size="small"
-                    label="RentalValue"
-                    type="number"
-                    fullWidth
-                    value={ownership.rentalValue.value}
-                    onChange={(e) => handleInputChange(index, { ...ownership, rentalValue: { min: null, max: null, value: parseInt(e.target.value) } })}
-                />
+                {edit && editForm && (
+                    <TextField
+                        size="small"
+                        label="RentalValue"
+                        type="number"
+                        fullWidth
+                        value={ownership.rentalValue.value}
+                        onChange={(e) => handleInputChange(index, { ...ownership, rentalValue: { min: null, max: null, value: parseInt(e.target.value) } })}
+                    />
+                )}
+                {!edit && editForm && (
+                    <InputContainer>
+                        <Typography>{ownership?.rentalValue?.value}</Typography>
+                    </InputContainer>
+                )}
+                {!edit && !editForm && (
+                    <TextField
+                        size="small"
+                        label="RentalValue"
+                        type="number"
+                        fullWidth
+                        value={ownership.rentalValue.value}
+                        onChange={(e) => handleInputChange(index, { ...ownership, rentalValue: { min: null, max: null, value: parseInt(e.target.value) } })}
+                    />
+                )}
             </Grid>
             <Grid item xs={1}>
-                <IconButton onClick={() => handleRemoveRow(index)}>
-                    <DeleteIcon sx={{ color: "red" }} />
-                </IconButton>
+                {((edit && editForm) || (!edit && !editForm)) && (
+                    <IconButton onClick={() => handleRemoveRow(index)}>
+                        <DeleteIcon sx={{ color: "red" }} />
+                    </IconButton>
+                )}
             </Grid>
         </Grid>
     );

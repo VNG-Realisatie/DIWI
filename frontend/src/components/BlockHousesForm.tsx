@@ -63,7 +63,7 @@ export const BlockHousesForm = ({ projectDetailHouseBlock, editForm }: Props) =>
             </Grid>
             <Grid container mt={2}>
                 <Grid item xs={12}>
-                    <OwnershipInformationGroup projectForm={projectForm} setProjectForm={setProjectForm} />
+                    <OwnershipInformationGroup projectForm={projectForm} setProjectForm={setProjectForm} edit={edit} editForm={editForm} />
                 </Grid>
             </Grid>
             <Grid container spacing={2} alignItems="stretch" mt={0.5}>
