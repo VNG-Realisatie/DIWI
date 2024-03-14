@@ -2,7 +2,7 @@ import { Stack, Typography } from "@mui/material";
 import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
 import { HouseBlock } from "../types";
-import { SingleNumberInput } from "./SingleNumberInput";
+import { SingleNumberInput } from "../physical-appearence/SingleNumberInput";
 
 export type PurposeInformationProps = {
     projectForm: HouseBlock;

@@ -2,7 +2,7 @@ import { Stack, Typography } from "@mui/material";
 import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
 import { HouseBlock } from "../types";
-import { SingleNumberInput } from "./SingleNumberInput";
+import { SingleNumberInput } from "../physical-appearence/SingleNumberInput";
 
 export type GroundPositionInformationProps = {
     projectForm: HouseBlock;
@@ -26,9 +26,57 @@ export const GroundPositionGroup = ({ projectForm, setProjectForm, edit, editFor
                     {t(`${translationPath}.value`)}
                 </Typography>
             </Stack>
-            <SingleNumberInput state={{ projectForm, setProjectForm, edit, editForm }} value="noPermissionOwner" translationPath={translationPath} />
-            <SingleNumberInput state={{ projectForm, setProjectForm, edit, editForm }} value="intentionPermissionOwner" translationPath={translationPath} />
-            <SingleNumberInput state={{ projectForm, setProjectForm, edit, editForm }} value="formalPermissionOwner" translationPath={translationPath} />
+            <SingleNumberInput
+                property={projectForm?.physicalAppeareance.noPermissionOwner}
+                update={(e) =>
+                    projectForm &&
+                    setProjectForm({
+                        ...projectForm,
+                        physicalAppeareance: {
+                            ...projectForm.physicalAppeareance,
+                            noPermissionOwner: e,
+                        },
+                    })
+                }
+                edit={edit}
+                editForm={editForm}
+                value="noPermissionOwner"
+                translationPath={translationPath}
+            />
+            <SingleNumberInput
+                property={projectForm?.physicalAppeareance.intentionPermissionOwner}
+                update={(e) =>
+                    projectForm &&
+                    setProjectForm({
+                        ...projectForm,
+                        physicalAppeareance: {
+                            ...projectForm.physicalAppeareance,
+                            intentionPermissionOwner: e,
+                        },
+                    })
+                }
+                edit={edit}
+                editForm={editForm}
+                value="intentionPermissionOwner"
+                translationPath={translationPath}
+            />
+            <SingleNumberInput
+                property={projectForm?.physicalAppeareance.formalPermissionOwner}
+                update={(e) =>
+                    projectForm &&
+                    setProjectForm({
+                        ...projectForm,
+                        physicalAppeareance: {
+                            ...projectForm.physicalAppeareance,
+                            formalPermissionOwner: e,
+                        },
+                    })
+                }
+                edit={edit}
+                editForm={editForm}
+                value="formalPermissionOwner"
+                translationPath={translationPath}
+            />
         </WizardCard>
     );
 };
