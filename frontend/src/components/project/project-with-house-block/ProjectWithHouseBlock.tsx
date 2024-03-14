@@ -30,6 +30,7 @@ import { PriorityEditForm } from "./PriorityEditForm";
 import { SelectModel, getProjectHouseBlocks, updateProjects } from "../../../api/projectsServices";
 import { BlockHousesForm } from "../../BlockHousesForm";
 import { HouseBlock } from "../../project-wizard/house-blocks/types";
+import AlertContext from "../../../context/AlertContext";
 export const columnTitleStyle = {
     border: "solid 1px #ddd",
     p: 0.6,
@@ -55,6 +56,8 @@ export const ProjectsWithHouseBlock = () => {
     const [selectedWijk, setSelectedWijk] = useState<SelectModel[]>([]);
     const [projectPriority, setProjectPriority] = useState<SelectModel | null>();
     const [houseBlocks, setHouseBlocks] = useState<HouseBlock[]>();
+
+    const { setAlert } = useContext(AlertContext);
 
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const handleStartDateChange = (newValue: Dayjs | null) => setStartDate(newValue);
@@ -181,10 +184,16 @@ export const ProjectsWithHouseBlock = () => {
     };
 
     const handleProjectSave = () => {
-        updateProjects(updatedProjectForm).then((res) => {
-            setProjectEditable(false);
-            updateProject();
-        });
+        updateProjects(updatedProjectForm)
+            .then((res) => {
+                if (res.ok) {
+                    setProjectEditable(false);
+                    updateProject();
+                }
+            })
+            .catch((error) => {
+                setAlert(error.message, "error");
+            });
     };
     const { id } = useContext(ProjectContext);
     useEffect(() => {
