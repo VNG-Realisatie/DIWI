@@ -1,67 +1,46 @@
 import { Stack, Typography, TextField } from "@mui/material";
 import { t } from "i18next";
-import { MutationInformationProps } from "./MutationInformationGroup";
 import { InputContainer } from "../InputContainer";
-
-export const GrossPlanCapacityInput = ({ projectForm, setProjectForm, edit, editForm }: MutationInformationProps) => {
+type Props = {
+    houseBlockGrossPlan: number | null;
+    updateHouseBlockGrossPlan: (houseBlockGrossPlan: number) => void;
+    edit: boolean;
+    editForm: boolean;
+};
+type GrosPlanProps = {
+    houseBlockGrossPlan: number | null;
+    updateHouseBlockGrossPlan: (houseBlockGrossPlan: number) => void;
+};
+const GrossPlanEditInput = ({ houseBlockGrossPlan, updateHouseBlockGrossPlan }: GrosPlanProps) => {
+    return (
+        <TextField
+            InputProps={{
+                inputProps: {
+                    min: 0,
+                },
+            }}
+            type="number"
+            id="grossPlan"
+            size="small"
+            variant="outlined"
+            value={houseBlockGrossPlan ? houseBlockGrossPlan : null}
+            onChange={(e) => updateHouseBlockGrossPlan(+e.target.value)}
+        />
+    );
+};
+export const GrossPlanCapacityInput = ({ houseBlockGrossPlan, updateHouseBlockGrossPlan, edit, editForm }: Props) => {
     return (
         <Stack>
             <Typography variant="subtitle1" fontWeight="500">
                 {t("createProject.houseBlocksForm.grossPlanCapacity")}
             </Typography>
-            {edit && editForm && (
-                <TextField
-                    InputProps={{
-                        inputProps: {
-                            min: 0,
-                        },
-                    }}
-                    type="number"
-                    id="grossPlan"
-                    size="small"
-                    variant="outlined"
-                    value={projectForm ? projectForm.mutation.grossPlanCapacity : null}
-                    onChange={(e) =>
-                        projectForm &&
-                        setProjectForm({
-                            ...projectForm,
-                            mutation: {
-                                ...projectForm.mutation,
-                                grossPlanCapacity: +e.target.value,
-                            },
-                        })
-                    }
-                />
-            )}
+            {edit && editForm && <GrossPlanEditInput houseBlockGrossPlan={houseBlockGrossPlan} updateHouseBlockGrossPlan={updateHouseBlockGrossPlan} />}
             {!edit && editForm && (
                 <InputContainer>
-                    <Typography>{projectForm?.mutation?.grossPlanCapacity}</Typography>
+                    <Typography>{houseBlockGrossPlan}</Typography>
                 </InputContainer>
             )}
-            {!edit && !editForm && (
-                <TextField
-                    InputProps={{
-                        inputProps: {
-                            min: 0,
-                        },
-                    }}
-                    type="number"
-                    id="grossPlan"
-                    size="small"
-                    variant="outlined"
-                    value={projectForm ? projectForm.mutation.grossPlanCapacity : null}
-                    onChange={(e) =>
-                        projectForm &&
-                        setProjectForm({
-                            ...projectForm,
-                            mutation: {
-                                ...projectForm.mutation,
-                                grossPlanCapacity: +e.target.value,
-                            },
-                        })
-                    }
-                />
-            )}
+            {!edit && !editForm && <GrossPlanEditInput houseBlockGrossPlan={houseBlockGrossPlan} updateHouseBlockGrossPlan={updateHouseBlockGrossPlan} />}
         </Stack>
     );
 };
