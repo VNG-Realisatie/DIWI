@@ -91,16 +91,22 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         if (isFilteredUrl()) {
             const filterValues = queryString.parse(location.search);
 
-            const filterItems = Object.entries(filterValues).map(([field, value]) => {
-                const operator = value === "ANY_OF" ? "isAnyOf" : "contains";
+            const filterItems = Object.values(filterValues);
 
-                return { field, operator, value };
-            });
-            const filter = {
-                items: filterItems,
-                logicOperator: GridLogicOperator.And,
-            };
-            setFilterModel(filter);
+            if (filterItems.length >= 3) {
+                const filter = {
+                    items: [
+                        {
+                            field: filterItems[0] as string,
+                            operator: filterItems[1] === "ANY_OF" ? "isAnyOf" : "contains",
+                            value: filterItems[2] as string,
+                        },
+                    ],
+                    logicOperator: GridLogicOperator.And,
+                };
+
+                setFilterModel(filter);
+            }
         }
     }, [isFilteredUrl, location.search]);
 
@@ -109,19 +115,16 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     });
 
     const updateUrl = useCallback(() => {
-        if (filterModel && filterModel.items && filterModel.items.length >= 2) {
+        if (filterModel && filterModel.items) {
             const updatedQuery = queryString.stringify({
-                filterColumn: filterModel.items[0].value,
-                filterCondition: filterModel.items[1].operator === "isAnyOf" ? "ANY_OF" : "CONTAINS",
-                filterValue: filterModel.items[1].operator === "isAnyOf" ? filterModel.items[2].value.join(",") : filterModel.items[2].value,
+                filterColumn: filterModel.items[0].field,
+                filterCondition: filterModel.items[0].operator === "isAnyOf" ? "ANY_OF" : "CONTAINS",
+                filterValue: filterModel.items[0].value,
             });
             setQuery(updatedQuery);
         }
         const url = `?pageNumber=${paginationInfo.page}&pageSize=${paginationInfo.pageSize}&${query}`;
         setFilterUrl(url);
-        // const test = { a: 1, b: 2 };
-        // const parsed = queryString.stringify(test);
-        // console.log(parsed);
     }, [filterModel, paginationInfo.page, paginationInfo.pageSize, query]);
 
     useEffect(() => {
@@ -423,7 +426,6 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             }
         }
         if (newModel.items.length > 0) {
-            console.log(newModel);
             setFilterModel(newModel);
         }
     };
