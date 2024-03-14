@@ -1,16 +1,14 @@
 package nl.vng.diwi.resources;
 
-import jakarta.ws.rs.QueryParam;
-import nl.vng.diwi.dal.GenericRepository;
-import nl.vng.diwi.dal.VngRepository;
-import nl.vng.diwi.security.LoggedUser;
-import nl.vng.diwi.security.SecurityRoleConstants;
-import nl.vng.diwi.models.SelectModel;
+import java.util.List;
+import java.util.UUID;
+
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import nl.vng.diwi.dal.GenericRepository;
@@ -18,9 +16,6 @@ import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.models.SelectModel;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.security.SecurityRoleConstants;
-
-import java.util.List;
-import java.util.UUID;
 
 @Path("/buurt")
 @RolesAllowed({SecurityRoleConstants.Admin})

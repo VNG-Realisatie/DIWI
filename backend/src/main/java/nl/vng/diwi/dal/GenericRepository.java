@@ -18,6 +18,7 @@ public class GenericRepository implements AutoCloseable {
                 Organization.class,
                 OrganizationProjectRole.class,
                 OrganizationState.class,
+                OrganizationToProject.class,
                 Project.class,
                 ProjectDurationChangelog.class,
                 ProjectFaseChangelog.class,
@@ -38,6 +39,7 @@ public class GenericRepository implements AutoCloseable {
                 WoningblokMutatieChangelogSoortValue.class,
                 User.class,
                 UserState.class,
+                UserToOrganization.class,
                 ProjectListSqlModel.class,
                 HouseblockSnapshotSqlModel.class);
         return entities;
