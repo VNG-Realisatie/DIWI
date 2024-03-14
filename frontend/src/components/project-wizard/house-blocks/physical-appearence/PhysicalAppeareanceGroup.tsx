@@ -7,9 +7,11 @@ import { SingleNumberInput } from "./SingleNumberInput";
 export type PhysicalAppeareanceInformationProps = {
     projectForm: HouseBlock;
     setProjectForm(project: HouseBlock): void;
+    edit: boolean;
+    editForm: boolean;
 };
 
-export const PhysicalAppeareanceGroup = ({ projectForm, setProjectForm }: PhysicalAppeareanceInformationProps) => {
+export const PhysicalAppeareanceGroup = ({ projectForm, setProjectForm, edit, editForm }: PhysicalAppeareanceInformationProps) => {
     const translationPath = "createProject.houseBlocksForm.physicalAppearance";
     return (
         <WizardCard>
@@ -24,13 +26,13 @@ export const PhysicalAppeareanceGroup = ({ projectForm, setProjectForm }: Physic
                     {t(`${translationPath}.value`)}
                 </Typography>
             </Stack>
-            <SingleNumberInput state={{ projectForm, setProjectForm }} value="tussenwoning" translationPath={translationPath} />
-            <SingleNumberInput state={{ projectForm, setProjectForm }} value="tweeondereenkap" translationPath={translationPath} />
-            <SingleNumberInput state={{ projectForm, setProjectForm }} value="portiekflat" translationPath={translationPath} />
-            <SingleNumberInput state={{ projectForm, setProjectForm }} value="hoekwoning" translationPath={translationPath} />
-            <SingleNumberInput state={{ projectForm, setProjectForm }} value="vrijstaand" translationPath={translationPath} />
+            <SingleNumberInput state={{ projectForm, setProjectForm, edit, editForm }} value="tussenwoning" translationPath={translationPath} />
+            <SingleNumberInput state={{ projectForm, setProjectForm, edit, editForm }} value="tweeondereenkap" translationPath={translationPath} />
+            <SingleNumberInput state={{ projectForm, setProjectForm, edit, editForm }} value="portiekflat" translationPath={translationPath} />
+            <SingleNumberInput state={{ projectForm, setProjectForm, edit, editForm }} value="hoekwoning" translationPath={translationPath} />
+            <SingleNumberInput state={{ projectForm, setProjectForm, edit, editForm }} value="vrijstaand" translationPath={translationPath} />
             <SingleNumberInput
-                state={{ projectForm, setProjectForm }}
+                state={{ projectForm, setProjectForm, edit, editForm }}
                 value="gallerijflat"
                 translationPath="createProject.houseBlocksForm.physicalAppearance"
             />

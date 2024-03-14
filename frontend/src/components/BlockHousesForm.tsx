@@ -68,7 +68,7 @@ export const BlockHousesForm = ({ projectDetailHouseBlock, editForm }: Props) =>
             </Grid>
             <Grid container spacing={2} alignItems="stretch" mt={0.5}>
                 <Grid item xs={12} md={4}>
-                    <PhysicalAppeareanceGroup projectForm={projectForm} setProjectForm={setProjectForm} />
+                    <PhysicalAppeareanceGroup projectForm={projectForm} setProjectForm={setProjectForm} edit={edit} editForm={editForm} />
                 </Grid>
                 <Grid item xs={12} md={4}>
                     <PurposeGroup projectForm={projectForm} setProjectForm={setProjectForm} />
