@@ -79,7 +79,7 @@ public class ProjectService {
 
     public Project createProject(VngRepository repo, UUID loggedInUserUuid, ProjectMinimalSnapshotModel projectData, ZonedDateTime now)
             throws VngServerErrorException, VngBadRequestException {
-        var user = repo.findById(User.class, loggedInUserUuid);
+        var user = repo.getReferenceById(User.class, loggedInUserUuid);
 
         var project = new Project();
         repo.persist(project);
