@@ -20,7 +20,12 @@ export const GeneralInformationGroup = ({ projectForm, setProjectForm, edit, edi
             <Typography fontWeight={600} mb={2}>
                 {t("wizard.houseBlocks.generalInformation.title")}
             </Typography>
-            <NameInput edit={edit} editForm={editForm} projectForm={projectForm} setProjectForm={setProjectForm} />
+            <NameInput
+                edit={edit}
+                editForm={editForm}
+                houseblockName={projectForm.houseblockName}
+                upDateHouseBlockName={(newValue: string) => setProjectForm({ ...projectForm, houseblockName: newValue })}
+            />
             <SizeInput edit={edit} editForm={editForm} projectForm={projectForm} setProjectForm={setProjectForm} />
             <StartDatePicker edit={edit} editForm={editForm} projectForm={projectForm} setProjectForm={setProjectForm} />
             <EndDatePicker edit={edit} editForm={editForm} projectForm={projectForm} setProjectForm={setProjectForm} />
