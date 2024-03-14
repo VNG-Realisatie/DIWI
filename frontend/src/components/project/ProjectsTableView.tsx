@@ -68,6 +68,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const [showDialog, setShowDialog] = useState(false);
     const [filterModel, setFilterModel] = useState<GridFilterModel>();
     const [filterUrl, setFilterUrl] = useState("");
+    const [query, setQuery] = useState("");
 
     const isFilteredUrl = useCallback(() => {
         const queryParams = ["pageNumber", "pageSize", "filterColumn", "filterCondition", "filterValue"];
@@ -95,7 +96,6 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
 
                 return { field, operator, value };
             });
-            console.log(filterItems);
             const filter = {
                 items: filterItems,
                 logicOperator: GridLogicOperator.And,
@@ -109,25 +109,28 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     });
 
     const updateUrl = useCallback(() => {
-        if (filterModel) {
-            const query = queryString.stringify({
+        if (filterModel && filterModel.items && filterModel.items.length >= 2) {
+            const updatedQuery = queryString.stringify({
                 filterColumn: filterModel.items[0].value,
-                filterCondition: filterModel.items[0].operator === "isAnyOf" ? "ANY_OF" : "CONTAINS",
-                filterValue: filterModel.items[0].operator === "isAnyOf" ? filterModel.items[2].value?.join(",") : filterModel.items[2].value,
+                filterCondition: filterModel.items[1].operator === "isAnyOf" ? "ANY_OF" : "CONTAINS",
+                filterValue: filterModel.items[1].operator === "isAnyOf" ? filterModel.items[2].value.join(",") : filterModel.items[2].value,
             });
-            console.log(query);
-            const url = `?pageNumber=${paginationInfo.page}&pageSize=${paginationInfo.pageSize}&${query}`;
-            setFilterUrl(url);
+            setQuery(updatedQuery);
         }
-    }, [filterModel, paginationInfo.page, paginationInfo.pageSize]);
+        const url = `?pageNumber=${paginationInfo.page}&pageSize=${paginationInfo.pageSize}&${query}`;
+        setFilterUrl(url);
+        // const test = { a: 1, b: 2 };
+        // const parsed = queryString.stringify(test);
+        // console.log(parsed);
+    }, [filterModel, paginationInfo.page, paginationInfo.pageSize, query]);
 
     useEffect(() => {
         updateUrl();
-    }, [updateUrl]);
+    }, [updateUrl, filterModel]);
 
     useEffect(() => {
         navigate(`/projects/table${filterUrl}`);
-    }, [filterUrl, navigate]);
+    }, [filterUrl, navigate, filterModel]);
 
     const handleExport = (params: GridRowParams) => {
         const clickedRow: RowData = params.row as RowData;
@@ -418,10 +421,10 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 };
                 setFilterModel(updatedFilterModel);
             }
-
-            if (newModel.items.length > 0) {
-                setFilterModel(newModel);
-            }
+        }
+        if (newModel.items.length > 0) {
+            console.log(newModel);
+            setFilterModel(newModel);
         }
     };
 
