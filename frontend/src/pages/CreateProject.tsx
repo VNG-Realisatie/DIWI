@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Stepper, Step, StepLabel, Button, Box, Stack, Typography } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
@@ -8,10 +8,11 @@ import { SelectFromMapForm } from "../components/SelectFromMapForm";
 import { TimelineForm } from "../components/TimelineForm";
 import useAlert from "../hooks/useAlert";
 import { useTranslation } from "react-i18next";
-import { updateProject, createProject, addHouseBlock } from "../api/projectsServices";
+import { updateProject, createProject, addHouseBlock, getProject } from "../api/projectsServices";
 import { useParams, useNavigate } from "react-router-dom";
 import { HouseBlock } from "../components/project-wizard/house-blocks/types";
 import { emptyHouseBlockForm } from "../components/project-wizard/house-blocks/constants";
+import dayjs from "dayjs";
 
 const CustomStepIcon: React.FC<CustomStepIconProps> = ({ active, completed }) => {
     if (completed) {
@@ -89,6 +90,11 @@ export const CreateProject = () => {
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
     console.log(createProjectForm);
+    useEffect(() => {
+        if (id) {
+            getProject(id).then((res: any) => setCreateProjectForm({ ...res, startDate: dayjs(res.startDate), endDate: dayjs(res.endDate) }));
+        }
+    }, [id]);
     return (
         //Components for wizard steps
         <Box mb={7} border="solid 2px #ddd" p={4}>
