@@ -192,11 +192,9 @@ export const ProjectsWithHouseBlock = () => {
 
     const handleProjectSave = () => {
         updateProjects(updatedProjectForm)
-            .then((res) => {
-                if (res.ok) {
-                    setProjectEditable(false);
-                    updateProject();
-                }
+            .then(() => {
+                setProjectEditable(false);
+                updateProject();
             })
             .catch((error) => {
                 setAlert(error.message, "error");
