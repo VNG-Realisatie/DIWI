@@ -88,34 +88,43 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     }, [isFilteredUrl, location.search, paginationInfo.page, paginationInfo.pageSize]);
 
     useEffect(() => {
-        const applyFilter = () => {
-            if (!isFilteredUrl()) return;
-
+        if (isFilteredUrl()) {
             const filterValues = queryString.parse(location.search);
+
             const filterItems = Object.values(filterValues);
-
-            if (filterItems.length < 3) return;
-
-            const field = filterItems[0] as string;
-            const operator = filterItems[1] === "ANY_OF" ? "isAnyOf" : "contains";
             const values = filterItems.slice(2, -2); //because 2 first are related to column and operator, two last are page number and size
+            //when I refactor it to value: values.length === 1 ? (values[0] as string) : (values as string[]), it doesnt work anymore. to consider later
+            if (filterItems.length >= 3) {
+                let filter;
+                if (values.length === 1) {
+                    filter = {
+                        items: [
+                            {
+                                field: filterItems[0] as string,
+                                operator: filterItems[1] === "ANY_OF" ? "isAnyOf" : "contains",
+                                value: values[0] as string,
+                            },
+                        ],
+                        logicOperator: GridLogicOperator.And,
+                    };
+                } else {
+                    filter = {
+                        items: [
+                            {
+                                field: filterItems[0] as string,
+                                operator: filterItems[1] === "ANY_OF" ? "isAnyOf" : "contains",
+                                value: values as string[],
+                            },
+                        ],
+                        logicOperator: GridLogicOperator.And,
+                    };
 
-            const filter = {
-                items: [
-                    {
-                        field,
-                        operator,
-                        value: values.length === 1 ? (values[0] as string) : (values as string[]),
-                    },
-                ],
-                logicOperator: GridLogicOperator.And,
-            };
-
-            setFilterModel(filter);
-        };
-
-        applyFilter();
+                    setFilterModel(filter);
+                }
+            }
+        }
     }, [isFilteredUrl, location.search]);
+
     const rows = projects.map((p) => {
         return { ...p, id: p.projectId };
     });
