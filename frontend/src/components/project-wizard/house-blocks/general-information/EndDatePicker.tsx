@@ -21,7 +21,9 @@ export const EndDatePicker = ({ houseBlockEndDate, updateHouseBlockEndDate, edit
                     <Typography>{houseBlockEndDate}</Typography>
                 </InputContainer>
             )}
-            {!edit && !editForm && <DatePicker value={houseBlockEndDate ? dayjs(houseBlockEndDate) : null} onChange={updateHouseBlockEndDate} />}
+            {!edit && !editForm && (
+                <DatePicker format="DD/MM/YYYY" value={houseBlockEndDate ? dayjs(houseBlockEndDate) : null} onChange={updateHouseBlockEndDate} />
+            )}
         </Stack>
     );
 };
