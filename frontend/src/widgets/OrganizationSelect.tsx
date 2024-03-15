@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import ProjectContext from "../context/ProjectContext";
-import { AvatarGroup, TextField, Autocomplete, Checkbox, SelectChangeEvent, Typography, Stack, Box, OutlinedInput } from "@mui/material";
+import { AvatarGroup, TextField, Autocomplete, Checkbox } from "@mui/material";
 import { OrganizationUserAvatars } from "../components/OrganizationUserAvatars";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
@@ -14,9 +14,10 @@ type Props = {
     projectEditable: boolean;
     owner: Organization[];
     setOwner: (owner: Organization[]) => void;
+    isLeader?: boolean;
 };
 
-export const OrganizationSelect = ({ projectEditable, owner, setOwner }: Props) => {
+export const OrganizationSelect = ({ projectEditable, owner, setOwner, isLeader }: Props) => {
     const { selectedProject } = useContext(ProjectContext);
     const [ownerOptions, setOwnerOptions] = useState<Organization[]>();
 
@@ -25,11 +26,19 @@ export const OrganizationSelect = ({ projectEditable, owner, setOwner }: Props) 
     }, []);
 
     if (!projectEditable) {
-        return (
-            <AvatarGroup max={3}>
-                <OrganizationUserAvatars organizations={selectedProject?.projectOwners} />
-            </AvatarGroup>
-        );
+        if (isLeader) {
+            return (
+                <AvatarGroup max={3}>
+                    <OrganizationUserAvatars organizations={selectedProject?.projectLeaders} />
+                </AvatarGroup>
+            );
+        } else {
+            return (
+                <AvatarGroup max={3}>
+                    <OrganizationUserAvatars organizations={selectedProject?.projectOwners} />
+                </AvatarGroup>
+            );
+        }
     } else {
         // return <TextField disabled size="small" id="organizationName" variant="outlined" />;
         return (
@@ -46,7 +55,7 @@ export const OrganizationSelect = ({ projectEditable, owner, setOwner }: Props) 
                         <Checkbox icon={icon} checkedIcon={checkedIcon} style={{ marginRight: 8 }} checked={selected} />
                         {option.name}
                         <AvatarGroup max={3}>
-                            <OrganizationUserAvatars organizations={option.users} />
+                            <OrganizationUserAvatars organizations={[option]} />
                         </AvatarGroup>
                     </li>
                 )}

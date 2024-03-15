@@ -24,7 +24,6 @@ import { WijkEditForm } from "./WijkEditForm";
 import { defaultColors } from "../../ColorSelector";
 import { BlockPicker, ColorResult } from "react-color";
 import { CellContainer } from "./CellContainer";
-import { OrganizationUserAvatars } from "../../OrganizationUserAvatars";
 import { OrganizationSelect } from "../../../widgets/OrganizationSelect";
 import { PlanStatusOptions, PlanTypeOptions } from "../../../types/enums";
 import { PriorityEditForm } from "./PriorityEditForm";
@@ -45,6 +44,7 @@ export const ProjectsWithHouseBlock = () => {
     const [openColorDialog, setOpenColorDialog] = useState(false);
     const [name, setName] = useState<string | null>();
     const [owner, setOwner] = useState<Organization[]>([]);
+    const [leader, setLeader] = useState<Organization[]>([]);
     const [startDate, setStartDate] = useState<Dayjs | null>();
     const [endDate, setEndDate] = useState<Dayjs | null>();
     const [projectPhase, setProjectPhase] = useState<string | undefined>();
@@ -84,7 +84,6 @@ export const ProjectsWithHouseBlock = () => {
 
     const updateChanges = useCallback(() => {
         setName(selectedProject?.projectName);
-        //add owner later
         setOwner(selectedProject?.projectOwners ?? []);
         setStartDate(dayjs(formatDate(selectedProject?.startDate)));
         setEndDate(dayjs(formatDate(selectedProject?.endDate)));
@@ -94,7 +93,7 @@ export const ProjectsWithHouseBlock = () => {
         setSelectedMunicipality(selectedProject?.municipality ?? []);
         setSelectedMunicipalityRole(selectedProject?.municipalityRole ?? []);
         setConfidentialityLevel(selectedProject?.confidentialityLevel);
-        //add leader later
+        setLeader(selectedProject?.projectLeaders ?? []);
         setPlanType(selectedProject?.planType?.map((type) => type) ?? []);
         setPlanStatus(selectedProject?.planningPlanStatus?.map((type) => type) ?? []);
         setSelectedWijk(selectedProject?.wijk ?? []);
@@ -107,6 +106,7 @@ export const ProjectsWithHouseBlock = () => {
         selectedProject?.municipality,
         selectedProject?.municipalityRole,
         selectedProject?.planType,
+        selectedProject?.projectLeaders,
         selectedProject?.planningPlanStatus,
         selectedProject?.priority?.value,
         selectedProject?.projectColor,
@@ -148,6 +148,8 @@ export const ProjectsWithHouseBlock = () => {
         projectPhase: projectPhase,
         planningPlanStatus: planStatus,
         municipalityRole: selectedMunicipalityRole,
+        projectOwner: owner,
+        projectLeader: leader,
         //Will be implemented later
         // projectOwners: [
         //     {
@@ -348,10 +350,12 @@ export const ProjectsWithHouseBlock = () => {
                             <ConfidentialityLevelEditForm confidentialityLevel={confidentialityLevel} setConfidentialityLevel={setConfidentialityLevel} />
                         )}
                     </Grid>
-                    <Grid item xs={12} md={1}>
+                    <Grid item sm={2}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.projectLeader")}</Typography>
 
-                        {!projectEditable ? (
+                        <OrganizationSelect projectEditable={projectEditable} owner={leader} setOwner={setLeader} isLeader={true} />
+
+                        {/* {!projectEditable ? (
                             <Box sx={{ border: "solid 1px #ddd", overflow: "hidden" }}>
                                 <AvatarGroup max={3}>
                                     <OrganizationUserAvatars organizations={selectedProject?.projectLeaders} />
@@ -360,7 +364,7 @@ export const ProjectsWithHouseBlock = () => {
                         ) : (
                             // TODO LATER
                             <TextField disabled size="small" id="outlined-basic" variant="outlined" />
-                        )}
+                        )} */}
                     </Grid>
                     <Grid item xs={12} md={4}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.planningPlanStatus")}</Typography>
