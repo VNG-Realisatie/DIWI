@@ -63,7 +63,7 @@ export const CreateProject = () => {
                 setValidationError(false);
                 const project = await createProject(temporaryCreateForm); //TODO later it will be change with createProjectForm
 
-                navigate(`/project/${project.projectId}`);
+                navigate(`/project/create/${project.projectId}`);
                 setAlert(t("createProject.successfullySaved"), "success");
             }
         } catch (error: any) {
@@ -73,11 +73,7 @@ export const CreateProject = () => {
     };
 
     const handleNext = async () => {
-        const res = await handleSave();
-        if (res) {
-            navigate(`/projects/${id}`); //before the next screen is implemented
-            // setActiveStep((prevActiveStep) => prevActiveStep + 1);
-        }
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
     };
 
     const handleBack = () => {
