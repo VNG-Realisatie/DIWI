@@ -32,6 +32,7 @@ export const CreateProject = () => {
     const [createFormHouseBlock, setCreateFormHouseBlock] = useState<HouseBlock>(emptyHouseBlockForm);
     const [activeStep, setActiveStep] = useState<number>(0);
     const [validationError, setValidationError] = useState(false);
+    const [saved, setSaved] = useState(false);
 
     const { id } = useParams();
     const navigate = useNavigate();
@@ -64,6 +65,7 @@ export const CreateProject = () => {
                 };
                 setValidationError(false);
                 const project = await createProject(temporaryCreateForm); //TODO later it will be change with createProjectForm
+                setSaved(true);
 
                 navigate(`/project/create/${project.projectId}`);
                 setAlert(t("createProject.successfullySaved"), "success");
@@ -117,7 +119,7 @@ export const CreateProject = () => {
                 <Button variant="contained" onClick={() => handleBack()} sx={{ mr: 2 }} disabled={activeStep === 0}>
                     {t("generic.previous")}
                 </Button>
-                <Button variant="contained" onClick={() => handleNext()}>
+                <Button variant="contained" onClick={() => handleNext()} disabled={activeStep === 0 && !saved}>
                     {t("generic.next")}
                 </Button>
             </Stack>
