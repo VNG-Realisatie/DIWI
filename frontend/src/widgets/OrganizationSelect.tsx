@@ -40,7 +40,6 @@ export const OrganizationSelect = ({ projectEditable, owner, setOwner, isLeader 
             );
         }
     } else {
-        // return <TextField disabled size="small" id="organizationName" variant="outlined" />;
         return (
             <Autocomplete
                 multiple
