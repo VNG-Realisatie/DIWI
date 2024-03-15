@@ -73,7 +73,7 @@ public class Project extends IdSuperclass {
     @JsonIgnoreProperties("project")
     @OneToMany(mappedBy="project", fetch = FetchType.LAZY)
     @Filter(name = GenericRepository.CURRENT_DATA_FILTER, condition = "change_end_date IS NULL")
-    private List<Woningblok> woningblokken;
+    private List<Houseblock> houseblocks;
 
     @OneToMany(mappedBy="project", fetch = FetchType.LAZY)
     @Filter(name = GenericRepository.CURRENT_DATA_FILTER, condition = "change_end_date IS NULL")

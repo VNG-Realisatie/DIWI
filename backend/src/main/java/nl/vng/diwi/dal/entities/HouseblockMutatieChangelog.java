@@ -17,24 +17,23 @@ import lombok.NoArgsConstructor;
 @Getter
 @Setter
 @NoArgsConstructor
-public class WoningblokMutatieChangelog extends MilestoneChangeDataSuperclass {
+public class HouseblockMutatieChangelog extends MilestoneChangeDataSuperclass {
 
-    @JsonIgnoreProperties("mutaties")
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "woningblok_id")
-    private Woningblok woningblok;
+    private Houseblock houseblock;
 
     @Column(name = "bruto_plancapaciteit")
-    private Integer amountCreated;
+    private Integer grossPlanCapacity;
 
     @Column(name = "sloop")
-    private Integer amountRemoved;
+    private Integer demolition;
 
     @Column(name = "netto_plancapaciteit")
-    private Integer totalAmount;
+    private Integer netPlanCapacity;
 
     @JsonIgnoreProperties("mutatieChangelog")
     @OneToMany(mappedBy="mutatieChangelog", fetch = FetchType.EAGER)
-    private List<WoningblokMutatieChangelogSoortValue> type;
+    private List<HouseblockMutatieChangelogTypeValue> type;
 
 }

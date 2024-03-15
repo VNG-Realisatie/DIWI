@@ -1,5 +1,6 @@
 package nl.vng.diwi.models.superclasses;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -23,9 +24,6 @@ public class ProjectMinimalSnapshotModel extends DatedDataModelSuperClass {
     private UUID projectId;
 
     @JsonProperty(required = true)
-    private UUID projectStateId;
-
-    @JsonProperty(required = true)
     private String projectName;
 
     @JsonProperty(required = true)
@@ -38,10 +36,12 @@ public class ProjectMinimalSnapshotModel extends DatedDataModelSuperClass {
     private ProjectPhase projectPhase;
 
     public String validate() {
-        if (projectId == null) {
-            return "projectId can not be null";
-        } else if (projectStateId == null) {
-            return "projectStateId can not be null";
+        if (getStartDate() == null) {
+            return "startDate can not be null";
+        } else if (getEndDate() == null) {
+            return "endDate can not be null";
+        } else if (!getEndDate().isAfter(LocalDate.now())) {
+            return "endDate must be in the future";
         } else if (projectName == null) {
             return "projectName can not be null";
         } else if (projectColor == null) {
