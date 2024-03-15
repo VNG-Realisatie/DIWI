@@ -37,13 +37,15 @@ export const GeneralInformationGroup = ({ projectForm, setProjectForm, edit, edi
                 edit={edit}
                 editForm={editForm}
                 houseBlockStartDate={projectForm.startDate}
-                updateHouseBlockStartDate={(e: Dayjs | null) => setProjectForm({ ...projectForm, startDate: e instanceof Date ? e.toISOString() : null })}
+                updateHouseBlockStartDate={(e: Dayjs | null) => {
+                    setProjectForm({ ...projectForm, startDate: e ? e.toISOString() : null });
+                }}
             />
             <EndDatePicker
                 edit={edit}
                 editForm={editForm}
                 houseBlockEndDate={projectForm.endDate}
-                updateHouseBlockEndDate={(e: Dayjs | null) => setProjectForm({ ...projectForm, endDate: e instanceof Date ? e.toISOString() : null })}
+                updateHouseBlockEndDate={(e: Dayjs | null) => setProjectForm({ ...projectForm, endDate: e ? e.toISOString() : null })}
             />
         </WizardCard>
     );

@@ -8,8 +8,10 @@ import { SelectFromMapForm } from "../components/SelectFromMapForm";
 import { TimelineForm } from "../components/TimelineForm";
 import useAlert from "../hooks/useAlert";
 import { useTranslation } from "react-i18next";
-import { updateProject, createProject } from "../api/projectsServices";
+import { updateProject, createProject, addHouseBlock } from "../api/projectsServices";
 import { useParams, useNavigate } from "react-router-dom";
+import { HouseBlock } from "../components/project-wizard/house-blocks/types";
+import { emptyHouseBlockForm } from "../components/project-wizard/house-blocks/constants";
 
 const CustomStepIcon: React.FC<CustomStepIconProps> = ({ active, completed }) => {
     if (completed) {
@@ -27,7 +29,7 @@ interface CustomStepIconProps {
 }
 export const CreateProject = () => {
     const [createProjectForm, setCreateProjectForm] = useState<any>(null);
-
+    const [createFormHouseBlock, setCreateFormHouseBlock] = useState<HouseBlock>(emptyHouseBlockForm);
     const [activeStep, setActiveStep] = useState<number>(0);
     const [validationError, setValidationError] = useState(false);
 
@@ -73,6 +75,11 @@ export const CreateProject = () => {
     };
 
     const handleNext = async () => {
+        if (activeStep === 1) {
+            await addHouseBlock({ ...createFormHouseBlock, projectId: id });
+            setActiveStep((prevActiveStep) => prevActiveStep + 1);
+            return;
+        }
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
     };
 
@@ -93,7 +100,9 @@ export const CreateProject = () => {
             {activeStep === 0 && (
                 <ProjectInformationForm validationError={validationError} setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />
             )}
-            {activeStep === 1 && <BlockHousesForm editForm={false} />}
+            {activeStep === 1 && (
+                <BlockHousesForm editForm={false} createFormHouseBlock={createFormHouseBlock} setCreateFormHouseBlock={setCreateFormHouseBlock} />
+            )}
             {activeStep === 2 && <SelectFromMapForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />}
             {activeStep === 3 && <TimelineForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />}
             {activeStep === 4 && (

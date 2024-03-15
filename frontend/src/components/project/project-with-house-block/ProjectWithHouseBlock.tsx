@@ -30,6 +30,8 @@ import { SelectModel, getProjectHouseBlocks, updateProjects } from "../../../api
 import { HouseBlock } from "../../project-wizard/house-blocks/types";
 import { CreateHouseBlockDialog } from "./CreateHouseBlockDialog";
 import { HouseBlocksList } from "./HouseBlocksList";
+import { emptyHouseBlockForm } from "../../project-wizard/house-blocks/constants";
+
 export const columnTitleStyle = {
     border: "solid 1px #ddd",
     p: 0.6,
@@ -57,6 +59,7 @@ export const ProjectsWithHouseBlock = () => {
     const [houseBlocks, setHouseBlocks] = useState<HouseBlock[]>();
     const [openHouseBlockDialog, setOpenHouseBlockDialog] = useState(false);
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+    const [createFormHouseBlock, setCreateFormHouseBlock] = useState<HouseBlock>(emptyHouseBlockForm);
     const handleStartDateChange = (newValue: Dayjs | null) => setStartDate(newValue);
 
     const handleEndDateChange = (newValue: Dayjs | null) => setEndDate(newValue);
@@ -442,7 +445,12 @@ export const ProjectsWithHouseBlock = () => {
                         <BlockPicker colors={defaultColors} color={selectedProjectColor} onChange={handleColorChange} />
                     </Popover>
                 )}
-                <CreateHouseBlockDialog openHouseBlockDialog={openHouseBlockDialog} setOpenHouseBlockDialog={setOpenHouseBlockDialog} />
+                <CreateHouseBlockDialog
+                    openHouseBlockDialog={openHouseBlockDialog}
+                    setOpenHouseBlockDialog={setOpenHouseBlockDialog}
+                    createFormHouseBlock={createFormHouseBlock}
+                    setCreateFormHouseBlock={setCreateFormHouseBlock}
+                />
             </Stack>
         </Stack>
     );

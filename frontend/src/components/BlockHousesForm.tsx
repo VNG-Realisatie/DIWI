@@ -18,13 +18,29 @@ import { t } from "i18next";
 type Props = {
     projectDetailHouseBlock?: HouseBlock;
     editForm: boolean;
+    createFormHouseBlock: HouseBlock;
+    setCreateFormHouseBlock: (hb: HouseBlock) => void;
 };
 
-export const BlockHousesForm = ({ projectDetailHouseBlock, editForm }: Props) => {
+export const BlockHousesForm = ({ projectDetailHouseBlock, editForm, createFormHouseBlock, setCreateFormHouseBlock }: Props) => {
     const [projectForm, setProjectForm] = useState<HouseBlock>(projectDetailHouseBlock ? projectDetailHouseBlock : emptyHouseBlockForm);
     const [edit, setEdit] = useState(false);
 
     const oldForm = projectDetailHouseBlock && { ...projectDetailHouseBlock };
+    const defineProjectState = () => {
+        if (editForm) {
+            return projectForm;
+        } else {
+            return createFormHouseBlock;
+        }
+    };
+    const defineProjectUpdateState = () => {
+        if (editForm) {
+            return setProjectForm;
+        } else {
+            return setCreateFormHouseBlock;
+        }
+    };
     return (
         <Box mt={4}>
             {editForm && (
@@ -55,34 +71,34 @@ export const BlockHousesForm = ({ projectDetailHouseBlock, editForm }: Props) =>
             )}
             <Grid container spacing={2} alignItems="stretch">
                 <Grid item xs={12} md={8}>
-                    <GeneralInformationGroup projectForm={projectForm} setProjectForm={setProjectForm} edit={edit} editForm={editForm} />
+                    <GeneralInformationGroup projectForm={defineProjectState()} setProjectForm={defineProjectUpdateState()} edit={edit} editForm={editForm} />
                 </Grid>
                 <Grid item xs={12} md={4}>
-                    <MutationInformationGroup projectForm={projectForm} setProjectForm={setProjectForm} edit={edit} editForm={editForm} />
+                    <MutationInformationGroup projectForm={defineProjectState()} setProjectForm={defineProjectUpdateState()} edit={edit} editForm={editForm} />
                 </Grid>
             </Grid>
             <Grid container mt={2}>
                 <Grid item xs={12}>
-                    <OwnershipInformationGroup projectForm={projectForm} setProjectForm={setProjectForm} edit={edit} editForm={editForm} />
+                    <OwnershipInformationGroup projectForm={defineProjectState()} setProjectForm={defineProjectUpdateState()} edit={edit} editForm={editForm} />
                 </Grid>
             </Grid>
             <Grid container spacing={2} alignItems="stretch" mt={0.5}>
                 <Grid item xs={12} md={4}>
-                    <PhysicalAppeareanceGroup projectForm={projectForm} setProjectForm={setProjectForm} edit={edit} editForm={editForm} />
+                    <PhysicalAppeareanceGroup projectForm={defineProjectState()} setProjectForm={defineProjectUpdateState()} edit={edit} editForm={editForm} />
                 </Grid>
                 <Grid item xs={12} md={4}>
-                    <PurposeGroup projectForm={projectForm} setProjectForm={setProjectForm} edit={edit} editForm={editForm} />
+                    <PurposeGroup projectForm={defineProjectState()} setProjectForm={defineProjectUpdateState()} edit={edit} editForm={editForm} />
                 </Grid>
                 <Grid item xs={12} md={4}>
-                    <HouseTypeGroup projectForm={projectForm} setProjectForm={setProjectForm} edit={edit} editForm={editForm} />
+                    <HouseTypeGroup projectForm={defineProjectState()} setProjectForm={defineProjectUpdateState()} edit={edit} editForm={editForm} />
                 </Grid>
             </Grid>
             <Grid container spacing={2} alignItems="stretch" mt={0.5}>
                 <Grid item xs={12} md={8}>
-                    <GroundPositionGroup projectForm={projectForm} setProjectForm={setProjectForm} edit={edit} editForm={editForm} />
+                    <GroundPositionGroup projectForm={defineProjectState()} setProjectForm={defineProjectUpdateState()} edit={edit} editForm={editForm} />
                 </Grid>
                 <Grid item xs={12} md={4}>
-                    <Programming projectForm={projectForm} setProjectForm={setProjectForm} edit={edit} editForm={editForm} />
+                    <Programming projectForm={defineProjectState()} setProjectForm={defineProjectUpdateState()} edit={edit} editForm={editForm} />
                 </Grid>
             </Grid>
         </Box>
