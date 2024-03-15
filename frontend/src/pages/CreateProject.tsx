@@ -52,8 +52,16 @@ export const CreateProject = () => {
                     return true;
                 }
             } else {
+                const temporaryCreateForm = {
+                    projectName: createProjectForm.projectName,
+                    projectColor: createProjectForm.projectColor,
+                    projectPhase: createProjectForm.projectPhase,
+                    confidentialityLevel: createProjectForm.confidentialityLevel,
+                    startDate: createProjectForm.startDate,
+                    endDate: createProjectForm.endDate,
+                };
                 setValidationError(false);
-                const project = await createProject(createProjectForm);
+                const project = await createProject(temporaryCreateForm); //TODO later it will be change with createProjectForm
 
                 navigate(`/project/${project.projectId}`);
                 setAlert(t("createProject.successfullySaved"), "success");

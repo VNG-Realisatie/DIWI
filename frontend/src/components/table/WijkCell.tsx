@@ -33,7 +33,7 @@ export const WijkCell = ({ cellValues, selectedWijk, handleWijkChange }: Props) 
             defaultOptionValues={defaultPlanTypes ? defaultPlanTypes : []}
             inputLabel={t("projects.tableColumns.wijk")}
             placeHolder={t("projects.tableColumns.selectWijk")}
-            handleChange={(_: React.ChangeEvent<{}>, values: OptionType[]) => handleWijkChange(_, values, cellValues.row?.projectId)}
+            handleChange={(_: React.ChangeEvent<{}>, values: OptionType[]) => handleWijkChange(_, values, cellValues.row?.projectId ?? "")}
             width="300px"
         />
     );

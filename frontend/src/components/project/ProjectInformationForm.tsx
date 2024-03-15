@@ -1,32 +1,13 @@
-import {
-    Autocomplete,
-    Box,
-    Checkbox,
-    InputLabel,
-    ListItemText,
-    MenuItem,
-    OutlinedInput,
-    Select,
-    SelectChangeEvent,
-    Stack,
-    TextField,
-    Typography,
-} from "@mui/material";
+import { Autocomplete, Box, InputLabel, ListItemText, MenuItem, OutlinedInput, Select, SelectChangeEvent, Stack, TextField, Typography } from "@mui/material";
 import ColorSelector from "../ColorSelector";
 import { DatePicker } from "@mui/x-date-pickers";
 
-import rolMunicipality from "../../api/json/gemeente_rol.json";
 import projectLead from "../../api/json/projectleider.json";
-import projectFaseList from "../../api/json/enums/project_phase.json";
-import planologischePlanStatus from "../../api/json/enums/planologische_planstatus.json";
-import vertrouwlijkheidsniveau from "../../api/json/enums/confidentiality.json";
-import priorityOption from "../../api/json/priorisering.json";
 import eigenaarOption from "../../api/json/eigenaar.json";
 import { useTranslation } from "react-i18next";
 import { MenuProps } from "../../utils/menuProps";
 import { confidentialityLevelOptions, planTypeOptions, planningPlanStatus, projectPhaseOptions } from "../table/constants";
 import { Dayjs } from "dayjs";
-import { PriorityEditForm } from "./project-with-house-block/PriorityEditForm";
 import { useEffect, useState } from "react";
 import { getMunicipalityRoleList, getPriorityList } from "../../api/projectsTableServices";
 import { SelectModel } from "../../api/projectsServices";
@@ -226,13 +207,14 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                 <Stack flex={1}>
                     <InputLabel id="projectLeader">{t("createProject.informationForm.projectLeader")}</InputLabel>
                     <Select
-                        disabled //implement later
                         labelId="projectLeader"
                         size="small"
                         id="project-leader"
                         value={createProjectForm ? createProjectForm.projectLeaders : ""}
                         label={t("createProject.informationForm.projectLeader")}
-                        onChange={(e) =>
+                        onChange={(
+                            e, //TODO later
+                        ) =>
                             setCreateProjectForm({
                                 ...createProjectForm,
                                 projectLeaders: [e.target.value],
@@ -300,14 +282,16 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         sx={{ width: "370px" }}
                         labelId="leader"
                         id="owner"
+                        size="small"
                         value={createProjectForm ? createProjectForm.projectOwners : ""}
                         label={t("createProject.informationForm.owner")}
-                        onChange={(e) =>
+                        onChange={(e) => {
+                            //todo later
                             setCreateProjectForm({
                                 ...createProjectForm,
                                 projectOwners: [e.target.value],
-                            })
-                        }
+                            });
+                        }}
                     >
                         {eigenaarOption.map((lead) => {
                             return (
