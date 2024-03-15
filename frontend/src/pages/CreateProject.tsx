@@ -86,7 +86,9 @@ export const CreateProject = () => {
                     </Step>
                 ))}
             </Stepper>
-            {activeStep === 0 && <ProjectInformationForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />}
+            {activeStep === 0 && (
+                <ProjectInformationForm validationError={validationError} setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />
+            )}
             {activeStep === 1 && <BlockHousesForm editForm={false} />}
             {activeStep === 2 && <SelectFromMapForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />}
             {activeStep === 3 && <TimelineForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />}
