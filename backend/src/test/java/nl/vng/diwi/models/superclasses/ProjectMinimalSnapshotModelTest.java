@@ -2,6 +2,7 @@ package nl.vng.diwi.models.superclasses;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDate;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -57,6 +58,8 @@ class ProjectMinimalSnapshotModelTest {
         model.setProjectColor("#abcdef");
         model.setConfidentialityLevel(Confidentiality.OPENBAAR);
         model.setProjectPhase(ProjectPhase._1_INITIATIEFFASE);
+        model.setStartDate(LocalDate.now().minusDays(3));
+        model.setEndDate(LocalDate.now().plusDays(3));
         return model;
     }
 
