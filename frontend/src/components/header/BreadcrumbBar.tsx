@@ -1,7 +1,6 @@
 import React from "react";
-import { Stack, Typography, Box } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import { Link, useLocation } from "react-router-dom";
-import Search from "../Search";
 
 interface titleLink {
     title: string;
@@ -17,10 +16,7 @@ const BreadcrumbBar: React.FC<BreadcrumbBarProps> = ({ pageTitle, links }) => {
     const location = useLocation();
     return (
         <Stack direction="row" justifyContent="flex-start" alignItems="flex-start">
-            <Box width="25%">
-                <Search label="Zoeken..." searchList={[]} isDetailSearch={false} />
-            </Box>
-            <Stack width="75%" direction="row" alignItems="center" justifyContent="space-between" sx={{ backgroundColor: "#002C64", color: "#FFFFFF" }} p={1}>
+            <Stack width="100%" direction="row" alignItems="center" justifyContent="space-between" sx={{ backgroundColor: "#002C64", color: "#FFFFFF" }} p={1}>
                 <Stack direction="row">
                     {pageTitle}:{" "}
                     {links?.map((object, index) => (
