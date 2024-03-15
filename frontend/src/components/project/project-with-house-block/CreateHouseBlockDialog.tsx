@@ -2,6 +2,10 @@ import { Dialog, DialogContent, DialogActions, Button } from "@mui/material";
 import { t } from "i18next";
 import { BlockHousesForm } from "../../BlockHousesForm";
 import { HouseBlock } from "../../project-wizard/house-blocks/types";
+import { addHouseBlock } from "../../../api/projectsServices";
+import { useParams } from "react-router-dom";
+import useAlert from "../../../hooks/useAlert";
+import { emptyHouseBlockForm } from "../../project-wizard/house-blocks/constants";
 
 type Props = {
     openHouseBlockDialog: boolean;
@@ -10,14 +14,32 @@ type Props = {
     setCreateFormHouseBlock: (hb: HouseBlock) => void;
 };
 export const CreateHouseBlockDialog = ({ openHouseBlockDialog, setOpenHouseBlockDialog, createFormHouseBlock, setCreateFormHouseBlock }: Props) => {
+    const { id } = useParams();
+    const { setAlert } = useAlert();
     return (
         <Dialog open={openHouseBlockDialog} onClose={() => setOpenHouseBlockDialog(false)} maxWidth="xl">
             <DialogContent>
                 <BlockHousesForm editForm={false} setCreateFormHouseBlock={setCreateFormHouseBlock} createFormHouseBlock={createFormHouseBlock} />
             </DialogContent>
             <DialogActions>
-                <Button onClick={() => setOpenHouseBlockDialog(false)}>{t("generic.cancel")}</Button>
-                <Button onClick={() => console.log("add endpoint will be here")} autoFocus>
+                <Button variant="contained" color="error" onClick={() => setOpenHouseBlockDialog(false)}>
+                    {t("generic.cancel")}
+                </Button>
+                <Button
+                    variant="contained"
+                    color="success"
+                    onClick={async () => {
+                        const addedHouseBlock = await addHouseBlock({ ...createFormHouseBlock, projectId: id });
+                        if (addedHouseBlock) {
+                            setAlert(t("createProject.houseBlocksForm.notifications.successfullySaved"), "success");
+                            setOpenHouseBlockDialog(false);
+                            setCreateFormHouseBlock(emptyHouseBlockForm);
+                        } else {
+                            setAlert(t("createProject.houseBlocksForm.notifications.error"), "error");
+                        }
+                    }}
+                    autoFocus
+                >
                     {t("generic.save")}
                 </Button>
             </DialogActions>

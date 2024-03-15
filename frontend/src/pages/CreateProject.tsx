@@ -89,7 +89,6 @@ export const CreateProject = () => {
     const handleBack = () => {
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
-    console.log(createProjectForm);
     useEffect(() => {
         if (id) {
             getProject(id).then((res: any) => setCreateProjectForm({ ...res, startDate: dayjs(res.startDate), endDate: dayjs(res.endDate) }));

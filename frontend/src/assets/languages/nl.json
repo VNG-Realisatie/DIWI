@@ -113,7 +113,11 @@
         "students": "Studenten",
         "elderly": "Ouderen",
         "disabilityAndCare": "Gehandicapter en zorg",
-        "largeFamilies": "Grote gezinnen"
+        "largeFamilies": "Grote gezinnen",
+        "notifications": {
+          "successfullySaved": "Huizenblokken succesvol opgeslagen.",
+          "error":"Er is iets fout gegaan"
+        }
       },
       "selectMapForm": {
         "title": "Teken het project in op de kaart",
