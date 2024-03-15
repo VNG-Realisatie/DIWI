@@ -1,4 +1,4 @@
-import { AvatarGroup, Box, Grid, Popover, Stack, TextField, Tooltip, Typography } from "@mui/material";
+import { Box, Grid, Popover, Stack, TextField, Tooltip, Typography } from "@mui/material";
 import { MouseEvent, useCallback, useContext, useEffect, useState } from "react";
 import ProjectContext from "../../../context/ProjectContext";
 import ProjectColorContext from "../../../pages/ProjectDetail";
@@ -148,8 +148,8 @@ export const ProjectsWithHouseBlock = () => {
         projectPhase: projectPhase,
         planningPlanStatus: planStatus,
         municipalityRole: selectedMunicipalityRole,
-        projectOwner: owner,
-        projectLeader: leader,
+        projectOwners: owner,
+        projectLeaders: leader,
         //Will be implemented later
         // projectOwners: [
         //     {
