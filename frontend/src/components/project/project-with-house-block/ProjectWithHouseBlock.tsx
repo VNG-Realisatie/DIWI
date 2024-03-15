@@ -28,6 +28,7 @@ import { PlanStatusOptions, PlanTypeOptions } from "../../../types/enums";
 import { PriorityEditForm } from "./PriorityEditForm";
 import { SelectModel, getProjectHouseBlocks, updateProjects } from "../../../api/projectsServices";
 import { HouseBlock } from "../../project-wizard/house-blocks/types";
+import AlertContext from "../../../context/AlertContext";
 import { CreateHouseBlockDialog } from "./CreateHouseBlockDialog";
 import { HouseBlocksList } from "./HouseBlocksList";
 export const columnTitleStyle = {
@@ -55,6 +56,9 @@ export const ProjectsWithHouseBlock = () => {
     const [selectedWijk, setSelectedWijk] = useState<SelectModel[]>([]);
     const [projectPriority, setProjectPriority] = useState<SelectModel | null>();
     const [houseBlocks, setHouseBlocks] = useState<HouseBlock[]>();
+
+    const { setAlert } = useContext(AlertContext);
+
     const [openHouseBlockDialog, setOpenHouseBlockDialog] = useState(false);
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const handleStartDateChange = (newValue: Dayjs | null) => setStartDate(newValue);
@@ -181,10 +185,16 @@ export const ProjectsWithHouseBlock = () => {
     };
 
     const handleProjectSave = () => {
-        updateProjects(updatedProjectForm).then((res) => {
-            setProjectEditable(false);
-            updateProject();
-        });
+        updateProjects(updatedProjectForm)
+            .then((res) => {
+                if (res.ok) {
+                    setProjectEditable(false);
+                    updateProject();
+                }
+            })
+            .catch((error) => {
+                setAlert(error.message, "error");
+            });
     };
     const { id } = useContext(ProjectContext);
     useEffect(() => {
