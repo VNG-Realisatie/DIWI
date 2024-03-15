@@ -82,7 +82,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                     error={validationError}
                     helperText={validationError && t("createProject.nameIsRequried")}
                 />
-                <ColorSelector selectedColor={createProjectForm} defaultColor="rgba(255, 87, 51, 1)" onColorChange={handleColorChange} />
+                <ColorSelector selectedColor={createProjectForm} defaultColor="#FF5733" onColorChange={handleColorChange} />
             </Stack>
             <Stack direction="row" alignItems="center" spacing={3} mt={2}>
                 <Stack flex={6}>

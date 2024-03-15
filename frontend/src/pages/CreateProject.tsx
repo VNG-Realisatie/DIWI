@@ -28,7 +28,7 @@ interface CustomStepIconProps {
     completed: boolean;
 }
 export const CreateProject = () => {
-    const [createProjectForm, setCreateProjectForm] = useState<any>(null);
+    const [createProjectForm, setCreateProjectForm] = useState<any>({ projectColor: "#FF5733" });
     const [createFormHouseBlock, setCreateFormHouseBlock] = useState<HouseBlock>(emptyHouseBlockForm);
     const [activeStep, setActiveStep] = useState<number>(0);
     const [validationError, setValidationError] = useState(false);
