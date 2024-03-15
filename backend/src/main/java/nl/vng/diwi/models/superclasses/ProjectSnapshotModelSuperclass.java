@@ -23,6 +23,8 @@ import nl.vng.diwi.models.SelectModel;
 @EqualsAndHashCode(callSuper = true)
 abstract public class ProjectSnapshotModelSuperclass extends ProjectMinimalSnapshotModel {
 
+    private UUID projectStateId;
+
     private List<PlanStatus> planningPlanStatus;
     private List<PlanType> planType = new ArrayList<>();
     private PriorityModel priority = new PriorityModel();
