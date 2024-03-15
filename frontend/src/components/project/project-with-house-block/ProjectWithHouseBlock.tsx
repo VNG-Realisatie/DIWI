@@ -1,4 +1,4 @@
-import { AvatarGroup, Box, Grid, Popover, Stack, TextField, Tooltip, Typography } from "@mui/material";
+import { Box, Grid, Popover, Stack, TextField, Tooltip, Typography } from "@mui/material";
 import { MouseEvent, useCallback, useContext, useEffect, useState } from "react";
 import ProjectContext from "../../../context/ProjectContext";
 import ProjectColorContext from "../../../pages/ProjectDetail";
@@ -23,10 +23,10 @@ import { WijkEditForm } from "./WijkEditForm";
 import { defaultColors } from "../../ColorSelector";
 import { BlockPicker, ColorResult } from "react-color";
 import { CellContainer } from "./CellContainer";
-import { OrganizationUserAvatars } from "../../OrganizationUserAvatars";
+import { OrganizationSelect } from "../../../widgets/OrganizationSelect";
 import { PlanStatusOptions, PlanTypeOptions } from "../../../types/enums";
 import { PriorityEditForm } from "./PriorityEditForm";
-import { SelectModel, getProjectHouseBlocks, updateProjects } from "../../../api/projectsServices";
+import { Organization, SelectModel, getProjectHouseBlocks, updateProjects } from "../../../api/projectsServices";
 import { HouseBlock } from "../../project-wizard/house-blocks/types";
 import AlertContext from "../../../context/AlertContext";
 import { CreateHouseBlockDialog } from "./CreateHouseBlockDialog";
@@ -44,6 +44,8 @@ export const ProjectsWithHouseBlock = () => {
     const [projectEditable, setProjectEditable] = useState(false);
     const [openColorDialog, setOpenColorDialog] = useState(false);
     const [name, setName] = useState<string | null>();
+    const [owner, setOwner] = useState<Organization[]>([]);
+    const [leader, setLeader] = useState<Organization[]>([]);
     const [startDate, setStartDate] = useState<Dayjs | null>();
     const [endDate, setEndDate] = useState<Dayjs | null>();
     const [projectPhase, setProjectPhase] = useState<string | undefined>();
@@ -86,7 +88,7 @@ export const ProjectsWithHouseBlock = () => {
 
     const updateChanges = useCallback(() => {
         setName(selectedProject?.projectName);
-        //add owner later
+        setOwner(selectedProject?.projectOwners ?? []);
         setStartDate(dayjs(formatDate(selectedProject?.startDate)));
         setEndDate(dayjs(formatDate(selectedProject?.endDate)));
         setProjectPriority(selectedProject?.priority?.value); //ToDo Fix later when decided range select
@@ -95,18 +97,20 @@ export const ProjectsWithHouseBlock = () => {
         setSelectedMunicipality(selectedProject?.municipality ?? []);
         setSelectedMunicipalityRole(selectedProject?.municipalityRole ?? []);
         setConfidentialityLevel(selectedProject?.confidentialityLevel);
-        //add leader later
+        setLeader(selectedProject?.projectLeaders ?? []);
         setPlanType(selectedProject?.planType?.map((type) => type) ?? []);
         setPlanStatus(selectedProject?.planningPlanStatus?.map((type) => type) ?? []);
         setSelectedWijk(selectedProject?.wijk ?? []);
         setSelectedProjectColor(selectedProject?.projectColor ?? "");
     }, [
+        selectedProject?.projectOwners,
         selectedProject?.buurt,
         selectedProject?.confidentialityLevel,
         selectedProject?.endDate,
         selectedProject?.municipality,
         selectedProject?.municipalityRole,
         selectedProject?.planType,
+        selectedProject?.projectLeaders,
         selectedProject?.planningPlanStatus,
         selectedProject?.priority?.value,
         selectedProject?.projectColor,
@@ -148,6 +152,8 @@ export const ProjectsWithHouseBlock = () => {
         projectPhase: projectPhase,
         planningPlanStatus: planStatus,
         municipalityRole: selectedMunicipalityRole,
+        projectOwners: owner,
+        projectLeaders: leader,
         //Will be implemented later
         // projectOwners: [
         //     {
@@ -248,17 +254,9 @@ export const ProjectsWithHouseBlock = () => {
                             <TextField size="small" disabled value={selectedProject?.totalValue} />
                         )}
                     </Grid>
-                    <Grid item xs={6} md={1}>
+                    <Grid item sm={2}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.organizationName")}</Typography>
-
-                        {!projectEditable ? (
-                            <AvatarGroup max={3}>
-                                <OrganizationUserAvatars organizations={selectedProject?.projectOwners} />
-                            </AvatarGroup>
-                        ) : (
-                            // TODO implement later
-                            <TextField disabled size="small" id="organizationName" variant="outlined" />
-                        )}
+                        <OrganizationSelect projectEditable={projectEditable} owner={owner} setOwner={setOwner} />
                     </Grid>
                     <Grid item sm={4}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.planType")}</Typography>
@@ -354,19 +352,9 @@ export const ProjectsWithHouseBlock = () => {
                             <ConfidentialityLevelEditForm confidentialityLevel={confidentialityLevel} setConfidentialityLevel={setConfidentialityLevel} />
                         )}
                     </Grid>
-                    <Grid item xs={12} md={1}>
+                    <Grid item sm={2}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.projectLeader")}</Typography>
-
-                        {!projectEditable ? (
-                            <Box sx={{ border: "solid 1px #ddd", overflow: "hidden" }}>
-                                <AvatarGroup max={3}>
-                                    <OrganizationUserAvatars organizations={selectedProject?.projectLeaders} />
-                                </AvatarGroup>
-                            </Box>
-                        ) : (
-                            // TODO LATER
-                            <TextField disabled size="small" id="outlined-basic" variant="outlined" />
-                        )}
+                        <OrganizationSelect projectEditable={projectEditable} owner={leader} setOwner={setLeader} isLeader={true} />
                     </Grid>
                     <Grid item xs={12} md={4}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.planningPlanStatus")}</Typography>

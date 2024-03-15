@@ -1,5 +1,6 @@
 import { getJson } from "../utils/requests";
 import { API_URI } from "../utils/urls";
+import { Organization } from "./projectsServices";
 
 export type ProjectTableOption = {
     name: string;
@@ -28,4 +29,8 @@ export async function getMunicipalityRoleList(): Promise<Array<ProjectTableOptio
 
 export async function getPriorityList(): Promise<Array<ProjectTableOption>> {
     return getJson(`${API_URI}/priority/list`);
+}
+
+export async function getOrganizationList(): Promise<Array<Organization>> {
+    return getJson(`${API_URI}/organizations/list`);
 }

@@ -4,6 +4,7 @@ import { API_URI } from "../utils/urls";
 import { HouseBlock } from "../components/project-wizard/house-blocks/types";
 
 export type Organization = components["schemas"]["OrganizationModel"];
+export type OrganizationUser = components["schemas"]["OrganizationUserModel"];
 export type Project = components["schemas"]["ProjectListModel"];
 export type ProjectUpdate = components["schemas"]["ProjectUpdateModel"];
 export type SelectModel = components["schemas"]["SelectModel"];
