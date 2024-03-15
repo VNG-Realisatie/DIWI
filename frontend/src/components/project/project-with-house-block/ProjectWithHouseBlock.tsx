@@ -1,11 +1,10 @@
-import { Accordion, AccordionDetails, AccordionSummary, AvatarGroup, Box, Grid, Popover, Stack, TextField, Tooltip, Typography } from "@mui/material";
+import { AvatarGroup, Box, Grid, Popover, Stack, TextField, Tooltip, Typography } from "@mui/material";
 import { MouseEvent, useCallback, useContext, useEffect, useState } from "react";
 import ProjectContext from "../../../context/ProjectContext";
 import ProjectColorContext from "../../../pages/ProjectDetail";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import ClearIcon from "@mui/icons-material/Clear";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import FormatColorFillIcon from "@mui/icons-material/FormatColorFill";
 import { useTranslation } from "react-i18next";
 import { DatePicker } from "@mui/x-date-pickers";
@@ -28,8 +27,9 @@ import { OrganizationUserAvatars } from "../../OrganizationUserAvatars";
 import { PlanStatusOptions, PlanTypeOptions } from "../../../types/enums";
 import { PriorityEditForm } from "./PriorityEditForm";
 import { SelectModel, getProjectHouseBlocks, updateProjects } from "../../../api/projectsServices";
-import { BlockHousesForm } from "../../BlockHousesForm";
 import { HouseBlock } from "../../project-wizard/house-blocks/types";
+import { CreateHouseBlockDialog } from "./CreateHouseBlockDialog";
+import { HouseBlocksList } from "./HouseBlocksList";
 export const columnTitleStyle = {
     border: "solid 1px #ddd",
     p: 0.6,
@@ -55,7 +55,7 @@ export const ProjectsWithHouseBlock = () => {
     const [selectedWijk, setSelectedWijk] = useState<SelectModel[]>([]);
     const [projectPriority, setProjectPriority] = useState<SelectModel | null>();
     const [houseBlocks, setHouseBlocks] = useState<HouseBlock[]>();
-
+    const [openHouseBlockDialog, setOpenHouseBlockDialog] = useState(false);
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const handleStartDateChange = (newValue: Dayjs | null) => setStartDate(newValue);
 
@@ -190,6 +190,7 @@ export const ProjectsWithHouseBlock = () => {
     useEffect(() => {
         id && getProjectHouseBlocks(id).then((res) => setHouseBlocks(res));
     }, [id]);
+
     return (
         <Stack my={1} p={1} mb={10}>
             <Box sx={{ cursor: "pointer" }} position="absolute" right={10} top={55} zIndex={9999}>
@@ -427,34 +428,7 @@ export const ProjectsWithHouseBlock = () => {
                     </Grid>
                 </Grid>
                 {/* List huizen blok cards */}
-                <Grid container my={2}>
-                    {houseBlocks?.map((hb: HouseBlock, i: number) => {
-                        return (
-                            <Accordion sx={{ width: "100%" }}>
-                                <AccordionSummary
-                                    sx={{ backgroundColor: "#00A9F3", color: "#ffffff" }}
-                                    expandIcon={<ExpandMoreIcon sx={{ color: "#ffffff" }} />}
-                                    aria-controls="panel1-content"
-                                    id="panel1-header"
-                                >
-                                    {hb.houseblockName}
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                    <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={2}>
-                                        <Tooltip placement="top" title={t("generic.cancelChanges")}>
-                                            <ClearIcon sx={{ cursor: "pointer" }} />
-                                        </Tooltip>
-                                        <Tooltip placement="top" title={t("generic.saveChanges")}>
-                                            {/* TODO integrate later updatehouseblock endpoint */}
-                                            <SaveIcon sx={{ cursor: "pointer" }} onClick={() => console.log(hb.houseblockId)} />
-                                        </Tooltip>
-                                    </Stack>
-                                    <BlockHousesForm projectDetailHouseBlock={hb} key={i} />
-                                </AccordionDetails>
-                            </Accordion>
-                        );
-                    })}
-                </Grid>
+                <HouseBlocksList houseBlocks={houseBlocks} setOpenHouseBlockDialog={setOpenHouseBlockDialog} />
                 {openColorDialog && (
                     <Popover
                         open={open}
@@ -468,6 +442,7 @@ export const ProjectsWithHouseBlock = () => {
                         <BlockPicker colors={defaultColors} color={selectedProjectColor} onChange={handleColorChange} />
                     </Popover>
                 )}
+                <CreateHouseBlockDialog openHouseBlockDialog={openHouseBlockDialog} setOpenHouseBlockDialog={setOpenHouseBlockDialog} />
             </Stack>
         </Stack>
     );
