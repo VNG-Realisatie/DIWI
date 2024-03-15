@@ -1,8 +1,22 @@
 import { Stack, TextField, Typography } from "@mui/material";
 import { t } from "i18next";
-import { GeneralInformationProps } from "./GeneralInformationGroup";
-
-export const SizeInput = ({ projectForm, setProjectForm }: GeneralInformationProps) => {
+import { InputContainer } from "../InputContainer";
+export type HouseBlockSize = {
+    value: number | null;
+    min: number | null;
+    max: number | null;
+};
+type Props = {
+    houseBlockSize: HouseBlockSize;
+    updateHouseBlockSize: (houseBlockSize: HouseBlockSize) => void;
+    edit: boolean;
+    editForm: boolean;
+};
+type HouseBlockSizeProps = {
+    houseBlockSize: HouseBlockSize;
+    updateHouseBlockSize: (houseBlockSize: HouseBlockSize) => void;
+};
+const HouseBlockSizeEditInput = ({ houseBlockSize, updateHouseBlockSize }: HouseBlockSizeProps) => {
     const handleSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newSize = {
             value: +e.target.value,
@@ -10,29 +24,37 @@ export const SizeInput = ({ projectForm, setProjectForm }: GeneralInformationPro
             max: null,
         };
 
-        setProjectForm({
-            ...projectForm,
-            size: newSize,
-        });
+        updateHouseBlockSize(newSize);
     };
+    return (
+        <TextField
+            InputProps={{
+                inputProps: {
+                    min: 0,
+                },
+            }}
+            type="number"
+            id="size"
+            size="small"
+            variant="outlined"
+            value={houseBlockSize ? houseBlockSize?.value : 0}
+            onChange={handleSizeChange}
+        />
+    );
+};
+export const SizeInput = ({ houseBlockSize, updateHouseBlockSize, edit, editForm }: Props) => {
     return (
         <Stack width="100%">
             <Typography variant="subtitle1" fontWeight="500">
                 {t("createProject.houseBlocksForm.size")}
             </Typography>
-            <TextField
-                InputProps={{
-                    inputProps: {
-                        min: 0,
-                    },
-                }}
-                type="number"
-                id="size"
-                size="small"
-                variant="outlined"
-                value={projectForm ? projectForm?.size?.value : 0}
-                onChange={handleSizeChange}
-            />
+            {edit && editForm && <HouseBlockSizeEditInput houseBlockSize={houseBlockSize} updateHouseBlockSize={updateHouseBlockSize} />}
+            {!edit && editForm && (
+                <InputContainer>
+                    <Typography>{houseBlockSize?.value}</Typography>
+                </InputContainer>
+            )}
+            {!edit && !editForm && <HouseBlockSizeEditInput houseBlockSize={houseBlockSize} updateHouseBlockSize={updateHouseBlockSize} />}
         </Stack>
     );
 };

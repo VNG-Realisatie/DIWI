@@ -10,7 +10,8 @@
       "saveChanges": "Opslaan veranderingen",
       "edit": "Bewerken",
       "confirmDeletion": "Weet u zeker dat u {{name}} wilt verwijderen?",
-      "delete": "Verwijderen"
+      "delete": "Verwijderen",
+      "cancel": "Annuleren"
     },
     "createProject": {
       "information": "Project informatie",
@@ -19,7 +20,7 @@
       "timeline": "Tijdlijn",
       "completeMessage": "De wizard voor het maken van projectformulieren is voltooid. Klik op Opslaan om het proces te voltooien.",
       "successfullySaved": "Project succesvol opgeslagen.",
-      "nameIsRequried" : "Vul het veld projectnaam in",
+      "nameIsRequried": "Vul het veld projectnaam in",
       "informationForm": {
         "title": "Vul de projectgegevens in",
         "nameLabel": "Projectnaam en projectkleur*",
@@ -46,9 +47,9 @@
         "demolition": "Sloop",
         "mutationType": "Mutatiesoort",
         "size": "Grootte",
-        "type":"Soort",
-        "amount":"Aantal",
-        "rent":"Huur",
+        "type": "Soort",
+        "amount": "Aantal",
+        "rent": "Huur",
         "ownershipAndValue": "Eigendom en waarde",
         "ownerOccupiedHome": "Koopwoning",
         "rentalPropertyPrivate": "Huurwoning Particuliere verhuurder",

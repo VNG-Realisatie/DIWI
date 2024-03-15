@@ -8,9 +8,11 @@ import { OwnershipRowInputs } from "./OwnershipRowInputs";
 export type OwnershipInformationProps = {
     projectForm: HouseBlock;
     setProjectForm(project: HouseBlock): void;
+    edit: boolean;
+    editForm: boolean;
 };
 
-export const OwnershipInformationGroup = ({ projectForm, setProjectForm }: OwnershipInformationProps) => {
+export const OwnershipInformationGroup = ({ projectForm, setProjectForm, edit, editForm }: OwnershipInformationProps) => {
     const handleAddRow = () => {
         setProjectForm({
             ...projectForm,
@@ -67,11 +69,20 @@ export const OwnershipInformationGroup = ({ projectForm, setProjectForm }: Owner
             </Stack>
             <Grid container>
                 {projectForm.ownershipValue.map((ownership, index) => (
-                    <OwnershipRowInputs index={index} handleRemoveRow={handleRemoveRow} handleInputChange={handleInputChange} ownership={ownership} />
+                    <OwnershipRowInputs
+                        index={index}
+                        handleRemoveRow={handleRemoveRow}
+                        handleInputChange={handleInputChange}
+                        ownership={ownership}
+                        edit={edit}
+                        editForm={editForm}
+                    />
                 ))}
-                <IconButton onClick={handleAddRow}>
-                    <AddIcon sx={{ color: "green" }} />
-                </IconButton>
+                {((edit && editForm) || (!edit && !editForm)) && (
+                    <IconButton onClick={handleAddRow}>
+                        <AddIcon sx={{ color: "green" }} />
+                    </IconButton>
+                )}
             </Grid>
         </WizardCard>
     );
