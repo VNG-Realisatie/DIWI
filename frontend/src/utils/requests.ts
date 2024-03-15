@@ -55,8 +55,7 @@ export async function postJson(url: string, data: any) {
     });
     if (!res.ok) {
         if (res.status === 400) {
-            const readableStream = await res.text();
-            const response = await JSON.parse(readableStream);
+            const response = await readStream(res);
             throw Error(response.error);
         } else {
             throw Error(res.statusText);
@@ -91,4 +90,9 @@ export async function deleteJson(url: string) {
     }
 
     return res.json();
+}
+
+async function readStream(response: Response): Promise<any> {
+    const readableStream = await response.text();
+    return JSON.parse(readableStream);
 }
