@@ -2,6 +2,7 @@ package nl.vng.diwi.models.superclasses;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDate;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -18,8 +19,6 @@ class ProjectMinimalSnapshotModelTest {
 
     private static Stream<Arguments> validation () {
         return Stream.of(
-             Arguments.of("projectId", null),
-             Arguments.of("projectStateId", null),
              Arguments.of("projectName", null),
              Arguments.of("projectColor", null),
              Arguments.of("projectColor", "not a color"),
@@ -55,13 +54,12 @@ class ProjectMinimalSnapshotModelTest {
     private ProjectMinimalSnapshotModel createModel() {
         var model = new ProjectMinimalSnapshotModel();
 
-        UUID uuid = UUID.randomUUID();
-        model.setProjectId(uuid);
-        model.setProjectStateId(uuid);
         model.setProjectName("name");
         model.setProjectColor("#abcdef");
         model.setConfidentialityLevel(Confidentiality.OPENBAAR);
         model.setProjectPhase(ProjectPhase._1_INITIATIEFFASE);
+        model.setStartDate(LocalDate.now().minusDays(3));
+        model.setEndDate(LocalDate.now().plusDays(3));
         return model;
     }
 
