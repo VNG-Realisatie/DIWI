@@ -6,6 +6,8 @@ import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
+import nl.vng.diwi.models.validation.Validation;
+
 import org.apache.commons.lang3.EnumUtils;
 
 import java.time.LocalDate;
@@ -15,8 +17,6 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 public class ProjectUpdateModel {
-
-    private static final String COLOR_REGEX = "^#[0-9a-fA-F]{6}$";
 
     public enum ProjectProperty {
         confidentialityLevel,
@@ -135,7 +135,7 @@ public class ProjectUpdateModel {
                 }
                 yield "Invalid values for new priority. Provide either the 'value' field, or the 'min' and 'max' fields.";
             }
-            case projectColor -> (value == null || !value.matches(COLOR_REGEX)) ? "New color is not valid." : null;
+            case projectColor -> (value == null || Validation.validateColor(value)) ? "New color is not valid." : null;
             case projectPhase -> (value == null || !EnumUtils.isValidEnum(ProjectPhase.class, value)) ? "New project phase value is not valid." : null;
             case municipalityRole, projectLeaders, projectOwners -> null;
         };

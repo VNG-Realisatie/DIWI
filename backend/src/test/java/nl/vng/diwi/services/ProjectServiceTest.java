@@ -1,23 +1,6 @@
 package nl.vng.diwi.services;
 
-import nl.vng.diwi.dal.*;
-import nl.vng.diwi.dal.entities.*;
-import nl.vng.diwi.dal.entities.enums.Confidentiality;
-import nl.vng.diwi.dal.entities.enums.MilestoneStatus;
-import nl.vng.diwi.dal.entities.enums.PlanStatus;
-import nl.vng.diwi.dal.entities.enums.ProjectPhase;
-import nl.vng.diwi.dal.entities.enums.ValueType;
-import nl.vng.diwi.rest.VngBadRequestException;
-import nl.vng.diwi.rest.VngNotFoundException;
-import nl.vng.diwi.rest.VngServerErrorException;
-import nl.vng.diwi.testutil.TestDb;
-
-import org.apache.commons.lang3.NotImplementedException;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-
-import jakarta.persistence.Tuple;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -26,7 +9,53 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.apache.commons.lang3.NotImplementedException;
+import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.persistence.Tuple;
+import nl.vng.diwi.dal.AutoCloseTransaction;
+import nl.vng.diwi.dal.Dal;
+import nl.vng.diwi.dal.DalFactory;
+import nl.vng.diwi.dal.GenericRepository;
+import nl.vng.diwi.dal.VngRepository;
+import nl.vng.diwi.dal.entities.Milestone;
+import nl.vng.diwi.dal.entities.MilestoneState;
+import nl.vng.diwi.dal.entities.Project;
+import nl.vng.diwi.dal.entities.ProjectDurationChangelog;
+import nl.vng.diwi.dal.entities.ProjectFaseChangelog;
+import nl.vng.diwi.dal.entities.ProjectGemeenteRolChangelog;
+import nl.vng.diwi.dal.entities.ProjectGemeenteRolValue;
+import nl.vng.diwi.dal.entities.ProjectNameChangelog;
+import nl.vng.diwi.dal.entities.ProjectPlanTypeChangelog;
+import nl.vng.diwi.dal.entities.ProjectPlanologischePlanstatusChangelog;
+import nl.vng.diwi.dal.entities.ProjectPlanologischePlanstatusChangelogValue;
+import nl.vng.diwi.dal.entities.ProjectPrioriseringChangelog;
+import nl.vng.diwi.dal.entities.ProjectPrioriseringValue;
+import nl.vng.diwi.dal.entities.ProjectState;
+import nl.vng.diwi.dal.entities.User;
+import nl.vng.diwi.dal.entities.enums.Confidentiality;
+import nl.vng.diwi.dal.entities.enums.MilestoneStatus;
+import nl.vng.diwi.dal.entities.enums.PlanStatus;
+import nl.vng.diwi.dal.entities.enums.ProjectPhase;
+import nl.vng.diwi.dal.entities.enums.ValueType;
+import nl.vng.diwi.models.ProjectSnapshotModel;
+import nl.vng.diwi.models.superclasses.ProjectMinimalSnapshotModel;
+import nl.vng.diwi.rest.VngBadRequestException;
+import nl.vng.diwi.rest.VngNotFoundException;
+import nl.vng.diwi.rest.VngServerErrorException;
+import nl.vng.diwi.testutil.TestDb;
 
 public class ProjectServiceTest {
 
@@ -51,7 +80,9 @@ public class ProjectServiceTest {
 
     @AfterAll
     static void afterAll() {
-        testDb.close();
+        if (testDb != null) {
+            testDb.close();
+        }
     }
 
     @BeforeEach
@@ -270,6 +301,44 @@ public class ProjectServiceTest {
         assertThat(newMunicipalityRoleChangelog.getValue().getId()).isEqualTo(municipalityRoleUuid);
     }
 
+    @Test
+    void createProject() throws Exception {
+        ZonedDateTime now = ZonedDateTime.now();
+        LocalDate today = LocalDate.now();
+
+        ProjectMinimalSnapshotModel projectData = new ProjectMinimalSnapshotModel();
+        projectData.setProjectName("name");
+        projectData.setStartDate(today.plusDays(10));
+        projectData.setEndDate(today.plusDays(20));
+        projectData.setProjectColor("abcdef");
+        projectData.setConfidentialityLevel(Confidentiality.OPENBAAR);
+        projectData.setProjectPhase(ProjectPhase._3_VERGUNNINGSFASE);
+
+        Project project;
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+            project = projectService.createProject(repo, userUuid, projectData, now);
+
+            transaction.commit();
+            repo.getSession().clear();
+        }
+
+        try (var transaction = repo.beginTransaction()) {
+            var actual = projectService.getProjectSnapshot(repo, project.getId());
+
+            assertThat(actual.getProjectId()).isNotNull();
+            assertThat(actual.getProjectStateId()).isNotNull();
+
+            // Creates a partial copy of the project snapshot using only the fields in the minimal snapshot
+            ProjectMinimalSnapshotModel minimalSnapshotActual = partialCopy(actual, ProjectMinimalSnapshotModel.class);
+
+            assertThat(minimalSnapshotActual)
+                    .usingRecursiveComparison(RecursiveComparisonConfiguration.builder()
+                            .withIgnoredFields("projectId", "projectStateId") // These were not set in the original object, so they won't match
+                            .build())
+                    .isEqualTo(projectData);
+        }
+    }
+
     @ParameterizedTest
     @ValueSource(strings = { "project_state",
 //            "project_actor_rol_changelog", Not used yet
@@ -305,8 +374,7 @@ public class ProjectServiceTest {
                 createPriorityChangelog(repo, project, startMilestone, endMilestone, user);
             } else if (tableName.equals("project_planologische_planstatus_changelog")) {
                 createProjectPlanStatusChangelog(repo, project, Set.of(PlanStatus._1A_ONHERROEPELIJK), startMilestone, endMilestone, user);
-            }
-            else if (tableName.equals("project_gemeenterol_changelog")) {
+            } else if (tableName.equals("project_gemeenterol_changelog")) {
                 createProjectGemeenteRolChangelog(repo, project, startMilestone, endMilestone, user);
             } else if (tableName.equals("project_state")) {
                 // No need to create this one. it is created in the before each method
@@ -340,6 +408,11 @@ public class ProjectServiceTest {
         assertThat(changelogs)
                 .extracting((t) -> t.get("change_user_id"))
                 .containsOnly(userUuid);
+    }
+
+    private static <T> T partialCopy(ProjectSnapshotModel actual, Class<T> targetClass) throws JsonProcessingException, JsonMappingException {
+        ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return objectMapper.readValue(objectMapper.writeValueAsString(actual), targetClass);
     }
 
     public static Project createProject(VngRepository repo, User user) {

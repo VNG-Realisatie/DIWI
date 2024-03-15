@@ -53,13 +53,10 @@ export const CreateProject = () => {
                 }
             } else {
                 setValidationError(false);
-                const res = await createProject(createProjectForm);
-                if (res.ok) {
-                    const newId = res.data.id;
-                    navigate(`/project/create/${newId}`);
-                    setAlert(t("createProject.successfullySaved"), "success");
-                    return true;
-                }
+                const project = await createProject(createProjectForm);
+
+                navigate(`/project/${project.projectId}`);
+                setAlert(t("createProject.successfullySaved"), "success");
             }
         } catch (error: any) {
             setAlert(error.message, "error");
@@ -90,7 +87,7 @@ export const CreateProject = () => {
                 ))}
             </Stepper>
             {activeStep === 0 && <ProjectInformationForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />}
-            {activeStep === 1 && <BlockHousesForm />}
+            {activeStep === 1 && <BlockHousesForm editForm={false} />}
             {activeStep === 2 && <SelectFromMapForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />}
             {activeStep === 3 && <TimelineForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />}
             {activeStep === 4 && (
