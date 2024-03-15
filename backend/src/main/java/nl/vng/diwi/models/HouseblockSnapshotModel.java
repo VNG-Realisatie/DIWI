@@ -31,7 +31,7 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
 
     private GroundPosition groundPosition = new GroundPosition();
 
-    private PhysicalAppeareance physicalAppeareance = new PhysicalAppeareance();
+    private PhysicalAppearance physicalAppearance = new PhysicalAppearance();
 
     private HouseType houseType = new HouseType();
 
@@ -64,12 +64,12 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
         this.groundPosition.setIntentionPermissionOwner(sqlModel.getIntentionPermissionOwner());
         this.groundPosition.setNoPermissionOwner(sqlModel.getNoPermissionOwner());
 
-        this.physicalAppeareance.setGallerijflat(sqlModel.getGallerijflat());
-        this.physicalAppeareance.setHoekwoning(sqlModel.getHoekwoning());
-        this.physicalAppeareance.setVrijstaand(sqlModel.getVrijstaand());
-        this.physicalAppeareance.setTweeondereenkap(sqlModel.getTweeondereenkap());
-        this.physicalAppeareance.setPortiekflat(sqlModel.getPortiekflat());
-        this.physicalAppeareance.setTussenwoning(sqlModel.getTussenwoning());
+        this.physicalAppearance.setGallerijflat(sqlModel.getGallerijflat());
+        this.physicalAppearance.setHoekwoning(sqlModel.getHoekwoning());
+        this.physicalAppearance.setVrijstaand(sqlModel.getVrijstaand());
+        this.physicalAppearance.setTweeondereenkap(sqlModel.getTweeondereenkap());
+        this.physicalAppearance.setPortiekflat(sqlModel.getPortiekflat());
+        this.physicalAppearance.setTussenwoning(sqlModel.getTussenwoning());
 
         this.houseType.setEengezinswoning(sqlModel.getEengezinswoning());
         this.houseType.setMeergezinswoning(sqlModel.getMeergezinswoning());
@@ -113,7 +113,7 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
 
     @Getter
     @Setter
-    public static class PhysicalAppeareance {
+    public static class PhysicalAppearance {
         private Integer tussenwoning;
         private Integer tweeondereenkap;
         private Integer portiekflat;
