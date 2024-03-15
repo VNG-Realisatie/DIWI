@@ -246,15 +246,6 @@ export const ProjectsWithHouseBlock = () => {
                     </Grid>
                     <Grid item sm={2}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.organizationName")}</Typography>
-
-                        {/* {!projectEditable ? (
-                            <AvatarGroup max={3}>
-                                <OrganizationUserAvatars organizations={selectedProject?.projectOwners} />
-                            </AvatarGroup>
-                        ) : (
-                            // TODO implement later
-                            <TextField disabled size="small" id="organizationName" variant="outlined" />
-                        )} */}
                         <OrganizationSelect projectEditable={projectEditable} owner={owner} setOwner={setOwner} />
                     </Grid>
                     <Grid item sm={4}>
@@ -353,19 +344,7 @@ export const ProjectsWithHouseBlock = () => {
                     </Grid>
                     <Grid item sm={2}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.projectLeader")}</Typography>
-
                         <OrganizationSelect projectEditable={projectEditable} owner={leader} setOwner={setLeader} isLeader={true} />
-
-                        {/* {!projectEditable ? (
-                            <Box sx={{ border: "solid 1px #ddd", overflow: "hidden" }}>
-                                <AvatarGroup max={3}>
-                                    <OrganizationUserAvatars organizations={selectedProject?.projectLeaders} />
-                                </AvatarGroup>
-                            </Box>
-                        ) : (
-                            // TODO LATER
-                            <TextField disabled size="small" id="outlined-basic" variant="outlined" />
-                        )} */}
                     </Grid>
                     <Grid item xs={12} md={4}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.planningPlanStatus")}</Typography>
