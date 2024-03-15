@@ -96,8 +96,10 @@ function RequiresLogin() {
 
     useEffect(() => {
         diwiFetch(Paths.loggedIn.path)
-            .then(() => {
-                setIsLoggedIn(true);
+            .then((res) => {
+                if (res.ok) {
+                    setIsLoggedIn(true);
+                }
             })
             .catch((error) => {
                 setAlert(error.message, "error");
