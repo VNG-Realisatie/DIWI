@@ -43,6 +43,7 @@ import nl.vng.diwi.models.ProjectTimelineModel;
 import nl.vng.diwi.models.ProjectUpdateModel;
 import nl.vng.diwi.models.ProjectUpdateModel.ProjectProperty;
 import nl.vng.diwi.models.SelectModel;
+import nl.vng.diwi.models.superclasses.ProjectCreateSnapshotModel;
 import nl.vng.diwi.models.superclasses.ProjectMinimalSnapshotModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
@@ -69,7 +70,7 @@ public class ProjectsResource {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public ProjectMinimalSnapshotModel createProject(@Context LoggedUser loggedUser, ProjectMinimalSnapshotModel projectSnapshotModel)
+    public ProjectMinimalSnapshotModel createProject(@Context LoggedUser loggedUser, ProjectCreateSnapshotModel projectSnapshotModel)
             throws VngServerErrorException, VngBadRequestException, VngNotFoundException {
         String validationError = projectSnapshotModel.validate();
         if (validationError != null) {

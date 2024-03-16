@@ -45,6 +45,7 @@ import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
 import nl.vng.diwi.models.MilestoneModel;
 import nl.vng.diwi.models.ProjectListModel;
 import nl.vng.diwi.models.ProjectSnapshotModel;
+import nl.vng.diwi.models.superclasses.ProjectCreateSnapshotModel;
 import nl.vng.diwi.models.superclasses.ProjectMinimalSnapshotModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
@@ -77,7 +78,7 @@ public class ProjectService {
         return result;
     }
 
-    public Project createProject(VngRepository repo, UUID loggedInUserUuid, ProjectMinimalSnapshotModel projectData, ZonedDateTime now)
+    public Project createProject(VngRepository repo, UUID loggedInUserUuid, ProjectCreateSnapshotModel projectData, ZonedDateTime now)
             throws VngServerErrorException, VngBadRequestException {
         var user = repo.getReferenceById(User.class, loggedInUserUuid);
 
