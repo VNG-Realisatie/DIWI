@@ -27,7 +27,7 @@ export const PhysicalAppeareanceGroup = ({ projectForm, setProjectForm, edit, ed
                 </Typography>
             </Stack>
             <SingleNumberInput
-                property={projectForm?.physicalAppearance.tussenwoning}
+                property={projectForm?.physicalAppeareance?.tussenwoning}
                 update={(e) =>
                     projectForm &&
                     setProjectForm({
@@ -44,7 +44,7 @@ export const PhysicalAppeareanceGroup = ({ projectForm, setProjectForm, edit, ed
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.physicalAppearance.tweeondereenkap}
+                property={projectForm?.physicalAppeareance?.tweeondereenkap}
                 update={(e) =>
                     projectForm &&
                     setProjectForm({
@@ -61,7 +61,7 @@ export const PhysicalAppeareanceGroup = ({ projectForm, setProjectForm, edit, ed
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.physicalAppearance.portiekflat}
+                property={projectForm?.physicalAppeareance?.portiekflat}
                 update={(e) =>
                     projectForm &&
                     setProjectForm({
@@ -78,7 +78,7 @@ export const PhysicalAppeareanceGroup = ({ projectForm, setProjectForm, edit, ed
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.physicalAppearance.hoekwoning}
+                property={projectForm?.physicalAppeareance?.hoekwoning}
                 update={(e) =>
                     projectForm &&
                     setProjectForm({
@@ -95,7 +95,7 @@ export const PhysicalAppeareanceGroup = ({ projectForm, setProjectForm, edit, ed
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.physicalAppearance.vrijstaand}
+                property={projectForm?.physicalAppeareance?.vrijstaand}
                 update={(e) =>
                     projectForm &&
                     setProjectForm({
@@ -112,7 +112,7 @@ export const PhysicalAppeareanceGroup = ({ projectForm, setProjectForm, edit, ed
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.physicalAppearance.gallerijflat}
+                property={projectForm?.physicalAppeareance?.gallerijflat}
                 update={(e) =>
                     projectForm &&
                     setProjectForm({

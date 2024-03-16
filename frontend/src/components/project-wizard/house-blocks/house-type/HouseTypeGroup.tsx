@@ -27,7 +27,7 @@ export const HouseTypeGroup = ({ projectForm, setProjectForm, edit, editForm }: 
                 </Typography>
             </Stack>
             <SingleNumberInput
-                property={projectForm?.houseType.meergezinswoning}
+                property={projectForm?.physicalAppeareance?.meergezinswoning}
                 update={(e) =>
                     projectForm &&
                     setProjectForm({
@@ -44,7 +44,7 @@ export const HouseTypeGroup = ({ projectForm, setProjectForm, edit, editForm }: 
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.houseType.eengezinswoning}
+                property={projectForm?.physicalAppeareance?.eengezinswoning}
                 update={(e) =>
                     projectForm &&
                     setProjectForm({

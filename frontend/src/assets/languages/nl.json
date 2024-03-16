@@ -138,7 +138,8 @@
       "projects": "Projecten",
       "dashboards": "Dashboards",
       "users": "Gebruikers",
-      "dataExchange": "Data uitwisselen"
+      "dataExchange": "Data uitwisselen",
+      "settings": "Instellingen"
     },
     "projects": {
       "title": "Projecten overzicht",
@@ -235,6 +236,21 @@
         "generalInformation": {
           "title": "Algemene informatie"
         }
+      }
+    },
+    "admin": {
+      "settings": {
+        "title": "Lijst met optionele velden",
+        "tableHeader": {
+          "name": "Naam",
+          "objectType": "Project og HuizenBlokken",
+          "propertyType": "Type",
+          "categories": "Opties",
+          "status": "Aan/ Uit",
+          "active": "Actief",
+          "edit": "Bewerken"
+        },
+        "add": "Voeg optioneel toe"
       }
     }
   }
