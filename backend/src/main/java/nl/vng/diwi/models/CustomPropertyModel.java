@@ -1,21 +1,49 @@
 package nl.vng.diwi.models;
 
-import lombok.Data;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import nl.vng.diwi.dal.JsonListType;
 import nl.vng.diwi.dal.entities.enums.ObjectType;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.annotations.Type;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Data
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class CustomPropertyModel {
 
+    @Id
     private UUID id;
     private String name;
+
+    @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
     private ObjectType objectType;
+
+    @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
     private PropertyType propertyType;
     private Boolean disabled;
-    private List<SelectModel> categories;
+
+    @Type(value = JsonListType.class)
+    private List<SelectDisabledModel> categoryValues;
+
+    @Type(value = JsonListType.class)
+    private List<OrdinalSelectDisabledModel> ordinalValues;
 
     public String validate() {
 
