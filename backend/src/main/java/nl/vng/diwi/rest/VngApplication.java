@@ -5,6 +5,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
+import nl.vng.diwi.resources.CustomPropertiesResource;
 import nl.vng.diwi.resources.HouseblockResource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -107,6 +108,7 @@ public class VngApplication extends ResourceConfig {
         register(WijkResource.class);
         register(PriorityResource.class);
         register(HouseblockResource.class);
+        register(CustomPropertiesResource.class);
 
         // Flyway migrations
         Database.upgrade(projectConfig.getDbUrl(), projectConfig.getDbUser(), projectConfig.getDbPass());
