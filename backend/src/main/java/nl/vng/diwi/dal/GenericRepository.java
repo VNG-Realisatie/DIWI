@@ -18,6 +18,12 @@ public class GenericRepository implements AutoCloseable {
     public static List<Class<? extends Object>> getEntities() {
         List<Class<? extends Object>> entities =
             Arrays.asList(
+                CustomCategoryValue.class,
+                CustomCategoryValueState.class,
+                CustomOrdinalValue.class,
+                CustomOrdinalValueState.class,
+                CustomProperty.class,
+                CustomPropertyState.class,
                 Houseblock.class,
                 HouseblockAppearanceAndTypeChangelog.class,
                 HouseblockPhysicalAppearanceChangelogValue.class,

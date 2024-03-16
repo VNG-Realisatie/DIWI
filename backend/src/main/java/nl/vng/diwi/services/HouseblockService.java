@@ -165,103 +165,104 @@ public class HouseblockService {
                 groundPositionChangelogValue.setAmount(groundPosition.getNoPermissionOwner());
                 repo.persist(groundPositionChangelogValue);
             }
+        }
 
-            var ownershipValues = houseblockSnapshotModel.getOwnershipValue();
-            if (ownershipValues != null) {
-                ownershipValues.forEach(ov -> {
-                    var ownershipValue = new HouseblockOwnershipValueChangelog();
-                    setChangelogValues.accept(ownershipValue);
-                    ownershipValue.setHouseblock(houseblock);
-                    if (ov.getValue().getValue() != null) {
-                        ownershipValue.setValue(ov.getValue().getValue());
-                        ownershipValue.setValueType(ValueType.SINGLE_VALUE);
-                    } else if (ov.getValue().getMin() != null && ov.getValue().getMax() != null) {
-                        ownershipValue.setValueRange(Range.closed(ov.getValue().getMin(), ov.getValue().getMax()));
+        var ownershipValues = houseblockSnapshotModel.getOwnershipValue();
+        if (ownershipValues != null) {
+            ownershipValues.forEach(ov -> {
+                var ownershipValue = new HouseblockOwnershipValueChangelog();
+                setChangelogValues.accept(ownershipValue);
+                ownershipValue.setHouseblock(houseblock);
+                if (ov.getValue().getValue() != null) {
+                    ownershipValue.setValue(ov.getValue().getValue());
+                    ownershipValue.setValueType(ValueType.SINGLE_VALUE);
+                } else if (ov.getValue().getMin() != null && ov.getValue().getMax() != null) {
+                    ownershipValue.setValueRange(Range.closed(ov.getValue().getMin(), ov.getValue().getMax()));
+                }
+                if (ov.getRentalValue().getValue() != null) {
+                    ownershipValue.setRentalValue(ov.getRentalValue().getValue());
+                    ownershipValue.setRentalValueType(ValueType.SINGLE_VALUE);
+                } else if (ov.getRentalValue().getMin() != null && ov.getRentalValue().getMax() != null) {
+                    ownershipValue.setRentalValueRange(Range.closed(ov.getRentalValue().getMin(), ov.getRentalValue().getMax()));
+                }
+                ownershipValue.setAmount(ov.getAmount());
+                ownershipValue.setOwnershipType(ov.getType());
+                repo.persist(ownershipValue);
+            });
+        }
+
+        var physicalAppearance = houseblockSnapshotModel.getPhysicalAppearance();
+        var houseType = houseblockSnapshotModel.getHouseType();
+
+        if (physicalAppearance != null || houseType != null) {
+            var appearanceAndTypeChangelog = new HouseblockAppearanceAndTypeChangelog();
+            setChangelogValues.accept(appearanceAndTypeChangelog);
+            appearanceAndTypeChangelog.setHouseblock(houseblock);
+            repo.persist(appearanceAndTypeChangelog);
+
+            if (physicalAppearance != null) {
+                Map<PhysicalAppearance, Integer> physicalAppearanceAmountMap = new HashMap<>();
+                physicalAppearanceAmountMap.put(PhysicalAppearance.GALLERIJFLAT, physicalAppearance.getGallerijflat());
+                physicalAppearanceAmountMap.put(PhysicalAppearance.HOEKWONING, physicalAppearance.getHoekwoning());
+                physicalAppearanceAmountMap.put(PhysicalAppearance.TUSSENWONING, physicalAppearance.getTussenwoning());
+                physicalAppearanceAmountMap.put(PhysicalAppearance.PORTIEKFLAT, physicalAppearance.getPortiekflat());
+                physicalAppearanceAmountMap.put(PhysicalAppearance.VRIJSTAAND, physicalAppearance.getVrijstaand());
+                physicalAppearanceAmountMap.put(PhysicalAppearance.TWEE_ONDER_EEN_KAP, physicalAppearance.getTweeondereenkap());
+
+                physicalAppearanceAmountMap.forEach((k, v) -> {
+                    if (v != null) {
+                        var physicalAppearanceValue = new HouseblockPhysicalAppearanceChangelogValue();
+                        physicalAppearanceValue.setAmount(v);
+                        physicalAppearanceValue.setPhysicalAppearance(k);
+                        physicalAppearanceValue.setAppearanceAndTypeChangelog(appearanceAndTypeChangelog);
+                        repo.persist(physicalAppearanceValue);
                     }
-                    if (ov.getRentalValue().getValue() != null) {
-                        ownershipValue.setRentalValue(ov.getRentalValue().getValue());
-                        ownershipValue.setRentalValueType(ValueType.SINGLE_VALUE);
-                    } else if (ov.getRentalValue().getMin() != null && ov.getRentalValue().getMax() != null) {
-                        ownershipValue.setRentalValueRange(Range.closed(ov.getRentalValue().getMin(), ov.getRentalValue().getMax()));
-                    }
-                    ownershipValue.setAmount(ov.getAmount());
-                    ownershipValue.setOwnershipType(ov.getType());
-                    repo.persist(ownershipValue);
                 });
             }
 
-            var physicalAppearance = houseblockSnapshotModel.getPhysicalAppearance();
-            var houseType = houseblockSnapshotModel.getHouseType();
+            if (houseType != null) {
+                Map<HouseType, Integer> houseTypeAmountMap = new HashMap<>();
+                houseTypeAmountMap.put(HouseType.EENGEZINSWONING, houseType.getEengezinswoning());
+                houseTypeAmountMap.put(HouseType.MEERGEZINSWONING, houseType.getMeergezinswoning());
 
-            if (physicalAppearance != null || houseType != null) {
-                var appearanceAndTypeChangelog = new HouseblockAppearanceAndTypeChangelog();
-                setChangelogValues.accept(appearanceAndTypeChangelog);
-                appearanceAndTypeChangelog.setHouseblock(houseblock);
-                repo.persist(appearanceAndTypeChangelog);
-
-                if (physicalAppearance != null) {
-                    Map<PhysicalAppearance, Integer> physicalAppearanceAmountMap = new HashMap<>();
-                    physicalAppearanceAmountMap.put(PhysicalAppearance.GALLERIJFLAT, physicalAppearance.getGallerijflat());
-                    physicalAppearanceAmountMap.put(PhysicalAppearance.HOEKWONING, physicalAppearance.getHoekwoning());
-                    physicalAppearanceAmountMap.put(PhysicalAppearance.TUSSENWONING, physicalAppearance.getTussenwoning());
-                    physicalAppearanceAmountMap.put(PhysicalAppearance.PORTIEKFLAT, physicalAppearance.getPortiekflat());
-                    physicalAppearanceAmountMap.put(PhysicalAppearance.VRIJSTAAND, physicalAppearance.getVrijstaand());
-                    physicalAppearanceAmountMap.put(PhysicalAppearance.TWEE_ONDER_EEN_KAP, physicalAppearance.getTweeondereenkap());
-
-                    physicalAppearanceAmountMap.forEach((k, v) -> {
-                        if (v != null) {
-                            var physicalAppearanceValue = new HouseblockPhysicalAppearanceChangelogValue();
-                            physicalAppearanceValue.setAmount(v);
-                            physicalAppearanceValue.setPhysicalAppearance(k);
-                            physicalAppearanceValue.setAppearanceAndTypeChangelog(appearanceAndTypeChangelog);
-                            repo.persist(physicalAppearanceValue);
-                        }
-                    });
-                }
-
-                if (houseType != null) {
-                    Map<HouseType, Integer> houseTypeAmountMap = new HashMap<>();
-                    houseTypeAmountMap.put(HouseType.EENGEZINSWONING, houseType.getEengezinswoning());
-                    houseTypeAmountMap.put(HouseType.MEERGEZINSWONING, houseType.getMeergezinswoning());
-
-                    houseTypeAmountMap.forEach((k, v) -> {
-                        if (v != null) {
-                            var houseTypeValue = new HouseblockHouseTypeChangelogValue();
-                            houseTypeValue.setAmount(v);
-                            houseTypeValue.setHouseType(k);
-                            houseTypeValue.setAppearanceAndTypeChangelog(appearanceAndTypeChangelog);
-                            repo.persist(houseTypeValue);
-                        }
-                    });
-                }
-            }
-
-            var purpose = houseblockSnapshotModel.getPurpose();
-            if (purpose != null) {
-                var purposeChangelog = new HouseblockPurposeChangelog();
-                setChangelogValues.accept(purposeChangelog);
-                purposeChangelog.setHouseblock(houseblock);
-                repo.persist(purposeChangelog);
-
-                Map<Purpose, Integer> purposeAmountMap = new HashMap<>();
-                purposeAmountMap.put(Purpose.REGULIER, purpose.getRegular());
-                purposeAmountMap.put(Purpose.JONGEREN, purpose.getYouth());
-                purposeAmountMap.put(Purpose.STUDENTEN, purpose.getStudent());
-                purposeAmountMap.put(Purpose.OUDEREN, purpose.getElderly());
-                purposeAmountMap.put(Purpose.GROTE_GEZINNEN, purpose.getLargeFamilies());
-                purposeAmountMap.put(Purpose.GEHANDICAPTEN_EN_ZORG, purpose.getGHZ());
-
-                purposeAmountMap.forEach((k, v) -> {
+                houseTypeAmountMap.forEach((k, v) -> {
                     if (v != null) {
-                        var purposeValue = new HouseblockPurposeChangelogValue();
-                        purposeValue.setAmount(v);
-                        purposeValue.setPurpose(k);
-                        purposeValue.setPurposeChangelog(purposeChangelog);
-                        repo.persist(purposeValue);
+                        var houseTypeValue = new HouseblockHouseTypeChangelogValue();
+                        houseTypeValue.setAmount(v);
+                        houseTypeValue.setHouseType(k);
+                        houseTypeValue.setAppearanceAndTypeChangelog(appearanceAndTypeChangelog);
+                        repo.persist(houseTypeValue);
                     }
                 });
             }
         }
+
+        var purpose = houseblockSnapshotModel.getPurpose();
+        if (purpose != null) {
+            var purposeChangelog = new HouseblockPurposeChangelog();
+            setChangelogValues.accept(purposeChangelog);
+            purposeChangelog.setHouseblock(houseblock);
+            repo.persist(purposeChangelog);
+
+            Map<Purpose, Integer> purposeAmountMap = new HashMap<>();
+            purposeAmountMap.put(Purpose.REGULIER, purpose.getRegular());
+            purposeAmountMap.put(Purpose.JONGEREN, purpose.getYouth());
+            purposeAmountMap.put(Purpose.STUDENTEN, purpose.getStudent());
+            purposeAmountMap.put(Purpose.OUDEREN, purpose.getElderly());
+            purposeAmountMap.put(Purpose.GROTE_GEZINNEN, purpose.getLargeFamilies());
+            purposeAmountMap.put(Purpose.GEHANDICAPTEN_EN_ZORG, purpose.getGHZ());
+
+            purposeAmountMap.forEach((k, v) -> {
+                if (v != null) {
+                    var purposeValue = new HouseblockPurposeChangelogValue();
+                    purposeValue.setAmount(v);
+                    purposeValue.setPurpose(k);
+                    purposeValue.setPurposeChangelog(purposeChangelog);
+                    repo.persist(purposeValue);
+                }
+            });
+        }
+
         return houseblock;
     }
 }
