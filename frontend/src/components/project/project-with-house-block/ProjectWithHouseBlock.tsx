@@ -281,7 +281,7 @@ export const ProjectsWithHouseBlock = () => {
                         {!projectEditable ? (
                             <CellContainer>{startDate ? convertDayjsToString(startDate) : selectedProject?.startDate}</CellContainer>
                         ) : (
-                            <DatePicker format="DD-MM-YYYY" slotProps={{ textField: { size: "small" } }} value={startDate} onChange={handleStartDateChange} />
+                            <DatePicker slotProps={{ textField: { size: "small" } }} value={startDate} onChange={handleStartDateChange} />
                         )}
                     </Grid>
                     <Grid item xs={6} md={1.1}>
@@ -290,7 +290,7 @@ export const ProjectsWithHouseBlock = () => {
                         {!projectEditable ? (
                             <CellContainer>{endDate ? convertDayjsToString(endDate) : selectedProject?.endDate}</CellContainer>
                         ) : (
-                            <DatePicker format="DD-MM-YYYY" slotProps={{ textField: { size: "small" } }} value={endDate} onChange={handleEndDateChange} />
+                            <DatePicker slotProps={{ textField: { size: "small" } }} value={endDate} onChange={handleEndDateChange} />
                         )}
                     </Grid>
                     <Grid item xs={12} md={2}>
