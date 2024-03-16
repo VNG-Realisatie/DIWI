@@ -113,7 +113,9 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
             <AlertProvider>
                 <AlertPopup />
                 <ScopedCssBaseline>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>{children}</LocalizationProvider>
+                    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="nl" dateFormats={{ keyboardDate: "DD-MM-YYYY" }}>
+                        {children}
+                    </LocalizationProvider>
                 </ScopedCssBaseline>
             </AlertProvider>
         </ThemeProvider>
