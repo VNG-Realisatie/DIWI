@@ -27,13 +27,13 @@ export const GroundPositionGroup = ({ projectForm, setProjectForm, edit, editFor
                 </Typography>
             </Stack>
             <SingleNumberInput
-                property={projectForm?.physicalAppeareance.noPermissionOwner}
+                property={projectForm?.groundPosition.noPermissionOwner}
                 update={(e) =>
                     projectForm &&
                     setProjectForm({
                         ...projectForm,
-                        physicalAppeareance: {
-                            ...projectForm.physicalAppeareance,
+                        groundPosition: {
+                            ...projectForm.groundPosition,
                             noPermissionOwner: e,
                         },
                     })
@@ -44,13 +44,13 @@ export const GroundPositionGroup = ({ projectForm, setProjectForm, edit, editFor
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.physicalAppeareance.intentionPermissionOwner}
+                property={projectForm?.groundPosition.intentionPermissionOwner}
                 update={(e) =>
                     projectForm &&
                     setProjectForm({
                         ...projectForm,
-                        physicalAppeareance: {
-                            ...projectForm.physicalAppeareance,
+                        groundPosition: {
+                            ...projectForm.groundPosition,
                             intentionPermissionOwner: e,
                         },
                     })
@@ -61,13 +61,13 @@ export const GroundPositionGroup = ({ projectForm, setProjectForm, edit, editFor
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.physicalAppeareance.formalPermissionOwner}
+                property={projectForm?.groundPosition.formalPermissionOwner}
                 update={(e) =>
                     projectForm &&
                     setProjectForm({
                         ...projectForm,
-                        physicalAppeareance: {
-                            ...projectForm.physicalAppeareance,
+                        groundPosition: {
+                            ...projectForm.groundPosition,
                             formalPermissionOwner: e,
                         },
                     })

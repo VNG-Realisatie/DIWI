@@ -54,6 +54,8 @@ class ProjectMinimalSnapshotModelTest {
     private ProjectMinimalSnapshotModel createModel() {
         var model = new ProjectMinimalSnapshotModel();
 
+        model.setStartDate(LocalDate.now().minusDays(2));
+        model.setEndDate(LocalDate.now().plusDays(2));
         model.setProjectName("name");
         model.setProjectColor("#abcdef");
         model.setConfidentialityLevel(Confidentiality.OPENBAAR);
