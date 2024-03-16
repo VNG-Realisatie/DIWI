@@ -9,15 +9,12 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -339,48 +336,13 @@ public class ProjectServiceTest {
         }
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = { "project_state",
-//            "project_actor_rol_changelog", Not used yet
-            "project_duration_changelog",
-            "project_fase_changelog",
-            "project_gemeenterol_changelog",
-//            "project_maatwerk_boolean_changelog", Not used yet
-//            "project_maatwerk_categorie_changelog", Not used yet
-//            "project_maatwerk_numeriek_changelog", Not used yet
-//            "project_maatwerk_ordinaal_changelog", Not used yet
-            "project_name_changelog",
-            "project_plan_type_changelog",
-            "project_planologische_planstatus_changelog",
-            "project_planologische_planstatus_changelog",
-            "project_priorisering_changelog"
-    })
-    void deleteProject(String tableName) throws Exception {
+    @Test
+    void deleteProject() throws Exception {
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             Milestone startMilestone = createMilestone(repo, project, LocalDate.now().minusDays(10), user);
             Milestone endMilestone = createMilestone(repo, project, LocalDate.now().plusDays(10), user);
 
-            if (tableName.equals("project_name_changelog")) {
-                createProjectNameChangelog(repo, project, "", startMilestone, endMilestone, user);
-            } else if (tableName.equals("project_duration_changelog")) {
-                createProjectDurationChangelog(repo, project, startMilestone, endMilestone, user);
-            } else if (tableName.equals("project_fase_changelog")) {
-                createProjectFaseChangelog(repo, project, ProjectPhase._1_INITIATIEFFASE, startMilestone, endMilestone, user);
-            } else if (tableName.equals("project_plan_type_changelog")) {
-                createProjectPlanTypeChangelog(repo, project, startMilestone, endMilestone, user);
-            } else if (tableName.equals("project_gemeenterol_changelog")) {
-                createProjectGemeenteRolChangelog(repo, project, startMilestone, endMilestone, user);
-            } else if (tableName.equals("project_priorisering_changelog")) {
-                createPriorityChangelog(repo, project, startMilestone, endMilestone, user);
-            } else if (tableName.equals("project_planologische_planstatus_changelog")) {
-                createProjectPlanStatusChangelog(repo, project, Set.of(PlanStatus._1A_ONHERROEPELIJK), startMilestone, endMilestone, user);
-            } else if (tableName.equals("project_gemeenterol_changelog")) {
-                createProjectGemeenteRolChangelog(repo, project, startMilestone, endMilestone, user);
-            } else if (tableName.equals("project_state")) {
-                // No need to create this one. it is created in the before each method
-            } else {
-                throw new NotImplementedException();
-            }
+            createProjectDurationChangelog(repo, project, startMilestone, endMilestone, user);
             transaction.commit();
             repo.getSession().clear();
         }
@@ -392,11 +354,11 @@ public class ProjectServiceTest {
         }
 
         List<Tuple> changelogs = repo
-                .getSession()
-                .createNativeQuery("SELECT change_end_date, change_user_id FROM diwi_testset." + tableName + " WHERE project_id = :projectUuid",
-                        Tuple.class)
-                .setParameter("projectUuid", projectUuid)
-                .list();
+            .getSession()
+            .createNativeQuery("SELECT change_end_date, change_user_id FROM diwi_testset.project_duration_changelog WHERE project_id = :projectUuid",
+                Tuple.class)
+            .setParameter("projectUuid", projectUuid)
+            .list();
 
         assertThat(changelogs)
                 .hasSize(1); // Only one change log at a time
@@ -477,51 +439,6 @@ public class ProjectServiceTest {
         changelog.setEndMilestone(endMilestone);
         changelog.setChangeStartDate(ZonedDateTime.now());
         changelog.setProjectPhase(fase);
-        repo.persist(changelog);
-        return changelog;
-    }
-
-    private ProjectPlanTypeChangelog createProjectPlanTypeChangelog(VngRepository repo, Project project, Milestone startMilestone, Milestone endMilestone,
-            User user) {
-        var changelog = new ProjectPlanTypeChangelog();
-        changelog.setProject(project);
-        changelog.setCreateUser(user);
-        changelog.setStartMilestone(startMilestone);
-        changelog.setEndMilestone(endMilestone);
-        changelog.setChangeStartDate(ZonedDateTime.now());
-        repo.persist(changelog);
-        return changelog;
-    }
-
-    private ProjectGemeenteRolChangelog createProjectGemeenteRolChangelog(VngRepository repo, Project project, Milestone startMilestone, Milestone endMilestone,
-            User user) {
-        var value = new ProjectGemeenteRolValue();
-        repo.persist(value);
-
-        var changelog = new ProjectGemeenteRolChangelog();
-        changelog.setProject(project);
-        changelog.setCreateUser(user);
-        changelog.setStartMilestone(startMilestone);
-        changelog.setEndMilestone(endMilestone);
-        changelog.setChangeStartDate(ZonedDateTime.now());
-        changelog.setValue(value);
-        repo.persist(changelog);
-        return changelog;
-    }
-
-    private ProjectPrioriseringChangelog createPriorityChangelog(VngRepository repo, Project project, Milestone startMilestone, Milestone endMilestone,
-            User user) {
-        var changelogValue = new ProjectPrioriseringValue();
-        repo.persist(changelogValue);
-
-        var changelog = new ProjectPrioriseringChangelog();
-        changelog.setProject(project);
-        changelog.setCreateUser(user);
-        changelog.setStartMilestone(startMilestone);
-        changelog.setEndMilestone(endMilestone);
-        changelog.setChangeStartDate(ZonedDateTime.now());
-        changelog.setValue(changelogValue);
-        changelog.setValueType(ValueType.SINGLE_VALUE);
         repo.persist(changelog);
         return changelog;
     }

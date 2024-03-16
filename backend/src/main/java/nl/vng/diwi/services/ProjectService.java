@@ -159,22 +159,13 @@ public class ProjectService {
             throw new VngNotFoundException();
         }
 
-        List<ChangeDataSuperclass> endDateEntities = new ArrayList<>();
-        endDateEntities.addAll(project.getDuration());
-        endDateEntities.addAll(project.getPhase());
-        endDateEntities.addAll(project.getName());
-        endDateEntities.addAll(project.getPlanType());
-        endDateEntities.addAll(project.getPlanologischePlanstatus());
-        endDateEntities.addAll(project.getPriority());
-        endDateEntities.addAll(project.getMunicipalityRole());
-        endDateEntities.addAll(project.getState());
-
-        endDateEntities.stream()
-                .filter(cl -> cl.getChangeEndDate() == null)
-                .forEach(cl -> {
-                    cl.setChangeEndDate(now);
-                    cl.setChangeUser(user);
-                });
+        project.getDuration().stream()
+            .filter(cl -> cl.getChangeEndDate() == null)
+            .forEach(cl -> {
+                cl.setChangeEndDate(now);
+                cl.setChangeUser(user);
+                repo.persist(cl);
+            });
     }
 
     public void updateProjectColor(VngRepository repo, Project project, String newColor, UUID loggedInUserUuid)
