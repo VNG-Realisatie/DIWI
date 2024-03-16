@@ -4,6 +4,8 @@ import "leaflet-draw/dist/leaflet.draw.css";
 import L from "leaflet";
 import "leaflet-draw";
 import { useEffect, useId, useRef } from "react";
+import PlusButton from "../PlusButton";
+import * as Paths from "../../Paths";
 
 type Marker = {
     projectColor: string;
@@ -74,7 +76,11 @@ const NetherlandsMap = ({ height, width, mapData }: Props) => {
         });
     }, [mapData, id]);
 
-    return <div id={id} style={{ width, height }}></div>;
+    return (
+        <div id={id} style={{ width, height }}>
+            <PlusButton color="info" link={Paths.projectAdd.path} text="Nieuwe plannen & beleidsdoelen toevoegen" />
+        </div>
+    );
 };
 
 export default NetherlandsMap;
