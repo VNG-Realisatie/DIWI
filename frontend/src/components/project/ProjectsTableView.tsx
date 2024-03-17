@@ -3,7 +3,6 @@ import {
     GridCallbackDetails,
     GridColDef,
     GridFilterModel,
-    GridLogicOperator,
     GridPaginationModel,
     GridPreProcessEditCellProps,
     GridRenderCellParams,
@@ -11,11 +10,11 @@ import {
     getGridSingleSelectOperators,
     getGridStringOperators,
 } from "@mui/x-data-grid";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
 import { AvatarGroup, Box, Button, Dialog, DialogActions, DialogTitle, Stack, Typography } from "@mui/material";
 import useAlert from "../../hooks/useAlert";
-import { Project, getProjects } from "../../api/projectsServices";
+import { Project } from "../../api/projectsServices";
 import { useTranslation } from "react-i18next";
 import { PlanTypeCell } from "../table/PlanTypeCell";
 import { MunicipalityRoleCell } from "../table/MunicipalityRoleCell";
@@ -24,10 +23,9 @@ import { WijkCell } from "../table/WijkCell";
 import { BuurtCell } from "../table/NeighbourhoodCell";
 import { MunicipalityCell } from "../table/MunicipalityCell";
 import { confidentialityLevelOptions, planTypeOptions, projectPhaseOptions } from "../table/constants";
-import { filterTable } from "../../api/projectsTableServices";
 import { OrganizationUserAvatars } from "../OrganizationUserAvatars";
 import ProjectContext from "../../context/ProjectContext";
-import queryString from "query-string";
+import useCustomSearchParams from "../../hooks/useCustomSearchParams";
 
 interface RowData {
     id: number;
@@ -52,12 +50,10 @@ export type SelectedOptionWithId = {
 export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const { paginationInfo, setPaginationInfo } = useContext(ProjectContext);
 
-    const location = useLocation();
     const navigate = useNavigate();
     const { setAlert } = useAlert();
     const { t } = useTranslation();
 
-    const [projects, setProjects] = useState<Array<Project>>([]);
     const [selectedRows, setSelectedRows] = useState<any[]>([]);
     const [selectedPlanTypes, setSelectedPlanTypes] = useState<SelectedOptionWithId[]>([]);
     const [selectedMunicipality, setSelectedMunicipality] = useState<SelectedOptionWithId[]>([]);
@@ -67,84 +63,8 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const [selectedBuurt, setSelectedBuurt] = useState<SelectedOptionWithId[]>([]);
     const [showDialog, setShowDialog] = useState(false);
     const [filterModel, setFilterModel] = useState<GridFilterModel>();
-    const [filterUrl, setFilterUrl] = useState("");
-    const [query, setQuery] = useState("");
 
-    const isFilteredUrl = useCallback(() => {
-        const queryParams = ["pageNumber", "pageSize", "filterColumn", "filterCondition", "filterValue"];
-        return queryParams.every((e) => location.search.includes(e));
-    }, [location.search]);
-
-    useEffect(() => {
-        if (isFilteredUrl()) {
-            filterTable(location.search).then((res) => setProjects(res));
-        } else {
-            getProjects(paginationInfo.page, paginationInfo.pageSize)
-                .then((projects) => {
-                    setProjects(projects);
-                })
-                .catch((err) => console.log(err));
-        }
-    }, [isFilteredUrl, location.search, paginationInfo.page, paginationInfo.pageSize]);
-
-    useEffect(() => {
-        if (isFilteredUrl()) {
-            const filterValues = queryString.parse(location.search);
-
-            const filterItems = Object.values(filterValues);
-            const values = filterItems.slice(2, -2); //because 2 first are related to column and operator, two last are page number and size
-            //when I refactor it to value: values.length === 1 ? (values[0] as string) : (values as string[]), it doesnt work anymore. to consider later
-            if (filterItems.length >= 3) {
-                let filter;
-                if (values.length === 1) {
-                    filter = {
-                        items: [
-                            {
-                                field: filterItems[0] as string,
-                                operator: filterItems[1] === "ANY_OF" ? "isAnyOf" : "contains",
-                                value: values[0] as string,
-                            },
-                        ],
-                        logicOperator: GridLogicOperator.And,
-                    };
-                } else {
-                    filter = {
-                        items: [
-                            {
-                                field: filterItems[0] as string,
-                                operator: filterItems[1] === "ANY_OF" ? "isAnyOf" : "contains",
-                                value: values as string[],
-                            },
-                        ],
-                        logicOperator: GridLogicOperator.And,
-                    };
-
-                    setFilterModel(filter);
-                }
-            }
-        }
-    }, [isFilteredUrl, location.search]);
-
-    const rows = projects.map((p) => {
-        return { ...p, id: p.projectId };
-    });
-
-    const updateUrl = useCallback(() => {
-        if (filterModel && filterModel.items) {
-            const updatedQuery = queryString.stringify({
-                filterColumn: filterModel.items[0].field,
-                filterCondition: filterModel.items[0].operator === "isAnyOf" ? "ANY_OF" : "CONTAINS",
-                filterValue: filterModel.items[0].value,
-            });
-            setQuery(updatedQuery);
-        }
-        const url = `?pageNumber=${paginationInfo.page}&pageSize=${paginationInfo.pageSize}&${query}`;
-        setFilterUrl(url);
-    }, [filterModel, paginationInfo.page, paginationInfo.pageSize, query]);
-
-    useEffect(() => {
-        updateUrl();
-    }, [updateUrl, filterModel]);
+    const { filterUrl, rows } = useCustomSearchParams(filterModel, paginationInfo);
 
     useEffect(() => {
         navigate(`/projects/table${filterUrl}`);
