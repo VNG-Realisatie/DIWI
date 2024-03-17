@@ -1,5 +1,6 @@
 package nl.vng.diwi.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,6 +15,8 @@ import java.util.UUID;
 public class SelectModel implements Comparable<SelectModel> {
 
     private UUID id;
+
+    @JsonProperty(required = true)
     private String name;
 
 
