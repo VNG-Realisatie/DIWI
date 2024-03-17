@@ -78,11 +78,6 @@ export const ProjectDetail = ({ children }: PropsWithChildren) => {
                     />
                 )}
             </Stack>
-            {/* <Stack direction="row" justifyContent="flex-end" border="solid 1px #ddd" p={0.5}>
-                <Box sx={{ cursor: "pointer" }} onClick={() => navigate(Paths.projectAdd.path)}>
-                    <AddCircleIcon color="info" sx={{ fontSize: "45px" }} />
-                </Box>
-            </Stack> */}
 
             <ProjectColorContext.Provider
                 value={{

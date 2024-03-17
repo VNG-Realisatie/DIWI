@@ -140,6 +140,7 @@
       "title": "Projecten overzicht",
       "map": "Kaart",
       "table": "Tabel",
+      "createNewProject": "Nieuw project toevoegen",
       "tableColumns": {
         "projectName": "Project naam",
         "totalValue": "Totaal aantal",
@@ -169,7 +170,8 @@
       "map": "Kaart",
       "characteristics": "Eigenschappen",
       "timeline": "Tijdlijn",
-      "colorEdit": "Kleur bewerken"
+      "colorEdit": "Kleur bewerken",
+      "createNewHouseBlock": "Nieuw huizenblok toevoegen"
     },
     "exchangeData": {
       "title": "Data uitwisselen",
