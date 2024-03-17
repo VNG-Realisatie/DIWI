@@ -12,10 +12,90 @@
     "/rest/buurt/list": {
       "get": {
         "operationId": "getAllBuurts",
+        "parameters": [{ "name": "wijkId", "in": "query", "schema": { "type": "array", "items": { "type": "string", "format": "uuid" } } }],
         "responses": {
           "default": {
             "description": "default response",
             "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/SelectModel" } } } }
+          }
+        }
+      }
+    },
+    "/rest/customproperties": {
+      "get": {
+        "operationId": "getAllCustomProperties",
+        "parameters": [{ "name": "objectType", "in": "query", "schema": { "type": "string", "enum": ["PROJECT", "WONINGBLOK"] } }],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/CustomPropertyModel" } } } }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createCustomProperty",
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CustomPropertyModel" } } } },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CustomPropertyModel" } } }
+          }
+        }
+      }
+    },
+    "/rest/customproperties/{id}": {
+      "get": {
+        "operationId": "getCustomProperty",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CustomPropertyModel" } } }
+          }
+        }
+      },
+      "put": {
+        "operationId": "updateCustomProperty",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CustomPropertyModel" } } } },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CustomPropertyModel" } } }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "disableCustomProperty",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CustomPropertyModel" } } }
+          }
+        }
+      }
+    },
+    "/rest/houseblock/add": {
+      "post": {
+        "operationId": "createHouseblock",
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HouseblockSnapshotModel" } } } },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HouseblockSnapshotModel" } } }
+          }
+        }
+      }
+    },
+    "/rest/houseblock/{uuid}": {
+      "get": {
+        "operationId": "getCurrentHouseblockSnapshot",
+        "parameters": [{ "name": "uuid", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/HouseblockSnapshotModel" } } }
           }
         }
       }
@@ -73,6 +153,35 @@
         }
       }
     },
+    "/rest/projects": {
+      "post": {
+        "operationId": "createProject",
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ProjectCreateSnapshotModel" } } } },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ProjectMinimalSnapshotModel" } } }
+          }
+        }
+      }
+    },
+    "/rest/projects/{id}": {
+      "get": {
+        "operationId": "getCurrentProjectSnapshot",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ProjectSnapshotModel" } } }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteProject",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "responses": { "default": { "description": "default response", "content": { "*/*": {} } } }
+      }
+    },
     "/rest/projects/table": {
       "get": {
         "operationId": "getAllProjects",
@@ -113,23 +222,28 @@
         }
       }
     },
-    "/rest/projects/{id}": {
-      "get": {
-        "operationId": "getCurrentProjectSnapshot",
-        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
-        "responses": {
-          "default": {
-            "description": "default response",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ProjectSnapshotModel" } } }
-          }
-        }
-      }
-    },
     "/rest/projects/{id}/timeline": {
       "get": {
         "operationId": "getCurrentProjectTimeline",
         "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
-        "responses": { "default": { "description": "default response", "content": { "application/json": { "schema": { "type": "object" } } } } }
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ProjectTimelineModel" } } }
+          }
+        }
+      }
+    },
+    "/rest/projects/{id}/houseblocks": {
+      "get": {
+        "operationId": "getProjectHouseblocks",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/HouseblockSnapshotModel" } } } }
+          }
+        }
       }
     },
     "/rest/projects/update": {
@@ -155,6 +269,7 @@
     "/rest/wijk/list": {
       "get": {
         "operationId": "getAllWijks",
+        "parameters": [{ "name": "gemeenteId", "in": "query", "schema": { "type": "array", "items": { "type": "string", "format": "uuid" } } }],
         "responses": {
           "default": {
             "description": "default response",
@@ -208,17 +323,118 @@
   },
   "components": {
     "schemas": {
-      "SelectModel": { "type": "object", "properties": { "id": { "type": "string", "format": "uuid" }, "name": { "type": "string" } } },
-      "MilestoneModel": {
+      "SelectModel": {
+        "required": ["id", "name"],
+        "type": "object",
+        "properties": { "id": { "type": "string", "format": "uuid" }, "name": { "type": "string" } }
+      },
+      "CustomPropertyModel": {
         "type": "object",
         "properties": {
           "id": { "type": "string", "format": "uuid" },
-          "state": { "type": "string", "enum": ["VOORSPELD", "GEPLAND", "GEREALISEERD", "AFGEBROKEN"] },
+          "name": { "type": "string" },
+          "objectType": { "type": "string", "enum": ["PROJECT", "WONINGBLOK"] },
+          "propertyType": { "type": "string", "enum": ["BOOLEAN", "CATEGORY", "ORDINAL", "NUMERIC", "TEXT"] },
+          "disabled": { "type": "boolean" },
+          "categories": { "type": "array", "items": { "$ref": "#/components/schemas/SelectModel" } }
+        }
+      },
+      "GroundPosition": {
+        "type": "object",
+        "properties": {
+          "noPermissionOwner": { "type": "integer", "format": "int32" },
+          "intentionPermissionOwner": { "type": "integer", "format": "int32" },
+          "formalPermissionOwner": { "type": "integer", "format": "int32" }
+        }
+      },
+      "HouseType": {
+        "type": "object",
+        "properties": { "meergezinswoning": { "type": "integer", "format": "int32" }, "eengezinswoning": { "type": "integer", "format": "int32" } }
+      },
+      "HouseblockSnapshotModel": {
+        "type": "object",
+        "properties": {
+          "startDate": { "type": "string", "format": "date" },
+          "endDate": { "type": "string", "format": "date" },
+          "projectId": { "type": "string", "format": "uuid" },
+          "houseblockId": { "type": "string", "format": "uuid" },
+          "houseblockName": { "type": "string" },
+          "size": { "$ref": "#/components/schemas/SingleValueOrRangeModelBigDecimal" },
+          "programming": { "type": "boolean" },
+          "mutation": { "$ref": "#/components/schemas/Mutation" },
+          "ownershipValue": { "type": "array", "items": { "$ref": "#/components/schemas/OwnershipValue" } },
+          "groundPosition": { "$ref": "#/components/schemas/GroundPosition" },
+          "physicalAppearance": { "$ref": "#/components/schemas/PhysicalAppearance" },
+          "houseType": { "$ref": "#/components/schemas/HouseType" },
+          "purpose": { "$ref": "#/components/schemas/Purpose" }
+        }
+      },
+      "Mutation": {
+        "type": "object",
+        "properties": {
+          "mutationKind": { "type": "array", "items": { "type": "string", "enum": ["BOUW", "SLOOP", "TRANSFORMATIE", "SPLITSING"] } },
+          "grossPlanCapacity": { "type": "integer", "format": "int32" },
+          "netPlanCapacity": { "type": "integer", "format": "int32" },
+          "demolition": { "type": "integer", "format": "int32" }
+        }
+      },
+      "OwnershipValue": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "type": { "type": "string", "enum": ["KOOPWONING", "HUURWONING_PARTICULIERE_VERHUURDER", "HUURWONING_WONINGCORPORATIE"] },
+          "amount": { "type": "integer", "format": "int32" },
+          "value": { "$ref": "#/components/schemas/SingleValueOrRangeModelInteger" },
+          "rentalValue": { "$ref": "#/components/schemas/SingleValueOrRangeModelInteger" }
+        }
+      },
+      "PhysicalAppearance": {
+        "type": "object",
+        "properties": {
+          "tussenwoning": { "type": "integer", "format": "int32" },
+          "tweeondereenkap": { "type": "integer", "format": "int32" },
+          "portiekflat": { "type": "integer", "format": "int32" },
+          "hoekwoning": { "type": "integer", "format": "int32" },
+          "vrijstaand": { "type": "integer", "format": "int32" },
+          "gallerijflat": { "type": "integer", "format": "int32" }
+        }
+      },
+      "Purpose": {
+        "type": "object",
+        "properties": {
+          "regular": { "type": "integer", "format": "int32" },
+          "youth": { "type": "integer", "format": "int32" },
+          "student": { "type": "integer", "format": "int32" },
+          "elderly": { "type": "integer", "format": "int32" },
+          "largeFamilies": { "type": "integer", "format": "int32" },
+          "ghz": { "type": "integer", "format": "int32" }
+        }
+      },
+      "SingleValueOrRangeModelBigDecimal": {
+        "type": "object",
+        "properties": { "value": { "type": "number" }, "min": { "type": "number" }, "max": { "type": "number" } }
+      },
+      "SingleValueOrRangeModelInteger": {
+        "type": "object",
+        "properties": {
+          "value": { "type": "integer", "format": "int32" },
+          "min": { "type": "integer", "format": "int32" },
+          "max": { "type": "integer", "format": "int32" }
+        }
+      },
+      "MilestoneModel": {
+        "required": ["id", "stateId", "status"],
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "stateId": { "type": "string", "format": "uuid" },
+          "status": { "type": "string", "enum": ["VOORSPELD", "GEPLAND", "GEREALISEERD", "AFGEBROKEN"] },
           "date": { "type": "string", "format": "date" },
           "description": { "type": "string" }
         }
       },
       "OrganizationModel": {
+        "required": ["name", "uuid"],
         "type": "object",
         "properties": {
           "uuid": { "type": "string", "format": "uuid" },
@@ -235,6 +451,34 @@
           "initials": { "type": "string" }
         }
       },
+      "ProjectMinimalSnapshotModel": {
+        "required": ["confidentialityLevel", "projectColor", "projectId", "projectName", "projectPhase"],
+        "type": "object",
+        "properties": {
+          "startDate": { "type": "string", "format": "date" },
+          "endDate": { "type": "string", "format": "date" },
+          "projectName": { "type": "string" },
+          "projectColor": { "type": "string" },
+          "confidentialityLevel": { "type": "string", "enum": ["PRIVE", "INTERN_UITVOERING", "INTERN_RAPPORTAGE", "EXTERN_RAPPORTAGE", "OPENBAAR"] },
+          "projectPhase": {
+            "type": "string",
+            "enum": ["_1_INITIATIEFFASE", "_2_PROJECTFASE", "_3_VERGUNNINGSFASE", "_4_REALISATIEFASE", "_5_OPLEVERINGSFASE"]
+          },
+          "projectId": { "type": "string", "format": "uuid" }
+        }
+      },
+      "ProjectCreateSnapshotModel": {
+        "required": ["confidentialityLevel", "projectColor", "projectName", "projectPhase"],
+        "type": "object",
+        "properties": {
+          "startDate": { "type": "string", "format": "date" },
+          "endDate": { "type": "string", "format": "date" },
+          "projectName": { "type": "string" },
+          "projectColor": { "type": "string" },
+          "confidentialityLevel": { "type": "string", "enum": ["PRIVE", "INTERN_UITVOERING", "INTERN_RAPPORTAGE", "EXTERN_RAPPORTAGE", "OPENBAAR"] },
+          "projectPhase": { "type": "string", "enum": ["_1_INITIATIEFFASE", "_2_PROJECTFASE", "_3_VERGUNNINGSFASE", "_4_REALISATIEFASE", "_5_OPLEVERINGSFASE"] }
+        }
+      },
       "PriorityModel": {
         "type": "object",
         "properties": {
@@ -244,26 +488,20 @@
         }
       },
       "ProjectListModel": {
+        "required": ["confidentialityLevel", "projectColor", "projectId", "projectName", "projectPhase"],
         "type": "object",
         "properties": {
           "startDate": { "type": "string", "format": "date" },
           "endDate": { "type": "string", "format": "date" },
-          "projectId": { "type": "string", "format": "uuid" },
           "projectName": { "type": "string" },
           "projectColor": { "type": "string" },
           "confidentialityLevel": { "type": "string", "enum": ["PRIVE", "INTERN_UITVOERING", "INTERN_RAPPORTAGE", "EXTERN_RAPPORTAGE", "OPENBAAR"] },
-          "planType": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "enum": ["PAND_TRANSFORMATIE", "TRANSFORMATIEGEBIED", "HERSTRUCTURERING", "VERDICHTING", "UITBREIDING_UITLEG", "UITBREIDING_OVERIG"]
-            }
-          },
-          "priority": { "$ref": "#/components/schemas/PriorityModel" },
           "projectPhase": {
             "type": "string",
             "enum": ["_1_INITIATIEFFASE", "_2_PROJECTFASE", "_3_VERGUNNINGSFASE", "_4_REALISATIEFASE", "_5_OPLEVERINGSFASE"]
           },
+          "projectId": { "type": "string", "format": "uuid" },
+          "projectStateId": { "type": "string", "format": "uuid" },
           "planningPlanStatus": {
             "type": "array",
             "items": {
@@ -281,25 +519,6 @@
               ]
             }
           },
-          "municipalityRole": { "type": "array", "items": { "$ref": "#/components/schemas/SelectModel" } },
-          "projectOwners": { "type": "array", "items": { "$ref": "#/components/schemas/OrganizationModel" } },
-          "projectLeaders": { "type": "array", "items": { "$ref": "#/components/schemas/OrganizationModel" } },
-          "totalValue": { "type": "integer", "format": "int64" },
-          "municipality": { "type": "array", "items": { "$ref": "#/components/schemas/SelectModel" } },
-          "wijk": { "type": "array", "items": { "$ref": "#/components/schemas/SelectModel" } },
-          "buurt": { "type": "array", "items": { "$ref": "#/components/schemas/SelectModel" } },
-          "projectStateId": { "type": "string", "format": "uuid" }
-        }
-      },
-      "ProjectSnapshotModel": {
-        "type": "object",
-        "properties": {
-          "startDate": { "type": "string", "format": "date" },
-          "endDate": { "type": "string", "format": "date" },
-          "projectId": { "type": "string", "format": "uuid" },
-          "projectName": { "type": "string" },
-          "projectColor": { "type": "string" },
-          "confidentialityLevel": { "type": "string", "enum": ["PRIVE", "INTERN_UITVOERING", "INTERN_RAPPORTAGE", "EXTERN_RAPPORTAGE", "OPENBAAR"] },
           "planType": {
             "type": "array",
             "items": {
@@ -308,27 +527,6 @@
             }
           },
           "priority": { "$ref": "#/components/schemas/PriorityModel" },
-          "projectPhase": {
-            "type": "string",
-            "enum": ["_1_INITIATIEFFASE", "_2_PROJECTFASE", "_3_VERGUNNINGSFASE", "_4_REALISATIEFASE", "_5_OPLEVERINGSFASE"]
-          },
-          "planningPlanStatus": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "enum": [
-                "_1A_ONHERROEPELIJK",
-                "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG",
-                "_1C_ONHERROEPELIJK_MET_BW_NODIG",
-                "_2A_VASTGESTELD",
-                "_2B_VASTGESTELD_MET_UITWERKING_NODIG",
-                "_2C_VASTGESTELD_MET_BW_NODIG",
-                "_3_IN_VOORBEREIDING",
-                "_4A_OPGENOMEN_IN_VISIE",
-                "_4B_NIET_OPGENOMEN_IN_VISIE"
-              ]
-            }
-          },
           "municipalityRole": { "type": "array", "items": { "$ref": "#/components/schemas/SelectModel" } },
           "projectOwners": { "type": "array", "items": { "$ref": "#/components/schemas/OrganizationModel" } },
           "projectLeaders": { "type": "array", "items": { "$ref": "#/components/schemas/OrganizationModel" } },
@@ -336,6 +534,143 @@
           "municipality": { "type": "array", "items": { "$ref": "#/components/schemas/SelectModel" } },
           "wijk": { "type": "array", "items": { "$ref": "#/components/schemas/SelectModel" } },
           "buurt": { "type": "array", "items": { "$ref": "#/components/schemas/SelectModel" } }
+        }
+      },
+      "ProjectSnapshotModel": {
+        "required": ["confidentialityLevel", "projectColor", "projectId", "projectName", "projectPhase"],
+        "type": "object",
+        "properties": {
+          "startDate": { "type": "string", "format": "date" },
+          "endDate": { "type": "string", "format": "date" },
+          "projectName": { "type": "string" },
+          "projectColor": { "type": "string" },
+          "confidentialityLevel": { "type": "string", "enum": ["PRIVE", "INTERN_UITVOERING", "INTERN_RAPPORTAGE", "EXTERN_RAPPORTAGE", "OPENBAAR"] },
+          "projectPhase": {
+            "type": "string",
+            "enum": ["_1_INITIATIEFFASE", "_2_PROJECTFASE", "_3_VERGUNNINGSFASE", "_4_REALISATIEFASE", "_5_OPLEVERINGSFASE"]
+          },
+          "projectId": { "type": "string", "format": "uuid" },
+          "projectStateId": { "type": "string", "format": "uuid" },
+          "planningPlanStatus": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "_1A_ONHERROEPELIJK",
+                "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG",
+                "_1C_ONHERROEPELIJK_MET_BW_NODIG",
+                "_2A_VASTGESTELD",
+                "_2B_VASTGESTELD_MET_UITWERKING_NODIG",
+                "_2C_VASTGESTELD_MET_BW_NODIG",
+                "_3_IN_VOORBEREIDING",
+                "_4A_OPGENOMEN_IN_VISIE",
+                "_4B_NIET_OPGENOMEN_IN_VISIE"
+              ]
+            }
+          },
+          "planType": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["PAND_TRANSFORMATIE", "TRANSFORMATIEGEBIED", "HERSTRUCTURERING", "VERDICHTING", "UITBREIDING_UITLEG", "UITBREIDING_OVERIG"]
+            }
+          },
+          "priority": { "$ref": "#/components/schemas/PriorityModel" },
+          "municipalityRole": { "type": "array", "items": { "$ref": "#/components/schemas/SelectModel" } },
+          "projectOwners": { "type": "array", "items": { "$ref": "#/components/schemas/OrganizationModel" } },
+          "projectLeaders": { "type": "array", "items": { "$ref": "#/components/schemas/OrganizationModel" } },
+          "totalValue": { "type": "integer", "format": "int64" },
+          "municipality": { "type": "array", "items": { "$ref": "#/components/schemas/SelectModel" } },
+          "wijk": { "type": "array", "items": { "$ref": "#/components/schemas/SelectModel" } },
+          "buurt": { "type": "array", "items": { "$ref": "#/components/schemas/SelectModel" } }
+        }
+      },
+      "DatedDataModelListPlanStatus": {
+        "type": "object",
+        "properties": {
+          "startDate": { "type": "string", "format": "date" },
+          "endDate": { "type": "string", "format": "date" },
+          "id": { "type": "string", "format": "uuid" },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "_1A_ONHERROEPELIJK",
+                "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG",
+                "_1C_ONHERROEPELIJK_MET_BW_NODIG",
+                "_2A_VASTGESTELD",
+                "_2B_VASTGESTELD_MET_UITWERKING_NODIG",
+                "_2C_VASTGESTELD_MET_BW_NODIG",
+                "_3_IN_VOORBEREIDING",
+                "_4A_OPGENOMEN_IN_VISIE",
+                "_4B_NIET_OPGENOMEN_IN_VISIE"
+              ]
+            }
+          }
+        }
+      },
+      "DatedDataModelListPlanType": {
+        "type": "object",
+        "properties": {
+          "startDate": { "type": "string", "format": "date" },
+          "endDate": { "type": "string", "format": "date" },
+          "id": { "type": "string", "format": "uuid" },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["PAND_TRANSFORMATIE", "TRANSFORMATIEGEBIED", "HERSTRUCTURERING", "VERDICHTING", "UITBREIDING_UITLEG", "UITBREIDING_OVERIG"]
+            }
+          }
+        }
+      },
+      "DatedDataModelProjectPhase": {
+        "type": "object",
+        "properties": {
+          "startDate": { "type": "string", "format": "date" },
+          "endDate": { "type": "string", "format": "date" },
+          "id": { "type": "string", "format": "uuid" },
+          "data": { "type": "string", "enum": ["_1_INITIATIEFFASE", "_2_PROJECTFASE", "_3_VERGUNNINGSFASE", "_4_REALISATIEFASE", "_5_OPLEVERINGSFASE"] }
+        }
+      },
+      "DatedDataModelString": {
+        "type": "object",
+        "properties": {
+          "startDate": { "type": "string", "format": "date" },
+          "endDate": { "type": "string", "format": "date" },
+          "id": { "type": "string", "format": "uuid" },
+          "data": { "type": "string" }
+        }
+      },
+      "DatedPriorityModel": {
+        "type": "object",
+        "properties": {
+          "startDate": { "type": "string", "format": "date" },
+          "endDate": { "type": "string", "format": "date" },
+          "priorityModel": { "$ref": "#/components/schemas/PriorityModel" }
+        }
+      },
+      "ProjectTimelineModel": {
+        "type": "object",
+        "properties": {
+          "startDate": { "type": "string", "format": "date" },
+          "endDate": { "type": "string", "format": "date" },
+          "projectId": { "type": "string", "format": "uuid" },
+          "projectName": { "type": "array", "items": { "$ref": "#/components/schemas/DatedDataModelString" } },
+          "projectColor": { "type": "string" },
+          "confidentialityLevel": { "type": "string", "enum": ["PRIVE", "INTERN_UITVOERING", "INTERN_RAPPORTAGE", "EXTERN_RAPPORTAGE", "OPENBAAR"] },
+          "planType": { "type": "array", "items": { "$ref": "#/components/schemas/DatedDataModelListPlanType" } },
+          "priority": { "type": "array", "items": { "$ref": "#/components/schemas/DatedPriorityModel" } },
+          "projectPhase": { "type": "array", "items": { "$ref": "#/components/schemas/DatedDataModelProjectPhase" } },
+          "municipalityRole": { "type": "array", "items": { "$ref": "#/components/schemas/DatedDataModelString" } },
+          "planningPlanStatus": { "type": "array", "items": { "$ref": "#/components/schemas/DatedDataModelListPlanStatus" } },
+          "projectOwners": { "type": "array", "items": { "$ref": "#/components/schemas/OrganizationModel" } },
+          "projectLeaders": { "type": "array", "items": { "$ref": "#/components/schemas/OrganizationModel" } },
+          "totalValue": { "type": "integer", "format": "int64" },
+          "municipality": { "type": "array", "items": { "type": "string" } },
+          "wijk": { "type": "array", "items": { "type": "string" } },
+          "buurt": { "type": "array", "items": { "type": "string" } }
         }
       },
       "ProjectUpdateModel": {
@@ -349,16 +684,21 @@
               "name",
               "planningPlanStatus",
               "planType",
+              "priority",
               "projectColor",
               "projectLeaders",
               "projectOwners",
-              "projectPhase"
+              "projectPhase",
+              "startDate",
+              "endDate"
             ]
           },
           "value": { "type": "string" },
           "values": { "type": "array", "items": { "type": "string" } },
-          "add": { "type": "string" },
-          "remove": { "type": "string" }
+          "add": { "type": "string", "format": "uuid" },
+          "remove": { "type": "string", "format": "uuid" },
+          "min": { "type": "string", "format": "uuid" },
+          "max": { "type": "string", "format": "uuid" }
         }
       },
       "UserModel": {
