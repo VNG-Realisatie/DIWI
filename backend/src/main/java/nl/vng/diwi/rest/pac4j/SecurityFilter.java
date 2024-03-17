@@ -9,6 +9,7 @@ import org.pac4j.core.exception.TechnicalException;
 import org.pac4j.jee.context.JEEFrameworkParameters;
 
 import jakarta.annotation.Priority;
+import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.Priorities;
@@ -31,7 +32,7 @@ public class SecurityFilter implements ContainerRequestFilter {
 
     private ProjectConfig config;
 
-
+    @Inject
     public SecurityFilter(ProjectConfig config) {
         this.config = config;
     }
