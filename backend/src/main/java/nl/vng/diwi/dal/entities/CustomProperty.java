@@ -22,4 +22,10 @@ public class CustomProperty extends IdSuperclass {
     @OneToMany(mappedBy="customProperty", fetch = FetchType.LAZY)
     private List<CustomPropertyState> states;
 
+    @OneToMany(mappedBy="customProperty", fetch = FetchType.LAZY)
+    private List<CustomCategoryValue> categoryValues;
+
+    @OneToMany(mappedBy="customProperty", fetch = FetchType.LAZY)
+    private List<CustomOrdinalValue> ordinalValues;
+
 }
