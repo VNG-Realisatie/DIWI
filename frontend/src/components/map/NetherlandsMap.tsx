@@ -4,6 +4,9 @@ import "leaflet-draw/dist/leaflet.draw.css";
 import L from "leaflet";
 import "leaflet-draw";
 import { useEffect, useId, useRef } from "react";
+import PlusButton from "../PlusButton";
+import * as Paths from "../../Paths";
+import { useTranslation } from "react-i18next";
 
 type Marker = {
     projectColor: string;
@@ -15,16 +18,18 @@ type Props = {
     height: string;
     width: string;
     mapData: Marker[];
+    plusButton?: boolean;
 };
 
 //Dummy Coordinates for the center of the Netherlands
 const center: LatLngTuple = [52.1326, 5.2913];
 
-const NetherlandsMap = ({ height, width, mapData }: Props) => {
+const NetherlandsMap = ({ height, width, mapData, plusButton }: Props) => {
     const mapRef = useRef<Map>();
     const id = useId();
 
     const mapZoom = 10;
+    const { t } = useTranslation();
 
     function createMarkerIcon(color: string) {
         return L.divIcon({
@@ -74,7 +79,11 @@ const NetherlandsMap = ({ height, width, mapData }: Props) => {
         });
     }, [mapData, id]);
 
-    return <div id={id} style={{ width, height }}></div>;
+    return (
+        <div id={id} style={{ width, height }}>
+            {plusButton && <PlusButton color="#002C64" link={Paths.projectAdd.path} text={t("projects.createNewProject")} />}
+        </div>
+    );
 };
 
 export default NetherlandsMap;
