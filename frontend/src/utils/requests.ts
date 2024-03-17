@@ -53,9 +53,13 @@ export async function postJson(url: string, data: any) {
             "Content-Type": "application/json",
         },
     });
-
     if (!res.ok) {
-        throw Error(res.statusText);
+        if (res.status === 400) {
+            const response = await res.json();
+            throw Error(response.error);
+        } else {
+            throw Error(res.statusText);
+        }
     }
 
     return res.json();
@@ -67,6 +71,9 @@ export async function putJson(url: string, data: any) {
     const res = await diwiFetch(encodeURI(url), {
         method: "PUT",
         body: body,
+        headers: {
+            "Content-Type": "application/json",
+        },
     });
 
     if (!res.ok) {

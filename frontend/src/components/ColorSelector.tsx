@@ -15,7 +15,7 @@ const ColorSelector: FC<ColorSelectorProps> = ({ defaultColor, onColorChange, se
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
     const handleColorChange = (newColor: ColorResult) => {
-        const newColorString = `rgba(${newColor.rgb.r}, ${newColor.rgb.g}, ${newColor.rgb.b}, ${newColor.rgb.a})`;
+        const newColorString = newColor.hex;
         setColor(newColorString);
         if (onColorChange) {
             onColorChange(newColorString);

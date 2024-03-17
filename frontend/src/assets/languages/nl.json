@@ -10,7 +10,8 @@
       "saveChanges": "Opslaan veranderingen",
       "edit": "Bewerken",
       "confirmDeletion": "Weet u zeker dat u {{name}} wilt verwijderen?",
-      "delete": "Verwijderen"
+      "delete": "Verwijderen",
+      "cancel": "Annuleren"
     },
     "createProject": {
       "information": "Project informatie",
@@ -19,7 +20,7 @@
       "timeline": "Tijdlijn",
       "completeMessage": "De wizard voor het maken van projectformulieren is voltooid. Klik op Opslaan om het proces te voltooien.",
       "successfullySaved": "Project succesvol opgeslagen.",
-      "nameIsRequried" : "Vul het veld projectnaam in",
+      "nameIsRequried": "Vul het veld projectnaam in",
       "informationForm": {
         "title": "Vul de projectgegevens in",
         "nameLabel": "Projectnaam en projectkleur*",
@@ -46,9 +47,9 @@
         "demolition": "Sloop",
         "mutationType": "Mutatiesoort",
         "size": "Grootte",
-        "type":"Soort",
-        "amount":"Aantal",
-        "rent":"Huur",
+        "type": "Soort",
+        "amount": "Aantal",
+        "rent": "Huur",
         "ownershipAndValue": "Eigendom en waarde",
         "ownerOccupiedHome": "Koopwoning",
         "rentalPropertyPrivate": "Huurwoning Particuliere verhuurder",
@@ -112,7 +113,11 @@
         "students": "Studenten",
         "elderly": "Ouderen",
         "disabilityAndCare": "Gehandicapter en zorg",
-        "largeFamilies": "Grote gezinnen"
+        "largeFamilies": "Grote gezinnen",
+        "notifications": {
+          "successfullySaved": "Huizenblokken succesvol opgeslagen.",
+          "error": "Er is iets fout gegaan"
+        }
       },
       "selectMapForm": {
         "title": "Teken het project in op de kaart",
@@ -133,7 +138,8 @@
       "projects": "Projecten",
       "dashboards": "Dashboards",
       "users": "Gebruikers",
-      "dataExchange": "Data uitwisselen"
+      "dataExchange": "Data uitwisselen",
+      "settings": "Instellingen"
     },
     "projects": {
       "title": "Projecten overzicht",
@@ -229,6 +235,27 @@
       "houseBlocks": {
         "generalInformation": {
           "title": "Algemene informatie"
+        }
+      }
+    },
+    "admin": {
+      "settings": {
+        "title": "Lijst met optionele velden",
+        "tableHeader": {
+          "name": "Naam",
+          "objectType": "Project of Huizen blok",
+          "propertyType": "Type",
+          "categories": "Opties",
+          "status": "Aan/ Uit",
+          "active": "Actief",
+          "edit": "Bewerken",
+          "delete": "Verwijderen",
+          "actions": "Acties"
+        },
+        "add": "Voeg optioneel toe",
+        "notifications": {
+          "successfullySaved": "Eigenschappen succesvol opgeslagen.",
+          "successfullyDeleted": "Eigenschappen succesvol verwijderd."
         }
       }
     }

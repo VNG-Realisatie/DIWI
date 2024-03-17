@@ -45,7 +45,7 @@ export const emptyHouseBlockForm: HouseBlock = {
         intentionPermissionOwner: null,
         formalPermissionOwner: null,
     },
-    physicalAppeareance: {
+    physicalAppearance: {
         tussenwoning: null,
         tweeondereenkap: null,
         portiekflat: null,

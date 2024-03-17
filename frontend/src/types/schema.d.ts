@@ -122,7 +122,7 @@ export interface components {
             /** Format: date */
             endDate?: string;
             /** Format: uuid */
-            projectId: string;
+            projectId?: string;
             projectName: string;
             projectColor?: string;
             /** @enum {string} */

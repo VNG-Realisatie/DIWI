@@ -4,6 +4,9 @@ x-environment: &common
   KEYCLOAK_PORT: ${KEYCLOAK_PORT:-1780}
   FRONTEND_PORT: ${FRONTEND_PORT:-3000}
 
+include:
+  - docker-compose.keycloak.dev.yml
+
 services:
   backend:
     build:
@@ -23,47 +26,8 @@ services:
       DIWI_DB_USERNAME: ${DIWI_DB_USERNAME:-diwi}
       DIWI_DB_PASSWORD: ${DIWI_DB_PASSWORD:-diwi}
       KC_REALM_NAME: ${KC_REALM_NAME:-diwi-test-realm}
-      KC_AUTH_SERVER_URL: ${KC_AUTH_SERVER_URL:-http://localhost:${KEYCLOAK_PORT}}
+      KC_AUTH_SERVER_URL: ${KC_AUTH_SERVER_URL:-http://localhost:${KEYCLOAK_PORT:-1780}}
       KC_SECRET: ${KC_SECRET:-diwi-test-secret}
       KC_RESOURCE_NAME: ${KC_RESOURCE_NAME:-diwi-test-client}
     depends_on:
       - keycloak
-
-  keycloak:
-    build:
-      context: keycloak
-    develop:
-      watch:
-        - action: rebuild
-          path: keycloak
-    network_mode: host
-    environment:
-      <<: *common
-      KC_DB: postgres
-      KC_HTTP_ENABLED: true
-      KC_PROXY: edge
-      KC_DB_URL_HOST: ${KEYCLOAK_DB_HOST:-localhost}
-      KC_DB_URL_PORT: ${KEYCLOAK_DB_PORT:-1732}
-      KC_DB_USERNAME: ${KEYCLOAK_DB_USERNAME:-keycloak}
-      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:-keycloak}
-      KC_HOSTNAME_STRICT: false
-      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
-    depends_on:
-      - keycloak_database
-    volumes:
-      - ./keycloak/realm-import:/opt/keycloak/data/import
-    command: "start --import-realm --optimized --http-port=$${KEYCLOAK_PORT}"
-
-  keycloak_database:
-    image: git.phinion.com/phinion/dependency_proxy/containers/postgres:15
-    network_mode: host
-    environment:
-      <<: *common
-      POSTGRES_DB: keycloak
-      POSTGRES_USER: ${KEYCLOAK_DB_USERNAME:-keycloak}
-      POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD:-keycloak}
-      KEYCLOAK_DB_PORT: ${KEYCLOAK_DB_PORT:-1732}
-    volumes:
-      - ./data/keycloak:/var/lib/postgresql/data
-    entrypoint: bash -c "/usr/local/bin/docker-entrypoint.sh -p $$KEYCLOAK_DB_PORT"

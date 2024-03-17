@@ -1,4 +1,4 @@
-package nl.vng.diwi.models;
+package nl.vng.diwi.dal.entities;
 
 import io.hypersistence.utils.hibernate.type.array.StringArrayType;
 import jakarta.persistence.Column;

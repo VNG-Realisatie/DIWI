@@ -1,11 +1,10 @@
-import { Accordion, AccordionDetails, AccordionSummary, AvatarGroup, Box, Grid, Popover, Stack, TextField, Tooltip, Typography } from "@mui/material";
-import { MouseEvent, useCallback, useContext, useState } from "react";
+import { Box, Grid, Popover, Stack, TextField, Tooltip, Typography } from "@mui/material";
+import { MouseEvent, useCallback, useContext, useEffect, useState } from "react";
 import ProjectContext from "../../../context/ProjectContext";
 import ProjectColorContext from "../../../pages/ProjectDetail";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import ClearIcon from "@mui/icons-material/Clear";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import FormatColorFillIcon from "@mui/icons-material/FormatColorFill";
 import { useTranslation } from "react-i18next";
 import { DatePicker } from "@mui/x-date-pickers";
@@ -24,13 +23,15 @@ import { WijkEditForm } from "./WijkEditForm";
 import { defaultColors } from "../../ColorSelector";
 import { BlockPicker, ColorResult } from "react-color";
 import { CellContainer } from "./CellContainer";
-import { OrganizationUserAvatars } from "../../OrganizationUserAvatars";
+import { OrganizationSelect } from "../../../widgets/OrganizationSelect";
 import { PlanStatusOptions, PlanTypeOptions } from "../../../types/enums";
 import { PriorityEditForm } from "./PriorityEditForm";
-import { SelectModel, updateProjects } from "../../../api/projectsServices";
-import { BlockHousesForm } from "../../BlockHousesForm";
+import { Organization, SelectModel, getProjectHouseBlocks, updateProjects } from "../../../api/projectsServices";
 import { HouseBlock } from "../../project-wizard/house-blocks/types";
-// import { ProjectHouseBlockCardItem } from "./ProjectHouseBlockCardItem";
+import AlertContext from "../../../context/AlertContext";
+import { CreateHouseBlockDialog } from "./CreateHouseBlockDialog";
+import { HouseBlocksList } from "./HouseBlocksList";
+import { emptyHouseBlockForm } from "../../project-wizard/house-blocks/constants";
 
 export const columnTitleStyle = {
     border: "solid 1px #ddd",
@@ -38,162 +39,15 @@ export const columnTitleStyle = {
     color: "#FFFFFF",
     backgroundColor: "#738092",
 };
-const dummyArray: HouseBlock[] = [
-    {
-        startDate: "2024-03-11",
-        endDate: "2024-04-11",
-        projectId: "project123",
-        houseblockId: "block456",
-        houseblockName: "Sample House Block",
-        size: {
-            value: 500,
-            min: 400,
-            max: 600,
-        },
-        programming: true,
-        mutation: {
-            mutationKind: ["BOUW", "SLOOP"],
-            grossPlanCapacity: 1000,
-            netPlanCapacity: 900,
-            demolition: 200,
-        },
-        ownershipValue: [
-            {
-                type: "KOOPWONING",
-                amount: 1,
-                value: {
-                    value: 500000,
-                    min: 400000,
-                    max: 600000,
-                },
-                rentalValue: {
-                    value: 2000,
-                    min: 1800,
-                    max: 2200,
-                },
-            },
-            {
-                type: "HUURWONING_PARTICULIERE_VERHUURDER",
-                amount: 2,
-                value: {
-                    value: 300000,
-                    min: 250000,
-                    max: 350000,
-                },
-                rentalValue: {
-                    value: 1500,
-                    min: 1300,
-                    max: 1700,
-                },
-            },
-        ],
-        groundPosition: {
-            noPermissionOwner: 10,
-            intentionPermissionOwner: 15,
-            formalPermissionOwner: null,
-        },
-        physicalAppeareance: {
-            tussenwoning: 5,
-            tweeondereenkap: 7,
-            portiekflat: 2,
-            hoekwoning: 5,
-            vrijstaand: 20,
-            gallerijflat: 10,
-        },
-        houseType: {
-            meergezinswoning: 8,
-            eengezinswoning: 12,
-        },
-        purpose: {
-            regular: 5,
-            youth: 8,
-            student: 12,
-            elderly: 9,
-            largeFamilies: 26,
-            ghz: 30,
-        },
-    },
-    {
-        startDate: "2024-03-11",
-        endDate: "2024-04-11",
-        projectId: "project12",
-        houseblockId: "block45",
-        houseblockName: "Sample House Block-2",
-        size: {
-            value: 300,
-            min: 400,
-            max: 600,
-        },
-        programming: true,
-        mutation: {
-            mutationKind: ["SLOOP"],
-            grossPlanCapacity: 1000,
-            netPlanCapacity: 900,
-            demolition: 200,
-        },
-        ownershipValue: [
-            {
-                type: "KOOPWONING",
-                amount: 1,
-                value: {
-                    value: 500000,
-                    min: 400000,
-                    max: 600000,
-                },
-                rentalValue: {
-                    value: 2000,
-                    min: 1800,
-                    max: 2200,
-                },
-            },
-            {
-                type: "HUURWONING_PARTICULIERE_VERHUURDER",
-                amount: 2,
-                value: {
-                    value: 300000,
-                    min: 250000,
-                    max: 350000,
-                },
-                rentalValue: {
-                    value: 1500,
-                    min: 1300,
-                    max: 1700,
-                },
-            },
-        ],
-        groundPosition: {
-            noPermissionOwner: 10,
-            intentionPermissionOwner: 15,
-            formalPermissionOwner: null,
-        },
-        physicalAppeareance: {
-            tussenwoning: 5,
-            tweeondereenkap: 7,
-            portiekflat: 2,
-            hoekwoning: 5,
-            vrijstaand: 20,
-            gallerijflat: 10,
-        },
-        houseType: {
-            meergezinswoning: 8,
-            eengezinswoning: 12,
-        },
-        purpose: {
-            regular: 5,
-            youth: 8,
-            student: 12,
-            elderly: 9,
-            largeFamilies: 26,
-            ghz: 30,
-        },
-    },
-];
+
 export const ProjectsWithHouseBlock = () => {
     const { selectedProject, updateProject } = useContext(ProjectContext);
     const { selectedProjectColor, setSelectedProjectColor } = useContext(ProjectColorContext);
     const [projectEditable, setProjectEditable] = useState(false);
     const [openColorDialog, setOpenColorDialog] = useState(false);
     const [name, setName] = useState<string | null>();
+    const [owner, setOwner] = useState<Organization[]>([]);
+    const [leader, setLeader] = useState<Organization[]>([]);
     const [startDate, setStartDate] = useState<Dayjs | null>();
     const [endDate, setEndDate] = useState<Dayjs | null>();
     const [projectPhase, setProjectPhase] = useState<string | undefined>();
@@ -205,8 +59,13 @@ export const ProjectsWithHouseBlock = () => {
     const [selectedNeighbourhood, setSelectedNeighbourhood] = useState<SelectModel[]>([]);
     const [selectedWijk, setSelectedWijk] = useState<SelectModel[]>([]);
     const [projectPriority, setProjectPriority] = useState<SelectModel | null>();
+    const [houseBlocks, setHouseBlocks] = useState<HouseBlock[]>();
 
+    const { setAlert } = useContext(AlertContext);
+
+    const [openHouseBlockDialog, setOpenHouseBlockDialog] = useState(false);
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+    const [createFormHouseBlock, setCreateFormHouseBlock] = useState<HouseBlock>(emptyHouseBlockForm);
     const handleStartDateChange = (newValue: Dayjs | null) => setStartDate(newValue);
 
     const handleEndDateChange = (newValue: Dayjs | null) => setEndDate(newValue);
@@ -232,7 +91,7 @@ export const ProjectsWithHouseBlock = () => {
 
     const updateChanges = useCallback(() => {
         setName(selectedProject?.projectName);
-        //add owner later
+        setOwner(selectedProject?.projectOwners ?? []);
         setStartDate(dayjs(formatDate(selectedProject?.startDate)));
         setEndDate(dayjs(formatDate(selectedProject?.endDate)));
         setProjectPriority(selectedProject?.priority?.value); //ToDo Fix later when decided range select
@@ -241,18 +100,20 @@ export const ProjectsWithHouseBlock = () => {
         setSelectedMunicipality(selectedProject?.municipality ?? []);
         setSelectedMunicipalityRole(selectedProject?.municipalityRole ?? []);
         setConfidentialityLevel(selectedProject?.confidentialityLevel);
-        //add leader later
+        setLeader(selectedProject?.projectLeaders ?? []);
         setPlanType(selectedProject?.planType?.map((type) => type) ?? []);
         setPlanStatus(selectedProject?.planningPlanStatus?.map((type) => type) ?? []);
         setSelectedWijk(selectedProject?.wijk ?? []);
         setSelectedProjectColor(selectedProject?.projectColor ?? "");
     }, [
+        selectedProject?.projectOwners,
         selectedProject?.buurt,
         selectedProject?.confidentialityLevel,
         selectedProject?.endDate,
         selectedProject?.municipality,
         selectedProject?.municipalityRole,
         selectedProject?.planType,
+        selectedProject?.projectLeaders,
         selectedProject?.planningPlanStatus,
         selectedProject?.priority?.value,
         selectedProject?.projectColor,
@@ -294,6 +155,8 @@ export const ProjectsWithHouseBlock = () => {
         projectPhase: projectPhase,
         planningPlanStatus: planStatus,
         municipalityRole: selectedMunicipalityRole,
+        projectOwners: owner,
+        projectLeaders: leader,
         //Will be implemented later
         // projectOwners: [
         //     {
@@ -331,11 +194,22 @@ export const ProjectsWithHouseBlock = () => {
     };
 
     const handleProjectSave = () => {
-        updateProjects(updatedProjectForm).then((res) => {
-            setProjectEditable(false);
-            updateProject();
-        });
+        updateProjects(updatedProjectForm)
+            .then((res) => {
+                if (res.ok) {
+                    setProjectEditable(false);
+                    updateProject();
+                }
+            })
+            .catch((error) => {
+                setAlert(error.message, "error");
+            });
     };
+    const { id } = useContext(ProjectContext);
+    useEffect(() => {
+        id && getProjectHouseBlocks(id).then((res) => setHouseBlocks(res));
+    }, [id]);
+
     return (
         <Stack my={1} p={1} mb={10}>
             <Box sx={{ cursor: "pointer" }} position="absolute" right={10} top={55} zIndex={9999}>
@@ -383,17 +257,9 @@ export const ProjectsWithHouseBlock = () => {
                             <TextField size="small" disabled value={selectedProject?.totalValue} />
                         )}
                     </Grid>
-                    <Grid item xs={6} md={1}>
+                    <Grid item sm={2}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.organizationName")}</Typography>
-
-                        {!projectEditable ? (
-                            <AvatarGroup max={3}>
-                                <OrganizationUserAvatars organizations={selectedProject?.projectOwners} />
-                            </AvatarGroup>
-                        ) : (
-                            // TODO implement later
-                            <TextField disabled size="small" id="organizationName" variant="outlined" />
-                        )}
+                        <OrganizationSelect projectEditable={projectEditable} owner={owner} setOwner={setOwner} />
                     </Grid>
                     <Grid item sm={4}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.planType")}</Typography>
@@ -418,7 +284,7 @@ export const ProjectsWithHouseBlock = () => {
                         {!projectEditable ? (
                             <CellContainer>{startDate ? convertDayjsToString(startDate) : selectedProject?.startDate}</CellContainer>
                         ) : (
-                            <DatePicker format="DD-MM-YYYY" slotProps={{ textField: { size: "small" } }} value={startDate} onChange={handleStartDateChange} />
+                            <DatePicker slotProps={{ textField: { size: "small" } }} value={startDate} onChange={handleStartDateChange} />
                         )}
                     </Grid>
                     <Grid item xs={6} md={1.1}>
@@ -427,7 +293,7 @@ export const ProjectsWithHouseBlock = () => {
                         {!projectEditable ? (
                             <CellContainer>{endDate ? convertDayjsToString(endDate) : selectedProject?.endDate}</CellContainer>
                         ) : (
-                            <DatePicker format="DD-MM-YYYY" slotProps={{ textField: { size: "small" } }} value={endDate} onChange={handleEndDateChange} />
+                            <DatePicker slotProps={{ textField: { size: "small" } }} value={endDate} onChange={handleEndDateChange} />
                         )}
                     </Grid>
                     <Grid item xs={12} md={2}>
@@ -489,19 +355,9 @@ export const ProjectsWithHouseBlock = () => {
                             <ConfidentialityLevelEditForm confidentialityLevel={confidentialityLevel} setConfidentialityLevel={setConfidentialityLevel} />
                         )}
                     </Grid>
-                    <Grid item xs={12} md={1}>
+                    <Grid item sm={2}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.projectLeader")}</Typography>
-
-                        {!projectEditable ? (
-                            <Box sx={{ border: "solid 1px #ddd", overflow: "hidden" }}>
-                                <AvatarGroup max={3}>
-                                    <OrganizationUserAvatars organizations={selectedProject?.projectLeaders} />
-                                </AvatarGroup>
-                            </Box>
-                        ) : (
-                            // TODO LATER
-                            <TextField disabled size="small" id="outlined-basic" variant="outlined" />
-                        )}
+                        <OrganizationSelect projectEditable={projectEditable} owner={leader} setOwner={setLeader} isLeader={true} />
                     </Grid>
                     <Grid item xs={12} md={4}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.planningPlanStatus")}</Typography>
@@ -573,25 +429,7 @@ export const ProjectsWithHouseBlock = () => {
                     </Grid>
                 </Grid>
                 {/* List huizen blok cards */}
-                <Grid container my={2}>
-                    {dummyArray.map((hb: HouseBlock, i: number) => {
-                        return (
-                            <Accordion>
-                                <AccordionSummary
-                                    sx={{ backgroundColor: "#00A9F3", color: "#ffffff" }}
-                                    expandIcon={<ExpandMoreIcon sx={{ color: "#ffffff" }} />}
-                                    aria-controls="panel1-content"
-                                    id="panel1-header"
-                                >
-                                    {hb.houseblockName}
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                    <BlockHousesForm projectDetailHouseBlock={hb} key={i} />
-                                </AccordionDetails>
-                            </Accordion>
-                        );
-                    })}
-                </Grid>
+                <HouseBlocksList houseBlocks={houseBlocks} setOpenHouseBlockDialog={setOpenHouseBlockDialog} />
                 {openColorDialog && (
                     <Popover
                         open={open}
@@ -605,6 +443,12 @@ export const ProjectsWithHouseBlock = () => {
                         <BlockPicker colors={defaultColors} color={selectedProjectColor} onChange={handleColorChange} />
                     </Popover>
                 )}
+                <CreateHouseBlockDialog
+                    openHouseBlockDialog={openHouseBlockDialog}
+                    setOpenHouseBlockDialog={setOpenHouseBlockDialog}
+                    createFormHouseBlock={createFormHouseBlock}
+                    setCreateFormHouseBlock={setCreateFormHouseBlock}
+                />
             </Stack>
         </Stack>
     );

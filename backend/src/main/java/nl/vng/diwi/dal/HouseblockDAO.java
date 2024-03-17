@@ -15,7 +15,7 @@ public class HouseblockDAO extends AbstractRepository {
 
     public HouseblockSnapshotSqlModel getHouseblockByUuid(UUID houseblockUuid) {
         return session.createNativeQuery(
-                "SELECT * FROM get_active_or_future_houseblock_snapshots(null, :houseblockUuid, :now) " , HouseblockSnapshotSqlModel.class)
+                "SELECT * FROM get_houseblock_snapshots(null, :houseblockUuid, :now) " , HouseblockSnapshotSqlModel.class)
             .setParameter("now", LocalDate.now())
             .setParameter("houseblockUuid", houseblockUuid)
             .getSingleResultOrNull();
@@ -23,7 +23,7 @@ public class HouseblockDAO extends AbstractRepository {
 
     public List<HouseblockSnapshotSqlModel> getHouseblocksByProjectUuid(UUID projectUuid) {
         return session.createNativeQuery(
-                "SELECT * FROM get_active_or_future_houseblock_snapshots(:projectUuid, null, :now) " , HouseblockSnapshotSqlModel.class)
+                "SELECT * FROM get_houseblock_snapshots(:projectUuid, null, :now) " , HouseblockSnapshotSqlModel.class)
             .setParameter("now", LocalDate.now())
             .setParameter("projectUuid", projectUuid)
             .list();

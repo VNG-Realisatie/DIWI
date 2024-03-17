@@ -10,6 +10,7 @@ import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.models.superclasses.DatedDataModelSuperClass;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -31,7 +32,7 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
 
     private GroundPosition groundPosition = new GroundPosition();
 
-    private PhysicalAppeareance physicalAppeareance = new PhysicalAppeareance();
+    private PhysicalAppearance physicalAppearance = new PhysicalAppearance();
 
     private HouseType houseType = new HouseType();
 
@@ -64,12 +65,12 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
         this.groundPosition.setIntentionPermissionOwner(sqlModel.getIntentionPermissionOwner());
         this.groundPosition.setNoPermissionOwner(sqlModel.getNoPermissionOwner());
 
-        this.physicalAppeareance.setGallerijflat(sqlModel.getGallerijflat());
-        this.physicalAppeareance.setHoekwoning(sqlModel.getHoekwoning());
-        this.physicalAppeareance.setVrijstaand(sqlModel.getVrijstaand());
-        this.physicalAppeareance.setTweeondereenkap(sqlModel.getTweeondereenkap());
-        this.physicalAppeareance.setPortiekflat(sqlModel.getPortiekflat());
-        this.physicalAppeareance.setTussenwoning(sqlModel.getTussenwoning());
+        this.physicalAppearance.setGallerijflat(sqlModel.getGallerijflat());
+        this.physicalAppearance.setHoekwoning(sqlModel.getHoekwoning());
+        this.physicalAppearance.setVrijstaand(sqlModel.getVrijstaand());
+        this.physicalAppearance.setTweeondereenkap(sqlModel.getTweeondereenkap());
+        this.physicalAppearance.setPortiekflat(sqlModel.getPortiekflat());
+        this.physicalAppearance.setTussenwoning(sqlModel.getTussenwoning());
 
         this.houseType.setEengezinswoning(sqlModel.getEengezinswoning());
         this.houseType.setMeergezinswoning(sqlModel.getMeergezinswoning());
@@ -80,6 +81,63 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
         this.purpose.setElderly(sqlModel.getElderly());
         this.purpose.setGHZ(sqlModel.getGHZ());
         this.purpose.setLargeFamilies(sqlModel.getLargeFamilies());
+    }
+
+    public String validate(LocalDate projectStartDate, LocalDate projectEndDate) {
+
+        if (this.houseblockName == null || this.houseblockName.isBlank()) {
+            return "Houseblock name can not be null.";
+        } else if (this.getStartDate() == null) {
+            return "Houseblock start date can not be null";
+        } else if (this.getEndDate() == null) {
+            return "Houseblock end date can not be null";
+        } else if (projectStartDate.isAfter(this.getStartDate())) {
+            return "Houseblock start date must be within the duration of the project.";
+        } else if (projectEndDate.isBefore(this.getEndDate())) {
+            return "Houseblock end date must be within the duration of the project";
+        }
+
+        if (size != null) {
+            if (size.getValue() != null) {
+                size.setMin(null);
+                size.setMax(null);
+            } else if (size.getMax() == null || size.getMin() == null) {
+                //size info is not present
+                this.size = null;
+            }
+        }
+
+        if (mutation != null && mutation.getNetPlanCapacity() == null && mutation.getDemolition() == null &&
+            mutation.getGrossPlanCapacity() == null && (mutation.getMutationKind() == null || mutation.getMutationKind().isEmpty())) {
+            //mutation info is not present
+            this.mutation = null;
+        }
+
+        if (groundPosition != null && groundPosition.getNoPermissionOwner() == null &&
+            groundPosition.getIntentionPermissionOwner() == null && groundPosition.getFormalPermissionOwner() == null) {
+            //ground position info is not present
+            this.groundPosition = null;
+        }
+
+        if (physicalAppearance != null && physicalAppearance.getTussenwoning() == null && physicalAppearance.getTweeondereenkap() == null &&
+            physicalAppearance.getPortiekflat() == null && physicalAppearance.getHoekwoning() == null && physicalAppearance.getVrijstaand() == null &&
+            physicalAppearance.getGallerijflat() == null) {
+            //physical appearance info is not present
+            this.physicalAppearance = null;
+        }
+
+        if (houseType != null && houseType.getEengezinswoning() == null && houseType.getMeergezinswoning() == null) {
+            //house type info is not present
+            this.houseType = null;
+        }
+
+        if (purpose != null && purpose.getRegular() == null && purpose.getYouth() == null && purpose.getStudent() == null &&
+            purpose.getElderly() == null && purpose.getGHZ() == null && purpose.getLargeFamilies() == null) {
+            //purpose info is not present
+            this.purpose = null;
+        }
+
+        return null;
     }
 
     @Getter
@@ -113,7 +171,7 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
 
     @Getter
     @Setter
-    public static class PhysicalAppeareance {
+    public static class PhysicalAppearance {
         private Integer tussenwoning;
         private Integer tweeondereenkap;
         private Integer portiekflat;

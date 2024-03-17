@@ -6,34 +6,28 @@ import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.uuid.impl.UUIDUtil;
+
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import nl.vng.diwi.dal.entities.enums.Confidentiality;
+import nl.vng.diwi.dal.entities.ProjectListSqlModel;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
-import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.models.OrganizationModel;
 import nl.vng.diwi.models.OrganizationUserModel;
 import nl.vng.diwi.models.PriorityModel;
-import nl.vng.diwi.models.ProjectListSqlModel;
 import nl.vng.diwi.models.SelectModel;
-
-import lombok.Data;
 
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-abstract public class ProjectSnapshotModelSuperclass extends DatedDataModelSuperClass {
+abstract public class ProjectSnapshotModelSuperclass extends ProjectMinimalSnapshotModel {
 
-    private UUID projectId;
     private UUID projectStateId;
-    private String projectName;
-    private String projectColor;
-    private Confidentiality confidentialityLevel;
+
+    private List<PlanStatus> planningPlanStatus;
     private List<PlanType> planType = new ArrayList<>();
     private PriorityModel priority = new PriorityModel();
-    private ProjectPhase projectPhase;
-    private List<PlanStatus> planningPlanStatus;
     private List<SelectModel> municipalityRole = new ArrayList<>();
     private List<OrganizationModel> projectOwners = new ArrayList<>();
     private List<OrganizationModel> projectLeaders = new ArrayList<>();
@@ -45,7 +39,7 @@ abstract public class ProjectSnapshotModelSuperclass extends DatedDataModelSuper
 
     public ProjectSnapshotModelSuperclass(ProjectListSqlModel sqlModel) {
         this.setProjectId(sqlModel.getProjectId());
-        this.projectStateId = sqlModel.getProjectStateId();
+        this.setProjectStateId(sqlModel.getProjectStateId());
         this.setProjectName(sqlModel.getProjectName());
         this.setProjectOwners(getOrganizationModelListFromSqlArray(sqlModel.getProjectOwnersArray()));
         this.setProjectLeaders(getOrganizationModelListFromSqlArray(sqlModel.getProjectLeadersArray()));

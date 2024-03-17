@@ -62,7 +62,7 @@ export type HouseBlock = {
 
     groundPosition: GroundPositionInformations;
 
-    physicalAppeareance: PhysicalInformations;
+    physicalAppearance: PhysicalInformations;
 
     houseType: HouseTypeInformations;
 
