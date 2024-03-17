@@ -112,13 +112,28 @@ export interface components {
         CustomPropertyModel: {
             /** Format: uuid */
             id?: string;
-            name?: string;
+            name: string;
             /** @enum {string} */
-            objectType?: "PROJECT" | "WONINGBLOK";
+            objectType: "PROJECT" | "WONINGBLOK";
             /** @enum {string} */
-            propertyType?: "BOOLEAN" | "CATEGORY" | "ORDINAL" | "NUMERIC" | "TEXT";
-            disabled?: boolean;
-            categories?: components["schemas"]["SelectModel"][];
+            propertyType: "BOOLEAN" | "CATEGORY" | "ORDINAL" | "NUMERIC" | "TEXT";
+            disabled: boolean;
+            categories?: components["schemas"]["SelectDisabledModel"][];
+            ordinals?: components["schemas"]["OrdinalSelectDisabledModel"][];
+        };
+        OrdinalSelectDisabledModel: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            disabled: boolean;
+            /** Format: int32 */
+            level: number;
+        };
+        SelectDisabledModel: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            disabled: boolean;
         };
         GroundPosition: {
             /** Format: int32 */

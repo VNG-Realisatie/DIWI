@@ -14,6 +14,7 @@ import {
     DialogActions,
     Box,
     Button,
+    Chip,
 } from "@mui/material";
 import { t } from "i18next";
 import { CustomPropertyType, deleteCustomProperty, getCustomProperties } from "../../api/adminSettingServices";
@@ -88,7 +89,7 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
                                     {row.objectType}
                                 </TableCell>
                                 <TableCell sx={cellStyle} align="right">
-                                    {row.categories?.map((category) => <>{category}</>)}
+                                    {row.categories?.map((category) => <Chip variant="outlined" label={category.name} />)}
                                 </TableCell>
                                 <TableCell sx={cellStyle} align="right">
                                     <Switch checked={!row.disabled} color="success" />

@@ -52,8 +52,8 @@ public class CustomPropertiesService {
         repo.persist(customPropertyState);
 
         if (PropertyType.CATEGORY.equals(customPropertyModel.getPropertyType())) {
-            if (customPropertyModel.getCategoryValues() != null) {
-                customPropertyModel.getCategoryValues().forEach(cat -> {
+            if (customPropertyModel.getCategories() != null) {
+                customPropertyModel.getCategories().forEach(cat -> {
                     CustomCategoryValue customCategoryValue = new CustomCategoryValue();
                     customCategoryValue.setCustomProperty(customProperty);
                     repo.persist(customCategoryValue);
@@ -66,8 +66,8 @@ public class CustomPropertiesService {
                 });
             }
         } else if (PropertyType.ORDINAL.equals(customPropertyModel.getPropertyType())) {
-            if (customPropertyModel.getOrdinalValues() != null) {
-                customPropertyModel.getOrdinalValues().forEach(ord -> {
+            if (customPropertyModel.getOrdinals() != null) {
+                customPropertyModel.getOrdinals().forEach(ord -> {
                     CustomOrdinalValue customOrdinalValue = new CustomOrdinalValue();
                     customOrdinalValue.setCustomProperty(customProperty);
                     repo.persist(customOrdinalValue);
@@ -118,10 +118,10 @@ public class CustomPropertiesService {
             repo.persist(state);
         }
 
-        if (PropertyType.CATEGORY.equals(state.getPropertyType()) && customPropertyModel.getCategoryValues() != null) {
+        if (PropertyType.CATEGORY.equals(state.getPropertyType()) && customPropertyModel.getCategories() != null) {
             List<CustomCategoryValue> categoryValues = customProperty.getCategoryValues();
 
-            for (SelectDisabledModel catValueModel : customPropertyModel.getCategoryValues()) {
+            for (SelectDisabledModel catValueModel : customPropertyModel.getCategories()) {
                 if (catValueModel.getId() == null) { //new category value TODO: check label does not already exist in that category?
                     CustomCategoryValue newCat = new CustomCategoryValue();
                     newCat.setCustomProperty(customProperty);
@@ -169,7 +169,7 @@ public class CustomPropertiesService {
         if (PropertyType.ORDINAL.equals(state.getPropertyType())) {
             List<CustomOrdinalValue> ordinalValues = customProperty.getOrdinalValues();
 
-            for (OrdinalSelectDisabledModel ordValueModel : customPropertyModel.getOrdinalValues()) {
+            for (OrdinalSelectDisabledModel ordValueModel : customPropertyModel.getOrdinals()) {
                 if (ordValueModel.getId() == null) { //new category value TODO: check label does not already exist in that ordinal list?
                     CustomOrdinalValue newOrd = new CustomOrdinalValue();
                     newOrd.setCustomProperty(customProperty);
