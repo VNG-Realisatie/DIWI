@@ -113,7 +113,11 @@
         "students": "Studenten",
         "elderly": "Ouderen",
         "disabilityAndCare": "Gehandicapter en zorg",
-        "largeFamilies": "Grote gezinnen"
+        "largeFamilies": "Grote gezinnen",
+        "notifications": {
+          "successfullySaved": "Huizenblokken succesvol opgeslagen.",
+          "error": "Er is iets fout gegaan"
+        }
       },
       "selectMapForm": {
         "title": "Teken het project in op de kaart",
@@ -134,7 +138,8 @@
       "projects": "Projecten",
       "dashboards": "Dashboards",
       "users": "Gebruikers",
-      "dataExchange": "Data uitwisselen"
+      "dataExchange": "Data uitwisselen",
+      "settings": "Instellingen"
     },
     "projects": {
       "title": "Projecten overzicht",
@@ -232,6 +237,27 @@
       "houseBlocks": {
         "generalInformation": {
           "title": "Algemene informatie"
+        }
+      }
+    },
+    "admin": {
+      "settings": {
+        "title": "Lijst met optionele velden",
+        "tableHeader": {
+          "name": "Naam",
+          "objectType": "Project of Huizen blok",
+          "propertyType": "Type",
+          "categories": "Opties",
+          "status": "Aan/ Uit",
+          "active": "Actief",
+          "edit": "Bewerken",
+          "delete": "Verwijderen",
+          "actions": "Acties"
+        },
+        "add": "Voeg optioneel toe",
+        "notifications": {
+          "successfullySaved": "Eigenschappen succesvol opgeslagen.",
+          "successfullyDeleted": "Eigenschappen succesvol verwijderd."
         }
       }
     }

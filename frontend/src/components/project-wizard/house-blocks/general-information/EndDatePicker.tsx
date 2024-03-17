@@ -3,12 +3,14 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { t } from "i18next";
 import dayjs, { Dayjs } from "dayjs";
 import { InputContainer } from "../InputContainer";
+
 type Props = {
     houseBlockEndDate: string | null;
     updateHouseBlockEndDate: (date: Dayjs | null) => void;
     edit: boolean;
     editForm: boolean;
 };
+
 export const EndDatePicker = ({ houseBlockEndDate, updateHouseBlockEndDate, edit, editForm }: Props) => {
     return (
         <Stack width="100%">

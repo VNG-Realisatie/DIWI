@@ -15,3 +15,5 @@ export type PlanTypeOptions = "PAND_TRANSFORMATIE" | "TRANSFORMATIEGEBIED" | "HE
 
 export type MutationSelectOptions = "BOUW" | "SLOOP" | "TRANSFORMATIE" | "SPLITSING";
 export type OwnershipValueType = "KOOPWONING" | "HUURWONING_PARTICULIERE_VERHUURDER" | "HUURWONING_WONINGCORPORATIE" | "";
+export type PropertyType = "BOOLEAN" | "CATEGORY" | "ORDINAL" | "NUMERIC" | "TEXT";
+export type ObjectType = "PROJECT" | "WONINGBLOK";

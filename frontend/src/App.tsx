@@ -26,6 +26,7 @@ import { nlNL } from "@mui/material/locale";
 import { Swagger } from "./pages/Swagger";
 import { diwiFetch } from "./utils/requests";
 import { ProjectsWithHouseBlock } from "./components/project/project-with-house-block/ProjectWithHouseBlock";
+import { Settings } from "./components/admin/Settings";
 
 export const drawerWidth = 290;
 
@@ -113,7 +114,9 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
             <AlertProvider>
                 <AlertPopup />
                 <ScopedCssBaseline>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>{children}</LocalizationProvider>
+                    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="nl" dateFormats={{ keyboardDate: "DD-MM-YYYY" }}>
+                        {children}
+                    </LocalizationProvider>
                 </ScopedCssBaseline>
             </AlertProvider>
         </ThemeProvider>
@@ -217,6 +220,7 @@ function App() {
                                 </ProjectProvider>
                             }
                         />
+                        <Route path={Paths.userSettings.path} element={<Settings />} />
                         <Route path={Paths.importExcelProjects.path} element={<ImportedProjects type="Excel" />} />
                         <Route path={Paths.importSquitProjects.path} element={<ImportedProjects type="Squit" />} />
                         <Route path={Paths.swagger.path} element={<Swagger />} />

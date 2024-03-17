@@ -71,6 +71,9 @@ export async function putJson(url: string, data: any) {
     const res = await diwiFetch(encodeURI(url), {
         method: "PUT",
         body: body,
+        headers: {
+            "Content-Type": "application/json",
+        },
     });
 
     if (!res.ok) {

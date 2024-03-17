@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import nl.vng.diwi.dal.entities.*;
+import nl.vng.diwi.models.CustomPropertyModel;
 
 public class GenericRepository implements AutoCloseable {
 
@@ -18,6 +19,12 @@ public class GenericRepository implements AutoCloseable {
     public static List<Class<? extends Object>> getEntities() {
         List<Class<? extends Object>> entities =
             Arrays.asList(
+                CustomCategoryValue.class,
+                CustomCategoryValueState.class,
+                CustomOrdinalValue.class,
+                CustomOrdinalValueState.class,
+                CustomProperty.class,
+                CustomPropertyState.class,
                 Houseblock.class,
                 HouseblockAppearanceAndTypeChangelog.class,
                 HouseblockPhysicalAppearanceChangelogValue.class,
@@ -58,7 +65,8 @@ public class GenericRepository implements AutoCloseable {
                 UserState.class,
                 UserToOrganization.class,
                 ProjectListSqlModel.class,
-                HouseblockSnapshotSqlModel.class);
+                HouseblockSnapshotSqlModel.class,
+                CustomPropertyModel.class);
         return entities;
     }
 

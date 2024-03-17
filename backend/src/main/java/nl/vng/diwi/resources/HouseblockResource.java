@@ -17,6 +17,8 @@ import nl.vng.diwi.dal.entities.Houseblock;
 import nl.vng.diwi.dal.entities.Milestone;
 import nl.vng.diwi.dal.entities.Project;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
+import nl.vng.diwi.models.MilestoneModel;
+import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.services.HouseblockService;
@@ -59,12 +61,19 @@ public class HouseblockResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public HouseblockSnapshotModel createHouseblock(@Context LoggedUser loggedUser, HouseblockSnapshotModel houseblockSnapshotModel)
-        throws VngNotFoundException {
+        throws VngNotFoundException, VngBadRequestException {
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             Project project = projectService.getCurrentProject(repo, houseblockSnapshotModel.getProjectId());
             Milestone startMilestone = projectService.getOrCreateMilestoneForProject(repo, project, houseblockSnapshotModel.getStartDate(), loggedUser.getUuid());
             Milestone endMilestone = projectService.getOrCreateMilestoneForProject(repo, project, houseblockSnapshotModel.getEndDate(), loggedUser.getUuid());
+
+            String validationError = houseblockSnapshotModel.validate(new MilestoneModel(project.getDuration().get(0).getStartMilestone()).getDate(),
+                new MilestoneModel(project.getDuration().get(0).getEndMilestone()).getDate());
+
+            if (validationError != null) {
+                throw new VngBadRequestException(validationError);
+            }
 
             Houseblock houseblock = houseblockService.createHouseblock(repo, houseblockSnapshotModel, startMilestone, endMilestone,
                 loggedUser.getUuid(), ZonedDateTime.now());

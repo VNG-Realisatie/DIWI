@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Stepper, Step, StepLabel, Button, Box, Stack, Typography } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
@@ -8,8 +8,11 @@ import { SelectFromMapForm } from "../components/SelectFromMapForm";
 import { TimelineForm } from "../components/TimelineForm";
 import useAlert from "../hooks/useAlert";
 import { useTranslation } from "react-i18next";
-import { updateProject, createProject } from "../api/projectsServices";
+import { updateProject, createProject, addHouseBlock, getProject } from "../api/projectsServices";
 import { useParams, useNavigate } from "react-router-dom";
+import { HouseBlock } from "../components/project-wizard/house-blocks/types";
+import { emptyHouseBlockForm } from "../components/project-wizard/house-blocks/constants";
+import dayjs from "dayjs";
 
 const CustomStepIcon: React.FC<CustomStepIconProps> = ({ active, completed }) => {
     if (completed) {
@@ -26,10 +29,11 @@ interface CustomStepIconProps {
     completed: boolean;
 }
 export const CreateProject = () => {
-    const [createProjectForm, setCreateProjectForm] = useState<any>(null);
-
+    const [createProjectForm, setCreateProjectForm] = useState<any>({ projectColor: "#FF5733" });
+    const [createFormHouseBlock, setCreateFormHouseBlock] = useState<HouseBlock>(emptyHouseBlockForm);
     const [activeStep, setActiveStep] = useState<number>(0);
-    const [, setValidationError] = useState(false);
+    const [validationError, setValidationError] = useState(false);
+    const [saved, setSaved] = useState(false);
 
     const { id } = useParams();
     const navigate = useNavigate();
@@ -52,10 +56,19 @@ export const CreateProject = () => {
                     return true;
                 }
             } else {
+                const temporaryCreateForm = {
+                    projectName: createProjectForm.projectName,
+                    projectColor: createProjectForm.projectColor,
+                    projectPhase: createProjectForm.projectPhase,
+                    confidentialityLevel: createProjectForm.confidentialityLevel,
+                    startDate: createProjectForm.startDate,
+                    endDate: createProjectForm.endDate,
+                };
                 setValidationError(false);
-                const project = await createProject(createProjectForm);
+                const project = await createProject(temporaryCreateForm); //TODO later it will be change with createProjectForm
+                setSaved(true);
 
-                navigate(`/project/${project.projectId}`);
+                navigate(`/project/create/${project.projectId}`);
                 setAlert(t("createProject.successfullySaved"), "success");
             }
         } catch (error: any) {
@@ -65,17 +78,22 @@ export const CreateProject = () => {
     };
 
     const handleNext = async () => {
-        const res = await handleSave();
-        if (res) {
-            navigate(`/projects/${id}`); //before the next screen is implemented
-            // setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        if (activeStep === 1) {
+            await addHouseBlock({ ...createFormHouseBlock, projectId: id });
+            setActiveStep((prevActiveStep) => prevActiveStep + 1);
+            return;
         }
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
     };
 
     const handleBack = () => {
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
-
+    useEffect(() => {
+        if (id) {
+            getProject(id).then((res: any) => setCreateProjectForm({ ...res, startDate: dayjs(res.startDate), endDate: dayjs(res.endDate) }));
+        }
+    }, [id]);
     return (
         //Components for wizard steps
         <Box mb={7} border="solid 2px #ddd" p={4}>
@@ -86,8 +104,12 @@ export const CreateProject = () => {
                     </Step>
                 ))}
             </Stepper>
-            {activeStep === 0 && <ProjectInformationForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />}
-            {activeStep === 1 && <BlockHousesForm editForm={false} />}
+            {activeStep === 0 && (
+                <ProjectInformationForm validationError={validationError} setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />
+            )}
+            {activeStep === 1 && (
+                <BlockHousesForm editForm={false} createFormHouseBlock={createFormHouseBlock} setCreateFormHouseBlock={setCreateFormHouseBlock} />
+            )}
             {activeStep === 2 && <SelectFromMapForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />}
             {activeStep === 3 && <TimelineForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />}
             {activeStep === 4 && (
@@ -102,7 +124,7 @@ export const CreateProject = () => {
                 <Button variant="contained" onClick={() => handleBack()} sx={{ mr: 2 }} disabled={activeStep === 0}>
                     {t("generic.previous")}
                 </Button>
-                <Button variant="contained" onClick={() => handleNext()}>
+                <Button variant="contained" onClick={() => handleNext()} disabled={activeStep === 0 && !saved}>
                     {t("generic.next")}
                 </Button>
             </Stack>

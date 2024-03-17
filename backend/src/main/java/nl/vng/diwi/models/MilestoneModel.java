@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
@@ -19,8 +20,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MilestoneModel {
 
+    @JsonProperty(required = true)
     private UUID id;
+    @JsonProperty(required = true)
     private UUID stateId;
+    @JsonProperty(required = true)
     private MilestoneStatus status;
 
     @JsonDeserialize(using = LocalDateDeserializer.class)

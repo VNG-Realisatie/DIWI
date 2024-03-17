@@ -9,6 +9,7 @@ import org.pac4j.core.exception.TechnicalException;
 import org.pac4j.jee.context.JEEFrameworkParameters;
 
 import jakarta.annotation.Priority;
+import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.Priorities;
@@ -31,7 +32,7 @@ public class SecurityFilter implements ContainerRequestFilter {
 
     private ProjectConfig config;
 
-
+    @Inject
     public SecurityFilter(ProjectConfig config) {
         this.config = config;
     }
@@ -46,14 +47,19 @@ public class SecurityFilter implements ContainerRequestFilter {
         }
 
         Config pac4jConfig = config.getPac4jConfig();
+        if (pac4jConfig == null) {
+            return;
+        }
+
         try {
             DefaultSecurityLogic securityLogic = new DefaultSecurityLogic();
-            securityLogic.perform(pac4jConfig, (ctx, sessionStore, profiles) -> "AUTH_GRANTED", null, DefaultAuthorizers.IS_AUTHENTICATED, null,
+            securityLogic.perform(pac4jConfig, (ctx, sessionStore, profiles) -> "AUTH_GRANTED", null,
+                    DefaultAuthorizers.IS_AUTHENTICATED, null,
                     new JEEFrameworkParameters(httpRequest, httpResponse));
         } catch (TechnicalException | NullPointerException e) {
             log.info("config: {}", config);
             throw new VngServerErrorException("Server error", e);
         }
-    }
 
+    }
 }

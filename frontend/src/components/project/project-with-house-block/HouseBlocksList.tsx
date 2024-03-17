@@ -26,7 +26,13 @@ export const HouseBlocksList = ({ setOpenHouseBlockDialog, houseBlocks }: Props)
                             {hb.houseblockName}
                         </AccordionSummary>
                         <AccordionDetails>
-                            <BlockHousesForm projectDetailHouseBlock={hb} key={i} editForm={true} />
+                            <BlockHousesForm
+                                projectDetailHouseBlock={hb}
+                                key={i}
+                                editForm={true}
+                                createFormHouseBlock={hb}
+                                setCreateFormHouseBlock={(hb) => {}}
+                            />
                         </AccordionDetails>
                     </Accordion>
                 );

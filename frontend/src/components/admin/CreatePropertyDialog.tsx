@@ -1,0 +1,105 @@
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    Stack,
+    TextField,
+    InputLabel,
+    Select,
+    SelectChangeEvent,
+    MenuItem,
+    Typography,
+    Checkbox,
+    DialogActions,
+    Button,
+} from "@mui/material";
+import { t } from "i18next";
+import { ChangeEvent } from "react";
+import { ObjectType, PropertyType } from "../../types/enums";
+import { CategoryCreateOption } from "./CategoryCreateOption";
+import { objectType, propertyType } from "./constants";
+
+type Props = {
+    openDialog: boolean;
+    setOpenDialog: (openDialog: boolean) => void;
+    name: string;
+    setName: (name: string) => void;
+    selectedObjectType: ObjectType;
+    setSelectedObjectType: (selectedObjectType: ObjectType) => void;
+    selectedPropertyType: PropertyType;
+    setSelectedPropertyType: (selectedPropertyType: PropertyType) => void;
+    active: boolean;
+    setActive: (active: boolean) => void;
+    handleSave: () => void;
+    categories: string[];
+    setCategories: (categories: string[]) => void;
+};
+export const CreatePropertyDialog = ({
+    openDialog,
+    setOpenDialog,
+    name,
+    setName,
+    selectedObjectType,
+    setSelectedObjectType,
+    selectedPropertyType,
+    setSelectedPropertyType,
+    active,
+    setActive,
+    handleSave,
+    categories,
+    setCategories,
+}: Props) => {
+    return (
+        <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth>
+            <DialogTitle id="alert-dialog-title"> {t("admin.settings.add")}</DialogTitle>
+            <DialogContent>
+                <Stack spacing={2}>
+                    <TextField
+                        label={t("admin.settings.tableHeader.name")}
+                        value={name}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+                    />
+                    <InputLabel variant="standard" id="objectType">
+                        {t("admin.settings.tableHeader.objectType")}
+                    </InputLabel>
+                    <Select
+                        value={selectedObjectType}
+                        labelId="objectType"
+                        onChange={(e: SelectChangeEvent<typeof selectedObjectType>) => setSelectedObjectType(e.target.value as ObjectType)}
+                    >
+                        {objectType.map((object) => {
+                            return <MenuItem value={object}>{object}</MenuItem>;
+                        })}
+                    </Select>
+                    <InputLabel variant="standard" id="propertyType">
+                        {t("admin.settings.tableHeader.propertyType")}
+                    </InputLabel>
+                    <Select
+                        value={selectedPropertyType}
+                        labelId="propertyType"
+                        onChange={(e: SelectChangeEvent<typeof selectedPropertyType>) => setSelectedPropertyType(e.target.value as PropertyType)}
+                    >
+                        {propertyType.map((property) => {
+                            return <MenuItem value={property}>{property}</MenuItem>;
+                        })}
+                    </Select>
+                    {selectedPropertyType === "CATEGORY" && <CategoryCreateOption categoryValue={categories} setCategoryValue={setCategories} />}
+                    <Stack>
+                        <Typography>
+                            {t("admin.settings.tableHeader.active")}
+                            <Checkbox checked={active} onChange={(event: ChangeEvent<HTMLInputElement>) => setActive(event.target.checked)} />
+                        </Typography>
+                    </Stack>
+                </Stack>
+            </DialogContent>
+            <DialogActions>
+                <Button variant="contained" color="error" onClick={() => setOpenDialog(false)}>
+                    {t("generic.cancel")}
+                </Button>
+                <Button variant="contained" color="success" onClick={handleSave} autoFocus>
+                    {t("generic.save")}
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
+};
