@@ -3,15 +3,10 @@ package nl.vng.diwi.rest.pac4j;
 import java.io.IOException;
 
 import org.pac4j.core.authorization.authorizer.DefaultAuthorizers;
-import org.pac4j.core.client.Clients;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.engine.DefaultSecurityLogic;
 import org.pac4j.core.exception.TechnicalException;
-import org.pac4j.core.util.InitializableObject;
 import org.pac4j.jee.context.JEEFrameworkParameters;
-import org.pac4j.oidc.client.OidcClient;
-import org.pac4j.oidc.config.OidcConfiguration;
-import org.pac4j.oidc.metadata.OidcOpMetadataResolver;
 
 import jakarta.annotation.Priority;
 import jakarta.inject.Inject;

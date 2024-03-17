@@ -13,7 +13,6 @@ import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
-import org.pac4j.core.config.Config;
 
 import jakarta.annotation.PreDestroy;
 import jakarta.servlet.ServletConfig;
