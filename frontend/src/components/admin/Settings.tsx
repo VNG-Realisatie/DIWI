@@ -2,7 +2,7 @@ import { Stack, Typography } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { useTranslation } from "react-i18next";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { CustomPropertyType, addCustomProperty, getCustomProperties } from "../../api/adminSettingServices";
+import { CustomPropertyType, OrdinalValuesType, addCustomProperty, getCustomProperties } from "../../api/adminSettingServices";
 import { ObjectType, PropertyType } from "../../types/enums";
 import AlertContext from "../../context/AlertContext";
 import { CreatePropertyDialog } from "./CreatePropertyDialog";
@@ -19,7 +19,8 @@ export const Settings = () => {
     const [selectedPropertyType, setSelectedPropertyType] = useState<PropertyType>("TEXT");
     const [active, setActive] = useState(false);
     const [name, setName] = useState<string>("");
-    const [categories, setCategories] = useState<string[]>([]);
+    const [categories, setCategories] = useState<string[] | null>(null);
+    const [values, setValues] = useState<OrdinalValuesType[] | null>(null);
 
     const { t } = useTranslation();
     const { setAlert } = useContext(AlertContext);
@@ -30,19 +31,20 @@ export const Settings = () => {
             objectType: selectedObjectType,
             propertyType: selectedPropertyType,
             disabled: !active,
-            categories:
-                categories.length > 0
+            categoryValues:
+                categories !== null && categories.length > 0
                     ? categories.map((c) => {
                           return { name: c };
                       })
                     : null,
+            ordinalValues: values !== null && values.length > 0 ? values : null,
         };
         addCustomProperty(newProperty).then(() => {
             setAlert(t("admin.settings.notifications.successfullySaved"), "success");
             setOpenDialog(false);
             getCustomProperties().then((customProperties) => setCustomProperties(customProperties));
         });
-    }, [active, categories, name, selectedObjectType, selectedPropertyType, setAlert, t]);
+    }, [active, categories, name, selectedObjectType, selectedPropertyType, setAlert, t, values]);
 
     useEffect(() => {
         getCustomProperties().then((customProperties) => setCustomProperties(customProperties));
@@ -71,7 +73,7 @@ export const Settings = () => {
                 active={active}
                 setActive={setActive}
                 handleSave={handleSave}
-                categories={categories}
+                categories={categories ? categories : []}
                 setCategories={setCategories}
             />
         </Stack>

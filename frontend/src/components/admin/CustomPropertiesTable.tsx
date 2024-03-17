@@ -88,7 +88,7 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
                                     {row.objectType}
                                 </TableCell>
                                 <TableCell sx={cellStyle} align="right">
-                                    {row.categories?.map((category) => <>{category}</>)}
+                                    {row.categoryValues?.map((category) => <>{category.name}</>)}
                                 </TableCell>
                                 <TableCell sx={cellStyle} align="right">
                                     <Switch checked={!row.disabled} color="success" />

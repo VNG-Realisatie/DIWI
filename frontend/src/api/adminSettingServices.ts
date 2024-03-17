@@ -4,6 +4,13 @@ import { API_URI } from "../utils/urls";
 export type CategoryType = {
     id?: string;
     name: string;
+    disabled?: boolean;
+};
+export type OrdinalValuesType = {
+    id?: string;
+    name: string;
+    disabled: boolean;
+    level: number;
 };
 export type CustomPropertyType = {
     id?: string;
@@ -11,11 +18,16 @@ export type CustomPropertyType = {
     objectType: ObjectType;
     propertyType: PropertyType;
     disabled: boolean;
-    categories: CategoryType[] | null;
+    categoryValues: CategoryType[] | null;
+    ordinalValues: OrdinalValuesType[] | null;
 };
 
 export async function getCustomProperties(): Promise<Array<CustomPropertyType>> {
     return getJson(`${API_URI}/customproperties`);
+}
+
+export async function getCustomPropertiesWithQuery(query: ObjectType): Promise<Array<CustomPropertyType>> {
+    return getJson(`${API_URI}/customproperties?objectType=${query}`);
 }
 
 export async function getCustomProperty(id: string): Promise<CustomPropertyType> {

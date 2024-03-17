@@ -18,7 +18,7 @@ import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { ObjectType, PropertyType } from "../../types/enums";
 import { CategoryCreateOption } from "./CategoryCreateOption";
 import { objectType, propertyType } from "./constants";
-import { CustomPropertyType, getCustomProperties, getCustomProperty, updateCustomProperty } from "../../api/adminSettingServices";
+import { CustomPropertyType, OrdinalValuesType, getCustomProperties, getCustomProperty, updateCustomProperty } from "../../api/adminSettingServices";
 import AlertContext from "../../context/AlertContext";
 
 type Props = {
@@ -33,15 +33,17 @@ export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomPro
     const [active, setActive] = useState(false);
     const [name, setName] = useState<string>("");
     const [categories, setCategories] = useState<string[] | null>(null);
+    const [values, setValues] = useState<OrdinalValuesType[] | null>(null);
     const { setAlert } = useContext(AlertContext);
     useEffect(() => {
         if (id) {
             getCustomProperty(id).then((property) => {
                 setName(property.name);
-                property.categories && setCategories(property.categories?.map((c) => c.name));
+                property.categoryValues && setCategories(property.categoryValues.map((c) => c.name));
                 setActive(property.disabled);
                 setSelectedObjectType(property.objectType);
                 setSelectedPropertyType(property.propertyType);
+                setValues(property.ordinalValues);
             });
         }
     }, [id]);
@@ -53,12 +55,13 @@ export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomPro
             objectType: selectedObjectType,
             propertyType: selectedPropertyType,
             disabled: !active,
-            categories:
+            categoryValues:
                 categories !== null && categories.length > 0
                     ? categories.map((c) => {
                           return { name: c };
                       })
                     : null,
+            ordinalValues: values !== null && values.length > 0 ? values : null,
         };
         updateCustomProperty(id, newProperty).then(() => {
             setAlert(t("admin.settings.notifications.successfullySaved"), "success");

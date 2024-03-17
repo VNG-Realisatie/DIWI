@@ -32,6 +32,7 @@ import AlertContext from "../../../context/AlertContext";
 import { CreateHouseBlockDialog } from "./CreateHouseBlockDialog";
 import { HouseBlocksList } from "./HouseBlocksList";
 import { emptyHouseBlockForm } from "../../project-wizard/house-blocks/constants";
+import { CustomPropertyType, getCustomPropertiesWithQuery } from "../../../api/adminSettingServices";
 
 export const columnTitleStyle = {
     border: "solid 1px #ddd",
@@ -60,6 +61,7 @@ export const ProjectsWithHouseBlock = () => {
     const [selectedWijk, setSelectedWijk] = useState<SelectModel[]>([]);
     const [projectPriority, setProjectPriority] = useState<SelectModel | null>();
     const [houseBlocks, setHouseBlocks] = useState<HouseBlock[]>();
+    const [customProperties, setCustomProperties] = useState<CustomPropertyType[]>();
 
     const { setAlert } = useContext(AlertContext);
 
@@ -206,10 +208,15 @@ export const ProjectsWithHouseBlock = () => {
             });
     };
     const { id } = useContext(ProjectContext);
+
     useEffect(() => {
         id && getProjectHouseBlocks(id).then((res) => setHouseBlocks(res));
     }, [id]);
 
+    useEffect(() => {
+        getCustomPropertiesWithQuery("PROJECT").then((customProperties) => setCustomProperties(customProperties));
+    }, []);
+    console.log(customProperties);
     return (
         <Stack my={1} p={1} mb={10}>
             <Box sx={{ cursor: "pointer" }} position="absolute" right={10} top={55} zIndex={9999}>
@@ -427,6 +434,31 @@ export const ProjectsWithHouseBlock = () => {
                             <WijkEditForm selectedWijk={selectedWijk} setSelectedWijk={setSelectedWijk} />
                         )}
                     </Grid>
+                </Grid>
+                {/*List Custom Properties */}
+                <Grid container my={2}>
+                    {customProperties &&
+                        customProperties.map((cp, i) => {
+                            const inputValue = () => {
+                                if (cp.propertyType === "CATEGORY") {
+                                    return cp.categoryValues;
+                                } else return cp.ordinalValues;
+                            };
+                            return (
+                                <Grid item xs={6} md={1} key={i}>
+                                    <Typography sx={columnTitleStyle}>{cp.name}</Typography>
+                                    {!projectEditable ? (
+                                        <CellContainer>
+                                            {inputValue()?.map((v) => {
+                                                return <>{v.name}</>;
+                                            })}
+                                        </CellContainer>
+                                    ) : (
+                                        <>EDIT FORM LATER</>
+                                    )}
+                                </Grid>
+                            );
+                        })}
                 </Grid>
                 {/* List huizen blok cards */}
                 <HouseBlocksList houseBlocks={houseBlocks} setOpenHouseBlockDialog={setOpenHouseBlockDialog} />
