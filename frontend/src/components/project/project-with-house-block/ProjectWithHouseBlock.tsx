@@ -444,6 +444,7 @@ export const ProjectsWithHouseBlock = () => {
                     </Popover>
                 )}
                 <CreateHouseBlockDialog
+                    setHouseBlocks={setHouseBlocks}
                     openHouseBlockDialog={openHouseBlockDialog}
                     setOpenHouseBlockDialog={setOpenHouseBlockDialog}
                     createFormHouseBlock={createFormHouseBlock}
