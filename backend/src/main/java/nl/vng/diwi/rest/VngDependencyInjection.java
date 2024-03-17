@@ -10,10 +10,9 @@ import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.process.internal.RequestScoped;
 import org.hibernate.Session;
 
-import nl.vng.diwi.dal.Dal;
 import nl.vng.diwi.dal.DalFactory;
 import nl.vng.diwi.dal.GenericRepository;
-
+import nl.vng.diwi.rest.setup.GenericRepoFactory;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.container.ContainerRequestContext;
 
@@ -21,7 +20,7 @@ public class VngDependencyInjection extends AbstractBinder implements AutoClosea
 
     static Logger logger = LogManager.getLogger();
 
-    static class SessionFactory implements Factory<Session> {
+    static public class SessionFactory implements Factory<Session> {
         private DalFactory dalFactory;
 
         public SessionFactory(DalFactory dalFactory) {
@@ -35,27 +34,6 @@ public class VngDependencyInjection extends AbstractBinder implements AutoClosea
 
         @Override
         public void dispose(Session instance) {
-            instance.close();
-
-        }
-    }
-
-    static class GenericRepoFactory implements Factory<GenericRepository> {
-        private DalFactory dalFactory;
-
-        public GenericRepoFactory(DalFactory factory) {
-            this.dalFactory = factory;
-        }
-
-
-        @Override
-        public GenericRepository provide() {
-            Dal dal = dalFactory.constructDal();
-            return new GenericRepository(dal);
-        }
-
-        @Override
-        public void dispose(GenericRepository instance) {
             instance.close();
 
         }
