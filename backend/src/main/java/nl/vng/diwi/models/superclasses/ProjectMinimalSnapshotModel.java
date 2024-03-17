@@ -1,6 +1,5 @@
 package nl.vng.diwi.models.superclasses;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
