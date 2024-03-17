@@ -84,6 +84,7 @@ public class ProjectConfig {
 
             this.pac4jConfig = oidcConfig;
         } else {
+            log.warn("Authentication is disabled");
             this.pac4jConfig = null;
         }
     }
