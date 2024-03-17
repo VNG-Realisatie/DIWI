@@ -44,7 +44,7 @@ cd frontend
 yarn && yarn run create-types
 ```
 
-**!! The types have too many optional properties. e.g. projectId and projectName. They have to manually modified at the moment. !!**
+If some values values seem optional in the openapi definition, but they are not, You can use the `@JsonProperty(required = true)` annotation in the java model.
 
 ### Setup Backend development
 
