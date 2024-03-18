@@ -2,6 +2,8 @@ package nl.vng.diwi.dal;
 
 import org.hibernate.Session;
 
+import jakarta.inject.Inject;
+
 /**The dal owns 1 session. Use the dal
 * to initiate repos, which need a session to operate with.
 */
@@ -9,11 +11,8 @@ public class Dal implements AutoCloseable
 {
     private Session session = null;
 
-    /**
-     * Not accessible from outside, use DalFactory to get a dal
-     * @param session
-     */
-    Dal(Session session)
+    @Inject
+    public Dal(Session session)
     {
         this.session = session;
     }

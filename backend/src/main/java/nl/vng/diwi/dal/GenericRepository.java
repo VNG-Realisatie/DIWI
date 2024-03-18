@@ -3,6 +3,7 @@ package nl.vng.diwi.dal;
 import java.util.Arrays;
 import java.util.List;
 
+import jakarta.inject.Inject;
 import nl.vng.diwi.dal.entities.*;
 import nl.vng.diwi.models.CustomPropertyModel;
 
@@ -12,6 +13,7 @@ public class GenericRepository implements AutoCloseable {
     public static final String CURRENT_DATA_FILTER = "current";
     private Dal dal;
 
+    @Inject
     public GenericRepository(Dal dal) {
         this.dal = dal;
     }

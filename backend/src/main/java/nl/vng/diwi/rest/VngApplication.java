@@ -35,8 +35,6 @@ import nl.vng.diwi.resources.VngOpenApiResource;
 import nl.vng.diwi.resources.OrganizationResource;
 import nl.vng.diwi.resources.WijkResource;
 import nl.vng.diwi.rest.pac4j.SecurityFilter;
-import nl.vng.diwi.security.LoginRequestFilter;
-import nl.vng.diwi.security.UserResource;
 
 @ApplicationPath("rest")
 @MultipartConfig(fileSizeThreshold = 0, maxFileSize = -1, maxRequestSize = -1)
@@ -82,7 +80,7 @@ public class VngApplication extends ResourceConfig {
         register(LogRequestFilter.class);
         register(LogResponseFilter.class);
         register(SecurityFilter.class);
-        register(LoginRequestFilter.class);
+        // register(LoginRequestFilter.class);
         register(RolesAllowedDynamicFeature.class);
         register(MultiPartFeature.class);
         register(CORSFilter.class);
@@ -96,7 +94,6 @@ public class VngApplication extends ResourceConfig {
         register(VngOpenApiResource.class);
         register(OrganizationResource.class);
         register(AuthResource.class);
-        register(UserResource.class);
         register(ProjectsResource.class);
         register(MilestoneResource.class);
         register(MunicipalityResource.class);
@@ -116,14 +113,6 @@ public class VngApplication extends ResourceConfig {
     public void destroy() {
         logger.info("Destroy Vng Application servlet name {}, context path {}", config.getServletName(),
                 config.getServletContext().getContextPath());
-
-        if (dependencyInjection != null) {
-            try {
-                dependencyInjection.close();
-            } catch (Exception e) {
-                logger.info("Error stopping services", e);
-            }
-        }
 
         logger.info("Destroy Vng Application servlet name {}, context path {} complete", config.getServletName(),
                 config.getServletContext().getContextPath());

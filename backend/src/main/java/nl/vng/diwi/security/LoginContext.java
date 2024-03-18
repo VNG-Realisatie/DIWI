@@ -3,7 +3,7 @@ package nl.vng.diwi.security;
 import java.security.Principal;
 import jakarta.ws.rs.core.SecurityContext;
 
-class LoginContext implements SecurityContext {
+public class LoginContext implements SecurityContext {
 
     private LoggedUser loggedUser;
 
@@ -16,13 +16,13 @@ class LoginContext implements SecurityContext {
         if (loggedUser == null) {
             return null;
         } else {
-            return () -> loggedUser.getEmail();
+            return () -> loggedUser.getUuid().toString();
         }
     }
 
     @Override
     public boolean isUserInRole(final String role) {
-        return !loggedUser.isDisabled() && loggedUser.getRole().toString().equals(role);
+        return  loggedUser.getRole().toString().equals(role);
     }
 
     @Override

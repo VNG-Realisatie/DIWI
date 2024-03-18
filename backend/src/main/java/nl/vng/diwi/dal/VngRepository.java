@@ -38,7 +38,6 @@ public class VngRepository extends AbstractRepository {
         return houseblockDAO;
     }
 
-
     public MilestoneDAO getMilestoneDAO() {
         if (milestoneDAO == null) {
             milestoneDAO = new MilestoneDAO(session);

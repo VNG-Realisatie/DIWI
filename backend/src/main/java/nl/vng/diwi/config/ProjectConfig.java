@@ -151,7 +151,6 @@ public class ProjectConfig {
         }
         for (var client : clients.findAllClients()) {
             if (client instanceof InitializableObject initializableClient) {
-                log.info("client {}", client);
                 if (!initializableClient.isInitialized()) {
                     log.info("Initializing pac4j client '{}'", client.getName());
                     initializableClient.init();
