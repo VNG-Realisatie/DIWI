@@ -96,6 +96,9 @@ public class ProjectListSqlModel {
     @Column(columnDefinition = "text[][]")
     private String[][] buurt;
 
+    private Double latitude;
+    private Double longitude;
+
     public List<PlanType> getPlanType() {
         if (planType == null) {
             return new ArrayList<>();
