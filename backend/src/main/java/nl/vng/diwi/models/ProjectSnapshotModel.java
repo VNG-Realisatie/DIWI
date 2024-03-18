@@ -12,8 +12,12 @@ import lombok.EqualsAndHashCode;
 @NoArgsConstructor
 public class ProjectSnapshotModel extends ProjectSnapshotModelSuperclass {
 
+    private LocationModel location;
+
     public ProjectSnapshotModel(ProjectListSqlModel sqlProject) {
         super(sqlProject);
+
+        this.location = new LocationModel(sqlProject.getLatitude(), sqlProject.getLongitude());
     }
 
 }
