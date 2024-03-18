@@ -5,18 +5,26 @@ import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Map;
 
+import org.pac4j.core.authorization.authorizer.DefaultAuthorizers;
+import org.pac4j.core.authorization.authorizer.IsAuthenticatedAuthorizer;
+import org.pac4j.core.client.Clients;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.profile.factory.ProfileManagerFactory;
+import org.pac4j.core.util.InitializableObject;
 import org.pac4j.jee.context.JEEContextFactory;
 import org.pac4j.jee.context.session.JEESessionStoreFactory;
 import org.pac4j.oidc.client.KeycloakOidcClient;
+import org.pac4j.oidc.client.OidcClient;
 import org.pac4j.oidc.config.KeycloakOidcConfiguration;
+import org.pac4j.oidc.config.OidcConfiguration;
+import org.pac4j.oidc.metadata.OidcOpMetadataResolver;
 
 import com.nimbusds.oauth2.sdk.auth.ClientAuthenticationMethod;
 
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import nl.vng.diwi.rest.InvalidConfigException;
+import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.rest.pac4j.Constants;
 import nl.vng.diwi.rest.pac4j.HttpActionAdapterImplementation;
 
@@ -78,9 +86,11 @@ public class ProjectConfig {
             oidcConfig.setWebContextFactory(JEEContextFactory.INSTANCE);
             oidcConfig.setSessionStoreFactory(JEESessionStoreFactory.INSTANCE);
             oidcConfig.setHttpActionAdapter(new HttpActionAdapterImplementation());
+            oidcConfig.setAuthorizers(Map.of(DefaultAuthorizers.IS_AUTHENTICATED, new IsAuthenticatedAuthorizer()));
 
             this.pac4jConfig = oidcConfig;
         } else {
+            log.warn("Authentication is disabled");
             this.pac4jConfig = null;
         }
     }
@@ -108,5 +118,54 @@ public class ProjectConfig {
 
     public String getDbUrl() {
         return MessageFormat.format("jdbc:postgresql://{0}:{1}/{2}", getDbHost(), getDbPort(), getDbName());
+    }
+
+    public Config getPac4jConfig(){
+        Clients clients = pac4jConfig.getClients();
+        if (!clients.isInitialized()) {
+            log.info("Initializing pac4j clients");
+            clients.init();
+            if (!clients.isInitialized()) {
+                log.info("Initializing pac4j clients failed");
+                throw new VngServerErrorException("Server error");
+            }
+        }
+        for (var client : clients.findAllClients()) {
+            if (client instanceof InitializableObject initializableClient) {
+                log.info("client {}", client);
+                if (!initializableClient.isInitialized()) {
+                    log.info("Initializing pac4j client '{}'", client.getName());
+                    initializableClient.init();
+                    if (!initializableClient.isInitialized()) {
+                        log.info("Initializing pac4j client '{}' failed", client.getName());
+                        throw new VngServerErrorException("Server error");
+                    }
+                }
+            }
+
+            if (client instanceof OidcClient oidcClient) {
+                OidcConfiguration oidcConfig = oidcClient.getConfiguration();
+                if (!oidcConfig.isInitialized()) {
+                    log.info("Initializing pac4j config for client '{}'", client.getName());
+                    oidcConfig.init();
+                    if (!oidcConfig.isInitialized()) {
+                        log.info("Initializing pac4j config for client '{}' failed", client.getName());
+                        throw new VngServerErrorException("Server error");
+                    }
+                }
+
+                OidcOpMetadataResolver opMetadataResolver = oidcConfig.getOpMetadataResolver();
+                if (!opMetadataResolver.isInitialized()){
+                    log.info("Initializing pac4j metadata resolver for client '{}'", client.getName());
+                    opMetadataResolver.init(true);
+                    if (!opMetadataResolver.isInitialized()) {
+                        log.info("Initializing pac4j metadata resolver for client '{}' failed", client.getName());
+                        throw new VngServerErrorException("Server error");
+                    }
+                }
+            }
+        }
+
+        return pac4jConfig;
     }
 }

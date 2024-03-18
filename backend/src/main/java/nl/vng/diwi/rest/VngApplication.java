@@ -5,6 +5,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
+import nl.vng.diwi.resources.CustomPropertiesResource;
 import nl.vng.diwi.resources.HouseblockResource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,7 +13,6 @@ import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
-import org.pac4j.core.config.Config;
 
 import jakarta.annotation.PreDestroy;
 import jakarta.servlet.ServletConfig;
@@ -75,15 +75,12 @@ public class VngApplication extends ResourceConfig {
         dependencyInjection = new VngDependencyInjection(dalFactory, projectConfig);
         register(dependencyInjection);
 
-        Config pac4jConfig = projectConfig.getPac4jConfig();
-        if (pac4jConfig != null) {
-            register(new SecurityFilter(projectConfig));
-        }
 
         // Filters and features
         register(JacksonFeature.class);
         register(LogRequestFilter.class);
         register(LogResponseFilter.class);
+        register(SecurityFilter.class);
         register(LoginRequestFilter.class);
         register(RolesAllowedDynamicFeature.class);
         register(MultiPartFeature.class);
@@ -107,10 +104,10 @@ public class VngApplication extends ResourceConfig {
         register(WijkResource.class);
         register(PriorityResource.class);
         register(HouseblockResource.class);
+        register(CustomPropertiesResource.class);
 
         // Flyway migrations
         Database.upgrade(projectConfig.getDbUrl(), projectConfig.getDbUser(), projectConfig.getDbPass());
-
     }
 
     @PreDestroy

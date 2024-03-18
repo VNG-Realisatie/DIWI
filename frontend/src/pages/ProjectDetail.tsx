@@ -1,8 +1,7 @@
-import { Box, Stack, Tooltip, Typography } from "@mui/material";
-import { useContext, useState, createContext, PropsWithChildren, useEffect } from "react";
+import { Stack, Tooltip, Typography } from "@mui/material";
+import { useContext, useState, createContext, PropsWithChildren } from "react";
 import ProjectContext from "../context/ProjectContext";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import { useNavigate } from "react-router-dom";
+
 import * as Paths from "../Paths";
 import BreadcrumbBar from "../components/header/BreadcrumbBar";
 import { useTranslation } from "react-i18next";
@@ -35,7 +34,6 @@ const ProjectColorContext = createContext({
 
 export const ProjectDetail = ({ children }: PropsWithChildren) => {
     const { selectedProject, id } = useContext(ProjectContext);
-    const navigate = useNavigate();
     const { t } = useTranslation();
     const [projectData, setProjectData] = useState(null);
     const [error, setError] = useState(null);
@@ -93,11 +91,6 @@ export const ProjectDetail = ({ children }: PropsWithChildren) => {
                         projectId={selectedProject.projectId}
                     />
                 )}
-            </Stack>
-            <Stack direction="row" justifyContent="flex-end" border="solid 1px #ddd" p={0.5}>
-                <Box sx={{ cursor: "pointer" }} onClick={() => navigate(Paths.projectAdd.path)}>
-                    <AddCircleIcon color="info" sx={{ fontSize: "45px" }} />
-                </Box>
             </Stack>
 
             <ProjectColorContext.Provider

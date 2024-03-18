@@ -5,16 +5,20 @@ import lombok.NoArgsConstructor;
 
 import java.util.*;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import nl.vng.diwi.dal.entities.Organization;
 
 @Data
 @NoArgsConstructor
 public class OrganizationModel {
 
+    @JsonProperty(required = true)
     UUID uuid;
+    @JsonProperty(required = true)
     String name;
     List<OrganizationUserModel> users = new ArrayList<>();
-    
+
     public OrganizationModel(Organization organization) {
         uuid = organization.getId();
         // stub

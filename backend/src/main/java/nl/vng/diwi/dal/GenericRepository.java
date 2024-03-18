@@ -4,20 +4,48 @@ import java.util.Arrays;
 import java.util.List;
 
 import nl.vng.diwi.dal.entities.*;
+import nl.vng.diwi.models.CustomPropertyModel;
 
 public class GenericRepository implements AutoCloseable {
 
     public static final String VNG_SCHEMA_NAME = "diwi_testset";
     public static final String CURRENT_DATA_FILTER = "current";
+    private Dal dal;
+
+    public GenericRepository(Dal dal) {
+        this.dal = dal;
+    }
 
     public static List<Class<? extends Object>> getEntities() {
         List<Class<? extends Object>> entities =
             Arrays.asList(
+                CustomCategoryValue.class,
+                CustomCategoryValueState.class,
+                CustomOrdinalValue.class,
+                CustomOrdinalValueState.class,
+                CustomProperty.class,
+                CustomPropertyState.class,
+                Houseblock.class,
+                HouseblockAppearanceAndTypeChangelog.class,
+                HouseblockPhysicalAppearanceChangelogValue.class,
+                HouseblockHouseTypeChangelogValue.class,
+                HouseblockDurationChangelog.class,
+                HouseblockGroundPositionChangelog.class,
+                HouseblockGroundPositionChangelogValue.class,
+                HouseblockMutatieChangelog.class,
+                HouseblockMutatieChangelogTypeValue.class,
+                HouseblockNameChangelog.class,
+                HouseblockOwnershipValueChangelog.class,
+                HouseblockProgrammingChangelog.class,
+                HouseblockPurposeChangelog.class,
+                HouseblockPurposeChangelogValue.class,
+                HouseblockSizeChangelog.class,
                 Milestone.class,
                 MilestoneState.class,
                 Organization.class,
                 OrganizationProjectRole.class,
                 OrganizationState.class,
+                OrganizationToProject.class,
                 Project.class,
                 ProjectDurationChangelog.class,
                 ProjectFaseChangelog.class,
@@ -33,20 +61,13 @@ public class GenericRepository implements AutoCloseable {
                 ProjectPrioriseringValue.class,
                 ProjectPrioriseringValueState.class,
                 ProjectState.class,
-                Woningblok.class,
-                WoningblokMutatieChangelog.class,
-                WoningblokMutatieChangelogSoortValue.class,
                 User.class,
                 UserState.class,
+                UserToOrganization.class,
                 ProjectListSqlModel.class,
-                HouseblockSnapshotSqlModel.class);
+                HouseblockSnapshotSqlModel.class,
+                CustomPropertyModel.class);
         return entities;
-    }
-
-    private Dal dal;
-
-    public GenericRepository(Dal dal) {
-        this.dal = dal;
     }
 
     public Dal getDal() {

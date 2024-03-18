@@ -3,7 +3,6 @@ import {
     GridCallbackDetails,
     GridColDef,
     GridFilterModel,
-    GridLogicOperator,
     GridPaginationModel,
     GridPreProcessEditCellProps,
     GridRenderCellParams,
@@ -11,11 +10,12 @@ import {
     getGridSingleSelectOperators,
     getGridStringOperators,
 } from "@mui/x-data-grid";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+import * as Paths from "../../Paths";
 import { AvatarGroup, Box, Button, Dialog, DialogActions, DialogTitle, Stack, Typography } from "@mui/material";
 import useAlert from "../../hooks/useAlert";
-import { Project, getProjects } from "../../api/projectsServices";
+import { Project } from "../../api/projectsServices";
 import { useTranslation } from "react-i18next";
 import { PlanTypeCell } from "../table/PlanTypeCell";
 import { MunicipalityRoleCell } from "../table/MunicipalityRoleCell";
@@ -24,9 +24,10 @@ import { WijkCell } from "../table/WijkCell";
 import { BuurtCell } from "../table/NeighbourhoodCell";
 import { MunicipalityCell } from "../table/MunicipalityCell";
 import { confidentialityLevelOptions, planTypeOptions, projectPhaseOptions } from "../table/constants";
-import { filterTable } from "../../api/projectsTableServices";
 import { OrganizationUserAvatars } from "../OrganizationUserAvatars";
 import ProjectContext from "../../context/ProjectContext";
+import useCustomSearchParams from "../../hooks/useCustomSearchParams";
+import PlusButton from "../PlusButton";
 
 interface RowData {
     id: number;
@@ -51,12 +52,10 @@ export type SelectedOptionWithId = {
 export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const { paginationInfo, setPaginationInfo } = useContext(ProjectContext);
 
-    const location = useLocation();
     const navigate = useNavigate();
     const { setAlert } = useAlert();
     const { t } = useTranslation();
 
-    const [projects, setProjects] = useState<Array<Project>>([]);
     const [selectedRows, setSelectedRows] = useState<any[]>([]);
     const [selectedPlanTypes, setSelectedPlanTypes] = useState<SelectedOptionWithId[]>([]);
     const [selectedMunicipality, setSelectedMunicipality] = useState<SelectedOptionWithId[]>([]);
@@ -66,67 +65,12 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const [selectedBuurt, setSelectedBuurt] = useState<SelectedOptionWithId[]>([]);
     const [showDialog, setShowDialog] = useState(false);
     const [filterModel, setFilterModel] = useState<GridFilterModel>();
-    const [filterUrl, setFilterUrl] = useState("");
 
-    const isFilteredUrl = useCallback(() => {
-        const queryParams = ["pageNumber", "pageSize", "filterColumn", "filterCondition", "filterValue"];
-        return queryParams.every((e) => location.search.includes(e));
-    }, [location.search]);
-
-    useEffect(() => {
-        if (isFilteredUrl()) {
-            filterTable(location.search).then((res) => setProjects(res));
-        } else {
-            getProjects(paginationInfo.page, paginationInfo.pageSize)
-                .then((projects) => {
-                    setProjects(projects);
-                })
-                .catch((err) => console.log(err));
-        }
-    }, [isFilteredUrl, location.search, paginationInfo.page, paginationInfo.pageSize]);
-
-    useEffect(() => {
-        if (isFilteredUrl()) {
-            const filterParams = location.search.split("&");
-            const filterValues = filterParams.map((f) => f.split("="));
-            const field = filterValues[2][1];
-            const operator = filterValues[3][1] === "ANY_OF" ? "isAnyOf" : "contains";
-            const values = filterValues.slice(4).map((v) => v[1]);
-            const filter = {
-                items: [{ field, operator, value: values }],
-                logicOperator: GridLogicOperator.And,
-            };
-            setFilterModel(filter);
-        }
-    }, [isFilteredUrl, location.search]);
-
-    const rows = projects.map((p) => {
-        return { ...p, id: p.projectId };
-    });
-
-    const updateUrl = useCallback(() => {
-        let query = "";
-
-        if (filterModel) {
-            const converFilterType = filterModel.items[0].operator === "isAnyOf" ? "ANY_OF" : "CONTAINS";
-            const filterValues =
-                filterModel.items[0].operator === "isAnyOf"
-                    ? filterModel.items[0].value?.map((v: string) => `filterValue=${v}`).join("&")
-                    : `filterValue=${filterModel.items[0].value}`;
-            query = `filterColumn=${filterModel.items[0].field}&filterCondition=${converFilterType}&${filterValues}`;
-        }
-
-        const url = `?pageNumber=${paginationInfo.page}&pageSize=${paginationInfo.pageSize}&${query}`;
-        setFilterUrl(url);
-    }, [filterModel, paginationInfo.page, paginationInfo.pageSize]);
-
-    useEffect(() => {
-        updateUrl();
-    }, [updateUrl]);
+    const { filterUrl, rows } = useCustomSearchParams(filterModel, paginationInfo);
 
     useEffect(() => {
         navigate(`/projects/table${filterUrl}`);
-    }, [filterUrl, navigate]);
+    }, [filterUrl, navigate, filterModel]);
 
     const handleExport = (params: GridRowParams) => {
         const clickedRow: RowData = params.row as RowData;
@@ -315,7 +259,10 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         {
             field: "priority",
             headerName: t("projects.tableColumns.priority"),
-            editable: true,
+            editable: false,
+            renderCell: (cellValues: GridRenderCellParams<Project>) => {
+                return <>{cellValues.row?.priority?.value?.name}</>; //TODO FIX AFTER MIN MAX INTEGRATED
+            },
             preProcessEditCellProps: createErrorReport,
         },
         {
@@ -417,10 +364,9 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 };
                 setFilterModel(updatedFilterModel);
             }
-
-            if (newModel.items.length > 0) {
-                setFilterModel(newModel);
-            }
+        }
+        if (newModel.items.length > 0) {
+            setFilterModel(newModel);
         }
     };
 
@@ -483,6 +429,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                     Exporteren
                 </Button>
             )}
+            <PlusButton color="#002C64" link={Paths.projectAdd.path} text={t("projects.createNewProject")} />
         </Stack>
     );
 };

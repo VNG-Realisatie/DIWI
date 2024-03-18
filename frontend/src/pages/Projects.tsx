@@ -1,8 +1,7 @@
 import { Stack } from "@mui/material";
 
 import { ProjectsTableView } from "../components/project/ProjectsTableView";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import * as Paths from "../Paths";
 import { dummyMapData } from "./ProjectDetail";
 
@@ -11,7 +10,6 @@ import { useTranslation } from "react-i18next";
 import NetherlandsMap from "../components/map/NetherlandsMap";
 
 export const Projects = () => {
-    const navigate = useNavigate();
     const location = useLocation();
 
     const { t } = useTranslation();
@@ -25,11 +23,8 @@ export const Projects = () => {
                     { title: t("projects.table"), link: Paths.projectsTable.path },
                 ]}
             />
-            <Stack direction="row" justifyContent="flex-end" alignItems="center" border="solid 1px #ddd" p={0.5}>
-                <AddCircleIcon color="info" sx={{ fontSize: "45px", cursor: "pointer" }} onClick={() => navigate(Paths.projectAdd.path)} />
-            </Stack>
             {(location.pathname === Paths.projects.path || location.pathname === Paths.root.path) && (
-                <NetherlandsMap height="70vh" width="100%" mapData={dummyMapData} />
+                <NetherlandsMap height="70vh" width="100%" mapData={dummyMapData} plusButton={true} />
             )}
             {location.pathname === Paths.projectsTable.path && <ProjectsTableView />}
         </Stack>
