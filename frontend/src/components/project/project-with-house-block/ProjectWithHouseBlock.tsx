@@ -40,6 +40,21 @@ export const columnTitleStyle = {
     backgroundColor: "#738092",
 };
 
+type DateDisplayEditorProps = {
+    projectEditable: boolean;
+    date: Dayjs | string | undefined;
+    onChange: (newDate: Dayjs | null) => void;
+};
+
+const DateDisplayEditor = ({ projectEditable, date, onChange }: DateDisplayEditorProps) => {
+    const dayjsDate = typeof date === "string" ? dayjs(date) : date;
+    if (!projectEditable) {
+        return <CellContainer>{dayjsDate ? convertDayjsToString(dayjsDate) : ""}</CellContainer>;
+    } else {
+        return <DatePicker slotProps={{ textField: { size: "small" } }} value={dayjsDate} onChange={onChange} />;
+    }
+};
+
 export const ProjectsWithHouseBlock = () => {
     const { selectedProject, updateProject } = useContext(ProjectContext);
     const { selectedProjectColor, setSelectedProjectColor } = useContext(ProjectColorContext);
@@ -292,21 +307,19 @@ export const ProjectsWithHouseBlock = () => {
                     </Grid>
                     <Grid item xs={6} md={1.1}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.startDate")}</Typography>
-
-                        {!projectEditable ? (
-                            <CellContainer>{startDate ? convertDayjsToString(startDate) : selectedProject?.startDate}</CellContainer>
-                        ) : (
-                            <DatePicker slotProps={{ textField: { size: "small" } }} value={startDate} onChange={handleStartDateChange} />
-                        )}
+                        <DateDisplayEditor
+                            projectEditable={projectEditable}
+                            date={startDate ? startDate : selectedProject?.startDate}
+                            onChange={handleStartDateChange}
+                        />
                     </Grid>
                     <Grid item xs={6} md={1.1}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.endDate")}</Typography>
-
-                        {!projectEditable ? (
-                            <CellContainer>{endDate ? convertDayjsToString(endDate) : selectedProject?.endDate}</CellContainer>
-                        ) : (
-                            <DatePicker slotProps={{ textField: { size: "small" } }} value={endDate} onChange={handleEndDateChange} />
-                        )}
+                        <DateDisplayEditor
+                            projectEditable={projectEditable}
+                            date={endDate ? endDate : selectedProject?.endDate}
+                            onChange={handleEndDateChange}
+                        />
                     </Grid>
                     <Grid item xs={12} md={2}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.priority")}</Typography>
