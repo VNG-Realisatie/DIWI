@@ -3,6 +3,7 @@ package nl.vng.diwi.rest.pac4j;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 
+import org.hibernate.Session;
 import org.pac4j.core.authorization.authorizer.DefaultAuthorizers;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.engine.DefaultSecurityLogic;
@@ -22,9 +23,13 @@ import jakarta.ws.rs.core.Context;
 import lombok.extern.log4j.Log4j2;
 import nl.vng.diwi.config.ProjectConfig;
 import nl.vng.diwi.dal.DalFactory;
+import nl.vng.diwi.dal.OrganizationsDAO;
 import nl.vng.diwi.dal.UserDAO;
+import nl.vng.diwi.dal.entities.Organization;
+import nl.vng.diwi.dal.entities.OrganizationState;
 import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.dal.entities.UserState;
+import nl.vng.diwi.dal.entities.UserToOrganization;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.security.LoginContext;
@@ -88,7 +93,10 @@ public class SecurityFilter implements ContainerRequestFilter {
     }
 
     private UserState getUserForProfile(UserProfile profile) {
-        UserDAO userDao = new UserDAO(dalFactory.constructDal().getSession());
+        Session session = dalFactory.constructDal().getSession();
+        var userDao = new UserDAO(session);
+        var organizationsDAO = new OrganizationsDAO(session);
+
         try (var transaction = userDao.beginTransaction()) {
             var profileUuid = profile.getId();
 
@@ -97,19 +105,39 @@ public class SecurityFilter implements ContainerRequestFilter {
 
             var userEntity = userDao.getUserByIdentityProviderId(profileUuid);
             if (userEntity == null) {
+                ZonedDateTime now = ZonedDateTime.now();
+                User systemUser = userDao.getSystemUser();
+
                 var newUser = new User();
                 newUser.setSystemUser(false);
                 userDao.persist(newUser);
 
                 userEntity = new UserState();
-                userEntity.setChangeStartDate(ZonedDateTime.now());
-                userEntity.setCreateUser(userDao.getSystemUser());
+                userEntity.setChangeStartDate(now);
+                userEntity.setCreateUser(systemUser);
                 userEntity.setFirstName((String) firsttName);
                 userEntity.setLastName((String) lastName);
                 userEntity.setUser(newUser);
                 userEntity.setIdentityProviderId(profileUuid);
-
                 userDao.persist(userEntity);
+
+                var org =  new Organization();
+                organizationsDAO.persist(org);
+
+                var orgState = new OrganizationState();
+                orgState.setChangeStartDate(now);
+                orgState.setCreateUser(systemUser);
+                orgState.setName(userEntity.getFirstName() + " " + userEntity.getLastName());
+                orgState.setOrganization(org);
+                organizationsDAO.persist(orgState);
+
+                var orgToUser = new UserToOrganization();
+                orgToUser.setChangeStartDate(now);
+                orgToUser.setCreateUser(systemUser);
+                orgToUser.setOrganization(org);
+                orgToUser.setUser(newUser);
+                organizationsDAO.persist(orgToUser);
+
                 transaction.commit();
             }
             return userEntity;
