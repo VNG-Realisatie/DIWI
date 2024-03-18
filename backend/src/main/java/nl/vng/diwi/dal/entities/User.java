@@ -27,6 +27,6 @@ public class User extends IdSuperclass {
     private List<UserState> state;
 
     @Column(name = "system_user")
-    private Boolean systemUser;
+    private Boolean systemUser = false;
 
 }
