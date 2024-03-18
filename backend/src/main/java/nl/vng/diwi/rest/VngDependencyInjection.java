@@ -1,8 +1,5 @@
 package nl.vng.diwi.rest;
 
-import nl.vng.diwi.config.ProjectConfig;
-import nl.vng.diwi.security.LoggedUser;
-import nl.vng.diwi.services.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.hk2.api.Factory;
@@ -10,13 +7,20 @@ import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.process.internal.RequestScoped;
 import org.hibernate.Session;
 
-import nl.vng.diwi.dal.DalFactory;
-import nl.vng.diwi.dal.GenericRepository;
-import nl.vng.diwi.dal.UserDAO;
-import nl.vng.diwi.rest.setup.GenericRepoFactory;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import lombok.extern.log4j.Log4j2;
+import nl.vng.diwi.config.ProjectConfig;
+import nl.vng.diwi.dal.Dal;
+import nl.vng.diwi.dal.DalFactory;
+import nl.vng.diwi.dal.GenericRepository;
+import nl.vng.diwi.dal.UserDAO;
+import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.services.CustomPropertiesService;
+import nl.vng.diwi.services.HouseblockService;
+import nl.vng.diwi.services.MilestoneService;
+import nl.vng.diwi.services.OrganizationsService;
+import nl.vng.diwi.services.ProjectService;
 
 public class VngDependencyInjection extends AbstractBinder {
 
@@ -24,15 +28,17 @@ public class VngDependencyInjection extends AbstractBinder {
 
     @Log4j2
     static public class SessionFactory implements Factory<Session> {
+
         private DalFactory dalFactory;
 
+        @Inject
         public SessionFactory(DalFactory dalFactory) {
             this.dalFactory = dalFactory;
         }
 
         @Override
         public Session provide() {
-            log.debug("Creating hibernate session");
+            log.debug("Construct DAL");
             return dalFactory.constructDal().getSession();
         }
 
@@ -43,6 +49,7 @@ public class VngDependencyInjection extends AbstractBinder {
         }
     }
 
+    @Log4j2
     public static class LoggedUserFactory implements Factory<LoggedUser> {
         private final ContainerRequestContext context;
 
@@ -53,6 +60,7 @@ public class VngDependencyInjection extends AbstractBinder {
 
         @Override
         public LoggedUser provide() {
+            log.debug("Getting LoggedUser");
             return (LoggedUser) context.getProperty("loggedUser");
         }
 
@@ -75,11 +83,12 @@ public class VngDependencyInjection extends AbstractBinder {
     protected void configure() {
         bind(projectConfig).to(ProjectConfig.class);
         bind(dalFactory).to(DalFactory.class);
-        // bind(keycloakService).to(KeycloakService.class);
 
-        bindFactory(new SessionFactory(dalFactory)).to(Session.class);
-        bindFactory(new GenericRepoFactory(dalFactory)).to(GenericRepository.class);
-        bind(UserDAO.class).to(UserDAO.class);
+        bindFactory(SessionFactory.class).to(Session.class).in(RequestScoped.class);
+        bind(Dal.class).to(Dal.class).in(RequestScoped.class);
+        bind(GenericRepository.class).to(GenericRepository.class).in(RequestScoped.class);
+        bind(UserDAO.class).to(UserDAO.class).in(RequestScoped.class);
+
         bindFactory(LoggedUserFactory.class).to(LoggedUser.class).in(RequestScoped.class);
 
         bind(new MilestoneService()).to(MilestoneService.class);
@@ -87,7 +96,6 @@ public class VngDependencyInjection extends AbstractBinder {
         bind(new OrganizationsService()).to(OrganizationsService.class);
         bind(new HouseblockService()).to(HouseblockService.class);
         bind(new CustomPropertiesService()).to(CustomPropertiesService.class);
-        // bind(new MailService(projectConfig.getMailConfig())).to(MailService.class);
 
     }
 }

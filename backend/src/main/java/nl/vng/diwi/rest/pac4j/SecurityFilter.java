@@ -21,7 +21,7 @@ import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.core.Context;
 import lombok.extern.log4j.Log4j2;
 import nl.vng.diwi.config.ProjectConfig;
-import nl.vng.diwi.dal.AutoCloseTransaction;
+import nl.vng.diwi.dal.DalFactory;
 import nl.vng.diwi.dal.UserDAO;
 import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.dal.entities.UserState;
@@ -40,12 +40,12 @@ public class SecurityFilter implements ContainerRequestFilter {
     private HttpServletResponse httpResponse;
 
     private ProjectConfig config;
-    private UserDAO userDao;
+    private DalFactory dalFactory;
 
     @Inject
-    public SecurityFilter(ProjectConfig config, UserDAO userDao) {
+    public SecurityFilter(ProjectConfig config, DalFactory dalFactory) {
         this.config = config;
-        this.userDao = userDao;
+        this.dalFactory = dalFactory;
     }
 
     @Override
@@ -64,8 +64,6 @@ public class SecurityFilter implements ContainerRequestFilter {
 
         SecurityGrantedAccessAdapter securityGrantedAccessAdapter = (ctx, sessionStore, profiles) -> {
             for (var profile : profiles) {
-                log.info("access granted {}", profile.getAttributes());
-
                 var userEntity = getUserForProfile(profile);
 
                 LoggedUser loggedUser = new LoggedUser(userEntity);
@@ -87,10 +85,10 @@ public class SecurityFilter implements ContainerRequestFilter {
             log.info("config: {}", config);
             throw new VngServerErrorException("Server error", e);
         }
-
     }
 
     private UserState getUserForProfile(UserProfile profile) {
+        UserDAO userDao = new UserDAO(dalFactory.constructDal().getSession());
         try (var transaction = userDao.beginTransaction()) {
             var profileUuid = profile.getId();
 
