@@ -26,4 +26,7 @@ public class User extends IdSuperclass {
     @Filter(name = GenericRepository.CURRENT_DATA_FILTER, condition = "change_end_date IS NULL")
     private List<UserState> state;
 
+    @Column(name = "system_user")
+    private Boolean systemUser;
+
 }
