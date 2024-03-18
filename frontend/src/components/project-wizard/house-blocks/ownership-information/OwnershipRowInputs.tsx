@@ -30,7 +30,11 @@ const OwnershipTypeOption = ({ handleInputChange, ownership, index }: OwnershipP
             onChange={(e) => handleInputChange(index, { ...ownership, type: e.target.value as OwnershipValueType })}
         >
             {ownershipValueOptions.map((type) => {
-                return <MenuItem value={type}>{type}</MenuItem>;
+                return (
+                    <MenuItem key={type} value={type}>
+                        {type}
+                    </MenuItem>
+                );
             })}
         </Select>
     );

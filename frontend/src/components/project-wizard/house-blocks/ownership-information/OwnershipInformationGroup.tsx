@@ -70,6 +70,7 @@ export const OwnershipInformationGroup = ({ projectForm, setProjectForm, edit, e
             <Grid container>
                 {projectForm.ownershipValue.map((ownership, index) => (
                     <OwnershipRowInputs
+                        key={index}
                         index={index}
                         handleRemoveRow={handleRemoveRow}
                         handleInputChange={handleInputChange}

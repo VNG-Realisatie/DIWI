@@ -16,7 +16,7 @@ export const HouseBlocksList = ({ setOpenHouseBlockDialog, houseBlocks }: Props)
             <PlusButton color="#00A9F3" link={() => setOpenHouseBlockDialog(true)} text={t("projectDetail.createNewHouseBlock")} />
             {houseBlocks?.map((hb: HouseBlock, i: number) => {
                 return (
-                    <Accordion sx={{ width: "100%" }}>
+                    <Accordion sx={{ width: "100%" }} key={i}>
                         <AccordionSummary
                             sx={{ backgroundColor: "#00A9F3", color: "#ffffff" }}
                             expandIcon={<ExpandMoreIcon sx={{ color: "#ffffff" }} />}
