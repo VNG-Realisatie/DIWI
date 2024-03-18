@@ -23,6 +23,7 @@ export const MultiSelect = ({ tagLimit, options, selected, defaultOptionValues, 
     return (
         <Stack direction="row" spacing={1}>
             <Autocomplete
+                readOnly={true}
                 size="small"
                 multiple
                 limitTags={tagLimit}
