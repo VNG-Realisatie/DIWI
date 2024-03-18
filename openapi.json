@@ -329,6 +329,7 @@
         "properties": { "id": { "type": "string", "format": "uuid" }, "name": { "type": "string" } }
       },
       "CustomPropertyModel": {
+        "required": ["disabled", "name", "objectType", "propertyType"],
         "type": "object",
         "properties": {
           "id": { "type": "string", "format": "uuid" },
@@ -336,8 +337,24 @@
           "objectType": { "type": "string", "enum": ["PROJECT", "WONINGBLOK"] },
           "propertyType": { "type": "string", "enum": ["BOOLEAN", "CATEGORY", "ORDINAL", "NUMERIC", "TEXT"] },
           "disabled": { "type": "boolean" },
-          "categories": { "type": "array", "items": { "$ref": "#/components/schemas/SelectModel" } }
+          "categories": { "type": "array", "items": { "$ref": "#/components/schemas/SelectDisabledModel" } },
+          "ordinals": { "type": "array", "items": { "$ref": "#/components/schemas/OrdinalSelectDisabledModel" } }
         }
+      },
+      "OrdinalSelectDisabledModel": {
+        "required": ["disabled", "level", "name"],
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string" },
+          "disabled": { "type": "boolean" },
+          "level": { "type": "integer", "format": "int32" }
+        }
+      },
+      "SelectDisabledModel": {
+        "required": ["disabled", "name"],
+        "type": "object",
+        "properties": { "id": { "type": "string", "format": "uuid" }, "name": { "type": "string" }, "disabled": { "type": "boolean" } }
       },
       "GroundPosition": {
         "type": "object",

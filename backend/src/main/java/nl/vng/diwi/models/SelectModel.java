@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode
 public class SelectModel implements Comparable<SelectModel> {
-
     @JsonProperty(required = true)
     private UUID id;
 

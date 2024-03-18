@@ -44,10 +44,10 @@ public class CustomPropertyModel {
     private Boolean disabled;
 
     @Type(value = JsonListType.class)
-    private List<SelectDisabledModel> categoryValues;
+    private List<SelectDisabledModel> categories;
 
     @Type(value = JsonListType.class)
-    private List<OrdinalSelectDisabledModel> ordinalValues;
+    private List<OrdinalSelectDisabledModel> ordinals;
 
     public String validate() {
 
@@ -57,14 +57,14 @@ public class CustomPropertyModel {
             return "Custom property object-type can not be null.";
         } else if (this.propertyType == null) {
             return "Custom property property-type can not be null.";
-        } else if (this.getCategoryValues() != null) {
-            for (SelectDisabledModel category : this.getCategoryValues()) {
+        } else if (this.getCategories() != null) {
+            for (SelectDisabledModel category : this.getCategories()) {
                 if (category.getName() == null || category.getName().isEmpty()) {
                     return "Custom property category value name can not be null.";
                 }
             }
-        } else if (this.getOrdinalValues() != null) {
-            for (OrdinalSelectDisabledModel ordinal : this.getOrdinalValues()) {
+        } else if (this.getOrdinals() != null) {
+            for (OrdinalSelectDisabledModel ordinal : this.getOrdinals()) {
                 if (ordinal.getName() == null || ordinal.getName().isEmpty()) {
                     return "Custom property ordinal value name can not be null.";
                 }
