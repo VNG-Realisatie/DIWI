@@ -2,9 +2,12 @@ import { IconButton, Typography, useTheme } from "@mui/material";
 import Add from "@mui/icons-material/Add";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import { theme } from "../theme";
+import * as Paths from "../Paths";
 
 type PlusButtonProps = {
-    color: string;
+    color: string | undefined;
     link: string | (() => void);
     text: string;
 };
@@ -82,3 +85,29 @@ export default function PlusButton({ color, link, text }: PlusButtonProps) {
         </IconButton>
     );
 }
+
+export const AddHouseBlockButton: React.FC<{ onClick: () => void }> = ({ onClick }) => {
+    const { t } = useTranslation();
+    const handleClick = () => {
+        onClick();
+    };
+
+    const buttonProps: PlusButtonProps = {
+        color: theme.palette.primary.customLightBlue,
+        link: handleClick,
+        text: t("projectDetail.createNewHouseBlock"),
+    };
+
+    return <PlusButton {...buttonProps} />;
+};
+
+export const AddProjectButton: React.FC = () => {
+    const { t } = useTranslation();
+    const buttonProps: PlusButtonProps = {
+        color: theme.palette.primary.customDarkBlue,
+        link: Paths.projectAdd.path,
+        text: t("projects.createNewProject"),
+    };
+
+    return <PlusButton {...buttonProps} />;
+};

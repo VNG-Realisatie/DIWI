@@ -12,7 +12,6 @@ import {
 } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
-import * as Paths from "../../Paths";
 import { AvatarGroup, Box, Button, Dialog, DialogActions, DialogTitle, Stack, Typography } from "@mui/material";
 import useAlert from "../../hooks/useAlert";
 import { Project } from "../../api/projectsServices";
@@ -27,7 +26,7 @@ import { confidentialityLevelOptions, planTypeOptions, projectPhaseOptions } fro
 import { OrganizationUserAvatars } from "../OrganizationUserAvatars";
 import ProjectContext from "../../context/ProjectContext";
 import useCustomSearchParams from "../../hooks/useCustomSearchParams";
-import PlusButton from "../PlusButton";
+import { AddProjectButton } from "../PlusButton";
 
 interface RowData {
     id: number;
@@ -421,7 +420,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                     Exporteren
                 </Button>
             )}
-            <PlusButton color="#002C64" link={Paths.projectAdd.path} text={t("projects.createNewProject")} />
+            <AddProjectButton />
         </Stack>
     );
 };
