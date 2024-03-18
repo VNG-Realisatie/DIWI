@@ -1,11 +1,14 @@
 package nl.vng.diwi.rest.pac4j;
 
 import java.io.IOException;
+import java.time.ZonedDateTime;
 
 import org.pac4j.core.authorization.authorizer.DefaultAuthorizers;
 import org.pac4j.core.config.Config;
 import org.pac4j.core.engine.DefaultSecurityLogic;
+import org.pac4j.core.engine.SecurityGrantedAccessAdapter;
 import org.pac4j.core.exception.TechnicalException;
+import org.pac4j.core.profile.UserProfile;
 import org.pac4j.jee.context.JEEFrameworkParameters;
 
 import jakarta.annotation.Priority;
@@ -18,7 +21,13 @@ import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.core.Context;
 import lombok.extern.log4j.Log4j2;
 import nl.vng.diwi.config.ProjectConfig;
+import nl.vng.diwi.dal.AutoCloseTransaction;
+import nl.vng.diwi.dal.UserDAO;
+import nl.vng.diwi.dal.entities.User;
+import nl.vng.diwi.dal.entities.UserState;
 import nl.vng.diwi.rest.VngServerErrorException;
+import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.security.LoginContext;
 
 @Log4j2
 @Priority(Priorities.AUTHENTICATION)
@@ -31,10 +40,12 @@ public class SecurityFilter implements ContainerRequestFilter {
     private HttpServletResponse httpResponse;
 
     private ProjectConfig config;
+    private UserDAO userDao;
 
     @Inject
-    public SecurityFilter(ProjectConfig config) {
+    public SecurityFilter(ProjectConfig config, UserDAO userDao) {
         this.config = config;
+        this.userDao = userDao;
     }
 
     @Override
@@ -51,15 +62,60 @@ public class SecurityFilter implements ContainerRequestFilter {
             return;
         }
 
-        try {
+        SecurityGrantedAccessAdapter securityGrantedAccessAdapter = (ctx, sessionStore, profiles) -> {
+            for (var profile : profiles) {
+                log.info("access granted {}", profile.getAttributes());
+
+                var userEntity = getUserForProfile(profile);
+
+                LoggedUser loggedUser = new LoggedUser(userEntity);
+                requestContext.setProperty("loggedUser", loggedUser);
+                final LoginContext context = new LoginContext(loggedUser);
+                requestContext.setSecurityContext(context);
+
+                break;
+            }
+            return null;
+        };
+
+        try
+        {
             DefaultSecurityLogic securityLogic = new DefaultSecurityLogic();
-            securityLogic.perform(pac4jConfig, (ctx, sessionStore, profiles) -> "AUTH_GRANTED", null,
-                    DefaultAuthorizers.IS_AUTHENTICATED, null,
-                    new JEEFrameworkParameters(httpRequest, httpResponse));
+            securityLogic.perform(pac4jConfig, securityGrantedAccessAdapter, null, DefaultAuthorizers.IS_AUTHENTICATED,
+                    null, new JEEFrameworkParameters(httpRequest, httpResponse));
         } catch (TechnicalException | NullPointerException e) {
             log.info("config: {}", config);
             throw new VngServerErrorException("Server error", e);
         }
 
+    }
+
+    private UserState getUserForProfile(UserProfile profile) {
+        try (var transaction = userDao.beginTransaction()) {
+            var profileUuid = profile.getId();
+
+            var firsttName = profile.getAttribute("given_name");
+            var lastName = profile.getAttribute("family_name");
+
+            var userEntity = userDao.getUserByIdentityProviderId(profileUuid);
+            if (userEntity == null) {
+                var newUser = new User();
+                newUser.setSystemUser(false);
+                userDao.persist(newUser);
+
+                userEntity = new UserState();
+                userEntity.setChangeStartDate(ZonedDateTime.now());
+                userEntity.setCreateUser(userDao.getSystemUser());
+                userEntity.setFirstName((String) firsttName);
+                userEntity.setLastName((String) lastName);
+                userEntity.setUser(newUser);
+                userEntity.setIdentityProviderId(profileUuid);
+
+                userDao.persist(userEntity);
+                transaction.commit();
+            }
+            return userEntity;
+
+        }
     }
 }
