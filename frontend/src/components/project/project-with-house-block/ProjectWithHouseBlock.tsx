@@ -66,9 +66,23 @@ export const ProjectsWithHouseBlock = () => {
     const [openHouseBlockDialog, setOpenHouseBlockDialog] = useState(false);
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const [createFormHouseBlock, setCreateFormHouseBlock] = useState<HouseBlock>(emptyHouseBlockForm);
-    const handleStartDateChange = (newValue: Dayjs | null) => setStartDate(newValue);
+    const handleStartDateChange = (newValue: Dayjs | null) => {
+        if (newValue) {
+            const startDate = newValue.endOf("day");
+            setStartDate(startDate);
+        } else {
+            setStartDate(null);
+        }
+    };
 
-    const handleEndDateChange = (newValue: Dayjs | null) => setEndDate(newValue);
+    const handleEndDateChange = (newValue: Dayjs | null) => {
+        if (newValue) {
+            const endDate = newValue.endOf("day");
+            setEndDate(endDate);
+        } else {
+            setEndDate(null);
+        }
+    };
 
     const handleCancelChange = () => {
         setProjectEditable(false);
@@ -92,8 +106,8 @@ export const ProjectsWithHouseBlock = () => {
     const updateChanges = useCallback(() => {
         setName(selectedProject?.projectName);
         setOwner(selectedProject?.projectOwners ?? []);
-        setStartDate(dayjs(formatDate(selectedProject?.startDate)));
-        setEndDate(dayjs(formatDate(selectedProject?.endDate)));
+        setStartDate(selectedProject?.startDate ? dayjs(formatDate(selectedProject.startDate)).endOf("day") : null);
+        setEndDate(selectedProject?.endDate ? dayjs(formatDate(selectedProject.endDate)).endOf("day") : null);
         setProjectPriority(selectedProject?.priority?.value); //ToDo Fix later when decided range select
         setProjectPhase(selectedProject?.projectPhase);
         setSelectedNeighbourhood(selectedProject?.buurt ?? []);
@@ -195,11 +209,9 @@ export const ProjectsWithHouseBlock = () => {
 
     const handleProjectSave = () => {
         updateProjects(updatedProjectForm)
-            .then((res) => {
-                if (res.ok) {
-                    setProjectEditable(false);
-                    updateProject();
-                }
+            .then(() => {
+                setProjectEditable(false);
+                updateProject();
             })
             .catch((error) => {
                 setAlert(error.message, "error");
