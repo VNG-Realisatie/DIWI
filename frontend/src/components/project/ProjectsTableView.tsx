@@ -259,7 +259,10 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         {
             field: "priority",
             headerName: t("projects.tableColumns.priority"),
-            editable: true,
+            editable: false,
+            renderCell: (cellValues: GridRenderCellParams<Project>) => {
+                return <>{cellValues.row?.priority?.value?.name}</>; //TODO FIX AFTER MIN MAX INTEGRATED
+            },
             preProcessEditCellProps: createErrorReport,
         },
         {
