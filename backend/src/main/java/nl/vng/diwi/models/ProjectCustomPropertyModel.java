@@ -1,7 +1,6 @@
 package nl.vng.diwi.models;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import nl.vng.diwi.dal.entities.ProjectCustomPropertySqlModel;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
 
@@ -11,7 +10,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Data
-@NoArgsConstructor
 public class ProjectCustomPropertyModel {
 
     private UUID customPropertyId;
@@ -22,11 +20,16 @@ public class ProjectCustomPropertyModel {
 
     private Boolean booleanValue;
 
-    private SingleValueOrRangeModel<BigDecimal> numericValue = new SingleValueOrRangeModel<>();
+    private SingleValueOrRangeModel<BigDecimal> numericValue;
 
     private List<UUID> categories = new ArrayList<>();
 
-    private SingleValueOrRangeModel<UUID> ordinals = new SingleValueOrRangeModel<>();
+    private SingleValueOrRangeModel<UUID> ordinals;
+
+    public ProjectCustomPropertyModel() {
+        this.numericValue = new SingleValueOrRangeModel<>();
+        this.ordinals = new SingleValueOrRangeModel<>();
+    }
 
     public ProjectCustomPropertyModel(ProjectCustomPropertySqlModel sqlModel) {
         this.customPropertyId = sqlModel.getCustomPropertyId();

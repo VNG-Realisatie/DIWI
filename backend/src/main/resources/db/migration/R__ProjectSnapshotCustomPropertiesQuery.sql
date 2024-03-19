@@ -239,10 +239,10 @@ FROM (
              null AS numericValueType,
              null AS textValue,
              CAST (null AS UUID[])  AS categories,
-             apo.eigenschap_id AS customPropertyId,
              apo.ordinal_value_id AS ordinalValueId,
              apo.ordinal_min_value_id AS ordinalMinValueId,
              apo.ordinal_max_value_id AS ordinalMaxValueId,
+             apo.eigenschap_id AS customPropertyId,
              'ORDINAL'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
          FROM active_projects ap
              JOIN active_projects_ordinalCP apo ON ap.id = apo.id

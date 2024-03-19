@@ -221,6 +221,9 @@ public class ProjectsResource {
                 case NUMERIC -> {
                     var currentNumericValue = currentProjectCP.getNumericValue();
                     var updateNumericValue = projectCPUpdateModel.getNumericValue();
+                    if (updateNumericValue == null || !updateNumericValue.isValid()) {
+                        throw new VngBadRequestException("Numeric value does not have a valid format.");
+                    }
                     if (!Objects.equals(currentNumericValue.getValue() != null ? currentNumericValue.getValue().doubleValue() : null,
                         updateNumericValue.getValue() != null ? updateNumericValue.getValue().doubleValue() : null)
                         || !Objects.equals(currentNumericValue.getMin(), updateNumericValue.getMin())
@@ -238,7 +241,14 @@ public class ProjectsResource {
                     }
                 }
                 case ORDINAL -> {
-                }//TODO
+                    if (projectCPUpdateModel.getOrdinals() == null || !projectCPUpdateModel.getOrdinals().isValid()) {
+                        throw new VngBadRequestException("Ordinal value does not have a valid format.");
+                    }
+                    if (!Objects.equals(currentProjectCP.getOrdinals(), projectCPUpdateModel.getOrdinals())) {
+                        projectService.updateProjectOrdinalCustomProperty(repo, project, projectCPUpdateModel.getCustomPropertyId(),
+                            projectCPUpdateModel.getOrdinals(), loggedUser.getUuid(), updateDate);
+                    }
+                }
             }
             transaction.commit();
             repo.getSession().clear();

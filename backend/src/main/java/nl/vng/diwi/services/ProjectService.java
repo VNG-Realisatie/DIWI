@@ -13,11 +13,13 @@ import java.util.stream.Collectors;
 
 import io.hypersistence.utils.hibernate.type.range.Range;
 import nl.vng.diwi.dal.entities.CustomCategoryValue;
+import nl.vng.diwi.dal.entities.CustomOrdinalValue;
 import nl.vng.diwi.dal.entities.CustomProperty;
 import nl.vng.diwi.dal.entities.ProjectBooleanCustomPropertyChangelog;
 import nl.vng.diwi.dal.entities.ProjectCategoryCustomPropertyChangelog;
 import nl.vng.diwi.dal.entities.ProjectCategoryCustomPropertyChangelogValue;
 import nl.vng.diwi.dal.entities.ProjectNumericCustomPropertyChangelog;
+import nl.vng.diwi.dal.entities.ProjectOrdinalCustomPropertyChangelog;
 import nl.vng.diwi.dal.entities.ProjectTextCustomPropertyChangelog;
 import nl.vng.diwi.models.ProjectCustomPropertyModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
@@ -628,6 +630,48 @@ public class ProjectService {
                     oldChangelogValue.setCategoryValue(repo.getReferenceById(CustomCategoryValue.class, oldCategoryValue));
                     repo.persist(oldChangelogValue);
                 }
+            }
+        }
+    }
+
+    public void updateProjectOrdinalCustomProperty(VngRepository repo, Project project, UUID customPropertyId, SingleValueOrRangeModel<UUID> newOrdinalValue,
+                                                   UUID loggedInUserUuid, LocalDate updateDate) {
+        ProjectOrdinalCustomPropertyChangelog oldChangelogAfterUpdate = new ProjectOrdinalCustomPropertyChangelog();
+        ProjectOrdinalCustomPropertyChangelog newChangelog = null;
+        if (newOrdinalValue.getValue() != null || newOrdinalValue.getMin() != null || newOrdinalValue.getMax() != null) {
+            newChangelog = new ProjectOrdinalCustomPropertyChangelog();
+            newChangelog.setProject(project);
+            if (newOrdinalValue.getValue() != null) {
+                newChangelog.setValue(repo.getReferenceById(CustomOrdinalValue.class, newOrdinalValue.getValue()));
+                newChangelog.setValueType(ValueType.SINGLE_VALUE);
+            } else {
+                newChangelog.setMinValue(repo.getReferenceById(CustomOrdinalValue.class, newOrdinalValue.getMin()));
+                newChangelog.setMaxValue(repo.getReferenceById(CustomOrdinalValue.class, newOrdinalValue.getMax()));
+                newChangelog.setValueType(ValueType.RANGE);
+            }
+            newChangelog.setCustomProperty(repo.getReferenceById(CustomProperty.class, customPropertyId));
+        }
+
+        List<ProjectOrdinalCustomPropertyChangelog> changelogs = project.getOrdinalCustomProperties().stream()
+            .filter(cp -> cp.getCustomProperty().getId().equals(customPropertyId)).toList();
+
+        ProjectOrdinalCustomPropertyChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, changelogs, newChangelog,
+            oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
+
+        if (newChangelog != null) {
+            repo.persist(newChangelog);
+        }
+        if (oldChangelog != null) {
+            repo.persist(oldChangelog);
+            if (oldChangelogAfterUpdate.getStartMilestone() != null) {
+                // it is a current project && it had a non-null changelog before the update
+                oldChangelogAfterUpdate.setProject(project);
+                oldChangelogAfterUpdate.setValue(oldChangelog.getValue());
+                oldChangelogAfterUpdate.setMinValue(oldChangelog.getMinValue());
+                oldChangelogAfterUpdate.setMaxValue(oldChangelog.getMaxValue());
+                oldChangelogAfterUpdate.setValueType(oldChangelog.getValueType());
+                oldChangelogAfterUpdate.setCustomProperty(oldChangelog.getCustomProperty());
+                repo.persist(oldChangelogAfterUpdate);
             }
         }
     }
