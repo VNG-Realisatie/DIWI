@@ -7,6 +7,7 @@ import { ObjectType, PropertyType } from "../../types/enums";
 import AlertContext from "../../context/AlertContext";
 import { CreatePropertyDialog } from "./CreatePropertyDialog";
 import { CustomPropertiesTable } from "./CustomPropertiesTable";
+import { components } from "../../types/schema";
 
 export const rowStyle = {
     p: 1,
@@ -19,7 +20,7 @@ export const Settings = () => {
     const [selectedPropertyType, setSelectedPropertyType] = useState<PropertyType>("TEXT");
     const [active, setActive] = useState(false);
     const [name, setName] = useState<string>("");
-    const [categories, setCategories] = useState<string[]>([]);
+    const [categories, setCategories] = useState<components["schemas"]["SelectDisabledModel"][]>([]);
 
     const { t } = useTranslation();
     const { setAlert } = useContext(AlertContext);
@@ -33,9 +34,9 @@ export const Settings = () => {
             categories:
                 categories.length > 0
                     ? categories.map((c) => {
-                          return { name: c };
+                          return c;
                       })
-                    : null,
+                    : undefined,
         };
         addCustomProperty(newProperty).then(() => {
             setAlert(t("admin.settings.notifications.successfullySaved"), "success");

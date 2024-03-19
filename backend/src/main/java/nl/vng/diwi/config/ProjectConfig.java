@@ -3,8 +3,12 @@ package nl.vng.diwi.config;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import nl.vng.diwi.models.ConfigModel;
+import nl.vng.diwi.models.LocationModel;
 import org.pac4j.core.authorization.authorizer.DefaultAuthorizers;
 import org.pac4j.core.authorization.authorizer.IsAuthenticatedAuthorizer;
 import org.pac4j.core.client.Clients;
@@ -46,6 +50,8 @@ public class ProjectConfig {
 
     private final boolean pac4jCentralLogout;
     private final Config pac4jConfig;
+
+    private final ConfigModel configModel = new ConfigModel();
 
     public ProjectConfig(Map<String, String> env) throws InvalidConfigException {
         this.baseUrl = getURL(env, "BASE_URL");
@@ -93,6 +99,19 @@ public class ProjectConfig {
             log.warn("Authentication is disabled");
             this.pac4jConfig = null;
         }
+
+        getDefaultMapBounds(env.getOrDefault("DEFAULT_MAP_BOUNDS", ""));
+    }
+
+    private void getDefaultMapBounds(String defaultMapBoundsStr) {
+        try {
+            List<String> mapBounds = Arrays.asList(defaultMapBoundsStr.split(","));
+            LocationModel corner1 = new LocationModel(Double.parseDouble(mapBounds.get(0)), Double.parseDouble(mapBounds.get(1)));
+            LocationModel corner2 = new LocationModel(Double.parseDouble(mapBounds.get(2)), Double.parseDouble(mapBounds.get(3)));
+            this.configModel.setDefaultMapBounds(new ConfigModel.MapBounds(corner1, corner2));
+        } catch (Exception ex) {
+            log.error("Error reading default map bounds from string: {} ", defaultMapBoundsStr, ex);
+        }
     }
 
     private static String getNotNull(Map<String, String> env, String key) throws InvalidConfigException {
@@ -132,7 +151,6 @@ public class ProjectConfig {
         }
         for (var client : clients.findAllClients()) {
             if (client instanceof InitializableObject initializableClient) {
-                log.info("client {}", client);
                 if (!initializableClient.isInitialized()) {
                     log.info("Initializing pac4j client '{}'", client.getName());
                     initializableClient.init();
