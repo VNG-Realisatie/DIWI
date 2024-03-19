@@ -43,6 +43,7 @@ function PlusButton({ color, link, text }: PlusButtonProps) {
                 borderRadius: "40px",
                 backgroundColor: color,
                 color: theme.palette.common.white,
+                boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.2)",
                 transition: "padding-left 0.3s ease, background-color 0.3s ease",
                 "&:hover, &.PlusButtonHovered": {
                     paddingLeft: `${textWidth + 30}px`,
