@@ -11,6 +11,7 @@ import { Dayjs } from "dayjs";
 import { useEffect, useState } from "react";
 import { getMunicipalityRoleList, getPriorityList } from "../../api/projectsTableServices";
 import { SelectModel } from "../../api/projectsServices";
+import { dateFormats } from "../../localization";
 
 type Props = {
     setCreateProjectForm: (a: any) => void;
@@ -109,7 +110,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                 <Stack flex={2}>
                     <InputLabel id="startDate">{t("createProject.informationForm.startDate")}</InputLabel>
                     <DatePicker
-                        format="DD-MM-YYYY"
+                        format={dateFormats.keyboardDate}
                         slotProps={{ textField: { size: "small" } }}
                         value={createProjectForm?.startDate}
                         onChange={(newValue: Dayjs | null) =>
@@ -123,7 +124,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                 <Stack flex={2}>
                     <InputLabel id="enddate">{t("createProject.informationForm.endDate")} </InputLabel>
                     <DatePicker
-                        format="DD-MM-YYYY"
+                        format={dateFormats.keyboardDate}
                         slotProps={{ textField: { size: "small" } }}
                         value={createProjectForm?.endDate}
                         onChange={(newValue: Dayjs | null) =>
