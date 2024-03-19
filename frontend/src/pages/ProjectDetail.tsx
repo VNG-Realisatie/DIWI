@@ -1,4 +1,4 @@
-import { Stack, Tooltip, Typography } from "@mui/material";
+import { Box, Stack, Tooltip, Typography } from "@mui/material";
 import { useContext, useState, createContext, PropsWithChildren } from "react";
 import ProjectContext from "../context/ProjectContext";
 
@@ -7,7 +7,6 @@ import BreadcrumbBar from "../components/header/BreadcrumbBar";
 import { useTranslation } from "react-i18next";
 import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
 import DeleteProjectDialog from "../components/project/DeleteProjectDialog";
-import { getProjectTimeline } from "../api/projectTimeLine";
 
 export const dummyMapData = [
     {
@@ -35,23 +34,10 @@ const ProjectColorContext = createContext({
 export const ProjectDetail = ({ children }: PropsWithChildren) => {
     const { selectedProject, id } = useContext(ProjectContext);
     const { t } = useTranslation();
-    const [projectData, setProjectData] = useState(null);
-    const [error, setError] = useState(null);
     const [selectedProjectColor, setSelectedProjectColor] = useState<string>("");
 
     const [isDeleteConfirmationOpen, setDeteleConfirmationOpen] = useState<boolean>(false);
 
-    useEffect(() => {
-        if (id) {
-            getProjectTimeline(id)
-                .then((timelineData) => setProjectData(timelineData))
-                .catch((error) => {
-                    setError(error);
-                });
-        }
-    }, [id]);
-
-    console.log(projectData);
     return (
         <Stack direction="column" justifyContent="space-between" position="relative" border="solid 1px #ddd" mb={10}>
             <BreadcrumbBar
