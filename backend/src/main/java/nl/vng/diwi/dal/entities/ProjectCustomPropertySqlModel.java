@@ -14,9 +14,12 @@ import lombok.Setter;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
 import nl.vng.diwi.dal.entities.enums.ValueType;
 import org.hibernate.annotations.JdbcType;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
+import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -44,6 +47,10 @@ public class ProjectCustomPropertySqlModel {
 
     @Column(columnDefinition = "numrange")
     private Range<BigDecimal> numericValueRange;
+
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    @Column(columnDefinition = "UUID[]")
+    private List<UUID> categories;
 
     @Enumerated(EnumType.STRING)
     @JdbcType(PostgreSQLEnumJdbcType.class)

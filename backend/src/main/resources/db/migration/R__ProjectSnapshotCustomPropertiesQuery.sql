@@ -11,6 +11,7 @@ CREATE OR REPLACE FUNCTION get_active_or_future_project_custom_properties (
         numericValueRange NUMRANGE,
         numericValueType diwi_testset.value_type,
         textValue TEXT,
+        categories UUID[],
         propertyType diwi_testset.maatwerk_eigenschap_type
 	)
 	LANGUAGE plpgsql
@@ -25,6 +26,7 @@ SELECT
     q.numericValueRange,
     q.numericValueType,
     q.textValue,
+    q.categories,
     q.propertyType
 
 FROM (
@@ -73,6 +75,19 @@ FROM (
                  WHERE
                      sms.date <= _now_ AND _now_ < ems.date
              ),
+             active_projects_categoriesCP AS (
+                 SELECT
+                     ap.id, pcc.eigenschap_id, array_agg(pccv.eigenschap_waarde_id) AS categories
+                 FROM
+                     active_projects ap
+                         JOIN diwi_testset.project_maatwerk_categorie_changelog pcc ON ap.id = pcc.project_id AND pcc.change_end_date IS NULL
+                         JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pcc.start_milestone_id AND sms.change_end_date IS NULL
+                         JOIN diwi_testset.milestone_state ems ON ems.milestone_id = pcc.end_milestone_id AND ems.change_end_date IS NULL
+                         LEFT JOIN diwi_testset.project_maatwerk_categorie_changelog_value pccv ON pccv.project_maatwerk_categorie_changelog_id = pcc.id
+                 WHERE
+                     sms.date <= _now_ AND _now_ < ems.date
+                 GROUP BY ap.id, pcc.eigenschap_id
+             ),
              future_projects AS (
                  SELECT
                      p.id, sms.milestone_id AS start_milestone_id
@@ -106,6 +121,16 @@ FROM (
                      future_projects fp
                          JOIN diwi_testset.project_maatwerk_text_changelog ptc ON fp.id = ptc.project_id
                          AND ptc.start_milestone_id = fp.start_milestone_id AND ptc.change_end_date IS NULL
+             ),
+             future_projects_categoriesCP AS (
+                 SELECT
+                     fp.id, pcc.eigenschap_id, array_agg(pccv.eigenschap_waarde_id) AS categories
+                 FROM
+                     future_projects fp
+                         JOIN diwi_testset.project_maatwerk_categorie_changelog pcc ON fp.id = pcc.project_id
+                            AND pcc.start_milestone_id = fp.start_milestone_id AND pcc.change_end_date IS NULL
+                         LEFT JOIN diwi_testset.project_maatwerk_categorie_changelog_value pccv ON pccv.project_maatwerk_categorie_changelog_id = pcc.id
+                 GROUP BY fp.id, pcc.eigenschap_id
              )
 
          SELECT
@@ -115,6 +140,7 @@ FROM (
              CAST (null AS NUMRANGE) AS numericValueRange,
              CAST (null AS diwi_testset.value_type) AS numericValueType,
              null AS textValue,
+             CAST (null AS UUID[]) AS categories,
              apb.eigenschap_id AS customPropertyId,
              'BOOLEAN'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
          FROM active_projects ap
@@ -129,6 +155,7 @@ FROM (
              apn.value_range AS numericValueRange,
              apn.value_type AS numericValueType,
              null AS textValue,
+             CAST (null AS UUID[]) AS categories,
              apn.eigenschap_id AS customPropertyId,
              'NUMERIC'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
          FROM active_projects ap
@@ -143,10 +170,26 @@ FROM (
              null AS numericValueRange,
              null AS numericValueType,
              apt.value AS textValue,
+             CAST (null AS UUID[]) AS categories,
              apt.eigenschap_id AS customPropertyId,
              'TEXT'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
          FROM active_projects ap
                 JOIN active_projects_textCP apt ON ap.id = apt.id
+
+         UNION
+
+         SELECT
+             ap.id AS projectId,
+             CAST(null AS BOOL) AS booleanValue,
+             null AS numericValue,
+             null AS numericValueRange,
+             null AS numericValueType,
+             null AS textValue,
+             apc.categories AS categories,
+             apc.eigenschap_id AS customPropertyId,
+             'CATEGORY'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
+         FROM active_projects ap
+             JOIN active_projects_categoriesCP apc ON ap.id = apc.id
 
          UNION
 
@@ -157,6 +200,7 @@ FROM (
              CAST (null AS NUMRANGE) AS numericValueRange,
              CAST (null AS diwi_testset.value_type) AS numericValueType,
              null AS textValue,
+             CAST (null AS UUID[]) AS categories,
              fpb.eigenschap_id AS customPropertyId,
              'BOOLEAN'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
          FROM future_projects fp
@@ -171,6 +215,7 @@ FROM (
              fpn.value_range AS numericValueRange,
              fpn.value_type AS numericValueType,
              null AS textValue,
+             CAST (null AS UUID[]) AS categories,
              fpn.eigenschap_id AS customPropertyId,
              'NUMERIC'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
          FROM future_projects fp
@@ -185,10 +230,27 @@ FROM (
              null AS numericValueRange,
              null AS numericValueType,
              fpt.value AS textValue,
+             CAST (null AS UUID[]) AS categories,
              fpt.eigenschap_id AS customPropertyId,
              'TEXT'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
          FROM future_projects fp
                   JOIN future_projects_textCP fpt ON fp.id = fpt.id
+
+         UNION
+
+         SELECT
+             fp.id AS projectId,
+             CAST(null AS BOOL) AS booleanValue,
+             null AS numericValue,
+             null AS numericValueRange,
+             null AS numericValueType,
+             null AS textValue,
+             fpc.categories AS categories,
+             fpc.eigenschap_id AS customPropertyId,
+             'CATEGORY'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
+         FROM future_projects fp
+             JOIN future_projects_categoriesCP fpc ON fp.id = fpc.id
+
      ) AS q
 
         JOIN diwi_testset.maatwerk_eigenschap_state cps ON cps.eigenschap_id = q.customPropertyId AND cps.change_end_date IS NULL

@@ -32,6 +32,7 @@ import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.Project;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
+import nl.vng.diwi.dal.entities.enums.ObjectType;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
@@ -189,7 +190,7 @@ public class ProjectsResource {
         throws VngNotFoundException, VngBadRequestException, VngServerErrorException {
 
         CustomPropertyModel dbCP = customPropertiesService.getCustomProperty(repo, projectCPUpdateModel.getCustomPropertyId());
-        if (dbCP == null) {
+        if (dbCP == null || !dbCP.getObjectType().equals(ObjectType.PROJECT)) {
             throw new VngBadRequestException("Custom property id does not match any known property.");
         }
         if (dbCP.getDisabled() == Boolean.TRUE) {
@@ -229,7 +230,13 @@ public class ProjectsResource {
                     }
                 }
                 case CATEGORY -> {
-                }//TODO
+                    var currentCategories = currentProjectCP.getCategories();
+                    var updateCategories = projectCPUpdateModel.getCategories();
+                    if (currentCategories.size() != updateCategories.size() || !currentCategories.containsAll(updateCategories)) {
+                        projectService.updateProjectCategoryCustomProperty(repo, project, projectCPUpdateModel.getCustomPropertyId(),
+                            new HashSet<>(updateCategories), loggedUser.getUuid(), updateDate);
+                    }
+                }
                 case ORDINAL -> {
                 }//TODO
             }

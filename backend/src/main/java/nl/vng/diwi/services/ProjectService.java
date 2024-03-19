@@ -12,8 +12,11 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import io.hypersistence.utils.hibernate.type.range.Range;
+import nl.vng.diwi.dal.entities.CustomCategoryValue;
 import nl.vng.diwi.dal.entities.CustomProperty;
 import nl.vng.diwi.dal.entities.ProjectBooleanCustomPropertyChangelog;
+import nl.vng.diwi.dal.entities.ProjectCategoryCustomPropertyChangelog;
+import nl.vng.diwi.dal.entities.ProjectCategoryCustomPropertyChangelogValue;
 import nl.vng.diwi.dal.entities.ProjectNumericCustomPropertyChangelog;
 import nl.vng.diwi.dal.entities.ProjectTextCustomPropertyChangelog;
 import nl.vng.diwi.models.ProjectCustomPropertyModel;
@@ -581,6 +584,50 @@ public class ProjectService {
                 oldChangelogAfterUpdate.setValueType(oldChangelog.getValueType());
                 oldChangelogAfterUpdate.setCustomProperty(oldChangelog.getCustomProperty());
                 repo.persist(oldChangelogAfterUpdate);
+            }
+        }
+    }
+
+    public void updateProjectCategoryCustomProperty(VngRepository repo, Project project, UUID customPropertyId, Set<UUID> newCategoryValues, UUID loggedInUserUuid, LocalDate updateDate) {
+        ProjectCategoryCustomPropertyChangelog oldChangelogAfterUpdate = new ProjectCategoryCustomPropertyChangelog();
+        ProjectCategoryCustomPropertyChangelog newChangelog = null;
+        if (newCategoryValues != null && !newCategoryValues.isEmpty()) {
+            newChangelog = new ProjectCategoryCustomPropertyChangelog();
+            newChangelog.setProject(project);
+            newChangelog.setCustomProperty(repo.getReferenceById(CustomProperty.class, customPropertyId));
+        }
+
+        List<ProjectCategoryCustomPropertyChangelog> changelogs = project.getCategoryCustomProperties().stream()
+            .filter(cp -> cp.getCustomProperty().getId().equals(customPropertyId)).toList();
+
+        ProjectCategoryCustomPropertyChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, changelogs, newChangelog,
+            oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
+
+        if (newChangelog != null) {
+            repo.persist(newChangelog);
+            for (UUID newCategoryValue : newCategoryValues) {
+                ProjectCategoryCustomPropertyChangelogValue newChangelogValue = new ProjectCategoryCustomPropertyChangelogValue();
+                newChangelogValue.setCategoryChangelog(newChangelog);
+                newChangelogValue.setCategoryValue(repo.getReferenceById(CustomCategoryValue.class, newCategoryValue));
+                repo.persist(newChangelogValue);
+            }
+        }
+        if (oldChangelog != null) {
+            Set<UUID> oldCategoryValues = oldChangelog.getChangelogCategoryValues().stream()
+                .map(cv -> cv.getCategoryValue().getId()).collect(Collectors.toSet());
+
+            repo.persist(oldChangelog);
+            if (oldChangelogAfterUpdate.getStartMilestone() != null) {
+                // it is a current project && it had a non-null changelog before the update
+                oldChangelogAfterUpdate.setProject(project);
+                oldChangelogAfterUpdate.setCustomProperty(oldChangelog.getCustomProperty());
+                repo.persist(oldChangelogAfterUpdate);
+                for (UUID oldCategoryValue : oldCategoryValues) {
+                    ProjectCategoryCustomPropertyChangelogValue oldChangelogValue = new ProjectCategoryCustomPropertyChangelogValue();
+                    oldChangelogValue.setCategoryChangelog(oldChangelogAfterUpdate);
+                    oldChangelogValue.setCategoryValue(repo.getReferenceById(CustomCategoryValue.class, oldCategoryValue));
+                    repo.persist(oldChangelogValue);
+                }
             }
         }
     }
