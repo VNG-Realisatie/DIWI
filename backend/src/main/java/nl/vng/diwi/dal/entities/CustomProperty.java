@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.entities.superclasses.IdSuperclass;
+import org.hibernate.annotations.Filter;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ import java.util.List;
 public class CustomProperty extends IdSuperclass {
 
     @OneToMany(mappedBy="customProperty", fetch = FetchType.LAZY)
+    @Filter(name = GenericRepository.CURRENT_DATA_FILTER, condition = "change_end_date IS NULL")
     private List<CustomPropertyState> states;
 
     @OneToMany(mappedBy="customProperty", fetch = FetchType.LAZY)

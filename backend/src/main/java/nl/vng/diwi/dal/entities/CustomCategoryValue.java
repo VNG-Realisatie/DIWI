@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.entities.superclasses.IdSuperclass;
+import org.hibernate.annotations.Filter;
 
 import java.util.List;
 
@@ -26,5 +27,6 @@ public class CustomCategoryValue extends IdSuperclass {
     private CustomProperty customProperty;
 
     @OneToMany(mappedBy="customCategoryValue", fetch = FetchType.LAZY)
+    @Filter(name = GenericRepository.CURRENT_DATA_FILTER, condition = "change_end_date IS NULL")
     private List<CustomCategoryValueState> states;
 }

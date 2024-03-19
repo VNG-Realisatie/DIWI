@@ -63,12 +63,16 @@ public class GenericRepository implements AutoCloseable {
                 ProjectPrioriseringValue.class,
                 ProjectPrioriseringValueState.class,
                 ProjectState.class,
+                ProjectBooleanCustomPropertyChangelog.class,
+                ProjectNumericCustomPropertyChangelog.class,
+                ProjectTextCustomPropertyChangelog.class,
                 User.class,
                 UserState.class,
                 UserToOrganization.class,
                 ProjectListSqlModel.class,
                 HouseblockSnapshotSqlModel.class,
-                CustomPropertyModel.class);
+                CustomPropertyModel.class,
+                ProjectCustomPropertySqlModel.class);
         return entities;
     }
 
