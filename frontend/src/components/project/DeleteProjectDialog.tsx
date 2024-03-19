@@ -12,13 +12,12 @@ export default function DeleteProjectDialog({ setIsOpen, isOpen, projectName, pr
     const onDelete = async (projectId: string) => {
         try {
             const res = await deleteProject(projectId);
-
             if (res.ok) {
-                setAlert(t("projectDeletedSuccesMessage", { name: projectName }), "success");
+                setAlert(t("generic.projectDeletion", { name: projectName }), "success");
+                navigate("/projects/table");
             }
         } catch (error: any) {
             setAlert(error.message, "error");
-            navigate("/projects/table");
         } finally {
             setIsOpen(false);
         }
