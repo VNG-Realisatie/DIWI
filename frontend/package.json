@@ -85,10 +85,12 @@
   },
   "jest": {
     "transformIgnorePatterns": [
-      "node_modules/(?!(react-leaflet|leaflet|leaflet-draw|swagger-ui-react|swagger-client|react-syntax-highlighter|d3|d3-array|internmap|delaunator|robust-predicates)/)"
+      "node_modules/(?!(react-leaflet|leaflet|leaflet-draw|swagger-ui-react|swagger-client|react-syntax-highlighter)/)"
     ],
     "moduleNameMapper": {
-      "^\\@swagger-api/apidom-reference": "<rootDir>/node_modules/@swagger-api/apidom-reference/dist/apidom-reference.browser.min.js"
+      "^\\@swagger-api/apidom-reference": "<rootDir>/node_modules/@swagger-api/apidom-reference/dist/apidom-reference.browser.min.js",
+      "d3": "<rootDir>/node_modules/d3/dist/d3.min.js",
+      "^d3-(.*)$": "<rootDir>/node_modules/d3-$1/dist/d3-$1.min.js"
     }
   }
 }
