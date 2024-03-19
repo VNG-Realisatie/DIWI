@@ -7,6 +7,7 @@ import { useEffect, useId, useRef } from "react";
 import PlusButton from "../PlusButton";
 import * as Paths from "../../Paths";
 import { useTranslation } from "react-i18next";
+import queryString from "query-string";
 
 type Marker = {
     projectColor: string;
@@ -30,6 +31,8 @@ const NetherlandsMap = ({ height, width, mapData, plusButton }: Props) => {
 
     const mapZoom = 10;
     const { t } = useTranslation();
+
+    fetchStuff();
 
     function createMarkerIcon(color: string) {
         return L.divIcon({
@@ -71,6 +74,12 @@ const NetherlandsMap = ({ height, width, mapData, plusButton }: Props) => {
             drawnItems.addLayer(layer);
         });
 
+        map.on("click", (event) => {
+            console.log(event.latlng);
+            // event.latlng.lat
+
+            // fetchFeatureInfoWms();
+        });
         //Get this from backend
         mapData.map((data) => {
             return L.marker(data.coordinate, { icon: createMarkerIcon(data.projectColor) })
@@ -87,3 +96,144 @@ const NetherlandsMap = ({ height, width, mapData, plusButton }: Props) => {
 };
 
 export default NetherlandsMap;
+
+async function fetchStuff() {
+    fetchCapabilityWms();
+    fetchFeatureInfoWms3857();
+    fetchFeatureInfoWms();
+    fetchFeatureInfoWms4326();
+}
+
+const baseUrlKadasterWms = "https://service.pdok.nl/kadaster/kadastralekaart/wms/v5_0";
+
+async function fetchCapabilityWms() {
+    const url = queryString.stringifyUrl({
+        url: baseUrlKadasterWms,
+        query: {
+            REQUEST: "GetCapabilities",
+            SERVICE: "WMS",
+        },
+    });
+
+    const res = await fetch(url);
+    const result = await res.text();
+    console.log("Capabilities", result);
+}
+
+async function fetchFeatureInfoWms4326() {
+    const lat = 571179.1781929513 / 100_000;
+    const lng = 6816654.835548575 / 100_000;
+    const lat2 = 571193.89834407 / 100_000;
+    const lng2 = 6816669.697605649 / 100_000;
+    const bbox = `${lat},${lng},${lat2},${lng2}`;
+    const url = queryString.stringifyUrl({
+        url: baseUrlKadasterWms,
+        query: {
+            QUERY_LAYERS: "Perceel",
+            INFO_FORMAT: "application/json",
+            REQUEST: "GetFeatureInfo",
+            SERVICE: "WMS",
+            VERSION: "1.3.0",
+            HEIGHT: "101", // What?
+            WIDTH: "101", // What?
+            I: "50", // What?
+            J: "50", // What?
+            layers: "Perceel",
+            // CRS: "EPSG:28992", // RD coords
+            CRS: "EPSG:4326",
+            BBOX: bbox,
+        },
+    });
+
+    const res = await fetch(url);
+    const result = await res.text();
+    console.log("EPSG:4326", result);
+}
+
+async function fetchFeatureInfoWms3857() {
+    const lat = 571179.1781929513; /// 100_000;
+    const lng = 6816654.835548575; /// 100_000;
+    const lat2 = 571193.89834407; /// 100_000;
+    const lng2 = 6816669.697605649; /// 100_000;
+    const bbox = `${lat},${lng},${lat2},${lng2}`;
+    const url = queryString.stringifyUrl({
+        url: baseUrlKadasterWms,
+        query: {
+            QUERY_LAYERS: "Perceel",
+            INFO_FORMAT: "application/json",
+            REQUEST: "GetFeatureInfo",
+            SERVICE: "WMS",
+            VERSION: "1.3.0",
+            HEIGHT: "101", // What?
+            WIDTH: "101", // What?
+            I: "50", // What?
+            J: "50", // What?
+            layers: "Perceel",
+            // CRS: "EPSG:28992", // RD coords
+            CRS: "EPSG:3857",
+            BBOX: bbox,
+        },
+    });
+
+    const res = await fetch(url);
+    const result = await res.text();
+    console.log("EPSG:3857", result);
+}
+
+async function fetchFeatureInfoWms() {
+    const url = queryString.stringifyUrl({
+        url: baseUrlKadasterWms,
+        query: {
+            QUERY_LAYERS: "Perceel",
+            INFO_FORMAT: "application/json",
+            REQUEST: "GetFeatureInfo",
+            SERVICE: "WMS",
+            VERSION: "1.3.0",
+            HEIGHT: "101", // What?
+            WIDTH: "101", // What?
+            I: "50", // What?
+            J: "50", // What?
+            layers: "Perceel",
+            CRS: "EPSG:28992", // RD coords
+            // CRS: "EPSG:3857",
+            BBOX: "137441.18940484137,455927.1762410904,137450.28376863306,455936.27060488204",
+        },
+    });
+
+    const res = await fetch(url);
+    const result = await res.text();
+    console.log("EPSG:28992", result);
+}
+
+// QUERY_LAYERS
+// 	Perceel
+// INFO_FORMAT
+// 	application/json
+// REQUEST
+// 	GetFeatureInfo
+// SERVICE
+// 	WMS
+// VERSION
+// 	1.3.0
+// FORMAT
+// 	image/png
+// STYLES
+
+// TRANSPARENT
+// 	true
+// layers
+// 	Perceel
+// FEATURE_COUNT
+// 	8
+// I
+// 	50
+// J
+// 	50
+// WIDTH
+// 	101
+// HEIGHT
+// 	101
+// CRS
+// 	EPSG:28992
+// BBOX
+// 	137441.18940484137,455927.1762410904,137450.28376863306,455936.27060488204
