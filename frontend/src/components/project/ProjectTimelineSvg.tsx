@@ -7,6 +7,7 @@ import { getProjectHouseBlocks } from "../../api/projectsServices";
 import dayjs from "dayjs";
 import type { Dayjs } from "dayjs";
 import { components } from "../../types/schema";
+import { HouseBlock } from "../project-wizard/house-blocks/types";
 
 type TimeDataType = {
     startDate: Dayjs;
@@ -46,7 +47,7 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, width, height }: any) => {
     */
     const { id, selectedProject } = useContext(ProjectContext);
     const [projectPhaseData, setProjectPhaseData] = useState<Array<components["schemas"]["DatedDataModelProjectPhase"]> | null>(null);
-    const [houseBlockData, setHouseBlockData] = useState<any /*Array<components["schemas"]["HouseblockSnapshotModel"]>*/ | null>(null);
+    const [houseBlockData, setHouseBlockData] = useState<Array<HouseBlock> | null>(null);
 
     useEffect(() => {
         if (id) {
@@ -209,7 +210,7 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, width, height }: any) => {
                         {/* Blocks */}
                         <g className="houseblockTrack">
                             {houseBlockData &&
-                                houseBlockData.map((block: components["schemas"]["HouseblockSnapshotModel"], index: number) => {
+                                houseBlockData.map((block, index: number) => {
                                     const x = xScale(dayjs(block.startDate)) + spacingHorizontal;
                                     const y =
                                         timelineHeight +
