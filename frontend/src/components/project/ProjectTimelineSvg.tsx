@@ -120,9 +120,8 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, width, height }: any) => {
     const xScale = d3.scaleTime().domain([earliestDate, latestDate]).range([0, chartWidth]);
 
     // Todayline
-    const today = dayjs("04-04-2024");
+    const today = dayjs();
     const todayX = xScale(today);
-    console.log(todayX);
 
     return (
         <Box sx={{ overflow: "scroll" }} width={width} height={height} lineHeight={0}>
@@ -252,6 +251,8 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, width, height }: any) => {
         </Box>
     );
 };
+
+// Comment below still usefull for TODO's regarding ZOOM and DRAG functionality
 
 // const calculateDateRange = (scaleIndex: number, startDate: Date, endDate: Date) => {
 //     let range: Date[] = [];
