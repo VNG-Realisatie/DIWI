@@ -11,8 +11,8 @@ OR REPLACE FUNCTION get_customproperty_definitions (
         objectType diwi_testset.maatwerk_object_soort,
         propertyType diwi_testset.maatwerk_eigenschap_type,
         disabled BOOL,
-        categoryValues JSONB,
-        ordinalValues JSONB
+        categories JSONB,
+        ordinals JSONB
 	)
 	LANGUAGE plpgsql
 AS $$
@@ -26,10 +26,10 @@ SELECT cp.id                                                                    
        CASE WHEN cpState.change_end_date IS NULL THEN false ELSE TRUE END                                                                AS disabled,
        to_jsonb(array_agg(
            jsonb_build_object('id', catState.categorie_waarde_id, 'name', catState.waarde_label, 'disabled',
-                              catState.change_end_date IS NOT NULL)) FILTER (WHERE catState.categorie_waarde_id IS NOT NULL))            AS categoryValues,
+                              catState.change_end_date IS NOT NULL)) FILTER (WHERE catState.categorie_waarde_id IS NOT NULL))            AS categories,
        to_jsonb(array_agg(
            jsonb_build_object('id', ordState.ordinaal_waarde_id, 'name', ordState.waarde_label, 'level', ordState.ordinaal_niveau,
-                              'disabled', ordState.change_end_date IS NOT NULL)) FILTER (WHERE ordState.ordinaal_waarde_id IS NOT NULL)) AS ordinalValues
+                              'disabled', ordState.change_end_date IS NOT NULL)) FILTER (WHERE ordState.ordinaal_waarde_id IS NOT NULL)) AS ordinals
 
 FROM diwi_testset.maatwerk_eigenschap cp
     LEFT JOIN LATERAL (

@@ -20,6 +20,7 @@ public class ProjectTimelineModel extends DatedDataModelSuperClass {
     private List<DatedDataModel<String>> projectName = new ArrayList<>();
     private String projectColor;
     private Confidentiality confidentialityLevel;
+    private LocationModel location;
     private List<DatedDataModel<List<PlanType>>> planType = new ArrayList<>();
     private List<DatedPriorityModel> priority = new ArrayList<>();
     private List<DatedDataModel<ProjectPhase>> projectPhase = new ArrayList<>();
@@ -37,6 +38,7 @@ public class ProjectTimelineModel extends DatedDataModelSuperClass {
         ProjectState projectState = project.getState().get(0);
         projectColor = projectState.getColor();
         confidentialityLevel = projectState.getConfidentiality();
+        location = new LocationModel(projectState.getLatitude(), projectState.getLongitude());
         ProjectDurationChangelog projectDuration = project.getDuration().get(0);
         MilestoneModel projectStartMilestone = new MilestoneModel(projectDuration.getStartMilestone());
         MilestoneModel projectEndMilestone = new MilestoneModel(projectDuration.getEndMilestone());

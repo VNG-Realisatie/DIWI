@@ -35,4 +35,10 @@ public class ProjectState extends ChangeDataSuperclass {
 
     @Column(name = "project_colour")
     private String color;
+
+    @Column(name = "latitude")
+    private Double latitude;
+
+    @Column(name = "longitude")
+    private Double longitude;
 }

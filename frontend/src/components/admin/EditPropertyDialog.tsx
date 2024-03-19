@@ -18,7 +18,7 @@ import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { ObjectType, PropertyType } from "../../types/enums";
 import { CategoryCreateOption } from "./CategoryCreateOption";
 import { objectType, propertyType } from "./constants";
-import { CustomPropertyType, OrdinalValuesType, getCustomProperties, getCustomProperty, updateCustomProperty } from "../../api/adminSettingServices";
+import { CategoryType, CustomPropertyType, getCustomProperties, getCustomProperty, updateCustomProperty } from "../../api/adminSettingServices";
 import AlertContext from "../../context/AlertContext";
 
 type Props = {
@@ -32,14 +32,13 @@ export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomPro
     const [selectedPropertyType, setSelectedPropertyType] = useState<PropertyType>("TEXT");
     const [active, setActive] = useState(false);
     const [name, setName] = useState<string>("");
-    const [categories, setCategories] = useState<string[] | null>(null);
-    const [values, setValues] = useState<OrdinalValuesType[] | null>(null);
+    const [categories, setCategories] = useState<CategoryType[]>([]);
     const { setAlert } = useContext(AlertContext);
     useEffect(() => {
         if (id) {
             getCustomProperty(id).then((property) => {
                 setName(property.name);
-                property.categoryValues && setCategories(property.categoryValues.map((c) => c.name));
+                property.categories && setCategories(property.categories);
                 setActive(property.disabled);
                 setSelectedObjectType(property.objectType);
                 setSelectedPropertyType(property.propertyType);
@@ -55,13 +54,7 @@ export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomPro
             objectType: selectedObjectType,
             propertyType: selectedPropertyType,
             disabled: !active,
-            categoryValues:
-                categories !== null && categories.length > 0
-                    ? categories.map((c) => {
-                          return { name: c };
-                      })
-                    : null,
-            ordinalValues: values !== null && values.length > 0 ? values : null,
+            categories: selectedPropertyType === "CATEGORY" ? categories : undefined,
         };
         updateCustomProperty(id, newProperty).then(() => {
             setAlert(t("admin.settings.notifications.successfullySaved"), "success");

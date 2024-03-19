@@ -3,6 +3,7 @@ package nl.vng.diwi.resources;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,7 @@ import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.dal.entities.enums.ProjectRole;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
+import nl.vng.diwi.models.LocationModel;
 import nl.vng.diwi.models.OrganizationModel;
 import nl.vng.diwi.models.PriorityModel;
 import nl.vng.diwi.models.ProjectListModel;
@@ -175,7 +177,7 @@ public class ProjectsResource {
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             Project project = projectService.getCurrentProjectAndPerformPreliminaryUpdateChecks(repo, projectUuid);
-            updateProjectProperty(project, projectUpdateModel, loggedUser, updateDate);
+            updateProjectProperty(project, projectUpdateModel, loggedUser, updateDate, ZonedDateTime.now());
             transaction.commit();
         }
 
@@ -224,6 +226,18 @@ public class ProjectsResource {
             case projectColor -> {
                 if (!Objects.equals(projectSnapshotModelToUpdate.getProjectColor(), projectSnapshotModelCurrent.getProjectColor())) {
                     projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectColor, projectSnapshotModelToUpdate.getProjectColor()));
+                }
+            }
+            case location -> {
+                if (projectSnapshotModelToUpdate.getLocation() == null) {
+                    projectSnapshotModelToUpdate.setLocation(new LocationModel());
+                }
+                if (!Objects.equals(projectSnapshotModelToUpdate.getLocation(), projectSnapshotModelCurrent.getLocation())) {
+                    Double newLatitude = projectSnapshotModelToUpdate.getLocation().getLat();
+                    Double newLongitude = projectSnapshotModelToUpdate.getLocation().getLng();
+                    projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.location, Arrays.asList(
+                        newLatitude == null ? null : newLatitude.toString(),
+                        newLongitude == null ? null : newLongitude.toString())));
                 }
             }
             case planningPlanStatus -> {
@@ -305,6 +319,7 @@ public class ProjectsResource {
         }
 
         LocalDate updateDate = LocalDate.now();
+        ZonedDateTime changeDate = ZonedDateTime.now();
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             projectService.getCurrentProjectAndPerformPreliminaryUpdateChecks(repo, project.getId());
             for (ProjectUpdateModel projectUpdateModel : projectUpdateModelList) {
@@ -312,7 +327,7 @@ public class ProjectsResource {
                 if (validationError != null) {
                     throw new VngBadRequestException(validationError);
                 }
-                updateProjectProperty(project, projectUpdateModel, loggedUser, updateDate);
+                updateProjectProperty(project, projectUpdateModel, loggedUser, updateDate, changeDate);
             }
             transaction.commit();
             repo.getSession().clear();
@@ -321,7 +336,7 @@ public class ProjectsResource {
         return projectService.getProjectSnapshot(repo, projectUuid);
     }
 
-    private void updateProjectProperty(Project project, ProjectUpdateModel projectUpdateModel, LoggedUser loggedUser, LocalDate updateDate)
+    private void updateProjectProperty(Project project, ProjectUpdateModel projectUpdateModel, LoggedUser loggedUser, LocalDate updateDate, ZonedDateTime changeDate)
             throws VngNotFoundException, VngServerErrorException, VngBadRequestException {
 
         switch (projectUpdateModel.getProperty()) {
@@ -329,10 +344,13 @@ public class ProjectsResource {
         case endDate -> projectService.updateProjectDuration(repo, project, null, LocalDate.parse(projectUpdateModel.getValue()), loggedUser.getUuid());
         case confidentialityLevel -> {
             Confidentiality newConfidentiality = Confidentiality.valueOf(projectUpdateModel.getValue());
-            projectService.updateProjectConfidentialityLevel(repo, project, newConfidentiality, loggedUser.getUuid());
+            projectService.updateProjectConfidentialityLevel(repo, project, newConfidentiality, loggedUser.getUuid(), changeDate);
         }
         case name -> projectService.updateProjectName(repo, project, projectUpdateModel.getValue(), loggedUser.getUuid(), updateDate);
-        case projectColor -> projectService.updateProjectColor(repo, project, projectUpdateModel.getValue(), loggedUser.getUuid());
+        case projectColor -> projectService.updateProjectColor(repo, project, projectUpdateModel.getValue(), loggedUser.getUuid(), changeDate);
+        case location -> projectService.updateProjectLocation(repo, project, projectUpdateModel.getValues().stream()
+            .map(v -> (v == null) ? null : Double.parseDouble(v))
+            .toList(), loggedUser.getUuid(), changeDate);
         case planningPlanStatus -> {
             Set<PlanStatus> planStatuses = (projectUpdateModel.getValues() != null)
                     ? projectUpdateModel.getValues().stream().map(PlanStatus::valueOf).collect(Collectors.toSet())

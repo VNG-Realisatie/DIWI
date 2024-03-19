@@ -1,27 +1,9 @@
-import { ObjectType } from "../types/enums";
 import { components } from "../types/schema";
 import { deleteJson, getJson, postJson, putJson } from "../utils/requests";
 import { API_URI } from "../utils/urls";
-export type CategoryType = {
-    id?: string;
-    name: string;
-    disabled?: boolean;
-};
-export type OrdinalValuesType = {
-    id?: string;
-    name: string;
-    disabled: boolean;
-    level: number;
-};
-export type CustomPropertyType = {
-    id?: string;
-    name: string;
-    objectType: ObjectType;
-    propertyType: PropertyType;
-    disabled: boolean;
-    categoryValues: CategoryType[] | null;
-    ordinalValues: OrdinalValuesType[] | null;
-};
+
+export type CategoryType = components["schemas"]["SelectDisabledModel"];
+export type CustomPropertyType = components["schemas"]["CustomPropertyModel"];
 
 export async function getCustomProperties(): Promise<Array<CustomPropertyType>> {
     return getJson(`${API_URI}/customproperties`);

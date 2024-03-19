@@ -20,6 +20,7 @@ public class ProjectUpdateModel {
 
     public enum ProjectProperty {
         confidentialityLevel,
+        location,
         municipalityRole,
         name,
         planningPlanStatus,
@@ -37,17 +38,11 @@ public class ProjectUpdateModel {
     }
 
     private ProjectProperty property;
-
     private String value;
-
     private List<String> values;
-
     private UUID add;
-
     private UUID remove;
-
     private UUID min;
-
     private UUID max;
 
     public ProjectUpdateModel(ProjectProperty property, UUID add, UUID remove) {
@@ -136,6 +131,22 @@ public class ProjectUpdateModel {
                 yield "Invalid values for new priority. Provide either the 'value' field, or the 'min' and 'max' fields.";
             }
             case projectColor -> (value == null || Validation.validateColor(value)) ? "New color is not valid." : null;
+            case location -> {
+                if (values == null || values.size() != 2) {
+                    yield "Invalid values for new location. 2 values must be provided in the 'values' list.";
+                }
+                try {
+                    if (values.get(0) != null) {
+                        Double.parseDouble(values.get(0));
+                    }
+                    if (values.get(1) != null) {
+                        Double.parseDouble(values.get(1));
+                    }
+                } catch (NumberFormatException ex) {
+                    yield "Latitude and/or longitude values do not have the correct format.";
+                }
+                yield null;
+            }
             case projectPhase -> (value == null || !EnumUtils.isValidEnum(ProjectPhase.class, value)) ? "New project phase value is not valid." : null;
             case municipalityRole, projectLeaders, projectOwners -> null;
         };

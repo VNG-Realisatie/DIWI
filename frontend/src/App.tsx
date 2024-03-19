@@ -27,6 +27,7 @@ import { Swagger } from "./pages/Swagger";
 import { diwiFetch } from "./utils/requests";
 import { ProjectsWithHouseBlock } from "./components/project/project-with-house-block/ProjectWithHouseBlock";
 import { Settings } from "./components/admin/Settings";
+import { dateFormats } from "./localization";
 
 export const drawerWidth = 290;
 
@@ -97,8 +98,10 @@ function RequiresLogin() {
 
     useEffect(() => {
         diwiFetch(Paths.loggedIn.path)
-            .then(() => {
-                setIsLoggedIn(true);
+            .then((res) => {
+                if (res.ok) {
+                    setIsLoggedIn(true);
+                }
             })
             .catch((error) => {
                 setAlert(error.message, "error");
@@ -114,7 +117,7 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
             <AlertProvider>
                 <AlertPopup />
                 <ScopedCssBaseline>
-                    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="nl" dateFormats={{ keyboardDate: "DD-MM-YYYY" }}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="nl" dateFormats={dateFormats}>
                         {children}
                     </LocalizationProvider>
                 </ScopedCssBaseline>

@@ -3,6 +3,7 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { t } from "i18next";
 import dayjs, { Dayjs } from "dayjs";
 import { InputContainer } from "../InputContainer";
+import { convertDayjsToString } from "../../../../utils/convertDayjsToString";
 
 type Props = {
     houseBlockEndDate: string | null;
@@ -20,7 +21,7 @@ export const EndDatePicker = ({ houseBlockEndDate, updateHouseBlockEndDate, edit
             {edit && editForm && <DatePicker value={houseBlockEndDate ? dayjs(houseBlockEndDate) : null} onChange={updateHouseBlockEndDate} />}
             {!edit && editForm && (
                 <InputContainer>
-                    <Typography>{houseBlockEndDate}</Typography>
+                    <Typography>{convertDayjsToString(dayjs(houseBlockEndDate))}</Typography>
                 </InputContainer>
             )}
             {!edit && !editForm && <DatePicker value={houseBlockEndDate ? dayjs(houseBlockEndDate) : null} onChange={updateHouseBlockEndDate} />}
