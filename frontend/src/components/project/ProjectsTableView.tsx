@@ -364,6 +364,9 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             }}
         >
             <DataGrid
+                sx={{
+                    borderRadius: 0,
+                }}
                 checkboxSelection={showCheckBox}
                 rows={rows}
                 columns={columns}
@@ -420,6 +423,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                     Exporteren
                 </Button>
             )}
+            <Box sx={{ height: 100 }}></Box>
             <AddProjectButton />
         </Stack>
     );

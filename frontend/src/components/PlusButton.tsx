@@ -1,4 +1,4 @@
-import { IconButton, Typography, useTheme } from "@mui/material";
+import { IconButton, Typography } from "@mui/material";
 import Add from "@mui/icons-material/Add";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef } from "react";
@@ -12,8 +12,7 @@ type PlusButtonProps = {
     text: string;
 };
 
-export default function PlusButton({ color, link, text }: PlusButtonProps) {
-    const theme = useTheme();
+function PlusButton({ color, link, text }: PlusButtonProps) {
     const navigate = useNavigate();
     const textWidth = text ? text.length * 8 : 0;
     const buttonRef = useRef<HTMLButtonElement>(null);
@@ -28,13 +27,7 @@ export default function PlusButton({ color, link, text }: PlusButtonProps) {
         }
     }, []);
 
-    const handleButtonClick = () => {
-        if (typeof link === "string") {
-            navigate(link);
-        } else {
-            link();
-        }
-    };
+    const handleButtonClick = () => (typeof link === "string" ? navigate(link) : link());
 
     return (
         <IconButton
@@ -44,8 +37,8 @@ export default function PlusButton({ color, link, text }: PlusButtonProps) {
             onClick={handleButtonClick}
             sx={{
                 position: "absolute",
-                bottom: 50,
-                right: 50,
+                bottom: 20,
+                right: 20,
                 zIndex: 999,
                 borderRadius: "40px",
                 backgroundColor: color,
