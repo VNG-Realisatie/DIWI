@@ -1,9 +1,6 @@
 package nl.vng.diwi.dal.entities;
 
-import io.hypersistence.utils.hibernate.type.range.PostgreSQLRangeType;
-import io.hypersistence.utils.hibernate.type.range.Range;
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -18,21 +15,14 @@ import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.entities.enums.ValueType;
 import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
 import org.hibernate.annotations.JdbcType;
-import org.hibernate.annotations.Type;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
-import java.math.BigDecimal;
-
 @Entity
-@Table(name = "project_maatwerk_numeriek_changelog", schema = GenericRepository.VNG_SCHEMA_NAME)
+@Table(name = "project_maatwerk_ordinaal_changelog", schema = GenericRepository.VNG_SCHEMA_NAME)
 @Getter
 @Setter
 @NoArgsConstructor
-@Convert(
-    attributeName = "numrange",
-    converter = PostgreSQLRangeType.class
-)
-public class ProjectNumericCustomPropertyChangelog extends MilestoneChangeDataSuperclass {
+public class ProjectOrdinalCustomPropertyChangelog extends MilestoneChangeDataSuperclass {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "project_id")
@@ -42,12 +32,17 @@ public class ProjectNumericCustomPropertyChangelog extends MilestoneChangeDataSu
     @JoinColumn(name = "eigenschap_id")
     private CustomProperty customProperty;
 
-    @Column(name = "value")
-    private Double value;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "value_id")
+    private CustomOrdinalValue value;
 
-    @Type(PostgreSQLRangeType.class)
-    @Column(name = "value_range", columnDefinition = "numrange")
-    private Range<BigDecimal> valueRange;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "min_value_id")
+    private CustomOrdinalValue minValue;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "max_value_id")
+    private CustomOrdinalValue maxValue;
 
     @Column(name = "value_type")
     @Enumerated(EnumType.STRING)

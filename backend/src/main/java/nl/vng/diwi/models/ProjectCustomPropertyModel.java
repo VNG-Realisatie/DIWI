@@ -26,6 +26,8 @@ public class ProjectCustomPropertyModel {
 
     private List<UUID> categories = new ArrayList<>();
 
+    private SingleValueOrRangeModel<UUID> ordinals = new SingleValueOrRangeModel<>();
+
     public ProjectCustomPropertyModel(ProjectCustomPropertySqlModel sqlModel) {
         this.customPropertyId = sqlModel.getCustomPropertyId();
         this.propertyType = sqlModel.getPropertyType();
@@ -36,6 +38,9 @@ public class ProjectCustomPropertyModel {
         }
         if (PropertyType.CATEGORY.equals(this.propertyType)) {
             this.categories.addAll(sqlModel.getCategories());
+        }
+        if (PropertyType.ORDINAL.equals(this.propertyType)) {
+            this.ordinals = new SingleValueOrRangeModel<>(sqlModel.getOrdinalValueId(), sqlModel.getOrdinalMinValueId(), sqlModel.getOrdinalMaxValueId());
         }
     }
 }

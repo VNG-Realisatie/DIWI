@@ -1,6 +1,5 @@
 package nl.vng.diwi.dal.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -20,12 +19,10 @@ import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
 @NoArgsConstructor
 public class ProjectBooleanCustomPropertyChangelog extends MilestoneChangeDataSuperclass {
 
-    @JsonIgnoreProperties("name")
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "project_id")
     private Project project;
 
-    @JsonIgnoreProperties("name")
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "eigenschap_id")
     private CustomProperty customProperty;

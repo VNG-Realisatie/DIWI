@@ -52,6 +52,12 @@ public class ProjectCustomPropertySqlModel {
     @Column(columnDefinition = "UUID[]")
     private List<UUID> categories;
 
+    private UUID ordinalValueId;
+
+    private UUID ordinalMinValueId;
+
+    private UUID ordinalMaxValueId;
+
     @Enumerated(EnumType.STRING)
     @JdbcType(PostgreSQLEnumJdbcType.class)
     private PropertyType propertyType;

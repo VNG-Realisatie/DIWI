@@ -68,6 +68,7 @@ public class GenericRepository implements AutoCloseable {
                 ProjectTextCustomPropertyChangelog.class,
                 ProjectCategoryCustomPropertyChangelog.class,
                 ProjectCategoryCustomPropertyChangelogValue.class,
+                ProjectOrdinalCustomPropertyChangelog.class,
                 User.class,
                 UserState.class,
                 UserToOrganization.class,
