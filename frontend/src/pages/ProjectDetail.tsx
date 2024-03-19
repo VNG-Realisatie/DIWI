@@ -1,4 +1,4 @@
-import { Box, Stack, Tooltip, Typography } from "@mui/material";
+import { Stack, Tooltip, Typography } from "@mui/material";
 import { useContext, useState, createContext, PropsWithChildren } from "react";
 import ProjectContext from "../context/ProjectContext";
 
