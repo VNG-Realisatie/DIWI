@@ -1,6 +1,5 @@
 package nl.vng.diwi.resources;
 
-import io.swagger.v3.jaxrs2.integration.resources.BaseOpenApiResource;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -12,7 +11,7 @@ import nl.vng.diwi.rest.VngServerErrorException;
 
 
 @Path("/config")
-public class ConfigResource extends BaseOpenApiResource {
+public class ConfigResource {
 
     private ProjectConfig projectConfig;
 
