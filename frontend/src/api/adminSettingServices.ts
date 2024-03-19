@@ -1,4 +1,5 @@
-import { ObjectType, PropertyType } from "../types/enums";
+import { ObjectType } from "../types/enums";
+import { components } from "../types/schema";
 import { deleteJson, getJson, postJson, putJson } from "../utils/requests";
 import { API_URI } from "../utils/urls";
 export type CategoryType = {

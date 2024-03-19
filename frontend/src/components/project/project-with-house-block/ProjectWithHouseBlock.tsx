@@ -212,6 +212,9 @@ export const ProjectsWithHouseBlock = () => {
     useEffect(() => {
         id && getProjectHouseBlocks(id).then((res) => setHouseBlocks(res));
     }, [id]);
+    useEffect(() => {
+        getCustomPropertiesWithQuery("PROJECT").then((customProperties) => setCustomProperties(customProperties));
+    }, []);
 
     useEffect(() => {
         getCustomPropertiesWithQuery("PROJECT").then((customProperties) => setCustomProperties(customProperties));
@@ -438,27 +441,15 @@ export const ProjectsWithHouseBlock = () => {
                 {/*List Custom Properties */}
                 <Grid container my={2}>
                     {customProperties &&
-                        customProperties.map((cp, i) => {
-                            const inputValue = () => {
-                                if (cp.propertyType === "CATEGORY") {
-                                    return cp.categoryValues;
-                                } else return cp.ordinalValues;
-                            };
-                            return (
-                                <Grid item xs={6} md={1} key={i}>
-                                    <Typography sx={columnTitleStyle}>{cp.name}</Typography>
-                                    {!projectEditable ? (
-                                        <CellContainer>
-                                            {inputValue()?.map((v) => {
-                                                return <>{v.name}</>;
-                                            })}
-                                        </CellContainer>
-                                    ) : (
-                                        <>EDIT FORM LATER</>
-                                    )}
-                                </Grid>
-                            );
-                        })}
+                        customProperties
+                            .filter((p) => !p.disabled)
+                            .map((cp, i) => {
+                                return (
+                                    <Grid item xs={6} md={1} key={i}>
+                                        <Typography sx={columnTitleStyle}>{cp.name}</Typography>
+                                    </Grid>
+                                );
+                            })}
                 </Grid>
                 {/* List huizen blok cards */}
                 <HouseBlocksList houseBlocks={houseBlocks} setOpenHouseBlockDialog={setOpenHouseBlockDialog} />
