@@ -45,6 +45,7 @@ const OwnershipAmountInput = ({ handleInputChange, ownership, index }: Ownership
             size="small"
             label="Amount"
             type="number"
+            required
             fullWidth
             value={ownership.amount}
             onChange={(e) => handleInputChange(index, { ...ownership, amount: parseInt(e.target.value) })}
