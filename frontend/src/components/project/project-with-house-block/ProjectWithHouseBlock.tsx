@@ -246,7 +246,7 @@ export const ProjectsWithHouseBlock = () => {
     useEffect(() => {
         getCustomPropertiesWithQuery("PROJECT").then((customProperties) => setCustomProperties(customProperties));
     }, []);
-    console.log(customProperties);
+
     return (
         <Stack my={1} p={1} mb={10}>
             <Box sx={{ cursor: "pointer" }} position="absolute" right={10} top={55} zIndex={9999}>
