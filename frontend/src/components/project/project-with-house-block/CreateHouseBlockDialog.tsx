@@ -36,14 +36,21 @@ export const CreateHouseBlockDialog = ({
                     variant="contained"
                     color="success"
                     onClick={async () => {
-                        const addedHouseBlock = await addHouseBlock({ ...createFormHouseBlock, projectId: id });
-                        if (addedHouseBlock) {
-                            setAlert(t("createProject.houseBlocksForm.notifications.successfullySaved"), "success");
-                            setOpenHouseBlockDialog(false);
-                            setCreateFormHouseBlock(emptyHouseBlockForm);
-                            id && getProjectHouseBlocks(id).then((hb) => setHouseBlocks(hb));
-                        } else {
-                            setAlert(t("createProject.houseBlocksForm.notifications.error"), "error");
+                        try {
+                            const addedHouseBlock = await addHouseBlock({ ...createFormHouseBlock, projectId: id });
+                            if (addedHouseBlock) {
+                                setAlert(t("createProject.houseBlocksForm.notifications.successfullySaved"), "success");
+                                setOpenHouseBlockDialog(false);
+                                setCreateFormHouseBlock(emptyHouseBlockForm);
+                                if (id) {
+                                    const hb = await getProjectHouseBlocks(id);
+                                    setHouseBlocks(hb);
+                                }
+                            } else {
+                                setAlert(t("createProject.houseBlocksForm.notifications.error"), "error");
+                            }
+                        } catch (error: any) {
+                            setAlert(error.message, "error");
                         }
                     }}
                     autoFocus
