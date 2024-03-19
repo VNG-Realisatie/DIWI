@@ -42,7 +42,6 @@ export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomPro
                 setActive(property.disabled);
                 setSelectedObjectType(property.objectType);
                 setSelectedPropertyType(property.propertyType);
-                setValues(property.ordinalValues);
             });
         }
     }, [id]);

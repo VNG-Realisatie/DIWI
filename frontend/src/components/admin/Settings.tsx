@@ -2,7 +2,7 @@ import { Stack, Typography } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { useTranslation } from "react-i18next";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { CustomPropertyType, OrdinalValuesType, addCustomProperty, getCustomProperties } from "../../api/adminSettingServices";
+import { CustomPropertyType, addCustomProperty, getCustomProperties } from "../../api/adminSettingServices";
 import { ObjectType, PropertyType } from "../../types/enums";
 import AlertContext from "../../context/AlertContext";
 import { CreatePropertyDialog } from "./CreatePropertyDialog";
@@ -31,7 +31,7 @@ export const Settings = () => {
             objectType: selectedObjectType,
             propertyType: selectedPropertyType,
             disabled: !active,
-            categoryValues:
+            categories:
                 categories !== null && categories.length > 0
                     ? categories.map((c) => {
                           return c;
@@ -43,7 +43,7 @@ export const Settings = () => {
             setOpenDialog(false);
             getCustomProperties().then((customProperties) => setCustomProperties(customProperties));
         });
-    }, [active, categories, name, selectedObjectType, selectedPropertyType, setAlert, t, values]);
+    }, [active, categories, name, selectedObjectType, selectedPropertyType, setAlert, t]);
 
     useEffect(() => {
         getCustomProperties().then((customProperties) => setCustomProperties(customProperties));
