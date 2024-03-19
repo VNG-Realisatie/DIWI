@@ -27,6 +27,8 @@ import { OrganizationUserAvatars } from "../OrganizationUserAvatars";
 import ProjectContext from "../../context/ProjectContext";
 import useCustomSearchParams from "../../hooks/useCustomSearchParams";
 import { AddProjectButton } from "../PlusButton";
+import dayjs from "dayjs";
+import { dateFormats } from "../../localization";
 
 interface RowData {
     id: number;
@@ -224,6 +226,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             field: "startDate",
             headerName: t("projects.tableColumns.startDate"),
             type: "dateTime",
+            valueFormatter: (p) => dayjs(p.value).format(dateFormats.keyboardDate),
             filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
             valueGetter: ({ value }) => value && new Date(value),
             preProcessEditCellProps: createErrorReport,
@@ -232,6 +235,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             field: "endDate",
             headerName: t("projects.tableColumns.endDate"),
             type: "dateTime",
+            valueFormatter: (p) => dayjs(p.value).format(dateFormats.keyboardDate),
             filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
             valueGetter: ({ value }) => value && new Date(value),
             preProcessEditCellProps: createErrorReport,

@@ -18,6 +18,7 @@ import { ChangeEvent } from "react";
 import { ObjectType, PropertyType } from "../../types/enums";
 import { CategoryCreateOption } from "./CategoryCreateOption";
 import { objectType, propertyType } from "./constants";
+import { components } from "../../types/schema";
 
 type Props = {
     openDialog: boolean;
@@ -31,8 +32,8 @@ type Props = {
     active: boolean;
     setActive: (active: boolean) => void;
     handleSave: () => void;
-    categories: string[];
-    setCategories: (categories: string[]) => void;
+    categories: components["schemas"]["SelectDisabledModel"][];
+    setCategories: (categories: components["schemas"]["SelectDisabledModel"][]) => void;
 };
 export const CreatePropertyDialog = ({
     openDialog,

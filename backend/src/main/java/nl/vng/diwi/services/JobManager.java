@@ -17,14 +17,12 @@ public class JobManager {
 
     private DalFactory dalFactory;
     private Scheduler scheduler;
-    private ProjectConfig projectConfig;
 
     public JobManager(DalFactory dalFactory, ProjectConfig projectConfig, Scheduler scheduler) {
         logger.info("Start RestTaskManager");
 
         this.dalFactory = dalFactory;
         this.scheduler = scheduler;
-        this.projectConfig = projectConfig;
     }
 
     public boolean startJobNow(Class<? extends Job> jobClass, String jobKey, JobDataMap jobDataMap) {
