@@ -28,6 +28,7 @@ import { diwiFetch } from "./utils/requests";
 import { ProjectsWithHouseBlock } from "./components/project/project-with-house-block/ProjectWithHouseBlock";
 import { Settings } from "./components/admin/Settings";
 import { dateFormats } from "./localization";
+import OpenLayersMap from "./components/map/OpenLayersMap";
 
 export const drawerWidth = 290;
 
@@ -134,9 +135,12 @@ function App() {
                         <Route
                             index
                             element={
-                                <ProjectProvider>
-                                    <Projects />
-                                </ProjectProvider>
+                                <>
+                                    <OpenLayersMap />
+                                    <ProjectProvider>
+                                        <Projects />
+                                    </ProjectProvider>
+                                </>
                             }
                         />
                         <Route
