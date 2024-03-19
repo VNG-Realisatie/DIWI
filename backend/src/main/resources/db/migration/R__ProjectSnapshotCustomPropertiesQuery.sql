@@ -12,6 +12,9 @@ CREATE OR REPLACE FUNCTION get_active_or_future_project_custom_properties (
         numericValueType diwi_testset.value_type,
         textValue TEXT,
         categories UUID[],
+        ordinalValueId UUID,
+        ordinalMinValueId UUID,
+        ordinalMaxValueId UUID,
         propertyType diwi_testset.maatwerk_eigenschap_type
 	)
 	LANGUAGE plpgsql
@@ -27,6 +30,9 @@ SELECT
     q.numericValueType,
     q.textValue,
     q.categories,
+    q.ordinalValueId,
+    q.ordinalMinValueId,
+    q.ordinalMaxValueId,
     q.propertyType
 
 FROM (
@@ -88,6 +94,17 @@ FROM (
                      sms.date <= _now_ AND _now_ < ems.date
                  GROUP BY ap.id, pcc.eigenschap_id
              ),
+             active_projects_ordinalCP AS (
+                 SELECT
+                     ap.id, poc.eigenschap_id, poc.value_id AS ordinal_value_id, poc.min_value_id AS ordinal_min_value_id, poc.max_value_id AS ordinal_max_value_id
+                 FROM
+                     active_projects ap
+                         JOIN diwi_testset.project_maatwerk_ordinaal_changelog poc ON ap.id = poc.project_id AND poc.change_end_date IS NULL
+                         JOIN diwi_testset.milestone_state sms ON sms.milestone_id = poc.start_milestone_id AND sms.change_end_date IS NULL
+                         JOIN diwi_testset.milestone_state ems ON ems.milestone_id = poc.end_milestone_id AND ems.change_end_date IS NULL
+                 WHERE
+                     sms.date <= _now_ AND _now_ < ems.date
+             ),
              future_projects AS (
                  SELECT
                      p.id, sms.milestone_id AS start_milestone_id
@@ -131,6 +148,15 @@ FROM (
                             AND pcc.start_milestone_id = fp.start_milestone_id AND pcc.change_end_date IS NULL
                          LEFT JOIN diwi_testset.project_maatwerk_categorie_changelog_value pccv ON pccv.project_maatwerk_categorie_changelog_id = pcc.id
                  GROUP BY fp.id, pcc.eigenschap_id
+             ),
+             future_projects_ordinalCP AS (
+                 SELECT
+                     fp.id, poc.eigenschap_id, poc.value_id AS ordinal_value_id, poc.min_value_id AS ordinal_min_value_id, poc.max_value_id AS ordinal_max_value_id
+                 FROM
+                     future_projects fp
+                         JOIN diwi_testset.project_maatwerk_ordinaal_changelog poc ON fp.id = poc.project_id
+                         AND poc.start_milestone_id = fp.start_milestone_id AND poc.change_end_date IS NULL
+
              )
 
          SELECT
@@ -141,6 +167,9 @@ FROM (
              CAST (null AS diwi_testset.value_type) AS numericValueType,
              null AS textValue,
              CAST (null AS UUID[]) AS categories,
+             CAST (null AS UUID) AS ordinalValueId,
+             CAST (null AS UUID) AS ordinalMinValueId,
+             CAST (null AS UUID) AS ordinalMaxValueId,
              apb.eigenschap_id AS customPropertyId,
              'BOOLEAN'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
          FROM active_projects ap
@@ -156,6 +185,9 @@ FROM (
              apn.value_type AS numericValueType,
              null AS textValue,
              CAST (null AS UUID[]) AS categories,
+             CAST (null AS UUID) AS ordinalValueId,
+             CAST (null AS UUID) AS ordinalMinValueId,
+             CAST (null AS UUID) AS ordinalMaxValueId,
              apn.eigenschap_id AS customPropertyId,
              'NUMERIC'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
          FROM active_projects ap
@@ -171,6 +203,9 @@ FROM (
              null AS numericValueType,
              apt.value AS textValue,
              CAST (null AS UUID[]) AS categories,
+             CAST (null AS UUID) AS ordinalValueId,
+             CAST (null AS UUID) AS ordinalMinValueId,
+             CAST (null AS UUID) AS ordinalMaxValueId,
              apt.eigenschap_id AS customPropertyId,
              'TEXT'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
          FROM active_projects ap
@@ -186,10 +221,31 @@ FROM (
              null AS numericValueType,
              null AS textValue,
              apc.categories AS categories,
+             CAST (null AS UUID) AS ordinalValueId,
+             CAST (null AS UUID) AS ordinalMinValueId,
+             CAST (null AS UUID) AS ordinalMaxValueId,
              apc.eigenschap_id AS customPropertyId,
              'CATEGORY'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
          FROM active_projects ap
              JOIN active_projects_categoriesCP apc ON ap.id = apc.id
+
+         UNION
+
+         SELECT
+             ap.id AS projectId,
+             CAST(null AS BOOL) AS booleanValue,
+             null AS numericValue,
+             null AS numericValueRange,
+             null AS numericValueType,
+             null AS textValue,
+             CAST (null AS UUID[])  AS categories,
+             apo.eigenschap_id AS customPropertyId,
+             apo.ordinal_value_id AS ordinalValueId,
+             apo.ordinal_min_value_id AS ordinalMinValueId,
+             apo.ordinal_max_value_id AS ordinalMaxValueId,
+             'ORDINAL'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
+         FROM active_projects ap
+             JOIN active_projects_ordinalCP apo ON ap.id = apo.id
 
          UNION
 
@@ -201,6 +257,9 @@ FROM (
              CAST (null AS diwi_testset.value_type) AS numericValueType,
              null AS textValue,
              CAST (null AS UUID[]) AS categories,
+             CAST (null AS UUID) AS ordinalValueId,
+             CAST (null AS UUID) AS ordinalMinValueId,
+             CAST (null AS UUID) AS ordinalMaxValueId,
              fpb.eigenschap_id AS customPropertyId,
              'BOOLEAN'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
          FROM future_projects fp
@@ -216,6 +275,9 @@ FROM (
              fpn.value_type AS numericValueType,
              null AS textValue,
              CAST (null AS UUID[]) AS categories,
+             CAST (null AS UUID) AS ordinalValueId,
+             CAST (null AS UUID) AS ordinalMinValueId,
+             CAST (null AS UUID) AS ordinalMaxValueId,
              fpn.eigenschap_id AS customPropertyId,
              'NUMERIC'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
          FROM future_projects fp
@@ -231,6 +293,9 @@ FROM (
              null AS numericValueType,
              fpt.value AS textValue,
              CAST (null AS UUID[]) AS categories,
+             CAST (null AS UUID) AS ordinalValueId,
+             CAST (null AS UUID) AS ordinalMinValueId,
+             CAST (null AS UUID) AS ordinalMaxValueId,
              fpt.eigenschap_id AS customPropertyId,
              'TEXT'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
          FROM future_projects fp
@@ -246,10 +311,31 @@ FROM (
              null AS numericValueType,
              null AS textValue,
              fpc.categories AS categories,
+             CAST (null AS UUID) AS ordinalValueId,
+             CAST (null AS UUID) AS ordinalMinValueId,
+             CAST (null AS UUID) AS ordinalMaxValueId,
              fpc.eigenschap_id AS customPropertyId,
              'CATEGORY'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
          FROM future_projects fp
              JOIN future_projects_categoriesCP fpc ON fp.id = fpc.id
+
+         UNION
+
+         SELECT
+             fp.id AS projectId,
+             CAST(null AS BOOL) AS booleanValue,
+             null AS numericValue,
+             null AS numericValueRange,
+             null AS numericValueType,
+             null AS textValue,
+             CAST (null AS UUID[])  AS categories,
+             fpo.eigenschap_id AS customPropertyId,
+             fpo.ordinal_value_id AS ordinalValueId,
+             fpo.ordinal_min_value_id AS ordinalMinValueId,
+             fpo.ordinal_max_value_id AS ordinalMaxValueId,
+             'ORDINAL'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
+         FROM future_projects fp
+             JOIN future_projects_ordinalCP fpo ON fp.id = fpo.id
 
      ) AS q
 
