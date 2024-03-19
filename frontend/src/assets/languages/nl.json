@@ -260,6 +260,10 @@
           "successfullyDeleted": "Eigenschappen succesvol verwijderd."
         }
       }
-    }
+    },
+    "projectPhase": "Project Fase",
+    "planType": "Plan Type",
+    "totalValue": "Aantal",
+    "projectOwners": "Eigenaar"
   }
 }

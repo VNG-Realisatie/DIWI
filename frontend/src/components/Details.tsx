@@ -1,4 +1,4 @@
-import { List, ListItem, ListItemText } from "@mui/material";
+import { List, ListItem, ListItemText, Typography } from "@mui/material";
 import { Fragment, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Project } from "../api/projectsServices";
@@ -9,6 +9,7 @@ type Props = {
 };
 
 const DetailListItem = ({ children, property }: { children: ReactNode; property: string }) => {
+    const { t } = useTranslation();
     return (
         <>
             <ListItem
@@ -18,7 +19,7 @@ const DetailListItem = ({ children, property }: { children: ReactNode; property:
                     border: "solid 1px #ddd",
                 }}
             >
-                <ListItemText primary={property} />
+                <ListItemText primary={t(property)} />
             </ListItem>
             <ListItem
                 sx={{
@@ -63,7 +64,8 @@ export const Details = ({ project }: Props) => {
                     if (property === "start datum") {
                         console.log(value);
                     }
-                    if (property !== "projectId" && property !== "projectStateId" && property !== "organization_state_id") {
+                    if (property === "totalValue" || property === "projectPhase" || property === "planType") {
+                        console.log(value);
                         return (
                             <Fragment key={property}>
                                 <ListItem
@@ -73,7 +75,7 @@ export const Details = ({ project }: Props) => {
                                         border: "solid 1px #ddd",
                                     }}
                                 >
-                                    <ListItemText primary={property} />
+                                    <ListItemText primary={t(property)} />
                                 </ListItem>
                                 <ListItem
                                     sx={{
@@ -81,7 +83,9 @@ export const Details = ({ project }: Props) => {
                                     }}
                                 >
                                     {/* Temporary hack, should show all data when we start working on map */}
+                                    {typeof value === "number" && <ListItemText primary={getTranslatedText(property, value.toString())} />}
                                     {typeof value === "string" && <ListItemText primary={getTranslatedText(property, value)} />}
+                                    {typeof value === "object" && <Typography>{value.toString().split(",").join(", ")}</Typography>}
                                 </ListItem>
                             </Fragment>
                         );
@@ -90,9 +94,6 @@ export const Details = ({ project }: Props) => {
                 })}
             <DetailListItem property="projectOwners">
                 <OrganizationUserAvatars organizations={project?.projectOwners} />
-            </DetailListItem>
-            <DetailListItem property="projectLeaders">
-                <OrganizationUserAvatars organizations={project?.projectLeaders} />
             </DetailListItem>
         </List>
     );
