@@ -80,7 +80,7 @@ const OpenLayersMap = () => {
                 .then((res) => res.json())
                 .then((result) => {
                     console.log(result);
-                    map.addLayer(
+                    map.map.addLayer(
                         new VectorLayer({
                             source: new VectorSource({
                                 features: new GeoJSON().readFeatures(result),
@@ -91,53 +91,6 @@ const OpenLayersMap = () => {
         });
 
         mapRef.current = map;
-        // map.on("click", async (event) => {
-        //     // const crs = L.CRS.EPSG4326;
-        //     console.log(event.latlng);
-        //     // event.latlng.lat
-
-        //     // const bbox = map.getBounds().toBBoxString();
-        //     // console.log(bbox);
-        //     // const bbox = bounds.toBBoxString();
-        //     const bounds = map.getBounds();
-        //     const nw = crs.project(bounds.getNorthWest());
-        //     const se = crs.project(bounds.getSouthEast());
-        //     // const bbox = `${nw.x},${nw.y},${se.x},${se.y}`;
-
-        //     const loc = crs.project(event.latlng);
-
-        //     const bboxSize = 1 / 100_000;
-        //     const bbox = `${loc.x - bboxSize},${loc.y - bboxSize},${loc.x + bboxSize},${loc.y + bboxSize}`;
-        //     console.log(bbox);
-        //     const url = queryString.stringifyUrl({
-        //         url: baseUrlKadasterWms,
-        //         query: {
-        //             QUERY_LAYERS: "Perceel",
-        //             INFO_FORMAT: "application/json",
-        //             REQUEST: "GetFeatureInfo",
-        //             SERVICE: "WMS",
-        //             VERSION: "1.3.0",
-        //             HEIGHT: "101", // What?
-        //             WIDTH: "101", // What?
-        //             I: "50", // What?
-        //             J: "50", // What?
-        //             layers: "Perceel",
-        //             CRS: crs.code,
-        //             BBOX: bbox,
-        //         },
-        //     });
-
-        //     const res = await fetch(url);
-        //     const result = await res.json();
-        //     // selectedPlotLayer.addData(epsg);
-        //     console.log("on click", result);
-        // });
-        //Get this from backend
-        // mapData.map((data) => {
-        //     return L.marker(data.coordinate, { icon: createMarkerIcon(data.projectColor) })
-        //         .addTo(map)
-        //         .bindPopup(data.projectName);
-        // });
     }, [id]);
 
     return (
