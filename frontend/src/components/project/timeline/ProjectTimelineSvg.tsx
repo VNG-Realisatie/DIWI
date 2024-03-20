@@ -9,6 +9,7 @@ import type { Dayjs } from "dayjs";
 import { components } from "../../../types/schema";
 import { HouseBlock } from "../../project-wizard/house-blocks/types";
 import { TimelineBar } from "./TimelineBar";
+import { Phases } from "./Phases";
 
 export const ProjectTimelineSvg = ({ timeScaleIndex, width, height }: any) => {
     /* explanation for sizing of/in this element:
@@ -105,52 +106,29 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, width, height }: any) => {
             <svg width={svgWidth} height={svgHeight} viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="viz">
                 <g className="chartArea" transform={`translate(${margin.left}, ${margin.top})`}>
                     <g className="timeline" transform={`translate(${0}, ${0})`}>
-                    <TimelineBar
-                        startDate={projectStartDate}
-                        endDate={projectEndDate}
-                        timeScaleIndex={timeScaleIndex}
-                        xScale={xScale}
-                        size={{
-                            x: chartWidth,
-                            y: timelineHeight,
-                        }}
-                        spacing={spacing}
-                        textSpacing={textSpacing}
-                    />
+                        <TimelineBar
+                            startDate={projectStartDate}
+                            endDate={projectEndDate}
+                            timeScaleIndex={timeScaleIndex}
+                            xScale={xScale}
+                            size={{
+                                x: chartWidth,
+                                y: timelineHeight,
+                            }}
+                            spacing={spacing}
+                            textSpacing={textSpacing}
+                        />
                     </g>
-                    <g className="phases">
-                        {/* Title */}
-                        <g className="phaseTitle">
-                            <rect
-                                x={spacing.x}
-                                y={timelineHeight + spacing.y}
-                                width={chartWidth - 2 * spacing.x}
-                                height={phaseTitleHeight - 2 * spacing.y}
-                                fill="#e7b85d"
-                            />
-                            {/* TODO make based on translation? */}
-                            <text x={spacing.x + textSpacing.x} y={timelineHeight + phaseTitleHeight - 2 * spacing.y - textSpacing.y}>
-                                Phases
-                            </text>
-                        </g>
-                        {/* Blocks */}
-                        <g className="phaseTrack">
-                            {projectPhaseData &&
-                                projectPhaseData.map((phase) => {
-                                    const x = xScale(dayjs(phase.startDate)) + spacing.x;
-                                    const y = timelineHeight + phaseTitleHeight + spacing.y;
-                                    const width = xScale(dayjs(phase.endDate)) - xScale(dayjs(phase.startDate)) - 2 * spacing.x;
-                                    const height = phaseBlockHeight - 2 * spacing.y;
-                                    return (
-                                        <g key={"phase" + phase.startDate}>
-                                            <rect x={x} y={y} width={width} height={height} fill="#edcf95" />
-                                            <text x={x + textSpacing.x} y={y + height - textSpacing.y}>
-                                                {phase.data}
-                                            </text>
-                                        </g>
-                                    );
-                                })}
-                        </g>
+                    <g className="timeline" transform={`translate(${0}, ${timelineHeight})`}>
+                        <Phases
+                            phaseData={projectPhaseData}
+                            xScale={xScale}
+                            titleHeight={phaseTitleHeight}
+                            blockHeight={phaseBlockHeight}
+                            chartWidth={chartWidth}
+                            spacing={spacing}
+                            textSpacing={textSpacing}
+                        />
                     </g>
                     {/* Documents */}
                     {/* <g className="documents">
