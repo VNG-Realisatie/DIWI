@@ -46,6 +46,7 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, width, height }: any) => {
     Example: width and height can be 500x300, svgWidth and svgHeight can be 1300x700, scrollbars ensure you can inspect all data.
     */
     const margin = { top: 5, right: 5, bottom: 5, left: 5 };
+    const spacing = { x: 1, y: 1 };
 
     const { id, selectedProject } = useContext(ProjectContext);
     const [projectPhaseData, setProjectPhaseData] = useState<Array<components["schemas"]["DatedDataModelProjectPhase"]> | null>(null);
@@ -103,9 +104,6 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, width, height }: any) => {
     const svgHeight = chartHeight + margin.top + margin.bottom;
     const textSpacing = 3;
 
-    const spacingHorizontal = 1;
-    const spacingVertical = 1;
-
     // Time line
     const timelineHeight = 20;
     const timedata = createTimeData(earliestDate, latestDate, timeScaleIndex);
@@ -135,13 +133,13 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, width, height }: any) => {
                 <g className="chartArea" transform={`translate(${margin.left}, ${margin.top})`}>
                     {/* Timeline indicator years, months, or weeks */}
                     <g className="timeline">
-                        <rect x={spacingHorizontal} y={spacingVertical} width={chartWidth - 2 * spacingHorizontal} height={phaseTitleHeight} fill="#111111" />
+                        <rect x={spacing.x} y={spacing.y} width={chartWidth - 2 * spacing.x} height={phaseTitleHeight} fill="#111111" />
                         {timedata &&
                             timedata.map((d: TimeDataType) => {
-                                const x = xScale(d.startDate) + spacingHorizontal;
-                                const y = spacingVertical;
-                                const width = xScale(d.endDate) - xScale(d.startDate) - 2 * spacingHorizontal;
-                                const height = timelineHeight - 2 * spacingVertical;
+                                const x = xScale(d.startDate) + spacing.x;
+                                const y = spacing.y;
+                                const width = xScale(d.endDate) - xScale(d.startDate) - 2 * spacing.x;
+                                const height = timelineHeight - 2 * spacing.y;
                                 return (
                                     <g key={"timeline block" + d.startDate}>
                                         <rect x={x} y={y} width={width} height={height} fill="#d9d9d9" />
@@ -157,14 +155,14 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, width, height }: any) => {
                         {/* Title */}
                         <g className="phaseTitle">
                             <rect
-                                x={spacingHorizontal}
-                                y={timelineHeight + spacingVertical}
-                                width={chartWidth - 2 * spacingHorizontal}
-                                height={phaseTitleHeight - 2 * spacingVertical}
+                                x={spacing.x}
+                                y={timelineHeight + spacing.y}
+                                width={chartWidth - 2 * spacing.x}
+                                height={phaseTitleHeight - 2 * spacing.y}
                                 fill="#e7b85d"
                             />
                             {/* TODO make based on translation? */}
-                            <text x={spacingHorizontal + textSpacing} y={timelineHeight + phaseTitleHeight - 2 * spacingVertical - textSpacing}>
+                            <text x={spacing.x + textSpacing} y={timelineHeight + phaseTitleHeight - 2 * spacing.y - textSpacing}>
                                 Phases
                             </text>
                         </g>
@@ -172,10 +170,10 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, width, height }: any) => {
                         <g className="phaseTrack">
                             {projectPhaseData &&
                                 projectPhaseData.map((phase) => {
-                                    const x = xScale(dayjs(phase.startDate)) + spacingHorizontal;
-                                    const y = timelineHeight + phaseTitleHeight + spacingVertical;
-                                    const width = xScale(dayjs(phase.endDate)) - xScale(dayjs(phase.startDate)) - 2 * spacingHorizontal;
-                                    const height = phaseBlockHeight - 2 * spacingVertical;
+                                    const x = xScale(dayjs(phase.startDate)) + spacing.x;
+                                    const y = timelineHeight + phaseTitleHeight + spacing.y;
+                                    const width = xScale(dayjs(phase.endDate)) - xScale(dayjs(phase.startDate)) - 2 * spacing.x;
+                                    const height = phaseBlockHeight - 2 * spacing.y;
                                     return (
                                         <g key={"phase" + phase.startDate}>
                                             <rect x={x} y={y} width={width} height={height} fill="#edcf95" />
@@ -198,16 +196,16 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, width, height }: any) => {
                         {/* Title */}
                         <g className="houseblockTitle">
                             <rect
-                                x={spacingHorizontal}
-                                y={timelineHeight + phaseTitleHeight + phaseBlockHeight + spacingVertical}
-                                width={chartWidth - 2 * spacingHorizontal}
-                                height={houseblockTitleHeight - 2 * spacingVertical}
+                                x={spacing.x}
+                                y={timelineHeight + phaseTitleHeight + phaseBlockHeight + spacing.y}
+                                width={chartWidth - 2 * spacing.x}
+                                height={houseblockTitleHeight - 2 * spacing.y}
                                 fill="#00A9F3"
                             />
                             {/* TODO make based on translation? */}
                             <text
-                                x={spacingHorizontal + textSpacing}
-                                y={timelineHeight + phaseTitleHeight + phaseBlockHeight + houseblockTitleHeight - 2 * spacingVertical - textSpacing}
+                                x={spacing.x + textSpacing}
+                                y={timelineHeight + phaseTitleHeight + phaseBlockHeight + houseblockTitleHeight - 2 * spacing.y - textSpacing}
                             >
                                 Houseblocks
                             </text>
@@ -216,16 +214,16 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, width, height }: any) => {
                         <g className="houseblockTrack">
                             {houseBlockData &&
                                 houseBlockData.map((block, index: number) => {
-                                    const x = xScale(dayjs(block.startDate)) + spacingHorizontal;
+                                    const x = xScale(dayjs(block.startDate)) + spacing.x;
                                     const y =
                                         timelineHeight +
                                         phaseTitleHeight +
                                         phaseBlockHeight +
                                         houseblockTitleHeight +
-                                        spacingVertical +
+                                        spacing.y +
                                         index * houseblockTrackHeight;
-                                    const width = xScale(dayjs(block.endDate)) - xScale(dayjs(block.startDate)) - 2 * spacingHorizontal;
-                                    const height = phaseBlockHeight - 2 * spacingVertical;
+                                    const width = xScale(dayjs(block.endDate)) - xScale(dayjs(block.startDate)) - 2 * spacing.x;
+                                    const height = phaseBlockHeight - 2 * spacing.y;
                                     return (
                                         <g key={"houseBlock" + block.houseblockId}>
                                             <rect x={x} y={y} width={width} height={height} fill="#5cc6f5" />
@@ -243,9 +241,9 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, width, height }: any) => {
                         {today.isAfter(earliestDate) && today.isBefore(latestDate) && (
                             <line
                                 x1={todayX}
-                                y1={timelineHeight + spacingVertical}
+                                y1={timelineHeight + spacing.y}
                                 x2={todayX}
-                                y2={chartHeight - spacingVertical}
+                                y2={chartHeight - spacing.y}
                                 stroke="#333333"
                                 strokeDasharray={3}
                                 strokeWidth={1}
