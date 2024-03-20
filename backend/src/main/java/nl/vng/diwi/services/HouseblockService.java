@@ -421,6 +421,62 @@ public class HouseblockService {
         }
     }
 
+    public void updatePhysicalAppearanceAndHouseType(VngRepository repo, Project project, Houseblock houseblock, Map<PhysicalAppearance, Integer> physicalAppearanceMap,
+                                                     Map<HouseType, Integer> houseTypeMap, UUID loggedInUserUuid, LocalDate updateDate) {
+
+        HouseblockAppearanceAndTypeChangelog oldChangelogAfterUpdate = new HouseblockAppearanceAndTypeChangelog();
+        HouseblockAppearanceAndTypeChangelog newChangelog = null;
+        if (!physicalAppearanceMap.isEmpty() || !houseTypeMap.isEmpty()) {
+            newChangelog = new HouseblockAppearanceAndTypeChangelog();
+            newChangelog.setHouseblock(houseblock);
+        }
+
+        HouseblockAppearanceAndTypeChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, houseblock, houseblock.getAppearanceAndTypes(), newChangelog,
+            oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
+
+        if (newChangelog != null) {
+            repo.persist(newChangelog);
+            for (Map.Entry<PhysicalAppearance, Integer> paMapEntry : physicalAppearanceMap.entrySet()) {
+                HouseblockPhysicalAppearanceChangelogValue newChangelogValue = new HouseblockPhysicalAppearanceChangelogValue();
+                newChangelogValue.setAppearanceAndTypeChangelog(newChangelog);
+                newChangelogValue.setPhysicalAppearance(paMapEntry.getKey());
+                newChangelogValue.setAmount(paMapEntry.getValue());
+                repo.persist(newChangelogValue);
+            }
+            for (Map.Entry<HouseType, Integer> htMapEntry : houseTypeMap.entrySet()) {
+                HouseblockHouseTypeChangelogValue newChangelogValue = new HouseblockHouseTypeChangelogValue();
+                newChangelogValue.setAppearanceAndTypeChangelog(newChangelog);
+                newChangelogValue.setHouseType(htMapEntry.getKey());
+                newChangelogValue.setAmount(htMapEntry.getValue());
+                repo.persist(newChangelogValue);
+            }
+        }
+
+        if (oldChangelog != null) {
+            repo.persist(oldChangelog);
+            if (oldChangelogAfterUpdate.getStartMilestone() != null) {
+                // it is a current project && it had a non-null changelog before the update
+                oldChangelogAfterUpdate.setHouseblock(houseblock);
+                repo.persist(oldChangelogAfterUpdate);
+                for (HouseblockPhysicalAppearanceChangelogValue paValue : oldChangelog.getPhysicalAppearanceValues()) {
+                    HouseblockPhysicalAppearanceChangelogValue oldChangelogValue = new HouseblockPhysicalAppearanceChangelogValue();
+                    oldChangelogValue.setAppearanceAndTypeChangelog(oldChangelogAfterUpdate);
+                    oldChangelogValue.setPhysicalAppearance(paValue.getPhysicalAppearance());
+                    oldChangelogValue.setAmount(paValue.getAmount());
+                    repo.persist(oldChangelogValue);
+                }
+                for (HouseblockHouseTypeChangelogValue htValue : oldChangelog.getHouseblockHouseTypeValues()) {
+                    HouseblockHouseTypeChangelogValue oldChangelogValue = new HouseblockHouseTypeChangelogValue();
+                    oldChangelogValue.setAppearanceAndTypeChangelog(oldChangelogAfterUpdate);
+                    oldChangelogValue.setHouseType(htValue.getHouseType());
+                    oldChangelogValue.setAmount(htValue.getAmount());
+                    repo.persist(oldChangelogValue);
+                }
+            }
+        }
+
+    }
+
     private <T extends MilestoneChangeDataSuperclass> T prepareChangelogValuesToUpdate(VngRepository repo, Project project, Houseblock houseblock, List<T> changelogs,
                                                                                        T newChangelog, T oldChangelogAfterUpdate, UUID loggedInUserUuid, LocalDate updateDate) {
 

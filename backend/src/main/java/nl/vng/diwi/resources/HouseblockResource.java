@@ -18,6 +18,8 @@ import nl.vng.diwi.dal.entities.Houseblock;
 import nl.vng.diwi.dal.entities.Milestone;
 import nl.vng.diwi.dal.entities.Project;
 import nl.vng.diwi.dal.entities.enums.GroundPosition;
+import nl.vng.diwi.dal.entities.enums.HouseType;
+import nl.vng.diwi.dal.entities.enums.PhysicalAppearance;
 import nl.vng.diwi.dal.entities.enums.Purpose;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.models.HouseblockUpdateModel;
@@ -140,6 +142,21 @@ public class HouseblockResource {
                         houseblockUpdateModelList.add(new HouseblockUpdateModel(HouseblockUpdateModel.HouseblockProperty.size, houseblockModelToUpdate.getSize()));
                     }
                 }
+                case physicalAppearanceAndHouseType -> {
+                    if (!Objects.equals(houseblockModelToUpdate.getPhysicalAppearance(), houseblockCurrentValues.getPhysicalAppearance()) ||
+                    !Objects.equals(houseblockModelToUpdate.getHouseType(), houseblockCurrentValues.getHouseType())) {
+                        Map<Object, Integer> physicalAppAndHouseTypeMap = new HashMap<>();
+                        physicalAppAndHouseTypeMap.put(PhysicalAppearance.TUSSENWONING, houseblockModelToUpdate.getPhysicalAppearance().getTussenwoning());
+                        physicalAppAndHouseTypeMap.put(PhysicalAppearance.HOEKWONING, houseblockModelToUpdate.getPhysicalAppearance().getHoekwoning());
+                        physicalAppAndHouseTypeMap.put(PhysicalAppearance.TWEE_ONDER_EEN_KAP, houseblockModelToUpdate.getPhysicalAppearance().getTweeondereenkap());
+                        physicalAppAndHouseTypeMap.put(PhysicalAppearance.VRIJSTAAND, houseblockModelToUpdate.getPhysicalAppearance().getVrijstaand());
+                        physicalAppAndHouseTypeMap.put(PhysicalAppearance.PORTIEKFLAT, houseblockModelToUpdate.getPhysicalAppearance().getPortiekflat());
+                        physicalAppAndHouseTypeMap.put(PhysicalAppearance.GALLERIJFLAT, houseblockModelToUpdate.getPhysicalAppearance().getGallerijflat());
+                        physicalAppAndHouseTypeMap.put(HouseType.EENGEZINSWONING, houseblockModelToUpdate.getHouseType().getEengezinswoning());
+                        physicalAppAndHouseTypeMap.put(HouseType.MEERGEZINSWONING, houseblockModelToUpdate.getHouseType().getMeergezinswoning());
+                        houseblockUpdateModelList.add(new HouseblockUpdateModel(HouseblockUpdateModel.HouseblockProperty.physicalAppearanceAndHouseType, physicalAppAndHouseTypeMap));
+                    }
+                }
                 case startDate -> {
                     LocalDate newStartDate = houseblockModelToUpdate.getStartDate();
                     if (!Objects.equals(newStartDate, houseblockCurrentValues.getStartDate())) {
@@ -194,6 +211,15 @@ public class HouseblockResource {
                 houseblockService.updateHouseblockGroundPosition(repo, project, houseblock, groundPositionMap, loggedUserUuid, updateDate);
             }
             case size -> houseblockService.updateHouseblockSize(repo, project, houseblock, updateModel.getSizeValue(), loggedUserUuid, updateDate);
+            case physicalAppearanceAndHouseType -> {
+                Map<PhysicalAppearance, Integer> physicalAppearanceMap = updateModel.getValuesMap().entrySet().stream()
+                    .filter(e -> e.getKey() instanceof PhysicalAppearance)
+                    .collect(Collectors.toMap(e -> (PhysicalAppearance) e.getKey(), Map.Entry::getValue));
+                Map<HouseType, Integer> houseTypeMap = updateModel.getValuesMap().entrySet().stream()
+                    .filter(e -> e.getKey() instanceof HouseType)
+                    .collect(Collectors.toMap(e -> (HouseType) e.getKey(), Map.Entry::getValue));
+                houseblockService.updatePhysicalAppearanceAndHouseType(repo, project, houseblock, physicalAppearanceMap, houseTypeMap, loggedUserUuid, updateDate);
+            }
         }
     }
 

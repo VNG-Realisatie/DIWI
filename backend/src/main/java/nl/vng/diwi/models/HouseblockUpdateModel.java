@@ -15,6 +15,7 @@ public class HouseblockUpdateModel {
         name,
         groundPosition,
         purpose,
+        physicalAppearanceAndHouseType,
         size,
         // Do not change the order - startDate and endDate must be the last ones!
         // It will cause problems and extra milestones to be created.
@@ -58,7 +59,7 @@ public class HouseblockUpdateModel {
             }
             case name -> (value == null || value.isBlank()) ? "New houseblock name value is not valid." : null;
             case size -> sizeValue.isValid() ? null : "Size value is not valid.";
-            case purpose, groundPosition -> {
+            case purpose, groundPosition, physicalAppearanceAndHouseType -> {
                 valuesMap.entrySet().removeIf(entry -> entry.getValue() == null);
                 yield null;
             }
