@@ -37,7 +37,7 @@ const HouseBlockSizeEditInput = ({ houseBlockSize, updateHouseBlockSize }: House
             id="size"
             size="small"
             variant="outlined"
-            value={houseBlockSize ? houseBlockSize?.value : 0}
+            value={houseBlockSize?.value !== null ? houseBlockSize?.value : ""}
             onChange={handleSizeChange}
         />
     );
