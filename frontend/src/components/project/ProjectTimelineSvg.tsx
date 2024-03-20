@@ -45,9 +45,12 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, width, height }: any) => {
 
     Example: width and height can be 500x300, svgWidth and svgHeight can be 1300x700, scrollbars ensure you can inspect all data.
     */
+    const margin = { top: 5, right: 5, bottom: 5, left: 5 };
+
     const { id, selectedProject } = useContext(ProjectContext);
     const [projectPhaseData, setProjectPhaseData] = useState<Array<components["schemas"]["DatedDataModelProjectPhase"]> | null>(null);
     const [houseBlockData, setHouseBlockData] = useState<Array<HouseBlock> | null>(null);
+    const [chartHeight, setChartHeight] = useState<number>(height - margin.top);
 
     useEffect(() => {
         if (id) {
@@ -86,14 +89,16 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, width, height }: any) => {
         }
     }, [id]);
 
+    useEffect(() => {
+        setChartHeight(timelineHeight + phaseTitleHeight + phaseBlockHeight + houseblockTitleHeight + (houseBlockData?.length ?? 1) * houseblockTrackHeight);
+    }, [houseBlockData]);
+
     // Generic, used by all items below
-    const margin = { top: 5, right: 5, bottom: 5, left: 5 };
     const earliestDate: Dayjs = dayjs(selectedProject?.startDate).startOf("month");
     const latestDate: Dayjs = dayjs(selectedProject?.endDate).endOf("month");
     const diffDays = latestDate.diff(earliestDate, "days");
     const pixelsPerDay = timeScaleIndex * 2;
     const chartWidth = diffDays * pixelsPerDay;
-    const chartHeight = height - margin.top - margin.bottom; // TODO make this depend on its content (timeline, phases, documents and houseblocks)
     const svgWidth = chartWidth + margin.left + margin.right;
     const svgHeight = chartHeight + margin.top + margin.bottom;
     const textSpacing = 3;
