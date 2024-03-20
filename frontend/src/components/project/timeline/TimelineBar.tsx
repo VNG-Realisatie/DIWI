@@ -63,3 +63,34 @@ export const TimelineBar = ({ startDate, endDate, timeScaleIndex, xScale, size, 
         </g>
     );
 };
+
+// comment might still be usefull for zoom/formatting for timeline
+
+// const calculateDateRange = (scaleIndex: number, startDate: Date, endDate: Date) => {
+//     let range: Date[] = [];
+//     let adjustedStartDate = d3.timeDay.floor(startDate);
+//     if (scaleIndex === 0) {
+//         let adjustedEndDate = d3.timeWeek.offset(endDate, 1);
+//         range = d3.timeWeek.range(adjustedStartDate, adjustedEndDate, 1);
+//         setTimeFormat("%d %B %Y"); // clarify
+//         setSvgWidth(range.length * 200);
+//         setDateRange(range);
+//     } else if (scaleIndex === 1) {
+//         let adjustedEndDate = d3.timeMonth.offset(endDate, 1);
+//         range = d3.timeMonth.range(adjustedStartDate, adjustedEndDate, 1);
+//         setTimeFormat("%b %Y");
+//         setSvgWidth(range.length * 300);
+//         setDateRange(range);
+//     } else if (scaleIndex === 2) {
+//         let adjustedEndDate = d3.timeYear.offset(endDate, 1);
+//         range = d3.timeYear.range(adjustedStartDate, adjustedEndDate, 1);
+
+// useEffect(() => {
+//     calculateDateRange(timeScaleIndex, testStartDate, testEndDate); //new Date(projectData.startDate)
+// }, [timeScaleIndex]);
+
+//         setTimeFormat("%Y");
+//         setSvgWidth(range.length * 400);
+//         setDateRange(range);
+//     }
+// };
