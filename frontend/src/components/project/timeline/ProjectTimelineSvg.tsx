@@ -100,7 +100,7 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, width, height }: any) => {
     const xScale = d3.scaleTime().domain([projectStartDate, projectEndDate]).range([0, chartWidth]);
 
     return (
-        <Box sx={{ overflow: "scroll" }} width={width} height={height} lineHeight={0}>
+        <Box sx={{ overflow: "scroll" }} width={width} height={height} lineHeight={0} /* lineheight is to prevent vertical scrollbar */>
             <svg width={svgWidth} height={svgHeight} viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="viz">
                 <g className="chartArea" transform={`translate(${margin.left}, ${margin.top})`}>
                     <g className="timeline" transform={`translate(${0}, ${0})`}>
