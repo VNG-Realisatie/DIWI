@@ -82,19 +82,19 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, width, height }: any) => {
     const svgHeight = chartHeight + margin.top + margin.bottom;
 
     // Time line
-    const timelineHeight = 20;
+    const timelineHeight = 30;
 
     // Phases
-    const phaseTitleHeight = 20;
-    const phaseBlockHeight = 50;
+    const phaseTitleHeight = 30;
+    const phaseBlockHeight = 90;
 
     // Documents
-    // const documentTitleHeight = 20;
-    // const documentTrackHeight = 50;
+    // const documentTitleHeight = 30;
+    // const documentTrackHeight = 90;
 
     // House blocks
-    const houseblockTitleHeight = 20;
-    const houseblockTrackHeight = 50;
+    const houseblockTitleHeight = 30;
+    const houseblockTrackHeight = 90;
 
     //Create the horizontal scale and its axis generator.
     const xScale = d3.scaleTime().domain([projectStartDate, projectEndDate]).range([0, chartWidth]);
