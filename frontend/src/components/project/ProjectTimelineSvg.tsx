@@ -91,7 +91,7 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, width, height }: any) => {
     const earliestDate: Dayjs = dayjs(selectedProject?.startDate).startOf("month");
     const latestDate: Dayjs = dayjs(selectedProject?.endDate).endOf("month");
     const diffDays = latestDate.diff(earliestDate, "days");
-    const pixelsPerDay = 10;
+    const pixelsPerDay = timeScaleIndex * 2;
     const chartWidth = diffDays * pixelsPerDay;
     const chartHeight = height - margin.top - margin.bottom; // TODO make this depend on its content (timeline, phases, documents and houseblocks)
     const svgWidth = chartWidth + margin.left + margin.right;
