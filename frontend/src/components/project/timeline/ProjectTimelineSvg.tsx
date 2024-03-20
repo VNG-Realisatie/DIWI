@@ -104,6 +104,7 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, width, height }: any) => {
         <Box sx={{ overflow: "scroll" }} width={width} height={height} lineHeight={0}>
             <svg width={svgWidth} height={svgHeight} viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="viz">
                 <g className="chartArea" transform={`translate(${margin.left}, ${margin.top})`}>
+                    <g className="timeline" transform={`translate(${0}, ${0})`}>
                     <TimelineBar
                         startDate={projectStartDate}
                         endDate={projectEndDate}
@@ -116,7 +117,7 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, width, height }: any) => {
                         spacing={spacing}
                         textSpacing={textSpacing}
                     />
-                    {/* Phases */}
+                    </g>
                     <g className="phases">
                         {/* Title */}
                         <g className="phaseTitle">

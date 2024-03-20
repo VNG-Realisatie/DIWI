@@ -43,7 +43,7 @@ export const TimelineBar = ({ startDate, endDate, timeScaleIndex, xScale, size, 
     const timedata = createTimeData(startDate, endDate, timeScaleIndex);
 
     return (
-        <g className="timeline">
+        <>
             <rect x={spacing.x} y={spacing.y} width={size.x - 2 * spacing.x} height={size.y} fill="#111111" />
             {timedata &&
                 timedata.map((d: TimeDataType) => {
@@ -60,7 +60,7 @@ export const TimelineBar = ({ startDate, endDate, timeScaleIndex, xScale, size, 
                         </g>
                     );
                 })}
-        </g>
+        </>
     );
 };
 
