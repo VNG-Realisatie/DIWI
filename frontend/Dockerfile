@@ -15,10 +15,12 @@ RUN yarn build
 
 ARG REACT_APP_GIT_SHA
 ENV REACT_APP_GIT_SHA=${REACT_APP_GIT_SHA}
+ARG REACT_APP_DEPLOY_DATE
+ENV REACT_APP_DEPLOY_DATE=${REACT_APP_DEPLOY_DATE}
 RUN echo "{ \
     \"git hash\": \"$REACT_APP_GIT_SHA\",\
-    \"build date\": \"$REACT_APP_GIT_SHA\"\
- }" > ./build/version.json
+    \"build date\": \"$REACT_APP_DEPLOY_DATE\"\
+    }" > ./build/version.json
 
 # production stage
 FROM nginx:1.24-alpine as production-stage
