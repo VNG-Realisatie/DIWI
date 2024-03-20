@@ -8,6 +8,7 @@ import GeoJSON from "ol/format/GeoJSON.js";
 import queryString from "query-string";
 import { useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { dummyData } from "./dummy";
 
 // type Props = {
 //     height: string;
@@ -19,7 +20,8 @@ import { useTranslation } from "react-i18next";
 const PlotSelectorMap = () => {
     const mapRef = useRef<Map>();
     const id = useId();
-    const [plots, setPlots] = useState();
+    const [selectedPlot, setSelectedPlot] = useState<any>();
+    const [selectedPlots, setSelectedPlots] = useState<any[]>([]);
 
     const mapZoom = 10;
     const { t } = useTranslation();
@@ -50,15 +52,24 @@ const PlotSelectorMap = () => {
                 zoom: 16,
             }),
         });
+        dummyData.map((d) => {
+            return map.addLayer(
+                new VectorLayer({
+                    source: new VectorSource({
+                        features: new GeoJSON().readFeatures(d),
+                    }),
+                }),
+            );
+        });
         map.addEventListener("click", (e) => {
-            console.log(e);
+            // console.log(e);
             // @ts-ignore
             const loc = e.coordinate;
-            console.log(loc);
+            // console.log(loc);
 
             const bboxSize = 1;
             const bbox = `${loc[0] - bboxSize},${loc[1] - bboxSize},${loc[0] + bboxSize},${loc[1] + bboxSize}`;
-            console.log(bbox);
+            // console.log(bbox);
             const url = queryString.stringifyUrl({
                 url: baseUrlKadasterWms,
                 query: {
@@ -80,7 +91,7 @@ const PlotSelectorMap = () => {
             fetch(url)
                 .then((res) => res.json())
                 .then((result) => {
-                    console.log(result);
+                    setSelectedPlot(result);
                     map.addLayer(
                         new VectorLayer({
                             source: new VectorSource({
@@ -90,10 +101,16 @@ const PlotSelectorMap = () => {
                     );
                 });
         });
-
         mapRef.current = map;
-    }, [id]);
-
+    }, [id, selectedPlots]);
+    useEffect(() => {
+        const filteredPlots: any = selectedPlots.filter((sp: any) => {
+            return sp?.features[0].id !== selectedPlot?.features[0].id;
+        });
+        selectedPlot && setSelectedPlots(filteredPlots ? [...filteredPlots, selectedPlot] : [selectedPlot]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedPlot]);
+    console.log(selectedPlots);
     return (
         <div id={id} style={{ width: "500px", height: "500px" }}>
             {/* {plusButton && <PlusButton color="#002C64" link={Paths.projectAdd.path} text={t("projects.createNewProject")} />} */}
