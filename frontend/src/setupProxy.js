@@ -14,4 +14,10 @@ const proxy = createProxyMiddleware({
 
 module.exports = function (app) {
     app.use("/rest/*", proxy);
+    app.get("/version.json", (req, res) => {
+        res.send({
+            "git hash": "3.14.15",
+            "build date": "2014-03-14",
+        });
+    });
 };
