@@ -3,16 +3,18 @@ import { deleteProject } from "../../api/projectsServices";
 import { useTranslation } from "react-i18next";
 import AlertContext from "../../context/AlertContext";
 import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function DeleteProjectDialog({ setIsOpen, isOpen, projectName, projectId }: any) {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const { setAlert } = useContext(AlertContext);
     const onDelete = async (projectId: string) => {
         try {
             const res = await deleteProject(projectId);
-
             if (res.ok) {
-                setAlert(t("projectDeletedSuccesMessage", { name: projectName }), "success");
+                setAlert(t("generic.projectDeletion", { name: projectName }), "success");
+                navigate("/projects/table");
             }
         } catch (error: any) {
             setAlert(error.message, "error");
