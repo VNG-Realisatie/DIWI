@@ -18,7 +18,7 @@ export const HouseBlocks = ({ houseBlockData, xScale, titleHeight, blockHeight, 
             <g className="houseblockTitle">
                 <rect x={spacing.x} y={spacing.y} width={chartWidth - 2 * spacing.x} height={titleHeight - 2 * spacing.y} fill="#00A9F3" />
                 {/* TODO make based on translation? */}
-                <text x={spacing.x + textSpacing.x} y={titleHeight - 2 * spacing.y - textSpacing.y}>
+                <text x={spacing.x + textSpacing.x} y={titleHeight - 2 * spacing.y - textSpacing.y} fill="#FFFFFF">
                     Houseblocks
                 </text>
             </g>
@@ -32,7 +32,7 @@ export const HouseBlocks = ({ houseBlockData, xScale, titleHeight, blockHeight, 
                         return (
                             <g key={"houseBlock" + block.houseblockId}>
                                 <rect x={x} y={y} width={w} height={h} fill="#5cc6f5" />
-                                <text x={x + textSpacing.x} y={y + h - textSpacing.y}>
+                                <text x={x + textSpacing.x} y={y + h - textSpacing.y} fill="#FFFFFF">
                                     {block.houseblockName}
                                 </text>
                             </g>
