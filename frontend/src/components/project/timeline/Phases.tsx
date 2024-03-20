@@ -40,7 +40,7 @@ export const Phases = ({ phaseData, xScale, titleHeight, blockHeight, chartWidth
                                 <rect x={x} y={y + spacing.y} width={w} height={h} fill="#edcf95" />
                                 {/* name on first textrow */}
                                 <svg transform={`translate(${x + textSpacing.x},${y + textSpacing.y})`} width={w} height={textVerticalSpace}>
-                                    <text y="60%" dominant-baseline="middle" fill="#FFFFFF">
+                                    <text y="60%" dominantBaseline="middle" fill="#FFFFFF">
                                         {phase.data}
                                     </text>
                                 </svg>
@@ -50,7 +50,7 @@ export const Phases = ({ phaseData, xScale, titleHeight, blockHeight, chartWidth
                                     width={w}
                                     height={textVerticalSpace}
                                 >
-                                    <text y="60%" dominant-baseline="middle" fill="#FFFFFF">
+                                    <text y="60%" dominantBaseline="middle" fill="#FFFFFF">
                                         From
                                     </text>
                                     <svg transform={`translate(${50},${textSpacing.y})`} width={dateBoxWidth} height={textVerticalSpace - 2 * textSpacing.y}>
@@ -64,7 +64,7 @@ export const Phases = ({ phaseData, xScale, titleHeight, blockHeight, chartWidth
                                             ry={5}
                                             fill="#FFFFFF"
                                         ></rect>
-                                        <text x="50%" y="60%" dominant-baseline="middle" text-anchor="middle" fill="#edcf95">
+                                        <text x="50%" y="60%" dominantBaseline="middle" textAnchor="middle" fill="#edcf95">
                                             {start.format("DD-MM-YYYY")}
                                         </text>
                                     </svg>
@@ -75,7 +75,7 @@ export const Phases = ({ phaseData, xScale, titleHeight, blockHeight, chartWidth
                                     width={w}
                                     height={textVerticalSpace}
                                 >
-                                    <text y="60%" dominant-baseline="middle" fill="#FFFFFF">
+                                    <text y="60%" dominantBaseline="middle" fill="#FFFFFF">
                                         To
                                     </text>
                                     <svg transform={`translate(${50},${textSpacing.y})`} width={dateBoxWidth} height={textVerticalSpace - 2 * textSpacing.y}>
@@ -89,7 +89,7 @@ export const Phases = ({ phaseData, xScale, titleHeight, blockHeight, chartWidth
                                             ry={5}
                                             fill="#FFFFFF"
                                         ></rect>
-                                        <text x="50%" y="60%" dominant-baseline="middle" text-anchor="middle" fill="#edcf95">
+                                        <text x="50%" y="60%" dominantBaseline="middle" textAnchor="middle" fill="#edcf95">
                                             {end.format("DD-MM-YYYY")}
                                         </text>
                                     </svg>
