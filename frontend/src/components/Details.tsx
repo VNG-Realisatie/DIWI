@@ -67,10 +67,6 @@ export const Details = ({ project }: Props) => {
         >
             {project &&
                 Object.entries(project).map(([property, value]) => {
-                    //To avoid mixed data type bug keep this. it will be removed after all data defined
-                    if (property === "start datum") {
-                        console.log(value);
-                    }
                     if (property === "totalValue" || property === "projectPhase" || property === "planType") {
                         console.log(value);
                         return (
@@ -89,7 +85,6 @@ export const Details = ({ project }: Props) => {
                                         border: "solid 1px #ddd",
                                     }}
                                 >
-                                    {/* Temporary hack, should show all data when we start working on map */}
                                     {value !== null && typeof value === "number" && <ListItemText primary={getTranslatedText(property, value.toString())} />}
                                     {value !== null && typeof value === "string" && <ListItemText primary={getTranslatedText(property, value)} />}
                                     {value !== null && typeof value === "object" && <Typography>{value.toString().split(",").join(", ")}</Typography>}
