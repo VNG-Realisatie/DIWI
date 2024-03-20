@@ -87,7 +87,9 @@ export async function deleteJson(url: string) {
     const res = await diwiFetch(encodeURI(url), {
         method: "DELETE",
     });
-
+    if (res.status === 204) {
+        return res;
+    }
     if (!res.ok) {
         throw Error(res.statusText);
     }

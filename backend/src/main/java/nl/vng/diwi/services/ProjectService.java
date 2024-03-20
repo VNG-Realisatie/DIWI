@@ -1,5 +1,6 @@
 package nl.vng.diwi.services;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
@@ -10,6 +11,18 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import io.hypersistence.utils.hibernate.type.range.Range;
+import nl.vng.diwi.dal.entities.CustomCategoryValue;
+import nl.vng.diwi.dal.entities.CustomOrdinalValue;
+import nl.vng.diwi.dal.entities.CustomProperty;
+import nl.vng.diwi.dal.entities.ProjectBooleanCustomPropertyChangelog;
+import nl.vng.diwi.dal.entities.ProjectCategoryCustomPropertyChangelog;
+import nl.vng.diwi.dal.entities.ProjectCategoryCustomPropertyChangelogValue;
+import nl.vng.diwi.dal.entities.ProjectNumericCustomPropertyChangelog;
+import nl.vng.diwi.dal.entities.ProjectOrdinalCustomPropertyChangelog;
+import nl.vng.diwi.dal.entities.ProjectTextCustomPropertyChangelog;
+import nl.vng.diwi.models.ProjectCustomPropertyModel;
+import nl.vng.diwi.models.SingleValueOrRangeModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -66,13 +79,24 @@ public class ProjectService {
             logger.error("Project with uuid {} was not found.", projectUuid);
             throw new VngNotFoundException();
         }
-        return new ProjectSnapshotModel(projectModel);
+
+        ProjectSnapshotModel snapshotModel = new ProjectSnapshotModel(projectModel);
+        snapshotModel.setCustomProperties(getProjectCustomProperties(repo, projectUuid));
+
+        return snapshotModel;
     }
 
     public List<ProjectListModel> getProjectsTable(VngRepository repo, FilterPaginationSorting filtering) {
         List<ProjectListSqlModel> projectsTable = repo.getProjectsDAO().getProjectsTable(filtering);
         List<ProjectListModel> result = projectsTable.stream().map(ProjectListModel::new).toList();
         return result;
+    }
+
+    public List<ProjectCustomPropertyModel> getProjectCustomProperties(VngRepository repo, UUID projectUuid) {
+
+        return repo.getProjectsDAO().getProjectCustomProperties(projectUuid).stream()
+            .map(ProjectCustomPropertyModel::new).toList();
+
     }
 
     public Project createProject(VngRepository repo, UUID loggedInUserUuid, ProjectCreateSnapshotModel projectData, ZonedDateTime now)
@@ -460,6 +484,194 @@ public class ProjectService {
                     oldChangelogValue.setPlanType(oldPlanTypeValue);
                     repo.persist(oldChangelogValue);
                 }
+            }
+        }
+    }
+
+    public void updateProjectBooleanCustomProperty(VngRepository repo, Project project, UUID customPropertyId, Boolean newBooleanValue, UUID loggedInUserUuid, LocalDate updateDate) {
+        ProjectBooleanCustomPropertyChangelog oldChangelogAfterUpdate = new ProjectBooleanCustomPropertyChangelog();
+        ProjectBooleanCustomPropertyChangelog newChangelog = null;
+        if (newBooleanValue != null) {
+            newChangelog = new ProjectBooleanCustomPropertyChangelog();
+            newChangelog.setProject(project);
+            newChangelog.setValue(newBooleanValue);
+            newChangelog.setCustomProperty(repo.getReferenceById(CustomProperty.class, customPropertyId));
+        }
+
+        List<ProjectBooleanCustomPropertyChangelog> changelogs = project.getBooleanCustomProperties().stream()
+            .filter(cp -> cp.getCustomProperty().getId().equals(customPropertyId)).toList();
+
+        ProjectBooleanCustomPropertyChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, changelogs, newChangelog,
+            oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
+
+        if (newChangelog != null) {
+            repo.persist(newChangelog);
+        }
+        if (oldChangelog != null) {
+            repo.persist(oldChangelog);
+            if (oldChangelogAfterUpdate.getStartMilestone() != null) {
+                // it is a current project && it had a non-null changelog before the update
+                oldChangelogAfterUpdate.setProject(project);
+                oldChangelogAfterUpdate.setValue(oldChangelog.getValue());
+                oldChangelogAfterUpdate.setCustomProperty(oldChangelog.getCustomProperty());
+                repo.persist(oldChangelogAfterUpdate);
+            }
+        }
+    }
+
+    public void updateProjectTextCustomProperty(VngRepository repo, Project project, UUID customPropertyId, String newTextValue, UUID loggedInUserUuid, LocalDate updateDate) {
+        ProjectTextCustomPropertyChangelog oldChangelogAfterUpdate = new ProjectTextCustomPropertyChangelog();
+        ProjectTextCustomPropertyChangelog newChangelog = null;
+        if (newTextValue != null) {
+            newChangelog = new ProjectTextCustomPropertyChangelog();
+            newChangelog.setProject(project);
+            newChangelog.setValue(newTextValue);
+            newChangelog.setCustomProperty(repo.getReferenceById(CustomProperty.class, customPropertyId));
+        }
+
+        List<ProjectTextCustomPropertyChangelog> changelogs = project.getTextCustomProperties().stream()
+            .filter(cp -> cp.getCustomProperty().getId().equals(customPropertyId)).toList();
+
+        ProjectTextCustomPropertyChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, changelogs, newChangelog,
+            oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
+
+        if (newChangelog != null) {
+            repo.persist(newChangelog);
+        }
+        if (oldChangelog != null) {
+            repo.persist(oldChangelog);
+            if (oldChangelogAfterUpdate.getStartMilestone() != null) {
+                // it is a current project && it had a non-null changelog before the update
+                oldChangelogAfterUpdate.setProject(project);
+                oldChangelogAfterUpdate.setValue(oldChangelog.getValue());
+                oldChangelogAfterUpdate.setCustomProperty(oldChangelog.getCustomProperty());
+                repo.persist(oldChangelogAfterUpdate);
+            }
+        }
+    }
+
+    public void updateProjectNumericCustomProperty(VngRepository repo, Project project, UUID customPropertyId, SingleValueOrRangeModel<BigDecimal> newNumericValue,
+                                                   UUID loggedInUserUuid, LocalDate updateDate) {
+        ProjectNumericCustomPropertyChangelog oldChangelogAfterUpdate = new ProjectNumericCustomPropertyChangelog();
+        ProjectNumericCustomPropertyChangelog newChangelog = null;
+        if (newNumericValue.getValue() != null || newNumericValue.getMin() != null || newNumericValue.getMax() != null) {
+            newChangelog = new ProjectNumericCustomPropertyChangelog();
+            newChangelog.setProject(project);
+            if (newNumericValue.getValue() != null) {
+                newChangelog.setValue(newNumericValue.getValue().doubleValue());
+                newChangelog.setValueType(ValueType.SINGLE_VALUE);
+            } else {
+                newChangelog.setValueRange(Range.closed(newNumericValue.getMin(), newNumericValue.getMax()));
+                newChangelog.setValueType(ValueType.RANGE);
+            }
+            newChangelog.setCustomProperty(repo.getReferenceById(CustomProperty.class, customPropertyId));
+        }
+
+        List<ProjectNumericCustomPropertyChangelog> changelogs = project.getNumericCustomProperties().stream()
+            .filter(cp -> cp.getCustomProperty().getId().equals(customPropertyId)).toList();
+
+        ProjectNumericCustomPropertyChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, changelogs, newChangelog,
+            oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
+
+        if (newChangelog != null) {
+            repo.persist(newChangelog);
+        }
+        if (oldChangelog != null) {
+            repo.persist(oldChangelog);
+            if (oldChangelogAfterUpdate.getStartMilestone() != null) {
+                // it is a current project && it had a non-null changelog before the update
+                oldChangelogAfterUpdate.setProject(project);
+                oldChangelogAfterUpdate.setValue(oldChangelog.getValue());
+                oldChangelogAfterUpdate.setValueRange(oldChangelog.getValueRange());
+                oldChangelogAfterUpdate.setValueType(oldChangelog.getValueType());
+                oldChangelogAfterUpdate.setCustomProperty(oldChangelog.getCustomProperty());
+                repo.persist(oldChangelogAfterUpdate);
+            }
+        }
+    }
+
+    public void updateProjectCategoryCustomProperty(VngRepository repo, Project project, UUID customPropertyId, Set<UUID> newCategoryValues, UUID loggedInUserUuid, LocalDate updateDate) {
+        ProjectCategoryCustomPropertyChangelog oldChangelogAfterUpdate = new ProjectCategoryCustomPropertyChangelog();
+        ProjectCategoryCustomPropertyChangelog newChangelog = null;
+        if (newCategoryValues != null && !newCategoryValues.isEmpty()) {
+            newChangelog = new ProjectCategoryCustomPropertyChangelog();
+            newChangelog.setProject(project);
+            newChangelog.setCustomProperty(repo.getReferenceById(CustomProperty.class, customPropertyId));
+        }
+
+        List<ProjectCategoryCustomPropertyChangelog> changelogs = project.getCategoryCustomProperties().stream()
+            .filter(cp -> cp.getCustomProperty().getId().equals(customPropertyId)).toList();
+
+        ProjectCategoryCustomPropertyChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, changelogs, newChangelog,
+            oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
+
+        if (newChangelog != null) {
+            repo.persist(newChangelog);
+            for (UUID newCategoryValue : newCategoryValues) {
+                ProjectCategoryCustomPropertyChangelogValue newChangelogValue = new ProjectCategoryCustomPropertyChangelogValue();
+                newChangelogValue.setCategoryChangelog(newChangelog);
+                newChangelogValue.setCategoryValue(repo.getReferenceById(CustomCategoryValue.class, newCategoryValue));
+                repo.persist(newChangelogValue);
+            }
+        }
+        if (oldChangelog != null) {
+            Set<UUID> oldCategoryValues = oldChangelog.getChangelogCategoryValues().stream()
+                .map(cv -> cv.getCategoryValue().getId()).collect(Collectors.toSet());
+
+            repo.persist(oldChangelog);
+            if (oldChangelogAfterUpdate.getStartMilestone() != null) {
+                // it is a current project && it had a non-null changelog before the update
+                oldChangelogAfterUpdate.setProject(project);
+                oldChangelogAfterUpdate.setCustomProperty(oldChangelog.getCustomProperty());
+                repo.persist(oldChangelogAfterUpdate);
+                for (UUID oldCategoryValue : oldCategoryValues) {
+                    ProjectCategoryCustomPropertyChangelogValue oldChangelogValue = new ProjectCategoryCustomPropertyChangelogValue();
+                    oldChangelogValue.setCategoryChangelog(oldChangelogAfterUpdate);
+                    oldChangelogValue.setCategoryValue(repo.getReferenceById(CustomCategoryValue.class, oldCategoryValue));
+                    repo.persist(oldChangelogValue);
+                }
+            }
+        }
+    }
+
+    public void updateProjectOrdinalCustomProperty(VngRepository repo, Project project, UUID customPropertyId, SingleValueOrRangeModel<UUID> newOrdinalValue,
+                                                   UUID loggedInUserUuid, LocalDate updateDate) {
+        ProjectOrdinalCustomPropertyChangelog oldChangelogAfterUpdate = new ProjectOrdinalCustomPropertyChangelog();
+        ProjectOrdinalCustomPropertyChangelog newChangelog = null;
+        if (newOrdinalValue.getValue() != null || newOrdinalValue.getMin() != null || newOrdinalValue.getMax() != null) {
+            newChangelog = new ProjectOrdinalCustomPropertyChangelog();
+            newChangelog.setProject(project);
+            if (newOrdinalValue.getValue() != null) {
+                newChangelog.setValue(repo.getReferenceById(CustomOrdinalValue.class, newOrdinalValue.getValue()));
+                newChangelog.setValueType(ValueType.SINGLE_VALUE);
+            } else {
+                newChangelog.setMinValue(repo.getReferenceById(CustomOrdinalValue.class, newOrdinalValue.getMin()));
+                newChangelog.setMaxValue(repo.getReferenceById(CustomOrdinalValue.class, newOrdinalValue.getMax()));
+                newChangelog.setValueType(ValueType.RANGE);
+            }
+            newChangelog.setCustomProperty(repo.getReferenceById(CustomProperty.class, customPropertyId));
+        }
+
+        List<ProjectOrdinalCustomPropertyChangelog> changelogs = project.getOrdinalCustomProperties().stream()
+            .filter(cp -> cp.getCustomProperty().getId().equals(customPropertyId)).toList();
+
+        ProjectOrdinalCustomPropertyChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, changelogs, newChangelog,
+            oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
+
+        if (newChangelog != null) {
+            repo.persist(newChangelog);
+        }
+        if (oldChangelog != null) {
+            repo.persist(oldChangelog);
+            if (oldChangelogAfterUpdate.getStartMilestone() != null) {
+                // it is a current project && it had a non-null changelog before the update
+                oldChangelogAfterUpdate.setProject(project);
+                oldChangelogAfterUpdate.setValue(oldChangelog.getValue());
+                oldChangelogAfterUpdate.setMinValue(oldChangelog.getMinValue());
+                oldChangelogAfterUpdate.setMaxValue(oldChangelog.getMaxValue());
+                oldChangelogAfterUpdate.setValueType(oldChangelog.getValueType());
+                oldChangelogAfterUpdate.setCustomProperty(oldChangelog.getCustomProperty());
+                repo.persist(oldChangelogAfterUpdate);
             }
         }
     }
