@@ -279,9 +279,9 @@ export const ProjectsWithHouseBlock = () => {
                     <Grid item xs={6} md={1}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.totalValue")}</Typography>
                         {!projectEditable ? (
-                            <CellContainer>{houseBlocks ? houseBlocks.length : 0}</CellContainer>
+                            <CellContainer>{selectedProject?.totalValue ? selectedProject.totalValue : 0}</CellContainer>
                         ) : (
-                            <TextField size="small" disabled value={houseBlocks ? houseBlocks.length : 0} />
+                            <TextField size="small" disabled value={selectedProject?.totalValue ? selectedProject.totalValue : 0} />
                         )}
                     </Grid>
                     <Grid item sm={2}>
