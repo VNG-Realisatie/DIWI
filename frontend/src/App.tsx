@@ -27,7 +27,7 @@ import { diwiFetch } from "./utils/requests";
 import { ProjectsWithHouseBlock } from "./components/project/project-with-house-block/ProjectWithHouseBlock";
 import { Settings } from "./components/admin/Settings";
 import { dateFormats } from "./localization";
-import { ProjectTimeline } from "./components/project/ProjectTimeline";
+import { ProjectTimeline } from "./components/project/timeline/ProjectTimeline";
 
 export const drawerWidth = 290;
 

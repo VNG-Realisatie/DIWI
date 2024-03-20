@@ -1,13 +1,13 @@
 import { useState, useEffect, useContext } from "react";
 import * as d3 from "d3";
 import { Box } from "@mui/material";
-import { getProjectTimeline } from "../../api/projectTimeLine";
-import ProjectContext from "../../context/ProjectContext";
-import { getProjectHouseBlocks } from "../../api/projectsServices";
+import { getProjectTimeline } from "../../../api/projectTimeLine";
+import ProjectContext from "../../../context/ProjectContext";
+import { getProjectHouseBlocks } from "../../../api/projectsServices";
 import dayjs from "dayjs";
 import type { Dayjs } from "dayjs";
-import { components } from "../../types/schema";
-import { HouseBlock } from "../project-wizard/house-blocks/types";
+import { components } from "../../../types/schema";
+import { HouseBlock } from "../../project-wizard/house-blocks/types";
 
 type TimeDataType = {
     startDate: Dayjs;
