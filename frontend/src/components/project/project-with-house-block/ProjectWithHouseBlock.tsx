@@ -246,7 +246,7 @@ export const ProjectsWithHouseBlock = () => {
 
     return (
         <Stack my={1} p={1} mb={10}>
-            <Box sx={{ cursor: "pointer" }} position="absolute" right={10} top={55} zIndex={9999}>
+            <Box sx={{ cursor: "pointer" }} position="absolute" right={10} top={55}>
                 <Tooltip placement="top" title={t("projectDetail.colorEdit")}>
                     <FormatColorFillIcon
                         sx={{ mr: 2, color: "#FFFFFF" }}
