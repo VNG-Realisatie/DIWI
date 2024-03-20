@@ -30,12 +30,12 @@ export const HouseBlocks = ({ houseBlockData, xScale, titleHeight, blockHeight, 
                         const w = xScale(dayjs(block.endDate)) - xScale(dayjs(block.startDate)) - 2 * spacing.x;
                         const h = blockHeight - 2 * spacing.y;
                         return (
-                            <g key={"houseBlock" + block.houseblockId}>
+                            <svg key={"houseBlock" + block.houseblockId}>
                                 <rect x={x} y={y} width={w} height={h} fill="#5cc6f5" />
-                                <text x={x + textSpacing.x} y={y + h - textSpacing.y} fill="#FFFFFF">
+                                <text x={x + textSpacing.x} y={y + textSpacing.y + 20} fill="#FFFFFF">
                                     {block.houseblockName}
                                 </text>
-                            </g>
+                            </svg>
                         );
                     })}
             </g>
