@@ -5,7 +5,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { ProjectTimelineSvg } from "./ProjectTimelineSvg";
 
 export const ProjectTimeline = () => {
-    const [timeScaleIndex, setTimeScaleIndex] = useState(1);
+    const [timeScaleIndex, setTimeScaleIndex] = useState(3);
 
     const handleScaleChange = (increment: number) => {
         setTimeScaleIndex((prevIndex) => prevIndex + increment);
