@@ -6,6 +6,8 @@ import { addHouseBlock, getProjectHouseBlocks } from "../../../api/projectsServi
 import { useParams } from "react-router-dom";
 import useAlert from "../../../hooks/useAlert";
 import { emptyHouseBlockForm } from "../../project-wizard/house-blocks/constants";
+import ProjectContext from "../../../context/ProjectContext";
+import { useContext } from "react";
 
 type Props = {
     openHouseBlockDialog: boolean;
@@ -23,6 +25,7 @@ export const CreateHouseBlockDialog = ({
 }: Props) => {
     const { id } = useParams();
     const { setAlert } = useAlert();
+    const { updateProject } = useContext(ProjectContext);
     return (
         <Dialog open={openHouseBlockDialog} onClose={() => setOpenHouseBlockDialog(false)} maxWidth="xl">
             <DialogContent>
@@ -45,6 +48,7 @@ export const CreateHouseBlockDialog = ({
                                 if (id) {
                                     const hb = await getProjectHouseBlocks(id);
                                     setHouseBlocks(hb);
+                                    updateProject();
                                 }
                             } else {
                                 setAlert(t("createProject.houseBlocksForm.notifications.error"), "error");
