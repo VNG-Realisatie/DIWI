@@ -32,7 +32,7 @@ import AlertContext from "../../../context/AlertContext";
 import { CreateHouseBlockDialog } from "./CreateHouseBlockDialog";
 import { HouseBlocksList } from "./HouseBlocksList";
 import { emptyHouseBlockForm } from "../../project-wizard/house-blocks/constants";
-import { CustomPropertyType, getCustomPropertiesWithQuery } from "../../../api/adminSettingServices";
+import CustomPropertyWidget from "../../CustomPropertyWidget";
 
 export const columnTitleStyle = {
     border: "solid 1px #ddd",
@@ -76,7 +76,6 @@ export const ProjectsWithHouseBlock = () => {
     const [selectedWijk, setSelectedWijk] = useState<SelectModel[]>([]);
     const [projectPriority, setProjectPriority] = useState<SelectModel | null>();
     const [houseBlocks, setHouseBlocks] = useState<HouseBlock[]>();
-    const [customProperties, setCustomProperties] = useState<CustomPropertyType[]>();
 
     const { setAlert } = useContext(AlertContext);
 
@@ -239,10 +238,6 @@ export const ProjectsWithHouseBlock = () => {
     useEffect(() => {
         id && getProjectHouseBlocks(id).then((res) => setHouseBlocks(res));
     }, [id]);
-
-    useEffect(() => {
-        getCustomPropertiesWithQuery("PROJECT").then((customProperties) => setCustomProperties(customProperties));
-    }, []);
 
     return (
         <Stack my={1} p={1} mb={10}>
@@ -461,18 +456,7 @@ export const ProjectsWithHouseBlock = () => {
                     </Grid>
                 </Grid>
                 {/*List Custom Properties */}
-                <Grid container my={2}>
-                    {customProperties &&
-                        customProperties
-                            .filter((p) => !p.disabled)
-                            .map((cp, i) => {
-                                return (
-                                    <Grid item xs={6} md={1} key={i}>
-                                        <Typography sx={columnTitleStyle}>{cp.name}</Typography>
-                                    </Grid>
-                                );
-                            })}
-                </Grid>
+                <CustomPropertyWidget />
                 {/* List huizen blok cards */}
                 <HouseBlocksList houseBlocks={houseBlocks} setOpenHouseBlockDialog={setOpenHouseBlockDialog} />
                 {openColorDialog && (
