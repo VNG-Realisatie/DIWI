@@ -12,6 +12,8 @@ export const About = () => {
     const { t } = useTranslation();
     const [version, setVersion] = useState<VersionType | null>(null);
 
+    const unavailableText = t("generic.noInfoAvailable");
+
     useEffect(() => {
         diwiFetch("/version.json")
             .then((res) => {
@@ -23,7 +25,9 @@ export const About = () => {
             })
             .then((data) => {
                 if (data) {
-                    const versionInfo = { hash: data["git hash"], date: data["build date"] };
+                    const hash = data["git hash"] && data["git hash"].trim().length !== 0 ? data["git hash"] : null;
+                    const date = data["build date"] && data["build date"].trim().length !== 0 ? data["build date"] : null;
+                    const versionInfo = { hash: hash, date: date };
                     setVersion(versionInfo);
                 } else {
                     setVersion(null);
@@ -39,11 +43,11 @@ export const About = () => {
                     <TableBody>
                         <TableRow>
                             <TableCell>{t("about.version")}</TableCell>
-                            <TableCell>{version?.hash ?? "No info available"}</TableCell>
+                            <TableCell>{version?.hash ?? unavailableText}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell>{t("about.deployedOn")}</TableCell>
-                            <TableCell>{version?.date ?? "No info available"}</TableCell>
+                            <TableCell>{version?.date ?? unavailableText}</TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
