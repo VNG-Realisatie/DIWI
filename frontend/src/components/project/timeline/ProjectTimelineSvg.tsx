@@ -200,27 +200,3 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, width, height }: any) => {
         </Box>
     );
 };
-
-// Comment below still usefull for TODO's regarding ZOOM and DRAG functionality
-
-//         const drag = d3.drag().on("drag", handleDrag);
-
-//         function handleDrag(e: any) {
-//             e.subject.x = e.x;
-//             update();
-//         }
-
-//         function update() {
-//             d3.select("svg")
-//                 .selectAll("drag-handle")
-//                 .attr("x", (d: any) => d.x);
-//         }
-
-//         function initDrag() {
-//             const dragHandles = d3.select<SVGSVGElement, unknown>("svg").selectAll<SVGSVGElement, any>(".drag-handle");
-//             dragHandles.call(drag as any);
-//         }
-
-//         initDrag();
-//         // svg.selectAll(".drag-handle").call(dragHandle);
-//     }, [projectData, dateRange, timeFormat, width]);
