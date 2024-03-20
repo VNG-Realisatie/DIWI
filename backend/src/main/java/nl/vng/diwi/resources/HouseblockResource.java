@@ -157,6 +157,11 @@ public class HouseblockResource {
                         houseblockUpdateModelList.add(new HouseblockUpdateModel(HouseblockUpdateModel.HouseblockProperty.physicalAppearanceAndHouseType, physicalAppAndHouseTypeMap));
                     }
                 }
+                case programming -> {
+                    if (!Objects.equals(houseblockModelToUpdate.getProgramming(), houseblockCurrentValues.getProgramming())) {
+                        houseblockUpdateModelList.add(new HouseblockUpdateModel(HouseblockUpdateModel.HouseblockProperty.programming, houseblockModelToUpdate.getProgramming()));
+                    }
+                }
                 case startDate -> {
                     LocalDate newStartDate = houseblockModelToUpdate.getStartDate();
                     if (!Objects.equals(newStartDate, houseblockCurrentValues.getStartDate())) {
@@ -220,6 +225,7 @@ public class HouseblockResource {
                     .collect(Collectors.toMap(e -> (HouseType) e.getKey(), Map.Entry::getValue));
                 houseblockService.updatePhysicalAppearanceAndHouseType(repo, project, houseblock, physicalAppearanceMap, houseTypeMap, loggedUserUuid, updateDate);
             }
+            case programming -> houseblockService.updateHouseblockProgramming(repo, project, houseblock, updateModel.getBooleanValue(), loggedUserUuid, updateDate);
         }
     }
 

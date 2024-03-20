@@ -477,6 +477,34 @@ public class HouseblockService {
 
     }
 
+    public void updateHouseblockProgramming(VngRepository repo, Project project, Houseblock houseblock, Boolean newProgramming, UUID loggedInUserUuid, LocalDate updateDate) {
+
+        HouseblockProgrammingChangelog oldChangelogAfterUpdate = new HouseblockProgrammingChangelog();
+        HouseblockProgrammingChangelog newChangelog = null;
+        if (newProgramming != null) {
+            newChangelog = new HouseblockProgrammingChangelog();
+            newChangelog.setHouseblock(houseblock);
+            newChangelog.setProgramming(newProgramming);
+        }
+
+        HouseblockProgrammingChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, houseblock, houseblock.getProgrammings(), newChangelog,
+            oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
+
+        if (newChangelog != null) {
+            repo.persist(newChangelog);
+        }
+
+        if (oldChangelog != null) {
+            repo.persist(oldChangelog);
+            if (oldChangelogAfterUpdate.getStartMilestone() != null) {
+                // it is a current project && it had a non-null changelog before the update
+                oldChangelogAfterUpdate.setHouseblock(houseblock);
+                oldChangelogAfterUpdate.setProgramming(oldChangelog.getProgramming());
+                repo.persist(oldChangelogAfterUpdate);
+            }
+        }
+    }
+
     private <T extends MilestoneChangeDataSuperclass> T prepareChangelogValuesToUpdate(VngRepository repo, Project project, Houseblock houseblock, List<T> changelogs,
                                                                                        T newChangelog, T oldChangelogAfterUpdate, UUID loggedInUserUuid, LocalDate updateDate) {
 

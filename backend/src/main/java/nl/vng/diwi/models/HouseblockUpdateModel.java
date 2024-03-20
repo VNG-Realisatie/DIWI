@@ -16,6 +16,7 @@ public class HouseblockUpdateModel {
         groundPosition,
         purpose,
         physicalAppearanceAndHouseType,
+        programming,
         size,
         // Do not change the order - startDate and endDate must be the last ones!
         // It will cause problems and extra milestones to be created.
@@ -25,12 +26,18 @@ public class HouseblockUpdateModel {
 
     private HouseblockProperty property;
     private String value;
+    private Boolean booleanValue;
     private SingleValueOrRangeModel<BigDecimal> sizeValue;
     private Map<Object, Integer> valuesMap;
 
     public HouseblockUpdateModel(HouseblockProperty property, String value) {
         this.property = property;
         this.value = value;
+    }
+
+    public HouseblockUpdateModel(HouseblockProperty property, Boolean value) {
+        this.property = property;
+        this.booleanValue = value;
     }
 
     public HouseblockUpdateModel(HouseblockProperty property, Map<Object, Integer> valuesMap) {
@@ -63,6 +70,7 @@ public class HouseblockUpdateModel {
                 valuesMap.entrySet().removeIf(entry -> entry.getValue() == null);
                 yield null;
             }
+            case programming -> null;
         };
 
     }
