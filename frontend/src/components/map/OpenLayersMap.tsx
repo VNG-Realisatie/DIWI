@@ -7,7 +7,6 @@ import GeoJSON from "ol/format/GeoJSON.js";
 
 import queryString from "query-string";
 import { useEffect, useId, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { dummyData } from "./dummy";
 
 // type Props = {
@@ -16,15 +15,55 @@ import { dummyData } from "./dummy";
 //     mapData: Marker[];
 //     plusButton?: boolean;
 // };
+type LayerType = {
+    type: string;
+    features: [
+        {
+            id: string;
+            type: string;
+            bbox: number[];
+            geometry: {
+                type: string;
+                coordinates: number[][][];
+            };
+            properties: {
+                AKRKadastraleGemeenteCodeCode: string;
+                AKRKadastraleGemeenteCodeWaarde: string;
+                beginGeldigheid: string;
+                identificatieLokaalID: string;
+                identificatieNamespace: string;
+                kadastraleGemeenteCode: string;
+                kadastraleGemeenteWaarde: string;
+                kadastraleGrootteWaarde: string;
+                perceelnummer: string;
+                perceelnummerPlaatscoordinaatX: string;
+                perceelnummerPlaatscoordinaatY: string;
+                perceelnummerRotatie: string;
+                perceelnummerVerschuivingDeltaX: string;
+                perceelnummerVerschuivingDeltaY: string;
+                sectie: string;
+                soortGrootteCode: string;
+                soortGrootteWaarde: string;
+                statusHistorieCode: string;
+                statusHistorieWaarde: string;
+                tijdstipRegistratie: string;
+                volgnummer: string;
+            };
+        },
+    ];
+    crs: {
+        properties: {
+            name: string;
+        };
+        type: string;
+    };
+};
 
 const PlotSelectorMap = () => {
     const mapRef = useRef<Map>();
     const id = useId();
-    const [selectedPlot, setSelectedPlot] = useState<any>();
-    const [selectedPlots, setSelectedPlots] = useState<any[]>([]);
-
-    const mapZoom = 10;
-    const { t } = useTranslation();
+    const [selectedPlot, setSelectedPlot] = useState<LayerType>();
+    const [selectedPlots, setSelectedPlots] = useState<LayerType[]>([]);
 
     // fetchStuff();
 
@@ -52,6 +91,7 @@ const PlotSelectorMap = () => {
                 zoom: 16,
             }),
         });
+        //This will come from backend
         dummyData.map((d) => {
             return map.addLayer(
                 new VectorLayer({
@@ -61,6 +101,7 @@ const PlotSelectorMap = () => {
                 }),
             );
         });
+
         map.addEventListener("click", (e) => {
             // console.log(e);
             // @ts-ignore
@@ -110,7 +151,8 @@ const PlotSelectorMap = () => {
         selectedPlot && setSelectedPlots(filteredPlots ? [...filteredPlots, selectedPlot] : [selectedPlot]);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedPlot]);
-    console.log(selectedPlots);
+    //This will update backend later
+    console.log(selectedPlot);
     return (
         <div id={id} style={{ width: "500px", height: "500px" }}>
             {/* {plusButton && <PlusButton color="#002C64" link={Paths.projectAdd.path} text={t("projects.createNewProject")} />} */}
