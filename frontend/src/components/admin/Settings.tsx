@@ -32,7 +32,7 @@ export const Settings = () => {
             propertyType: selectedPropertyType,
             disabled: !active,
             categories:
-                categories !== null && categories.length > 0
+                categories !== null
                     ? categories.map((c) => {
                           return c;
                       })

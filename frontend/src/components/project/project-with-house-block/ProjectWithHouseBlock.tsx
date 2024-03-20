@@ -239,9 +239,6 @@ export const ProjectsWithHouseBlock = () => {
     useEffect(() => {
         id && getProjectHouseBlocks(id).then((res) => setHouseBlocks(res));
     }, [id]);
-    useEffect(() => {
-        getCustomPropertiesWithQuery("PROJECT").then((customProperties) => setCustomProperties(customProperties));
-    }, []);
 
     useEffect(() => {
         getCustomPropertiesWithQuery("PROJECT").then((customProperties) => setCustomProperties(customProperties));
