@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
-import { ScopedCssBaseline, ThemeProvider, createTheme } from "@mui/material";
+import { ScopedCssBaseline, ThemeProvider } from "@mui/material";
 import "./App.css";
 import AlertContext from "./context/AlertContext";
 import { AlertProvider } from "./context/AlertContext";
@@ -22,75 +22,13 @@ import { ImportExcel } from "./pages/ImportExcel";
 import { ImportedProjects } from "./pages/ImportedProjects";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { nlNL } from "@mui/material/locale";
 import { Swagger } from "./pages/Swagger";
 import { diwiFetch } from "./utils/requests";
 import { ProjectsWithHouseBlock } from "./components/project/project-with-house-block/ProjectWithHouseBlock";
 import { Settings } from "./components/admin/Settings";
+import { theme } from "./theme";
 import { dateFormats } from "./localization";
-import OpenLayersMap from "./components/map/OpenLayersMap";
-
-export const drawerWidth = 290;
-
-const theme = createTheme(
-    {
-        typography: {
-            fontFamily: "Inter, Arial",
-            h6: {
-                fontWeight: 600,
-            },
-            caption: {
-                fontWeight: 500,
-                fontSize: "13px",
-                lineHeight: "120%",
-            },
-        },
-        components: {
-            MuiDrawer: {
-                styleOverrides: {
-                    paper: {
-                        width: drawerWidth,
-                        backgroundColor: "#002C64",
-                        color: "#FFFFFF",
-                        boxSizing: "border-box",
-                    },
-                },
-            },
-            MuiAppBar: {
-                styleOverrides: {
-                    root: {
-                        backgroundColor: "#FFFFFF",
-                        position: "fixed",
-                    },
-                },
-            },
-            MuiListItemIcon: {
-                styleOverrides: {
-                    root: {
-                        color: "#FFFFFF",
-                        minWidth: "40px",
-                    },
-                },
-            },
-            MuiInputBase: {
-                styleOverrides: {
-                    input: {
-                        backgroundColor: "white", // Set the background color to white
-                    },
-                },
-            },
-        },
-        palette: {
-            primary: {
-                main: "#002C64",
-            },
-            secondary: {
-                main: "#900A0A",
-            },
-        },
-    },
-    nlNL,
-);
+import PlotSelectorMap from "./components/map/OpenLayersMap";
 
 function RequiresLogin() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -136,7 +74,7 @@ function App() {
                             index
                             element={
                                 <>
-                                    <OpenLayersMap />
+                                    <PlotSelectorMap />
                                     <ProjectProvider>
                                         <Projects />
                                     </ProjectProvider>

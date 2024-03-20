@@ -6,7 +6,7 @@ import { OSM, Vector as VectorSource } from "ol/source";
 import GeoJSON from "ol/format/GeoJSON.js";
 
 import queryString from "query-string";
-import { useEffect, useId, useRef } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 // type Props = {
@@ -16,9 +16,10 @@ import { useTranslation } from "react-i18next";
 //     plusButton?: boolean;
 // };
 
-const OpenLayersMap = () => {
+const PlotSelectorMap = () => {
     const mapRef = useRef<Map>();
     const id = useId();
+    const [plots, setPlots] = useState();
 
     const mapZoom = 10;
     const { t } = useTranslation();
@@ -80,7 +81,7 @@ const OpenLayersMap = () => {
                 .then((res) => res.json())
                 .then((result) => {
                     console.log(result);
-                    map.map.addLayer(
+                    map.addLayer(
                         new VectorLayer({
                             source: new VectorSource({
                                 features: new GeoJSON().readFeatures(result),
@@ -100,6 +101,6 @@ const OpenLayersMap = () => {
     );
 };
 
-export default OpenLayersMap;
+export default PlotSelectorMap;
 
 const baseUrlKadasterWms = "https://service.pdok.nl/kadaster/kadastralekaart/wms/v5_0";

@@ -4,9 +4,7 @@ import "leaflet-draw/dist/leaflet.draw.css";
 import L, { latLng } from "leaflet";
 import "leaflet-draw";
 import { useEffect, useId, useRef } from "react";
-import PlusButton from "../PlusButton";
-import * as Paths from "../../Paths";
-import { useTranslation } from "react-i18next";
+import { AddProjectButton } from "../PlusButton";
 import queryString from "query-string";
 
 type Marker = {
@@ -30,7 +28,6 @@ const NetherlandsMap = ({ height, width, mapData, plusButton }: Props) => {
     const id = useId();
 
     const mapZoom = 10;
-    const { t } = useTranslation();
 
     fetchStuff();
 
@@ -136,7 +133,7 @@ const NetherlandsMap = ({ height, width, mapData, plusButton }: Props) => {
 
     return (
         <div id={id} style={{ width, height }}>
-            {plusButton && <PlusButton color="#002C64" link={Paths.projectAdd.path} text={t("projects.createNewProject")} />}
+            {plusButton && <AddProjectButton />}
         </div>
     );
 };
