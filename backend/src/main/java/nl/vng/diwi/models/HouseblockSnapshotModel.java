@@ -1,6 +1,7 @@
 package nl.vng.diwi.models;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -163,6 +164,7 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
 
     @Getter
     @Setter
+    @EqualsAndHashCode
     public static class GroundPosition {
         private Integer noPermissionOwner;
         private Integer intentionPermissionOwner;
@@ -171,6 +173,7 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
 
     @Getter
     @Setter
+    @EqualsAndHashCode
     public static class PhysicalAppearance {
         private Integer tussenwoning;
         private Integer tweeondereenkap;
@@ -182,6 +185,7 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
 
     @Getter
     @Setter
+    @EqualsAndHashCode
     public static class HouseType {
         private Integer meergezinswoning;
         private Integer eengezinswoning;
@@ -189,6 +193,7 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
 
     @Getter
     @Setter
+    @EqualsAndHashCode
     public static class Purpose {
         private Integer regular;
         private Integer youth;

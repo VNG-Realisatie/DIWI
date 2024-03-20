@@ -28,23 +28,34 @@ import nl.vng.diwi.dal.entities.enums.ValueType;
 import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.dal.entities.HouseblockSnapshotSqlModel;
+import nl.vng.diwi.models.MilestoneModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
 import nl.vng.diwi.rest.VngNotFoundException;
+import nl.vng.diwi.rest.VngServerErrorException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 
 public class HouseblockService {
     private static final Logger logger = LogManager.getLogger();
 
+    private ProjectService projectService;
+
     public HouseblockService() {
+    }
+
+    public void setProjectService(ProjectService projectService) {
+        this.projectService = projectService;
     }
 
     public HouseblockSnapshotModel getHouseblockSnapshot(VngRepository repo, UUID houseblockUuid) throws VngNotFoundException {
@@ -265,4 +276,174 @@ public class HouseblockService {
 
         return houseblock;
     }
+
+    public void updateHouseblockName(VngRepository repo, Project project, Houseblock houseblock, String newName, UUID loggedInUserUuid, LocalDate updateDate) {
+        // name is mandatory for the entire duration of the houseblock
+
+        HouseblockNameChangelog oldChangelogAfterUpdate = new HouseblockNameChangelog();
+        HouseblockNameChangelog newChangelog = new HouseblockNameChangelog();
+        newChangelog.setHouseblock(houseblock);
+        newChangelog.setName(newName);
+
+        HouseblockNameChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, houseblock, houseblock.getNames(), newChangelog,
+            oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
+
+        repo.persist(newChangelog);
+        if (oldChangelog == null) {
+            logger.error("Houseblock with uuid {} has missing name changelog value", houseblock.getId());
+            throw new VngServerErrorException("Houseblock name changelog is invalid.");
+        }
+
+        repo.persist(oldChangelog);
+        if (oldChangelogAfterUpdate.getStartMilestone() != null) {
+            // it is a current houseblock && it had a non-null changelog before the update
+            oldChangelogAfterUpdate.setHouseblock(houseblock);
+            oldChangelogAfterUpdate.setName(oldChangelog.getName());
+            repo.persist(oldChangelogAfterUpdate);
+        }
+    }
+
+
+    public void updateHouseblockPurpose(VngRepository repo, Project project, Houseblock houseblock, Map<Purpose, Integer> newPurposeMap, UUID loggedInUserUuid, LocalDate updateDate) {
+
+        HouseblockPurposeChangelog oldChangelogAfterUpdate = new HouseblockPurposeChangelog();
+        HouseblockPurposeChangelog newChangelog = null;
+        if (!newPurposeMap.isEmpty()) {
+            newChangelog = new HouseblockPurposeChangelog();
+            newChangelog.setHouseblock(houseblock);
+        }
+
+        HouseblockPurposeChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, houseblock, houseblock.getPurposes(), newChangelog,
+            oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
+
+        if (newChangelog != null) {
+            repo.persist(newChangelog);
+            for (Map.Entry<Purpose, Integer> purposeMapEntry : newPurposeMap.entrySet()) {
+                HouseblockPurposeChangelogValue newChangelogValue = new HouseblockPurposeChangelogValue();
+                newChangelogValue.setPurposeChangelog(newChangelog);
+                newChangelogValue.setPurpose(purposeMapEntry.getKey());
+                newChangelogValue.setAmount(purposeMapEntry.getValue());
+                repo.persist(newChangelogValue);
+            }
+        }
+
+        if (oldChangelog != null) {
+            repo.persist(oldChangelog);
+            if (oldChangelogAfterUpdate.getStartMilestone() != null) {
+                // it is a current project && it had a non-null changelog before the update
+                oldChangelogAfterUpdate.setHouseblock(houseblock);
+                repo.persist(oldChangelogAfterUpdate);
+                for (HouseblockPurposeChangelogValue purposeValue : oldChangelog.getPurposeValues()) {
+                    HouseblockPurposeChangelogValue oldChangelogValue = new HouseblockPurposeChangelogValue();
+                    oldChangelogValue.setPurposeChangelog(oldChangelogAfterUpdate);
+                    oldChangelogValue.setPurpose(purposeValue.getPurpose());
+                    oldChangelogValue.setAmount(purposeValue.getAmount());
+                    repo.persist(oldChangelogValue);
+                }
+            }
+        }
+    }
+
+    private <T extends MilestoneChangeDataSuperclass> T prepareChangelogValuesToUpdate(VngRepository repo, Project project, Houseblock houseblock, List<T> changelogs,
+                                                                                       T newChangelog, T oldChangelogAfterUpdate, UUID loggedInUserUuid, LocalDate updateDate) {
+
+        Milestone houseblockStartMilestone = houseblock.getDuration().get(0).getStartMilestone();
+        Milestone houseblockEndMilestone = houseblock.getDuration().get(0).getEndMilestone();
+
+        ZonedDateTime zdtNow = ZonedDateTime.now();
+        LocalDate houseblockStartDate = (new MilestoneModel(houseblockStartMilestone)).getDate();
+        LocalDate houseblockEndDate = (new MilestoneModel(houseblockEndMilestone)).getDate();
+        boolean currentOrFutureHouseblock = true;
+
+        T oldChangelog;
+        if (newChangelog != null) {
+            newChangelog.setCreateUser(repo.getReferenceById(User.class, loggedInUserUuid));
+            newChangelog.setChangeStartDate(zdtNow);
+        }
+
+        if (houseblockStartDate.isAfter(updateDate)) {
+            updateDate = houseblockStartDate;
+        }
+
+        if (houseblockEndDate.isBefore(updateDate)) {
+            updateDate = houseblockEndDate;
+            currentOrFutureHouseblock = false;
+        }
+
+        LocalDate finalUpdateDate = updateDate;
+        boolean finalIsCurrentOrFutureHouseblock = currentOrFutureHouseblock;
+
+        oldChangelog = changelogs.stream()
+            .filter(c -> (finalIsCurrentOrFutureHouseblock && !(new MilestoneModel(c.getStartMilestone())).getDate().isAfter(finalUpdateDate)
+                && (new MilestoneModel(c.getEndMilestone())).getDate().isAfter(finalUpdateDate)) ||
+                (!finalIsCurrentOrFutureHouseblock && (new MilestoneModel(c.getEndMilestone())).getDate().equals(finalUpdateDate)))
+            .findFirst().orElse(null);
+
+        Milestone updateMilestone = projectService.getOrCreateMilestoneForProject(repo, project, updateDate, loggedInUserUuid);
+
+        if (oldChangelog != null && finalIsCurrentOrFutureHouseblock && !Objects.equals(oldChangelog.getStartMilestone().getId(), updateMilestone.getId())) {
+            oldChangelogAfterUpdate.setStartMilestone(oldChangelog.getStartMilestone());
+            oldChangelogAfterUpdate.setEndMilestone(updateMilestone);
+            oldChangelogAfterUpdate.setCreateUser(oldChangelog.getCreateUser());
+            oldChangelogAfterUpdate.setChangeStartDate(zdtNow);
+        }
+
+        if (newChangelog != null) {
+            if (finalIsCurrentOrFutureHouseblock) {
+                newChangelog.setStartMilestone(updateMilestone);
+            } else {
+                if (oldChangelog != null) {
+                    newChangelog.setStartMilestone(oldChangelog.getStartMilestone());
+                } else {
+                    newChangelog.setStartMilestone(houseblockStartMilestone);
+                }
+            }
+        }
+
+        if (oldChangelog != null) {
+            oldChangelog.setChangeEndDate(zdtNow);
+            oldChangelog.setChangeUser(repo.getReferenceById(User.class, loggedInUserUuid));
+        }
+
+        if (newChangelog != null) {
+            if (oldChangelog != null) {
+                newChangelog.setEndMilestone(oldChangelog.getEndMilestone());
+            } else {
+                LocalDate currentStartDate = (new MilestoneModel(newChangelog.getStartMilestone())).getDate();
+                UUID newEndMilestoneUuid = changelogs.stream().map(MilestoneChangeDataSuperclass::getStartMilestone)
+                    .map(MilestoneModel::new)
+                    .filter(mm -> mm.getDate().isAfter(currentStartDate))
+                    .min(Comparator.comparing(MilestoneModel::getDate))
+                    .map(MilestoneModel::getId)
+                    .orElse(houseblockEndMilestone.getId());
+                newChangelog.setEndMilestone(repo.getReferenceById(Milestone.class, newEndMilestoneUuid));
+            }
+        }
+
+        return oldChangelog;
+    }
+
+    public Houseblock getCurrentHouseblockAndPerformPreliminaryUpdateChecks(VngRepository repo, UUID houseblockId) throws VngNotFoundException {
+        Houseblock houseblock = repo.getHouseblockDAO().getCurrentHouseblock(houseblockId);
+
+        if (houseblock == null) {
+            logger.error("Houseblock with uuid {} not found.", houseblockId);
+            throw new VngNotFoundException("Houseblock not found");
+        }
+
+        if (houseblock.getDuration().size() != 1) {
+            logger.error("Houseblock with uuid {} has {} duration changelog values", houseblockId, houseblock.getDuration().size());
+            throw new VngServerErrorException("Houseblock duration changelog is invalid.");
+        }
+
+        MilestoneModel houseblockStartMilestone = new MilestoneModel(houseblock.getDuration().get(0).getStartMilestone());
+        MilestoneModel houseblockEndMilestone = new MilestoneModel(houseblock.getDuration().get(0).getEndMilestone());
+        if (houseblockStartMilestone.getStateId() == null || houseblockEndMilestone.getStateId() == null) {
+            logger.error("Houseblock with uuid {} has start or end milestone with invalid states.", houseblockId);
+            throw new VngServerErrorException("Houseblock milestones are invalid.");
+        }
+
+        return houseblock;
+    }
+
 }
