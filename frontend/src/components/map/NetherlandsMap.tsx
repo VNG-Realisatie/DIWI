@@ -39,7 +39,7 @@ const NetherlandsMap = ({ height, width, mapData, plusButton }: Props) => {
             return;
         }
 
-        mapRef.current = L.map(id);
+        mapRef.current = L.map(id, { attributionControl: false });
         const map = mapRef.current;
 
         map.setView(center, mapZoom);
