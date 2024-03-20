@@ -13,28 +13,87 @@ type PhasesProps = {
 };
 
 export const Phases = ({ phaseData, xScale, titleHeight, blockHeight, chartWidth, spacing, textSpacing }: PhasesProps) => {
+    const textVerticalSpace = (blockHeight - 4 * textSpacing.y) / 3;
+
     return (
         <>
             <g className="phaseTitle">
                 <rect x={spacing.x} y={spacing.y} width={chartWidth - 2 * spacing.x} height={titleHeight - 2 * spacing.y} fill="#e7b85d" />
                 {/* TODO make based on translation? */}
-                <text x={spacing.x + textSpacing.x} y={titleHeight - 2 * spacing.y - textSpacing.y}>
+                <text x={spacing.x + textSpacing.x} y={titleHeight - 2 * spacing.y - textSpacing.y} fill="#FFFFFF">
                     Phases
                 </text>
             </g>
             <g className="phaseBlocks">
                 {phaseData &&
                     phaseData.map((phase) => {
-                        const x = xScale(dayjs(phase.startDate)) + spacing.x;
-                        const y = titleHeight + spacing.y;
-                        const w = xScale(dayjs(phase.endDate)) - xScale(dayjs(phase.startDate)) - 2 * spacing.x;
+                        const start = dayjs(phase.startDate);
+                        const end = dayjs(phase.endDate);
+                        const x = xScale(start) + spacing.x;
+                        const y = titleHeight;
+                        const w = xScale(end) - xScale(start) - 2 * spacing.x;
                         const h = blockHeight - 2 * spacing.y;
+                        const dateBoxWidth = 100;
                         return (
-                            <g key={"phase" + phase.startDate}>
-                                <rect x={x} y={y} width={w} height={h} fill="#edcf95" />
-                                <text x={x + textSpacing.x} y={y + h - textSpacing.y}>
-                                    {phase.data}
-                                </text>
+                            <g key={"phase" + start}>
+                                {/* Bounding block */}
+                                <rect x={x} y={y + spacing.y} width={w} height={h} fill="#edcf95" />
+                                {/* name on first textrow */}
+                                <svg transform={`translate(${x + textSpacing.x},${y + textSpacing.y})`} width={w} height={textVerticalSpace}>
+                                    <text y="60%" dominant-baseline="middle" fill="#FFFFFF">
+                                        {phase.data}
+                                    </text>
+                                </svg>
+                                {/* from on second textrow*/}
+                                <svg
+                                    transform={`translate(${x + textSpacing.x},${y + textSpacing.y + textVerticalSpace})`}
+                                    width={w}
+                                    height={textVerticalSpace}
+                                >
+                                    <text y="60%" dominant-baseline="middle" fill="#FFFFFF">
+                                        From
+                                    </text>
+                                    <svg transform={`translate(${50},${textSpacing.y})`} width={dateBoxWidth} height={textVerticalSpace - 2 * textSpacing.y}>
+                                        <rect
+                                            x={0}
+                                            y={0}
+                                            width={dateBoxWidth}
+                                            height={textVerticalSpace - 2 * textSpacing.y}
+                                            strokeLinejoin="round"
+                                            rx={5}
+                                            ry={5}
+                                            fill="#FFFFFF"
+                                        ></rect>
+                                        <text x="50%" y="60%" dominant-baseline="middle" text-anchor="middle" fill="#edcf95">
+                                            {start.format("DD-MM-YYYY")}
+                                        </text>
+                                    </svg>
+                                </svg>
+                                {/* to on third textrow*/}
+                                <svg
+                                    transform={`translate(${x + textSpacing.x},${y + textSpacing.y + textVerticalSpace * 2})`}
+                                    width={w}
+                                    height={textVerticalSpace}
+                                >
+                                    <text y="60%" dominant-baseline="middle" fill="#FFFFFF">
+                                        To
+                                    </text>
+                                    <svg transform={`translate(${50},${textSpacing.y})`} width={dateBoxWidth} height={textVerticalSpace - 2 * textSpacing.y}>
+                                        <rect
+                                            x={0}
+                                            y={0}
+                                            width={dateBoxWidth}
+                                            height={textVerticalSpace - 2 * textSpacing.y}
+                                            strokeLinejoin="round"
+                                            rx={5}
+                                            ry={5}
+                                            fill="#FFFFFF"
+                                        ></rect>
+                                        <text x="50%" y="60%" dominant-baseline="middle" text-anchor="middle" fill="#edcf95">
+                                            {end.format("DD-MM-YYYY")}
+                                        </text>
+                                    </svg>
+                                </svg>
                             </g>
                         );
                     })}
