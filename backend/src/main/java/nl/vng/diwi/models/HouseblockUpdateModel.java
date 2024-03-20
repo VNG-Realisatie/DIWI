@@ -2,8 +2,8 @@ package nl.vng.diwi.models;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import nl.vng.diwi.dal.entities.enums.Purpose;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Map;
 
@@ -13,7 +13,9 @@ public class HouseblockUpdateModel {
 
     public enum HouseblockProperty {
         name,
+        groundPosition,
         purpose,
+        size,
         // Do not change the order - startDate and endDate must be the last ones!
         // It will cause problems and extra milestones to be created.
         startDate, // Do not change the order - startDate and endDate must be the last ones
@@ -22,16 +24,22 @@ public class HouseblockUpdateModel {
 
     private HouseblockProperty property;
     private String value;
-    private Map<Purpose, Integer> purposeMap;
+    private SingleValueOrRangeModel<BigDecimal> sizeValue;
+    private Map<Object, Integer> valuesMap;
 
     public HouseblockUpdateModel(HouseblockProperty property, String value) {
         this.property = property;
         this.value = value;
     }
 
-    public HouseblockUpdateModel(HouseblockProperty property, Map<Purpose, Integer> valuesMap) {
+    public HouseblockUpdateModel(HouseblockProperty property, Map<Object, Integer> valuesMap) {
         this.property = property;
-        this.purposeMap = valuesMap;
+        this.valuesMap = valuesMap;
+    }
+
+    public HouseblockUpdateModel(HouseblockProperty property, SingleValueOrRangeModel<BigDecimal> singleValueOrRangeModel) {
+        this.property = property;
+        this.sizeValue = singleValueOrRangeModel;
     }
 
     public String validate() {
@@ -49,8 +57,9 @@ public class HouseblockUpdateModel {
                 yield null;
             }
             case name -> (value == null || value.isBlank()) ? "New houseblock name value is not valid." : null;
-            case purpose -> {
-                purposeMap.entrySet().removeIf(entry -> entry.getValue() == null);
+            case size -> sizeValue.isValid() ? null : "Size value is not valid.";
+            case purpose, groundPosition -> {
+                valuesMap.entrySet().removeIf(entry -> entry.getValue() == null);
                 yield null;
             }
         };

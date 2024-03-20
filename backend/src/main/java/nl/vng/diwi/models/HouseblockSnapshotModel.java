@@ -84,6 +84,24 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
         this.purpose.setLargeFamilies(sqlModel.getLargeFamilies());
     }
 
+    public boolean isSizeEqualTo(SingleValueOrRangeModel<BigDecimal> otherSize) {
+        if ((this.size.getValue() == null && otherSize.getValue() != null) ||
+            (this.size.getValue() != null && otherSize.getValue() == null) ||
+            (this.size.getMin() == null && otherSize.getMin() != null) ||
+            (this.size.getMin() != null && otherSize.getMin() == null) ||
+            (this.size.getMax() == null && otherSize.getMax() != null) ||
+            (this.size.getMax() != null && otherSize.getMax() == null)) {
+            return false;
+        }
+        if ((this.size.getValue() != null && this.size.getValue().doubleValue() != otherSize.getValue().doubleValue()) ||
+            (this.size.getMin() != null && this.size.getMin().doubleValue() != otherSize.getMin().doubleValue()) ||
+            (this.size.getMax() != null && this.size.getMax().doubleValue() != otherSize.getMax().doubleValue())) {
+            return false;
+        }
+
+        return true;
+    }
+
     public String validate(LocalDate projectStartDate, LocalDate projectEndDate) {
 
         if (this.houseblockName == null || this.houseblockName.isBlank()) {

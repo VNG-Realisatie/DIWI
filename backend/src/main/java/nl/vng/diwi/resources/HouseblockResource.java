@@ -17,6 +17,7 @@ import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.Houseblock;
 import nl.vng.diwi.dal.entities.Milestone;
 import nl.vng.diwi.dal.entities.Project;
+import nl.vng.diwi.dal.entities.enums.GroundPosition;
 import nl.vng.diwi.dal.entities.enums.Purpose;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.models.HouseblockUpdateModel;
@@ -36,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static nl.vng.diwi.security.SecurityRoleConstants.Admin;
 
@@ -114,7 +116,7 @@ public class HouseblockResource {
                 }
                 case purpose -> {
                     if (!Objects.equals(houseblockModelToUpdate.getPurpose(), houseblockCurrentValues.getPurpose())) {
-                        Map<Purpose, Integer> purposeMap = new HashMap<>();
+                        Map<Object, Integer> purposeMap = new HashMap<>();
                         purposeMap.put(Purpose.REGULIER, houseblockModelToUpdate.getPurpose().getRegular());
                         purposeMap.put(Purpose.JONGEREN, houseblockModelToUpdate.getPurpose().getYouth());
                         purposeMap.put(Purpose.STUDENTEN, houseblockModelToUpdate.getPurpose().getStudent());
@@ -122,6 +124,20 @@ public class HouseblockResource {
                         purposeMap.put(Purpose.GEHANDICAPTEN_EN_ZORG, houseblockModelToUpdate.getPurpose().getGHZ());
                         purposeMap.put(Purpose.GROTE_GEZINNEN, houseblockModelToUpdate.getPurpose().getLargeFamilies());
                         houseblockUpdateModelList.add(new HouseblockUpdateModel(HouseblockUpdateModel.HouseblockProperty.purpose, purposeMap));
+                    }
+                }
+                case groundPosition -> {
+                    if (!Objects.equals(houseblockModelToUpdate.getGroundPosition(), houseblockCurrentValues.getGroundPosition())) {
+                        Map<Object, Integer> groundPositionMap = new HashMap<>();
+                        groundPositionMap.put(GroundPosition.FORMELE_TOESTEMMING_GRONDEIGENAAR, houseblockModelToUpdate.getGroundPosition().getFormalPermissionOwner());
+                        groundPositionMap.put(GroundPosition.GEEN_TOESTEMMING_GRONDEIGENAAR, houseblockModelToUpdate.getGroundPosition().getNoPermissionOwner());
+                        groundPositionMap.put(GroundPosition.INTENTIE_MEDEWERKING_GRONDEIGENAAR, houseblockModelToUpdate.getGroundPosition().getIntentionPermissionOwner());
+                        houseblockUpdateModelList.add(new HouseblockUpdateModel(HouseblockUpdateModel.HouseblockProperty.groundPosition, groundPositionMap));
+                    }
+                }
+                case size -> {
+                    if (!houseblockCurrentValues.isSizeEqualTo(houseblockModelToUpdate.getSize())) {
+                        houseblockUpdateModelList.add(new HouseblockUpdateModel(HouseblockUpdateModel.HouseblockProperty.size, houseblockModelToUpdate.getSize()));
                     }
                 }
                 case startDate -> {
@@ -153,7 +169,7 @@ public class HouseblockResource {
                 if (validationError != null) {
                     throw new VngBadRequestException(validationError);
                 }
-                updateHouseblockProperty(project, houseblock, houseblockUpdateModel, loggedUser, updateDate);
+                updateHouseblockProperty(project, houseblock, houseblockUpdateModel, loggedUser.getUuid(), updateDate);
             }
             transaction.commit();
             repo.getSession().clear();
@@ -162,12 +178,22 @@ public class HouseblockResource {
         return houseblockService.getHouseblockSnapshot(repo, houseblockUuid);
     }
 
-    private void updateHouseblockProperty(Project project, Houseblock houseblock, HouseblockUpdateModel updateModel, LoggedUser loggedUser, LocalDate updateDate)
+    private void updateHouseblockProperty(Project project, Houseblock houseblock, HouseblockUpdateModel updateModel, UUID loggedUserUuid, LocalDate updateDate)
         throws VngServerErrorException {
 
         switch (updateModel.getProperty()) {
-            case name -> houseblockService.updateHouseblockName(repo, project, houseblock, updateModel.getValue(), loggedUser.getUuid(), updateDate);
-            case purpose -> houseblockService.updateHouseblockPurpose(repo, project, houseblock, updateModel.getPurposeMap(), loggedUser.getUuid(), updateDate);
+            case name -> houseblockService.updateHouseblockName(repo, project, houseblock, updateModel.getValue(), loggedUserUuid, updateDate);
+            case purpose -> {
+                Map<Purpose, Integer> purposeMap = updateModel.getValuesMap().entrySet().stream()
+                    .collect(Collectors.toMap(e -> (Purpose) e.getKey(), Map.Entry::getValue));
+                houseblockService.updateHouseblockPurpose(repo, project, houseblock, purposeMap, loggedUserUuid, updateDate);
+            }
+            case groundPosition -> {
+                Map<GroundPosition, Integer> groundPositionMap = updateModel.getValuesMap().entrySet().stream()
+                    .collect(Collectors.toMap(e -> (GroundPosition) e.getKey(), Map.Entry::getValue));
+                houseblockService.updateHouseblockGroundPosition(repo, project, houseblock, groundPositionMap, loggedUserUuid, updateDate);
+            }
+            case size -> houseblockService.updateHouseblockSize(repo, project, houseblock, updateModel.getSizeValue(), loggedUserUuid, updateDate);
         }
     }
 

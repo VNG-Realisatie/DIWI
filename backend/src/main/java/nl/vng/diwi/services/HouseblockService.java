@@ -303,6 +303,42 @@ public class HouseblockService {
         }
     }
 
+    public void updateHouseblockSize(VngRepository repo, Project project, Houseblock houseblock, SingleValueOrRangeModel<BigDecimal> sizeValue,
+                                     UUID loggedInUserUuid, LocalDate updateDate) {
+
+        HouseblockSizeChangelog oldChangelogAfterUpdate = new HouseblockSizeChangelog();
+        HouseblockSizeChangelog newChangelog = null;
+        if (sizeValue.getValue() != null) {
+            newChangelog = new HouseblockSizeChangelog();
+            newChangelog.setHouseblock(houseblock);
+            newChangelog.setValueType(ValueType.SINGLE_VALUE);
+            newChangelog.setSize(sizeValue.getValue());
+        } else if (sizeValue.getMin() != null && sizeValue.getMax() != null) {
+            newChangelog = new HouseblockSizeChangelog();
+            newChangelog.setHouseblock(houseblock);
+            newChangelog.setValueType(ValueType.RANGE);
+            newChangelog.setSizeRange(Range.closed(sizeValue.getMin(), sizeValue.getMax()));
+        }
+
+        HouseblockSizeChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, houseblock, houseblock.getSizes(), newChangelog,
+            oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
+
+        if (newChangelog != null) {
+            repo.persist(newChangelog);
+        }
+
+        if (oldChangelog != null) {
+            repo.persist(oldChangelog);
+            if (oldChangelogAfterUpdate.getStartMilestone() != null) {
+                // it is a current project && it had a non-null changelog before the update
+                oldChangelogAfterUpdate.setHouseblock(houseblock);
+                oldChangelogAfterUpdate.setSize(oldChangelog.getSize());
+                oldChangelogAfterUpdate.setSizeRange(oldChangelog.getSizeRange());
+                oldChangelogAfterUpdate.setValueType(oldChangelog.getValueType());
+                repo.persist(oldChangelogAfterUpdate);
+            }
+        }
+    }
 
     public void updateHouseblockPurpose(VngRepository repo, Project project, Houseblock houseblock, Map<Purpose, Integer> newPurposeMap, UUID loggedInUserUuid, LocalDate updateDate) {
 
@@ -338,6 +374,47 @@ public class HouseblockService {
                     oldChangelogValue.setPurposeChangelog(oldChangelogAfterUpdate);
                     oldChangelogValue.setPurpose(purposeValue.getPurpose());
                     oldChangelogValue.setAmount(purposeValue.getAmount());
+                    repo.persist(oldChangelogValue);
+                }
+            }
+        }
+    }
+
+    public void updateHouseblockGroundPosition(VngRepository repo, Project project, Houseblock houseblock, Map<GroundPosition, Integer> newGroundPositionMap,
+                                               UUID loggedInUserUuid, LocalDate updateDate) {
+
+        HouseblockGroundPositionChangelog oldChangelogAfterUpdate = new HouseblockGroundPositionChangelog();
+        HouseblockGroundPositionChangelog newChangelog = null;
+        if (!newGroundPositionMap.isEmpty()) {
+            newChangelog = new HouseblockGroundPositionChangelog();
+            newChangelog.setHouseblock(houseblock);
+        }
+
+        HouseblockGroundPositionChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, houseblock, houseblock.getGroundPositions(), newChangelog,
+            oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
+
+        if (newChangelog != null) {
+            repo.persist(newChangelog);
+            for (Map.Entry<GroundPosition, Integer> gpMapEntry : newGroundPositionMap.entrySet()) {
+                HouseblockGroundPositionChangelogValue newChangelogValue = new HouseblockGroundPositionChangelogValue();
+                newChangelogValue.setGroundPositionChangelog(newChangelog);
+                newChangelogValue.setGroundPosition(gpMapEntry.getKey());
+                newChangelogValue.setAmount(gpMapEntry.getValue());
+                repo.persist(newChangelogValue);
+            }
+        }
+
+        if (oldChangelog != null) {
+            repo.persist(oldChangelog);
+            if (oldChangelogAfterUpdate.getStartMilestone() != null) {
+                // it is a current project && it had a non-null changelog before the update
+                oldChangelogAfterUpdate.setHouseblock(houseblock);
+                repo.persist(oldChangelogAfterUpdate);
+                for (HouseblockGroundPositionChangelogValue gpValue : oldChangelog.getValues()) {
+                    HouseblockGroundPositionChangelogValue oldChangelogValue = new HouseblockGroundPositionChangelogValue();
+                    oldChangelogValue.setGroundPositionChangelog(oldChangelogAfterUpdate);
+                    oldChangelogValue.setGroundPosition(gpValue.getGroundPosition());
+                    oldChangelogValue.setAmount(gpValue.getAmount());
                     repo.persist(oldChangelogValue);
                 }
             }
