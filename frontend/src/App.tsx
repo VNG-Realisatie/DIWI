@@ -12,7 +12,6 @@ import { NoMatch } from "./pages/NoMatch";
 import * as Paths from "./Paths";
 import { ProjectDetail } from "./pages/ProjectDetail";
 import { ProjectProvider } from "./context/ProjectContext";
-import { ReactComponent as TimeLineImg } from "./assets/temp/timeline.svg";
 import DetailsWithMap from "./components/DetailsWithMap";
 import { PolicyLists } from "./pages/PolicyLists";
 import { DashboardProjects } from "./pages/DashboardProjects";
@@ -29,6 +28,7 @@ import { ProjectsWithHouseBlock } from "./components/project/project-with-house-
 import { Settings } from "./components/admin/Settings";
 import { theme } from "./theme";
 import { dateFormats } from "./localization";
+import { ProjectTimeline } from "./components/project/ProjectTimeline";
 
 function RequiresLogin() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -135,7 +135,7 @@ function App() {
                             element={
                                 <ProjectProvider>
                                     <ProjectDetail>
-                                        <TimeLineImg style={{ width: "100%" }} />
+                                        <ProjectTimeline />
                                     </ProjectDetail>
                                 </ProjectProvider>
                             }

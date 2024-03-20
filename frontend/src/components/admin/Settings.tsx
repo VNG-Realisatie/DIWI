@@ -32,7 +32,7 @@ export const Settings = () => {
             propertyType: selectedPropertyType,
             disabled: !active,
             categories:
-                categories.length > 0
+                categories !== null
                     ? categories.map((c) => {
                           return c;
                       })
@@ -72,7 +72,7 @@ export const Settings = () => {
                 active={active}
                 setActive={setActive}
                 handleSave={handleSave}
-                categories={categories}
+                categories={categories ? categories : []}
                 setCategories={setCategories}
             />
         </Stack>

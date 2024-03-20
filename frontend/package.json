@@ -20,6 +20,7 @@
     "@types/node": "^16.7.13",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
+    "d3": "^7.8.5",
     "autolinker": "^4.0.0",
     "dayjs": "^1.11.9",
     "i18next": "^23.8.1",
@@ -34,6 +35,7 @@
     "react-router-dom": "^6.15.0",
     "react-scripts": "5.0.1",
     "sass": "^1.65.1",
+    "svg": "^0.1.0",
     "source-map-loader": "^5.0.0",
     "swagger-ui-react": "^4.12.0",
     "typescript": "^4.4.2",
@@ -71,6 +73,7 @@
     ]
   },
   "devDependencies": {
+    "@types/d3": "^7.4.3",
     "@types/leaflet": "^1.9.8",
     "@types/react-color": "^3.0.6",
     "@types/swagger-ui-react": "^4.18.3",
@@ -85,7 +88,9 @@
       "node_modules/(?!(react-leaflet|leaflet|leaflet-draw|swagger-ui-react|swagger-client|react-syntax-highlighter)/)"
     ],
     "moduleNameMapper": {
-      "^\\@swagger-api/apidom-reference": "<rootDir>/node_modules/@swagger-api/apidom-reference/dist/apidom-reference.browser.min.js"
+      "^\\@swagger-api/apidom-reference": "<rootDir>/node_modules/@swagger-api/apidom-reference/dist/apidom-reference.browser.min.js",
+      "d3": "<rootDir>/node_modules/d3/dist/d3.min.js",
+      "^d3-(.*)$": "<rootDir>/node_modules/d3-$1/dist/d3-$1.min.js"
     }
   }
 }

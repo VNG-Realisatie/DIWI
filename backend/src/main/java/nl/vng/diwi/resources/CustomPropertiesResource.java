@@ -43,9 +43,9 @@ public class CustomPropertiesResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<CustomPropertyModel> getAllCustomProperties(@QueryParam("objectType") ObjectType objectType) {
+    public List<CustomPropertyModel> getAllCustomProperties(@QueryParam("objectType") ObjectType objectType, @QueryParam("disabled") Boolean disabled) {
 
-        return customPropertiesService.getAllCustomProperties(repo, objectType);
+        return customPropertiesService.getAllCustomProperties(repo, objectType, disabled);
 
     }
 
