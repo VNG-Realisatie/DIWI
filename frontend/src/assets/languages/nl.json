@@ -141,6 +141,11 @@
       "dataExchange": "Data uitwisselen",
       "settings": "Instellingen"
     },
+    "about": {
+      "heading": "Over deze website",
+      "version": "Versie",
+      "deployedOn": "Online sinds"
+    },
     "projects": {
       "title": "Projecten overzicht",
       "map": "Kaart",

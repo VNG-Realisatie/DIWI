@@ -20,6 +20,7 @@ import { ExchangeData } from "./pages/ExchangeData";
 import { ExportProject } from "./pages/ExportProject";
 import { ImportExcel } from "./pages/ImportExcel";
 import { ImportedProjects } from "./pages/ImportedProjects";
+import { About } from "./pages/About";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { Swagger } from "./pages/Swagger";
@@ -164,6 +165,7 @@ function App() {
                         <Route path={Paths.userSettings.path} element={<Settings />} />
                         <Route path={Paths.importExcelProjects.path} element={<ImportedProjects type="Excel" />} />
                         <Route path={Paths.importSquitProjects.path} element={<ImportedProjects type="Squit" />} />
+                        <Route path={Paths.about.path} element={<About />} />
                         <Route path={Paths.swagger.path} element={<Swagger />} />
                         <Route path="*" element={<NoMatch />} />
                     </Route>
