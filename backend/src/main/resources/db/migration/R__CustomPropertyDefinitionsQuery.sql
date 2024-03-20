@@ -3,7 +3,8 @@ DROP FUNCTION IF EXISTS get_customproperty_definitions;
 CREATE
 OR REPLACE FUNCTION get_customproperty_definitions (
   _cp_uuid_ UUID,
-  _cp_object_type_ VARCHAR
+  _cp_object_type_ VARCHAR,
+  _cp_disabled_ BOOL
 )
 	RETURNS TABLE (
         id UUID,
@@ -61,6 +62,14 @@ WHERE
         WHEN _cp_uuid_ IS NOT NULL THEN cp.id = _cp_uuid_
         WHEN _cp_object_type_ IS NOT NULL THEN cpState.eigenschap_object_soort = CAST (_cp_object_type_ AS diwi_testset.maatwerk_object_soort)
         ELSE 1 = 1
+    END
+
+    AND
+
+    CASE
+        WHEN _cp_disabled_ IS NULL THEN 1 = 1
+        WHEN _cp_disabled_ IS TRUE THEN cpState.change_end_date IS NOT NULL
+        WHEN _cp_disabled_ IS FALSE THEN cpState.change_end_date IS NULL
     END
 
 GROUP BY cp.id, cpState.eigenschap_naam, cpState.eigenschap_object_soort, cpState.eigenschap_type, disabled
