@@ -12,6 +12,8 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nonnull;
+
 import io.hypersistence.utils.hibernate.type.range.Range;
 import nl.vng.diwi.dal.entities.PropertyCategoryValue;
 import nl.vng.diwi.dal.entities.PropertyOrdinalValue;
@@ -481,7 +483,7 @@ public class ProjectService {
         }
     }
 
-    public void updateProjectPlanStatus(VngRepository repo, Project project, Set<PlanStatus> newProjectPlanStatuses, UUID loggedInUserUuid,
+    public void updateProjectPlanStatus(VngRepository repo, Project project, @Nonnull Set<PlanStatus> newProjectPlanStatuses, UUID loggedInUserUuid,
             LocalDate updateDate) {
 
         ProjectPlanologischePlanstatusChangelog oldPlanStatusChangelogAfterUpdate = new ProjectPlanologischePlanstatusChangelog();
@@ -524,7 +526,7 @@ public class ProjectService {
         }
     }
 
-    public void updateProjectPlanTypes(VngRepository repo, Project project, Set<PlanType> newProjectPlanTypes, UUID loggedInUserUuid, LocalDate updateDate) {
+    public void updateProjectPlanTypes(VngRepository repo, Project project, @Nonnull Set<PlanType> newProjectPlanTypes, UUID loggedInUserUuid, LocalDate updateDate) {
 
         ProjectPlanTypeChangelog oldPlanTypeChangelogAfterUpdate = new ProjectPlanTypeChangelog();
         ProjectPlanTypeChangelog newPlanTypeChangelog = null;
