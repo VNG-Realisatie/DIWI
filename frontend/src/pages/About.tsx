@@ -2,6 +2,7 @@ import { TableContainer, Table, TableBody, TableRow, TableCell } from "@mui/mate
 import { useTranslation } from "react-i18next";
 import { diwiFetch } from "../utils/requests";
 import { useEffect, useState } from "react";
+import useAlert from "../hooks/useAlert";
 
 type VersionType = {
     hash: string;
@@ -11,6 +12,7 @@ type VersionType = {
 export const About = () => {
     const { t } = useTranslation();
     const [version, setVersion] = useState<VersionType | null>(null);
+    const { setAlert } = useAlert();
 
     const unavailableText = t("generic.noInfoAvailable");
 
@@ -18,7 +20,7 @@ export const About = () => {
         diwiFetch("/version.json")
             .then((res) => {
                 if (!res.ok) {
-                    console.warn("Problem getting version info!");
+                    setAlert("Problem getting version info!", "error");
                     return null;
                 }
                 return res.json();
@@ -33,7 +35,7 @@ export const About = () => {
                     setVersion(null);
                 }
             });
-    }, []);
+    }, [setAlert]);
 
     return (
         <>
