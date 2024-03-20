@@ -1,8 +1,8 @@
-import { Box, Grid, Stack, Tooltip } from "@mui/material";
+import { Box, Grid, Stack, Tooltip, Typography } from "@mui/material";
 import { HouseBlock } from "./project-wizard/house-blocks/types";
 import { GeneralInformationGroup } from "./project-wizard/house-blocks/general-information/GeneralInformationGroup";
 import { MutationInformationGroup } from "./project-wizard/house-blocks/mutation-information/MutationInformationGroup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { OwnershipInformationGroup } from "./project-wizard/house-blocks/ownership-information/OwnershipInformationGroup";
 import { PhysicalAppeareanceGroup } from "./project-wizard/house-blocks/physical-appearence/PhysicalAppeareanceGroup";
 import { PurposeGroup } from "./project-wizard/house-blocks/purpose/PurposeGroup";
@@ -14,6 +14,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import ClearIcon from "@mui/icons-material/Clear";
 import { t } from "i18next";
+import { CustomPropertyType, getCustomPropertiesWithQuery } from "../api/adminSettingServices";
+import { columnTitleStyle } from "./project/project-with-house-block/ProjectWithHouseBlock";
 
 type Props = {
     projectDetailHouseBlock?: HouseBlock;
@@ -25,6 +27,7 @@ type Props = {
 export const BlockHousesForm = ({ projectDetailHouseBlock, editForm, createFormHouseBlock, setCreateFormHouseBlock }: Props) => {
     const [projectForm, setProjectForm] = useState<HouseBlock>(projectDetailHouseBlock ? projectDetailHouseBlock : emptyHouseBlockForm);
     const [edit, setEdit] = useState(false);
+    const [customProperties, setCustomProperties] = useState<CustomPropertyType[]>();
 
     const oldForm = projectDetailHouseBlock && { ...projectDetailHouseBlock };
     const defineProjectState = () => {
@@ -34,6 +37,7 @@ export const BlockHousesForm = ({ projectDetailHouseBlock, editForm, createFormH
             return createFormHouseBlock;
         }
     };
+
     const defineProjectUpdateState = () => {
         if (editForm) {
             return setProjectForm;
@@ -41,6 +45,11 @@ export const BlockHousesForm = ({ projectDetailHouseBlock, editForm, createFormH
             return setCreateFormHouseBlock;
         }
     };
+
+    useEffect(() => {
+        getCustomPropertiesWithQuery("WONINGBLOK").then((customProperties) => setCustomProperties(customProperties));
+    }, []);
+
     return (
         <Box mt={4}>
             {editForm && (
@@ -100,6 +109,18 @@ export const BlockHousesForm = ({ projectDetailHouseBlock, editForm, createFormH
                 <Grid item xs={12} md={4}>
                     <Programming projectForm={defineProjectState()} setProjectForm={defineProjectUpdateState()} edit={edit} editForm={editForm} />
                 </Grid>
+            </Grid>
+            <Grid container spacing={2} alignItems="stretch" mt={0.5}>
+                {customProperties &&
+                    customProperties
+                        .filter((p) => !p.disabled)
+                        .map((cp, i) => {
+                            return (
+                                <Grid item xs={6} md={1} key={i}>
+                                    <Typography sx={columnTitleStyle}>{cp.name}</Typography>
+                                </Grid>
+                            );
+                        })}
             </Grid>
         </Box>
     );

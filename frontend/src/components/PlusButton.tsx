@@ -1,16 +1,18 @@
-import { IconButton, Typography, useTheme } from "@mui/material";
+import { IconButton, Typography } from "@mui/material";
 import Add from "@mui/icons-material/Add";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import { theme } from "../theme";
+import * as Paths from "../Paths";
 
 type PlusButtonProps = {
-    color: string;
+    color: string | undefined;
     link: string | (() => void);
     text: string;
 };
 
-export default function PlusButton({ color, link, text }: PlusButtonProps) {
-    const theme = useTheme();
+function PlusButton({ color, link, text }: PlusButtonProps) {
     const navigate = useNavigate();
     const textWidth = text ? text.length * 8 : 0;
     const buttonRef = useRef<HTMLButtonElement>(null);
@@ -25,13 +27,7 @@ export default function PlusButton({ color, link, text }: PlusButtonProps) {
         }
     }, []);
 
-    const handleButtonClick = () => {
-        if (typeof link === "string") {
-            navigate(link);
-        } else {
-            link();
-        }
-    };
+    const handleButtonClick = () => (typeof link === "string" ? navigate(link) : link());
 
     return (
         <IconButton
@@ -41,12 +37,13 @@ export default function PlusButton({ color, link, text }: PlusButtonProps) {
             onClick={handleButtonClick}
             sx={{
                 position: "absolute",
-                bottom: 50,
-                right: 50,
+                bottom: 20,
+                right: 20,
                 zIndex: 999,
                 borderRadius: "40px",
                 backgroundColor: color,
                 color: theme.palette.common.white,
+                boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.2)",
                 transition: "padding-left 0.3s ease, background-color 0.3s ease",
                 "&:hover, &.PlusButtonHovered": {
                     paddingLeft: `${textWidth + 30}px`,
@@ -82,3 +79,29 @@ export default function PlusButton({ color, link, text }: PlusButtonProps) {
         </IconButton>
     );
 }
+
+export const AddHouseBlockButton: React.FC<{ onClick: () => void }> = ({ onClick }) => {
+    const { t } = useTranslation();
+    const handleClick = () => {
+        onClick();
+    };
+
+    const buttonProps: PlusButtonProps = {
+        color: theme.palette.primary.customLightBlue,
+        link: handleClick,
+        text: t("projectDetail.createNewHouseBlock"),
+    };
+
+    return <PlusButton {...buttonProps} />;
+};
+
+export const AddProjectButton: React.FC = () => {
+    const { t } = useTranslation();
+    const buttonProps: PlusButtonProps = {
+        color: theme.palette.primary.customDarkBlue,
+        link: Paths.projectAdd.path,
+        text: t("projects.createNewProject"),
+    };
+
+    return <PlusButton {...buttonProps} />;
+};
