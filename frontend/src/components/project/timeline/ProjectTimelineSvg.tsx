@@ -11,6 +11,7 @@ import { HouseBlock } from "../../project-wizard/house-blocks/types";
 import { TimelineBar } from "./TimelineBar";
 import { Phases } from "./Phases";
 import { HouseBlocks } from "./HouseBlocks";
+import { TodayLine } from "./TodayLine";
 
 export const ProjectTimelineSvg = ({ timeScaleIndex, width, height }: any) => {
     /* explanation for sizing of/in this element:
@@ -98,10 +99,6 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, width, height }: any) => {
     //Create the horizontal scale and its axis generator.
     const xScale = d3.scaleTime().domain([projectStartDate, projectEndDate]).range([0, chartWidth]);
 
-    // Todayline
-    const today = dayjs();
-    const todayX = xScale(today);
-
     return (
         <Box sx={{ overflow: "scroll" }} width={width} height={height} lineHeight={0}>
             <svg width={svgWidth} height={svgHeight} viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="viz">
@@ -131,7 +128,6 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, width, height }: any) => {
                             textSpacing={textSpacing}
                         />
                     </g>
-                    {/* Documents */}
                     {/* <g className="documents">
                     <rect x="100" y="100" width="50" height="50" fill="#d09c6c" />
                     <rect x="100" y="100" width="50" height="50" fill="#f5d3b3" />
@@ -148,20 +144,14 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, width, height }: any) => {
                         />
                     </g>
 
-                    {/* Nowline */}
-                    <g className="nowline">
-                        {today.isAfter(projectStartDate) && today.isBefore(projectEndDate) && (
-                            <line
-                                x1={todayX}
-                                y1={timelineHeight + spacing.y}
-                                x2={todayX}
-                                y2={chartHeight - spacing.y}
-                                stroke="#333333"
-                                strokeDasharray={3}
-                                strokeWidth={1}
-                            />
-                        )}
-                    </g>
+                    <TodayLine
+                        startDate={projectStartDate}
+                        endDate={projectEndDate}
+                        xScale={xScale}
+                        timelineHeight={timelineHeight}
+                        chartHeight={chartHeight}
+                        spacing={spacing}
+                    />
                 </g>
             </svg>
         </Box>
