@@ -13,7 +13,7 @@ import { Phases } from "./Phases";
 import { HouseBlocks } from "./HouseBlocks";
 import { TodayLine } from "./TodayLine";
 
-export const ProjectTimelineSvg = ({ timeScaleIndex, width, height }: any) => {
+export const ProjectTimelineSvg = ({ timeScaleIndex, showToday, width, height }: any) => {
     /* explanation for sizing of/in this element:
     width and height are outer boundaries of this component in the webpage.
     svgWidth and svgHeight are the dimensions for the svg, including margins so elements are not placed directly on a border.
@@ -148,6 +148,7 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, width, height }: any) => {
                         startDate={projectStartDate}
                         endDate={projectEndDate}
                         xScale={xScale}
+                        showToday={showToday}
                         timelineHeight={timelineHeight}
                         chartHeight={chartHeight}
                         spacing={spacing}

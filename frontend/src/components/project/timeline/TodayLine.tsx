@@ -5,18 +5,19 @@ type TodayLineProps = {
     startDate: Dayjs;
     endDate: Dayjs;
     xScale: ScaleTime<number, number, never>;
+    showToday: boolean;
     timelineHeight: number;
     chartHeight: number;
     spacing: { x: number; y: number };
 };
 
-export const TodayLine = ({ startDate, endDate, xScale, timelineHeight, chartHeight, spacing }: TodayLineProps) => {
+export const TodayLine = ({ startDate, endDate, xScale, showToday, timelineHeight, chartHeight, spacing }: TodayLineProps) => {
     const today = dayjs();
     const todayX = xScale(today);
 
     return (
         <g className="nowline">
-            {today.isAfter(startDate) && today.isBefore(endDate) && (
+            {showToday && today.isAfter(startDate) && today.isBefore(endDate) && (
                 <line
                     x1={todayX}
                     y1={timelineHeight + spacing.y}
