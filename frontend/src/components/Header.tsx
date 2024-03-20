@@ -3,7 +3,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { styled } from "@mui/material/styles";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 
-import { drawerWidth } from "../App";
+import { drawerWidth } from "../theme";
 import { useState } from "react";
 
 import { diwiFetch } from "../utils/requests";

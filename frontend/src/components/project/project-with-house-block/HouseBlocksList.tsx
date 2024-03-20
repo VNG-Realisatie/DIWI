@@ -2,18 +2,16 @@ import { Grid, Accordion, AccordionSummary, AccordionDetails } from "@mui/materi
 import { BlockHousesForm } from "../../BlockHousesForm";
 import { HouseBlock } from "../../project-wizard/house-blocks/types";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import PlusButton from "../../PlusButton";
-import { useTranslation } from "react-i18next";
+import { AddHouseBlockButton } from "../../PlusButton";
 
 type Props = {
     houseBlocks?: HouseBlock[];
     setOpenHouseBlockDialog: (open: boolean) => void;
 };
 export const HouseBlocksList = ({ setOpenHouseBlockDialog, houseBlocks }: Props) => {
-    const { t } = useTranslation();
     return (
         <Grid container my={2}>
-            <PlusButton color="#00A9F3" link={() => setOpenHouseBlockDialog(true)} text={t("projectDetail.createNewHouseBlock")} />
+            <AddHouseBlockButton onClick={() => setOpenHouseBlockDialog(true)} />
             {houseBlocks?.map((hb: HouseBlock, i: number) => {
                 return (
                     <Accordion sx={{ width: "100%" }} key={i}>

@@ -15,7 +15,7 @@ export const Projects = () => {
     const { t } = useTranslation();
 
     return (
-        <Stack direction="column" justifyContent="space-between" position="relative" border="solid 1px #ddd" mb={10}>
+        <Stack direction="column" justifyContent="space-between" position="relative" mb={10}>
             <BreadcrumbBar
                 pageTitle={t("projects.title")}
                 links={[
