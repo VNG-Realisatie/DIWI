@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.hibernate.Session;
 
+import nl.vng.diwi.dal.entities.ProjectRegistryLinkChangelog;
 import nl.vng.diwi.dal.entities.ProjectRegistryLinkChangelogValue;
 
 public class PlotDAO extends AbstractRepository {
@@ -13,15 +14,22 @@ public class PlotDAO extends AbstractRepository {
         super(session);
     }
 
-    public List<ProjectRegistryLinkChangelogValue> getPlots(UUID projectUuid) {
-        return session
-                .createQuery("""
+    public List<ProjectRegistryLinkChangelogValue> getPlots(UUID projectId) {
+        return session.createQuery("""
                 FROM ProjectRegistryLinkChangelogValue v
-                WHERE
-                        v.projectRegistryLinkChangelog.project.id = :projectUuid
-                        AND v.projectRegistryLinkChangelog.changeEndDate is null""",
-                        ProjectRegistryLinkChangelogValue.class)
-                .setParameter("projectUuid", projectUuid)
+                WHERE v.projectRegistryLinkChangelog.project.id = :projectUuid
+                  AND v.projectRegistryLinkChangelog.changeEndDate is null""",
+                ProjectRegistryLinkChangelogValue.class)
+                .setParameter("projectUuid", projectId)
                 .list();
+    }
+
+    public ProjectRegistryLinkChangelog getProjectRegistryLinkChangelog(UUID projectId) {
+        return session.createQuery("""
+                FROM ProjectRegistryLinkChangelog cl
+                WHERE cl.project.id = :projectUuid
+                AND cl.changeEndDate is null""", ProjectRegistryLinkChangelog.class)
+                .setParameter("projectUuid", projectId)
+                .getSingleResult();
     }
 }

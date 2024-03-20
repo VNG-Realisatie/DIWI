@@ -26,4 +26,32 @@ public class PlotModel {
     private Long brkPerceelNummer;
     private String brkSelectie;
     private ObjectNode geoJson;
+
+    public String validate() {
+        if (brkGemeenteCode == null) {
+            return "brkGemeenteCode can not be null";
+        }
+        else if (brkGemeenteCode.isBlank()) {
+            return "brkGemeenteCode can not be blank";
+        }
+        else if (brkSectie == null) {
+            return "brkSectie can not be null";
+        }
+        else if (brkSectie.isBlank()) {
+            return "brkSectie can not be blank";
+        }
+        else if (brkSelectie == null) {
+            return "brkPerceelNummer can not be null";
+        }
+        else if (brkSelectie.isBlank()) {
+            return "brkSelectie can not be blank";
+        }
+        else if (brkPerceelNummer == null) {
+            return "brkPerceelNummer can not be null";
+        }
+        else if (geoJson == null) {
+            return "geoJson can not be null";
+        }
+        return null;
+    }
 }

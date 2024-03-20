@@ -57,6 +57,7 @@ import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.testutil.TestDb;
 
 public class ProjectServiceTest {
+    private static RecursiveComparisonConfiguration ignoreId = RecursiveComparisonConfiguration.builder().withIgnoredFields("id").build();
 
     private static DalFactory dalFactory;
     private static TestDb testDb;
@@ -103,6 +104,7 @@ public class ProjectServiceTest {
 
             startMilestone = createMilestone(repo, project, LocalDate.now().minusDays(10), user);
             endMilestone = createMilestone(repo, project, LocalDate.now().plusDays(10), user);
+            createProjectDurationChangelog(repo, project, startMilestone, endMilestone, user);
 
             transaction.commit();
             repo.getSession().clear();
@@ -349,15 +351,6 @@ public class ProjectServiceTest {
     @Test
     void deleteProject() throws Exception {
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            Milestone startMilestone = createMilestone(repo, project, LocalDate.now().minusDays(10), user);
-            Milestone endMilestone = createMilestone(repo, project, LocalDate.now().plusDays(10), user);
-
-            createProjectDurationChangelog(repo, project, startMilestone, endMilestone, user);
-            transaction.commit();
-            repo.getSession().clear();
-        }
-
-        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             projectService.deleteProject(repo, projectUuid, userUuid);
             transaction.commit();
             repo.getSession().clear();
@@ -414,6 +407,67 @@ public class ProjectServiceTest {
 
             assertThat(plots).usingRecursiveAssertion().isEqualTo(expected);
         }
+    }
+
+    @Test
+    void setPlots() throws Exception {
+
+        ObjectNode geoJson = JsonNodeFactory.instance.objectNode().put("geojson", "ish");
+        String gemeenteCode = "gemeente";
+        long brkPerceelNummer = 1234l;
+        String brkSectie = "sectie";
+        String brkSelectie = "selectie";
+
+        // Create an old and a current changelog already so we can test these are replaced.
+        try (var transaction = repo.beginTransaction()) {
+            var oldChangelog = createPlot(geoJson, gemeenteCode + "old", brkPerceelNummer, brkSectie, brkSelectie);
+            oldChangelog.setChangeEndDate(now);
+            oldChangelog.setChangeUser(user);
+            repo.persist(oldChangelog);
+
+            createPlot(geoJson, gemeenteCode, brkPerceelNummer, brkSectie, brkSelectie);
+
+            transaction.commit();
+            repo.getSession().clear();
+        }
+
+        // Call the endpoints with the new plot
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+            var plots = List.of(
+                    PlotModel.builder()
+                            .brkGemeenteCode(gemeenteCode + "new")
+                            .brkPerceelNummer(brkPerceelNummer)
+                            .brkSectie(brkSectie)
+                            .brkSelectie(brkSelectie)
+                            .geoJson(geoJson)
+                            .build());
+            projectService.setPlots(repo, project.getId(), plots, user.getId());
+
+            transaction.commit();
+            repo.getSession().clear();
+        }
+
+        try (var transaction = repo.beginTransaction()) {
+            var actualCls = repo.getSession()
+                    .createQuery("FROM ProjectRegistryLinkChangelog cl WHERE cl.changeEndDate is null", ProjectRegistryLinkChangelog.class)
+                    .list();
+
+            assertThat(actualCls).hasSize(1);
+
+            List<ProjectRegistryLinkChangelogValue> expected = List.of(ProjectRegistryLinkChangelogValue.builder()
+                    .brkGemeenteCode(gemeenteCode + "new")
+                    .brkPerceelNummer(brkPerceelNummer)
+                    .brkSectie(brkSectie)
+                    .brkSelectie(brkSelectie)
+                    .geoJson(geoJson)
+                    .projectRegistryLinkChangelog(actualCls.get(0))
+                    .build());
+
+            assertThat(actualCls.get(0).getValues())
+                    .usingRecursiveComparison(ignoreId)
+                    .isEqualTo(expected);
+        }
+
     }
 
     private ProjectRegistryLinkChangelog createPlot(ObjectNode geoJson, String gemeenteCode, long brkPerceelNummer, String brkSectie, String brkSelectie) {
@@ -544,10 +598,5 @@ public class ProjectServiceTest {
         }
 
         return planStatusChangelog;
-    }
-
-    private void setStartEndDate(LocalDate today, DatedDataModelSuperClass datedModel) {
-        datedModel.setStartDate(today.plusDays(10));
-        datedModel.setEndDate(today.plusDays(20));
     }
 }
