@@ -27,6 +27,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import nl.vng.diwi.dal.FilterPaginationSorting;
+import nl.vng.diwi.dal.PlotDAO;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.Milestone;
 import nl.vng.diwi.dal.entities.MilestoneState;
@@ -54,6 +55,7 @@ import nl.vng.diwi.dal.entities.enums.ProjectRole;
 import nl.vng.diwi.dal.entities.enums.ValueType;
 import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
 import nl.vng.diwi.models.MilestoneModel;
+import nl.vng.diwi.models.PlotModel;
 import nl.vng.diwi.models.ProjectListModel;
 import nl.vng.diwi.models.ProjectSnapshotModel;
 import nl.vng.diwi.models.superclasses.ProjectCreateSnapshotModel;
@@ -97,6 +99,14 @@ public class ProjectService {
         return repo.getProjectsDAO().getProjectCustomProperties(projectUuid).stream()
             .map(ProjectCustomPropertyModel::new).toList();
 
+    }
+
+    public List<PlotModel> getPlots(VngRepository repo, UUID projectUuid) {
+        return new PlotDAO(repo.getSession())
+                .getPlots(projectUuid)
+                .stream()
+                .map(value -> new PlotModel(value))
+                .toList();
     }
 
     public Project createProject(VngRepository repo, UUID loggedInUserUuid, ProjectCreateSnapshotModel projectData, ZonedDateTime now)

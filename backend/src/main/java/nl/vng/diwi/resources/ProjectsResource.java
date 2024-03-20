@@ -41,6 +41,7 @@ import nl.vng.diwi.models.CustomPropertyModel;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.models.LocationModel;
 import nl.vng.diwi.models.OrganizationModel;
+import nl.vng.diwi.models.PlotModel;
 import nl.vng.diwi.models.PriorityModel;
 import nl.vng.diwi.models.ProjectCustomPropertyModel;
 import nl.vng.diwi.models.ProjectListModel;
@@ -278,6 +279,20 @@ public class ProjectsResource {
         }
 
         return projectService.getProjectSnapshot(repo, projectUuid);
+    }
+
+    @GET
+    @Path("/{id}/plots")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public List<PlotModel> getProjectPlots(@PathParam("id") UUID projectUuid) throws VngNotFoundException {
+        Project project = projectService.getCurrentProject(repo, projectUuid);
+
+        if (project == null) {
+            throw new VngNotFoundException("project not found");
+        }
+
+        return projectService.getPlots(repo, projectUuid);
     }
 
     @POST
