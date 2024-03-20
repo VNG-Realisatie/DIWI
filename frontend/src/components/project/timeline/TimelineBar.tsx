@@ -1,6 +1,9 @@
 import type { Dayjs } from "dayjs";
 import type { ScaleTime } from "d3";
 import dayjs from "dayjs";
+import weekOfYear from "dayjs/plugin/weekOfYear";
+
+dayjs.extend(weekOfYear);
 
 type TimelineBarProps = {
     startDate: Dayjs;
@@ -12,50 +15,54 @@ type TimelineBarProps = {
     textSpacing: { x: number; y: number };
 };
 
-type TimeDataType = {
-    startDate: Dayjs;
-    endDate: Dayjs;
-    label: string;
+type DateRange = {
+    start: Dayjs;
+    end: Dayjs;
 };
 
-const createTimeData = (earliestDate: Dayjs, latestDate: Dayjs, timeScaleIndex: number): Array<TimeDataType> => {
-    // TODO implement timescaleIndex
-    const result = new Array<TimeDataType>();
+const createDateRangeData = (earliestDate: Dayjs, latestDate: Dayjs, increment: "week" | "month" | "year"): Array<DateRange> => {
+    const dateRanges = new Array<DateRange>();
 
-    const createdDate = dayjs(earliestDate);
-    var firstOfMonth = createdDate.startOf("month");
-    var lastOfMonth = createdDate.endOf("month");
-
-    // if start and end are in the same month return it, otherwise make it the first element
-    if (lastOfMonth.isAfter(latestDate)) {
-        return [{ startDate: firstOfMonth, endDate: lastOfMonth, label: firstOfMonth.format("MM-YYYY") }];
+    // add earliestdate and check if increment falls beyond latestDate
+    const earliestEndDate = earliestDate.endOf(increment);
+    if (earliestEndDate.isAfter(latestDate)) {
+        dateRanges.push({ start: earliestDate, end: latestDate });
+        return dateRanges;
     }
-    // keep adding months, checking for the last
-    while (firstOfMonth.isBefore(latestDate)) {
-        result.push({ startDate: firstOfMonth, endDate: lastOfMonth, label: firstOfMonth.format("MM-YYYY") });
-        firstOfMonth = firstOfMonth.add(1, "month");
-        lastOfMonth = lastOfMonth.add(1, "month").endOf("month");
+    // then skip to the first monday AFTER earliestdate
+    dateRanges.push({ start: earliestDate, end: earliestEndDate });
+    let current = dayjs(earliestDate).startOf(increment);
+    current = current.add(1, increment);
+    // keep adding all 'first' mondays before latestdate
+    while (current.isBefore(latestDate) && current.add(1, increment).isBefore(latestDate)) {
+        dateRanges.push({ start: current, end: current.add(1, increment) });
+        current = current.add(1, increment);
     }
-    return result;
+    dateRanges.push({ start: current, end: latestDate });
+    return dateRanges;
 };
 
 export const TimelineBar = ({ startDate, endDate, timeScaleIndex, xScale, size, spacing, textSpacing }: TimelineBarProps) => {
-    const timedata = createTimeData(startDate, endDate, timeScaleIndex);
+    // timescaleindex 1 = smallest scale, timescaleindex 5 = largest scale
+    const increment = (timeScaleIndex === 1 && "year") || (timeScaleIndex === 5 && "week") || "month";
+    const timedata = createDateRangeData(startDate, endDate, increment);
 
     return (
         <>
             <rect x={spacing.x} y={spacing.y} width={size.x - 2 * spacing.x} height={size.y} fill="#111111" />
             {timedata &&
-                timedata.map((d: TimeDataType) => {
-                    const x = xScale(d.startDate) + spacing.x;
+                timedata.map((d: DateRange) => {
+                    const x = xScale(d.start) + spacing.x;
                     const y = spacing.y;
-                    const w = xScale(d.endDate) - xScale(d.startDate) - 2 * spacing.x;
+                    const w = xScale(d.end) - xScale(d.start) - 2 * spacing.x;
                     const h = size.y - 2 * spacing.y;
                     return (
-                        <g key={"timeline block" + d.startDate}>
+                        <g key={"timeline block" + d.start} transform="translate(0,0)">
                             <rect x={x} y={y} width={w} height={h} fill="#d9d9d9" />
                             <text x={x + textSpacing.x} y={y + h - textSpacing.y}>
-                                {d.label}
+                                {increment === "year" && d.start.format("YYYY")}
+                                {increment === "month" && d.start.format("MMM-YYYY") /* TODO add translation for month names? */}
+                                {increment === "week" && d.start.week()}
                             </text>
                         </g>
                     );
