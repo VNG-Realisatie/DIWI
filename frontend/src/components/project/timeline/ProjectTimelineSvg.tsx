@@ -10,6 +10,7 @@ import { components } from "../../../types/schema";
 import { HouseBlock } from "../../project-wizard/house-blocks/types";
 import { TimelineBar } from "./TimelineBar";
 import { Phases } from "./Phases";
+import { HouseBlocks } from "./HouseBlocks";
 
 export const ProjectTimelineSvg = ({ timeScaleIndex, width, height }: any) => {
     /* explanation for sizing of/in this element:
@@ -135,50 +136,16 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, width, height }: any) => {
                     <rect x="100" y="100" width="50" height="50" fill="#d09c6c" />
                     <rect x="100" y="100" width="50" height="50" fill="#f5d3b3" />
                     </g> */}
-
-                    {/* Housebocks */}
-                    <g className="houseblocks">
-                        {/* Title */}
-                        <g className="houseblockTitle">
-                            <rect
-                                x={spacing.x}
-                                y={timelineHeight + phaseTitleHeight + phaseBlockHeight + spacing.y}
-                                width={chartWidth - 2 * spacing.x}
-                                height={houseblockTitleHeight - 2 * spacing.y}
-                                fill="#00A9F3"
-                            />
-                            {/* TODO make based on translation? */}
-                            <text
-                                x={spacing.x + textSpacing.x}
-                                y={timelineHeight + phaseTitleHeight + phaseBlockHeight + houseblockTitleHeight - 2 * spacing.y - textSpacing.y}
-                            >
-                                Houseblocks
-                            </text>
-                        </g>
-                        {/* Blocks */}
-                        <g className="houseblockTrack">
-                            {houseBlockData &&
-                                houseBlockData.map((block, index: number) => {
-                                    const x = xScale(dayjs(block.startDate)) + spacing.x;
-                                    const y =
-                                        timelineHeight +
-                                        phaseTitleHeight +
-                                        phaseBlockHeight +
-                                        houseblockTitleHeight +
-                                        spacing.y +
-                                        index * houseblockTrackHeight;
-                                    const width = xScale(dayjs(block.endDate)) - xScale(dayjs(block.startDate)) - 2 * spacing.x;
-                                    const height = phaseBlockHeight - 2 * spacing.y;
-                                    return (
-                                        <g key={"houseBlock" + block.houseblockId}>
-                                            <rect x={x} y={y} width={width} height={height} fill="#5cc6f5" />
-                                            <text x={x + textSpacing.x} y={y + height - textSpacing.y}>
-                                                {block.houseblockName}
-                                            </text>
-                                        </g>
-                                    );
-                                })}
-                        </g>
+                    <g className="houseblocks" transform={`translate(${0}, ${timelineHeight + phaseTitleHeight + phaseBlockHeight})`}>
+                        <HouseBlocks
+                            houseBlockData={houseBlockData}
+                            xScale={xScale}
+                            titleHeight={houseblockTitleHeight}
+                            blockHeight={houseblockTrackHeight}
+                            chartWidth={chartWidth}
+                            spacing={spacing}
+                            textSpacing={textSpacing}
+                        />
                     </g>
 
                     {/* Nowline */}
