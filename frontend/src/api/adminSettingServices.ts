@@ -1,3 +1,4 @@
+import { ObjectType } from "../types/enums";
 import { components } from "../types/schema";
 import { deleteJson, getJson, postJson, putJson } from "../utils/requests";
 import { API_URI } from "../utils/urls";
@@ -7,6 +8,10 @@ export type CustomPropertyType = components["schemas"]["CustomPropertyModel"];
 
 export async function getCustomProperties(): Promise<Array<CustomPropertyType>> {
     return getJson(`${API_URI}/customproperties`);
+}
+
+export async function getCustomPropertiesWithQuery(query: ObjectType): Promise<Array<CustomPropertyType>> {
+    return getJson(`${API_URI}/customproperties?objectType=${query}`);
 }
 
 export async function getCustomProperty(id: string): Promise<CustomPropertyType> {
