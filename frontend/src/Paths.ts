@@ -40,6 +40,7 @@ export const login = createPathObject(config.baseurl + "rest/auth/login");
 export const loggedIn = createPathObject(config.baseurl + "rest/auth/loggedIn");
 export const logout = createPathObject(config.baseurl + "rest/auth/logout");
 export const home = createPathObject(config.baseurl + "home");
+export const about = createPathObject(config.baseurl + "about");
 
 export const userSettings = createPathObject(config.baseurl + "admin/settings");
 

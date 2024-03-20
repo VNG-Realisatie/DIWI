@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
+set -eux
 
 git pull
 
 docker compose pull
-[ $? -eq 0 ] && docker compose up --build --remove-orphans -d
+
+. ./version.sh
+docker compose up --build --remove-orphans -d
