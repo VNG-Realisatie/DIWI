@@ -62,6 +62,8 @@ public class GenericRepository implements AutoCloseable {
                 ProjectPrioriseringChangelog.class,
                 ProjectPrioriseringValue.class,
                 ProjectPrioriseringValueState.class,
+                ProjectRegistryLinkChangelog.class,
+                ProjectRegistryLinkChangelogValue.class,
                 ProjectState.class,
                 ProjectBooleanCustomPropertyChangelog.class,
                 ProjectNumericCustomPropertyChangelog.class,
