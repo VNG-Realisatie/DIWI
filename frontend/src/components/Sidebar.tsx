@@ -49,7 +49,7 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
                     </Link>
                 ))}
             </List>
-            <List sx={{ ml: 3 }}>
+            {/* <List sx={{ ml: 3 }}>
                 <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>{t("sidebar.dashboards")}</Typography>
 
                 <Link to={Paths.policygoal.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
@@ -65,15 +65,15 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
             </List>
             <List sx={{ ml: 3 }}>
                 <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>{t("sidebar.users")}</Typography>
-            </List>
-            <List sx={{ ml: 3 }}>
+            </List> */}
+            {/* <List sx={{ ml: 3 }}>
                 <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>{t("sidebar.dataExchange")}</Typography>
                 <Link to={Paths.exchangedata.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
                     <ListItemButton>
                         <ListItemText primary="Data uitwisselen" />
                     </ListItemButton>
                 </Link>
-            </List>
+            </List> */}
             <List sx={{ ml: 3 }}>
                 <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>{t("sidebar.settings")}</Typography>
                 <Link to={Paths.userSettings.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>

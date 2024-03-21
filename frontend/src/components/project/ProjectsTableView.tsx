@@ -19,9 +19,9 @@ import { useTranslation } from "react-i18next";
 import { PlanTypeCell } from "../table/PlanTypeCell";
 import { MunicipalityRoleCell } from "../table/MunicipalityRoleCell";
 import { PlanningPlanStatusCell } from "../table/PlanningPlanStatusCell";
-import { WijkCell } from "../table/WijkCell";
-import { BuurtCell } from "../table/NeighbourhoodCell";
-import { MunicipalityCell } from "../table/MunicipalityCell";
+// import { WijkCell } from "../table/WijkCell";
+// import { BuurtCell } from "../table/NeighbourhoodCell";
+// import { MunicipalityCell } from "../table/MunicipalityCell";
 import { confidentialityLevelOptions, planTypeOptions, projectPhaseOptions } from "../table/constants";
 import { OrganizationUserAvatars } from "../OrganizationUserAvatars";
 import ProjectContext from "../../context/ProjectContext";
@@ -59,11 +59,11 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
 
     const [selectedRows, setSelectedRows] = useState<any[]>([]);
     const [selectedPlanTypes, setSelectedPlanTypes] = useState<SelectedOptionWithId[]>([]);
-    const [selectedMunicipality, setSelectedMunicipality] = useState<SelectedOptionWithId[]>([]);
+    // const [selectedMunicipality, setSelectedMunicipality] = useState<SelectedOptionWithId[]>([]);
     const [selectedMunicipalityRole, setSelectedMunicipalityRole] = useState<SelectedOptionWithId[]>([]);
     const [selectedPlanStatus, setSelectedPlanStatus] = useState<SelectedOptionWithId[]>([]);
-    const [selectedWijk, setSelectedWijk] = useState<SelectedOptionWithId[]>([]);
-    const [selectedBuurt, setSelectedBuurt] = useState<SelectedOptionWithId[]>([]);
+    // const [selectedWijk, setSelectedWijk] = useState<SelectedOptionWithId[]>([]);
+    // const [selectedBuurt, setSelectedBuurt] = useState<SelectedOptionWithId[]>([]);
     const [showDialog, setShowDialog] = useState(false);
     const [filterModel, setFilterModel] = useState<GridFilterModel>();
 
@@ -126,47 +126,47 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         //Add update endpoint later
     };
 
-    const handleMunicipalityChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
-        const existingRecordIndex = selectedMunicipality.findIndex((item) => item.id === id);
+    // const handleMunicipalityChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
+    //     const existingRecordIndex = selectedMunicipality.findIndex((item) => item.id === id);
 
-        if (existingRecordIndex !== -1) {
-            const updateMunicipality = [...selectedMunicipality];
-            updateMunicipality[existingRecordIndex] = { id, option: values };
-            setSelectedMunicipality(updateMunicipality);
-        } else {
-            // If not exists, add a new record
-            setSelectedMunicipality([...selectedMunicipality, { id, option: values }]);
-        }
-        //Add update endpoint later
-    };
+    //     if (existingRecordIndex !== -1) {
+    //         const updateMunicipality = [...selectedMunicipality];
+    //         updateMunicipality[existingRecordIndex] = { id, option: values };
+    //         setSelectedMunicipality(updateMunicipality);
+    //     } else {
+    //         // If not exists, add a new record
+    //         setSelectedMunicipality([...selectedMunicipality, { id, option: values }]);
+    //     }
+    //     //Add update endpoint later
+    // };
 
-    const handleWijkChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
-        const existingRecordIndex = selectedWijk.findIndex((item) => item.id === id);
+    // const handleWijkChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
+    //     const existingRecordIndex = selectedWijk.findIndex((item) => item.id === id);
 
-        if (existingRecordIndex !== -1) {
-            const updateWijk = [...selectedWijk];
-            updateWijk[existingRecordIndex] = { id, option: values };
-            setSelectedWijk(updateWijk);
-        } else {
-            // If not exists, add a new record
-            setSelectedWijk([...selectedWijk, { id, option: values }]);
-        }
-        //Add update endpoint later
-    };
+    //     if (existingRecordIndex !== -1) {
+    //         const updateWijk = [...selectedWijk];
+    //         updateWijk[existingRecordIndex] = { id, option: values };
+    //         setSelectedWijk(updateWijk);
+    //     } else {
+    //         // If not exists, add a new record
+    //         setSelectedWijk([...selectedWijk, { id, option: values }]);
+    //     }
+    //     //Add update endpoint later
+    // };
 
-    const handleBuurtChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
-        const existingRecordIndex = selectedBuurt.findIndex((item) => item.id === id);
+    // const handleBuurtChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
+    //     const existingRecordIndex = selectedBuurt.findIndex((item) => item.id === id);
 
-        if (existingRecordIndex !== -1) {
-            const updateBuurt = [...selectedBuurt];
-            updateBuurt[existingRecordIndex] = { id, option: values };
-            setSelectedBuurt(updateBuurt);
-        } else {
-            // If not exists, add a new record
-            setSelectedBuurt([...selectedBuurt, { id, option: values }]);
-        }
-        //Add update endpoint later
-    };
+    //     if (existingRecordIndex !== -1) {
+    //         const updateBuurt = [...selectedBuurt];
+    //         updateBuurt[existingRecordIndex] = { id, option: values };
+    //         setSelectedBuurt(updateBuurt);
+    //     } else {
+    //         // If not exists, add a new record
+    //         setSelectedBuurt([...selectedBuurt, { id, option: values }]);
+    //     }
+    //     //Add update endpoint later
+    // };
 
     const createErrorReport = (params: GridPreProcessEditCellProps) => {
         const hasError = params.props.value.length < 3;
@@ -311,35 +311,35 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 return <PlanningPlanStatusCell cellValues={cellValues} selectedPlanStatus={selectedPlanStatus} handleStatusChange={handleStatusChange} />;
             },
         },
-        {
-            field: "municipality",
-            headerName: t("projects.tableColumns.municipality"),
-            width: 320,
-            renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                return (
-                    <MunicipalityCell cellValues={cellValues} selectedMunicipality={selectedMunicipality} handleMunicipalityChange={handleMunicipalityChange} />
-                );
-            },
-            preProcessEditCellProps: createErrorReport,
-        },
-        {
-            field: "wijk",
-            headerName: t("projects.tableColumns.wijk"),
-            width: 320,
-            renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                return <WijkCell cellValues={cellValues} selectedWijk={selectedWijk} handleWijkChange={handleWijkChange} />;
-            },
-            preProcessEditCellProps: createErrorReport,
-        },
-        {
-            field: "buurt",
-            headerName: t("projects.tableColumns.neighbourhood"),
-            width: 320,
-            renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                return <BuurtCell cellValues={cellValues} selectedNeighbourhood={selectedBuurt} handleNeighbourhoodChange={handleBuurtChange} />;
-            },
-            preProcessEditCellProps: createErrorReport,
-        },
+        // {
+        //     field: "municipality",
+        //     headerName: t("projects.tableColumns.municipality"),
+        //     width: 320,
+        //     renderCell: (cellValues: GridRenderCellParams<Project>) => {
+        //         return (
+        //             <MunicipalityCell cellValues={cellValues} selectedMunicipality={selectedMunicipality} handleMunicipalityChange={handleMunicipalityChange} />
+        //         );
+        //     },
+        //     preProcessEditCellProps: createErrorReport,
+        // },
+        // {
+        //     field: "wijk",
+        //     headerName: t("projects.tableColumns.wijk"),
+        //     width: 320,
+        //     renderCell: (cellValues: GridRenderCellParams<Project>) => {
+        //         return <WijkCell cellValues={cellValues} selectedWijk={selectedWijk} handleWijkChange={handleWijkChange} />;
+        //     },
+        //     preProcessEditCellProps: createErrorReport,
+        // },
+        // {
+        //     field: "buurt",
+        //     headerName: t("projects.tableColumns.neighbourhood"),
+        //     width: 320,
+        //     renderCell: (cellValues: GridRenderCellParams<Project>) => {
+        //         return <BuurtCell cellValues={cellValues} selectedNeighbourhood={selectedBuurt} handleNeighbourhoodChange={handleBuurtChange} />;
+        //     },
+        //     preProcessEditCellProps: createErrorReport,
+        // },
     ];
 
     const handleFilterModelChange = (newModel: GridFilterModel, details: GridCallbackDetails) => {

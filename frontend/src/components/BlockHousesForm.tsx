@@ -1,4 +1,4 @@
-import { Box, Grid, Stack, Tooltip, Typography } from "@mui/material";
+import { Box, Grid, Stack, Tooltip } from "@mui/material";
 import { HouseBlock } from "./project-wizard/house-blocks/types";
 import { GeneralInformationGroup } from "./project-wizard/house-blocks/general-information/GeneralInformationGroup";
 import { MutationInformationGroup } from "./project-wizard/house-blocks/mutation-information/MutationInformationGroup";
@@ -29,7 +29,6 @@ type Props = {
 export const BlockHousesForm = ({ projectDetailHouseBlock, editForm, createFormHouseBlock, setCreateFormHouseBlock }: Props) => {
     const [projectForm, setProjectForm] = useState<HouseBlock>(projectDetailHouseBlock ? projectDetailHouseBlock : emptyHouseBlockForm);
     const [edit, setEdit] = useState(false);
-    const [customProperties, setCustomProperties] = useState<CustomPropertyType[]>();
 
     const { setAlert } = useContext(AlertContext);
 
@@ -124,16 +123,9 @@ export const BlockHousesForm = ({ projectDetailHouseBlock, editForm, createFormH
                 </Grid>
             </Grid>
             <Grid container spacing={2} alignItems="stretch" mt={0.5}>
-                {customProperties &&
-                    customProperties
-                        .filter((p) => !p.disabled)
-                        .map((cp, i) => {
-                            return (
-                                <Grid item xs={6} md={1} key={i}>
-                                    <Typography sx={columnTitleStyle}>{cp.name}</Typography>
-                                </Grid>
-                            );
-                        })}
+                <Grid item xs={12}>
+                    <CustomPropertiesGroup />
+                </Grid>
             </Grid>
         </Box>
     );

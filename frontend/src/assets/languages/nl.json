@@ -270,6 +270,9 @@
         }
       }
     },
+    "customProperties": {
+      "title": "Maatwerk eigenschappen"
+    },
     "projectPhase": "Project Fase",
     "planType": "Plan Type",
     "totalValue": "Aantal",
