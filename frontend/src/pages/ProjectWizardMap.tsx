@@ -5,8 +5,6 @@ import WizardLayout from "../components/project-wizard/WizardLayout";
 import usePlotSelector from "../hooks/usePlotSelector";
 
 export const ProjectWizardMap = () => {
-    // const [project, setProject] = useState<Project | null>(null);
-
     const { projectId } = useParams();
     const navigate = useNavigate();
     const id = useId();
