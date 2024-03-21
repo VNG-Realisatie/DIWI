@@ -3,7 +3,7 @@ import { Map, View } from "ol";
 import GeoJSON from "ol/format/GeoJSON.js";
 import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
-import { OSM, Vector as VectorSource } from "ol/source";
+import { OSM, TileWMS, Vector as VectorSource } from "ol/source";
 
 import ClearIcon from "@mui/icons-material/Clear";
 import SaveIcon from "@mui/icons-material/Save";
@@ -154,6 +154,13 @@ const ProjectPlotSelector = () => {
                 source: new OSM(),
             });
 
+            const kadasterLayers = new TileLayer({
+                source: new TileWMS({
+                    url: "https://service.pdok.nl/kadaster/kadastralekaart/wms/v5_0",
+                    params: { layers: "Kadastralekaart", minZoom: 17, maxNativeZoom: 22, maxZoom: 23, transparent: true },
+                }),
+            });
+
             const source = new VectorSource();
             const selectedPlotLayer = new VectorLayer({ source });
 
@@ -161,7 +168,7 @@ const ProjectPlotSelector = () => {
 
             const newMap = new Map({
                 target: id,
-                layers: [osmLayer, selectedPlotLayer],
+                layers: [osmLayer, kadasterLayers, selectedPlotLayer],
                 view: new View({
                     center: [521407.57221923344, 6824704.512308201],
                     zoom: 16,
