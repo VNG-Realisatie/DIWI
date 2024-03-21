@@ -23,7 +23,7 @@ const GrossPlanEditInput = ({ houseBlockGrossPlan, updateHouseBlockGrossPlan }: 
             id="grossPlan"
             size="small"
             variant="outlined"
-            value={houseBlockGrossPlan ? houseBlockGrossPlan : null}
+            value={houseBlockGrossPlan !== null ? houseBlockGrossPlan : ""}
             onChange={(e) => updateHouseBlockGrossPlan(+e.target.value)}
         />
     );

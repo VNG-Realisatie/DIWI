@@ -27,7 +27,7 @@ const SingleNumberEditInput = ({ value, property, update }: SingleNumberEdit) =>
             id={value ? value : ""}
             size="small"
             variant="outlined"
-            value={property ? property : null}
+            value={property !== null ? property : ""}
             onChange={(e) => update(+e.target.value)}
         />
     );

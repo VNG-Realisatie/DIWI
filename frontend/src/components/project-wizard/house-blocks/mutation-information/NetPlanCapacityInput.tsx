@@ -25,7 +25,7 @@ const NetPlanEditInput = ({ houseBlockNetPlan, updateHouseBlockNetPlan }: NetPla
             id="grossPlan"
             size="small"
             variant="outlined"
-            value={houseBlockNetPlan ? houseBlockNetPlan : null}
+            value={houseBlockNetPlan !== null ? houseBlockNetPlan : ""}
             onChange={(e) => updateHouseBlockNetPlan(+e.target.value)}
         />
     );

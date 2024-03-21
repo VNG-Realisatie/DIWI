@@ -47,7 +47,7 @@ const OwnershipAmountInput = ({ handleInputChange, ownership, index }: Ownership
             type="number"
             required
             fullWidth
-            value={ownership.amount}
+            value={ownership.amount !== null ? ownership.amount : ""}
             onChange={(e) => handleInputChange(index, { ...ownership, amount: parseInt(e.target.value) })}
         />
     );
@@ -59,7 +59,7 @@ const OwnershipValueInput = ({ handleInputChange, ownership, index }: OwnershipP
             label="Value"
             type="number"
             fullWidth
-            value={ownership.value.value}
+            value={ownership.value.value !== null ? ownership.value.value : ""}
             onChange={(e) => handleInputChange(index, { ...ownership, value: { min: null, max: null, value: parseInt(e.target.value) } })}
         />
     );
@@ -72,7 +72,7 @@ const OwnershipRentalValueInput = ({ handleInputChange, ownership, index }: Owne
             label="RentalValue"
             type="number"
             fullWidth
-            value={ownership.rentalValue.value}
+            value={ownership.rentalValue.value !== null ? ownership.rentalValue.value : ""}
             onChange={(e) => handleInputChange(index, { ...ownership, rentalValue: { min: null, max: null, value: parseInt(e.target.value) } })}
         />
     );
