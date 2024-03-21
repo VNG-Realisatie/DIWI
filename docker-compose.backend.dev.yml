@@ -1,5 +1,3 @@
-version: "3"
-
 x-environment: &common
   KEYCLOAK_PORT: ${KEYCLOAK_PORT:-1780}
   FRONTEND_PORT: ${FRONTEND_PORT:-3000}
