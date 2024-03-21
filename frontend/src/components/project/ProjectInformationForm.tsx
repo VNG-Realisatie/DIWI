@@ -78,7 +78,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         id="projectname"
                         size="small"
                         variant="outlined"
-                        value={createProjectForm ? createProjectForm.projectName : ""}
+                        value={createProjectForm?.projectName ?? ""}
                         onChange={(e) => {
                             setCreateProjectForm({
                                 ...createProjectForm,
@@ -100,7 +100,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         labelId="plantype"
                         id="plan-type-checkbox"
                         multiple
-                        value={createProjectForm?.planType ? createProjectForm?.planType : []}
+                        value={createProjectForm?.planType ?? []}
                         onChange={handlePlanTypeChange}
                         input={<OutlinedInput />}
                         renderValue={(selected) => selected.join(", ")}
@@ -157,7 +157,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         id="priority-select"
                         size="small"
                         fullWidth
-                        options={priorityOptionList ? priorityOptionList : []}
+                        options={priorityOptionList ?? []}
                         getOptionLabel={(option) => option.name}
                         value={createProjectForm?.priority?.value}
                         filterSelectedOptions
@@ -180,7 +180,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         size="small"
                         labelId="projectPhase"
                         id="project-phase-select"
-                        value={createProjectForm?.projectPhase}
+                        value={createProjectForm?.projectPhase ?? ""}
                         onChange={(e) =>
                             setCreateProjectForm({
                                 ...createProjectForm,
@@ -204,7 +204,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         size="small"
                         multiple
                         id="tags-outlined"
-                        options={municipalityRolesOptions ? municipalityRolesOptions : []}
+                        options={municipalityRolesOptions ?? []}
                         getOptionLabel={(option) => option.name}
                         value={createProjectForm?.municipalityRole}
                         filterSelectedOptions
@@ -225,7 +225,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         labelId="projectLeader"
                         size="small"
                         id="project-leader"
-                        value={createProjectForm ? createProjectForm.projectLeaders : ""}
+                        value={createProjectForm?.projectLeaders ?? ""}
                         label={t("createProject.informationForm.projectLeader")}
                         onChange={(
                             e, //TODO later
@@ -251,7 +251,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         labelId="confidentialityLevel"
                         size="small"
                         id="confidentiality-level-select"
-                        value={createProjectForm?.confidentialityLevel}
+                        value={createProjectForm?.confidentialityLevel ?? ""}
                         onChange={(e) =>
                             setCreateProjectForm({
                                 ...createProjectForm,
@@ -278,7 +278,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         id="plan-status-checkbox"
                         sx={{ maxWidth: "538px" }}
                         multiple
-                        value={createProjectForm?.planningPlanStatus ? createProjectForm?.planningPlanStatus : []}
+                        value={createProjectForm?.planningPlanStatus ?? []}
                         onChange={handlePlanStatusChange}
                         input={<OutlinedInput />}
                         renderValue={(selected) => selected.join(", ")}
@@ -301,7 +301,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         labelId="leader"
                         id="owner"
                         size="small"
-                        value={createProjectForm ? createProjectForm.projectOwners : ""}
+                        value={createProjectForm?.projectOwners ?? ""}
                         label={t("createProject.informationForm.owner")}
                         onChange={(e) => {
                             //todo later
