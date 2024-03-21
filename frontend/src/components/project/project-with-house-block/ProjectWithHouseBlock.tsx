@@ -319,7 +319,7 @@ export const ProjectsWithHouseBlock = () => {
                         </Grid>
                     </Grid>
                     <Grid container>
-                        <Grid item xs={12} md={1.5}>
+                        <Grid item xs={12} md={1.1}>
                             <Typography sx={columnTitleStyle}>{t("projects.tableColumns.startDate")}</Typography>
                             <DateDisplayEditor
                                 projectEditable={projectEditable}
@@ -327,7 +327,7 @@ export const ProjectsWithHouseBlock = () => {
                                 onChange={handleStartDateChange}
                             />
                         </Grid>
-                        <Grid item xs={12} md={1.5}>
+                        <Grid item xs={12} md={1.1}>
                             <Typography sx={columnTitleStyle}>{t("projects.tableColumns.endDate")}</Typography>
                             <DateDisplayEditor
                                 projectEditable={projectEditable}
@@ -335,7 +335,7 @@ export const ProjectsWithHouseBlock = () => {
                                 onChange={handleEndDateChange}
                             />
                         </Grid>
-                        <Grid item xs={12} md={1}>
+                        <Grid item xs={12} md={1.8}>
                             <Typography sx={columnTitleStyle}>{t("projects.tableColumns.priority")}</Typography>
 
                             {!projectEditable ? (
