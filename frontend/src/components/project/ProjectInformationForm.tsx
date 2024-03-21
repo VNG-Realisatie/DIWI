@@ -121,7 +121,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         slotProps={{
                             textField: { size: "small" },
                         }}
-                        value={createProjectForm?.startDate}
+                        value={createProjectForm?.startDate ?? null}
                         onChange={(newValue: Dayjs | null) =>
                             setCreateProjectForm({
                                 ...createProjectForm,
@@ -139,7 +139,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         slotProps={{
                             textField: { size: "small" },
                         }}
-                        value={createProjectForm?.endDate}
+                        value={createProjectForm?.endDate ?? null}
                         onChange={(newValue: Dayjs | null) =>
                             setCreateProjectForm({
                                 ...createProjectForm,
