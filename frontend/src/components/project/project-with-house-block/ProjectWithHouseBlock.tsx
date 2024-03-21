@@ -33,6 +33,7 @@ import { CreateHouseBlockDialog } from "./CreateHouseBlockDialog";
 import { HouseBlocksList } from "./HouseBlocksList";
 import { emptyHouseBlockForm } from "../../project-wizard/house-blocks/constants";
 import CustomPropertyWidget from "../../CustomPropertyWidget";
+import { getCustomPropertyValues, putCustomPropertyValues } from "../../../api/adminSettingServices";
 
 export const columnTitleStyle = {
     border: "solid 1px #ddd",
@@ -76,12 +77,29 @@ export const ProjectsWithHouseBlock = () => {
     const [selectedWijk, setSelectedWijk] = useState<SelectModel[]>([]);
     const [projectPriority, setProjectPriority] = useState<SelectModel | null>();
     const [houseBlocks, setHouseBlocks] = useState<HouseBlock[]>();
+    const [customValues, setCustomValues] = useState<
+        { customPropertyId: string; textValue?: string | null; numericValue?: number | null; booleanValue?: boolean | null }[]
+    >([]);
+    //to be modified
 
     const { setAlert } = useContext(AlertContext);
 
     const [openHouseBlockDialog, setOpenHouseBlockDialog] = useState(false);
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const [createFormHouseBlock, setCreateFormHouseBlock] = useState<HouseBlock>(emptyHouseBlockForm);
+
+    useEffect(() => {
+        const fetchCustomPropertyValues = async () => {
+            try {
+                const values = await getCustomPropertyValues(selectedProject?.projectId as string);
+                setCustomValues(values);
+            } catch (error) {
+                console.error("Error fetching custom property values:", error);
+            }
+        };
+
+        fetchCustomPropertyValues();
+    }, []);
     const handleStartDateChange = (newValue: Dayjs | null) => {
         if (newValue) {
             const startDate = newValue.endOf("day");
@@ -222,12 +240,18 @@ export const ProjectsWithHouseBlock = () => {
         wijk: selectedWijk,
         buurt: selectedNeighbourhood,
     };
+    const handleCustomPropertiesSave = () => {
+        customValues.forEach((value) => {
+            putCustomPropertyValues(selectedProject?.projectId as string, value);
+        });
+    };
 
     const handleProjectSave = () => {
         updateProjects(updatedProjectForm)
             .then(() => {
                 setProjectEditable(false);
                 updateProject();
+                handleCustomPropertiesSave();
             })
             .catch((error) => {
                 setAlert(error.message, "error");
@@ -238,6 +262,8 @@ export const ProjectsWithHouseBlock = () => {
     useEffect(() => {
         id && getProjectHouseBlocks(id).then((res) => setHouseBlocks(res));
     }, [id]);
+
+    console.log(customValues);
 
     return (
         <Stack my={1} p={1} mb={10}>
@@ -456,7 +482,7 @@ export const ProjectsWithHouseBlock = () => {
                     </Grid>
                 </Grid>
                 {/*List Custom Properties */}
-                <CustomPropertyWidget />
+                <CustomPropertyWidget projectEditable={projectEditable} customValues={customValues} setCustomValues={setCustomValues} />
                 {/* List huizen blok cards */}
                 <HouseBlocksList houseBlocks={houseBlocks} setOpenHouseBlockDialog={setOpenHouseBlockDialog} />
                 {openColorDialog && (
