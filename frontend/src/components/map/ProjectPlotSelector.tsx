@@ -6,16 +6,9 @@ import { OSM, Vector as VectorSource } from "ol/source";
 import GeoJSON from "ol/format/GeoJSON.js";
 
 import queryString from "query-string";
-import { useEffect, useId, useRef, useState } from "react";
-import { dummyData } from "./dummy";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 
-// type Props = {
-//     height: string;
-//     width: string;
-//     mapData: Marker[];
-//     plusButton?: boolean;
-// };
-type LayerType = {
+type PlotGeoJSON = {
     type: string;
     features: [
         {
@@ -66,57 +59,19 @@ type Props = {
 };
 
 const ProjectPlotSelector = ({ height, width, plusButton }: Props) => {
-    const mapRef = useRef<Map>();
     const id = useId();
-    const [selectedPlot, setSelectedPlot] = useState<LayerType>();
-    const [selectedPlots, setSelectedPlots] = useState<LayerType[]>([]);
+
+    const [map, setMap] = useState<Map>();
+    const [selectedPlotLayerSource, setSelectedPlotLayerSource] = useState<VectorSource>();
+    const [selectedPlots, setSelectedPlots] = useState<PlotGeoJSON[]>([]);
 
     // fetchStuff();
-
-    useEffect(() => {
-        if (mapRef.current) {
-            return;
-        }
-
-        const raster = new TileLayer({
-            source: new OSM(),
-        });
-
-        const source = new VectorSource({ wrapX: false });
-
-        const vector = new VectorLayer({
-            source: source,
-        });
-
-        const map = new Map({
-            target: id,
-            layers: [raster, vector],
-            // target: "map",
-            view: new View({
-                center: [521407.57221923344, 6824704.512308201],
-                zoom: 16,
-            }),
-        });
-        //This will come from backend
-        dummyData.map((d) => {
-            return map.addLayer(
-                new VectorLayer({
-                    source: new VectorSource({
-                        features: new GeoJSON().readFeatures(d),
-                    }),
-                }),
-            );
-        });
-
-        map.addEventListener("click", (e) => {
-            // console.log(e);
+    const handleClick = useCallback(
+        (e: any) => {
             // @ts-ignore
             const loc = e.coordinate;
-            // console.log(loc);
-
             const bboxSize = 1;
             const bbox = `${loc[0] - bboxSize},${loc[1] - bboxSize},${loc[0] + bboxSize},${loc[1] + bboxSize}`;
-            // console.log(bbox);
             const url = queryString.stringifyUrl({
                 url: baseUrlKadasterWms,
                 query: {
@@ -137,28 +92,64 @@ const ProjectPlotSelector = ({ height, width, plusButton }: Props) => {
 
             fetch(url)
                 .then((res) => res.json())
-                .then((result) => {
-                    setSelectedPlot(result);
-                    map.addLayer(
-                        new VectorLayer({
-                            source: new VectorSource({
-                                features: new GeoJSON().readFeatures(result),
-                            }),
-                        }),
-                    );
+                .then((result): void => {
+                    const newSelectedPlots = [...selectedPlots, result];
+                    console.log("new selected plots:", newSelectedPlots);
+                    setSelectedPlots(newSelectedPlots);
                 });
-        });
-        mapRef.current = map;
-    }, [id, selectedPlots]);
+        },
+        [selectedPlots],
+    );
+
     useEffect(() => {
-        const filteredPlots: any = selectedPlots.filter((sp: any) => {
-            return sp?.features[0].id !== selectedPlot?.features[0].id;
+        if (!selectedPlotLayerSource) return;
+
+        selectedPlotLayerSource.clear();
+        for (const selectedPlot of selectedPlots) {
+            const geojson = new GeoJSON().readFeatures(selectedPlot);
+            selectedPlotLayerSource.addFeatures(geojson);
+        }
+    }, [selectedPlotLayerSource, selectedPlots]);
+
+    useEffect(() => {
+        if (!map) return;
+
+        map.addEventListener("click", handleClick);
+        return () => {
+            map.removeEventListener("click", handleClick);
+        };
+    }, [handleClick, map]);
+
+    useEffect(() => {
+        const osmLayer = new TileLayer({
+            source: new OSM(),
         });
-        selectedPlot && setSelectedPlots(filteredPlots ? [...filteredPlots, selectedPlot] : [selectedPlot]);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedPlot]);
-    //This will update backend later
-    console.log(selectedPlot);
+
+        const source = new VectorSource();
+        const selectedPlotLayer = new VectorLayer({ source });
+
+        setSelectedPlotLayerSource(source);
+
+        const newMap = new Map({
+            target: id,
+            layers: [osmLayer, selectedPlotLayer],
+            view: new View({
+                center: [521407.57221923344, 6824704.512308201],
+                zoom: 16,
+            }),
+        });
+        setMap(newMap);
+        return () => {
+            console.log("clear!");
+            newMap.dispose();
+            // mapRef.current = undefined;
+            const mapElement = document.getElementById(id);
+            if (mapElement) {
+                mapElement.innerHTML = "";
+            }
+        };
+    }, [id]);
+
     return (
         <div id={id} style={{ width, height }}>
             {/* {plusButton && <PlusButton color="#002C64" link={Paths.projectAdd.path} text={t("projects.createNewProject")} />} */}
