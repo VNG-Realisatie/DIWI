@@ -10,6 +10,55 @@ export type ProjectCreate = components["schemas"]["ProjectCreateSnapshotModel"];
 export type ProjectUpdate = components["schemas"]["ProjectUpdateModel"];
 export type SelectModel = components["schemas"]["SelectModel"];
 
+export type PlotGeoJSON = {
+    type: string;
+    features: [
+        {
+            id: string;
+            type: string;
+            bbox: number[];
+            geometry: {
+                type: string;
+                coordinates: number[][][];
+            };
+            properties: {
+                AKRKadastraleGemeenteCodeCode: string;
+                AKRKadastraleGemeenteCodeWaarde: string;
+                beginGeldigheid: string;
+                identificatieLokaalID: string;
+                identificatieNamespace: string;
+                kadastraleGemeenteCode: string;
+                kadastraleGemeenteWaarde: string;
+                kadastraleGrootteWaarde: string;
+                perceelnummer: string;
+                perceelnummerPlaatscoordinaatX: string;
+                perceelnummerPlaatscoordinaatY: string;
+                perceelnummerRotatie: string;
+                perceelnummerVerschuivingDeltaX: string;
+                perceelnummerVerschuivingDeltaY: string;
+                sectie: string;
+                soortGrootteCode: string;
+                soortGrootteWaarde: string;
+                statusHistorieCode: string;
+                statusHistorieWaarde: string;
+                tijdstipRegistratie: string;
+                volgnummer: string;
+            };
+        },
+    ];
+    crs: {
+        properties: {
+            name: string;
+        };
+        type: string;
+    };
+};
+
+// The generated plot model doesn't work as the geojson definition is not correct.
+// Replace by PlotGeoJSON for now.
+type OgPlot = components["schemas"]["PlotModel"];
+export type Plot = Pick<OgPlot, Exclude<keyof OgPlot, "geoJson">> & { geoJson: PlotGeoJSON };
+
 export async function getProjects(pageNumber: number, pageSize: number): Promise<Array<Project>> {
     return getJson(`${API_URI}/projects/table?pageNumber=${pageNumber}&pageSize=${pageSize}`);
 }
@@ -44,4 +93,12 @@ export async function addHouseBlock(newData: HouseBlock): Promise<HouseBlock> {
 
 export async function updateHouseBlock(newData: HouseBlock): Promise<HouseBlock> {
     return putJson(`${API_URI}/houseblock/update`, newData);
+}
+
+export async function getProjectPlots(id: string): Promise<Plot[]> {
+    return getJson(`${API_URI}/projects/${id}/plots`);
+}
+
+export async function updateProjectPlots(id: string, plots: Plot[]): Promise<void> {
+    return postJson(`${API_URI}/projects/${id}/plots`, plots);
 }
