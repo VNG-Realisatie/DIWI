@@ -59,7 +59,13 @@ type LayerType = {
     };
 };
 
-const PlotSelectorMap = () => {
+type Props = {
+    height?: string;
+    width?: string;
+    plusButton?: boolean;
+};
+
+const ProjectPlotSelector = ({ height, width, plusButton }: Props) => {
     const mapRef = useRef<Map>();
     const id = useId();
     const [selectedPlot, setSelectedPlot] = useState<LayerType>();
@@ -154,12 +160,12 @@ const PlotSelectorMap = () => {
     //This will update backend later
     console.log(selectedPlot);
     return (
-        <div id={id} style={{ width: "500px", height: "500px" }}>
+        <div id={id} style={{ width, height }}>
             {/* {plusButton && <PlusButton color="#002C64" link={Paths.projectAdd.path} text={t("projects.createNewProject")} />} */}
         </div>
     );
 };
 
-export default PlotSelectorMap;
+export default ProjectPlotSelector;
 
 const baseUrlKadasterWms = "https://service.pdok.nl/kadaster/kadastralekaart/wms/v5_0";

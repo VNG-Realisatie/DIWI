@@ -1,7 +1,7 @@
 import type { LatLngTuple, Map } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
-import L, { latLng } from "leaflet";
+import L from "leaflet";
 import "leaflet-draw";
 import { useEffect, useId, useRef } from "react";
 import { AddProjectButton } from "../PlusButton";
@@ -82,7 +82,7 @@ const NetherlandsMap = ({ height, width, mapData, plusButton }: Props) => {
             // const bbox = map.getBounds().toBBoxString();
             // console.log(bbox);
             // const bbox = bounds.toBBoxString();
-            const bounds = map.getBounds();
+            // const bounds = map.getBounds();
             // const bbox = `${nw.x},${nw.y},${se.x},${se.y}`;
 
             const loc = crs.project(event.latlng);

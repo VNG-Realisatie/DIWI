@@ -28,7 +28,6 @@ import { ProjectsWithHouseBlock } from "./components/project/project-with-house-
 import { Settings } from "./components/admin/Settings";
 import { theme } from "./theme";
 import { dateFormats } from "./localization";
-import PlotSelectorMap from "./components/map/OpenLayersMap";
 import { ProjectTimeline } from "./components/project/ProjectTimeline";
 
 function RequiresLogin() {
@@ -75,7 +74,6 @@ function App() {
                             index
                             element={
                                 <>
-                                    <PlotSelectorMap />
                                     <ProjectProvider>
                                         <Projects />
                                     </ProjectProvider>
