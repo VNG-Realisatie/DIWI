@@ -17,9 +17,9 @@ import { PhaseEditForm } from "./PhaseEditForm";
 import { MunicipalityRoleEditForm } from "./MunicipalityRoleEditForm";
 import { ConfidentialityLevelEditForm } from "./ConfidentialityLevelEditForm";
 import { PlanStatusEditForm } from "./PlanStatusEditForm";
-import { MunicipalityEditForm } from "./MunicipalityEditForm";
-import { NeighbourhoodEditForm } from "./NeighbourhoodEditForm";
-import { WijkEditForm } from "./WijkEditForm";
+// import { MunicipalityEditForm } from "./MunicipalityEditForm";
+// import { NeighbourhoodEditForm } from "./NeighbourhoodEditForm";
+// import { WijkEditForm } from "./WijkEditForm";
 import { defaultColors } from "../../ColorSelector";
 import { BlockPicker, ColorResult } from "react-color";
 import { CellContainer } from "./CellContainer";
@@ -50,7 +50,11 @@ type DateDisplayEditorProps = {
 const DateDisplayEditor = ({ projectEditable, date, onChange }: DateDisplayEditorProps) => {
     const dayjsDate = typeof date === "string" ? dayjs(date) : date;
     if (!projectEditable) {
-        return <CellContainer>{dayjsDate ? convertDayjsToString(dayjsDate) : ""}</CellContainer>;
+        return (
+            <CellContainer>
+                <Typography minHeight={34}>{dayjsDate ? convertDayjsToString(dayjsDate) : ""}</Typography>
+            </CellContainer>
+        );
     } else {
         return <DatePicker slotProps={{ textField: { size: "small" } }} value={dayjsDate} onChange={onChange} />;
     }
@@ -278,7 +282,9 @@ export const ProjectsWithHouseBlock = () => {
                     <Grid item xs={6} md={1}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.projectName")}</Typography>
                         {!projectEditable ? (
-                            <CellContainer>{name ? name : selectedProject?.projectName}</CellContainer>
+                            <CellContainer>
+                                <Typography minHeight={34}>{name ? name : selectedProject?.projectName}</Typography>
+                            </CellContainer>
                         ) : (
                             <ProjectNameEditForm name={name} setName={setName} />
                         )}
@@ -286,20 +292,24 @@ export const ProjectsWithHouseBlock = () => {
                     <Grid item xs={6} md={1}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.totalValue")}</Typography>
                         {!projectEditable ? (
-                            <CellContainer>{selectedProject?.totalValue ? selectedProject.totalValue : 0}</CellContainer>
+                            <CellContainer>
+                                <Typography minHeight={34}>{selectedProject?.totalValue ? selectedProject.totalValue : 0}</Typography>
+                            </CellContainer>
                         ) : (
                             <TextField size="small" disabled value={selectedProject?.totalValue ? selectedProject.totalValue : 0} />
                         )}
                     </Grid>
                     <Grid item sm={2}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.organizationName")}</Typography>
-                        <OrganizationSelect projectEditable={projectEditable} owner={owner} setOwner={setOwner} />
+                        <CellContainer>
+                            <OrganizationSelect projectEditable={projectEditable} owner={owner} setOwner={setOwner} />
+                        </CellContainer>
                     </Grid>
                     <Grid item sm={4}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.planType")}</Typography>
 
                         {!projectEditable ? (
-                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
+                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }} minHeight={44}>
                                 {planType.length > 0
                                     ? planType.map((pt: string) => {
                                           return <span key={pt}>{t(`projectTable.planTypeOptions.${pt}`)},</span>;
@@ -333,13 +343,15 @@ export const ProjectsWithHouseBlock = () => {
 
                         {!projectEditable ? (
                             <CellContainer>
-                                <span key={selectedProject?.priority?.value?.id}>
-                                    {selectedProject?.priority?.value?.name ??
-                                        `${selectedProject?.priority?.min?.name}-${selectedProject?.priority?.max?.name}`}
-                                </span>
+                                <Typography minHeight={24}>
+                                    <span key={selectedProject?.priority?.value?.id}>
+                                        {selectedProject?.priority?.value?.name ??
+                                            `${selectedProject?.priority?.min?.name}-${selectedProject?.priority?.max?.name}`}
+                                    </span>
+                                </Typography>
                             </CellContainer>
                         ) : (
-                            // TODO Implement later
+                            // TODO Implement later for ranges
                             <PriorityEditForm projectPriority={projectPriority} setProjectPriority={setProjectPriority} />
                         )}
                     </Grid>
@@ -348,7 +360,9 @@ export const ProjectsWithHouseBlock = () => {
 
                         {!projectEditable ? (
                             <CellContainer>
-                                {t(`projectTable.projectPhaseOptions.${projectPhase ? projectPhase : selectedProject?.projectPhase}`)}
+                                <Typography minHeight={24}>
+                                    {t(`projectTable.projectPhaseOptions.${projectPhase ? projectPhase : selectedProject?.projectPhase}`)}
+                                </Typography>
                             </CellContainer>
                         ) : (
                             <PhaseEditForm projectPhase={projectPhase} setProjectPhase={setProjectPhase} />
@@ -359,13 +373,16 @@ export const ProjectsWithHouseBlock = () => {
 
                         {!projectEditable ? (
                             <CellContainer>
-                                {selectedMunicipalityRole.length > 0
-                                    ? selectedMunicipalityRole.map((mr: SelectModel) => {
-                                          return <span key={mr.id}>{mr.name}</span>;
-                                      })
-                                    : selectedProject?.municipalityRole?.map((mr) => {
-                                          return <span key={mr.id}>{mr.name}</span>;
-                                      })}
+                                <Typography minHeight={24}>
+                                    {" "}
+                                    {selectedMunicipalityRole.length > 0
+                                        ? selectedMunicipalityRole.map((mr: SelectModel) => {
+                                              return <span key={mr.id}>{mr.name}</span>;
+                                          })
+                                        : selectedProject?.municipalityRole?.map((mr) => {
+                                              return <span key={mr.id}>{mr.name}</span>;
+                                          })}
+                                </Typography>
                             </CellContainer>
                         ) : (
                             <MunicipalityRoleEditForm
@@ -379,9 +396,11 @@ export const ProjectsWithHouseBlock = () => {
 
                         {!projectEditable ? (
                             <CellContainer>
-                                {confidentialityLevel
-                                    ? t(`projectTable.confidentialityLevelOptions.${confidentialityLevel}`)
-                                    : t(`projectTable.confidentialityLevelOptions.${selectedProject?.confidentialityLevel}`)}
+                                <Typography minHeight={24}>
+                                    {confidentialityLevel
+                                        ? t(`projectTable.confidentialityLevelOptions.${confidentialityLevel}`)
+                                        : t(`projectTable.confidentialityLevelOptions.${selectedProject?.confidentialityLevel}`)}
+                                </Typography>
                             </CellContainer>
                         ) : (
                             <ConfidentialityLevelEditForm confidentialityLevel={confidentialityLevel} setConfidentialityLevel={setConfidentialityLevel} />
@@ -389,13 +408,15 @@ export const ProjectsWithHouseBlock = () => {
                     </Grid>
                     <Grid item sm={2}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.projectLeader")}</Typography>
-                        <OrganizationSelect projectEditable={projectEditable} owner={leader} setOwner={setLeader} isLeader={true} />
+                        <Box sx={{ border: "solid 1px #ddd" }} minHeight={34}>
+                            <OrganizationSelect projectEditable={projectEditable} owner={leader} setOwner={setLeader} isLeader={true} />
+                        </Box>
                     </Grid>
                     <Grid item xs={12} md={4}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.planningPlanStatus")}</Typography>
 
                         {!projectEditable ? (
-                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
+                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }} minHeight={34}>
                                 {planStatus.length > 0
                                     ? planStatus.map((pp: string) => {
                                           return <span key={pp}>{t(`projectTable.planningPlanStatus.${pp}`)}</span>;
@@ -408,7 +429,7 @@ export const ProjectsWithHouseBlock = () => {
                             <PlanStatusEditForm planStatus={planStatus} setPlanStatus={setPlanStatus} />
                         )}
                     </Grid>
-                    <Grid item xs={12} md={2}>
+                    {/* <Grid item xs={12} md={2}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.municipality")}</Typography>
 
                         {!projectEditable ? (
@@ -458,7 +479,7 @@ export const ProjectsWithHouseBlock = () => {
                         ) : (
                             <WijkEditForm selectedWijk={selectedWijk} setSelectedWijk={setSelectedWijk} />
                         )}
-                    </Grid>
+                    </Grid> */}
                 </Grid>
                 {/*List Custom Properties */}
                 <Grid container my={2}>
