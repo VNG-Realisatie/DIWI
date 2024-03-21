@@ -1,17 +1,4 @@
-import {
-    Alert,
-    Autocomplete,
-    Box,
-    InputLabel,
-    ListItemText,
-    MenuItem,
-    OutlinedInput,
-    Select,
-    SelectChangeEvent,
-    Stack,
-    TextField,
-    Typography,
-} from "@mui/material";
+import { Alert, Autocomplete, Box, ListItemText, MenuItem, OutlinedInput, Select, SelectChangeEvent, Stack, TextField, Typography } from "@mui/material";
 import ColorSelector from "../ColorSelector";
 import { DatePicker } from "@mui/x-date-pickers";
 
@@ -25,6 +12,7 @@ import { useEffect, useState } from "react";
 import { getMunicipalityRoleList, getPriorityList } from "../../api/projectsTableServices";
 import { SelectModel } from "../../api/projectsServices";
 import { dateFormats } from "../../localization";
+import { LabelComponent } from "./LabelComponent";
 
 type Props = {
     setCreateProjectForm: (a: any) => void;
@@ -82,9 +70,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
             <Typography variant="h6" fontWeight="600">
                 {t("createProject.informationForm.title")}
             </Typography>
-            <Typography variant="subtitle1" fontWeight="500">
-                {t("createProject.informationForm.nameLabel")}
-            </Typography>
+            <LabelComponent required text="createProject.informationForm.nameLabel" />
             <Stack direction="row" alignItems="center" justifyContent="space-between">
                 <Stack width="100%">
                     <TextField
@@ -107,7 +93,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
             </Stack>
             <Stack direction="row" alignItems="center" spacing={3} mt={2}>
                 <Stack flex={6}>
-                    <InputLabel id="plantype">{t("createProject.informationForm.planType")}</InputLabel>
+                    <LabelComponent required={false} text={t("createProject.informationForm.planType")} />
                     <Select
                         fullWidth
                         size="small"
@@ -128,7 +114,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                     </Select>
                 </Stack>
                 <Stack flex={2}>
-                    <InputLabel id="startDate">{t("createProject.informationForm.startDate")}</InputLabel>
+                    <LabelComponent required text={t("createProject.informationForm.startDate")} />
                     <DatePicker
                         sx={datePickerStyle}
                         format={dateFormats.keyboardDate}
@@ -146,7 +132,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                     {!createProjectForm.startDate && <Alert severity="warning">{t("createProject.hasMissingRequiredAreas.startDate")}</Alert>}
                 </Stack>
                 <Stack flex={2}>
-                    <InputLabel id="enddate">{t("createProject.informationForm.endDate")} </InputLabel>
+                    <LabelComponent required text={t("createProject.informationForm.endDate")} />
                     <DatePicker
                         sx={datePickerStyle}
                         format={dateFormats.keyboardDate}
@@ -166,8 +152,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
             </Stack>
             <Stack direction="row" alignItems="center" spacing={3} mt={2}>
                 <Stack flex={1}>
-                    <InputLabel id="priority">{t("createProject.informationForm.priority")}</InputLabel>
-
+                    <LabelComponent required={false} text={t("createProject.informationForm.priority")} />
                     <Autocomplete
                         id="priority-select"
                         size="small"
@@ -189,7 +174,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                     />
                 </Stack>
                 <Stack flex={1}>
-                    <InputLabel id="projectPhase">{t("createProject.informationForm.projectPhase")}</InputLabel>
+                    <LabelComponent required text={t("createProject.informationForm.projectPhase")} />
                     <Select
                         fullWidth
                         size="small"
@@ -214,7 +199,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                     {!createProjectForm.projectPhase && <Alert severity="warning">{t("createProject.hasMissingRequiredAreas.projectPhase")}</Alert>}
                 </Stack>
                 <Stack flex={1}>
-                    <InputLabel id="role">{t("createProject.informationForm.roleMunicipality")}</InputLabel>
+                    <LabelComponent required={false} text={t("createProject.informationForm.roleMunicipality")} />
                     <Autocomplete
                         size="small"
                         multiple
@@ -235,7 +220,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
             </Stack>
             <Stack direction="row" alignItems="center" spacing={3} mt={2}>
                 <Stack flex={1}>
-                    <InputLabel id="projectLeader">{t("createProject.informationForm.projectLeader")}</InputLabel>
+                    <LabelComponent required={false} text={t("createProject.informationForm.projectLeader")} />
                     <Select
                         labelId="projectLeader"
                         size="small"
@@ -261,7 +246,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                     </Select>
                 </Stack>
                 <Stack flex={1}>
-                    <InputLabel id="confidentialityLevel">{t("createProject.informationForm.confidentialityLevel")}</InputLabel>
+                    <LabelComponent required text={t("createProject.informationForm.confidentialityLevel")} />
                     <Select
                         labelId="confidentialityLevel"
                         size="small"
@@ -287,7 +272,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                     )}
                 </Stack>
                 <Stack flex={1}>
-                    <InputLabel id="planningPlanStatus">{t("createProject.informationForm.planningPlanStatus")}</InputLabel>
+                    <LabelComponent required={false} text={t("createProject.informationForm.planningPlanStatus")} />
                     <Select
                         size="small"
                         id="plan-status-checkbox"
@@ -310,7 +295,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
 
             <Stack direction="row" alignItems="center" spacing={3} mt={2}>
                 <Stack>
-                    <InputLabel id="leader">{t("createProject.informationForm.owner")}</InputLabel>
+                    <LabelComponent required={false} text={t("createProject.informationForm.owner")} />
                     <Select
                         sx={{ width: "370px" }}
                         labelId="leader"

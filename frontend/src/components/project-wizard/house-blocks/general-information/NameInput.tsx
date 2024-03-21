@@ -1,6 +1,7 @@
 import { Stack, Typography, TextField } from "@mui/material";
 import { t } from "i18next";
 import { InputContainer } from "../InputContainer";
+import { LabelComponent } from "../../../project/LabelComponent";
 type Props = {
     houseblockName: string;
     upDateHouseBlockName: (name: string) => void;
@@ -29,9 +30,7 @@ const NameEditInput = ({ houseblockName, upDateHouseBlockName }: NameInputProps)
 export const NameInput = ({ houseblockName, upDateHouseBlockName, edit, editForm }: Props) => {
     return (
         <Stack width="100%">
-            <Typography variant="subtitle1" fontWeight="500">
-                {t("createProject.houseBlocksForm.nameLabel")}
-            </Typography>
+            <LabelComponent required text={t("createProject.houseBlocksForm.nameLabel")} />
             {edit && editForm && <NameEditInput houseblockName={houseblockName} upDateHouseBlockName={upDateHouseBlockName} />}
             {!edit && editForm && (
                 <InputContainer>

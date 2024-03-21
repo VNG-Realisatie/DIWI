@@ -4,6 +4,7 @@ import { t } from "i18next";
 import dayjs, { Dayjs } from "dayjs";
 import { InputContainer } from "../InputContainer";
 import { convertDayjsToString } from "../../../../utils/convertDayjsToString";
+import { LabelComponent } from "../../../project/LabelComponent";
 
 type Props = {
     houseBlockEndDate: string | null;
@@ -15,9 +16,8 @@ type Props = {
 export const EndDatePicker = ({ houseBlockEndDate, updateHouseBlockEndDate, edit, editForm }: Props) => {
     return (
         <Stack width="100%">
-            <Typography variant="subtitle1" fontWeight="500">
-                {t("createProject.houseBlocksForm.endDate")}
-            </Typography>
+            <LabelComponent required text={t("createProject.houseBlocksForm.endDate")} />
+
             {edit && editForm && <DatePicker value={houseBlockEndDate ? dayjs(houseBlockEndDate) : null} onChange={updateHouseBlockEndDate} />}
             {!edit && editForm && (
                 <InputContainer>
