@@ -29,6 +29,7 @@ import { Settings } from "./components/admin/Settings";
 import { theme } from "./theme";
 import { dateFormats } from "./localization";
 import { ProjectTimeline } from "./components/project/ProjectTimeline";
+import { ConfigProvider } from "./context/ConfigContext";
 
 function RequiresLogin() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -53,14 +54,16 @@ function RequiresLogin() {
 const Providers = ({ children }: { children: React.ReactNode }) => {
     return (
         <ThemeProvider theme={theme}>
-            <AlertProvider>
-                <AlertPopup />
-                <ScopedCssBaseline>
-                    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="nl" dateFormats={dateFormats}>
-                        {children}
-                    </LocalizationProvider>
-                </ScopedCssBaseline>
-            </AlertProvider>
+            <ConfigProvider>
+                <AlertProvider>
+                    <AlertPopup />
+                    <ScopedCssBaseline>
+                        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="nl" dateFormats={dateFormats}>
+                            {children}
+                        </LocalizationProvider>
+                    </ScopedCssBaseline>
+                </AlertProvider>
+            </ConfigProvider>
         </ThemeProvider>
     );
 };
