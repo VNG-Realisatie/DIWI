@@ -93,8 +93,19 @@ const ProjectPlotSelector = () => {
                         brkSelectie: "TBD", // TODO what to put here?
                         geoJson: geojson,
                     };
-                    const newSelectedPlots = [...selectedPlots, newPlot];
-                    setSelectedPlots(newSelectedPlots);
+                    const newSelectedPlots = selectedPlots.filter((p) => {
+                        const notEqual =
+                            p.brkGemeenteCode !== newPlot.brkGemeenteCode ||
+                            p.brkPerceelNummer !== newPlot.brkPerceelNummer ||
+                            p.brkSectie !== newPlot.brkSectie ||
+                            p.brkSelectie !== newPlot.brkSelectie;
+                        return notEqual;
+                    });
+                    if (newSelectedPlots.length !== selectedPlots.length) {
+                        setSelectedPlots(newSelectedPlots);
+                    } else {
+                        setSelectedPlots([...selectedPlots, newPlot]);
+                    }
                 });
         },
         [selectedPlots],
