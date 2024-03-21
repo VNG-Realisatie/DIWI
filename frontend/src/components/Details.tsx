@@ -99,7 +99,7 @@ export const Details = ({ project }: Props) => {
             {houseBlocks &&
                 houseBlocks.map((hb: HouseBlock) => {
                     return (
-                        <Stack>
+                        <Stack key={hb.houseblockName}>
                             <Typography sx={{ color: "#FFFFFF", backgroundColor: "#00A9F3", px: 2, py: 1.5 }}>{hb.houseblockName}</Typography>
                             <Box border="solid 1px #DDD" px={2} py={1.5}>
                                 <Typography>{hb.mutation.netPlanCapacity}</Typography>
