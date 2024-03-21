@@ -17,7 +17,9 @@ public class HouseblockUpdateModel {
     private SingleValueOrRangeModel<BigDecimal> sizeValue;
     private Map<Object, Integer> valuesMap;
     private HouseblockSnapshotModel.OwnershipValue ownershipValue;
+    private HouseblockSnapshotModel.Mutation mutationValue;
     private ActionType actionType;
+
     public HouseblockUpdateModel(HouseblockProperty property, String value) {
         this.property = property;
         this.value = value;
@@ -44,6 +46,11 @@ public class HouseblockUpdateModel {
         this.actionType = actionType;
     }
 
+    public HouseblockUpdateModel(HouseblockProperty property, HouseblockSnapshotModel.Mutation mutationValue) {
+        this.property = property;
+        this.mutationValue = mutationValue;
+    }
+
     public String validate() {
         if (property == null) {
             return "Property is missing";
@@ -64,7 +71,7 @@ public class HouseblockUpdateModel {
                 valuesMap.entrySet().removeIf(entry -> entry.getValue() == null);
                 yield null;
             }
-            case programming -> null;
+            case programming, mutation  -> null;
             case ownershipValue -> (ownershipValue.getType() == null || ownershipValue.getAmount() == null || !ownershipValue.getRentalValue().isValid() ||
                 !ownershipValue.getValue().isValid()) ? "Ownership value is not valid" : null;
         };
@@ -74,6 +81,7 @@ public class HouseblockUpdateModel {
     public enum HouseblockProperty {
         name,
         groundPosition,
+        mutation,
         ownershipValue,
         purpose,
         physicalAppearanceAndHouseType,

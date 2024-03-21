@@ -162,6 +162,11 @@ public class HouseblockResource {
                         houseblockUpdateModelList.add(new HouseblockUpdateModel(HouseblockUpdateModel.HouseblockProperty.programming, houseblockModelToUpdate.getProgramming()));
                     }
                 }
+                case mutation -> {
+                    if (!Objects.equals(houseblockModelToUpdate.getMutation(), houseblockCurrentValues.getMutation())) {
+                        houseblockUpdateModelList.add(new HouseblockUpdateModel(HouseblockUpdateModel.HouseblockProperty.mutation, houseblockModelToUpdate.getMutation()));
+                    }
+                }
                 case startDate -> {
                     LocalDate newStartDate = houseblockModelToUpdate.getStartDate();
                     if (!Objects.equals(newStartDate, houseblockCurrentValues.getStartDate())) {
@@ -249,6 +254,7 @@ public class HouseblockResource {
             case programming -> houseblockService.updateHouseblockProgramming(repo, project, houseblock, updateModel.getBooleanValue(), loggedUserUuid, updateDate);
             case ownershipValue -> houseblockService.updateHouseblockOwnershipValue(repo, project, houseblock, updateModel.getOwnershipValue(),
                 updateModel.getActionType(), loggedUserUuid, updateDate);
+            case mutation -> houseblockService.updateHouseblockMutation(repo, project, houseblock, updateModel.getMutationValue(), loggedUserUuid, updateDate);
         }
     }
 

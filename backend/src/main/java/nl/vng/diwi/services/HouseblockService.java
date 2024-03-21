@@ -22,6 +22,7 @@ import nl.vng.diwi.dal.entities.HouseblockProgrammingChangelog;
 import nl.vng.diwi.dal.entities.HouseblockSizeChangelog;
 import nl.vng.diwi.dal.entities.enums.GroundPosition;
 import nl.vng.diwi.dal.entities.enums.HouseType;
+import nl.vng.diwi.dal.entities.enums.MutationType;
 import nl.vng.diwi.dal.entities.enums.PhysicalAppearance;
 import nl.vng.diwi.dal.entities.enums.Purpose;
 import nl.vng.diwi.dal.entities.enums.ValueType;
@@ -502,6 +503,54 @@ public class HouseblockService {
                 oldChangelogAfterUpdate.setHouseblock(houseblock);
                 oldChangelogAfterUpdate.setProgramming(oldChangelog.getProgramming());
                 repo.persist(oldChangelogAfterUpdate);
+            }
+        }
+    }
+
+    public void updateHouseblockMutation(VngRepository repo, Project project, Houseblock houseblock, HouseblockSnapshotModel.Mutation newMutation,
+                                         UUID loggedInUserUuid, LocalDate updateDate) {
+
+        HouseblockMutatieChangelog oldChangelogAfterUpdate = new HouseblockMutatieChangelog();
+        HouseblockMutatieChangelog newChangelog = null;
+        if (newMutation != null && (newMutation.getDemolition() != null || newMutation.getNetPlanCapacity() != null || newMutation.getGrossPlanCapacity() != null ||
+            (newMutation.getMutationKind() != null && !newMutation.getMutationKind().isEmpty()))) {
+            newChangelog = new HouseblockMutatieChangelog();
+            newChangelog.setHouseblock(houseblock);
+            newChangelog.setDemolition(newMutation.getDemolition());
+            newChangelog.setGrossPlanCapacity(newMutation.getGrossPlanCapacity());
+            newChangelog.setNetPlanCapacity(newMutation.getNetPlanCapacity());
+        }
+
+        HouseblockMutatieChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, houseblock, houseblock.getMutaties(), newChangelog,
+            oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
+
+        if (newChangelog != null) {
+            repo.persist(newChangelog);
+            if (newMutation.getMutationKind() != null) {
+                for (MutationType mutationType : newMutation.getMutationKind()) {
+                    HouseblockMutatieChangelogTypeValue newChangelogValue = new HouseblockMutatieChangelogTypeValue();
+                    newChangelogValue.setMutatieChangelog(newChangelog);
+                    newChangelogValue.setMutationType(mutationType);
+                    repo.persist(newChangelogValue);
+                }
+            }
+        }
+
+        if (oldChangelog != null) {
+            repo.persist(oldChangelog);
+            if (oldChangelogAfterUpdate.getStartMilestone() != null) {
+                // it is a current project && it had a non-null changelog before the update
+                oldChangelogAfterUpdate.setHouseblock(houseblock);
+                oldChangelogAfterUpdate.setDemolition(oldChangelog.getDemolition());
+                oldChangelogAfterUpdate.setNetPlanCapacity(oldChangelog.getNetPlanCapacity());
+                oldChangelogAfterUpdate.setGrossPlanCapacity(oldChangelog.getGrossPlanCapacity());
+                repo.persist(oldChangelogAfterUpdate);
+                for (HouseblockMutatieChangelogTypeValue type : oldChangelog.getType()) {
+                    HouseblockMutatieChangelogTypeValue oldChangelogValue = new HouseblockMutatieChangelogTypeValue();
+                    oldChangelogValue.setMutatieChangelog(oldChangelogAfterUpdate);
+                    oldChangelogValue.setMutationType(type.getMutationType());
+                    repo.persist(oldChangelogValue);
+                }
             }
         }
     }

@@ -13,7 +13,9 @@ import nl.vng.diwi.models.superclasses.DatedDataModelSuperClass;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -54,7 +56,7 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
         this.mutation.setDemolition(sqlModel.getDemolition());
         this.mutation.setGrossPlanCapacity(sqlModel.getGrossPlanCapacity());
         this.mutation.setNetPlanCapacity(sqlModel.getNetPlanCapacity());
-        this.mutation.setMutationKind(sqlModel.getMutationKind());
+        this.mutation.getMutationKind().addAll(sqlModel.getMutationKind());
 
         if (sqlModel.getOwnershipValueList() != null) {
             sqlModel.getOwnershipValueList().forEach(oSql -> this.ownershipValue.add(new OwnershipValue(oSql.getOwnershipId(), oSql.getOwnershipType(), oSql.getOwnershipAmount(),
@@ -161,8 +163,9 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
 
     @Getter
     @Setter
+    @EqualsAndHashCode
     public static class Mutation {
-        private List<MutationType> mutationKind;
+        private Set<MutationType> mutationKind = new HashSet<>();
         private Integer grossPlanCapacity;
         private Integer netPlanCapacity;
         private Integer demolition;
