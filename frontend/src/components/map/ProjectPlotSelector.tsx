@@ -17,6 +17,7 @@ import { Plot, PlotGeoJSON, getProjectPlots, updateProjectPlots } from "../../ap
 import { Box, Stack } from "@mui/material";
 import ProjectContext from "../../context/ProjectContext";
 import { Details } from "../Details";
+import { Extent } from "ol/extent";
 
 const ProjectPlotSelector = () => {
     const { t } = useTranslation();
@@ -32,15 +33,19 @@ const ProjectPlotSelector = () => {
     const [selectedPlots, setSelectedPlots] = useState<Plot[]>([]);
 
     const [plotsChanged, setPlotsChanged] = useState(false);
+    const [extent, setExtent] = useState<Extent | null>(null);
 
-    useEffect(() => {
-        if (!selectedProject) return;
+    useEffect(
+        function fetchPlots() {
+            if (!selectedProject) return;
 
-        getProjectPlots(selectedProject.projectId).then((plots) => {
-            setOriginalSelectedPlots(plots);
-            setSelectedPlots(plots);
-        });
-    }, [selectedProject]);
+            getProjectPlots(selectedProject.projectId).then((plots) => {
+                setOriginalSelectedPlots(plots);
+                setSelectedPlots(plots);
+            });
+        },
+        [selectedProject],
+    );
 
     const handleCancelChange = () => {
         setSelectedPlots(originalSelectedPlots);
@@ -95,16 +100,32 @@ const ProjectPlotSelector = () => {
         [selectedPlots],
     );
 
-    useEffect(() => {
-        if (!selectedPlotLayerSource) return;
+    useEffect(
+        function updatePlotsLayer() {
+            if (!selectedPlotLayerSource) return;
 
-        const changed = !_.isEqual(selectedPlots, originalSelectedPlots);
-        setPlotsChanged(changed);
-        for (const selectedPlot of selectedPlots) {
-            const geojson = new GeoJSON().readFeatures(selectedPlot.geoJson);
-            selectedPlotLayerSource.addFeatures(geojson);
-        }
-    }, [originalSelectedPlots, selectedPlotLayerSource, selectedPlots]);
+            const changed = !_.isEqual(selectedPlots, originalSelectedPlots);
+            setPlotsChanged(changed);
+            for (const selectedPlot of selectedPlots) {
+                const geojson = new GeoJSON().readFeatures(selectedPlot.geoJson);
+                selectedPlotLayerSource.addFeatures(geojson);
+            }
+
+            if (extent != null && !selectedPlotLayerSource.isEmpty()) {
+                setExtent(selectedPlotLayerSource.getExtent());
+            }
+        },
+        [extent, originalSelectedPlots, selectedPlotLayerSource, selectedPlots],
+    );
+
+    useEffect(
+        function zoomToExtent() {
+            if (extent) {
+                map?.getView().fit(extent);
+            }
+        },
+        [extent, map],
+    );
 
     useEffect(() => {
         if (!map) return;
@@ -115,33 +136,36 @@ const ProjectPlotSelector = () => {
         };
     }, [handleClick, map]);
 
-    useEffect(() => {
-        const osmLayer = new TileLayer({
-            source: new OSM(),
-        });
+    useEffect(
+        function createMap() {
+            const osmLayer = new TileLayer({
+                source: new OSM(),
+            });
 
-        const source = new VectorSource();
-        const selectedPlotLayer = new VectorLayer({ source });
+            const source = new VectorSource();
+            const selectedPlotLayer = new VectorLayer({ source });
 
-        setSelectedPlotLayerSource(source);
+            setSelectedPlotLayerSource(source);
 
-        const newMap = new Map({
-            target: id,
-            layers: [osmLayer, selectedPlotLayer],
-            view: new View({
-                center: [521407.57221923344, 6824704.512308201],
-                zoom: 16,
-            }),
-        });
-        setMap(newMap);
-        return () => {
-            newMap.dispose();
-            const mapElement = document.getElementById(id);
-            if (mapElement) {
-                mapElement.innerHTML = "";
-            }
-        };
-    }, [id]);
+            const newMap = new Map({
+                target: id,
+                layers: [osmLayer, selectedPlotLayer],
+                view: new View({
+                    center: [521407.57221923344, 6824704.512308201],
+                    zoom: 16,
+                }),
+            });
+            setMap(newMap);
+            return () => {
+                newMap.dispose();
+                const mapElement = document.getElementById(id);
+                if (mapElement) {
+                    mapElement.innerHTML = "";
+                }
+            };
+        },
+        [id],
+    );
 
     return (
         <Stack my={1} p={1} mb={10}>
