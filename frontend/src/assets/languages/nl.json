@@ -140,11 +140,11 @@
       "hasMissingRequiredAreas": {
         "name": "Naam ontbreekt",
         "startDate": "Start datum ontbreekt",
-        "endDate": "End datum ontbreekt",
+        "endDate": "Eind datum ontbreekt",
         "projectPhase": "Project Fase ontbreekt",
         "confidentialityLevel": "Vertrouwlijkheidsniveau  ontbreekt",
         "amount": "Aantal ontbreekt",
-        "hasmissingProperty":"Formulier heeft ontbrekende eigenschappen"
+        "hasmissingProperty": "Formulier heeft ontbrekende eigenschappen"
       }
     },
     "sidebar": {
