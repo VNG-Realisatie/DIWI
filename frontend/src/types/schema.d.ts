@@ -325,6 +325,7 @@ export interface components {
             municipality?: components["schemas"]["SelectModel"][];
             wijk?: components["schemas"]["SelectModel"][];
             buurt?: components["schemas"]["SelectModel"][];
+            location?: components["schemas"]["LocationModel"];
         };
         ProjectCustomPropertyModel: {
             /** Format: uuid */

@@ -5,7 +5,8 @@ import { HouseBlock } from "../components/project-wizard/house-blocks/types";
 
 export type Organization = components["schemas"]["OrganizationModel"];
 export type OrganizationUser = components["schemas"]["OrganizationUserModel"];
-export type Project = components["schemas"]["ProjectListModel"];
+export type ProjectListModel = components["schemas"]["ProjectListModel"];
+export type Project = components["schemas"]["ProjectSnapshotModel"];
 export type ProjectCreate = components["schemas"]["ProjectCreateSnapshotModel"];
 export type ProjectUpdate = components["schemas"]["ProjectUpdateModel"];
 export type SelectModel = components["schemas"]["SelectModel"];

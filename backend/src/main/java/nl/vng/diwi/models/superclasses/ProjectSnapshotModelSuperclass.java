@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import nl.vng.diwi.dal.entities.ProjectListSqlModel;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
+import nl.vng.diwi.models.LocationModel;
 import nl.vng.diwi.models.OrganizationModel;
 import nl.vng.diwi.models.OrganizationUserModel;
 import nl.vng.diwi.models.PriorityModel;
@@ -37,6 +38,8 @@ abstract public class ProjectSnapshotModelSuperclass extends ProjectMinimalSnaps
     private List<SelectModel> wijk = new ArrayList<>();
     private List<SelectModel> buurt = new ArrayList<>();
 
+    private LocationModel location;
+
     public ProjectSnapshotModelSuperclass(ProjectListSqlModel sqlModel) {
         this.setProjectId(sqlModel.getProjectId());
         this.setProjectStateId(sqlModel.getProjectStateId());
@@ -56,6 +59,7 @@ abstract public class ProjectSnapshotModelSuperclass extends ProjectMinimalSnaps
         this.setMunicipality(getSelectModelListFromSqlArray(sqlModel.getMunicipality()));
         this.setWijk(getSelectModelListFromSqlArray(sqlModel.getWijk()));
         this.setBuurt(getSelectModelListFromSqlArray(sqlModel.getBuurt()));
+        this.location = new LocationModel(sqlModel.getLatitude(), sqlModel.getLongitude());
 
         Collections.sort(this.getMunicipalityRole());
         Collections.sort(this.getMunicipality());
