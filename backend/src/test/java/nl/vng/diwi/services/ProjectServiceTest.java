@@ -384,6 +384,8 @@ public class ProjectServiceTest {
         String brkSelectie = "selectie";
 
         try (var transaction = repo.beginTransaction()) {
+            createProjectDurationChangelog(repo, project, startMilestone, endMilestone, user);
+
             var oldChangelog = createPlot(geoJson, gemeenteCode + "old", brkPerceelNummer, brkSectie, brkSelectie);
             oldChangelog.setChangeEndDate(now);
             oldChangelog.setChangeUser(user);
@@ -395,7 +397,8 @@ public class ProjectServiceTest {
         }
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            List<PlotModel> plots = projectService.getPlots(repo, project.getId());
+            project = projectService.getCurrentProject(repo, projectUuid);
+            List<PlotModel> plots = projectService.getCurrentPlots(project);
             var expected = List.of(
                     PlotModel.builder()
                             .brkGemeenteCode(gemeenteCode)
@@ -420,6 +423,7 @@ public class ProjectServiceTest {
 
         // Create an old and a current changelog already so we can test these are replaced.
         try (var transaction = repo.beginTransaction()) {
+            createProjectDurationChangelog(repo, project, startMilestone, endMilestone, user);
             var oldChangelog = createPlot(geoJson, gemeenteCode + "old", brkPerceelNummer, brkSectie, brkSelectie);
             oldChangelog.setChangeEndDate(now);
             oldChangelog.setChangeUser(user);
@@ -433,6 +437,7 @@ public class ProjectServiceTest {
 
         // Call the endpoints with the new plot
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+            project = projectService.getCurrentProject(repo, projectUuid);
             var plots = List.of(
                     PlotModel.builder()
                             .brkGemeenteCode(gemeenteCode + "new")
@@ -441,7 +446,7 @@ public class ProjectServiceTest {
                             .brkSelectie(brkSelectie)
                             .geoJson(geoJson)
                             .build());
-            projectService.setPlots(repo, project.getId(), plots, user.getId());
+            projectService.setPlots(repo, project, plots, user.getId());
 
             transaction.commit();
             repo.getSession().clear();
@@ -452,7 +457,7 @@ public class ProjectServiceTest {
                     .createQuery("FROM ProjectRegistryLinkChangelog cl WHERE cl.changeEndDate is null", ProjectRegistryLinkChangelog.class)
                     .list();
 
-            assertThat(actualCls).hasSize(1);
+            assertThat(actualCls).hasSize(2);
 
             List<ProjectRegistryLinkChangelogValue> expected = List.of(ProjectRegistryLinkChangelogValue.builder()
                     .brkGemeenteCode(gemeenteCode + "new")
@@ -463,7 +468,8 @@ public class ProjectServiceTest {
                     .projectRegistryLinkChangelog(actualCls.get(0))
                     .build());
 
-            assertThat(actualCls.get(0).getValues())
+            var newChangelog = actualCls.stream().filter(c -> c.getStartMilestone().getState().get(0).getDate().equals(LocalDate.now())).findAny().get();
+            assertThat(newChangelog.getValues())
                     .usingRecursiveComparison(ignoreId)
                     .isEqualTo(expected);
         }

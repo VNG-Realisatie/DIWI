@@ -98,4 +98,8 @@ public class Project extends IdSuperclass {
     @OneToMany(mappedBy="project", fetch = FetchType.LAZY)
     @Filter(name = GenericRepository.CURRENT_DATA_FILTER, condition = "change_end_date IS NULL")
     private List<ProjectOrdinalCustomPropertyChangelog> ordinalCustomProperties;
+
+    @OneToMany(mappedBy="project", fetch = FetchType.LAZY)
+    @Filter(name = GenericRepository.CURRENT_DATA_FILTER, condition = "change_end_date IS NULL")
+    private List<ProjectRegistryLinkChangelog> registryLinks;
 }

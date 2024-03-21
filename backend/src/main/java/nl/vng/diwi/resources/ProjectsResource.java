@@ -290,7 +290,7 @@ public class ProjectsResource {
             throw new VngNotFoundException("project not found");
         }
 
-        return projectService.getPlots(repo, projectUuid);
+        return projectService.getCurrentPlots(project);
     }
 
     @POST
@@ -311,7 +311,7 @@ public class ProjectsResource {
         }
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            projectService.setPlots(repo, projectUuid, plots, loggedUser.getUuid());
+            projectService.setPlots(repo, project, plots, loggedUser.getUuid());
             transaction.commit();
         }
     }
