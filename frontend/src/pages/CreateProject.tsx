@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Stepper, Step, StepLabel, Button, Box, Stack, Typography } from "@mui/material";
+import { Stepper, Step, StepLabel, Button, Box, Stack } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import { ProjectInformationForm } from "../components/project/ProjectInformationForm";
 import { BlockHousesForm } from "../components/BlockHousesForm";
-import { SelectFromMapForm } from "../components/SelectFromMapForm";
-import { TimelineForm } from "../components/TimelineForm";
+// import { SelectFromMapForm } from "../components/SelectFromMapForm";
+// import { TimelineForm } from "../components/TimelineForm";
 import useAlert from "../hooks/useAlert";
 import { useTranslation } from "react-i18next";
 import { updateProject, createProject, addHouseBlock, getProject } from "../api/projectsServices";
@@ -22,7 +22,11 @@ const CustomStepIcon: React.FC<CustomStepIconProps> = ({ active, completed }) =>
     }
 };
 
-const steps: string[] = ["information", "houseBlocks", "signupOnTheMap", "timeline"];
+const steps: string[] = [
+    "information",
+    "houseBlocks",
+    //  "signupOnTheMap", "timeline"
+];
 
 interface CustomStepIconProps {
     active: boolean;
@@ -110,13 +114,13 @@ export const CreateProject = () => {
             {activeStep === 1 && (
                 <BlockHousesForm editForm={false} createFormHouseBlock={createFormHouseBlock} setCreateFormHouseBlock={setCreateFormHouseBlock} />
             )}
-            {activeStep === 2 && <SelectFromMapForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />}
-            {activeStep === 3 && <TimelineForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />}
-            {activeStep === 4 && (
+            {/* {activeStep === 2 && <SelectFromMapForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />} */}
+            {/* {activeStep === 2 && <TimelineForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />} */}
+            {/* {activeStep === 3 && (
                 <Stack direction="row" justifyContent="center" p={5}>
                     <Typography> {t("createProject.completeMessage")}</Typography>
                 </Stack>
-            )}
+            )} */}
             <Stack direction="row" alignItems="center" justifyContent="flex-end" py={2}>
                 <Button variant="outlined" onClick={() => handleSave()} sx={{ mr: 2 }}>
                     {t("generic.save")}
