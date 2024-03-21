@@ -88,7 +88,7 @@
   },
   "jest": {
     "transformIgnorePatterns": [
-      "node_modules/(?!(react-leaflet|leaflet|leaflet-draw|swagger-ui-react|swagger-client|react-syntax-highlighter)/)"
+      "node_modules/(?!(react-leaflet|leaflet|leaflet-draw|swagger-ui-react|swagger-client|react-syntax-highlighter|query-string|decode-uri-component|split-on-first|filter-obj|ol|color-space|color-rgba|color-parse|color-name|quick-lru)/)"
     ],
     "moduleNameMapper": {
       "^\\@swagger-api/apidom-reference": "<rootDir>/node_modules/@swagger-api/apidom-reference/dist/apidom-reference.browser.min.js",
