@@ -21,7 +21,7 @@ import nl.vng.diwi.dal.entities.ProjectCategoryCustomPropertyChangelogValue;
 import nl.vng.diwi.dal.entities.ProjectNumericCustomPropertyChangelog;
 import nl.vng.diwi.dal.entities.ProjectOrdinalCustomPropertyChangelog;
 import nl.vng.diwi.dal.entities.ProjectTextCustomPropertyChangelog;
-import nl.vng.diwi.models.ProjectCustomPropertyModel;
+import nl.vng.diwi.models.ProjectHouseblockCustomPropertyModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -95,10 +95,10 @@ public class ProjectService {
         return result;
     }
 
-    public List<ProjectCustomPropertyModel> getProjectCustomProperties(VngRepository repo, UUID projectUuid) {
+    public List<ProjectHouseblockCustomPropertyModel> getProjectCustomProperties(VngRepository repo, UUID projectUuid) {
 
         return repo.getProjectsDAO().getProjectCustomProperties(projectUuid).stream()
-                .map(ProjectCustomPropertyModel::new).toList();
+                .map(ProjectHouseblockCustomPropertyModel::new).toList();
 
     }
 

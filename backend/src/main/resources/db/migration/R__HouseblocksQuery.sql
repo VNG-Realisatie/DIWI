@@ -634,6 +634,6 @@ FROM (
                  LEFT JOIN past_ownership_value pov ON pov.id = pw.id
      ) AS q
 
-    ORDER BY q.startDate, q.endDate;
+    ORDER BY q.woningblokName, q.startDate, q.endDate;
 
 END;$$

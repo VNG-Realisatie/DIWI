@@ -27,7 +27,7 @@ export const GroundPositionGroup = ({ projectForm, setProjectForm, edit, editFor
                 </Typography>
             </Stack>
             <SingleNumberInput
-                property={projectForm?.physicalAppearance?.noPermissionOwner}
+                property={projectForm?.groundPosition?.noPermissionOwner}
                 update={(e) =>
                     projectForm &&
                     setProjectForm({
@@ -44,7 +44,7 @@ export const GroundPositionGroup = ({ projectForm, setProjectForm, edit, editFor
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.physicalAppearance?.intentionPermissionOwner}
+                property={projectForm?.groundPosition?.intentionPermissionOwner}
                 update={(e) =>
                     projectForm &&
                     setProjectForm({
@@ -61,7 +61,7 @@ export const GroundPositionGroup = ({ projectForm, setProjectForm, edit, editFor
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.physicalAppearance?.formalPermissionOwner}
+                property={projectForm?.groundPosition?.formalPermissionOwner}
                 update={(e) =>
                     projectForm &&
                     setProjectForm({

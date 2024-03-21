@@ -31,6 +31,7 @@ import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.dal.entities.HouseblockSnapshotSqlModel;
 import nl.vng.diwi.models.HouseblockUpdateModel;
 import nl.vng.diwi.models.MilestoneModel;
+import nl.vng.diwi.models.ProjectHouseblockCustomPropertyModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
@@ -62,13 +63,23 @@ public class HouseblockService {
 
     public HouseblockSnapshotModel getHouseblockSnapshot(VngRepository repo, UUID houseblockUuid) throws VngNotFoundException {
 
-        HouseblockSnapshotSqlModel houseblockSnapshotModel = repo.getHouseblockDAO().getHouseblockByUuid(houseblockUuid);
+        HouseblockSnapshotSqlModel snapshotSqlModel = repo.getHouseblockDAO().getHouseblockByUuid(houseblockUuid);
 
-        if (houseblockSnapshotModel == null) {
+        if (snapshotSqlModel == null) {
             logger.error("Houseblock with uuid {} was not found.", houseblockUuid);
             throw new VngNotFoundException();
         }
-        return new HouseblockSnapshotModel(houseblockSnapshotModel);
+
+        HouseblockSnapshotModel snapshotModel = new HouseblockSnapshotModel(snapshotSqlModel);
+        snapshotModel.setCustomProperties(getHouseblockCustomProperties(repo, houseblockUuid));
+
+        return snapshotModel;
+    }
+
+    public List<ProjectHouseblockCustomPropertyModel> getHouseblockCustomProperties(VngRepository repo, UUID houseblockUuid) {
+
+        return repo.getHouseblockDAO().getHouseblockCustomProperties(houseblockUuid).stream()
+            .map(ProjectHouseblockCustomPropertyModel::new).toList();
     }
 
     public List<HouseblockSnapshotModel> getProjectHouseblocks(VngRepository repo, UUID projectUuid) {

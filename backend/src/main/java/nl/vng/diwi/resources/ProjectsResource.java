@@ -43,7 +43,7 @@ import nl.vng.diwi.models.LocationModel;
 import nl.vng.diwi.models.OrganizationModel;
 import nl.vng.diwi.models.PlotModel;
 import nl.vng.diwi.models.PriorityModel;
-import nl.vng.diwi.models.ProjectCustomPropertyModel;
+import nl.vng.diwi.models.ProjectHouseblockCustomPropertyModel;
 import nl.vng.diwi.models.ProjectListModel;
 import nl.vng.diwi.models.ProjectSnapshotModel;
 import nl.vng.diwi.models.ProjectTimelineModel;
@@ -177,7 +177,7 @@ public class ProjectsResource {
     @Path("/{id}/customproperties")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<ProjectCustomPropertyModel> getProjectCustomProperties(@PathParam("id") UUID projectUuid) {
+    public List<ProjectHouseblockCustomPropertyModel> getProjectCustomProperties(@PathParam("id") UUID projectUuid) {
 
         return projectService.getProjectCustomProperties(repo, projectUuid);
 
@@ -187,7 +187,7 @@ public class ProjectsResource {
     @Path("/{id}/customproperties")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<ProjectCustomPropertyModel> updateProjectCustomProperty(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid, ProjectCustomPropertyModel projectCPUpdateModel)
+    public List<ProjectHouseblockCustomPropertyModel> updateProjectCustomProperty(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid, ProjectHouseblockCustomPropertyModel projectCPUpdateModel)
         throws VngNotFoundException, VngBadRequestException, VngServerErrorException {
 
         CustomPropertyModel dbCP = customPropertiesService.getCustomProperty(repo, projectCPUpdateModel.getCustomPropertyId());
@@ -200,8 +200,8 @@ public class ProjectsResource {
 
         LocalDate updateDate = LocalDate.now();
 
-        ProjectCustomPropertyModel currentProjectCP = projectService.getProjectCustomProperties(repo, projectUuid).stream().filter(cp -> cp.getCustomPropertyId().equals(projectCPUpdateModel.getCustomPropertyId()))
-            .findFirst().orElse(new ProjectCustomPropertyModel());
+        ProjectHouseblockCustomPropertyModel currentProjectCP = projectService.getProjectCustomProperties(repo, projectUuid).stream().filter(cp -> cp.getCustomPropertyId().equals(projectCPUpdateModel.getCustomPropertyId()))
+            .findFirst().orElse(new ProjectHouseblockCustomPropertyModel());
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             Project project = projectService.getCurrentProjectAndPerformPreliminaryUpdateChecks(repo, projectUuid);

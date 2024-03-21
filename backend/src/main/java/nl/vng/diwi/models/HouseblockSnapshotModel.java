@@ -41,6 +41,8 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
 
     private Purpose purpose = new Purpose();
 
+    private List<ProjectHouseblockCustomPropertyModel> customProperties = new ArrayList<>();
+
     public HouseblockSnapshotModel(HouseblockSnapshotSqlModel sqlModel) {
         this.projectId = sqlModel.getProjectId();
         this.houseblockId = sqlModel.getHouseblockId();

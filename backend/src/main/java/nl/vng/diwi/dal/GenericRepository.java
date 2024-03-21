@@ -42,6 +42,12 @@ public class GenericRepository implements AutoCloseable {
                 HouseblockPurposeChangelog.class,
                 HouseblockPurposeChangelogValue.class,
                 HouseblockSizeChangelog.class,
+                HouseblockBooleanCustomPropertyChangelog.class,
+                HouseblockNumericCustomPropertyChangelog.class,
+                HouseblockTextCustomPropertyChangelog.class,
+                HouseblockCategoryCustomPropertyChangelog.class,
+                HouseblockCategoryCustomPropertyChangelogValue.class,
+                HouseblockOrdinalCustomPropertyChangelog.class,
                 Milestone.class,
                 MilestoneState.class,
                 Organization.class,
@@ -77,7 +83,7 @@ public class GenericRepository implements AutoCloseable {
                 ProjectListSqlModel.class,
                 HouseblockSnapshotSqlModel.class,
                 CustomPropertyModel.class,
-                ProjectCustomPropertySqlModel.class);
+                ProjectHouseblockCustomPropertySqlModel.class);
         return entities;
     }
 
