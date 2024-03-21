@@ -1,4 +1,4 @@
-import { getJson, postJson, deleteJson, putJson } from "../utils/requests";
+import { getJson, postJson, deleteJson, putJson, postJsonNoResponse } from "../utils/requests";
 import { components } from "../types/schema";
 import { API_URI } from "../utils/urls";
 import { HouseBlock } from "../components/project-wizard/house-blocks/types";
@@ -99,6 +99,6 @@ export async function getProjectPlots(id: string): Promise<Plot[]> {
     return getJson(`${API_URI}/projects/${id}/plots`);
 }
 
-export async function updateProjectPlots(id: string, plots: Plot[]): Promise<void> {
-    return postJson(`${API_URI}/projects/${id}/plots`, plots);
+export async function updateProjectPlots(id: string, plots: Plot[]): Promise<Response> {
+    return postJsonNoResponse(`${API_URI}/projects/${id}/plots`, plots);
 }
