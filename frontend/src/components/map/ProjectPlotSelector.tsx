@@ -1,79 +1,56 @@
-import { View, Map } from "ol";
+import { Map, View } from "ol";
 
+import GeoJSON from "ol/format/GeoJSON.js";
 import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
 import { OSM, Vector as VectorSource } from "ol/source";
-import GeoJSON from "ol/format/GeoJSON.js";
 
+import ClearIcon from "@mui/icons-material/Clear";
+import SaveIcon from "@mui/icons-material/Save";
+import Tooltip from "@mui/material/Tooltip";
+
+import _ from "lodash";
 import queryString from "query-string";
-import { useCallback, useEffect, useId, useRef, useState } from "react";
-import { Plot, getProjectPlots } from "../../api/projectsServices";
+import { useCallback, useContext, useEffect, useId, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Plot, PlotGeoJSON, getProjectPlots, updateProjectPlots } from "../../api/projectsServices";
+import { Box, Stack } from "@mui/material";
+import ProjectContext from "../../context/ProjectContext";
+import { Details } from "../Details";
 
-type PlotGeoJSON = {
-    type: string;
-    features: [
-        {
-            id: string;
-            type: string;
-            bbox: number[];
-            geometry: {
-                type: string;
-                coordinates: number[][][];
-            };
-            properties: {
-                AKRKadastraleGemeenteCodeCode: string;
-                AKRKadastraleGemeenteCodeWaarde: string;
-                beginGeldigheid: string;
-                identificatieLokaalID: string;
-                identificatieNamespace: string;
-                kadastraleGemeenteCode: string;
-                kadastraleGemeenteWaarde: string;
-                kadastraleGrootteWaarde: string;
-                perceelnummer: string;
-                perceelnummerPlaatscoordinaatX: string;
-                perceelnummerPlaatscoordinaatY: string;
-                perceelnummerRotatie: string;
-                perceelnummerVerschuivingDeltaX: string;
-                perceelnummerVerschuivingDeltaY: string;
-                sectie: string;
-                soortGrootteCode: string;
-                soortGrootteWaarde: string;
-                statusHistorieCode: string;
-                statusHistorieWaarde: string;
-                tijdstipRegistratie: string;
-                volgnummer: string;
-            };
-        },
-    ];
-    crs: {
-        properties: {
-            name: string;
-        };
-        type: string;
-    };
-};
+const ProjectPlotSelector = () => {
+    const { t } = useTranslation();
 
-type Props = {
-    height?: string;
-    width?: string;
-    plusButton?: boolean;
-    projectId?: string;
-};
+    const { selectedProject } = useContext(ProjectContext);
 
-const ProjectPlotSelector = ({ height, width, plusButton, projectId }: Props) => {
     const id = useId();
 
     const [map, setMap] = useState<Map>();
     const [selectedPlotLayerSource, setSelectedPlotLayerSource] = useState<VectorSource>();
+
+    const [originalSelectedPlots, setOriginalSelectedPlots] = useState<Plot[]>([]);
     const [selectedPlots, setSelectedPlots] = useState<Plot[]>([]);
 
-    useEffect(() => {
-        if (!projectId) return;
+    const [plotsChanged, setPlotsChanged] = useState(false);
 
-        getProjectPlots(projectId).then((plots) => {
+    useEffect(() => {
+        if (!selectedProject) return;
+
+        getProjectPlots(selectedProject.projectId).then((plots) => {
+            setOriginalSelectedPlots(plots);
             setSelectedPlots(plots);
         });
-    }, [projectId]);
+    }, [selectedProject]);
+
+    const handleCancelChange = () => {
+        setSelectedPlots(originalSelectedPlots);
+    };
+
+    const handleSaveChange = () => {
+        if (selectedProject) {
+            updateProjectPlots(selectedProject.projectId, selectedPlots);
+        }
+    };
 
     const handleClick = useCallback(
         (e: any) => {
@@ -102,12 +79,15 @@ const ProjectPlotSelector = ({ height, width, plusButton, projectId }: Props) =>
             fetch(url)
                 .then((res) => res.json())
                 .then((result): void => {
+                    const geojson = result as PlotGeoJSON;
+                    const properties = geojson.features[0].properties;
+                    console.log(properties);
                     const newPlot: Plot = {
-                        brkGemeenteCode: "",
-                        brkPerceelNummer: 1,
-                        brkSectie: "",
-                        brkSelectie: "",
-                        geojson: result,
+                        brkGemeenteCode: properties.kadastraleGemeenteCode,
+                        brkPerceelNummer: parseInt(properties.perceelnummer),
+                        brkSectie: properties.sectie,
+                        brkSelectie: "TBD", // TODO what to put here?
+                        geoJson: geojson,
                     };
                     const newSelectedPlots = [...selectedPlots, newPlot];
                     console.log("new selected plots:", newSelectedPlots);
@@ -120,13 +100,15 @@ const ProjectPlotSelector = ({ height, width, plusButton, projectId }: Props) =>
     useEffect(() => {
         if (!selectedPlotLayerSource) return;
 
-        selectedPlotLayerSource.clear();
+        const changed = !_.isEqual(selectedPlots, originalSelectedPlots);
+        console.log(changed);
+        setPlotsChanged(changed);
         for (const selectedPlot of selectedPlots) {
-            console.log(selectedPlot);
-            const geojson = new GeoJSON().readFeatures(selectedPlot.geojson);
+            // console.log(selectedPlot);
+            const geojson = new GeoJSON().readFeatures(selectedPlot.geoJson);
             selectedPlotLayerSource.addFeatures(geojson);
         }
-    }, [selectedPlotLayerSource, selectedPlots]);
+    }, [originalSelectedPlots, selectedPlotLayerSource, selectedPlots]);
 
     useEffect(() => {
         if (!map) return;
@@ -159,7 +141,6 @@ const ProjectPlotSelector = ({ height, width, plusButton, projectId }: Props) =>
         return () => {
             console.log("clear!");
             newMap.dispose();
-            // mapRef.current = undefined;
             const mapElement = document.getElementById(id);
             if (mapElement) {
                 mapElement.innerHTML = "";
@@ -168,9 +149,26 @@ const ProjectPlotSelector = ({ height, width, plusButton, projectId }: Props) =>
     }, [id]);
 
     return (
-        <div id={id} style={{ width, height }}>
-            {/* {plusButton && <PlusButton color="#002C64" link={Paths.projectAdd.path} text={t("projects.createNewProject")} />} */}
-        </div>
+        <Stack my={1} p={1} mb={10}>
+            <Box sx={{ cursor: "pointer" }} position="absolute" right={10} top={55}>
+                {plotsChanged && (
+                    <>
+                        <Tooltip placement="top" title={t("generic.cancelChanges")}>
+                            <ClearIcon sx={{ mr: 2, color: "#FFFFFF" }} onClick={handleCancelChange} />
+                        </Tooltip>
+                        <Tooltip placement="top" title={t("generic.saveChanges")}>
+                            <SaveIcon sx={{ color: "#FFFFFF" }} onClick={handleSaveChange} />
+                        </Tooltip>
+                    </>
+                )}
+            </Box>
+            <Stack direction="row" alignItems="center" justifyContent="space-between">
+                <Stack overflow="auto" height="70vh">
+                    <Details project={selectedProject} />
+                </Stack>
+                <div id={id} style={{ height: "70vh", width: "100%" }}></div>
+            </Stack>
+        </Stack>
     );
 };
 

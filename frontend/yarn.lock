@@ -2993,25 +2993,25 @@
   dependencies:
     "@types/d3-path" "^2"
 
-"@types/d3-time-format@*", "@types/d3-time-format@^2.3.1":
-  version "2.3.1"
-  resolved "https://registry.npmjs.org/@types/d3-time-format/-/d3-time-format-2.3.1.tgz"
-  integrity sha512-fck0Z9RGfIQn3GJIEKVrp15h9m6Vlg0d5XXeiE/6+CQiBmMDZxfR21XtjEPuDeg7gC3bBM0SdieA5XF3GW1wKA==
-
-"@types/d3-time-format@^3.0.0":
+"@types/d3-time-format@*", "@types/d3-time-format@^3.0.0":
   version "3.0.1"
   resolved "https://registry.npmjs.org/@types/d3-time-format/-/d3-time-format-3.0.1.tgz"
   integrity sha512-5GIimz5IqaRsdnxs4YlyTZPwAMfALu/wA4jqSiuqgdbCxUZ2WjrnwANqOtoBJQgeaUTdYNfALJO0Yb0YrDqduA==
 
-"@types/d3-time@*", "@types/d3-time@^1.1.1":
-  version "1.1.1"
-  resolved "https://registry.npmjs.org/@types/d3-time/-/d3-time-1.1.1.tgz"
-  integrity sha512-ULX7LoqXTCYtM+tLYOaeAJK7IwCT+4Gxlm2MaH0ErKLi07R5lh8NHCAyWcDkCCmx1AfRcBEV6H9QE9R25uP7jw==
+"@types/d3-time-format@^2.3.1":
+  version "2.3.1"
+  resolved "https://registry.npmjs.org/@types/d3-time-format/-/d3-time-format-2.3.1.tgz"
+  integrity sha512-fck0Z9RGfIQn3GJIEKVrp15h9m6Vlg0d5XXeiE/6+CQiBmMDZxfR21XtjEPuDeg7gC3bBM0SdieA5XF3GW1wKA==
 
-"@types/d3-time@^2":
+"@types/d3-time@*", "@types/d3-time@^2":
   version "2.1.1"
   resolved "https://registry.npmjs.org/@types/d3-time/-/d3-time-2.1.1.tgz"
   integrity sha512-9MVYlmIgmRR31C5b4FVSWtuMmBHh2mOWQYfl7XAYOa8dsnb7iEmUmRSWSFgXFtkjxO65d7hTUHQC+RhR/9IWFg==
+
+"@types/d3-time@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.npmjs.org/@types/d3-time/-/d3-time-1.1.1.tgz"
+  integrity sha512-ULX7LoqXTCYtM+tLYOaeAJK7IwCT+4Gxlm2MaH0ErKLi07R5lh8NHCAyWcDkCCmx1AfRcBEV6H9QE9R25uP7jw==
 
 "@types/d3-timer@*":
   version "3.0.2"
@@ -3217,6 +3217,11 @@
   integrity sha512-EXdsL4EhoUtGm2GC2ZYtXn+Fzc6pluVgagvo2VC1RHWToLGlTRwVYoDpqS/7QXa01rmDyBjJk3Catpf60VMkwg==
   dependencies:
     "@types/geojson" "*"
+
+"@types/lodash@^4.17.0":
+  version "4.17.0"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.17.0.tgz#d774355e41f372d5350a4d0714abb48194a489c3"
+  integrity sha512-t7dhREVv6dbNj0q17X12j7yDG4bD/DHYX7o5/DbDxobP0HnGPgpRz2Ej77aL7TZT3DSw13fqUTj8J4mMnqa7WA==
 
 "@types/mime@*":
   version "3.0.1"
