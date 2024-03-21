@@ -2,7 +2,7 @@ import { Box, Grid, Stack, Tooltip } from "@mui/material";
 import { HouseBlock } from "./project-wizard/house-blocks/types";
 import { GeneralInformationGroup } from "./project-wizard/house-blocks/general-information/GeneralInformationGroup";
 import { MutationInformationGroup } from "./project-wizard/house-blocks/mutation-information/MutationInformationGroup";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { OwnershipInformationGroup } from "./project-wizard/house-blocks/ownership-information/OwnershipInformationGroup";
 import { PhysicalAppeareanceGroup } from "./project-wizard/house-blocks/physical-appearence/PhysicalAppeareanceGroup";
 import { PurposeGroup } from "./project-wizard/house-blocks/purpose/PurposeGroup";
@@ -14,6 +14,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import ClearIcon from "@mui/icons-material/Clear";
 import { t } from "i18next";
+import { updateHouseBlock } from "../api/projectsServices";
+import AlertContext from "../context/AlertContext";
 import { CustomPropertiesGroup } from "./project-wizard/house-blocks/custom-properties/CustomPropertiesGroup";
 
 type Props = {
@@ -26,6 +28,8 @@ type Props = {
 export const BlockHousesForm = ({ projectDetailHouseBlock, editForm, createFormHouseBlock, setCreateFormHouseBlock }: Props) => {
     const [projectForm, setProjectForm] = useState<HouseBlock>(projectDetailHouseBlock ? projectDetailHouseBlock : emptyHouseBlockForm);
     const [edit, setEdit] = useState(false);
+
+    const { setAlert } = useContext(AlertContext);
 
     const oldForm = projectDetailHouseBlock && { ...projectDetailHouseBlock };
     const defineProjectState = () => {
@@ -43,7 +47,15 @@ export const BlockHousesForm = ({ projectDetailHouseBlock, editForm, createFormH
             return setCreateFormHouseBlock;
         }
     };
-
+    const handleHouseBlockUpdate = () => {
+        updateHouseBlock(projectForm)
+            .then((res) => {
+                setEdit(false);
+                setAlert(t("generic.updated"), "success");
+                setProjectForm(res);
+            })
+            .catch(() => setAlert(t("generic.failedToUpdate"), "error"));
+    };
     return (
         <Box mt={4}>
             {editForm && (
@@ -66,7 +78,7 @@ export const BlockHousesForm = ({ projectDetailHouseBlock, editForm, createFormH
                             </Tooltip>
                             <Tooltip placement="top" title={t("generic.saveChanges")}>
                                 {/* TODO integrate later updatehouseblock endpoint */}
-                                <SaveIcon sx={{ cursor: "pointer" }} onClick={() => console.log(projectForm.houseblockId)} />
+                                <SaveIcon sx={{ cursor: "pointer" }} onClick={handleHouseBlockUpdate} />
                             </Tooltip>
                         </>
                     )}

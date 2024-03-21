@@ -6,8 +6,11 @@ import { CustomPropertyType, getCustomPropertiesWithQuery } from "../../../../ap
 
 export const CustomPropertiesGroup = () => {
     const [customProperties, setCustomProperties] = useState<CustomPropertyType[]>();
+
     const { t } = useTranslation();
+
     const translationPath = "customProperties";
+
     useEffect(() => {
         getCustomPropertiesWithQuery("WONINGBLOK").then((customProperties) => setCustomProperties(customProperties));
     }, []);

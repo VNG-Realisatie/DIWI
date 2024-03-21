@@ -41,3 +41,7 @@ export async function getProjectHouseBlocks(id: string): Promise<HouseBlock[]> {
 export async function addHouseBlock(newData: HouseBlock): Promise<HouseBlock> {
     return postJson(`${API_URI}/houseblock/add`, newData);
 }
+
+export async function updateHouseBlock(newData: HouseBlock): Promise<HouseBlock> {
+    return putJson(`${API_URI}/houseblock/update`, newData);
+}
