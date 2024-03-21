@@ -32,7 +32,7 @@ export const HouseBlocks = ({ houseBlockData, xScale, titleHeight, blockHeight, 
                         return (
                             <svg key={"houseBlock" + block.houseblockId}>
                                 <rect x={x} y={y} width={w} height={h} fill="#5cc6f5" />
-                                <text x={x + textSpacing.x} y={y + textSpacing.y + 20} fill="#FFFFFF">
+                                <text x={x + textSpacing.x} y={y + textSpacing.y + 18} fill="#FFFFFF">
                                     {block.houseblockName}
                                 </text>
                             </svg>

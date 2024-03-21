@@ -94,7 +94,7 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, showToday, width, height }:
 
     // House blocks
     const houseblockTitleHeight = 30;
-    const houseblockTrackHeight = 90;
+    const houseblockTrackHeight = 30; /* TODO make bigger when more info is placed inside */
 
     //Create the horizontal scale and its axis generator.
     const xScale = d3.scaleTime().domain([projectStartDate, projectEndDate]).range([0, chartWidth]);
