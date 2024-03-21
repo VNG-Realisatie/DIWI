@@ -10,6 +10,11 @@ export type ProjectCreate = components["schemas"]["ProjectCreateSnapshotModel"];
 export type ProjectUpdate = components["schemas"]["ProjectUpdateModel"];
 export type SelectModel = components["schemas"]["SelectModel"];
 
+// The generated plot model doesn't work as the geojson definition is not correct.
+// Replace by any for now.
+type OgPlot = components["schemas"]["PlotModel"];
+export type Plot = Pick<OgPlot, Exclude<keyof OgPlot, "geojson">> & { geojson: any };
+
 export async function getProjects(pageNumber: number, pageSize: number): Promise<Array<Project>> {
     return getJson(`${API_URI}/projects/table?pageNumber=${pageNumber}&pageSize=${pageSize}`);
 }
@@ -40,4 +45,8 @@ export async function getProjectHouseBlocks(id: string): Promise<HouseBlock[]> {
 
 export async function addHouseBlock(newData: HouseBlock): Promise<HouseBlock> {
     return postJson(`${API_URI}/houseblock/add`, newData);
+}
+
+export async function getProjectPlots(id: string): Promise<Plot[]> {
+    return getJson(`${API_URI}/projects/${id}/plots`);
 }
