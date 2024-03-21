@@ -299,7 +299,7 @@ export const ProjectsWithHouseBlock = () => {
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.planType")}</Typography>
 
                         {!projectEditable ? (
-                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
+                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }} minHeight={34}>
                                 {planType.length > 0
                                     ? planType.map((pt: string) => {
                                           return <span key={pt}>{t(`projectTable.planTypeOptions.${pt}`)},</span>;
@@ -333,13 +333,15 @@ export const ProjectsWithHouseBlock = () => {
 
                         {!projectEditable ? (
                             <CellContainer>
-                                <span key={selectedProject?.priority?.value?.id}>
-                                    {selectedProject?.priority?.value?.name ??
-                                        `${selectedProject?.priority?.min?.name}-${selectedProject?.priority?.max?.name}`}
-                                </span>
+                                <Typography minHeight={24}>
+                                    <span key={selectedProject?.priority?.value?.id}>
+                                        {selectedProject?.priority?.value?.name ??
+                                            `${selectedProject?.priority?.min?.name}-${selectedProject?.priority?.max?.name}`}
+                                    </span>
+                                </Typography>
                             </CellContainer>
                         ) : (
-                            // TODO Implement later
+                            // TODO Implement later for ranges
                             <PriorityEditForm projectPriority={projectPriority} setProjectPriority={setProjectPriority} />
                         )}
                     </Grid>
@@ -348,7 +350,9 @@ export const ProjectsWithHouseBlock = () => {
 
                         {!projectEditable ? (
                             <CellContainer>
-                                {t(`projectTable.projectPhaseOptions.${projectPhase ? projectPhase : selectedProject?.projectPhase}`)}
+                                <Typography minHeight={24}>
+                                    {t(`projectTable.projectPhaseOptions.${projectPhase ? projectPhase : selectedProject?.projectPhase}`)}
+                                </Typography>
                             </CellContainer>
                         ) : (
                             <PhaseEditForm projectPhase={projectPhase} setProjectPhase={setProjectPhase} />
@@ -359,13 +363,16 @@ export const ProjectsWithHouseBlock = () => {
 
                         {!projectEditable ? (
                             <CellContainer>
-                                {selectedMunicipalityRole.length > 0
-                                    ? selectedMunicipalityRole.map((mr: SelectModel) => {
-                                          return <span key={mr.id}>{mr.name}</span>;
-                                      })
-                                    : selectedProject?.municipalityRole?.map((mr) => {
-                                          return <span key={mr.id}>{mr.name}</span>;
-                                      })}
+                                <Typography minHeight={24}>
+                                    {" "}
+                                    {selectedMunicipalityRole.length > 0
+                                        ? selectedMunicipalityRole.map((mr: SelectModel) => {
+                                              return <span key={mr.id}>{mr.name}</span>;
+                                          })
+                                        : selectedProject?.municipalityRole?.map((mr) => {
+                                              return <span key={mr.id}>{mr.name}</span>;
+                                          })}
+                                </Typography>
                             </CellContainer>
                         ) : (
                             <MunicipalityRoleEditForm
@@ -379,9 +386,11 @@ export const ProjectsWithHouseBlock = () => {
 
                         {!projectEditable ? (
                             <CellContainer>
-                                {confidentialityLevel
-                                    ? t(`projectTable.confidentialityLevelOptions.${confidentialityLevel}`)
-                                    : t(`projectTable.confidentialityLevelOptions.${selectedProject?.confidentialityLevel}`)}
+                                <Typography minHeight={24}>
+                                    {confidentialityLevel
+                                        ? t(`projectTable.confidentialityLevelOptions.${confidentialityLevel}`)
+                                        : t(`projectTable.confidentialityLevelOptions.${selectedProject?.confidentialityLevel}`)}
+                                </Typography>
                             </CellContainer>
                         ) : (
                             <ConfidentialityLevelEditForm confidentialityLevel={confidentialityLevel} setConfidentialityLevel={setConfidentialityLevel} />
@@ -389,7 +398,7 @@ export const ProjectsWithHouseBlock = () => {
                     </Grid>
                     <Grid item sm={2}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.projectLeader")}</Typography>
-                        <Box sx={{ border: "solid 1px #ddd" }}>
+                        <Box sx={{ border: "solid 1px #ddd" }} minHeight={34}>
                             <OrganizationSelect projectEditable={projectEditable} owner={leader} setOwner={setLeader} isLeader={true} />
                         </Box>
                     </Grid>
@@ -397,7 +406,7 @@ export const ProjectsWithHouseBlock = () => {
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.planningPlanStatus")}</Typography>
 
                         {!projectEditable ? (
-                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
+                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }} minHeight={34}>
                                 {planStatus.length > 0
                                     ? planStatus.map((pp: string) => {
                                           return <span key={pp}>{t(`projectTable.planningPlanStatus.${pp}`)}</span>;
