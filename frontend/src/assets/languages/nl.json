@@ -27,16 +27,16 @@
       "nameIsRequried": "Vul het veld projectnaam in",
       "informationForm": {
         "title": "Vul de projectgegevens in",
-        "nameLabel": "Projectnaam en projectkleur*",
+        "nameLabel": "Projectnaam en projectkleur *",
         "planType": "Plan Type",
-        "startDate": "Start Datum",
-        "endDate": "Eind Datum",
+        "startDate": "Start Datum *",
+        "endDate": "Eind Datum *",
         "priority": "Priorisering",
-        "projectPhase": "Project Fase",
+        "projectPhase": "Project Fase *",
         "roleMunicipality": "Rol Gemeente",
         "programming": "Programmering",
         "projectLeader": "Project Leider",
-        "confidentialityLevel": "Vertrouwlijkheidsniveau",
+        "confidentialityLevel": "Vertrouwlijkheidsniveau *",
         "planningPlanStatus": "Planologische Plan Status",
         "owner": "Eigenaar"
       },
@@ -136,6 +136,13 @@
         "expectedDelivery": "Verwachte oplevering",
         "status": "Toestand",
         "is": "is"
+      },
+      "hasMissingRequiredAreas":{
+        "name":"Naam ontbreekt",
+        "startDate":"Start datum ontbreekt",
+        "endDate":"End datum ontbreekt",
+        "projectPhase":"Project Fase ontbreekt",
+        "confidentialityLevel":"Vertrouwlijkheidsniveau  ontbreekt"
       }
     },
     "sidebar": {

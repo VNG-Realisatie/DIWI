@@ -36,7 +36,7 @@ export const CreateProject = () => {
     const [createProjectForm, setCreateProjectForm] = useState<any>({ projectColor: "#FF5733" });
     const [createFormHouseBlock, setCreateFormHouseBlock] = useState<HouseBlock>(emptyHouseBlockForm);
     const [activeStep, setActiveStep] = useState<number>(0);
-    const [validationError, setValidationError] = useState(false);
+    const [validationError, setValidationError] = useState("");
     const [saved, setSaved] = useState(false);
 
     const { id } = useParams();
@@ -47,13 +47,28 @@ export const CreateProject = () => {
     const { t } = useTranslation();
 
     const handleSave = async () => {
-        if (!createProjectForm || !createProjectForm.projectName) {
-            setValidationError(true);
+        if (!createProjectForm.projectName) {
+            setValidationError("name");
+            return;
+        } else if (!createProjectForm.startDate) {
+            setValidationError("startDate");
+            return;
+        } else if (!createProjectForm.endDate) {
+            setValidationError("endDate");
+            return;
+        } else if (!createProjectForm.projectColor) {
+            setValidationError("projectColor");
+            return;
+        } else if (!createProjectForm.projectPhase) {
+            setValidationError("projectPhase");
+            return;
+        } else if (!createProjectForm.confidentialityLevel) {
+            setValidationError("confidentialityLevel");
             return;
         }
         try {
             if (id) {
-                setValidationError(false);
+                setValidationError("");
                 const res = await updateProject(id, createProjectForm);
                 if (res.ok) {
                     setAlert(t("createProject.successfullySaved"), "success");
@@ -68,7 +83,7 @@ export const CreateProject = () => {
                     startDate: createProjectForm.startDate,
                     endDate: createProjectForm.endDate,
                 };
-                setValidationError(false);
+                setValidationError("");
                 const project = await createProject(temporaryCreateForm); //TODO later it will be change with createProjectForm
                 setSaved(true);
 

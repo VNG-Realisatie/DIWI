@@ -1,4 +1,17 @@
-import { Autocomplete, Box, InputLabel, ListItemText, MenuItem, OutlinedInput, Select, SelectChangeEvent, Stack, TextField, Typography } from "@mui/material";
+import {
+    Alert,
+    Autocomplete,
+    Box,
+    InputLabel,
+    ListItemText,
+    MenuItem,
+    OutlinedInput,
+    Select,
+    SelectChangeEvent,
+    Stack,
+    TextField,
+    Typography,
+} from "@mui/material";
 import ColorSelector from "../ColorSelector";
 import { DatePicker } from "@mui/x-date-pickers";
 
@@ -18,6 +31,7 @@ type Props = {
     createProjectForm: any;
     validationError: any;
 };
+
 export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm, validationError }: Props) => {
     const { t } = useTranslation();
     const [priorityOptionList, setPriorityOptionList] = useState<SelectModel[]>();
@@ -58,6 +72,11 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
             });
         }
     };
+    const datePickerStyle = {
+        "& .MuiFormHelperText-root": {
+            color: "red", // Change this to your desired color
+        },
+    };
     return (
         <Box mt={4}>
             <Typography variant="h6" fontWeight="600">
@@ -67,22 +86,23 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                 {t("createProject.informationForm.nameLabel")}
             </Typography>
             <Stack direction="row" alignItems="center" justifyContent="space-between">
-                <TextField
-                    required
-                    id="projectname"
-                    size="small"
-                    variant="outlined"
-                    value={createProjectForm ? createProjectForm.projectName : ""}
-                    sx={{ width: "97%" }}
-                    onChange={(e) => {
-                        setCreateProjectForm({
-                            ...createProjectForm,
-                            projectName: e.target.value,
-                        });
-                    }}
-                    error={validationError}
-                    helperText={validationError && t("createProject.nameIsRequried")}
-                />
+                <Stack width="100%">
+                    <TextField
+                        required
+                        id="projectname"
+                        size="small"
+                        variant="outlined"
+                        value={createProjectForm ? createProjectForm.projectName : ""}
+                        onChange={(e) => {
+                            setCreateProjectForm({
+                                ...createProjectForm,
+                                projectName: e.target.value,
+                            });
+                        }}
+                    />
+                    {validationError === "name" && <Alert severity="warning">{t("createProject.hasMissingRequiredAreas.name")}</Alert>}
+                </Stack>
+
                 <ColorSelector selectedColor={createProjectForm} defaultColor="#FF5733" onColorChange={handleColorChange} />
             </Stack>
             <Stack direction="row" alignItems="center" spacing={3} mt={2}>
@@ -110,8 +130,11 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                 <Stack flex={2}>
                     <InputLabel id="startDate">{t("createProject.informationForm.startDate")}</InputLabel>
                     <DatePicker
+                        sx={datePickerStyle}
                         format={dateFormats.keyboardDate}
-                        slotProps={{ textField: { size: "small" } }}
+                        slotProps={{
+                            textField: { size: "small" },
+                        }}
                         value={createProjectForm?.startDate}
                         onChange={(newValue: Dayjs | null) =>
                             setCreateProjectForm({
@@ -120,12 +143,16 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                             })
                         }
                     />
+                    {validationError === "startDate" && <Alert severity="warning">{t("createProject.hasMissingRequiredAreas.startDate")}</Alert>}
                 </Stack>
                 <Stack flex={2}>
                     <InputLabel id="enddate">{t("createProject.informationForm.endDate")} </InputLabel>
                     <DatePicker
+                        sx={datePickerStyle}
                         format={dateFormats.keyboardDate}
-                        slotProps={{ textField: { size: "small" } }}
+                        slotProps={{
+                            textField: { size: "small" },
+                        }}
                         value={createProjectForm?.endDate}
                         onChange={(newValue: Dayjs | null) =>
                             setCreateProjectForm({
@@ -134,6 +161,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                             })
                         }
                     />
+                    {validationError === "endDate" && <Alert severity="warning">{t("createProject.hasMissingRequiredAreas.endDate")}</Alert>}
                 </Stack>
             </Stack>
             <Stack direction="row" alignItems="center" spacing={3} mt={2}>
@@ -183,6 +211,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                             );
                         })}
                     </Select>
+                    {validationError === "projectPhase" && <Alert severity="warning">{t("createProject.hasMissingRequiredAreas.projectPhase")}</Alert>}
                 </Stack>
                 <Stack flex={1}>
                     <InputLabel id="role">{t("createProject.informationForm.roleMunicipality")}</InputLabel>
@@ -253,6 +282,9 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                             );
                         })}
                     </Select>
+                    {validationError === "confidentialityLevel" && (
+                        <Alert severity="warning">{t("createProject.hasMissingRequiredAreas.confidentialityLevel")}</Alert>
+                    )}
                 </Stack>
                 <Stack flex={1}>
                     <InputLabel id="planningPlanStatus">{t("createProject.informationForm.planningPlanStatus")}</InputLabel>
