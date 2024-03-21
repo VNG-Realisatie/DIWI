@@ -100,7 +100,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                             });
                         }}
                     />
-                    {validationError === "name" && <Alert severity="warning">{t("createProject.hasMissingRequiredAreas.name")}</Alert>}
+                    {!createProjectForm.projectName && <Alert severity="warning">{t("createProject.hasMissingRequiredAreas.name")}</Alert>}
                 </Stack>
 
                 <ColorSelector selectedColor={createProjectForm} defaultColor="#FF5733" onColorChange={handleColorChange} />
@@ -143,7 +143,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                             })
                         }
                     />
-                    {validationError === "startDate" && <Alert severity="warning">{t("createProject.hasMissingRequiredAreas.startDate")}</Alert>}
+                    {!createProjectForm.startDate && <Alert severity="warning">{t("createProject.hasMissingRequiredAreas.startDate")}</Alert>}
                 </Stack>
                 <Stack flex={2}>
                     <InputLabel id="enddate">{t("createProject.informationForm.endDate")} </InputLabel>
@@ -161,7 +161,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                             })
                         }
                     />
-                    {validationError === "endDate" && <Alert severity="warning">{t("createProject.hasMissingRequiredAreas.endDate")}</Alert>}
+                    {!createProjectForm.endDate && <Alert severity="warning">{t("createProject.hasMissingRequiredAreas.endDate")}</Alert>}
                 </Stack>
             </Stack>
             <Stack direction="row" alignItems="center" spacing={3} mt={2}>
@@ -211,7 +211,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                             );
                         })}
                     </Select>
-                    {validationError === "projectPhase" && <Alert severity="warning">{t("createProject.hasMissingRequiredAreas.projectPhase")}</Alert>}
+                    {!createProjectForm.projectPhase && <Alert severity="warning">{t("createProject.hasMissingRequiredAreas.projectPhase")}</Alert>}
                 </Stack>
                 <Stack flex={1}>
                     <InputLabel id="role">{t("createProject.informationForm.roleMunicipality")}</InputLabel>
@@ -282,7 +282,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                             );
                         })}
                     </Select>
-                    {validationError === "confidentialityLevel" && (
+                    {!createProjectForm.confidentialityLevel && (
                         <Alert severity="warning">{t("createProject.hasMissingRequiredAreas.confidentialityLevel")}</Alert>
                     )}
                 </Stack>

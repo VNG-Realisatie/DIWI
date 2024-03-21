@@ -47,23 +47,15 @@ export const CreateProject = () => {
     const { t } = useTranslation();
 
     const handleSave = async () => {
-        if (!createProjectForm.projectName) {
-            setValidationError("name");
-            return;
-        } else if (!createProjectForm.startDate) {
-            setValidationError("startDate");
-            return;
-        } else if (!createProjectForm.endDate) {
-            setValidationError("endDate");
-            return;
-        } else if (!createProjectForm.projectColor) {
-            setValidationError("projectColor");
-            return;
-        } else if (!createProjectForm.projectPhase) {
-            setValidationError("projectPhase");
-            return;
-        } else if (!createProjectForm.confidentialityLevel) {
-            setValidationError("confidentialityLevel");
+        if (
+            !createProjectForm.projectName ||
+            !createProjectForm.startDate ||
+            !createProjectForm.endDate ||
+            !createProjectForm.projectColor ||
+            !createProjectForm.projectPhase ||
+            !createProjectForm.confidentialityLevel
+        ) {
+            setAlert(t("createProject.hasMissingRequiredAreas.hasmissingProperty"), "warning");
             return;
         }
         try {
