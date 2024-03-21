@@ -18,7 +18,7 @@ import { Box, Stack } from "@mui/material";
 import ProjectContext from "../../context/ProjectContext";
 import { Details } from "../Details";
 import { Extent } from "ol/extent";
-import { Attribution, defaults as defaultControls } from "ol/control.js";
+import { defaults as defaultControls } from "ol/control.js";
 const ProjectPlotSelector = () => {
     const { t } = useTranslation();
 
