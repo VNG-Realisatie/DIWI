@@ -106,12 +106,13 @@ const ProjectPlotSelector = () => {
 
             const changed = !_.isEqual(selectedPlots, originalSelectedPlots);
             setPlotsChanged(changed);
+            selectedPlotLayerSource.clear();
             for (const selectedPlot of selectedPlots) {
                 const geojson = new GeoJSON().readFeatures(selectedPlot.geoJson);
                 selectedPlotLayerSource.addFeatures(geojson);
             }
 
-            if (extent != null && !selectedPlotLayerSource.isEmpty()) {
+            if (extent == null && !selectedPlotLayerSource.isEmpty()) {
                 setExtent(selectedPlotLayerSource.getExtent());
             }
         },
