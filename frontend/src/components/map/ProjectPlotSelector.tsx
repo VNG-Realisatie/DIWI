@@ -9,16 +9,17 @@ import ClearIcon from "@mui/icons-material/Clear";
 import SaveIcon from "@mui/icons-material/Save";
 import Tooltip from "@mui/material/Tooltip";
 
+import { Box, Stack } from "@mui/material";
 import _ from "lodash";
+import { defaults as defaultControls } from "ol/control.js";
+import { Extent } from "ol/extent";
 import queryString from "query-string";
 import { useCallback, useContext, useEffect, useId, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Plot, PlotGeoJSON, getProjectPlots, updateProjectPlots } from "../../api/projectsServices";
-import { Box, Stack } from "@mui/material";
+import { Plot, PlotGeoJSON, getProjectPlots, updateProjectPlots, updateProjects } from "../../api/projectsServices";
 import ProjectContext from "../../context/ProjectContext";
 import { Details } from "../Details";
-import { Extent } from "ol/extent";
-import { defaults as defaultControls } from "ol/control.js";
+
 const ProjectPlotSelector = () => {
     const { t } = useTranslation();
 
@@ -51,9 +52,16 @@ const ProjectPlotSelector = () => {
         setSelectedPlots(originalSelectedPlots);
     };
 
-    const handleSaveChange = () => {
+    const handleSaveChange = async () => {
         if (selectedProject) {
-            updateProjectPlots(selectedProject.projectId, selectedPlots).then(() => setOriginalSelectedPlots(selectedPlots));
+            await updateProjectPlots(selectedProject.projectId, selectedPlots);
+            setOriginalSelectedPlots(selectedPlots);
+
+            const extent = selectedPlotLayerSource?.getExtent();
+            if (extent) {
+                selectedProject.location = { lat: extent[0] + (extent[2] - extent[0]) / 2, lng: extent[1] + (extent[3] - extent[1]) / 2 };
+            }
+            await updateProjects(selectedProject);
         }
     };
 
@@ -176,6 +184,7 @@ const ProjectPlotSelector = () => {
                 controls: defaultControls({ attribution: false }),
             });
             setMap(newMap);
+
             return () => {
                 newMap.dispose();
                 const mapElement = document.getElementById(id);
