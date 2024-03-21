@@ -30,6 +30,7 @@ import { dateFormats } from "./localization";
 import { ProjectTimeline } from "./components/project/ProjectTimeline";
 import ProjectPlotSelector from "./components/map/ProjectPlotSelector";
 import { ConfigProvider } from "./context/ConfigContext";
+import "dayjs/locale/nl";
 
 function RequiresLogin() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
