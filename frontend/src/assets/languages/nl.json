@@ -13,7 +13,9 @@
       "projectDeletion": "Project {{name}} is verwijderd",
       "delete": "Verwijderen",
       "cancel": "Annuleren",
-      "noInfoAvailable": "Geen informatie beschikbaar"
+      "noInfoAvailable": "Geen informatie beschikbaar",
+      "updated":"Succesvol geüpdatet",
+      "failedToUpdate":"Kan niet updaten."
     },
     "createProject": {
       "information": "Project informatie",
@@ -267,6 +269,9 @@
           "successfullyDeleted": "Eigenschappen succesvol verwijderd."
         }
       }
+    },
+    "customProperties": {
+      "title": "Maatwerk eigenschappen"
     },
     "projectPhase": "Project Fase",
     "planType": "Plan Type",

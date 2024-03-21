@@ -1,7 +1,7 @@
 package nl.vng.diwi.models;
 
 import lombok.Data;
-import nl.vng.diwi.dal.entities.ProjectCustomPropertySqlModel;
+import nl.vng.diwi.dal.entities.ProjectHouseblockCustomPropertySqlModel;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
 
 import java.math.BigDecimal;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Data
-public class ProjectCustomPropertyModel {
+public class ProjectHouseblockCustomPropertyModel {
 
     private UUID customPropertyId;
 
@@ -26,12 +26,12 @@ public class ProjectCustomPropertyModel {
 
     private SingleValueOrRangeModel<UUID> ordinals;
 
-    public ProjectCustomPropertyModel() {
+    public ProjectHouseblockCustomPropertyModel() {
         this.numericValue = new SingleValueOrRangeModel<>();
         this.ordinals = new SingleValueOrRangeModel<>();
     }
 
-    public ProjectCustomPropertyModel(ProjectCustomPropertySqlModel sqlModel) {
+    public ProjectHouseblockCustomPropertyModel(ProjectHouseblockCustomPropertySqlModel sqlModel) {
         this.customPropertyId = sqlModel.getCustomPropertyId();
         this.propertyType = sqlModel.getPropertyType();
         this.textValue = sqlModel.getTextValue();

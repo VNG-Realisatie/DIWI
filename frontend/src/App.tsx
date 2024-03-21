@@ -12,7 +12,6 @@ import { NoMatch } from "./pages/NoMatch";
 import * as Paths from "./Paths";
 import { ProjectDetail } from "./pages/ProjectDetail";
 import { ProjectProvider } from "./context/ProjectContext";
-import DetailsWithMap from "./components/DetailsWithMap";
 import { PolicyLists } from "./pages/PolicyLists";
 import { DashboardProjects } from "./pages/DashboardProjects";
 import { ExchangeData } from "./pages/ExchangeData";
@@ -29,6 +28,7 @@ import { Settings } from "./components/admin/Settings";
 import { theme } from "./theme";
 import { dateFormats } from "./localization";
 import { ProjectTimeline } from "./components/project/ProjectTimeline";
+import ProjectPlotSelector from "./components/map/ProjectPlotSelector";
 import { ConfigProvider } from "./context/ConfigContext";
 
 function RequiresLogin() {
@@ -76,9 +76,11 @@ function App() {
                         <Route
                             index
                             element={
-                                <ProjectProvider>
-                                    <Projects />
-                                </ProjectProvider>
+                                <>
+                                    <ProjectProvider>
+                                        <Projects />
+                                    </ProjectProvider>
+                                </>
                             }
                         />
                         <Route
@@ -118,7 +120,7 @@ function App() {
                             element={
                                 <ProjectProvider>
                                     <ProjectDetail>
-                                        <DetailsWithMap />
+                                        <ProjectPlotSelector />
                                     </ProjectDetail>
                                 </ProjectProvider>
                             }

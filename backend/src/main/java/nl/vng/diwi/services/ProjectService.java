@@ -3,6 +3,7 @@ package nl.vng.diwi.services;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -21,7 +22,7 @@ import nl.vng.diwi.dal.entities.ProjectCategoryCustomPropertyChangelogValue;
 import nl.vng.diwi.dal.entities.ProjectNumericCustomPropertyChangelog;
 import nl.vng.diwi.dal.entities.ProjectOrdinalCustomPropertyChangelog;
 import nl.vng.diwi.dal.entities.ProjectTextCustomPropertyChangelog;
-import nl.vng.diwi.models.ProjectCustomPropertyModel;
+import nl.vng.diwi.models.ProjectHouseblockCustomPropertyModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -95,40 +96,54 @@ public class ProjectService {
         return result;
     }
 
-    public List<ProjectCustomPropertyModel> getProjectCustomProperties(VngRepository repo, UUID projectUuid) {
+    public List<ProjectHouseblockCustomPropertyModel> getProjectCustomProperties(VngRepository repo, UUID projectUuid) {
 
         return repo.getProjectsDAO().getProjectCustomProperties(projectUuid).stream()
-                .map(ProjectCustomPropertyModel::new).toList();
+                .map(ProjectHouseblockCustomPropertyModel::new).toList();
 
     }
 
-    public List<PlotModel> getPlots(VngRepository repo, UUID projectUuid) {
-        return repo.getPlotDAO()
-                .getPlots(projectUuid)
-                .stream()
-                .map(value -> new PlotModel(value))
-                .toList();
+    public List<PlotModel> getCurrentPlots(Project project) {
+
+        Milestone projectStartMilestone = project.getDuration().get(0).getStartMilestone();
+        LocalDate projectStartDate = (new MilestoneModel(projectStartMilestone)).getDate();
+
+        LocalDate referenceDate = LocalDate.now();
+        if (projectStartDate.isAfter(referenceDate)) {
+            referenceDate = projectStartDate;
+        }
+        LocalDate finalReferenceDate = referenceDate;
+
+        var currentChangelog = project.getRegistryLinks().stream()
+            .filter(pc -> !(new MilestoneModel(pc.getStartMilestone())).getDate().isAfter(finalReferenceDate)
+                && (new MilestoneModel(pc.getEndMilestone())).getDate().isAfter(finalReferenceDate))
+            .findFirst().orElse(null);
+
+        if (currentChangelog != null) {
+            return currentChangelog.getValues().stream().map(PlotModel::new).toList();
+        }
+
+        return new ArrayList<>();
     }
 
-    public void setPlots(VngRepository repo, UUID projectId, List<PlotModel> plots, UUID loggedInUserUuid) {
+    public void setPlots(VngRepository repo, Project project, List<PlotModel> plots, UUID loggedInUserUuid) {
 
         var currentDate = LocalDate.now();
 
-        var dao = repo.getPlotDAO();
-        var project = repo.findById(Project.class, projectId);
-
-        var oldCl = dao.getProjectRegistryLinkChangelog(projectId);
         var oldClAfterUpdate = new ProjectRegistryLinkChangelog();
-        var newCl = new ProjectRegistryLinkChangelog();
-        newCl.setProject(project);
+        ProjectRegistryLinkChangelog newCl = null;
 
-        prepareChangelogValuesToUpdate(repo, project, List.of(oldCl), newCl, oldClAfterUpdate, loggedInUserUuid,
-                currentDate);
-        repo.persist(oldCl);
-        repo.persist(newCl);
+        if (!plots.isEmpty()) {
+            newCl = new ProjectRegistryLinkChangelog();
+            newCl.setProject(project);
+        }
 
-        for (var plot : plots) {
-            repo.persist(ProjectRegistryLinkChangelogValue.builder()
+        var oldCl = prepareChangelogValuesToUpdate(repo, project, project.getRegistryLinks(), newCl, oldClAfterUpdate, loggedInUserUuid, currentDate);
+
+        if (newCl != null) {
+            repo.persist(newCl);
+            for (var plot : plots) {
+                repo.persist(ProjectRegistryLinkChangelogValue.builder()
                     .brkGemeenteCode(plot.getBrkGemeenteCode())
                     .brkPerceelNummer(plot.getBrkPerceelNummer())
                     .brkSectie(plot.getBrkSectie())
@@ -136,8 +151,28 @@ public class ProjectService {
                     .geoJson(plot.getGeoJson())
                     .projectRegistryLinkChangelog(newCl)
                     .build());
+            }
         }
 
+        if (oldCl != null) {
+            repo.persist(oldCl);
+            if (oldClAfterUpdate.getStartMilestone() != null) {
+                // it is a current project && it had a non-null changelog before the update
+                oldClAfterUpdate.setProject(project);
+                repo.persist(oldClAfterUpdate);
+
+                for (var oldClValue : oldCl.getValues()) {
+                    repo.persist(ProjectRegistryLinkChangelogValue.builder()
+                        .brkGemeenteCode(oldClValue.getBrkGemeenteCode())
+                        .brkPerceelNummer(oldClValue.getBrkPerceelNummer())
+                        .brkSectie(oldClValue.getBrkSectie())
+                        .brkSelectie(oldClValue.getBrkSelectie())
+                        .geoJson(oldClValue.getGeoJson())
+                        .projectRegistryLinkChangelog(oldClAfterUpdate)
+                        .build());
+                }
+            }
+        }
     }
 
     public Project createProject(VngRepository repo, UUID loggedInUserUuid, ProjectCreateSnapshotModel projectData, ZonedDateTime now)

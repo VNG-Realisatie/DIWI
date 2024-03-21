@@ -68,7 +68,6 @@ export const Details = ({ project }: Props) => {
             {project &&
                 Object.entries(project).map(([property, value]) => {
                     if (property === "totalValue" || property === "projectPhase" || property === "planType") {
-                        console.log(value);
                         return (
                             <Fragment key={property}>
                                 <ListItem
