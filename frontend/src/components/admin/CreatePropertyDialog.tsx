@@ -69,7 +69,11 @@ export const CreatePropertyDialog = ({
                         onChange={(e: SelectChangeEvent<typeof selectedObjectType>) => setSelectedObjectType(e.target.value as ObjectType)}
                     >
                         {objectType.map((object) => {
-                            return <MenuItem value={object}>{object}</MenuItem>;
+                            return (
+                                <MenuItem key={object} value={object}>
+                                    {object}
+                                </MenuItem>
+                            );
                         })}
                     </Select>
                     <InputLabel variant="standard" id="propertyType">
@@ -81,7 +85,11 @@ export const CreatePropertyDialog = ({
                         onChange={(e: SelectChangeEvent<typeof selectedPropertyType>) => setSelectedPropertyType(e.target.value as PropertyType)}
                     >
                         {propertyType.map((property) => {
-                            return <MenuItem value={property}>{property}</MenuItem>;
+                            return (
+                                <MenuItem key={property} value={property}>
+                                    {property}
+                                </MenuItem>
+                            );
                         })}
                     </Select>
                     {selectedPropertyType === "CATEGORY" && <CategoryCreateOption categoryValue={categories} setCategoryValue={setCategories} />}
