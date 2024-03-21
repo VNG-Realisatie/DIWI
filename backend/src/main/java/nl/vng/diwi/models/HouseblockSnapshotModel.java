@@ -172,6 +172,7 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
+    @EqualsAndHashCode
     public static class OwnershipValue {
         private UUID id;
         private OwnershipType type;

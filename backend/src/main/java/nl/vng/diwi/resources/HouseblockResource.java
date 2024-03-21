@@ -174,6 +174,27 @@ public class HouseblockResource {
                         houseblockUpdateModelList.add(new HouseblockUpdateModel(HouseblockUpdateModel.HouseblockProperty.endDate, (newEndDate == null) ? null : newEndDate.toString()));
                     }
                 }
+                case ownershipValue -> { //TODO: need to limit only one changelog for each OwnershipType?
+                    List<HouseblockSnapshotModel.OwnershipValue> newOwnershipValues = houseblockModelToUpdate.getOwnershipValue();
+                    List<HouseblockSnapshotModel.OwnershipValue> oldOwnershipValues = houseblockCurrentValues.getOwnershipValue();
+                    for (var newOV : newOwnershipValues) {
+                        if (newOV.getId() == null) {
+                            houseblockUpdateModelList.add(new HouseblockUpdateModel(HouseblockUpdateModel.HouseblockProperty.ownershipValue, newOV, HouseblockUpdateModel.ActionType.add));
+                        } else {
+                            var olvOv = oldOwnershipValues.stream().filter(ov -> ov.getId().equals(newOV.getId())).findFirst()
+                                .orElseThrow(() -> new VngBadRequestException("Unrecognized ownership value id."));
+                            if (!Objects.equals(newOV, olvOv)) {
+                                houseblockUpdateModelList.add(new HouseblockUpdateModel(HouseblockUpdateModel.HouseblockProperty.ownershipValue, newOV, HouseblockUpdateModel.ActionType.update));
+                            }
+                        }
+                    }
+                    for (var oldOV : oldOwnershipValues) {
+                        var newOv = newOwnershipValues.stream().filter(ov -> oldOV.getId().equals(ov.getId())).findFirst().orElse(null);
+                        if (newOv == null) {
+                            houseblockUpdateModelList.add(new HouseblockUpdateModel(HouseblockUpdateModel.HouseblockProperty.ownershipValue, oldOV, HouseblockUpdateModel.ActionType.remove));
+                        }
+                    }
+                }
                 default -> throw new VngServerErrorException(String.format("Houseblock property not implemented %s ", projectProperty));
             }
         }
@@ -226,6 +247,8 @@ public class HouseblockResource {
                 houseblockService.updatePhysicalAppearanceAndHouseType(repo, project, houseblock, physicalAppearanceMap, houseTypeMap, loggedUserUuid, updateDate);
             }
             case programming -> houseblockService.updateHouseblockProgramming(repo, project, houseblock, updateModel.getBooleanValue(), loggedUserUuid, updateDate);
+            case ownershipValue -> houseblockService.updateHouseblockOwnershipValue(repo, project, houseblock, updateModel.getOwnershipValue(),
+                updateModel.getActionType(), loggedUserUuid, updateDate);
         }
     }
 

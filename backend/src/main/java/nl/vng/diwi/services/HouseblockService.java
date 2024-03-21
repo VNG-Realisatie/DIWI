@@ -28,6 +28,7 @@ import nl.vng.diwi.dal.entities.enums.ValueType;
 import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.dal.entities.HouseblockSnapshotSqlModel;
+import nl.vng.diwi.models.HouseblockUpdateModel;
 import nl.vng.diwi.models.MilestoneModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
 import nl.vng.diwi.rest.VngNotFoundException;
@@ -503,6 +504,83 @@ public class HouseblockService {
                 repo.persist(oldChangelogAfterUpdate);
             }
         }
+    }
+
+    public void updateHouseblockOwnershipValue(VngRepository repo, Project project, Houseblock houseblock, HouseblockSnapshotModel.OwnershipValue ownershipValue,
+                                               HouseblockUpdateModel.ActionType actionType, UUID loggedInUserUuid, LocalDate updateDate) {
+
+        Milestone houseblockStartMilestone = houseblock.getDuration().get(0).getStartMilestone();
+        Milestone houseblockEndMilestone = houseblock.getDuration().get(0).getEndMilestone();
+        LocalDate houseblockStartDate = new MilestoneModel(houseblockStartMilestone).getDate();
+        LocalDate houseblockEndDate = new MilestoneModel(houseblockEndMilestone).getDate();
+
+        if (actionType == HouseblockUpdateModel.ActionType.add) {
+            HouseblockOwnershipValueChangelog newChangelog = createOwnershipChangelog(ownershipValue);
+            newChangelog.setHouseblock(houseblock);
+            newChangelog.setCreateUser(repo.getReferenceById(User.class, loggedInUserUuid));
+            if (houseblockStartDate.isBefore(updateDate) && !houseblockEndDate.isBefore(updateDate)) {
+                newChangelog.setStartMilestone(projectService.getOrCreateMilestoneForProject(repo, project, updateDate, loggedInUserUuid));
+            } else {
+                newChangelog.setStartMilestone(houseblockStartMilestone); //TODO: is this ok for past houseblock?
+            }
+            newChangelog.setEndMilestone(houseblockEndMilestone); //TODO: is this ok for future houseblock?
+            repo.persist(newChangelog);
+        } else if (actionType == HouseblockUpdateModel.ActionType.remove) {
+            HouseblockOwnershipValueChangelog oldChangelog = houseblock.getOwnershipValues().stream().filter(ov -> ov.getId().equals(ownershipValue.getId()))
+                .findFirst().orElseThrow(() -> new VngServerErrorException(String.format("Ownerhip value %s not found", ownershipValue.getId())));
+            oldChangelog.setChangeEndDate(ZonedDateTime.now());
+            oldChangelog.setChangeUser(repo.getReferenceById(User.class, loggedInUserUuid));
+            repo.persist(oldChangelog);
+        } else {
+            HouseblockOwnershipValueChangelog oldChangelogAfterUpdate = new HouseblockOwnershipValueChangelog();
+            HouseblockOwnershipValueChangelog newChangelog = createOwnershipChangelog(ownershipValue);
+            newChangelog.setHouseblock(houseblock);
+            newChangelog.setCreateUser(repo.getReferenceById(User.class, loggedInUserUuid));
+
+            List<HouseblockOwnershipValueChangelog> changelos = houseblock.getOwnershipValues().stream().filter(c -> c.getId().equals(ownershipValue.getId())).toList();
+
+            HouseblockOwnershipValueChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, houseblock, changelos, newChangelog,
+                oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
+
+            repo.persist(newChangelog);
+            repo.persist(oldChangelog);
+
+            if (oldChangelogAfterUpdate.getStartMilestone() != null) {
+                // it is a current houseblock && it had a non-null changelog before the update
+                oldChangelogAfterUpdate.setHouseblock(houseblock);
+                oldChangelogAfterUpdate.setOwnershipType(oldChangelog.getOwnershipType());
+                oldChangelogAfterUpdate.setAmount(oldChangelog.getAmount());
+                oldChangelogAfterUpdate.setValue(oldChangelog.getValue());
+                oldChangelogAfterUpdate.setValueRange(oldChangelog.getValueRange());
+                oldChangelogAfterUpdate.setValueType(oldChangelog.getValueType());
+                oldChangelogAfterUpdate.setRentalValue(oldChangelog.getRentalValue());
+                oldChangelogAfterUpdate.setRentalValueRange(oldChangelog.getRentalValueRange());
+                oldChangelogAfterUpdate.setRentalValueType(oldChangelog.getRentalValueType());
+                repo.persist(oldChangelogAfterUpdate);
+            }
+        }
+    }
+
+    private HouseblockOwnershipValueChangelog createOwnershipChangelog(HouseblockSnapshotModel.OwnershipValue ownershipValue) {
+        HouseblockOwnershipValueChangelog newChangelog = new HouseblockOwnershipValueChangelog();
+        newChangelog.setOwnershipType(ownershipValue.getType());
+        newChangelog.setAmount(ownershipValue.getAmount());
+        newChangelog.setValue(ownershipValue.getValue().getValue());
+        if (ownershipValue.getValue().getMin() != null && ownershipValue.getValue().getMax() != null) {
+            newChangelog.setValueRange(Range.closed(ownershipValue.getValue().getMin(), ownershipValue.getValue().getMax()));
+            newChangelog.setValueType(ValueType.RANGE);
+        } else {
+            newChangelog.setValueType(ValueType.SINGLE_VALUE);
+        }
+        newChangelog.setRentalValue(ownershipValue.getRentalValue().getValue());
+        if (ownershipValue.getRentalValue().getMin() != null && ownershipValue.getRentalValue().getMax() != null) {
+            newChangelog.setRentalValueRange(Range.closed(ownershipValue.getRentalValue().getMin(), ownershipValue.getRentalValue().getMax()));
+            newChangelog.setRentalValueType(ValueType.RANGE);
+        } else {
+            newChangelog.setRentalValueType(ValueType.SINGLE_VALUE);
+        }
+        newChangelog.setChangeStartDate(ZonedDateTime.now());
+        return newChangelog;
     }
 
     private <T extends MilestoneChangeDataSuperclass> T prepareChangelogValuesToUpdate(VngRepository repo, Project project, Houseblock houseblock, List<T> changelogs,

@@ -11,25 +11,13 @@ import java.util.Map;
 @NoArgsConstructor
 public class HouseblockUpdateModel {
 
-    public enum HouseblockProperty {
-        name,
-        groundPosition,
-        purpose,
-        physicalAppearanceAndHouseType,
-        programming,
-        size,
-        // Do not change the order - startDate and endDate must be the last ones!
-        // It will cause problems and extra milestones to be created.
-        startDate, // Do not change the order - startDate and endDate must be the last ones
-        endDate; // Do not change the order - startDate and endDate must be the last ones
-    }
-
     private HouseblockProperty property;
     private String value;
     private Boolean booleanValue;
     private SingleValueOrRangeModel<BigDecimal> sizeValue;
     private Map<Object, Integer> valuesMap;
-
+    private HouseblockSnapshotModel.OwnershipValue ownershipValue;
+    private ActionType actionType;
     public HouseblockUpdateModel(HouseblockProperty property, String value) {
         this.property = property;
         this.value = value;
@@ -48,6 +36,12 @@ public class HouseblockUpdateModel {
     public HouseblockUpdateModel(HouseblockProperty property, SingleValueOrRangeModel<BigDecimal> singleValueOrRangeModel) {
         this.property = property;
         this.sizeValue = singleValueOrRangeModel;
+    }
+
+    public HouseblockUpdateModel(HouseblockProperty property, HouseblockSnapshotModel.OwnershipValue ownershipValue, ActionType actionType) {
+        this.property = property;
+        this.ownershipValue = ownershipValue;
+        this.actionType = actionType;
     }
 
     public String validate() {
@@ -71,8 +65,30 @@ public class HouseblockUpdateModel {
                 yield null;
             }
             case programming -> null;
+            case ownershipValue -> (ownershipValue.getType() == null || ownershipValue.getAmount() == null || !ownershipValue.getRentalValue().isValid() ||
+                !ownershipValue.getValue().isValid()) ? "Ownership value is not valid" : null;
         };
 
+    }
+
+    public enum HouseblockProperty {
+        name,
+        groundPosition,
+        ownershipValue,
+        purpose,
+        physicalAppearanceAndHouseType,
+        programming,
+        size,
+        // Do not change the order - startDate and endDate must be the last ones!
+        // It will cause problems and extra milestones to be created.
+        startDate, // Do not change the order - startDate and endDate must be the last ones
+        endDate; // Do not change the order - startDate and endDate must be the last ones
+    }
+
+    public enum ActionType {
+        add,
+        remove,
+        update;
     }
 
 }
