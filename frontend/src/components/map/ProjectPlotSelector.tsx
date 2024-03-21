@@ -18,7 +18,7 @@ import { Box, Stack } from "@mui/material";
 import ProjectContext from "../../context/ProjectContext";
 import { Details } from "../Details";
 import { Extent } from "ol/extent";
-
+import { Attribution, defaults as defaultControls } from "ol/control.js";
 const ProjectPlotSelector = () => {
     const { t } = useTranslation();
 
@@ -154,6 +154,7 @@ const ProjectPlotSelector = () => {
                     center: [521407.57221923344, 6824704.512308201],
                     zoom: 16,
                 }),
+                controls: defaultControls({ attribution: false }),
             });
             setMap(newMap);
             return () => {
