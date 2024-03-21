@@ -14,8 +14,8 @@
       "delete": "Verwijderen",
       "cancel": "Annuleren",
       "noInfoAvailable": "Geen informatie beschikbaar",
-      "updated":"Succesvol geüpdatet",
-      "failedToUpdate":"Kan niet updaten."
+      "updated": "Succesvol geüpdatet",
+      "failedToUpdate": "Kan niet updaten."
     },
     "createProject": {
       "information": "Project informatie",
@@ -42,9 +42,9 @@
       },
       "houseBlocksForm": {
         "title": "Vul de huizenblokken in",
-        "nameLabel": "Naam",
-        "startDate": "Start Datum",
-        "endDate": "Eind Datum",
+        "nameLabel": "Naam *",
+        "startDate": "Start Datum *",
+        "endDate": "Eind Datum *",
         "mutationData": "Mutatie gegevens",
         "grossPlanCapacity": "Bruto plancapaciteit",
         "netPlanCapacity": "Netto Plancapaciteit",
@@ -137,12 +137,14 @@
         "status": "Toestand",
         "is": "is"
       },
-      "hasMissingRequiredAreas":{
-        "name":"Naam ontbreekt",
-        "startDate":"Start datum ontbreekt",
-        "endDate":"End datum ontbreekt",
-        "projectPhase":"Project Fase ontbreekt",
-        "confidentialityLevel":"Vertrouwlijkheidsniveau  ontbreekt"
+      "hasMissingRequiredAreas": {
+        "name": "Naam ontbreekt",
+        "startDate": "Start datum ontbreekt",
+        "endDate": "End datum ontbreekt",
+        "projectPhase": "Project Fase ontbreekt",
+        "confidentialityLevel": "Vertrouwlijkheidsniveau  ontbreekt",
+        "amount": "Aantal ontbreekt",
+        "hasmissingProperty":"Formulier heeft ontbrekende eigenschappen"
       }
     },
     "sidebar": {

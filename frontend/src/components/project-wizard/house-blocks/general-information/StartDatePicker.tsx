@@ -22,7 +22,20 @@ export const StartDatePicker = ({ houseBlockStartDate, updateHouseBlockStartDate
                     <Typography>{convertDayjsToString(dayjs(houseBlockStartDate))}</Typography>
                 </InputContainer>
             )}
-            {!edit && !editForm && <DatePicker value={houseBlockStartDate ? dayjs(houseBlockStartDate) : null} onChange={updateHouseBlockStartDate} />}
+            {!edit && !editForm && (
+                <DatePicker
+                    sx={{
+                        "& .MuiFormHelperText-root": {
+                            color: "red",
+                        },
+                    }}
+                    slotProps={{
+                        textField: { helperText: houseBlockStartDate === null ? t("createProject.hasMissingRequiredAreas.startDate") : "" },
+                    }}
+                    value={houseBlockStartDate ? dayjs(houseBlockStartDate) : null}
+                    onChange={updateHouseBlockStartDate}
+                />
+            )}
         </Stack>
     );
 };

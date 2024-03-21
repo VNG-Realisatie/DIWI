@@ -98,6 +98,19 @@ export const CreateProject = () => {
 
     const handleNext = async () => {
         if (activeStep === 1) {
+            if (!createFormHouseBlock.houseblockName) {
+                setValidationError("houseblockName");
+                return;
+            } else if (!createFormHouseBlock.startDate) {
+                setValidationError("startDate");
+                return;
+            } else if (!createFormHouseBlock.endDate) {
+                setValidationError("endDate");
+                return;
+            } else if (createFormHouseBlock.ownershipValue.some((owner) => owner.amount === null || isNaN(owner.amount))) {
+                setValidationError("value");
+                return;
+            }
             await addHouseBlock({ ...createFormHouseBlock, projectId: id });
             setActiveStep((prevActiveStep) => prevActiveStep + 1);
             return;
@@ -127,7 +140,12 @@ export const CreateProject = () => {
                 <ProjectInformationForm validationError={validationError} setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />
             )}
             {activeStep === 1 && (
-                <BlockHousesForm editForm={false} createFormHouseBlock={createFormHouseBlock} setCreateFormHouseBlock={setCreateFormHouseBlock} />
+                <BlockHousesForm
+                    validationError={validationError}
+                    editForm={false}
+                    createFormHouseBlock={createFormHouseBlock}
+                    setCreateFormHouseBlock={setCreateFormHouseBlock}
+                />
             )}
             {/* {activeStep === 2 && <SelectFromMapForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />} */}
             {/* {activeStep === 2 && <TimelineForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />} */}

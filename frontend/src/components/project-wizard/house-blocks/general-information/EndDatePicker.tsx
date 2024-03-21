@@ -24,7 +24,20 @@ export const EndDatePicker = ({ houseBlockEndDate, updateHouseBlockEndDate, edit
                     <Typography>{convertDayjsToString(dayjs(houseBlockEndDate))}</Typography>
                 </InputContainer>
             )}
-            {!edit && !editForm && <DatePicker value={houseBlockEndDate ? dayjs(houseBlockEndDate) : null} onChange={updateHouseBlockEndDate} />}
+            {!edit && !editForm && (
+                <DatePicker
+                    sx={{
+                        "& .MuiFormHelperText-root": {
+                            color: "red",
+                        },
+                    }}
+                    slotProps={{
+                        textField: { helperText: houseBlockEndDate === null ? t("createProject.hasMissingRequiredAreas.endDate") : "" },
+                    }}
+                    value={houseBlockEndDate ? dayjs(houseBlockEndDate) : null}
+                    onChange={updateHouseBlockEndDate}
+                />
+            )}
         </Stack>
     );
 };

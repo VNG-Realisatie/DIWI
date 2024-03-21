@@ -29,7 +29,7 @@ import { dateFormats } from "../../localization";
 type Props = {
     setCreateProjectForm: (a: any) => void;
     createProjectForm: any;
-    validationError: any;
+    validationError: string;
 };
 
 export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm, validationError }: Props) => {

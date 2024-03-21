@@ -14,12 +14,15 @@ type NameInputProps = {
 const NameEditInput = ({ houseblockName, upDateHouseBlockName }: NameInputProps) => {
     return (
         <TextField
+            required
             id="name"
             size="small"
             variant="outlined"
             value={houseblockName ? houseblockName : ""}
             onChange={(e) => upDateHouseBlockName(e.target.value)}
             fullWidth
+            error={!houseblockName || houseblockName === ""}
+            helperText={!houseblockName || houseblockName === "" ? t("createProject.nameIsRequried") : ""}
         />
     );
 };
