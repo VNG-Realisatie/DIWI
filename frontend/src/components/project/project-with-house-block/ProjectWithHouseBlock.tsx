@@ -17,9 +17,9 @@ import { PhaseEditForm } from "./PhaseEditForm";
 import { MunicipalityRoleEditForm } from "./MunicipalityRoleEditForm";
 import { ConfidentialityLevelEditForm } from "./ConfidentialityLevelEditForm";
 import { PlanStatusEditForm } from "./PlanStatusEditForm";
-import { MunicipalityEditForm } from "./MunicipalityEditForm";
-import { NeighbourhoodEditForm } from "./NeighbourhoodEditForm";
-import { WijkEditForm } from "./WijkEditForm";
+// import { MunicipalityEditForm } from "./MunicipalityEditForm";
+// import { NeighbourhoodEditForm } from "./NeighbourhoodEditForm";
+// import { WijkEditForm } from "./WijkEditForm";
 import { defaultColors } from "../../ColorSelector";
 import { BlockPicker, ColorResult } from "react-color";
 import { CellContainer } from "./CellContainer";
@@ -389,7 +389,9 @@ export const ProjectsWithHouseBlock = () => {
                     </Grid>
                     <Grid item sm={2}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.projectLeader")}</Typography>
-                        <OrganizationSelect projectEditable={projectEditable} owner={leader} setOwner={setLeader} isLeader={true} />
+                        <Box sx={{ border: "solid 1px #ddd" }}>
+                            <OrganizationSelect projectEditable={projectEditable} owner={leader} setOwner={setLeader} isLeader={true} />
+                        </Box>
                     </Grid>
                     <Grid item xs={12} md={4}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.planningPlanStatus")}</Typography>
@@ -408,7 +410,7 @@ export const ProjectsWithHouseBlock = () => {
                             <PlanStatusEditForm planStatus={planStatus} setPlanStatus={setPlanStatus} />
                         )}
                     </Grid>
-                    <Grid item xs={12} md={2}>
+                    {/* <Grid item xs={12} md={2}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.municipality")}</Typography>
 
                         {!projectEditable ? (
@@ -458,7 +460,7 @@ export const ProjectsWithHouseBlock = () => {
                         ) : (
                             <WijkEditForm selectedWijk={selectedWijk} setSelectedWijk={setSelectedWijk} />
                         )}
-                    </Grid>
+                    </Grid> */}
                 </Grid>
                 {/*List Custom Properties */}
                 <Grid container my={2}>
