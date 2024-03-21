@@ -7,12 +7,13 @@ import { OSM, TileWMS, Vector as VectorSource } from "ol/source";
 import { Stack } from "@mui/material";
 import { defaults as defaultControls } from "ol/control.js";
 import { useEffect, useId, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { ProjectListModel, getProjects } from "../../api/projectsServices";
+
 import Feature from "ol/Feature";
-import { Circle as CircleStyle, Fill, Stroke, Style } from "ol/style";
 import { Point } from "ol/geom";
+import { Circle as CircleStyle, Fill, Stroke, Style } from "ol/style";
+import { ProjectListModel, getProjects } from "../../api/projectsServices";
 import { components } from "../../types/schema";
+
 const geoMarker = new Style({
     image: new CircleStyle({
         radius: 7,
