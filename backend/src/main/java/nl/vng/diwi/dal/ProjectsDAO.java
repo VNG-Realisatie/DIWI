@@ -8,7 +8,7 @@ import java.util.UUID;
 import nl.vng.diwi.dal.entities.Organization;
 import nl.vng.diwi.dal.entities.OrganizationToProject;
 import nl.vng.diwi.dal.entities.Project;
-import nl.vng.diwi.dal.entities.ProjectCustomPropertySqlModel;
+import nl.vng.diwi.dal.entities.ProjectHouseblockCustomPropertySqlModel;
 import nl.vng.diwi.dal.entities.ProjectState;
 import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.dal.entities.enums.ProjectRole;
@@ -46,9 +46,9 @@ public class ProjectsDAO extends AbstractRepository {
     }
 
 
-    public List<ProjectCustomPropertySqlModel> getProjectCustomProperties(UUID projectUuid) {
-        List<ProjectCustomPropertySqlModel> result = session.createNativeQuery(
-                "SELECT * FROM get_active_or_future_project_custom_properties(:projectUuid, :now) " , ProjectCustomPropertySqlModel.class)
+    public List<ProjectHouseblockCustomPropertySqlModel> getProjectCustomProperties(UUID projectUuid) {
+        List<ProjectHouseblockCustomPropertySqlModel> result = session.createNativeQuery(
+                "SELECT * FROM get_active_or_future_project_custom_properties(:projectUuid, :now) " , ProjectHouseblockCustomPropertySqlModel.class)
             .setParameter("now", LocalDate.now())
             .setParameter("projectUuid", projectUuid)
             .list();
