@@ -7,6 +7,7 @@ import GeoJSON from "ol/format/GeoJSON.js";
 
 import queryString from "query-string";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { Plot, getProjectPlots } from "../../api/projectsServices";
 
 type PlotGeoJSON = {
     type: string;
@@ -56,16 +57,24 @@ type Props = {
     height?: string;
     width?: string;
     plusButton?: boolean;
+    projectId?: string;
 };
 
-const ProjectPlotSelector = ({ height, width, plusButton }: Props) => {
+const ProjectPlotSelector = ({ height, width, plusButton, projectId }: Props) => {
     const id = useId();
 
     const [map, setMap] = useState<Map>();
     const [selectedPlotLayerSource, setSelectedPlotLayerSource] = useState<VectorSource>();
-    const [selectedPlots, setSelectedPlots] = useState<PlotGeoJSON[]>([]);
+    const [selectedPlots, setSelectedPlots] = useState<Plot[]>([]);
 
-    // fetchStuff();
+    useEffect(() => {
+        if (!projectId) return;
+
+        getProjectPlots(projectId).then((plots) => {
+            setSelectedPlots(plots);
+        });
+    }, [projectId]);
+
     const handleClick = useCallback(
         (e: any) => {
             // @ts-ignore
@@ -93,7 +102,14 @@ const ProjectPlotSelector = ({ height, width, plusButton }: Props) => {
             fetch(url)
                 .then((res) => res.json())
                 .then((result): void => {
-                    const newSelectedPlots = [...selectedPlots, result];
+                    const newPlot: Plot = {
+                        brkGemeenteCode: "",
+                        brkPerceelNummer: 1,
+                        brkSectie: "",
+                        brkSelectie: "",
+                        geojson: result,
+                    };
+                    const newSelectedPlots = [...selectedPlots, newPlot];
                     console.log("new selected plots:", newSelectedPlots);
                     setSelectedPlots(newSelectedPlots);
                 });
@@ -106,7 +122,8 @@ const ProjectPlotSelector = ({ height, width, plusButton }: Props) => {
 
         selectedPlotLayerSource.clear();
         for (const selectedPlot of selectedPlots) {
-            const geojson = new GeoJSON().readFeatures(selectedPlot);
+            console.log(selectedPlot);
+            const geojson = new GeoJSON().readFeatures(selectedPlot.geojson);
             selectedPlotLayerSource.addFeatures(geojson);
         }
     }, [selectedPlotLayerSource, selectedPlots]);

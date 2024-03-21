@@ -11,7 +11,7 @@ const DetailsWithMap = () => {
             <Stack overflow="auto" height="70vh">
                 <Details project={selectedProject} />
             </Stack>
-            <ProjectPlotSelector height="70vh" width="100%" />
+            <ProjectPlotSelector height="70vh" width="100%" projectId={selectedProject?.projectId} />
         </Stack>
     );
 };
