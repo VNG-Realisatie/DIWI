@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { ReactNode } from "react";
 
 type Props = {
@@ -6,5 +6,9 @@ type Props = {
 };
 
 export const CellContainer = ({ children }: Props) => {
-    return <Box sx={{ border: "solid 1px #ddd", p: 0.5 }}>{children}</Box>;
+    return (
+        <Box sx={{ border: "solid 1px #ddd", p: 0.5 }}>
+            <Typography minHeight={34}>{children}</Typography>
+        </Box>
+    );
 };
