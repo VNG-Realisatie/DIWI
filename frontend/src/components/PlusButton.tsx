@@ -99,7 +99,7 @@ export const AddProjectButton: React.FC = () => {
     const { t } = useTranslation();
     const buttonProps: PlusButtonProps = {
         color: theme.palette.primary.customDarkBlue,
-        link: Paths.projectAdd.path,
+        link: Paths.projectWizard.path,
         text: t("projects.createNewProject"),
     };
 

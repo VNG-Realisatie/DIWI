@@ -30,6 +30,7 @@ import { dateFormats } from "./localization";
 import { ProjectTimeline } from "./components/project/ProjectTimeline";
 import ProjectPlotSelector from "./components/map/ProjectPlotSelector";
 import { ConfigProvider } from "./context/ConfigContext";
+import { ProjectWizardMap } from "./pages/ProjectWizardMap";
 import "dayjs/locale/nl";
 
 function RequiresLogin() {
@@ -101,7 +102,7 @@ function App() {
                             }
                         />
                         <Route
-                            path={Paths.projectAdd.path}
+                            path={Paths.projectWizard.path}
                             element={
                                 <ProjectProvider>
                                     <CreateProject />
@@ -109,10 +110,18 @@ function App() {
                             }
                         />
                         <Route
-                            path={Paths.projectUpdate.path}
+                            path={Paths.projectWizardWithId.path}
                             element={
                                 <ProjectProvider>
                                     <CreateProject />
+                                </ProjectProvider>
+                            }
+                        />
+                        <Route
+                            path={Paths.projectWizardMap.path}
+                            element={
+                                <ProjectProvider>
+                                    <ProjectWizardMap />
                                 </ProjectProvider>
                             }
                         />
