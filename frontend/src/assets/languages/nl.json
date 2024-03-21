@@ -119,7 +119,7 @@
         "disabilityAndCare": "Gehandicapter en zorg",
         "largeFamilies": "Grote gezinnen",
         "notifications": {
-          "successfullySaved": "Huisblokken succesvol opgeslagen.",
+          "successfullySaved": "Huizenblokken succesvol opgeslagen.",
           "error": "Er is iets fout gegaan"
         }
       },
@@ -132,7 +132,7 @@
       "timelineForm": {
         "title": "Vul de gegevens voor de tijdlijn in",
         "deliveryDate": "Opleverdatum*",
-        "houseBlock": "Huis blok",
+        "houseBlock": "Huizen blok",
         "expectedDelivery": "Verwachte oplevering",
         "status": "Toestand",
         "is": "is"
