@@ -8,6 +8,8 @@ import { Link } from "react-router-dom";
 
 import * as Paths from "../Paths";
 import { useTranslation } from "react-i18next";
+import { useContext } from "react";
+import ConfigContext from "../context/ConfigContext";
 
 type SideBarProps = {
     open: boolean;
@@ -26,12 +28,14 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
     const theme = useTheme();
     const { t } = useTranslation();
+    const { municipalityName } = useContext(ConfigContext);
+
     return (
         <Drawer variant="persistent" anchor="left" open={open}>
             <DrawerHeader>
                 <Typography sx={{ fontSize: "20px", fontWeight: "700" }} ml={1}>
                     {/* This will come from backend ignore for now  */}
-                    Voorne aan Zee
+                    {municipalityName}
                 </Typography>
                 <IconButton onClick={handleDrawerClose}>
                     {theme.direction === "ltr" ? <CloseIcon sx={{ color: "#FFFFFF" }} /> : <ChevronRightIcon sx={{ color: "#FFFFFF" }} />}
