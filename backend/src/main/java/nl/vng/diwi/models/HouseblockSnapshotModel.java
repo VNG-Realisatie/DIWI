@@ -1,6 +1,7 @@
 package nl.vng.diwi.models;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,7 +13,9 @@ import nl.vng.diwi.models.superclasses.DatedDataModelSuperClass;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -53,7 +56,7 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
         this.mutation.setDemolition(sqlModel.getDemolition());
         this.mutation.setGrossPlanCapacity(sqlModel.getGrossPlanCapacity());
         this.mutation.setNetPlanCapacity(sqlModel.getNetPlanCapacity());
-        this.mutation.setMutationKind(sqlModel.getMutationKind());
+        this.mutation.getMutationKind().addAll(sqlModel.getMutationKind());
 
         if (sqlModel.getOwnershipValueList() != null) {
             sqlModel.getOwnershipValueList().forEach(oSql -> this.ownershipValue.add(new OwnershipValue(oSql.getOwnershipId(), oSql.getOwnershipType(), oSql.getOwnershipAmount(),
@@ -81,6 +84,24 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
         this.purpose.setElderly(sqlModel.getElderly());
         this.purpose.setGHZ(sqlModel.getGHZ());
         this.purpose.setLargeFamilies(sqlModel.getLargeFamilies());
+    }
+
+    public boolean isSizeEqualTo(SingleValueOrRangeModel<BigDecimal> otherSize) {
+        if ((this.size.getValue() == null && otherSize.getValue() != null) ||
+            (this.size.getValue() != null && otherSize.getValue() == null) ||
+            (this.size.getMin() == null && otherSize.getMin() != null) ||
+            (this.size.getMin() != null && otherSize.getMin() == null) ||
+            (this.size.getMax() == null && otherSize.getMax() != null) ||
+            (this.size.getMax() != null && otherSize.getMax() == null)) {
+            return false;
+        }
+        if ((this.size.getValue() != null && this.size.getValue().doubleValue() != otherSize.getValue().doubleValue()) ||
+            (this.size.getMin() != null && this.size.getMin().doubleValue() != otherSize.getMin().doubleValue()) ||
+            (this.size.getMax() != null && this.size.getMax().doubleValue() != otherSize.getMax().doubleValue())) {
+            return false;
+        }
+
+        return true;
     }
 
     public String validate(LocalDate projectStartDate, LocalDate projectEndDate) {
@@ -142,8 +163,9 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
 
     @Getter
     @Setter
+    @EqualsAndHashCode
     public static class Mutation {
-        private List<MutationType> mutationKind;
+        private Set<MutationType> mutationKind = new HashSet<>();
         private Integer grossPlanCapacity;
         private Integer netPlanCapacity;
         private Integer demolition;
@@ -153,6 +175,7 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
+    @EqualsAndHashCode
     public static class OwnershipValue {
         private UUID id;
         private OwnershipType type;
@@ -163,6 +186,7 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
 
     @Getter
     @Setter
+    @EqualsAndHashCode
     public static class GroundPosition {
         private Integer noPermissionOwner;
         private Integer intentionPermissionOwner;
@@ -171,6 +195,7 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
 
     @Getter
     @Setter
+    @EqualsAndHashCode
     public static class PhysicalAppearance {
         private Integer tussenwoning;
         private Integer tweeondereenkap;
@@ -182,6 +207,7 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
 
     @Getter
     @Setter
+    @EqualsAndHashCode
     public static class HouseType {
         private Integer meergezinswoning;
         private Integer eengezinswoning;
@@ -189,6 +215,7 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
 
     @Getter
     @Setter
+    @EqualsAndHashCode
     public static class Purpose {
         private Integer regular;
         private Integer youth;
