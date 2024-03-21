@@ -4,6 +4,7 @@ import { OwnershipSingleValue } from "../types";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { OwnershipValueType } from "../../../../types/enums";
 import { InputContainer } from "../InputContainer";
+import { useTranslation } from "react-i18next";
 
 type Props = {
     ownership: OwnershipSingleValue;
@@ -40,6 +41,7 @@ const OwnershipTypeOption = ({ handleInputChange, ownership, index }: OwnershipP
     );
 };
 const OwnershipAmountInput = ({ handleInputChange, ownership, index }: OwnershipProps) => {
+    const { t } = useTranslation();
     return (
         <TextField
             size="small"
@@ -49,6 +51,8 @@ const OwnershipAmountInput = ({ handleInputChange, ownership, index }: Ownership
             fullWidth
             value={ownership.amount !== null ? ownership.amount : ""}
             onChange={(e) => handleInputChange(index, { ...ownership, amount: parseInt(e.target.value) })}
+            error={!ownership.amount}
+            helperText={!ownership.amount ? t("createProject.hasMissingRequiredAreas.amount") : ""}
         />
     );
 };

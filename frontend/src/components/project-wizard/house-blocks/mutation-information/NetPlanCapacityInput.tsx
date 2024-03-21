@@ -1,6 +1,7 @@
 import { Stack, Typography, TextField } from "@mui/material";
 import { t } from "i18next";
 import { InputContainer } from "../InputContainer";
+import { LabelComponent } from "../../../project/LabelComponent";
 
 type Props = {
     houseBlockNetPlan: number | null;
@@ -33,9 +34,8 @@ const NetPlanEditInput = ({ houseBlockNetPlan, updateHouseBlockNetPlan }: NetPla
 export const NetPlanCapacityInput = ({ houseBlockNetPlan, updateHouseBlockNetPlan, edit, editForm }: Props) => {
     return (
         <Stack>
-            <Typography variant="subtitle1" fontWeight="500">
-                {t("createProject.houseBlocksForm.netPlanCapacity")}
-            </Typography>
+            <LabelComponent required={false} text={t("createProject.houseBlocksForm.netPlanCapacity")} />
+
             {edit && editForm && <NetPlanEditInput houseBlockNetPlan={houseBlockNetPlan} updateHouseBlockNetPlan={updateHouseBlockNetPlan} />}
             {!edit && editForm && (
                 <InputContainer>

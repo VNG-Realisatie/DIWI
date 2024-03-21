@@ -23,6 +23,7 @@ type Props = {
     editForm: boolean;
     createFormHouseBlock: HouseBlock;
     setCreateFormHouseBlock: (hb: HouseBlock) => void;
+    validationError?: string;
 };
 
 export const BlockHousesForm = ({ projectDetailHouseBlock, editForm, createFormHouseBlock, setCreateFormHouseBlock }: Props) => {
@@ -32,6 +33,7 @@ export const BlockHousesForm = ({ projectDetailHouseBlock, editForm, createFormH
     const { setAlert } = useContext(AlertContext);
 
     const oldForm = projectDetailHouseBlock && { ...projectDetailHouseBlock };
+
     const defineProjectState = () => {
         if (editForm) {
             return projectForm;
@@ -47,7 +49,18 @@ export const BlockHousesForm = ({ projectDetailHouseBlock, editForm, createFormH
             return setCreateFormHouseBlock;
         }
     };
+
     const handleHouseBlockUpdate = () => {
+        if (
+            !projectForm.houseblockName ||
+            !projectForm.startDate ||
+            !projectForm.endDate ||
+            projectForm.ownershipValue.some((owner) => owner.amount === null || isNaN(owner.amount))
+        ) {
+            setAlert(t("createProject.hasMissingRequiredAreas.hasmissingProperty"), "warning");
+            return;
+        }
+
         updateHouseBlock(projectForm)
             .then((res) => {
                 setEdit(false);
@@ -77,7 +90,6 @@ export const BlockHousesForm = ({ projectDetailHouseBlock, editForm, createFormH
                                 />
                             </Tooltip>
                             <Tooltip placement="top" title={t("generic.saveChanges")}>
-                                {/* TODO integrate later updatehouseblock endpoint */}
                                 <SaveIcon sx={{ cursor: "pointer" }} onClick={handleHouseBlockUpdate} />
                             </Tooltip>
                         </>

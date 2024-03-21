@@ -1,6 +1,7 @@
 import { Stack, TextField, Typography } from "@mui/material";
 import { t } from "i18next";
 import { InputContainer } from "../InputContainer";
+import { LabelComponent } from "../../../project/LabelComponent";
 export type HouseBlockSize = {
     value: number | null;
     min: number | null;
@@ -45,9 +46,7 @@ const HouseBlockSizeEditInput = ({ houseBlockSize, updateHouseBlockSize }: House
 export const SizeInput = ({ houseBlockSize, updateHouseBlockSize, edit, editForm }: Props) => {
     return (
         <Stack width="100%">
-            <Typography variant="subtitle1" fontWeight="500">
-                {t("createProject.houseBlocksForm.size")}
-            </Typography>
+            <LabelComponent required={false} text={t("createProject.houseBlocksForm.size")} />
             {edit && editForm && <HouseBlockSizeEditInput houseBlockSize={houseBlockSize} updateHouseBlockSize={updateHouseBlockSize} />}
             {!edit && editForm && (
                 <InputContainer>

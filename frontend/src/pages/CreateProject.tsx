@@ -36,7 +36,7 @@ export const CreateProject = () => {
     const [createProjectForm, setCreateProjectForm] = useState<any>({ projectColor: "#FF5733" });
     const [createFormHouseBlock, setCreateFormHouseBlock] = useState<HouseBlock>(emptyHouseBlockForm);
     const [activeStep, setActiveStep] = useState<number>(0);
-    const [validationError, setValidationError] = useState(false);
+    const [validationError, setValidationError] = useState("");
     const [saved, setSaved] = useState(false);
 
     const { id } = useParams();
@@ -47,13 +47,20 @@ export const CreateProject = () => {
     const { t } = useTranslation();
 
     const handleSave = async () => {
-        if (!createProjectForm || !createProjectForm.projectName) {
-            setValidationError(true);
+        if (
+            !createProjectForm.projectName ||
+            !createProjectForm.startDate ||
+            !createProjectForm.endDate ||
+            !createProjectForm.projectColor ||
+            !createProjectForm.projectPhase ||
+            !createProjectForm.confidentialityLevel
+        ) {
+            setAlert(t("createProject.hasMissingRequiredAreas.hasmissingProperty"), "warning");
             return;
         }
         try {
             if (id) {
-                setValidationError(false);
+                setValidationError("");
                 const res = await updateProject(id, createProjectForm);
                 if (res.ok) {
                     setAlert(t("createProject.successfullySaved"), "success");
@@ -68,7 +75,7 @@ export const CreateProject = () => {
                     startDate: createProjectForm.startDate,
                     endDate: createProjectForm.endDate,
                 };
-                setValidationError(false);
+                setValidationError("");
                 const project = await createProject(temporaryCreateForm); //TODO later it will be change with createProjectForm
                 setSaved(true);
 
@@ -83,6 +90,19 @@ export const CreateProject = () => {
 
     const handleNext = async () => {
         if (activeStep === 1) {
+            if (!createFormHouseBlock.houseblockName) {
+                setValidationError("houseblockName");
+                return;
+            } else if (!createFormHouseBlock.startDate) {
+                setValidationError("startDate");
+                return;
+            } else if (!createFormHouseBlock.endDate) {
+                setValidationError("endDate");
+                return;
+            } else if (createFormHouseBlock.ownershipValue.some((owner) => owner.amount === null || isNaN(owner.amount))) {
+                setValidationError("value");
+                return;
+            }
             await addHouseBlock({ ...createFormHouseBlock, projectId: id });
             setActiveStep((prevActiveStep) => prevActiveStep + 1);
             return;
@@ -112,7 +132,12 @@ export const CreateProject = () => {
                 <ProjectInformationForm validationError={validationError} setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />
             )}
             {activeStep === 1 && (
-                <BlockHousesForm editForm={false} createFormHouseBlock={createFormHouseBlock} setCreateFormHouseBlock={setCreateFormHouseBlock} />
+                <BlockHousesForm
+                    validationError={validationError}
+                    editForm={false}
+                    createFormHouseBlock={createFormHouseBlock}
+                    setCreateFormHouseBlock={setCreateFormHouseBlock}
+                />
             )}
             {/* {activeStep === 2 && <SelectFromMapForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />} */}
             {/* {activeStep === 2 && <TimelineForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />} */}

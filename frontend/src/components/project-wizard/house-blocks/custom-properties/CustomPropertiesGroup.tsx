@@ -24,7 +24,7 @@ export const CustomPropertiesGroup = () => {
                     .filter((p) => !p.disabled)
                     .map((cp, i) => {
                         return (
-                            <Grid item xs={6} md={1} key={i} my={2} spacing={2}>
+                            <Grid item xs={6} md={1} key={i} my={2}>
                                 <Typography variant="subtitle1" fontWeight="500" border="solid 1px #ddd" borderRadius="5px" p={0.6}>
                                     {cp.name}
                                 </Typography>
