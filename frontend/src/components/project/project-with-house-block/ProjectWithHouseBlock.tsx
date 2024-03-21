@@ -50,11 +50,7 @@ type DateDisplayEditorProps = {
 const DateDisplayEditor = ({ projectEditable, date, onChange }: DateDisplayEditorProps) => {
     const dayjsDate = typeof date === "string" ? dayjs(date) : date;
     if (!projectEditable) {
-        return (
-            <CellContainer>
-                <Typography minHeight={34}>{dayjsDate ? convertDayjsToString(dayjsDate) : ""}</Typography>
-            </CellContainer>
-        );
+        return <CellContainer>{dayjsDate ? convertDayjsToString(dayjsDate) : ""}</CellContainer>;
     } else {
         return <DatePicker sx={{ width: "100%" }} slotProps={{ textField: { size: "small" } }} value={dayjsDate} onChange={onChange} />;
     }
