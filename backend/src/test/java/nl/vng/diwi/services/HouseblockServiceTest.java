@@ -83,11 +83,14 @@ public class HouseblockServiceTest {
 
     @Test
     void updateNameTest_futureHouseblock() throws VngServerErrorException {
+        final LocalDate startDate = LocalDate.now().minusDays(10);
+        final LocalDate middleDate = LocalDate.now().plusDays(5);
+        final LocalDate endDate = LocalDate.now().plusDays(10);
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            Milestone startMilestone = ProjectServiceTest.createMilestone(repo, houseblock.getProject(), LocalDate.now().minusDays(10), user);
-            Milestone middleMilestone = ProjectServiceTest.createMilestone(repo, houseblock.getProject(), LocalDate.now().plusDays(5), user);
-            Milestone endMilestone = ProjectServiceTest.createMilestone(repo, houseblock.getProject(), LocalDate.now().plusDays(10), user);
+            Milestone startMilestone = ProjectServiceTest.createMilestone(repo, houseblock.getProject(), startDate, user);
+            Milestone middleMilestone = ProjectServiceTest.createMilestone(repo, houseblock.getProject(), middleDate, user);
+            Milestone endMilestone = ProjectServiceTest.createMilestone(repo, houseblock.getProject(), endDate, user);
 
             ProjectServiceTest.createProjectDurationChangelog(repo, houseblock.getProject(), startMilestone, endMilestone, user);
             createHouseblockDurationChangelog(repo, houseblock, middleMilestone, endMilestone, user);
@@ -113,24 +116,28 @@ public class HouseblockServiceTest {
         HouseblockNameChangelog oldChangelog = nameChangelogs.stream().filter(c -> c.getName().equals("Name 1") && c.getChangeEndDate() != null).findFirst()
                 .orElse(null);
         assertThat(oldChangelog).isNotNull();
-        assertThat(oldChangelog.getStartMilestone().getState().get(0).getDate()).isEqualTo(LocalDate.now().plusDays(5));
-        assertThat(oldChangelog.getEndMilestone().getState().get(0).getDate()).isEqualTo(LocalDate.now().plusDays(10));
+        assertThat(oldChangelog.getStartMilestone().getState().get(0).getDate()).isEqualTo(middleDate);
+        assertThat(oldChangelog.getEndMilestone().getState().get(0).getDate()).isEqualTo(endDate);
 
         HouseblockNameChangelog newChangelog = nameChangelogs.stream().filter(c -> c.getName().equals("Name 1 - Update Test") && c.getChangeEndDate() == null)
                 .findFirst().orElse(null);
         assertThat(newChangelog).isNotNull();
-        assertThat(newChangelog.getStartMilestone().getState().get(0).getDate()).isEqualTo(LocalDate.now().plusDays(5));
-        assertThat(newChangelog.getEndMilestone().getState().get(0).getDate()).isEqualTo(LocalDate.now().plusDays(10));
+        assertThat(newChangelog.getStartMilestone().getState().get(0).getDate()).isEqualTo(middleDate);
+        assertThat(newChangelog.getEndMilestone().getState().get(0).getDate()).isEqualTo(endDate);
 
     }
 
     @Test
     void updateNameTest_pastHouseblock() throws VngServerErrorException {
 
+        final LocalDate startDate = LocalDate.now().minusDays(10);
+        final LocalDate middleDate = LocalDate.now().minusDays(5);
+        final LocalDate endDate = LocalDate.now().plusDays(10);
+
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            Milestone startMilestone = ProjectServiceTest.createMilestone(repo, houseblock.getProject(), LocalDate.now().minusDays(10), user);
-            Milestone middleMilestone = ProjectServiceTest.createMilestone(repo, houseblock.getProject(), LocalDate.now().minusDays(5), user);
-            Milestone endMilestone = ProjectServiceTest.createMilestone(repo, houseblock.getProject(), LocalDate.now().plusDays(10), user);
+            Milestone startMilestone = ProjectServiceTest.createMilestone(repo, houseblock.getProject(), startDate, user);
+            Milestone middleMilestone = ProjectServiceTest.createMilestone(repo, houseblock.getProject(), middleDate, user);
+            Milestone endMilestone = ProjectServiceTest.createMilestone(repo, houseblock.getProject(), endDate, user);
 
             ProjectServiceTest.createProjectDurationChangelog(repo, houseblock.getProject(), startMilestone, endMilestone, user);
             createHouseblockDurationChangelog(repo, houseblock, startMilestone, middleMilestone, user);
@@ -156,14 +163,14 @@ public class HouseblockServiceTest {
         HouseblockNameChangelog oldChangelog = nameChangelogs.stream().filter(c -> c.getName().equals("Name 1") && c.getChangeEndDate() != null).findFirst()
             .orElse(null);
         assertThat(oldChangelog).isNotNull();
-        assertThat(oldChangelog.getStartMilestone().getState().get(0).getDate()).isEqualTo(LocalDate.now().minusDays(10));
-        assertThat(oldChangelog.getEndMilestone().getState().get(0).getDate()).isEqualTo(LocalDate.now().minusDays(5));
+        assertThat(oldChangelog.getStartMilestone().getState().get(0).getDate()).isEqualTo(startDate);
+        assertThat(oldChangelog.getEndMilestone().getState().get(0).getDate()).isEqualTo(middleDate);
 
         HouseblockNameChangelog newChangelog = nameChangelogs.stream().filter(c -> c.getName().equals("Name 1 - Update Test") && c.getChangeEndDate() == null)
             .findFirst().orElse(null);
         assertThat(newChangelog).isNotNull();
-        assertThat(newChangelog.getStartMilestone().getState().get(0).getDate()).isEqualTo(LocalDate.now().minusDays(10));
-        assertThat(newChangelog.getEndMilestone().getState().get(0).getDate()).isEqualTo(LocalDate.now().minusDays(5));
+        assertThat(newChangelog.getStartMilestone().getState().get(0).getDate()).isEqualTo(startDate);
+        assertThat(newChangelog.getEndMilestone().getState().get(0).getDate()).isEqualTo(middleDate);
 
     }
 
@@ -171,9 +178,12 @@ public class HouseblockServiceTest {
     @Test
     void updateNameTest_currentHouseblock() throws VngServerErrorException {
 
+        final LocalDate startDate = LocalDate.now().minusDays(10);
+        final LocalDate endDate = LocalDate.now().plusDays(10);
+
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            Milestone startMilestone = ProjectServiceTest.createMilestone(repo, houseblock.getProject(), LocalDate.now().minusDays(10), user);
-            Milestone endMilestone = ProjectServiceTest.createMilestone(repo, houseblock.getProject(), LocalDate.now().plusDays(10), user);
+            Milestone startMilestone = ProjectServiceTest.createMilestone(repo, houseblock.getProject(), startDate, user);
+            Milestone endMilestone = ProjectServiceTest.createMilestone(repo, houseblock.getProject(), endDate, user);
 
             ProjectServiceTest.createProjectDurationChangelog(repo, houseblock.getProject(), startMilestone, endMilestone, user);
             createHouseblockDurationChangelog(repo, houseblock, startMilestone, endMilestone, user);
@@ -199,20 +209,20 @@ public class HouseblockServiceTest {
         HouseblockNameChangelog oldChangelog = nameChangelogs.stream().filter(c -> c.getName().equals("Name 1") && c.getChangeEndDate() == null).findFirst()
             .orElse(null);
         assertThat(oldChangelog).isNotNull();
-        assertThat(oldChangelog.getStartMilestone().getState().get(0).getDate()).isEqualTo(LocalDate.now().minusDays(10));
+        assertThat(oldChangelog.getStartMilestone().getState().get(0).getDate()).isEqualTo(startDate);
         assertThat(oldChangelog.getEndMilestone().getState().get(0).getDate()).isEqualTo(LocalDate.now());
 
         HouseblockNameChangelog oldChangelogAfterUpdate = nameChangelogs.stream().filter(c -> c.getName().equals("Name 1") && c.getChangeEndDate() != null).findFirst()
             .orElse(null);
         assertThat(oldChangelogAfterUpdate).isNotNull();
-        assertThat(oldChangelogAfterUpdate.getStartMilestone().getState().get(0).getDate()).isEqualTo(LocalDate.now().minusDays(10));
-        assertThat(oldChangelogAfterUpdate.getEndMilestone().getState().get(0).getDate()).isEqualTo(LocalDate.now().plusDays(10));
+        assertThat(oldChangelogAfterUpdate.getStartMilestone().getState().get(0).getDate()).isEqualTo(startDate);
+        assertThat(oldChangelogAfterUpdate.getEndMilestone().getState().get(0).getDate()).isEqualTo(endDate);
 
         HouseblockNameChangelog newChangelog = nameChangelogs.stream().filter(c -> c.getName().equals("Name 1 - Update Test") && c.getChangeEndDate() == null)
             .findFirst().orElse(null);
         assertThat(newChangelog).isNotNull();
         assertThat(newChangelog.getStartMilestone().getState().get(0).getDate()).isEqualTo(LocalDate.now());
-        assertThat(newChangelog.getEndMilestone().getState().get(0).getDate()).isEqualTo(LocalDate.now().plusDays(10));
+        assertThat(newChangelog.getEndMilestone().getState().get(0).getDate()).isEqualTo(endDate);
 
     }
 
