@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useId, useState } from "react";
 import { Stepper, Step, StepLabel, Button, Box, Stack } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
@@ -13,6 +13,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { HouseBlock } from "../components/project-wizard/house-blocks/types";
 import { emptyHouseBlockForm } from "../components/project-wizard/house-blocks/constants";
 import dayjs from "dayjs";
+import usePlotSelector from "../hooks/usePlotSelector";
 
 const CustomStepIcon: React.FC<CustomStepIconProps> = ({ active, completed }) => {
     if (completed) {
@@ -25,7 +26,8 @@ const CustomStepIcon: React.FC<CustomStepIconProps> = ({ active, completed }) =>
 const steps: string[] = [
     "information",
     "houseBlocks",
-    //  "signupOnTheMap", "timeline"
+    "signupOnTheMap",
+    // "timeline"
 ];
 
 interface CustomStepIconProps {
@@ -37,9 +39,8 @@ export const CreateProject = () => {
     const [createFormHouseBlock, setCreateFormHouseBlock] = useState<HouseBlock>(emptyHouseBlockForm);
     const [activeStep, setActiveStep] = useState<number>(0);
     const [validationError, setValidationError] = useState("");
-    const [saved, setSaved] = useState(false);
 
-    const { id } = useParams();
+    const { id: projectId } = useParams();
     const navigate = useNavigate();
 
     const { setAlert } = useAlert();
@@ -59,9 +60,9 @@ export const CreateProject = () => {
             return;
         }
         try {
-            if (id) {
+            if (projectId) {
                 setValidationError("");
-                const res = await updateProject(id, createProjectForm);
+                const res = await updateProject(projectId, createProjectForm);
                 if (res.ok) {
                     setAlert(t("createProject.successfullySaved"), "success");
                     return true;
@@ -77,7 +78,6 @@ export const CreateProject = () => {
                 };
                 setValidationError("");
                 const project = await createProject(temporaryCreateForm); //TODO later it will be change with createProjectForm
-                setSaved(true);
 
                 navigate(`/project/create/${project.projectId}`);
                 setAlert(t("createProject.successfullySaved"), "success");
@@ -103,7 +103,7 @@ export const CreateProject = () => {
                 setValidationError("value");
                 return;
             }
-            await addHouseBlock({ ...createFormHouseBlock, projectId: id });
+            await addHouseBlock({ ...createFormHouseBlock, projectId });
             setActiveStep((prevActiveStep) => prevActiveStep + 1);
             return;
         }
@@ -113,11 +113,13 @@ export const CreateProject = () => {
     const handleBack = () => {
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
+
     useEffect(() => {
-        if (id) {
-            getProject(id).then((res: any) => setCreateProjectForm({ ...res, startDate: dayjs(res.startDate), endDate: dayjs(res.endDate) }));
+        if (projectId) {
+            getProject(projectId).then((res: any) => setCreateProjectForm({ ...res, startDate: dayjs(res.startDate), endDate: dayjs(res.endDate) }));
         }
-    }, [id]);
+    }, [projectId]);
+
     return (
         //Components for wizard steps
         <Box mb={7} border="solid 2px #ddd" p={4}>
@@ -139,13 +141,8 @@ export const CreateProject = () => {
                     setCreateFormHouseBlock={setCreateFormHouseBlock}
                 />
             )}
-            {/* {activeStep === 2 && <SelectFromMapForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />} */}
-            {/* {activeStep === 2 && <TimelineForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />} */}
-            {/* {activeStep === 3 && (
-                <Stack direction="row" justifyContent="center" p={5}>
-                    <Typography> {t("createProject.completeMessage")}</Typography>
-                </Stack>
-            )} */}
+            {/* {activeStep === 2 && <div id={id} style={{ height: "70vh", width: "100%" }}></div>} */}
+
             <Stack direction="row" alignItems="center" justifyContent="flex-end" py={2}>
                 <Button variant="outlined" onClick={() => handleSave()} sx={{ mr: 2 }}>
                     {t("generic.save")}
@@ -153,7 +150,7 @@ export const CreateProject = () => {
                 <Button variant="contained" onClick={() => handleBack()} sx={{ mr: 2 }} disabled={activeStep === 0}>
                     {t("generic.previous")}
                 </Button>
-                <Button variant="contained" onClick={() => handleNext()} disabled={activeStep === 0 && !saved}>
+                <Button variant="contained" onClick={() => handleNext()} disabled={activeStep === 0 && !projectId}>
                     {t("generic.next")}
                 </Button>
             </Stack>

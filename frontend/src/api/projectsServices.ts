@@ -73,7 +73,7 @@ export async function updateProjects(newData: any): Promise<any> {
 }
 
 export async function updateProject(id: string, newData: ProjectUpdate): Promise<any> {
-    return putJson(`${API_URI}/projects/${id}/update`, newData);
+    return postJson(`${API_URI}/projects/update`, newData);
 }
 
 export async function deleteProject(id: string | null) {
