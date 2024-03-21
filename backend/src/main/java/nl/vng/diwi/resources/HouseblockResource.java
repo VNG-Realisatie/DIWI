@@ -109,8 +109,8 @@ public class HouseblockResource {
         HouseblockSnapshotModel houseblockCurrentValues = houseblockService.getHouseblockSnapshot(repo, houseblockUuid);
 
         List<HouseblockUpdateModel> houseblockUpdateModelList = new ArrayList<>();
-        for (HouseblockUpdateModel.HouseblockProperty projectProperty : HouseblockUpdateModel.HouseblockProperty.values()) {
-            switch (projectProperty) {
+        for (HouseblockUpdateModel.HouseblockProperty blockProperty : HouseblockUpdateModel.HouseblockProperty.values()) {
+            switch (blockProperty) {
                 case name -> {
                     if (!Objects.equals(houseblockModelToUpdate.getHouseblockName(), houseblockCurrentValues.getHouseblockName())) {
                         houseblockUpdateModelList.add(new HouseblockUpdateModel(HouseblockUpdateModel.HouseblockProperty.name, houseblockModelToUpdate.getHouseblockName()));
@@ -200,7 +200,7 @@ public class HouseblockResource {
                         }
                     }
                 }
-                default -> throw new VngServerErrorException(String.format("Houseblock property not implemented %s ", projectProperty));
+                default -> throw new VngServerErrorException(String.format("Houseblock property not implemented %s ", blockProperty));
             }
         }
 

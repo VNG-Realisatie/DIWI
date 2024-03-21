@@ -576,7 +576,7 @@ public class HouseblockService {
             repo.persist(newChangelog);
         } else if (actionType == HouseblockUpdateModel.ActionType.remove) {
             HouseblockOwnershipValueChangelog oldChangelog = houseblock.getOwnershipValues().stream().filter(ov -> ov.getId().equals(ownershipValue.getId()))
-                .findFirst().orElseThrow(() -> new VngServerErrorException(String.format("Ownerhip value %s not found", ownershipValue.getId())));
+                .findFirst().orElseThrow(() -> new VngServerErrorException(String.format("Ownership value %s not found", ownershipValue.getId())));
             oldChangelog.setChangeEndDate(ZonedDateTime.now());
             oldChangelog.setChangeUser(repo.getReferenceById(User.class, loggedInUserUuid));
             repo.persist(oldChangelog);
