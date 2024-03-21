@@ -27,7 +27,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import nl.vng.diwi.dal.FilterPaginationSorting;
-import nl.vng.diwi.dal.PlotDAO;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.Milestone;
 import nl.vng.diwi.dal.entities.MilestoneState;
@@ -104,7 +103,7 @@ public class ProjectService {
     }
 
     public List<PlotModel> getPlots(VngRepository repo, UUID projectUuid) {
-        return new PlotDAO(repo.getSession())
+        return repo.getPlotDAO()
                 .getPlots(projectUuid)
                 .stream()
                 .map(value -> new PlotModel(value))
@@ -115,7 +114,7 @@ public class ProjectService {
 
         var currentDate = LocalDate.now();
 
-        var dao = new PlotDAO(repo.getSession());
+        var dao = repo.getPlotDAO();
         var project = repo.findById(Project.class, projectId);
 
         var oldCl = dao.getProjectRegistryLinkChangelog(projectId);
