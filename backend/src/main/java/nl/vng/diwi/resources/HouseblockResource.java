@@ -91,15 +91,15 @@ public class HouseblockResource {
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             Project project = projectService.getCurrentProject(repo, houseblockSnapshotModel.getProjectId());
-            Milestone startMilestone = projectService.getOrCreateMilestoneForProject(repo, project, houseblockSnapshotModel.getStartDate(), loggedUser.getUuid());
-            Milestone endMilestone = projectService.getOrCreateMilestoneForProject(repo, project, houseblockSnapshotModel.getEndDate(), loggedUser.getUuid());
 
             String validationError = houseblockSnapshotModel.validate(new MilestoneModel(project.getDuration().get(0).getStartMilestone()).getDate(),
                 new MilestoneModel(project.getDuration().get(0).getEndMilestone()).getDate());
-
             if (validationError != null) {
                 throw new VngBadRequestException(validationError);
             }
+
+            Milestone startMilestone = projectService.getOrCreateMilestoneForProject(repo, project, houseblockSnapshotModel.getStartDate(), loggedUser.getUuid());
+            Milestone endMilestone = projectService.getOrCreateMilestoneForProject(repo, project, houseblockSnapshotModel.getEndDate(), loggedUser.getUuid());
 
             Houseblock houseblock = houseblockService.createHouseblock(repo, houseblockSnapshotModel, startMilestone, endMilestone,
                 loggedUser.getUuid(), ZonedDateTime.now());
