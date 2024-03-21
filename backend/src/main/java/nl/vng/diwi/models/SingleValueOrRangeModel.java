@@ -1,15 +1,18 @@
 package nl.vng.diwi.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.hypersistence.utils.hibernate.type.range.Range;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @EqualsAndHashCode
+@ToString
 public class SingleValueOrRangeModel<T extends Comparable<? super T>> {
 
     private T value;
@@ -27,6 +30,17 @@ public class SingleValueOrRangeModel<T extends Comparable<? super T>> {
         if (range != null) {
             this.min = range.lower();
             this.max = range.upper();
+        }
+    }
+
+    @JsonIgnore
+    public boolean isValid() {
+        if (value == null && min == null && max == null) {
+            return true;
+        } else if (value != null) {
+            return min == null && max == null;
+        } else {
+            return min != null && max != null && min.compareTo(max) < 0;
         }
     }
 }

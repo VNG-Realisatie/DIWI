@@ -10,8 +10,10 @@
       "saveChanges": "Opslaan veranderingen",
       "edit": "Bewerken",
       "confirmDeletion": "Weet u zeker dat u {{name}} wilt verwijderen?",
+      "projectDeletion": "Project {{name}} is verwijderd",
       "delete": "Verwijderen",
-      "cancel": "Annuleren"
+      "cancel": "Annuleren",
+      "noInfoAvailable": "Geen informatie beschikbaar"
     },
     "createProject": {
       "information": "Project informatie",
@@ -141,6 +143,11 @@
       "dataExchange": "Data uitwisselen",
       "settings": "Instellingen"
     },
+    "about": {
+      "heading": "Over deze website",
+      "version": "Versie",
+      "deployedOn": "Online sinds"
+    },
     "projects": {
       "title": "Projecten overzicht",
       "map": "Kaart",
@@ -260,6 +267,10 @@
           "successfullyDeleted": "Eigenschappen succesvol verwijderd."
         }
       }
-    }
+    },
+    "projectPhase": "Project Fase",
+    "planType": "Plan Type",
+    "totalValue": "Aantal",
+    "projectOwners": "Eigenaar"
   }
 }

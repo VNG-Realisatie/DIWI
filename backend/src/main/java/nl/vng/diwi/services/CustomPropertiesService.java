@@ -33,8 +33,8 @@ public class CustomPropertiesService {
         return repo.getCustomPropertiesDAO().getCustomProperyById(customPropertyUuid);
     }
 
-    public List<CustomPropertyModel> getAllCustomProperties(VngRepository repo, ObjectType objectType) {
-        return repo.getCustomPropertiesDAO().getCustomProperiesList(objectType);
+    public List<CustomPropertyModel> getAllCustomProperties(VngRepository repo, ObjectType objectType, Boolean disabled) {
+        return repo.getCustomPropertiesDAO().getCustomProperiesList(objectType, disabled);
     }
 
     public UUID createCustomProperty(VngRepository repo, CustomPropertyModel customPropertyModel, ZonedDateTime createTime, UUID loggedUserUuid) {

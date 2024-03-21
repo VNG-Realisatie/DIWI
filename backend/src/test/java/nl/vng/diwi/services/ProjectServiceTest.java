@@ -20,6 +20,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import jakarta.persistence.Tuple;
 import nl.vng.diwi.dal.AutoCloseTransaction;
@@ -37,13 +39,17 @@ import nl.vng.diwi.dal.entities.ProjectGemeenteRolValue;
 import nl.vng.diwi.dal.entities.ProjectNameChangelog;
 import nl.vng.diwi.dal.entities.ProjectPlanologischePlanstatusChangelog;
 import nl.vng.diwi.dal.entities.ProjectPlanologischePlanstatusChangelogValue;
+import nl.vng.diwi.dal.entities.ProjectRegistryLinkChangelog;
+import nl.vng.diwi.dal.entities.ProjectRegistryLinkChangelogValue;
 import nl.vng.diwi.dal.entities.ProjectState;
 import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.MilestoneStatus;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
+import nl.vng.diwi.models.PlotModel;
 import nl.vng.diwi.models.ProjectSnapshotModel;
+import nl.vng.diwi.models.superclasses.DatedDataModelSuperClass;
 import nl.vng.diwi.models.superclasses.ProjectMinimalSnapshotModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
@@ -51,16 +57,21 @@ import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.testutil.TestDb;
 
 public class ProjectServiceTest {
+    private static RecursiveComparisonConfiguration ignoreId = RecursiveComparisonConfiguration.builder().withIgnoredFields("id").build();
 
     private static DalFactory dalFactory;
     private static TestDb testDb;
 
     private Dal dal;
     private VngRepository repo;
+
+    private ZonedDateTime now;
     private UUID userUuid;
     private User user;
     private Project project;
     private UUID projectUuid;
+    private Milestone startMilestone;
+    private Milestone endMilestone;
 
     private static ProjectService projectService;
 
@@ -80,6 +91,7 @@ public class ProjectServiceTest {
 
     @BeforeEach
     void beforeEach() {
+        now = ZonedDateTime.now();
         dal = dalFactory.constructDal();
         repo = new VngRepository(dal.getSession());
 
@@ -89,6 +101,10 @@ public class ProjectServiceTest {
 
             project = createProject(repo, user);
             projectUuid = project.getId();
+
+            startMilestone = createMilestone(repo, project, LocalDate.now().minusDays(10), user);
+            endMilestone = createMilestone(repo, project, LocalDate.now().plusDays(10), user);
+            createProjectDurationChangelog(repo, project, startMilestone, endMilestone, user);
 
             transaction.commit();
             repo.getSession().clear();
@@ -335,15 +351,6 @@ public class ProjectServiceTest {
     @Test
     void deleteProject() throws Exception {
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            Milestone startMilestone = createMilestone(repo, project, LocalDate.now().minusDays(10), user);
-            Milestone endMilestone = createMilestone(repo, project, LocalDate.now().plusDays(10), user);
-
-            createProjectDurationChangelog(repo, project, startMilestone, endMilestone, user);
-            transaction.commit();
-            repo.getSession().clear();
-        }
-
-        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             projectService.deleteProject(repo, projectUuid, userUuid);
             transaction.commit();
             repo.getSession().clear();
@@ -368,9 +375,141 @@ public class ProjectServiceTest {
                 .containsOnly(userUuid);
     }
 
+    @Test
+    void getPlots() throws Exception {
+        ObjectNode geoJson = JsonNodeFactory.instance.objectNode().put("geojson", "ish");
+        String gemeenteCode = "gemeente";
+        long brkPerceelNummer = 1234l;
+        String brkSectie = "sectie";
+        String brkSelectie = "selectie";
+
+        try (var transaction = repo.beginTransaction()) {
+            var oldChangelog = createPlot(geoJson, gemeenteCode + "old", brkPerceelNummer, brkSectie, brkSelectie);
+            oldChangelog.setChangeEndDate(now);
+            oldChangelog.setChangeUser(user);
+            repo.persist(oldChangelog);
+
+            createPlot(geoJson, gemeenteCode, brkPerceelNummer, brkSectie, brkSelectie);
+            transaction.commit();
+            repo.getSession().clear();
+        }
+
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+            List<PlotModel> plots = projectService.getPlots(repo, project.getId());
+            var expected = List.of(
+                    PlotModel.builder()
+                            .brkGemeenteCode(gemeenteCode)
+                            .brkPerceelNummer(brkPerceelNummer)
+                            .brkSectie(brkSectie)
+                            .brkSelectie(brkSelectie)
+                            .geoJson(geoJson)
+                            .build());
+
+            assertThat(plots).usingRecursiveAssertion().isEqualTo(expected);
+        }
+    }
+
+    @Test
+    void setPlots() throws Exception {
+
+        ObjectNode geoJson = JsonNodeFactory.instance.objectNode().put("geojson", "ish");
+        String gemeenteCode = "gemeente";
+        long brkPerceelNummer = 1234l;
+        String brkSectie = "sectie";
+        String brkSelectie = "selectie";
+
+        // Create an old and a current changelog already so we can test these are replaced.
+        try (var transaction = repo.beginTransaction()) {
+            var oldChangelog = createPlot(geoJson, gemeenteCode + "old", brkPerceelNummer, brkSectie, brkSelectie);
+            oldChangelog.setChangeEndDate(now);
+            oldChangelog.setChangeUser(user);
+            repo.persist(oldChangelog);
+
+            createPlot(geoJson, gemeenteCode, brkPerceelNummer, brkSectie, brkSelectie);
+
+            transaction.commit();
+            repo.getSession().clear();
+        }
+
+        // Call the endpoints with the new plot
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+            var plots = List.of(
+                    PlotModel.builder()
+                            .brkGemeenteCode(gemeenteCode + "new")
+                            .brkPerceelNummer(brkPerceelNummer)
+                            .brkSectie(brkSectie)
+                            .brkSelectie(brkSelectie)
+                            .geoJson(geoJson)
+                            .build());
+            projectService.setPlots(repo, project.getId(), plots, user.getId());
+
+            transaction.commit();
+            repo.getSession().clear();
+        }
+
+        try (var transaction = repo.beginTransaction()) {
+            var actualCls = repo.getSession()
+                    .createQuery("FROM ProjectRegistryLinkChangelog cl WHERE cl.changeEndDate is null", ProjectRegistryLinkChangelog.class)
+                    .list();
+
+            assertThat(actualCls).hasSize(1);
+
+            List<ProjectRegistryLinkChangelogValue> expected = List.of(ProjectRegistryLinkChangelogValue.builder()
+                    .brkGemeenteCode(gemeenteCode + "new")
+                    .brkPerceelNummer(brkPerceelNummer)
+                    .brkSectie(brkSectie)
+                    .brkSelectie(brkSelectie)
+                    .geoJson(geoJson)
+                    .projectRegistryLinkChangelog(actualCls.get(0))
+                    .build());
+
+            assertThat(actualCls.get(0).getValues())
+                    .usingRecursiveComparison(ignoreId)
+                    .isEqualTo(expected);
+        }
+
+    }
+
+    private ProjectRegistryLinkChangelog createPlot(ObjectNode geoJson, String gemeenteCode, long brkPerceelNummer, String brkSectie, String brkSelectie) {
+        ProjectRegistryLinkChangelog changelog = ProjectRegistryLinkChangelog.builder()
+                .project(project)
+                .build();
+
+        setCreateUserAndDate(changelog);
+        changelog.setStartMilestone(startMilestone);
+        changelog.setEndMilestone(endMilestone);
+        repo.persist(changelog);
+
+        var val = ProjectRegistryLinkChangelogValue.builder()
+                .brkGemeenteCode(gemeenteCode)
+                .brkPerceelNummer(brkPerceelNummer)
+                .brkSectie(brkSectie)
+                .brkSelectie(brkSelectie)
+                .geoJson(geoJson)
+                .projectRegistryLinkChangelog(changelog)
+                .build();
+        repo.persist(val);
+        return changelog;
+    }
+
+    /**
+     * Use json serialization to only copy part of the properties of a class into e.g. a base class.
+     *
+     * @param <T>
+     * @param actual
+     * @param targetClass
+     * @return
+     * @throws JsonProcessingException
+     * @throws JsonMappingException
+     */
     private static <T> T partialCopy(ProjectSnapshotModel actual, Class<T> targetClass) throws JsonProcessingException, JsonMappingException {
         ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return objectMapper.readValue(objectMapper.writeValueAsString(actual), targetClass);
+    }
+
+    private void setCreateUserAndDate(ProjectRegistryLinkChangelog entity) {
+        entity.setChangeStartDate(now);
+        entity.setCreateUser(user);
     }
 
     public static Project createProject(VngRepository repo, User user) {

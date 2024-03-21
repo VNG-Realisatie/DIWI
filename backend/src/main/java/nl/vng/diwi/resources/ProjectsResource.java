@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.BeanParam;
@@ -19,26 +20,30 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import nl.vng.diwi.dal.AutoCloseTransaction;
 import nl.vng.diwi.dal.FilterPaginationSorting;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.Project;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
+import nl.vng.diwi.dal.entities.enums.ObjectType;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.dal.entities.enums.ProjectRole;
+import nl.vng.diwi.models.CustomPropertyModel;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.models.LocationModel;
 import nl.vng.diwi.models.OrganizationModel;
+import nl.vng.diwi.models.PlotModel;
 import nl.vng.diwi.models.PriorityModel;
+import nl.vng.diwi.models.ProjectCustomPropertyModel;
 import nl.vng.diwi.models.ProjectListModel;
 import nl.vng.diwi.models.ProjectSnapshotModel;
 import nl.vng.diwi.models.ProjectTimelineModel;
@@ -51,22 +56,29 @@ import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.security.SecurityRoleConstants;
+import nl.vng.diwi.services.CustomPropertiesService;
 import nl.vng.diwi.services.HouseblockService;
 import nl.vng.diwi.services.ProjectService;
 
 @Path("/projects")
+@RolesAllowed({SecurityRoleConstants.Admin})
 public class ProjectsResource {
     private final VngRepository repo;
     private final ProjectService projectService;
     private final HouseblockService houseblockService;
+    private final CustomPropertiesService customPropertiesService;
 
     @Inject
     public ProjectsResource(
             GenericRepository genericRepository,
-            ProjectService projectService) {
+            ProjectService projectService,
+            HouseblockService houseblockService,
+            CustomPropertiesService customPropertiesService) {
         this.repo = new VngRepository(genericRepository.getDal().getSession());
         this.projectService = projectService;
-        this.houseblockService = new HouseblockService();
+        this.houseblockService = houseblockService;
+        this.customPropertiesService = customPropertiesService;
     }
 
     @POST
@@ -88,8 +100,7 @@ public class ProjectsResource {
             ProjectSnapshotModel projectSnapshot = projectService.getProjectSnapshot(repo, project.getId());
 
             return projectSnapshot;
-        }
-        catch(ConstraintViolationException ex) {
+        } catch (ConstraintViolationException ex) {
             throw new VngBadRequestException("Error saving new project due to invalid data", ex);
         }
     }
@@ -162,11 +173,96 @@ public class ProjectsResource {
 
     }
 
+    @GET
+    @Path("/{id}/customproperties")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public List<ProjectCustomPropertyModel> getProjectCustomProperties(@PathParam("id") UUID projectUuid) {
+
+        return projectService.getProjectCustomProperties(repo, projectUuid);
+
+    }
+
+    @PUT
+    @Path("/{id}/customproperties")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public List<ProjectCustomPropertyModel> updateProjectCustomProperty(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid, ProjectCustomPropertyModel projectCPUpdateModel)
+        throws VngNotFoundException, VngBadRequestException, VngServerErrorException {
+
+        CustomPropertyModel dbCP = customPropertiesService.getCustomProperty(repo, projectCPUpdateModel.getCustomPropertyId());
+        if (dbCP == null || !dbCP.getObjectType().equals(ObjectType.PROJECT)) {
+            throw new VngBadRequestException("Custom property id does not match any known property.");
+        }
+        if (dbCP.getDisabled() == Boolean.TRUE) {
+            throw new VngBadRequestException("Custom property is disabled.");
+        }
+
+        LocalDate updateDate = LocalDate.now();
+
+        ProjectCustomPropertyModel currentProjectCP = projectService.getProjectCustomProperties(repo, projectUuid).stream().filter(cp -> cp.getCustomPropertyId().equals(projectCPUpdateModel.getCustomPropertyId()))
+            .findFirst().orElse(new ProjectCustomPropertyModel());
+
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+            Project project = projectService.getCurrentProjectAndPerformPreliminaryUpdateChecks(repo, projectUuid);
+
+            switch (dbCP.getPropertyType()) {
+            case BOOLEAN -> {
+                if (!Objects.equals(currentProjectCP.getBooleanValue(), projectCPUpdateModel.getBooleanValue())) {
+                    projectService.updateProjectBooleanCustomProperty(repo, project, projectCPUpdateModel.getCustomPropertyId(),
+                            projectCPUpdateModel.getBooleanValue(), loggedUser.getUuid(), updateDate);
+                }
+            }
+            case TEXT -> {
+                if (!Objects.equals(currentProjectCP.getTextValue(), projectCPUpdateModel.getTextValue())) {
+                    projectService.updateProjectTextCustomProperty(repo, project, projectCPUpdateModel.getCustomPropertyId(),
+                            projectCPUpdateModel.getTextValue(), loggedUser.getUuid(), updateDate);
+                }
+            }
+            case NUMERIC -> {
+                var currentNumericValue = currentProjectCP.getNumericValue();
+                var updateNumericValue = projectCPUpdateModel.getNumericValue();
+                if (updateNumericValue == null || !updateNumericValue.isValid()) {
+                    throw new VngBadRequestException("Numeric value does not have a valid format.");
+                }
+                if (!Objects.equals(currentNumericValue.getValue() != null ? currentNumericValue.getValue().doubleValue() : null,
+                        updateNumericValue.getValue() != null ? updateNumericValue.getValue().doubleValue() : null)
+                        || !Objects.equals(currentNumericValue.getMin(), updateNumericValue.getMin())
+                        || !Objects.equals(currentNumericValue.getMax(), updateNumericValue.getMax())) {
+                    projectService.updateProjectNumericCustomProperty(repo, project, projectCPUpdateModel.getCustomPropertyId(),
+                            projectCPUpdateModel.getNumericValue(), loggedUser.getUuid(), updateDate);
+                }
+            }
+            case CATEGORY -> {
+                var currentCategories = currentProjectCP.getCategories();
+                var updateCategories = projectCPUpdateModel.getCategories();
+                if (currentCategories.size() != updateCategories.size() || !currentCategories.containsAll(updateCategories)) {
+                    projectService.updateProjectCategoryCustomProperty(repo, project, projectCPUpdateModel.getCustomPropertyId(),
+                            new HashSet<>(updateCategories), loggedUser.getUuid(), updateDate);
+                }
+            }
+            case ORDINAL -> {
+                if (projectCPUpdateModel.getOrdinals() == null || !projectCPUpdateModel.getOrdinals().isValid()) {
+                    throw new VngBadRequestException("Ordinal value does not have a valid format.");
+                }
+                if (!Objects.equals(currentProjectCP.getOrdinals(), projectCPUpdateModel.getOrdinals())) {
+                    projectService.updateProjectOrdinalCustomProperty(repo, project, projectCPUpdateModel.getCustomPropertyId(),
+                            projectCPUpdateModel.getOrdinals(), loggedUser.getUuid(), updateDate);
+                }
+            }
+            }
+            transaction.commit();
+            repo.getSession().clear();
+        }
+
+        return projectService.getProjectCustomProperties(repo, projectUuid);
+    }
+
     @POST
     @Path("/{id}/update")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response updateProject(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid, ProjectUpdateModel projectUpdateModel)
+    public ProjectSnapshotModel updateProject(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid, ProjectUpdateModel projectUpdateModel)
             throws VngNotFoundException, VngBadRequestException, VngServerErrorException {
 
         String validationError = projectUpdateModel.validate();
@@ -181,7 +277,43 @@ public class ProjectsResource {
             transaction.commit();
         }
 
-        return Response.status(Response.Status.OK).build(); // TODO: return updated project??
+        return projectService.getProjectSnapshot(repo, projectUuid);
+    }
+
+    @GET
+    @Path("/{id}/plots")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<PlotModel> getProjectPlots(@PathParam("id") UUID projectUuid) throws VngNotFoundException {
+        Project project = projectService.getCurrentProject(repo, projectUuid);
+
+        if (project == null) {
+            throw new VngNotFoundException("project not found");
+        }
+
+        return projectService.getPlots(repo, projectUuid);
+    }
+
+    @POST
+    @Path("/{id}/plots")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void setProjectPlots(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid, List<PlotModel> plots) throws VngNotFoundException, VngBadRequestException {
+        Project project = projectService.getCurrentProject(repo, projectUuid);
+
+        if (project == null) {
+            throw new VngNotFoundException("project not found");
+        }
+
+        for (var plot : plots) {
+            String validationError = plot.validate();
+            if (validationError != null) {
+                throw new VngBadRequestException(validationError);
+            }
+        }
+
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+            projectService.setPlots(repo, projectUuid, plots, loggedUser.getUuid());
+            transaction.commit();
+        }
     }
 
     @POST
@@ -236,8 +368,8 @@ public class ProjectsResource {
                     Double newLatitude = projectSnapshotModelToUpdate.getLocation().getLat();
                     Double newLongitude = projectSnapshotModelToUpdate.getLocation().getLng();
                     projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.location, Arrays.asList(
-                        newLatitude == null ? null : newLatitude.toString(),
-                        newLongitude == null ? null : newLongitude.toString())));
+                            newLatitude == null ? null : newLatitude.toString(),
+                            newLongitude == null ? null : newLongitude.toString())));
                 }
             }
             case planningPlanStatus -> {
@@ -337,7 +469,7 @@ public class ProjectsResource {
     }
 
     private void updateProjectProperty(Project project, ProjectUpdateModel projectUpdateModel, LoggedUser loggedUser, LocalDate updateDate, ZonedDateTime changeDate)
-            throws VngNotFoundException, VngServerErrorException, VngBadRequestException {
+        throws VngNotFoundException, VngServerErrorException, VngBadRequestException {
 
         switch (projectUpdateModel.getProperty()) {
         case startDate -> projectService.updateProjectDuration(repo, project, LocalDate.parse(projectUpdateModel.getValue()), null, loggedUser.getUuid());
@@ -349,8 +481,8 @@ public class ProjectsResource {
         case name -> projectService.updateProjectName(repo, project, projectUpdateModel.getValue(), loggedUser.getUuid(), updateDate);
         case projectColor -> projectService.updateProjectColor(repo, project, projectUpdateModel.getValue(), loggedUser.getUuid(), changeDate);
         case location -> projectService.updateProjectLocation(repo, project, projectUpdateModel.getValues().stream()
-            .map(v -> (v == null) ? null : Double.parseDouble(v))
-            .toList(), loggedUser.getUuid(), changeDate);
+                .map(v -> (v == null) ? null : Double.parseDouble(v))
+                .toList(), loggedUser.getUuid(), changeDate);
         case planningPlanStatus -> {
             Set<PlanStatus> planStatuses = (projectUpdateModel.getValues() != null)
                     ? projectUpdateModel.getValues().stream().map(PlanStatus::valueOf).collect(Collectors.toSet())

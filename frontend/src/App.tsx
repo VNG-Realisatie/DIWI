@@ -12,7 +12,6 @@ import { NoMatch } from "./pages/NoMatch";
 import * as Paths from "./Paths";
 import { ProjectDetail } from "./pages/ProjectDetail";
 import { ProjectProvider } from "./context/ProjectContext";
-import { ReactComponent as TimeLineImg } from "./assets/temp/timeline.svg";
 import DetailsWithMap from "./components/DetailsWithMap";
 import { PolicyLists } from "./pages/PolicyLists";
 import { DashboardProjects } from "./pages/DashboardProjects";
@@ -20,6 +19,7 @@ import { ExchangeData } from "./pages/ExchangeData";
 import { ExportProject } from "./pages/ExportProject";
 import { ImportExcel } from "./pages/ImportExcel";
 import { ImportedProjects } from "./pages/ImportedProjects";
+import { About } from "./pages/About";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { Swagger } from "./pages/Swagger";
@@ -29,6 +29,7 @@ import { Settings } from "./components/admin/Settings";
 import { theme } from "./theme";
 import { dateFormats } from "./localization";
 import PlotSelectorMap from "./components/map/OpenLayersMap";
+import { ProjectTimeline } from "./components/project/ProjectTimeline";
 
 function RequiresLogin() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -138,7 +139,7 @@ function App() {
                             element={
                                 <ProjectProvider>
                                     <ProjectDetail>
-                                        <TimeLineImg style={{ width: "100%" }} />
+                                        <ProjectTimeline />
                                     </ProjectDetail>
                                 </ProjectProvider>
                             }
@@ -168,6 +169,7 @@ function App() {
                         <Route path={Paths.userSettings.path} element={<Settings />} />
                         <Route path={Paths.importExcelProjects.path} element={<ImportedProjects type="Excel" />} />
                         <Route path={Paths.importSquitProjects.path} element={<ImportedProjects type="Squit" />} />
+                        <Route path={Paths.about.path} element={<About />} />
                         <Route path={Paths.swagger.path} element={<Swagger />} />
                         <Route path="*" element={<NoMatch />} />
                     </Route>

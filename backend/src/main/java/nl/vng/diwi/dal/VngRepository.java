@@ -24,6 +24,8 @@ public class VngRepository extends AbstractRepository {
 
     private CustomPropertiesDAO customPropertiesDAO;
 
+    private PlotDAO plotDAO;
+
     public ProjectsDAO getProjectsDAO() {
         if (projectsDAO == null) {
             projectsDAO = new ProjectsDAO(session);
@@ -57,6 +59,13 @@ public class VngRepository extends AbstractRepository {
             customPropertiesDAO = new CustomPropertiesDAO(session);
         }
         return customPropertiesDAO;
+    }
+
+    public PlotDAO getPlotDAO() {
+        if (plotDAO == null) {
+            plotDAO = new PlotDAO(session);
+        }
+        return plotDAO;
     }
 
     public List<SelectModel> getMunicipalityRoles() {

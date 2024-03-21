@@ -7,12 +7,16 @@ import nl.vng.diwi.models.superclasses.ProjectSnapshotModelSuperclass;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class ProjectSnapshotModel extends ProjectSnapshotModelSuperclass {
 
     private LocationModel location;
+    private List<ProjectCustomPropertyModel> customProperties = new ArrayList<>();
 
     public ProjectSnapshotModel(ProjectListSqlModel sqlProject) {
         super(sqlProject);

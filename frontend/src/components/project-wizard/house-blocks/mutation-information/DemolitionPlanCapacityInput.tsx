@@ -23,7 +23,7 @@ const DemolitionPlanEditInput = ({ houseBlockDemolitionPlan, updateHouseBlockDem
             id="demolitionPlan"
             size="small"
             variant="outlined"
-            value={houseBlockDemolitionPlan ? houseBlockDemolitionPlan : null}
+            value={houseBlockDemolitionPlan !== null ? houseBlockDemolitionPlan : ""}
             onChange={(e) => updateHouseBlockDemolitionPlan(+e.target.value)}
         />
     );

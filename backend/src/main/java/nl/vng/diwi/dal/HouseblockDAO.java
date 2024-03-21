@@ -1,7 +1,9 @@
 package nl.vng.diwi.dal;
 
+import nl.vng.diwi.dal.entities.Houseblock;
 import nl.vng.diwi.dal.entities.HouseblockSnapshotSqlModel;
 import org.hibernate.Session;
+import org.hibernate.query.SelectionQuery;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,5 +29,14 @@ public class HouseblockDAO extends AbstractRepository {
             .setParameter("now", LocalDate.now())
             .setParameter("projectUuid", projectUuid)
             .list();
+    }
+
+    public Houseblock getCurrentHouseblock(UUID houseblockId) {
+        session.enableFilter(GenericRepository.CURRENT_DATA_FILTER);
+        String statement = "FROM Houseblock H WHERE H.id = :uuid";
+        SelectionQuery<Houseblock> query = session
+            .createSelectionQuery(statement, Houseblock.class)
+            .setParameter("uuid", houseblockId);
+        return query.getSingleResultOrNull();
     }
 }
