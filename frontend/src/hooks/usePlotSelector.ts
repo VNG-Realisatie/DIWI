@@ -8,7 +8,7 @@ import { OSM, TileWMS, Vector as VectorSource } from "ol/source";
 import { defaults as defaultControls } from "ol/control.js";
 import { Extent } from "ol/extent";
 import queryString from "query-string";
-import { useCallback, useContext, useEffect, useId, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { Plot, PlotGeoJSON, getProjectPlots, updateProjectPlots, updateProjects } from "../api/projectsServices";
 import ProjectContext from "../context/ProjectContext";
 import _ from "lodash";

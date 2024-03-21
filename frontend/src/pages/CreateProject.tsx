@@ -1,39 +1,16 @@
-import React, { useEffect, useId, useState } from "react";
-import { Stepper, Step, StepLabel, Button, Box, Stack } from "@mui/material";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
-import { ProjectInformationForm } from "../components/project/ProjectInformationForm";
-import { BlockHousesForm } from "../components/BlockHousesForm";
-// import { SelectFromMapForm } from "../components/SelectFromMapForm";
-// import { TimelineForm } from "../components/TimelineForm";
-import useAlert from "../hooks/useAlert";
-import { useTranslation } from "react-i18next";
-import { updateProject, createProject, addHouseBlock, getProject } from "../api/projectsServices";
-import { useParams, useNavigate } from "react-router-dom";
-import { HouseBlock } from "../components/project-wizard/house-blocks/types";
-import { emptyHouseBlockForm } from "../components/project-wizard/house-blocks/constants";
 import dayjs from "dayjs";
-import usePlotSelector from "../hooks/usePlotSelector";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate, useParams } from "react-router-dom";
+import { addHouseBlock, createProject, getProject, updateProject } from "../api/projectsServices";
+import { BlockHousesForm } from "../components/BlockHousesForm";
+import WizardLayout from "../components/project-wizard/WizardLayout";
+import { emptyHouseBlockForm } from "../components/project-wizard/house-blocks/constants";
+import { HouseBlock } from "../components/project-wizard/house-blocks/types";
+import { ProjectInformationForm } from "../components/project/ProjectInformationForm";
+import useAlert from "../hooks/useAlert";
+import { projectWizardMap } from "../Paths";
 
-const CustomStepIcon: React.FC<CustomStepIconProps> = ({ active, completed }) => {
-    if (completed) {
-        return <CheckCircleIcon color="primary" />;
-    } else {
-        return <RadioButtonUncheckedIcon color={active ? "primary" : "disabled"} />;
-    }
-};
-
-const steps: string[] = [
-    "information",
-    "houseBlocks",
-    "signupOnTheMap",
-    // "timeline"
-];
-
-interface CustomStepIconProps {
-    active: boolean;
-    completed: boolean;
-}
 export const CreateProject = () => {
     const [createProjectForm, setCreateProjectForm] = useState<any>({ projectColor: "#FF5733" });
     const [createFormHouseBlock, setCreateFormHouseBlock] = useState<HouseBlock>(emptyHouseBlockForm);
@@ -104,9 +81,11 @@ export const CreateProject = () => {
                 return;
             }
             await addHouseBlock({ ...createFormHouseBlock, projectId });
-            setActiveStep((prevActiveStep) => prevActiveStep + 1);
+
+            navigate(projectWizardMap.toPath({ projectId }));
             return;
         }
+
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
     };
 
@@ -122,14 +101,7 @@ export const CreateProject = () => {
 
     return (
         //Components for wizard steps
-        <Box mb={7} border="solid 2px #ddd" p={4}>
-            <Stepper activeStep={activeStep} alternativeLabel>
-                {steps.map((label) => (
-                    <Step key={label}>
-                        <StepLabel StepIconComponent={CustomStepIcon}>{t(`createProject.${label}`)}</StepLabel>
-                    </Step>
-                ))}
-            </Stepper>
+        <WizardLayout {...{ handleBack, handleNext, handleSave, projectId, activeStep }}>
             {activeStep === 0 && (
                 <ProjectInformationForm validationError={validationError} setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />
             )}
@@ -141,19 +113,8 @@ export const CreateProject = () => {
                     setCreateFormHouseBlock={setCreateFormHouseBlock}
                 />
             )}
-            {/* {activeStep === 2 && <div id={id} style={{ height: "70vh", width: "100%" }}></div>} */}
 
-            <Stack direction="row" alignItems="center" justifyContent="flex-end" py={2}>
-                <Button variant="outlined" onClick={() => handleSave()} sx={{ mr: 2 }}>
-                    {t("generic.save")}
-                </Button>
-                <Button variant="contained" onClick={() => handleBack()} sx={{ mr: 2 }} disabled={activeStep === 0}>
-                    {t("generic.previous")}
-                </Button>
-                <Button variant="contained" onClick={() => handleNext()} disabled={activeStep === 0 && !projectId}>
-                    {t("generic.next")}
-                </Button>
-            </Stack>
-        </Box>
+            {/* {activeStep === 2 && <div id={id} style={{ height: "70vh", width: "100%" }}></div>} */}
+        </WizardLayout>
     );
 };
