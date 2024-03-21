@@ -114,6 +114,7 @@ Or in docker:
 
 ```shell
 docker compose exec -T database psql --user diwi diwi < backend/src/main/resources/db/sql/vng_projects_testdata.sql
+docker compose exec -T database psql --user diwi diwi < backend/src/main/resources/db/sql/vng_woningbloks_testdata.sql
 ```
 
 ## Deploy on production
