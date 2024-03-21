@@ -2,8 +2,14 @@ package nl.vng.diwi.services;
 
 import io.hypersistence.utils.hibernate.type.range.Range;
 import nl.vng.diwi.dal.VngRepository;
+import nl.vng.diwi.dal.entities.CustomCategoryValue;
+import nl.vng.diwi.dal.entities.CustomOrdinalValue;
+import nl.vng.diwi.dal.entities.CustomProperty;
 import nl.vng.diwi.dal.entities.Houseblock;
 import nl.vng.diwi.dal.entities.HouseblockAppearanceAndTypeChangelog;
+import nl.vng.diwi.dal.entities.HouseblockBooleanCustomPropertyChangelog;
+import nl.vng.diwi.dal.entities.HouseblockCategoryCustomPropertyChangelog;
+import nl.vng.diwi.dal.entities.HouseblockCategoryCustomPropertyChangelogValue;
 import nl.vng.diwi.dal.entities.HouseblockDurationChangelog;
 import nl.vng.diwi.dal.entities.HouseblockGroundPositionChangelog;
 import nl.vng.diwi.dal.entities.HouseblockGroundPositionChangelogValue;
@@ -11,10 +17,13 @@ import nl.vng.diwi.dal.entities.HouseblockHouseTypeChangelogValue;
 import nl.vng.diwi.dal.entities.HouseblockMutatieChangelog;
 import nl.vng.diwi.dal.entities.HouseblockMutatieChangelogTypeValue;
 import nl.vng.diwi.dal.entities.HouseblockNameChangelog;
+import nl.vng.diwi.dal.entities.HouseblockNumericCustomPropertyChangelog;
+import nl.vng.diwi.dal.entities.HouseblockOrdinalCustomPropertyChangelog;
 import nl.vng.diwi.dal.entities.HouseblockOwnershipValueChangelog;
 import nl.vng.diwi.dal.entities.HouseblockPhysicalAppearanceChangelogValue;
 import nl.vng.diwi.dal.entities.HouseblockPurposeChangelog;
 import nl.vng.diwi.dal.entities.HouseblockPurposeChangelogValue;
+import nl.vng.diwi.dal.entities.HouseblockTextCustomPropertyChangelog;
 import nl.vng.diwi.dal.entities.Milestone;
 import nl.vng.diwi.dal.entities.Project;
 import nl.vng.diwi.dal.entities.User;
@@ -46,8 +55,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class HouseblockService {
     private static final Logger logger = LogManager.getLogger();
@@ -745,4 +756,204 @@ public class HouseblockService {
         return houseblock;
     }
 
+    public void updateHouseblockBooleanCustomProperty(VngRepository repo, Project project, Houseblock houseblock, UUID customPropertyId, Boolean newBooleanValue,
+                                                      UUID loggedInUserUuid, LocalDate updateDate) {
+
+        HouseblockBooleanCustomPropertyChangelog oldChangelogAfterUpdate = new HouseblockBooleanCustomPropertyChangelog();
+        HouseblockBooleanCustomPropertyChangelog newChangelog = null;
+        if (newBooleanValue != null) {
+            newChangelog = new HouseblockBooleanCustomPropertyChangelog();
+            newChangelog.setHouseblock(houseblock);
+            newChangelog.setValue(newBooleanValue);
+            newChangelog.setCustomProperty(repo.getReferenceById(CustomProperty.class, customPropertyId));
+        }
+
+
+        List<HouseblockBooleanCustomPropertyChangelog> changelogs = houseblock.getBooleanCustomProperties().stream()
+            .filter(cp -> cp.getCustomProperty().getId().equals(customPropertyId)).toList();
+
+        HouseblockBooleanCustomPropertyChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, houseblock, changelogs, newChangelog,
+            oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
+
+        if (newChangelog != null) {
+            repo.persist(newChangelog);
+        }
+
+        if (oldChangelog != null) {
+            repo.persist(oldChangelog);
+            if (oldChangelogAfterUpdate.getStartMilestone() != null) {
+                // it is a current houseblock && it had a non-null changelog before the update
+                oldChangelogAfterUpdate.setHouseblock(houseblock);
+                oldChangelogAfterUpdate.setValue(oldChangelog.getValue());
+                oldChangelogAfterUpdate.setCustomProperty(oldChangelog.getCustomProperty());
+                repo.persist(oldChangelogAfterUpdate);
+            }
+        }
+    }
+
+    public void updateHouseblockTextCustomProperty(VngRepository repo, Project project, Houseblock houseblock, UUID customPropertyId, String newTextValue,
+                                                   UUID loggedInUserUuid, LocalDate updateDate) {
+        HouseblockTextCustomPropertyChangelog oldChangelogAfterUpdate = new HouseblockTextCustomPropertyChangelog();
+        HouseblockTextCustomPropertyChangelog newChangelog = null;
+        if (newTextValue != null) {
+            newChangelog = new HouseblockTextCustomPropertyChangelog();
+            newChangelog.setHouseblock(houseblock);
+            newChangelog.setValue(newTextValue);
+            newChangelog.setCustomProperty(repo.getReferenceById(CustomProperty.class, customPropertyId));
+        }
+
+        List<HouseblockTextCustomPropertyChangelog> changelogs = houseblock.getTextCustomProperties().stream()
+            .filter(cp -> cp.getCustomProperty().getId().equals(customPropertyId)).toList();
+
+        HouseblockTextCustomPropertyChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, houseblock, changelogs, newChangelog,
+            oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
+
+        if (newChangelog != null) {
+            repo.persist(newChangelog);
+        }
+
+        if (oldChangelog != null) {
+            repo.persist(oldChangelog);
+            if (oldChangelogAfterUpdate.getStartMilestone() != null) {
+                // it is a current houseblock && it had a non-null changelog before the update
+                oldChangelogAfterUpdate.setHouseblock(houseblock);
+                oldChangelogAfterUpdate.setValue(oldChangelog.getValue());
+                oldChangelogAfterUpdate.setCustomProperty(oldChangelog.getCustomProperty());
+                repo.persist(oldChangelogAfterUpdate);
+            }
+        }
+    }
+
+
+    public void updateHouseblockNumericCustomProperty(VngRepository repo, Project project, Houseblock houseblock, UUID customPropertyId, SingleValueOrRangeModel<BigDecimal> newNumericValue,
+                                                      UUID loggedInUserUuid, LocalDate updateDate) {
+
+        HouseblockNumericCustomPropertyChangelog oldChangelogAfterUpdate = new HouseblockNumericCustomPropertyChangelog();
+        HouseblockNumericCustomPropertyChangelog newChangelog = null;
+        if (newNumericValue.getValue() != null || newNumericValue.getMin() != null || newNumericValue.getMax() != null) {
+            newChangelog = new HouseblockNumericCustomPropertyChangelog();
+            newChangelog.setHouseblock(houseblock);
+            if (newNumericValue.getValue() != null) {
+                newChangelog.setValue(newNumericValue.getValue().doubleValue());
+                newChangelog.setValueType(ValueType.SINGLE_VALUE);
+            } else {
+                newChangelog.setValueRange(Range.closed(newNumericValue.getMin(), newNumericValue.getMax()));
+                newChangelog.setValueType(ValueType.RANGE);
+            }
+            newChangelog.setCustomProperty(repo.getReferenceById(CustomProperty.class, customPropertyId));
+        }
+
+        List<HouseblockNumericCustomPropertyChangelog> changelogs = houseblock.getNumericCustomProperties().stream()
+            .filter(cp -> cp.getCustomProperty().getId().equals(customPropertyId)).toList();
+
+        HouseblockNumericCustomPropertyChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, houseblock, changelogs, newChangelog,
+            oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
+
+        if (newChangelog != null) {
+            repo.persist(newChangelog);
+        }
+
+        if (oldChangelog != null) {
+            repo.persist(oldChangelog);
+            if (oldChangelogAfterUpdate.getStartMilestone() != null) {
+                // it is a current houseblock && it had a non-null changelog before the update
+                oldChangelogAfterUpdate.setHouseblock(houseblock);
+                oldChangelogAfterUpdate.setValue(oldChangelog.getValue());
+                oldChangelogAfterUpdate.setValueRange(oldChangelog.getValueRange());
+                oldChangelogAfterUpdate.setValueType(oldChangelog.getValueType());
+                oldChangelogAfterUpdate.setCustomProperty(oldChangelog.getCustomProperty());
+                repo.persist(oldChangelogAfterUpdate);
+            }
+        }
+    }
+
+    public void updateHouseblockOrdinalCustomProperty(VngRepository repo, Project project, Houseblock houseblock, UUID customPropertyId, SingleValueOrRangeModel<UUID> newOrdinalValue,
+                                                      UUID loggedInUserUuid, LocalDate updateDate) {
+
+        HouseblockOrdinalCustomPropertyChangelog oldChangelogAfterUpdate = new HouseblockOrdinalCustomPropertyChangelog();
+        HouseblockOrdinalCustomPropertyChangelog newChangelog = null;
+        if (newOrdinalValue.getValue() != null || newOrdinalValue.getMin() != null || newOrdinalValue.getMax() != null) {
+            newChangelog = new HouseblockOrdinalCustomPropertyChangelog();
+            newChangelog.setHouseblock(houseblock);
+            if (newOrdinalValue.getValue() != null) {
+                newChangelog.setValue(repo.getReferenceById(CustomOrdinalValue.class, newOrdinalValue.getValue()));
+                newChangelog.setValueType(ValueType.SINGLE_VALUE);
+            } else {
+                newChangelog.setMinValue(repo.getReferenceById(CustomOrdinalValue.class, newOrdinalValue.getMin()));
+                newChangelog.setMaxValue(repo.getReferenceById(CustomOrdinalValue.class, newOrdinalValue.getMax()));
+                newChangelog.setValueType(ValueType.RANGE);
+            }
+            newChangelog.setCustomProperty(repo.getReferenceById(CustomProperty.class, customPropertyId));
+        }
+
+        List<HouseblockOrdinalCustomPropertyChangelog> changelogs = houseblock.getOrdinalCustomProperties().stream()
+            .filter(cp -> cp.getCustomProperty().getId().equals(customPropertyId)).toList();
+
+        HouseblockOrdinalCustomPropertyChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, houseblock, changelogs, newChangelog,
+            oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
+
+        if (newChangelog != null) {
+            repo.persist(newChangelog);
+        }
+
+        if (oldChangelog != null) {
+            repo.persist(oldChangelog);
+            if (oldChangelogAfterUpdate.getStartMilestone() != null) {
+                // it is a current houseblock && it had a non-null changelog before the update
+                oldChangelogAfterUpdate.setHouseblock(houseblock);
+                oldChangelogAfterUpdate.setValue(oldChangelog.getValue());
+                oldChangelogAfterUpdate.setMinValue(oldChangelog.getMinValue());
+                oldChangelogAfterUpdate.setMaxValue(oldChangelog.getMaxValue());
+                oldChangelogAfterUpdate.setValueType(oldChangelog.getValueType());
+                oldChangelogAfterUpdate.setCustomProperty(oldChangelog.getCustomProperty());
+                repo.persist(oldChangelogAfterUpdate);
+            }
+        }
+    }
+
+    public void updateHouseblockCategoryCustomProperty(VngRepository repo, Project project, Houseblock houseblock, UUID customPropertyId, Set<UUID> newCategoryValues,
+                                                       UUID loggedInUserUuid, LocalDate updateDate) {
+
+        HouseblockCategoryCustomPropertyChangelog oldChangelogAfterUpdate = new HouseblockCategoryCustomPropertyChangelog();
+        HouseblockCategoryCustomPropertyChangelog newChangelog = null;
+        if (newCategoryValues != null && !newCategoryValues.isEmpty()) {
+            newChangelog = new HouseblockCategoryCustomPropertyChangelog();
+            newChangelog.setHouseblock(houseblock);
+            newChangelog.setCustomProperty(repo.getReferenceById(CustomProperty.class, customPropertyId));
+        }
+
+        List<HouseblockCategoryCustomPropertyChangelog> changelogs = houseblock.getCategoryCustomProperties().stream()
+            .filter(cp -> cp.getCustomProperty().getId().equals(customPropertyId)).toList();
+
+        HouseblockCategoryCustomPropertyChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, houseblock, changelogs, newChangelog,
+            oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
+
+        if (newChangelog != null) {
+            repo.persist(newChangelog);
+            for (UUID newCategoryValue : newCategoryValues) {
+                HouseblockCategoryCustomPropertyChangelogValue newChangelogValue = new HouseblockCategoryCustomPropertyChangelogValue();
+                newChangelogValue.setCategoryChangelog(newChangelog);
+                newChangelogValue.setCategoryValue(repo.getReferenceById(CustomCategoryValue.class, newCategoryValue));
+                repo.persist(newChangelogValue);
+            }
+        }
+        if (oldChangelog != null) {
+            Set<UUID> oldCategoryValues = oldChangelog.getChangelogCategoryValues().stream()
+                .map(cv -> cv.getCategoryValue().getId()).collect(Collectors.toSet());
+
+            repo.persist(oldChangelog);
+            if (oldChangelogAfterUpdate.getStartMilestone() != null) {
+                // it is a current houseblock && it had a non-null changelog before the update
+                oldChangelogAfterUpdate.setHouseblock(houseblock);
+                oldChangelogAfterUpdate.setCustomProperty(oldChangelog.getCustomProperty());
+                repo.persist(oldChangelogAfterUpdate);
+                for (UUID oldCategoryValue : oldCategoryValues) {
+                    HouseblockCategoryCustomPropertyChangelogValue oldChangelogValue = new HouseblockCategoryCustomPropertyChangelogValue();
+                    oldChangelogValue.setCategoryChangelog(oldChangelogAfterUpdate);
+                    oldChangelogValue.setCategoryValue(repo.getReferenceById(CustomCategoryValue.class, oldCategoryValue));
+                    repo.persist(oldChangelogValue);
+                }
+            }
+        }
+    }
 }
