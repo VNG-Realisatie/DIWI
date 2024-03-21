@@ -2,6 +2,7 @@ package nl.vng.diwi.dal;
 
 import nl.vng.diwi.dal.entities.Houseblock;
 import nl.vng.diwi.dal.entities.HouseblockSnapshotSqlModel;
+import nl.vng.diwi.dal.entities.ProjectHouseblockCustomPropertySqlModel;
 import org.hibernate.Session;
 import org.hibernate.query.SelectionQuery;
 
@@ -38,5 +39,15 @@ public class HouseblockDAO extends AbstractRepository {
             .createSelectionQuery(statement, Houseblock.class)
             .setParameter("uuid", houseblockId);
         return query.getSingleResultOrNull();
+    }
+
+    public List<ProjectHouseblockCustomPropertySqlModel> getHouseblockCustomProperties(UUID houseblockUuid) {
+        List<ProjectHouseblockCustomPropertySqlModel> result = session.createNativeQuery(
+                "SELECT * FROM get_houseblock_custom_properties(:houseblockUuid, :now) " , ProjectHouseblockCustomPropertySqlModel.class)
+            .setParameter("now", LocalDate.now())
+            .setParameter("houseblockUuid", houseblockUuid)
+            .list();
+
+        return result;
     }
 }

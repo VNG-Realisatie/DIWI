@@ -30,7 +30,7 @@ import java.util.UUID;
     attributeName = "numrange",
     converter = PostgreSQLRangeType.class
 )
-public class ProjectCustomPropertySqlModel {
+public class ProjectHouseblockCustomPropertySqlModel {
 
     @Id
     private UUID customPropertyId;

@@ -24,6 +24,7 @@ import nl.vng.diwi.dal.entities.enums.Purpose;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.models.HouseblockUpdateModel;
 import nl.vng.diwi.models.MilestoneModel;
+import nl.vng.diwi.models.ProjectHouseblockCustomPropertyModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
@@ -68,6 +69,16 @@ public class HouseblockResource {
     public HouseblockSnapshotModel getCurrentHouseblockSnapshot(@PathParam("uuid") UUID houseblockUuid) throws VngNotFoundException {
 
         return houseblockService.getHouseblockSnapshot(repo, houseblockUuid);
+
+    }
+
+    @GET
+    @Path("/{id}/customproperties")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public List<ProjectHouseblockCustomPropertyModel> getProjectCustomProperties(@PathParam("id") UUID houseblockUuid) {
+
+        return houseblockService.getHouseblockCustomProperties(repo, houseblockUuid);
 
     }
 
