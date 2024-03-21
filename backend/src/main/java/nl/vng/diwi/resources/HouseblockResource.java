@@ -19,8 +19,10 @@ import nl.vng.diwi.dal.entities.Milestone;
 import nl.vng.diwi.dal.entities.Project;
 import nl.vng.diwi.dal.entities.enums.GroundPosition;
 import nl.vng.diwi.dal.entities.enums.HouseType;
+import nl.vng.diwi.dal.entities.enums.ObjectType;
 import nl.vng.diwi.dal.entities.enums.PhysicalAppearance;
 import nl.vng.diwi.dal.entities.enums.Purpose;
+import nl.vng.diwi.models.CustomPropertyModel;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.models.HouseblockUpdateModel;
 import nl.vng.diwi.models.MilestoneModel;
@@ -29,6 +31,7 @@ import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.services.CustomPropertiesService;
 import nl.vng.diwi.services.HouseblockService;
 import nl.vng.diwi.services.ProjectService;
 
@@ -36,6 +39,7 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -51,16 +55,19 @@ public class HouseblockResource {
     private final VngRepository repo;
     private final HouseblockService houseblockService;
     private final ProjectService projectService;
+    private final CustomPropertiesService customPropertiesService;
 
     @Inject
     public HouseblockResource(
         GenericRepository genericRepository,
         HouseblockService houseblockService,
-        ProjectService projectService) {
+        ProjectService projectService,
+        CustomPropertiesService customPropertiesService) {
         this.repo = new VngRepository(genericRepository.getDal().getSession());
         this.houseblockService = houseblockService;
         this.projectService = projectService;
         this.houseblockService.setProjectService(projectService);
+        this.customPropertiesService = customPropertiesService;
     }
 
     @GET
@@ -269,4 +276,81 @@ public class HouseblockResource {
         }
     }
 
+    @PUT
+    @Path("/{id}/customproperties")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public List<ProjectHouseblockCustomPropertyModel> updateProjectCustomProperty(@Context LoggedUser loggedUser, @PathParam("id") UUID houseblockUuid,
+                                                                                  ProjectHouseblockCustomPropertyModel houseblockCPUpdateModel)
+        throws VngNotFoundException, VngBadRequestException, VngServerErrorException {
+
+        CustomPropertyModel dbCP = customPropertiesService.getCustomProperty(repo, houseblockCPUpdateModel.getCustomPropertyId());
+        if (dbCP == null || !dbCP.getObjectType().equals(ObjectType.WONINGBLOK)) {
+            throw new VngBadRequestException("Custom property id does not match any known property.");
+        }
+        if (dbCP.getDisabled() == Boolean.TRUE) {
+            throw new VngBadRequestException("Custom property is disabled.");
+        }
+
+        LocalDate updateDate = LocalDate.now();
+
+        ProjectHouseblockCustomPropertyModel currentHouseblockCP = houseblockService.getHouseblockCustomProperties(repo, houseblockUuid).stream()
+            .filter(cp -> cp.getCustomPropertyId().equals(houseblockCPUpdateModel.getCustomPropertyId()))
+            .findFirst().orElse(new ProjectHouseblockCustomPropertyModel());
+
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+            Houseblock houseblock = houseblockService.getCurrentHouseblockAndPerformPreliminaryUpdateChecks(repo, houseblockUuid);
+            Project project = projectService.getCurrentProjectAndPerformPreliminaryUpdateChecks(repo, houseblock.getProject().getId());
+
+            switch (dbCP.getPropertyType()) {
+                case BOOLEAN -> {
+                    if (!Objects.equals(currentHouseblockCP.getBooleanValue(), houseblockCPUpdateModel.getBooleanValue())) {
+                        houseblockService.updateHouseblockBooleanCustomProperty(repo, project, houseblock, houseblockCPUpdateModel.getCustomPropertyId(),
+                            houseblockCPUpdateModel.getBooleanValue(), loggedUser.getUuid(), updateDate);
+                    }
+                }
+                case TEXT -> {
+                    if (!Objects.equals(currentHouseblockCP.getTextValue(), houseblockCPUpdateModel.getTextValue())) {
+                        houseblockService.updateHouseblockTextCustomProperty(repo, project, houseblock, houseblockCPUpdateModel.getCustomPropertyId(),
+                            houseblockCPUpdateModel.getTextValue(), loggedUser.getUuid(), updateDate);
+                    }
+                }
+                case NUMERIC -> {
+                    var currentNumericValue = currentHouseblockCP.getNumericValue();
+                    var updateNumericValue = houseblockCPUpdateModel.getNumericValue();
+                    if (updateNumericValue == null || !updateNumericValue.isValid()) {
+                        throw new VngBadRequestException("Numeric value does not have a valid format.");
+                    }
+                    if (!Objects.equals(currentNumericValue.getValue() != null ? currentNumericValue.getValue().doubleValue() : null,
+                        updateNumericValue.getValue() != null ? updateNumericValue.getValue().doubleValue() : null)
+                        || !Objects.equals(currentNumericValue.getMin(), updateNumericValue.getMin())
+                        || !Objects.equals(currentNumericValue.getMax(), updateNumericValue.getMax())) {
+                        houseblockService.updateHouseblockNumericCustomProperty(repo, project, houseblock, houseblockCPUpdateModel.getCustomPropertyId(),
+                            houseblockCPUpdateModel.getNumericValue(), loggedUser.getUuid(), updateDate);
+                    }
+                }
+                case CATEGORY -> {
+                    var currentCategories = currentHouseblockCP.getCategories();
+                    var updateCategories = houseblockCPUpdateModel.getCategories();
+                    if (currentCategories.size() != updateCategories.size() || !currentCategories.containsAll(updateCategories)) {
+                        houseblockService.updateHouseblockCategoryCustomProperty(repo, project, houseblock, houseblockCPUpdateModel.getCustomPropertyId(),
+                            new HashSet<>(updateCategories), loggedUser.getUuid(), updateDate);
+                    }
+                }
+                case ORDINAL -> {
+                    if (houseblockCPUpdateModel.getOrdinals() == null || !houseblockCPUpdateModel.getOrdinals().isValid()) {
+                        throw new VngBadRequestException("Ordinal value does not have a valid format.");
+                    }
+                    if (!Objects.equals(currentHouseblockCP.getOrdinals(), houseblockCPUpdateModel.getOrdinals())) {
+                        houseblockService.updateHouseblockOrdinalCustomProperty(repo, project, houseblock, houseblockCPUpdateModel.getCustomPropertyId(),
+                            houseblockCPUpdateModel.getOrdinals(), loggedUser.getUuid(), updateDate);
+                    }
+                }
+            }
+            transaction.commit();
+            repo.getSession().clear();
+        }
+
+        return houseblockService.getHouseblockCustomProperties(repo, houseblockUuid);
+    }
 }
