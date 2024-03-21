@@ -50,7 +50,11 @@ type DateDisplayEditorProps = {
 const DateDisplayEditor = ({ projectEditable, date, onChange }: DateDisplayEditorProps) => {
     const dayjsDate = typeof date === "string" ? dayjs(date) : date;
     if (!projectEditable) {
-        return <CellContainer>{dayjsDate ? convertDayjsToString(dayjsDate) : ""}</CellContainer>;
+        return (
+            <CellContainer>
+                <Typography minHeight={34}>{dayjsDate ? convertDayjsToString(dayjsDate) : ""}</Typography>
+            </CellContainer>
+        );
     } else {
         return <DatePicker slotProps={{ textField: { size: "small" } }} value={dayjsDate} onChange={onChange} />;
     }
@@ -278,7 +282,9 @@ export const ProjectsWithHouseBlock = () => {
                     <Grid item xs={6} md={1}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.projectName")}</Typography>
                         {!projectEditable ? (
-                            <CellContainer>{name ? name : selectedProject?.projectName}</CellContainer>
+                            <CellContainer>
+                                <Typography minHeight={34}>{name ? name : selectedProject?.projectName}</Typography>
+                            </CellContainer>
                         ) : (
                             <ProjectNameEditForm name={name} setName={setName} />
                         )}
@@ -286,20 +292,24 @@ export const ProjectsWithHouseBlock = () => {
                     <Grid item xs={6} md={1}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.totalValue")}</Typography>
                         {!projectEditable ? (
-                            <CellContainer>{selectedProject?.totalValue ? selectedProject.totalValue : 0}</CellContainer>
+                            <CellContainer>
+                                <Typography minHeight={34}>{selectedProject?.totalValue ? selectedProject.totalValue : 0}</Typography>
+                            </CellContainer>
                         ) : (
                             <TextField size="small" disabled value={selectedProject?.totalValue ? selectedProject.totalValue : 0} />
                         )}
                     </Grid>
                     <Grid item sm={2}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.organizationName")}</Typography>
-                        <OrganizationSelect projectEditable={projectEditable} owner={owner} setOwner={setOwner} />
+                        <CellContainer>
+                            <OrganizationSelect projectEditable={projectEditable} owner={owner} setOwner={setOwner} />
+                        </CellContainer>
                     </Grid>
                     <Grid item sm={4}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.planType")}</Typography>
 
                         {!projectEditable ? (
-                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }} minHeight={34}>
+                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }} minHeight={44}>
                                 {planType.length > 0
                                     ? planType.map((pt: string) => {
                                           return <span key={pt}>{t(`projectTable.planTypeOptions.${pt}`)},</span>;
