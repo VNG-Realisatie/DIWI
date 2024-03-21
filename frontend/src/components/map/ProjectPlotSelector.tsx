@@ -48,7 +48,7 @@ const ProjectPlotSelector = () => {
 
     const handleSaveChange = () => {
         if (selectedProject) {
-            updateProjectPlots(selectedProject.projectId, selectedPlots);
+            updateProjectPlots(selectedProject.projectId, selectedPlots).then(() => setOriginalSelectedPlots(selectedPlots));
         }
     };
 
@@ -81,7 +81,6 @@ const ProjectPlotSelector = () => {
                 .then((result): void => {
                     const geojson = result as PlotGeoJSON;
                     const properties = geojson.features[0].properties;
-                    console.log(properties);
                     const newPlot: Plot = {
                         brkGemeenteCode: properties.kadastraleGemeenteCode,
                         brkPerceelNummer: parseInt(properties.perceelnummer),
@@ -90,7 +89,6 @@ const ProjectPlotSelector = () => {
                         geoJson: geojson,
                     };
                     const newSelectedPlots = [...selectedPlots, newPlot];
-                    console.log("new selected plots:", newSelectedPlots);
                     setSelectedPlots(newSelectedPlots);
                 });
         },
@@ -101,10 +99,8 @@ const ProjectPlotSelector = () => {
         if (!selectedPlotLayerSource) return;
 
         const changed = !_.isEqual(selectedPlots, originalSelectedPlots);
-        console.log(changed);
         setPlotsChanged(changed);
         for (const selectedPlot of selectedPlots) {
-            // console.log(selectedPlot);
             const geojson = new GeoJSON().readFeatures(selectedPlot.geoJson);
             selectedPlotLayerSource.addFeatures(geojson);
         }
@@ -139,7 +135,6 @@ const ProjectPlotSelector = () => {
         });
         setMap(newMap);
         return () => {
-            console.log("clear!");
             newMap.dispose();
             const mapElement = document.getElementById(id);
             if (mapElement) {
