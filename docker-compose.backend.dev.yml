@@ -27,5 +27,6 @@ services:
       KC_AUTH_SERVER_URL: ${KC_AUTH_SERVER_URL:-http://localhost:${KEYCLOAK_PORT:-1780}}
       KC_SECRET: ${KC_SECRET:-diwi-test-secret}
       KC_RESOURCE_NAME: ${KC_RESOURCE_NAME:-diwi-test-client}
+      MUNICIPALITY_NAME: ${MUNICIPALITY_NAME:-EINDHOVEN}
     depends_on:
       - keycloak
