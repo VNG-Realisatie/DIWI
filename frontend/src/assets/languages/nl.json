@@ -13,7 +13,9 @@
       "projectDeletion": "Project {{name}} is verwijderd",
       "delete": "Verwijderen",
       "cancel": "Annuleren",
-      "noInfoAvailable": "Geen informatie beschikbaar"
+      "noInfoAvailable": "Geen informatie beschikbaar",
+      "updated":"Succesvol geüpdatet",
+      "failedToUpdate":"Kan niet updaten."
     },
     "createProject": {
       "information": "Project informatie",
@@ -117,7 +119,7 @@
         "disabilityAndCare": "Gehandicapter en zorg",
         "largeFamilies": "Grote gezinnen",
         "notifications": {
-          "successfullySaved": "Huizenblokken succesvol opgeslagen.",
+          "successfullySaved": "Huisblokken succesvol opgeslagen.",
           "error": "Er is iets fout gegaan"
         }
       },
@@ -130,7 +132,7 @@
       "timelineForm": {
         "title": "Vul de gegevens voor de tijdlijn in",
         "deliveryDate": "Opleverdatum*",
-        "houseBlock": "Huizen blok",
+        "houseBlock": "Huis blok",
         "expectedDelivery": "Verwachte oplevering",
         "status": "Toestand",
         "is": "is"
