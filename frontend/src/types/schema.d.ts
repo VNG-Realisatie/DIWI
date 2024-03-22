@@ -37,6 +37,10 @@ export interface paths {
     "/rest/houseblock/{uuid}": {
         get: operations["getCurrentHouseblockSnapshot"];
     };
+    "/rest/houseblock/{id}/customproperties": {
+        get: operations["getProjectCustomProperties"];
+        put: operations["updateProjectCustomProperty"];
+    };
     "/rest/houseblock/update": {
         put: operations["updateHouseblock"];
     };
@@ -72,8 +76,8 @@ export interface paths {
         get: operations["getCurrentProjectTimeline"];
     };
     "/rest/projects/{id}/customproperties": {
-        get: operations["getProjectCustomProperties"];
-        put: operations["updateProjectCustomProperty"];
+        get: operations["getProjectCustomProperties_1"];
+        put: operations["updateProjectCustomProperty_1"];
     };
     "/rest/projects/{id}/houseblocks": {
         get: operations["getProjectHouseblocks"];
@@ -87,6 +91,9 @@ export interface paths {
     };
     "/rest/projects/{id}/update": {
         post: operations["updateProject_1"];
+    };
+    "/rest/users/userinfo": {
+        get: operations["login_1"];
     };
     "/rest/wijk/list": {
         get: operations["getAllWijks"];
@@ -104,6 +111,7 @@ export interface components {
         };
         ConfigModel: {
             defaultMapBounds?: components["schemas"]["MapBounds"];
+            municipalityName?: string;
         };
         LocationModel: {
             /** Format: double */
@@ -173,6 +181,7 @@ export interface components {
             physicalAppearance?: components["schemas"]["PhysicalAppearance"];
             houseType?: components["schemas"]["HouseType"];
             purpose?: components["schemas"]["Purpose"];
+            customProperties?: components["schemas"]["ProjectHouseblockCustomPropertyModel"][];
         };
         Mutation: {
             mutationKind?: ("BOUW" | "SLOOP" | "TRANSFORMATIE" | "SPLITSING")[];
@@ -207,6 +216,17 @@ export interface components {
             /** Format: int32 */
             gallerijflat?: number;
         };
+        ProjectHouseblockCustomPropertyModel: {
+            /** Format: uuid */
+            customPropertyId?: string;
+            /** @enum {string} */
+            propertyType?: "BOOLEAN" | "CATEGORY" | "ORDINAL" | "NUMERIC" | "TEXT";
+            textValue?: string;
+            booleanValue?: boolean;
+            numericValue?: components["schemas"]["SingleValueOrRangeModelBigDecimal"];
+            categories?: string[];
+            ordinals?: components["schemas"]["SingleValueOrRangeModelUUID"];
+        };
         Purpose: {
             /** Format: int32 */
             regular?: number;
@@ -233,6 +253,14 @@ export interface components {
             min?: number;
             /** Format: int32 */
             max?: number;
+        };
+        SingleValueOrRangeModelUUID: {
+            /** Format: uuid */
+            value?: string;
+            /** Format: uuid */
+            min?: string;
+            /** Format: uuid */
+            max?: string;
         };
         MilestoneModel: {
             /** Format: uuid */
@@ -327,17 +355,6 @@ export interface components {
             buurt?: components["schemas"]["SelectModel"][];
             location?: components["schemas"]["LocationModel"];
         };
-        ProjectCustomPropertyModel: {
-            /** Format: uuid */
-            customPropertyId?: string;
-            /** @enum {string} */
-            propertyType?: "BOOLEAN" | "CATEGORY" | "ORDINAL" | "NUMERIC" | "TEXT";
-            textValue?: string;
-            booleanValue?: boolean;
-            numericValue?: components["schemas"]["SingleValueOrRangeModelBigDecimal"];
-            categories?: string[];
-            ordinals?: components["schemas"]["SingleValueOrRangeModelUUID"];
-        };
         ProjectSnapshotModel: {
             /** Format: date */
             startDate?: string;
@@ -375,15 +392,7 @@ export interface components {
             wijk?: components["schemas"]["SelectModel"][];
             buurt?: components["schemas"]["SelectModel"][];
             location?: components["schemas"]["LocationModel"];
-            customProperties?: components["schemas"]["ProjectCustomPropertyModel"][];
-        };
-        SingleValueOrRangeModelUUID: {
-            /** Format: uuid */
-            value?: string;
-            /** Format: uuid */
-            min?: string;
-            /** Format: uuid */
-            max?: string;
+            customProperties?: components["schemas"]["ProjectHouseblockCustomPropertyModel"][];
         };
         DatedDataModelListPlanStatus: {
             /** Format: date */
@@ -499,6 +508,13 @@ export interface components {
             min?: string;
             /** Format: uuid */
             max?: string;
+        };
+        UserModel: {
+            /** Format: uuid */
+            uuid: string;
+            firstName: string;
+            lastName: string;
+            initials: string;
         };
     };
     responses: never;
@@ -689,6 +705,41 @@ export interface operations {
             };
         };
     };
+    getProjectCustomProperties: {
+        parameters: {
+            path: {
+                id: string;
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["ProjectHouseblockCustomPropertyModel"][];
+                };
+            };
+        };
+    };
+    updateProjectCustomProperty: {
+        parameters: {
+            path: {
+                id: string;
+            };
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ProjectHouseblockCustomPropertyModel"];
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["ProjectHouseblockCustomPropertyModel"][];
+                };
+            };
+        };
+    };
     updateHouseblock: {
         requestBody?: {
             content: {
@@ -863,7 +914,7 @@ export interface operations {
             };
         };
     };
-    getProjectCustomProperties: {
+    getProjectCustomProperties_1: {
         parameters: {
             path: {
                 id: string;
@@ -873,12 +924,12 @@ export interface operations {
             /** @description default response */
             default: {
                 content: {
-                    "application/json": components["schemas"]["ProjectCustomPropertyModel"][];
+                    "application/json": components["schemas"]["ProjectHouseblockCustomPropertyModel"][];
                 };
             };
         };
     };
-    updateProjectCustomProperty: {
+    updateProjectCustomProperty_1: {
         parameters: {
             path: {
                 id: string;
@@ -886,14 +937,14 @@ export interface operations {
         };
         requestBody?: {
             content: {
-                "application/json": components["schemas"]["ProjectCustomPropertyModel"];
+                "application/json": components["schemas"]["ProjectHouseblockCustomPropertyModel"];
             };
         };
         responses: {
             /** @description default response */
             default: {
                 content: {
-                    "application/json": components["schemas"]["ProjectCustomPropertyModel"][];
+                    "application/json": components["schemas"]["ProjectHouseblockCustomPropertyModel"][];
                 };
             };
         };
@@ -979,6 +1030,16 @@ export interface operations {
             default: {
                 content: {
                     "application/json": components["schemas"]["ProjectSnapshotModel"];
+                };
+            };
+        };
+    };
+    login_1: {
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["UserModel"];
                 };
             };
         };
