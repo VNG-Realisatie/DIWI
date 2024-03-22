@@ -41,7 +41,7 @@
         "owner": "Eigenaar"
       },
       "houseBlocksForm": {
-        "title": "Vul de Woningblokken in",
+        "title": "Vul de woningblokken in",
         "nameLabel": "Naam",
         "startDate": "Start Datum",
         "endDate": "Eind Datum",
