@@ -12,7 +12,7 @@ jest.mock("query-string", () => ({
 test("renders projecten", () => {
     render(
         <MemoryRouter>
-            <ConfigContext.Provider value={{ municipalityName: "test", mapBounds: null }}>
+            <ConfigContext.Provider value={{ municipalityName: "test", mapBounds: { corner1: { lng: 0, lat: 0 }, corner2: { lng: 0, lat: 0 } } }}>
                 <Layout />
             </ConfigContext.Provider>
         </MemoryRouter>,
