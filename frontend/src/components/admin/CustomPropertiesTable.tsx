@@ -5,7 +5,6 @@ import {
     TableRow,
     TableCell,
     TableBody,
-    Switch,
     IconButton,
     Tooltip,
     Stack,
@@ -69,68 +68,67 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
                                 {t("admin.settings.tableHeader.categories")}
                             </TableCell>
                             <TableCell sx={headerStyle} align="right">
-                                {t("admin.settings.tableHeader.status")}
-                            </TableCell>
-                            <TableCell sx={headerStyle} align="right">
                                 {t("admin.settings.tableHeader.actions")}
                             </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {customProperties?.map((row: CustomPropertyType) => (
-                            <TableRow key={row.name}>
-                                <TableCell component="th" scope="row" sx={cellStyle}>
-                                    {row.name}
-                                </TableCell>
-                                <TableCell sx={cellStyle} align="right">
-                                    {row.propertyType}
-                                </TableCell>
-                                <TableCell sx={cellStyle} align="right">
-                                    {row.objectType}
-                                </TableCell>
-                                <TableCell sx={cellStyle} align="right">
-                                    {row.categories?.map((category) => <Chip variant="outlined" label={category.name} />)}
-                                </TableCell>
-                                <TableCell sx={cellStyle} align="right">
-                                    <Switch checked={!row.disabled} color="success" />
-                                </TableCell>
-                                <TableCell sx={cellStyle}>
-                                    <Stack direction="row" spacing={1} justifyContent="flex-end">
-                                        <Tooltip title={t("admin.settings.tableHeader.delete")}>
-                                            <IconButton
-                                                sx={{
-                                                    bgcolor: "tomato",
-                                                    color: "white",
-                                                    "&:hover": {
-                                                        bgcolor: "red",
-                                                    },
-                                                }}
-                                                onClick={() => row.id && handleDelete(row.id, row.name)}
-                                            >
-                                                <DeleteIcon color="inherit" />
-                                            </IconButton>
-                                        </Tooltip>
-                                        <Tooltip title={t("admin.settings.tableHeader.edit")}>
-                                            <IconButton
-                                                sx={{
-                                                    bgcolor: "#31456F",
-                                                    color: "white",
-                                                    "&:hover": {
-                                                        bgcolor: "navy",
-                                                    },
-                                                }}
-                                                onClick={() => {
-                                                    row.id && setEditPropertyId(row.id);
-                                                    setEditDialogOpen(true);
-                                                }}
-                                            >
-                                                <EditIcon color="inherit" />
-                                            </IconButton>
-                                        </Tooltip>
-                                    </Stack>
-                                </TableCell>
-                            </TableRow>
-                        ))}
+                        {customProperties?.map(
+                            (row: CustomPropertyType) =>
+                                !row.disabled && (
+                                    <TableRow key={row.name}>
+                                        <TableCell component="th" scope="row" sx={cellStyle}>
+                                            {row.name}
+                                        </TableCell>
+                                        <TableCell sx={cellStyle} align="right">
+                                            {row.propertyType}
+                                        </TableCell>
+                                        <TableCell sx={cellStyle} align="right">
+                                            {row.objectType}
+                                        </TableCell>
+                                        <TableCell sx={cellStyle} align="right">
+                                            {row.categories?.map((category) => <Chip variant="outlined" label={category.name} />)}
+                                        </TableCell>
+                                        <TableCell sx={cellStyle}>
+                                            <Stack direction="row" spacing={1} justifyContent="flex-end">
+                                                <Tooltip title={t("admin.settings.tableHeader.delete")}>
+                                                    <IconButton
+                                                        disabled={row.disabled}
+                                                        sx={{
+                                                            bgcolor: "tomato",
+                                                            color: "white",
+                                                            "&:hover": {
+                                                                bgcolor: "red",
+                                                            },
+                                                        }}
+                                                        onClick={() => row.id && handleDelete(row.id, row.name)}
+                                                    >
+                                                        <DeleteIcon color="inherit" />
+                                                    </IconButton>
+                                                </Tooltip>
+                                                <Tooltip title={t("admin.settings.tableHeader.edit")}>
+                                                    <IconButton
+                                                        disabled={row.disabled}
+                                                        sx={{
+                                                            bgcolor: "#31456F",
+                                                            color: "white",
+                                                            "&:hover": {
+                                                                bgcolor: "navy",
+                                                            },
+                                                        }}
+                                                        onClick={() => {
+                                                            row.id && setEditPropertyId(row.id);
+                                                            setEditDialogOpen(true);
+                                                        }}
+                                                    >
+                                                        <EditIcon color="inherit" />
+                                                    </IconButton>
+                                                </Tooltip>
+                                            </Stack>
+                                        </TableCell>
+                                    </TableRow>
+                                ),
+                        )}
                     </TableBody>
                 </Table>
             </TableContainer>

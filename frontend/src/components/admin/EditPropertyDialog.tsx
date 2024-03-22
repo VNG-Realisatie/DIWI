@@ -8,10 +8,9 @@ import {
     Select,
     SelectChangeEvent,
     MenuItem,
-    Typography,
-    Checkbox,
     DialogActions,
     Button,
+    Tooltip,
 } from "@mui/material";
 import { t } from "i18next";
 import { ChangeEvent, useContext, useEffect, useState } from "react";
@@ -20,6 +19,7 @@ import { CategoryCreateOption } from "./CategoryCreateOption";
 import { objectType, propertyType } from "./constants";
 import { CategoryType, CustomPropertyType, getCustomProperties, getCustomProperty, updateCustomProperty } from "../../api/adminSettingServices";
 import AlertContext from "../../context/AlertContext";
+import InfoIcon from "@mui/icons-material/Info";
 
 type Props = {
     openDialog: boolean;
@@ -65,8 +65,12 @@ export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomPro
         <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth>
             <DialogTitle id="alert-dialog-title"> {t("admin.settings.add")}</DialogTitle>
             <DialogContent>
-                <Stack spacing={2}>
+                <Stack spacing={1.5}>
+                    <InputLabel variant="standard" id="name">
+                        {t("admin.settings.tableHeader.name")}
+                    </InputLabel>
                     <TextField
+                        size="small"
                         label={t("admin.settings.tableHeader.name")}
                         value={name}
                         onChange={(e: ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
@@ -75,6 +79,7 @@ export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomPro
                         {t("admin.settings.tableHeader.objectType")}
                     </InputLabel>
                     <Select
+                        size="small"
                         value={selectedObjectType}
                         labelId="objectType"
                         onChange={(e: SelectChangeEvent<typeof selectedObjectType>) => setSelectedObjectType(e.target.value as ObjectType)}
@@ -87,10 +92,17 @@ export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomPro
                             );
                         })}
                     </Select>
-                    <InputLabel variant="standard" id="propertyType">
-                        {t("admin.settings.tableHeader.propertyType")}
-                    </InputLabel>
+                    <Stack direction="row" alignItems="center">
+                        <InputLabel variant="standard" id="propertyType">
+                            {t("admin.settings.tableHeader.propertyType")}
+                        </InputLabel>
+                        <Tooltip title={t("admin.settings.propertyTypeInfo")}>
+                            <InfoIcon sx={{ fontSize: "20px", color: "#394048" }} />
+                        </Tooltip>
+                    </Stack>
+
                     <Select
+                        size="small"
                         disabled
                         value={selectedPropertyType}
                         labelId="propertyType"
@@ -107,12 +119,6 @@ export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomPro
                     {selectedPropertyType === "CATEGORY" && (
                         <CategoryCreateOption categoryValue={categories ? categories : []} setCategoryValue={setCategories} />
                     )}
-                    <Stack>
-                        <Typography>
-                            {t("admin.settings.tableHeader.active")}
-                            <Checkbox checked={active} onChange={(event: ChangeEvent<HTMLInputElement>) => setActive(event.target.checked)} />
-                        </Typography>
-                    </Stack>
                 </Stack>
             </DialogContent>
             <DialogActions>
