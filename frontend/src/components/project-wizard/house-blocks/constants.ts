@@ -9,7 +9,7 @@ export const emptyHouseBlockForm: HouseBlock = {
     endDate: null,
     houseblockName: "",
     size: {
-        value: null,
+        value: 0,
         min: null,
         max: null,
     },
