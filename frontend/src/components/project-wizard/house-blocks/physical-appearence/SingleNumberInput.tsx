@@ -42,7 +42,7 @@ export const SingleNumberInput = ({ property, update, value, translationPath, ed
             {!edit && editForm && (
                 <Box sx={{ flex: 1 }}>
                     <InputContainer>
-                        <Typography>{property}</Typography>
+                        <Typography minHeight="20px">{property}</Typography>
                     </InputContainer>
                 </Box>
             )}
