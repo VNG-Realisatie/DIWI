@@ -225,7 +225,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         labelId="projectLeader"
                         size="small"
                         id="project-leader"
-                        value={createProjectForm?.projectLeaders ?? ""}
+                        value={createProjectForm?.projectLeaders && createProjectForm.projectLeaders.length > 0 ? createProjectForm.projectLeaders[0] : ""}
                         label={t("createProject.informationForm.projectLeader")}
                         onChange={(
                             e, //TODO later
@@ -301,7 +301,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         labelId="leader"
                         id="owner"
                         size="small"
-                        value={createProjectForm?.projectOwners ?? ""}
+                        value={createProjectForm?.projectOwners && createProjectForm.projectOwners.length > 0 ? createProjectForm.projectOwners[0] : ""}
                         label={t("createProject.informationForm.owner")}
                         onChange={(e) => {
                             //todo later
