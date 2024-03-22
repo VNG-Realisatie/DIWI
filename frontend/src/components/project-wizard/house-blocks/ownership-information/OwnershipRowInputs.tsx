@@ -49,7 +49,7 @@ const OwnershipAmountInput = ({ handleInputChange, ownership, index }: Ownership
             type="number"
             required
             fullWidth
-            value={ownership.amount !== null ? ownership.amount : ""}
+            value={ownership.amount !== null && !Number.isNaN(ownership.amount) ? ownership.amount : ""}
             onChange={(e) => handleInputChange(index, { ...ownership, amount: parseInt(e.target.value) })}
             error={!ownership.amount}
             helperText={!ownership.amount ? t("createProject.hasMissingRequiredAreas.amount") : ""}

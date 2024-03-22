@@ -50,7 +50,7 @@ export const SizeInput = ({ houseBlockSize, updateHouseBlockSize, edit, editForm
             {edit && editForm && <HouseBlockSizeEditInput houseBlockSize={houseBlockSize} updateHouseBlockSize={updateHouseBlockSize} />}
             {!edit && editForm && (
                 <InputContainer>
-                    <Typography>{houseBlockSize?.value}</Typography>
+                    <Typography minHeight="20px">{houseBlockSize?.value}</Typography>
                 </InputContainer>
             )}
             {!edit && !editForm && <HouseBlockSizeEditInput houseBlockSize={houseBlockSize} updateHouseBlockSize={updateHouseBlockSize} />}
