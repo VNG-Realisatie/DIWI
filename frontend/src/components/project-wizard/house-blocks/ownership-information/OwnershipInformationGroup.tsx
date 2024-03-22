@@ -21,8 +21,8 @@ export const OwnershipInformationGroup = ({ projectForm, setProjectForm, edit, e
                 {
                     type: "",
                     amount: null,
-                    value: { value: null, min: null, max: null },
-                    rentalValue: { value: null, min: null, max: null },
+                    value: { value: 0, min: null, max: null },
+                    rentalValue: { value: 0, min: null, max: null },
                 },
             ],
         });
