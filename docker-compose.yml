@@ -37,6 +37,9 @@ services:
       KC_AUTH_SERVER_URL: ${KC_AUTH_SERVER_URL:?oidc config needed}
       KC_SECRET: ${KC_SECRET:?oidc config needed}
       KC_RESOURCE_NAME: ${KC_RESOURCE_NAME:?oidc config needed}
+      MUNICIPALITY_NAME: ${MUNICIPALITY_NAME:?Please set up a municipality name}
+      DEFAULT_MAP_BOUNDS: ${DEFAULT_MAP_BOUNDS}
+
     ports:
       - ${BACKEND_PORT:-8080}
     depends_on:
