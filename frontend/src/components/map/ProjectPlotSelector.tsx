@@ -35,7 +35,7 @@ const ProjectPlotSelector = () => {
                 <Stack overflow="auto" height="70vh">
                     <Details project={selectedProject} />
                 </Stack>
-                <div id={id} style={{ height: "70vh", width: "100%" }}></div>
+                <div id={id} style={{ height: "70vh", width: "100%", paddingLeft: 8 }}></div>
             </Stack>
         </Stack>
     );

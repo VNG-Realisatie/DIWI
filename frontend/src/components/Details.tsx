@@ -25,6 +25,7 @@ const DetailListItem = ({ children, property }: { children: ReactNode; property:
             </ListItem>
             <ListItem
                 sx={{
+                    minHeight: "50px",
                     border: "solid 1px #ddd",
                 }}
             >
@@ -61,6 +62,7 @@ export const Details = ({ project }: Props) => {
     return (
         <List
             sx={{
+                padding: 0,
                 bgcolor: "background.paper",
                 width: "100%",
             }}
@@ -72,6 +74,7 @@ export const Details = ({ project }: Props) => {
                             <Fragment key={property}>
                                 <ListItem
                                     sx={{
+                                        width: "100%",
                                         backgroundColor: "#738092",
                                         color: "#FFFFFF",
                                         border: "solid 1px #ddd",
@@ -81,6 +84,7 @@ export const Details = ({ project }: Props) => {
                                 </ListItem>
                                 <ListItem
                                     sx={{
+                                        minHeight: "50px",
                                         border: "solid 1px #ddd",
                                     }}
                                 >
