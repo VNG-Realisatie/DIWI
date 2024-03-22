@@ -273,7 +273,7 @@
           "actions": "Acties"
         },
         "add": "Voeg optioneel toe",
-        "propertyTypeInfo": "Eigenschaps type kan na het opslaan niet meer worden gewijzigd.",
+        "propertyTypeInfo": "Type kan na het opslaan niet meer worden gewijzigd.",
         "notifications": {
           "successfullySaved": "Eigenschappen succesvol opgeslagen.",
           "successfullyDeleted": "Eigenschappen succesvol verwijderd."
