@@ -1,5 +1,5 @@
 export const menuProjects = [
-    { text: "Overzicht projecten", url: "projects" },
+    { text: "Overzicht projecten", url: "projects/table" },
     { text: "Project toevoegen", url: "project/create" },
 ];
 export const projectFaseList = ["1_Initiatieffase", "2_projectfase", "3_vergunningsfase", "4_realisatiefase", "5_opleveringsfase"];
