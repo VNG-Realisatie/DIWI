@@ -19,7 +19,7 @@ const CustomPropertyWidget = ({ projectEditable, customValues, setCustomValues }
                     ...value,
                     textValue: typeof newValue === "string" ? newValue : null,
                     numericValue: typeof newValue === "number" ? { value: newValue } : null,
-                    booleanValue: typeof newValue === "string" && (newValue === "true" || newValue === "false") ? Boolean(newValue) : null,
+                    booleanValue: typeof newValue === "string" && (newValue === "true" || newValue === "false") ? newValue === "true" : null,
                     categories: Array.isArray(newValue) && newValue.length === 1 ? newValue : [],
                 };
             }
@@ -44,20 +44,18 @@ const CustomPropertyWidget = ({ projectEditable, customValues, setCustomValues }
                                 : "CATEGORY",
                     textValue: typeof newValue === "string" ? newValue : null,
                     numericValue: typeof newValue === "number" ? { value: newValue } : null,
-                    booleanValue: typeof newValue === "string" && (newValue === "true" || newValue === "false") ? Boolean(newValue) : null,
+                    booleanValue: typeof newValue === "string" && (newValue === "true" || newValue === "false") ? newValue === "true" : null,
                     categories: Array.isArray(newValue) && newValue.length === 1 ? newValue : [],
                 },
             ]);
         }
     };
-    console.log(customProperties);
-    console.log(customValues);
 
     return (
         <Grid container my={2}>
             {customProperties.map((property: any) => (
                 <Grid item xs={6} md={1} key={property.id}>
-                    {/* {property.propertyType === "BOOLEAN" && (
+                    {property.propertyType === "BOOLEAN" && (
                         <>
                             {projectEditable ? (
                                 <>
@@ -78,7 +76,7 @@ const CustomPropertyWidget = ({ projectEditable, customValues, setCustomValues }
                                 </>
                             )}
                         </>
-                    )} */}
+                    )}
                     {property.propertyType === "CATEGORY" && (
                         <>
                             {projectEditable ? (
