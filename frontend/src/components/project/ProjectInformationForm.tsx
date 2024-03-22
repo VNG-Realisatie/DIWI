@@ -7,7 +7,7 @@ import eigenaarOption from "../../api/json/eigenaar.json";
 import { useTranslation } from "react-i18next";
 import { MenuProps } from "../../utils/menuProps";
 import { confidentialityLevelOptions, planTypeOptions, planningPlanStatus, projectPhaseOptions } from "../table/constants";
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { useEffect, useState } from "react";
 import { getMunicipalityRoleList, getPriorityList } from "../../api/projectsTableServices";
 import { SelectModel } from "../../api/projectsServices";
@@ -31,7 +31,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
     useEffect(() => {
         getMunicipalityRoleList().then((roles) => setMunicipalityRolesOptions(roles));
     }, []);
-    //ToDo add props later
+
     const handleColorChange = (newColor: string) => {
         setCreateProjectForm({
             ...createProjectForm,
@@ -62,7 +62,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
     };
     const datePickerStyle = {
         "& .MuiFormHelperText-root": {
-            color: "red", // Change this to your desired color
+            color: "red",
         },
     };
     return (
@@ -121,11 +121,11 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         slotProps={{
                             textField: { size: "small" },
                         }}
-                        value={createProjectForm?.startDate ?? null}
+                        value={createProjectForm?.startDate ? dayjs(createProjectForm?.startDate) : null}
                         onChange={(newValue: Dayjs | null) =>
                             setCreateProjectForm({
                                 ...createProjectForm,
-                                startDate: newValue,
+                                startDate: newValue ? newValue.format("YYYY-MM-DD") : null,
                             })
                         }
                     />
@@ -139,11 +139,11 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         slotProps={{
                             textField: { size: "small" },
                         }}
-                        value={createProjectForm?.endDate ?? null}
+                        value={createProjectForm?.endDate ? dayjs(createProjectForm?.endDate) : null}
                         onChange={(newValue: Dayjs | null) =>
                             setCreateProjectForm({
                                 ...createProjectForm,
-                                endDate: newValue,
+                                endDate: newValue ? newValue.format("YYYY-MM-DD") : null,
                             })
                         }
                     />
