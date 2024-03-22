@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
-import { ProjectTimelineSvg } from "./ProjectTimelineSvg";
+import { ProjectTimelineSvg } from "../components/project/timeline/ProjectTimelineSvg";
 
 export const ProjectTimeline = () => {
     const [timeScaleIndex, setTimeScaleIndex] = useState(3);

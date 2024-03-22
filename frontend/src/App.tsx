@@ -28,7 +28,7 @@ import { ProjectsWithHouseBlock } from "./components/project/project-with-house-
 import { Settings } from "./components/admin/Settings";
 import { theme } from "./theme";
 import { dateFormats } from "./localization";
-import { ProjectTimeline } from "./components/project/timeline/ProjectTimeline";
+import { ProjectTimeline } from "./pages/ProjectTimeline";
 
 function RequiresLogin() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
