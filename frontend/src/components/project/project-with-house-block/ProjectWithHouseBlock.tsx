@@ -487,7 +487,7 @@ export const ProjectsWithHouseBlock = () => {
                     </Grid> */}
                 </Grid>
                 {/*List Custom Properties */}
-                <CustomPropertyWidget projectEditable={projectEditable} customValues={customValues} setCustomValues={setCustomValues} />
+                <CustomPropertyWidget projectEditable={projectEditable} customValues={customValues} setCustomValues={setCustomValues} objectType="PROJECT" />
                 {/* List huizen blok cards */}
                 <HouseBlocksList houseBlocks={houseBlocks} setOpenHouseBlockDialog={setOpenHouseBlockDialog} />
                 {openColorDialog && (
