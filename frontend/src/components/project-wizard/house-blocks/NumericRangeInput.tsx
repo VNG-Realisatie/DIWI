@@ -17,8 +17,8 @@ export const NumericRangeInput = ({ labelText, value, updateCallBack }: Props) =
             const values = e.target.value.split("-");
             const newSize = {
                 value: null,
-                min: +values[0],
-                max: +values[1],
+                min: parseFloat(values[0]),
+                max: parseFloat(values[1]),
             };
             updateCallBack(newSize);
         } else {
