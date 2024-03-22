@@ -78,7 +78,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         id="projectname"
                         size="small"
                         variant="outlined"
-                        value={createProjectForm ? createProjectForm.projectName : ""}
+                        value={createProjectForm?.projectName ?? ""}
                         onChange={(e) => {
                             setCreateProjectForm({
                                 ...createProjectForm,
@@ -100,7 +100,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         labelId="plantype"
                         id="plan-type-checkbox"
                         multiple
-                        value={createProjectForm?.planType ? createProjectForm?.planType : []}
+                        value={createProjectForm?.planType ?? []}
                         onChange={handlePlanTypeChange}
                         input={<OutlinedInput />}
                         renderValue={(selected) => selected.join(", ")}
@@ -157,9 +157,9 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         id="priority-select"
                         size="small"
                         fullWidth
-                        options={priorityOptionList ? priorityOptionList : []}
-                        getOptionLabel={(option) => option.name}
-                        value={createProjectForm?.priority?.value}
+                        options={priorityOptionList ?? []}
+                        getOptionLabel={(option) => option.name ?? ""}
+                        value={createProjectForm?.priority?.value ?? null}
                         filterSelectedOptions
                         onChange={(_: any, newValue: SelectModel | null) =>
                             setCreateProjectForm({
@@ -180,7 +180,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         size="small"
                         labelId="projectPhase"
                         id="project-phase-select"
-                        value={createProjectForm?.projectPhase}
+                        value={createProjectForm?.projectPhase ?? ""}
                         onChange={(e) =>
                             setCreateProjectForm({
                                 ...createProjectForm,
@@ -204,9 +204,9 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         size="small"
                         multiple
                         id="tags-outlined"
-                        options={municipalityRolesOptions ? municipalityRolesOptions : []}
-                        getOptionLabel={(option) => option.name}
-                        value={createProjectForm?.municipalityRole}
+                        options={municipalityRolesOptions ?? []}
+                        getOptionLabel={(option) => option.name ?? ""}
+                        value={createProjectForm?.municipalityRole ?? []}
                         filterSelectedOptions
                         onChange={(_: any, newValue: SelectModel[]) =>
                             setCreateProjectForm({
@@ -225,7 +225,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         labelId="projectLeader"
                         size="small"
                         id="project-leader"
-                        value={createProjectForm ? createProjectForm.projectLeaders : ""}
+                        value={createProjectForm?.projectLeaders && createProjectForm.projectLeaders.length > 0 ? createProjectForm.projectLeaders[0] : ""}
                         label={t("createProject.informationForm.projectLeader")}
                         onChange={(
                             e, //TODO later
@@ -238,7 +238,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                     >
                         {projectLead.map((lead) => {
                             return (
-                                <MenuItem key={lead.ID} value={lead.name}>
+                                <MenuItem key={lead.ID} value={lead.name ?? ""}>
                                     {lead.name}
                                 </MenuItem>
                             );
@@ -251,7 +251,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         labelId="confidentialityLevel"
                         size="small"
                         id="confidentiality-level-select"
-                        value={createProjectForm?.confidentialityLevel}
+                        value={createProjectForm?.confidentialityLevel ?? ""}
                         onChange={(e) =>
                             setCreateProjectForm({
                                 ...createProjectForm,
@@ -261,7 +261,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                     >
                         {confidentialityLevelOptions.map((ppo) => {
                             return (
-                                <MenuItem key={ppo.id} value={ppo.id}>
+                                <MenuItem key={ppo.id} value={ppo.id ?? ""}>
                                     {t(`projectTable.confidentialityLevelOptions.${ppo.name}`)}
                                 </MenuItem>
                             );
@@ -278,14 +278,14 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         id="plan-status-checkbox"
                         sx={{ maxWidth: "538px" }}
                         multiple
-                        value={createProjectForm?.planningPlanStatus ? createProjectForm?.planningPlanStatus : []}
+                        value={createProjectForm?.planningPlanStatus ?? []}
                         onChange={handlePlanStatusChange}
                         input={<OutlinedInput />}
                         renderValue={(selected) => selected.join(", ")}
                         MenuProps={MenuProps}
                     >
                         {planningPlanStatus.map((pt) => (
-                            <MenuItem key={pt.id} value={pt.id}>
+                            <MenuItem key={pt.id} value={pt.id ?? null}>
                                 <ListItemText primary={t(`projectTable.planningPlanStatus.${pt.name}`)} />
                             </MenuItem>
                         ))}
@@ -301,7 +301,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         labelId="leader"
                         id="owner"
                         size="small"
-                        value={createProjectForm ? createProjectForm.projectOwners : ""}
+                        value={createProjectForm?.projectOwners && createProjectForm.projectOwners.length > 0 ? createProjectForm.projectOwners[0] : ""}
                         label={t("createProject.informationForm.owner")}
                         onChange={(e) => {
                             //todo later
@@ -313,7 +313,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                     >
                         {eigenaarOption.map((lead) => {
                             return (
-                                <MenuItem key={lead.ID} value={lead.naam}>
+                                <MenuItem key={lead.ID} value={lead.naam ?? ""}>
                                     {lead.naam}
                                 </MenuItem>
                             );
