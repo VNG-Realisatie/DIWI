@@ -1,4 +1,4 @@
-import { Feature, Map, View } from "ol";
+import { Map, View } from "ol";
 
 import GeoJSON from "ol/format/GeoJSON.js";
 import TileLayer from "ol/layer/Tile";
@@ -29,7 +29,7 @@ const usePlotSelector = (id: string) => {
     const [plotsChanged, setPlotsChanged] = useState(false);
     const [extent, setExtent] = useState<Extent | null>(null);
 
-    const selectedFeatureStyle = (f: Feature): Style => {
+    const selectedFeatureStyle = useCallback((): Style => {
         const fillOpacityHex = "99";
         const borderOpacityHex = "DD";
         const red = "#ff4122";
@@ -40,7 +40,7 @@ const usePlotSelector = (id: string) => {
                 width: 5,
             }),
         });
-    };
+    }, [selectedProject]);
 
     useEffect(
         function fetchPlots() {
@@ -199,7 +199,7 @@ const usePlotSelector = (id: string) => {
                 }
             };
         },
-        [id],
+        [id, selectedFeatureStyle],
     );
     return { plotsChanged, handleCancelChange, handleSaveChange };
 };
