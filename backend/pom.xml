@@ -6,7 +6,7 @@
 
     <groupId>nl.vng</groupId>
     <artifactId>diwi</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.1.0</version>
     <packaging>war</packaging>
 
     <url>https://vng.nl</url>
