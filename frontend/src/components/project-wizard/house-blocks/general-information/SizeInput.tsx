@@ -22,7 +22,7 @@ export const SizeInput = ({ houseBlockSize, updateHouseBlockSize, edit, editForm
             {edit && editForm && <NumericRangeInput value={houseBlockSize} updateCallBack={updateHouseBlockSize} />}
             {!edit && editForm && (
                 <InputContainer>
-                    <Typography>{houseBlockSize?.value !== null ? houseBlockSize?.value : houseBlockSize?.min + "-" + houseBlockSize?.max}</Typography>
+                    <Typography minHeight="20px">{houseBlockSize?.value}</Typography>
                 </InputContainer>
             )}
             {!edit && !editForm && <NumericRangeInput value={houseBlockSize} updateCallBack={updateHouseBlockSize} />}

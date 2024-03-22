@@ -28,5 +28,6 @@ services:
       KC_SECRET: ${KC_SECRET:-diwi-test-secret}
       KC_RESOURCE_NAME: ${KC_RESOURCE_NAME:-diwi-test-client}
       MUNICIPALITY_NAME: ${MUNICIPALITY_NAME:-EINDHOVEN}
+      DEFAULT_MAP_BOUNDS: ${DEFAULT_MAP_BOUNDS:-6673258.3174,577099.5636,6725464.8077,647498.0666}
     depends_on:
       - keycloak

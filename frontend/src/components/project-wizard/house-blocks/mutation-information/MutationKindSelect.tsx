@@ -49,7 +49,7 @@ export const MutationKindSelect = ({ houseBlockMutationKind, updateHouseBlockMut
             )}
             {!edit && editForm && (
                 <InputContainer>
-                    <Typography>{houseBlockMutationKind?.join(",")}</Typography>
+                    <Typography minHeight="20px">{houseBlockMutationKind?.join(",")}</Typography>
                 </InputContainer>
             )}
             {!edit && !editForm && (
