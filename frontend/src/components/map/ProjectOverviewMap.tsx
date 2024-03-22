@@ -6,13 +6,14 @@ import { OSM, TileWMS, Vector as VectorSource } from "ol/source";
 
 import { Stack } from "@mui/material";
 import { defaults as defaultControls } from "ol/control.js";
-import { useEffect, useId, useState } from "react";
+import { useContext, useEffect, useId, useState } from "react";
 
 import Feature from "ol/Feature";
 import { Point } from "ol/geom";
 import { Circle as CircleStyle, Fill, Stroke, Style } from "ol/style";
 import { ProjectListModel, getProjects } from "../../api/projectsServices";
 import { components } from "../../types/schema";
+import ConfigContext from "../../context/ConfigContext";
 
 const geoMarker = new Style({
     image: new CircleStyle({
@@ -24,8 +25,11 @@ const geoMarker = new Style({
         }),
     }),
 });
+
 const ProjectOverviewMap = () => {
     const id = useId();
+
+    const { mapBounds } = useContext(ConfigContext);
 
     const [projects, setProjects] = useState<ProjectListModel[]>();
     const [projectsLayerSource, setProjectsLayerSource] = useState<VectorSource>();
@@ -74,13 +78,19 @@ const ProjectOverviewMap = () => {
 
             setProjectsLayerSource(source);
 
+            // make sure to swap min and max if they are provided in the wrong order!
+            const minx = mapBounds.corner1.lng < mapBounds.corner2.lng ? mapBounds.corner1.lng : mapBounds.corner2.lng;
+            const miny = mapBounds.corner1.lat < mapBounds.corner2.lat ? mapBounds.corner1.lat : mapBounds.corner2.lat;
+            const maxx = mapBounds.corner1.lng > mapBounds.corner2.lng ? mapBounds.corner1.lng : mapBounds.corner2.lng;
+            const maxy = mapBounds.corner1.lat > mapBounds.corner2.lat ? mapBounds.corner1.lat : mapBounds.corner2.lat;
+            const extent = [minx, miny, maxx, maxy];
+            let view = new View({ extent: extent });
+            view.fit(extent);
+
             const newMap = new Map({
                 target: id,
                 layers: [osmLayer, kadasterLayers, selectedPlotLayer],
-                view: new View({
-                    center: [521407.57221923344, 6824704.512308201],
-                    zoom: 12,
-                }),
+                view: view,
                 controls: defaultControls({ attribution: false }),
             });
 
@@ -92,7 +102,7 @@ const ProjectOverviewMap = () => {
                 }
             };
         },
-        [id],
+        [id, mapBounds],
     );
 
     return (
