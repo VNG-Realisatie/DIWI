@@ -7,27 +7,56 @@ import { OSM, TileWMS, Vector as VectorSource } from "ol/source";
 import { Stack } from "@mui/material";
 import { defaults as defaultControls } from "ol/control.js";
 import { useContext, useEffect, useId, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import * as Paths from "../../Paths";
 
 import Feature from "ol/Feature";
 import { Point } from "ol/geom";
-import { Circle as CircleStyle, Fill, Stroke, Style } from "ol/style";
+import { Circle as CircleStyle, Fill, Stroke, Style, Text as StyleText } from "ol/style";
 import { ProjectListModel, getProjects } from "../../api/projectsServices";
 import { components } from "../../types/schema";
 import ConfigContext from "../../context/ConfigContext";
+import { StyleFunction } from "ol/style/Style";
 
-const geoMarker = new Style({
-    image: new CircleStyle({
-        radius: 7,
-        fill: new Fill({ color: "black" }),
-        stroke: new Stroke({
-            color: "white",
-            width: 2,
+const geoMarker = (f: Feature): Style => {
+    // check feature props for style
+    const fcolor = f.get("color") ?? "white";
+    const ftext = f.get("name") ?? "";
+    return new Style({
+        image: new CircleStyle({
+            radius: 10,
+            fill: new Fill({ color: fcolor }),
+            stroke: new Stroke({
+                color: "white",
+                width: 2,
+            }),
         }),
-    }),
-});
+        // draw rectangle behind text !!! does not work cannot have duplicate image keys in style object...
+
+        // const charHeight = 20;
+        // const charWidth = 5;
+        // const ftextLength = ftext.length * 1.33 * charWidth; // this currenlty needs a weird factor: 1.33 to account for weird scaling
+        // image: new RegularShape({
+        //     fill: new Fill({ color: fcolor }),
+        //     points: 4,
+        //     radius: ftextLength,
+        //     angle: Math.PI / 4,
+        //     scale: [1, charHeight / ftextLength],
+        // }),
+        // insert project name
+        text: new StyleText({
+            text: ftext,
+            offsetY: -20,
+            font: "16px Calibri,sans-serif",
+            fill: new Fill({ color: "#222" }),
+            stroke: new Stroke({ color: "#fff", width: 0 }),
+        }),
+    });
+};
 
 const ProjectOverviewMap = () => {
     const id = useId();
+    const navigate = useNavigate();
 
     const { mapBounds } = useContext(ConfigContext);
 
@@ -51,6 +80,9 @@ const ProjectOverviewMap = () => {
                     const marker = new Feature({
                         type: "icon",
                         geometry: new Point([location.lat, location.lng]),
+                        id: p.projectId,
+                        color: p.projectColor,
+                        name: p.projectName,
                     });
                     return marker;
                 });
@@ -74,7 +106,7 @@ const ProjectOverviewMap = () => {
             });
 
             const source = new VectorSource();
-            const selectedPlotLayer = new VectorLayer({ source, style: geoMarker });
+            const selectedPlotLayer = new VectorLayer({ source, style: geoMarker as StyleFunction });
 
             setProjectsLayerSource(source);
 
@@ -94,6 +126,19 @@ const ProjectOverviewMap = () => {
                 controls: defaultControls({ attribution: false }),
             });
 
+            /* Add a pointermove handler to the map to render the popup.*/
+            newMap.on("singleclick", function (evt) {
+                const feature = newMap.forEachFeatureAtPixel(evt.pixel, function (feat, layer) {
+                    return feat;
+                });
+                if (feature) {
+                    const projectId = feature.get("id");
+                    if (projectId) {
+                        navigate(Paths.projectDetail.path.replace(":id", projectId));
+                    }
+                }
+            });
+
             return () => {
                 newMap.dispose();
                 const mapElement = document.getElementById(id);
@@ -102,7 +147,7 @@ const ProjectOverviewMap = () => {
                 }
             };
         },
-        [id, mapBounds],
+        [id, mapBounds, navigate],
     );
 
     return (
