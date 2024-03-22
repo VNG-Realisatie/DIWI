@@ -1,58 +1,91 @@
-import React, { useState } from "react";
-import {
-    Stepper,
-    Step,
-    StepLabel,
-    Button,
-    Box,
-    Stack,
-    Typography,
-} from "@mui/material";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
-import { ProjectInformationForm } from "../components/ProjectInformationForm";
+import dayjs from "dayjs";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate, useParams } from "react-router-dom";
+import { addHouseBlock, createProject, getProject, updateProject } from "../api/projectsServices";
 import { BlockHousesForm } from "../components/BlockHousesForm";
-import { SelectFromMapForm } from "../components/SelectFromMapForm";
-import { TimelineForm } from "../components/TimelineForm";
+import WizardLayout from "../components/project-wizard/WizardLayout";
+import { emptyHouseBlockForm } from "../components/project-wizard/house-blocks/constants";
+import { HouseBlock } from "../components/project-wizard/house-blocks/types";
+import { ProjectInformationForm } from "../components/project/ProjectInformationForm";
 import useAlert from "../hooks/useAlert";
+import { projectWizardMap } from "../Paths";
 
-const CustomStepIcon: React.FC<CustomStepIconProps> = ({
-    active,
-    completed,
-}) => {
-    if (completed) {
-        return <CheckCircleIcon color="primary" />;
-    } else {
-        return (
-            <RadioButtonUncheckedIcon color={active ? "primary" : "disabled"} />
-        );
-    }
-};
-
-const steps: string[] = [
-    "Project informatie",
-    "Huizen blokken",
-    "Intekenen op de kaart",
-    "Tijdlijn",
-];
-
-interface CustomStepIconProps {
-    active: boolean;
-    completed: boolean;
-}
 export const CreateProject = () => {
-    const [createProjectForm, setCreateProjectForm] = useState<any>(null);
-    const [createHouseBlockForm, setCreateHouseBlockForm] = useState<any>(null);
+    const [createProjectForm, setCreateProjectForm] = useState<any>({ projectColor: "#FF5733" });
+    const [createFormHouseBlock, setCreateFormHouseBlock] = useState<HouseBlock>(emptyHouseBlockForm);
     const [activeStep, setActiveStep] = useState<number>(0);
+    const [validationError, setValidationError] = useState("");
+
+    const { id: projectId } = useParams();
+    const navigate = useNavigate();
 
     const { setAlert } = useAlert();
 
-    const handleSave = () => {
-        //Todo add createendpoint here
-        setAlert("Project succesvol opgeslagen.", "success");
+    const { t } = useTranslation();
+
+    const handleSave = async () => {
+        if (
+            !createProjectForm.projectName ||
+            !createProjectForm.startDate ||
+            !createProjectForm.endDate ||
+            !createProjectForm.projectColor ||
+            !createProjectForm.projectPhase ||
+            !createProjectForm.confidentialityLevel
+        ) {
+            setAlert(t("createProject.hasMissingRequiredAreas.hasmissingProperty"), "warning");
+            return;
+        }
+        try {
+            if (projectId) {
+                setValidationError("");
+                const res = await updateProject(projectId, createProjectForm);
+                if (res.ok) {
+                    setAlert(t("createProject.successfullySaved"), "success");
+                    return true;
+                }
+            } else {
+                const temporaryCreateForm = {
+                    projectName: createProjectForm.projectName,
+                    projectColor: createProjectForm.projectColor,
+                    projectPhase: createProjectForm.projectPhase,
+                    confidentialityLevel: createProjectForm.confidentialityLevel,
+                    startDate: createProjectForm.startDate,
+                    endDate: createProjectForm.endDate,
+                };
+                setValidationError("");
+                const project = await createProject(temporaryCreateForm); //TODO later it will be change with createProjectForm
+
+                navigate(`/project/create/${project.projectId}`);
+                setAlert(t("createProject.successfullySaved"), "success");
+            }
+        } catch (error: any) {
+            setAlert(error.message, "error");
+            return false;
+        }
     };
 
-    const handleNext = () => {
+    const handleNext = async () => {
+        if (activeStep === 1) {
+            if (!createFormHouseBlock.houseblockName) {
+                setValidationError("houseblockName");
+                return;
+            } else if (!createFormHouseBlock.startDate) {
+                setValidationError("startDate");
+                return;
+            } else if (!createFormHouseBlock.endDate) {
+                setValidationError("endDate");
+                return;
+            } else if (createFormHouseBlock.ownershipValue.some((owner) => owner.amount === null || isNaN(owner.amount))) {
+                setValidationError("value");
+                return;
+            }
+            await addHouseBlock({ ...createFormHouseBlock, projectId });
+
+            navigate(projectWizardMap.toPath({ projectId }));
+            return;
+        }
+
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
     };
 
@@ -60,76 +93,28 @@ export const CreateProject = () => {
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
 
+    useEffect(() => {
+        if (projectId) {
+            getProject(projectId).then((res: any) => setCreateProjectForm({ ...res, startDate: dayjs(res.startDate), endDate: dayjs(res.endDate) }));
+        }
+    }, [projectId]);
+
     return (
         //Components for wizard steps
-        <Box mb={7} border="solid 2px #ddd" p={4}>
-            <Stepper activeStep={activeStep} alternativeLabel>
-                {steps.map((label, index) => (
-                    <Step key={label}>
-                        <StepLabel StepIconComponent={CustomStepIcon}>
-                            {label}
-                        </StepLabel>
-                    </Step>
-                ))}
-            </Stepper>
+        <WizardLayout {...{ handleBack, handleNext, handleSave, projectId, activeStep }}>
             {activeStep === 0 && (
-                <ProjectInformationForm
-                    setCreateProjectForm={setCreateProjectForm}
-                    createProjectForm={createProjectForm}
-                />
+                <ProjectInformationForm validationError={validationError} setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />
             )}
             {activeStep === 1 && (
                 <BlockHousesForm
-                    setCreateProjectForm={setCreateHouseBlockForm}
-                    createProjectForm={createHouseBlockForm}
+                    validationError={validationError}
+                    editForm={false}
+                    createFormHouseBlock={createFormHouseBlock}
+                    setCreateFormHouseBlock={setCreateFormHouseBlock}
                 />
-            )}
-            {activeStep === 2 && (
-                <SelectFromMapForm
-                    setCreateProjectForm={setCreateProjectForm}
-                    createProjectForm={createProjectForm}
-                />
-            )}
-            {activeStep === 3 && (
-                <TimelineForm
-                    setCreateProjectForm={setCreateProjectForm}
-                    createProjectForm={createProjectForm}
-                />
-            )}
-            {activeStep === 4 && (
-                <Stack direction="row" justifyContent="center" p={5}>
-                    <Typography>
-                        De wizard voor het maken van projectformulieren is
-                        voltooid. Klik op Opslaan om het proces te voltooien.
-                    </Typography>
-                </Stack>
             )}
 
-            <Stack
-                direction="row"
-                alignItems="center"
-                justifyContent="flex-end"
-                py={2}
-            >
-                <Button
-                    variant="contained"
-                    onClick={() => handleBack()}
-                    sx={{ mr: 2 }}
-                    disabled={activeStep === 0}
-                >
-                    Vorig
-                </Button>
-                <Button
-                    variant="contained"
-                    onClick={() =>
-                        activeStep === steps.length
-                            ? handleSave()
-                            : handleNext()
-                    } // check last step save function
-                >
-                    {activeStep === steps.length ? "Opslaan" : "Volgende"}
-                </Button>
-            </Stack>
-        </Box>
+            {/* {activeStep === 2 && <div id={id} style={{ height: "70vh", width: "100%" }}></div>} */}
+        </WizardLayout>
     );
 };

@@ -1,0 +1,33 @@
+x-environment: &common
+  KEYCLOAK_PORT: ${KEYCLOAK_PORT:-1780}
+  FRONTEND_PORT: ${FRONTEND_PORT:-3000}
+
+include:
+  - docker-compose.keycloak.dev.yml
+
+services:
+  backend:
+    build:
+      context: backend
+    develop:
+      watch:
+        - action: rebuild
+          path: backend
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      <<: *common
+      BASE_URL: ${BASE_URL:-http://localhost:3000}
+      DIWI_DB_HOST: ${DIWI_DB_HOST:-localhost}
+      DIWI_DB_PORT: ${DIWI_DB_PORT:-5432}
+      DIWI_DB_NAME: ${DIWI_DB_NAME:-diwi}
+      DIWI_DB_USERNAME: ${DIWI_DB_USERNAME:-diwi}
+      DIWI_DB_PASSWORD: ${DIWI_DB_PASSWORD:-diwi}
+      KC_REALM_NAME: ${KC_REALM_NAME:-diwi-test-realm}
+      KC_AUTH_SERVER_URL: ${KC_AUTH_SERVER_URL:-http://localhost:${KEYCLOAK_PORT:-1780}}
+      KC_SECRET: ${KC_SECRET:-diwi-test-secret}
+      KC_RESOURCE_NAME: ${KC_RESOURCE_NAME:-diwi-test-client}
+      MUNICIPALITY_NAME: ${MUNICIPALITY_NAME:-EINDHOVEN}
+      DEFAULT_MAP_BOUNDS: ${DEFAULT_MAP_BOUNDS:-6673258.3174,577099.5636,6725464.8077,647498.0666}
+    depends_on:
+      - keycloak

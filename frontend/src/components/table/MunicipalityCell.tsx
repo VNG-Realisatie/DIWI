@@ -1,0 +1,42 @@
+import { GridRenderCellParams } from "@mui/x-data-grid";
+import { Project } from "../../api/projectsServices";
+import { MultiSelect } from "./MultiSelect";
+import { OptionType, SelectedOptionWithId } from "../project/ProjectsTableView";
+import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
+import { ProjectTableOption, getMunicipalityList } from "../../api/projectsTableServices";
+
+type Props = {
+    cellValues: GridRenderCellParams<Project>;
+    selectedMunicipality: SelectedOptionWithId[];
+    handleMunicipalityChange: (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => void;
+};
+
+export const MunicipalityCell = ({ cellValues, selectedMunicipality, handleMunicipalityChange }: Props) => {
+    const [municipalityOptions, setMunicipalityOptions] = useState<ProjectTableOption[]>([]);
+    const { t } = useTranslation();
+
+    const defaultPlanTypes = cellValues.row.municipality || [];
+    const findSelected = selectedMunicipality?.find((s) => s.id === cellValues.row.projectId);
+    const selectedOption = findSelected ? findSelected.option : [];
+
+    useEffect(() => {
+        getMunicipalityList().then((municipalities) => setMunicipalityOptions(municipalities));
+    }, []);
+
+    return (
+        <MultiSelect
+            currentRow={cellValues.row}
+            selected={selectedOption}
+            options={municipalityOptions}
+            tagLimit={2}
+            defaultOptionValues={defaultPlanTypes ? defaultPlanTypes : []}
+            inputLabel={t("projects.tableColumns.municipality")}
+            placeHolder={t("projects.tableColumns.selecMunicipality")}
+            handleChange={(_: React.ChangeEvent<{}>, values: OptionType[]) =>
+                cellValues.row.projectId && handleMunicipalityChange(_, values, cellValues.row.projectId)
+            }
+            width="300px"
+        />
+    );
+};

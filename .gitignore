@@ -1,8 +1,21 @@
 .env
 .env.*
-!.env.example
+!.env.*.example
 htpasswd
 /data/*
 !/data/.gitkeep
 
 sql/json/
+/.metadata/
+
+Servers/
+
+yarn.lock
+
+node_modules/
+
+end-to-end-tests/results.xml
+
+.ucdetector_reports/
+
+*.orig

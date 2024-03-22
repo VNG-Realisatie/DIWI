@@ -1,59 +1,115 @@
-import { List, ListItem, ListItemText } from "@mui/material";
-import { ProjectType } from "../context/ProjectContext";
+import { Box, List, ListItem, ListItemText, Stack, Typography } from "@mui/material";
+import { Fragment, ReactNode, useContext, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Project, getProjectHouseBlocks } from "../api/projectsServices";
+import { OrganizationUserAvatars } from "./OrganizationUserAvatars";
+import ProjectContext from "../context/ProjectContext";
+import { HouseBlock } from "./project-wizard/house-blocks/types";
 
 type Props = {
-    project: ProjectType|undefined;
+    project: Project | null;
 };
+
+const DetailListItem = ({ children, property }: { children: ReactNode; property: string }) => {
+    const { t } = useTranslation();
+    return (
+        <>
+            <ListItem
+                sx={{
+                    backgroundColor: "#738092",
+                    color: "#FFFFFF",
+                    border: "solid 1px #ddd",
+                }}
+            >
+                <ListItemText primary={t(property)} />
+            </ListItem>
+            <ListItem
+                sx={{
+                    minHeight: "50px",
+                    border: "solid 1px #ddd",
+                }}
+            >
+                {children}
+            </ListItem>
+        </>
+    );
+};
+
 export const Details = ({ project }: Props) => {
+    const { t } = useTranslation();
+    const [houseBlocks, setHouseBlocks] = useState<HouseBlock[]>();
+
+    const getTranslatedText = (property: string, content: string) => {
+        if (property === "confidentialityLevel") {
+            return t(`projectTable.confidentialityLevelOptions.${content}`);
+        }
+        if (property === "planType") {
+            return t(`projectTable.planTypeOptions.${content}`);
+        }
+        if (property === "projectPhase") {
+            return t(`projectTable.projectPhaseOptions.${content}`);
+        }
+        if (property === "planningPlanStatus") {
+            return t(`projectTable.planningPlanStatus.${content}`);
+        } else {
+            return content;
+        }
+    };
+    const { id } = useContext(ProjectContext);
+    useEffect(() => {
+        id && getProjectHouseBlocks(id).then((res) => setHouseBlocks(res));
+    }, [id]);
     return (
         <List
             sx={{
+                padding: 0,
                 bgcolor: "background.paper",
                 width: "100%",
             }}
         >
             {project &&
                 Object.entries(project).map(([property, value]) => {
-                    //To avoid mixed data type bug keep this. it will be removed after all data defined
-                    if(property==="start datum"){
-                        console.log(value)
-                    }
-                    if (
-                        property !== "organization_id" &&
-                        property !== "project_state_id" &&
-                        property !== "organization_state_id" &&
-                        property !== "project_fase_changelog_id" &&
-                        property !== "project_gemeenterol_value_id"&&
-                        property !== "project_name_changelog_id"&&
-                        property !== "project_priorisering_value_id"&&
-                        property !== "project_gemeenterol_changelog_id"&&
-                        property !== "project_priorisering_changelog_id" &&
-                        property !== "project_gemeenterol_value_state_id" &&
-                        property !== "project_priorisering_value_state_id"
-                    ) {
+                    if (property === "totalValue" || property === "projectPhase" || property === "planType") {
                         return (
-                            <>
+                            <Fragment key={property}>
                                 <ListItem
-                                    key={property}
                                     sx={{
+                                        width: "100%",
                                         backgroundColor: "#738092",
                                         color: "#FFFFFF",
                                         border: "solid 1px #ddd",
                                     }}
                                 >
-                                    <ListItemText primary={property} />
+                                    <ListItemText primary={t(property)} />
                                 </ListItem>
                                 <ListItem
                                     sx={{
+                                        minHeight: "50px",
                                         border: "solid 1px #ddd",
                                     }}
                                 >
-                                    <ListItemText primary={property==="start datum"||property==="eind datum"?"":value} />
+                                    {value !== null && typeof value === "number" && <ListItemText primary={getTranslatedText(property, value.toString())} />}
+                                    {value !== null && typeof value === "string" && <ListItemText primary={getTranslatedText(property, value)} />}
+                                    {value !== null && typeof value === "object" && <Typography>{value.toString().split(",").join(", ")}</Typography>}
                                 </ListItem>
-                            </>
+                            </Fragment>
                         );
                     }
-                    return <></>;
+                    return <Fragment key={property} />;
+                })}
+            <DetailListItem property="projectOwners">
+                <OrganizationUserAvatars organizations={project?.projectOwners} />
+            </DetailListItem>
+            {houseBlocks &&
+                houseBlocks.map((hb: HouseBlock) => {
+                    return (
+                        <Stack key={hb.houseblockId}>
+                            <Typography sx={{ color: "#FFFFFF", backgroundColor: "#00A9F3", px: 2, py: 1.5 }}>{hb.houseblockName}</Typography>
+                            <Box border="solid 1px #DDD" px={2} py={1.5}>
+                                <Typography>{hb.mutation.netPlanCapacity}</Typography>
+                            </Box>
+                        </Stack>
+                    );
                 })}
         </List>
     );

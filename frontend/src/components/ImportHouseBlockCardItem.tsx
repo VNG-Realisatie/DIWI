@@ -56,9 +56,7 @@ export const ImportHouseBlockCardItem = (props: any) => {
                 </Typography>
             </Grid>
             <Grid item sm={2}>
-                <Typography sx={columnTitleStyle}>
-                    Bruto plancapaciteit
-                </Typography>
+                <Typography sx={columnTitleStyle}>Bruto plancapaciteit</Typography>
 
                 <Typography
                     sx={{
@@ -82,9 +80,7 @@ export const ImportHouseBlockCardItem = (props: any) => {
                 </Typography>
             </Grid>
             <Grid item sm={2}>
-                <Typography sx={columnTitleStyle}>
-                    Netto Plancapaciteit
-                </Typography>
+                <Typography sx={columnTitleStyle}>Netto Plancapaciteit</Typography>
 
                 <Typography
                     sx={{
@@ -120,9 +116,7 @@ export const ImportHouseBlockCardItem = (props: any) => {
                 </Typography>
             </Grid>
             <Grid item sm={3}>
-                <Typography sx={columnTitleStyle}>
-                    Huurwoning Particuliere verhuurder
-                </Typography>
+                <Typography sx={columnTitleStyle}>Huurwoning Particuliere verhuurder</Typography>
 
                 <Typography
                     sx={{
@@ -134,9 +128,7 @@ export const ImportHouseBlockCardItem = (props: any) => {
                 </Typography>
             </Grid>
             <Grid item sm={3}>
-                <Typography sx={columnTitleStyle}>
-                    Huurwoning Woningcorporatie
-                </Typography>
+                <Typography sx={columnTitleStyle}>Huurwoning Woningcorporatie</Typography>
 
                 <Typography
                     sx={{

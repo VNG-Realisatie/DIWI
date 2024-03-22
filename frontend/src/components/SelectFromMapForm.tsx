@@ -1,21 +1,16 @@
-import {
-    Box,
-    InputLabel,
-    MenuItem,
-    Select,
-    Stack,
-    Typography,
-} from "@mui/material";
+import { Box, InputLabel, MenuItem, Select, Stack, Typography } from "@mui/material";
 import mapform from "../assets/temp/formmap.png";
 import wijk from "../api/json/wijk.json";
 import buurt from "../api/json/buurt.json";
 import gemeente from "../api/json/gemeente.json";
+import { useTranslation } from "react-i18next";
 
 export const SelectFromMapForm = (props: any) => {
+    const { t } = useTranslation();
     return (
         <Box mt={4} position="relative">
             <Typography variant="h6" fontWeight="600">
-                Teken het project in op de kaart
+                {t("createProject.selectMapForm.title")}
             </Typography>
 
             <Box
@@ -29,17 +24,13 @@ export const SelectFromMapForm = (props: any) => {
                 p={2}
             >
                 <Stack>
-                    <InputLabel id="Gemeente">Gemeente</InputLabel>
+                    <InputLabel id="municipality"> {t("createProject.selectMapForm.municipality")}</InputLabel>
                     <Select
                         sx={{ width: "100%" }}
-                        labelId="gemeente"
-                        id="gemeente"
-                        value={
-                            props.createProjectForm
-                                ? props.createProjectForm.gemeente
-                                : ""
-                        }
-                        label="Gemeente"
+                        labelId="municipality"
+                        id="municipality"
+                        value={props.createProjectForm ? props.createProjectForm.gemeente : ""}
+                        label={t("createProject.selectMapForm.municipality")}
                         onChange={(e) =>
                             props.setCreateProjectForm({
                                 ...props.createProjectForm,
@@ -57,17 +48,13 @@ export const SelectFromMapForm = (props: any) => {
                     </Select>
                 </Stack>
                 <Stack>
-                    <InputLabel id="wijk">Wijk</InputLabel>
+                    <InputLabel id="neighbourhood">{t("createProject.selectMapForm.neighbourhood")}</InputLabel>
                     <Select
                         sx={{ width: "100%" }}
-                        labelId="wijk"
-                        id="wijk"
-                        value={
-                            props.createProjectForm
-                                ? props.createProjectForm.wijk
-                                : ""
-                        }
-                        label="Wijk"
+                        labelId="neighbourhood"
+                        id="neighbourhood"
+                        value={props.createProjectForm ? props.createProjectForm.wijk : ""}
+                        label={t("createProject.selectMapForm.neighbourhood")}
                         onChange={(e) =>
                             props.setCreateProjectForm({
                                 ...props.createProjectForm,
@@ -85,17 +72,13 @@ export const SelectFromMapForm = (props: any) => {
                     </Select>
                 </Stack>
                 <Stack>
-                    <InputLabel id="Buurt">Buurt</InputLabel>
+                    <InputLabel id="district">{t("createProject.selectMapForm.district")}</InputLabel>
                     <Select
                         sx={{ width: "100%" }}
-                        labelId="buurt"
-                        id="buurt"
-                        value={
-                            props.createProjectForm
-                                ? props.createProjectForm.buurt
-                                : ""
-                        }
-                        label="Buurt"
+                        labelId="district"
+                        id="district"
+                        value={props.createProjectForm ? props.createProjectForm.buurt : ""}
+                        label={t("createProject.selectMapForm.district")}
                         onChange={(e) =>
                             props.setCreateProjectForm({
                                 ...props.createProjectForm,

@@ -1,9 +1,22 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import App from './App';
+import { render, screen } from "@testing-library/react";
+import { Layout } from "./components/Layout";
+import { MemoryRouter } from "react-router-dom";
+import ConfigContext from "./context/ConfigContext";
 
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+jest.mock("query-string", () => ({
+    //mock whatever you use from query-string
+    parse: jest.fn(),
+    stringify: jest.fn(),
+}));
+
+test("renders projecten", () => {
+    render(
+        <MemoryRouter>
+            <ConfigContext.Provider value={{ municipalityName: "test", mapBounds: { corner1: { lng: 0, lat: 0 }, corner2: { lng: 0, lat: 0 } } }}>
+                <Layout />
+            </ConfigContext.Provider>
+        </MemoryRouter>,
+    );
+    const vngElement = screen.getByText(/Overzicht projecten/i);
+    expect(vngElement).toBeInTheDocument();
 });

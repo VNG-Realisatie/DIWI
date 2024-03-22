@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.vng</groupId>
-    <artifactId>vng</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <groupId>nl.vng</groupId>
+    <artifactId>diwi</artifactId>
+    <version>1.1.0</version>
     <packaging>war</packaging>
 
-    <url>https://vng.com</url>
+    <url>https://vng.nl</url>
 
     <properties>
         <revision>1.0.1-SNAPSHOT</revision>
         <assertj.version>3.25.1</assertj.version>
         <jersey.version>3.1.5</jersey.version>
-        <hibernate.version>6.4.1.Final</hibernate.version>
+        <hibernate.version>6.3.2.Final</hibernate.version>
         <hibernate.validator.version>8.0.1.Final</hibernate.validator.version>
         <jakarta.validation.version>3.1.0-M1</jakarta.validation.version>
         <junit.platform.version>1.10.1</junit.platform.version>
@@ -23,7 +25,7 @@
         <jts.version>1.16.1</jts.version>
         <args4j.version>2.33</args4j.version>
         <poi.version>4.1.2</poi.version>
-        <log4j.version>3.0.0-beta1</log4j.version>
+        <log4j.version>2.22.1</log4j.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
     </properties>
@@ -56,6 +58,21 @@
     </dependencyManagement>
     <dependencies>
         <dependency>
+            <groupId>org.pac4j</groupId>
+            <artifactId>pac4j-oidc</artifactId>
+            <version>6.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.pac4j</groupId>
+            <artifactId>pac4j-core</artifactId>
+            <version>6.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.pac4j</groupId>
+            <artifactId>pac4j-jakartaee</artifactId>
+            <version>6.0.1</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
             <version>${log4j.version}</version>
@@ -67,12 +84,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-1.2-api</artifactId>
+            <artifactId>log4j-slf4j-impl</artifactId>
             <version>${log4j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
+            <artifactId>log4j-slf4j2-impl</artifactId>
             <version>${log4j.version}</version>
         </dependency>
         <dependency>
@@ -149,7 +166,6 @@
         <dependency>
             <groupId>org.glassfish.jersey.inject</groupId>
             <artifactId>jersey-hk2</artifactId>
-            <version>${jersey.version}</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate.orm</groupId>
@@ -163,13 +179,13 @@
         </dependency>
         <dependency>
             <groupId>io.hypersistence</groupId>
-            <artifactId>hypersistence-utils-hibernate-62</artifactId>
+            <artifactId>hypersistence-utils-hibernate-63</artifactId>
             <version>3.7.0</version>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.7.1</version>
+            <version>42.7.3</version>
         </dependency>
         <dependency>
             <groupId>jakarta.validation</groupId>
@@ -222,16 +238,6 @@
             <version>2.1.2</version>
         </dependency>
         <dependency>
-            <groupId>org.keycloak</groupId>
-            <artifactId>keycloak-servlet-filter-adapter</artifactId>
-            <version>23.0.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.keycloak</groupId>
-            <artifactId>keycloak-admin-client</artifactId>
-            <version>23.0.4</version>
-        </dependency>
-        <dependency>
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
             <version>5.9</version>
@@ -246,10 +252,36 @@
             <artifactId>commons-io</artifactId>
             <version>2.15.1</version>
         </dependency>
+        <dependency>
+        	<groupId>com.fasterxml.uuid</groupId>
+        	<artifactId>java-uuid-generator</artifactId>
+        	<version>4.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.30</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations-jakarta</artifactId>
+            <version>2.2.20</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-jaxrs2-jakarta</artifactId>
+            <version>2.2.20</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-jaxrs2-servlet-initializer-jakarta</artifactId>
+            <version>2.2.20</version>
+        </dependency>
     </dependencies>
 
     <build>
-        <finalName>vng</finalName>
+        <finalName>diwi</finalName>
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -364,24 +396,32 @@
                 </executions>
                 <configuration>
                     <configLocation>checkstyle.xml</configLocation>
-                    <encoding>UTF-8</encoding>
                     <consoleOutput>true</consoleOutput>
-                    <failsOnError>true</failsOnError>
-                    <linkXRef>false</linkXRef>
                 </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.maven.doxia</groupId>
-                        <artifactId>doxia-site-renderer</artifactId>
-                        <version>2.0.0-M16</version>
-                        <exclusions>
-                            <exclusion>
-                                <groupId>org.apache.struts</groupId>
-                                <artifactId>struts-tiles</artifactId>
-                            </exclusion>
-                        </exclusions>
-                    </dependency>
-                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>xml-maven-plugin</artifactId>
+                <version>1.1.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>transform</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <transformationSets>
+                        <transformationSet>
+                            <dir>${project.build.directory}</dir>
+                            <outputDir>${project.build.directory}/checkstyle-junit</outputDir>
+                            <includes>
+                                <include>checkstyle-result.xml</include>
+                            </includes>
+                            <stylesheet>checkstyle2junit.xslt</stylesheet>
+                        </transformationSet>
+                    </transformationSets>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.owasp</groupId>
@@ -389,9 +429,7 @@
                 <version>5.3.2</version>
                 <configuration>
                     <cveValidForHours>12</cveValidForHours>
-
                     <format>xml</format>
-
                     <nodeAnalyzerEnabled>false</nodeAnalyzerEnabled>
                     <reportSets>
                         <reportSet>
@@ -486,6 +524,30 @@
             </activation>
             <build>
                 <directory>${alt.build.dir}</directory>
+            </build>
+        </profile>
+        <profile>
+            <id>skipTests</id>
+            <activation>
+                <property>
+                    <name>skipTests</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>xml-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>none</phase>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                </plugins>
             </build>
         </profile>
     </profiles>

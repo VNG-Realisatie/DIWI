@@ -1,29 +1,58 @@
-version: '3'
+version: "3"
 
 services:
   frontend:
     build:
-        context: frontend
+      context: frontend
+      args:
+        REACT_APP_GIT_SHA: ${REACT_APP_GIT_SHA:?need commit hash}
+        REACT_APP_DEPLOY_DATE: ${REACT_APP_DEPLOY_DATE:?need commit date}
+    develop:
+      watch:
+        - action: rebuild
+          path: frontend
     restart: unless-stopped
-    env_file:
-      - .env
     ports:
       - ${MAIN_PORT:-80}:80
     volumes:
       - ./dummy-api/v0.0/:/var/www/api/v0.0/:ro
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/conf.d/:/etc/nginx/conf.d/:ro
-      - ./htpasswd:/etc/nginx/htpasswd:ro
-  database:
-    image: git.phinion.com/phinion/dependency_proxy/containers/postgres:14
+
+  backend:
+    build:
+      context: backend
+    develop:
+      watch:
+        - action: rebuild
+          path: backend
     restart: unless-stopped
     environment:
-      - POSTGRES_DB
-      - POSTGRES_USER
-      - POSTGRES_PASSWORD
-    env_file:
-      - .env
+      BASE_URL: ${BASE_URL:-http://localhost:${MAIN_PORT}}
+      DIWI_DB_HOST: ${DIWI_DB_HOST:-database}
+      DIWI_DB_NAME: ${DIWI_DB_NAME:-diwi}
+      DIWI_DB_USERNAME: ${DIWI_DB_USERNAME:-diwi}
+      DIWI_DB_PASSWORD: ${DIWI_DB_PASSWORD:?define a password please}
+      KC_REALM_NAME: ${KC_REALM_NAME:?oidc config needed}
+      KC_AUTH_SERVER_URL: ${KC_AUTH_SERVER_URL:?oidc config needed}
+      KC_SECRET: ${KC_SECRET:?oidc config needed}
+      KC_RESOURCE_NAME: ${KC_RESOURCE_NAME:?oidc config needed}
+      MUNICIPALITY_NAME: ${MUNICIPALITY_NAME:?Please set up a municipality name}
+      DEFAULT_MAP_BOUNDS: ${DEFAULT_MAP_BOUNDS}
+
     ports:
-      - 5432
+      - ${BACKEND_PORT:-8080}
+    depends_on:
+      - database
+
+  database:
+    image: git.phinion.com/vng/dependency_proxy/containers/postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DIWI_DB_NAME:-diwi}
+      POSTGRES_USER: ${DIWI_DB_USERNAME:-diwi}
+      POSTGRES_PASSWORD: ${DIWI_DB_PASSWORD:?define a password please}
+    ports:
+      - ${DATABASE_PORT:-5432}
     volumes:
       - ./data/database:/var/lib/postgresql/data

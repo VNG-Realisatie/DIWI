@@ -1,92 +1,188 @@
 # vng
 
+## Development
 
+### Front end development
 
-## Getting started
+You can start the back end and keycloak using docker.
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+First login to git.phinion.com if needed. You need an access token with `read_registry` permissions. You only need to do this once.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-
-```
-cd existing_repo
-git remote add origin https://git.phinion.com/vng/vng.git
-git branch -M master
-git push -uf origin master
+```shell
+docker login git.phinion.com
 ```
 
-## Integrate with your tools
+Then start the backend and keycloak:
 
-- [ ] [Set up project integrations](https://git.phinion.com/vng/vng/-/settings/integrations)
+```shell
+./deploy.backend.dev.sh
+```
 
-## Collaborate with your team
+Create a user with the username and password 'admin' in keycloak:
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+```
+./addUsers.sh
+```
 
-## Test and Deploy
+Start the front end in a dev server as follows:
 
-Use the built-in continuous integration in GitLab.
+```shell
+cd frontend
+yarn && yarn start
+```
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+You shouldn't need any settings in the .env file other than `DIWI_DB_USERNAME` and `DIWI_DB_PASSWORD`. See `.env.backend.dev.example`.
 
-***
+### Generate types from backend api
 
-# Editing this README
+You can generate types from the backend by downloading the openapi.json file from e.g. http://localhost:3000/rest/openapi.json and putting it in the root folder of the repo.
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+You can then execute the following yarn script"
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+```shell
+cd frontend
+yarn && yarn run create-types
+```
 
-## Name
-Choose a self-explaining name for your project.
+If some values values seem optional in the openapi definition, but they are not, You can use the `@JsonProperty(required = true)` annotation in the java model.
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+### Setup Backend development
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+#### Install Eclipse for java EE
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+- Download the installer (https://www.eclipse.org/downloads/)
+- Extract the installer
+- Run `eclipse-inst`
+- Choose 'Eclipse IDE for Enterprise Java and Web Developers'
+- Wait
+- Done
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+#### Install Project Lombok
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+- If you've already run maven, the lombok installer is in the repo. otherwise you can download lombok.jar from https://projectlombok.org/download.
+- Run the installer from the maven repo.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+```
+java -jar ~/.m2/repository/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar
+```
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+- -or- from the downloaded file
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+```
+java -jar ~/Downloads/lombok.jar
+```
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+- In the installer choose the eclipse folder. Which normally is something like: `~/eclipse/jee-2023-12/eclipse/`
+- Click install
+- Close the installer
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+#### Setup the eclipse workspace
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+- Open eclipse and choose a workspace directory (e.g. the root folder of the repo. **Not** the `backend` directory.)
+- Import the project
 
-## License
-For open source projects, say how it is licensed.
+  - Open the import File → Import
+  - Select Maven → Existing Maven Projects
+  - Click Browse and select the backend directory
+  - Click Finish
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+#### Setup the development server
+
+- In the servers view(the servers view is located by default next to the console at the bottom of the window), select 'Click this link to create a new one'
+- Select tomcat v10.1 (Or look at the docker compose file for the current version)
+- In the next window select download and install. Create a new dir somewhere outside the project directory. Eclipse will download the server in the background so it will take some time for the 'next' button to be activated.
+- In the next window, move the backend to the configured side.
+- Double click the server in the servers view. This opens the run configuration. (You can also go here from the dropdown next to the play button in the toolbar.)
+- Click the modules tab at the bottom of the run configuration.
+- Set the path of the application to / by clicking the edit button and changing `/vng` to `/`.
+- Click the play button in the servers view to start the server.
+
+## Setup the DB with the test data
+
+Note: This is still in development and subject to change.
+
+- Make sure the empty database exists / create it.
+- Start the backend (all the tables will be created through migration scripts).
+- Run the following command to import the test sets:
+
+```shell
+psql diwi < backend/src/main/resources/db/sql/vng_projects_testdata.sql
+psql diwi < backend/src/main/resources/db/sql/vng_woningbloks_testdata.sql
+```
+
+Or in docker:
+
+```shell
+docker compose exec -T database psql --user diwi diwi < backend/src/main/resources/db/sql/vng_projects_testdata.sql
+docker compose exec -T database psql --user diwi diwi < backend/src/main/resources/db/sql/vng_woningbloks_testdata.sql
+```
+
+## Deploy on production
+
+- Copy `.env.production.example` to `.env`
+- Set a secure password for the database in the .env file
+- Configure keycloak with a new client and enter the parameters in the .env file
+- Call `./deploy.sh`
+
+## Development
+
+### Calling the backend from the front end
+
+To make sure we don't get redirect responses when we do `fetch` requests we need to use the wrapper `diwiFetch` from `src/utils/request.ts`.
+
+### HTTP API guidelines
+
+We use the following query parameters for paginated queries:
+
+- pageNumber (1 based)
+- pageSize (must be larger than 0)
+
+We use the following query parameters for sorting
+
+- sortColumn
+- sortDirection (ASC or DESC)
+
+We use the following for filterings:
+
+- filterColumn
+- filterValue (This can be a list: filterValue=a&filterValue=b&filterValue=c)
+- filterCondition
+
+Also see FilterPaginationSorting.java
+
+### How to query the tables for a specific 'peildatum'/reference date
+
+For querying for the current date you can just check if the end date of the table is `NULL`. e.g:
+
+```sql
+SELECT
+    *
+FROM
+    diwi_testset_simplified.gemeente_state gs
+WHERE
+    gs.change_end_date IS NULL
+```
+
+For a specific date the query is more complex. There can not be any overlapping state/changelog entries:
+
+```sql
+SELECT
+    *
+FROM
+    diwi_testset_simplified.gemeente_state gs
+WHERE
+    gs.change_start_date <= :reference_date AND (gs.change_end_date IS NULL OR gs.change_end_date > :reference_date)
+```
+
+## Glossary
+
+As the project is meant for Dutch municipalities there are lots of Dutch terms.
+
+| Dutch       | English        |
+| ----------- | -------------- |
+| Peildatum   | Reference date |
+| Gemeente    | Municipality   |
+| Buurt       | Neighbourhood  |
+| Eigenaar    | Owner          |
+| Beleidsdoel | Policy goal    |
+| Perceel     | Plot           |

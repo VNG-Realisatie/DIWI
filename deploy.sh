@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
+set -eux
 
-touch htpasswd # Create the file if it isn't there yet, otherwise docker will create a directory
+git pull
+
+. ./version.sh
 
 docker compose pull
-[ $? -eq 0 ] && docker compose up --build --remove-orphans -d
+docker compose up --build --remove-orphans -d

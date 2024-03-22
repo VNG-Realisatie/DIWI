@@ -1,108 +1,94 @@
-import { Box, Button, Stack, Typography } from "@mui/material";
-import Search from "../components/Search";
-import { useContext, useState } from "react";
-import { Details } from "../components/Details";
-import { ReactComponent as Map } from "../assets/temp/map.svg";
+import { Stack, Tooltip, Typography } from "@mui/material";
+import { useContext, useState, createContext, PropsWithChildren } from "react";
 import ProjectContext from "../context/ProjectContext";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import { ReactComponent as TimeLineImg } from "../assets/temp/timeline.svg";
-import { useNavigate } from "react-router-dom";
-import * as Paths from "../Paths";
-import { colorArray } from "../api/dummyData";
-import { ProjectsWithHouseBlock } from "../components/ProjectWithHouseBlock";
 
-export const ProjectDetail = () => {
-    const { selectedProject, projects, id } = useContext(ProjectContext);
-    const [selectedType, setSelectedType] = useState<
-        "map" | "characteristics" | "timeline"
-    >("map");
-    const navigate = useNavigate();
+import * as Paths from "../Paths";
+import BreadcrumbBar from "../components/header/BreadcrumbBar";
+import { useTranslation } from "react-i18next";
+import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
+import DeleteProjectDialog from "../components/project/DeleteProjectDialog";
+
+export const dummyMapData = [
+    {
+        projectColor: "orange",
+        projectName: "test-01",
+        coordinate: [52.1434, 5.0013],
+    },
+    {
+        projectColor: "tomato",
+        projectName: "test-02",
+        coordinate: [52.2434, 5.2013],
+    },
+    {
+        projectColor: "green",
+        projectName: "test-03",
+        coordinate: [52.5434, 5.5013],
+    },
+];
+
+const ProjectColorContext = createContext({
+    selectedProjectColor: "",
+    setSelectedProjectColor: (color: string) => {},
+});
+
+export const ProjectDetail = ({ children }: PropsWithChildren) => {
+    const { selectedProject, id } = useContext(ProjectContext);
+    const { t } = useTranslation();
+    const [selectedProjectColor, setSelectedProjectColor] = useState<string>("");
+
+    const [isDeleteConfirmationOpen, setDeteleConfirmationOpen] = useState<boolean>(false);
+
     return (
-        <Stack
-            direction="column"
-            justifyContent="space-between"
-            position="relative"
-            border="solid 1px #ddd"
-            mb={10}
-        >
-            <Stack
-                direction="row"
-                justifyContent="flex-start"
-                alignItems="flex-start"
-            >
-                <Box width="20%">
-                    <Search
-                        label="Zoeken..."
-                        searchList={projects.map((p) => p.project)}
-                        isDetailSearch={true}
-                    />
-                </Box>
-                <Stack
-                    width="80%"
-                    direction="row"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    sx={{ backgroundColor: "#002C64", color: "#FFFFFF" }}
-                    p={1}
-                >
-                    <Typography> Projecten overzicht: </Typography>
-                    <Typography> Peildatum: 12 Jan 2023</Typography>
-                </Stack>
-            </Stack>
+        <Stack direction="column" justifyContent="space-between" position="relative" border="solid 1px #ddd" mb={10}>
+            <BreadcrumbBar
+                pageTitle={t("projectDetail.title")}
+                links={[
+                    { title: t("projectDetail.map"), link: Paths.projectDetail.path.replace(":id", id ?? "1") },
+                    { title: t("projectDetail.characteristics"), link: Paths.projectDetailCharacteristics.path.replace(":id", id ?? "1") },
+                    // { title: t("projectDetail.timeline"), link: Paths.projectDetailTimeline.path.replace(":id", id ?? "1") },
+                ]}
+            />
             <Stack
                 direction="row"
                 alignItems="center"
                 pl={2}
                 sx={{
-                    backgroundColor: id && colorArray[parseInt(id) - 1],
+                    backgroundColor: selectedProjectColor ? selectedProjectColor : selectedProject?.projectColor,
                     color: "#FFFFFF",
                     minHeight: "53px",
                 }}
             >
-                <Typography variant="h5">{selectedProject?.name}</Typography>
+                <Typography variant="h5">{selectedProject?.projectName}</Typography>
+                {selectedProject && (
+                    <Tooltip placement="top" title={t("generic.delete")}>
+                        <DeleteForeverOutlinedIcon
+                            sx={{ ml: 3, color: "#FFFFFF", cursor: "pointer" }}
+                            onClick={() => {
+                                setDeteleConfirmationOpen(!isDeleteConfirmationOpen);
+                            }}
+                        />
+                    </Tooltip>
+                )}
+                {isDeleteConfirmationOpen && selectedProject && (
+                    <DeleteProjectDialog
+                        setIsOpen={setDeteleConfirmationOpen}
+                        isOpen={isDeleteConfirmationOpen}
+                        projectName={selectedProject.projectName}
+                        projectId={selectedProject.projectId}
+                    />
+                )}
             </Stack>
-            <Stack direction="row" justifyContent="flex-end" border="solid 1px #ddd" p={0.5}>
-                <Button onClick={() => setSelectedType("map")}>Kaart</Button>
-                <Button onClick={() => setSelectedType("characteristics")}>
-                    Eigenschappen
-                </Button>
-                <Button onClick={() => setSelectedType("timeline")}>
-                    Tijdlijn
-                </Button>
-                <Box
-                sx={{ cursor: "pointer" }}
-                onClick={() => navigate(Paths.projectAdd.path)}
-            >
-                <AddCircleIcon color="info" sx={{ fontSize: "45px" }} />
-            </Box>
-            </Stack>
-            {selectedType === "map" && (
-                <Stack
-                    direction="row"
-                    alignItems="center"
-                    justifyContent="space-between"
-                >
-                    <Stack overflow="auto" height="70vh" >
-                        {<Details project={selectedProject} />}
-                    </Stack>
-                    <Map style={{ width: "100%" }} />
-                </Stack>
-            )}
-            {selectedType === "timeline" && <TimeLineImg style={{ width: "100%"}}/>}
-            {selectedType === "characteristics" && (
-                <ProjectsWithHouseBlock
-                    project={selectedProject}
-                    houseblocks={
-                        projects.filter(
-                            (p) =>
-                                selectedProject &&
-                                p.project &&
-                                p.project.id === selectedProject.id
-                        )[0].woningblokken
-                    }
-                />
-            )}
 
+            <ProjectColorContext.Provider
+                value={{
+                    selectedProjectColor,
+                    setSelectedProjectColor,
+                }}
+            >
+                {children}
+            </ProjectColorContext.Provider>
         </Stack>
     );
 };
+
+export default ProjectColorContext;

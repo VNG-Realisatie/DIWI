@@ -17,10 +17,16 @@ function createPathObject(path: string): Path {
 export const root = createPathObject(config.baseurl);
 
 export const projects = createPathObject(config.baseurl + "projects");
-export const projectAdd = createPathObject(config.baseurl + "project/create");
-export const projectDetail= createPathObject(config.baseurl + "projects/:id");
+export const projectsTable = createPathObject(config.baseurl + "projects/table");
+export const projectWizard = createPathObject(config.baseurl + "project/create");
+export const projectWizardWithId = createPathObject(config.baseurl + "project/create/:id");
+export const projectWizardMap = createPathObject(config.baseurl + "project/create/:projectId/map");
+export const projectDetail = createPathObject(config.baseurl + "projects/:id");
+export const projectDetailCharacteristics = createPathObject(config.baseurl + "projects/:id/characteristics");
+export const projectDetailTimeline = createPathObject(config.baseurl + "projects/:id/timeline");
 
 export const policygoal = createPathObject(config.baseurl + "policygoal");
+export const policygoalDashboard = createPathObject(config.baseurl + "policygoal/dashboard");
 export const dashboard = createPathObject(config.baseurl + "dashboard");
 export const wizard = createPathObject(config.baseurl + "admin/wizard");
 export const exchangedata = createPathObject(config.baseurl + "exchangedata");
@@ -31,9 +37,12 @@ export const importSquit = createPathObject(config.baseurl + "exchangedata/impor
 export const importExcelProjects = createPathObject(config.baseurl + "exchangedata/importexcel/projects");
 export const importSquitProjects = createPathObject(config.baseurl + "exchangedata/importsquit/projects");
 
-
-
 export const login = createPathObject(config.baseurl + "rest/auth/login");
 export const loggedIn = createPathObject(config.baseurl + "rest/auth/loggedIn");
 export const logout = createPathObject(config.baseurl + "rest/auth/logout");
 export const home = createPathObject(config.baseurl + "home");
+export const about = createPathObject(config.baseurl + "about");
+
+export const userSettings = createPathObject(config.baseurl + "admin/settings");
+
+export const swagger = createPathObject(config.baseurl + "swagger");
