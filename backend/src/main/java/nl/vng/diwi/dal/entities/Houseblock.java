@@ -64,4 +64,24 @@ public class Houseblock extends IdSuperclass {
     @Filter(name = GenericRepository.CURRENT_DATA_FILTER, condition = "change_end_date IS NULL")
     private List<HouseblockPurposeChangelog> purposes;
 
+    @OneToMany(mappedBy="houseblock", fetch = FetchType.LAZY)
+    @Filter(name = GenericRepository.CURRENT_DATA_FILTER, condition = "change_end_date IS NULL")
+    private List<HouseblockBooleanCustomPropertyChangelog> booleanCustomProperties;
+
+    @OneToMany(mappedBy="houseblock", fetch = FetchType.LAZY)
+    @Filter(name = GenericRepository.CURRENT_DATA_FILTER, condition = "change_end_date IS NULL")
+    private List<HouseblockNumericCustomPropertyChangelog> numericCustomProperties;
+
+    @OneToMany(mappedBy="houseblock", fetch = FetchType.LAZY)
+    @Filter(name = GenericRepository.CURRENT_DATA_FILTER, condition = "change_end_date IS NULL")
+    private List<HouseblockTextCustomPropertyChangelog> textCustomProperties;
+
+    @OneToMany(mappedBy="houseblock", fetch = FetchType.LAZY)
+    @Filter(name = GenericRepository.CURRENT_DATA_FILTER, condition = "change_end_date IS NULL")
+    private List<HouseblockCategoryCustomPropertyChangelog> categoryCustomProperties;
+
+    @OneToMany(mappedBy="houseblock", fetch = FetchType.LAZY)
+    @Filter(name = GenericRepository.CURRENT_DATA_FILTER, condition = "change_end_date IS NULL")
+    private List<HouseblockOrdinalCustomPropertyChangelog> ordinalCustomProperties;
+
 }

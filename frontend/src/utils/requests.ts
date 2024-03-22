@@ -43,7 +43,7 @@ export async function getJson(url: string) {
     return res.json();
 }
 
-export async function postJson(url: string, data: any) {
+export async function postJsonNoResponse(url: string, data: any) {
     const body = JSON.stringify(data);
 
     const res = await diwiFetch(encodeURI(url), {
@@ -61,6 +61,11 @@ export async function postJson(url: string, data: any) {
             throw Error(res.statusText);
         }
     }
+    return res;
+}
+
+export async function postJson(url: string, data: any) {
+    const res = await postJsonNoResponse(url, data);
 
     return res.json();
 }

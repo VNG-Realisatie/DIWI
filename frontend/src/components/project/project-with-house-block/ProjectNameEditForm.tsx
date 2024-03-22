@@ -12,7 +12,7 @@ export const ProjectNameEditForm = ({ name, setName }: Props) => {
 
     return (
         <Stack direction="row" alignItems="center" spacing={1}>
-            <TextField size="small" sx={{ border: "solid 1px white" }} value={name} onChange={handleNameChange} />
+            <TextField fullWidth size="small" sx={{ border: "solid 1px white" }} value={name} onChange={handleNameChange} />
         </Stack>
     );
 };

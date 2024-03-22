@@ -36,7 +36,6 @@ export const PolicyLists = () => {
     });
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = event.target;
-        console.log(value);
         if (name === "name") {
             setDataPolicy({ ...dataPolicy, name: value });
         } else {
@@ -93,7 +92,6 @@ export const PolicyLists = () => {
                                 variant="contained"
                                 color="primary"
                                 onClick={() => {
-                                    console.log(dataPolicy);
                                     setShowDialog(false);
                                 }}
                                 sx={{ ml: "auto" }}

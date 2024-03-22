@@ -23,19 +23,19 @@ export const emptyHouseBlockForm: HouseBlock = {
     ownershipValue: [
         {
             type: "KOOPWONING",
-            amount: 0,
+            amount: null,
             value: { value: null, min: null, max: null },
             rentalValue: { value: null, min: null, max: null },
         },
         {
             type: "HUURWONING_PARTICULIERE_VERHUURDER",
-            amount: 0,
+            amount: null,
             value: { value: null, min: null, max: null },
             rentalValue: { value: null, min: null, max: null },
         },
         {
             type: "HUURWONING_WONINGCORPORATIE",
-            amount: 0,
+            amount: null,
             value: { value: null, min: null, max: null },
             rentalValue: { value: null, min: null, max: null },
         },

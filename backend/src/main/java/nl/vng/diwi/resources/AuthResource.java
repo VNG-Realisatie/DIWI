@@ -7,6 +7,7 @@ import org.pac4j.core.engine.DefaultLogoutLogic;
 import org.pac4j.jee.context.JEEFrameworkParameters;
 import org.pac4j.oidc.exceptions.OidcMissingSessionStateException;
 import org.pac4j.oidc.exceptions.OidcStateMismatchException;
+import org.pac4j.oidc.exceptions.OidcTokenException;
 
 import nl.vng.diwi.config.ProjectConfig;
 
@@ -48,7 +49,7 @@ public class AuthResource {
             callbackLogic.perform(projectConfig.getPac4jConfig(), projectConfig.getBaseUrl(), null, null,
                     new JEEFrameworkParameters(httpRequest, httpResponse));
             return Response.ok().build();
-        } catch (OidcMissingSessionStateException | OidcStateMismatchException e) {
+        } catch (OidcMissingSessionStateException | OidcStateMismatchException | OidcTokenException e) {
             // In this case the Keycloak or the back end server might have restarted between
             // the redirect to Keycloak and entering the password or the user might just have an used an old open tab to login and the state
             // has gone stale

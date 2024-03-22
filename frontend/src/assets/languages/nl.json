@@ -13,7 +13,9 @@
       "projectDeletion": "Project {{name}} is verwijderd",
       "delete": "Verwijderen",
       "cancel": "Annuleren",
-      "noInfoAvailable": "Geen informatie beschikbaar"
+      "noInfoAvailable": "Geen informatie beschikbaar",
+      "updated": "Succesvol geüpdatet",
+      "failedToUpdate": "Kan niet updaten."
     },
     "createProject": {
       "information": "Project informatie",
@@ -25,7 +27,7 @@
       "nameIsRequried": "Vul het veld projectnaam in",
       "informationForm": {
         "title": "Vul de projectgegevens in",
-        "nameLabel": "Projectnaam en projectkleur*",
+        "nameLabel": "Projectnaam en projectkleur",
         "planType": "Plan Type",
         "startDate": "Start Datum",
         "endDate": "Eind Datum",
@@ -73,7 +75,7 @@
           "value": "Aantal"
         },
         "purpose": {
-          "title": "Doel",
+          "title": "Doelgroep",
           "regular": "Regulier",
           "youth": "Jongeren",
           "student": "Student",
@@ -134,6 +136,15 @@
         "expectedDelivery": "Verwachte oplevering",
         "status": "Toestand",
         "is": "is"
+      },
+      "hasMissingRequiredAreas": {
+        "name": "Naam ontbreekt",
+        "startDate": "Start datum ontbreekt",
+        "endDate": "Eind datum ontbreekt",
+        "projectPhase": "Project Fase ontbreekt",
+        "confidentialityLevel": "Vertrouwlijkheidsniveau  ontbreekt",
+        "amount": "Aantal ontbreekt",
+        "hasmissingProperty": "Formulier heeft ontbrekende eigenschappen"
       }
     },
     "sidebar": {
@@ -267,6 +278,13 @@
           "successfullyDeleted": "Eigenschappen succesvol verwijderd."
         }
       }
-    }
+    },
+    "customProperties": {
+      "title": "Maatwerk eigenschappen"
+    },
+    "projectPhase": "Project Fase",
+    "planType": "Plan Type",
+    "totalValue": "Aantal",
+    "projectOwners": "Eigenaar"
   }
 }

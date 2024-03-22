@@ -15,13 +15,12 @@ import java.util.List;
 @NoArgsConstructor
 public class ProjectSnapshotModel extends ProjectSnapshotModelSuperclass {
 
-    private LocationModel location;
-    private List<ProjectCustomPropertyModel> customProperties = new ArrayList<>();
+
+    private List<ProjectHouseblockCustomPropertyModel> customProperties = new ArrayList<>();
 
     public ProjectSnapshotModel(ProjectListSqlModel sqlProject) {
         super(sqlProject);
 
-        this.location = new LocationModel(sqlProject.getLatitude(), sqlProject.getLongitude());
     }
 
 }

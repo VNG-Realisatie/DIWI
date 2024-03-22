@@ -12,7 +12,6 @@ import { NoMatch } from "./pages/NoMatch";
 import * as Paths from "./Paths";
 import { ProjectDetail } from "./pages/ProjectDetail";
 import { ProjectProvider } from "./context/ProjectContext";
-import DetailsWithMap from "./components/DetailsWithMap";
 import { PolicyLists } from "./pages/PolicyLists";
 import { DashboardProjects } from "./pages/DashboardProjects";
 import { ExchangeData } from "./pages/ExchangeData";
@@ -29,6 +28,10 @@ import { Settings } from "./components/admin/Settings";
 import { theme } from "./theme";
 import { dateFormats } from "./localization";
 import { ProjectTimeline } from "./components/project/ProjectTimeline";
+import ProjectPlotSelector from "./components/map/ProjectPlotSelector";
+import { ConfigProvider } from "./context/ConfigContext";
+import { ProjectWizardMap } from "./pages/ProjectWizardMap";
+import "dayjs/locale/nl";
 
 function RequiresLogin() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -53,14 +56,16 @@ function RequiresLogin() {
 const Providers = ({ children }: { children: React.ReactNode }) => {
     return (
         <ThemeProvider theme={theme}>
-            <AlertProvider>
-                <AlertPopup />
-                <ScopedCssBaseline>
-                    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="nl" dateFormats={dateFormats}>
-                        {children}
-                    </LocalizationProvider>
-                </ScopedCssBaseline>
-            </AlertProvider>
+            <ConfigProvider>
+                <AlertProvider>
+                    <AlertPopup />
+                    <ScopedCssBaseline>
+                        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="nl" dateFormats={dateFormats}>
+                            {children}
+                        </LocalizationProvider>
+                    </ScopedCssBaseline>
+                </AlertProvider>
+            </ConfigProvider>
         </ThemeProvider>
     );
 };
@@ -73,9 +78,11 @@ function App() {
                         <Route
                             index
                             element={
-                                <ProjectProvider>
-                                    <Projects />
-                                </ProjectProvider>
+                                <>
+                                    <ProjectProvider>
+                                        <Projects />
+                                    </ProjectProvider>
+                                </>
                             }
                         />
                         <Route
@@ -95,7 +102,7 @@ function App() {
                             }
                         />
                         <Route
-                            path={Paths.projectAdd.path}
+                            path={Paths.projectWizard.path}
                             element={
                                 <ProjectProvider>
                                     <CreateProject />
@@ -103,10 +110,18 @@ function App() {
                             }
                         />
                         <Route
-                            path={Paths.projectUpdate.path}
+                            path={Paths.projectWizardWithId.path}
                             element={
                                 <ProjectProvider>
                                     <CreateProject />
+                                </ProjectProvider>
+                            }
+                        />
+                        <Route
+                            path={Paths.projectWizardMap.path}
+                            element={
+                                <ProjectProvider>
+                                    <ProjectWizardMap />
                                 </ProjectProvider>
                             }
                         />
@@ -115,7 +130,7 @@ function App() {
                             element={
                                 <ProjectProvider>
                                     <ProjectDetail>
-                                        <DetailsWithMap />
+                                        <ProjectPlotSelector />
                                     </ProjectDetail>
                                 </ProjectProvider>
                             }

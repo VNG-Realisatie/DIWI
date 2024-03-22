@@ -219,7 +219,7 @@ FROM (
                      aw.id, to_jsonb(array_agg(jsonb_build_object('ownershipId', wewc.id, 'ownershipType', wewc.eigendom_soort, 'ownershipAmount', wewc.amount,
                                     'ownershipValue', wewc.waarde_value, 'ownershipRentalValue', wewc.huurbedrag_value,
                                     'ownershipValueRangeMin', lower(wewc.waarde_value_range), 'ownershipRentalValueRangeMin', lower(huurbedrag_value_range),
-                                    'ownershipValueRangeMax', upper(wewc.waarde_value_range), 'ownershipRentalValueRangeMax', upper(huurbedrag_value_range)))) AS ownershipValue
+                                    'ownershipValueRangeMax', upper(wewc.waarde_value_range) - 1, 'ownershipRentalValueRangeMax', upper(huurbedrag_value_range) - 1))) AS ownershipValue
                  FROM
                      active_woningbloks aw
                          JOIN diwi_testset.woningblok_eigendom_en_waarde_changelog wewc ON aw.id = wewc.woningblok_id AND wewc.change_end_date IS NULL
@@ -356,7 +356,7 @@ FROM (
                      fw.id, to_jsonb(array_agg(jsonb_build_object('ownershipId', wewc.id, 'ownershipType', wewc.eigendom_soort, 'ownershipAmount', wewc.amount,
                                     'ownershipValue', wewc.waarde_value, 'ownershipRentalValue', wewc.huurbedrag_value,
                                     'ownershipValueRangeMin', lower(wewc.waarde_value_range), 'ownershipRentalValueRangeMin', lower(huurbedrag_value_range),
-                                    'ownershipValueRangeMax', upper(wewc.waarde_value_range), 'ownershipRentalValueRangeMax', upper(huurbedrag_value_range)))) AS ownershipValue
+                                    'ownershipValueRangeMax', upper(wewc.waarde_value_range) - 1, 'ownershipRentalValueRangeMax', upper(huurbedrag_value_range) - 1))) AS ownershipValue
                  FROM
                      future_woningbloks fw
                          JOIN diwi_testset.woningblok_eigendom_en_waarde_changelog wewc ON fw.id = wewc.woningblok_id
@@ -491,7 +491,7 @@ FROM (
                      pw.id, to_jsonb(array_agg(jsonb_build_object('ownershipId', wewc.id, 'ownershipType', wewc.eigendom_soort, 'ownershipAmount', wewc.amount,
                                     'ownershipValue', wewc.waarde_value, 'ownershipRentalValue', wewc.huurbedrag_value,
                                     'ownershipValueRangeMin', lower(wewc.waarde_value_range), 'ownershipRentalValueRangeMin', lower(huurbedrag_value_range),
-                                    'ownershipValueRangeMax', upper(wewc.waarde_value_range), 'ownershipRentalValueRangeMax', upper(huurbedrag_value_range)))) AS ownershipValue
+                                    'ownershipValueRangeMax', upper(wewc.waarde_value_range) - 1, 'ownershipRentalValueRangeMax', upper(huurbedrag_value_range) - 1))) AS ownershipValue
                  FROM
                      past_woningbloks pw
                          JOIN diwi_testset.woningblok_eigendom_en_waarde_changelog wewc ON pw.id = wewc.woningblok_id
@@ -634,6 +634,6 @@ FROM (
                  LEFT JOIN past_ownership_value pov ON pov.id = pw.id
      ) AS q
 
-    ORDER BY q.startDate, q.endDate;
+    ORDER BY q.woningblokName, q.startDate, q.endDate;
 
 END;$$

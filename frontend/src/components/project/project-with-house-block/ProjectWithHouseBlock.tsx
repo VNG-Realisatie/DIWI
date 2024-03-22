@@ -17,9 +17,9 @@ import { PhaseEditForm } from "./PhaseEditForm";
 import { MunicipalityRoleEditForm } from "./MunicipalityRoleEditForm";
 import { ConfidentialityLevelEditForm } from "./ConfidentialityLevelEditForm";
 import { PlanStatusEditForm } from "./PlanStatusEditForm";
-import { MunicipalityEditForm } from "./MunicipalityEditForm";
-import { NeighbourhoodEditForm } from "./NeighbourhoodEditForm";
-import { WijkEditForm } from "./WijkEditForm";
+// import { MunicipalityEditForm } from "./MunicipalityEditForm";
+// import { NeighbourhoodEditForm } from "./NeighbourhoodEditForm";
+// import { WijkEditForm } from "./WijkEditForm";
 import { defaultColors } from "../../ColorSelector";
 import { BlockPicker, ColorResult } from "react-color";
 import { CellContainer } from "./CellContainer";
@@ -53,7 +53,7 @@ const DateDisplayEditor = ({ projectEditable, date, onChange }: DateDisplayEdito
     if (!projectEditable) {
         return <CellContainer>{dayjsDate ? convertDayjsToString(dayjsDate) : ""}</CellContainer>;
     } else {
-        return <DatePicker slotProps={{ textField: { size: "small" } }} value={dayjsDate} onChange={onChange} />;
+        return <DatePicker sx={{ width: "100%" }} slotProps={{ textField: { size: "small" } }} value={dayjsDate} onChange={onChange} />;
     }
 };
 
@@ -266,7 +266,7 @@ export const ProjectsWithHouseBlock = () => {
 
     return (
         <Stack my={1} p={1} mb={10}>
-            <Box sx={{ cursor: "pointer" }} position="absolute" right={10} top={55} zIndex={9999}>
+            <Box sx={{ cursor: "pointer" }} position="absolute" right={10} top={55}>
                 <Tooltip placement="top" title={t("projectDetail.colorEdit")}>
                     <FormatColorFillIcon
                         sx={{ mr: 2, color: "#FFFFFF" }}
@@ -295,140 +295,146 @@ export const ProjectsWithHouseBlock = () => {
             <Stack>
                 {/* List project properties */}
                 <Grid container my={2}>
-                    <Grid item xs={6} md={1}>
-                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.projectName")}</Typography>
-                        {!projectEditable ? (
-                            <CellContainer>{name ? name : selectedProject?.projectName}</CellContainer>
-                        ) : (
-                            <ProjectNameEditForm name={name} setName={setName} />
-                        )}
-                    </Grid>
-                    <Grid item xs={6} md={1}>
-                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.totalValue")}</Typography>
-                        {!projectEditable ? (
-                            <CellContainer>{selectedProject?.totalValue ? selectedProject.totalValue : 0}</CellContainer>
-                        ) : (
-                            <TextField size="small" disabled value={selectedProject?.totalValue ? selectedProject.totalValue : 0} />
-                        )}
-                    </Grid>
-                    <Grid item sm={2}>
-                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.organizationName")}</Typography>
-                        <OrganizationSelect projectEditable={projectEditable} owner={owner} setOwner={setOwner} />
-                    </Grid>
-                    <Grid item sm={4}>
-                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.planType")}</Typography>
+                    <Grid container>
+                        <Grid item xs={12} md={1}>
+                            <Typography sx={columnTitleStyle}>{t("projects.tableColumns.projectName")}</Typography>
+                            {!projectEditable ? (
+                                <CellContainer>{name ? name : selectedProject?.projectName}</CellContainer>
+                            ) : (
+                                <ProjectNameEditForm name={name} setName={setName} />
+                            )}
+                        </Grid>
+                        <Grid item xs={12} md={1}>
+                            <Typography sx={columnTitleStyle}>{t("projects.tableColumns.totalValue")}</Typography>
+                            {!projectEditable ? (
+                                <CellContainer>{selectedProject?.totalValue ? selectedProject.totalValue : 0}</CellContainer>
+                            ) : (
+                                <TextField fullWidth size="small" disabled value={selectedProject?.totalValue ? selectedProject.totalValue : 0} />
+                            )}
+                        </Grid>
+                        <Grid item xs={12} md={2}>
+                            <Typography sx={columnTitleStyle}>{t("projects.tableColumns.organizationName")}</Typography>
+                            <OrganizationSelect projectEditable={projectEditable} owner={owner} setOwner={setOwner} />
+                        </Grid>
+                        <Grid item xs={12} md={8}>
+                            <Typography sx={columnTitleStyle}>{t("projects.tableColumns.planType")}</Typography>
 
-                        {!projectEditable ? (
-                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
-                                {planType.length > 0
-                                    ? planType.map((pt: string) => {
-                                          return <span key={pt}>{t(`projectTable.planTypeOptions.${pt}`)},</span>;
-                                      })
-                                    : selectedProject?.planType?.map((pt) => {
-                                          return <span key={pt}>{t(`projectTable.planTypeOptions.${pt}`)},</span>;
-                                      })}
-                            </Typography>
-                        ) : (
-                            <PlanTypeEditForm planType={planType} setPlanType={setPlanType} />
-                        )}
+                            {!projectEditable ? (
+                                <CellContainer>
+                                    {planType.length > 0
+                                        ? planType.map((pt: string) => {
+                                              return <span key={pt}>{t(`projectTable.planTypeOptions.${pt}`)},</span>;
+                                          })
+                                        : selectedProject?.planType?.map((pt) => {
+                                              return <span key={pt}>{t(`projectTable.planTypeOptions.${pt}`)},</span>;
+                                          })}
+                                </CellContainer>
+                            ) : (
+                                <PlanTypeEditForm planType={planType} setPlanType={setPlanType} />
+                            )}
+                        </Grid>
                     </Grid>
-                    <Grid item xs={6} md={1.1}>
-                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.startDate")}</Typography>
-                        <DateDisplayEditor
-                            projectEditable={projectEditable}
-                            date={startDate ? startDate : selectedProject?.startDate}
-                            onChange={handleStartDateChange}
-                        />
-                    </Grid>
-                    <Grid item xs={6} md={1.1}>
-                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.endDate")}</Typography>
-                        <DateDisplayEditor
-                            projectEditable={projectEditable}
-                            date={endDate ? endDate : selectedProject?.endDate}
-                            onChange={handleEndDateChange}
-                        />
-                    </Grid>
-                    <Grid item xs={12} md={2}>
-                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.priority")}</Typography>
-
-                        {!projectEditable ? (
-                            <CellContainer>
-                                <span key={selectedProject?.priority?.value?.id}>
-                                    {selectedProject?.priority?.value?.name ??
-                                        `${selectedProject?.priority?.min?.name}-${selectedProject?.priority?.max?.name}`}
-                                </span>
-                            </CellContainer>
-                        ) : (
-                            // TODO Implement later
-                            <PriorityEditForm projectPriority={projectPriority} setProjectPriority={setProjectPriority} />
-                        )}
-                    </Grid>
-                    <Grid item xs={12} md={2}>
-                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.projectPhase")}</Typography>
-
-                        {!projectEditable ? (
-                            <CellContainer>
-                                {t(`projectTable.projectPhaseOptions.${projectPhase ? projectPhase : selectedProject?.projectPhase}`)}
-                            </CellContainer>
-                        ) : (
-                            <PhaseEditForm projectPhase={projectPhase} setProjectPhase={setProjectPhase} />
-                        )}
-                    </Grid>
-                    <Grid item xs={12} md={2}>
-                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.municipalityRole")}</Typography>
-
-                        {!projectEditable ? (
-                            <CellContainer>
-                                {selectedMunicipalityRole.length > 0
-                                    ? selectedMunicipalityRole.map((mr: SelectModel) => {
-                                          return <span key={mr.id}>{mr.name}</span>;
-                                      })
-                                    : selectedProject?.municipalityRole?.map((mr) => {
-                                          return <span key={mr.id}>{mr.name}</span>;
-                                      })}
-                            </CellContainer>
-                        ) : (
-                            <MunicipalityRoleEditForm
-                                selectedMunicipalityRole={selectedMunicipalityRole}
-                                setSelectedMunicipalityRole={setSelectedMunicipalityRole}
+                    <Grid container>
+                        <Grid item xs={12} md={1.1}>
+                            <Typography sx={columnTitleStyle}>{t("projects.tableColumns.startDate")}</Typography>
+                            <DateDisplayEditor
+                                projectEditable={projectEditable}
+                                date={startDate ? startDate : selectedProject?.startDate}
+                                onChange={handleStartDateChange}
                             />
-                        )}
-                    </Grid>
-                    <Grid item xs={12} md={2}>
-                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.confidentialityLevel")}</Typography>
+                        </Grid>
+                        <Grid item xs={12} md={1.1}>
+                            <Typography sx={columnTitleStyle}>{t("projects.tableColumns.endDate")}</Typography>
+                            <DateDisplayEditor
+                                projectEditable={projectEditable}
+                                date={endDate ? endDate : selectedProject?.endDate}
+                                onChange={handleEndDateChange}
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={1.8}>
+                            <Typography sx={columnTitleStyle}>{t("projects.tableColumns.priority")}</Typography>
 
-                        {!projectEditable ? (
-                            <CellContainer>
-                                {confidentialityLevel
-                                    ? t(`projectTable.confidentialityLevelOptions.${confidentialityLevel}`)
-                                    : t(`projectTable.confidentialityLevelOptions.${selectedProject?.confidentialityLevel}`)}
-                            </CellContainer>
-                        ) : (
-                            <ConfidentialityLevelEditForm confidentialityLevel={confidentialityLevel} setConfidentialityLevel={setConfidentialityLevel} />
-                        )}
-                    </Grid>
-                    <Grid item sm={2}>
-                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.projectLeader")}</Typography>
-                        <OrganizationSelect projectEditable={projectEditable} owner={leader} setOwner={setLeader} isLeader={true} />
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.planningPlanStatus")}</Typography>
+                            {!projectEditable ? (
+                                <CellContainer>
+                                    <span key={selectedProject?.priority?.value?.id}>
+                                        {selectedProject?.priority?.value?.name ??
+                                            `${selectedProject?.priority?.min?.name}-${selectedProject?.priority?.max?.name}`}
+                                    </span>
+                                </CellContainer>
+                            ) : (
+                                // TODO Implement later for ranges
+                                <PriorityEditForm projectPriority={projectPriority} setProjectPriority={setProjectPriority} />
+                            )}
+                        </Grid>
+                        <Grid item xs={12} md={2}>
+                            <Typography sx={columnTitleStyle}>{t("projects.tableColumns.projectPhase")}</Typography>
 
-                        {!projectEditable ? (
-                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
-                                {planStatus.length > 0
-                                    ? planStatus.map((pp: string) => {
-                                          return <span key={pp}>{t(`projectTable.planningPlanStatus.${pp}`)}</span>;
-                                      })
-                                    : selectedProject?.planningPlanStatus?.map((pp) => {
-                                          return <span key={pp}>{t(`projectTable.planningPlanStatus.${pp}`)}</span>;
-                                      })}
-                            </Typography>
-                        ) : (
-                            <PlanStatusEditForm planStatus={planStatus} setPlanStatus={setPlanStatus} />
-                        )}
+                            {!projectEditable ? (
+                                <CellContainer>
+                                    {t(`projectTable.projectPhaseOptions.${projectPhase ? projectPhase : selectedProject?.projectPhase}`)}
+                                </CellContainer>
+                            ) : (
+                                <PhaseEditForm projectPhase={projectPhase} setProjectPhase={setProjectPhase} />
+                            )}
+                        </Grid>
+                        <Grid item xs={12} md={2}>
+                            <Typography sx={columnTitleStyle}>{t("projects.tableColumns.municipalityRole")}</Typography>
+
+                            {!projectEditable ? (
+                                <CellContainer>
+                                    {selectedMunicipalityRole.length > 0
+                                        ? selectedMunicipalityRole.map((mr: SelectModel) => {
+                                              return <span key={mr.id}>{mr.name}</span>;
+                                          })
+                                        : selectedProject?.municipalityRole?.map((mr) => {
+                                              return <span key={mr.id}>{mr.name}</span>;
+                                          })}
+                                </CellContainer>
+                            ) : (
+                                <MunicipalityRoleEditForm
+                                    selectedMunicipalityRole={selectedMunicipalityRole}
+                                    setSelectedMunicipalityRole={setSelectedMunicipalityRole}
+                                />
+                            )}
+                        </Grid>
+                        <Grid item xs={12} md={2}>
+                            <Typography sx={columnTitleStyle}>{t("projects.tableColumns.confidentialityLevel")}</Typography>
+
+                            {!projectEditable ? (
+                                <CellContainer>
+                                    {confidentialityLevel
+                                        ? t(`projectTable.confidentialityLevelOptions.${confidentialityLevel}`)
+                                        : t(`projectTable.confidentialityLevelOptions.${selectedProject?.confidentialityLevel}`)}
+                                </CellContainer>
+                            ) : (
+                                <ConfidentialityLevelEditForm confidentialityLevel={confidentialityLevel} setConfidentialityLevel={setConfidentialityLevel} />
+                            )}
+                        </Grid>
+                        <Grid item xs={12} md={2}>
+                            <Typography sx={columnTitleStyle}>{t("projects.tableColumns.projectLeader")}</Typography>
+                            <OrganizationSelect projectEditable={projectEditable} owner={leader} setOwner={setLeader} isLeader={true} />
+                        </Grid>
                     </Grid>
-                    <Grid item xs={12} md={2}>
+                    <Grid container>
+                        <Grid item xs={12} md={12}>
+                            <Typography sx={columnTitleStyle}>{t("projects.tableColumns.planningPlanStatus")}</Typography>
+
+                            {!projectEditable ? (
+                                <CellContainer>
+                                    {planStatus.length > 0
+                                        ? planStatus.map((pp: string) => {
+                                              return <span key={pp}>{t(`projectTable.planningPlanStatus.${pp}`)},</span>;
+                                          })
+                                        : selectedProject?.planningPlanStatus?.map((pp) => {
+                                              return <span key={pp}>{t(`projectTable.planningPlanStatus.${pp}`)},</span>;
+                                          })}
+                                </CellContainer>
+                            ) : (
+                                <PlanStatusEditForm planStatus={planStatus} setPlanStatus={setPlanStatus} />
+                            )}
+                        </Grid>
+                    </Grid>
+                    {/* <Grid item xs={12} md={2}>
                         <Typography sx={columnTitleStyle}>{t("projects.tableColumns.municipality")}</Typography>
 
                         {!projectEditable ? (
@@ -478,7 +484,7 @@ export const ProjectsWithHouseBlock = () => {
                         ) : (
                             <WijkEditForm selectedWijk={selectedWijk} setSelectedWijk={setSelectedWijk} />
                         )}
-                    </Grid>
+                    </Grid> */}
                 </Grid>
                 {/*List Custom Properties */}
                 <CustomPropertyWidget projectEditable={projectEditable} customValues={customValues} setCustomValues={setCustomValues} />
