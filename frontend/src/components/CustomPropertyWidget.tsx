@@ -1,7 +1,14 @@
 import { Autocomplete, Grid, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { CustomPropertyType, getCustomPropertiesWithQuery } from "../api/adminSettingServices";
-import { columnTitleStyle } from "./project/project-with-house-block/ProjectWithHouseBlock";
+import { CellContainer } from "./project/project-with-house-block/CellContainer";
+
+const columnTitleStyle = {
+    border: "solid 1px #ddd",
+    p: 0.6,
+    color: "#FFFFFF",
+    backgroundColor: "#738092",
+};
 
 const CustomPropertyWidget = ({ projectEditable, customValues, setCustomValues }: any) => {
     const [customProperties, setCustomProperties] = useState<CustomPropertyType[]>([]);
@@ -12,7 +19,7 @@ const CustomPropertyWidget = ({ projectEditable, customValues, setCustomValues }
         });
     }, []);
 
-    const handleValueChange = (customPropertyId: string, newValue: string | number | boolean | [any] | null) => {
+    const handleValueChange = (customPropertyId: string, newValue: any) => {
         const updatedValues = customValues.map((value: any) => {
             if (value.customPropertyId === customPropertyId) {
                 return {
@@ -70,9 +77,9 @@ const CustomPropertyWidget = ({ projectEditable, customValues, setCustomValues }
                             ) : (
                                 <>
                                     <Typography sx={columnTitleStyle}>{property.name}</Typography>
-                                    <Typography sx={columnTitleStyle}>
+                                    <CellContainer>
                                         {customValues.find((value: any) => value.customPropertyId === property.id)?.booleanValue?.toString() || ""}
-                                    </Typography>
+                                    </CellContainer>
                                 </>
                             )}
                         </>
@@ -98,14 +105,14 @@ const CustomPropertyWidget = ({ projectEditable, customValues, setCustomValues }
                             ) : (
                                 <>
                                     <Typography sx={columnTitleStyle}>{property.name}</Typography>
-                                    <Typography sx={columnTitleStyle}>
+                                    <CellContainer>
                                         {(() => {
                                             const categoryId = customValues.find((value: any) => value.customPropertyId === property.id)?.categories?.[0];
                                             if (!categoryId) return null;
                                             const category = property.categories.find((cat: any) => cat.id === categoryId);
                                             return category ? category.name : null;
                                         })()}
-                                    </Typography>
+                                    </CellContainer>
                                 </>
                             )}
                         </>
@@ -128,9 +135,9 @@ const CustomPropertyWidget = ({ projectEditable, customValues, setCustomValues }
                             ) : (
                                 <>
                                     <Typography sx={columnTitleStyle}>{property.name}</Typography>
-                                    <Typography sx={columnTitleStyle}>
+                                    <CellContainer>
                                         {customValues.find((value: any) => value.customPropertyId === property.id)?.numericValue?.value || 0}
-                                    </Typography>
+                                    </CellContainer>
                                 </>
                             )}
                         </>
@@ -150,9 +157,7 @@ const CustomPropertyWidget = ({ projectEditable, customValues, setCustomValues }
                             ) : (
                                 <>
                                     <Typography sx={columnTitleStyle}>{property.name}</Typography>
-                                    <Typography sx={columnTitleStyle}>
-                                        {customValues.find((value: any) => value.customPropertyId === property.id)?.textValue || ""}
-                                    </Typography>
+                                    <CellContainer>{customValues.find((value: any) => value.customPropertyId === property.id)?.textValue || ""}</CellContainer>
                                 </>
                             )}
                         </>
