@@ -99,7 +99,8 @@ export const ProjectsWithHouseBlock = () => {
         };
 
         fetchCustomPropertyValues();
-    }, []);
+    }, [selectedProject?.projectId]);
+
     const handleStartDateChange = (newValue: Dayjs | null) => {
         if (newValue) {
             const startDate = newValue.endOf("day");
@@ -262,8 +263,6 @@ export const ProjectsWithHouseBlock = () => {
     useEffect(() => {
         id && getProjectHouseBlocks(id).then((res) => setHouseBlocks(res));
     }, [id]);
-
-    console.log(customValues);
 
     return (
         <Stack my={1} p={1} mb={10}>

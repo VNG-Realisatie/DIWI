@@ -12,14 +12,15 @@ const CustomPropertyWidget = ({ projectEditable, customValues, setCustomValues }
         });
     }, []);
 
-    const handleValueChange = (customPropertyId: string, newValue: string | number | boolean) => {
+    const handleValueChange = (customPropertyId: string, newValue: string | number | boolean | [any] | null) => {
         const updatedValues = customValues.map((value: any) => {
             if (value.customPropertyId === customPropertyId) {
                 return {
                     ...value,
                     textValue: typeof newValue === "string" ? newValue : null,
                     numericValue: typeof newValue === "number" ? { value: newValue } : null,
-                    booleanValue: typeof newValue === "boolean" ? newValue : null,
+                    booleanValue: typeof newValue === "string" && (newValue === "true" || newValue === "false") ? Boolean(newValue) : null,
+                    categories: Array.isArray(newValue) && newValue.length === 1 ? newValue : [],
                 };
             }
             return value;
@@ -33,10 +34,18 @@ const CustomPropertyWidget = ({ projectEditable, customValues, setCustomValues }
                 ...updatedValues,
                 {
                     customPropertyId,
-                    propertyType: typeof newValue === "string" ? "TEXT" : typeof newValue === "number" ? "NUMERIC" : "BOOLEAN",
+                    propertyType:
+                        typeof newValue === "string"
+                            ? "TEXT"
+                            : typeof newValue === "number"
+                              ? "NUMERIC"
+                              : typeof newValue === "boolean"
+                                ? "BOOLEAN"
+                                : "CATEGORY",
                     textValue: typeof newValue === "string" ? newValue : null,
                     numericValue: typeof newValue === "number" ? { value: newValue } : null,
-                    booleanValue: typeof newValue === "boolean" ? newValue : null,
+                    booleanValue: typeof newValue === "string" && (newValue === "true" || newValue === "false") ? Boolean(newValue) : null,
+                    categories: Array.isArray(newValue) && newValue.length === 1 ? newValue : [],
                 },
             ]);
         }
@@ -48,6 +57,61 @@ const CustomPropertyWidget = ({ projectEditable, customValues, setCustomValues }
         <Grid container my={2}>
             {customProperties.map((property: any) => (
                 <Grid item xs={6} md={1} key={property.id}>
+                    {/* {property.propertyType === "BOOLEAN" && (
+                        <>
+                            {projectEditable ? (
+                                <>
+                                    <Typography sx={columnTitleStyle}>{property.name}</Typography>
+                                    <Autocomplete
+                                        options={["true", "false"]}
+                                        value={customValues.find((value: any) => value.customPropertyId === property.id)?.booleanValue?.toString() || ""}
+                                        onChange={(_, newValue) => handleValueChange(property.id, newValue)}
+                                        renderInput={(params) => <TextField {...params} size="small" />}
+                                    />
+                                </>
+                            ) : (
+                                <>
+                                    <Typography sx={columnTitleStyle}>{property.name}</Typography>
+                                    <Typography sx={columnTitleStyle}>
+                                        {customValues.find((value: any) => value.customPropertyId === property.id)?.booleanValue?.toString() || ""}
+                                    </Typography>
+                                </>
+                            )}
+                        </>
+                    )} */}
+                    {property.propertyType === "CATEGORY" && (
+                        <>
+                            {projectEditable ? (
+                                <>
+                                    <Typography sx={columnTitleStyle}>{property.name}</Typography>
+                                    <Autocomplete
+                                        options={property.categories || []}
+                                        getOptionLabel={(option: any) => option.name}
+                                        value={(() => {
+                                            const categoryId = customValues.find((value: any) => value.customPropertyId === property.id)?.categories?.[0];
+                                            if (!categoryId) return null;
+                                            const category = property.categories.find((cat: any) => cat.id === categoryId);
+                                            return category ? category : null;
+                                        })()}
+                                        onChange={(_, newValue) => handleValueChange(property.id, newValue ? [newValue.id] : null)}
+                                        renderInput={(params) => <TextField {...params} size="small" />}
+                                    />
+                                </>
+                            ) : (
+                                <>
+                                    <Typography sx={columnTitleStyle}>{property.name}</Typography>
+                                    <Typography sx={columnTitleStyle}>
+                                        {(() => {
+                                            const categoryId = customValues.find((value: any) => value.customPropertyId === property.id)?.categories?.[0];
+                                            if (!categoryId) return null;
+                                            const category = property.categories.find((cat: any) => cat.id === categoryId);
+                                            return category ? category.name : null;
+                                        })()}
+                                    </Typography>
+                                </>
+                            )}
+                        </>
+                    )}
                     {property.propertyType === "NUMERIC" && (
                         <>
                             {projectEditable ? (
