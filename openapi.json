@@ -111,6 +111,33 @@
         }
       }
     },
+    "/rest/houseblock/{id}/customproperties": {
+      "get": {
+        "operationId": "getProjectCustomProperties",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ProjectHouseblockCustomPropertyModel" } } }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "updateProjectCustomProperty",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ProjectHouseblockCustomPropertyModel" } } } },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ProjectHouseblockCustomPropertyModel" } } }
+            }
+          }
+        }
+      }
+    },
     "/rest/houseblock/update": {
       "put": {
         "operationId": "updateHouseblock",
@@ -259,23 +286,27 @@
     },
     "/rest/projects/{id}/customproperties": {
       "get": {
-        "operationId": "getProjectCustomProperties",
+        "operationId": "getProjectCustomProperties_1",
         "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
         "responses": {
           "default": {
             "description": "default response",
-            "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ProjectCustomPropertyModel" } } } }
+            "content": {
+              "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ProjectHouseblockCustomPropertyModel" } } }
+            }
           }
         }
       },
       "put": {
-        "operationId": "updateProjectCustomProperty",
+        "operationId": "updateProjectCustomProperty_1",
         "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
-        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ProjectCustomPropertyModel" } } } },
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ProjectHouseblockCustomPropertyModel" } } } },
         "responses": {
           "default": {
             "description": "default response",
-            "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ProjectCustomPropertyModel" } } } }
+            "content": {
+              "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ProjectHouseblockCustomPropertyModel" } } }
+            }
           }
         }
       }
@@ -335,6 +366,14 @@
         }
       }
     },
+    "/rest/users/userinfo": {
+      "get": {
+        "operationId": "login_1",
+        "responses": {
+          "default": { "description": "default response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UserModel" } } } }
+        }
+      }
+    },
     "/rest/wijk/list": {
       "get": {
         "operationId": "getAllWijks",
@@ -355,7 +394,10 @@
         "type": "object",
         "properties": { "id": { "type": "string", "format": "uuid" }, "name": { "type": "string" } }
       },
-      "ConfigModel": { "type": "object", "properties": { "defaultMapBounds": { "$ref": "#/components/schemas/MapBounds" } } },
+      "ConfigModel": {
+        "type": "object",
+        "properties": { "defaultMapBounds": { "$ref": "#/components/schemas/MapBounds" }, "municipalityName": { "type": "string" } }
+      },
       "LocationModel": {
         "required": ["lat", "lng"],
         "type": "object",
@@ -420,7 +462,8 @@
           "groundPosition": { "$ref": "#/components/schemas/GroundPosition" },
           "physicalAppearance": { "$ref": "#/components/schemas/PhysicalAppearance" },
           "houseType": { "$ref": "#/components/schemas/HouseType" },
-          "purpose": { "$ref": "#/components/schemas/Purpose" }
+          "purpose": { "$ref": "#/components/schemas/Purpose" },
+          "customProperties": { "type": "array", "items": { "$ref": "#/components/schemas/ProjectHouseblockCustomPropertyModel" } }
         }
       },
       "Mutation": {
@@ -453,6 +496,18 @@
           "gallerijflat": { "type": "integer", "format": "int32" }
         }
       },
+      "ProjectHouseblockCustomPropertyModel": {
+        "type": "object",
+        "properties": {
+          "customPropertyId": { "type": "string", "format": "uuid" },
+          "propertyType": { "type": "string", "enum": ["BOOLEAN", "CATEGORY", "ORDINAL", "NUMERIC", "TEXT"] },
+          "textValue": { "type": "string" },
+          "booleanValue": { "type": "boolean" },
+          "numericValue": { "$ref": "#/components/schemas/SingleValueOrRangeModelBigDecimal" },
+          "categories": { "type": "array", "items": { "type": "string", "format": "uuid" } },
+          "ordinals": { "$ref": "#/components/schemas/SingleValueOrRangeModelUUID" }
+        }
+      },
       "Purpose": {
         "type": "object",
         "properties": {
@@ -474,6 +529,14 @@
           "value": { "type": "integer", "format": "int32" },
           "min": { "type": "integer", "format": "int32" },
           "max": { "type": "integer", "format": "int32" }
+        }
+      },
+      "SingleValueOrRangeModelUUID": {
+        "type": "object",
+        "properties": {
+          "value": { "type": "string", "format": "uuid" },
+          "min": { "type": "string", "format": "uuid" },
+          "max": { "type": "string", "format": "uuid" }
         }
       },
       "MilestoneModel": {
@@ -587,19 +650,8 @@
           "totalValue": { "type": "integer", "format": "int64" },
           "municipality": { "type": "array", "items": { "$ref": "#/components/schemas/SelectModel" } },
           "wijk": { "type": "array", "items": { "$ref": "#/components/schemas/SelectModel" } },
-          "buurt": { "type": "array", "items": { "$ref": "#/components/schemas/SelectModel" } }
-        }
-      },
-      "ProjectCustomPropertyModel": {
-        "type": "object",
-        "properties": {
-          "customPropertyId": { "type": "string", "format": "uuid" },
-          "propertyType": { "type": "string", "enum": ["BOOLEAN", "CATEGORY", "ORDINAL", "NUMERIC", "TEXT"] },
-          "textValue": { "type": "string" },
-          "booleanValue": { "type": "boolean" },
-          "numericValue": { "$ref": "#/components/schemas/SingleValueOrRangeModelBigDecimal" },
-          "categories": { "type": "array", "items": { "type": "string", "format": "uuid" } },
-          "ordinals": { "$ref": "#/components/schemas/SingleValueOrRangeModelUUID" }
+          "buurt": { "type": "array", "items": { "$ref": "#/components/schemas/SelectModel" } },
+          "location": { "$ref": "#/components/schemas/LocationModel" }
         }
       },
       "ProjectSnapshotModel": {
@@ -650,15 +702,7 @@
           "wijk": { "type": "array", "items": { "$ref": "#/components/schemas/SelectModel" } },
           "buurt": { "type": "array", "items": { "$ref": "#/components/schemas/SelectModel" } },
           "location": { "$ref": "#/components/schemas/LocationModel" },
-          "customProperties": { "type": "array", "items": { "$ref": "#/components/schemas/ProjectCustomPropertyModel" } }
-        }
-      },
-      "SingleValueOrRangeModelUUID": {
-        "type": "object",
-        "properties": {
-          "value": { "type": "string", "format": "uuid" },
-          "min": { "type": "string", "format": "uuid" },
-          "max": { "type": "string", "format": "uuid" }
+          "customProperties": { "type": "array", "items": { "$ref": "#/components/schemas/ProjectHouseblockCustomPropertyModel" } }
         }
       },
       "DatedDataModelListPlanStatus": {
@@ -788,6 +832,16 @@
           "remove": { "type": "string", "format": "uuid" },
           "min": { "type": "string", "format": "uuid" },
           "max": { "type": "string", "format": "uuid" }
+        }
+      },
+      "UserModel": {
+        "required": ["firstName", "initials", "lastName", "uuid"],
+        "type": "object",
+        "properties": {
+          "uuid": { "type": "string", "format": "uuid" },
+          "firstName": { "type": "string" },
+          "lastName": { "type": "string" },
+          "initials": { "type": "string" }
         }
       }
     }

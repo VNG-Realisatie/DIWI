@@ -1,13 +1,14 @@
-import { Avatar, IconButton, Menu, MenuItem, Stack, Toolbar } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { styled } from "@mui/material/styles";
+import { Avatar, IconButton, Menu, MenuItem, Stack, Toolbar } from "@mui/material";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
+import { styled } from "@mui/material/styles";
 
+import { useEffect, useState } from "react";
 import { drawerWidth } from "../theme";
-import { useState } from "react";
 
-import { diwiFetch } from "../utils/requests";
 import * as Paths from "../Paths";
+import { User, getCurrentUser } from "../api/userSerivces";
+import { diwiFetch } from "../utils/requests";
 import { useNavigate } from "react-router-dom";
 
 type Props = {
@@ -36,6 +37,11 @@ const AppBar = styled(MuiAppBar, {
 }));
 export const Header = ({ open, handleDrawerOpen }: Props) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [user, setUser] = useState<User | null>(null);
+
+    useEffect(() => {
+        getCurrentUser().then(setUser);
+    }, []);
 
     const navigate = useNavigate();
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -67,7 +73,7 @@ export const Header = ({ open, handleDrawerOpen }: Props) => {
                         aria-haspopup="true"
                         aria-expanded={openProfile ? "true" : undefined}
                     >
-                        <Avatar sx={{ width: 35, height: 35, cursor: "pointer" }}>AD</Avatar>
+                        <Avatar sx={{ width: 35, height: 35, cursor: "pointer" }}>{user?.initials}</Avatar>
                     </IconButton>
                     <Menu
                         id="profile-menu"

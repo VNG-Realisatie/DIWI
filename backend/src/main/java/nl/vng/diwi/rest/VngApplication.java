@@ -31,6 +31,7 @@ import nl.vng.diwi.resources.MunicipalityResource;
 import nl.vng.diwi.resources.MunicipalityRoleResource;
 import nl.vng.diwi.resources.PriorityResource;
 import nl.vng.diwi.resources.ProjectsResource;
+import nl.vng.diwi.resources.UserResource;
 import nl.vng.diwi.resources.VngOpenApiResource;
 import nl.vng.diwi.resources.OrganizationResource;
 import nl.vng.diwi.resources.WijkResource;
@@ -104,6 +105,7 @@ public class VngApplication extends ResourceConfig {
         register(HouseblockResource.class);
         register(CustomPropertiesResource.class);
         register(ConfigResource.class);
+        register(UserResource.class);
 
         // Flyway migrations
         Database.upgrade(projectConfig.getDbUrl(), projectConfig.getDbUser(), projectConfig.getDbPass());
