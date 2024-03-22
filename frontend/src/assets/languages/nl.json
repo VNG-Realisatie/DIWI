@@ -194,7 +194,7 @@
       "characteristics": "Eigenschappen",
       "timeline": "Tijdlijn",
       "colorEdit": "Kleur bewerken",
-      "createNewHouseBlock": "Nieuw Woningblok toevoegen"
+      "createNewHouseBlock": "Nieuw woningblok toevoegen"
     },
     "exchangeData": {
       "title": "Data uitwisselen",
@@ -263,7 +263,7 @@
         "title": "Lijst met optionele velden",
         "tableHeader": {
           "name": "Naam",
-          "objectType": "Project of Woningblok",
+          "objectType": "Project of woningblok",
           "propertyType": "Type",
           "categories": "Opties",
           "status": "Aan/ Uit",
