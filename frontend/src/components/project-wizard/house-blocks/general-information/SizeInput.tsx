@@ -1,7 +1,8 @@
-import { Stack, TextField, Typography } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import { t } from "i18next";
 import { InputContainer } from "../InputContainer";
 import { LabelComponent } from "../../../project/LabelComponent";
+import { NumericRangeInput } from "../NumericRangeInput";
 export type HouseBlockSize = {
     value: number | null;
     min: number | null;
@@ -13,47 +14,18 @@ type Props = {
     edit: boolean;
     editForm: boolean;
 };
-type HouseBlockSizeProps = {
-    houseBlockSize: HouseBlockSize;
-    updateHouseBlockSize: (houseBlockSize: HouseBlockSize) => void;
-};
-const HouseBlockSizeEditInput = ({ houseBlockSize, updateHouseBlockSize }: HouseBlockSizeProps) => {
-    const handleSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newSize = {
-            value: +e.target.value,
-            min: null,
-            max: null,
-        };
 
-        updateHouseBlockSize(newSize);
-    };
-    return (
-        <TextField
-            InputProps={{
-                inputProps: {
-                    min: 0,
-                },
-            }}
-            type="number"
-            id="size"
-            size="small"
-            variant="outlined"
-            value={houseBlockSize?.value !== null ? houseBlockSize?.value : ""}
-            onChange={handleSizeChange}
-        />
-    );
-};
 export const SizeInput = ({ houseBlockSize, updateHouseBlockSize, edit, editForm }: Props) => {
     return (
         <Stack width="100%">
             <LabelComponent required={false} text={t("createProject.houseBlocksForm.size")} />
-            {edit && editForm && <HouseBlockSizeEditInput houseBlockSize={houseBlockSize} updateHouseBlockSize={updateHouseBlockSize} />}
+            {edit && editForm && <NumericRangeInput value={houseBlockSize} updateCallBack={updateHouseBlockSize} />}
             {!edit && editForm && (
                 <InputContainer>
                     <Typography minHeight="20px">{houseBlockSize?.value}</Typography>
                 </InputContainer>
             )}
-            {!edit && !editForm && <HouseBlockSizeEditInput houseBlockSize={houseBlockSize} updateHouseBlockSize={updateHouseBlockSize} />}
+            {!edit && !editForm && <NumericRangeInput value={houseBlockSize} updateCallBack={updateHouseBlockSize} />}
         </Stack>
     );
 };

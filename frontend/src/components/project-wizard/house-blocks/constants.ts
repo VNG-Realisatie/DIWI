@@ -9,7 +9,7 @@ export const emptyHouseBlockForm: HouseBlock = {
     endDate: null,
     houseblockName: "",
     size: {
-        value: null,
+        value: 0,
         min: null,
         max: null,
     },
@@ -24,20 +24,20 @@ export const emptyHouseBlockForm: HouseBlock = {
         {
             type: "KOOPWONING",
             amount: null,
-            value: { value: null, min: null, max: null },
-            rentalValue: { value: null, min: null, max: null },
+            value: { value: 0, min: null, max: null },
+            rentalValue: { value: 0, min: null, max: null },
         },
         {
             type: "HUURWONING_PARTICULIERE_VERHUURDER",
             amount: null,
-            value: { value: null, min: null, max: null },
-            rentalValue: { value: null, min: null, max: null },
+            value: { value: 0, min: null, max: null },
+            rentalValue: { value: 0, min: null, max: null },
         },
         {
             type: "HUURWONING_WONINGCORPORATIE",
             amount: null,
-            value: { value: null, min: null, max: null },
-            rentalValue: { value: null, min: null, max: null },
+            value: { value: 0, min: null, max: null },
+            rentalValue: { value: 0, min: null, max: null },
         },
     ],
     groundPosition: {
