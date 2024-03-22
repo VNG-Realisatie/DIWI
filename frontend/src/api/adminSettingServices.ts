@@ -29,3 +29,11 @@ export async function updateCustomProperty(id: string, newData: CustomPropertyTy
 export async function deleteCustomProperty(id: string): Promise<CustomPropertyType> {
     return deleteJson(`${API_URI}/customproperties/${id}`);
 }
+
+export async function getCustomPropertyValues(id: string): Promise<any> {
+    return getJson(`${API_URI}/projects/${id}/customproperties`);
+}
+
+export async function putCustomPropertyValues(id: string, newData: any): Promise<any> {
+    return putJson(`${API_URI}/projects/${id}/customproperties`, newData);
+}
