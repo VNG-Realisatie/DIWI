@@ -1,4 +1,4 @@
-import { Map, View } from "ol";
+import { Feature, Map, View } from "ol";
 
 import GeoJSON from "ol/format/GeoJSON.js";
 import TileLayer from "ol/layer/Tile";
@@ -12,6 +12,8 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { Plot, PlotGeoJSON, getProjectPlots, updateProjectPlots, updateProjects } from "../api/projectsServices";
 import ProjectContext from "../context/ProjectContext";
 import _ from "lodash";
+import { Style, Fill, Stroke } from "ol/style";
+import { StyleFunction } from "ol/style/Style";
 
 const baseUrlKadasterWms = "https://service.pdok.nl/kadaster/kadastralekaart/wms/v5_0";
 
@@ -26,6 +28,20 @@ const usePlotSelector = (id: string) => {
 
     const [plotsChanged, setPlotsChanged] = useState(false);
     const [extent, setExtent] = useState<Extent | null>(null);
+
+    const selectedFeatureStyle = (f: Feature): Style => {
+        const fillOpacityHex = "99";
+        const borderOpacityHex = "DD";
+        const red = "#ff4122";
+        return new Style({
+            fill: new Fill({ color: (selectedProject?.projectColor ? selectedProject.projectColor : red) + fillOpacityHex }),
+            stroke: new Stroke({
+                color: (selectedProject?.projectColor ?? red) + borderOpacityHex,
+                width: 5,
+            }),
+        });
+    };
+
     useEffect(
         function fetchPlots() {
             if (!selectedProject) return;
@@ -160,7 +176,7 @@ const usePlotSelector = (id: string) => {
             });
 
             const source = new VectorSource();
-            const selectedPlotLayer = new VectorLayer({ source });
+            const selectedPlotLayer = new VectorLayer({ source, style: selectedFeatureStyle as StyleFunction });
 
             setSelectedPlotLayerSource(source);
 
