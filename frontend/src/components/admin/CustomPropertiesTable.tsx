@@ -98,6 +98,7 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
                                     <Stack direction="row" spacing={1} justifyContent="flex-end">
                                         <Tooltip title={t("admin.settings.tableHeader.delete")}>
                                             <IconButton
+                                                disabled={row.disabled}
                                                 sx={{
                                                     bgcolor: "tomato",
                                                     color: "white",
@@ -112,6 +113,7 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
                                         </Tooltip>
                                         <Tooltip title={t("admin.settings.tableHeader.edit")}>
                                             <IconButton
+                                                disabled={row.disabled}
                                                 sx={{
                                                     bgcolor: "#31456F",
                                                     color: "white",

@@ -11,6 +11,7 @@ type Props = {
 export const CategoryCreateOption: React.FC<Props> = ({ categoryValue, setCategoryValue }) => {
     return (
         <Autocomplete
+            size="small"
             multiple
             id="tags-filled"
             options={categoryValue}

@@ -12,6 +12,7 @@ import {
     Checkbox,
     DialogActions,
     Button,
+    Tooltip,
 } from "@mui/material";
 import { t } from "i18next";
 import { ChangeEvent } from "react";
@@ -19,6 +20,7 @@ import { ObjectType, PropertyType } from "../../types/enums";
 import { CategoryCreateOption } from "./CategoryCreateOption";
 import { objectType, propertyType } from "./constants";
 import { components } from "../../types/schema";
+import InfoIcon from "@mui/icons-material/Info";
 
 type Props = {
     openDialog: boolean;
@@ -54,8 +56,9 @@ export const CreatePropertyDialog = ({
         <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth>
             <DialogTitle id="alert-dialog-title"> {t("admin.settings.add")}</DialogTitle>
             <DialogContent>
-                <Stack spacing={2}>
+                <Stack spacing={1.5} pt={1}>
                     <TextField
+                        size="small"
                         label={t("admin.settings.tableHeader.name")}
                         value={name}
                         onChange={(e: ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
@@ -64,6 +67,7 @@ export const CreatePropertyDialog = ({
                         {t("admin.settings.tableHeader.objectType")}
                     </InputLabel>
                     <Select
+                        size="small"
                         value={selectedObjectType}
                         labelId="objectType"
                         onChange={(e: SelectChangeEvent<typeof selectedObjectType>) => setSelectedObjectType(e.target.value as ObjectType)}
@@ -76,10 +80,16 @@ export const CreatePropertyDialog = ({
                             );
                         })}
                     </Select>
-                    <InputLabel variant="standard" id="propertyType">
-                        {t("admin.settings.tableHeader.propertyType")}
-                    </InputLabel>
+                    <Stack direction="row" alignItems="center">
+                        <InputLabel variant="standard" id="propertyType">
+                            {t("admin.settings.tableHeader.propertyType")}
+                        </InputLabel>
+                        <Tooltip title={t("admin.settings.propertyTypeInfo")}>
+                            <InfoIcon sx={{ fontSize: "20px", color: "#394048" }} />
+                        </Tooltip>
+                    </Stack>
                     <Select
+                        size="small"
                         value={selectedPropertyType}
                         labelId="propertyType"
                         onChange={(e: SelectChangeEvent<typeof selectedPropertyType>) => setSelectedPropertyType(e.target.value as PropertyType)}
