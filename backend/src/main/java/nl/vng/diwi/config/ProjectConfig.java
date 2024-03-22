@@ -101,6 +101,7 @@ public class ProjectConfig {
         }
 
         getDefaultMapBounds(env.getOrDefault("DEFAULT_MAP_BOUNDS", ""));
+        this.configModel.setMunicipalityName(env.getOrDefault("MUNICIPALITY_NAME", ""));
     }
 
     private void getDefaultMapBounds(String defaultMapBoundsStr) {

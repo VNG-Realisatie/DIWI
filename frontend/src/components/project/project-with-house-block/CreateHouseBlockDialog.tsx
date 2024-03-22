@@ -26,6 +26,34 @@ export const CreateHouseBlockDialog = ({
     const { id } = useParams();
     const { setAlert } = useAlert();
     const { updateProject } = useContext(ProjectContext);
+    const handleSave = async () => {
+        if (
+            !createFormHouseBlock.houseblockName ||
+            !createFormHouseBlock.startDate ||
+            !createFormHouseBlock.endDate ||
+            createFormHouseBlock.ownershipValue.some((owner) => owner.amount === null || isNaN(owner.amount))
+        ) {
+            setAlert(t("createProject.hasMissingRequiredAreas.hasmissingProperty"), "warning");
+            return;
+        }
+        try {
+            const addedHouseBlock = await addHouseBlock({ ...createFormHouseBlock, projectId: id });
+            if (addedHouseBlock) {
+                setAlert(t("createProject.houseBlocksForm.notifications.successfullySaved"), "success");
+                setOpenHouseBlockDialog(false);
+                setCreateFormHouseBlock(emptyHouseBlockForm);
+                if (id) {
+                    const hb = await getProjectHouseBlocks(id);
+                    setHouseBlocks(hb);
+                    updateProject();
+                }
+            } else {
+                setAlert(t("createProject.houseBlocksForm.notifications.error"), "error");
+            }
+        } catch (error: any) {
+            setAlert(error.message, "error");
+        }
+    };
     return (
         <Dialog open={openHouseBlockDialog} onClose={() => setOpenHouseBlockDialog(false)} maxWidth="xl">
             <DialogContent>
@@ -35,30 +63,7 @@ export const CreateHouseBlockDialog = ({
                 <Button variant="contained" color="error" onClick={() => setOpenHouseBlockDialog(false)}>
                     {t("generic.cancel")}
                 </Button>
-                <Button
-                    variant="contained"
-                    color="success"
-                    onClick={async () => {
-                        try {
-                            const addedHouseBlock = await addHouseBlock({ ...createFormHouseBlock, projectId: id });
-                            if (addedHouseBlock) {
-                                setAlert(t("createProject.houseBlocksForm.notifications.successfullySaved"), "success");
-                                setOpenHouseBlockDialog(false);
-                                setCreateFormHouseBlock(emptyHouseBlockForm);
-                                if (id) {
-                                    const hb = await getProjectHouseBlocks(id);
-                                    setHouseBlocks(hb);
-                                    updateProject();
-                                }
-                            } else {
-                                setAlert(t("createProject.houseBlocksForm.notifications.error"), "error");
-                            }
-                        } catch (error: any) {
-                            setAlert(error.message, "error");
-                        }
-                    }}
-                    autoFocus
-                >
+                <Button variant="contained" color="success" onClick={handleSave} autoFocus>
                     {t("generic.save")}
                 </Button>
             </DialogActions>

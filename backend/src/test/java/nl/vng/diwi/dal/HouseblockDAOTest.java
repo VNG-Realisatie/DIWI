@@ -104,9 +104,9 @@ public class HouseblockDAOTest {
         assertThat(huur).isNotNull();
         assertThat(huur.getOwnershipAmount()).isEqualTo(5);
         assertThat(huur.getOwnershipValueRangeMin()).isEqualTo(10);
-        assertThat(huur.getOwnershipValueRangeMax()).isEqualTo(13);
+        assertThat(huur.getOwnershipValueRangeMax()).isEqualTo(12);
         assertThat(huur.getOwnershipRentalValueRangeMin()).isEqualTo(8);
-        assertThat(huur.getOwnershipRentalValueRangeMax()).isEqualTo(10);
+        assertThat(huur.getOwnershipRentalValueRangeMax()).isEqualTo(9);
 
         assertThat(hb.getNoPermissionOwner()).isEqualTo(30);
         assertThat(hb.getIntentionPermissionOwner()).isEqualTo(20);

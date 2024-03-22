@@ -40,7 +40,7 @@ public class SingleValueOrRangeModel<T extends Comparable<? super T>> {
         } else if (value != null) {
             return min == null && max == null;
         } else {
-            return min != null && max != null;
+            return min != null && max != null && min.compareTo(max) < 0;
         }
     }
 }

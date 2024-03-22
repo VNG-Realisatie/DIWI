@@ -1,8 +1,9 @@
-import { Stack, InputLabel, Select, MenuItem, SelectChangeEvent, OutlinedInput, Typography } from "@mui/material";
+import { Stack, Select, MenuItem, SelectChangeEvent, OutlinedInput, Typography } from "@mui/material";
 import { t } from "i18next";
 import { mutationSelectOptions } from "../constants";
 import { MutationSelectOptions } from "../../../../types/enums";
 import { InputContainer } from "../InputContainer";
+import { LabelComponent } from "../../../project/LabelComponent";
 
 type Props = {
     houseBlockMutationKind: MutationSelectOptions[] | null;
@@ -41,7 +42,8 @@ const MutationKindEditOption = ({ houseBlockMutationKind, updateHouseBlockMutati
 export const MutationKindSelect = ({ houseBlockMutationKind, updateHouseBlockMutationKind, edit, editForm }: Props) => {
     return (
         <Stack>
-            <InputLabel id="mutationtype"> {t("createProject.houseBlocksForm.mutationType")}</InputLabel>
+            <LabelComponent required={false} text={t("createProject.houseBlocksForm.mutationType")} />
+
             {edit && editForm && (
                 <MutationKindEditOption houseBlockMutationKind={houseBlockMutationKind} updateHouseBlockMutationKind={updateHouseBlockMutationKind} />
             )}

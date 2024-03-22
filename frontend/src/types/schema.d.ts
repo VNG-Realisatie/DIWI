@@ -19,6 +19,9 @@ export interface paths {
     "/rest/buurt/list": {
         get: operations["getAllBuurts"];
     };
+    "/rest/config": {
+        get: operations["getConfig"];
+    };
     "/rest/customproperties": {
         get: operations["getAllCustomProperties"];
         post: operations["createCustomProperty"];
@@ -33,6 +36,9 @@ export interface paths {
     };
     "/rest/houseblock/{uuid}": {
         get: operations["getCurrentHouseblockSnapshot"];
+    };
+    "/rest/houseblock/update": {
+        put: operations["updateHouseblock"];
     };
     "/rest/milestone/{id}": {
         get: operations["getMilestone"];
@@ -65,8 +71,16 @@ export interface paths {
     "/rest/projects/{id}/timeline": {
         get: operations["getCurrentProjectTimeline"];
     };
+    "/rest/projects/{id}/customproperties": {
+        get: operations["getProjectCustomProperties"];
+        put: operations["updateProjectCustomProperty"];
+    };
     "/rest/projects/{id}/houseblocks": {
         get: operations["getProjectHouseblocks"];
+    };
+    "/rest/projects/{id}/plots": {
+        get: operations["getProjectPlots"];
+        post: operations["setProjectPlots"];
     };
     "/rest/projects/update": {
         post: operations["updateProject"];
@@ -76,27 +90,6 @@ export interface paths {
     };
     "/rest/wijk/list": {
         get: operations["getAllWijks"];
-    };
-    "/rest/users/add": {
-        post: operations["createUser"];
-    };
-    "/rest/users/{userId}/delete": {
-        delete: operations["deleteUser"];
-    };
-    "/rest/users/all": {
-        get: operations["getAllUsers"];
-    };
-    "/rest/users/userinfo": {
-        get: operations["getUserInfo"];
-    };
-    "/rest/users/{userId}/userinfo": {
-        get: operations["getUserInfoByUserId"];
-    };
-    "/rest/users/{userId}/sendWelcomeMail": {
-        post: operations["sendWelcomeMail"];
-    };
-    "/rest/users/{userId}/update": {
-        put: operations["updateUser"];
     };
 }
 
@@ -108,6 +101,19 @@ export interface components {
             /** Format: uuid */
             id: string;
             name: string;
+        };
+        ConfigModel: {
+            defaultMapBounds?: components["schemas"]["MapBounds"];
+        };
+        LocationModel: {
+            /** Format: double */
+            lat: number;
+            /** Format: double */
+            lng: number;
+        };
+        MapBounds: {
+            corner1?: components["schemas"]["LocationModel"];
+            corner2?: components["schemas"]["LocationModel"];
         };
         CustomPropertyModel: {
             /** Format: uuid */
@@ -319,6 +325,18 @@ export interface components {
             municipality?: components["schemas"]["SelectModel"][];
             wijk?: components["schemas"]["SelectModel"][];
             buurt?: components["schemas"]["SelectModel"][];
+            location?: components["schemas"]["LocationModel"];
+        };
+        ProjectCustomPropertyModel: {
+            /** Format: uuid */
+            customPropertyId?: string;
+            /** @enum {string} */
+            propertyType?: "BOOLEAN" | "CATEGORY" | "ORDINAL" | "NUMERIC" | "TEXT";
+            textValue?: string;
+            booleanValue?: boolean;
+            numericValue?: components["schemas"]["SingleValueOrRangeModelBigDecimal"];
+            categories?: string[];
+            ordinals?: components["schemas"]["SingleValueOrRangeModelUUID"];
         };
         ProjectSnapshotModel: {
             /** Format: date */
@@ -356,6 +374,16 @@ export interface components {
             municipality?: components["schemas"]["SelectModel"][];
             wijk?: components["schemas"]["SelectModel"][];
             buurt?: components["schemas"]["SelectModel"][];
+            location?: components["schemas"]["LocationModel"];
+            customProperties?: components["schemas"]["ProjectCustomPropertyModel"][];
+        };
+        SingleValueOrRangeModelUUID: {
+            /** Format: uuid */
+            value?: string;
+            /** Format: uuid */
+            min?: string;
+            /** Format: uuid */
+            max?: string;
         };
         DatedDataModelListPlanStatus: {
             /** Format: date */
@@ -422,6 +450,7 @@ export interface components {
             projectColor?: string;
             /** @enum {string} */
             confidentialityLevel?: "PRIVE" | "INTERN_UITVOERING" | "INTERN_RAPPORTAGE" | "EXTERN_RAPPORTAGE" | "OPENBAAR";
+            location?: components["schemas"]["LocationModel"];
             planType?: components["schemas"]["DatedDataModelListPlanType"][];
             priority?: components["schemas"]["DatedPriorityModel"][];
             projectPhase?: components["schemas"]["DatedDataModelProjectPhase"][];
@@ -435,10 +464,20 @@ export interface components {
             wijk?: string[];
             buurt?: string[];
         };
+        ObjectNode: Record<string, never>;
+        PlotModel: {
+            brkGemeenteCode?: string;
+            brkSectie?: string;
+            /** Format: int64 */
+            brkPerceelNummer?: number;
+            brkSelectie?: string;
+            geoJson?: components["schemas"]["ObjectNode"];
+        };
         ProjectUpdateModel: {
             /** @enum {string} */
             property?:
                 | "confidentialityLevel"
+                | "location"
                 | "municipalityRole"
                 | "name"
                 | "planningPlanStatus"
@@ -460,15 +499,6 @@ export interface components {
             min?: string;
             /** Format: uuid */
             max?: string;
-        };
-        UserModel: {
-            /** Format: int64 */
-            id?: number;
-            email?: string;
-            name?: string;
-            /** @enum {string} */
-            userRole?: "Admin";
-            disabled?: boolean;
         };
     };
     responses: never;
@@ -538,10 +568,21 @@ export interface operations {
             };
         };
     };
+    getConfig: {
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["ConfigModel"];
+                };
+            };
+        };
+    };
     getAllCustomProperties: {
         parameters: {
             query?: {
                 objectType?: "PROJECT" | "WONINGBLOK";
+                disabled?: boolean;
             };
         };
         responses: {
@@ -637,6 +678,21 @@ export interface operations {
         parameters: {
             path: {
                 uuid: string;
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["HouseblockSnapshotModel"];
+                };
+            };
+        };
+    };
+    updateHouseblock: {
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["HouseblockSnapshotModel"];
             };
         };
         responses: {
@@ -807,6 +863,41 @@ export interface operations {
             };
         };
     };
+    getProjectCustomProperties: {
+        parameters: {
+            path: {
+                id: string;
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["ProjectCustomPropertyModel"][];
+                };
+            };
+        };
+    };
+    updateProjectCustomProperty: {
+        parameters: {
+            path: {
+                id: string;
+            };
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ProjectCustomPropertyModel"];
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["ProjectCustomPropertyModel"][];
+                };
+            };
+        };
+    };
     getProjectHouseblocks: {
         parameters: {
             path: {
@@ -818,6 +909,41 @@ export interface operations {
             default: {
                 content: {
                     "application/json": components["schemas"]["HouseblockSnapshotModel"][];
+                };
+            };
+        };
+    };
+    getProjectPlots: {
+        parameters: {
+            path: {
+                id: string;
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["PlotModel"][];
+                };
+            };
+        };
+    };
+    setProjectPlots: {
+        parameters: {
+            path: {
+                id: string;
+            };
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PlotModel"][];
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "*/*": unknown;
                 };
             };
         };
@@ -852,7 +978,7 @@ export interface operations {
             /** @description default response */
             default: {
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["ProjectSnapshotModel"];
                 };
             };
         };
@@ -868,106 +994,6 @@ export interface operations {
             default: {
                 content: {
                     "application/json": components["schemas"]["SelectModel"][];
-                };
-            };
-        };
-    };
-    createUser: {
-        requestBody?: {
-            content: {
-                "application/json": components["schemas"]["UserModel"];
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                content: {
-                    "application/json": unknown;
-                };
-            };
-        };
-    };
-    deleteUser: {
-        parameters: {
-            path: {
-                userId: number;
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                content: {
-                    "application/json": unknown;
-                };
-            };
-        };
-    };
-    getAllUsers: {
-        responses: {
-            /** @description default response */
-            default: {
-                content: {
-                    "application/json": unknown;
-                };
-            };
-        };
-    };
-    getUserInfo: {
-        responses: {
-            /** @description default response */
-            default: {
-                content: {
-                    "application/json": unknown;
-                };
-            };
-        };
-    };
-    getUserInfoByUserId: {
-        parameters: {
-            path: {
-                userId: number;
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                content: {
-                    "application/json": unknown;
-                };
-            };
-        };
-    };
-    sendWelcomeMail: {
-        parameters: {
-            path: {
-                userId: number;
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                content: {
-                    "application/json": unknown;
-                };
-            };
-        };
-    };
-    updateUser: {
-        parameters: {
-            path: {
-                userId: number;
-            };
-        };
-        requestBody?: {
-            content: {
-                "application/json": components["schemas"]["UserModel"];
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                content: {
-                    "application/json": unknown;
                 };
             };
         };

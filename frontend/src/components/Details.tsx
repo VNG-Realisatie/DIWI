@@ -1,14 +1,17 @@
-import { List, ListItem, ListItemText } from "@mui/material";
-import { Fragment, ReactNode } from "react";
+import { Box, List, ListItem, ListItemText, Stack, Typography } from "@mui/material";
+import { Fragment, ReactNode, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Project } from "../api/projectsServices";
+import { Project, getProjectHouseBlocks } from "../api/projectsServices";
 import { OrganizationUserAvatars } from "./OrganizationUserAvatars";
+import ProjectContext from "../context/ProjectContext";
+import { HouseBlock } from "./project-wizard/house-blocks/types";
 
 type Props = {
     project: Project | null;
 };
 
 const DetailListItem = ({ children, property }: { children: ReactNode; property: string }) => {
+    const { t } = useTranslation();
     return (
         <>
             <ListItem
@@ -18,7 +21,7 @@ const DetailListItem = ({ children, property }: { children: ReactNode; property:
                     border: "solid 1px #ddd",
                 }}
             >
-                <ListItemText primary={property} />
+                <ListItemText primary={t(property)} />
             </ListItem>
             <ListItem
                 sx={{
@@ -33,6 +36,7 @@ const DetailListItem = ({ children, property }: { children: ReactNode; property:
 
 export const Details = ({ project }: Props) => {
     const { t } = useTranslation();
+    const [houseBlocks, setHouseBlocks] = useState<HouseBlock[]>();
 
     const getTranslatedText = (property: string, content: string) => {
         if (property === "confidentialityLevel") {
@@ -50,6 +54,10 @@ export const Details = ({ project }: Props) => {
             return content;
         }
     };
+    const { id } = useContext(ProjectContext);
+    useEffect(() => {
+        id && getProjectHouseBlocks(id).then((res) => setHouseBlocks(res));
+    }, [id]);
     return (
         <List
             sx={{
@@ -59,11 +67,7 @@ export const Details = ({ project }: Props) => {
         >
             {project &&
                 Object.entries(project).map(([property, value]) => {
-                    //To avoid mixed data type bug keep this. it will be removed after all data defined
-                    if (property === "start datum") {
-                        console.log(value);
-                    }
-                    if (property !== "projectId" && property !== "projectStateId" && property !== "organization_state_id") {
+                    if (property === "totalValue" || property === "projectPhase" || property === "planType") {
                         return (
                             <Fragment key={property}>
                                 <ListItem
@@ -73,15 +77,16 @@ export const Details = ({ project }: Props) => {
                                         border: "solid 1px #ddd",
                                     }}
                                 >
-                                    <ListItemText primary={property} />
+                                    <ListItemText primary={t(property)} />
                                 </ListItem>
                                 <ListItem
                                     sx={{
                                         border: "solid 1px #ddd",
                                     }}
                                 >
-                                    {/* Temporary hack, should show all data when we start working on map */}
-                                    {typeof value === "string" && <ListItemText primary={getTranslatedText(property, value)} />}
+                                    {value !== null && typeof value === "number" && <ListItemText primary={getTranslatedText(property, value.toString())} />}
+                                    {value !== null && typeof value === "string" && <ListItemText primary={getTranslatedText(property, value)} />}
+                                    {value !== null && typeof value === "object" && <Typography>{value.toString().split(",").join(", ")}</Typography>}
                                 </ListItem>
                             </Fragment>
                         );
@@ -91,9 +96,17 @@ export const Details = ({ project }: Props) => {
             <DetailListItem property="projectOwners">
                 <OrganizationUserAvatars organizations={project?.projectOwners} />
             </DetailListItem>
-            <DetailListItem property="projectLeaders">
-                <OrganizationUserAvatars organizations={project?.projectLeaders} />
-            </DetailListItem>
+            {houseBlocks &&
+                houseBlocks.map((hb: HouseBlock) => {
+                    return (
+                        <Stack>
+                            <Typography sx={{ color: "#FFFFFF", backgroundColor: "#00A9F3", px: 2, py: 1.5 }}>{hb.houseblockName}</Typography>
+                            <Box border="solid 1px #DDD" px={2} py={1.5}>
+                                <Typography>{hb.mutation.netPlanCapacity}</Typography>
+                            </Box>
+                        </Stack>
+                    );
+                })}
         </List>
     );
 };
