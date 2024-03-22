@@ -8,8 +8,6 @@ import {
     Select,
     SelectChangeEvent,
     MenuItem,
-    Typography,
-    Checkbox,
     DialogActions,
     Button,
     Tooltip,
@@ -67,7 +65,10 @@ export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomPro
         <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth>
             <DialogTitle id="alert-dialog-title"> {t("admin.settings.add")}</DialogTitle>
             <DialogContent>
-                <Stack spacing={1.5} pt={1}>
+                <Stack spacing={1.5}>
+                    <InputLabel variant="standard" id="name">
+                        {t("admin.settings.tableHeader.name")}
+                    </InputLabel>
                     <TextField
                         size="small"
                         label={t("admin.settings.tableHeader.name")}
@@ -118,12 +119,6 @@ export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomPro
                     {selectedPropertyType === "CATEGORY" && (
                         <CategoryCreateOption categoryValue={categories ? categories : []} setCategoryValue={setCategories} />
                     )}
-                    <Stack>
-                        <Typography>
-                            {t("admin.settings.tableHeader.active")}
-                            <Checkbox checked={active} onChange={(event: ChangeEvent<HTMLInputElement>) => setActive(event.target.checked)} />
-                        </Typography>
-                    </Stack>
                 </Stack>
             </DialogContent>
             <DialogActions>
