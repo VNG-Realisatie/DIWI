@@ -158,8 +158,8 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         size="small"
                         fullWidth
                         options={priorityOptionList ?? []}
-                        getOptionLabel={(option) => option.name}
-                        value={createProjectForm?.priority?.value}
+                        getOptionLabel={(option) => option.name ?? ""}
+                        value={createProjectForm?.priority?.value ?? null}
                         filterSelectedOptions
                         onChange={(_: any, newValue: SelectModel | null) =>
                             setCreateProjectForm({
@@ -205,8 +205,8 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         multiple
                         id="tags-outlined"
                         options={municipalityRolesOptions ?? []}
-                        getOptionLabel={(option) => option.name}
-                        value={createProjectForm?.municipalityRole}
+                        getOptionLabel={(option) => option.name ?? ""}
+                        value={createProjectForm?.municipalityRole ?? []}
                         filterSelectedOptions
                         onChange={(_: any, newValue: SelectModel[]) =>
                             setCreateProjectForm({
@@ -238,7 +238,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                     >
                         {projectLead.map((lead) => {
                             return (
-                                <MenuItem key={lead.ID} value={lead.name}>
+                                <MenuItem key={lead.ID} value={lead.name ?? ""}>
                                     {lead.name}
                                 </MenuItem>
                             );
@@ -261,7 +261,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                     >
                         {confidentialityLevelOptions.map((ppo) => {
                             return (
-                                <MenuItem key={ppo.id} value={ppo.id}>
+                                <MenuItem key={ppo.id} value={ppo.id ?? ""}>
                                     {t(`projectTable.confidentialityLevelOptions.${ppo.name}`)}
                                 </MenuItem>
                             );
@@ -285,7 +285,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         MenuProps={MenuProps}
                     >
                         {planningPlanStatus.map((pt) => (
-                            <MenuItem key={pt.id} value={pt.id}>
+                            <MenuItem key={pt.id} value={pt.id ?? null}>
                                 <ListItemText primary={t(`projectTable.planningPlanStatus.${pt.name}`)} />
                             </MenuItem>
                         ))}
@@ -313,7 +313,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                     >
                         {eigenaarOption.map((lead) => {
                             return (
-                                <MenuItem key={lead.ID} value={lead.naam}>
+                                <MenuItem key={lead.ID} value={lead.naam ?? ""}>
                                     {lead.naam}
                                 </MenuItem>
                             );
