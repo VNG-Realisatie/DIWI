@@ -5,6 +5,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { OwnershipValueType } from "../../../../types/enums";
 import { InputContainer } from "../InputContainer";
 import { useTranslation } from "react-i18next";
+import { NumericRangeInput } from "../NumericRangeInput";
 
 type Props = {
     ownership: OwnershipSingleValue;
@@ -56,31 +57,6 @@ const OwnershipAmountInput = ({ handleInputChange, ownership, index }: Ownership
         />
     );
 };
-const OwnershipValueInput = ({ handleInputChange, ownership, index }: OwnershipProps) => {
-    return (
-        <TextField
-            size="small"
-            label="Value"
-            type="number"
-            fullWidth
-            value={ownership.value.value !== null ? ownership.value.value : ""}
-            onChange={(e) => handleInputChange(index, { ...ownership, value: { min: null, max: null, value: parseInt(e.target.value) } })}
-        />
-    );
-};
-
-const OwnershipRentalValueInput = ({ handleInputChange, ownership, index }: OwnershipProps) => {
-    return (
-        <TextField
-            size="small"
-            label="RentalValue"
-            type="number"
-            fullWidth
-            value={ownership.rentalValue.value !== null ? ownership.rentalValue.value : ""}
-            onChange={(e) => handleInputChange(index, { ...ownership, rentalValue: { min: null, max: null, value: parseInt(e.target.value) } })}
-        />
-    );
-};
 
 export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handleRemoveRow, edit, editForm }: Props) => {
     return (
@@ -104,22 +80,42 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                 {!edit && !editForm && <OwnershipAmountInput index={index} handleInputChange={handleInputChange} ownership={ownership} />}
             </Grid>
             <Grid item xs={2}>
-                {edit && editForm && <OwnershipValueInput index={index} handleInputChange={handleInputChange} ownership={ownership} />}
+                {edit && editForm && (
+                    <NumericRangeInput value={ownership.value} labelText="Value" updateCallBack={(e) => handleInputChange(index, { ...ownership, value: e })} />
+                )}
                 {!edit && editForm && (
                     <InputContainer>
-                        <Typography>{ownership?.value?.value}</Typography>
+                        <Typography>{ownership?.value.value !== null ? ownership?.value.value : ownership?.value.min + "-" + ownership?.value.max}</Typography>
                     </InputContainer>
                 )}
-                {!edit && !editForm && <OwnershipValueInput index={index} handleInputChange={handleInputChange} ownership={ownership} />}
+                {!edit && !editForm && (
+                    <NumericRangeInput value={ownership.value} labelText="Value" updateCallBack={(e) => handleInputChange(index, { ...ownership, value: e })} />
+                )}
             </Grid>
             <Grid item xs={2}>
-                {edit && editForm && <OwnershipRentalValueInput index={index} handleInputChange={handleInputChange} ownership={ownership} />}
+                {edit && editForm && (
+                    <NumericRangeInput
+                        value={ownership.rentalValue}
+                        labelText="RentalValue"
+                        updateCallBack={(e) => handleInputChange(index, { ...ownership, rentalValue: e })}
+                    />
+                )}
                 {!edit && editForm && (
                     <InputContainer>
-                        <Typography>{ownership?.rentalValue?.value}</Typography>
+                        <Typography>
+                            {ownership?.rentalValue.value !== null
+                                ? ownership?.rentalValue.value
+                                : ownership?.rentalValue.min + "-" + ownership?.rentalValue.max}
+                        </Typography>
                     </InputContainer>
                 )}
-                {!edit && !editForm && <OwnershipRentalValueInput index={index} handleInputChange={handleInputChange} ownership={ownership} />}
+                {!edit && !editForm && (
+                    <NumericRangeInput
+                        value={ownership.rentalValue}
+                        labelText="RentalValue"
+                        updateCallBack={(e) => handleInputChange(index, { ...ownership, rentalValue: e })}
+                    />
+                )}
             </Grid>
             <Grid item xs={1}>
                 {((edit && editForm) || (!edit && !editForm)) && (

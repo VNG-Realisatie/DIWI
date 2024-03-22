@@ -8,9 +8,10 @@ type ValueType = {
 type Props = {
     value: ValueType;
     updateCallBack: (value: ValueType) => void;
+    labelText?: string;
 };
 
-export const NumericRangeInput = ({ value, updateCallBack }: Props) => {
+export const NumericRangeInput = ({ labelText, value, updateCallBack }: Props) => {
     const handleSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.value.includes("-")) {
             const values = e.target.value.split("-");
@@ -34,6 +35,7 @@ export const NumericRangeInput = ({ value, updateCallBack }: Props) => {
             id="size"
             size="small"
             variant="outlined"
+            label={labelText}
             value={value?.value !== null ? value?.value : value?.min + "-" + value?.max}
             onChange={handleSizeChange}
         />
