@@ -32,9 +32,8 @@ import AlertContext from "../../../context/AlertContext";
 import { CreateHouseBlockDialog } from "./CreateHouseBlockDialog";
 import { HouseBlocksList } from "./HouseBlocksList";
 import { emptyHouseBlockForm } from "../../project-wizard/house-blocks/constants";
-import { getCustomPropertyValues, putCustomPropertyValues } from "../../../api/adminSettingServices";
 import { CustomerPropertiesProjectBlock } from "./CustomerPropertiesProjectBlock";
-import { CustomPropertyValue } from "../../../api/customProps";
+import { CustomPropertyValue, getCustomPropertyValues, putCustomPropertyValues } from "../../../api/customProps";
 
 export const columnTitleStyle: SxProps<Theme> = {
     border: "solid 1px #ddd",
@@ -241,7 +240,7 @@ export const ProjectsWithHouseBlock = () => {
     };
     const handleCustomPropertiesSave = () => {
         customValues.forEach((value) => {
-            putCustomPropertyValues(selectedProject?.projectId as string, value).catch((error) => setAlert(error.message, "error"));
+            putCustomPropertyValues(selectedProject?.projectId as string, value).catch((error: any) => setAlert(error.message, "error"));
         });
     };
 
