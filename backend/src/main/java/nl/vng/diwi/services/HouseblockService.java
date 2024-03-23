@@ -365,7 +365,7 @@ public class HouseblockService {
         }
     }
 
-    public void updateHouseblockEndDate(VngRepository repo, Project project, Houseblock houseblock, LocalDate newEndDate, UUID loggedInUserUuid)
+    public void updateHouseblockEndDate(VngRepository repo, Project project, Houseblock houseblock, LocalDate newEndDate, UUID loggedInUserUuid, LocalDate updateDate)
         throws VngBadRequestException {
         Set<MilestoneState> activeMilestoneStates = repo.getHouseblockDAO().getHouseblockActiveMilestones(houseblock.getId());
 
@@ -387,21 +387,23 @@ public class HouseblockService {
             List<? extends HouseblockMilestoneChangeDataSuperclass> activeChangelogs = repo.getHouseblockDAO()
                 .findActiveHouseblockChangelogByEndMilestone(changelogClass, houseblock.getId(), houseblockEndMilestone.getId());
             activeChangelogs.forEach(activeChangelog -> {
-                updateChangelogDuration(repo, activeChangelog, activeChangelog.getStartMilestone(), newEndMilestone, userReference, now);
+                if (changelogClass == HouseblockDeliveryDateChangelog.class) {
+                    updateHouseblockExpectedDeliveryDate(repo, project, (HouseblockDeliveryDateChangelog) activeChangelog,
+                        newEndMilestone, loggedInUserUuid, updateDate);
+                } else {
+                    updateChangelogDuration(repo, activeChangelog, activeChangelog.getStartMilestone(), newEndMilestone, userReference, now);
+                }
             });
         }
     }
 
-    private static void updateChangelogDuration(VngRepository repo, HouseblockMilestoneChangeDataSuperclass activeChangelog, Milestone newStartMilestone, Milestone newEndMilestone,
+    private void updateChangelogDuration(VngRepository repo, HouseblockMilestoneChangeDataSuperclass activeChangelog, Milestone newStartMilestone, Milestone newEndMilestone,
                                                 User userReference, ZonedDateTime now) {
         var newChangelog = (HouseblockMilestoneChangeDataSuperclass) activeChangelog.getShallowCopy();
         newChangelog.setStartMilestone(newStartMilestone);
         newChangelog.setEndMilestone(newEndMilestone);
         newChangelog.setCreateUser(userReference);
         newChangelog.setChangeStartDate(now);
-        if (activeChangelog instanceof HouseblockDeliveryDateChangelog) {
-            ((HouseblockDeliveryDateChangelog) newChangelog).setExpectedDeliveryDate(new MilestoneModel(newEndMilestone).getDate());
-        }
         repo.persist(newChangelog);
 
         if (activeChangelog instanceof HouseblockPurposeChangelog oldPurposeChangelog) {
@@ -450,6 +452,37 @@ public class HouseblockService {
         activeChangelog.setChangeUser(userReference);
         activeChangelog.setChangeEndDate(now);
         repo.persist(activeChangelog);
+    }
+
+    public void updateHouseblockExpectedDeliveryDate(VngRepository repo, Project project, HouseblockDeliveryDateChangelog changelog,
+                                                     Milestone newEndMilestone, UUID loggedInUserUuid, LocalDate updateDate) {
+
+        LocalDate changelogStartDate = new MilestoneModel(changelog.getStartMilestone()).getDate();
+
+        LocalDate newDeliveryDate = new MilestoneModel(newEndMilestone).getDate();
+
+        var newChangelog = (HouseblockDeliveryDateChangelog) changelog.getShallowCopy();
+        newChangelog.setExpectedDeliveryDate(newDeliveryDate);
+        newChangelog.setChangeStartDate(ZonedDateTime.now());
+        newChangelog.setCreateUser(repo.getReferenceById(User.class, loggedInUserUuid));
+        newChangelog.setEndMilestone(newEndMilestone);
+
+        if (!updateDate.isBefore(changelogStartDate) && !newDeliveryDate.isBefore(updateDate)) {
+            Milestone newMilestone = projectService.getOrCreateMilestoneForProject(repo, project, updateDate, loggedInUserUuid);
+            newChangelog.setStartMilestone(newMilestone);
+
+            var oldChangelogV2 = (HouseblockDeliveryDateChangelog) changelog.getShallowCopy();
+            oldChangelogV2.setChangeStartDate(ZonedDateTime.now());
+            oldChangelogV2.setCreateUser(repo.getReferenceById(User.class, loggedInUserUuid));
+            oldChangelogV2.setEndMilestone(newMilestone);
+            repo.persist(oldChangelogV2);
+        }
+
+        repo.persist(newChangelog);
+
+        changelog.setChangeEndDate(ZonedDateTime.now());
+        changelog.setChangeUser(repo.getReferenceById(User.class, loggedInUserUuid));
+        repo.persist(changelog);
     }
 
     public void updateHouseblockSize(VngRepository repo, Project project, Houseblock houseblock, SingleValueOrRangeModel<BigDecimal> sizeValue,
