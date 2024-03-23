@@ -375,7 +375,7 @@ public class HouseblockService {
             .max(Comparator.comparing(MilestoneState::getDate)).orElseThrow(() -> new VngServerErrorException("Houseblock doesn't have enough active milestones"));
 
         if (!newEndDate.isAfter(previousMilestoneState.getDate())) {
-            throw new VngBadRequestException("Update is not possible because new start date overlaps other existing milestones in this houseblock");
+            throw new VngBadRequestException("Update is not possible because new end date overlaps other existing milestones in this houseblock");
         }
 
         User userReference = repo.getReferenceById(User.class, loggedInUserUuid);
@@ -717,9 +717,9 @@ public class HouseblockService {
             if (houseblockStartDate.isBefore(updateDate) && !houseblockEndDate.isBefore(updateDate)) {
                 newChangelog.setStartMilestone(projectService.getOrCreateMilestoneForProject(repo, project, updateDate, loggedInUserUuid));
             } else {
-                newChangelog.setStartMilestone(houseblockStartMilestone); //TODO: is this ok for past houseblock?
+                newChangelog.setStartMilestone(houseblockStartMilestone);
             }
-            newChangelog.setEndMilestone(houseblockEndMilestone); //TODO: is this ok for future houseblock?
+            newChangelog.setEndMilestone(houseblockEndMilestone);
             repo.persist(newChangelog);
         } else if (actionType == HouseblockUpdateModel.ActionType.remove) {
             HouseblockOwnershipValueChangelog oldChangelog = houseblock.getOwnershipValues().stream().filter(ov -> ov.getId().equals(ownershipValue.getId()))
