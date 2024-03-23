@@ -74,9 +74,9 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
                     </TableHead>
                     <TableBody>
                         {customProperties?.map(
-                            (row: CustomPropertyType) =>
+                            (row: CustomPropertyType, index: number) =>
                                 !row.disabled && (
-                                    <TableRow key={row.name}>
+                                    <TableRow key={row.name + row.propertyType + row.objectType + index}>
                                         <TableCell component="th" scope="row" sx={cellStyle}>
                                             {row.name}
                                         </TableCell>
@@ -87,7 +87,9 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
                                             {row.objectType}
                                         </TableCell>
                                         <TableCell sx={cellStyle} align="right">
-                                            {row.categories?.map((category) => <Chip variant="outlined" label={category.name} />)}
+                                            {row.categories?.map((category, index) => (
+                                                <Chip key={category.id ?? "" + index} variant="outlined" label={category.name} />
+                                            ))}
                                         </TableCell>
                                         <TableCell sx={cellStyle}>
                                             <Stack direction="row" spacing={1} justifyContent="flex-end">
