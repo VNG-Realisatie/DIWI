@@ -354,8 +354,11 @@ export const ProjectsWithHouseBlock = () => {
                             {!projectEditable ? (
                                 <CellContainer>
                                     <span key={selectedProject?.priority?.value?.id}>
-                                        {selectedProject?.priority?.value?.name ??
-                                            `${selectedProject?.priority?.min?.name}-${selectedProject?.priority?.max?.name}`}
+                                        {selectedProject?.priority?.value?.name
+                                            ? selectedProject?.priority?.value?.name
+                                            : selectedProject?.priority?.min === null && selectedProject?.priority?.max === null
+                                              ? ""
+                                              : `${selectedProject?.priority?.min?.name}-${selectedProject?.priority?.max?.name}`}
                                     </span>
                                 </CellContainer>
                             ) : (
