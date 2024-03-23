@@ -51,7 +51,7 @@ export type SelectedOptionWithId = {
 };
 
 export const ProjectsTableView = ({ showCheckBox }: Props) => {
-    const { paginationInfo, setPaginationInfo } = useContext(ProjectContext);
+    const { paginationInfo, setPaginationInfo, totalProjectCount } = useContext(ProjectContext);
 
     const navigate = useNavigate();
     const { setAlert } = useAlert();
@@ -384,7 +384,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 onPaginationModelChange={(model: GridPaginationModel, _: GridCallbackDetails) => {
                     setPaginationInfo({ page: model.page + 1, pageSize: model.pageSize });
                 }}
-                rowCount={rows.length}
+                rowCount={totalProjectCount}
                 paginationMode="server"
                 onRowClick={
                     showCheckBox
