@@ -105,7 +105,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         value={createProjectForm?.planType ?? []}
                         onChange={handlePlanTypeChange}
                         input={<OutlinedInput />}
-                        renderValue={(selected) => selected.join(", ")}
+                        renderValue={(selected) => selected.map((s: string[]) => t(`projectTable.planTypeOptions.${s}`)).join(", ")}
                         MenuProps={MenuProps}
                     >
                         {planTypeOptions.map((pt) => (
@@ -271,7 +271,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         value={createProjectForm?.planningPlanStatus ?? []}
                         onChange={handlePlanStatusChange}
                         input={<OutlinedInput />}
-                        renderValue={(selected) => selected.join(", ")}
+                        renderValue={(selected) => selected.map((s: string[]) => t(`projectTable.planningPlanStatus.${s}`)).join(", ")}
                         MenuProps={MenuProps}
                     >
                         {planningPlanStatus.map((pt) => (
