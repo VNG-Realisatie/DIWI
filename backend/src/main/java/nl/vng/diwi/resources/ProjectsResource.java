@@ -312,6 +312,15 @@ public class ProjectsResource {
             }
         }
 
+        //prevent creating new changelogs in the DB when updating with the same values that already exist
+        List<PlotModel> currentPlots = new ArrayList<>(projectService.getCurrentPlots(project));
+        if (currentPlots.size() == plots.size()) {
+            currentPlots.removeAll(plots);
+            if (currentPlots.isEmpty()) {
+                return;
+            }
+        }
+
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             projectService.setPlots(repo, project, plots, loggedUser.getUuid());
             transaction.commit();

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import nl.vng.diwi.dal.entities.ProjectRegistryLinkChangelogValue;
 
@@ -12,6 +13,7 @@ import nl.vng.diwi.dal.entities.ProjectRegistryLinkChangelogValue;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
+@EqualsAndHashCode
 public class PlotModel {
     public PlotModel(ProjectRegistryLinkChangelogValue value) {
         this.brkGemeenteCode = value.getBrkGemeenteCode();
