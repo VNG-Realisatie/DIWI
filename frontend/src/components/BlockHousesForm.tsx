@@ -2,7 +2,7 @@ import { Box, Grid, Stack, Tooltip } from "@mui/material";
 import { HouseBlock } from "./project-wizard/house-blocks/types";
 import { GeneralInformationGroup } from "./project-wizard/house-blocks/general-information/GeneralInformationGroup";
 import { MutationInformationGroup } from "./project-wizard/house-blocks/mutation-information/MutationInformationGroup";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { OwnershipInformationGroup } from "./project-wizard/house-blocks/ownership-information/OwnershipInformationGroup";
 import { PhysicalAppeareanceGroup } from "./project-wizard/house-blocks/physical-appearence/PhysicalAppeareanceGroup";
 import { PurposeGroup } from "./project-wizard/house-blocks/purpose/PurposeGroup";
@@ -17,6 +17,7 @@ import { t } from "i18next";
 import { updateHouseBlock } from "../api/projectsServices";
 import AlertContext from "../context/AlertContext";
 import { CustomPropertiesGroup } from "./project-wizard/house-blocks/custom-properties/CustomPropertiesGroup";
+import { CustomPropertyValue, getBlockCustomPropertyValues, putBlockCustomPropertyValues } from "../api/customPropServices";
 
 type Props = {
     projectDetailHouseBlock?: HouseBlock;
@@ -29,8 +30,22 @@ type Props = {
 export const BlockHousesForm = ({ projectDetailHouseBlock, editForm, createFormHouseBlock, setCreateFormHouseBlock }: Props) => {
     const [projectForm, setProjectForm] = useState<HouseBlock>(projectDetailHouseBlock ? projectDetailHouseBlock : emptyHouseBlockForm);
     const [edit, setEdit] = useState(false);
+    const [customValues, setCustomValues] = useState<CustomPropertyValue[]>([]);
 
     const { setAlert } = useContext(AlertContext);
+
+    useEffect(() => {
+        const fetchCustomPropertyValues = async () => {
+            try {
+                const values = await getBlockCustomPropertyValues(projectForm.houseblockId as string);
+                setCustomValues(values);
+            } catch (error) {
+                console.error("Error fetching custom property values:", error);
+            }
+        };
+
+        fetchCustomPropertyValues();
+    }, [projectForm.houseblockId]);
 
     const oldForm = projectDetailHouseBlock && { ...projectDetailHouseBlock };
 
@@ -50,6 +65,11 @@ export const BlockHousesForm = ({ projectDetailHouseBlock, editForm, createFormH
         }
     };
 
+    const handleCustomPropertiesSave = () => {
+        customValues.forEach((value) => {
+            putBlockCustomPropertyValues(projectForm.houseblockId as string, value).catch((error) => setAlert(error.message, "error"));
+        });
+    };
     const handleHouseBlockUpdate = () => {
         if (
             !projectForm.houseblockName ||
@@ -66,6 +86,7 @@ export const BlockHousesForm = ({ projectDetailHouseBlock, editForm, createFormH
                 setEdit(false);
                 setAlert(t("generic.updated"), "success");
                 setProjectForm(res);
+                handleCustomPropertiesSave();
             })
             .catch(() => setAlert(t("generic.failedToUpdate"), "error"));
     };
@@ -130,7 +151,7 @@ export const BlockHousesForm = ({ projectDetailHouseBlock, editForm, createFormH
             </Grid>
             <Grid container spacing={2} alignItems="stretch" mt={0.5}>
                 <Grid item xs={12}>
-                    <CustomPropertiesGroup />
+                    <CustomPropertiesGroup {...{ projectEditable: edit, customValues, setCustomValues, columnTitleStyle: {} }} />
                 </Grid>
             </Grid>
         </Box>

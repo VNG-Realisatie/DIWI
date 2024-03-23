@@ -1,36 +1,59 @@
-import { Grid, Typography } from "@mui/material";
-import { WizardCard } from "../../WizardCard";
-import { useTranslation } from "react-i18next";
+import { Stack, SxProps, Theme, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { CustomPropertyType, getCustomPropertiesWithQuery } from "../../../../api/adminSettingServices";
+import { LabelComponent } from "../../../project/LabelComponent";
+import { WizardCard } from "../../WizardCard";
+import { CustomPropertyValue } from "../../../../api/customPropServices";
+import { CustomPropertyWidget } from "../../../CustomPropertyWidget";
 
-export const CustomPropertiesGroup = () => {
-    const [customProperties, setCustomProperties] = useState<CustomPropertyType[]>();
+type Props = {
+    projectEditable: boolean;
+    customValues: CustomPropertyValue[];
+    setCustomValues: (updatedValues: CustomPropertyValue[]) => void;
+    columnTitleStyle: SxProps<Theme> | undefined;
+};
+
+export const CustomPropertiesGroup = ({ projectEditable, customValues, setCustomValues, columnTitleStyle }: Props) => {
+    const [customDefinitions, setCustomDefinitions] = useState<CustomPropertyType[]>([]);
 
     const { t } = useTranslation();
 
     const translationPath = "customProperties";
 
     useEffect(() => {
-        getCustomPropertiesWithQuery("WONINGBLOK").then((customProperties) => setCustomProperties(customProperties));
+        getCustomPropertiesWithQuery("WONINGBLOK").then((customProperties) => setCustomDefinitions(customProperties));
     }, []);
+
+    const setCustomValue = (newValue: CustomPropertyValue) => {
+        const newCustomValues = customValues.filter((val) => val.customPropertyId !== newValue.customPropertyId);
+        setCustomValues([...newCustomValues, newValue]);
+    };
+
     return (
         <WizardCard>
             <Typography fontWeight={600} mb={2}>
                 {t(`${translationPath}.title`)}
             </Typography>
-            {customProperties &&
-                customProperties
-                    .filter((p) => !p.disabled)
-                    .map((cp, i) => {
-                        return (
-                            <Grid item xs={6} md={1} key={i} my={2}>
-                                <Typography variant="subtitle1" fontWeight="500" border="solid 1px #ddd" borderRadius="5px" p={0.6}>
-                                    {cp.name}
-                                </Typography>
-                            </Grid>
-                        );
-                    })}
+            {customDefinitions
+                .filter((p) => !p.disabled)
+                .map((property) => {
+                    const customValue = customValues?.find((cv) => cv.customPropertyId === property.id);
+
+                    return (
+                        <Stack width="100%">
+                            <LabelComponent required text={property.name} />{" "}
+                            <CustomPropertyWidget
+                                projectEditable={projectEditable}
+                                customValue={customValue}
+                                setCustomValue={(newValue) => {
+                                    setCustomValue({ ...newValue, customPropertyId: property.id });
+                                }}
+                                customDefinition={property}
+                            />
+                        </Stack>
+                    );
+                })}
         </WizardCard>
     );
 };

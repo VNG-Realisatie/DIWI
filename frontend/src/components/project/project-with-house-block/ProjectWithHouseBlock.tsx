@@ -1,4 +1,4 @@
-import { Box, Grid, Popover, Stack, TextField, Tooltip, Typography } from "@mui/material";
+import { Box, Grid, Popover, Stack, SxProps, TextField, Theme, Tooltip, Typography } from "@mui/material";
 import { MouseEvent, useCallback, useContext, useEffect, useState } from "react";
 import ProjectContext from "../../../context/ProjectContext";
 import ProjectColorContext from "../../../pages/ProjectDetail";
@@ -32,10 +32,10 @@ import AlertContext from "../../../context/AlertContext";
 import { CreateHouseBlockDialog } from "./CreateHouseBlockDialog";
 import { HouseBlocksList } from "./HouseBlocksList";
 import { emptyHouseBlockForm } from "../../project-wizard/house-blocks/constants";
-import CustomPropertyWidget from "../../CustomPropertyWidget";
-import { getCustomPropertyValues, putCustomPropertyValues } from "../../../api/adminSettingServices";
+import { CustomerPropertiesProjectBlock } from "./CustomerPropertiesProjectBlock";
+import { CustomPropertyValue, getCustomPropertyValues, putCustomPropertyValues } from "../../../api/customPropServices";
 
-export const columnTitleStyle = {
+export const columnTitleStyle: SxProps<Theme> = {
     border: "solid 1px #ddd",
     p: 0.6,
     color: "#FFFFFF",
@@ -77,10 +77,7 @@ export const ProjectsWithHouseBlock = () => {
     const [selectedWijk, setSelectedWijk] = useState<SelectModel[]>([]);
     const [projectPriority, setProjectPriority] = useState<SelectModel | null>();
     const [houseBlocks, setHouseBlocks] = useState<HouseBlock[]>();
-    const [customValues, setCustomValues] = useState<
-        { customPropertyId: string; textValue?: string | null; numericValue?: number | null; booleanValue?: boolean | null }[]
-    >([]);
-    //to be modified
+    const [customValues, setCustomValues] = useState<CustomPropertyValue[]>([]);
 
     const { setAlert } = useContext(AlertContext);
 
@@ -243,7 +240,7 @@ export const ProjectsWithHouseBlock = () => {
     };
     const handleCustomPropertiesSave = () => {
         customValues.forEach((value) => {
-            putCustomPropertyValues(selectedProject?.projectId as string, value);
+            putCustomPropertyValues(selectedProject?.projectId as string, value).catch((error: any) => setAlert(error.message, "error"));
         });
     };
 
@@ -487,7 +484,8 @@ export const ProjectsWithHouseBlock = () => {
                     </Grid> */}
                 </Grid>
                 {/*List Custom Properties */}
-                <CustomPropertyWidget projectEditable={projectEditable} customValues={customValues} setCustomValues={setCustomValues} objectType="PROJECT" />
+                <CustomerPropertiesProjectBlock {...{ projectEditable, customValues, setCustomValues, columnTitleStyle }} />
+
                 {/* List huizen blok cards */}
                 <HouseBlocksList houseBlocks={houseBlocks} setOpenHouseBlockDialog={setOpenHouseBlockDialog} />
                 {openColorDialog && (
