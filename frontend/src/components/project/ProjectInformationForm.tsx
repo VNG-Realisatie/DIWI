@@ -2,8 +2,6 @@ import { Alert, Autocomplete, Box, ListItemText, MenuItem, OutlinedInput, Select
 import ColorSelector from "../ColorSelector";
 import { DatePicker } from "@mui/x-date-pickers";
 
-import projectLead from "../../api/json/projectleider.json";
-import eigenaarOption from "../../api/json/eigenaar.json";
 import { useTranslation } from "react-i18next";
 import { MenuProps } from "../../utils/menuProps";
 import { confidentialityLevelOptions, planTypeOptions, planningPlanStatus, projectPhaseOptions } from "../table/constants";
@@ -13,14 +11,14 @@ import { getMunicipalityRoleList, getPriorityList } from "../../api/projectsTabl
 import { SelectModel } from "../../api/projectsServices";
 import { dateFormats } from "../../localization";
 import { LabelComponent } from "./LabelComponent";
+import { OrganizationSelect } from "../../widgets/OrganizationSelect";
 
 type Props = {
     setCreateProjectForm: (a: any) => void;
     createProjectForm: any;
-    validationError: string;
 };
 
-export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm, validationError }: Props) => {
+export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm }: Props) => {
     const { t } = useTranslation();
     const [priorityOptionList, setPriorityOptionList] = useState<SelectModel[]>();
     const [municipalityRolesOptions, setMunicipalityRolesOptions] = useState<SelectModel[]>();
@@ -221,29 +219,17 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
             <Stack direction="row" alignItems="center" spacing={3} mt={2}>
                 <Stack flex={1}>
                     <LabelComponent required={false} text={t("createProject.informationForm.projectLeader")} />
-                    <Select
-                        labelId="projectLeader"
-                        size="small"
-                        id="project-leader"
-                        value={createProjectForm?.projectLeaders && createProjectForm.projectLeaders.length > 0 ? createProjectForm.projectLeaders[0] : ""}
-                        label={t("createProject.informationForm.projectLeader")}
-                        onChange={(
-                            e, //TODO later
-                        ) =>
+                    <OrganizationSelect
+                        projectEditable={true}
+                        isLeader={true}
+                        owner={createProjectForm?.projectLeaders ? createProjectForm.projectLeaders : []}
+                        setOwner={(e) =>
                             setCreateProjectForm({
                                 ...createProjectForm,
-                                projectLeaders: [e.target.value],
+                                projectLeaders: e,
                             })
                         }
-                    >
-                        {projectLead.map((lead) => {
-                            return (
-                                <MenuItem key={lead.ID} value={lead.name ?? ""}>
-                                    {lead.name}
-                                </MenuItem>
-                            );
-                        })}
-                    </Select>
+                    />
                 </Stack>
                 <Stack flex={1}>
                     <LabelComponent required text={t("createProject.informationForm.confidentialityLevel")} />
@@ -294,9 +280,9 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
             </Stack>
 
             <Stack direction="row" alignItems="center" spacing={3} mt={2}>
-                <Stack>
+                <Stack flex={1}>
                     <LabelComponent required={false} text={t("createProject.informationForm.owner")} />
-                    <Select
+                    {/* <Select
                         sx={{ width: "370px" }}
                         labelId="leader"
                         id="owner"
@@ -318,7 +304,17 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                                 </MenuItem>
                             );
                         })}
-                    </Select>
+                    </Select> */}
+                    <OrganizationSelect
+                        projectEditable={true}
+                        owner={createProjectForm?.projectOwners ? createProjectForm.projectOwners : []}
+                        setOwner={(e) =>
+                            setCreateProjectForm({
+                                ...createProjectForm,
+                                projectOwners: e,
+                            })
+                        }
+                    />
                 </Stack>
             </Stack>
         </Box>

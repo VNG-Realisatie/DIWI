@@ -12,7 +12,11 @@ import useAlert from "../hooks/useAlert";
 import { projectWizardMap } from "../Paths";
 
 export const CreateProject = () => {
-    const [createProjectForm, setCreateProjectForm] = useState<any>({ projectColor: "#FF5733" });
+    const [createProjectForm, setCreateProjectForm] = useState<any>({
+        projectColor: "#FF5733",
+        projectLeaders: [],
+        projectOwners: [],
+    });
     const [createFormHouseBlock, setCreateFormHouseBlock] = useState<HouseBlock>(emptyHouseBlockForm);
     const [activeStep, setActiveStep] = useState<number>(0);
     const [validationError, setValidationError] = useState("");
@@ -45,16 +49,8 @@ export const CreateProject = () => {
                     return true;
                 }
             } else {
-                const temporaryCreateForm = {
-                    projectName: createProjectForm.projectName,
-                    projectColor: createProjectForm.projectColor,
-                    projectPhase: createProjectForm.projectPhase,
-                    confidentialityLevel: createProjectForm.confidentialityLevel,
-                    startDate: createProjectForm.startDate,
-                    endDate: createProjectForm.endDate,
-                };
                 setValidationError("");
-                const project = await createProject(temporaryCreateForm); //TODO later it will be change with createProjectForm
+                const project = await createProject(createProjectForm); //TODO needs backend update to accept other properties.
 
                 navigate(`/project/create/${project.projectId}`);
                 setAlert(t("createProject.successfullySaved"), "success");
@@ -98,13 +94,11 @@ export const CreateProject = () => {
             getProject(projectId).then((res: any) => setCreateProjectForm({ ...res, startDate: dayjs(res.startDate), endDate: dayjs(res.endDate) }));
         }
     }, [projectId]);
-
+    console.log(createProjectForm);
     return (
         //Components for wizard steps
         <WizardLayout {...{ handleBack, handleNext, handleSave, projectId, activeStep }}>
-            {activeStep === 0 && (
-                <ProjectInformationForm validationError={validationError} setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />
-            )}
+            {activeStep === 0 && <ProjectInformationForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />}
             {activeStep === 1 && (
                 <BlockHousesForm
                     validationError={validationError}
