@@ -273,6 +273,7 @@
           "actions": "Acties"
         },
         "add": "Voeg optioneel toe",
+        "edit": "Pas optioneel veld aan",
         "propertyTypeInfo": "Type kan na het opslaan niet meer worden gewijzigd.",
         "notifications": {
           "successfullySaved": "Eigenschappen succesvol opgeslagen.",
