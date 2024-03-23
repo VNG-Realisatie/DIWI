@@ -1,6 +1,6 @@
 import { PropsWithChildren, createContext, useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Project, getProject, getProjects } from "../api/projectsServices";
+import { Project, getProject, getProjects, getProjectsSize } from "../api/projectsServices";
 import { components } from "../types/schema";
 import { GridPaginationModel } from "@mui/x-data-grid";
 
@@ -11,6 +11,7 @@ type ProjectContextType = {
     setSelectedProject(project: Project): void;
     projects: Array<Project>;
     setProjects(project: Array<Project>): void;
+    totalProjectCount: number;
     id: string | undefined;
     paginationInfo: GridPaginationModel;
     setPaginationInfo(info: GridPaginationModel): void;
@@ -24,10 +25,16 @@ export const ProjectProvider = ({ children }: PropsWithChildren) => {
     const [projects, setProjects] = useState<Array<Project>>([]);
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
     const [paginationInfo, setPaginationInfo] = useState<GridPaginationModel>({ page: 1, pageSize: 10 });
+    const [totalProjectCount, setTotalProjectCount] = useState(0);
 
     const updateProjects = useCallback(() => {
         getProjects(paginationInfo.page, paginationInfo.pageSize)
             .then((projects) => setProjects(projects))
+            .catch((err) => console.log(err));
+        getProjectsSize()
+            .then((data) => {
+                setTotalProjectCount(data.size);
+            })
             .catch((err) => console.log(err));
     }, [paginationInfo.page, paginationInfo.pageSize]);
 
@@ -52,6 +59,7 @@ export const ProjectProvider = ({ children }: PropsWithChildren) => {
                 setSelectedProject,
                 projects,
                 setProjects,
+                totalProjectCount,
                 id,
                 paginationInfo,
                 setPaginationInfo,
