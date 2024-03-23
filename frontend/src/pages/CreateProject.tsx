@@ -106,7 +106,7 @@ export const CreateProject = () => {
             getProject(projectId).then((res: any) => setCreateProjectForm({ ...res, startDate: dayjs(res.startDate), endDate: dayjs(res.endDate) }));
         }
     }, [projectId]);
-    console.log(createProjectForm);
+
     return (
         //Components for wizard steps
         <WizardLayout {...{ handleBack, handleNext, handleSave, projectId, activeStep }}>
