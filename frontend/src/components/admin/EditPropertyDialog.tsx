@@ -63,7 +63,7 @@ export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomPro
     };
     return (
         <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth>
-            <DialogTitle id="alert-dialog-title"> {t("admin.settings.add")}</DialogTitle>
+            <DialogTitle id="alert-dialog-title"> {t("admin.settings.edit")}</DialogTitle>
             <DialogContent>
                 <Stack spacing={1.5}>
                     <InputLabel variant="standard" id="name">
