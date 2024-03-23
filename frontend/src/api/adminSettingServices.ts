@@ -2,7 +2,6 @@ import { ObjectType } from "../types/enums";
 import { components } from "../types/schema";
 import { deleteJson, getJson, postJson, putJson } from "../utils/requests";
 import { API_URI } from "../utils/urls";
-import { CustomPropertyValue } from "./customProps";
 
 export type CategoryType = components["schemas"]["SelectDisabledModel"];
 export type CustomPropertyType = components["schemas"]["CustomPropertyModel"];
