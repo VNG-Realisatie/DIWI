@@ -1,6 +1,7 @@
 package nl.vng.diwi.services;
 
 import io.hypersistence.utils.hibernate.type.range.Range;
+import nl.vng.diwi.dal.HouseblockDAO;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.CustomCategoryValue;
 import nl.vng.diwi.dal.entities.CustomOrdinalValue;
@@ -10,6 +11,7 @@ import nl.vng.diwi.dal.entities.HouseblockAppearanceAndTypeChangelog;
 import nl.vng.diwi.dal.entities.HouseblockBooleanCustomPropertyChangelog;
 import nl.vng.diwi.dal.entities.HouseblockCategoryCustomPropertyChangelog;
 import nl.vng.diwi.dal.entities.HouseblockCategoryCustomPropertyChangelogValue;
+import nl.vng.diwi.dal.entities.HouseblockDeliveryDateChangelog;
 import nl.vng.diwi.dal.entities.HouseblockDurationChangelog;
 import nl.vng.diwi.dal.entities.HouseblockGroundPositionChangelog;
 import nl.vng.diwi.dal.entities.HouseblockGroundPositionChangelogValue;
@@ -25,6 +27,7 @@ import nl.vng.diwi.dal.entities.HouseblockPurposeChangelog;
 import nl.vng.diwi.dal.entities.HouseblockPurposeChangelogValue;
 import nl.vng.diwi.dal.entities.HouseblockTextCustomPropertyChangelog;
 import nl.vng.diwi.dal.entities.Milestone;
+import nl.vng.diwi.dal.entities.MilestoneState;
 import nl.vng.diwi.dal.entities.Project;
 import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.dal.entities.HouseblockProgrammingChangelog;
@@ -35,6 +38,7 @@ import nl.vng.diwi.dal.entities.enums.MutationType;
 import nl.vng.diwi.dal.entities.enums.PhysicalAppearance;
 import nl.vng.diwi.dal.entities.enums.Purpose;
 import nl.vng.diwi.dal.entities.enums.ValueType;
+import nl.vng.diwi.dal.entities.superclasses.HouseblockMilestoneChangeDataSuperclass;
 import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.dal.entities.HouseblockSnapshotSqlModel;
@@ -42,6 +46,7 @@ import nl.vng.diwi.models.HouseblockUpdateModel;
 import nl.vng.diwi.models.MilestoneModel;
 import nl.vng.diwi.models.ProjectHouseblockCustomPropertyModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
+import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import org.apache.logging.log4j.LogManager;
@@ -120,6 +125,12 @@ public class HouseblockService {
         setChangelogValues.accept(durationChangelog);
         durationChangelog.setHouseblock(houseblock);
         repo.persist(durationChangelog);
+
+        var deliveryDateChangelog = new HouseblockDeliveryDateChangelog();
+        setChangelogValues.accept(deliveryDateChangelog);
+        deliveryDateChangelog.setHouseblock(houseblock);
+        deliveryDateChangelog.setExpectedDeliveryDate(new MilestoneModel(endMilestone).getDate());
+        repo.persist(deliveryDateChangelog);
 
         var nameChangelog = new HouseblockNameChangelog();
         setChangelogValues.accept(nameChangelog);
@@ -325,6 +336,120 @@ public class HouseblockService {
             oldChangelogAfterUpdate.setName(oldChangelog.getName());
             repo.persist(oldChangelogAfterUpdate);
         }
+    }
+
+    public void updateHouseblockStartDate(VngRepository repo, Project project, Houseblock houseblock, LocalDate newStartDate, UUID loggedInUserUuid) throws VngBadRequestException {
+
+        Set<MilestoneState> activeMilestoneStates = repo.getHouseblockDAO().getHouseblockActiveMilestones(houseblock.getId());
+
+        Milestone houseblockStartMilestone = houseblock.getDuration().get(0).getStartMilestone();
+        MilestoneState nextMilestoneState = activeMilestoneStates.stream()
+            .filter(ms -> !ms.getMilestone().getId().equals(houseblockStartMilestone.getId()))
+            .min(Comparator.comparing(MilestoneState::getDate)).orElseThrow(() -> new VngServerErrorException("Houseblock doesn't have enough active milestones"));
+
+        if (!newStartDate.isBefore(nextMilestoneState.getDate())) {
+            throw new VngBadRequestException("Update is not possible because new start date overlaps other existing milestones in this houseblock");
+        }
+
+        User userReference = repo.getReferenceById(User.class, loggedInUserUuid);
+        ZonedDateTime now = ZonedDateTime.now();
+
+        Milestone newStartMilestone = projectService.getOrCreateMilestoneForProject(repo, project, newStartDate, loggedInUserUuid);
+
+        for (Class<? extends HouseblockMilestoneChangeDataSuperclass> changelogClass : HouseblockDAO.houseblockChangelogs.keySet()) {
+            List<? extends HouseblockMilestoneChangeDataSuperclass> activeChangelogs = repo.getHouseblockDAO()
+                .findActiveHouseblockChangelogByStartMilestone(changelogClass, houseblock.getId(), houseblockStartMilestone.getId());
+            activeChangelogs.forEach(activeChangelog -> {
+                updateChangelogDuration(repo, activeChangelog, newStartMilestone, activeChangelog.getEndMilestone(), userReference, now);
+            });
+        }
+    }
+
+    public void updateHouseblockEndDate(VngRepository repo, Project project, Houseblock houseblock, LocalDate newEndDate, UUID loggedInUserUuid)
+        throws VngBadRequestException {
+        Set<MilestoneState> activeMilestoneStates = repo.getHouseblockDAO().getHouseblockActiveMilestones(houseblock.getId());
+
+        Milestone houseblockEndMilestone = houseblock.getDuration().get(0).getEndMilestone();
+        MilestoneState previousMilestoneState = activeMilestoneStates.stream()
+            .filter(ms -> !ms.getMilestone().getId().equals(houseblockEndMilestone.getId()))
+            .max(Comparator.comparing(MilestoneState::getDate)).orElseThrow(() -> new VngServerErrorException("Houseblock doesn't have enough active milestones"));
+
+        if (!newEndDate.isAfter(previousMilestoneState.getDate())) {
+            throw new VngBadRequestException("Update is not possible because new start date overlaps other existing milestones in this houseblock");
+        }
+
+        User userReference = repo.getReferenceById(User.class, loggedInUserUuid);
+        ZonedDateTime now = ZonedDateTime.now();
+
+        Milestone newEndMilestone = projectService.getOrCreateMilestoneForProject(repo, project, newEndDate, loggedInUserUuid);
+
+        for (Class<? extends HouseblockMilestoneChangeDataSuperclass> changelogClass : HouseblockDAO.houseblockChangelogs.keySet()) {
+            List<? extends HouseblockMilestoneChangeDataSuperclass> activeChangelogs = repo.getHouseblockDAO()
+                .findActiveHouseblockChangelogByEndMilestone(changelogClass, houseblock.getId(), houseblockEndMilestone.getId());
+            activeChangelogs.forEach(activeChangelog -> {
+                updateChangelogDuration(repo, activeChangelog, activeChangelog.getStartMilestone(), newEndMilestone, userReference, now);
+            });
+        }
+    }
+
+    private static void updateChangelogDuration(VngRepository repo, HouseblockMilestoneChangeDataSuperclass activeChangelog, Milestone newStartMilestone, Milestone newEndMilestone,
+                                                User userReference, ZonedDateTime now) {
+        var newChangelog = (HouseblockMilestoneChangeDataSuperclass) activeChangelog.getShallowCopy();
+        newChangelog.setStartMilestone(newStartMilestone);
+        newChangelog.setEndMilestone(newEndMilestone);
+        newChangelog.setCreateUser(userReference);
+        newChangelog.setChangeStartDate(now);
+        if (activeChangelog instanceof HouseblockDeliveryDateChangelog) {
+            ((HouseblockDeliveryDateChangelog) newChangelog).setExpectedDeliveryDate(new MilestoneModel(newEndMilestone).getDate());
+        }
+        repo.persist(newChangelog);
+
+        if (activeChangelog instanceof HouseblockPurposeChangelog oldPurposeChangelog) {
+            oldPurposeChangelog.getPurposeValues().forEach(pv -> {
+                var newPurposeValue = HouseblockPurposeChangelogValue.builder()
+                    .purpose(pv.getPurpose()).amount(pv.getAmount()).purposeChangelog((HouseblockPurposeChangelog) newChangelog).build();
+                repo.persist(newPurposeValue);
+            });
+        }
+        if (activeChangelog instanceof HouseblockGroundPositionChangelog oldGroundPosChangelog) {
+            oldGroundPosChangelog.getValues().forEach(gpv -> {
+                var newGroundPosValue = HouseblockGroundPositionChangelogValue.builder()
+                    .groundPosition(gpv.getGroundPosition()).amount(gpv.getAmount()).groundPositionChangelog((HouseblockGroundPositionChangelog) newChangelog).build();
+                repo.persist(newGroundPosValue);
+            });
+        }
+        if (activeChangelog instanceof HouseblockCategoryCustomPropertyChangelog oldCategCPChangelog) {
+            oldCategCPChangelog.getChangelogCategoryValues().forEach(cv -> {
+                var newCategCPValue = HouseblockCategoryCustomPropertyChangelogValue.builder()
+                    .categoryValue(cv.getCategoryValue()).categoryChangelog((HouseblockCategoryCustomPropertyChangelog) newChangelog).build();
+                repo.persist(newCategCPValue);
+            });
+        }
+        if (activeChangelog instanceof HouseblockMutatieChangelog oldMutatieChangelog) {
+            oldMutatieChangelog.getType().forEach(mv -> {
+                var newMutatieValue = HouseblockMutatieChangelogTypeValue.builder()
+                    .mutationType(mv.getMutationType()).mutatieChangelog((HouseblockMutatieChangelog) newChangelog).build();
+                repo.persist(newMutatieValue);
+            });
+        }
+        if (activeChangelog instanceof HouseblockAppearanceAndTypeChangelog oldAppTypeChangelog) {
+            oldAppTypeChangelog.getPhysicalAppearanceValues().forEach(av -> {
+                var newAppValue = HouseblockPhysicalAppearanceChangelogValue.builder()
+                    .physicalAppearance(av.getPhysicalAppearance()).amount(av.getAmount())
+                    .appearanceAndTypeChangelog((HouseblockAppearanceAndTypeChangelog) newChangelog).build();
+                repo.persist(newAppValue);
+            });
+            oldAppTypeChangelog.getHouseblockHouseTypeValues().forEach(tv -> {
+                var newTypeValue = HouseblockHouseTypeChangelogValue.builder()
+                    .houseType(tv.getHouseType()).amount(tv.getAmount())
+                    .appearanceAndTypeChangelog((HouseblockAppearanceAndTypeChangelog) newChangelog).build();
+                repo.persist(newTypeValue);
+            });
+        }
+
+        activeChangelog.setChangeUser(userReference);
+        activeChangelog.setChangeEndDate(now);
+        repo.persist(activeChangelog);
     }
 
     public void updateHouseblockSize(VngRepository repo, Project project, Houseblock houseblock, SingleValueOrRangeModel<BigDecimal> sizeValue,

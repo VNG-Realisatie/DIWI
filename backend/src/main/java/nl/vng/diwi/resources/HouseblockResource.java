@@ -197,7 +197,7 @@ public class HouseblockResource {
                         houseblockUpdateModelList.add(new HouseblockUpdateModel(HouseblockUpdateModel.HouseblockProperty.endDate, (newEndDate == null) ? null : newEndDate.toString()));
                     }
                 }
-                case ownershipValue -> { //TODO: need to limit only one changelog for each OwnershipType?
+                case ownershipValue -> {
                     List<HouseblockSnapshotModel.OwnershipValue> newOwnershipValues = houseblockModelToUpdate.getOwnershipValue();
                     List<HouseblockSnapshotModel.OwnershipValue> oldOwnershipValues = houseblockCurrentValues.getOwnershipValue();
                     for (var newOV : newOwnershipValues) {
@@ -224,28 +224,68 @@ public class HouseblockResource {
 
         LocalDate updateDate = LocalDate.now();
 
-        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            Project project = projectService.getCurrentProjectAndPerformPreliminaryUpdateChecks(repo, houseblockModelToUpdate.getProjectId());
-            Houseblock houseblock = houseblockService.getCurrentHouseblockAndPerformPreliminaryUpdateChecks(repo, houseblockModelToUpdate.getHouseblockId());
-            if (!houseblock.getProject().getId().equals(houseblockModelToUpdate.getProjectId())) {
-                throw new VngBadRequestException(String.format("Houseblock %s does not belong to project %s", houseblockModelToUpdate.getHouseblockId(), houseblockModelToUpdate.getProjectId()));
-            }
-            for (HouseblockUpdateModel houseblockUpdateModel : houseblockUpdateModelList) {
-                String validationError = houseblockUpdateModel.validate();
-                if (validationError != null) {
-                    throw new VngBadRequestException(validationError);
-                }
-                updateHouseblockProperty(project, houseblock, houseblockUpdateModel, loggedUser.getUuid(), updateDate);
-            }
-            transaction.commit();
-            repo.getSession().clear();
+        Houseblock houseblock = houseblockService.getCurrentHouseblockAndPerformPreliminaryUpdateChecks(repo, houseblockModelToUpdate.getHouseblockId());
+        Project project = projectService.getCurrentProject(repo, houseblockModelToUpdate.getProjectId());
+        if (!houseblock.getProject().getId().equals(houseblockModelToUpdate.getProjectId())) {
+            throw new VngBadRequestException(String.format("Houseblock %s does not belong to project %s", houseblockModelToUpdate.getHouseblockId(), houseblockModelToUpdate.getProjectId()));
         }
 
+        //handle all other fields
+        List<HouseblockUpdateModel> otherUpdateFields = houseblockUpdateModelList.stream().filter(m -> !m.getProperty().equals(HouseblockUpdateModel.HouseblockProperty.startDate) &&
+            !m.getProperty().equals(HouseblockUpdateModel.HouseblockProperty.endDate)).toList();
+        if (!otherUpdateFields.isEmpty()) {
+            try (AutoCloseTransaction transaction1 = repo.beginTransaction()) {
+                for (HouseblockUpdateModel houseblockUpdateModel : otherUpdateFields) {
+                    String validationError = houseblockUpdateModel.validate();
+                    if (validationError != null) {
+                        throw new VngBadRequestException(validationError);
+                    }
+                    updateHouseblockProperty(project, houseblock, houseblockUpdateModel, loggedUser.getUuid(), updateDate);
+                }
+                transaction1.commit();
+                repo.getSession().clear();
+                houseblock = houseblockService.getCurrentHouseblockAndPerformPreliminaryUpdateChecks(repo, houseblockModelToUpdate.getHouseblockId());
+                project = projectService.getCurrentProject(repo, houseblockModelToUpdate.getProjectId());
+            }
+        }
+
+        //handle duration update last
+        HouseblockUpdateModel startDateUpdateModel = houseblockUpdateModelList.stream()
+            .filter(m -> m.getProperty().equals(HouseblockUpdateModel.HouseblockProperty.startDate))
+            .findFirst().orElse(null);
+        if (startDateUpdateModel != null) {
+            String validationError = startDateUpdateModel.validate();
+            if (validationError != null) {
+                throw new VngBadRequestException(validationError);
+            }
+            try (AutoCloseTransaction transaction2 = repo.beginTransaction()) {
+                updateHouseblockProperty(project, houseblock, startDateUpdateModel, loggedUser.getUuid(), updateDate);
+                transaction2.commit();
+                repo.getSession().clear();
+                houseblock = houseblockService.getCurrentHouseblockAndPerformPreliminaryUpdateChecks(repo, houseblockModelToUpdate.getHouseblockId());
+                project = projectService.getCurrentProject(repo, houseblockModelToUpdate.getProjectId());
+            }
+        }
+
+        HouseblockUpdateModel endDateUpdateModel = houseblockUpdateModelList.stream()
+            .filter(m -> m.getProperty().equals(HouseblockUpdateModel.HouseblockProperty.endDate))
+            .findFirst().orElse(null);
+        if (endDateUpdateModel != null) {
+            String validationError = endDateUpdateModel.validate();
+            if (validationError != null) {
+                throw new VngBadRequestException(validationError);
+            }
+            try (AutoCloseTransaction transaction3 = repo.beginTransaction()) {
+                updateHouseblockProperty(project, houseblock, endDateUpdateModel, loggedUser.getUuid(), updateDate);
+                transaction3.commit();
+                repo.getSession().clear();
+            }
+        }
         return houseblockService.getHouseblockSnapshot(repo, houseblockUuid);
     }
 
     private void updateHouseblockProperty(Project project, Houseblock houseblock, HouseblockUpdateModel updateModel, UUID loggedUserUuid, LocalDate updateDate)
-        throws VngServerErrorException {
+        throws VngServerErrorException, VngBadRequestException {
 
         switch (updateModel.getProperty()) {
             case name -> houseblockService.updateHouseblockName(repo, project, houseblock, updateModel.getValue(), loggedUserUuid, updateDate);
@@ -273,6 +313,10 @@ public class HouseblockResource {
             case ownershipValue -> houseblockService.updateHouseblockOwnershipValue(repo, project, houseblock, updateModel.getOwnershipValue(),
                 updateModel.getActionType(), loggedUserUuid, updateDate);
             case mutation -> houseblockService.updateHouseblockMutation(repo, project, houseblock, updateModel.getMutationValue(), loggedUserUuid, updateDate);
+            case startDate ->
+                houseblockService.updateHouseblockStartDate(repo, project, houseblock, LocalDate.parse(updateModel.getValue()), loggedUserUuid);
+            case endDate ->
+                houseblockService.updateHouseblockEndDate(repo, project, houseblock, LocalDate.parse(updateModel.getValue()), loggedUserUuid);
         }
     }
 
