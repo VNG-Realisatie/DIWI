@@ -1,3 +1,4 @@
+import React from "react";
 import { TextField } from "@mui/material";
 
 type ValueType = {
@@ -13,31 +14,30 @@ type Props = {
 
 export const NumericRangeInput = ({ labelText, value, updateCallBack }: Props) => {
     const handleSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.value.includes("-")) {
-            const values = e.target.value.split("-");
-            const newSize = {
-                value: null,
-                min: parseFloat(values[0]),
-                max: parseFloat(values[1]),
-            };
-            updateCallBack(newSize);
+        const inputValue = e.target.value.trim();
+        if (inputValue === "") {
+            updateCallBack({ value: null, min: null, max: null });
+        } else if (inputValue.includes("-")) {
+            const [minStr, maxStr] = inputValue.split("-");
+            const min = isNaN(parseFloat(minStr)) ? null : parseFloat(minStr);
+            const max = isNaN(parseFloat(maxStr)) ? null : parseFloat(maxStr);
+            updateCallBack({ value: null, min, max });
         } else {
-            const newSize = {
-                value: +e.target.value,
-                min: null,
-                max: null,
-            };
-            updateCallBack(newSize);
+            const newValue = parseFloat(inputValue);
+            updateCallBack({ value: newValue, min: null, max: null });
         }
     };
-    return (
-        <TextField
-            id="size"
-            size="small"
-            variant="outlined"
-            label={labelText}
-            value={value?.value !== null ? value?.value : value?.min + "-" + value?.max}
-            onChange={handleSizeChange}
-        />
-    );
+
+    const formatValue = (val: number | null) => {
+        return val !== null ? String(val) : "";
+    };
+
+    const inputValue =
+        value.value !== null
+            ? formatValue(value.value)
+            : value.min !== null || value.max !== null
+              ? `${formatValue(value.min ?? null)}-${formatValue(value.max ?? null)}`
+              : "";
+
+    return <TextField id="size" size="small" variant="outlined" label={labelText} value={inputValue} onChange={handleSizeChange} />;
 };
