@@ -33,7 +33,7 @@ import { CreateHouseBlockDialog } from "./CreateHouseBlockDialog";
 import { HouseBlocksList } from "./HouseBlocksList";
 import { emptyHouseBlockForm } from "../../project-wizard/house-blocks/constants";
 import { CustomerPropertiesProjectBlock } from "./CustomerPropertiesProjectBlock";
-import { CustomPropertyValue, getCustomPropertyValues, putCustomPropertyValues } from "../../../api/customProps";
+import { CustomPropertyValue, getCustomPropertyValues, putCustomPropertyValues } from "../../../api/customPropServices";
 
 export const columnTitleStyle: SxProps<Theme> = {
     border: "solid 1px #ddd",

@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { CustomPropertyType, getCustomPropertiesWithQuery } from "../../../../api/adminSettingServices";
 import { LabelComponent } from "../../../project/LabelComponent";
 import { WizardCard } from "../../WizardCard";
-import { CustomPropertyValue } from "../../../../api/customProps";
+import { CustomPropertyValue } from "../../../../api/customPropServices";
 import { CustomPropertyWidget } from "../../../CustomPropertyWidget";
 
 type Props = {

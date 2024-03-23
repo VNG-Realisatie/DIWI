@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { CustomPropertyType, getCustomPropertiesWithQuery } from "../../../api/adminSettingServices";
 import Grid from "@mui/material/Grid";
-import { CustomPropertyValue } from "../../../api/customProps";
+import { CustomPropertyValue } from "../../../api/customPropServices";
 import Typography from "@mui/material/Typography";
 import { CustomPropertyWidget } from "../../CustomPropertyWidget";
 import { SxProps, Theme } from "@mui/material";

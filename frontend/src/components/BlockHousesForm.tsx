@@ -17,7 +17,7 @@ import { t } from "i18next";
 import { updateHouseBlock } from "../api/projectsServices";
 import AlertContext from "../context/AlertContext";
 import { CustomPropertiesGroup } from "./project-wizard/house-blocks/custom-properties/CustomPropertiesGroup";
-import { CustomPropertyValue, getBlockCustomPropertyValues, putBlockCustomPropertyValues } from "../api/customProps";
+import { CustomPropertyValue, getBlockCustomPropertyValues, putBlockCustomPropertyValues } from "../api/customPropServices";
 
 type Props = {
     projectDetailHouseBlock?: HouseBlock;

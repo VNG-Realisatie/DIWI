@@ -1,6 +1,6 @@
 import { Autocomplete, TextField } from "@mui/material";
 import { CustomPropertyType } from "../api/adminSettingServices";
-import { CustomPropertyValue } from "../api/customProps";
+import { CustomPropertyValue } from "../api/customPropServices";
 import { CellContainer } from "./project/project-with-house-block/CellContainer";
 
 type Props = {
