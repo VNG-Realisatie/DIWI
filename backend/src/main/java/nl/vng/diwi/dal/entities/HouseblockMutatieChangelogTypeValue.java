@@ -1,5 +1,7 @@
 package nl.vng.diwi.dal.entities;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import nl.vng.diwi.dal.GenericRepository;
@@ -18,6 +20,8 @@ import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class HouseblockMutatieChangelogTypeValue extends IdSuperclass {
 
     @JsonIgnoreProperties("type")

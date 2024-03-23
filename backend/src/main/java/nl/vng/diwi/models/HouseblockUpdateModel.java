@@ -87,10 +87,8 @@ public class HouseblockUpdateModel {
         physicalAppearanceAndHouseType,
         programming,
         size,
-        // Do not change the order - startDate and endDate must be the last ones!
-        // It will cause problems and extra milestones to be created.
-        startDate, // Do not change the order - startDate and endDate must be the last ones
-        endDate; // Do not change the order - startDate and endDate must be the last ones
+        startDate,
+        endDate;
     }
 
     public enum ActionType {
