@@ -390,7 +390,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                     showCheckBox
                         ? handleExport
                         : (params: GridRowParams) => {
-                              navigate(`/projects/${params.id}`);
+                              navigate(`/projects/${params.id}/characteristics`);
                           }
                 }
                 processRowUpdate={
