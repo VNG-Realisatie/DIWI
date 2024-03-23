@@ -16,6 +16,8 @@ export const CreateProject = () => {
         projectColor: "#FF5733",
         projectLeaders: [],
         projectOwners: [],
+        projectPhase: "INITIATION",
+        planningPlanStatus: [],
     });
     const [createFormHouseBlock, setCreateFormHouseBlock] = useState<HouseBlock>(emptyHouseBlockForm);
     const [activeStep, setActiveStep] = useState<number>(0);
@@ -49,8 +51,18 @@ export const CreateProject = () => {
                     return true;
                 }
             } else {
+                const temporaryCreateForm = {
+                    projectName: createProjectForm.projectName,
+                    projectColor: createProjectForm.projectColor,
+                    projectPhase: createProjectForm.projectPhase,
+                    confidentialityLevel: createProjectForm.confidentialityLevel,
+                    startDate: createProjectForm.startDate,
+                    endDate: createProjectForm.endDate,
+                };
                 setValidationError("");
-                const project = await createProject(createProjectForm); //TODO needs backend update to accept other properties.
+                const project = await createProject(temporaryCreateForm);
+                createProjectForm.projectId = project.projectId;
+                await updateProject(createProjectForm.projectId, createProjectForm);
 
                 navigate(`/project/create/${project.projectId}`);
                 setAlert(t("createProject.successfullySaved"), "success");
