@@ -26,6 +26,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
     useEffect(() => {
         getPriorityList().then((priorityList) => setPriorityOptionList(priorityList));
     }, []);
+
     useEffect(() => {
         getMunicipalityRoleList().then((roles) => setMunicipalityRolesOptions(roles));
     }, []);
@@ -36,6 +37,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
             projectColor: newColor,
         });
     };
+
     const handlePlanTypeChange = (event: SelectChangeEvent<any>) => {
         const {
             target: { value },
@@ -47,6 +49,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
             });
         }
     };
+
     const handlePlanStatusChange = (event: SelectChangeEvent<any>) => {
         const {
             target: { value },
@@ -58,6 +61,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
             });
         }
     };
+
     const datePickerStyle = {
         "& .MuiFormHelperText-root": {
             color: "red",

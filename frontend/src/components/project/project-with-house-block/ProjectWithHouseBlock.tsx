@@ -206,36 +206,6 @@ export const ProjectsWithHouseBlock = () => {
         municipalityRole: selectedMunicipalityRole,
         projectOwners: owner,
         projectLeaders: leader,
-        //Will be implemented later
-        // projectOwners: [
-        //     {
-        //         uuid: selectedProject?.projectId,
-        //         name: "string",
-        //         users: [
-        //             {
-        //                 uuid: selectedProject?.projectId,
-        //                 firstName: "firtname",
-        //                 lastName: "lastname",
-        //                 initials: "fl",
-        //             },
-        //         ],
-        //     },
-        // ],
-        //Will be implemented later
-        // projectLeaders: [
-        //     {
-        //         uuid: selectedProject?.projectId,
-        //         name: "string",
-        //         users: [
-        //             {
-        //                 uuid: selectedProject?.projectId,
-        //                 firstName: "firtname",
-        //                 lastName: "lastname",
-        //                 initials: "fl",
-        //             },
-        //         ],
-        //     },
-        // ],
         totalValue: selectedProject?.totalValue,
         municipality: selectedMunicipality,
         wijk: selectedWijk,
