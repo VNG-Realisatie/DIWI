@@ -85,7 +85,13 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                 )}
                 {!edit && editForm && (
                     <InputContainer>
-                        <Typography>{ownership?.value.value !== null ? ownership?.value.value : ownership?.value.min + "-" + ownership?.value.max}</Typography>
+                        <Typography>
+                            {ownership?.value.value !== null
+                                ? ownership?.value.value
+                                : ownership?.value.min == null && ownership?.value.max === null
+                                  ? ""
+                                  : ownership?.value.min + "-" + ownership?.value.max}
+                        </Typography>
                     </InputContainer>
                 )}
                 {!edit && !editForm && (
@@ -105,7 +111,9 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                         <Typography>
                             {ownership?.rentalValue.value !== null
                                 ? ownership?.rentalValue.value
-                                : ownership?.rentalValue.min + "-" + ownership?.rentalValue.max}
+                                : ownership?.rentalValue.min == null && ownership?.rentalValue.max === null
+                                  ? ""
+                                  : ownership?.rentalValue.min + "-" + ownership?.rentalValue.max}
                         </Typography>
                     </InputContainer>
                 )}
