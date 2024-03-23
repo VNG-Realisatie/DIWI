@@ -218,37 +218,37 @@
     },
     "projectTable": {
       "planningPlanStatus": {
-        "_1A_ONHERROEPELIJK": "ONHERROEPELIJK",
-        "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG": "ONHERROEPELIJK MET UITWERKING NODIG",
-        "_1C_ONHERROEPELIJK_MET_BW_NODIG": "ONHERROEPELIJK MET BW NODIG",
-        "_2A_VASTGESTELD": "VASTGESTELD",
-        "_2B_VASTGESTELD_MET_UITWERKING_NODIG": "VASTGESTELD MET UITWERKING NODIG",
-        "_2C_VASTGESTELD_MET_BW_NODIG": "VASTGESTELD MET BW NODIG",
-        "_3_IN_VOORBEREIDING": "IN VOORBEREIDING",
-        "_4A_OPGENOMEN_IN_VISIE": "OPGENOMEN IN VISIE",
-        "_4B_NIET_OPGENOMEN_IN_VISIE": "NIET OPGENOMEN IN VISIE"
+        "_1A_ONHERROEPELIJK": "Onherroepelijk",
+        "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG": "Onherroepelijk met uitwerking nodig",
+        "_1C_ONHERROEPELIJK_MET_BW_NODIG": "Onherroepelijk met bw nodig",
+        "_2A_VASTGESTELD": "Vastgesteld",
+        "_2B_VASTGESTELD_MET_UITWERKING_NODIG": "Vastgesteld met uitwerking nodig",
+        "_2C_VASTGESTELD_MET_BW_NODIG": "Vastgesteld met bw nodig",
+        "_3_IN_VOORBEREIDING": "In voorbereiding",
+        "_4A_OPGENOMEN_IN_VISIE": "Opgenomen in visie",
+        "_4B_NIET_OPGENOMEN_IN_VISIE": "Niet opgenomen in visie"
       },
       "planTypeOptions": {
-        "PAND_TRANSFORMATIE": "PAND TRANSFORMATIE",
-        "TRANSFORMATIEGEBIED": "TRANSFORMATIEGEBIED",
-        "HERSTRUCTURERING": "HERSTRUCTURERING",
-        "VERDICHTING": "VERDICHTING",
-        "UITBREIDING_UITLEG": "UITBREIDING UITLEG",
-        "UITBREIDING_OVERIG": "UITBREIDING OVERIG"
+        "PAND_TRANSFORMATIE": "Pand Transformatie",
+        "TRANSFORMATIEGEBIED": "Transformatiegebied",
+        "HERSTRUCTURERING": "Herstructurering",
+        "VERDICHTING": "Verdichting",
+        "UITBREIDING_UITLEG": "Uitbreiding uitleg",
+        "UITBREIDING_OVERIG": "Uitbreiding overig"
       },
       "confidentialityLevelOptions": {
-        "PRIVE": "PRIVE",
-        "INTERN_UITVOERING": "INTERN UITVOERING",
-        "INTERN_RAPPORTAGE": "INTERN RAPPORTAGE",
-        "EXTERN_RAPPORTAGE": "EXTERN RAPPORTAGE",
-        "OPENBAAR": "OPENBAAR"
+        "PRIVE": "Prive",
+        "INTERN_UITVOERING": "Intern uitvoering",
+        "INTERN_RAPPORTAGE": "Intern rapportage",
+        "EXTERN_RAPPORTAGE": "Extern rapportage",
+        "OPENBAAR": "Openbaar"
       },
       "projectPhaseOptions": {
-        "_1_INITIATIEFFASE": "INITIATIEFFASE",
-        "_2_PROJECTFASE": "PROJECTFASE",
-        "_3_VERGUNNINGSFASE": "VERGUNNINGSFASE",
-        "_4_REALISATIEFASE": "REALISATIEFASE",
-        "_5_OPLEVERINGSFASE": "OPLEVERINGSFASE"
+        "_1_INITIATIEFFASE": "Initiatieffase",
+        "_2_PROJECTFASE": "Projectfase",
+        "_3_VERGUNNINGSFASE": "Vergunningsfase",
+        "_4_REALISATIEFASE": "Realisatiefase",
+        "_5_OPLEVERINGSFASE": "Opleveringsfase"
       }
     },
     "wizard": {
