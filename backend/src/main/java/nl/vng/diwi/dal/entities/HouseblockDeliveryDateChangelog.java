@@ -2,9 +2,6 @@ package nl.vng.diwi.dal.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,26 +11,24 @@ import lombok.Setter;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.entities.superclasses.HouseblockMilestoneChangeDataSuperclass;
 
+import java.time.LocalDate;
+
 @Entity
-@Table(name = "woningblok_maatwerk_boolean_changelog", schema = GenericRepository.VNG_SCHEMA_NAME)
+@Table(name = "woningblok_opleverdatum_changelog", schema = GenericRepository.VNG_SCHEMA_NAME)
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class HouseblockBooleanCustomPropertyChangelog extends HouseblockMilestoneChangeDataSuperclass {
+public class HouseblockDeliveryDateChangelog extends HouseblockMilestoneChangeDataSuperclass {
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "eigenschap_id")
-    private CustomProperty customProperty;
-
-    @Column(name = "value")
-    private Boolean value;
+    @Column(name = "verwachte_opleverdatum")
+    private LocalDate expectedDeliveryDate;
 
     @Override
     public Object getShallowCopy() {
-        var newChangelog = HouseblockBooleanCustomPropertyChangelog.builder()
-            .customProperty(customProperty).value(value).build();
+        var newChangelog = HouseblockDeliveryDateChangelog.builder()
+            .expectedDeliveryDate(expectedDeliveryDate).build();
         newChangelog.setHouseblock(getHouseblock());
         newChangelog.setStartMilestone(getStartMilestone());
         newChangelog.setEndMilestone(getEndMilestone());

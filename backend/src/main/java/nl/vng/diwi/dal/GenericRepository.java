@@ -31,6 +31,7 @@ public class GenericRepository implements AutoCloseable {
                 HouseblockAppearanceAndTypeChangelog.class,
                 HouseblockPhysicalAppearanceChangelogValue.class,
                 HouseblockHouseTypeChangelogValue.class,
+                HouseblockDeliveryDateChangelog.class,
                 HouseblockDurationChangelog.class,
                 HouseblockGroundPositionChangelog.class,
                 HouseblockGroundPositionChangelogValue.class,
