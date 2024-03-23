@@ -13,10 +13,11 @@ import * as Paths from "../../Paths";
 import Feature from "ol/Feature";
 import { Point } from "ol/geom";
 import { Circle as CircleStyle, Fill, Stroke, Style, Text as StyleText } from "ol/style";
-import { ProjectListModel, getProjects } from "../../api/projectsServices";
-import { components } from "../../types/schema";
-import ConfigContext from "../../context/ConfigContext";
 import { StyleFunction } from "ol/style/Style";
+import { ProjectListModel, getProjects } from "../../api/projectsServices";
+import ConfigContext from "../../context/ConfigContext";
+import { components } from "../../types/schema";
+import { mapBoundsToExtent } from "../../utils/map";
 
 const geoMarker = (f: Feature): Style => {
     // check feature props for style
@@ -110,12 +111,7 @@ const ProjectOverviewMap = () => {
 
             setProjectsLayerSource(source);
 
-            // make sure to swap min and max if they are provided in the wrong order!
-            const minx = mapBounds.corner1.lng < mapBounds.corner2.lng ? mapBounds.corner1.lng : mapBounds.corner2.lng;
-            const miny = mapBounds.corner1.lat < mapBounds.corner2.lat ? mapBounds.corner1.lat : mapBounds.corner2.lat;
-            const maxx = mapBounds.corner1.lng > mapBounds.corner2.lng ? mapBounds.corner1.lng : mapBounds.corner2.lng;
-            const maxy = mapBounds.corner1.lat > mapBounds.corner2.lat ? mapBounds.corner1.lat : mapBounds.corner2.lat;
-            const extent = [minx, miny, maxx, maxy];
+            const extent = mapBoundsToExtent(mapBounds);
             let view = new View({ extent: extent });
             view.fit(extent);
 
