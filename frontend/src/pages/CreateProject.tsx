@@ -16,7 +16,7 @@ export const CreateProject = () => {
         projectColor: "#FF5733",
         projectLeaders: [],
         projectOwners: [],
-        projectPhase: "INITIATION",
+        projectPhase: "",
         planningPlanStatus: [],
     });
     const [createFormHouseBlock, setCreateFormHouseBlock] = useState<HouseBlock>(emptyHouseBlockForm);
