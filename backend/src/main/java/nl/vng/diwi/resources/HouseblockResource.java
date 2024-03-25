@@ -230,6 +230,12 @@ public class HouseblockResource {
             throw new VngBadRequestException(String.format("Houseblock %s does not belong to project %s", houseblockModelToUpdate.getHouseblockId(), houseblockModelToUpdate.getProjectId()));
         }
 
+        String snapshotValidationError = houseblockModelToUpdate.validate(new MilestoneModel(project.getDuration().get(0).getStartMilestone()).getDate(),
+            new MilestoneModel(project.getDuration().get(0).getEndMilestone()).getDate());
+        if (snapshotValidationError != null) {
+            throw new VngBadRequestException(snapshotValidationError);
+        }
+
         //handle all other fields
         List<HouseblockUpdateModel> otherUpdateFields = houseblockUpdateModelList.stream().filter(m -> !m.getProperty().equals(HouseblockUpdateModel.HouseblockProperty.startDate) &&
             !m.getProperty().equals(HouseblockUpdateModel.HouseblockProperty.endDate)).toList();
@@ -316,7 +322,7 @@ public class HouseblockResource {
             case startDate ->
                 houseblockService.updateHouseblockStartDate(repo, project, houseblock, LocalDate.parse(updateModel.getValue()), loggedUserUuid);
             case endDate ->
-                houseblockService.updateHouseblockEndDate(repo, project, houseblock, LocalDate.parse(updateModel.getValue()), loggedUserUuid);
+                houseblockService.updateHouseblockEndDate(repo, project, houseblock, LocalDate.parse(updateModel.getValue()), loggedUserUuid, updateDate);
         }
     }
 
