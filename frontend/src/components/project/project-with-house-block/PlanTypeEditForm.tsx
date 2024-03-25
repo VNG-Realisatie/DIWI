@@ -29,7 +29,7 @@ export const PlanTypeEditForm = ({ planType, setPlanType }: Props) => {
             value={planType}
             onChange={handlePlanTypeChange}
             input={<OutlinedInput />}
-            renderValue={(selected) => selected.join(", ")}
+            renderValue={(selected) => selected.map((s) => t(`projectTable.planTypeOptions.${s}`)).join(", ")}
             MenuProps={MenuProps}
         >
             {planTypeOptions.map((pt) => (

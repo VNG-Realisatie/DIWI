@@ -5,27 +5,46 @@ import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
 import { OSM, TileWMS, Vector as VectorSource } from "ol/source";
 
+import _ from "lodash";
 import { defaults as defaultControls } from "ol/control.js";
 import { Extent } from "ol/extent";
+import { Fill, Stroke, Style } from "ol/style";
+import { StyleFunction } from "ol/style/Style";
 import queryString from "query-string";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Plot, PlotGeoJSON, getProjectPlots, updateProjectPlots, updateProjects } from "../api/projectsServices";
+import ConfigContext from "../context/ConfigContext";
 import ProjectContext from "../context/ProjectContext";
-import _ from "lodash";
+import { extentToCenter, mapBoundsToExtent } from "../utils/map";
 
 const baseUrlKadasterWms = "https://service.pdok.nl/kadaster/kadastralekaart/wms/v5_0";
 
 const usePlotSelector = (id: string) => {
     const { selectedProject } = useContext(ProjectContext);
+    const { mapBounds } = useContext(ConfigContext);
 
     const [map, setMap] = useState<Map>();
     const [selectedPlotLayerSource, setSelectedPlotLayerSource] = useState<VectorSource>();
 
-    const [originalSelectedPlots, setOriginalSelectedPlots] = useState<Plot[]>([]);
+    const [originalSelectedPlots, setOriginalSelectedPlots] = useState<Plot[] | null>(null);
     const [selectedPlots, setSelectedPlots] = useState<Plot[]>([]);
 
     const [plotsChanged, setPlotsChanged] = useState(false);
     const [extent, setExtent] = useState<Extent | null>(null);
+
+    const selectedFeatureStyle = useCallback((): Style => {
+        const fillOpacityHex = "99";
+        const borderOpacityHex = "DD";
+        const red = "#ff4122";
+        return new Style({
+            fill: new Fill({ color: (selectedProject?.projectColor ? selectedProject.projectColor : red) + fillOpacityHex }),
+            stroke: new Stroke({
+                color: (selectedProject?.projectColor ?? red) + borderOpacityHex,
+                width: 5,
+            }),
+        });
+    }, [selectedProject]);
+
     useEffect(
         function fetchPlots() {
             if (!selectedProject) return;
@@ -39,7 +58,7 @@ const usePlotSelector = (id: string) => {
     );
 
     const handleCancelChange = () => {
-        setSelectedPlots(originalSelectedPlots);
+        setSelectedPlots(originalSelectedPlots || []);
     };
 
     const handleSaveChange = async () => {
@@ -49,7 +68,8 @@ const usePlotSelector = (id: string) => {
 
             const extent = selectedPlotLayerSource?.getExtent();
             if (extent) {
-                selectedProject.location = { lat: extent[0] + (extent[2] - extent[0]) / 2, lng: extent[1] + (extent[3] - extent[1]) / 2 };
+                const center = extentToCenter(extent);
+                selectedProject.location = { lat: center[0], lng: center[1] };
             }
             await updateProjects(selectedProject);
         }
@@ -121,11 +141,15 @@ const usePlotSelector = (id: string) => {
                 selectedPlotLayerSource.addFeatures(geojson);
             }
 
-            if (extent == null && !selectedPlotLayerSource.isEmpty()) {
-                setExtent(selectedPlotLayerSource.getExtent());
+            if (extent == null && originalSelectedPlots != null) {
+                if (!selectedPlotLayerSource.isEmpty()) {
+                    setExtent(selectedPlotLayerSource.getExtent());
+                } else {
+                    setExtent(mapBoundsToExtent(mapBounds));
+                }
             }
         },
-        [extent, originalSelectedPlots, selectedPlotLayerSource, selectedPlots],
+        [extent, originalSelectedPlots, selectedPlotLayerSource, selectedPlots, mapBounds],
     );
 
     useEffect(
@@ -160,7 +184,7 @@ const usePlotSelector = (id: string) => {
             });
 
             const source = new VectorSource();
-            const selectedPlotLayer = new VectorLayer({ source });
+            const selectedPlotLayer = new VectorLayer({ source, style: selectedFeatureStyle as StyleFunction });
 
             setSelectedPlotLayerSource(source);
 
@@ -168,12 +192,14 @@ const usePlotSelector = (id: string) => {
                 target: id,
                 layers: [osmLayer, kadasterLayers, selectedPlotLayer],
                 view: new View({
-                    center: [521407.57221923344, 6824704.512308201],
-                    zoom: 16,
+                    center: extentToCenter(mapBoundsToExtent(mapBounds)),
+                    zoom: 12,
                 }),
                 controls: defaultControls({ attribution: false }),
             });
             setMap(newMap);
+            const extent = mapBoundsToExtent(mapBounds);
+            newMap.getView().fit(extent);
 
             return () => {
                 newMap.dispose();
@@ -183,7 +209,7 @@ const usePlotSelector = (id: string) => {
                 }
             };
         },
-        [id],
+        [id, mapBounds, selectedFeatureStyle],
     );
     return { plotsChanged, handleCancelChange, handleSaveChange };
 };

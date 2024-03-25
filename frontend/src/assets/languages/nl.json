@@ -63,6 +63,7 @@
         "noPermissionFromLandOwner": "Geen toestemming Grondeigenaar",
         "intentionToCooperateWithTheLandowner": "Intentie medewerking Grondeigenaar",
         "formalPermissionFromLandOwner": "Formele toestemming van Grondeigenaar",
+        "housesOn": "woningen op",
         "physicalAppearance": {
           "title": "Fysiek voorkomen",
           "tussenwoning": "Tussenwoning",
@@ -218,37 +219,37 @@
     },
     "projectTable": {
       "planningPlanStatus": {
-        "_1A_ONHERROEPELIJK": "ONHERROEPELIJK",
-        "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG": "ONHERROEPELIJK MET UITWERKING NODIG",
-        "_1C_ONHERROEPELIJK_MET_BW_NODIG": "ONHERROEPELIJK MET BW NODIG",
-        "_2A_VASTGESTELD": "VASTGESTELD",
-        "_2B_VASTGESTELD_MET_UITWERKING_NODIG": "VASTGESTELD MET UITWERKING NODIG",
-        "_2C_VASTGESTELD_MET_BW_NODIG": "VASTGESTELD MET BW NODIG",
-        "_3_IN_VOORBEREIDING": "IN VOORBEREIDING",
-        "_4A_OPGENOMEN_IN_VISIE": "OPGENOMEN IN VISIE",
-        "_4B_NIET_OPGENOMEN_IN_VISIE": "NIET OPGENOMEN IN VISIE"
+        "_1A_ONHERROEPELIJK": "1A Onherroepelijk",
+        "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG": "1B Onherroepelijk met uitwerking nodig",
+        "_1C_ONHERROEPELIJK_MET_BW_NODIG": "1C Onherroepelijk met bw nodig",
+        "_2A_VASTGESTELD": "2A Vastgesteld",
+        "_2B_VASTGESTELD_MET_UITWERKING_NODIG": "2B Vastgesteld met uitwerking nodig",
+        "_2C_VASTGESTELD_MET_BW_NODIG": "2C Vastgesteld met bw nodig",
+        "_3_IN_VOORBEREIDING": "3 In voorbereiding",
+        "_4A_OPGENOMEN_IN_VISIE": "4A Opgenomen in visie",
+        "_4B_NIET_OPGENOMEN_IN_VISIE": "4B Niet opgenomen in visie"
       },
       "planTypeOptions": {
-        "PAND_TRANSFORMATIE": "PAND TRANSFORMATIE",
-        "TRANSFORMATIEGEBIED": "TRANSFORMATIEGEBIED",
-        "HERSTRUCTURERING": "HERSTRUCTURERING",
-        "VERDICHTING": "VERDICHTING",
-        "UITBREIDING_UITLEG": "UITBREIDING UITLEG",
-        "UITBREIDING_OVERIG": "UITBREIDING OVERIG"
+        "PAND_TRANSFORMATIE": "Pand Transformatie",
+        "TRANSFORMATIEGEBIED": "Transformatiegebied",
+        "HERSTRUCTURERING": "Herstructurering",
+        "VERDICHTING": "Verdichting",
+        "UITBREIDING_UITLEG": "Uitbreiding uitleg",
+        "UITBREIDING_OVERIG": "Uitbreiding overig"
       },
       "confidentialityLevelOptions": {
-        "PRIVE": "PRIVE",
-        "INTERN_UITVOERING": "INTERN UITVOERING",
-        "INTERN_RAPPORTAGE": "INTERN RAPPORTAGE",
-        "EXTERN_RAPPORTAGE": "EXTERN RAPPORTAGE",
-        "OPENBAAR": "OPENBAAR"
+        "PRIVE": "Prive",
+        "INTERN_UITVOERING": "Intern uitvoering",
+        "INTERN_RAPPORTAGE": "Intern rapportage",
+        "EXTERN_RAPPORTAGE": "Extern rapportage",
+        "OPENBAAR": "Openbaar"
       },
       "projectPhaseOptions": {
-        "_1_INITIATIEFFASE": "INITIATIEFFASE",
-        "_2_PROJECTFASE": "PROJECTFASE",
-        "_3_VERGUNNINGSFASE": "VERGUNNINGSFASE",
-        "_4_REALISATIEFASE": "REALISATIEFASE",
-        "_5_OPLEVERINGSFASE": "OPLEVERINGSFASE"
+        "_1_INITIATIEFFASE": "1 Initiatieffase",
+        "_2_PROJECTFASE": "2 Projectfase",
+        "_3_VERGUNNINGSFASE": "3 Vergunningsfase",
+        "_4_REALISATIEFASE": "4 Realisatiefase",
+        "_5_OPLEVERINGSFASE": "5 Opleveringsfase"
       }
     },
     "wizard": {
@@ -273,6 +274,7 @@
           "actions": "Acties"
         },
         "add": "Voeg optioneel toe",
+        "edit": "Pas optioneel veld aan",
         "propertyTypeInfo": "Type kan na het opslaan niet meer worden gewijzigd.",
         "notifications": {
           "successfullySaved": "Eigenschappen succesvol opgeslagen.",

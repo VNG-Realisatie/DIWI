@@ -189,7 +189,9 @@ public class ProjectsResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public List<ProjectHouseblockCustomPropertyModel> updateProjectCustomProperty(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid, ProjectHouseblockCustomPropertyModel projectCPUpdateModel)
         throws VngNotFoundException, VngBadRequestException, VngServerErrorException {
-
+        if (projectCPUpdateModel.getCustomPropertyId() == null){
+            throw new VngBadRequestException("Custom property id must be set.");
+        }
         CustomPropertyModel dbCP = customPropertiesService.getCustomProperty(repo, projectCPUpdateModel.getCustomPropertyId());
         if (dbCP == null || !dbCP.getObjectType().equals(ObjectType.PROJECT)) {
             throw new VngBadRequestException("Custom property id does not match any known property.");

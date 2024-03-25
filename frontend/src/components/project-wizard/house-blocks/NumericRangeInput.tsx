@@ -1,6 +1,7 @@
 import { TextField } from "@mui/material";
+import React, { useEffect, useState } from "react";
 
-type ValueType = {
+export type ValueType = {
     value: null | number;
     min: null | number;
     max: null | number;
@@ -11,33 +12,74 @@ type Props = {
     labelText?: string;
 };
 
-export const NumericRangeInput = ({ labelText, value, updateCallBack }: Props) => {
-    const handleSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.value.includes("-")) {
-            const values = e.target.value.split("-");
-            const newSize = {
-                value: null,
-                min: parseFloat(values[0]),
-                max: parseFloat(values[1]),
-            };
-            updateCallBack(newSize);
+const formatValue = (val: number | null) => {
+    return val !== null ? String(val) : "";
+};
+
+function fromRangeToString(value: ValueType) {
+    let inputValue = "";
+    if (value.value !== null) {
+        inputValue = formatValue(value.value);
+    } else if (value.min !== null || value.max !== null) {
+        inputValue = `${formatValue(value.min)}-${formatValue(value.max)}`;
+    }
+    return inputValue;
+}
+
+function fromStringToRange(stringValue: string) {
+    const inputValue = stringValue;
+    if (inputValue === "") {
+        return { value: null, min: null, max: null };
+    } else if (inputValue.includes("-")) {
+        const [minStr, maxStr] = inputValue.split("-");
+        const min = parseFloat(minStr);
+        const max = parseFloat(maxStr);
+        if (!isNaN(min) && !isNaN(max)) {
+            return { value: null, min, max };
+        } else if (!isNaN(min)) {
+            return { value: min, min: null, max: null };
+        } else if (!isNaN(max)) {
+            return { value: max, min: null, max: null };
         } else {
-            const newSize = {
-                value: +e.target.value,
-                min: null,
-                max: null,
-            };
-            updateCallBack(newSize);
+            return { value: null, min: null, max: null };
         }
+    } else {
+        const newValue = parseFloat(inputValue);
+        return { value: newValue, min: null, max: null };
+    }
+}
+
+export const NumericRangeInput = ({ labelText, value, updateCallBack }: Props) => {
+    const [stringValue, setStringValue] = useState<string>(fromRangeToString(value));
+
+    useEffect(() => {
+        setStringValue(fromRangeToString(value));
+    }, [value]);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setStringValue(e.target.value);
     };
+
+    const onBlur = () => {
+        const range = fromStringToRange(stringValue);
+        updateCallBack(range);
+    };
+
+    function handleKey(event: React.KeyboardEvent<HTMLDivElement>): void {
+        if (event.key === "Enter") {
+            onBlur();
+        }
+    }
     return (
         <TextField
             id="size"
             size="small"
             variant="outlined"
             label={labelText}
-            value={value?.value !== null ? value?.value : value?.min + "-" + value?.max}
-            onChange={handleSizeChange}
+            value={stringValue}
+            onChange={handleChange}
+            onBlur={onBlur}
+            onKeyUp={handleKey}
         />
     );
 };

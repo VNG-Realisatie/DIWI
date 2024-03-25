@@ -55,6 +55,10 @@ export type PlotGeoJSON = {
     };
 };
 
+type SizeData = {
+    size: number;
+};
+
 // The generated plot model doesn't work as the geojson definition is not correct.
 // Replace by PlotGeoJSON for now.
 type OgPlot = components["schemas"]["PlotModel"];
@@ -62,6 +66,10 @@ export type Plot = Pick<OgPlot, Exclude<keyof OgPlot, "geoJson">> & { geoJson: P
 
 export async function getProjects(pageNumber: number, pageSize: number): Promise<Array<Project>> {
     return getJson(`${API_URI}/projects/table?pageNumber=${pageNumber}&pageSize=${pageSize}`);
+}
+
+export async function getProjectsSize(): Promise<SizeData> {
+    return getJson(`${API_URI}/projects/table/size`);
 }
 
 export async function getProject(id: string): Promise<Project> {

@@ -30,7 +30,7 @@ export const PlanStatusEditForm = ({ planStatus, setPlanStatus }: Props) => {
             value={planStatus}
             onChange={handlePlanStatusChange}
             input={<OutlinedInput />}
-            renderValue={(selected) => selected.join(", ")}
+            renderValue={(selected) => selected.map((s) => t(`projectTable.planningPlanStatus.${s}`)).join(", ")}
             MenuProps={MenuProps}
         >
             {planningPlanStatus.map((pt) => (

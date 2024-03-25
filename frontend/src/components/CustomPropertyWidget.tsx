@@ -1,174 +1,82 @@
-import { Autocomplete, Grid, TextField, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
-import { CustomPropertyType, getCustomPropertiesWithQuery } from "../api/adminSettingServices";
+import { Autocomplete, TextField } from "@mui/material";
+import { CustomPropertyType } from "../api/adminSettingServices";
+import { CustomPropertyValue } from "../api/customPropServices";
 import { CellContainer } from "./project/project-with-house-block/CellContainer";
-import { columnTitleStyle } from "./project/project-with-house-block/ProjectWithHouseBlock";
 
-const CustomPropertyWidget = ({ projectEditable, customValues, setCustomValues, objectType }: any) => {
-    const [customProperties, setCustomProperties] = useState<CustomPropertyType[]>([]);
-
-    useEffect(() => {
-        getCustomPropertiesWithQuery("PROJECT").then((properties) => {
-            setCustomProperties(properties.filter((property) => !!property.id));
-        });
-    }, []);
-
-    const handleValueChange = (customPropertyId: string, newValue: any) => {
-        const updatedValues = customValues.map((value: any) => {
-            if (value.customPropertyId === customPropertyId) {
-                return {
-                    ...value,
-                    textValue: typeof newValue === "string" ? newValue : null,
-                    numericValue: typeof newValue === "number" ? { value: newValue } : null,
-                    booleanValue: typeof newValue === "string" && (newValue === "true" || newValue === "false") ? newValue === "true" : null,
-                    categories: Array.isArray(newValue) && newValue.length === 1 ? newValue : [],
-                };
-            }
-            return value;
-        });
-
-        const existingValueIndex = updatedValues.findIndex((value: any) => value.customPropertyId === customPropertyId);
-        if (existingValueIndex !== -1) {
-            setCustomValues(updatedValues);
-        } else {
-            setCustomValues([
-                ...updatedValues,
-                {
-                    customPropertyId,
-                    propertyType:
-                        typeof newValue === "string"
-                            ? "TEXT"
-                            : typeof newValue === "number"
-                              ? "NUMERIC"
-                              : typeof newValue === "boolean"
-                                ? "BOOLEAN"
-                                : "CATEGORY",
-                    textValue: typeof newValue === "string" ? newValue : null,
-                    numericValue: typeof newValue === "number" ? { value: newValue } : null,
-                    booleanValue: typeof newValue === "string" && (newValue === "true" || newValue === "false") ? newValue === "true" : null,
-                    categories: Array.isArray(newValue) && newValue.length === 1 ? newValue : [],
-                },
-            ]);
-        }
-    };
-    return (
-        <Grid container my={2}>
-            {customProperties.map(
-                (property: any) =>
-                    property.disabled !== true &&
-                    property.objectType === objectType && (
-                        <Grid item xs={6} md={1} key={property.id}>
-                            {property.propertyType === "BOOLEAN" && (
-                                <>
-                                    {projectEditable ? (
-                                        <>
-                                            <Typography sx={columnTitleStyle}>{property.name}</Typography>
-                                            <Autocomplete
-                                                options={["true", "false"]}
-                                                value={
-                                                    customValues.find((value: any) => value.customPropertyId === property.id)?.booleanValue?.toString() || ""
-                                                }
-                                                onChange={(_, newValue) => handleValueChange(property.id, newValue)}
-                                                renderInput={(params) => <TextField {...params} size="small" />}
-                                            />
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Typography sx={columnTitleStyle}>{property.name}</Typography>
-                                            <CellContainer>
-                                                {customValues.find((value: any) => value.customPropertyId === property.id)?.booleanValue?.toString() || ""}
-                                            </CellContainer>
-                                        </>
-                                    )}
-                                </>
-                            )}
-                            {property.propertyType === "CATEGORY" && (
-                                <>
-                                    {projectEditable ? (
-                                        <>
-                                            <Typography sx={columnTitleStyle}>{property.name}</Typography>
-                                            <Autocomplete
-                                                options={property.categories || []}
-                                                getOptionLabel={(option: any) => option.name}
-                                                value={(() => {
-                                                    const categoryId = customValues.find((value: any) => value.customPropertyId === property.id)
-                                                        ?.categories?.[0];
-                                                    if (!categoryId) return null;
-                                                    const category = property.categories.find((cat: any) => cat.id === categoryId);
-                                                    return category ? category : null;
-                                                })()}
-                                                onChange={(_, newValue) => handleValueChange(property.id, newValue ? [newValue.id] : null)}
-                                                renderInput={(params) => <TextField {...params} size="small" />}
-                                            />
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Typography sx={columnTitleStyle}>{property.name}</Typography>
-                                            <CellContainer>
-                                                {(() => {
-                                                    const categoryId = customValues.find((value: any) => value.customPropertyId === property.id)
-                                                        ?.categories?.[0];
-                                                    if (!categoryId) return null;
-                                                    const category = property.categories.find((cat: any) => cat.id === categoryId);
-                                                    return category ? category.name : null;
-                                                })()}
-                                            </CellContainer>
-                                        </>
-                                    )}
-                                </>
-                            )}
-                            {property.propertyType === "NUMERIC" && (
-                                <>
-                                    {projectEditable ? (
-                                        <>
-                                            <Typography sx={columnTitleStyle}>{property.name}</Typography>
-                                            <TextField
-                                                variant="outlined"
-                                                size="small"
-                                                value={customValues.find((value: any) => value.customPropertyId === property.id)?.numericValue?.value || 0}
-                                                onChange={(e) => {
-                                                    const numericValue: number = +e.target.value.replace(/[^0-9]/g, "");
-                                                    handleValueChange(property.id, numericValue);
-                                                }}
-                                            />
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Typography sx={columnTitleStyle}>{property.name}</Typography>
-                                            <CellContainer>
-                                                {customValues.find((value: any) => value.customPropertyId === property.id)?.numericValue?.value || 0}
-                                            </CellContainer>
-                                        </>
-                                    )}
-                                </>
-                            )}
-                            {property.propertyType === "TEXT" && (
-                                <>
-                                    {projectEditable ? (
-                                        <>
-                                            <Typography sx={columnTitleStyle}>{property.name}</Typography>
-                                            <TextField
-                                                variant="outlined"
-                                                size="small"
-                                                value={customValues.find((value: any) => value.customPropertyId === property.id)?.textValue || ""}
-                                                onChange={(e) => handleValueChange(property.id, e.target.value)}
-                                            />
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Typography sx={columnTitleStyle}>{property.name}</Typography>
-                                            <CellContainer>
-                                                {customValues.find((value: any) => value.customPropertyId === property.id)?.textValue || ""}
-                                            </CellContainer>
-                                        </>
-                                    )}
-                                </>
-                            )}
-                        </Grid>
-                    ),
-            )}
-        </Grid>
-    );
+type Props = {
+    projectEditable: boolean;
+    customValue: CustomPropertyValue | undefined;
+    customDefinition: CustomPropertyType;
+    setCustomValue: (newValue: CustomPropertyValue) => void;
 };
 
-export default CustomPropertyWidget;
+export const CustomPropertyWidget = ({ projectEditable, customValue, setCustomValue, customDefinition }: Props) => {
+    if (customDefinition.propertyType === "BOOLEAN") {
+        if (projectEditable) {
+            return (
+                <Autocomplete
+                    options={["true", "false"]}
+                    value={customValue?.booleanValue?.toString() || ""}
+                    onChange={(_, newValue) => setCustomValue({ ...customValue, booleanValue: newValue === "true" ? true : false })}
+                    renderInput={(params) => <TextField {...params} size="small" />}
+                />
+            );
+        } else {
+            return <CellContainer>{customValue?.booleanValue?.toString() || ""}</CellContainer>;
+        }
+    } else if (customDefinition.propertyType === "CATEGORY")
+        if (projectEditable) {
+            const values = customValue?.categories?.map((val) => customDefinition.categories?.find((d) => val === d.id));
+            return (
+                <Autocomplete
+                    options={customDefinition.categories || []}
+                    getOptionLabel={(option) => option?.name || ""}
+                    value={values}
+                    multiple
+                    onChange={(_, newValue) => setCustomValue({ ...customValue, categories: newValue.map((c) => c?.id as string) })}
+                    renderInput={(params) => <TextField {...params} size="small" />}
+                />
+            );
+        } else {
+            return (
+                <CellContainer>
+                    {(() => {
+                        const categoryId = customValue?.categories?.[0];
+                        if (!categoryId) return null;
+                        const category = customDefinition?.categories?.find((cat: any) => cat.id === categoryId);
+                        return category ? category.name : null;
+                    })()}
+                </CellContainer>
+            );
+        }
+    else if (customDefinition.propertyType === "NUMERIC") {
+        if (projectEditable) {
+            return (
+                <TextField
+                    variant="outlined"
+                    size="small"
+                    type="number"
+                    value={customValue?.numericValue?.value || 0}
+                    onChange={(e) => setCustomValue({ ...customValue, numericValue: { value: parseFloat(e.target.value) } })}
+                />
+            );
+        } else {
+            return <CellContainer>{customValue?.numericValue?.value || 0}</CellContainer>;
+        }
+    } else if (customDefinition.propertyType === "TEXT") {
+        if (projectEditable) {
+            return (
+                <TextField
+                    variant="outlined"
+                    size="small"
+                    value={customValue?.textValue || ""}
+                    onChange={(e) => setCustomValue({ ...customValue, textValue: e.target.value })}
+                />
+            );
+        } else {
+            return <CellContainer>{customValue?.textValue || ""}</CellContainer>;
+        }
+    } else {
+        return null;
+    }
+};
