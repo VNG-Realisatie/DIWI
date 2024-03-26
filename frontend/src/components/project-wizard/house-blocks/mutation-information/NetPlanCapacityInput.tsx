@@ -2,6 +2,7 @@ import { Stack, Typography, TextField } from "@mui/material";
 import { t } from "i18next";
 import { InputContainer } from "../InputContainer";
 import { LabelComponent } from "../../../project/LabelComponent";
+import { useState } from "react";
 
 type Props = {
     houseBlockNetPlan: number | null;
@@ -15,14 +16,35 @@ type NetPlanProps = {
 };
 
 const NetPlanEditInput = ({ houseBlockNetPlan, updateHouseBlockNetPlan }: NetPlanProps) => {
+    const [stringValue, setStringValue] = useState<string>(String(houseBlockNetPlan));
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setStringValue(e.target.value);
+        updateHouseBlockNetPlan(+e.target.value);
+    };
+
+    const onFocus = () => {
+        if (stringValue === "0") {
+            setStringValue("");
+        }
+    };
+
+    const onBlur = () => {
+        if (stringValue === "") {
+            setStringValue("0");
+        }
+    };
+
     return (
         <TextField
             type="number"
             id="grossPlan"
             size="small"
             variant="outlined"
-            value={houseBlockNetPlan !== null ? houseBlockNetPlan : ""}
-            onChange={(e) => updateHouseBlockNetPlan(+e.target.value)}
+            value={stringValue}
+            onChange={handleChange}
+            onFocus={onFocus}
+            onBlur={onBlur}
         />
     );
 };
