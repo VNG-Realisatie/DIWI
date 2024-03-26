@@ -41,10 +41,11 @@ export const CustomPropertyWidget = ({ projectEditable, customValue, setCustomVa
             return (
                 <CellContainer>
                     {(() => {
-                        const categoryId = customValue?.categories?.[0];
+                        const categoryId = customValue?.categories;
                         if (!categoryId) return null;
-                        const category = customDefinition?.categories?.find((cat: any) => cat.id === categoryId);
-                        return category ? category.name : null;
+                        const category = customDefinition?.categories?.filter((cat: any) => categoryId.includes(cat.id));
+                        const categoryValues = category?.map((c) => c.name);
+                        return categoryValues ? categoryValues.join(", ") : null;
                     })()}
                 </CellContainer>
             );
