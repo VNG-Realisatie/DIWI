@@ -43,8 +43,8 @@ export const CustomPropertyWidget = ({ projectEditable, customValue, setCustomVa
                     {(() => {
                         const categoryId = customValue?.categories;
                         if (!categoryId) return null;
-                        const category = customDefinition?.categories?.filter((cat: any) => categoryId.includes(cat.id));
-                        const categoryValues = category?.map((c) => c.name);
+                        const selectedCategoryIds = customDefinition?.categories?.filter((cat: any) => categoryId.includes(cat.id));
+                        const categoryValues = selectedCategoryIds?.map((c) => c.name);
                         return categoryValues ? categoryValues.join(", ") : null;
                     })()}
                 </CellContainer>
