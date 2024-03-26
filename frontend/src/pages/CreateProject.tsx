@@ -74,6 +74,9 @@ export const CreateProject = () => {
     };
 
     const handleNext = async () => {
+        if (activeStep === 0) {
+            navigate(`/project/create/${projectId}/blocks`);
+        }
         if (activeStep === 1) {
             if (!createFormHouseBlock.houseblockName) {
                 setValidationError("houseblockName");

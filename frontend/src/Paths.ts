@@ -20,6 +20,7 @@ export const projects = createPathObject(config.baseurl + "projects");
 export const projectsTable = createPathObject(config.baseurl + "projects/table");
 export const projectWizard = createPathObject(config.baseurl + "project/create");
 export const projectWizardWithId = createPathObject(config.baseurl + "project/create/:id");
+export const projectWizardBlocks = createPathObject(config.baseurl + "project/create/:id/blocks");
 export const projectWizardMap = createPathObject(config.baseurl + "project/create/:projectId/map");
 export const projectDetail = createPathObject(config.baseurl + "projects/:id");
 export const projectDetailCharacteristics = createPathObject(config.baseurl + "projects/:id/characteristics");

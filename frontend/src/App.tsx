@@ -118,6 +118,14 @@ function App() {
                             }
                         />
                         <Route
+                            path={Paths.projectWizardBlocks.path}
+                            element={
+                                <ProjectProvider>
+                                    <CreateProject />
+                                </ProjectProvider>
+                            }
+                        />
+                        <Route
                             path={Paths.projectWizardMap.path}
                             element={
                                 <ProjectProvider>
