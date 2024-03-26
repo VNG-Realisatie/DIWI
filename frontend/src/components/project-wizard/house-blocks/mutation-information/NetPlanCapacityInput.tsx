@@ -17,11 +17,6 @@ type NetPlanProps = {
 const NetPlanEditInput = ({ houseBlockNetPlan, updateHouseBlockNetPlan }: NetPlanProps) => {
     return (
         <TextField
-            InputProps={{
-                inputProps: {
-                    min: 0,
-                },
-            }}
             type="number"
             id="grossPlan"
             size="small"
