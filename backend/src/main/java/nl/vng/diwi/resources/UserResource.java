@@ -31,8 +31,7 @@ public class UserResource {
     @Path("/userinfo")
     @Produces(MediaType.APPLICATION_JSON)
     public UserModel login(@Context LoggedUser loggedUser) {
-        var user = userDao.getUserById(loggedUser.getUuid());
-        return new UserModel(user);
+        return new UserModel(loggedUser);
     }
 
 }
