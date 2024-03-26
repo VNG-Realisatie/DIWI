@@ -82,13 +82,13 @@ export const HouseBlocksForm = ({ projectDetailHouseBlock, editForm, createFormH
             setAlert(t("createProject.hasMissingRequiredAreas.hasmissingProperty"), "warning");
             return;
         }
-        const updatedHoseBlock = houseBlocks.filter((hb) => hb.houseblockId !== projectForm.houseblockId);
+        const updatedHouseBlock = houseBlocks.filter((hb) => hb.houseblockId !== projectForm.houseblockId);
         updateHouseBlock(projectForm)
             .then((res) => {
                 setEdit(false);
                 setAlert(t("generic.updated"), "success");
                 setProjectForm(res);
-                setHouseBlocks([...updatedHoseBlock, res]);
+                setHouseBlocks([...updatedHouseBlock, res]);
                 handleCustomPropertiesSave();
             })
             .catch(() => setAlert(t("generic.failedToUpdate"), "error"));
