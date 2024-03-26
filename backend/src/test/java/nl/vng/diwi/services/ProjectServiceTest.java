@@ -49,7 +49,6 @@ import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.models.PlotModel;
 import nl.vng.diwi.models.ProjectSnapshotModel;
-import nl.vng.diwi.models.superclasses.DatedDataModelSuperClass;
 import nl.vng.diwi.models.superclasses.ProjectMinimalSnapshotModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
