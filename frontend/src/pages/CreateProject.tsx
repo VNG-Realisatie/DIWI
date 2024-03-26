@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { addHouseBlock, createProject, getProject, updateProject } from "../api/projectsServices";
-import { BlockHousesForm } from "../components/BlockHousesForm";
+import { HouseBlocksForm } from "../components/HouseBlocksForm";
 import WizardLayout from "../components/project-wizard/WizardLayout";
 import { emptyHouseBlockForm } from "../components/project-wizard/house-blocks/constants";
 import { HouseBlock } from "../components/project-wizard/house-blocks/types";
@@ -112,7 +112,7 @@ export const CreateProject = () => {
         <WizardLayout {...{ handleBack, handleNext, handleSave, projectId, activeStep }}>
             {activeStep === 0 && <ProjectInformationForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />}
             {activeStep === 1 && (
-                <BlockHousesForm
+                <HouseBlocksForm
                     validationError={validationError}
                     editForm={false}
                     createFormHouseBlock={createFormHouseBlock}

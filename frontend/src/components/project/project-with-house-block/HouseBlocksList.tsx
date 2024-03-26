@@ -1,5 +1,5 @@
 import { Grid, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
-import { BlockHousesForm } from "../../BlockHousesForm";
+import { HouseBlocksForm } from "../../HouseBlocksForm";
 import { HouseBlock } from "../../project-wizard/house-blocks/types";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { AddHouseBlockButton } from "../../PlusButton";
@@ -28,7 +28,7 @@ export const HouseBlocksList = ({ setOpenHouseBlockDialog }: Props) => {
                             {hb.houseblockName}: {hb.mutation.netPlanCapacity} {t("createProject.houseBlocksForm.housesOn")} {hb.endDate}
                         </AccordionSummary>
                         <AccordionDetails>
-                            <BlockHousesForm
+                            <HouseBlocksForm
                                 projectDetailHouseBlock={hb}
                                 key={i}
                                 editForm={true}

@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogActions, Button } from "@mui/material";
 import { t } from "i18next";
-import { BlockHousesForm } from "../../BlockHousesForm";
+import { HouseBlocksForm } from "../../HouseBlocksForm";
 import { HouseBlock } from "../../project-wizard/house-blocks/types";
 import { addHouseBlock, getProjectHouseBlocks } from "../../../api/projectsServices";
 import { useParams } from "react-router-dom";
@@ -52,7 +52,7 @@ export const CreateHouseBlockDialog = ({ openHouseBlockDialog, setOpenHouseBlock
     return (
         <Dialog open={openHouseBlockDialog} onClose={() => setOpenHouseBlockDialog(false)} maxWidth="xl">
             <DialogContent>
-                <BlockHousesForm editForm={false} setCreateFormHouseBlock={setCreateFormHouseBlock} createFormHouseBlock={createFormHouseBlock} />
+                <HouseBlocksForm editForm={false} setCreateFormHouseBlock={setCreateFormHouseBlock} createFormHouseBlock={createFormHouseBlock} />
             </DialogContent>
             <DialogActions>
                 <Button variant="contained" color="error" onClick={() => setOpenHouseBlockDialog(false)}>
