@@ -87,11 +87,13 @@ export const ProjectsWithHouseBlock = () => {
 
     useEffect(() => {
         const fetchCustomPropertyValues = async () => {
-            try {
-                const values = await getCustomPropertyValues(selectedProject?.projectId as string);
-                setCustomValues(values);
-            } catch (error) {
-                console.error("Error fetching custom property values:", error);
+            if (selectedProject?.projectId) {
+                try {
+                    const values = await getCustomPropertyValues(selectedProject?.projectId);
+                    setCustomValues(values);
+                } catch (error) {
+                    console.error("Error fetching custom property values:", error);
+                }
             }
         };
 
