@@ -32,18 +32,6 @@ const geoMarker = (f: Feature): Style => {
                 width: 2,
             }),
         }),
-        // draw rectangle behind text !!! does not work cannot have duplicate image keys in style object...
-
-        // const charHeight = 20;
-        // const charWidth = 5;
-        // const ftextLength = ftext.length * 1.33 * charWidth; // this currenlty needs a weird factor: 1.33 to account for weird scaling
-        // image: new RegularShape({
-        //     fill: new Fill({ color: fcolor }),
-        //     points: 4,
-        //     radius: ftextLength,
-        //     angle: Math.PI / 4,
-        //     scale: [1, charHeight / ftextLength],
-        // }),
         // insert project name
         text: new StyleText({
             text: ftext,
