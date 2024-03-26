@@ -82,7 +82,7 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
                 <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>{t("sidebar.settings")}</Typography>
                 <Link to={Paths.userSettings.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
                     <ListItemButton>
-                        <ListItemText primary="Gebruiker Instellingen " />
+                        <ListItemText primary={t("customProperties.title")} />
                     </ListItemButton>
                 </Link>
             </List>
