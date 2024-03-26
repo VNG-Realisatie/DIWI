@@ -12,7 +12,7 @@ import * as Paths from "../../Paths";
 
 import Feature from "ol/Feature";
 import { Point } from "ol/geom";
-import { Circle as CircleStyle, Fill, Stroke, Style, Text as StyleText } from "ol/style";
+import { Circle as CircleStyle, Fill, Stroke, Style } from "ol/style";
 import { StyleFunction } from "ol/style/Style";
 import { ProjectListModel, getProjects } from "../../api/projectsServices";
 import ConfigContext from "../../context/ConfigContext";
