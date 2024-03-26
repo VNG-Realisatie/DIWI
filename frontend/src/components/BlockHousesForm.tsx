@@ -18,6 +18,7 @@ import { updateHouseBlock } from "../api/projectsServices";
 import AlertContext from "../context/AlertContext";
 import { CustomPropertiesGroup } from "./project-wizard/house-blocks/custom-properties/CustomPropertiesGroup";
 import { CustomPropertyValue, getBlockCustomPropertyValues, putBlockCustomPropertyValues } from "../api/customPropServices";
+import HouseBlockContext from "../context/HouseBlockContext";
 
 type Props = {
     projectDetailHouseBlock?: HouseBlock;
@@ -33,6 +34,7 @@ export const BlockHousesForm = ({ projectDetailHouseBlock, editForm, createFormH
     const [customValues, setCustomValues] = useState<CustomPropertyValue[]>([]);
 
     const { setAlert } = useContext(AlertContext);
+    const { houseBlocks, setHouseBlocks } = useContext(HouseBlockContext);
 
     useEffect(() => {
         const fetchCustomPropertyValues = async () => {
@@ -80,12 +82,13 @@ export const BlockHousesForm = ({ projectDetailHouseBlock, editForm, createFormH
             setAlert(t("createProject.hasMissingRequiredAreas.hasmissingProperty"), "warning");
             return;
         }
-
+        const updatedHoseBlock = houseBlocks.filter((hb) => hb.houseblockId !== projectForm.houseblockId);
         updateHouseBlock(projectForm)
             .then((res) => {
                 setEdit(false);
                 setAlert(t("generic.updated"), "success");
                 setProjectForm(res);
+                setHouseBlocks([...updatedHoseBlock, res]);
                 handleCustomPropertiesSave();
             })
             .catch(() => setAlert(t("generic.failedToUpdate"), "error"));

@@ -26,7 +26,7 @@ import { CellContainer } from "./CellContainer";
 import { OrganizationSelect } from "../../../widgets/OrganizationSelect";
 import { PlanStatusOptions, PlanTypeOptions } from "../../../types/enums";
 import { PriorityEditForm } from "./PriorityEditForm";
-import { Organization, SelectModel, getProjectHouseBlocks, updateProjects } from "../../../api/projectsServices";
+import { Organization, SelectModel, updateProjects } from "../../../api/projectsServices";
 import { HouseBlock } from "../../project-wizard/house-blocks/types";
 import AlertContext from "../../../context/AlertContext";
 import { CreateHouseBlockDialog } from "./CreateHouseBlockDialog";
@@ -76,7 +76,6 @@ export const ProjectsWithHouseBlock = () => {
     const [selectedNeighbourhood, setSelectedNeighbourhood] = useState<SelectModel[]>([]);
     const [selectedWijk, setSelectedWijk] = useState<SelectModel[]>([]);
     const [projectPriority, setProjectPriority] = useState<SelectModel | null>();
-    const [houseBlocks, setHouseBlocks] = useState<HouseBlock[]>();
     const [customValues, setCustomValues] = useState<CustomPropertyValue[]>([]);
 
     const { setAlert } = useContext(AlertContext);
@@ -225,11 +224,6 @@ export const ProjectsWithHouseBlock = () => {
                 setAlert(error.message, "error");
             });
     };
-    const { id } = useContext(ProjectContext);
-
-    useEffect(() => {
-        id && getProjectHouseBlocks(id).then((res) => setHouseBlocks(res));
-    }, [id]);
 
     return (
         <Stack my={1} p={1} mb={10}>
@@ -460,7 +454,7 @@ export const ProjectsWithHouseBlock = () => {
                 <CustomerPropertiesProjectBlock {...{ projectEditable, customValues, setCustomValues, columnTitleStyle }} />
 
                 {/* List huizen blok cards */}
-                <HouseBlocksList houseBlocks={houseBlocks} setOpenHouseBlockDialog={setOpenHouseBlockDialog} />
+                <HouseBlocksList setOpenHouseBlockDialog={setOpenHouseBlockDialog} />
                 {openColorDialog && (
                     <Popover
                         open={open}
@@ -475,7 +469,6 @@ export const ProjectsWithHouseBlock = () => {
                     </Popover>
                 )}
                 <CreateHouseBlockDialog
-                    setHouseBlocks={setHouseBlocks}
                     openHouseBlockDialog={openHouseBlockDialog}
                     setOpenHouseBlockDialog={setOpenHouseBlockDialog}
                     createFormHouseBlock={createFormHouseBlock}
