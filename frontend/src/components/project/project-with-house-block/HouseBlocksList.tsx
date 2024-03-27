@@ -25,7 +25,7 @@ export const HouseBlocksList = ({ setOpenHouseBlockDialog }: Props) => {
                             aria-controls="panel1-content"
                             id="panel1-header"
                         >
-                            {hb.houseblockName}: {hb.mutation.netPlanCapacity} {t("createProject.houseBlocksForm.housesOn")} {hb.endDate}
+                            {hb.houseblockName}: {hb.mutation.grossPlanCapacity} {t("createProject.houseBlocksForm.housesOn")} {hb.endDate}
                         </AccordionSummary>
                         <AccordionDetails>
                             <HouseBlocksForm
