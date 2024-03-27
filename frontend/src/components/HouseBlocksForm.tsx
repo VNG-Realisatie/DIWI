@@ -26,9 +26,10 @@ type Props = {
     createFormHouseBlock: HouseBlock;
     setCreateFormHouseBlock: (hb: HouseBlock) => void;
     validationError?: string;
+    customPropertyEditable?: boolean;
 };
 
-export const HouseBlocksForm = ({ projectDetailHouseBlock, editForm, createFormHouseBlock, setCreateFormHouseBlock }: Props) => {
+export const HouseBlocksForm = ({ projectDetailHouseBlock, editForm, createFormHouseBlock, customPropertyEditable, setCreateFormHouseBlock }: Props) => {
     const [projectForm, setProjectForm] = useState<HouseBlock>(projectDetailHouseBlock ? projectDetailHouseBlock : emptyHouseBlockForm);
     const [edit, setEdit] = useState(false);
     const [customValues, setCustomValues] = useState<CustomPropertyValue[]>([]);
@@ -154,7 +155,7 @@ export const HouseBlocksForm = ({ projectDetailHouseBlock, editForm, createFormH
             </Grid>
             <Grid container spacing={2} alignItems="stretch" mt={0.5}>
                 <Grid item xs={12}>
-                    <CustomPropertiesGroup {...{ projectEditable: edit, customValues, setCustomValues, columnTitleStyle: {} }} />
+                    <CustomPropertiesGroup {...{ projectEditable: edit, customPropertyEditable, customValues, setCustomValues, columnTitleStyle: {} }} />
                 </Grid>
             </Grid>
         </Box>

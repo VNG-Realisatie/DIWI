@@ -8,11 +8,21 @@ type Props = {
     customValue: CustomPropertyValue | undefined;
     customDefinition: CustomPropertyType;
     setCustomValue: (newValue: CustomPropertyValue) => void;
+    customPropertyEditable?: boolean;
 };
 
-export const CustomPropertyWidget = ({ projectEditable, customValue, setCustomValue, customDefinition }: Props) => {
+export const CustomPropertyWidget = ({ projectEditable, customValue, setCustomValue, customDefinition, customPropertyEditable }: Props) => {
     if (customDefinition.propertyType === "BOOLEAN") {
         if (projectEditable) {
+            return (
+                <Autocomplete
+                    options={["true", "false"]}
+                    value={customValue?.booleanValue?.toString() || ""}
+                    onChange={(_, newValue) => setCustomValue({ ...customValue, booleanValue: newValue === "true" ? true : false })}
+                    renderInput={(params) => <TextField {...params} size="small" />}
+                />
+            );
+        } else if (customPropertyEditable) {
             return (
                 <Autocomplete
                     options={["true", "false"]}
@@ -24,8 +34,20 @@ export const CustomPropertyWidget = ({ projectEditable, customValue, setCustomVa
         } else {
             return <CellContainer>{customValue?.booleanValue?.toString() || ""}</CellContainer>;
         }
-    } else if (customDefinition.propertyType === "CATEGORY")
+    } else if (customDefinition.propertyType === "CATEGORY") {
         if (projectEditable) {
+            const values = customValue?.categories?.map((val) => customDefinition.categories?.find((d) => val === d.id));
+            return (
+                <Autocomplete
+                    options={customDefinition.categories || []}
+                    getOptionLabel={(option) => option?.name || ""}
+                    value={values}
+                    multiple
+                    onChange={(_, newValue) => setCustomValue({ ...customValue, categories: newValue.map((c) => c?.id as string) })}
+                    renderInput={(params) => <TextField {...params} size="small" />}
+                />
+            );
+        } else if (customPropertyEditable) {
             const values = customValue?.categories?.map((val) => customDefinition.categories?.find((d) => val === d.id));
             return (
                 <Autocomplete
@@ -50,8 +72,18 @@ export const CustomPropertyWidget = ({ projectEditable, customValue, setCustomVa
                 </CellContainer>
             );
         }
-    else if (customDefinition.propertyType === "NUMERIC") {
+    } else if (customDefinition.propertyType === "NUMERIC") {
         if (projectEditable) {
+            return (
+                <TextField
+                    variant="outlined"
+                    size="small"
+                    type="number"
+                    value={customValue?.numericValue?.value || 0}
+                    onChange={(e) => setCustomValue({ ...customValue, numericValue: { value: parseFloat(e.target.value) } })}
+                />
+            );
+        } else if (projectEditable) {
             return (
                 <TextField
                     variant="outlined"
@@ -66,6 +98,16 @@ export const CustomPropertyWidget = ({ projectEditable, customValue, setCustomVa
         }
     } else if (customDefinition.propertyType === "TEXT") {
         if (projectEditable) {
+            return (
+                <TextField
+                    variant="outlined"
+                    size="small"
+                    value={customValue?.textValue || ""}
+                    onChange={(e) => setCustomValue({ ...customValue, textValue: e.target.value })}
+                />
+            );
+        }
+        if (customPropertyEditable) {
             return (
                 <TextField
                     variant="outlined"

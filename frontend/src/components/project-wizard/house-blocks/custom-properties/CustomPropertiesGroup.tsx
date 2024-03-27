@@ -12,9 +12,10 @@ type Props = {
     customValues: CustomPropertyValue[];
     setCustomValues: (updatedValues: CustomPropertyValue[]) => void;
     columnTitleStyle: SxProps<Theme> | undefined;
+    customPropertyEditable?: boolean;
 };
 
-export const CustomPropertiesGroup = ({ projectEditable, customValues, setCustomValues, columnTitleStyle }: Props) => {
+export const CustomPropertiesGroup = ({ projectEditable, customValues, customPropertyEditable, setCustomValues, columnTitleStyle }: Props) => {
     const [customDefinitions, setCustomDefinitions] = useState<CustomPropertyType[]>([]);
 
     const { t } = useTranslation();
@@ -45,6 +46,7 @@ export const CustomPropertiesGroup = ({ projectEditable, customValues, setCustom
                             <LabelComponent required text={property.name} />{" "}
                             <CustomPropertyWidget
                                 projectEditable={projectEditable}
+                                customPropertyEditable={customPropertyEditable}
                                 customValue={customValue}
                                 setCustomValue={(newValue) => {
                                     setCustomValue({ ...newValue, customPropertyId: property.id });

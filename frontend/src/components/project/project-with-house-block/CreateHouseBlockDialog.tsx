@@ -52,7 +52,12 @@ export const CreateHouseBlockDialog = ({ openHouseBlockDialog, setOpenHouseBlock
     return (
         <Dialog open={openHouseBlockDialog} onClose={() => setOpenHouseBlockDialog(false)} maxWidth="xl">
             <DialogContent>
-                <HouseBlocksForm editForm={false} setCreateFormHouseBlock={setCreateFormHouseBlock} createFormHouseBlock={createFormHouseBlock} />
+                <HouseBlocksForm
+                    customPropertyEditable={true}
+                    editForm={false}
+                    setCreateFormHouseBlock={setCreateFormHouseBlock}
+                    createFormHouseBlock={createFormHouseBlock}
+                />
             </DialogContent>
             <DialogActions>
                 <Button variant="contained" color="error" onClick={() => setOpenHouseBlockDialog(false)}>
