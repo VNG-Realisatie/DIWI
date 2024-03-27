@@ -6,13 +6,13 @@
 
     <groupId>nl.vng</groupId>
     <artifactId>diwi</artifactId>
-    <version>1.1.1</version>
+    <version>${revision}</version>
     <packaging>war</packaging>
 
     <url>https://vng.nl</url>
 
     <properties>
-        <revision>1.1.1</revision>
+        <revision>1.1.2</revision>
         <assertj.version>3.25.1</assertj.version>
         <jersey.version>3.1.5</jersey.version>
         <hibernate.version>6.3.2.Final</hibernate.version>
