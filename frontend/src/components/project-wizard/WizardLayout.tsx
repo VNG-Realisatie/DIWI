@@ -25,7 +25,7 @@ interface CustomStepIconProps {
 }
 type Props = {
     children: React.ReactNode;
-    handleBack: () => void;
+    handleBack?: () => void;
     handleNext: () => void;
     handleSave: () => void;
     activeStep: number;
@@ -49,7 +49,7 @@ const WizardLayout = ({ children, handleBack, handleNext, handleSave, activeStep
                 <Button variant="outlined" onClick={() => handleSave()} sx={{ mr: 2 }}>
                     {t("generic.save")}
                 </Button>
-                <Button variant="contained" onClick={() => handleBack()} sx={{ mr: 2 }} disabled={activeStep === 0}>
+                <Button variant="contained" onClick={() => (handleBack ? handleBack() : null)} sx={{ mr: 2 }} disabled={activeStep === 0}>
                     {t("generic.previous")}
                 </Button>
                 <Button variant="contained" onClick={() => handleNext()} disabled={activeStep === 0 && !projectId}>

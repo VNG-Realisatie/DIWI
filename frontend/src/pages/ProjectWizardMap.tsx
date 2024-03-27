@@ -1,6 +1,6 @@
 import { useId } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { projectDetailCharacteristics, projectWizardWithId } from "../Paths";
+import { projectDetailCharacteristics, projectWizardBlocks } from "../Paths";
 import WizardLayout from "../components/project-wizard/WizardLayout";
 import usePlotSelector from "../hooks/usePlotSelector";
 
@@ -16,7 +16,7 @@ export const ProjectWizardMap = () => {
     };
 
     const handleBack = () => {
-        navigate(projectWizardWithId.toPath({ id: projectId }));
+        navigate(projectWizardBlocks.toPath({ projectId }));
     };
 
     return (

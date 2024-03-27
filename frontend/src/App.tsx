@@ -7,7 +7,6 @@ import { AlertProvider } from "./context/AlertContext";
 import AlertPopup from "./components/AlertPopup";
 import { Layout } from "./components/Layout";
 import { Projects } from "./pages/Projects";
-import { CreateProject } from "./pages/CreateProject";
 import { NoMatch } from "./pages/NoMatch";
 import * as Paths from "./Paths";
 import { ProjectDetail } from "./pages/ProjectDetail";
@@ -33,6 +32,8 @@ import { ConfigProvider } from "./context/ConfigContext";
 import { ProjectWizardMap } from "./pages/ProjectWizardMap";
 import "dayjs/locale/nl";
 import { HouseBlockProvider } from "./context/HouseBlockContext";
+import ProjectWizard from "./pages/ProjectWizard";
+import ProjectWizardBlocks from "./pages/ProjectWizardBlocks";
 
 function RequiresLogin() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -106,7 +107,7 @@ function App() {
                             path={Paths.projectWizard.path}
                             element={
                                 <ProjectProvider>
-                                    <CreateProject />
+                                    <ProjectWizard />
                                 </ProjectProvider>
                             }
                         />
@@ -115,7 +116,7 @@ function App() {
                             element={
                                 <ProjectProvider>
                                     <HouseBlockProvider>
-                                        <CreateProject />
+                                        <ProjectWizard />
                                     </HouseBlockProvider>
                                 </ProjectProvider>
                             }
@@ -124,7 +125,9 @@ function App() {
                             path={Paths.projectWizardBlocks.path}
                             element={
                                 <ProjectProvider>
-                                    <CreateProject />
+                                    <HouseBlockProvider>
+                                        <ProjectWizardBlocks />
+                                    </HouseBlockProvider>
                                 </ProjectProvider>
                             }
                         />
