@@ -66,8 +66,6 @@ const ProjectWizard = () => {
         navigate(projectWizardBlocks.toPath({ projectId }));
     };
 
-    const handleBack = () => {};
-    //should it be here?
 
     useEffect(() => {
         if (projectId) {
@@ -75,7 +73,7 @@ const ProjectWizard = () => {
         }
     }, [projectId]);
     return (
-        <WizardLayout {...{ handleBack, handleNext, handleSave, projectId, activeStep: 0 }}>
+        <WizardLayout {...{ handleNext, handleSave, projectId, activeStep: 0 }}>
             <ProjectInformationForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />
         </WizardLayout>
     );
