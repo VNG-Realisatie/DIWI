@@ -15,7 +15,7 @@ type NetPlanProps = {
     updateHouseBlockNetPlan: (houseBlockNetPlan: number) => void;
 };
 
-const NetPlanEditInput = ({ houseBlockNetPlan, updateHouseBlockNetPlan }: NetPlanProps) => {
+export const NetPlanEditInput = ({ houseBlockNetPlan, updateHouseBlockNetPlan }: NetPlanProps) => {
     const [stringValue, setStringValue] = useState<string>(String(houseBlockNetPlan));
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,16 +36,7 @@ const NetPlanEditInput = ({ houseBlockNetPlan, updateHouseBlockNetPlan }: NetPla
     };
 
     return (
-        <TextField
-            type="number"
-            id="grossPlan"
-            size="small"
-            variant="outlined"
-            value={stringValue}
-            onChange={handleChange}
-            onFocus={onFocus}
-            onBlur={onBlur}
-        />
+        <TextField type="number" id="grossPlan" size="small" variant="outlined" value={stringValue} onChange={handleChange} onFocus={onFocus} onBlur={onBlur} />
     );
 };
 export const NetPlanCapacityInput = ({ houseBlockNetPlan, updateHouseBlockNetPlan, edit, editForm }: Props) => {
