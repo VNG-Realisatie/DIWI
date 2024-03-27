@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useAlert from "../hooks/useAlert";
 import { useTranslation } from "react-i18next";
@@ -65,7 +65,6 @@ const ProjectWizard = () => {
     const handleNext = async () => {
         navigate(projectWizardBlocks.toPath({ projectId }));
     };
-
 
     useEffect(() => {
         if (projectId) {

@@ -1,4 +1,4 @@
-import React, { useId, useState } from "react";
+import { useId, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import usePlotSelector from "../hooks/usePlotSelector";
 import { HouseBlock } from "../components/project-wizard/house-blocks/types";
