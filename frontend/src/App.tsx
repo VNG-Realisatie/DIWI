@@ -114,7 +114,9 @@ function App() {
                             path={Paths.projectWizardWithId.path}
                             element={
                                 <ProjectProvider>
-                                    <CreateProject />
+                                    <HouseBlockProvider>
+                                        <CreateProject />
+                                    </HouseBlockProvider>
                                 </ProjectProvider>
                             }
                         />
