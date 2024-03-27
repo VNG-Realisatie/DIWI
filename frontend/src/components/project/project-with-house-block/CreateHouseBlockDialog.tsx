@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogActions, Button } from "@mui/material";
 import { t } from "i18next";
-import { BlockHousesForm } from "../../BlockHousesForm";
+import { HouseBlocksForm } from "../../HouseBlocksForm";
 import { HouseBlock } from "../../project-wizard/house-blocks/types";
 import { addHouseBlock, getProjectHouseBlocks } from "../../../api/projectsServices";
 import { useParams } from "react-router-dom";
@@ -8,24 +8,19 @@ import useAlert from "../../../hooks/useAlert";
 import { emptyHouseBlockForm } from "../../project-wizard/house-blocks/constants";
 import ProjectContext from "../../../context/ProjectContext";
 import { useContext } from "react";
+import HouseBlockContext from "../../../context/HouseBlockContext";
 
 type Props = {
     openHouseBlockDialog: boolean;
     setOpenHouseBlockDialog: (openDialog: boolean) => void;
     createFormHouseBlock: HouseBlock;
     setCreateFormHouseBlock: (hb: HouseBlock) => void;
-    setHouseBlocks: (hb: HouseBlock[]) => void;
 };
-export const CreateHouseBlockDialog = ({
-    openHouseBlockDialog,
-    setOpenHouseBlockDialog,
-    createFormHouseBlock,
-    setCreateFormHouseBlock,
-    setHouseBlocks,
-}: Props) => {
+export const CreateHouseBlockDialog = ({ openHouseBlockDialog, setOpenHouseBlockDialog, createFormHouseBlock, setCreateFormHouseBlock }: Props) => {
     const { id } = useParams();
     const { setAlert } = useAlert();
     const { updateProject } = useContext(ProjectContext);
+    const { setHouseBlocks } = useContext(HouseBlockContext);
     const handleSave = async () => {
         if (
             !createFormHouseBlock.houseblockName ||
@@ -57,7 +52,7 @@ export const CreateHouseBlockDialog = ({
     return (
         <Dialog open={openHouseBlockDialog} onClose={() => setOpenHouseBlockDialog(false)} maxWidth="xl">
             <DialogContent>
-                <BlockHousesForm editForm={false} setCreateFormHouseBlock={setCreateFormHouseBlock} createFormHouseBlock={createFormHouseBlock} />
+                <HouseBlocksForm editForm={false} setCreateFormHouseBlock={setCreateFormHouseBlock} createFormHouseBlock={createFormHouseBlock} />
             </DialogContent>
             <DialogActions>
                 <Button variant="contained" color="error" onClick={() => setOpenHouseBlockDialog(false)}>

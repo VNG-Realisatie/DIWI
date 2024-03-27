@@ -32,6 +32,7 @@ import ProjectPlotSelector from "./components/map/ProjectPlotSelector";
 import { ConfigProvider } from "./context/ConfigContext";
 import { ProjectWizardMap } from "./pages/ProjectWizardMap";
 import "dayjs/locale/nl";
+import { HouseBlockProvider } from "./context/HouseBlockContext";
 
 function RequiresLogin() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -113,7 +114,9 @@ function App() {
                             path={Paths.projectWizardWithId.path}
                             element={
                                 <ProjectProvider>
-                                    <CreateProject />
+                                    <HouseBlockProvider>
+                                        <CreateProject />
+                                    </HouseBlockProvider>
                                 </ProjectProvider>
                             }
                         />
@@ -147,9 +150,11 @@ function App() {
                             path={Paths.projectDetailCharacteristics.path}
                             element={
                                 <ProjectProvider>
-                                    <ProjectDetail>
-                                        <ProjectsWithHouseBlock />
-                                    </ProjectDetail>
+                                    <HouseBlockProvider>
+                                        <ProjectDetail>
+                                            <ProjectsWithHouseBlock />
+                                        </ProjectDetail>
+                                    </HouseBlockProvider>
                                 </ProjectProvider>
                             }
                         />

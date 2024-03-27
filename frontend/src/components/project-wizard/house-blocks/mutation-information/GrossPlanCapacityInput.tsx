@@ -2,6 +2,7 @@ import { Stack, Typography, TextField } from "@mui/material";
 import { t } from "i18next";
 import { InputContainer } from "../InputContainer";
 import { LabelComponent } from "../../../project/LabelComponent";
+import { useState } from "react";
 type Props = {
     houseBlockGrossPlan: number | null;
     updateHouseBlockGrossPlan: (houseBlockGrossPlan: number) => void;
@@ -13,6 +14,25 @@ type GrosPlanProps = {
     updateHouseBlockGrossPlan: (houseBlockGrossPlan: number) => void;
 };
 const GrossPlanEditInput = ({ houseBlockGrossPlan, updateHouseBlockGrossPlan }: GrosPlanProps) => {
+    const [stringValue, setStringValue] = useState<string>(String(houseBlockGrossPlan));
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setStringValue(e.target.value);
+        updateHouseBlockGrossPlan(+e.target.value);
+    };
+
+    const onFocus = () => {
+        if (stringValue === "0") {
+            setStringValue("");
+        }
+    };
+
+    const onBlur = () => {
+        if (stringValue === "") {
+            setStringValue("0");
+        }
+    };
+
     return (
         <TextField
             InputProps={{
@@ -24,8 +44,10 @@ const GrossPlanEditInput = ({ houseBlockGrossPlan, updateHouseBlockGrossPlan }: 
             id="grossPlan"
             size="small"
             variant="outlined"
-            value={houseBlockGrossPlan !== null ? houseBlockGrossPlan : ""}
-            onChange={(e) => updateHouseBlockGrossPlan(+e.target.value)}
+            value={stringValue}
+            onChange={handleChange}
+            onFocus={onFocus}
+            onBlur={onBlur}
         />
     );
 };

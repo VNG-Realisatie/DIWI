@@ -35,16 +35,31 @@ You shouldn't need any settings in the .env file other than `DIWI_DB_USERNAME` a
 
 ### Generate types from backend api
 
-You can generate types from the backend by downloading the openapi.json file from e.g. http://localhost:3000/rest/openapi.json and putting it in the root folder of the repo.
+You can generate typescript types matching the API with the following script:
 
-You can then execute the following yarn script"
-
-```shell
-cd frontend
-yarn && yarn run create-types
+```bash
+./update-types.sh
 ```
 
-If some values values seem optional in the openapi definition, but they are not, You can use the `@JsonProperty(required = true)` annotation in the java model.
+This will update [openapi.json](./api/openapi.json) and [schema.d.ts](./frontend/src/types/schema.d.ts).
+
+You can use the types in typescript as follows:
+
+```Typescript
+import { components } from "../types/schema";
+
+// Directly using it is a bit cumbersome so it is a good idea to use type aliases
+export type CategoryType = components["schemas"]["SelectDisabledModel"];
+```
+
+You can use Typescript utility types if you want to derive another type from an API type. e.g. if want to remove the id:
+
+```Typescript
+export type Project = components["schemas"]["ProjectSnapshotModel"];
+export type ProjectWithoutId Omit<Project, "projectId">
+```
+
+If some values values seem optional in the openapi definition, but they are not, You need to add the `@JsonProperty(required = true)` annotation in the java model.
 
 ### Setup Backend development
 
@@ -63,13 +78,17 @@ If some values values seem optional in the openapi definition, but they are not,
 - Run the installer from the maven repo.
 
 ```
+
 java -jar ~/.m2/repository/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar
+
 ```
 
 - -or- from the downloaded file
 
 ```
+
 java -jar ~/Downloads/lombok.jar
+
 ```
 
 - In the installer choose the eclipse folder. Which normally is something like: `~/eclipse/jee-2023-12/eclipse/`

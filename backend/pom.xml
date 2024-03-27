@@ -253,9 +253,9 @@
             <version>2.15.1</version>
         </dependency>
         <dependency>
-        	<groupId>com.fasterxml.uuid</groupId>
-        	<artifactId>java-uuid-generator</artifactId>
-        	<version>4.3.0</version>
+            <groupId>com.fasterxml.uuid</groupId>
+            <artifactId>java-uuid-generator</artifactId>
+            <version>4.3.0</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -459,6 +459,21 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-maven-plugin-jakarta</artifactId>
+                <version>2.2.21</version>
+                <configuration>
+                    <outputFileName>openapi</outputFileName>
+                    <outputPath>${project.build.directory}/../../api/</outputPath>
+                    <outputFormat>JSON</outputFormat>
+                    <alwaysResolveAppPath>true</alwaysResolveAppPath>
+                    <resourcePackages>
+                        <package>nl.vng.diwi</package>
+                    </resourcePackages>
+                    <prettyPrint>TRUE</prettyPrint>
+                </configuration>
             </plugin>
         </plugins>
     </build>
