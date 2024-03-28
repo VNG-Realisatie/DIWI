@@ -11,21 +11,19 @@ export type HouseBlockSize = {
 type Props = {
     houseBlockSize: HouseBlockSize;
     updateHouseBlockSize: (houseBlockSize: HouseBlockSize) => void;
-    edit: boolean;
-    editForm: boolean;
+    readOnly: boolean;
 };
 
-export const SizeInput = ({ houseBlockSize, updateHouseBlockSize, edit, editForm }: Props) => {
+export const SizeInput = ({ houseBlockSize, updateHouseBlockSize, readOnly }: Props) => {
     return (
         <Stack width="100%">
             <LabelComponent required={false} text={t("createProject.houseBlocksForm.size")} />
-            {edit && editForm && <NumericRangeInput value={houseBlockSize} updateCallBack={updateHouseBlockSize} />}
-            {!edit && editForm && (
+            {!readOnly && <NumericRangeInput value={houseBlockSize} updateCallBack={updateHouseBlockSize} />}
+            {readOnly && (
                 <InputContainer>
                     <Typography minHeight="20px">{houseBlockSize?.value}</Typography>
                 </InputContainer>
             )}
-            {!edit && !editForm && <NumericRangeInput value={houseBlockSize} updateCallBack={updateHouseBlockSize} />}
         </Stack>
     );
 };

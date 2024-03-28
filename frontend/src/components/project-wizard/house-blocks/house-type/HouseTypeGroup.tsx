@@ -7,11 +7,10 @@ import { SingleNumberInput } from "../physical-appearence/SingleNumberInput";
 export type HouseTypeInformationProps = {
     projectForm: HouseBlock;
     setProjectForm(project: HouseBlock): void;
-    edit: boolean;
-    editForm: boolean;
+    readOnly: boolean;
 };
 
-export const HouseTypeGroup = ({ projectForm, setProjectForm, edit, editForm }: HouseTypeInformationProps) => {
+export const HouseTypeGroup = ({ projectForm, setProjectForm, readOnly }: HouseTypeInformationProps) => {
     const translationPath = "createProject.houseBlocksForm.houseType";
     return (
         <WizardCard>
@@ -38,8 +37,7 @@ export const HouseTypeGroup = ({ projectForm, setProjectForm, edit, editForm }: 
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="meergezinswoning"
                 translationPath={translationPath}
             />
@@ -55,8 +53,7 @@ export const HouseTypeGroup = ({ projectForm, setProjectForm, edit, editForm }: 
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="eengezinswoning"
                 translationPath={translationPath}
             />

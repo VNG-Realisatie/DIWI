@@ -7,11 +7,10 @@ import { ChangeEvent } from "react";
 export type ProgrammingProps = {
     projectForm: HouseBlock;
     setProjectForm(project: HouseBlock): void;
-    edit: boolean;
-    editForm: boolean;
+    readOnly: boolean;
 };
 
-export const Programming = ({ projectForm, setProjectForm, edit, editForm }: ProgrammingProps) => {
+export const Programming = ({ projectForm, setProjectForm, readOnly }: ProgrammingProps) => {
     const translationPath = "createProject.houseBlocksForm.programming";
     return (
         <WizardCard>
@@ -19,7 +18,7 @@ export const Programming = ({ projectForm, setProjectForm, edit, editForm }: Pro
                 {t(`${translationPath}.title`)}
             </Typography>
             <Stack direction="row" alignItems="center" my={1}>
-                <FormControl disabled={!edit && editForm}>
+                <FormControl disabled={readOnly}>
                     <RadioGroup
                         name="programming"
                         value={projectForm?.programming !== null ? (projectForm?.programming === true ? "yes" : "no") : null}

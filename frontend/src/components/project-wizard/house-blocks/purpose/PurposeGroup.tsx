@@ -7,11 +7,10 @@ import { SingleNumberInput } from "../physical-appearence/SingleNumberInput";
 export type PurposeInformationProps = {
     projectForm: HouseBlock;
     setProjectForm(project: HouseBlock): void;
-    edit: boolean;
-    editForm: boolean;
+    readOnly: boolean;
 };
 
-export const PurposeGroup = ({ projectForm, setProjectForm, edit, editForm }: PurposeInformationProps) => {
+export const PurposeGroup = ({ projectForm, setProjectForm, readOnly }: PurposeInformationProps) => {
     const translationPath = "createProject.houseBlocksForm.purpose";
     return (
         <WizardCard>
@@ -38,8 +37,7 @@ export const PurposeGroup = ({ projectForm, setProjectForm, edit, editForm }: Pu
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="regular"
                 translationPath={translationPath}
             />
@@ -55,8 +53,7 @@ export const PurposeGroup = ({ projectForm, setProjectForm, edit, editForm }: Pu
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="youth"
                 translationPath={translationPath}
             />
@@ -72,8 +69,7 @@ export const PurposeGroup = ({ projectForm, setProjectForm, edit, editForm }: Pu
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="student"
                 translationPath={translationPath}
             />
@@ -89,8 +85,7 @@ export const PurposeGroup = ({ projectForm, setProjectForm, edit, editForm }: Pu
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="elderly"
                 translationPath={translationPath}
             />
@@ -106,8 +101,7 @@ export const PurposeGroup = ({ projectForm, setProjectForm, edit, editForm }: Pu
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="largeFamilies"
                 translationPath={translationPath}
             />
@@ -123,8 +117,7 @@ export const PurposeGroup = ({ projectForm, setProjectForm, edit, editForm }: Pu
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="ghz"
                 translationPath={translationPath}
             />

@@ -59,39 +59,34 @@ export const HouseBlocksForm = ({ projectDetailHouseBlock, readOnly, createFormH
         <>
             <Grid container spacing={2} alignItems="stretch">
                 <Grid item xs={12} md={8}>
-                    <GeneralInformationGroup projectForm={defineProjectState()} setProjectForm={defineProjectUpdateState()} edit={!readOnly} editForm={true} />
+                    <GeneralInformationGroup projectForm={defineProjectState()} setProjectForm={defineProjectUpdateState()} readOnly={readOnly} />
                 </Grid>
                 <Grid item xs={12} md={4}>
-                    <MutationInformationGroup projectForm={defineProjectState()} setProjectForm={defineProjectUpdateState()} edit={!readOnly} editForm={true} />
+                    <MutationInformationGroup projectForm={defineProjectState()} setProjectForm={defineProjectUpdateState()} readOnly={readOnly} />
                 </Grid>
             </Grid>
             <Grid container mt={2}>
                 <Grid item xs={12}>
-                    <OwnershipInformationGroup
-                        projectForm={defineProjectState()}
-                        setProjectForm={defineProjectUpdateState()}
-                        edit={!readOnly}
-                        editForm={true}
-                    />
+                    <OwnershipInformationGroup projectForm={defineProjectState()} setProjectForm={defineProjectUpdateState()} readOnly={readOnly} />
                 </Grid>
             </Grid>
             <Grid container spacing={2} alignItems="stretch" mt={0.5}>
                 <Grid item xs={12} md={4}>
-                    <PhysicalAppeareanceGroup projectForm={defineProjectState()} setProjectForm={defineProjectUpdateState()} edit={!readOnly} editForm={true} />
+                    <PhysicalAppeareanceGroup projectForm={defineProjectState()} setProjectForm={defineProjectUpdateState()} readOnly={readOnly} />
                 </Grid>
                 <Grid item xs={12} md={4}>
-                    <PurposeGroup projectForm={defineProjectState()} setProjectForm={defineProjectUpdateState()} edit={!readOnly} editForm={true} />
+                    <PurposeGroup projectForm={defineProjectState()} setProjectForm={defineProjectUpdateState()} readOnly={readOnly} />
                 </Grid>
                 <Grid item xs={12} md={4}>
-                    <HouseTypeGroup projectForm={defineProjectState()} setProjectForm={defineProjectUpdateState()} edit={!readOnly} editForm={true} />
+                    <HouseTypeGroup projectForm={defineProjectState()} setProjectForm={defineProjectUpdateState()} readOnly={readOnly} />
                 </Grid>
             </Grid>
             <Grid container spacing={2} alignItems="stretch" mt={0.5}>
                 <Grid item xs={12} md={8}>
-                    <GroundPositionGroup projectForm={defineProjectState()} setProjectForm={defineProjectUpdateState()} edit={!readOnly} editForm={true} />
+                    <GroundPositionGroup projectForm={defineProjectState()} setProjectForm={defineProjectUpdateState()} readOnly={readOnly} />
                 </Grid>
                 <Grid item xs={12} md={4}>
-                    <Programming projectForm={defineProjectState()} setProjectForm={defineProjectUpdateState()} edit={!readOnly} editForm={true} />
+                    <Programming projectForm={defineProjectState()} setProjectForm={defineProjectUpdateState()} readOnly={readOnly} />
                 </Grid>
             </Grid>
             <Grid container spacing={2} alignItems="stretch" mt={0.5}>

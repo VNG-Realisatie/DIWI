@@ -7,11 +7,10 @@ import { SingleNumberInput } from "../physical-appearence/SingleNumberInput";
 export type GroundPositionInformationProps = {
     projectForm: HouseBlock;
     setProjectForm(project: HouseBlock): void;
-    edit: boolean;
-    editForm: boolean;
+    readOnly: boolean;
 };
 
-export const GroundPositionGroup = ({ projectForm, setProjectForm, edit, editForm }: GroundPositionInformationProps) => {
+export const GroundPositionGroup = ({ projectForm, setProjectForm, readOnly }: GroundPositionInformationProps) => {
     const translationPath = "createProject.houseBlocksForm.groundPosition";
     return (
         <WizardCard>
@@ -38,8 +37,7 @@ export const GroundPositionGroup = ({ projectForm, setProjectForm, edit, editFor
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="noPermissionOwner"
                 translationPath={translationPath}
             />
@@ -55,8 +53,7 @@ export const GroundPositionGroup = ({ projectForm, setProjectForm, edit, editFor
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="intentionPermissionOwner"
                 translationPath={translationPath}
             />
@@ -72,8 +69,7 @@ export const GroundPositionGroup = ({ projectForm, setProjectForm, edit, editFor
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="formalPermissionOwner"
                 translationPath={translationPath}
             />
