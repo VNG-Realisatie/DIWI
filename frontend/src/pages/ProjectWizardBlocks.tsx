@@ -57,7 +57,7 @@ const ProjectWizardBlocks = () => {
         <WizardLayout {...{ handleBack, handleNext, handleSave, projectId, activeStep: 1 }}>
             <HouseBlocksForm
                 validationError={validationError}
-                editForm={false}
+                readOnly={false}
                 createFormHouseBlock={createFormHouseBlock}
                 setCreateFormHouseBlock={setCreateFormHouseBlock}
             />
