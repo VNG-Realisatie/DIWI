@@ -8,11 +8,10 @@ import { OwnershipRowInputs } from "./OwnershipRowInputs";
 export type OwnershipInformationProps = {
     projectForm: HouseBlock;
     setProjectForm(project: HouseBlock): void;
-    edit: boolean;
-    editForm: boolean;
+    readOnly: boolean;
 };
 
-export const OwnershipInformationGroup = ({ projectForm, setProjectForm, edit, editForm }: OwnershipInformationProps) => {
+export const OwnershipInformationGroup = ({ projectForm, setProjectForm, readOnly }: OwnershipInformationProps) => {
     const handleAddRow = () => {
         setProjectForm({
             ...projectForm,
@@ -75,11 +74,10 @@ export const OwnershipInformationGroup = ({ projectForm, setProjectForm, edit, e
                         handleRemoveRow={handleRemoveRow}
                         handleInputChange={handleInputChange}
                         ownership={ownership}
-                        edit={edit}
-                        editForm={editForm}
+                        readOnly={readOnly}
                     />
                 ))}
-                {((edit && editForm) || (!edit && !editForm)) && (
+                {!readOnly && (
                     <IconButton onClick={handleAddRow}>
                         <AddIcon sx={{ color: "green" }} />
                     </IconButton>

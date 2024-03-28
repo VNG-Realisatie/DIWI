@@ -224,7 +224,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                 <Stack flex={1}>
                     <LabelComponent required={false} text={t("createProject.informationForm.projectLeader")} />
                     <OrganizationSelect
-                        projectEditable={true}
+                        readOnly={false}
                         isLeader={true}
                         owner={createProjectForm?.projectLeaders ? createProjectForm.projectLeaders : []}
                         setOwner={(e) =>
@@ -286,31 +286,8 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
             <Stack direction="row" alignItems="center" spacing={3} mt={2}>
                 <Stack flex={1}>
                     <LabelComponent required={false} text={t("createProject.informationForm.owner")} />
-                    {/* <Select
-                        sx={{ width: "370px" }}
-                        labelId="leader"
-                        id="owner"
-                        size="small"
-                        value={createProjectForm?.projectOwners && createProjectForm.projectOwners.length > 0 ? createProjectForm.projectOwners[0] : ""}
-                        label={t("createProject.informationForm.owner")}
-                        onChange={(e) => {
-                            //todo later
-                            setCreateProjectForm({
-                                ...createProjectForm,
-                                projectOwners: [e.target.value],
-                            });
-                        }}
-                    >
-                        {eigenaarOption.map((lead) => {
-                            return (
-                                <MenuItem key={lead.ID} value={lead.naam ?? ""}>
-                                    {lead.naam}
-                                </MenuItem>
-                            );
-                        })}
-                    </Select> */}
                     <OrganizationSelect
-                        projectEditable={true}
+                        readOnly={false}
                         owner={createProjectForm?.projectOwners ? createProjectForm.projectOwners : []}
                         setOwner={(e) =>
                             setCreateProjectForm({

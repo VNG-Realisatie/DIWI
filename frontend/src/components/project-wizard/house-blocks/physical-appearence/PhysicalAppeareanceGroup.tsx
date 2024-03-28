@@ -7,11 +7,10 @@ import { SingleNumberInput } from "./SingleNumberInput";
 export type PhysicalAppeareanceInformationProps = {
     projectForm: HouseBlock;
     setProjectForm(project: HouseBlock): void;
-    edit: boolean;
-    editForm: boolean;
+    readOnly: boolean;
 };
 
-export const PhysicalAppeareanceGroup = ({ projectForm, setProjectForm, edit, editForm }: PhysicalAppeareanceInformationProps) => {
+export const PhysicalAppeareanceGroup = ({ projectForm, setProjectForm, readOnly }: PhysicalAppeareanceInformationProps) => {
     const translationPath = "createProject.houseBlocksForm.physicalAppearance";
     return (
         <WizardCard>
@@ -38,8 +37,7 @@ export const PhysicalAppeareanceGroup = ({ projectForm, setProjectForm, edit, ed
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="tussenwoning"
                 translationPath={translationPath}
             />
@@ -55,8 +53,7 @@ export const PhysicalAppeareanceGroup = ({ projectForm, setProjectForm, edit, ed
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="tweeondereenkap"
                 translationPath={translationPath}
             />
@@ -72,8 +69,7 @@ export const PhysicalAppeareanceGroup = ({ projectForm, setProjectForm, edit, ed
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="portiekflat"
                 translationPath={translationPath}
             />
@@ -89,8 +85,7 @@ export const PhysicalAppeareanceGroup = ({ projectForm, setProjectForm, edit, ed
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="hoekwoning"
                 translationPath={translationPath}
             />
@@ -106,8 +101,7 @@ export const PhysicalAppeareanceGroup = ({ projectForm, setProjectForm, edit, ed
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="vrijstaand"
                 translationPath={translationPath}
             />
@@ -123,8 +117,7 @@ export const PhysicalAppeareanceGroup = ({ projectForm, setProjectForm, edit, ed
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="gallerijflat"
                 translationPath="createProject.houseBlocksForm.physicalAppearance"
             />

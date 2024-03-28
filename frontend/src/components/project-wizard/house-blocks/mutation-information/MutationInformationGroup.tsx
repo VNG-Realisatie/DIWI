@@ -12,19 +12,17 @@ import { MutationSelectOptions } from "../../../../types/enums";
 export type MutationInformationProps = {
     projectForm: HouseBlock;
     setProjectForm(project: HouseBlock): void;
-    edit: boolean;
-    editForm: boolean;
+    readOnly: boolean;
 };
 
-export const MutationInformationGroup = ({ projectForm, setProjectForm, edit, editForm }: MutationInformationProps) => {
+export const MutationInformationGroup = ({ projectForm, setProjectForm, readOnly }: MutationInformationProps) => {
     return (
         <WizardCard>
             <Typography fontWeight={600} mb={2}>
                 {t("createProject.houseBlocksForm.mutationData")}
             </Typography>
             <GrossPlanCapacityInput
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 houseBlockGrossPlan={projectForm.mutation.grossPlanCapacity}
                 updateHouseBlockGrossPlan={(e) =>
                     setProjectForm({
@@ -37,8 +35,7 @@ export const MutationInformationGroup = ({ projectForm, setProjectForm, edit, ed
                 }
             />
             <DemolitionPlanCapacityInput
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 houseBlockDemolitionPlan={projectForm.mutation.demolition}
                 updateHouseBlockDemolitionPlan={(e) =>
                     setProjectForm({
@@ -51,8 +48,7 @@ export const MutationInformationGroup = ({ projectForm, setProjectForm, edit, ed
                 }
             />
             <NetPlanCapacityInput
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 houseBlockNetPlan={projectForm.mutation.netPlanCapacity}
                 updateHouseBlockNetPlan={(e) =>
                     setProjectForm({
@@ -65,8 +61,7 @@ export const MutationInformationGroup = ({ projectForm, setProjectForm, edit, ed
                 }
             />
             <MutationKindSelect
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 houseBlockMutationKind={projectForm.mutation.mutationKind}
                 updateHouseBlockMutationKind={(event: SelectChangeEvent<MutationSelectOptions[]>) => {
                     const {

@@ -1,4 +1,4 @@
-import { Box, Grid, Popover, Stack, SxProps, TextField, Theme, Tooltip, Typography } from "@mui/material";
+import { Box, Popover, Stack, SxProps, Theme, Tooltip } from "@mui/material";
 import { MouseEvent, useCallback, useContext, useEffect, useState } from "react";
 import ProjectContext from "../../../context/ProjectContext";
 import ProjectColorContext from "../../../pages/ProjectDetail";
@@ -7,25 +7,13 @@ import SaveIcon from "@mui/icons-material/Save";
 import ClearIcon from "@mui/icons-material/Clear";
 import FormatColorFillIcon from "@mui/icons-material/FormatColorFill";
 import { useTranslation } from "react-i18next";
-import { DatePicker } from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from "dayjs";
-import { convertDayjsToString } from "../../../utils/convertDayjsToString";
 import { formatDate } from "../../../utils/formatDate";
-import { ProjectNameEditForm } from "./ProjectNameEditForm";
-import { PlanTypeEditForm } from "./PlanTypeEditForm";
-import { PhaseEditForm } from "./PhaseEditForm";
-import { MunicipalityRoleEditForm } from "./MunicipalityRoleEditForm";
-import { ConfidentialityLevelEditForm } from "./ConfidentialityLevelEditForm";
-import { PlanStatusEditForm } from "./PlanStatusEditForm";
-// import { MunicipalityEditForm } from "./MunicipalityEditForm";
-// import { NeighbourhoodEditForm } from "./NeighbourhoodEditForm";
-// import { WijkEditForm } from "./WijkEditForm";
+
 import { defaultColors } from "../../ColorSelector";
 import { BlockPicker, ColorResult } from "react-color";
-import { CellContainer } from "./CellContainer";
-import { OrganizationSelect } from "../../../widgets/OrganizationSelect";
+
 import { PlanStatusOptions, PlanTypeOptions } from "../../../types/enums";
-import { PriorityEditForm } from "./PriorityEditForm";
 import { Organization, SelectModel, updateProjects } from "../../../api/projectsServices";
 import { HouseBlock } from "../../project-wizard/house-blocks/types";
 import AlertContext from "../../../context/AlertContext";
@@ -34,6 +22,7 @@ import { HouseBlocksList } from "./HouseBlocksList";
 import { emptyHouseBlockForm } from "../../project-wizard/house-blocks/constants";
 import { CustomerPropertiesProjectBlock } from "./CustomerPropertiesProjectBlock";
 import { CustomPropertyValue, getCustomPropertyValues, putCustomPropertyValues } from "../../../api/customPropServices";
+import { ProjectProperties } from "./ProjectProperties";
 
 export const columnTitleStyle: SxProps<Theme> = {
     border: "solid 1px #ddd",
@@ -42,31 +31,16 @@ export const columnTitleStyle: SxProps<Theme> = {
     backgroundColor: "#738092",
 };
 
-type DateDisplayEditorProps = {
-    projectEditable: boolean;
-    date: Dayjs | string | undefined;
-    onChange: (newDate: Dayjs | null) => void;
-};
-
-const DateDisplayEditor = ({ projectEditable, date, onChange }: DateDisplayEditorProps) => {
-    const dayjsDate = typeof date === "string" ? dayjs(date) : date;
-    if (!projectEditable) {
-        return <CellContainer>{dayjsDate ? convertDayjsToString(dayjsDate) : ""}</CellContainer>;
-    } else {
-        return <DatePicker sx={{ width: "100%" }} slotProps={{ textField: { size: "small" } }} value={dayjsDate} onChange={onChange} />;
-    }
-};
-
 export const ProjectsWithHouseBlock = () => {
     const { selectedProject, updateProject } = useContext(ProjectContext);
     const { selectedProjectColor, setSelectedProjectColor } = useContext(ProjectColorContext);
-    const [projectEditable, setProjectEditable] = useState(false);
+    const [readOnly, setReadOnly] = useState(true);
     const [openColorDialog, setOpenColorDialog] = useState(false);
-    const [name, setName] = useState<string | null>();
+    const [name, setName] = useState<string | null>("");
     const [owner, setOwner] = useState<Organization[]>([]);
     const [leader, setLeader] = useState<Organization[]>([]);
-    const [startDate, setStartDate] = useState<Dayjs | null>();
-    const [endDate, setEndDate] = useState<Dayjs | null>();
+    const [startDate, setStartDate] = useState<Dayjs | null>(null);
+    const [endDate, setEndDate] = useState<Dayjs | null>(null);
     const [projectPhase, setProjectPhase] = useState<string | undefined>();
     const [confidentialityLevel, setConfidentialityLevel] = useState<string | undefined>();
     const [planType, setPlanType] = useState<PlanTypeOptions[]>([]);
@@ -75,7 +49,7 @@ export const ProjectsWithHouseBlock = () => {
     const [selectedMunicipality, setSelectedMunicipality] = useState<SelectModel[]>([]);
     const [selectedNeighbourhood, setSelectedNeighbourhood] = useState<SelectModel[]>([]);
     const [selectedWijk, setSelectedWijk] = useState<SelectModel[]>([]);
-    const [projectPriority, setProjectPriority] = useState<SelectModel | null>();
+    const [projectPriority, setProjectPriority] = useState<SelectModel | null>(null);
     const [customValues, setCustomValues] = useState<CustomPropertyValue[]>([]);
 
     const { setAlert } = useContext(AlertContext);
@@ -99,26 +73,8 @@ export const ProjectsWithHouseBlock = () => {
         fetchCustomPropertyValues();
     }, [selectedProject?.projectId]);
 
-    const handleStartDateChange = (newValue: Dayjs | null) => {
-        if (newValue) {
-            const startDate = newValue.endOf("day");
-            setStartDate(startDate);
-        } else {
-            setStartDate(null);
-        }
-    };
-
-    const handleEndDateChange = (newValue: Dayjs | null) => {
-        if (newValue) {
-            const endDate = newValue.endOf("day");
-            setEndDate(endDate);
-        } else {
-            setEndDate(null);
-        }
-    };
-
     const handleCancelChange = () => {
-        setProjectEditable(false);
+        setReadOnly(true);
         updateChanges();
     };
 
@@ -137,11 +93,11 @@ export const ProjectsWithHouseBlock = () => {
     };
 
     const updateChanges = useCallback(() => {
-        setName(selectedProject?.projectName);
+        setName(selectedProject?.projectName ?? "");
         setOwner(selectedProject?.projectOwners ?? []);
         setStartDate(selectedProject?.startDate ? dayjs(formatDate(selectedProject.startDate)).endOf("day") : null);
         setEndDate(selectedProject?.endDate ? dayjs(formatDate(selectedProject.endDate)).endOf("day") : null);
-        setProjectPriority(selectedProject?.priority?.value); //ToDo Fix later when decided range select
+        setProjectPriority(selectedProject?.priority?.value ?? { id: "", name: "" }); //ToDo Fix later when decided range select
         setProjectPhase(selectedProject?.projectPhase);
         setSelectedNeighbourhood(selectedProject?.buurt ?? []);
         setSelectedMunicipality(selectedProject?.municipality ?? []);
@@ -174,7 +130,7 @@ export const ProjectsWithHouseBlock = () => {
     const open = Boolean(anchorEl);
 
     const handleProjectEdit = () => {
-        setProjectEditable(true);
+        setReadOnly(false);
         updateChanges();
     };
 
@@ -218,7 +174,7 @@ export const ProjectsWithHouseBlock = () => {
     const handleProjectSave = () => {
         updateProjects(updatedProjectForm)
             .then(() => {
-                setProjectEditable(false);
+                setReadOnly(true);
                 updateProject();
                 handleCustomPropertiesSave();
             })
@@ -239,12 +195,12 @@ export const ProjectsWithHouseBlock = () => {
                         }}
                     />
                 </Tooltip>
-                {!projectEditable && (
+                {readOnly && (
                     <Tooltip placement="top" title={t("generic.edit")}>
                         <EditIcon sx={{ color: "#FFFFFF" }} onClick={handleProjectEdit} />
                     </Tooltip>
                 )}
-                {projectEditable && (
+                {!readOnly && (
                     <>
                         <Tooltip placement="top" title={t("generic.cancelChanges")}>
                             <ClearIcon sx={{ mr: 2, color: "#FFFFFF" }} onClick={handleCancelChange} />
@@ -256,206 +212,40 @@ export const ProjectsWithHouseBlock = () => {
                 )}
             </Box>
             <Stack>
-                {/* List project properties */}
-                <Grid container my={2}>
-                    <Grid container>
-                        <Grid item xs={12} md={1}>
-                            <Typography sx={columnTitleStyle}>{t("projects.tableColumns.projectName")}</Typography>
-                            {!projectEditable ? (
-                                <CellContainer>{name ? name : selectedProject?.projectName}</CellContainer>
-                            ) : (
-                                <ProjectNameEditForm name={name} setName={setName} />
-                            )}
-                        </Grid>
-                        <Grid item xs={12} md={1}>
-                            <Typography sx={columnTitleStyle}>{t("projects.tableColumns.totalValue")}</Typography>
-                            {!projectEditable ? (
-                                <CellContainer>{selectedProject?.totalValue ? selectedProject.totalValue : 0}</CellContainer>
-                            ) : (
-                                <TextField fullWidth size="small" disabled value={selectedProject?.totalValue ? selectedProject.totalValue : 0} />
-                            )}
-                        </Grid>
-                        <Grid item xs={12} md={2}>
-                            <Typography sx={columnTitleStyle}>{t("projects.tableColumns.organizationName")}</Typography>
-                            <OrganizationSelect projectEditable={projectEditable} owner={owner} setOwner={setOwner} />
-                        </Grid>
-                        <Grid item xs={12} md={8}>
-                            <Typography sx={columnTitleStyle}>{t("projects.tableColumns.planType")}</Typography>
+                <ProjectProperties
+                    projectPhase={projectPhase}
+                    setProjectPhase={setProjectPhase}
+                    setStartDate={setStartDate}
+                    setEndDate={setEndDate}
+                    readOnly={readOnly}
+                    name={name}
+                    setName={setName}
+                    owner={owner}
+                    setOwner={setOwner}
+                    planType={planType}
+                    setPlanType={setPlanType}
+                    startDate={startDate}
+                    endDate={endDate}
+                    projectPriority={projectPriority}
+                    setProjectPriority={setProjectPriority}
+                    selectedMunicipalityRole={selectedMunicipalityRole}
+                    setSelectedMunicipalityRole={setSelectedMunicipalityRole}
+                    confidentialityLevel={confidentialityLevel}
+                    setConfidentialityLevel={setConfidentialityLevel}
+                    leader={leader}
+                    setLeader={setLeader}
+                    planStatus={planStatus}
+                    setPlanStatus={setPlanStatus}
+                    // selectedMunicipality,
+                    // setSelectedMunicipality,
+                    // selectedNeighbourhood,
+                    // setSelectedNeighbourhood,
+                    // selectedWijk,
+                    // setSelectedWijk,
+                />
 
-                            {!projectEditable ? (
-                                <CellContainer>
-                                    {planType.length > 0
-                                        ? planType.map((pt: string) => {
-                                              return <span key={pt}>{t(`projectTable.planTypeOptions.${pt}`)},</span>;
-                                          })
-                                        : selectedProject?.planType?.map((pt) => {
-                                              return <span key={pt}>{t(`projectTable.planTypeOptions.${pt}`)},</span>;
-                                          })}
-                                </CellContainer>
-                            ) : (
-                                <PlanTypeEditForm planType={planType} setPlanType={setPlanType} />
-                            )}
-                        </Grid>
-                    </Grid>
-                    <Grid container>
-                        <Grid item xs={12} md={1.1}>
-                            <Typography sx={columnTitleStyle}>{t("projects.tableColumns.startDate")}</Typography>
-                            <DateDisplayEditor
-                                projectEditable={projectEditable}
-                                date={startDate ? startDate : selectedProject?.startDate}
-                                onChange={handleStartDateChange}
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={1.1}>
-                            <Typography sx={columnTitleStyle}>{t("projects.tableColumns.endDate")}</Typography>
-                            <DateDisplayEditor
-                                projectEditable={projectEditable}
-                                date={endDate ? endDate : selectedProject?.endDate}
-                                onChange={handleEndDateChange}
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={1.8}>
-                            <Typography sx={columnTitleStyle}>{t("projects.tableColumns.priority")}</Typography>
+                <CustomerPropertiesProjectBlock {...{ readOnly, customValues, setCustomValues, columnTitleStyle }} />
 
-                            {!projectEditable ? (
-                                <CellContainer>
-                                    <span key={selectedProject?.priority?.value?.id}>
-                                        {selectedProject?.priority?.value?.name
-                                            ? selectedProject?.priority?.value?.name
-                                            : selectedProject?.priority?.min === null && selectedProject?.priority?.max === null
-                                              ? ""
-                                              : `${selectedProject?.priority?.min?.name}-${selectedProject?.priority?.max?.name}`}
-                                    </span>
-                                </CellContainer>
-                            ) : (
-                                // TODO Implement later for ranges
-                                <PriorityEditForm projectPriority={projectPriority} setProjectPriority={setProjectPriority} />
-                            )}
-                        </Grid>
-                        <Grid item xs={12} md={2}>
-                            <Typography sx={columnTitleStyle}>{t("projects.tableColumns.projectPhase")}</Typography>
-
-                            {!projectEditable ? (
-                                <CellContainer>
-                                    {t(`projectTable.projectPhaseOptions.${projectPhase ? projectPhase : selectedProject?.projectPhase}`)}
-                                </CellContainer>
-                            ) : (
-                                <PhaseEditForm projectPhase={projectPhase} setProjectPhase={setProjectPhase} />
-                            )}
-                        </Grid>
-                        <Grid item xs={12} md={2}>
-                            <Typography sx={columnTitleStyle}>{t("projects.tableColumns.municipalityRole")}</Typography>
-
-                            {!projectEditable ? (
-                                <CellContainer>
-                                    {selectedMunicipalityRole.length > 0
-                                        ? selectedMunicipalityRole.map((mr: SelectModel) => {
-                                              return <span key={mr.id}>{mr.name}</span>;
-                                          })
-                                        : selectedProject?.municipalityRole?.map((mr) => {
-                                              return <span key={mr.id}>{mr.name}</span>;
-                                          })}
-                                </CellContainer>
-                            ) : (
-                                <MunicipalityRoleEditForm
-                                    selectedMunicipalityRole={selectedMunicipalityRole}
-                                    setSelectedMunicipalityRole={setSelectedMunicipalityRole}
-                                />
-                            )}
-                        </Grid>
-                        <Grid item xs={12} md={2}>
-                            <Typography sx={columnTitleStyle}>{t("projects.tableColumns.confidentialityLevel")}</Typography>
-
-                            {!projectEditable ? (
-                                <CellContainer>
-                                    {confidentialityLevel
-                                        ? t(`projectTable.confidentialityLevelOptions.${confidentialityLevel}`)
-                                        : t(`projectTable.confidentialityLevelOptions.${selectedProject?.confidentialityLevel}`)}
-                                </CellContainer>
-                            ) : (
-                                <ConfidentialityLevelEditForm confidentialityLevel={confidentialityLevel} setConfidentialityLevel={setConfidentialityLevel} />
-                            )}
-                        </Grid>
-                        <Grid item xs={12} md={2}>
-                            <Typography sx={columnTitleStyle}>{t("projects.tableColumns.projectLeader")}</Typography>
-                            <OrganizationSelect projectEditable={projectEditable} owner={leader} setOwner={setLeader} isLeader={true} />
-                        </Grid>
-                    </Grid>
-                    <Grid container>
-                        <Grid item xs={12} md={12}>
-                            <Typography sx={columnTitleStyle}>{t("projects.tableColumns.planningPlanStatus")}</Typography>
-
-                            {!projectEditable ? (
-                                <CellContainer>
-                                    {planStatus.length > 0
-                                        ? planStatus.map((pp: string) => {
-                                              return <span key={pp}>{t(`projectTable.planningPlanStatus.${pp}`)},</span>;
-                                          })
-                                        : selectedProject?.planningPlanStatus?.map((pp) => {
-                                              return <span key={pp}>{t(`projectTable.planningPlanStatus.${pp}`)},</span>;
-                                          })}
-                                </CellContainer>
-                            ) : (
-                                <PlanStatusEditForm planStatus={planStatus} setPlanStatus={setPlanStatus} />
-                            )}
-                        </Grid>
-                    </Grid>
-                    {/* <Grid item xs={12} md={2}>
-                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.municipality")}</Typography>
-
-                        {!projectEditable ? (
-                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
-                                {selectedMunicipality.length > 0
-                                    ? selectedMunicipality.map((municipality: SelectModel) => {
-                                          return <span key={municipality.id}>{municipality.name},</span>;
-                                      })
-                                    : selectedProject?.municipality?.map((municipality) => {
-                                          return <span key={municipality.id}>{municipality.name},</span>;
-                                      })}
-                            </Typography>
-                        ) : (
-                            <MunicipalityEditForm selectedMunicipality={selectedMunicipality} setSelectedMunicipality={setSelectedMunicipality} />
-                        )}
-                    </Grid>
-                    <Grid item xs={12} md={2}>
-                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.neighbourhood")}</Typography>
-
-                        {!projectEditable ? (
-                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
-                                {selectedNeighbourhood.length > 0
-                                    ? selectedNeighbourhood.map((neighbourhood: SelectModel) => {
-                                          return <span key={neighbourhood.id}>{neighbourhood.name},</span>;
-                                      })
-                                    : selectedProject?.buurt?.map((neighbourhood) => {
-                                          return <span key={neighbourhood.id}>{neighbourhood.name},</span>;
-                                      })}
-                            </Typography>
-                        ) : (
-                            <NeighbourhoodEditForm selectedNeighbourhood={selectedNeighbourhood} setSelectedNeighbourhood={setSelectedNeighbourhood} />
-                        )}
-                    </Grid>
-                    <Grid item xs={12} md={2}>
-                        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.wijk")}</Typography>
-
-                        {!projectEditable ? (
-                            <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
-                                {selectedWijk.length > 0
-                                    ? selectedWijk.map((wijk: SelectModel) => {
-                                          return <span key={wijk.id}>{wijk.name},</span>;
-                                      })
-                                    : selectedProject?.wijk?.map((wijk) => {
-                                          return <span key={wijk.id}>{wijk.name},</span>;
-                                      })}
-                            </Typography>
-                        ) : (
-                            <WijkEditForm selectedWijk={selectedWijk} setSelectedWijk={setSelectedWijk} />
-                        )}
-                    </Grid> */}
-                </Grid>
-                {/*List Custom Properties */}
-                <CustomerPropertiesProjectBlock {...{ projectEditable, customValues, setCustomValues, columnTitleStyle }} />
-
-                {/* List huizen blok cards */}
                 <HouseBlocksList setOpenHouseBlockDialog={setOpenHouseBlockDialog} />
                 {openColorDialog && (
                     <Popover

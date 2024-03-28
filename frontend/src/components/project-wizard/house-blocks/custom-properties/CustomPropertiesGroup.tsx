@@ -1,4 +1,4 @@
-import { Stack, SxProps, Theme, Typography } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CustomPropertyType, getCustomPropertiesWithQuery } from "../../../../api/adminSettingServices";
@@ -8,14 +8,12 @@ import { CustomPropertyValue } from "../../../../api/customPropServices";
 import { CustomPropertyWidget } from "../../../CustomPropertyWidget";
 
 type Props = {
-    projectEditable: boolean;
+    readOnly: boolean;
     customValues: CustomPropertyValue[];
     setCustomValues: (updatedValues: CustomPropertyValue[]) => void;
-    columnTitleStyle: SxProps<Theme> | undefined;
-    customPropertyEditable?: boolean;
 };
 
-export const CustomPropertiesGroup = ({ projectEditable, customValues, customPropertyEditable, setCustomValues, columnTitleStyle }: Props) => {
+export const CustomPropertiesGroup = ({ readOnly, customValues, setCustomValues }: Props) => {
     const [customDefinitions, setCustomDefinitions] = useState<CustomPropertyType[]>([]);
 
     const { t } = useTranslation();
@@ -45,8 +43,7 @@ export const CustomPropertiesGroup = ({ projectEditable, customValues, customPro
                         <Stack width="100%">
                             <LabelComponent required text={property.name} />{" "}
                             <CustomPropertyWidget
-                                projectEditable={projectEditable}
-                                customPropertyEditable={customPropertyEditable}
+                                readOnly={readOnly}
                                 customValue={customValue}
                                 setCustomValue={(newValue) => {
                                     setCustomValue({ ...newValue, customPropertyId: property.id });
