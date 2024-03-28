@@ -150,7 +150,7 @@ FROM (
              ),
              active_project_woningblok_totalvalue AS (
                  SELECT
-                     w.project_id, SUM(COALESCE(wmc.netto_plancapaciteit, 0)) AS total_value
+                     w.project_id, SUM(COALESCE(wmc.bruto_plancapaciteit, 0)) AS total_value
                  FROM
                      diwi_testset.woningblok_mutatie_changelog wmc
                          JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wmc.start_milestone_id AND sms.change_end_date IS NULL
@@ -299,7 +299,7 @@ FROM (
              ),
              future_project_woningblok_totalvalue AS (
                  SELECT
-                     w.project_id, SUM(COALESCE(wmc.netto_plancapaciteit, 0)) AS total_value
+                     w.project_id, SUM(COALESCE(wmc.bruto_plancapaciteit, 0)) AS total_value
                  FROM
                      diwi_testset.woningblok_mutatie_changelog wmc
                          JOIN diwi_testset.woningblok w ON wmc.woningblok_id = w.id
