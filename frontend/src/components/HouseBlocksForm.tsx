@@ -2,7 +2,7 @@ import { Box, Grid, Stack, Tooltip } from "@mui/material";
 import { HouseBlock } from "./project-wizard/house-blocks/types";
 import { GeneralInformationGroup } from "./project-wizard/house-blocks/general-information/GeneralInformationGroup";
 import { MutationInformationGroup } from "./project-wizard/house-blocks/mutation-information/MutationInformationGroup";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { OwnershipInformationGroup } from "./project-wizard/house-blocks/ownership-information/OwnershipInformationGroup";
 import { PhysicalAppeareanceGroup } from "./project-wizard/house-blocks/physical-appearence/PhysicalAppeareanceGroup";
 import { PurposeGroup } from "./project-wizard/house-blocks/purpose/PurposeGroup";
@@ -14,12 +14,11 @@ import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import ClearIcon from "@mui/icons-material/Clear";
 import { t } from "i18next";
-import { Project, getProject, updateHouseBlock } from "../api/projectsServices";
+import { updateHouseBlock } from "../api/projectsServices";
 import AlertContext from "../context/AlertContext";
 import { CustomPropertiesGroup } from "./project-wizard/house-blocks/custom-properties/CustomPropertiesGroup";
 import { CustomPropertyValue, getBlockCustomPropertyValues, putBlockCustomPropertyValues } from "../api/customPropServices";
 import HouseBlockContext from "../context/HouseBlockContext";
-import { useParams } from "react-router-dom";
 
 type Props = {
     projectDetailHouseBlock?: HouseBlock;
@@ -33,39 +32,9 @@ export const HouseBlocksForm = ({ projectDetailHouseBlock, editForm, createFormH
     const [projectForm, setProjectForm] = useState<HouseBlock>(projectDetailHouseBlock ? projectDetailHouseBlock : emptyHouseBlockForm);
     const [edit, setEdit] = useState(false);
     const [customValues, setCustomValues] = useState<CustomPropertyValue[]>([]);
-    const [project, setProject] = useState<Project | null>(null);
 
     const { setAlert } = useContext(AlertContext);
     const { houseBlocks, setHouseBlocks } = useContext(HouseBlockContext);
-
-    const { projectId } = useParams();
-
-    useEffect(() => {
-        if (!editForm) {
-            const fetchProject = async () => {
-                const data = await getProject(projectId as string);
-                setProject(data);
-            };
-
-            fetchProject();
-        }
-    }, [projectId, editForm]);
-
-    const setDates = useCallback(() => {
-        if (project && project.startDate && project.endDate) {
-            setCreateFormHouseBlock({
-                ...emptyHouseBlockForm,
-                startDate: project.startDate,
-                endDate: project.endDate,
-            });
-        }
-    }, [project, setCreateFormHouseBlock]);
-
-    useEffect(() => {
-        if (project && !editForm) {
-            setDates();
-        }
-    }, [project, setDates, editForm]);
 
     useEffect(() => {
         const fetchCustomPropertyValues = async () => {
