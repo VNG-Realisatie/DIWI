@@ -113,9 +113,8 @@ export const CreateProject = () => {
             {activeStep === 0 && <ProjectInformationForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />}
             {activeStep === 1 && (
                 <HouseBlocksForm
-                    customPropertyEditable={true}
                     validationError={validationError}
-                    editForm={false}
+                    readOnly={false}
                     createFormHouseBlock={createFormHouseBlock}
                     setCreateFormHouseBlock={setCreateFormHouseBlock}
                 />

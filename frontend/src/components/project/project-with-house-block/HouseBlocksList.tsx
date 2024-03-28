@@ -1,11 +1,11 @@
 import { Grid, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
-import { HouseBlocksForm } from "../../HouseBlocksForm";
 import { HouseBlock } from "../../project-wizard/house-blocks/types";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { AddHouseBlockButton } from "../../PlusButton";
 import { useTranslation } from "react-i18next";
 import { useContext } from "react";
 import HouseBlockContext from "../../../context/HouseBlockContext";
+import { HouseBlocksFormWithControls } from "../../HouseBlocksFormWithControls";
 
 type Props = {
     setOpenHouseBlockDialog: (open: boolean) => void;
@@ -28,13 +28,7 @@ export const HouseBlocksList = ({ setOpenHouseBlockDialog }: Props) => {
                             {hb.houseblockName}: {hb.mutation.grossPlanCapacity} {t("createProject.houseBlocksForm.housesOn")} {hb.endDate}
                         </AccordionSummary>
                         <AccordionDetails>
-                            <HouseBlocksForm
-                                projectDetailHouseBlock={hb}
-                                key={i}
-                                editForm={true}
-                                createFormHouseBlock={hb}
-                                setCreateFormHouseBlock={(hb) => {}}
-                            />
+                            <HouseBlocksFormWithControls projectDetailHouseBlock={hb} key={i} createFormHouseBlock={hb} setCreateFormHouseBlock={(hb) => {}} />
                         </AccordionDetails>
                     </Accordion>
                 );
