@@ -165,6 +165,11 @@
       "map": "Kaart",
       "table": "Tabel",
       "createNewProject": "Nieuw project toevoegen",
+      "export":"Exporteren",
+      "exportIt": "Exporteer",
+      "confirmExport": "Weet je het zeker?",
+      "cancelExport":"Annuleer",
+      "successExport": "Gelukt! Je ontvangt de bevestiging via de mail.",
       "tableColumns": {
         "projectName": "Project naam",
         "totalValue": "Totaal aantal",

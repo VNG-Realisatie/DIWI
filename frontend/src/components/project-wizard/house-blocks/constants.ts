@@ -27,18 +27,6 @@ export const emptyHouseBlockForm: HouseBlock = {
             value: { value: 0, min: null, max: null },
             rentalValue: { value: 0, min: null, max: null },
         },
-        {
-            type: "HUURWONING_PARTICULIERE_VERHUURDER",
-            amount: null,
-            value: { value: 0, min: null, max: null },
-            rentalValue: { value: 0, min: null, max: null },
-        },
-        {
-            type: "HUURWONING_WONINGCORPORATIE",
-            amount: null,
-            value: { value: 0, min: null, max: null },
-            rentalValue: { value: 0, min: null, max: null },
-        },
     ],
     groundPosition: {
         noPermissionOwner: null,

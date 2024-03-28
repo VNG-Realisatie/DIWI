@@ -401,18 +401,18 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 onFilterModelChange={handleFilterModelChange}
             />
             <Dialog open={showDialog} onClose={handleClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
-                <DialogTitle id="alert-dialog-title">Weet je het zeker?</DialogTitle>
+                <DialogTitle id="alert-dialog-title">{t("projects.confirmExport")}</DialogTitle>
                 <DialogActions sx={{ px: 5, py: 3, ml: 15 }}>
-                    <Button onClick={handleClose}>Annuleer</Button>
+                    <Button onClick={handleClose}>{t("projects.cancelExport")}</Button>
                     <Button
                         variant="contained"
                         onClick={() => {
                             handleClose();
-                            setAlert("Gelukt! Je ontvangt de bevestiging via de mail.", "success");
+                            setAlert(t("projects.successExport"), "success");
                         }}
                         autoFocus
                     >
-                        Exporteer
+                        {t("projects.exportIt")}
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -424,7 +424,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                         setShowDialog(true);
                     }}
                 >
-                    Exporteren
+                    {t("projects.export")}
                 </Button>
             )}
             <Box sx={{ height: 100 }}></Box>

@@ -26,7 +26,6 @@ export const CustomerPropertiesProjectBlock = ({ projectEditable, customValues, 
         const newCustomValues = customValues.filter((val) => val.customPropertyId !== newValue.customPropertyId);
         setCustomValues([...newCustomValues, newValue]);
     };
-
     return (
         <Grid container my={2}>
             {customDefinitions.map((property) => {
