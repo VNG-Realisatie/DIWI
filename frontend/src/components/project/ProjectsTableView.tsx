@@ -65,7 +65,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     // const [selectedWijk, setSelectedWijk] = useState<SelectedOptionWithId[]>([]);
     // const [selectedBuurt, setSelectedBuurt] = useState<SelectedOptionWithId[]>([]);
     const [showDialog, setShowDialog] = useState(false);
-    const [filterModel, setFilterModel] = useState<GridFilterModel>();
+    const [filterModel, setFilterModel] = useState<GridFilterModel | undefined>();
 
     const { filterUrl, rows } = useCustomSearchParams(filterModel, paginationInfo);
 
