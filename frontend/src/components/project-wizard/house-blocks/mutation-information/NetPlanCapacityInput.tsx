@@ -15,7 +15,7 @@ type NetPlanProps = {
     updateHouseBlockNetPlan: (houseBlockNetPlan: number) => void;
 };
 
-const NetPlanEditInput = ({ houseBlockNetPlan, updateHouseBlockNetPlan }: NetPlanProps) => {
+export const NetPlanEditInput = ({ houseBlockNetPlan, updateHouseBlockNetPlan }: NetPlanProps) => {
     const [stringValue, setStringValue] = useState<string>(String(houseBlockNetPlan));
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -13,7 +13,7 @@ type GrosPlanProps = {
     houseBlockGrossPlan: number | null;
     updateHouseBlockGrossPlan: (houseBlockGrossPlan: number) => void;
 };
-const GrossPlanEditInput = ({ houseBlockGrossPlan, updateHouseBlockGrossPlan }: GrosPlanProps) => {
+export const GrossPlanEditInput = ({ houseBlockGrossPlan, updateHouseBlockGrossPlan }: GrosPlanProps) => {
     const [stringValue, setStringValue] = useState<string>(String(houseBlockGrossPlan));
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

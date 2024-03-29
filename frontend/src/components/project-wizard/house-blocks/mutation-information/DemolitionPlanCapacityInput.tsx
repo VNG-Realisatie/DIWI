@@ -13,7 +13,7 @@ type DemolitionPlanProps = {
     houseBlockDemolitionPlan: number | null;
     updateHouseBlockDemolitionPlan: (demolitionPlan: number) => void;
 };
-const DemolitionPlanEditInput = ({ houseBlockDemolitionPlan, updateHouseBlockDemolitionPlan }: DemolitionPlanProps) => {
+export const DemolitionPlanEditInput = ({ houseBlockDemolitionPlan, updateHouseBlockDemolitionPlan }: DemolitionPlanProps) => {
     const [stringValue, setStringValue] = useState<string>(String(houseBlockDemolitionPlan));
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
