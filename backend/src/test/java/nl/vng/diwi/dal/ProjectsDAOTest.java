@@ -69,10 +69,10 @@ public class ProjectsDAOTest {
 
         List<ProjectListSqlModel> projects = repo.getProjectsDAO().getProjectsTable(filtering);
 
-        //There are 3 projects. One in the past, one ongoing, one in the future. Only the ongoing and future ones are returned.
-        assertThat(projects.size()).isEqualTo(2);
+        //There are 3 projects. One in the past, one ongoing, one in the future. All are returned.
+        assertThat(projects.size()).isEqualTo(3);
 
-        ProjectListSqlModel currentProject = projects.get(0);
+        ProjectListSqlModel currentProject = projects.get(1);
         //Test that only the project_state with change_end_date = NULL is taken into account
         assertThat(currentProject.getConfidentialityLevel()).isEqualTo(Confidentiality.OPENBAAR);
         assertThat(currentProject.getProjectColor()).isEqualTo("#223344");
@@ -93,7 +93,7 @@ public class ProjectsDAOTest {
         assertThat(currentProject.getMunicipality()[0][1]).isEqualTo("Gemeente 1");
         assertThat(currentProject.getMunicipality()[1][1]).isEqualTo("Gemeente 2");
 
-        ProjectListSqlModel futureProject = projects.get(1);
+        ProjectListSqlModel futureProject = projects.get(2);
         assertThat(futureProject.getConfidentialityLevel()).isEqualTo(Confidentiality.EXTERN_RAPPORTAGE);
         assertThat(futureProject.getProjectColor()).isEqualTo("#456456");
         assertThat(futureProject.getStartDate()).isEqualTo(LocalDate.now().plusDays(10));
