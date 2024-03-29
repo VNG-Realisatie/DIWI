@@ -5,7 +5,7 @@ import { Box, Button, Popover } from "@mui/material";
 interface ColorSelectorProps {
     defaultColor: string;
     onColorChange: (color: string) => void;
-    selectedColor: any;
+    selectedColor: string;
 }
 
 export const defaultColors = ["#FFE3DC", "#AEBD93", "#FFE066", "#49DCB1", "#94D1BE", "#DE2130", "#8B2635", "#976880", "#F18F01", "#768948"];
@@ -40,7 +40,7 @@ const ColorSelector: FC<ColorSelectorProps> = ({ defaultColor, onColorChange, se
                     sx={{
                         width: "30px",
                         height: "30px",
-                        backgroundColor: selectedColor?.color ? selectedColor.color : color,
+                        backgroundColor: selectedColor ? selectedColor : color,
                         borderRadius: "5px",
                     }}
                     mr={1}
@@ -55,7 +55,7 @@ const ColorSelector: FC<ColorSelectorProps> = ({ defaultColor, onColorChange, se
                     horizontal: "left",
                 }}
             >
-                <BlockPicker colors={defaultColors} color={color} onChange={handleColorChange} />
+                <BlockPicker colors={defaultColors} color={selectedColor ? selectedColor : color} onChange={handleColorChange} />
             </Popover>
         </div>
     );
