@@ -2,7 +2,7 @@ import { Stack, Typography, TextField } from "@mui/material";
 import { t } from "i18next";
 import { InputContainer } from "../InputContainer";
 import { LabelComponent } from "../../../project/LabelComponent";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 type Props = {
     houseBlockGrossPlan: number | null;
     updateHouseBlockGrossPlan: (houseBlockGrossPlan: number) => void;
@@ -14,7 +14,11 @@ type GrosPlanProps = {
     updateHouseBlockGrossPlan: (houseBlockGrossPlan: number) => void;
 };
 export const GrossPlanEditInput = ({ houseBlockGrossPlan, updateHouseBlockGrossPlan }: GrosPlanProps) => {
-    const [stringValue, setStringValue] = useState<string>(String(houseBlockGrossPlan));
+    const [stringValue, setStringValue] = useState<string>("");
+
+    useEffect(() => {
+        setStringValue(String(houseBlockGrossPlan));
+    }, [houseBlockGrossPlan]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setStringValue(e.target.value);
