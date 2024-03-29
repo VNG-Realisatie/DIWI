@@ -1,73 +1,31 @@
 import { Box, Stack, Tooltip } from "@mui/material";
 import { HouseBlock } from "./project-wizard/house-blocks/types";
-import { useContext, useEffect, useState } from "react";
-import { emptyHouseBlockForm } from "./project-wizard/house-blocks/constants";
+import { useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import ClearIcon from "@mui/icons-material/Clear";
 import { t } from "i18next";
-import { updateHouseBlock } from "../api/projectsServices";
-import AlertContext from "../context/AlertContext";
-import { CustomPropertyValue, getBlockCustomPropertyValues, putBlockCustomPropertyValues } from "../api/customPropServices";
-import HouseBlockContext from "../context/HouseBlockContext";
 import { HouseBlocksForm } from "./HouseBlocksForm";
 
 type Props = {
-    projectDetailHouseBlock?: HouseBlock;
-    createFormHouseBlock: HouseBlock;
-    setCreateFormHouseBlock: (hb: HouseBlock) => void;
-    validationError?: string;
+    houseBlock: HouseBlock;
+    setHouseBlock: (hb: HouseBlock) => void;
 };
 
-export const HouseBlocksFormWithControls = ({ projectDetailHouseBlock, createFormHouseBlock, setCreateFormHouseBlock }: Props) => {
-    const [projectForm, setProjectForm] = useState<HouseBlock>(projectDetailHouseBlock ? projectDetailHouseBlock : emptyHouseBlockForm);
+export const HouseBlocksFormWithControls = ({ houseBlock, setHouseBlock }: Props) => {
     const [readOnly, setReadOnly] = useState(true);
-    const [customValues, setCustomValues] = useState<CustomPropertyValue[]>([]);
+    const [newHouseBlock, setNewHouseBlock] = useState<HouseBlock>(houseBlock);
 
-    const { setAlert } = useContext(AlertContext);
-    const { houseBlocks, setHouseBlocks } = useContext(HouseBlockContext);
-
-    useEffect(() => {
-        const fetchCustomPropertyValues = async () => {
-            try {
-                const values = await getBlockCustomPropertyValues(projectForm.houseblockId as string);
-                setCustomValues(values);
-            } catch (error) {
-                console.error("Error fetching custom property values:", error);
-            }
-        };
-
-        fetchCustomPropertyValues();
-    }, [projectForm.houseblockId]);
-
-    const oldForm = projectDetailHouseBlock && { ...projectDetailHouseBlock };
-
-    const handleCustomPropertiesSave = () => {
-        customValues.forEach((value) => {
-            putBlockCustomPropertyValues(projectForm.houseblockId as string, value).catch((error) => setAlert(error.message, "error"));
-        });
+    const handleSave = () => {
+        setHouseBlock(newHouseBlock);
+        setReadOnly(true);
     };
-    const handleHouseBlockUpdate = () => {
-        if (
-            !projectForm.houseblockName ||
-            !projectForm.startDate ||
-            !projectForm.endDate ||
-            projectForm.ownershipValue.some((owner) => owner.amount === null || isNaN(owner.amount))
-        ) {
-            setAlert(t("createProject.hasMissingRequiredAreas.hasmissingProperty"), "warning");
-            return;
-        }
-        const updatedHouseBlock = houseBlocks.filter((hb) => hb.houseblockId !== projectForm.houseblockId);
-        updateHouseBlock(projectForm)
-            .then((res) => {
-                setReadOnly(true);
-                setAlert(t("generic.updated"), "success");
-                setProjectForm(res);
-                setHouseBlocks([...updatedHouseBlock, res]);
-                handleCustomPropertiesSave();
-            })
-            .catch(() => setAlert(t("generic.failedToUpdate"), "error"));
+
+    const handleCancel = () => {
+        setNewHouseBlock(houseBlock);
+        setReadOnly(true);
     };
+
     return (
         <Box mt={4}>
             <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={2} mb={2}>
@@ -79,26 +37,15 @@ export const HouseBlocksFormWithControls = ({ projectDetailHouseBlock, createFor
                 {!readOnly && (
                     <>
                         <Tooltip placement="top" title={t("generic.cancelChanges")}>
-                            <ClearIcon
-                                sx={{ cursor: "pointer" }}
-                                onClick={() => {
-                                    setReadOnly(true);
-                                    oldForm && setProjectForm(oldForm);
-                                }}
-                            />
+                            <ClearIcon sx={{ cursor: "pointer" }} onClick={handleCancel} />
                         </Tooltip>
                         <Tooltip placement="top" title={t("generic.saveChanges")}>
-                            <SaveIcon sx={{ cursor: "pointer" }} onClick={handleHouseBlockUpdate} />
+                            <SaveIcon sx={{ cursor: "pointer" }} onClick={handleSave} />
                         </Tooltip>
                     </>
                 )}
             </Stack>
-            <HouseBlocksForm
-                projectDetailHouseBlock={projectDetailHouseBlock}
-                readOnly={readOnly}
-                createFormHouseBlock={createFormHouseBlock}
-                setCreateFormHouseBlock={setCreateFormHouseBlock}
-            />
+            <HouseBlocksForm houseBlock={newHouseBlock} setHouseBlock={setNewHouseBlock} readOnly={readOnly} />
         </Box>
     );
 };

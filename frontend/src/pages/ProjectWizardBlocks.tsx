@@ -1,49 +1,44 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { HouseBlock } from "../components/project-wizard/house-blocks/types";
-import { emptyHouseBlockForm } from "../components/project-wizard/house-blocks/constants";
-import { addHouseBlock } from "../api/projectsServices";
 import { projectWizardMap, projectWizardWithId } from "../Paths";
 import WizardLayout from "../components/project-wizard/WizardLayout";
 import { HouseBlocksForm } from "../components/HouseBlocksForm";
 import useAlert from "../hooks/useAlert";
 import { useTranslation } from "react-i18next";
+import HouseBlockContext from "../context/HouseBlockContext";
 
 const ProjectWizardBlocks = () => {
-    const [createFormHouseBlock, setCreateFormHouseBlock] = useState<HouseBlock>(emptyHouseBlockForm);
-    const [validationError, setValidationError] = useState("");
+    const { houseBlocks, addHouseBlock, getEmptyHouseBlock, updateHouseBlock } = useContext(HouseBlockContext);
+    const [houseBlock, setHouseBlock] = useState<HouseBlock>(getEmptyHouseBlock());
     const { projectId } = useParams();
     const navigate = useNavigate();
     const { setAlert } = useAlert();
     const { t } = useTranslation();
 
     const handleNext = async () => {
-        try {
-            if (!createFormHouseBlock.houseblockName) {
-                setValidationError("houseblockName");
-                return;
-            } else if (!createFormHouseBlock.startDate) {
-                setValidationError("startDate");
-                return;
-            } else if (!createFormHouseBlock.endDate) {
-                setValidationError("endDate");
-                return;
-            } else if (createFormHouseBlock.ownershipValue.some((owner) => owner.amount === null || isNaN(owner.amount))) {
-                setValidationError("value");
-                return;
-            }
-            await addHouseBlock({ ...createFormHouseBlock, projectId });
-
+        if (
+            !houseBlock.houseblockName ||
+            !houseBlock.startDate ||
+            !houseBlock.endDate ||
+            houseBlock.ownershipValue.some((owner) => owner.amount === null || isNaN(owner.amount))
+        ) {
+            setAlert(t("createProject.hasMissingRequiredAreas.hasmissingProperty"), "warning");
+        } else {
+            addHouseBlock(houseBlock);
             navigate(projectWizardMap.toPath({ projectId }));
-        } catch (error: any) {
-            setAlert(error.message, "warning");
         }
     };
 
     const handleSave = async () => {
         try {
-            await addHouseBlock({ ...createFormHouseBlock, projectId });
-            setAlert(t("createProject.houseBlocksForm.notifications.successfullySaved"), "success");
+            if (houseBlock.houseblockId) {
+                updateHouseBlock(houseBlock);
+                setAlert(t("createProject.houseBlocksForm.notifications.successfullyUpdated"), "success");
+            } else {
+                addHouseBlock(houseBlock);
+                setAlert(t("createProject.houseBlocksForm.notifications.successfullySaved"), "success");
+            }
         } catch (error: any) {
             setAlert(error.message, "warning");
         }
@@ -53,14 +48,16 @@ const ProjectWizardBlocks = () => {
         navigate(projectWizardWithId.toPath({ projectId }));
     };
 
+    useEffect(() => {
+        const filteredHouseBlocks = houseBlocks.filter((hb) => hb.houseblockName === houseBlock.houseblockName);
+        if (filteredHouseBlocks.length > 0) {
+            setHouseBlock(filteredHouseBlocks[0]);
+        }
+    }, [houseBlock.houseblockName, houseBlocks, setHouseBlock]);
+
     return (
         <WizardLayout {...{ handleBack, handleNext, handleSave, projectId, activeStep: 1 }}>
-            <HouseBlocksForm
-                validationError={validationError}
-                readOnly={false}
-                createFormHouseBlock={createFormHouseBlock}
-                setCreateFormHouseBlock={setCreateFormHouseBlock}
-            />
+            <HouseBlocksForm readOnly={false} houseBlock={houseBlock} setHouseBlock={setHouseBlock} />
         </WizardLayout>
     );
 };

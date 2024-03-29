@@ -5,12 +5,12 @@ import { HouseBlock } from "../types";
 import { SingleNumberInput } from "../physical-appearence/SingleNumberInput";
 
 export type GroundPositionInformationProps = {
-    projectForm: HouseBlock;
-    setProjectForm(project: HouseBlock): void;
+    houseBlock: HouseBlock;
+    setHouseBlock(houseBlock: HouseBlock): void;
     readOnly: boolean;
 };
 
-export const GroundPositionGroup = ({ projectForm, setProjectForm, readOnly }: GroundPositionInformationProps) => {
+export const GroundPositionGroup = ({ houseBlock, setHouseBlock, readOnly }: GroundPositionInformationProps) => {
     const translationPath = "createProject.houseBlocksForm.groundPosition";
     return (
         <WizardCard>
@@ -26,13 +26,13 @@ export const GroundPositionGroup = ({ projectForm, setProjectForm, readOnly }: G
                 </Typography>
             </Stack>
             <SingleNumberInput
-                property={projectForm?.groundPosition?.noPermissionOwner}
+                property={houseBlock?.groundPosition?.noPermissionOwner}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         groundPosition: {
-                            ...projectForm.groundPosition,
+                            ...houseBlock.groundPosition,
                             noPermissionOwner: e,
                         },
                     })
@@ -42,13 +42,13 @@ export const GroundPositionGroup = ({ projectForm, setProjectForm, readOnly }: G
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.groundPosition?.intentionPermissionOwner}
+                property={houseBlock?.groundPosition?.intentionPermissionOwner}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         groundPosition: {
-                            ...projectForm.groundPosition,
+                            ...houseBlock.groundPosition,
                             intentionPermissionOwner: e,
                         },
                     })
@@ -58,13 +58,13 @@ export const GroundPositionGroup = ({ projectForm, setProjectForm, readOnly }: G
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.groundPosition?.formalPermissionOwner}
+                property={houseBlock?.groundPosition?.formalPermissionOwner}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         groundPosition: {
-                            ...projectForm.groundPosition,
+                            ...houseBlock.groundPosition,
                             formalPermissionOwner: e,
                         },
                     })

@@ -5,12 +5,12 @@ import { HouseBlock } from "../types";
 import { SingleNumberInput } from "./SingleNumberInput";
 
 export type PhysicalAppeareanceInformationProps = {
-    projectForm: HouseBlock;
-    setProjectForm(project: HouseBlock): void;
+    houseBlock: HouseBlock;
+    setHouseBlock(houseBlock: HouseBlock): void;
     readOnly: boolean;
 };
 
-export const PhysicalAppeareanceGroup = ({ projectForm, setProjectForm, readOnly }: PhysicalAppeareanceInformationProps) => {
+export const PhysicalAppeareanceGroup = ({ houseBlock, setHouseBlock, readOnly }: PhysicalAppeareanceInformationProps) => {
     const translationPath = "createProject.houseBlocksForm.physicalAppearance";
     return (
         <WizardCard>
@@ -26,13 +26,13 @@ export const PhysicalAppeareanceGroup = ({ projectForm, setProjectForm, readOnly
                 </Typography>
             </Stack>
             <SingleNumberInput
-                property={projectForm?.physicalAppearance?.tussenwoning}
+                property={houseBlock?.physicalAppearance?.tussenwoning}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         physicalAppearance: {
-                            ...projectForm.physicalAppearance,
+                            ...houseBlock.physicalAppearance,
                             tussenwoning: e,
                         },
                     })
@@ -42,13 +42,13 @@ export const PhysicalAppeareanceGroup = ({ projectForm, setProjectForm, readOnly
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.physicalAppearance?.tweeondereenkap}
+                property={houseBlock?.physicalAppearance?.tweeondereenkap}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         physicalAppearance: {
-                            ...projectForm.physicalAppearance,
+                            ...houseBlock.physicalAppearance,
                             tweeondereenkap: e,
                         },
                     })
@@ -58,13 +58,13 @@ export const PhysicalAppeareanceGroup = ({ projectForm, setProjectForm, readOnly
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.physicalAppearance?.portiekflat}
+                property={houseBlock?.physicalAppearance?.portiekflat}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         physicalAppearance: {
-                            ...projectForm.physicalAppearance,
+                            ...houseBlock.physicalAppearance,
                             portiekflat: e,
                         },
                     })
@@ -74,13 +74,13 @@ export const PhysicalAppeareanceGroup = ({ projectForm, setProjectForm, readOnly
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.physicalAppearance?.hoekwoning}
+                property={houseBlock?.physicalAppearance?.hoekwoning}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         physicalAppearance: {
-                            ...projectForm.physicalAppearance,
+                            ...houseBlock.physicalAppearance,
                             hoekwoning: e,
                         },
                     })
@@ -90,13 +90,13 @@ export const PhysicalAppeareanceGroup = ({ projectForm, setProjectForm, readOnly
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.physicalAppearance?.vrijstaand}
+                property={houseBlock?.physicalAppearance?.vrijstaand}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         physicalAppearance: {
-                            ...projectForm.physicalAppearance,
+                            ...houseBlock.physicalAppearance,
                             vrijstaand: e,
                         },
                     })
@@ -106,13 +106,13 @@ export const PhysicalAppeareanceGroup = ({ projectForm, setProjectForm, readOnly
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.physicalAppearance?.gallerijflat}
+                property={houseBlock?.physicalAppearance?.gallerijflat}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         physicalAppearance: {
-                            ...projectForm.physicalAppearance,
+                            ...houseBlock.physicalAppearance,
                             gallerijflat: e,
                         },
                     })

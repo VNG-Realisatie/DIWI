@@ -15,11 +15,9 @@ import { BlockPicker, ColorResult } from "react-color";
 
 import { PlanStatusOptions, PlanTypeOptions } from "../../../types/enums";
 import { Organization, SelectModel, updateProjects } from "../../../api/projectsServices";
-import { HouseBlock } from "../../project-wizard/house-blocks/types";
 import AlertContext from "../../../context/AlertContext";
 import { CreateHouseBlockDialog } from "./CreateHouseBlockDialog";
 import { HouseBlocksList } from "./HouseBlocksList";
-import { emptyHouseBlockForm } from "../../project-wizard/house-blocks/constants";
 import { CustomerPropertiesProjectBlock } from "./CustomerPropertiesProjectBlock";
 import { CustomPropertyValue, getCustomPropertyValues, putCustomPropertyValues } from "../../../api/customPropServices";
 import { ProjectProperties } from "./ProjectProperties";
@@ -56,7 +54,6 @@ export const ProjectsWithHouseBlock = () => {
 
     const [openHouseBlockDialog, setOpenHouseBlockDialog] = useState(false);
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-    const [createFormHouseBlock, setCreateFormHouseBlock] = useState<HouseBlock>(emptyHouseBlockForm);
 
     useEffect(() => {
         const fetchCustomPropertyValues = async () => {
@@ -260,12 +257,7 @@ export const ProjectsWithHouseBlock = () => {
                         <BlockPicker colors={defaultColors} color={selectedProjectColor} onChange={handleColorChange} />
                     </Popover>
                 )}
-                <CreateHouseBlockDialog
-                    openHouseBlockDialog={openHouseBlockDialog}
-                    setOpenHouseBlockDialog={setOpenHouseBlockDialog}
-                    createFormHouseBlock={createFormHouseBlock}
-                    setCreateFormHouseBlock={setCreateFormHouseBlock}
-                />
+                <CreateHouseBlockDialog openHouseBlockDialog={openHouseBlockDialog} setOpenHouseBlockDialog={setOpenHouseBlockDialog} />
             </Stack>
         </Stack>
     );

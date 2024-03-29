@@ -12,7 +12,7 @@ type ProjectContextType = {
     projects: Array<Project>;
     setProjects(project: Array<Project>): void;
     totalProjectCount: number;
-    id: string | undefined;
+    projectId: string | undefined;
     paginationInfo: GridPaginationModel;
     setPaginationInfo(info: GridPaginationModel): void;
     updateProject(): void;
@@ -21,7 +21,7 @@ type ProjectContextType = {
 const ProjectContext = createContext<ProjectContextType | null>(null) as React.Context<ProjectContextType>;
 
 export const ProjectProvider = ({ children }: PropsWithChildren) => {
-    const { id } = useParams();
+    const { projectId } = useParams();
     const [projects, setProjects] = useState<Array<Project>>([]);
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
     const [paginationInfo, setPaginationInfo] = useState<GridPaginationModel>({ page: 1, pageSize: 10 });
@@ -37,12 +37,13 @@ export const ProjectProvider = ({ children }: PropsWithChildren) => {
             })
             .catch((err) => console.log(err));
     }, [paginationInfo.page, paginationInfo.pageSize]);
-
+    console.log(projectId);
     const updateProject = useCallback(() => {
-        if (id) {
-            getProject(id).then((project) => setSelectedProject(project));
+        if (projectId) {
+            getProject(projectId).then((project) => setSelectedProject(project));
+            console.log("id is here");
         }
-    }, [id]);
+    }, [projectId]);
 
     useEffect(() => {
         updateProject();
@@ -60,7 +61,7 @@ export const ProjectProvider = ({ children }: PropsWithChildren) => {
                 projects,
                 setProjects,
                 totalProjectCount,
-                id,
+                projectId,
                 paginationInfo,
                 setPaginationInfo,
                 updateProject,

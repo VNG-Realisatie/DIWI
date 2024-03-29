@@ -11,8 +11,13 @@ type Props = {
     setOpenHouseBlockDialog: (open: boolean) => void;
 };
 export const HouseBlocksList = ({ setOpenHouseBlockDialog }: Props) => {
-    const { houseBlocks } = useContext(HouseBlockContext);
+    const { houseBlocks, updateHouseBlock } = useContext(HouseBlockContext);
     const { t } = useTranslation();
+
+    const handleUpdateHouseBlock = (houseBlock: HouseBlock) => {
+        updateHouseBlock(houseBlock);
+    };
+
     return (
         <Grid container my={2}>
             <AddHouseBlockButton onClick={() => setOpenHouseBlockDialog(true)} />
@@ -28,7 +33,7 @@ export const HouseBlocksList = ({ setOpenHouseBlockDialog }: Props) => {
                             {hb.houseblockName}: {hb.mutation.grossPlanCapacity} {t("createProject.houseBlocksForm.housesOn")} {hb.endDate}
                         </AccordionSummary>
                         <AccordionDetails>
-                            <HouseBlocksFormWithControls projectDetailHouseBlock={hb} key={i} createFormHouseBlock={hb} setCreateFormHouseBlock={(hb) => {}} />
+                            <HouseBlocksFormWithControls houseBlock={hb} key={i} setHouseBlock={handleUpdateHouseBlock} />
                         </AccordionDetails>
                     </Accordion>
                 );

@@ -9,12 +9,12 @@ import { EndDatePicker } from "./EndDatePicker";
 import { Dayjs } from "dayjs";
 
 export type GeneralInformationProps = {
-    projectForm: HouseBlock;
-    setProjectForm(project: HouseBlock): void;
+    houseBlock: HouseBlock;
+    setHouseBlock(houseBlock: HouseBlock): void;
     readOnly: boolean;
 };
 
-export const GeneralInformationGroup = ({ readOnly, projectForm, setProjectForm }: GeneralInformationProps) => {
+export const GeneralInformationGroup = ({ readOnly, houseBlock, setHouseBlock }: GeneralInformationProps) => {
     return (
         <WizardCard>
             <Typography fontWeight={600} mb={2}>
@@ -22,25 +22,25 @@ export const GeneralInformationGroup = ({ readOnly, projectForm, setProjectForm 
             </Typography>
             <NameInput
                 readOnly={readOnly}
-                houseblockName={projectForm.houseblockName}
-                upDateHouseBlockName={(newValue: string) => setProjectForm({ ...projectForm, houseblockName: newValue })}
+                houseblockName={houseBlock.houseblockName}
+                upDateHouseBlockName={(newValue: string) => setHouseBlock({ ...houseBlock, houseblockName: newValue })}
             />
             <SizeInput
                 readOnly={readOnly}
-                houseBlockSize={projectForm.size}
-                updateHouseBlockSize={(houseBlockSize: HouseBlockSize) => setProjectForm({ ...projectForm, size: houseBlockSize })}
+                houseBlockSize={houseBlock.size}
+                updateHouseBlockSize={(houseBlockSize: HouseBlockSize) => setHouseBlock({ ...houseBlock, size: houseBlockSize })}
             />
             <StartDatePicker
                 readOnly={readOnly}
-                houseBlockStartDate={projectForm.startDate}
+                houseBlockStartDate={houseBlock.startDate}
                 updateHouseBlockStartDate={(e: Dayjs | null) => {
-                    setProjectForm({ ...projectForm, startDate: e ? e.format("YYYY-MM-DD") : null });
+                    setHouseBlock({ ...houseBlock, startDate: e ? e.format("YYYY-MM-DD") : null });
                 }}
             />
             <EndDatePicker
                 readOnly={readOnly}
-                houseBlockEndDate={projectForm.endDate}
-                updateHouseBlockEndDate={(e: Dayjs | null) => setProjectForm({ ...projectForm, endDate: e ? e.format("YYYY-MM-DD") : null })}
+                houseBlockEndDate={houseBlock.endDate}
+                updateHouseBlockEndDate={(e: Dayjs | null) => setHouseBlock({ ...houseBlock, endDate: e ? e.format("YYYY-MM-DD") : null })}
             />
         </WizardCard>
     );

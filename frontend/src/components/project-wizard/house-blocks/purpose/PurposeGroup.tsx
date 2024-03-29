@@ -5,12 +5,12 @@ import { HouseBlock } from "../types";
 import { SingleNumberInput } from "../physical-appearence/SingleNumberInput";
 
 export type PurposeInformationProps = {
-    projectForm: HouseBlock;
-    setProjectForm(project: HouseBlock): void;
+    houseBlock: HouseBlock;
+    setHouseBlock(houseBlock: HouseBlock): void;
     readOnly: boolean;
 };
 
-export const PurposeGroup = ({ projectForm, setProjectForm, readOnly }: PurposeInformationProps) => {
+export const PurposeGroup = ({ houseBlock, setHouseBlock, readOnly }: PurposeInformationProps) => {
     const translationPath = "createProject.houseBlocksForm.purpose";
     return (
         <WizardCard>
@@ -26,13 +26,13 @@ export const PurposeGroup = ({ projectForm, setProjectForm, readOnly }: PurposeI
                 </Typography>
             </Stack>
             <SingleNumberInput
-                property={projectForm?.purpose.regular}
+                property={houseBlock?.purpose.regular}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         purpose: {
-                            ...projectForm.purpose,
+                            ...houseBlock.purpose,
                             regular: e,
                         },
                     })
@@ -42,13 +42,13 @@ export const PurposeGroup = ({ projectForm, setProjectForm, readOnly }: PurposeI
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.purpose.youth}
+                property={houseBlock?.purpose.youth}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         purpose: {
-                            ...projectForm.purpose,
+                            ...houseBlock.purpose,
                             youth: e,
                         },
                     })
@@ -58,13 +58,13 @@ export const PurposeGroup = ({ projectForm, setProjectForm, readOnly }: PurposeI
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.purpose.student}
+                property={houseBlock?.purpose.student}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         purpose: {
-                            ...projectForm.purpose,
+                            ...houseBlock.purpose,
                             student: e,
                         },
                     })
@@ -74,13 +74,13 @@ export const PurposeGroup = ({ projectForm, setProjectForm, readOnly }: PurposeI
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.purpose.elderly}
+                property={houseBlock?.purpose.elderly}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         purpose: {
-                            ...projectForm.purpose,
+                            ...houseBlock.purpose,
                             elderly: e,
                         },
                     })
@@ -90,13 +90,13 @@ export const PurposeGroup = ({ projectForm, setProjectForm, readOnly }: PurposeI
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.purpose.largeFamilies}
+                property={houseBlock?.purpose.largeFamilies}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         purpose: {
-                            ...projectForm.purpose,
+                            ...houseBlock.purpose,
                             largeFamilies: e,
                         },
                     })
@@ -106,13 +106,13 @@ export const PurposeGroup = ({ projectForm, setProjectForm, readOnly }: PurposeI
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.purpose.ghz}
+                property={houseBlock?.purpose.ghz}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         purpose: {
-                            ...projectForm.purpose,
+                            ...houseBlock.purpose,
                             ghz: e,
                         },
                     })

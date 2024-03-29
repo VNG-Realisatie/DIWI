@@ -6,17 +6,17 @@ import AddIcon from "@mui/icons-material/Add";
 import { OwnershipRowInputs } from "./OwnershipRowInputs";
 
 export type OwnershipInformationProps = {
-    projectForm: HouseBlock;
-    setProjectForm(project: HouseBlock): void;
+    houseBlock: HouseBlock;
+    setHouseBlock(houseBlock: HouseBlock): void;
     readOnly: boolean;
 };
 
-export const OwnershipInformationGroup = ({ projectForm, setProjectForm, readOnly }: OwnershipInformationProps) => {
+export const OwnershipInformationGroup = ({ houseBlock, setHouseBlock, readOnly }: OwnershipInformationProps) => {
     const handleAddRow = () => {
-        setProjectForm({
-            ...projectForm,
+        setHouseBlock({
+            ...houseBlock,
             ownershipValue: [
-                ...projectForm.ownershipValue,
+                ...houseBlock.ownershipValue,
                 {
                     type: "",
                     amount: null,
@@ -28,19 +28,19 @@ export const OwnershipInformationGroup = ({ projectForm, setProjectForm, readOnl
     };
 
     const handleInputChange = (index: number, value: OwnershipSingleValue) => {
-        const updatedValues = [...projectForm.ownershipValue];
+        const updatedValues = [...houseBlock.ownershipValue];
         updatedValues[index] = value;
-        setProjectForm({
-            ...projectForm,
+        setHouseBlock({
+            ...houseBlock,
             ownershipValue: updatedValues,
         });
     };
 
     const handleRemoveRow = (index: number) => {
-        const updatedValues = [...projectForm.ownershipValue];
+        const updatedValues = [...houseBlock.ownershipValue];
         updatedValues.splice(index, 1);
-        setProjectForm({
-            ...projectForm,
+        setHouseBlock({
+            ...houseBlock,
             ownershipValue: updatedValues,
         });
     };
@@ -67,7 +67,7 @@ export const OwnershipInformationGroup = ({ projectForm, setProjectForm, readOnl
                 <Typography fontWeight={600} flex={2}></Typography>
             </Stack>
             <Grid container>
-                {projectForm.ownershipValue.map((ownership, index) => (
+                {houseBlock.ownershipValue.map((ownership, index) => (
                     <OwnershipRowInputs
                         key={index}
                         index={index}

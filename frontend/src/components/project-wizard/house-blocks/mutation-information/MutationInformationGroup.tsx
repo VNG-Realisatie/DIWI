@@ -10,12 +10,12 @@ import { MutationKindSelect } from "./MutationKindSelect";
 import { MutationSelectOptions } from "../../../../types/enums";
 
 export type MutationInformationProps = {
-    projectForm: HouseBlock;
-    setProjectForm(project: HouseBlock): void;
+    houseBlock: HouseBlock;
+    setHouseBlock(houseBlock: HouseBlock): void;
     readOnly: boolean;
 };
 
-export const MutationInformationGroup = ({ projectForm, setProjectForm, readOnly }: MutationInformationProps) => {
+export const MutationInformationGroup = ({ houseBlock, setHouseBlock, readOnly }: MutationInformationProps) => {
     return (
         <WizardCard>
             <Typography fontWeight={600} mb={2}>
@@ -23,12 +23,12 @@ export const MutationInformationGroup = ({ projectForm, setProjectForm, readOnly
             </Typography>
             <GrossPlanCapacityInput
                 readOnly={readOnly}
-                houseBlockGrossPlan={projectForm.mutation.grossPlanCapacity}
+                houseBlockGrossPlan={houseBlock.mutation.grossPlanCapacity}
                 updateHouseBlockGrossPlan={(e) =>
-                    setProjectForm({
-                        ...projectForm,
+                    setHouseBlock({
+                        ...houseBlock,
                         mutation: {
-                            ...projectForm.mutation,
+                            ...houseBlock.mutation,
                             grossPlanCapacity: e,
                         },
                     })
@@ -36,12 +36,12 @@ export const MutationInformationGroup = ({ projectForm, setProjectForm, readOnly
             />
             <DemolitionPlanCapacityInput
                 readOnly={readOnly}
-                houseBlockDemolitionPlan={projectForm.mutation.demolition}
+                houseBlockDemolitionPlan={houseBlock.mutation.demolition}
                 updateHouseBlockDemolitionPlan={(e) =>
-                    setProjectForm({
-                        ...projectForm,
+                    setHouseBlock({
+                        ...houseBlock,
                         mutation: {
-                            ...projectForm.mutation,
+                            ...houseBlock.mutation,
                             demolition: e,
                         },
                     })
@@ -49,12 +49,12 @@ export const MutationInformationGroup = ({ projectForm, setProjectForm, readOnly
             />
             <NetPlanCapacityInput
                 readOnly={readOnly}
-                houseBlockNetPlan={projectForm.mutation.netPlanCapacity}
+                houseBlockNetPlan={houseBlock.mutation.netPlanCapacity}
                 updateHouseBlockNetPlan={(e) =>
-                    setProjectForm({
-                        ...projectForm,
+                    setHouseBlock({
+                        ...houseBlock,
                         mutation: {
-                            ...projectForm.mutation,
+                            ...houseBlock.mutation,
                             netPlanCapacity: e,
                         },
                     })
@@ -62,16 +62,16 @@ export const MutationInformationGroup = ({ projectForm, setProjectForm, readOnly
             />
             <MutationKindSelect
                 readOnly={readOnly}
-                houseBlockMutationKind={projectForm.mutation.mutationKind}
+                houseBlockMutationKind={houseBlock.mutation.mutationKind}
                 updateHouseBlockMutationKind={(event: SelectChangeEvent<MutationSelectOptions[]>) => {
                     const {
                         target: { value },
                     } = event;
                     if (typeof value !== "string") {
-                        setProjectForm({
-                            ...projectForm,
+                        setHouseBlock({
+                            ...houseBlock,
                             mutation: {
-                                ...projectForm.mutation,
+                                ...houseBlock.mutation,
                                 mutationKind: value,
                             },
                         });
