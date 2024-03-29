@@ -41,13 +41,13 @@ const ProjectWizardBlocks = () => {
 
     useEffect(() => {
         if (houseBlocks && houseBlocks.length > 0) {
-            let earlierCreatedHouseBlock = { ...emptyHouseBlockForm };
+            let earlierCreatedHouseBlock;
 
-            houseBlocks.forEach((property) => {
-                earlierCreatedHouseBlock = { ...earlierCreatedHouseBlock, ...property };
+            houseBlocks.forEach((properties) => {
+                earlierCreatedHouseBlock = { ...properties };
+
+                setCreateFormHouseBlock(earlierCreatedHouseBlock);
             });
-
-            setCreateFormHouseBlock(earlierCreatedHouseBlock);
         }
     }, [houseBlocks]);
 
@@ -110,6 +110,8 @@ const ProjectWizardBlocks = () => {
     const handleBack = () => {
         navigate(projectWizardWithId.toPath({ projectId }));
     };
+
+    console.log(houseBlocks);
 
     return (
         <WizardLayout {...{ handleBack, handleNext, handleSave, projectId, activeStep: 1 }}>
