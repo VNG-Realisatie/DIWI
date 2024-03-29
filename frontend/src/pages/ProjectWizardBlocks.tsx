@@ -111,8 +111,6 @@ const ProjectWizardBlocks = () => {
         navigate(projectWizardWithId.toPath({ projectId }));
     };
 
-    console.log(houseBlocks);
-
     return (
         <WizardLayout {...{ handleBack, handleNext, handleSave, projectId, activeStep: 1 }}>
             <HouseBlocksForm
