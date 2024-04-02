@@ -15,6 +15,7 @@ export const CustomPropertyWidget = ({ projectEditable, customValue, setCustomVa
         if (projectEditable) {
             return (
                 <Autocomplete
+                    size="small"
                     options={["true", "false"]}
                     value={customValue?.booleanValue?.toString() || ""}
                     onChange={(_, newValue) => setCustomValue({ ...customValue, booleanValue: newValue === "true" ? true : false })}
@@ -29,6 +30,7 @@ export const CustomPropertyWidget = ({ projectEditable, customValue, setCustomVa
             const values = customValue?.categories?.map((val) => customDefinition.categories?.find((d) => val === d.id));
             return (
                 <Autocomplete
+                    size="small"
                     options={customDefinition.categories || []}
                     getOptionLabel={(option) => option?.name || ""}
                     value={values}
