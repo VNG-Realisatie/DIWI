@@ -13,13 +13,15 @@ const useCustomSearchParams = (filter: GridFilterModel | undefined, paginationIn
     const [filterUrl, setFilterUrl] = useState("");
 
     useEffect(() => {
-        setFilterModel(filter);
+        if (filter) {
+            setFilterModel(filter);
+        }
     }, [filter]);
 
     const isFilteredUrl = useCallback(() => {
         const queryParams = ["pageNumber", "pageSize", "filterColumn", "filterCondition", "filterValue"];
         return queryParams.every((e) => location.search.includes(e));
-    }, [location.search]);
+    }, [location]);
 
     useEffect(() => {
         if (isFilteredUrl()) {
@@ -70,16 +72,15 @@ const useCustomSearchParams = (filter: GridFilterModel | undefined, paginationIn
     }, [isFilteredUrl, location.search]);
 
     const updateUrl = useCallback(() => {
-        let query = "";
         if (filterModel && filterModel.items) {
-            query = queryString.stringify({
+            let query = queryString.stringify({
                 filterColumn: filterModel.items[0].field,
                 filterCondition: filterModel.items[0].operator === "isAnyOf" ? "ANY_OF" : "CONTAINS",
                 filterValue: filterModel.items[0].value,
             });
+            const url = `?pageNumber=${paginationInfo.page}&pageSize=${paginationInfo.pageSize}&${query}`;
+            setFilterUrl(url);
         }
-        const url = `?pageNumber=${paginationInfo.page}&pageSize=${paginationInfo.pageSize}&${query}`;
-        setFilterUrl(url);
     }, [filterModel, paginationInfo.page, paginationInfo.pageSize]);
 
     useEffect(() => {

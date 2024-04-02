@@ -70,7 +70,9 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const { filterUrl, rows } = useCustomSearchParams(filterModel, paginationInfo);
 
     useEffect(() => {
-        navigate(`/projects/table${filterUrl}`);
+        if (filterUrl !== "") {
+            navigate(`/projects/table${filterUrl}`);
+        }
     }, [filterUrl, navigate, filterModel]);
 
     const handleExport = (params: GridRowParams) => {
