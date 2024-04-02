@@ -21,7 +21,7 @@ const useCustomSearchParams = (filter: GridFilterModel | undefined, paginationIn
     const isFilteredUrl = useCallback(() => {
         const queryParams = ["pageNumber", "pageSize", "filterColumn", "filterCondition", "filterValue"];
         return queryParams.every((e) => location.search.includes(e));
-    }, [location]);
+    }, [location.search]);
 
     useEffect(() => {
         if (isFilteredUrl()) {
