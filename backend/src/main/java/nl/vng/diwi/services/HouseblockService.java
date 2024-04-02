@@ -765,9 +765,9 @@ public class HouseblockService {
             newChangelog.setHouseblock(houseblock);
             newChangelog.setCreateUser(repo.getReferenceById(User.class, loggedInUserUuid));
 
-            List<HouseblockOwnershipValueChangelog> changelos = houseblock.getOwnershipValues().stream().filter(c -> c.getId().equals(ownershipValue.getId())).toList();
+            List<HouseblockOwnershipValueChangelog> changelogs = houseblock.getOwnershipValues().stream().filter(c -> c.getId().equals(ownershipValue.getId())).toList();
 
-            HouseblockOwnershipValueChangelog oldChangelog = prepareHouseblockChangelogValuesToUpdate(repo, project, houseblock, changelos, newChangelog,
+            HouseblockOwnershipValueChangelog oldChangelog = prepareHouseblockChangelogValuesToUpdate(repo, project, houseblock, changelogs, newChangelog,
                 oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
 
             repo.persist(newChangelog);
