@@ -908,7 +908,6 @@ public class ProjectService {
         LocalDate endDate = (new MilestoneModel(endMilestone)).getDate();
 
         ZonedDateTime zdtNow = ZonedDateTime.now();
-        boolean currentOrFuture = true;
 
         T oldChangelog;
         if (newChangelog != null) {
@@ -916,26 +915,29 @@ public class ProjectService {
             newChangelog.setChangeStartDate(zdtNow);
         }
 
+        boolean finalIsCurrentOrFuture;
+        LocalDate finalUpdateDate;
         if (startDate.isAfter(updateDate)) {
-            updateDate = startDate;
+            finalUpdateDate = startDate;
+            finalIsCurrentOrFuture = true;
+        }
+        else if (endDate.isBefore(updateDate)) {
+            finalUpdateDate = endDate;
+            finalIsCurrentOrFuture = false;
+        }
+        else {
+            finalUpdateDate = updateDate;
+            finalIsCurrentOrFuture = true;
         }
 
-        if (endDate.isBefore(updateDate)) {
-            updateDate = endDate;
-            currentOrFuture = false;
-        }
-
-
-        LocalDate finalUpdateDate = updateDate;
-        boolean finalIsCurrentOrFuture = currentOrFuture;
 
         oldChangelog = changelogs.stream()
-                .filter(pc -> (finalIsCurrentOrFuture && !(new MilestoneModel(pc.getStartMilestone())).getDate().isAfter(finalUpdateDate)
-                        && (new MilestoneModel(pc.getEndMilestone())).getDate().isAfter(finalUpdateDate)) ||
-                    (!finalIsCurrentOrFuture && (new MilestoneModel(pc.getEndMilestone())).getDate().equals(finalUpdateDate)))
-                .findFirst().orElse(null);
+            .filter(pc -> finalIsCurrentOrFuture ? !(new MilestoneModel(pc.getStartMilestone())).getDate().isAfter(finalUpdateDate)
+                && (new MilestoneModel(pc.getEndMilestone())).getDate().isAfter(finalUpdateDate) :
+                (new MilestoneModel(pc.getEndMilestone())).getDate().equals(finalUpdateDate))
+            .findFirst().orElse(null);
 
-        Milestone updateMilestone = getOrCreateMilestoneForProject(repo, project, updateDate, loggedInUserUuid);
+        Milestone updateMilestone = getOrCreateMilestoneForProject(repo, project, finalUpdateDate, loggedInUserUuid);
 
         if (oldChangelog != null && finalIsCurrentOrFuture && !Objects.equals(oldChangelog.getStartMilestone().getId(), updateMilestone.getId())) {
             oldChangelogAfterUpdate.setStartMilestone(oldChangelog.getStartMilestone());
