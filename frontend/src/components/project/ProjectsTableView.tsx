@@ -177,7 +177,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         {
             field: "projectName",
             headerName: t("projects.tableColumns.projectName"),
-            width: 120,
+            width: 200,
             filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
                 return (
