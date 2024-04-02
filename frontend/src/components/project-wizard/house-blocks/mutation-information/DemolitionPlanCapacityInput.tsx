@@ -2,7 +2,7 @@ import { Stack, Typography, TextField } from "@mui/material";
 import { t } from "i18next";
 import { InputContainer } from "../InputContainer";
 import { LabelComponent } from "../../../project/LabelComponent";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 type Props = {
     houseBlockDemolitionPlan: number | null;
     updateHouseBlockDemolitionPlan: (demolitionPlan: number) => void;
@@ -14,12 +14,16 @@ type DemolitionPlanProps = {
     updateHouseBlockDemolitionPlan: (demolitionPlan: number) => void;
 };
 export const DemolitionPlanEditInput = ({ houseBlockDemolitionPlan, updateHouseBlockDemolitionPlan }: DemolitionPlanProps) => {
-    const [stringValue, setStringValue] = useState<string>(String(houseBlockDemolitionPlan));
+    const [stringValue, setStringValue] = useState<string>("");
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setStringValue(e.target.value);
         updateHouseBlockDemolitionPlan(+e.target.value);
     };
+
+    useEffect(() => {
+        setStringValue(String(houseBlockDemolitionPlan));
+    }, [houseBlockDemolitionPlan]);
 
     const onFocus = () => {
         if (stringValue === "0") {
