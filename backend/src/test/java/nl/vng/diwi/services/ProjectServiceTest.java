@@ -549,7 +549,7 @@ public class ProjectServiceTest {
             ProjectNameChangelog oldChangelog = projectService.prepareChangelogValuesToUpdate(repo, project, project.getName(), newChangelog, oldChangelogAfterUpdate,
                 user.getId(), startMilestone, endMilestone, LocalDate.now());
 
-            //the existing changelog is not split into past and future segments when updating a future project
+            //the existing changelog is not split into past and future segments when updating a past project
             assertThat(oldChangelogAfterUpdate.getStartMilestone()).isNull();
 
             //the existing changelog has the same end milestone, but non-null change-end-date and change-user
@@ -593,7 +593,7 @@ public class ProjectServiceTest {
             ProjectNameChangelog oldChangelog = projectService.prepareChangelogValuesToUpdate(repo, project, project.getName(), newChangelog, oldChangelogAfterUpdate,
                 user.getId(), startMilestone, endMilestone, LocalDate.now());
 
-            //the existing changelog is not split into past and future segments when updating a future project
+            //the existing changelog is split into past and future segments when updating a current project
             assertThat(oldChangelogAfterUpdate.getStartMilestone()).isNotNull();
             assertThat(oldChangelogAfterUpdate.getStartMilestone().getId()).isEqualTo(startMilestone.getId());
             assertThat(oldChangelogAfterUpdate.getEndMilestone().getId()).isEqualTo(middleMilestone.getId());
