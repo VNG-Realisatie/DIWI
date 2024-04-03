@@ -1,5 +1,6 @@
 package nl.vng.diwi.dal;
 
+import nl.vng.diwi.dal.entities.CustomPropertyState;
 import nl.vng.diwi.dal.entities.enums.ObjectType;
 import nl.vng.diwi.models.CustomPropertyModel;
 import org.hibernate.Session;
@@ -13,7 +14,7 @@ public class CustomPropertiesDAO extends AbstractRepository {
         super(session);
     }
 
-    public List<CustomPropertyModel> getCustomProperiesList(ObjectType objectType, Boolean disabled) {
+    public List<CustomPropertyModel> getCustomPropertiesList(ObjectType objectType, Boolean disabled) {
 
         return session.createNativeQuery("SELECT * FROM get_customproperty_definitions(null, :objectType, :disabled) ", CustomPropertyModel.class)
             .setParameter("objectType", objectType == null ? null : objectType.name())
@@ -21,7 +22,7 @@ public class CustomPropertiesDAO extends AbstractRepository {
             .list();
     }
 
-    public CustomPropertyModel getCustomProperyById(UUID customPropertyUuid) {
+    public CustomPropertyModel getCustomPropertyById(UUID customPropertyUuid) {
 
         return session.createNativeQuery("SELECT * FROM get_customproperty_definitions(:customPropertyUuid, null, null) ", CustomPropertyModel.class)
             .setParameter("customPropertyUuid", customPropertyUuid)
@@ -29,4 +30,9 @@ public class CustomPropertiesDAO extends AbstractRepository {
 
     }
 
+    public List<CustomPropertyState> getActiveCustomPropertyStateByName(String name) {
+        return session.createQuery("FROM CustomPropertyState cps WHERE cps.propertyName = :name AND cps.changeEndDate IS NULL", CustomPropertyState.class)
+            .setParameter("name", name)
+            .list();
+    }
 }
