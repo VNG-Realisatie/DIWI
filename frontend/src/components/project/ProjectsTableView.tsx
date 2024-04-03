@@ -177,7 +177,8 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         {
             field: "projectName",
             headerName: t("projects.tableColumns.projectName"),
-            width: 120,
+            display: "flex",
+            width: 200,
             filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
                 return (
@@ -192,6 +193,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         {
             field: "totalValue",
             headerName: t("projects.tableColumns.totalValue"),
+            display: "flex",
             width: 120,
             filterable: false,
             preProcessEditCellProps: createErrorReport,
@@ -200,6 +202,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         {
             field: "projectOwners",
             headerName: t("projects.tableColumns.organizationName"),
+            display: "flex",
             width: 160,
             filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
@@ -214,6 +217,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         {
             field: "confidentialityLevel",
             headerName: t("projects.tableColumns.confidentialityLevel"),
+            display: "flex",
             valueOptions: confidentialityLevelOptions.map((c) => {
                 return { value: c.id, label: t(`projectTable.confidentialityLevelOptions.${c.name}`) };
             }),
@@ -225,8 +229,9 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         {
             field: "startDate",
             headerName: t("projects.tableColumns.startDate"),
+            display: "flex",
             type: "dateTime",
-            valueFormatter: (p) => dayjs(p.value).format(dateFormats.keyboardDate),
+            valueFormatter: (p) => dayjs(p).format(dateFormats.keyboardDate),
             filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
             valueGetter: ({ value }) => value && new Date(value),
             preProcessEditCellProps: createErrorReport,
@@ -234,8 +239,9 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         {
             field: "endDate",
             headerName: t("projects.tableColumns.endDate"),
+            display: "flex",
             type: "dateTime",
-            valueFormatter: (p) => dayjs(p.value).format(dateFormats.keyboardDate),
+            valueFormatter: (p) => dayjs(p).format(dateFormats.keyboardDate),
             filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
             valueGetter: ({ value }) => value && new Date(value),
             preProcessEditCellProps: createErrorReport,
@@ -243,6 +249,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         {
             field: "planType",
             headerName: t("projects.tableColumns.planType"),
+            display: "flex",
             width: 500,
             align: "center",
             valueOptions: planTypeOptions.map((pt) => pt.id),
@@ -256,6 +263,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         {
             field: "priority",
             headerName: t("projects.tableColumns.priority"),
+            display: "flex",
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
                 return <>{cellValues.row?.priority?.value?.name}</>; //TODO FIX AFTER MIN MAX INTEGRATED
             },
@@ -264,6 +272,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         {
             field: "municipalityRole",
             headerName: t("projects.tableColumns.municipalityRole"),
+            display: "flex",
             width: 320,
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
                 return (
@@ -279,6 +288,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         {
             field: "projectLeaders",
             headerName: t("projects.tableColumns.projectLeader"),
+            display: "flex",
             width: 160,
             filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
@@ -293,6 +303,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         {
             field: "projectPhase",
             headerName: t("projects.tableColumns.projectPhase"),
+            display: "flex",
             valueOptions: projectPhaseOptions.map((c) => {
                 return { value: c.id, label: t(`projectTable.projectPhaseOptions.${c.name}`) };
             }),
@@ -304,6 +315,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         {
             field: "planningPlanStatus",
             headerName: t("projects.tableColumns.planningPlanStatus"),
+            display: "flex",
             width: 500,
             align: "center",
             preProcessEditCellProps: createErrorReport,
