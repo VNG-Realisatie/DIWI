@@ -282,6 +282,13 @@
           "delete": "Verwijderen",
           "actions": "Acties"
         },
+        "propertyType" : {
+          "BOOLEAN": "Ja / Nee",
+          "NUMERIC": "Getal",
+          "ORDINAL": "Gerangschikte categorie",
+          "CATEGORY": "Categorie",
+          "TEXT": "Open tekstveld"
+        },
         "add": "Voeg optioneel toe",
         "edit": "Pas optioneel veld aan",
         "propertyTypeInfo": "Type kan na het opslaan niet meer worden gewijzigd.",
