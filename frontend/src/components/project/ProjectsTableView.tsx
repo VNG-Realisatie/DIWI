@@ -180,7 +180,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             field: "projectName",
             headerName: t("projects.tableColumns.projectName"),
             display: "flex",
-            width: 200,
+            width: 300,
             filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
                 return (
