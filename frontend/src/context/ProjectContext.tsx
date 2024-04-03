@@ -37,11 +37,10 @@ export const ProjectProvider = ({ children }: PropsWithChildren) => {
             })
             .catch((err) => console.log(err));
     }, [paginationInfo.page, paginationInfo.pageSize]);
-    console.log(projectId);
+
     const updateProject = useCallback(() => {
         if (projectId) {
             getProject(projectId).then((project) => setSelectedProject(project));
-            console.log("id is here");
         }
     }, [projectId]);
 
