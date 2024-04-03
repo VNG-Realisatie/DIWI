@@ -8,8 +8,6 @@ import { drawerWidth } from "../theme";
 
 import * as Paths from "../Paths";
 import { User, getCurrentUser } from "../api/userSerivces";
-import { diwiFetch } from "../utils/requests";
-import { useNavigate } from "react-router-dom";
 
 type Props = {
     open: boolean;
@@ -43,7 +41,6 @@ export const Header = ({ open, handleDrawerOpen }: Props) => {
         getCurrentUser().then(setUser);
     }, []);
 
-    const navigate = useNavigate();
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
@@ -53,10 +50,8 @@ export const Header = ({ open, handleDrawerOpen }: Props) => {
     };
 
     const handleLogout = () => {
-        setAnchorEl(null);
-        diwiFetch(Paths.logout.path)
-            .then((res) => navigate(Paths.logout.path))
-            .catch((err) => console.log(err));
+        // We can't use navigate here, because navigate will use the internal router and just show a 404
+        window.location.href = Paths.logout.path;
     };
     const openProfile = Boolean(anchorEl);
     return (

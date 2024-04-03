@@ -6,8 +6,7 @@ import { useEffect, useState } from "react";
 type Props = {
     houseBlockGrossPlan: number | null;
     updateHouseBlockGrossPlan: (houseBlockGrossPlan: number) => void;
-    edit: boolean;
-    editForm: boolean;
+    readOnly: boolean;
 };
 type GrosPlanProps = {
     houseBlockGrossPlan: number | null;
@@ -55,18 +54,17 @@ export const GrossPlanEditInput = ({ houseBlockGrossPlan, updateHouseBlockGrossP
         />
     );
 };
-export const GrossPlanCapacityInput = ({ houseBlockGrossPlan, updateHouseBlockGrossPlan, edit, editForm }: Props) => {
+export const GrossPlanCapacityInput = ({ houseBlockGrossPlan, updateHouseBlockGrossPlan, readOnly }: Props) => {
     return (
         <Stack>
             <LabelComponent required={false} text={t("createProject.houseBlocksForm.grossPlanCapacity")} />
 
-            {edit && editForm && <GrossPlanEditInput houseBlockGrossPlan={houseBlockGrossPlan} updateHouseBlockGrossPlan={updateHouseBlockGrossPlan} />}
-            {!edit && editForm && (
+            {!readOnly && <GrossPlanEditInput houseBlockGrossPlan={houseBlockGrossPlan} updateHouseBlockGrossPlan={updateHouseBlockGrossPlan} />}
+            {readOnly && (
                 <InputContainer>
                     <Typography>{houseBlockGrossPlan}</Typography>
                 </InputContainer>
             )}
-            {!edit && !editForm && <GrossPlanEditInput houseBlockGrossPlan={houseBlockGrossPlan} updateHouseBlockGrossPlan={updateHouseBlockGrossPlan} />}
         </Stack>
     );
 };

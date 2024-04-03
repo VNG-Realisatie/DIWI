@@ -6,8 +6,7 @@ import { useEffect, useState } from "react";
 type Props = {
     houseBlockDemolitionPlan: number | null;
     updateHouseBlockDemolitionPlan: (demolitionPlan: number) => void;
-    edit: boolean;
-    editForm: boolean;
+    readOnly: boolean;
 };
 type DemolitionPlanProps = {
     houseBlockDemolitionPlan: number | null;
@@ -55,21 +54,18 @@ export const DemolitionPlanEditInput = ({ houseBlockDemolitionPlan, updateHouseB
         />
     );
 };
-export const DemolitionPlanCapacityInput = ({ houseBlockDemolitionPlan, updateHouseBlockDemolitionPlan, edit, editForm }: Props) => {
+export const DemolitionPlanCapacityInput = ({ houseBlockDemolitionPlan, updateHouseBlockDemolitionPlan, readOnly }: Props) => {
     return (
         <Stack>
             <LabelComponent required={false} text={t("createProject.houseBlocksForm.demolition")} />
 
-            {edit && editForm && (
+            {!readOnly && (
                 <DemolitionPlanEditInput houseBlockDemolitionPlan={houseBlockDemolitionPlan} updateHouseBlockDemolitionPlan={updateHouseBlockDemolitionPlan} />
             )}
-            {!edit && editForm && (
+            {readOnly && (
                 <InputContainer>
                     <Typography>{houseBlockDemolitionPlan}</Typography>
                 </InputContainer>
-            )}
-            {!edit && !editForm && (
-                <DemolitionPlanEditInput houseBlockDemolitionPlan={houseBlockDemolitionPlan} updateHouseBlockDemolitionPlan={updateHouseBlockDemolitionPlan} />
             )}
         </Stack>
     );

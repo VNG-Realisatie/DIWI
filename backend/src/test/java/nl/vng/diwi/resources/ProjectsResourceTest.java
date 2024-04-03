@@ -65,7 +65,7 @@ public class ProjectsResourceTest {
     }
 
     @Test
-    void updateProjectTest_currentProject() throws VngNotFoundException, VngServerErrorException, VngBadRequestException {
+    void updateProjectSnapshotTest_currentProject() throws VngNotFoundException, VngServerErrorException, VngBadRequestException {
 
         UUID userUuid;
         UUID projectUuid;
@@ -94,7 +94,7 @@ public class ProjectsResourceTest {
         //call update endpoint
         LoggedUser loggedUser = new LoggedUser();
         loggedUser.setUuid(userUuid);
-        projectResource.updateProject(loggedUser, projectSnapshot);
+        projectResource.updateProjectSnapshot(loggedUser, projectSnapshot);
         repo.getSession().clear();
 
         //assert
@@ -127,7 +127,7 @@ public class ProjectsResourceTest {
 
 
     @Test
-    void updateProjectTest_futureProject() throws VngNotFoundException, VngServerErrorException, VngBadRequestException {
+    void updateProjectSnapshotTest_futureProject() throws VngNotFoundException, VngServerErrorException, VngBadRequestException {
 
         UUID userUuid;
         UUID projectUuid;
@@ -156,7 +156,7 @@ public class ProjectsResourceTest {
         //call update endpoint
         LoggedUser loggedUser = new LoggedUser();
         loggedUser.setUuid(userUuid);
-        projectResource.updateProject(loggedUser, projectSnapshot);
+        projectResource.updateProjectSnapshot(loggedUser, projectSnapshot);
         repo.getSession().clear();
 
         //assert

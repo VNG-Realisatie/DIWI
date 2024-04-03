@@ -55,10 +55,13 @@ export const Details = ({ project }: Props) => {
             return content;
         }
     };
-    const { id } = useContext(ProjectContext);
+
+    const { projectId } = useContext(ProjectContext);
+
     useEffect(() => {
-        id && getProjectHouseBlocks(id).then((res) => setHouseBlocks(res));
-    }, [id]);
+        projectId && getProjectHouseBlocks(projectId).then((res) => setHouseBlocks(res));
+    }, [projectId]);
+
     return (
         <List
             sx={{

@@ -71,6 +71,7 @@ public class ProjectServiceTest {
     private UUID projectUuid;
     private Milestone startMilestone;
     private Milestone endMilestone;
+    private Milestone middleMilestone;
 
     private static ProjectService projectService;
 
@@ -473,6 +474,145 @@ public class ProjectServiceTest {
                     .isEqualTo(expected);
         }
 
+    }
+
+
+    @Test
+    void prepareChangelogValuesToUpdate_FutureProject() {
+
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+            project = createProject(repo, user);
+            projectUuid = project.getId();
+            startMilestone = createMilestone(repo, project, LocalDate.now().plusDays(10), user);
+            middleMilestone = createMilestone(repo, project, LocalDate.now().plusDays(25), user);
+            endMilestone = createMilestone(repo, project, LocalDate.now().plusDays(50), user);
+            createProjectDurationChangelog(repo, project, startMilestone, endMilestone, user);
+            createProjectNameChangelog(repo, project, "Name 1", startMilestone, middleMilestone, user);
+            createProjectNameChangelog(repo, project, "Name 2", middleMilestone, endMilestone, user);
+            transaction.commit();
+            repo.getSession().clear();
+        }
+
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+
+            project = projectService.getCurrentProject(repo, projectUuid);
+            startMilestone = project.getDuration().get(0).getStartMilestone();
+            endMilestone = project.getDuration().get(0).getEndMilestone();
+            ProjectNameChangelog newChangelog = new ProjectNameChangelog();
+            ProjectNameChangelog oldChangelogAfterUpdate = new ProjectNameChangelog();
+
+            ProjectNameChangelog oldChangelog = projectService.prepareChangelogValuesToUpdate(repo, project, project.getName(), newChangelog, oldChangelogAfterUpdate,
+                user.getId(), startMilestone, endMilestone, LocalDate.now());
+
+            //the existing changelog is not split into past and future segments when updating a future project
+            assertThat(oldChangelogAfterUpdate.getStartMilestone()).isNull();
+
+            //the existing changelog has the same start milestone, but non-null change-end-date and change-user
+            assertThat(oldChangelog).isNotNull();
+            assertThat(oldChangelog.getStartMilestone().getId()).isEqualTo(startMilestone.getId());
+            assertThat(oldChangelog.getEndMilestone().getId()).isEqualTo(middleMilestone.getId());
+            assertThat(oldChangelog.getChangeEndDate()).isNotNull();
+            assertThat(oldChangelog.getChangeUser()).isNotNull();
+
+            //the new changelog is configured with the correct values
+            assertThat(newChangelog.getStartMilestone().getId()).isEqualTo(startMilestone.getId());
+            assertThat(newChangelog.getEndMilestone().getId()).isEqualTo(middleMilestone.getId());
+            assertThat(newChangelog.getCreateUser()).isNotNull();
+            assertThat(newChangelog.getChangeStartDate()).isNotNull();
+        }
+    }
+
+    @Test
+    void prepareChangelogValuesToUpdate_PastProject() {
+
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+            project = createProject(repo, user);
+            projectUuid = project.getId();
+            startMilestone = createMilestone(repo, project, LocalDate.now().minusDays(50), user);
+            middleMilestone = createMilestone(repo, project, LocalDate.now().minusDays(25), user);
+            endMilestone = createMilestone(repo, project, LocalDate.now().minusDays(10), user);
+            createProjectDurationChangelog(repo, project, startMilestone, endMilestone, user);
+            createProjectNameChangelog(repo, project, "Name 1", startMilestone, middleMilestone, user);
+            createProjectNameChangelog(repo, project, "Name 2", middleMilestone, endMilestone, user);
+            transaction.commit();
+            repo.getSession().clear();
+        }
+
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+
+            project = projectService.getCurrentProject(repo, projectUuid);
+            startMilestone = project.getDuration().get(0).getStartMilestone();
+            endMilestone = project.getDuration().get(0).getEndMilestone();
+            ProjectNameChangelog newChangelog = new ProjectNameChangelog();
+            ProjectNameChangelog oldChangelogAfterUpdate = new ProjectNameChangelog();
+
+            ProjectNameChangelog oldChangelog = projectService.prepareChangelogValuesToUpdate(repo, project, project.getName(), newChangelog, oldChangelogAfterUpdate,
+                user.getId(), startMilestone, endMilestone, LocalDate.now());
+
+            //the existing changelog is not split into past and future segments when updating a past project
+            assertThat(oldChangelogAfterUpdate.getStartMilestone()).isNull();
+
+            //the existing changelog has the same end milestone, but non-null change-end-date and change-user
+            assertThat(oldChangelog).isNotNull();
+            assertThat(oldChangelog.getStartMilestone().getId()).isEqualTo(middleMilestone.getId());
+            assertThat(oldChangelog.getEndMilestone().getId()).isEqualTo(endMilestone.getId());
+            assertThat(oldChangelog.getChangeEndDate()).isNotNull();
+            assertThat(oldChangelog.getChangeUser()).isNotNull();
+
+            //the new changelog is configured with the correct values
+            assertThat(newChangelog.getStartMilestone().getId()).isEqualTo(middleMilestone.getId());
+            assertThat(newChangelog.getEndMilestone().getId()).isEqualTo(endMilestone.getId());
+            assertThat(newChangelog.getCreateUser()).isNotNull();
+            assertThat(newChangelog.getChangeStartDate()).isNotNull();
+        }
+    }
+
+    @Test
+    void prepareChangelogValuesToUpdate_CurrentProject() {
+
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+            project = createProject(repo, user);
+            projectUuid = project.getId();
+            startMilestone = createMilestone(repo, project, LocalDate.now().minusDays(10), user);
+            middleMilestone = createMilestone(repo, project, LocalDate.now(), user);
+            endMilestone = createMilestone(repo, project, LocalDate.now().plusDays(10), user);
+            createProjectDurationChangelog(repo, project, startMilestone, endMilestone, user);
+            createProjectNameChangelog(repo, project, "Name", startMilestone, endMilestone, user);
+            transaction.commit();
+            repo.getSession().clear();
+        }
+
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+
+            project = projectService.getCurrentProject(repo, projectUuid);
+            startMilestone = project.getDuration().get(0).getStartMilestone();
+            endMilestone = project.getDuration().get(0).getEndMilestone();
+            ProjectNameChangelog newChangelog = new ProjectNameChangelog();
+            ProjectNameChangelog oldChangelogAfterUpdate = new ProjectNameChangelog();
+
+            ProjectNameChangelog oldChangelog = projectService.prepareChangelogValuesToUpdate(repo, project, project.getName(), newChangelog, oldChangelogAfterUpdate,
+                user.getId(), startMilestone, endMilestone, LocalDate.now());
+
+            //the existing changelog is split into past and future segments when updating a current project
+            assertThat(oldChangelogAfterUpdate.getStartMilestone()).isNotNull();
+            assertThat(oldChangelogAfterUpdate.getStartMilestone().getId()).isEqualTo(startMilestone.getId());
+            assertThat(oldChangelogAfterUpdate.getEndMilestone().getId()).isEqualTo(middleMilestone.getId());
+            assertThat(oldChangelogAfterUpdate.getCreateUser()).isNotNull();
+            assertThat(oldChangelogAfterUpdate.getChangeStartDate()).isNotNull();
+
+            //the existing changelog has the same end milestone, but non-null change-end-date and change-user
+            assertThat(oldChangelog).isNotNull();
+            assertThat(oldChangelog.getStartMilestone().getId()).isEqualTo(startMilestone.getId());
+            assertThat(oldChangelog.getEndMilestone().getId()).isEqualTo(endMilestone.getId());
+            assertThat(oldChangelog.getChangeEndDate()).isNotNull();
+            assertThat(oldChangelog.getChangeUser()).isNotNull();
+
+            //the new changelog is configured with the correct values
+            assertThat(newChangelog.getStartMilestone().getId()).isEqualTo(middleMilestone.getId());
+            assertThat(newChangelog.getEndMilestone().getId()).isEqualTo(endMilestone.getId());
+            assertThat(newChangelog.getCreateUser()).isNotNull();
+            assertThat(newChangelog.getChangeStartDate()).isNotNull();
+        }
     }
 
     private ProjectRegistryLinkChangelog createPlot(ObjectNode geoJson, String gemeenteCode, long brkPerceelNummer, String brkSectie, String brkSelectie) {

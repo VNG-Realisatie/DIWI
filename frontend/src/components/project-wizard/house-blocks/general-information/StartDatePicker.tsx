@@ -8,33 +8,18 @@ import { LabelComponent } from "../../../project/LabelComponent";
 type Props = {
     houseBlockStartDate: string | null;
     updateHouseBlockStartDate: (date: Dayjs | null) => void;
-    edit: boolean;
-    editForm: boolean;
+    readOnly: boolean;
 };
-export const StartDatePicker = ({ houseBlockStartDate, updateHouseBlockStartDate, edit, editForm }: Props) => {
+export const StartDatePicker = ({ houseBlockStartDate, updateHouseBlockStartDate, readOnly }: Props) => {
     return (
         <Stack width="100%">
             <LabelComponent required text={t("createProject.houseBlocksForm.startDate")} />
 
-            {edit && editForm && <DatePicker value={houseBlockStartDate ? dayjs(houseBlockStartDate) : null} onChange={updateHouseBlockStartDate} />}
-            {!edit && editForm && (
+            {!readOnly && <DatePicker value={houseBlockStartDate ? dayjs(houseBlockStartDate) : null} onChange={updateHouseBlockStartDate} />}
+            {readOnly && (
                 <InputContainer>
                     <Typography>{convertDayjsToString(dayjs(houseBlockStartDate))}</Typography>
                 </InputContainer>
-            )}
-            {!edit && !editForm && (
-                <DatePicker
-                    sx={{
-                        "& .MuiFormHelperText-root": {
-                            color: "red",
-                        },
-                    }}
-                    slotProps={{
-                        textField: { helperText: houseBlockStartDate === null ? t("createProject.hasMissingRequiredAreas.startDate") : "" },
-                    }}
-                    value={houseBlockStartDate ? dayjs(houseBlockStartDate) : null}
-                    onChange={updateHouseBlockStartDate}
-                />
             )}
         </Stack>
     );

@@ -22,9 +22,9 @@ export const projectWizard = createPathObject(config.baseurl + "project/create")
 export const projectWizardWithId = createPathObject(config.baseurl + "project/create/:projectId");
 export const projectWizardBlocks = createPathObject(config.baseurl + "project/create/:projectId/blocks");
 export const projectWizardMap = createPathObject(config.baseurl + "project/create/:projectId/map");
-export const projectDetail = createPathObject(config.baseurl + "projects/:id");
-export const projectDetailCharacteristics = createPathObject(config.baseurl + "projects/:id/characteristics");
-export const projectDetailTimeline = createPathObject(config.baseurl + "projects/:id/timeline");
+export const projectDetail = createPathObject(config.baseurl + "projects/:projectId");
+export const projectDetailCharacteristics = createPathObject(config.baseurl + "projects/:projectId/characteristics");
+export const projectDetailTimeline = createPathObject(config.baseurl + "projects/:projectId/timeline");
 
 export const policygoal = createPathObject(config.baseurl + "policygoal");
 export const policygoalDashboard = createPathObject(config.baseurl + "policygoal/dashboard");
