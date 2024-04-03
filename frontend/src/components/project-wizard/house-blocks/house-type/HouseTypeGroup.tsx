@@ -5,13 +5,12 @@ import { HouseBlock } from "../types";
 import { SingleNumberInput } from "../physical-appearence/SingleNumberInput";
 
 export type HouseTypeInformationProps = {
-    projectForm: HouseBlock;
-    setProjectForm(project: HouseBlock): void;
-    edit: boolean;
-    editForm: boolean;
+    houseBlock: HouseBlock;
+    setHouseBlock(houseBlock: HouseBlock): void;
+    readOnly: boolean;
 };
 
-export const HouseTypeGroup = ({ projectForm, setProjectForm, edit, editForm }: HouseTypeInformationProps) => {
+export const HouseTypeGroup = ({ houseBlock, setHouseBlock, readOnly }: HouseTypeInformationProps) => {
     const translationPath = "createProject.houseBlocksForm.houseType";
     return (
         <WizardCard>
@@ -27,36 +26,34 @@ export const HouseTypeGroup = ({ projectForm, setProjectForm, edit, editForm }: 
                 </Typography>
             </Stack>
             <SingleNumberInput
-                property={projectForm?.houseType?.meergezinswoning}
+                property={houseBlock?.houseType?.meergezinswoning}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         houseType: {
-                            ...projectForm.houseType,
+                            ...houseBlock.houseType,
                             meergezinswoning: e,
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="meergezinswoning"
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.houseType?.eengezinswoning}
+                property={houseBlock?.houseType?.eengezinswoning}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         houseType: {
-                            ...projectForm.houseType,
+                            ...houseBlock.houseType,
                             eengezinswoning: e,
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="eengezinswoning"
                 translationPath={translationPath}
             />

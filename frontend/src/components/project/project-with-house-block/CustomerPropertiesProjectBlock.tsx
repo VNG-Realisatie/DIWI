@@ -7,13 +7,13 @@ import { CustomPropertyWidget } from "../../CustomPropertyWidget";
 import { SxProps, Theme } from "@mui/material";
 
 type Props = {
-    projectEditable: boolean;
+    readOnly: boolean;
     customValues: CustomPropertyValue[];
     setCustomValues: (updatedValues: CustomPropertyValue[]) => void;
     columnTitleStyle: SxProps<Theme> | undefined;
 };
 
-export const CustomerPropertiesProjectBlock = ({ projectEditable, customValues, setCustomValues, columnTitleStyle }: Props) => {
+export const CustomerPropertiesProjectBlock = ({ readOnly, customValues, setCustomValues, columnTitleStyle }: Props) => {
     const [customDefinitions, setCustomDefinitions] = useState<CustomPropertyType[]>([]);
 
     useEffect(() => {
@@ -35,7 +35,7 @@ export const CustomerPropertiesProjectBlock = ({ projectEditable, customValues, 
                         <Typography sx={columnTitleStyle}>{property.name}</Typography>
 
                         <CustomPropertyWidget
-                            projectEditable={projectEditable}
+                            readOnly={readOnly}
                             customValue={customValue}
                             setCustomValue={(newValue) => {
                                 setCustomValue({ ...newValue, customPropertyId: property.id });

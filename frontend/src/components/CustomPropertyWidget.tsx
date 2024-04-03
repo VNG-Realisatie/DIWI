@@ -4,15 +4,15 @@ import { CustomPropertyValue } from "../api/customPropServices";
 import { CellContainer } from "./project/project-with-house-block/CellContainer";
 
 type Props = {
-    projectEditable: boolean;
+    readOnly: boolean;
     customValue: CustomPropertyValue | undefined;
     customDefinition: CustomPropertyType;
     setCustomValue: (newValue: CustomPropertyValue) => void;
 };
 
-export const CustomPropertyWidget = ({ projectEditable, customValue, setCustomValue, customDefinition }: Props) => {
+export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, customDefinition }: Props) => {
     if (customDefinition.propertyType === "BOOLEAN") {
-        if (projectEditable) {
+        if (!readOnly) {
             return (
                 <Autocomplete
                     size="small"
@@ -25,8 +25,8 @@ export const CustomPropertyWidget = ({ projectEditable, customValue, setCustomVa
         } else {
             return <CellContainer>{customValue?.booleanValue?.toString() || ""}</CellContainer>;
         }
-    } else if (customDefinition.propertyType === "CATEGORY")
-        if (projectEditable) {
+    } else if (customDefinition.propertyType === "CATEGORY") {
+        if (!readOnly) {
             const values = customValue?.categories?.map((val) => customDefinition.categories?.find((d) => val === d.id));
             return (
                 <Autocomplete
@@ -52,8 +52,8 @@ export const CustomPropertyWidget = ({ projectEditable, customValue, setCustomVa
                 </CellContainer>
             );
         }
-    else if (customDefinition.propertyType === "NUMERIC") {
-        if (projectEditable) {
+    } else if (customDefinition.propertyType === "NUMERIC") {
+        if (!readOnly) {
             return (
                 <TextField
                     variant="outlined"
@@ -67,7 +67,7 @@ export const CustomPropertyWidget = ({ projectEditable, customValue, setCustomVa
             return <CellContainer>{customValue?.numericValue?.value || 0}</CellContainer>;
         }
     } else if (customDefinition.propertyType === "TEXT") {
-        if (projectEditable) {
+        if (!readOnly) {
             return (
                 <TextField
                     variant="outlined"

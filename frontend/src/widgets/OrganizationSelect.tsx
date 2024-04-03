@@ -11,13 +11,13 @@ const icon = <CheckBoxOutlineBlankIcon />;
 const checkedIcon = <CheckBoxIcon />;
 
 type Props = {
-    projectEditable: boolean;
+    readOnly: boolean;
     owner: Organization[];
     setOwner: (owner: Organization[]) => void;
     isLeader?: boolean;
 };
 
-export const OrganizationSelect = ({ projectEditable, owner, setOwner, isLeader }: Props) => {
+export const OrganizationSelect = ({ readOnly, owner, setOwner, isLeader }: Props) => {
     const { selectedProject } = useContext(ProjectContext);
     const [ownerOptions, setOwnerOptions] = useState<Organization[]>();
 
@@ -25,7 +25,7 @@ export const OrganizationSelect = ({ projectEditable, owner, setOwner, isLeader 
         getOrganizationList().then((organizations) => setOwnerOptions(organizations));
     }, []);
 
-    if (!projectEditable) {
+    if (readOnly) {
         if (isLeader) {
             return (
                 <AvatarGroup max={3}>

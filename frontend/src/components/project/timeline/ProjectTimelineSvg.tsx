@@ -26,14 +26,14 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, showToday, width, height }:
     const spacing = { x: 1, y: 1 };
     const textSpacing = { x: 3, y: 3 };
 
-    const { id, selectedProject } = useContext(ProjectContext);
+    const { projectId, selectedProject } = useContext(ProjectContext);
     const [projectPhaseData, setProjectPhaseData] = useState<Array<components["schemas"]["DatedDataModelProjectPhase"]> | null>(null);
     const [houseBlockData, setHouseBlockData] = useState<Array<HouseBlock> | null>(null);
     const [chartHeight, setChartHeight] = useState<number>(height - margin.top);
 
     useEffect(() => {
-        if (id) {
-            getProjectTimeline(id)
+        if (projectId) {
+            getProjectTimeline(projectId)
                 .then((projectData) => {
                     const phaseData = projectData?.projectPhase;
                     if (phaseData) {
@@ -48,11 +48,11 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, showToday, width, height }:
                     setProjectPhaseData(null);
                 });
         }
-    }, [id]);
+    }, [projectId]);
 
     useEffect(() => {
-        if (id) {
-            getProjectHouseBlocks(id)
+        if (projectId) {
+            getProjectHouseBlocks(projectId)
                 .then((houseBlockData) => {
                     if (houseBlockData) {
                         setHouseBlockData(houseBlockData.sort((a, b) => (dayjs(a.startDate).isBefore(dayjs(b.startDate)) ? -1 : 1)));
@@ -66,7 +66,7 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, showToday, width, height }:
                     setHouseBlockData(null);
                 });
         }
-    }, [id]);
+    }, [projectId]);
 
     useEffect(() => {
         setChartHeight(timelineHeight + phaseTitleHeight + phaseBlockHeight + houseblockTitleHeight + (houseBlockData?.length ?? 1) * houseblockTrackHeight);
