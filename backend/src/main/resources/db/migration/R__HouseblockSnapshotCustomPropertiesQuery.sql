@@ -481,7 +481,7 @@ FROM (
 
      ) AS q
 
-        JOIN diwi_testset.maatwerk_eigenschap_state cps ON cps.eigenschap_id = q.customPropertyId AND cps.change_end_date IS NULL
+        JOIN diwi_testset.property_state cps ON cps.property_id = q.customPropertyId AND cps.change_end_date IS NULL
 
 WHERE q.woningblokId = _woningblok_uuid_;
 
