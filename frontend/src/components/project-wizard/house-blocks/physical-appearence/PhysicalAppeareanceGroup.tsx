@@ -5,13 +5,12 @@ import { HouseBlock } from "../types";
 import { SingleNumberInput } from "./SingleNumberInput";
 
 export type PhysicalAppeareanceInformationProps = {
-    projectForm: HouseBlock;
-    setProjectForm(project: HouseBlock): void;
-    edit: boolean;
-    editForm: boolean;
+    houseBlock: HouseBlock;
+    setHouseBlock(houseBlock: HouseBlock): void;
+    readOnly: boolean;
 };
 
-export const PhysicalAppeareanceGroup = ({ projectForm, setProjectForm, edit, editForm }: PhysicalAppeareanceInformationProps) => {
+export const PhysicalAppeareanceGroup = ({ houseBlock, setHouseBlock, readOnly }: PhysicalAppeareanceInformationProps) => {
     const translationPath = "createProject.houseBlocksForm.physicalAppearance";
     return (
         <WizardCard>
@@ -27,104 +26,98 @@ export const PhysicalAppeareanceGroup = ({ projectForm, setProjectForm, edit, ed
                 </Typography>
             </Stack>
             <SingleNumberInput
-                property={projectForm?.physicalAppearance?.tussenwoning}
+                property={houseBlock?.physicalAppearance?.tussenwoning}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         physicalAppearance: {
-                            ...projectForm.physicalAppearance,
+                            ...houseBlock.physicalAppearance,
                             tussenwoning: e,
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="tussenwoning"
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.physicalAppearance?.tweeondereenkap}
+                property={houseBlock?.physicalAppearance?.tweeondereenkap}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         physicalAppearance: {
-                            ...projectForm.physicalAppearance,
+                            ...houseBlock.physicalAppearance,
                             tweeondereenkap: e,
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="tweeondereenkap"
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.physicalAppearance?.portiekflat}
+                property={houseBlock?.physicalAppearance?.portiekflat}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         physicalAppearance: {
-                            ...projectForm.physicalAppearance,
+                            ...houseBlock.physicalAppearance,
                             portiekflat: e,
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="portiekflat"
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.physicalAppearance?.hoekwoning}
+                property={houseBlock?.physicalAppearance?.hoekwoning}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         physicalAppearance: {
-                            ...projectForm.physicalAppearance,
+                            ...houseBlock.physicalAppearance,
                             hoekwoning: e,
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="hoekwoning"
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.physicalAppearance?.vrijstaand}
+                property={houseBlock?.physicalAppearance?.vrijstaand}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         physicalAppearance: {
-                            ...projectForm.physicalAppearance,
+                            ...houseBlock.physicalAppearance,
                             vrijstaand: e,
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="vrijstaand"
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.physicalAppearance?.gallerijflat}
+                property={houseBlock?.physicalAppearance?.gallerijflat}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         physicalAppearance: {
-                            ...projectForm.physicalAppearance,
+                            ...houseBlock.physicalAppearance,
                             gallerijflat: e,
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="gallerijflat"
                 translationPath="createProject.houseBlocksForm.physicalAppearance"
             />

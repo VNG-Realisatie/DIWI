@@ -10,73 +10,68 @@ import { MutationKindSelect } from "./MutationKindSelect";
 import { MutationSelectOptions } from "../../../../types/enums";
 
 export type MutationInformationProps = {
-    projectForm: HouseBlock;
-    setProjectForm(project: HouseBlock): void;
-    edit: boolean;
-    editForm: boolean;
+    houseBlock: HouseBlock;
+    setHouseBlock(houseBlock: HouseBlock): void;
+    readOnly: boolean;
 };
 
-export const MutationInformationGroup = ({ projectForm, setProjectForm, edit, editForm }: MutationInformationProps) => {
+export const MutationInformationGroup = ({ houseBlock, setHouseBlock, readOnly }: MutationInformationProps) => {
     return (
         <WizardCard>
             <Typography fontWeight={600} mb={2}>
                 {t("createProject.houseBlocksForm.mutationData")}
             </Typography>
             <GrossPlanCapacityInput
-                edit={edit}
-                editForm={editForm}
-                houseBlockGrossPlan={projectForm.mutation.grossPlanCapacity}
+                readOnly={readOnly}
+                houseBlockGrossPlan={houseBlock.mutation.grossPlanCapacity}
                 updateHouseBlockGrossPlan={(e) =>
-                    setProjectForm({
-                        ...projectForm,
+                    setHouseBlock({
+                        ...houseBlock,
                         mutation: {
-                            ...projectForm.mutation,
+                            ...houseBlock.mutation,
                             grossPlanCapacity: e,
                         },
                     })
                 }
             />
             <DemolitionPlanCapacityInput
-                edit={edit}
-                editForm={editForm}
-                houseBlockDemolitionPlan={projectForm.mutation.demolition}
+                readOnly={readOnly}
+                houseBlockDemolitionPlan={houseBlock.mutation.demolition}
                 updateHouseBlockDemolitionPlan={(e) =>
-                    setProjectForm({
-                        ...projectForm,
+                    setHouseBlock({
+                        ...houseBlock,
                         mutation: {
-                            ...projectForm.mutation,
+                            ...houseBlock.mutation,
                             demolition: e,
                         },
                     })
                 }
             />
             <NetPlanCapacityInput
-                edit={edit}
-                editForm={editForm}
-                houseBlockNetPlan={projectForm.mutation.netPlanCapacity}
+                readOnly={readOnly}
+                houseBlockNetPlan={houseBlock.mutation.netPlanCapacity}
                 updateHouseBlockNetPlan={(e) =>
-                    setProjectForm({
-                        ...projectForm,
+                    setHouseBlock({
+                        ...houseBlock,
                         mutation: {
-                            ...projectForm.mutation,
+                            ...houseBlock.mutation,
                             netPlanCapacity: e,
                         },
                     })
                 }
             />
             <MutationKindSelect
-                edit={edit}
-                editForm={editForm}
-                houseBlockMutationKind={projectForm.mutation.mutationKind}
+                readOnly={readOnly}
+                houseBlockMutationKind={houseBlock.mutation.mutationKind}
                 updateHouseBlockMutationKind={(event: SelectChangeEvent<MutationSelectOptions[]>) => {
                     const {
                         target: { value },
                     } = event;
                     if (typeof value !== "string") {
-                        setProjectForm({
-                            ...projectForm,
+                        setHouseBlock({
+                            ...houseBlock,
                             mutation: {
-                                ...projectForm.mutation,
+                                ...houseBlock.mutation,
                                 mutationKind: value,
                             },
                         });

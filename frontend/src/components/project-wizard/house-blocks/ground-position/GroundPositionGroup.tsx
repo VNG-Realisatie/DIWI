@@ -5,13 +5,12 @@ import { HouseBlock } from "../types";
 import { SingleNumberInput } from "../physical-appearence/SingleNumberInput";
 
 export type GroundPositionInformationProps = {
-    projectForm: HouseBlock;
-    setProjectForm(project: HouseBlock): void;
-    edit: boolean;
-    editForm: boolean;
+    houseBlock: HouseBlock;
+    setHouseBlock(houseBlock: HouseBlock): void;
+    readOnly: boolean;
 };
 
-export const GroundPositionGroup = ({ projectForm, setProjectForm, edit, editForm }: GroundPositionInformationProps) => {
+export const GroundPositionGroup = ({ houseBlock, setHouseBlock, readOnly }: GroundPositionInformationProps) => {
     const translationPath = "createProject.houseBlocksForm.groundPosition";
     return (
         <WizardCard>
@@ -27,53 +26,50 @@ export const GroundPositionGroup = ({ projectForm, setProjectForm, edit, editFor
                 </Typography>
             </Stack>
             <SingleNumberInput
-                property={projectForm?.groundPosition?.noPermissionOwner}
+                property={houseBlock?.groundPosition?.noPermissionOwner}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         groundPosition: {
-                            ...projectForm.groundPosition,
+                            ...houseBlock.groundPosition,
                             noPermissionOwner: e,
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="noPermissionOwner"
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.groundPosition?.intentionPermissionOwner}
+                property={houseBlock?.groundPosition?.intentionPermissionOwner}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         groundPosition: {
-                            ...projectForm.groundPosition,
+                            ...houseBlock.groundPosition,
                             intentionPermissionOwner: e,
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="intentionPermissionOwner"
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.groundPosition?.formalPermissionOwner}
+                property={houseBlock?.groundPosition?.formalPermissionOwner}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         groundPosition: {
-                            ...projectForm.groundPosition,
+                            ...houseBlock.groundPosition,
                             formalPermissionOwner: e,
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="formalPermissionOwner"
                 translationPath={translationPath}
             />
