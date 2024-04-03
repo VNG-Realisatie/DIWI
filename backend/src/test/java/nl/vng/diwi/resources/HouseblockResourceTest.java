@@ -16,7 +16,7 @@ import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
-import nl.vng.diwi.services.CustomPropertiesService;
+import nl.vng.diwi.services.PropertiesService;
 import nl.vng.diwi.services.HouseblockService;
 import nl.vng.diwi.services.HouseblockServiceTest;
 import nl.vng.diwi.services.ProjectService;
@@ -47,7 +47,7 @@ public class HouseblockResourceTest {
         testDb = new TestDb();
         dalFactory = testDb.getDalFactory();
         houseblockResource = new HouseblockResource(new GenericRepository(dalFactory.constructDal()),
-            new HouseblockService(), new ProjectService(), new CustomPropertiesService());
+            new HouseblockService(), new ProjectService(), new PropertiesService());
     }
 
     @AfterAll

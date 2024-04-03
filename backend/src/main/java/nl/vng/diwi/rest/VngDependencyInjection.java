@@ -16,7 +16,7 @@ import nl.vng.diwi.dal.DalFactory;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.UserDAO;
 import nl.vng.diwi.security.LoggedUser;
-import nl.vng.diwi.services.CustomPropertiesService;
+import nl.vng.diwi.services.PropertiesService;
 import nl.vng.diwi.services.HouseblockService;
 import nl.vng.diwi.services.MilestoneService;
 import nl.vng.diwi.services.OrganizationsService;
@@ -95,7 +95,7 @@ public class VngDependencyInjection extends AbstractBinder {
         bind(new ProjectService()).to(ProjectService.class);
         bind(new OrganizationsService()).to(OrganizationsService.class);
         bind(new HouseblockService()).to(HouseblockService.class);
-        bind(new CustomPropertiesService()).to(CustomPropertiesService.class);
+        bind(new PropertiesService()).to(PropertiesService.class);
 
     }
 }

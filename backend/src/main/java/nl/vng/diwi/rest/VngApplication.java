@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import nl.vng.diwi.resources.ConfigResource;
-import nl.vng.diwi.resources.CustomPropertiesResource;
+import nl.vng.diwi.resources.PropertiesResource;
 import nl.vng.diwi.resources.HouseblockResource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -103,7 +103,7 @@ public class VngApplication extends ResourceConfig {
         register(WijkResource.class);
         register(PriorityResource.class);
         register(HouseblockResource.class);
-        register(CustomPropertiesResource.class);
+        register(PropertiesResource.class);
         register(ConfigResource.class);
         register(UserResource.class);
 

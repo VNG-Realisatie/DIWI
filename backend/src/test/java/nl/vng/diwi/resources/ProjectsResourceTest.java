@@ -15,7 +15,7 @@ import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
-import nl.vng.diwi.services.CustomPropertiesService;
+import nl.vng.diwi.services.PropertiesService;
 import nl.vng.diwi.services.HouseblockService;
 import nl.vng.diwi.services.ProjectService;
 import nl.vng.diwi.services.ProjectServiceTest;
@@ -45,7 +45,7 @@ public class ProjectsResourceTest {
         testDb = new TestDb();
         dalFactory = testDb.getDalFactory();
         projectResource = new ProjectsResource(new GenericRepository(dalFactory.constructDal()),
-            new ProjectService(), new HouseblockService(), new CustomPropertiesService());
+            new ProjectService(), new HouseblockService(), new PropertiesService());
     }
 
     @AfterAll

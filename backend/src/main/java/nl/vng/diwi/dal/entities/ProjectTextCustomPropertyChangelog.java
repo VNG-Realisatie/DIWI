@@ -25,7 +25,7 @@ public class ProjectTextCustomPropertyChangelog extends MilestoneChangeDataSuper
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "eigenschap_id")
-    private CustomProperty customProperty;
+    private Property property;
 
     @Column(name = "value")
     private String value;
