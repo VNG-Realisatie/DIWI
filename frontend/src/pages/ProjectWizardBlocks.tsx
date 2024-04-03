@@ -16,54 +16,6 @@ const ProjectWizardBlocks = () => {
     const { setAlert } = useAlert();
     const { t } = useTranslation();
 
-    useEffect(() => {
-        const fetchHouseBlocks = async () => {
-            const data = await getProjectHouseBlocks(projectId as string);
-            setHouseBlocks(data);
-        };
-
-        fetchHouseBlocks();
-    }, [projectId]);
-
-    useEffect(() => {
-        if (houseBlocks && houseBlocks.length === 0) {
-            const fetchProject = async () => {
-                const data = await getProject(projectId as string);
-                setProject(data);
-            };
-
-            fetchProject();
-        }
-    }, [projectId, houseBlocks]);
-
-    useEffect(() => {
-        if (houseBlocks && houseBlocks.length > 0) {
-            let earlierCreatedHouseBlock;
-
-            houseBlocks.forEach((properties) => {
-                earlierCreatedHouseBlock = { ...properties };
-
-                setCreateFormHouseBlock(earlierCreatedHouseBlock);
-            });
-        }
-    }, [houseBlocks]);
-
-    const setDates = useCallback(() => {
-        if (project && project.startDate && project.endDate) {
-            setCreateFormHouseBlock({
-                ...emptyHouseBlockForm,
-                startDate: project.startDate,
-                endDate: project.endDate,
-            });
-        }
-    }, [project, setCreateFormHouseBlock]);
-
-    useEffect(() => {
-        if (project) {
-            setDates();
-        }
-    }, [project, setDates]);
-
     const handleNext = async () => {
         if (
             !houseBlock.houseblockName ||
@@ -73,7 +25,13 @@ const ProjectWizardBlocks = () => {
         ) {
             setAlert(t("createProject.hasMissingRequiredAreas.hasmissingProperty"), "warning");
         } else {
-            addHouseBlock(houseBlock);
+            if (houseBlock.houseblockId) {
+                updateHouseBlock(houseBlock);
+                setAlert(t("createProject.houseBlocksForm.notifications.successfullyUpdated"), "success");
+            } else {
+                addHouseBlock(houseBlock);
+                setAlert(t("createProject.houseBlocksForm.notifications.successfullySaved"), "success");
+            }
             navigate(projectWizardMap.toPath({ projectId }));
         }
     };
