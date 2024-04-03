@@ -58,10 +58,10 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const { t } = useTranslation();
 
     const [selectedRows, setSelectedRows] = useState<any[]>([]);
-    const [selectedPlanTypes, setSelectedPlanTypes] = useState<SelectedOptionWithId[]>([]);
+    // const [selectedPlanTypes, setSelectedPlanTypes] = useState<SelectedOptionWithId[]>([]);
     // const [selectedMunicipality, setSelectedMunicipality] = useState<SelectedOptionWithId[]>([]);
-    const [selectedMunicipalityRole, setSelectedMunicipalityRole] = useState<SelectedOptionWithId[]>([]);
-    const [selectedPlanStatus, setSelectedPlanStatus] = useState<SelectedOptionWithId[]>([]);
+    // const [selectedMunicipalityRole, setSelectedMunicipalityRole] = useState<SelectedOptionWithId[]>([]);
+    // const [selectedPlanStatus, setSelectedPlanStatus] = useState<SelectedOptionWithId[]>([]);
     // const [selectedWijk, setSelectedWijk] = useState<SelectedOptionWithId[]>([]);
     // const [selectedBuurt, setSelectedBuurt] = useState<SelectedOptionWithId[]>([]);
     const [showDialog, setShowDialog] = useState(false);
@@ -84,47 +84,47 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
 
     const handleClose = () => setShowDialog(false);
 
-    const handlePlanTypeChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
-        const existingRecordIndex = selectedPlanTypes.findIndex((item) => item.id === id);
+    // const handlePlanTypeChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
+    //     const existingRecordIndex = selectedPlanTypes.findIndex((item) => item.id === id);
 
-        if (existingRecordIndex !== -1) {
-            const updatedSelectedPlanTypes = [...selectedPlanTypes];
-            updatedSelectedPlanTypes[existingRecordIndex] = { id, option: values };
-            setSelectedPlanTypes(updatedSelectedPlanTypes);
-        } else {
-            // If not exists, add a new record
-            setSelectedPlanTypes([...selectedPlanTypes, { id, option: values }]);
-        }
-        //Add update endpoint later
-    };
+    //     if (existingRecordIndex !== -1) {
+    //         const updatedSelectedPlanTypes = [...selectedPlanTypes];
+    //         updatedSelectedPlanTypes[existingRecordIndex] = { id, option: values };
+    //         setSelectedPlanTypes(updatedSelectedPlanTypes);
+    //     } else {
+    //         // If not exists, add a new record
+    //         setSelectedPlanTypes([...selectedPlanTypes, { id, option: values }]);
+    //     }
+    //     //Add update endpoint later
+    // };
 
-    const handleMunicipalityRoleChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
-        const existingRecordIndex = selectedMunicipalityRole.findIndex((item) => item.id === id);
+    // const handleMunicipalityRoleChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
+    //     const existingRecordIndex = selectedMunicipalityRole.findIndex((item) => item.id === id);
 
-        if (existingRecordIndex !== -1) {
-            const updatedMunicipality = [...selectedMunicipalityRole];
-            updatedMunicipality[existingRecordIndex] = { id, option: values };
-            setSelectedMunicipalityRole(updatedMunicipality);
-        } else {
-            // If not exists, add a new record
-            setSelectedMunicipalityRole([...selectedMunicipalityRole, { id, option: values }]);
-        }
-        //Add update endpoint later
-    };
+    //     if (existingRecordIndex !== -1) {
+    //         const updatedMunicipality = [...selectedMunicipalityRole];
+    //         updatedMunicipality[existingRecordIndex] = { id, option: values };
+    //         setSelectedMunicipalityRole(updatedMunicipality);
+    //     } else {
+    //         // If not exists, add a new record
+    //         setSelectedMunicipalityRole([...selectedMunicipalityRole, { id, option: values }]);
+    //     }
+    //     //Add update endpoint later
+    // };
 
-    const handleStatusChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
-        const existingRecordIndex = selectedPlanStatus.findIndex((item) => item.id === id);
+    // const handleStatusChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
+    //     const existingRecordIndex = selectedPlanStatus.findIndex((item) => item.id === id);
 
-        if (existingRecordIndex !== -1) {
-            const updatedPlanStatus = [...selectedPlanStatus];
-            updatedPlanStatus[existingRecordIndex] = { id, option: values };
-            setSelectedPlanStatus(updatedPlanStatus);
-        } else {
-            // If not exists, add a new record
-            setSelectedPlanStatus([...selectedPlanStatus, { id, option: values }]);
-        }
-        //Add update endpoint later
-    };
+    //     if (existingRecordIndex !== -1) {
+    //         const updatedPlanStatus = [...selectedPlanStatus];
+    //         updatedPlanStatus[existingRecordIndex] = { id, option: values };
+    //         setSelectedPlanStatus(updatedPlanStatus);
+    //     } else {
+    //         // If not exists, add a new record
+    //         setSelectedPlanStatus([...selectedPlanStatus, { id, option: values }]);
+    //     }
+    //     //Add update endpoint later
+    // };
 
     // const handleMunicipalityChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
     //     const existingRecordIndex = selectedMunicipality.findIndex((item) => item.id === id);
@@ -244,11 +244,10 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             field: "planType",
             headerName: t("projects.tableColumns.planType"),
             width: 500,
-            align: "center",
             valueOptions: planTypeOptions.map((pt) => pt.id),
             type: "singleSelect",
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                return <PlanTypeCell cellValues={cellValues} selectedPlanTypes={selectedPlanTypes} handlePlanTypeChange={handlePlanTypeChange} />;
+                return <PlanTypeCell cellValues={cellValues} />;
             },
             filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
             preProcessEditCellProps: createErrorReport,
@@ -266,13 +265,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             headerName: t("projects.tableColumns.municipalityRole"),
             width: 320,
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                return (
-                    <MunicipalityRoleCell
-                        cellValues={cellValues}
-                        selectedMunicipalityRole={selectedMunicipalityRole}
-                        handleMunicipalityRoleChange={handleMunicipalityRoleChange}
-                    />
-                );
+                return <MunicipalityRoleCell cellValues={cellValues} />;
             },
             preProcessEditCellProps: createErrorReport,
         },
@@ -305,10 +298,9 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             field: "planningPlanStatus",
             headerName: t("projects.tableColumns.planningPlanStatus"),
             width: 500,
-            align: "center",
             preProcessEditCellProps: createErrorReport,
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                return <PlanningPlanStatusCell cellValues={cellValues} selectedPlanStatus={selectedPlanStatus} handleStatusChange={handleStatusChange} />;
+                return <PlanningPlanStatusCell cellValues={cellValues} />;
             },
         },
         // {
