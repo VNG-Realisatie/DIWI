@@ -2,7 +2,7 @@ import { Stack, Typography, TextField } from "@mui/material";
 import { t } from "i18next";
 import { InputContainer } from "../InputContainer";
 import { LabelComponent } from "../../../project/LabelComponent";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type Props = {
     houseBlockNetPlan: number | null;
@@ -14,8 +14,12 @@ type NetPlanProps = {
     updateHouseBlockNetPlan: (houseBlockNetPlan: number) => void;
 };
 
-const NetPlanEditInput = ({ houseBlockNetPlan, updateHouseBlockNetPlan }: NetPlanProps) => {
-    const [stringValue, setStringValue] = useState<string>(String(houseBlockNetPlan));
+export const NetPlanEditInput = ({ houseBlockNetPlan, updateHouseBlockNetPlan }: NetPlanProps) => {
+    const [stringValue, setStringValue] = useState<string>("");
+
+    useEffect(() => {
+        setStringValue(String(houseBlockNetPlan));
+    }, [houseBlockNetPlan]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setStringValue(e.target.value);

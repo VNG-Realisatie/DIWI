@@ -91,7 +91,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                     {!createProjectForm.projectName && <Alert severity="warning">{t("createProject.hasMissingRequiredAreas.name")}</Alert>}
                 </Stack>
 
-                <ColorSelector selectedColor={createProjectForm} defaultColor="#FF5733" onColorChange={handleColorChange} />
+                <ColorSelector selectedColor={createProjectForm?.projectColor} defaultColor="#FF5733" onColorChange={handleColorChange} />
             </Stack>
             <Stack direction="row" alignItems="center" spacing={3} mt={2}>
                 <Stack flex={6}>

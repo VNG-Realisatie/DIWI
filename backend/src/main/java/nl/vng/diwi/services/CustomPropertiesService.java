@@ -30,14 +30,29 @@ public class CustomPropertiesService {
     }
 
     public CustomPropertyModel getCustomProperty(VngRepository repo, UUID customPropertyUuid) {
-        return repo.getCustomPropertiesDAO().getCustomProperyById(customPropertyUuid);
+        return repo.getCustomPropertiesDAO().getCustomPropertyById(customPropertyUuid);
     }
 
     public List<CustomPropertyModel> getAllCustomProperties(VngRepository repo, ObjectType objectType, Boolean disabled) {
-        return repo.getCustomPropertiesDAO().getCustomProperiesList(objectType, disabled);
+        return repo.getCustomPropertiesDAO().getCustomPropertiesList(objectType, disabled);
     }
 
-    public UUID createCustomProperty(VngRepository repo, CustomPropertyModel customPropertyModel, ZonedDateTime createTime, UUID loggedUserUuid) {
+    public boolean checkPropertyNameExists(VngRepository repo, String name, UUID currentPropertyUuid) {
+        List<CustomPropertyState> states = repo.getCustomPropertiesDAO().getActiveCustomPropertyStateByName(name);
+        for (CustomPropertyState s : states) {
+            if (!s.getCustomProperty().getId().equals(currentPropertyUuid)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public UUID createCustomProperty(VngRepository repo, CustomPropertyModel customPropertyModel, ZonedDateTime createTime, UUID loggedUserUuid)
+        throws VngBadRequestException {
+
+        if (checkPropertyNameExists(repo, customPropertyModel.getName(), null)) {
+            throw new VngBadRequestException("Custom property name already exists");
+        }
 
         CustomProperty customProperty = new CustomProperty();
         repo.persist(customProperty);
@@ -94,7 +109,9 @@ public class CustomPropertiesService {
             throw new VngNotFoundException("Custom property could not be found.");
         }
 
-        //TODO: check uniqueness of name + propertyType + objectType ??
+        if (checkPropertyNameExists(repo, customPropertyModel.getName(), customProperty.getId())) {
+            throw new VngBadRequestException("Custom property name already exists");
+        }
 
         List<CustomPropertyState> statesList = customProperty.getStates();
         statesList.sort(Comparator.comparing(CustomPropertyState::getChangeStartDate).reversed());
