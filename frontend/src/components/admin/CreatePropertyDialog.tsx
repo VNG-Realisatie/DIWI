@@ -98,7 +98,7 @@ export const CreatePropertyDialog = ({
                         {propertyType.map((property) => {
                             return (
                                 <MenuItem key={property} value={property}>
-                                    {property}
+                                    {t(`admin.settings.propertyType.${property}`)}
                                 </MenuItem>
                             );
                         })}
