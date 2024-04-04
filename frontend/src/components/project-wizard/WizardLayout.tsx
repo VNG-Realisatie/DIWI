@@ -3,12 +3,15 @@ import { t } from "i18next";
 
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
+import RadioButtonChecked from "@mui/icons-material/RadioButtonChecked";
 
 const CustomStepIcon: React.FC<CustomStepIconProps> = ({ active, completed }) => {
     if (completed) {
         return <CheckCircleIcon color="primary" />;
+    } else if (active) {
+        return <RadioButtonChecked color="primary" />;
     } else {
-        return <RadioButtonUncheckedIcon color={active ? "primary" : "disabled"} />;
+        return <RadioButtonUncheckedIcon color="disabled" />;
     }
 };
 
