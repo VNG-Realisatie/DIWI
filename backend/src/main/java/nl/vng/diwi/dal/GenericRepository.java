@@ -28,6 +28,7 @@ public class GenericRepository implements AutoCloseable {
                 CustomProperty.class,
                 CustomPropertyState.class,
                 Houseblock.class,
+                HouseblockState.class,
                 HouseblockAppearanceAndTypeChangelog.class,
                 HouseblockPhysicalAppearanceChangelogValue.class,
                 HouseblockHouseTypeChangelogValue.class,

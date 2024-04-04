@@ -83,6 +83,7 @@ FROM (
                      w.id, w.project_id, sms.date AS startDate, ems.date AS endDate
                  FROM
                      diwi_testset.woningblok w
+                         JOIN diwi_testset.woningblok_state ws ON ws.woningblok_id = w.id AND ws.change_end_date IS NULL
                          JOIN diwi_testset.woningblok_duration_changelog wdc ON wdc.woningblok_id = w.id AND wdc.change_end_date IS NULL
                          JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wdc.start_milestone_id AND sms.change_end_date IS NULL
                          JOIN diwi_testset.milestone_state ems ON ems.milestone_id = wdc.end_milestone_id AND ems.change_end_date IS NULL
@@ -234,6 +235,7 @@ FROM (
                      w.id, w.project_id, sms.date AS startDate, sms.milestone_id AS start_milestone_id, ems.date AS endDate
                  FROM
                      diwi_testset.woningblok w
+                         JOIN diwi_testset.woningblok_state ws ON ws.woningblok_id = w.id AND ws.change_end_date IS NULL
                          JOIN diwi_testset.woningblok_duration_changelog wdc ON wdc.woningblok_id = w.id AND wdc.change_end_date IS NULL
                          JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wdc.start_milestone_id AND sms.change_end_date IS NULL
                          JOIN diwi_testset.milestone_state ems ON ems.milestone_id = wdc.end_milestone_id AND ems.change_end_date IS NULL
@@ -369,6 +371,7 @@ FROM (
                      w.id, w.project_id, sms.date AS startDate, ems.date AS endDate, ems.milestone_id AS end_milestone_id
                  FROM
                      diwi_testset.woningblok w
+                         JOIN diwi_testset.woningblok_state ws ON ws.woningblok_id = w.id AND ws.change_end_date IS NULL
                          JOIN diwi_testset.woningblok_duration_changelog wdc ON wdc.woningblok_id = w.id AND wdc.change_end_date IS NULL
                          JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wdc.start_milestone_id AND sms.change_end_date IS NULL
                          JOIN diwi_testset.milestone_state ems ON ems.milestone_id = wdc.end_milestone_id AND ems.change_end_date IS NULL

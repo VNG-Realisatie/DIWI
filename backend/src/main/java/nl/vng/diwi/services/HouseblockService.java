@@ -6,6 +6,7 @@ import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.CustomCategoryValue;
 import nl.vng.diwi.dal.entities.CustomOrdinalValue;
 import nl.vng.diwi.dal.entities.CustomProperty;
+import nl.vng.diwi.dal.entities.HouseblockState;
 import nl.vng.diwi.dal.entities.Houseblock;
 import nl.vng.diwi.dal.entities.HouseblockAppearanceAndTypeChangelog;
 import nl.vng.diwi.dal.entities.HouseblockBooleanCustomPropertyChangelog;
@@ -104,6 +105,26 @@ public class HouseblockService {
         return sqlHouseblocks.stream().map(HouseblockSnapshotModel::new).toList();
     }
 
+    public void deleteHouseblock(VngRepository repo, UUID houseblockUuid, UUID loggedInUserUuid) throws VngNotFoundException {
+        var now = ZonedDateTime.now();
+        var user = repo.findById(User.class, loggedInUserUuid);
+
+        var houseblock = repo.getHouseblockDAO().getCurrentHouseblock(houseblockUuid);
+
+        if (houseblock == null) {
+            logger.error("Houseblock with uuid {} was not found.", houseblockUuid);
+            throw new VngNotFoundException();
+        }
+
+        houseblock.getState().stream()
+            .filter(cl -> cl.getChangeEndDate() == null)
+            .forEach(cl -> {
+                cl.setChangeEndDate(now);
+                cl.setChangeUser(user);
+                repo.persist(cl);
+            });
+    }
+
     public Houseblock createHouseblock(VngRepository repo, HouseblockSnapshotModel houseblockSnapshotModel, Milestone startMilestone, Milestone endMilestone,
                                        UUID loggedUserUuid, ZonedDateTime now) {
 
@@ -112,6 +133,12 @@ public class HouseblockService {
         repo.persist(houseblock);
 
         User user = repo.getReferenceById(User.class, loggedUserUuid);
+
+        HouseblockState houseblockState = new HouseblockState();
+        houseblockState.setHouseblock(houseblock);
+        houseblockState.setCreateUser(user);
+        houseblockState.setChangeStartDate(now);
+        repo.persist(houseblockState);
 
         Consumer<MilestoneChangeDataSuperclass> setChangelogValues = (MilestoneChangeDataSuperclass entity) -> {
             entity.setStartMilestone(startMilestone);
@@ -832,6 +859,11 @@ public class HouseblockService {
         if (houseblock.getDuration().size() != 1) {
             logger.error("Houseblock with uuid {} has {} duration changelog values", houseblockId, houseblock.getDuration().size());
             throw new VngServerErrorException("Houseblock duration changelog is invalid.");
+        }
+
+        if (houseblock.getState().size() != 1) {
+            logger.error("Houseblock with uuid {} has {} state values", houseblockId, houseblock.getState().size());
+            throw new VngServerErrorException("Houseblock state is invalid.");
         }
 
         MilestoneModel houseblockStartMilestone = new MilestoneModel(houseblock.getDuration().get(0).getStartMilestone());
