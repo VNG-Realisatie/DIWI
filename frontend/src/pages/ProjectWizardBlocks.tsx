@@ -5,8 +5,8 @@ import { projectWizardMap, projectWizardWithId } from "../Paths";
 import WizardLayout from "../components/project-wizard/WizardLayout";
 import { HouseBlocksForm } from "../components/HouseBlocksForm";
 import useAlert from "../hooks/useAlert";
-import { useTranslation } from "react-i18next";
 import HouseBlockContext from "../context/HouseBlockContext";
+import { t } from "i18next";
 
 const ProjectWizardBlocks = () => {
     const { houseBlocks, addHouseBlock, getEmptyHouseBlock, updateHouseBlock } = useContext(HouseBlockContext);
@@ -14,7 +14,6 @@ const ProjectWizardBlocks = () => {
     const { projectId } = useParams();
     const navigate = useNavigate();
     const { setAlert } = useAlert();
-    const { t } = useTranslation();
 
     const handleNext = async () => {
         if (
@@ -61,8 +60,10 @@ const ProjectWizardBlocks = () => {
         }
     }, [houseBlock.houseblockName, houseBlocks, setHouseBlock]);
 
+    const infoText = t("createProject.houseBlocksForm.info");
+
     return (
-        <WizardLayout {...{ handleBack, handleNext, handleSave, projectId, activeStep: 1 }}>
+        <WizardLayout {...{ infoText, warning: undefined, handleBack, handleNext, handleSave, projectId, activeStep: 1 }}>
             <HouseBlocksForm readOnly={false} houseBlock={houseBlock} setHouseBlock={setHouseBlock} />
         </WizardLayout>
     );
