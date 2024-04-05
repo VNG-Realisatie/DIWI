@@ -102,21 +102,20 @@ const usePlotSelector = (id: string) => {
             fetch(url)
                 .then((res) => res.json())
                 .then((result): void => {
-                    const geojson = result as PlotGeoJSON;
-                    const properties = geojson.features[0].properties;
+                    const plotFeature = result as PlotGeoJSON;
+                    const properties = plotFeature.features[0].properties;
                     const newPlot: Plot = {
                         brkGemeenteCode: properties.kadastraleGemeenteCode,
                         brkPerceelNummer: parseInt(properties.perceelnummer),
                         brkSectie: properties.sectie,
-                        brkSelectie: "TBD", // TODO what to put here?
-                        geoJson: geojson,
+                        plotFeature: plotFeature,
                     };
                     const newSelectedPlots = selectedPlots.filter((p) => {
                         const notEqual =
                             p.brkGemeenteCode !== newPlot.brkGemeenteCode ||
                             p.brkPerceelNummer !== newPlot.brkPerceelNummer ||
                             p.brkSectie !== newPlot.brkSectie ||
-                            p.brkSelectie !== newPlot.brkSelectie;
+                            p.plotFeature !== newPlot.plotFeature;
                         return notEqual;
                     });
                     if (newSelectedPlots.length !== selectedPlots.length) {
@@ -137,7 +136,7 @@ const usePlotSelector = (id: string) => {
             setPlotsChanged(changed);
             selectedPlotLayerSource.clear();
             for (const selectedPlot of selectedPlots) {
-                const geojson = new GeoJSON().readFeatures(selectedPlot.geoJson);
+                const geojson = new GeoJSON().readFeatures(selectedPlot.plotFeature);
                 selectedPlotLayerSource.addFeatures(geojson);
             }
 
