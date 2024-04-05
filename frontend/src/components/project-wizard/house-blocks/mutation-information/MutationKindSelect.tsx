@@ -8,8 +8,7 @@ import { LabelComponent } from "../../../project/LabelComponent";
 type Props = {
     houseBlockMutationKind: MutationSelectOptions[] | null;
     updateHouseBlockMutationKind: (event: SelectChangeEvent<MutationSelectOptions[]>) => void;
-    edit: boolean;
-    editForm: boolean;
+    readOnly: boolean;
 };
 type MutationKindProps = {
     houseBlockMutationKind: MutationSelectOptions[] | null;
@@ -39,21 +38,18 @@ const MutationKindEditOption = ({ houseBlockMutationKind, updateHouseBlockMutati
     );
 };
 
-export const MutationKindSelect = ({ houseBlockMutationKind, updateHouseBlockMutationKind, edit, editForm }: Props) => {
+export const MutationKindSelect = ({ houseBlockMutationKind, updateHouseBlockMutationKind, readOnly }: Props) => {
     return (
         <Stack>
             <LabelComponent required={false} text={t("createProject.houseBlocksForm.mutationType")} />
 
-            {edit && editForm && (
+            {!readOnly && (
                 <MutationKindEditOption houseBlockMutationKind={houseBlockMutationKind} updateHouseBlockMutationKind={updateHouseBlockMutationKind} />
             )}
-            {!edit && editForm && (
+            {readOnly && (
                 <InputContainer>
                     <Typography minHeight="20px">{houseBlockMutationKind?.join(",")}</Typography>
                 </InputContainer>
-            )}
-            {!edit && !editForm && (
-                <MutationKindEditOption houseBlockMutationKind={houseBlockMutationKind} updateHouseBlockMutationKind={updateHouseBlockMutationKind} />
             )}
         </Stack>
     );

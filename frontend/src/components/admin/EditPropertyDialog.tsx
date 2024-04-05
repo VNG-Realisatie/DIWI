@@ -111,7 +111,7 @@ export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomPro
                         {propertyType.map((property) => {
                             return (
                                 <MenuItem key={property} value={property}>
-                                    {property}
+                                    {t(`admin.settings.propertyType.${property}`)}
                                 </MenuItem>
                             );
                         })}

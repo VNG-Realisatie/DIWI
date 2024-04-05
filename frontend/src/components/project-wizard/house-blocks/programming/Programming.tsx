@@ -5,13 +5,12 @@ import { HouseBlock } from "../types";
 import { ChangeEvent } from "react";
 
 export type ProgrammingProps = {
-    projectForm: HouseBlock;
-    setProjectForm(project: HouseBlock): void;
-    edit: boolean;
-    editForm: boolean;
+    houseBlock: HouseBlock;
+    setHouseBlock(houseBlock: HouseBlock): void;
+    readOnly: boolean;
 };
 
-export const Programming = ({ projectForm, setProjectForm, edit, editForm }: ProgrammingProps) => {
+export const Programming = ({ houseBlock, setHouseBlock, readOnly }: ProgrammingProps) => {
     const translationPath = "createProject.houseBlocksForm.programming";
     return (
         <WizardCard>
@@ -19,11 +18,11 @@ export const Programming = ({ projectForm, setProjectForm, edit, editForm }: Pro
                 {t(`${translationPath}.title`)}
             </Typography>
             <Stack direction="row" alignItems="center" my={1}>
-                <FormControl disabled={!edit && editForm}>
+                <FormControl disabled={readOnly}>
                     <RadioGroup
                         name="programming"
-                        value={projectForm?.programming !== null ? (projectForm?.programming === true ? "yes" : "no") : null}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => setProjectForm({ ...projectForm, programming: e.target.value === "yes" })}
+                        value={houseBlock?.programming !== null ? (houseBlock?.programming === true ? "yes" : "no") : null}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => setHouseBlock({ ...houseBlock, programming: e.target.value === "yes" })}
                     >
                         <FormControlLabel value="yes" control={<Radio />} label={t("generic.yes")} />
                         <FormControlLabel value="no" control={<Radio />} label={t("generic.no")} />

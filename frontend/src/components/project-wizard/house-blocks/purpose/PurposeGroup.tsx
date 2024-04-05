@@ -5,13 +5,12 @@ import { HouseBlock } from "../types";
 import { SingleNumberInput } from "../physical-appearence/SingleNumberInput";
 
 export type PurposeInformationProps = {
-    projectForm: HouseBlock;
-    setProjectForm(project: HouseBlock): void;
-    edit: boolean;
-    editForm: boolean;
+    houseBlock: HouseBlock;
+    setHouseBlock(houseBlock: HouseBlock): void;
+    readOnly: boolean;
 };
 
-export const PurposeGroup = ({ projectForm, setProjectForm, edit, editForm }: PurposeInformationProps) => {
+export const PurposeGroup = ({ houseBlock, setHouseBlock, readOnly }: PurposeInformationProps) => {
     const translationPath = "createProject.houseBlocksForm.purpose";
     return (
         <WizardCard>
@@ -27,104 +26,98 @@ export const PurposeGroup = ({ projectForm, setProjectForm, edit, editForm }: Pu
                 </Typography>
             </Stack>
             <SingleNumberInput
-                property={projectForm?.purpose.regular}
+                property={houseBlock?.purpose.regular}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         purpose: {
-                            ...projectForm.purpose,
+                            ...houseBlock.purpose,
                             regular: e,
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="regular"
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.purpose.youth}
+                property={houseBlock?.purpose.youth}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         purpose: {
-                            ...projectForm.purpose,
+                            ...houseBlock.purpose,
                             youth: e,
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="youth"
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.purpose.student}
+                property={houseBlock?.purpose.student}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         purpose: {
-                            ...projectForm.purpose,
+                            ...houseBlock.purpose,
                             student: e,
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="student"
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.purpose.elderly}
+                property={houseBlock?.purpose.elderly}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         purpose: {
-                            ...projectForm.purpose,
+                            ...houseBlock.purpose,
                             elderly: e,
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="elderly"
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.purpose.largeFamilies}
+                property={houseBlock?.purpose.largeFamilies}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         purpose: {
-                            ...projectForm.purpose,
+                            ...houseBlock.purpose,
                             largeFamilies: e,
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="largeFamilies"
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={projectForm?.purpose.ghz}
+                property={houseBlock?.purpose.ghz}
                 update={(e) =>
-                    projectForm &&
-                    setProjectForm({
-                        ...projectForm,
+                    houseBlock &&
+                    setHouseBlock({
+                        ...houseBlock,
                         purpose: {
-                            ...projectForm.purpose,
+                            ...houseBlock.purpose,
                             ghz: e,
                         },
                     })
                 }
-                edit={edit}
-                editForm={editForm}
+                readOnly={readOnly}
                 value="ghz"
                 translationPath={translationPath}
             />

@@ -12,8 +12,7 @@ type Props = {
     index: number;
     handleInputChange: (index: number, value: OwnershipSingleValue) => void;
     handleRemoveRow: (index: number) => void;
-    edit: boolean;
-    editForm: boolean;
+    readOnly: boolean;
 };
 type OwnershipProps = {
     ownership: OwnershipSingleValue;
@@ -58,32 +57,30 @@ const OwnershipAmountInput = ({ handleInputChange, ownership, index }: Ownership
     );
 };
 
-export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handleRemoveRow, edit, editForm }: Props) => {
+export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handleRemoveRow, readOnly }: Props) => {
     return (
         <Grid container spacing={2} mt={1}>
             <Grid item xs={4}>
-                {edit && editForm && <OwnershipTypeOption index={index} handleInputChange={handleInputChange} ownership={ownership} />}
-                {!edit && editForm && (
+                {!readOnly && <OwnershipTypeOption index={index} handleInputChange={handleInputChange} ownership={ownership} />}
+                {readOnly && (
                     <InputContainer>
                         <Typography>{ownership?.type}</Typography>
                     </InputContainer>
                 )}
-                {!edit && !editForm && <OwnershipTypeOption index={index} handleInputChange={handleInputChange} ownership={ownership} />}
             </Grid>
             <Grid item xs={2}>
-                {edit && editForm && <OwnershipAmountInput index={index} handleInputChange={handleInputChange} ownership={ownership} />}
-                {!edit && editForm && (
+                {!readOnly && <OwnershipAmountInput index={index} handleInputChange={handleInputChange} ownership={ownership} />}
+                {readOnly && (
                     <InputContainer>
                         <Typography>{ownership?.amount}</Typography>
                     </InputContainer>
                 )}
-                {!edit && !editForm && <OwnershipAmountInput index={index} handleInputChange={handleInputChange} ownership={ownership} />}
             </Grid>
             <Grid item xs={2}>
-                {edit && editForm && (
+                {!readOnly && (
                     <NumericRangeInput value={ownership.value} labelText="Value" updateCallBack={(e) => handleInputChange(index, { ...ownership, value: e })} />
                 )}
-                {!edit && editForm && (
+                {readOnly && (
                     <InputContainer>
                         <Typography>
                             {ownership?.value.value !== null
@@ -94,19 +91,16 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                         </Typography>
                     </InputContainer>
                 )}
-                {!edit && !editForm && (
-                    <NumericRangeInput value={ownership.value} labelText="Value" updateCallBack={(e) => handleInputChange(index, { ...ownership, value: e })} />
-                )}
             </Grid>
             <Grid item xs={2}>
-                {edit && editForm && (
+                {!readOnly && (
                     <NumericRangeInput
                         value={ownership.rentalValue}
                         labelText="RentalValue"
                         updateCallBack={(e) => handleInputChange(index, { ...ownership, rentalValue: e })}
                     />
                 )}
-                {!edit && editForm && (
+                {readOnly && (
                     <InputContainer>
                         <Typography>
                             {ownership?.rentalValue.value !== null
@@ -117,16 +111,9 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                         </Typography>
                     </InputContainer>
                 )}
-                {!edit && !editForm && (
-                    <NumericRangeInput
-                        value={ownership.rentalValue}
-                        labelText="RentalValue"
-                        updateCallBack={(e) => handleInputChange(index, { ...ownership, rentalValue: e })}
-                    />
-                )}
             </Grid>
             <Grid item xs={1}>
-                {((edit && editForm) || (!edit && !editForm)) && (
+                {!readOnly && (
                     <IconButton onClick={() => handleRemoveRow(index)}>
                         <DeleteIcon sx={{ color: "red" }} />
                     </IconButton>

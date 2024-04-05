@@ -331,7 +331,7 @@ public class ProjectsResource {
     @Path("/update")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public ProjectSnapshotModel updateProject(@Context LoggedUser loggedUser, ProjectSnapshotModel projectSnapshotModelToUpdate)
+    public ProjectSnapshotModel updateProjectSnapshot(@Context LoggedUser loggedUser, ProjectSnapshotModel projectSnapshotModelToUpdate)
             throws VngNotFoundException, VngBadRequestException, VngServerErrorException {
 
         UUID projectUuid = projectSnapshotModelToUpdate.getProjectId();

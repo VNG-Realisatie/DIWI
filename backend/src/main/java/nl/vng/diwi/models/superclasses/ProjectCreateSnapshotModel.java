@@ -1,7 +1,5 @@
 package nl.vng.diwi.models.superclasses;
 
-import java.time.LocalDate;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -33,8 +31,8 @@ public class ProjectCreateSnapshotModel extends DatedDataModelSuperClass {
             return "startDate can not be null";
         } else if (getEndDate() == null) {
             return "endDate can not be null";
-        } else if (!getEndDate().isAfter(LocalDate.now())) {
-            return "endDate must be in the future";
+        } else if (!getEndDate().isAfter(getStartDate())) {
+            return "endDate must be after startDate";
         } else if (projectName == null) {
             return "projectName can not be null";
         } else if (projectColor == null) {

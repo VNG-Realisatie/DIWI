@@ -1,4 +1,4 @@
-import { Stack, SxProps, Theme, Typography } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CustomPropertyType, getCustomPropertiesWithQuery } from "../../../../api/adminSettingServices";
@@ -8,13 +8,12 @@ import { CustomPropertyValue } from "../../../../api/customPropServices";
 import { CustomPropertyWidget } from "../../../CustomPropertyWidget";
 
 type Props = {
-    projectEditable: boolean;
-    customValues: CustomPropertyValue[];
-    setCustomValues: (updatedValues: CustomPropertyValue[]) => void;
-    columnTitleStyle: SxProps<Theme> | undefined;
+    readOnly: boolean;
+    customPropertyValues: CustomPropertyValue[];
+    setCustomPropertyValues: (updatedValues: CustomPropertyValue[]) => void;
 };
 
-export const CustomPropertiesGroup = ({ projectEditable, customValues, setCustomValues, columnTitleStyle }: Props) => {
+export const CustomPropertiesGroup = ({ readOnly, customPropertyValues, setCustomPropertyValues }: Props) => {
     const [customDefinitions, setCustomDefinitions] = useState<CustomPropertyType[]>([]);
 
     const { t } = useTranslation();
@@ -26,8 +25,8 @@ export const CustomPropertiesGroup = ({ projectEditable, customValues, setCustom
     }, []);
 
     const setCustomValue = (newValue: CustomPropertyValue) => {
-        const newCustomValues = customValues.filter((val) => val.customPropertyId !== newValue.customPropertyId);
-        setCustomValues([...newCustomValues, newValue]);
+        const newCustomValues = customPropertyValues.filter((val) => val.customPropertyId !== newValue.customPropertyId);
+        setCustomPropertyValues([...newCustomValues, newValue]);
     };
 
     return (
@@ -38,13 +37,13 @@ export const CustomPropertiesGroup = ({ projectEditable, customValues, setCustom
             {customDefinitions
                 .filter((p) => !p.disabled)
                 .map((property) => {
-                    const customValue = customValues?.find((cv) => cv.customPropertyId === property.id);
+                    const customValue = customPropertyValues?.find((cv) => cv.customPropertyId === property.id);
 
                     return (
                         <Stack width="100%">
                             <LabelComponent required text={property.name} />{" "}
                             <CustomPropertyWidget
-                                projectEditable={projectEditable}
+                                readOnly={readOnly}
                                 customValue={customValue}
                                 setCustomValue={(newValue) => {
                                     setCustomValue({ ...newValue, customPropertyId: property.id });

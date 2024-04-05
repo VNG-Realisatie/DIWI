@@ -5,8 +5,7 @@ import { LabelComponent } from "../../../project/LabelComponent";
 type Props = {
     houseblockName: string;
     upDateHouseBlockName: (name: string) => void;
-    edit: boolean;
-    editForm: boolean;
+    readOnly: boolean;
 };
 type NameInputProps = {
     houseblockName: string;
@@ -27,17 +26,16 @@ const NameEditInput = ({ houseblockName, upDateHouseBlockName }: NameInputProps)
         />
     );
 };
-export const NameInput = ({ houseblockName, upDateHouseBlockName, edit, editForm }: Props) => {
+export const NameInput = ({ houseblockName, upDateHouseBlockName, readOnly }: Props) => {
     return (
         <Stack width="100%">
             <LabelComponent required text={t("createProject.houseBlocksForm.nameLabel")} />
-            {edit && editForm && <NameEditInput houseblockName={houseblockName} upDateHouseBlockName={upDateHouseBlockName} />}
-            {!edit && editForm && (
+            {!readOnly && <NameEditInput houseblockName={houseblockName} upDateHouseBlockName={upDateHouseBlockName} />}
+            {readOnly && (
                 <InputContainer>
                     <Typography>{houseblockName ? houseblockName : ""}</Typography>
                 </InputContainer>
             )}
-            {!edit && !editForm && <NameEditInput houseblockName={houseblockName} upDateHouseBlockName={upDateHouseBlockName} />}
         </Stack>
     );
 };
