@@ -45,7 +45,7 @@ export const ProjectDetail = ({ children }: PropsWithChildren) => {
                 links={[
                     { title: t("projectDetail.map"), link: Paths.projectDetail.toPath({ ":projectId": projectId || "" }) },
                     { title: t("projectDetail.characteristics"), link: Paths.projectDetailCharacteristics.toPath({ ":projectId": projectId || "" }) },
-                    // { title: t("projectDetail.timeline"), link: Paths.projectDetailTimeline.path.replace(":id", id ?? "1") },
+                    // { title: t("projectDetail.timeline"), link: Paths.projectDetailTimeline..toPath({ ":projectId": projectId || "" }) },
                 ]}
             />
             <Stack
