@@ -39,6 +39,7 @@ export const HouseBlocksFormWithControls = ({ houseBlock, setHouseBlock }: Props
                     {houseBlock.houseblockId && (
                         <DeleteButtonWithConfirm
                             typeAndName={`${t("generic.houseblock")} ${houseBlock.houseblockName}`}
+                            iconColor={"red"}
                             deleteFunction={() => deleteHouseBlock(houseBlock.houseblockId ?? null)}
                             afterDelete={refresh}
                         />

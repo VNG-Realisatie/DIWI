@@ -62,6 +62,7 @@ export const ProjectDetail = ({ children }: PropsWithChildren) => {
                 {selectedProject && (
                     <DeleteButtonWithConfirm
                         typeAndName={`${t("generic.project")} ${selectedProject.projectName}`}
+                        iconColor={"#FFFFFF"}
                         deleteFunction={() => deleteProject(projectId ?? null)}
                         afterDelete={() => navigate("/projects/table")}
                     />

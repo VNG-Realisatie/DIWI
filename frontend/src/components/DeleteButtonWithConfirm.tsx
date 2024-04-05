@@ -3,14 +3,16 @@ import { t } from "i18next";
 import { Box, Button, Dialog, DialogActions, DialogTitle, Tooltip } from "@mui/material";
 import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
 import useAlert from "../hooks/useAlert";
+import { Color } from "react-color";
 
 type DeleteButtonWithConfirmProps = {
     typeAndName: string;
+    iconColor: Color;
     deleteFunction: () => Promise<any>;
     afterDelete?: () => void;
 };
 
-export const DeleteButtonWithConfirm = ({ typeAndName: name, deleteFunction, afterDelete }: DeleteButtonWithConfirmProps) => {
+export const DeleteButtonWithConfirm = ({ typeAndName: name, iconColor, deleteFunction, afterDelete }: DeleteButtonWithConfirmProps) => {
     const { setAlert } = useAlert();
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
@@ -30,7 +32,7 @@ export const DeleteButtonWithConfirm = ({ typeAndName: name, deleteFunction, aft
         <>
             <Tooltip placement="top" title={t("generic.delete")}>
                 <DeleteForeverOutlinedIcon
-                    sx={{ ml: 3, color: "#FFFFFF", cursor: "pointer" }}
+                    sx={{ ml: 3, color: iconColor.toString(), cursor: "pointer" }}
                     onClick={() => {
                         setIsDialogOpen(!isDialogOpen);
                     }}
