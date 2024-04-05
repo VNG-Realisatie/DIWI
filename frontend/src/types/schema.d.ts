@@ -34,6 +34,9 @@ export interface paths {
     "/rest/houseblock/add": {
         post: operations["createHouseblock"];
     };
+    "/rest/houseblock/{id}": {
+        delete: operations["deleteHouseblock"];
+    };
     "/rest/houseblock/{uuid}": {
         get: operations["getCurrentHouseblockSnapshot"];
     };
@@ -86,11 +89,11 @@ export interface paths {
         get: operations["getProjectPlots"];
         post: operations["setProjectPlots"];
     };
-    "/rest/projects/update": {
+    "/rest/projects/{id}/update": {
         post: operations["updateProject"];
     };
-    "/rest/projects/{id}/update": {
-        post: operations["updateProject_1"];
+    "/rest/projects/update": {
+        post: operations["updateProjectSnapshot"];
     };
     "/rest/users/userinfo": {
         get: operations["login_1"];
@@ -690,6 +693,21 @@ export interface operations {
             };
         };
     };
+    deleteHouseblock: {
+        parameters: {
+            path: {
+                id: string;
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "*/*": unknown;
+                };
+            };
+        };
+    };
     getCurrentHouseblockSnapshot: {
         parameters: {
             path: {
@@ -1000,9 +1018,14 @@ export interface operations {
         };
     };
     updateProject: {
+        parameters: {
+            path: {
+                id: string;
+            };
+        };
         requestBody?: {
             content: {
-                "application/json": components["schemas"]["ProjectSnapshotModel"];
+                "application/json": components["schemas"]["ProjectUpdateModel"];
             };
         };
         responses: {
@@ -1014,15 +1037,10 @@ export interface operations {
             };
         };
     };
-    updateProject_1: {
-        parameters: {
-            path: {
-                id: string;
-            };
-        };
+    updateProjectSnapshot: {
         requestBody?: {
             content: {
-                "application/json": components["schemas"]["ProjectUpdateModel"];
+                "application/json": components["schemas"]["ProjectSnapshotModel"];
             };
         };
         responses: {

@@ -279,6 +279,30 @@
         }
       }
     },
+    "/rest/houseblock/{id}": {
+      "delete": {
+        "operationId": "deleteHouseblock",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "*/*": {}
+            }
+          }
+        }
+      }
+    },
     "/rest/houseblock/{uuid}": {
       "get": {
         "operationId": "getCurrentHouseblockSnapshot",
@@ -936,14 +960,25 @@
         }
       }
     },
-    "/rest/projects/update": {
+    "/rest/projects/{id}/update": {
       "post": {
         "operationId": "updateProject",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ProjectSnapshotModel"
+                "$ref": "#/components/schemas/ProjectUpdateModel"
               }
             }
           }
@@ -962,25 +997,14 @@
         }
       }
     },
-    "/rest/projects/{id}/update": {
+    "/rest/projects/update": {
       "post": {
-        "operationId": "updateProject_1",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
+        "operationId": "updateProjectSnapshot",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ProjectUpdateModel"
+                "$ref": "#/components/schemas/ProjectSnapshotModel"
               }
             }
           }
