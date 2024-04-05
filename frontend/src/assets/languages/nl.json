@@ -8,7 +8,7 @@
       "next": "Volgende",
       "previous": "Vorig",
       "cancelChanges": "Stop veranderingen",
-      "saveChanges": "Opslaan veranderingen",
+      "saveChanges": "Veranderingen opslaan",
       "edit": "Bewerken",
       "confirmDeletion": "Weet u zeker dat u {{name}} wilt verwijderen?",
       "projectDeletion": "Project {{name}} is verwijderd",
@@ -29,6 +29,7 @@
       "nameIsRequried": "Vul het veld projectnaam in",
       "informationForm": {
         "title": "Vul de projectgegevens in",
+        "info": "Vul de projectgegevens in",
         "nameLabel": "Projectnaam en projectkleur",
         "planType": "Plan Type",
         "startDate": "Start Datum",
@@ -44,6 +45,7 @@
       },
       "houseBlocksForm": {
         "title": "Vul de woningblokken in",
+        "info": "Vul de woningblok informatie in",
         "nameLabel": "Naam",
         "startDate": "Start Datum",
         "endDate": "Eind Datum",
@@ -130,6 +132,8 @@
       },
       "selectMapForm": {
         "title": "Teken het project in op de kaart",
+        "info": "Selecteer de percelen of delen van percelen voor het project in op de kaart",
+        "warning": "Er zijn geen percelen geselecteerd, dit project zal niet zichtbaar zijn op de overzichtskaart",
         "municipality": "Gemeente",
         "neighbourhood": "Wijk",
         "district": "Buurt"

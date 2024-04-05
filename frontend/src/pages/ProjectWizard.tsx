@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useAlert from "../hooks/useAlert";
-import { useTranslation } from "react-i18next";
 import { createProject, getProject, updateProject } from "../api/projectsServices";
 import dayjs from "dayjs";
 import WizardLayout from "../components/project-wizard/WizardLayout";
 import { ProjectInformationForm } from "../components/project/ProjectInformationForm";
 import { projectWizardBlocks } from "../Paths";
+import { t } from "i18next";
 
 const ProjectWizard = () => {
     const [createProjectForm, setCreateProjectForm] = useState<any>({
@@ -18,7 +18,6 @@ const ProjectWizard = () => {
     });
     const { projectId } = useParams();
     const navigate = useNavigate();
-    const { t } = useTranslation();
     const { setAlert } = useAlert();
 
     const handleSave = async () => {
@@ -71,8 +70,11 @@ const ProjectWizard = () => {
             getProject(projectId).then((res: any) => setCreateProjectForm({ ...res, startDate: dayjs(res.startDate), endDate: dayjs(res.endDate) }));
         }
     }, [projectId]);
+
+    const infoText = t("createProject.informationForm.info");
+
     return (
-        <WizardLayout {...{ handleNext, handleSave, projectId, activeStep: 0 }}>
+        <WizardLayout {...{ infoText, handleNext, handleSave, projectId, activeStep: 0 }}>
             <ProjectInformationForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />
         </WizardLayout>
     );
