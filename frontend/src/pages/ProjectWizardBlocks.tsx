@@ -63,7 +63,7 @@ const ProjectWizardBlocks = () => {
     const infoText = t("createProject.houseBlocksForm.info");
 
     return (
-        <WizardLayout {...{ infoText, warning: undefined, handleBack, handleNext, handleSave, projectId, activeStep: 1 }}>
+        <WizardLayout {...{ infoText, handleBack, handleNext, handleSave, projectId, activeStep: 1 }}>
             <HouseBlocksForm readOnly={false} houseBlock={houseBlock} setHouseBlock={setHouseBlock} />
         </WizardLayout>
     );

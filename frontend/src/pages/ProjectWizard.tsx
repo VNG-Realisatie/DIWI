@@ -74,7 +74,7 @@ const ProjectWizard = () => {
     const infoText = t("createProject.informationForm.info");
 
     return (
-        <WizardLayout {...{ infoText, warning: undefined, handleNext, handleSave, projectId, activeStep: 0 }}>
+        <WizardLayout {...{ infoText, handleNext, handleSave, projectId, activeStep: 0 }}>
             <ProjectInformationForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />
         </WizardLayout>
     );
