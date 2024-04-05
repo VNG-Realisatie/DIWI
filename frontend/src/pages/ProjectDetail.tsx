@@ -43,8 +43,8 @@ export const ProjectDetail = ({ children }: PropsWithChildren) => {
             <BreadcrumbBar
                 pageTitle={t("projectDetail.title")}
                 links={[
-                    { title: t("projectDetail.map"), link: Paths.projectDetail.toPath({ ":projectId": projectId || "" }) },
-                    { title: t("projectDetail.characteristics"), link: Paths.projectDetailCharacteristics.toPath({ ":projectId": projectId || "" }) },
+                    { title: t("projectDetail.map"), link: Paths.projectDetail.toPath({ projectId: projectId || "" }) },
+                    { title: t("projectDetail.characteristics"), link: Paths.projectDetailCharacteristics.toPath({ projectId: projectId || "" }) },
                     // { title: t("projectDetail.timeline"), link: Paths.projectDetailTimeline..toPath({ ":projectId": projectId || "" }) },
                 ]}
             />
