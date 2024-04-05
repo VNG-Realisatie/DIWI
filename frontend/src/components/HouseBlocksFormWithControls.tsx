@@ -33,36 +33,30 @@ export const HouseBlocksFormWithControls = ({ houseBlock, setHouseBlock }: Props
 
     return (
         <Box mt={4}>
-            <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2} mb={2}>
-                {/* left aligning stack */}
-                <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={2} mb={2}>
-                    {houseBlock.houseblockId && (
-                        <DeleteButtonWithConfirm
-                            typeAndName={`${t("generic.houseblock")} ${houseBlock.houseblockName}`}
-                            iconColor={"red"}
-                            deleteFunction={() => deleteHouseBlock(houseBlock.houseblockId ?? null)}
-                            afterDelete={refresh}
-                        />
-                    )}
-                </Stack>
-                {/* right aligning stack */}
-                <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={2} mb={2}>
-                    {readOnly && (
-                        <Tooltip placement="top" title={t("generic.edit")}>
-                            <EditIcon sx={{ cursor: "pointer" }} onClick={() => setReadOnly(false)} />
+            <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={2} mb={2}>
+                {readOnly && (
+                    <Tooltip placement="top" title={t("generic.edit")}>
+                        <EditIcon sx={{ cursor: "pointer" }} onClick={() => setReadOnly(false)} />
+                    </Tooltip>
+                )}
+                {!readOnly && (
+                    <>
+                        <Tooltip placement="top" title={t("generic.cancelChanges")}>
+                            <ClearIcon sx={{ cursor: "pointer" }} onClick={handleCancel} />
                         </Tooltip>
-                    )}
-                    {!readOnly && (
-                        <>
-                            <Tooltip placement="top" title={t("generic.cancelChanges")}>
-                                <ClearIcon sx={{ cursor: "pointer" }} onClick={handleCancel} />
-                            </Tooltip>
-                            <Tooltip placement="top" title={t("generic.saveChanges")}>
-                                <SaveIcon sx={{ cursor: "pointer" }} onClick={handleSave} />
-                            </Tooltip>
-                        </>
-                    )}
-                </Stack>
+                        <Tooltip placement="top" title={t("generic.saveChanges")}>
+                            <SaveIcon sx={{ cursor: "pointer" }} onClick={handleSave} />
+                        </Tooltip>
+                    </>
+                )}
+                {houseBlock.houseblockId && (
+                    <DeleteButtonWithConfirm
+                        typeAndName={`${t("generic.houseblock")} ${houseBlock.houseblockName}`}
+                        iconColor={"red"}
+                        deleteFunction={() => deleteHouseBlock(houseBlock.houseblockId ?? null)}
+                        afterDelete={refresh}
+                    />
+                )}
             </Stack>
             <HouseBlocksForm houseBlock={newHouseBlock} setHouseBlock={setNewHouseBlock} readOnly={readOnly} />
         </Box>
