@@ -235,7 +235,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             type: "dateTime",
             valueFormatter: (p) => dayjs(p).format(dateFormats.keyboardDate),
             filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
-            valueGetter: ({ value }) => value && new Date(value),
+            valueGetter: (value) => value && new Date(value),
             preProcessEditCellProps: createErrorReport,
         },
         {
@@ -245,7 +245,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             type: "dateTime",
             valueFormatter: (p) => dayjs(p).format(dateFormats.keyboardDate),
             filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
-            valueGetter: ({ value }) => value && new Date(value),
+            valueGetter: (value) => value && new Date(value),
             preProcessEditCellProps: createErrorReport,
         },
         {
