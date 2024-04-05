@@ -8,6 +8,7 @@ import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.Houseblock;
 import nl.vng.diwi.dal.entities.HouseblockDurationChangelog;
 import nl.vng.diwi.dal.entities.HouseblockNameChangelog;
+import nl.vng.diwi.dal.entities.HouseblockState;
 import nl.vng.diwi.dal.entities.Milestone;
 import nl.vng.diwi.dal.entities.Project;
 import nl.vng.diwi.dal.entities.User;
@@ -93,7 +94,7 @@ public class HouseblockServiceTest {
             Milestone endMilestone = ProjectServiceTest.createMilestone(repo, houseblock.getProject(), endDate, user);
 
             ProjectServiceTest.createProjectDurationChangelog(repo, houseblock.getProject(), startMilestone, endMilestone, user);
-            createHouseblockDurationChangelog(repo, houseblock, middleMilestone, endMilestone, user);
+            createHouseblockDurationAndStateChangelog(repo, houseblock, middleMilestone, endMilestone, user);
             createHouseblockNameChangelog(repo, houseblock, "Name 1", middleMilestone, endMilestone, user);
 
             transaction.commit();
@@ -140,7 +141,7 @@ public class HouseblockServiceTest {
             Milestone endMilestone = ProjectServiceTest.createMilestone(repo, houseblock.getProject(), endDate, user);
 
             ProjectServiceTest.createProjectDurationChangelog(repo, houseblock.getProject(), startMilestone, endMilestone, user);
-            createHouseblockDurationChangelog(repo, houseblock, startMilestone, middleMilestone, user);
+            createHouseblockDurationAndStateChangelog(repo, houseblock, startMilestone, middleMilestone, user);
             createHouseblockNameChangelog(repo, houseblock, "Name 1", startMilestone, middleMilestone, user);
 
             transaction.commit();
@@ -186,7 +187,7 @@ public class HouseblockServiceTest {
             Milestone endMilestone = ProjectServiceTest.createMilestone(repo, houseblock.getProject(), endDate, user);
 
             ProjectServiceTest.createProjectDurationChangelog(repo, houseblock.getProject(), startMilestone, endMilestone, user);
-            createHouseblockDurationChangelog(repo, houseblock, startMilestone, endMilestone, user);
+            createHouseblockDurationAndStateChangelog(repo, houseblock, startMilestone, endMilestone, user);
             createHouseblockNameChangelog(repo, houseblock, "Name 1", startMilestone, endMilestone, user);
 
             transaction.commit();
@@ -226,8 +227,8 @@ public class HouseblockServiceTest {
 
     }
 
-    public static HouseblockDurationChangelog createHouseblockDurationChangelog(VngRepository repo, Houseblock houseblock, Milestone startMilestone,
-                                                                                Milestone endMilestone, User user) {
+    public static HouseblockDurationChangelog createHouseblockDurationAndStateChangelog(VngRepository repo, Houseblock houseblock,
+                                                                                        Milestone startMilestone, Milestone endMilestone, User user) {
         HouseblockDurationChangelog durationChangelog = new HouseblockDurationChangelog();
         durationChangelog.setHouseblock(houseblock);
         durationChangelog.setCreateUser(user);
@@ -235,6 +236,13 @@ public class HouseblockServiceTest {
         durationChangelog.setEndMilestone(endMilestone);
         durationChangelog.setChangeStartDate(ZonedDateTime.now());
         repo.persist(durationChangelog);
+
+        HouseblockState state = new HouseblockState();
+        state.setHouseblock(houseblock);
+        state.setCreateUser(user);
+        state.setChangeStartDate(ZonedDateTime.now());
+        repo.persist(state);
+
         return durationChangelog;
     }
 

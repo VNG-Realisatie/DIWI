@@ -3,6 +3,7 @@ package nl.vng.diwi.resources;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
@@ -113,6 +114,15 @@ public class HouseblockResource {
             transaction.commit();
 
             return houseblockService.getHouseblockSnapshot(repo, houseblock.getId());
+        }
+    }
+
+    @DELETE
+    @Path("/{id}")
+    public void deleteHouseblock(@Context LoggedUser loggedUser, @PathParam("id") UUID houseblockUuid) throws VngNotFoundException {
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+            houseblockService.deleteHouseblock(repo, houseblockUuid, loggedUser.getUuid());
+            transaction.commit();
         }
     }
 

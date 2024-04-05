@@ -81,7 +81,7 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
                                             {row.name}
                                         </TableCell>
                                         <TableCell sx={cellStyle} align="right">
-                                            {row.propertyType}
+                                            {t(`admin.settings.propertyType.${row.propertyType}`)}
                                         </TableCell>
                                         <TableCell sx={cellStyle} align="right">
                                             {row.objectType}

@@ -89,7 +89,7 @@ public class HouseblockResourceTest {
             Houseblock houseblock = new Houseblock();
             houseblock.setProject(project);
             repo.persist(houseblock);
-            HouseblockServiceTest.createHouseblockDurationChangelog(repo, houseblock, startMilestone, endMilestone, user);
+            HouseblockServiceTest.createHouseblockDurationAndStateChangelog(repo, houseblock, startMilestone, endMilestone, user);
             HouseblockServiceTest.createHouseblockNameChangelog(repo, houseblock, "HB 1", startMilestone, endMilestone, user);
             houseblockUuid = houseblock.getId();
 

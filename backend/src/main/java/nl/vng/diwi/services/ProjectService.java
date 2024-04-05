@@ -995,6 +995,11 @@ public class ProjectService {
             throw new VngServerErrorException("Project duration changelog is invalid.");
         }
 
+        if (project.getState().size() != 1) {
+            logger.error("Project with uuid {} has {} state values", projectUuid, project.getState().size());
+            throw new VngServerErrorException("Project state is invalid.");
+        }
+
         MilestoneModel projectStartMilestone = new MilestoneModel(project.getDuration().get(0).getStartMilestone());
         MilestoneModel projectEndMilestone = new MilestoneModel(project.getDuration().get(0).getEndMilestone());
         if (projectStartMilestone.getStateId() == null || projectEndMilestone.getStateId() == null) {

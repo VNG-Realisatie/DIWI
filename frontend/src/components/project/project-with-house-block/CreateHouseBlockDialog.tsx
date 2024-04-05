@@ -2,7 +2,7 @@ import { Dialog, DialogContent, DialogActions, Button } from "@mui/material";
 import { t } from "i18next";
 import { HouseBlocksForm } from "../../HouseBlocksForm";
 import { HouseBlock } from "../../project-wizard/house-blocks/types";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import HouseBlockContext from "../../../context/HouseBlockContext";
 
 type Props = {
@@ -13,13 +13,25 @@ export const CreateHouseBlockDialog = ({ openHouseBlockDialog, setOpenHouseBlock
     const { addHouseBlock, getEmptyHouseBlock } = useContext(HouseBlockContext);
     const [houseBlock, setHouseBlock] = useState<HouseBlock>(getEmptyHouseBlock());
 
+    useEffect(() => {
+        if (!openHouseBlockDialog) {
+            setHouseBlock(getEmptyHouseBlock());
+        }
+    }, [openHouseBlockDialog, getEmptyHouseBlock, setHouseBlock]);
+
     return (
         <Dialog open={openHouseBlockDialog} onClose={() => setOpenHouseBlockDialog(false)} maxWidth="xl">
             <DialogContent>
                 <HouseBlocksForm houseBlock={houseBlock} setHouseBlock={setHouseBlock} readOnly={false} />
             </DialogContent>
             <DialogActions>
-                <Button variant="contained" color="error" onClick={() => setOpenHouseBlockDialog(false)}>
+                <Button
+                    variant="contained"
+                    color="error"
+                    onClick={() => {
+                        setOpenHouseBlockDialog(false);
+                    }}
+                >
                     {t("generic.cancel")}
                 </Button>
                 <Button

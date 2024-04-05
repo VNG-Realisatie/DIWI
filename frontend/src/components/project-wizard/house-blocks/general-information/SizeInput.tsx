@@ -21,7 +21,9 @@ export const SizeInput = ({ houseBlockSize, updateHouseBlockSize, readOnly }: Pr
             {!readOnly && <NumericRangeInput value={houseBlockSize} updateCallBack={updateHouseBlockSize} />}
             {readOnly && (
                 <InputContainer>
-                    <Typography minHeight="20px">{houseBlockSize?.value}</Typography>
+                    <Typography minHeight="20px">
+                        {houseBlockSize?.min && houseBlockSize?.max ? `${houseBlockSize.min}-${houseBlockSize.max}` : houseBlockSize.value}
+                    </Typography>
                 </InputContainer>
             )}
         </Stack>

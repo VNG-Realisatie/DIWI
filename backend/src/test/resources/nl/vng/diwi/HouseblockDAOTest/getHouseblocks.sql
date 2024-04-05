@@ -16,6 +16,9 @@ INSERT INTO diwi_testset.woningblok (id, project_id) VALUES ('16dbf29e-bd3e-419e
 INSERT INTO diwi_testset.woningblok_duration_changelog (id, woningblok_id, start_milestone_id, end_milestone_id, create_user_id, change_start_date)
     VALUES ('c8aa5543-734e-4282-8d00-c2ece87503d3', '16dbf29e-bd3e-419e-9b2c-0bfd834c0d19', 'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '342887ab-2106-45c4-9565-a4b83f4d3362', '2122426c-6e70-419c-a054-f51dd24d798b', NOW());
 
+INSERT INTO diwi_testset.woningblok_state (id, woningblok_id, create_user_id, change_start_date)
+    VALUES ('018eaa5b-44a9-7387-bbe2-b7844d9529a8', '16dbf29e-bd3e-419e-9b2c-0bfd834c0d19', '2122426c-6e70-419c-a054-f51dd24d798b', NOW());
+
 INSERT INTO diwi_testset.woningblok_naam_changelog (id, woningblok_id, start_milestone_id, end_milestone_id, naam, create_user_id, change_start_date)
     VALUES ('6452192f-f978-4b68-b047-262a2e34a1f8', '16dbf29e-bd3e-419e-9b2c-0bfd834c0d19', 'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '342887ab-2106-45c4-9565-a4b83f4d3362', 'Woningblok 1', '2122426c-6e70-419c-a054-f51dd24d798b', NOW());
 
