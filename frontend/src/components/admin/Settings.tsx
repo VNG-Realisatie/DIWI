@@ -42,6 +42,12 @@ export const Settings = () => {
             setAlert(t("admin.settings.notifications.successfullySaved"), "success");
             setOpenDialog(false);
             getCustomProperties().then((customProperties) => setCustomProperties(customProperties));
+
+            setName("");
+            setSelectedObjectType("PROJECT");
+            setSelectedPropertyType("TEXT");
+            setActive(false);
+            setCategories([]);
         });
     }, [active, categories, name, selectedObjectType, selectedPropertyType, setAlert, t]);
 
