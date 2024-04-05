@@ -21,9 +21,9 @@ export const HouseBlocksList = ({ setOpenHouseBlockDialog }: Props) => {
     return (
         <Grid container my={2}>
             <AddHouseBlockButton onClick={() => setOpenHouseBlockDialog(true)} />
-            {houseBlocks?.map((hb: HouseBlock, i: number) => {
+            {houseBlocks?.map((hb: HouseBlock) => {
                 return (
-                    <Accordion sx={{ width: "100%" }} key={i}>
+                    <Accordion sx={{ width: "100%" }} key={hb.houseblockId}>
                         <AccordionSummary
                             sx={{ backgroundColor: "#00A9F3", color: "#ffffff" }}
                             expandIcon={<ExpandMoreIcon sx={{ color: "#ffffff" }} />}
@@ -33,7 +33,7 @@ export const HouseBlocksList = ({ setOpenHouseBlockDialog }: Props) => {
                             {hb.houseblockName}: {hb.mutation.grossPlanCapacity} {t("createProject.houseBlocksForm.housesOn")} {hb.endDate}
                         </AccordionSummary>
                         <AccordionDetails>
-                            <HouseBlocksFormWithControls houseBlock={hb} key={i} setHouseBlock={handleUpdateHouseBlock} />
+                            <HouseBlocksFormWithControls houseBlock={hb} setHouseBlock={handleUpdateHouseBlock} />
                         </AccordionDetails>
                     </Accordion>
                 );
