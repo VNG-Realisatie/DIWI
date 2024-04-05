@@ -6,6 +6,8 @@ import SaveIcon from "@mui/icons-material/Save";
 import ClearIcon from "@mui/icons-material/Clear";
 import { t } from "i18next";
 import { HouseBlocksForm } from "./HouseBlocksForm";
+import { DeleteButtonWithConfirm } from "./DeleteButtonWithConfirm";
+import { deleteHouseBlock } from "../api/projectsServices";
 
 type Props = {
     houseBlock: HouseBlock;
@@ -28,22 +30,35 @@ export const HouseBlocksFormWithControls = ({ houseBlock, setHouseBlock }: Props
 
     return (
         <Box mt={4}>
-            <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={2} mb={2}>
-                {readOnly && (
-                    <Tooltip placement="top" title={t("generic.edit")}>
-                        <EditIcon sx={{ cursor: "pointer" }} onClick={() => setReadOnly(false)} />
-                    </Tooltip>
-                )}
-                {!readOnly && (
-                    <>
-                        <Tooltip placement="top" title={t("generic.cancelChanges")}>
-                            <ClearIcon sx={{ cursor: "pointer" }} onClick={handleCancel} />
+            <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2} mb={2}>
+                {/* left aligning stack */}
+                <Stack direction="row" alignItems="center" justifyContent="flex-start" spacing={2} mb={2}>
+                    {houseBlock.houseblockId && (
+                        <DeleteButtonWithConfirm
+                            typeAndName={`${t("generic.houseblock")} ${houseBlock.houseblockName}`}
+                            deleteFunction={() => deleteHouseBlock(houseBlock.houseblockId ?? null)}
+                            afterDelete={undefined}
+                        />
+                    )}
+                </Stack>
+                {/* right aligning stack */}
+                <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={2} mb={2}>
+                    {readOnly && (
+                        <Tooltip placement="top" title={t("generic.edit")}>
+                            <EditIcon sx={{ cursor: "pointer" }} onClick={() => setReadOnly(false)} />
                         </Tooltip>
-                        <Tooltip placement="top" title={t("generic.saveChanges")}>
-                            <SaveIcon sx={{ cursor: "pointer" }} onClick={handleSave} />
-                        </Tooltip>
-                    </>
-                )}
+                    )}
+                    {!readOnly && (
+                        <>
+                            <Tooltip placement="top" title={t("generic.cancelChanges")}>
+                                <ClearIcon sx={{ cursor: "pointer" }} onClick={handleCancel} />
+                            </Tooltip>
+                            <Tooltip placement="top" title={t("generic.saveChanges")}>
+                                <SaveIcon sx={{ cursor: "pointer" }} onClick={handleSave} />
+                            </Tooltip>
+                        </>
+                    )}
+                </Stack>
             </Stack>
             <HouseBlocksForm houseBlock={newHouseBlock} setHouseBlock={setNewHouseBlock} readOnly={readOnly} />
         </Box>
