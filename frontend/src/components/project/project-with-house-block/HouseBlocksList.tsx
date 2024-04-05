@@ -18,10 +18,20 @@ export const HouseBlocksList = ({ setOpenHouseBlockDialog }: Props) => {
         updateHouseBlock(houseBlock);
     };
 
+    const sortByNameAndId = (a: HouseBlock, b: HouseBlock) => {
+        const firstSmaller = 1;
+        // first sort by name
+        if (a.houseblockName < b.houseblockName) return firstSmaller;
+        if (a.houseblockName > b.houseblockName) return -firstSmaller;
+        // if names identical, sort by id which cannot be identical
+        if (a.houseblockId && b.houseblockId && a.houseblockId < b.houseblockId) return firstSmaller;
+        return -firstSmaller;
+    };
+
     return (
         <Grid container my={2}>
             <AddHouseBlockButton onClick={() => setOpenHouseBlockDialog(true)} />
-            {houseBlocks?.map((hb: HouseBlock) => {
+            {houseBlocks.sort(sortByNameAndId).map((hb: HouseBlock) => {
                 return (
                     <Accordion sx={{ width: "100%" }} key={hb.houseblockId}>
                         <AccordionSummary
