@@ -130,7 +130,7 @@ const ProjectOverviewMap = () => {
                 if (feature) {
                     const projectId = feature.get("id");
                     if (projectId) {
-                        navigate(Paths.projectDetail.path.replace(":id", projectId));
+                        navigate(Paths.projectDetail.toPath(":projectId", projectId));
                     }
                 }
             });
