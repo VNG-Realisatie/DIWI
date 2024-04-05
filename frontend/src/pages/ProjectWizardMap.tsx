@@ -13,11 +13,15 @@ export const ProjectWizardMap = () => {
 
     const handleNext = async () => {
         handleSaveChange();
-        navigate(projectDetailCharacteristics.toPath({ projectId }));
+        if (projectId) {
+            navigate(projectDetailCharacteristics.toPath({ projectId }));
+        }
     };
 
     const handleBack = () => {
-        navigate(projectWizardBlocks.toPath({ projectId }));
+        if (projectId) {
+            navigate(projectWizardBlocks.toPath({ projectId }));
+        }
     };
 
     const infoText = t("createProject.selectMapForm.info");

@@ -2,29 +2,26 @@ import { compile } from "path-to-regexp";
 
 import config from "./config";
 
-type Path = {
-    path: string;
-    toPath: Function;
-};
-
-function createPathObject(path: string): Path {
+function createPathObject<P extends object>(path: string) {
     return {
-        path: path,
-        toPath: compile(path),
+        path: path, // Should only be used for routes
+        toPath: compile<P>(path), // Should be used for links
     };
 }
 
 export const root = createPathObject(config.baseurl);
 
+type ProjectId = { projectId: string };
+
 export const projects = createPathObject(config.baseurl + "projects");
 export const projectsTable = createPathObject(config.baseurl + "projects/table");
 export const projectWizard = createPathObject(config.baseurl + "project/create");
-export const projectWizardWithId = createPathObject(config.baseurl + "project/create/:projectId");
-export const projectWizardBlocks = createPathObject(config.baseurl + "project/create/:projectId/blocks");
-export const projectWizardMap = createPathObject(config.baseurl + "project/create/:projectId/map");
-export const projectDetail = createPathObject(config.baseurl + "projects/:projectId");
-export const projectDetailCharacteristics = createPathObject(config.baseurl + "projects/:projectId/characteristics");
-export const projectDetailTimeline = createPathObject(config.baseurl + "projects/:projectId/timeline");
+export const projectWizardWithId = createPathObject<ProjectId>(config.baseurl + "project/create/:projectId");
+export const projectWizardBlocks = createPathObject<ProjectId>(config.baseurl + "project/create/:projectId/blocks");
+export const projectWizardMap = createPathObject<ProjectId>(config.baseurl + "project/create/:projectId/map");
+export const projectDetail = createPathObject<ProjectId>(config.baseurl + "projects/:projectId");
+export const projectDetailCharacteristics = createPathObject<ProjectId>(config.baseurl + "projects/:projectId/characteristics");
+export const projectDetailTimeline = createPathObject<ProjectId>(config.baseurl + "projects/:projectId/timeline");
 
 export const policygoal = createPathObject(config.baseurl + "policygoal");
 export const policygoalDashboard = createPathObject(config.baseurl + "policygoal/dashboard");

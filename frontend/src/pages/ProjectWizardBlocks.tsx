@@ -31,7 +31,9 @@ const ProjectWizardBlocks = () => {
                 addHouseBlock(houseBlock);
                 setAlert(t("createProject.houseBlocksForm.notifications.successfullySaved"), "success");
             }
-            navigate(projectWizardMap.toPath({ projectId }));
+            if (projectId) {
+                navigate(projectWizardMap.toPath({ projectId }));
+            }
         }
     };
 
@@ -50,7 +52,9 @@ const ProjectWizardBlocks = () => {
     };
 
     const handleBack = () => {
-        navigate(projectWizardWithId.toPath({ projectId }));
+        if (projectId) {
+            navigate(projectWizardWithId.toPath({ projectId }));
+        }
     };
 
     useEffect(() => {

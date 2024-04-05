@@ -5,7 +5,7 @@ import { createProject, getProject, updateProject } from "../api/projectsService
 import dayjs from "dayjs";
 import WizardLayout from "../components/project-wizard/WizardLayout";
 import { ProjectInformationForm } from "../components/project/ProjectInformationForm";
-import { projectWizardBlocks } from "../Paths";
+import { projectWizardBlocks, projectWizardWithId } from "../Paths";
 import { t } from "i18next";
 
 const ProjectWizard = () => {
@@ -52,7 +52,7 @@ const ProjectWizard = () => {
                 createProjectForm.projectId = project.projectId;
                 await updateProject(createProjectForm.projectId, createProjectForm);
 
-                navigate(`/project/create/${project.projectId}`);
+                navigate(projectWizardWithId.toPath({ projectId: project.projectId }));
                 setAlert(t("createProject.successfullySaved"), "success");
             }
         } catch (error: any) {
@@ -62,7 +62,9 @@ const ProjectWizard = () => {
     };
 
     const handleNext = async () => {
-        navigate(projectWizardBlocks.toPath({ projectId }));
+        if (projectId) {
+            navigate(projectWizardBlocks.toPath({ projectId }));
+        }
     };
 
     useEffect(() => {
