@@ -44,8 +44,8 @@ public class PropertiesResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<PropertyModel> getAllCustomProperties(@QueryParam("objectType") ObjectType objectType, @QueryParam("disabled") Boolean disabled,
-                                                      @QueryParam("type") PropertyKind type) {
+    public List<PropertyModel> getAllProperties(@QueryParam("objectType") ObjectType objectType, @QueryParam("disabled") Boolean disabled,
+                                                @QueryParam("type") PropertyKind type) {
 
         return propertiesService.getAllProperties(repo, objectType, disabled, type);
 
@@ -54,7 +54,7 @@ public class PropertiesResource {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public PropertyModel getCustomProperty(@PathParam("id") UUID customPropertyUuid) throws VngNotFoundException {
+    public PropertyModel getProperty(@PathParam("id") UUID customPropertyUuid) throws VngNotFoundException {
 
         PropertyModel propertyModel = propertiesService.getProperty(repo, customPropertyUuid);
 
@@ -89,8 +89,8 @@ public class PropertiesResource {
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public PropertyModel updateCustomProperty(@Context LoggedUser loggedUser, @PathParam("id") UUID customPropertyUuid,
-                                              PropertyModel propertyModel) throws VngNotFoundException, VngBadRequestException {
+    public PropertyModel updateProperty(@Context LoggedUser loggedUser, @PathParam("id") UUID customPropertyUuid,
+                                        PropertyModel propertyModel) throws VngNotFoundException, VngBadRequestException {
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
 
