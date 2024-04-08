@@ -27,7 +27,7 @@ public class ProjectCategoryCustomPropertyChangelog extends MilestoneChangeDataS
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "eigenschap_id")
-    private CustomProperty customProperty;
+    private Property property;
 
     @OneToMany(mappedBy="categoryChangelog", fetch = FetchType.LAZY)
     private List<ProjectCategoryCustomPropertyChangelogValue> changelogCategoryValues;

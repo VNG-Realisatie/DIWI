@@ -25,7 +25,7 @@ public class HouseblockTextCustomPropertyChangelog extends HouseblockMilestoneCh
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "eigenschap_id")
-    private CustomProperty customProperty;
+    private Property property;
 
     @Column(name = "value")
     private String value;
@@ -33,7 +33,7 @@ public class HouseblockTextCustomPropertyChangelog extends HouseblockMilestoneCh
     @Override
     public Object getShallowCopy() {
         var newChangelog = HouseblockTextCustomPropertyChangelog.builder()
-            .customProperty(customProperty).value(value).build();
+            .property(property).value(value).build();
         newChangelog.setHouseblock(getHouseblock());
         newChangelog.setStartMilestone(getStartMilestone());
         newChangelog.setEndMilestone(getEndMilestone());

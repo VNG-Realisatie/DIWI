@@ -19,25 +19,25 @@ import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 @Entity
-@Table(name = "maatwerk_eigenschap_state", schema = GenericRepository.VNG_SCHEMA_NAME)
+@Table(name = "property_state", schema = GenericRepository.VNG_SCHEMA_NAME)
 @Getter
 @Setter
 @NoArgsConstructor
-public class CustomPropertyState extends ChangeDataSuperclass {
+public class PropertyState extends ChangeDataSuperclass {
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "eigenschap_id")
-    private CustomProperty customProperty;
+    @JoinColumn(name = "property_id")
+    private Property property;
 
-    @Column(name = "eigenschap_naam")
+    @Column(name = "property_name")
     private String propertyName;
 
-    @Column(name = "eigenschap_type")
+    @Column(name = "property_type")
     @Enumerated(EnumType.STRING)
     @JdbcType(PostgreSQLEnumJdbcType.class)
     private PropertyType propertyType;
 
-    @Column(name = "eigenschap_object_soort")
+    @Column(name = "property_object_type")
     @Enumerated(EnumType.STRING)
     @JdbcType(PostgreSQLEnumJdbcType.class)
     private ObjectType objectType;

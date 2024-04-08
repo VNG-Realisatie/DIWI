@@ -103,156 +103,6 @@
         }
       }
     },
-    "/rest/customproperties": {
-      "get": {
-        "operationId": "getAllCustomProperties",
-        "parameters": [
-          {
-            "name": "objectType",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "enum": ["PROJECT", "WONINGBLOK"]
-            }
-          },
-          {
-            "name": "disabled",
-            "in": "query",
-            "schema": {
-              "type": "boolean"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "default response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CustomPropertyModel"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "operationId": "createCustomProperty",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CustomPropertyModel"
-              }
-            }
-          }
-        },
-        "responses": {
-          "default": {
-            "description": "default response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CustomPropertyModel"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/rest/customproperties/{id}": {
-      "get": {
-        "operationId": "getCustomProperty",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "default response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CustomPropertyModel"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "operationId": "updateCustomProperty",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CustomPropertyModel"
-              }
-            }
-          }
-        },
-        "responses": {
-          "default": {
-            "description": "default response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CustomPropertyModel"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "operationId": "disableCustomProperty",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "default response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CustomPropertyModel"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/rest/houseblock/add": {
       "post": {
         "operationId": "createHouseblock",
@@ -274,6 +124,30 @@
                   "$ref": "#/components/schemas/HouseblockSnapshotModel"
                 }
               }
+            }
+          }
+        }
+      }
+    },
+    "/rest/houseblock/{id}": {
+      "delete": {
+        "operationId": "deleteHouseblock",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "*/*": {}
             }
           }
         }
@@ -936,35 +810,9 @@
         }
       }
     },
-    "/rest/projects/update": {
-      "post": {
-        "operationId": "updateProject",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ProjectSnapshotModel"
-              }
-            }
-          }
-        },
-        "responses": {
-          "default": {
-            "description": "default response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProjectSnapshotModel"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/rest/projects/{id}/update": {
       "post": {
-        "operationId": "updateProject_1",
+        "operationId": "updateProject",
         "parameters": [
           {
             "name": "id",
@@ -992,6 +840,190 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProjectSnapshotModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rest/projects/update": {
+      "post": {
+        "operationId": "updateProjectSnapshot",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectSnapshotModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectSnapshotModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rest/properties": {
+      "get": {
+        "operationId": "getAllProperties",
+        "parameters": [
+          {
+            "name": "objectType",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["PROJECT", "WONINGBLOK"]
+            }
+          },
+          {
+            "name": "disabled",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["FIXED", "CUSTOM"]
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PropertyModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createCustomProperty",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PropertyModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PropertyModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rest/properties/{id}": {
+      "get": {
+        "operationId": "getProperty",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PropertyModel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "updateProperty",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PropertyModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PropertyModel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "disableCustomProperty",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PropertyModel"
                 }
               }
             }
@@ -1098,78 +1130,6 @@
           },
           "corner2": {
             "$ref": "#/components/schemas/LocationModel"
-          }
-        }
-      },
-      "CustomPropertyModel": {
-        "required": ["disabled", "name", "objectType", "propertyType"],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "objectType": {
-            "type": "string",
-            "enum": ["PROJECT", "WONINGBLOK"]
-          },
-          "propertyType": {
-            "type": "string",
-            "enum": ["BOOLEAN", "CATEGORY", "ORDINAL", "NUMERIC", "TEXT"]
-          },
-          "disabled": {
-            "type": "boolean"
-          },
-          "categories": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SelectDisabledModel"
-            }
-          },
-          "ordinals": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/OrdinalSelectDisabledModel"
-            }
-          }
-        }
-      },
-      "OrdinalSelectDisabledModel": {
-        "required": ["disabled", "level", "name"],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "disabled": {
-            "type": "boolean"
-          },
-          "level": {
-            "type": "integer",
-            "format": "int32"
-          }
-        }
-      },
-      "SelectDisabledModel": {
-        "required": ["disabled", "name"],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "disabled": {
-            "type": "boolean"
           }
         }
       },
@@ -2081,6 +2041,82 @@
           "max": {
             "type": "string",
             "format": "uuid"
+          }
+        }
+      },
+      "OrdinalSelectDisabledModel": {
+        "required": ["disabled", "level", "name"],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "disabled": {
+            "type": "boolean"
+          },
+          "level": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "PropertyModel": {
+        "required": ["disabled", "name", "objectType", "propertyType", "type"],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["FIXED", "CUSTOM"]
+          },
+          "objectType": {
+            "type": "string",
+            "enum": ["PROJECT", "WONINGBLOK"]
+          },
+          "propertyType": {
+            "type": "string",
+            "enum": ["BOOLEAN", "CATEGORY", "ORDINAL", "NUMERIC", "TEXT"]
+          },
+          "disabled": {
+            "type": "boolean"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SelectDisabledModel"
+            }
+          },
+          "ordinals": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrdinalSelectDisabledModel"
+            }
+          }
+        }
+      },
+      "SelectDisabledModel": {
+        "required": ["disabled", "name"],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "disabled": {
+            "type": "boolean"
           }
         }
       },

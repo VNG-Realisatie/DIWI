@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import nl.vng.diwi.dal.JsonListType;
 import nl.vng.diwi.dal.entities.enums.ObjectType;
+import nl.vng.diwi.dal.entities.enums.PropertyKind;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.Type;
@@ -22,13 +23,18 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class CustomPropertyModel {
+public class PropertyModel {
 
     @Id
     private UUID id;
 
     @JsonProperty(required = true)
     private String name;
+
+    @JsonProperty(required = true)
+    @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    private PropertyKind type;
 
     @JsonProperty(required = true)
     @Enumerated(EnumType.STRING)
@@ -52,24 +58,24 @@ public class CustomPropertyModel {
     public String validate() {
 
         if (this.name == null || this.name.isBlank()) {
-            return "Custom property name can not be null.";
+            return "Property name can not be null.";
         } else if (this.objectType == null) {
-            return "Custom property object-type can not be null.";
+            return "Property object-type can not be null.";
         } else if (this.propertyType == null) {
-            return "Custom property property-type can not be null.";
+            return "Property property-type can not be null.";
         } else if (this.getCategories() != null) {
             for (SelectDisabledModel category : this.getCategories()) {
                 if (category.getName() == null || category.getName().isEmpty()) {
-                    return "Custom property category value name can not be null.";
+                    return "Property category value name can not be null.";
                 }
             }
         } else if (this.getOrdinals() != null) {
             for (OrdinalSelectDisabledModel ordinal : this.getOrdinals()) {
                 if (ordinal.getName() == null || ordinal.getName().isEmpty()) {
-                    return "Custom property ordinal value name can not be null.";
+                    return "Property ordinal value name can not be null.";
                 }
                 if (ordinal.getLevel() == null) {
-                    return "Custom property ordinal value level can not be null.";
+                    return "Property ordinal value level can not be null.";
                 }
             }
         }

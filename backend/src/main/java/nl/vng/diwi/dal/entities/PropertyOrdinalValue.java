@@ -16,17 +16,18 @@ import org.hibernate.annotations.Filter;
 import java.util.List;
 
 @Entity
-@Table(name = "maatwerk_categorie_waarde", schema = GenericRepository.VNG_SCHEMA_NAME)
+@Table(name = "property_ordinal_value", schema = GenericRepository.VNG_SCHEMA_NAME)
 @Getter
 @Setter
 @NoArgsConstructor
-public class CustomCategoryValue extends IdSuperclass {
+public class PropertyOrdinalValue extends IdSuperclass {
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "maatwerk_eigenschap_id")
-    private CustomProperty customProperty;
+    @JoinColumn(name = "property_id")
+    private Property property;
 
-    @OneToMany(mappedBy="customCategoryValue", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy= "propertyOrdinalValue", fetch = FetchType.LAZY)
     @Filter(name = GenericRepository.CURRENT_DATA_FILTER, condition = "change_end_date IS NULL")
-    private List<CustomCategoryValueState> states;
+    private List<PropertyOrdinalValueState> states;
+
 }
