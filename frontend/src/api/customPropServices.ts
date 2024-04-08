@@ -2,7 +2,7 @@ import { components } from "../types/schema";
 import { getJson, putJson } from "../utils/requests";
 import { API_URI } from "../utils/urls";
 
-export type CustomPropDefinitions = components["schemas"]["CustomPropertyModel"];
+export type CustomPropDefinitions = components["schemas"]["PropertyModel"];
 export type CustomPropertyValue = components["schemas"]["ProjectHouseblockCustomPropertyModel"];
 
 export async function getCustomPropertyValues(id: string): Promise<CustomPropertyValue[]> {

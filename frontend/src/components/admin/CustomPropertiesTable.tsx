@@ -16,7 +16,7 @@ import {
     Chip,
 } from "@mui/material";
 import { t } from "i18next";
-import { CustomPropertyType, deleteCustomProperty, getCustomProperties } from "../../api/adminSettingServices";
+import { Property, deleteCustomProperty, getCustomProperties } from "../../api/adminSettingServices";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useContext, useState } from "react";
@@ -32,8 +32,8 @@ const cellStyle = {
     border: "solid 1px #BDBDBD",
 };
 type Props = {
-    customProperties: CustomPropertyType[];
-    setCustomProperties: (customProperties: CustomPropertyType[]) => void;
+    customProperties: Property[];
+    setCustomProperties: (customProperties: Property[]) => void;
 };
 export const CustomPropertiesTable = ({ customProperties, setCustomProperties }: Props) => {
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -74,7 +74,7 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
                     </TableHead>
                     <TableBody>
                         {customProperties?.map(
-                            (row: CustomPropertyType, index: number) =>
+                            (row: Property, index: number) =>
                                 !row.disabled && (
                                     <TableRow key={row.name + row.propertyType + row.objectType + index}>
                                         <TableCell component="th" scope="row" sx={cellStyle}>

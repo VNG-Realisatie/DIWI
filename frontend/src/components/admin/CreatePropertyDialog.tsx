@@ -16,7 +16,8 @@ import { t } from "i18next";
 import { ChangeEvent } from "react";
 import { ObjectType, PropertyType } from "../../types/enums";
 import { CategoryCreateOption } from "./CategoryCreateOption";
-import { objectType, propertyType } from "./constants";
+import { propertyType } from "../../types/enums";
+import { objectType } from "../../types/enums";
 import { components } from "../../types/schema";
 import InfoIcon from "@mui/icons-material/Info";
 

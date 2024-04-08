@@ -1,12 +1,12 @@
 import { Autocomplete, TextField } from "@mui/material";
-import { CustomPropertyType } from "../api/adminSettingServices";
+import { Property } from "../api/adminSettingServices";
 import { CustomPropertyValue } from "../api/customPropServices";
 import { CellContainer } from "./project/project-with-house-block/CellContainer";
 
 type Props = {
     readOnly: boolean;
     customValue: CustomPropertyValue | undefined;
-    customDefinition: CustomPropertyType;
+    customDefinition: Property;
     setCustomValue: (newValue: CustomPropertyValue) => void;
 };
 

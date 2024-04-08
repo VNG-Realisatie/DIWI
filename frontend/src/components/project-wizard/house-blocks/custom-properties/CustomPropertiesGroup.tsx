@@ -1,7 +1,7 @@
 import { Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { CustomPropertyType, getCustomPropertiesWithQuery } from "../../../../api/adminSettingServices";
+import { Property, getCustomPropertiesWithQuery } from "../../../../api/adminSettingServices";
 import { LabelComponent } from "../../../project/LabelComponent";
 import { WizardCard } from "../../WizardCard";
 import { CustomPropertyValue } from "../../../../api/customPropServices";
@@ -14,7 +14,7 @@ type Props = {
 };
 
 export const CustomPropertiesGroup = ({ readOnly, customPropertyValues, setCustomPropertyValues }: Props) => {
-    const [customDefinitions, setCustomDefinitions] = useState<CustomPropertyType[]>([]);
+    const [customDefinitions, setCustomDefinitions] = useState<Property[]>([]);
 
     const { t } = useTranslation();
 
