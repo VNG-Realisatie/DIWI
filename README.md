@@ -2,6 +2,32 @@
 
 ## Development
 
+## Setup the DB
+
+Set up the database and the user:
+
+```shell
+createuser diwi
+psql -c "ALTER USER \"diwi\" WITH PASSWORD 'diwi'"
+createdb diwi -O diwi
+```
+
+Start the backend (all the tables will be created through migration scripts). You can do this with the following command:
+
+```shell
+./deploy.backend.dev.sh
+```
+
+### Recreating the database
+
+First drop the database. For this you need to stop the backend and close any existing connections to the database.
+
+```shell
+dropdb diwi
+```
+
+Then you can execute the steps in [the setup chapter](#setup-the-db).
+
 ### Front end development
 
 You can start the back end and keycloak using docker.
@@ -115,26 +141,6 @@ java -jar ~/Downloads/lombok.jar
 - Click the modules tab at the bottom of the run configuration.
 - Set the path of the application to / by clicking the edit button and changing `/vng` to `/`.
 - Click the play button in the servers view to start the server.
-
-## Setup the DB with the test data
-
-Note: This is still in development and subject to change.
-
-- Make sure the empty database exists / create it.
-- Start the backend (all the tables will be created through migration scripts).
-- Run the following command to import the test sets:
-
-```shell
-psql diwi < backend/src/main/resources/db/sql/vng_projects_testdata.sql
-psql diwi < backend/src/main/resources/db/sql/vng_woningbloks_testdata.sql
-```
-
-Or in docker:
-
-```shell
-docker compose exec -T database psql --user diwi diwi < backend/src/main/resources/db/sql/vng_projects_testdata.sql
-docker compose exec -T database psql --user diwi diwi < backend/src/main/resources/db/sql/vng_woningbloks_testdata.sql
-```
 
 ## Deploy on production
 
