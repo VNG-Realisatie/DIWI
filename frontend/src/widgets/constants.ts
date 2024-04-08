@@ -1,4 +1,4 @@
-export const menuProjects = [
+export const projectMenuItems = [
     { text: "Overzicht projecten", url: "projects/table" },
     { text: "Project toevoegen", url: "project/create" },
 ];

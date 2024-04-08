@@ -2,6 +2,7 @@ import { Autocomplete, Checkbox, FormControl, FormControlLabel, Grid, Radio, Rad
 import { useState } from "react";
 import { ImportHouseBlockCardItem } from "./ImportHouseBlockCardItem";
 import { SearchItem, projects } from "../api/dummyData";
+import { HouseBlock } from "./project-wizard/house-blocks/types";
 export const columnTitleStyle = {
     border: "solid 1px #ddd",
     p: 0.6,
@@ -158,8 +159,8 @@ export const ImportProjectCardItem = (props: any) => {
                 </Grid>
                 {/* List huizen blok cards */}
                 <Grid container my={2}>
-                    {project.houseblocks.map((hb: any, i: number) => {
-                        return <ImportHouseBlockCardItem isImportCard hb={hb} key={i} />;
+                    {project.houseblocks.map((hb: HouseBlock) => {
+                        return <ImportHouseBlockCardItem isImportCard hb={hb} key={hb.houseblockId} />;
                     })}
                 </Grid>
             </Stack>

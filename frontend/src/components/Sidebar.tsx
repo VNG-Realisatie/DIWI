@@ -3,7 +3,7 @@ import { styled, useTheme } from "@mui/material/styles";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { menuProjects } from "../widgets/constants";
+import { projectMenuItems } from "../widgets/constants";
 import { Link } from "react-router-dom";
 
 import * as Paths from "../Paths";
@@ -45,10 +45,10 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
 
             <List sx={{ ml: 3 }}>
                 <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>{t("sidebar.projects")}</Typography>
-                {menuProjects.map((text, index) => (
-                    <Link key={index} to={`/${text.url}`} style={{ color: "#FFFFFF", textDecoration: "none" }}>
+                {projectMenuItems.map((menuItem) => (
+                    <Link key={menuItem.text} to={`/${menuItem.url}`} style={{ color: "#FFFFFF", textDecoration: "none" }}>
                         <ListItemButton onClick={handleDrawerClose}>
-                            <ListItemText primary={text.text} />
+                            <ListItemText primary={menuItem.text} />
                         </ListItemButton>
                     </Link>
                 ))}
