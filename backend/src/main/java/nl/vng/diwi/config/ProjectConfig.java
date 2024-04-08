@@ -51,6 +51,8 @@ public class ProjectConfig {
     private final boolean pac4jCentralLogout;
     private final Config pac4jConfig;
 
+    private final boolean allowFlywayErrors;
+
     private final ConfigModel configModel = new ConfigModel();
 
     public ProjectConfig(Map<String, String> env) throws InvalidConfigException {
@@ -69,6 +71,8 @@ public class ProjectConfig {
         }
 
         this.pac4jCentralLogout = Boolean.parseBoolean(env.getOrDefault("PAC4J_CENTRAL_LOGOUT", "true"));
+
+        this.allowFlywayErrors = Boolean.parseBoolean(env.getOrDefault("ALLOW_FLYWAY_ERRORS", "false"));
 
         this.dbHost = env.getOrDefault("DIWI_DB_HOST", "localhost");
         this.dbPort = env.getOrDefault("DIWI_DB_PORT", "5432");
