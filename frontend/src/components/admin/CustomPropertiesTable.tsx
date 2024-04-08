@@ -90,6 +90,9 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
                                             {row.categories?.map((category, index) => (
                                                 <Chip key={category.id ?? "" + index} variant="outlined" label={category.name} />
                                             ))}
+                                            {row.ordinals?.map((ordinalCategory, index) => (
+                                                <Chip key={ordinalCategory.id ?? "" + index} variant="outlined" label={ordinalCategory.name} />
+                                            ))}
                                         </TableCell>
                                         <TableCell sx={cellStyle}>
                                             <Stack direction="row" spacing={1} justifyContent="flex-end">

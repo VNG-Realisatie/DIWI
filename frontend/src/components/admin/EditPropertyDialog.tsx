@@ -18,9 +18,10 @@ import { ObjectType, PropertyType } from "../../types/enums";
 import { CategoryCreateOption } from "./CategoryCreateOption";
 import { propertyType } from "../../types/enums";
 import { objectType } from "../../types/enums";
-import { CategoryType, Property, getCustomProperties, getCustomProperty, updateCustomProperty } from "../../api/adminSettingServices";
+import { CategoryType, OrdinalCategoryType, Property, getCustomProperties, getCustomProperty, updateCustomProperty } from "../../api/adminSettingServices";
 import AlertContext from "../../context/AlertContext";
 import InfoIcon from "@mui/icons-material/Info";
+import { OrdinalCategoryCreateOption } from "./OrdinalCategoryCreateOption";
 
 type Props = {
     openDialog: boolean;
@@ -34,12 +35,14 @@ export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomPro
     const [active, setActive] = useState(false);
     const [name, setName] = useState<string>("");
     const [categories, setCategories] = useState<CategoryType[]>([]);
+    const [ordinals, setOrdinalCategories] = useState<OrdinalCategoryType[]>([]);
     const { setAlert } = useContext(AlertContext);
     useEffect(() => {
         if (id) {
             getCustomProperty(id).then((property) => {
                 setName(property.name);
                 property.categories && setCategories(property.categories);
+                property.ordinals && setOrdinalCategories(property.ordinals);
                 setActive(property.disabled);
                 setSelectedObjectType(property.objectType);
                 setSelectedPropertyType(property.propertyType);
@@ -56,6 +59,7 @@ export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomPro
             propertyType: selectedPropertyType,
             disabled: !active,
             categories: selectedPropertyType === "CATEGORY" ? categories : undefined,
+            ordinals: selectedPropertyType === "ORDINAL" ? ordinals : undefined,
         };
         updateCustomProperty(id, newProperty).then(() => {
             setAlert(t("admin.settings.notifications.successfullySaved"), "success");
@@ -120,6 +124,9 @@ export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomPro
                     </Select>
                     {selectedPropertyType === "CATEGORY" && (
                         <CategoryCreateOption categoryValue={categories ? categories : []} setCategoryValue={setCategories} />
+                    )}
+                    {selectedPropertyType === "ORDINAL" && (
+                        <OrdinalCategoryCreateOption ordinalCategoryValue={ordinals ? ordinals : []} setOrdinalCategoryValue={setOrdinalCategories} />
                     )}
                 </Stack>
             </DialogContent>

@@ -20,6 +20,7 @@ import { propertyType } from "../../types/enums";
 import { objectType } from "../../types/enums";
 import { components } from "../../types/schema";
 import InfoIcon from "@mui/icons-material/Info";
+import { OrdinalCategoryCreateOption } from "./OrdinalCategoryCreateOption";
 
 type Props = {
     openDialog: boolean;
@@ -35,6 +36,8 @@ type Props = {
     handleSave: () => void;
     categories: components["schemas"]["SelectDisabledModel"][];
     setCategories: (categories: components["schemas"]["SelectDisabledModel"][]) => void;
+    ordinals: components["schemas"]["OrdinalSelectDisabledModel"][];
+    setOrdinalCategories: (ordinals: components["schemas"]["OrdinalSelectDisabledModel"][]) => void;
 };
 export const CreatePropertyDialog = ({
     openDialog,
@@ -50,6 +53,8 @@ export const CreatePropertyDialog = ({
     handleSave,
     categories,
     setCategories,
+    ordinals,
+    setOrdinalCategories,
 }: Props) => {
     return (
         <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth>
@@ -105,6 +110,9 @@ export const CreatePropertyDialog = ({
                         })}
                     </Select>
                     {selectedPropertyType === "CATEGORY" && <CategoryCreateOption categoryValue={categories} setCategoryValue={setCategories} />}
+                    {selectedPropertyType === "ORDINAL" && (
+                        <OrdinalCategoryCreateOption ordinalCategoryValue={ordinals} setOrdinalCategoryValue={setOrdinalCategories} />
+                    )}
                 </Stack>
             </DialogContent>
             <DialogActions>

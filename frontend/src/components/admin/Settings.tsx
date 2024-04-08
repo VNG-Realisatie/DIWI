@@ -21,6 +21,7 @@ export const Settings = () => {
     const [active, setActive] = useState(false);
     const [name, setName] = useState<string>("");
     const [categories, setCategories] = useState<components["schemas"]["SelectDisabledModel"][]>([]);
+    const [ordinals, setOrdinalCategories] = useState<components["schemas"]["OrdinalSelectDisabledModel"][]>([]);
 
     const { t } = useTranslation();
     const { setAlert } = useContext(AlertContext);
@@ -38,6 +39,12 @@ export const Settings = () => {
                           return c;
                       })
                     : undefined,
+            ordinals:
+                ordinals !== null
+                    ? ordinals.map((oc) => {
+                          return oc;
+                      })
+                    : undefined,
         };
         addCustomProperty(newProperty).then(() => {
             setAlert(t("admin.settings.notifications.successfullySaved"), "success");
@@ -49,8 +56,9 @@ export const Settings = () => {
             setSelectedPropertyType("TEXT");
             setActive(false);
             setCategories([]);
+            setOrdinalCategories([]);
         });
-    }, [active, categories, name, selectedObjectType, selectedPropertyType, setAlert, t]);
+    }, [active, categories, ordinals, name, selectedObjectType, selectedPropertyType, setAlert, t]);
 
     useEffect(() => {
         getCustomProperties().then((customProperties) => setCustomProperties(customProperties));
@@ -59,6 +67,11 @@ export const Settings = () => {
     useEffect(() => {
         selectedPropertyType !== "CATEGORY" && setCategories([]);
     }, [selectedPropertyType]);
+
+    useEffect(() => {
+        selectedPropertyType !== "ORDINAL" && setOrdinalCategories([]);
+    }, [selectedPropertyType]);
+
     return (
         <Stack mt={2} mb={5} mx={2} pb={3}>
             <Typography fontWeight={600}>{t("admin.settings.title")}</Typography>
@@ -81,6 +94,8 @@ export const Settings = () => {
                 handleSave={handleSave}
                 categories={categories ? categories : []}
                 setCategories={setCategories}
+                ordinals={ordinals ? ordinals : []}
+                setOrdinalCategories={setOrdinalCategories}
             />
         </Stack>
     );
