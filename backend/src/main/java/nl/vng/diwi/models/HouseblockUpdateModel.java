@@ -5,8 +5,10 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -65,6 +67,9 @@ public class HouseblockUpdateModel {
     }
 
     public String validate() {
+        return validate(new ArrayList<>(), new ArrayList<>());
+    }
+    public String validate(List<UUID> targetGroupUuids, List<UUID> physicalAppeareanceUuids) {
         if (property == null) {
             return "Property is missing";
         }
@@ -80,8 +85,25 @@ public class HouseblockUpdateModel {
             }
             case name -> (value == null || value.isBlank()) ? "New houseblock name value is not valid." : null;
             case size -> sizeValue.isValid() ? null : "Size value is not valid.";
-            case targetGroup, groundPosition, physicalAppearanceAndHouseType -> {
+            case groundPosition -> {
                 valuesMap.entrySet().removeIf(entry -> entry.getValue() == null);
+                yield null;
+            }
+            case physicalAppearanceAndHouseType -> {
+                for (AmountModel amountModel : amountValuesList) {
+                    if (!targetGroupUuids.contains(amountModel.getId())) {
+                        yield "Physical appearance category id is not valid.";
+                    }
+                }
+                valuesMap.entrySet().removeIf(entry -> entry.getValue() == null);
+                yield null;
+            }
+            case targetGroup -> {
+                for (AmountModel amountModel : amountValuesList) {
+                    if (!targetGroupUuids.contains(amountModel.getId())) {
+                        yield "Target group category id is not valid.";
+                    }
+                }
                 yield null;
             }
             case programming, mutation  -> null;

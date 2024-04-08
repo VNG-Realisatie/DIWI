@@ -544,7 +544,7 @@ public class HouseblockService {
             for (AmountModel newTargetGroupValue : newTargetGroupList) {
                 HouseblockPurposeChangelogValue newChangelogValue = new HouseblockPurposeChangelogValue();
                 newChangelogValue.setPurposeChangelog(newChangelog);
-                newChangelogValue.setCategoryValue(repo.getReferenceById(PropertyCategoryValue.class, newChangelogValue.getId()));
+                newChangelogValue.setCategoryValue(repo.getReferenceById(PropertyCategoryValue.class, newTargetGroupValue.getId()));
                 newChangelogValue.setAmount(newTargetGroupValue.getAmount());
                 repo.persist(newChangelogValue);
             }
