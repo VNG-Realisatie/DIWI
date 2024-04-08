@@ -299,7 +299,7 @@ public class HouseblockResource {
 
         switch (updateModel.getProperty()) {
             case name -> houseblockService.updateHouseblockName(repo, project, houseblock, updateModel.getValue(), loggedUserUuid, updateDate);
-            case targetGroup -> houseblockService.updateHouseblockPurpose(repo, project, houseblock, updateModel.getAmountValuesList(), loggedUserUuid, updateDate);
+            case targetGroup -> houseblockService.updateHouseblockTargetGroup(repo, project, houseblock, updateModel.getAmountValuesList(), loggedUserUuid, updateDate);
             case groundPosition -> {
                 Map<GroundPosition, Integer> groundPositionMap = updateModel.getValuesMap().entrySet().stream()
                     .collect(Collectors.toMap(e -> (GroundPosition) e.getKey(), Map.Entry::getValue));

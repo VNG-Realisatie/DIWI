@@ -143,7 +143,7 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
         }
 
         if (targetGroup != null && targetGroup.isEmpty()) {
-            //purpose info is not present
+            //target group info is not present
             this.targetGroup = null;
         }
 

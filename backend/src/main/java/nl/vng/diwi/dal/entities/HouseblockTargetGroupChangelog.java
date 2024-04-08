@@ -18,14 +18,14 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class HouseblockPurposeChangelog extends HouseblockMilestoneChangeDataSuperclass {
+public class HouseblockTargetGroupChangelog extends HouseblockMilestoneChangeDataSuperclass {
 
-    @OneToMany(mappedBy="purposeChangelog", fetch = FetchType.EAGER)
-    private List<HouseblockPurposeChangelogValue> purposeValues = new ArrayList<>();
+    @OneToMany(mappedBy= "targetGroupChangelog", fetch = FetchType.EAGER)
+    private List<HouseblockTargetGroupChangelogValue> targetGroupValues = new ArrayList<>();
 
     @Override
     public Object getShallowCopy() {
-        var newChangelog = new HouseblockPurposeChangelog();
+        var newChangelog = new HouseblockTargetGroupChangelog();
         newChangelog.setHouseblock(getHouseblock());
         newChangelog.setStartMilestone(getStartMilestone());
         newChangelog.setEndMilestone(getEndMilestone());

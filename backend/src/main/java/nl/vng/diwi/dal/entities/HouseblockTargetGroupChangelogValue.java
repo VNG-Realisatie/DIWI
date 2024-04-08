@@ -20,11 +20,11 @@ import nl.vng.diwi.dal.entities.superclasses.IdSuperclass;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class HouseblockPurposeChangelogValue extends IdSuperclass {
+public class HouseblockTargetGroupChangelogValue extends IdSuperclass {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "woningblok_doelgroep_changelog_id")
-    HouseblockPurposeChangelog purposeChangelog;
+    HouseblockTargetGroupChangelog targetGroupChangelog;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "property_value_id")

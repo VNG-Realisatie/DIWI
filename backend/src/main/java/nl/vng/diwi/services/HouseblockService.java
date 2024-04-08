@@ -24,8 +24,8 @@ import nl.vng.diwi.dal.entities.HouseblockNumericCustomPropertyChangelog;
 import nl.vng.diwi.dal.entities.HouseblockOrdinalCustomPropertyChangelog;
 import nl.vng.diwi.dal.entities.HouseblockOwnershipValueChangelog;
 import nl.vng.diwi.dal.entities.HouseblockPhysicalAppearanceChangelogValue;
-import nl.vng.diwi.dal.entities.HouseblockPurposeChangelog;
-import nl.vng.diwi.dal.entities.HouseblockPurposeChangelogValue;
+import nl.vng.diwi.dal.entities.HouseblockTargetGroupChangelog;
+import nl.vng.diwi.dal.entities.HouseblockTargetGroupChangelogValue;
 import nl.vng.diwi.dal.entities.HouseblockTextCustomPropertyChangelog;
 import nl.vng.diwi.dal.entities.Milestone;
 import nl.vng.diwi.dal.entities.MilestoneState;
@@ -300,16 +300,16 @@ public class HouseblockService {
 
         var targetGroup = houseblockSnapshotModel.getTargetGroup();
         if (targetGroup != null) {
-            var targetGroupChangelog = new HouseblockPurposeChangelog();
+            var targetGroupChangelog = new HouseblockTargetGroupChangelog();
             setChangelogValues.accept(targetGroupChangelog);
             targetGroupChangelog.setHouseblock(houseblock);
             repo.persist(targetGroupChangelog);
 
             targetGroup.forEach(tg -> {
-                var targetGroupValue = new HouseblockPurposeChangelogValue();
+                var targetGroupValue = new HouseblockTargetGroupChangelogValue();
                 targetGroupValue.setAmount(tg.getAmount());
                 targetGroupValue.setCategoryValue(repo.getReferenceById(PropertyCategoryValue.class, tg.getId()));
-                targetGroupValue.setPurposeChangelog(targetGroupChangelog);
+                targetGroupValue.setTargetGroupChangelog(targetGroupChangelog);
                 repo.persist(targetGroupValue);
             });
         }
@@ -411,11 +411,11 @@ public class HouseblockService {
         newChangelog.setChangeStartDate(now);
         repo.persist(newChangelog);
 
-        if (activeChangelog instanceof HouseblockPurposeChangelog oldPurposeChangelog) {
-            oldPurposeChangelog.getPurposeValues().forEach(pv -> {
-                var newPurposeValue = HouseblockPurposeChangelogValue.builder()
-                    .categoryValue(pv.getCategoryValue()).amount(pv.getAmount()).purposeChangelog((HouseblockPurposeChangelog) newChangelog).build();
-                repo.persist(newPurposeValue);
+        if (activeChangelog instanceof HouseblockTargetGroupChangelog oldTargetGroupChangelog) {
+            oldTargetGroupChangelog.getTargetGroupValues().forEach(pv -> {
+                var newTargetGroupValue = HouseblockTargetGroupChangelogValue.builder()
+                    .categoryValue(pv.getCategoryValue()).amount(pv.getAmount()).targetGroupChangelog((HouseblockTargetGroupChangelog) newChangelog).build();
+                repo.persist(newTargetGroupValue);
             });
         }
         if (activeChangelog instanceof HouseblockGroundPositionChangelog oldGroundPosChangelog) {
@@ -527,23 +527,23 @@ public class HouseblockService {
         }
     }
 
-    public void updateHouseblockPurpose(VngRepository repo, Project project, Houseblock houseblock, List<AmountModel> newTargetGroupList, UUID loggedInUserUuid, LocalDate updateDate) {
+    public void updateHouseblockTargetGroup(VngRepository repo, Project project, Houseblock houseblock, List<AmountModel> newTargetGroupList, UUID loggedInUserUuid, LocalDate updateDate) {
 
-        HouseblockPurposeChangelog oldChangelogAfterUpdate = new HouseblockPurposeChangelog();
-        HouseblockPurposeChangelog newChangelog = null;
+        HouseblockTargetGroupChangelog oldChangelogAfterUpdate = new HouseblockTargetGroupChangelog();
+        HouseblockTargetGroupChangelog newChangelog = null;
         if (!newTargetGroupList.isEmpty()) {
-            newChangelog = new HouseblockPurposeChangelog();
+            newChangelog = new HouseblockTargetGroupChangelog();
             newChangelog.setHouseblock(houseblock);
         }
 
-        HouseblockPurposeChangelog oldChangelog = prepareHouseblockChangelogValuesToUpdate(repo, project, houseblock, houseblock.getPurposes(), newChangelog,
+        HouseblockTargetGroupChangelog oldChangelog = prepareHouseblockChangelogValuesToUpdate(repo, project, houseblock, houseblock.getTargetGroups(), newChangelog,
             oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
 
         if (newChangelog != null) {
             repo.persist(newChangelog);
             for (AmountModel newTargetGroupValue : newTargetGroupList) {
-                HouseblockPurposeChangelogValue newChangelogValue = new HouseblockPurposeChangelogValue();
-                newChangelogValue.setPurposeChangelog(newChangelog);
+                HouseblockTargetGroupChangelogValue newChangelogValue = new HouseblockTargetGroupChangelogValue();
+                newChangelogValue.setTargetGroupChangelog(newChangelog);
                 newChangelogValue.setCategoryValue(repo.getReferenceById(PropertyCategoryValue.class, newTargetGroupValue.getId()));
                 newChangelogValue.setAmount(newTargetGroupValue.getAmount());
                 repo.persist(newChangelogValue);
@@ -556,11 +556,11 @@ public class HouseblockService {
                 // it is a current project && it had a non-null changelog before the update
                 oldChangelogAfterUpdate.setHouseblock(houseblock);
                 repo.persist(oldChangelogAfterUpdate);
-                for (HouseblockPurposeChangelogValue purposeValue : oldChangelog.getPurposeValues()) {
-                    HouseblockPurposeChangelogValue oldChangelogValue = new HouseblockPurposeChangelogValue();
-                    oldChangelogValue.setPurposeChangelog(oldChangelogAfterUpdate);
-                    oldChangelogValue.setCategoryValue(purposeValue.getCategoryValue());
-                    oldChangelogValue.setAmount(purposeValue.getAmount());
+                for (HouseblockTargetGroupChangelogValue targetGroupValue : oldChangelog.getTargetGroupValues()) {
+                    HouseblockTargetGroupChangelogValue oldChangelogValue = new HouseblockTargetGroupChangelogValue();
+                    oldChangelogValue.setTargetGroupChangelog(oldChangelogAfterUpdate);
+                    oldChangelogValue.setCategoryValue(targetGroupValue.getCategoryValue());
+                    oldChangelogValue.setAmount(targetGroupValue.getAmount());
                     repo.persist(oldChangelogValue);
                 }
             }
