@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -16,6 +17,7 @@ public class HouseblockUpdateModel {
     private Boolean booleanValue;
     private SingleValueOrRangeModel<BigDecimal> sizeValue;
     private Map<Object, Integer> valuesMap;
+    private List<AmountModel> amountValuesList;
     private HouseblockSnapshotModel.OwnershipValue ownershipValue;
     private HouseblockSnapshotModel.Mutation mutationValue;
     private ActionType actionType;
@@ -33,6 +35,17 @@ public class HouseblockUpdateModel {
     public HouseblockUpdateModel(HouseblockProperty property, Map<Object, Integer> valuesMap) {
         this.property = property;
         this.valuesMap = valuesMap;
+    }
+
+    public HouseblockUpdateModel(HouseblockProperty property, List<AmountModel> amountValuesList) {
+        this.property = property;
+        this.amountValuesList = amountValuesList;
+    }
+
+    public HouseblockUpdateModel(HouseblockProperty property, List<AmountModel> amountValuesList, Map<Object, Integer> valuesMap) {
+        this.property = property;
+        this.valuesMap = valuesMap;
+        this.amountValuesList = amountValuesList;
     }
 
     public HouseblockUpdateModel(HouseblockProperty property, SingleValueOrRangeModel<BigDecimal> singleValueOrRangeModel) {
@@ -67,7 +80,7 @@ public class HouseblockUpdateModel {
             }
             case name -> (value == null || value.isBlank()) ? "New houseblock name value is not valid." : null;
             case size -> sizeValue.isValid() ? null : "Size value is not valid.";
-            case purpose, groundPosition, physicalAppearanceAndHouseType -> {
+            case targetGroup, groundPosition, physicalAppearanceAndHouseType -> {
                 valuesMap.entrySet().removeIf(entry -> entry.getValue() == null);
                 yield null;
             }
@@ -83,7 +96,7 @@ public class HouseblockUpdateModel {
         groundPosition,
         mutation,
         ownershipValue,
-        purpose,
+        targetGroup,
         physicalAppearanceAndHouseType,
         programming,
         size,

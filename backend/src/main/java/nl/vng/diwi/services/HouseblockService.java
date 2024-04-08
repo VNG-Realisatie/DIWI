@@ -36,11 +36,10 @@ import nl.vng.diwi.dal.entities.HouseblockSizeChangelog;
 import nl.vng.diwi.dal.entities.enums.GroundPosition;
 import nl.vng.diwi.dal.entities.enums.HouseType;
 import nl.vng.diwi.dal.entities.enums.MutationType;
-import nl.vng.diwi.dal.entities.enums.PhysicalAppearance;
-import nl.vng.diwi.dal.entities.enums.Purpose;
 import nl.vng.diwi.dal.entities.enums.ValueType;
 import nl.vng.diwi.dal.entities.superclasses.HouseblockMilestoneChangeDataSuperclass;
 import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
+import nl.vng.diwi.models.AmountModel;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.dal.entities.HouseblockSnapshotSqlModel;
 import nl.vng.diwi.models.HouseblockUpdateModel;
@@ -273,22 +272,12 @@ public class HouseblockService {
             repo.persist(appearanceAndTypeChangelog);
 
             if (physicalAppearance != null) {
-                Map<PhysicalAppearance, Integer> physicalAppearanceAmountMap = new HashMap<>();
-                physicalAppearanceAmountMap.put(PhysicalAppearance.GALLERIJFLAT, physicalAppearance.getGallerijflat());
-                physicalAppearanceAmountMap.put(PhysicalAppearance.HOEKWONING, physicalAppearance.getHoekwoning());
-                physicalAppearanceAmountMap.put(PhysicalAppearance.TUSSENWONING, physicalAppearance.getTussenwoning());
-                physicalAppearanceAmountMap.put(PhysicalAppearance.PORTIEKFLAT, physicalAppearance.getPortiekflat());
-                physicalAppearanceAmountMap.put(PhysicalAppearance.VRIJSTAAND, physicalAppearance.getVrijstaand());
-                physicalAppearanceAmountMap.put(PhysicalAppearance.TWEE_ONDER_EEN_KAP, physicalAppearance.getTweeondereenkap());
-
-                physicalAppearanceAmountMap.forEach((k, v) -> {
-                    if (v != null) {
-                        var physicalAppearanceValue = new HouseblockPhysicalAppearanceChangelogValue();
-                        physicalAppearanceValue.setAmount(v);
-                        physicalAppearanceValue.setPhysicalAppearance(k);
-                        physicalAppearanceValue.setAppearanceAndTypeChangelog(appearanceAndTypeChangelog);
-                        repo.persist(physicalAppearanceValue);
-                    }
+                physicalAppearance.forEach(pa -> {
+                    var physicalAppearanceValue = new HouseblockPhysicalAppearanceChangelogValue();
+                    physicalAppearanceValue.setAmount(pa.getAmount());
+                    physicalAppearanceValue.setCategoryValue(repo.getReferenceById(PropertyCategoryValue.class, pa.getId()));
+                    physicalAppearanceValue.setAppearanceAndTypeChangelog(appearanceAndTypeChangelog);
+                    repo.persist(physicalAppearanceValue);
                 });
             }
 
@@ -309,29 +298,19 @@ public class HouseblockService {
             }
         }
 
-        var purpose = houseblockSnapshotModel.getPurpose();
-        if (purpose != null) {
-            var purposeChangelog = new HouseblockPurposeChangelog();
-            setChangelogValues.accept(purposeChangelog);
-            purposeChangelog.setHouseblock(houseblock);
-            repo.persist(purposeChangelog);
+        var targetGroup = houseblockSnapshotModel.getTargetGroup();
+        if (targetGroup != null) {
+            var targetGroupChangelog = new HouseblockPurposeChangelog();
+            setChangelogValues.accept(targetGroupChangelog);
+            targetGroupChangelog.setHouseblock(houseblock);
+            repo.persist(targetGroupChangelog);
 
-            Map<Purpose, Integer> purposeAmountMap = new HashMap<>();
-            purposeAmountMap.put(Purpose.REGULIER, purpose.getRegular());
-            purposeAmountMap.put(Purpose.JONGEREN, purpose.getYouth());
-            purposeAmountMap.put(Purpose.STUDENTEN, purpose.getStudent());
-            purposeAmountMap.put(Purpose.OUDEREN, purpose.getElderly());
-            purposeAmountMap.put(Purpose.GROTE_GEZINNEN, purpose.getLargeFamilies());
-            purposeAmountMap.put(Purpose.GEHANDICAPTEN_EN_ZORG, purpose.getGHZ());
-
-            purposeAmountMap.forEach((k, v) -> {
-                if (v != null) {
-                    var purposeValue = new HouseblockPurposeChangelogValue();
-                    purposeValue.setAmount(v);
-                    purposeValue.setPurpose(k);
-                    purposeValue.setPurposeChangelog(purposeChangelog);
-                    repo.persist(purposeValue);
-                }
+            targetGroup.forEach(tg -> {
+                var targetGroupValue = new HouseblockPurposeChangelogValue();
+                targetGroupValue.setAmount(tg.getAmount());
+                targetGroupValue.setCategoryValue(repo.getReferenceById(PropertyCategoryValue.class, tg.getId()));
+                targetGroupValue.setPurposeChangelog(targetGroupChangelog);
+                repo.persist(targetGroupValue);
             });
         }
 
@@ -435,7 +414,7 @@ public class HouseblockService {
         if (activeChangelog instanceof HouseblockPurposeChangelog oldPurposeChangelog) {
             oldPurposeChangelog.getPurposeValues().forEach(pv -> {
                 var newPurposeValue = HouseblockPurposeChangelogValue.builder()
-                    .purpose(pv.getPurpose()).amount(pv.getAmount()).purposeChangelog((HouseblockPurposeChangelog) newChangelog).build();
+                    .categoryValue(pv.getCategoryValue()).amount(pv.getAmount()).purposeChangelog((HouseblockPurposeChangelog) newChangelog).build();
                 repo.persist(newPurposeValue);
             });
         }
@@ -463,7 +442,7 @@ public class HouseblockService {
         if (activeChangelog instanceof HouseblockAppearanceAndTypeChangelog oldAppTypeChangelog) {
             oldAppTypeChangelog.getPhysicalAppearanceValues().forEach(av -> {
                 var newAppValue = HouseblockPhysicalAppearanceChangelogValue.builder()
-                    .physicalAppearance(av.getPhysicalAppearance()).amount(av.getAmount())
+                    .categoryValue(av.getCategoryValue()).amount(av.getAmount())
                     .appearanceAndTypeChangelog((HouseblockAppearanceAndTypeChangelog) newChangelog).build();
                 repo.persist(newAppValue);
             });
@@ -548,11 +527,11 @@ public class HouseblockService {
         }
     }
 
-    public void updateHouseblockPurpose(VngRepository repo, Project project, Houseblock houseblock, Map<Purpose, Integer> newPurposeMap, UUID loggedInUserUuid, LocalDate updateDate) {
+    public void updateHouseblockPurpose(VngRepository repo, Project project, Houseblock houseblock, List<AmountModel> newTargetGroupList, UUID loggedInUserUuid, LocalDate updateDate) {
 
         HouseblockPurposeChangelog oldChangelogAfterUpdate = new HouseblockPurposeChangelog();
         HouseblockPurposeChangelog newChangelog = null;
-        if (!newPurposeMap.isEmpty()) {
+        if (!newTargetGroupList.isEmpty()) {
             newChangelog = new HouseblockPurposeChangelog();
             newChangelog.setHouseblock(houseblock);
         }
@@ -562,11 +541,11 @@ public class HouseblockService {
 
         if (newChangelog != null) {
             repo.persist(newChangelog);
-            for (Map.Entry<Purpose, Integer> purposeMapEntry : newPurposeMap.entrySet()) {
+            for (AmountModel newTargetGroupValue : newTargetGroupList) {
                 HouseblockPurposeChangelogValue newChangelogValue = new HouseblockPurposeChangelogValue();
                 newChangelogValue.setPurposeChangelog(newChangelog);
-                newChangelogValue.setPurpose(purposeMapEntry.getKey());
-                newChangelogValue.setAmount(purposeMapEntry.getValue());
+                newChangelogValue.setCategoryValue(repo.getReferenceById(PropertyCategoryValue.class, newChangelogValue.getId()));
+                newChangelogValue.setAmount(newTargetGroupValue.getAmount());
                 repo.persist(newChangelogValue);
             }
         }
@@ -580,7 +559,7 @@ public class HouseblockService {
                 for (HouseblockPurposeChangelogValue purposeValue : oldChangelog.getPurposeValues()) {
                     HouseblockPurposeChangelogValue oldChangelogValue = new HouseblockPurposeChangelogValue();
                     oldChangelogValue.setPurposeChangelog(oldChangelogAfterUpdate);
-                    oldChangelogValue.setPurpose(purposeValue.getPurpose());
+                    oldChangelogValue.setCategoryValue(purposeValue.getCategoryValue());
                     oldChangelogValue.setAmount(purposeValue.getAmount());
                     repo.persist(oldChangelogValue);
                 }
@@ -629,12 +608,12 @@ public class HouseblockService {
         }
     }
 
-    public void updatePhysicalAppearanceAndHouseType(VngRepository repo, Project project, Houseblock houseblock, Map<PhysicalAppearance, Integer> physicalAppearanceMap,
+    public void updatePhysicalAppearanceAndHouseType(VngRepository repo, Project project, Houseblock houseblock, List<AmountModel> physicalAppearanceList,
                                                      Map<HouseType, Integer> houseTypeMap, UUID loggedInUserUuid, LocalDate updateDate) {
 
         HouseblockAppearanceAndTypeChangelog oldChangelogAfterUpdate = new HouseblockAppearanceAndTypeChangelog();
         HouseblockAppearanceAndTypeChangelog newChangelog = null;
-        if (!physicalAppearanceMap.isEmpty() || !houseTypeMap.isEmpty()) {
+        if (!physicalAppearanceList.isEmpty() || !houseTypeMap.isEmpty()) {
             newChangelog = new HouseblockAppearanceAndTypeChangelog();
             newChangelog.setHouseblock(houseblock);
         }
@@ -644,11 +623,11 @@ public class HouseblockService {
 
         if (newChangelog != null) {
             repo.persist(newChangelog);
-            for (Map.Entry<PhysicalAppearance, Integer> paMapEntry : physicalAppearanceMap.entrySet()) {
+            for (AmountModel paValue : physicalAppearanceList) {
                 HouseblockPhysicalAppearanceChangelogValue newChangelogValue = new HouseblockPhysicalAppearanceChangelogValue();
                 newChangelogValue.setAppearanceAndTypeChangelog(newChangelog);
-                newChangelogValue.setPhysicalAppearance(paMapEntry.getKey());
-                newChangelogValue.setAmount(paMapEntry.getValue());
+                newChangelogValue.setCategoryValue(repo.getReferenceById(PropertyCategoryValue.class, paValue.getId()));
+                newChangelogValue.setAmount(paValue.getAmount());
                 repo.persist(newChangelogValue);
             }
             for (Map.Entry<HouseType, Integer> htMapEntry : houseTypeMap.entrySet()) {
@@ -669,7 +648,7 @@ public class HouseblockService {
                 for (HouseblockPhysicalAppearanceChangelogValue paValue : oldChangelog.getPhysicalAppearanceValues()) {
                     HouseblockPhysicalAppearanceChangelogValue oldChangelogValue = new HouseblockPhysicalAppearanceChangelogValue();
                     oldChangelogValue.setAppearanceAndTypeChangelog(oldChangelogAfterUpdate);
-                    oldChangelogValue.setPhysicalAppearance(paValue.getPhysicalAppearance());
+                    oldChangelogValue.setCategoryValue(paValue.getCategoryValue());
                     oldChangelogValue.setAmount(paValue.getAmount());
                     repo.persist(oldChangelogValue);
                 }

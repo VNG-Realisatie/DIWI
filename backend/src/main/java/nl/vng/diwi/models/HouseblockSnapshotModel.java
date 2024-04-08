@@ -35,11 +35,11 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
 
     private GroundPosition groundPosition = new GroundPosition();
 
-    private PhysicalAppearance physicalAppearance = new PhysicalAppearance();
+    private List<AmountModel> physicalAppearance = new ArrayList<>();
 
     private HouseType houseType = new HouseType();
 
-    private Purpose purpose = new Purpose();
+    private List<AmountModel> targetGroup = new ArrayList<>();
 
     private List<ProjectHouseblockCustomPropertyModel> customProperties = new ArrayList<>();
 
@@ -70,22 +70,12 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
         this.groundPosition.setIntentionPermissionOwner(sqlModel.getIntentionPermissionOwner());
         this.groundPosition.setNoPermissionOwner(sqlModel.getNoPermissionOwner());
 
-        this.physicalAppearance.setGallerijflat(sqlModel.getGallerijflat());
-        this.physicalAppearance.setHoekwoning(sqlModel.getHoekwoning());
-        this.physicalAppearance.setVrijstaand(sqlModel.getVrijstaand());
-        this.physicalAppearance.setTweeondereenkap(sqlModel.getTweeondereenkap());
-        this.physicalAppearance.setPortiekflat(sqlModel.getPortiekflat());
-        this.physicalAppearance.setTussenwoning(sqlModel.getTussenwoning());
+        this.physicalAppearance.addAll(sqlModel.getPhysicalAppearanceList());
 
         this.houseType.setEengezinswoning(sqlModel.getEengezinswoning());
         this.houseType.setMeergezinswoning(sqlModel.getMeergezinswoning());
 
-        this.purpose.setRegular(sqlModel.getRegular());
-        this.purpose.setYouth(sqlModel.getYouth());
-        this.purpose.setStudent(sqlModel.getStudent());
-        this.purpose.setElderly(sqlModel.getElderly());
-        this.purpose.setGHZ(sqlModel.getGHZ());
-        this.purpose.setLargeFamilies(sqlModel.getLargeFamilies());
+        this.targetGroup.addAll(sqlModel.getTargetGroupList());
     }
 
     public boolean isSizeEqualTo(SingleValueOrRangeModel<BigDecimal> otherSize) {
@@ -142,9 +132,7 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
             this.groundPosition = null;
         }
 
-        if (physicalAppearance != null && physicalAppearance.getTussenwoning() == null && physicalAppearance.getTweeondereenkap() == null &&
-            physicalAppearance.getPortiekflat() == null && physicalAppearance.getHoekwoning() == null && physicalAppearance.getVrijstaand() == null &&
-            physicalAppearance.getGallerijflat() == null) {
+        if (physicalAppearance != null && physicalAppearance.isEmpty()) {
             //physical appearance info is not present
             this.physicalAppearance = null;
         }
@@ -154,10 +142,9 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
             this.houseType = null;
         }
 
-        if (purpose != null && purpose.getRegular() == null && purpose.getYouth() == null && purpose.getStudent() == null &&
-            purpose.getElderly() == null && purpose.getGHZ() == null && purpose.getLargeFamilies() == null) {
+        if (targetGroup != null && targetGroup.isEmpty()) {
             //purpose info is not present
-            this.purpose = null;
+            this.targetGroup = null;
         }
 
         return null;
@@ -198,33 +185,9 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
     @Getter
     @Setter
     @EqualsAndHashCode
-    public static class PhysicalAppearance {
-        private Integer tussenwoning;
-        private Integer tweeondereenkap;
-        private Integer portiekflat;
-        private Integer hoekwoning;
-        private Integer vrijstaand;
-        private Integer gallerijflat;
-    }
-
-    @Getter
-    @Setter
-    @EqualsAndHashCode
     public static class HouseType {
         private Integer meergezinswoning;
         private Integer eengezinswoning;
-    }
-
-    @Getter
-    @Setter
-    @EqualsAndHashCode
-    public static class Purpose {
-        private Integer regular;
-        private Integer youth;
-        private Integer student;
-        private Integer elderly;
-        private Integer GHZ;
-        private Integer largeFamilies;
     }
 
 }
