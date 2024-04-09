@@ -1,5 +1,5 @@
 import { Box, Stack, Tooltip } from "@mui/material";
-import { HouseBlock } from "./project-wizard/house-blocks/types";
+import { HouseBlock } from "../types/houseBlockTypes";
 import { useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";

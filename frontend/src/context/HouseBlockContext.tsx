@@ -1,5 +1,5 @@
 import { PropsWithChildren, createContext, useContext, useEffect, useState } from "react";
-import { HouseBlock } from "../components/project-wizard/house-blocks/types";
+import { HouseBlock } from "../types/houseBlockTypes";
 import ProjectContext from "./ProjectContext";
 import { getProjectHouseBlocks } from "../api/projectsServices";
 import * as projectServices from "../api/projectsServices";

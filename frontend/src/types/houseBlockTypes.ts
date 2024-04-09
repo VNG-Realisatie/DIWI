@@ -1,4 +1,4 @@
-import { MutationSelectOptions, OwnershipValueType } from "../../../types/enums";
+import { MutationSelectOptions, OwnershipValueType } from "./enums";
 
 export type GeneralInformation = {
     startDate: null | string;

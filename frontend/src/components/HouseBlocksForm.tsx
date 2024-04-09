@@ -1,5 +1,5 @@
 import { Grid } from "@mui/material";
-import { HouseBlock } from "./project-wizard/house-blocks/types";
+import { HouseBlock } from "../types/houseBlockTypes";
 import { GeneralInformationGroup } from "./project-wizard/house-blocks/general-information/GeneralInformationGroup";
 import { MutationInformationGroup } from "./project-wizard/house-blocks/mutation-information/MutationInformationGroup";
 import { OwnershipInformationGroup } from "./project-wizard/house-blocks/ownership-information/OwnershipInformationGroup";

@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
 import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
-import { HouseBlock } from "../types";
+import { HouseBlock } from "../../../../types/houseBlockTypes";
 import { HouseBlockSize, SizeInput } from "./SizeInput";
 import { NameInput } from "./NameInput";
 import { StartDatePicker } from "./StartDatePicker";

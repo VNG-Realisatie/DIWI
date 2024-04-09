@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogActions, Button } from "@mui/material";
 import { t } from "i18next";
 import { HouseBlocksForm } from "../../HouseBlocksForm";
-import { HouseBlock } from "../../project-wizard/house-blocks/types";
+import { HouseBlock } from "../../../types/houseBlockTypes";
 import { useContext, useEffect, useState } from "react";
 import HouseBlockContext from "../../../context/HouseBlockContext";
 

@@ -1,5 +1,5 @@
 import { Grid, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
-import { HouseBlock } from "../../project-wizard/house-blocks/types";
+import { HouseBlock } from "../../../types/houseBlockTypes";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { AddHouseBlockButton } from "../../PlusButton";
 import { useTranslation } from "react-i18next";

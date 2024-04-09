@@ -1,7 +1,7 @@
 import { getJson, postJson, deleteJson, putJson, postJsonNoResponse } from "../utils/requests";
 import { components } from "../types/schema";
 import { API_URI } from "../utils/urls";
-import { HouseBlock } from "../components/project-wizard/house-blocks/types";
+import { HouseBlock } from "../types/houseBlockTypes";
 import { GeoJSONGeometry, GeoJSONMultiPolygon, GeoJSONPolygon } from "ol/format/GeoJSON";
 
 export type Organization = components["schemas"]["OrganizationModel"];
