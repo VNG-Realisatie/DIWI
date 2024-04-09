@@ -20,7 +20,7 @@ const ProjectWizard = () => {
     const navigate = useNavigate();
     const { setAlert } = useAlert();
 
-    const handleSave = async () => {
+    async function validateAndSave() {
         if (
             !createProjectForm.projectName ||
             !createProjectForm.startDate ||
@@ -59,9 +59,14 @@ const ProjectWizard = () => {
             setAlert(error.message, "error");
             return false;
         }
+    }
+
+    const handleSave = async () => {
+        validateAndSave();
     };
 
     const handleNext = async () => {
+        validateAndSave();
         if (projectId) {
             navigate(projectWizardBlocks.toPath({ projectId }));
         }
