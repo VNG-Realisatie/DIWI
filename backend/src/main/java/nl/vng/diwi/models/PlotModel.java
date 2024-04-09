@@ -11,7 +11,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import nl.vng.diwi.dal.entities.ProjectRegistryLinkChangelogValue;
-import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.geojson.GeoJsonObject;
 import org.geojson.MultiPolygon;
