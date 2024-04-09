@@ -65,11 +65,13 @@ export const Settings = () => {
     }, []);
 
     useEffect(() => {
-        selectedPropertyType !== "CATEGORY" && setCategories([]);
-    }, [selectedPropertyType]);
+        if (selectedPropertyType !== "CATEGORY") {
+            setCategories([]);
+        }
 
-    useEffect(() => {
-        selectedPropertyType !== "ORDINAL" && setOrdinalCategories([]);
+        if (selectedPropertyType !== "ORDINAL") {
+            setOrdinalCategories([]);
+        }
     }, [selectedPropertyType]);
 
     return (

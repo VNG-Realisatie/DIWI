@@ -40,6 +40,8 @@ export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomPro
     useEffect(() => {
         if (id) {
             getCustomProperty(id).then((property) => {
+                console.log("property", property);
+                console.log("property.ordinals", property.ordinals);
                 setName(property.name);
                 property.categories && setCategories(property.categories);
                 property.ordinals && setOrdinalCategories(property.ordinals);
