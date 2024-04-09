@@ -26,10 +26,8 @@ const ProjectWizardBlocks = () => {
         } else {
             if (houseBlock.houseblockId) {
                 updateHouseBlock(houseBlock);
-                setAlert(t("createProject.houseBlocksForm.notifications.successfullyUpdated"), "success");
             } else {
                 addHouseBlock(houseBlock);
-                setAlert(t("createProject.houseBlocksForm.notifications.successfullySaved"), "success");
             }
             if (projectId) {
                 navigate(projectWizardMap.toPath({ projectId }));
@@ -38,16 +36,10 @@ const ProjectWizardBlocks = () => {
     };
 
     const handleSave = async () => {
-        try {
-            if (houseBlock.houseblockId) {
-                updateHouseBlock(houseBlock);
-                setAlert(t("createProject.houseBlocksForm.notifications.successfullyUpdated"), "success");
-            } else {
-                addHouseBlock(houseBlock);
-                setAlert(t("createProject.houseBlocksForm.notifications.successfullySaved"), "success");
-            }
-        } catch (error: any) {
-            setAlert(error.message, "warning");
+        if (houseBlock.houseblockId) {
+            updateHouseBlock(houseBlock);
+        } else {
+            addHouseBlock(houseBlock);
         }
     };
 
