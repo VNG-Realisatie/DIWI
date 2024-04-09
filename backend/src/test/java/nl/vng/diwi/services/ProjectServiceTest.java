@@ -381,17 +381,17 @@ public class ProjectServiceTest {
         String gemeenteCode = "gemeente";
         long brkPerceelNummer = 1234l;
         String brkSectie = "sectie";
-        String brkSelectie = "selectie";
+        ObjectNode subselectionGeometry = JsonNodeFactory.instance.objectNode().put("subselectionGeometry", "geometry");
 
         try (var transaction = repo.beginTransaction()) {
             createProjectDurationChangelog(repo, project, startMilestone, endMilestone, user);
 
-            var oldChangelog = createPlot(geoJson, gemeenteCode + "old", brkPerceelNummer, brkSectie, brkSelectie);
+            var oldChangelog = createPlot(geoJson, gemeenteCode + "old", brkPerceelNummer, brkSectie, subselectionGeometry);
             oldChangelog.setChangeEndDate(now);
             oldChangelog.setChangeUser(user);
             repo.persist(oldChangelog);
 
-            createPlot(geoJson, gemeenteCode, brkPerceelNummer, brkSectie, brkSelectie);
+            createPlot(geoJson, gemeenteCode, brkPerceelNummer, brkSectie, subselectionGeometry);
             transaction.commit();
             repo.getSession().clear();
         }
@@ -404,8 +404,8 @@ public class ProjectServiceTest {
                             .brkGemeenteCode(gemeenteCode)
                             .brkPerceelNummer(brkPerceelNummer)
                             .brkSectie(brkSectie)
-                            .brkSelectie(brkSelectie)
-                            .geoJson(geoJson)
+                            .subselectionGeometry(subselectionGeometry)
+                            .plotFeature(geoJson)
                             .build());
 
             assertThat(plots).usingRecursiveAssertion().isEqualTo(expected);
@@ -419,17 +419,17 @@ public class ProjectServiceTest {
         String gemeenteCode = "gemeente";
         long brkPerceelNummer = 1234l;
         String brkSectie = "sectie";
-        String brkSelectie = "selectie";
+        ObjectNode subselectionGeometry = JsonNodeFactory.instance.objectNode().put("subselectionGeometry", "geometry");
 
         // Create an old and a current changelog already so we can test these are replaced.
         try (var transaction = repo.beginTransaction()) {
             createProjectDurationChangelog(repo, project, startMilestone, endMilestone, user);
-            var oldChangelog = createPlot(geoJson, gemeenteCode + "old", brkPerceelNummer, brkSectie, brkSelectie);
+            var oldChangelog = createPlot(geoJson, gemeenteCode + "old", brkPerceelNummer, brkSectie, subselectionGeometry);
             oldChangelog.setChangeEndDate(now);
             oldChangelog.setChangeUser(user);
             repo.persist(oldChangelog);
 
-            createPlot(geoJson, gemeenteCode, brkPerceelNummer, brkSectie, brkSelectie);
+            createPlot(geoJson, gemeenteCode, brkPerceelNummer, brkSectie, subselectionGeometry);
 
             transaction.commit();
             repo.getSession().clear();
@@ -443,8 +443,8 @@ public class ProjectServiceTest {
                             .brkGemeenteCode(gemeenteCode + "new")
                             .brkPerceelNummer(brkPerceelNummer)
                             .brkSectie(brkSectie)
-                            .brkSelectie(brkSelectie)
-                            .geoJson(geoJson)
+                            .subselectionGeometry(subselectionGeometry)
+                            .plotFeature(geoJson)
                             .build());
             projectService.setPlots(repo, project, plots, user.getId());
 
@@ -463,8 +463,8 @@ public class ProjectServiceTest {
                     .brkGemeenteCode(gemeenteCode + "new")
                     .brkPerceelNummer(brkPerceelNummer)
                     .brkSectie(brkSectie)
-                    .brkSelectie(brkSelectie)
-                    .geoJson(geoJson)
+                    .subselectionGeometry(subselectionGeometry)
+                    .plotFeature(geoJson)
                     .projectRegistryLinkChangelog(actualCls.get(0))
                     .build());
 
@@ -615,7 +615,7 @@ public class ProjectServiceTest {
         }
     }
 
-    private ProjectRegistryLinkChangelog createPlot(ObjectNode geoJson, String gemeenteCode, long brkPerceelNummer, String brkSectie, String brkSelectie) {
+    private ProjectRegistryLinkChangelog createPlot(ObjectNode geoJson, String gemeenteCode, long brkPerceelNummer, String brkSectie, ObjectNode subselectionGeometry) {
         ProjectRegistryLinkChangelog changelog = ProjectRegistryLinkChangelog.builder()
                 .project(project)
                 .build();
@@ -629,8 +629,8 @@ public class ProjectServiceTest {
                 .brkGemeenteCode(gemeenteCode)
                 .brkPerceelNummer(brkPerceelNummer)
                 .brkSectie(brkSectie)
-                .brkSelectie(brkSelectie)
-                .geoJson(geoJson)
+                .subselectionGeometry(subselectionGeometry)
+                .plotFeature(geoJson)
                 .projectRegistryLinkChangelog(changelog)
                 .build();
         repo.persist(val);

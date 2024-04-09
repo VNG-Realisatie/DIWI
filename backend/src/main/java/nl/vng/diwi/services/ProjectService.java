@@ -147,8 +147,8 @@ public class ProjectService {
                     .brkGemeenteCode(plot.getBrkGemeenteCode())
                     .brkPerceelNummer(plot.getBrkPerceelNummer())
                     .brkSectie(plot.getBrkSectie())
-                    .brkSelectie(plot.getBrkSelectie())
-                    .geoJson(plot.getGeoJson())
+                    .subselectionGeometry(plot.getSubselectionGeometry())
+                    .plotFeature(plot.getPlotFeature())
                     .projectRegistryLinkChangelog(newCl)
                     .build());
             }
@@ -166,8 +166,8 @@ public class ProjectService {
                         .brkGemeenteCode(oldClValue.getBrkGemeenteCode())
                         .brkPerceelNummer(oldClValue.getBrkPerceelNummer())
                         .brkSectie(oldClValue.getBrkSectie())
-                        .brkSelectie(oldClValue.getBrkSelectie())
-                        .geoJson(oldClValue.getGeoJson())
+                        .subselectionGeometry(oldClValue.getSubselectionGeometry())
+                        .plotFeature(oldClValue.getPlotFeature())
                         .projectRegistryLinkChangelog(oldClAfterUpdate)
                         .build());
                 }

@@ -17,3 +17,5 @@ export type MutationSelectOptions = "BOUW" | "SLOOP" | "TRANSFORMATIE" | "SPLITS
 export type OwnershipValueType = "KOOPWONING" | "HUURWONING_PARTICULIERE_VERHUURDER" | "HUURWONING_WONINGCORPORATIE" | "";
 export type PropertyType = "BOOLEAN" | "CATEGORY" | "ORDINAL" | "NUMERIC" | "TEXT";
 export type ObjectType = "PROJECT" | "WONINGBLOK";
+export const objectType = ["PROJECT", "WONINGBLOK"];
+export const propertyType = ["BOOLEAN", "CATEGORY", "ORDINAL", "NUMERIC", "TEXT"];

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { CustomPropertyType, getCustomPropertiesWithQuery } from "../../../api/adminSettingServices";
+import { Property, getCustomPropertiesWithQuery } from "../../../api/adminSettingServices";
 import Grid from "@mui/material/Grid";
 import { CustomPropertyValue } from "../../../api/customPropServices";
 import Typography from "@mui/material/Typography";
@@ -14,7 +14,7 @@ type Props = {
 };
 
 export const CustomerPropertiesProjectBlock = ({ readOnly, customValues, setCustomValues, columnTitleStyle }: Props) => {
-    const [customDefinitions, setCustomDefinitions] = useState<CustomPropertyType[]>([]);
+    const [customDefinitions, setCustomDefinitions] = useState<Property[]>([]);
 
     useEffect(() => {
         getCustomPropertiesWithQuery("PROJECT").then((properties) => {
