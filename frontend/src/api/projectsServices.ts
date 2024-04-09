@@ -2,6 +2,7 @@ import { getJson, postJson, deleteJson, putJson, postJsonNoResponse } from "../u
 import { components } from "../types/schema";
 import { API_URI } from "../utils/urls";
 import { HouseBlock } from "../components/project-wizard/house-blocks/types";
+import { GeoJSONGeometry, GeoJSONMultiPolygon, GeoJSONPolygon } from "ol/format/GeoJSON";
 
 export type Organization = components["schemas"]["OrganizationModel"];
 export type OrganizationUser = components["schemas"]["OrganizationUserModel"];
@@ -18,10 +19,7 @@ export type PlotGeoJSON = {
             id: string;
             type: string;
             bbox: number[];
-            geometry: {
-                type: string;
-                coordinates: number[][][];
-            };
+            geometry: GeoJSONGeometry;
             properties: {
                 AKRKadastraleGemeenteCodeCode: string;
                 AKRKadastraleGemeenteCodeWaarde: string;
@@ -62,7 +60,11 @@ type SizeData = {
 // The generated plot model doesn't work as the geojson definition is not correct.
 // Replace by PlotGeoJSON for now.
 type OgPlot = components["schemas"]["PlotModel"];
-export type Plot = Pick<OgPlot, Exclude<keyof OgPlot, "geoJson">> & { geoJson: PlotGeoJSON };
+// export type Plot = Pick<OgPlot, Exclude<keyof OgPlot, "geoJson">> & { plotFeature: PlotGeoJSON };
+export type Plot = Omit<OgPlot, "subselectionGeometry" | "plotFeature"> & {
+    plotFeature: PlotGeoJSON;
+    subSelectionGeometry?: GeoJSONMultiPolygon | GeoJSONPolygon;
+};
 
 export async function getProjects(pageNumber: number, pageSize: number): Promise<Array<Project>> {
     return getJson(`${API_URI}/projects/table?pageNumber=${pageNumber}&pageSize=${pageSize}`);
