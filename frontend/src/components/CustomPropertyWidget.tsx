@@ -16,14 +16,17 @@ export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, cu
             return (
                 <Autocomplete
                     size="small"
-                    options={["true", "false"]}
-                    value={customValue?.booleanValue?.toString() || ""}
-                    onChange={(_, newValue) => setCustomValue({ ...customValue, booleanValue: newValue === "true" ? true : false })}
+                    options={["Ja", "Nee"]}
+                    value={customValue?.booleanValue === true ? "Ja" : customValue?.booleanValue === false ? "Nee" : ""}
+                    onChange={(_, newValue) => {
+                        const booleanValue = newValue === "Ja" ? true : newValue === "Nee" ? false : undefined;
+                        setCustomValue({ ...customValue, booleanValue });
+                    }}
                     renderInput={(params) => <TextField {...params} size="small" />}
                 />
             );
         } else {
-            return <CellContainer>{customValue?.booleanValue?.toString() || ""}</CellContainer>;
+            return <CellContainer>{customValue?.booleanValue === true ? "Ja" : customValue?.booleanValue === false ? "Nee" : ""}</CellContainer>;
         }
     } else if (customDefinition.propertyType === "CATEGORY") {
         if (!readOnly) {
