@@ -40,7 +40,7 @@ export const CustomPropertiesGroup = ({ readOnly, customPropertyValues, setCusto
                     const customValue = customPropertyValues?.find((cv) => cv.customPropertyId === property.id);
 
                     return (
-                        <Stack width="100%">
+                        <Stack key={property.id} width="100%">
                             <LabelComponent required text={property.name} />{" "}
                             <CustomPropertyWidget
                                 readOnly={readOnly}
