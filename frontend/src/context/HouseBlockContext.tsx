@@ -203,26 +203,28 @@ export const HouseBlockProvider = ({ children }: PropsWithChildren) => {
                 intentionPermissionOwner: null,
                 formalPermissionOwner: null,
             },
-            physicalAppearance: {
-                tussenwoning: null,
-                tweeondereenkap: null,
-                portiekflat: null,
-                hoekwoning: null,
-                vrijstaand: null,
-                gallerijflat: null,
-            },
+            physicalAppearance: [],
+            // TODO: loop categories and set null
+
+            // tussenwoning: null,
+            // tweeondereenkap: null,
+            // portiekflat: null,
+            // hoekwoning: null,
+            // vrijstaand: null,
+            // gallerijflat: null,
             houseType: {
                 meergezinswoning: null,
                 eengezinswoning: null,
             },
-            purpose: {
-                regular: null,
-                youth: null,
-                student: null,
-                elderly: null,
-                largeFamilies: null,
-                ghz: null,
-            },
+            targetGroup: [],
+            // TODO: loop categories and set nulls
+
+            // regular: null,
+            // youth: null,
+            // student: null,
+            // elderly: null,
+            // largeFamilies: null,
+            // ghz: null,
         };
     };
 

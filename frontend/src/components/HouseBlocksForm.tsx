@@ -4,7 +4,7 @@ import { GeneralInformationGroup } from "./project-wizard/house-blocks/general-i
 import { MutationInformationGroup } from "./project-wizard/house-blocks/mutation-information/MutationInformationGroup";
 import { OwnershipInformationGroup } from "./project-wizard/house-blocks/ownership-information/OwnershipInformationGroup";
 import { PhysicalAppeareanceGroup } from "./project-wizard/house-blocks/physical-appearence/PhysicalAppeareanceGroup";
-import { PurposeGroup } from "./project-wizard/house-blocks/purpose/PurposeGroup";
+import { TargetGroup } from "./project-wizard/house-blocks/targetGroup/TargetGroup";
 import { HouseTypeGroup } from "./project-wizard/house-blocks/house-type/HouseTypeGroup";
 import { GroundPositionGroup } from "./project-wizard/house-blocks/ground-position/GroundPositionGroup";
 import { Programming } from "./project-wizard/house-blocks/programming/Programming";
@@ -52,7 +52,7 @@ export const HouseBlocksForm = ({ readOnly, houseBlock, setHouseBlock }: Props) 
                     <PhysicalAppeareanceGroup houseBlock={houseBlock} setHouseBlock={setHouseBlock} readOnly={readOnly} />
                 </Grid>
                 <Grid item xs={12} md={4}>
-                    <PurposeGroup houseBlock={houseBlock} setHouseBlock={setHouseBlock} readOnly={readOnly} />
+                    <TargetGroup houseBlock={houseBlock} setHouseBlock={setHouseBlock} readOnly={readOnly} />
                 </Grid>
                 <Grid item xs={12} md={4}>
                     <HouseTypeGroup houseBlock={houseBlock} setHouseBlock={setHouseBlock} readOnly={readOnly} />
