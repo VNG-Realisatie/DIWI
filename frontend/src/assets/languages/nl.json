@@ -11,13 +11,15 @@
       "saveChanges": "Veranderingen opslaan",
       "edit": "Bewerken",
       "confirmDeletion": "Weet u zeker dat u {{name}} wilt verwijderen?",
-      "projectDeletion": "Project {{name}} is verwijderd",
+      "deletionSuccess": "{{name}} is verwijderd",
       "delete": "Verwijderen",
       "cancel": "Annuleren",
       "noInfoAvailable": "Geen informatie beschikbaar",
       "updated": "Succesvol geüpdatet",
       "failedToUpdate": "Update is mislukt",
-      "failedToSave": "Opslaan is mislukt"
+      "failedToSave": "Opslaan is mislukt",
+      "project": "Project",
+      "houseblock": "Huizenblok"
     },
     "createProject": {
       "information": "Project informatie",
@@ -286,7 +288,7 @@
           "delete": "Verwijderen",
           "actions": "Acties"
         },
-        "propertyType" : {
+        "propertyType": {
           "BOOLEAN": "Ja / Nee",
           "NUMERIC": "Getal",
           "ORDINAL": "Gerangschikte categorie",
