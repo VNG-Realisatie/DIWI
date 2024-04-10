@@ -106,6 +106,10 @@ export async function updateHouseBlock(newData: HouseBlock): Promise<HouseBlock>
     return putJson(`${API_URI}/houseblock/update`, newData);
 }
 
+export async function deleteHouseBlock(id: string | null) {
+    return deleteJson(`${API_URI}/houseblock/${id}`);
+}
+
 export async function getProjectPlots(id: string): Promise<Plot[]> {
     return getJson(`${API_URI}/projects/${id}/plots`);
 }
