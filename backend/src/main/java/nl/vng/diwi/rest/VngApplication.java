@@ -6,10 +6,11 @@ import java.util.Map;
 import java.util.Properties;
 
 import nl.vng.diwi.resources.ConfigResource;
-import nl.vng.diwi.resources.CustomPropertiesResource;
+import nl.vng.diwi.resources.PropertiesResource;
 import nl.vng.diwi.resources.HouseblockResource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.flywaydb.core.api.exception.FlywayValidateException;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -103,12 +104,21 @@ public class VngApplication extends ResourceConfig {
         register(WijkResource.class);
         register(PriorityResource.class);
         register(HouseblockResource.class);
-        register(CustomPropertiesResource.class);
+        register(PropertiesResource.class);
         register(ConfigResource.class);
         register(UserResource.class);
 
         // Flyway migrations
-        Database.upgrade(projectConfig.getDbUrl(), projectConfig.getDbUser(), projectConfig.getDbPass());
+        try{
+            Database.upgrade(projectConfig.getDbUrl(), projectConfig.getDbUser(), projectConfig.getDbPass());
+        }
+        catch (FlywayValidateException e) {
+            logger.error(e.getMessage());
+            if (!projectConfig.isAllowFlywayErrors()) {
+                throw e;
+            }
+        }
+
     }
 
     @PreDestroy

@@ -1,14 +1,17 @@
-import { Box, Button, Stack, Step, StepLabel, Stepper } from "@mui/material";
+import { Alert, Box, Button, Stack, Step, StepLabel, Stepper } from "@mui/material";
 import { t } from "i18next";
 
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
+import RadioButtonChecked from "@mui/icons-material/RadioButtonChecked";
 
 const CustomStepIcon: React.FC<CustomStepIconProps> = ({ active, completed }) => {
     if (completed) {
         return <CheckCircleIcon color="primary" />;
+    } else if (active) {
+        return <RadioButtonChecked color="primary" />;
     } else {
-        return <RadioButtonUncheckedIcon color={active ? "primary" : "disabled"} />;
+        return <RadioButtonUncheckedIcon color="disabled" />;
     }
 };
 
@@ -30,9 +33,11 @@ type Props = {
     handleSave: () => void;
     activeStep: number;
     projectId: string | undefined;
+    infoText: string;
+    warning?: string;
 };
 
-const WizardLayout = ({ children, handleBack, handleNext, handleSave, activeStep, projectId }: Props) => {
+const WizardLayout = ({ children, handleBack, handleNext, handleSave, activeStep, projectId, infoText, warning }: Props) => {
     return (
         <Box mb={7} border="solid 2px #ddd" p={4}>
             <Stepper activeStep={activeStep} alternativeLabel>
@@ -42,10 +47,14 @@ const WizardLayout = ({ children, handleBack, handleNext, handleSave, activeStep
                     </Step>
                 ))}
             </Stepper>
+            <Alert severity="info">{infoText}</Alert>
             {children}
-            {/* {activeStep === 2 && <div id={id} style={{ height: "70vh", width: "100%" }}></div>} */}
-
             <Stack direction="row" alignItems="center" justifyContent="flex-end" py={2}>
+                {warning && (
+                    <Alert severity="warning" sx={{ mr: 2 }}>
+                        {warning}
+                    </Alert>
+                )}
                 <Button variant="outlined" onClick={() => handleSave()} sx={{ mr: 2 }}>
                     {t("generic.save")}
                 </Button>

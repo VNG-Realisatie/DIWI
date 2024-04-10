@@ -37,7 +37,7 @@ import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.dal.entities.enums.ProjectRole;
-import nl.vng.diwi.models.CustomPropertyModel;
+import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.models.LocationModel;
 import nl.vng.diwi.models.OrganizationModel;
@@ -57,7 +57,7 @@ import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.security.SecurityRoleConstants;
-import nl.vng.diwi.services.CustomPropertiesService;
+import nl.vng.diwi.services.PropertiesService;
 import nl.vng.diwi.services.HouseblockService;
 import nl.vng.diwi.services.ProjectService;
 
@@ -67,18 +67,18 @@ public class ProjectsResource {
     private final VngRepository repo;
     private final ProjectService projectService;
     private final HouseblockService houseblockService;
-    private final CustomPropertiesService customPropertiesService;
+    private final PropertiesService propertiesService;
 
     @Inject
     public ProjectsResource(
             GenericRepository genericRepository,
             ProjectService projectService,
             HouseblockService houseblockService,
-            CustomPropertiesService customPropertiesService) {
+            PropertiesService propertiesService) {
         this.repo = new VngRepository(genericRepository.getDal().getSession());
         this.projectService = projectService;
         this.houseblockService = houseblockService;
-        this.customPropertiesService = customPropertiesService;
+        this.propertiesService = propertiesService;
     }
 
     @POST
@@ -192,7 +192,7 @@ public class ProjectsResource {
         if (projectCPUpdateModel.getCustomPropertyId() == null){
             throw new VngBadRequestException("Custom property id must be set.");
         }
-        CustomPropertyModel dbCP = customPropertiesService.getCustomProperty(repo, projectCPUpdateModel.getCustomPropertyId());
+        PropertyModel dbCP = propertiesService.getProperty(repo, projectCPUpdateModel.getCustomPropertyId());
         if (dbCP == null || !dbCP.getObjectType().equals(ObjectType.PROJECT)) {
             throw new VngBadRequestException("Custom property id does not match any known property.");
         }

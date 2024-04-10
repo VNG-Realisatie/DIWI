@@ -22,15 +22,6 @@ export interface paths {
     "/rest/config": {
         get: operations["getConfig"];
     };
-    "/rest/customproperties": {
-        get: operations["getAllCustomProperties"];
-        post: operations["createCustomProperty"];
-    };
-    "/rest/customproperties/{id}": {
-        get: operations["getCustomProperty"];
-        put: operations["updateCustomProperty"];
-        delete: operations["disableCustomProperty"];
-    };
     "/rest/houseblock/add": {
         post: operations["createHouseblock"];
     };
@@ -95,6 +86,15 @@ export interface paths {
     "/rest/projects/update": {
         post: operations["updateProjectSnapshot"];
     };
+    "/rest/properties": {
+        get: operations["getAllProperties"];
+        post: operations["createCustomProperty"];
+    };
+    "/rest/properties/{id}": {
+        get: operations["getProperty"];
+        put: operations["updateProperty"];
+        delete: operations["disableCustomProperty"];
+    };
     "/rest/users/userinfo": {
         get: operations["login_1"];
     };
@@ -125,32 +125,6 @@ export interface components {
         MapBounds: {
             corner1?: components["schemas"]["LocationModel"];
             corner2?: components["schemas"]["LocationModel"];
-        };
-        CustomPropertyModel: {
-            /** Format: uuid */
-            id?: string;
-            name: string;
-            /** @enum {string} */
-            objectType: "PROJECT" | "WONINGBLOK";
-            /** @enum {string} */
-            propertyType: "BOOLEAN" | "CATEGORY" | "ORDINAL" | "NUMERIC" | "TEXT";
-            disabled: boolean;
-            categories?: components["schemas"]["SelectDisabledModel"][];
-            ordinals?: components["schemas"]["OrdinalSelectDisabledModel"][];
-        };
-        OrdinalSelectDisabledModel: {
-            /** Format: uuid */
-            id?: string;
-            name: string;
-            disabled: boolean;
-            /** Format: int32 */
-            level: number;
-        };
-        SelectDisabledModel: {
-            /** Format: uuid */
-            id?: string;
-            name: string;
-            disabled: boolean;
         };
         GroundPosition: {
             /** Format: int32 */
@@ -482,8 +456,8 @@ export interface components {
             brkSectie?: string;
             /** Format: int64 */
             brkPerceelNummer?: number;
-            brkSelectie?: string;
-            geoJson?: components["schemas"]["ObjectNode"];
+            subselectionGeometry?: components["schemas"]["ObjectNode"];
+            plotFeature?: components["schemas"]["ObjectNode"];
         };
         ProjectUpdateModel: {
             /** @enum {string} */
@@ -511,6 +485,34 @@ export interface components {
             min?: string;
             /** Format: uuid */
             max?: string;
+        };
+        OrdinalSelectDisabledModel: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            disabled: boolean;
+            /** Format: int32 */
+            level: number;
+        };
+        PropertyModel: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            /** @enum {string} */
+            type: "FIXED" | "CUSTOM";
+            /** @enum {string} */
+            objectType: "PROJECT" | "WONINGBLOK";
+            /** @enum {string} */
+            propertyType: "BOOLEAN" | "CATEGORY" | "ORDINAL" | "NUMERIC" | "TEXT";
+            disabled: boolean;
+            categories?: components["schemas"]["SelectDisabledModel"][];
+            ordinals?: components["schemas"]["OrdinalSelectDisabledModel"][];
+        };
+        SelectDisabledModel: {
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            disabled: boolean;
         };
         UserModel: {
             /** Format: uuid */
@@ -593,87 +595,6 @@ export interface operations {
             default: {
                 content: {
                     "application/json": components["schemas"]["ConfigModel"];
-                };
-            };
-        };
-    };
-    getAllCustomProperties: {
-        parameters: {
-            query?: {
-                objectType?: "PROJECT" | "WONINGBLOK";
-                disabled?: boolean;
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                content: {
-                    "application/json": components["schemas"]["CustomPropertyModel"][];
-                };
-            };
-        };
-    };
-    createCustomProperty: {
-        requestBody?: {
-            content: {
-                "application/json": components["schemas"]["CustomPropertyModel"];
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                content: {
-                    "application/json": components["schemas"]["CustomPropertyModel"];
-                };
-            };
-        };
-    };
-    getCustomProperty: {
-        parameters: {
-            path: {
-                id: string;
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                content: {
-                    "application/json": components["schemas"]["CustomPropertyModel"];
-                };
-            };
-        };
-    };
-    updateCustomProperty: {
-        parameters: {
-            path: {
-                id: string;
-            };
-        };
-        requestBody?: {
-            content: {
-                "application/json": components["schemas"]["CustomPropertyModel"];
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                content: {
-                    "application/json": components["schemas"]["CustomPropertyModel"];
-                };
-            };
-        };
-    };
-    disableCustomProperty: {
-        parameters: {
-            path: {
-                id: string;
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                content: {
-                    "application/json": components["schemas"]["CustomPropertyModel"];
                 };
             };
         };
@@ -1048,6 +969,88 @@ export interface operations {
             default: {
                 content: {
                     "application/json": components["schemas"]["ProjectSnapshotModel"];
+                };
+            };
+        };
+    };
+    getAllProperties: {
+        parameters: {
+            query?: {
+                objectType?: "PROJECT" | "WONINGBLOK";
+                disabled?: boolean;
+                type?: "FIXED" | "CUSTOM";
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["PropertyModel"][];
+                };
+            };
+        };
+    };
+    createCustomProperty: {
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PropertyModel"];
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["PropertyModel"];
+                };
+            };
+        };
+    };
+    getProperty: {
+        parameters: {
+            path: {
+                id: string;
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["PropertyModel"];
+                };
+            };
+        };
+    };
+    updateProperty: {
+        parameters: {
+            path: {
+                id: string;
+            };
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PropertyModel"];
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["PropertyModel"];
+                };
+            };
+        };
+    };
+    disableCustomProperty: {
+        parameters: {
+            path: {
+                id: string;
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["PropertyModel"];
                 };
             };
         };

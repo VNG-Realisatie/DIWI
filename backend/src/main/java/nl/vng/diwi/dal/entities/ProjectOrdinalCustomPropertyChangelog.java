@@ -30,19 +30,19 @@ public class ProjectOrdinalCustomPropertyChangelog extends MilestoneChangeDataSu
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "eigenschap_id")
-    private CustomProperty customProperty;
+    private Property property;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "value_id")
-    private CustomOrdinalValue value;
+    private PropertyOrdinalValue value;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "min_value_id")
-    private CustomOrdinalValue minValue;
+    private PropertyOrdinalValue minValue;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "max_value_id")
-    private CustomOrdinalValue maxValue;
+    private PropertyOrdinalValue maxValue;
 
     @Column(name = "value_type")
     @Enumerated(EnumType.STRING)

@@ -2,7 +2,7 @@ import { Stack, Typography } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { useTranslation } from "react-i18next";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { CustomPropertyType, addCustomProperty, getCustomProperties } from "../../api/adminSettingServices";
+import { Property, addCustomProperty, getCustomProperties } from "../../api/adminSettingServices";
 import { ObjectType, PropertyType } from "../../types/enums";
 import AlertContext from "../../context/AlertContext";
 import { CreatePropertyDialog } from "./CreatePropertyDialog";
@@ -15,7 +15,7 @@ export const rowStyle = {
 };
 export const Settings = () => {
     const [openDialog, setOpenDialog] = useState(false);
-    const [customProperties, setCustomProperties] = useState<CustomPropertyType[]>([]);
+    const [customProperties, setCustomProperties] = useState<Property[]>([]);
     const [selectedObjectType, setSelectedObjectType] = useState<ObjectType>("PROJECT");
     const [selectedPropertyType, setSelectedPropertyType] = useState<PropertyType>("TEXT");
     const [active, setActive] = useState(false);
@@ -26,8 +26,9 @@ export const Settings = () => {
     const { setAlert } = useContext(AlertContext);
 
     const handleSave = useCallback(() => {
-        const newProperty = {
+        const newProperty: Property = {
             name,
+            type: "CUSTOM",
             objectType: selectedObjectType,
             propertyType: selectedPropertyType,
             disabled: !active,
@@ -38,11 +39,19 @@ export const Settings = () => {
                       })
                     : undefined,
         };
-        addCustomProperty(newProperty).then(() => {
-            setAlert(t("admin.settings.notifications.successfullySaved"), "success");
-            setOpenDialog(false);
-            getCustomProperties().then((customProperties) => setCustomProperties(customProperties));
-        });
+        addCustomProperty(newProperty)
+            .then(() => {
+                setAlert(t("admin.settings.notifications.successfullySaved"), "success");
+                setOpenDialog(false);
+                getCustomProperties().then((customProperties) => setCustomProperties(customProperties));
+
+                setName("");
+                setSelectedObjectType("PROJECT");
+                setSelectedPropertyType("TEXT");
+                setActive(false);
+                setCategories([]);
+            })
+            .catch((error) => setAlert(error.message, "warning"));
     }, [active, categories, name, selectedObjectType, selectedPropertyType, setAlert, t]);
 
     useEffect(() => {

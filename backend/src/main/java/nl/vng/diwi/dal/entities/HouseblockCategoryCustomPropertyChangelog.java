@@ -27,14 +27,14 @@ public class HouseblockCategoryCustomPropertyChangelog extends HouseblockMilesto
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "eigenschap_id")
-    private CustomProperty customProperty;
+    private Property property;
 
     @OneToMany(mappedBy="categoryChangelog", fetch = FetchType.LAZY)
     private List<HouseblockCategoryCustomPropertyChangelogValue> changelogCategoryValues;
 
     @Override
     public Object getShallowCopy() {
-        var newChangelog = HouseblockCategoryCustomPropertyChangelog.builder().customProperty(customProperty).build();
+        var newChangelog = HouseblockCategoryCustomPropertyChangelog.builder().property(property).build();
         newChangelog.setHouseblock(getHouseblock());
         newChangelog.setStartMilestone(getStartMilestone());
         newChangelog.setEndMilestone(getEndMilestone());

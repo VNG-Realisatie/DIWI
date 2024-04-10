@@ -13,9 +13,9 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import io.hypersistence.utils.hibernate.type.range.Range;
-import nl.vng.diwi.dal.entities.CustomCategoryValue;
-import nl.vng.diwi.dal.entities.CustomOrdinalValue;
-import nl.vng.diwi.dal.entities.CustomProperty;
+import nl.vng.diwi.dal.entities.PropertyCategoryValue;
+import nl.vng.diwi.dal.entities.PropertyOrdinalValue;
+import nl.vng.diwi.dal.entities.Property;
 import nl.vng.diwi.dal.entities.ProjectBooleanCustomPropertyChangelog;
 import nl.vng.diwi.dal.entities.ProjectCategoryCustomPropertyChangelog;
 import nl.vng.diwi.dal.entities.ProjectCategoryCustomPropertyChangelogValue;
@@ -147,8 +147,8 @@ public class ProjectService {
                     .brkGemeenteCode(plot.getBrkGemeenteCode())
                     .brkPerceelNummer(plot.getBrkPerceelNummer())
                     .brkSectie(plot.getBrkSectie())
-                    .brkSelectie(plot.getBrkSelectie())
-                    .geoJson(plot.getGeoJson())
+                    .subselectionGeometry(plot.getSubselectionGeometry())
+                    .plotFeature(plot.getPlotFeature())
                     .projectRegistryLinkChangelog(newCl)
                     .build());
             }
@@ -166,8 +166,8 @@ public class ProjectService {
                         .brkGemeenteCode(oldClValue.getBrkGemeenteCode())
                         .brkPerceelNummer(oldClValue.getBrkPerceelNummer())
                         .brkSectie(oldClValue.getBrkSectie())
-                        .brkSelectie(oldClValue.getBrkSelectie())
-                        .geoJson(oldClValue.getGeoJson())
+                        .subselectionGeometry(oldClValue.getSubselectionGeometry())
+                        .plotFeature(oldClValue.getPlotFeature())
                         .projectRegistryLinkChangelog(oldClAfterUpdate)
                         .build());
                 }
@@ -573,11 +573,11 @@ public class ProjectService {
             newChangelog = new ProjectBooleanCustomPropertyChangelog();
             newChangelog.setProject(project);
             newChangelog.setValue(newBooleanValue);
-            newChangelog.setCustomProperty(repo.getReferenceById(CustomProperty.class, customPropertyId));
+            newChangelog.setProperty(repo.getReferenceById(Property.class, customPropertyId));
         }
 
         List<ProjectBooleanCustomPropertyChangelog> changelogs = project.getBooleanCustomProperties().stream()
-                .filter(cp -> cp.getCustomProperty().getId().equals(customPropertyId)).toList();
+                .filter(cp -> cp.getProperty().getId().equals(customPropertyId)).toList();
 
         ProjectBooleanCustomPropertyChangelog oldChangelog = prepareProjectChangelogValuesToUpdate(repo, project, changelogs, newChangelog,
                 oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
@@ -591,7 +591,7 @@ public class ProjectService {
                 // it is a current project && it had a non-null changelog before the update
                 oldChangelogAfterUpdate.setProject(project);
                 oldChangelogAfterUpdate.setValue(oldChangelog.getValue());
-                oldChangelogAfterUpdate.setCustomProperty(oldChangelog.getCustomProperty());
+                oldChangelogAfterUpdate.setProperty(oldChangelog.getProperty());
                 repo.persist(oldChangelogAfterUpdate);
             }
         }
@@ -605,11 +605,11 @@ public class ProjectService {
             newChangelog = new ProjectTextCustomPropertyChangelog();
             newChangelog.setProject(project);
             newChangelog.setValue(newTextValue);
-            newChangelog.setCustomProperty(repo.getReferenceById(CustomProperty.class, customPropertyId));
+            newChangelog.setProperty(repo.getReferenceById(Property.class, customPropertyId));
         }
 
         List<ProjectTextCustomPropertyChangelog> changelogs = project.getTextCustomProperties().stream()
-                .filter(cp -> cp.getCustomProperty().getId().equals(customPropertyId)).toList();
+                .filter(cp -> cp.getProperty().getId().equals(customPropertyId)).toList();
 
         ProjectTextCustomPropertyChangelog oldChangelog = prepareProjectChangelogValuesToUpdate(repo, project, changelogs, newChangelog,
                 oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
@@ -623,7 +623,7 @@ public class ProjectService {
                 // it is a current project && it had a non-null changelog before the update
                 oldChangelogAfterUpdate.setProject(project);
                 oldChangelogAfterUpdate.setValue(oldChangelog.getValue());
-                oldChangelogAfterUpdate.setCustomProperty(oldChangelog.getCustomProperty());
+                oldChangelogAfterUpdate.setProperty(oldChangelog.getProperty());
                 repo.persist(oldChangelogAfterUpdate);
             }
         }
@@ -644,11 +644,11 @@ public class ProjectService {
                 newChangelog.setValueRange(Range.closed(newNumericValue.getMin(), newNumericValue.getMax()));
                 newChangelog.setValueType(ValueType.RANGE);
             }
-            newChangelog.setCustomProperty(repo.getReferenceById(CustomProperty.class, customPropertyId));
+            newChangelog.setProperty(repo.getReferenceById(Property.class, customPropertyId));
         }
 
         List<ProjectNumericCustomPropertyChangelog> changelogs = project.getNumericCustomProperties().stream()
-                .filter(cp -> cp.getCustomProperty().getId().equals(customPropertyId)).toList();
+                .filter(cp -> cp.getProperty().getId().equals(customPropertyId)).toList();
 
         ProjectNumericCustomPropertyChangelog oldChangelog = prepareProjectChangelogValuesToUpdate(repo, project, changelogs, newChangelog,
                 oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
@@ -664,7 +664,7 @@ public class ProjectService {
                 oldChangelogAfterUpdate.setValue(oldChangelog.getValue());
                 oldChangelogAfterUpdate.setValueRange(oldChangelog.getValueRange());
                 oldChangelogAfterUpdate.setValueType(oldChangelog.getValueType());
-                oldChangelogAfterUpdate.setCustomProperty(oldChangelog.getCustomProperty());
+                oldChangelogAfterUpdate.setProperty(oldChangelog.getProperty());
                 repo.persist(oldChangelogAfterUpdate);
             }
         }
@@ -677,11 +677,11 @@ public class ProjectService {
         if (newCategoryValues != null && !newCategoryValues.isEmpty()) {
             newChangelog = new ProjectCategoryCustomPropertyChangelog();
             newChangelog.setProject(project);
-            newChangelog.setCustomProperty(repo.getReferenceById(CustomProperty.class, customPropertyId));
+            newChangelog.setProperty(repo.getReferenceById(Property.class, customPropertyId));
         }
 
         List<ProjectCategoryCustomPropertyChangelog> changelogs = project.getCategoryCustomProperties().stream()
-                .filter(cp -> cp.getCustomProperty().getId().equals(customPropertyId)).toList();
+                .filter(cp -> cp.getProperty().getId().equals(customPropertyId)).toList();
 
         ProjectCategoryCustomPropertyChangelog oldChangelog = prepareProjectChangelogValuesToUpdate(repo, project, changelogs, newChangelog,
                 oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
@@ -691,7 +691,7 @@ public class ProjectService {
             for (UUID newCategoryValue : newCategoryValues) {
                 ProjectCategoryCustomPropertyChangelogValue newChangelogValue = new ProjectCategoryCustomPropertyChangelogValue();
                 newChangelogValue.setCategoryChangelog(newChangelog);
-                newChangelogValue.setCategoryValue(repo.getReferenceById(CustomCategoryValue.class, newCategoryValue));
+                newChangelogValue.setCategoryValue(repo.getReferenceById(PropertyCategoryValue.class, newCategoryValue));
                 repo.persist(newChangelogValue);
             }
         }
@@ -703,12 +703,12 @@ public class ProjectService {
             if (oldChangelogAfterUpdate.getStartMilestone() != null) {
                 // it is a current project && it had a non-null changelog before the update
                 oldChangelogAfterUpdate.setProject(project);
-                oldChangelogAfterUpdate.setCustomProperty(oldChangelog.getCustomProperty());
+                oldChangelogAfterUpdate.setProperty(oldChangelog.getProperty());
                 repo.persist(oldChangelogAfterUpdate);
                 for (UUID oldCategoryValue : oldCategoryValues) {
                     ProjectCategoryCustomPropertyChangelogValue oldChangelogValue = new ProjectCategoryCustomPropertyChangelogValue();
                     oldChangelogValue.setCategoryChangelog(oldChangelogAfterUpdate);
-                    oldChangelogValue.setCategoryValue(repo.getReferenceById(CustomCategoryValue.class, oldCategoryValue));
+                    oldChangelogValue.setCategoryValue(repo.getReferenceById(PropertyCategoryValue.class, oldCategoryValue));
                     repo.persist(oldChangelogValue);
                 }
             }
@@ -723,18 +723,18 @@ public class ProjectService {
             newChangelog = new ProjectOrdinalCustomPropertyChangelog();
             newChangelog.setProject(project);
             if (newOrdinalValue.getValue() != null) {
-                newChangelog.setValue(repo.getReferenceById(CustomOrdinalValue.class, newOrdinalValue.getValue()));
+                newChangelog.setValue(repo.getReferenceById(PropertyOrdinalValue.class, newOrdinalValue.getValue()));
                 newChangelog.setValueType(ValueType.SINGLE_VALUE);
             } else {
-                newChangelog.setMinValue(repo.getReferenceById(CustomOrdinalValue.class, newOrdinalValue.getMin()));
-                newChangelog.setMaxValue(repo.getReferenceById(CustomOrdinalValue.class, newOrdinalValue.getMax()));
+                newChangelog.setMinValue(repo.getReferenceById(PropertyOrdinalValue.class, newOrdinalValue.getMin()));
+                newChangelog.setMaxValue(repo.getReferenceById(PropertyOrdinalValue.class, newOrdinalValue.getMax()));
                 newChangelog.setValueType(ValueType.RANGE);
             }
-            newChangelog.setCustomProperty(repo.getReferenceById(CustomProperty.class, customPropertyId));
+            newChangelog.setProperty(repo.getReferenceById(Property.class, customPropertyId));
         }
 
         List<ProjectOrdinalCustomPropertyChangelog> changelogs = project.getOrdinalCustomProperties().stream()
-                .filter(cp -> cp.getCustomProperty().getId().equals(customPropertyId)).toList();
+                .filter(cp -> cp.getProperty().getId().equals(customPropertyId)).toList();
 
         ProjectOrdinalCustomPropertyChangelog oldChangelog = prepareProjectChangelogValuesToUpdate(repo, project, changelogs, newChangelog,
                 oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
@@ -751,7 +751,7 @@ public class ProjectService {
                 oldChangelogAfterUpdate.setMinValue(oldChangelog.getMinValue());
                 oldChangelogAfterUpdate.setMaxValue(oldChangelog.getMaxValue());
                 oldChangelogAfterUpdate.setValueType(oldChangelog.getValueType());
-                oldChangelogAfterUpdate.setCustomProperty(oldChangelog.getCustomProperty());
+                oldChangelogAfterUpdate.setProperty(oldChangelog.getProperty());
                 repo.persist(oldChangelogAfterUpdate);
             }
         }
