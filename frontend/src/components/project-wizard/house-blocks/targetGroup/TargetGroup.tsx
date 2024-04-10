@@ -5,6 +5,7 @@ import { AmountModel, HouseBlock } from "../../../../types/houseBlockTypes";
 import { SingleNumberInput } from "../physical-appearence/SingleNumberInput";
 import { useCustomPropertyDefinitions } from "../../../../hooks/useCustomPropertyDefinitions";
 import { useEffect } from "react";
+import { CategoryType } from "../../../../api/adminSettingServices";
 
 export type TargetGroupProps = {
     houseBlock: HouseBlock;
@@ -26,6 +27,16 @@ export const TargetGroup = ({ houseBlock, setHouseBlock, readOnly }: TargetGroup
         }
     }, [houseBlock, targetGroupCategories, setHouseBlock]);
 
+    const sortByNameAndId = (a: CategoryType, b: CategoryType) => {
+        const firstSmaller = -1;
+        // first sort by name
+        if (a.name < b.name) return firstSmaller;
+        if (a.name > b.name) return -firstSmaller;
+        // if names identical, sort by id which cannot be identical
+        if (a.id && b.id && a.id < b.id) return firstSmaller;
+        return -firstSmaller;
+    };
+
     return (
         <WizardCard>
             <Typography fontWeight={600} mb={2}>
@@ -42,7 +53,7 @@ export const TargetGroup = ({ houseBlock, setHouseBlock, readOnly }: TargetGroup
             {houseBlock.targetGroup &&
                 houseBlock.targetGroup.length > 0 &&
                 targetGroupCategories &&
-                targetGroupCategories.map((tg) => {
+                targetGroupCategories.sort(sortByNameAndId).map((tg) => {
                     const propAmount = houseBlock.targetGroup.find((def) => def.id === tg.id)?.amount ?? null;
 
                     function handleChange(newValue: number | null): void {
