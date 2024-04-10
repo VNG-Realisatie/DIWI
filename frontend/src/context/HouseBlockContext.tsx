@@ -1,4 +1,4 @@
-import { PropsWithChildren, createContext, useContext, useEffect, useState } from "react";
+import { PropsWithChildren, createContext, useCallback, useContext, useEffect, useState } from "react";
 import { HouseBlock } from "../components/project-wizard/house-blocks/types";
 import ProjectContext from "./ProjectContext";
 import { getProjectHouseBlocks } from "../api/projectsServices";
@@ -14,6 +14,7 @@ type CustomPropertyValueHelper = {
 };
 type HouseBlockContextType = {
     houseBlocks: HouseBlock[];
+    refresh: () => void;
     updateHouseBlock: (houseBlock: HouseBlock) => void;
     addHouseBlock: (houseBlock: HouseBlock) => void;
     // saveHouseBlocks: () => void;
@@ -32,12 +33,17 @@ export const HouseBlockProvider = ({ children }: PropsWithChildren) => {
     const { t } = useTranslation();
 
     const { projectId, selectedProject } = useContext(ProjectContext);
-    useEffect(() => {
+
+    const refresh = useCallback(() => {
         projectId &&
             getProjectHouseBlocks(projectId).then((res: HouseBlock[]) => {
                 setHouseBlocks(res);
             });
     }, [projectId]);
+
+    useEffect(() => {
+        refresh();
+    }, [projectId, refresh]);
 
     const updateCustomPropertyValues = (houseBlockId: string, customPropertyValues: CustomPropertyValue[]) => {
         const newCustomPropertiesValues = customPropertiesValues.filter((cpv) => cpv.houseBlockId !== houseBlockId);
@@ -230,6 +236,7 @@ export const HouseBlockProvider = ({ children }: PropsWithChildren) => {
         <HouseBlockContext.Provider
             value={{
                 houseBlocks,
+                refresh,
                 updateHouseBlock,
                 addHouseBlock,
                 // saveHouseBlocks,
