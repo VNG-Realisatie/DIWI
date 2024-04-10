@@ -1988,10 +1988,10 @@
             "type": "integer",
             "format": "int64"
           },
-          "brkSelectie": {
-            "type": "string"
+          "subselectionGeometry": {
+            "$ref": "#/components/schemas/ObjectNode"
           },
-          "geoJson": {
+          "plotFeature": {
             "$ref": "#/components/schemas/ObjectNode"
           }
         }

@@ -46,18 +46,20 @@ export const Settings = () => {
                       })
                     : undefined,
         };
-        addCustomProperty(newProperty).then(() => {
-            setAlert(t("admin.settings.notifications.successfullySaved"), "success");
-            setOpenDialog(false);
-            getCustomProperties().then((customProperties) => setCustomProperties(customProperties));
+        addCustomProperty(newProperty)
+            .then(() => {
+                setAlert(t("admin.settings.notifications.successfullySaved"), "success");
+                setOpenDialog(false);
+                getCustomProperties().then((customProperties) => setCustomProperties(customProperties));
 
-            setName("");
-            setSelectedObjectType("PROJECT");
-            setSelectedPropertyType("TEXT");
-            setActive(false);
-            setCategories([]);
-            setOrdinalCategories([]);
-        });
+                setName("");
+                setSelectedObjectType("PROJECT");
+                setSelectedPropertyType("TEXT");
+                setActive(false);
+                setCategories([]);
+                setOrdinalCategories([]);
+            })
+            .catch((error) => setAlert(error.message, "warning"));
     }, [active, categories, ordinals, name, selectedObjectType, selectedPropertyType, setAlert, t]);
 
     useEffect(() => {

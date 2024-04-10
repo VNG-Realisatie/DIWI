@@ -456,8 +456,8 @@ export interface components {
             brkSectie?: string;
             /** Format: int64 */
             brkPerceelNummer?: number;
-            brkSelectie?: string;
-            geoJson?: components["schemas"]["ObjectNode"];
+            subselectionGeometry?: components["schemas"]["ObjectNode"];
+            plotFeature?: components["schemas"]["ObjectNode"];
         };
         ProjectUpdateModel: {
             /** @enum {string} */
