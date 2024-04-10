@@ -63,12 +63,15 @@ export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomPro
             categories: selectedPropertyType === "CATEGORY" ? categories : undefined,
             ordinals: selectedPropertyType === "ORDINAL" ? ordinals : undefined,
         };
+        console.log("newProperty", newProperty);
         updateCustomProperty(id, newProperty).then(() => {
+            console.log("id", id);
             setAlert(t("admin.settings.notifications.successfullySaved"), "success");
             getCustomProperties().then((customProperties) => setCustomProperties(customProperties));
             setOpenDialog(false);
         });
     };
+
     return (
         <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth>
             <DialogTitle id="alert-dialog-title"> {t("admin.settings.edit")}</DialogTitle>

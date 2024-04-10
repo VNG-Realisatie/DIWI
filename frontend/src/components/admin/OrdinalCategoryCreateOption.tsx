@@ -13,7 +13,7 @@ type Props = {
 };
 
 export const OrdinalCategoryCreateOption: React.FC<Props> = ({ ordinalCategoryValue, setOrdinalCategoryValue }) => {
-    const [newCategory, setNewCategory] = useState("");
+    const [newCategory, setNewCategory] = useState<string>("");
 
     const handleAddCategory = () => {
         if (newCategory.trim() !== "") {
@@ -37,7 +37,7 @@ export const OrdinalCategoryCreateOption: React.FC<Props> = ({ ordinalCategoryVa
 
     const handleRemoveCategory = (level: number) => {
         console.log(level);
-        const updatedCategories = ordinalCategoryValue.filter((category) => category.level !== level);
+        const updatedCategories = [...ordinalCategoryValue].filter((category) => category.level !== level);
         console.log(updatedCategories);
         updatedCategories.forEach((category) => {
             if (category.level > level) {
@@ -52,7 +52,7 @@ export const OrdinalCategoryCreateOption: React.FC<Props> = ({ ordinalCategoryVa
             const updatedCategories = [...ordinalCategoryValue];
             updatedCategories[level - 1].level--;
             updatedCategories[level - 2].level++;
-            setOrdinalCategoryValue(updatedCategories.sort((a, b) => a.level - b.level));
+            setOrdinalCategoryValue(updatedCategories);
         }
     };
 
@@ -61,7 +61,7 @@ export const OrdinalCategoryCreateOption: React.FC<Props> = ({ ordinalCategoryVa
             const updatedCategories = [...ordinalCategoryValue];
             updatedCategories[level - 1].level++;
             updatedCategories[level].level--;
-            setOrdinalCategoryValue(updatedCategories.sort((a, b) => a.level - b.level));
+            setOrdinalCategoryValue(updatedCategories);
         }
     };
 
@@ -73,7 +73,7 @@ export const OrdinalCategoryCreateOption: React.FC<Props> = ({ ordinalCategoryVa
             {ordinalCategoryValue
                 .sort((a, b) => a.level - b.level)
                 .map((category) => (
-                    <Box key={category.level} display="flex" alignItems="center" mb={1}>
+                    <Box key={category.id ?? category.level} display="flex" alignItems="center" mb={1}>
                         <InputLabel style={{ marginRight: "8px", overflow: "visible" }}>{category.level}</InputLabel>
                         <TextField
                             size="small"

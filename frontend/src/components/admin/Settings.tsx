@@ -66,16 +66,6 @@ export const Settings = () => {
         getCustomProperties().then((customProperties) => setCustomProperties(customProperties));
     }, []);
 
-    useEffect(() => {
-        if (selectedPropertyType !== "CATEGORY") {
-            setCategories([]);
-        }
-
-        if (selectedPropertyType !== "ORDINAL") {
-            setOrdinalCategories([]);
-        }
-    }, [selectedPropertyType]);
-
     return (
         <Stack mt={2} mb={5} mx={2} pb={3}>
             <Typography fontWeight={600}>{t("admin.settings.title")}</Typography>
