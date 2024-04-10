@@ -93,21 +93,23 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
                                         </TableCell>
                                         <TableCell sx={cellStyle}>
                                             <Stack direction="row" spacing={1} justifyContent="flex-end">
-                                                <Tooltip title={t("admin.settings.tableHeader.delete")}>
-                                                    <IconButton
-                                                        disabled={row.disabled}
-                                                        sx={{
-                                                            bgcolor: "tomato",
-                                                            color: "white",
-                                                            "&:hover": {
-                                                                bgcolor: "red",
-                                                            },
-                                                        }}
-                                                        onClick={() => row.id && handleDelete(row.id, row.name)}
-                                                    >
-                                                        <DeleteIcon color="inherit" />
-                                                    </IconButton>
-                                                </Tooltip>
+                                                {row.type === "CUSTOM" && (
+                                                    <Tooltip title={t("admin.settings.tableHeader.delete")}>
+                                                        <IconButton
+                                                            disabled={row.disabled}
+                                                            sx={{
+                                                                bgcolor: "tomato",
+                                                                color: "white",
+                                                                "&:hover": {
+                                                                    bgcolor: "red",
+                                                                },
+                                                            }}
+                                                            onClick={() => row.id && handleDelete(row.id, row.name)}
+                                                        >
+                                                            <DeleteIcon color="inherit" />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                )}
                                                 <Tooltip title={t("admin.settings.tableHeader.edit")}>
                                                     <IconButton
                                                         disabled={row.disabled}
