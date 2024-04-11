@@ -1133,6 +1133,20 @@
           }
         }
       },
+      "AmountModel": {
+        "required": ["amount", "id"],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "amount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
       "GroundPosition": {
         "type": "object",
         "properties": {
@@ -1204,13 +1218,19 @@
             "$ref": "#/components/schemas/GroundPosition"
           },
           "physicalAppearance": {
-            "$ref": "#/components/schemas/PhysicalAppearance"
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AmountModel"
+            }
           },
           "houseType": {
             "$ref": "#/components/schemas/HouseType"
           },
-          "purpose": {
-            "$ref": "#/components/schemas/Purpose"
+          "targetGroup": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AmountModel"
+            }
           },
           "customProperties": {
             "type": "array",
@@ -1268,35 +1288,6 @@
           }
         }
       },
-      "PhysicalAppearance": {
-        "type": "object",
-        "properties": {
-          "tussenwoning": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "tweeondereenkap": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "portiekflat": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "hoekwoning": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "vrijstaand": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "gallerijflat": {
-            "type": "integer",
-            "format": "int32"
-          }
-        }
-      },
       "ProjectHouseblockCustomPropertyModel": {
         "type": "object",
         "properties": {
@@ -1326,35 +1317,6 @@
           },
           "ordinals": {
             "$ref": "#/components/schemas/SingleValueOrRangeModelUUID"
-          }
-        }
-      },
-      "Purpose": {
-        "type": "object",
-        "properties": {
-          "regular": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "youth": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "student": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "elderly": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "largeFamilies": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "ghz": {
-            "type": "integer",
-            "format": "int32"
           }
         }
       },

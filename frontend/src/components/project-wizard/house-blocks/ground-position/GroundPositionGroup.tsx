@@ -1,7 +1,7 @@
 import { Stack, Typography } from "@mui/material";
 import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
-import { HouseBlock } from "../types";
+import { HouseBlock } from "../../../../types/houseBlockTypes";
 import { SingleNumberInput } from "../physical-appearence/SingleNumberInput";
 
 export type GroundPositionInformationProps = {
@@ -26,8 +26,8 @@ export const GroundPositionGroup = ({ houseBlock, setHouseBlock, readOnly }: Gro
                 </Typography>
             </Stack>
             <SingleNumberInput
-                property={houseBlock?.groundPosition?.noPermissionOwner}
-                update={(e) =>
+                value={houseBlock?.groundPosition?.noPermissionOwner}
+                onChange={(e) =>
                     houseBlock &&
                     setHouseBlock({
                         ...houseBlock,
@@ -38,12 +38,12 @@ export const GroundPositionGroup = ({ houseBlock, setHouseBlock, readOnly }: Gro
                     })
                 }
                 readOnly={readOnly}
-                value="noPermissionOwner"
+                name={t(`${translationPath}.noPermissionOwner`)}
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={houseBlock?.groundPosition?.intentionPermissionOwner}
-                update={(e) =>
+                value={houseBlock?.groundPosition?.intentionPermissionOwner}
+                onChange={(e) =>
                     houseBlock &&
                     setHouseBlock({
                         ...houseBlock,
@@ -54,12 +54,12 @@ export const GroundPositionGroup = ({ houseBlock, setHouseBlock, readOnly }: Gro
                     })
                 }
                 readOnly={readOnly}
-                value="intentionPermissionOwner"
+                name={t(`${translationPath}.intentionPermissionOwner`)}
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={houseBlock?.groundPosition?.formalPermissionOwner}
-                update={(e) =>
+                value={houseBlock?.groundPosition?.formalPermissionOwner}
+                onChange={(e) =>
                     houseBlock &&
                     setHouseBlock({
                         ...houseBlock,
@@ -70,7 +70,7 @@ export const GroundPositionGroup = ({ houseBlock, setHouseBlock, readOnly }: Gro
                     })
                 }
                 readOnly={readOnly}
-                value="formalPermissionOwner"
+                name={t(`${translationPath}.formalPermissionOwner`)}
                 translationPath={translationPath}
             />
         </WizardCard>

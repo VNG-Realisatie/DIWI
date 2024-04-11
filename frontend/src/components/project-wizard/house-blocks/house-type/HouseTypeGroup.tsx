@@ -1,7 +1,7 @@
 import { Stack, Typography } from "@mui/material";
 import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
-import { HouseBlock } from "../types";
+import { HouseBlock } from "../../../../types/houseBlockTypes";
 import { SingleNumberInput } from "../physical-appearence/SingleNumberInput";
 
 export type HouseTypeInformationProps = {
@@ -26,8 +26,8 @@ export const HouseTypeGroup = ({ houseBlock, setHouseBlock, readOnly }: HouseTyp
                 </Typography>
             </Stack>
             <SingleNumberInput
-                property={houseBlock?.houseType?.meergezinswoning}
-                update={(e) =>
+                value={houseBlock?.houseType?.meergezinswoning}
+                onChange={(e) =>
                     houseBlock &&
                     setHouseBlock({
                         ...houseBlock,
@@ -38,12 +38,12 @@ export const HouseTypeGroup = ({ houseBlock, setHouseBlock, readOnly }: HouseTyp
                     })
                 }
                 readOnly={readOnly}
-                value="meergezinswoning"
+                name={t(`${translationPath}.meergezinswoning`)}
                 translationPath={translationPath}
             />
             <SingleNumberInput
-                property={houseBlock?.houseType?.eengezinswoning}
-                update={(e) =>
+                value={houseBlock?.houseType?.eengezinswoning}
+                onChange={(e) =>
                     houseBlock &&
                     setHouseBlock({
                         ...houseBlock,
@@ -54,7 +54,7 @@ export const HouseTypeGroup = ({ houseBlock, setHouseBlock, readOnly }: HouseTyp
                     })
                 }
                 readOnly={readOnly}
-                value="eengezinswoning"
+                name={t(`${translationPath}.eengezinswoning`)}
                 translationPath={translationPath}
             />
         </WizardCard>

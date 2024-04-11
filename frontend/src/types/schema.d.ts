@@ -126,6 +126,12 @@ export interface components {
             corner1?: components["schemas"]["LocationModel"];
             corner2?: components["schemas"]["LocationModel"];
         };
+        AmountModel: {
+            /** Format: uuid */
+            id: string;
+            /** Format: int32 */
+            amount: number;
+        };
         GroundPosition: {
             /** Format: int32 */
             noPermissionOwner?: number;
@@ -155,9 +161,9 @@ export interface components {
             mutation?: components["schemas"]["Mutation"];
             ownershipValue?: components["schemas"]["OwnershipValue"][];
             groundPosition?: components["schemas"]["GroundPosition"];
-            physicalAppearance?: components["schemas"]["PhysicalAppearance"];
+            physicalAppearance?: components["schemas"]["AmountModel"][];
             houseType?: components["schemas"]["HouseType"];
-            purpose?: components["schemas"]["Purpose"];
+            targetGroup?: components["schemas"]["AmountModel"][];
             customProperties?: components["schemas"]["ProjectHouseblockCustomPropertyModel"][];
         };
         Mutation: {
@@ -179,20 +185,6 @@ export interface components {
             value?: components["schemas"]["SingleValueOrRangeModelInteger"];
             rentalValue?: components["schemas"]["SingleValueOrRangeModelInteger"];
         };
-        PhysicalAppearance: {
-            /** Format: int32 */
-            tussenwoning?: number;
-            /** Format: int32 */
-            tweeondereenkap?: number;
-            /** Format: int32 */
-            portiekflat?: number;
-            /** Format: int32 */
-            hoekwoning?: number;
-            /** Format: int32 */
-            vrijstaand?: number;
-            /** Format: int32 */
-            gallerijflat?: number;
-        };
         ProjectHouseblockCustomPropertyModel: {
             /** Format: uuid */
             customPropertyId?: string;
@@ -203,20 +195,6 @@ export interface components {
             numericValue?: components["schemas"]["SingleValueOrRangeModelBigDecimal"];
             categories?: string[];
             ordinals?: components["schemas"]["SingleValueOrRangeModelUUID"];
-        };
-        Purpose: {
-            /** Format: int32 */
-            regular?: number;
-            /** Format: int32 */
-            youth?: number;
-            /** Format: int32 */
-            student?: number;
-            /** Format: int32 */
-            elderly?: number;
-            /** Format: int32 */
-            largeFamilies?: number;
-            /** Format: int32 */
-            ghz?: number;
         };
         SingleValueOrRangeModelBigDecimal: {
             value?: number;
