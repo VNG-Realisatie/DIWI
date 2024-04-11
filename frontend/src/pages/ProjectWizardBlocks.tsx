@@ -25,12 +25,6 @@ const ProjectWizardBlocks = () => {
 
     const { t } = useTranslation();
 
-    useEffect(() => {
-        if (houseBlocks.length > 0) {
-            setExpanded(Array.from({ length: houseBlocks.length }, () => true));
-        }
-    }, [houseBlocks]);
-
     const handleNext = async () => {
         try {
             setErrorOccurred(false);
@@ -86,8 +80,11 @@ const ProjectWizardBlocks = () => {
 
     const handleAddHouseBlock = () => {
         const newHouseBlock = getEmptyHouseBlock();
+        const newExpanded = Array.from({ length: houseBlocksState.length }, () => false);
+        newExpanded.push(true);
+
         setHouseBlocksState([...houseBlocksState, newHouseBlock]);
-        setExpanded([...expanded, true]);
+        setExpanded(newExpanded);
     };
 
     useEffect(() => {
@@ -105,10 +102,11 @@ const ProjectWizardBlocks = () => {
             });
             setHouseBlocksState(updatedHouseBlocksState);
         }
-        if (houseBlocks.length > houseBlocksState.length) {
+        if (houseBlocks.length >= houseBlocksState.length) {
             setHouseBlocksState(houseBlocks);
         }
-    }, [houseBlocks, setHouseBlocksState, canUpdate, houseBlocksState]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [houseBlocks, setHouseBlocksState, canUpdate]);
 
     const infoText = t("createProject.houseBlocksForm.info");
 
@@ -125,7 +123,7 @@ const ProjectWizardBlocks = () => {
             if (houseblockId) {
                 await deleteHouseBlock(houseblockId);
                 setAlert("deleted successfully", "success");
-                refresh();
+                setHouseBlocksState((prevHouseBlocks) => prevHouseBlocks.filter((houseBlock) => houseBlock.houseblockId !== houseblockId));
             } else {
                 setHouseBlocksState((prevHouseBlocks) => prevHouseBlocks.filter((_, i) => i !== index));
             }
