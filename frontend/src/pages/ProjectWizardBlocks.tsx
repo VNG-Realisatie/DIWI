@@ -92,14 +92,23 @@ const ProjectWizardBlocks = () => {
 
     useEffect(() => {
         if (houseBlocks.length > 0 && canUpdate) {
-            const filteredHouseBlocksState = houseBlocksState.filter(
-                (stateBlock) => !houseBlocks.some((block) => block.houseblockName === stateBlock.houseblockName),
-            );
-            const updatedHouseBlocksState = [...houseBlocks, ...filteredHouseBlocksState];
-
+            const updatedHouseBlocksState = houseBlocksState.map((houseBlockState) => {
+                const matchingHouseBlock = houseBlocks.find((houseBlock) => houseBlock.houseblockName === houseBlockState.houseblockName);
+                if (matchingHouseBlock) {
+                    return {
+                        ...houseBlockState,
+                        houseblockId: matchingHouseBlock.houseblockId,
+                    };
+                } else {
+                    return houseBlockState;
+                }
+            });
             setHouseBlocksState(updatedHouseBlocksState);
         }
-    }, [houseBlocks, houseBlocksState, setHouseBlocksState, canUpdate]);
+        if (houseBlocks.length > houseBlocksState.length) {
+            setHouseBlocksState(houseBlocks);
+        }
+    }, [houseBlocks, setHouseBlocksState, canUpdate, houseBlocksState]);
 
     const infoText = t("createProject.houseBlocksForm.info");
 
@@ -116,7 +125,7 @@ const ProjectWizardBlocks = () => {
             if (houseblockId) {
                 await deleteHouseBlock(houseblockId);
                 setAlert("deleted successfully", "success");
-                setHouseBlocksState((prevHouseBlocks) => prevHouseBlocks.filter((block) => block.houseblockId !== houseblockId));
+                refresh();
             } else {
                 setHouseBlocksState((prevHouseBlocks) => prevHouseBlocks.filter((_, i) => i !== index));
             }
