@@ -14,7 +14,7 @@ import { defaultColors } from "../../ColorSelector";
 import { BlockPicker, ColorResult } from "react-color";
 
 import { PlanStatusOptions, PlanTypeOptions } from "../../../types/enums";
-import { Organization, SelectModel, updateProjects } from "../../../api/projectsServices";
+import { Organization, PriorityModel, SelectModel, updateProjects } from "../../../api/projectsServices";
 import AlertContext from "../../../context/AlertContext";
 import { CreateHouseBlockDialog } from "./CreateHouseBlockDialog";
 import { HouseBlocksList } from "./HouseBlocksList";
@@ -47,7 +47,7 @@ export const ProjectsWithHouseBlock = () => {
     const [selectedMunicipality, setSelectedMunicipality] = useState<SelectModel[]>([]);
     const [selectedNeighbourhood, setSelectedNeighbourhood] = useState<SelectModel[]>([]);
     const [selectedWijk, setSelectedWijk] = useState<SelectModel[]>([]);
-    const [projectPriority, setProjectPriority] = useState<SelectModel | null>(null);
+    const [projectPriority, setProjectPriority] = useState<PriorityModel | null>(null);
     const [customValues, setCustomValues] = useState<CustomPropertyValue[]>([]);
 
     const { setAlert } = useContext(AlertContext);
@@ -94,7 +94,7 @@ export const ProjectsWithHouseBlock = () => {
         setOwner(selectedProject?.projectOwners ?? []);
         setStartDate(selectedProject?.startDate ? dayjs(formatDate(selectedProject.startDate)).endOf("day") : null);
         setEndDate(selectedProject?.endDate ? dayjs(formatDate(selectedProject.endDate)).endOf("day") : null);
-        setProjectPriority(selectedProject?.priority?.value ?? { id: "", name: "" }); //ToDo Fix later when decided range select
+        setProjectPriority(selectedProject?.priority || {}); //ToDo Fix later when decided range select
         setProjectPhase(selectedProject?.projectPhase);
         setSelectedNeighbourhood(selectedProject?.buurt ?? []);
         setSelectedMunicipality(selectedProject?.municipality ?? []);
@@ -115,7 +115,7 @@ export const ProjectsWithHouseBlock = () => {
         selectedProject?.planType,
         selectedProject?.projectLeaders,
         selectedProject?.planningPlanStatus,
-        selectedProject?.priority?.value,
+        selectedProject?.priority,
         selectedProject?.projectColor,
         selectedProject?.projectName,
         selectedProject?.projectPhase,
@@ -139,19 +139,7 @@ export const ProjectsWithHouseBlock = () => {
         projectColor: selectedProjectColor,
         confidentialityLevel: confidentialityLevel,
         planType: planType,
-        priority: {
-            value: projectPriority,
-            //Will be updated after multi select added
-            // min: {
-            //     id: selectedProject?.projectId,
-            //     name: null,
-            // },
-            //Will be updated after multi select added
-            // max: {
-            //     id: selectedProject?.projectId,
-            //     name: null,
-            // },
-        },
+        priority: projectPriority,
         projectPhase: projectPhase,
         planningPlanStatus: planStatus,
         municipalityRole: selectedMunicipalityRole,

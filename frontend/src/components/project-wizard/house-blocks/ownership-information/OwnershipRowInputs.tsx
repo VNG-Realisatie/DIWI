@@ -1,6 +1,6 @@
 import { Grid, Select, MenuItem, TextField, IconButton, Typography } from "@mui/material";
 import { ownershipValueOptions } from "../constants";
-import { OwnershipSingleValue } from "../types";
+import { OwnershipSingleValue } from "../../../../types/houseBlockTypes";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { OwnershipValueType } from "../../../../types/enums";
 import { InputContainer } from "../InputContainer";

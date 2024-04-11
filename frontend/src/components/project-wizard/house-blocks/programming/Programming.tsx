@@ -1,7 +1,7 @@
 import { FormControl, FormControlLabel, Radio, RadioGroup, Stack, Typography } from "@mui/material";
 import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
-import { HouseBlock } from "../types";
+import { HouseBlock } from "../../../../types/houseBlockTypes";
 import { ChangeEvent } from "react";
 
 export type ProgrammingProps = {

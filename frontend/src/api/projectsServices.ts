@@ -1,7 +1,7 @@
 import { getJson, postJson, deleteJson, putJson, postJsonNoResponse } from "../utils/requests";
 import { components } from "../types/schema";
 import { API_URI } from "../utils/urls";
-import { HouseBlock } from "../components/project-wizard/house-blocks/types";
+import { HouseBlock } from "../types/houseBlockTypes";
 import { GeoJSONGeometry, GeoJSONMultiPolygon, GeoJSONPolygon } from "ol/format/GeoJSON";
 
 export type Organization = components["schemas"]["OrganizationModel"];
@@ -11,6 +11,7 @@ export type Project = components["schemas"]["ProjectSnapshotModel"];
 export type ProjectCreate = components["schemas"]["ProjectCreateSnapshotModel"];
 export type ProjectUpdate = components["schemas"]["ProjectUpdateModel"];
 export type SelectModel = components["schemas"]["SelectModel"];
+export type PriorityModel = components["schemas"]["PriorityModel"];
 
 export type PlotGeoJSON = {
     type: string;
@@ -104,6 +105,10 @@ export async function addHouseBlock(newData: HouseBlock): Promise<HouseBlock> {
 
 export async function updateHouseBlock(newData: HouseBlock): Promise<HouseBlock> {
     return putJson(`${API_URI}/houseblock/update`, newData);
+}
+
+export async function deleteHouseBlock(id: string | null) {
+    return deleteJson(`${API_URI}/houseblock/${id}`);
 }
 
 export async function getProjectPlots(id: string): Promise<Plot[]> {

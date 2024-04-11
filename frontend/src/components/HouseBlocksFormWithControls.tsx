@@ -1,11 +1,14 @@
 import { Box, Stack, Tooltip } from "@mui/material";
-import { HouseBlock } from "./project-wizard/house-blocks/types";
-import { useState } from "react";
+import { HouseBlock } from "../types/houseBlockTypes";
+import { useContext, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import ClearIcon from "@mui/icons-material/Clear";
 import { t } from "i18next";
 import { HouseBlocksForm } from "./HouseBlocksForm";
+import { DeleteButtonWithConfirm } from "./DeleteButtonWithConfirm";
+import { deleteHouseBlock } from "../api/projectsServices";
+import HouseBlockContext from "../context/HouseBlockContext";
 
 type Props = {
     houseBlock: HouseBlock;
@@ -13,6 +16,8 @@ type Props = {
 };
 
 export const HouseBlocksFormWithControls = ({ houseBlock, setHouseBlock }: Props) => {
+    const { refresh } = useContext(HouseBlockContext);
+
     const [readOnly, setReadOnly] = useState(true);
     const [newHouseBlock, setNewHouseBlock] = useState<HouseBlock>(houseBlock);
 
@@ -43,6 +48,14 @@ export const HouseBlocksFormWithControls = ({ houseBlock, setHouseBlock }: Props
                             <SaveIcon sx={{ cursor: "pointer" }} onClick={handleSave} />
                         </Tooltip>
                     </>
+                )}
+                {houseBlock.houseblockId && (
+                    <DeleteButtonWithConfirm
+                        typeAndName={`${t("generic.houseblock")} ${houseBlock.houseblockName}`}
+                        iconColor={"red"}
+                        deleteFunction={() => deleteHouseBlock(houseBlock.houseblockId ?? null)}
+                        afterDelete={refresh}
+                    />
                 )}
             </Stack>
             <HouseBlocksForm houseBlock={newHouseBlock} setHouseBlock={setNewHouseBlock} readOnly={readOnly} />

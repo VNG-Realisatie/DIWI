@@ -7,7 +7,7 @@ import { getProjectHouseBlocks } from "../../../api/projectsServices";
 import dayjs from "dayjs";
 import type { Dayjs } from "dayjs";
 import { components } from "../../../types/schema";
-import { HouseBlock } from "../../project-wizard/house-blocks/types";
+import { HouseBlock } from "../../../types/houseBlockTypes";
 import { TimelineBar } from "./TimelineBar";
 import { Phases } from "./Phases";
 import { HouseBlocks } from "./HouseBlocks";

@@ -1,9 +1,6 @@
 package nl.vng.diwi.dal.entities;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -14,10 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import nl.vng.diwi.dal.GenericRepository;
-import nl.vng.diwi.dal.entities.enums.PhysicalAppearance;
 import nl.vng.diwi.dal.entities.superclasses.IdSuperclass;
-import org.hibernate.annotations.JdbcType;
-import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 @Entity
 @Table(name = "woningblok_type_en_fysiek_changelog_fysiek_value", schema = GenericRepository.VNG_SCHEMA_NAME)
@@ -32,10 +26,9 @@ public class HouseblockPhysicalAppearanceChangelogValue extends IdSuperclass {
     @JoinColumn(name = "woningblok_type_en_fysiek_voorkomen_changelog_id")
     HouseblockAppearanceAndTypeChangelog appearanceAndTypeChangelog;
 
-    @Column(name = "fysiek_voorkomen")
-    @Enumerated(EnumType.STRING)
-    @JdbcType(PostgreSQLEnumJdbcType.class)
-    private PhysicalAppearance physicalAppearance;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "property_value_id")
+    private PropertyCategoryValue categoryValue;
 
     private Integer amount;
 

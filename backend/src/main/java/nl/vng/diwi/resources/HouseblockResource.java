@@ -21,8 +21,7 @@ import nl.vng.diwi.dal.entities.Project;
 import nl.vng.diwi.dal.entities.enums.GroundPosition;
 import nl.vng.diwi.dal.entities.enums.HouseType;
 import nl.vng.diwi.dal.entities.enums.ObjectType;
-import nl.vng.diwi.dal.entities.enums.PhysicalAppearance;
-import nl.vng.diwi.dal.entities.enums.Purpose;
+import nl.vng.diwi.models.AmountModel;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.models.HouseblockUpdateModel;
@@ -31,6 +30,7 @@ import nl.vng.diwi.models.ProjectHouseblockCustomPropertyModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
+import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.services.PropertiesService;
 import nl.vng.diwi.services.HouseblockService;
@@ -144,16 +144,10 @@ public class HouseblockResource {
                         houseblockUpdateModelList.add(new HouseblockUpdateModel(HouseblockUpdateModel.HouseblockProperty.name, houseblockModelToUpdate.getHouseblockName()));
                     }
                 }
-                case purpose -> {
-                    if (!Objects.equals(houseblockModelToUpdate.getPurpose(), houseblockCurrentValues.getPurpose())) {
-                        Map<Object, Integer> purposeMap = new HashMap<>();
-                        purposeMap.put(Purpose.REGULIER, houseblockModelToUpdate.getPurpose().getRegular());
-                        purposeMap.put(Purpose.JONGEREN, houseblockModelToUpdate.getPurpose().getYouth());
-                        purposeMap.put(Purpose.STUDENTEN, houseblockModelToUpdate.getPurpose().getStudent());
-                        purposeMap.put(Purpose.OUDEREN, houseblockModelToUpdate.getPurpose().getElderly());
-                        purposeMap.put(Purpose.GEHANDICAPTEN_EN_ZORG, houseblockModelToUpdate.getPurpose().getGHZ());
-                        purposeMap.put(Purpose.GROTE_GEZINNEN, houseblockModelToUpdate.getPurpose().getLargeFamilies());
-                        houseblockUpdateModelList.add(new HouseblockUpdateModel(HouseblockUpdateModel.HouseblockProperty.purpose, purposeMap));
+                case targetGroup -> {
+                    if (houseblockModelToUpdate.getTargetGroup().size() != houseblockCurrentValues.getTargetGroup().size() ||
+                        !houseblockModelToUpdate.getTargetGroup().containsAll(houseblockCurrentValues.getTargetGroup())) {
+                        houseblockUpdateModelList.add(new HouseblockUpdateModel(HouseblockUpdateModel.HouseblockProperty.targetGroup, houseblockModelToUpdate.getTargetGroup()));
                     }
                 }
                 case groundPosition -> {
@@ -171,18 +165,14 @@ public class HouseblockResource {
                     }
                 }
                 case physicalAppearanceAndHouseType -> {
-                    if (!Objects.equals(houseblockModelToUpdate.getPhysicalAppearance(), houseblockCurrentValues.getPhysicalAppearance()) ||
-                    !Objects.equals(houseblockModelToUpdate.getHouseType(), houseblockCurrentValues.getHouseType())) {
-                        Map<Object, Integer> physicalAppAndHouseTypeMap = new HashMap<>();
-                        physicalAppAndHouseTypeMap.put(PhysicalAppearance.TUSSENWONING, houseblockModelToUpdate.getPhysicalAppearance().getTussenwoning());
-                        physicalAppAndHouseTypeMap.put(PhysicalAppearance.HOEKWONING, houseblockModelToUpdate.getPhysicalAppearance().getHoekwoning());
-                        physicalAppAndHouseTypeMap.put(PhysicalAppearance.TWEE_ONDER_EEN_KAP, houseblockModelToUpdate.getPhysicalAppearance().getTweeondereenkap());
-                        physicalAppAndHouseTypeMap.put(PhysicalAppearance.VRIJSTAAND, houseblockModelToUpdate.getPhysicalAppearance().getVrijstaand());
-                        physicalAppAndHouseTypeMap.put(PhysicalAppearance.PORTIEKFLAT, houseblockModelToUpdate.getPhysicalAppearance().getPortiekflat());
-                        physicalAppAndHouseTypeMap.put(PhysicalAppearance.GALLERIJFLAT, houseblockModelToUpdate.getPhysicalAppearance().getGallerijflat());
-                        physicalAppAndHouseTypeMap.put(HouseType.EENGEZINSWONING, houseblockModelToUpdate.getHouseType().getEengezinswoning());
-                        physicalAppAndHouseTypeMap.put(HouseType.MEERGEZINSWONING, houseblockModelToUpdate.getHouseType().getMeergezinswoning());
-                        houseblockUpdateModelList.add(new HouseblockUpdateModel(HouseblockUpdateModel.HouseblockProperty.physicalAppearanceAndHouseType, physicalAppAndHouseTypeMap));
+                    if (houseblockModelToUpdate.getPhysicalAppearance().size() != houseblockCurrentValues.getPhysicalAppearance().size() ||
+                        !houseblockModelToUpdate.getPhysicalAppearance().containsAll(houseblockCurrentValues.getPhysicalAppearance()) ||
+                        !Objects.equals(houseblockModelToUpdate.getHouseType(), houseblockCurrentValues.getHouseType())) {
+                        Map<Object, Integer> houseTypeMap = new HashMap<>();
+                        houseTypeMap.put(HouseType.EENGEZINSWONING, houseblockModelToUpdate.getHouseType().getEengezinswoning());
+                        houseTypeMap.put(HouseType.MEERGEZINSWONING, houseblockModelToUpdate.getHouseType().getMeergezinswoning());
+                        houseblockUpdateModelList.add(new HouseblockUpdateModel(HouseblockUpdateModel.HouseblockProperty.physicalAppearanceAndHouseType,
+                            houseblockModelToUpdate.getPhysicalAppearance(), houseTypeMap));
                     }
                 }
                 case programming -> {
@@ -251,8 +241,12 @@ public class HouseblockResource {
             !m.getProperty().equals(HouseblockUpdateModel.HouseblockProperty.endDate)).toList();
         if (!otherUpdateFields.isEmpty()) {
             try (AutoCloseTransaction transaction1 = repo.beginTransaction()) {
+                List<UUID> physicalAppUuids = propertiesService.getCategoryStatesByPropertyName(repo, Constants.FIXED_PROPERTY_PHYSICAL_APPEARANCE).stream()
+                    .map(cs -> cs.getCategoryValue().getId()).toList();
+                List<UUID> targetGroupUuids = propertiesService.getCategoryStatesByPropertyName(repo, Constants.FIXED_PROPERTY_TARGET_GROUP).stream()
+                    .map(cs -> cs.getCategoryValue().getId()).toList();
                 for (HouseblockUpdateModel houseblockUpdateModel : otherUpdateFields) {
-                    String validationError = houseblockUpdateModel.validate();
+                    String validationError = houseblockUpdateModel.validate(targetGroupUuids, physicalAppUuids);
                     if (validationError != null) {
                         throw new VngBadRequestException(validationError);
                     }
@@ -305,11 +299,7 @@ public class HouseblockResource {
 
         switch (updateModel.getProperty()) {
             case name -> houseblockService.updateHouseblockName(repo, project, houseblock, updateModel.getValue(), loggedUserUuid, updateDate);
-            case purpose -> {
-                Map<Purpose, Integer> purposeMap = updateModel.getValuesMap().entrySet().stream()
-                    .collect(Collectors.toMap(e -> (Purpose) e.getKey(), Map.Entry::getValue));
-                houseblockService.updateHouseblockPurpose(repo, project, houseblock, purposeMap, loggedUserUuid, updateDate);
-            }
+            case targetGroup -> houseblockService.updateHouseblockTargetGroup(repo, project, houseblock, updateModel.getAmountValuesList(), loggedUserUuid, updateDate);
             case groundPosition -> {
                 Map<GroundPosition, Integer> groundPositionMap = updateModel.getValuesMap().entrySet().stream()
                     .collect(Collectors.toMap(e -> (GroundPosition) e.getKey(), Map.Entry::getValue));
@@ -317,13 +307,11 @@ public class HouseblockResource {
             }
             case size -> houseblockService.updateHouseblockSize(repo, project, houseblock, updateModel.getSizeValue(), loggedUserUuid, updateDate);
             case physicalAppearanceAndHouseType -> {
-                Map<PhysicalAppearance, Integer> physicalAppearanceMap = updateModel.getValuesMap().entrySet().stream()
-                    .filter(e -> e.getKey() instanceof PhysicalAppearance)
-                    .collect(Collectors.toMap(e -> (PhysicalAppearance) e.getKey(), Map.Entry::getValue));
+                List<AmountModel> physicalAppearanceList = updateModel.getAmountValuesList();
                 Map<HouseType, Integer> houseTypeMap = updateModel.getValuesMap().entrySet().stream()
                     .filter(e -> e.getKey() instanceof HouseType)
                     .collect(Collectors.toMap(e -> (HouseType) e.getKey(), Map.Entry::getValue));
-                houseblockService.updatePhysicalAppearanceAndHouseType(repo, project, houseblock, physicalAppearanceMap, houseTypeMap, loggedUserUuid, updateDate);
+                houseblockService.updatePhysicalAppearanceAndHouseType(repo, project, houseblock, physicalAppearanceList, houseTypeMap, loggedUserUuid, updateDate);
             }
             case programming -> houseblockService.updateHouseblockProgramming(repo, project, houseblock, updateModel.getBooleanValue(), loggedUserUuid, updateDate);
             case ownershipValue -> houseblockService.updateHouseblockOwnershipValue(repo, project, houseblock, updateModel.getOwnershipValue(),
