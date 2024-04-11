@@ -17,7 +17,9 @@
       "noInfoAvailable": "Geen informatie beschikbaar",
       "updated": "Succesvol geüpdatet",
       "failedToUpdate": "Update is mislukt",
-      "failedToSave": "Opslaan is mislukt"
+      "failedToSave": "Opslaan is mislukt",
+      "true": "Ja",
+      "false": "Nee"
     },
     "createProject": {
       "information": "Project informatie",

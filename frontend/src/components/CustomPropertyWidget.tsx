@@ -2,6 +2,7 @@ import { Autocomplete, TextField } from "@mui/material";
 import { Property } from "../api/adminSettingServices";
 import { CustomPropertyValue } from "../api/customPropServices";
 import { CellContainer } from "./project/project-with-house-block/CellContainer";
+import { useTranslation } from "react-i18next";
 
 type Props = {
     readOnly: boolean;
@@ -11,22 +12,27 @@ type Props = {
 };
 
 export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, customDefinition }: Props) => {
+    const { t } = useTranslation();
     if (customDefinition.propertyType === "BOOLEAN") {
         if (!readOnly) {
             return (
                 <Autocomplete
                     size="small"
-                    options={["Ja", "Nee"]}
-                    value={customValue?.booleanValue === true ? "Ja" : customValue?.booleanValue === false ? "Nee" : ""}
+                    options={[t("generic.true"), t("generic.false")]}
+                    value={customValue?.booleanValue === true ? t("generic.true") : customValue?.booleanValue === false ? t("generic.false") : ""}
                     onChange={(_, newValue) => {
-                        const booleanValue = newValue === "Ja" ? true : newValue === "Nee" ? false : undefined;
+                        const booleanValue = newValue === t("generic.true") ? true : newValue === t("generic.false") ? false : undefined;
                         setCustomValue({ ...customValue, booleanValue });
                     }}
                     renderInput={(params) => <TextField {...params} size="small" />}
                 />
             );
         } else {
-            return <CellContainer>{customValue?.booleanValue === true ? "Ja" : customValue?.booleanValue === false ? "Nee" : ""}</CellContainer>;
+            return (
+                <CellContainer>
+                    {customValue?.booleanValue === true ? t("generic.true") : customValue?.booleanValue === false ? t("generic.false") : ""}
+                </CellContainer>
+            );
         }
     } else if (customDefinition.propertyType === "CATEGORY") {
         if (!readOnly) {
