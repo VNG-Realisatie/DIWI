@@ -7,11 +7,13 @@ import useAlert from "../hooks/useAlert";
 import { useTranslation } from "react-i18next";
 import * as customPropServices from "../api/customPropServices";
 import { CustomPropertyValue } from "../api/customPropServices";
+import { useCustomPropertyDefinitions } from "../hooks/useCustomPropertyDefinitions";
 
 type CustomPropertyValueHelper = {
     houseBlockId: string;
     customPropertyValues: CustomPropertyValue[];
 };
+
 type HouseBlockContextType = {
     houseBlocks: HouseBlock[];
     refresh: () => void;
@@ -33,6 +35,7 @@ export const HouseBlockProvider = ({ children }: PropsWithChildren) => {
     const { t } = useTranslation();
 
     const { projectId, selectedProject } = useContext(ProjectContext);
+    const { physicalAppearanceCategories, targetGroupCategories } = useCustomPropertyDefinitions();
 
     const refresh = useCallback(() => {
         projectId &&
@@ -209,28 +212,12 @@ export const HouseBlockProvider = ({ children }: PropsWithChildren) => {
                 intentionPermissionOwner: null,
                 formalPermissionOwner: null,
             },
-            physicalAppearance: [],
-            // TODO: loop categories and set null
-
-            // tussenwoning: null,
-            // tweeondereenkap: null,
-            // portiekflat: null,
-            // hoekwoning: null,
-            // vrijstaand: null,
-            // gallerijflat: null,
+            physicalAppearance: physicalAppearanceCategories?.map((cat) => ({ id: cat.id, amount: 0 })) ?? [],
             houseType: {
                 meergezinswoning: null,
                 eengezinswoning: null,
             },
-            targetGroup: [],
-            // TODO: loop categories and set nulls
-
-            // regular: null,
-            // youth: null,
-            // student: null,
-            // elderly: null,
-            // largeFamilies: null,
-            // ghz: null,
+            targetGroup: targetGroupCategories?.map((cat) => ({ id: cat.id, amount: 0 })) ?? [],
         };
     };
 
