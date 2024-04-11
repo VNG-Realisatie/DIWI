@@ -1,12 +1,11 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useEffect, useState } from "react";
 import { HouseBlock } from "../components/project-wizard/house-blocks/types";
 import ProjectContext from "./ProjectContext";
-import { getProjectHouseBlocks } from "../api/projectsServices";
-import * as projectServices from "../api/projectsServices";
 import useAlert from "../hooks/useAlert";
 import { useTranslation } from "react-i18next";
-import * as customPropServices from "../api/customPropServices";
 import { CustomPropertyValue } from "../api/customPropServices";
+import * as houseBlockService from "../api/houseBlockService";
+import * as customPropServices from "../api/customPropServices";
 
 type CustomPropertyValueHelper = {
     houseBlockId: string;
@@ -36,7 +35,7 @@ export const HouseBlockProvider = ({ children }: PropsWithChildren) => {
 
     const refresh = useCallback(() => {
         projectId &&
-            getProjectHouseBlocks(projectId).then((res: HouseBlock[]) => {
+            houseBlockService.getProjectHouseBlocks(projectId).then((res: HouseBlock[]) => {
                 setHouseBlocks(res);
             });
     }, [projectId]);
@@ -61,7 +60,7 @@ export const HouseBlockProvider = ({ children }: PropsWithChildren) => {
             return;
         }
         const updatedHouseBlock = houseBlocks.filter((hb) => hb.houseblockId !== houseBlock.houseblockId);
-        projectServices
+        houseBlockService
             .updateHouseBlock(houseBlock)
             .then((res) => {
                 const customVal = customPropertiesValues.find((cpv) => cpv.houseBlockId === res.houseblockId)?.customPropertyValues ?? [];
@@ -113,7 +112,7 @@ export const HouseBlockProvider = ({ children }: PropsWithChildren) => {
             setAlert(t("createProject.hasMissingRequiredAreas.hasmissingProperty"), "warning");
             return;
         }
-        projectServices
+        houseBlockService
             .addHouseBlock(houseBlock)
             .then((res) => {
                 setHouseBlocks([...houseBlocks, res]);

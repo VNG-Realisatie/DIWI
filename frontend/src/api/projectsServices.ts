@@ -1,4 +1,4 @@
-import { getJson, postJson, deleteJson, putJson, postJsonNoResponse } from "../utils/requests";
+import { getJson, postJson, deleteJson, postJsonNoResponse } from "../utils/requests";
 import { components } from "../types/schema";
 import { API_URI } from "../utils/urls";
 import { HouseBlock } from "../components/project-wizard/house-blocks/types";
@@ -93,22 +93,6 @@ export async function deleteProject(id: string | null) {
 
 export async function createProject(projectData: ProjectCreate): Promise<Project> {
     return postJson(`${API_URI}/projects`, projectData);
-}
-
-export async function getProjectHouseBlocks(id: string): Promise<HouseBlock[]> {
-    return getJson(`${API_URI}/projects/${id}/houseblocks`);
-}
-
-export async function addHouseBlock(newData: HouseBlock): Promise<HouseBlock> {
-    return postJson(`${API_URI}/houseblock/add`, newData);
-}
-
-export async function updateHouseBlock(newData: HouseBlock): Promise<HouseBlock> {
-    return putJson(`${API_URI}/houseblock/update`, newData);
-}
-
-export async function deleteHouseBlock(id: string | null) {
-    return deleteJson(`${API_URI}/houseblock/${id}`);
 }
 
 export async function getProjectPlots(id: string): Promise<Plot[]> {
