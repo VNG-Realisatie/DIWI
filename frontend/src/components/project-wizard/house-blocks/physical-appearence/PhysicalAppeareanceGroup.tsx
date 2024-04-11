@@ -5,7 +5,6 @@ import { AmountModel, HouseBlock } from "../../../../types/houseBlockTypes";
 import { SingleNumberInput } from "./SingleNumberInput";
 import { useCustomPropertyDefinitions } from "../../../../hooks/useCustomPropertyDefinitions";
 import { useEffect } from "react";
-import { CategoryType } from "../../../../api/adminSettingServices";
 import { sortCategoriesByNameAndId } from "../../../../utils/sortFunctions";
 
 export type PhysicalAppeareanceInformationProps = {

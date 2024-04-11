@@ -5,7 +5,6 @@ import { AmountModel, HouseBlock } from "../../../../types/houseBlockTypes";
 import { SingleNumberInput } from "../physical-appearence/SingleNumberInput";
 import { useCustomPropertyDefinitions } from "../../../../hooks/useCustomPropertyDefinitions";
 import { useEffect } from "react";
-import { CategoryType } from "../../../../api/adminSettingServices";
 import { sortCategoriesByNameAndId } from "../../../../utils/sortFunctions";
 
 export type TargetGroupProps = {
