@@ -13,26 +13,29 @@ type Props = {
 
 export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, customDefinition }: Props) => {
     const { t } = useTranslation();
+    const trueishLabel = t("generic.true");
+    const falsyLabel = t("generic.false");
+
+    function booleanToLabel(value: boolean) {
+        return value === true ? trueishLabel : falsyLabel;
+    }
+
     if (customDefinition.propertyType === "BOOLEAN") {
         if (!readOnly) {
             return (
                 <Autocomplete
                     size="small"
-                    options={[t("generic.true"), t("generic.false")]}
-                    value={customValue?.booleanValue === true ? t("generic.true") : customValue?.booleanValue === false ? t("generic.false") : ""}
+                    options={[trueishLabel, falsyLabel]}
+                    value={customValue?.booleanValue ? booleanToLabel(customValue.booleanValue) : ""}
                     onChange={(_, newValue) => {
-                        const booleanValue = newValue === t("generic.true") ? true : newValue === t("generic.false") ? false : undefined;
+                        const booleanValue = newValue === trueishLabel ? true : newValue === falsyLabel ? false : undefined;
                         setCustomValue({ ...customValue, booleanValue });
                     }}
                     renderInput={(params) => <TextField {...params} size="small" />}
                 />
             );
         } else {
-            return (
-                <CellContainer>
-                    {customValue?.booleanValue === true ? t("generic.true") : customValue?.booleanValue === false ? t("generic.false") : ""}
-                </CellContainer>
-            );
+            return <CellContainer>{customValue?.booleanValue ? booleanToLabel(customValue.booleanValue) : ""}</CellContainer>;
         }
     } else if (customDefinition.propertyType === "CATEGORY") {
         if (!readOnly) {
