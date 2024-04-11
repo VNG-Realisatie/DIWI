@@ -24,20 +24,10 @@ CREATE OR REPLACE FUNCTION get_houseblock_snapshots (
         noPermissionOwner INTEGER,
         intentionPermissionOwner INTEGER,
         formalPermissionOwner INTEGER,
-        tussenwoning INTEGER,
-        tweeondereenkap INTEGER,
-        portiekflat INTEGER,
-        hoekwoning INTEGER,
-        vrijstaand INTEGER,
-        gallerijflat INTEGER,
+        physicalAppearanceList JSONB,
         meergezinswoning INTEGER,
         eengezinswoning INTEGER,
-        regular INTEGER,
-        youth INTEGER,
-        student INTEGER,
-        elderly INTEGER,
-        GHZ INTEGER,
-        largeFamilies INTEGER
+        targetGroupList JSONB
 	)
 	LANGUAGE plpgsql
 AS $$
@@ -61,20 +51,10 @@ SELECT  q.projectId,
         q.noPermissionOwner,
         q.intentionPermissionOwner,
         q.formalPermissionOwner,
-        q.tussenwoning,
-        q.tweeondereenkap,
-        q.portiekflat,
-        q.hoekwoning,
-        q.vrijstaand,
-        q.gallerijflat,
+        q.physicalAppearance,
         q.meergezinswoning,
         q.eengezinswoning,
-        q.regular,
-        q.youth,
-        q.student,
-        q.elderly,
-        q.GHZ,
-        q.largeFamilies
+        q.targetGroup
 FROM (
 
          WITH
@@ -128,56 +108,34 @@ FROM (
              ),
              active_woningbloks_fysiek AS (
                  SELECT
-                     aw.id, tuss.amount AS tussenwoning, twee.amount AS tweeondereenkap, port.amount AS portiekflat, hoek.amount AS hoekwoning,
-                     vrij.amount AS vrijstaand, gall.amount AS gallerijflat, meer.amount AS meergezinswoning, eeng.amount AS eengezinswoning
+                     aw.id, to_jsonb(array_agg(jsonb_build_object('id', wcfv.property_value_id, 'amount', wcfv.amount)) FILTER (WHERE wcfv.property_value_id IS NOT NULL)) AS physicalAppearance,
+                     meer.amount AS meergezinswoning, eeng.amount AS eengezinswoning
                  FROM
                      active_woningbloks aw
                          JOIN diwi_testset.woningblok_type_en_fysiek_changelog wtfc ON aw.id = wtfc.woningblok_id AND wtfc.change_end_date IS NULL
                          JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wtfc.start_milestone_id AND sms.change_end_date IS NULL
                          JOIN diwi_testset.milestone_state ems ON ems.milestone_id = wtfc.end_milestone_id AND ems.change_end_date IS NULL
-                         LEFT JOIN diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value tuss ON tuss.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
-                            AND tuss.fysiek_voorkomen = 'TUSSENWONING'
-                         LEFT JOIN diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value hoek ON hoek.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
-                            AND hoek.fysiek_voorkomen = 'HOEKWONING'
-                         LEFT JOIN diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value twee ON twee.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
-                            AND twee.fysiek_voorkomen = 'TWEE_ONDER_EEN_KAP'
-                         LEFT JOIN diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value vrij ON vrij.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
-                            AND vrij.fysiek_voorkomen = 'VRIJSTAAND'
-                         LEFT JOIN diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value port ON port.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
-                            AND port.fysiek_voorkomen = 'PORTIEKFLAT'
-                         LEFT JOIN diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value gall ON gall.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
-                            AND gall.fysiek_voorkomen = 'GALLERIJFLAT'
+                         LEFT JOIN diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value wcfv ON wcfv.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
                          LEFT JOIN diwi_testset.woningblok_type_en_fysiek_changelog_type_value eeng ON eeng.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
                             AND eeng.woning_type = 'EENGEZINSWONING'
                          LEFT JOIN diwi_testset.woningblok_type_en_fysiek_changelog_type_value meer ON meer.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
                             AND meer.woning_type = 'MEERGEZINSWONING'
                  WHERE
                      sms.date <= _now_ AND _now_ < ems.date
+                 GROUP BY aw.id, meer.amount, eeng.amount
              ),
              active_woningbloks_doelgroep AS (
                  SELECT
-                     aw.id,
-                     reg.amount AS regular, jong.amount AS youth, stud.amount AS student, oud.amount AS elderly,
-                     gez.amount AS GHZ, gg.amount AS largeFamilies
+                     aw.id, to_jsonb(array_agg(jsonb_build_object('id', wdcv.property_value_id, 'amount', wdcv.amount))) AS targetGroup
                  FROM
                      active_woningbloks aw
                          JOIN diwi_testset.woningblok_doelgroep_changelog wdgc ON aw.id = wdgc.woningblok_id AND wdgc.change_end_date IS NULL
                          JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wdgc.start_milestone_id AND sms.change_end_date IS NULL
                          JOIN diwi_testset.milestone_state ems ON ems.milestone_id = wdgc.end_milestone_id AND ems.change_end_date IS NULL
-                         LEFT JOIN diwi_testset.woningblok_doelgroep_changelog_value reg ON reg.woningblok_doelgroep_changelog_id = wdgc.id
-                            AND reg.doelgroep = 'REGULIER'
-                         LEFT JOIN diwi_testset.woningblok_doelgroep_changelog_value jong ON jong.woningblok_doelgroep_changelog_id = wdgc.id
-                            AND jong.doelgroep = 'JONGEREN'
-                         LEFT JOIN diwi_testset.woningblok_doelgroep_changelog_value stud ON stud.woningblok_doelgroep_changelog_id = wdgc.id
-                            AND stud.doelgroep = 'STUDENTEN'
-                         LEFT JOIN diwi_testset.woningblok_doelgroep_changelog_value oud ON oud.woningblok_doelgroep_changelog_id = wdgc.id
-                            AND oud.doelgroep = 'OUDEREN'
-                         LEFT JOIN diwi_testset.woningblok_doelgroep_changelog_value gez ON gez.woningblok_doelgroep_changelog_id = wdgc.id
-                            AND gez.doelgroep = 'GEHANDICAPTEN_EN_ZORG'
-                         LEFT JOIN diwi_testset.woningblok_doelgroep_changelog_value gg ON gg.woningblok_doelgroep_changelog_id = wdgc.id
-                            AND gg.doelgroep = 'GROTE_GEZINNEN'
+                         JOIN diwi_testset.woningblok_doelgroep_changelog_value wdcv ON wdcv.woningblok_doelgroep_changelog_id = wdgc.id
                  WHERE
                      sms.date <= _now_ AND _now_ < ems.date
+                 GROUP BY aw.id
              ),
              active_woningbloks_mutation AS (
                  SELECT
@@ -276,52 +234,30 @@ FROM (
              ),
              future_woningbloks_fysiek AS (
                  SELECT
-                     fw.id, tuss.amount AS tussenwoning, twee.amount AS tweeondereenkap, port.amount AS portiekflat, hoek.amount AS hoekwoning,
-                     vrij.amount AS vrijstaand, gall.amount AS gallerijflat, meer.amount AS meergezinswoning, eeng.amount AS eengezinswoning
+                     fw.id, to_jsonb(array_agg(jsonb_build_object('id', wcfv.property_value_id, 'amount', wcfv.amount)) FILTER (WHERE wcfv.property_value_id IS NOT NULL)) AS physicalAppearance,
+                     meer.amount AS meergezinswoning, eeng.amount AS eengezinswoning
                  FROM
                      future_woningbloks fw
                          JOIN diwi_testset.woningblok_type_en_fysiek_changelog wtfc ON fw.id = wtfc.woningblok_id
                                 AND wtfc.start_milestone_id = fw.start_milestone_id
                                 AND wtfc.change_end_date IS NULL
-                         LEFT JOIN diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value tuss ON tuss.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
-                            AND tuss.fysiek_voorkomen = 'TUSSENWONING'
-                         LEFT JOIN diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value hoek ON hoek.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
-                            AND hoek.fysiek_voorkomen = 'HOEKWONING'
-                         LEFT JOIN diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value twee ON twee.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
-                            AND twee.fysiek_voorkomen = 'TWEE_ONDER_EEN_KAP'
-                         LEFT JOIN diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value vrij ON vrij.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
-                            AND vrij.fysiek_voorkomen = 'VRIJSTAAND'
-                         LEFT JOIN diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value port ON port.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
-                            AND port.fysiek_voorkomen = 'PORTIEKFLAT'
-                         LEFT JOIN diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value gall ON gall.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
-                            AND gall.fysiek_voorkomen = 'GALLERIJFLAT'
+                         LEFT JOIN diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value wcfv ON wcfv.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
                          LEFT JOIN diwi_testset.woningblok_type_en_fysiek_changelog_type_value eeng ON eeng.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
                             AND eeng.woning_type = 'EENGEZINSWONING'
                          LEFT JOIN diwi_testset.woningblok_type_en_fysiek_changelog_type_value meer ON meer.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
                             AND meer.woning_type = 'MEERGEZINSWONING'
+                 GROUP BY fw.id, meer.amount, eeng.amount
              ),
              future_woningbloks_doelgroep AS (
                  SELECT
-                     fw.id,
-                     reg.amount AS regular, jong.amount AS youth, stud.amount AS student, oud.amount AS elderly,
-                     gez.amount AS GHZ, gg.amount AS largeFamilies
+                     fw.id, to_jsonb(array_agg(jsonb_build_object('id', wdcv.property_value_id, 'amount', wdcv.amount))) AS targetGroup
                  FROM
                      future_woningbloks fw
                          JOIN diwi_testset.woningblok_doelgroep_changelog wdgc ON fw.id = wdgc.woningblok_id
                                 AND wdgc.start_milestone_id = fw.start_milestone_id
                                 AND wdgc.change_end_date IS NULL
-                         LEFT JOIN diwi_testset.woningblok_doelgroep_changelog_value reg ON reg.woningblok_doelgroep_changelog_id = wdgc.id
-                            AND reg.doelgroep = 'REGULIER'
-                         LEFT JOIN diwi_testset.woningblok_doelgroep_changelog_value jong ON jong.woningblok_doelgroep_changelog_id = wdgc.id
-                            AND jong.doelgroep = 'JONGEREN'
-                         LEFT JOIN diwi_testset.woningblok_doelgroep_changelog_value stud ON stud.woningblok_doelgroep_changelog_id = wdgc.id
-                            AND stud.doelgroep = 'STUDENTEN'
-                         LEFT JOIN diwi_testset.woningblok_doelgroep_changelog_value oud ON oud.woningblok_doelgroep_changelog_id = wdgc.id
-                            AND oud.doelgroep = 'OUDEREN'
-                         LEFT JOIN diwi_testset.woningblok_doelgroep_changelog_value gez ON gez.woningblok_doelgroep_changelog_id = wdgc.id
-                            AND gez.doelgroep = 'GEHANDICAPTEN_EN_ZORG'
-                         LEFT JOIN diwi_testset.woningblok_doelgroep_changelog_value gg ON gg.woningblok_doelgroep_changelog_id = wdgc.id
-                            AND gg.doelgroep = 'GROTE_GEZINNEN'
+                         JOIN diwi_testset.woningblok_doelgroep_changelog_value wdcv ON wdcv.woningblok_doelgroep_changelog_id = wdgc.id
+                 GROUP BY fw.id
              ),
              future_woningbloks_mutation AS (
                  SELECT
@@ -412,52 +348,30 @@ FROM (
              ),
              past_woningbloks_fysiek AS (
                  SELECT
-                     pw.id, tuss.amount AS tussenwoning, twee.amount AS tweeondereenkap, port.amount AS portiekflat, hoek.amount AS hoekwoning,
-                     vrij.amount AS vrijstaand, gall.amount AS gallerijflat, meer.amount AS meergezinswoning, eeng.amount AS eengezinswoning
+                     pw.id, to_jsonb(array_agg(jsonb_build_object('id', wcfv.property_value_id, 'amount', wcfv.amount)) FILTER (WHERE wcfv.property_value_id IS NOT NULL)) AS physicalAppearance,
+                     meer.amount AS meergezinswoning, eeng.amount AS eengezinswoning
                  FROM
                      past_woningbloks pw
                          JOIN diwi_testset.woningblok_type_en_fysiek_changelog wtfc ON pw.id = wtfc.woningblok_id
                                 AND wtfc.end_milestone_id = pw.end_milestone_id
                                 AND wtfc.change_end_date IS NULL
-                         LEFT JOIN diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value tuss ON tuss.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
-                            AND tuss.fysiek_voorkomen = 'TUSSENWONING'
-                         LEFT JOIN diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value hoek ON hoek.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
-                            AND hoek.fysiek_voorkomen = 'HOEKWONING'
-                         LEFT JOIN diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value twee ON twee.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
-                            AND twee.fysiek_voorkomen = 'TWEE_ONDER_EEN_KAP'
-                         LEFT JOIN diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value vrij ON vrij.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
-                            AND vrij.fysiek_voorkomen = 'VRIJSTAAND'
-                         LEFT JOIN diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value port ON port.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
-                            AND port.fysiek_voorkomen = 'PORTIEKFLAT'
-                         LEFT JOIN diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value gall ON gall.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
-                            AND gall.fysiek_voorkomen = 'GALLERIJFLAT'
+                         LEFT JOIN diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value wcfv ON wcfv.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
                          LEFT JOIN diwi_testset.woningblok_type_en_fysiek_changelog_type_value eeng ON eeng.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
                             AND eeng.woning_type = 'EENGEZINSWONING'
                          LEFT JOIN diwi_testset.woningblok_type_en_fysiek_changelog_type_value meer ON meer.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
                             AND meer.woning_type = 'MEERGEZINSWONING'
+                 GROUP BY pw.id, meer.amount, eeng.amount
              ),
              past_woningbloks_doelgroep AS (
                  SELECT
-                     pw.id,
-                     reg.amount AS regular, jong.amount AS youth, stud.amount AS student, oud.amount AS elderly,
-                     gez.amount AS GHZ, gg.amount AS largeFamilies
+                     pw.id, to_jsonb(array_agg(jsonb_build_object('id', wdcv.property_value_id, 'amount', wdcv.amount))) AS targetGroup
                  FROM
                      past_woningbloks pw
                          JOIN diwi_testset.woningblok_doelgroep_changelog wdgc ON pw.id = wdgc.woningblok_id
                                 AND wdgc.end_milestone_id = pw.end_milestone_id
                                 AND wdgc.change_end_date IS NULL
-                         LEFT JOIN diwi_testset.woningblok_doelgroep_changelog_value reg ON reg.woningblok_doelgroep_changelog_id = wdgc.id
-                            AND reg.doelgroep = 'REGULIER'
-                         LEFT JOIN diwi_testset.woningblok_doelgroep_changelog_value jong ON jong.woningblok_doelgroep_changelog_id = wdgc.id
-                            AND jong.doelgroep = 'JONGEREN'
-                         LEFT JOIN diwi_testset.woningblok_doelgroep_changelog_value stud ON stud.woningblok_doelgroep_changelog_id = wdgc.id
-                            AND stud.doelgroep = 'STUDENTEN'
-                         LEFT JOIN diwi_testset.woningblok_doelgroep_changelog_value oud ON oud.woningblok_doelgroep_changelog_id = wdgc.id
-                            AND oud.doelgroep = 'OUDEREN'
-                         LEFT JOIN diwi_testset.woningblok_doelgroep_changelog_value gez ON gez.woningblok_doelgroep_changelog_id = wdgc.id
-                            AND gez.doelgroep = 'GEHANDICAPTEN_EN_ZORG'
-                         LEFT JOIN diwi_testset.woningblok_doelgroep_changelog_value gg ON gg.woningblok_doelgroep_changelog_id = wdgc.id
-                            AND gg.doelgroep = 'GROTE_GEZINNEN'
+                         JOIN diwi_testset.woningblok_doelgroep_changelog_value wdcv ON wdcv.woningblok_doelgroep_changelog_id = wdgc.id
+                 GROUP BY pw.id
              ),
              past_woningbloks_mutation AS (
                  SELECT
@@ -520,20 +434,10 @@ FROM (
                 awgp.noPermissionOwner          AS noPermissionOwner,
                 awgp.intentionPermissionOwner   AS intentionPermissionOwner,
                 awgp.formalPermissionOwner      AS formalPermissionOwner,
-                awf.tussenwoning                AS tussenwoning,
-                awf.tweeondereenkap             AS tweeondereenkap,
-                awf.portiekflat                 AS portiekflat,
-                awf.hoekwoning                  AS hoekwoning,
-                awf.vrijstaand                  AS vrijstaand,
-                awf.gallerijflat                AS gallerijflat,
+                awf.physicalAppearance          AS physicalAppearance,
                 awf.meergezinswoning            AS meergezinswoning,
                 awf.eengezinswoning             AS eengezinswoning,
-                awdg.regular                    AS regular,
-                awdg.youth                      AS youth,
-                awdg.student                    AS student,
-                awdg.elderly                    AS elderly,
-                awdg.GHZ                        AS GHZ,
-                awdg.largeFamilies              AS largeFamilies
+                awdg.targetGroup                AS targetGroup
 
          FROM
              active_woningbloks aw
@@ -565,20 +469,10 @@ FROM (
              fwgp.noPermissionOwner          AS noPermissionOwner,
              fwgp.intentionPermissionOwner   AS intentionPermissionOwner,
              fwgp.formalPermissionOwner      AS formalPermissionOwner,
-             fwf.tussenwoning                AS tussenwoning,
-             fwf.tweeondereenkap             AS tweeondereenkap,
-             fwf.portiekflat                 AS portiekflat,
-             fwf.hoekwoning                  AS hoekwoning,
-             fwf.vrijstaand                  AS vrijstaand,
-             fwf.gallerijflat                AS gallerijflat,
+             fwf.physicalAppearance          AS physicalAppearance,
              fwf.meergezinswoning            AS meergezinswoning,
              fwf.eengezinswoning             AS eengezinswoning,
-             fwdg.regular                    AS regular,
-             fwdg.youth                      AS youth,
-             fwdg.student                    AS student,
-             fwdg.elderly                    AS elderly,
-             fwdg.GHZ                        AS GHZ,
-             fwdg.largeFamilies              AS largeFamilies
+             fwdg.targetGroup                AS targetGroup
 
          FROM
              future_woningbloks fw
@@ -610,20 +504,10 @@ FROM (
                 pwgp.noPermissionOwner          AS noPermissionOwner,
                 pwgp.intentionPermissionOwner   AS intentionPermissionOwner,
                 pwgp.formalPermissionOwner      AS formalPermissionOwner,
-                pwf.tussenwoning                AS tussenwoning,
-                pwf.tweeondereenkap             AS tweeondereenkap,
-                pwf.portiekflat                 AS portiekflat,
-                pwf.hoekwoning                  AS hoekwoning,
-                pwf.vrijstaand                  AS vrijstaand,
-                pwf.gallerijflat                AS gallerijflat,
+                pwf.physicalAppearance          AS physicalAppearance,
                 pwf.meergezinswoning            AS meergezinswoning,
                 pwf.eengezinswoning             AS eengezinswoning,
-                pwdg.regular                    AS regular,
-                pwdg.youth                      AS youth,
-                pwdg.student                    AS student,
-                pwdg.elderly                    AS elderly,
-                pwdg.GHZ                        AS GHZ,
-                pwdg.largeFamilies              AS largeFamilies
+                pwdg.targetGroup                AS targetGroup
 
          FROM
              past_woningbloks pw

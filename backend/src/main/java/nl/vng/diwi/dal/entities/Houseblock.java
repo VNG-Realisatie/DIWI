@@ -66,7 +66,7 @@ public class Houseblock extends IdSuperclass {
 
     @OneToMany(mappedBy= "houseblock", fetch = FetchType.LAZY)
     @Filter(name = GenericRepository.CURRENT_DATA_FILTER, condition = "change_end_date IS NULL")
-    private List<HouseblockPurposeChangelog> purposes;
+    private List<HouseblockTargetGroupChangelog> targetGroups;
 
     @OneToMany(mappedBy="houseblock", fetch = FetchType.LAZY)
     @Filter(name = GenericRepository.CURRENT_DATA_FILTER, condition = "change_end_date IS NULL")

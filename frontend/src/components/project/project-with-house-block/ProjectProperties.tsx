@@ -1,6 +1,6 @@
 import { Grid, Typography, TextField } from "@mui/material";
 import { t } from "i18next";
-import { Organization, SelectModel } from "../../../api/projectsServices";
+import { Organization, PriorityModel, SelectModel } from "../../../api/projectsServices";
 import { OrganizationSelect } from "../../../widgets/OrganizationSelect";
 import { CellContainer } from "./CellContainer";
 import { ConfidentialityLevelEditForm } from "./ConfidentialityLevelEditForm";
@@ -31,8 +31,8 @@ type Props = {
     setEndDate: (endDate: Dayjs | null) => void;
     projectPhase: string | undefined;
     setProjectPhase: (projectPhase: string | undefined) => void;
-    projectPriority: SelectModel | null;
-    setProjectPriority: (projectPriority: SelectModel | null) => void;
+    projectPriority: PriorityModel | null;
+    setProjectPriority: (projectPriority: PriorityModel | null) => void;
     selectedMunicipalityRole: SelectModel[];
     setSelectedMunicipalityRole: (selectedMunicipalityRole: SelectModel[]) => void;
     confidentialityLevel: string | undefined;
