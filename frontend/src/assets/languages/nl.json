@@ -17,6 +17,7 @@
       "noInfoAvailable": "Geen informatie beschikbaar",
       "updated": "Succesvol geüpdatet",
       "failedToUpdate": "Update is mislukt",
+      "failedToSave": "Opslaan is mislukt",
       "project": "Project",
       "houseblock": "Huizenblok",
       "true": "Ja",
