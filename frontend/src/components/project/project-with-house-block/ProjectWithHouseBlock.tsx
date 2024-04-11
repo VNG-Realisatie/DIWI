@@ -13,7 +13,7 @@ import { defaultColors } from "../../ColorSelector";
 import { BlockPicker, ColorResult } from "react-color";
 
 import { PlanStatusOptions, PlanTypeOptions } from "../../../types/enums";
-import { Organization, PriorityModel, SelectModel, updateProjects } from "../../../api/projectsServices";
+import { Organization, PriorityModel, Project, SelectModel, updateProject as updateProjects } from "../../../api/projectsServices";
 import AlertContext from "../../../context/AlertContext";
 import { CreateHouseBlockDialog } from "./CreateHouseBlockDialog";
 import { HouseBlocksList } from "./HouseBlocksList";
@@ -157,7 +157,7 @@ export const ProjectsWithHouseBlock = () => {
             buurt: selectedNeighbourhood,
         };
 
-        updateProjects(updatedProjectForm)
+        updateProjects(updatedProjectForm as Project)
             .then(() => {
                 setReadOnly(true);
                 updateProject();
