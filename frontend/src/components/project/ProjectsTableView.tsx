@@ -376,6 +376,14 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             <DataGrid
                 sx={{
                     borderRadius: 0,
+                    "& .MuiDataGrid-cell, .MuiDataGrid-columnHeader": {
+                        borderLeft: "2px solid #ccc",
+                        borderTop: "2px solid #ccc",
+                    },
+                    "& .MuiDataGrid-columnHeader": {
+                        backgroundColor: "#738092",
+                        color: "#ffffff",
+                    },
                 }}
                 checkboxSelection={showCheckBox}
                 rows={rows}
