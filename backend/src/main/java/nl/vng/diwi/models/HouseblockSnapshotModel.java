@@ -104,6 +104,8 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
             return "Houseblock start date must be within the duration of the project.";
         } else if (projectEndDate.isBefore(this.getEndDate())) {
             return "Houseblock end date must be within the duration of the project";
+        } else if (mutation != null && mutation.getAmount() != null && mutation.getAmount() <= 0) {
+            return "Houseblock mutation amount must be greater than 0";
         }
 
         if (size != null) {
