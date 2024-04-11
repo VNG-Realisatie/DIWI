@@ -150,7 +150,12 @@ FROM (
              ),
              active_project_woningblok_totalvalue AS (
                  SELECT
-                     w.project_id, SUM(COALESCE(wmc.bruto_plancapaciteit, 0)) AS total_value
+                     w.project_id,
+                     SUM(wmc.amount *
+                         CASE wmc.mutation_kind
+                             WHEN 'CONSTRUCTION' THEN 1
+                             WHEN 'DEMOLITION' THEN -1
+                        END) AS total_value
                  FROM
                      diwi_testset.woningblok_mutatie_changelog wmc
                          JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wmc.start_milestone_id AND sms.change_end_date IS NULL
@@ -287,7 +292,12 @@ FROM (
              ),
              future_project_woningblok_totalvalue AS (
                  SELECT
-                     w.project_id, SUM(COALESCE(wmc.bruto_plancapaciteit, 0)) AS total_value
+                     w.project_id,
+                     SUM(wmc.amount *
+                         CASE wmc.mutation_kind
+                             WHEN 'CONSTRUCTION' THEN 1
+                             WHEN 'DEMOLITION' THEN -1
+                         END) AS total_value
                  FROM
                      future_projects fp
                         JOIN diwi_testset.woningblok w ON fp.id = w.project_id
@@ -416,7 +426,12 @@ FROM (
              ),
              past_project_woningblok_totalvalue AS (
                  SELECT
-                     w.project_id, SUM(COALESCE(wmc.bruto_plancapaciteit, 0)) AS total_value
+                     w.project_id,
+                     SUM(wmc.amount *
+                         CASE wmc.mutation_kind
+                             WHEN 'CONSTRUCTION' THEN 1
+                             WHEN 'DEMOLITION' THEN -1
+                         END) AS total_value
                  FROM
                      past_projects pp
                          JOIN diwi_testset.woningblok w ON pp.id = w.project_id
