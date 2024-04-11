@@ -6,6 +6,7 @@ import { SingleNumberInput } from "./SingleNumberInput";
 import { useCustomPropertyDefinitions } from "../../../../hooks/useCustomPropertyDefinitions";
 import { useEffect } from "react";
 import { CategoryType } from "../../../../api/adminSettingServices";
+import { sortCategoriesByNameAndId } from "../../../../utils/sortFunctions";
 
 export type PhysicalAppeareanceInformationProps = {
     houseBlock: HouseBlock;
@@ -27,16 +28,6 @@ export const PhysicalAppeareanceGroup = ({ houseBlock, setHouseBlock, readOnly }
         }
     }, [houseBlock, physicalAppearanceCategories, setHouseBlock]);
 
-    const sortByNameAndId = (a: CategoryType, b: CategoryType) => {
-        const firstSmaller = -1;
-        // first sort by name
-        if (a.name < b.name) return firstSmaller;
-        if (a.name > b.name) return -firstSmaller;
-        // if names identical, sort by id which cannot be identical
-        if (a.id && b.id && a.id < b.id) return firstSmaller;
-        return -firstSmaller;
-    };
-
     return (
         <WizardCard>
             <Typography fontWeight={600} mb={2}>
@@ -53,7 +44,7 @@ export const PhysicalAppeareanceGroup = ({ houseBlock, setHouseBlock, readOnly }
             {houseBlock.physicalAppearance &&
                 houseBlock.physicalAppearance.length > 0 &&
                 physicalAppearanceCategories &&
-                physicalAppearanceCategories.sort(sortByNameAndId).map((pa) => {
+                physicalAppearanceCategories.sort(sortCategoriesByNameAndId).map((pa) => {
                     const propAmount = houseBlock.physicalAppearance.find((def) => def.id === pa.id)?.amount ?? null;
 
                     function handleChange(newValue: number | null): void {
