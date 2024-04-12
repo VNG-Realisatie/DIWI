@@ -72,7 +72,7 @@ export const HouseBlockProvider = ({ children }: PropsWithChildren) => {
                         (cv) =>
                             res.houseblockId &&
                             customPropServices
-                                .putBlockCustomPropertyValues(res.houseblockId, cv)
+                                .putBlockCustomPropertyValue(res.houseblockId, cv)
                                 .then((_) => false)
                                 .catch((_) => true),
                     ),
@@ -125,7 +125,7 @@ export const HouseBlockProvider = ({ children }: PropsWithChildren) => {
                         (cv) =>
                             res.houseblockId &&
                             customPropServices
-                                .putCustomPropertyValues(res.houseblockId, cv)
+                                .putCustomPropertyValue(res.houseblockId, cv)
                                 .then((_) => false)
                                 .catch((_) => true),
                     ),
