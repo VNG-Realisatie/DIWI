@@ -2,7 +2,7 @@ import { Autocomplete, Checkbox, FormControl, FormControlLabel, Grid, Radio, Rad
 import { useState } from "react";
 import { ImportHouseBlockCardItem } from "./ImportHouseBlockCardItem";
 import { SearchItem, projects } from "../api/dummyData";
-import { HouseBlock } from "./project-wizard/house-blocks/types";
+import { HouseBlock } from "../types/houseBlockTypes";
 export const columnTitleStyle = {
     border: "solid 1px #ddd",
     p: 0.6,

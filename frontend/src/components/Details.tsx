@@ -3,7 +3,8 @@ import { Fragment, ReactNode, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Project } from "../api/projectsServices";
 import { OrganizationUserAvatars } from "./OrganizationUserAvatars";
-import { HouseBlock } from "./project-wizard/house-blocks/types";
+import ProjectContext from "../context/ProjectContext";
+import { HouseBlock } from "../types/houseBlockTypes";
 
 type Props = {
     project: Project | null;

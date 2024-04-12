@@ -19,7 +19,9 @@
       "failedToUpdate": "Update is mislukt",
       "failedToSave": "Opslaan is mislukt",
       "project": "Project",
-      "houseblock": "Huizenblok"
+      "houseblock": "Huizenblok",
+      "true": "Ja",
+      "false": "Nee"
     },
     "createProject": {
       "information": "Project informatie",

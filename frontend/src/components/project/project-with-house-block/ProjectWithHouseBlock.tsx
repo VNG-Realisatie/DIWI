@@ -8,7 +8,6 @@ import ClearIcon from "@mui/icons-material/Clear";
 import FormatColorFillIcon from "@mui/icons-material/FormatColorFill";
 import { useTranslation } from "react-i18next";
 import dayjs, { Dayjs } from "dayjs";
-import { formatDate } from "../../../utils/formatDate";
 
 import { defaultColors } from "../../ColorSelector";
 import { BlockPicker, ColorResult } from "react-color";
@@ -92,8 +91,8 @@ export const ProjectsWithHouseBlock = () => {
     const updateChanges = useCallback(() => {
         setName(selectedProject?.projectName ?? "");
         setOwner(selectedProject?.projectOwners ?? []);
-        setStartDate(selectedProject?.startDate ? dayjs(formatDate(selectedProject.startDate)).endOf("day") : null);
-        setEndDate(selectedProject?.endDate ? dayjs(formatDate(selectedProject.endDate)).endOf("day") : null);
+        setStartDate(selectedProject?.startDate ? dayjs(selectedProject.startDate) : null);
+        setEndDate(selectedProject?.endDate ? dayjs(selectedProject.endDate) : null);
         setProjectPriority(selectedProject?.priority || {}); //ToDo Fix later when decided range select
         setProjectPhase(selectedProject?.projectPhase);
         setSelectedNeighbourhood(selectedProject?.buurt ?? []);
@@ -131,25 +130,6 @@ export const ProjectsWithHouseBlock = () => {
         updateChanges();
     };
 
-    const updatedProjectForm = {
-        startDate: startDate,
-        endDate: endDate,
-        projectId: selectedProject?.projectId,
-        projectName: name,
-        projectColor: selectedProjectColor,
-        confidentialityLevel: confidentialityLevel,
-        planType: planType,
-        priority: projectPriority,
-        projectPhase: projectPhase,
-        planningPlanStatus: planStatus,
-        municipalityRole: selectedMunicipalityRole,
-        projectOwners: owner,
-        projectLeaders: leader,
-        totalValue: selectedProject?.totalValue,
-        municipality: selectedMunicipality,
-        wijk: selectedWijk,
-        buurt: selectedNeighbourhood,
-    };
     const handleCustomPropertiesSave = () => {
         customValues.forEach((value) => {
             putCustomPropertyValues(selectedProject?.projectId as string, value).catch((error: any) => setAlert(error.message, "error"));
@@ -157,6 +137,26 @@ export const ProjectsWithHouseBlock = () => {
     };
 
     const handleProjectSave = () => {
+        const updatedProjectForm = {
+            startDate: startDate?.format("YYYY-MM-DD"),
+            endDate: endDate?.format("YYYY-MM-DD"),
+            projectId: selectedProject?.projectId,
+            projectName: name,
+            projectColor: selectedProjectColor,
+            confidentialityLevel: confidentialityLevel,
+            planType: planType,
+            priority: projectPriority,
+            projectPhase: projectPhase,
+            planningPlanStatus: planStatus,
+            municipalityRole: selectedMunicipalityRole,
+            projectOwners: owner,
+            projectLeaders: leader,
+            totalValue: selectedProject?.totalValue,
+            municipality: selectedMunicipality,
+            wijk: selectedWijk,
+            buurt: selectedNeighbourhood,
+        };
+
         updateProjects(updatedProjectForm)
             .then(() => {
                 setReadOnly(true);

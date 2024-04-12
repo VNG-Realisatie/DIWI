@@ -2,30 +2,30 @@ import { Stack, Typography } from "@mui/material";
 import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
 import { AmountModel, HouseBlock } from "../../../../types/houseBlockTypes";
-import { SingleNumberInput } from "./SingleNumberInput";
+import { SingleNumberInput } from "../physical-appearence/SingleNumberInput";
 import { useCustomPropertyDefinitions } from "../../../../hooks/useCustomPropertyDefinitions";
 import { useEffect } from "react";
 import { sortCategoriesByNameAndId } from "../../../../utils/sortFunctions";
 
-export type PhysicalAppeareanceInformationProps = {
+export type TargetGroupProps = {
     houseBlock: HouseBlock;
     setHouseBlock(houseBlock: HouseBlock): void;
     readOnly: boolean;
 };
 
-export const PhysicalAppeareanceGroup = ({ houseBlock, setHouseBlock, readOnly }: PhysicalAppeareanceInformationProps) => {
-    const translationPath = "createProject.houseBlocksForm.physicalAppearance";
-    const { physicalAppearanceCategories } = useCustomPropertyDefinitions();
+export const TargetGroup = ({ houseBlock, setHouseBlock, readOnly }: TargetGroupProps) => {
+    const translationPath = "createProject.houseBlocksForm.purpose";
+    const { targetGroupCategories } = useCustomPropertyDefinitions();
 
     // update houseblock so it will have amounts for every category
     useEffect(() => {
-        const missingCategories = physicalAppearanceCategories?.filter((cat) => !houseBlock.physicalAppearance.map((cat) => cat.id).includes(cat.id));
+        const missingCategories = targetGroupCategories?.filter((cat) => !houseBlock.targetGroup.map((cat) => cat.id).includes(cat.id));
         if (missingCategories && missingCategories.length > 0) {
             const missingAmountObj = missingCategories.map((cat) => ({ id: cat.id, amount: 0 })) ?? [];
-            const newPhysicalAppearances = [...houseBlock.physicalAppearance, ...missingAmountObj];
-            setHouseBlock({ ...houseBlock, physicalAppearance: newPhysicalAppearances });
+            const newPhysicalAppearances = [...houseBlock.targetGroup, ...missingAmountObj];
+            setHouseBlock({ ...houseBlock, targetGroup: newPhysicalAppearances });
         }
-    }, [houseBlock, physicalAppearanceCategories, setHouseBlock]);
+    }, [houseBlock, targetGroupCategories, setHouseBlock]);
 
     return (
         <WizardCard>
@@ -34,32 +34,32 @@ export const PhysicalAppeareanceGroup = ({ houseBlock, setHouseBlock, readOnly }
             </Typography>
             <Stack direction="row" alignItems="center" spacing={3} my={1}>
                 <Typography fontWeight={600} flex={3}>
-                    {t(`${translationPath}.houseType`)}
+                    {t(`${translationPath}.typeOfResidents`)}
                 </Typography>
                 <Typography fontWeight={600} flex={1}>
                     {t(`${translationPath}.value`)}
                 </Typography>
             </Stack>
-            {houseBlock.physicalAppearance &&
-                houseBlock.physicalAppearance.length > 0 &&
-                physicalAppearanceCategories &&
-                physicalAppearanceCategories.sort(sortCategoriesByNameAndId).map((pa) => {
-                    const propAmount = houseBlock.physicalAppearance.find((def) => def.id === pa.id)?.amount ?? null;
+            {houseBlock.targetGroup &&
+                houseBlock.targetGroup.length > 0 &&
+                targetGroupCategories &&
+                targetGroupCategories.sort(sortCategoriesByNameAndId).map((tg) => {
+                    const propAmount = houseBlock.targetGroup.find((def) => def.id === tg.id)?.amount ?? null;
 
                     function handleChange(newValue: number | null): void {
-                        const newAmountObj = { id: pa.id, amount: newValue ?? 0 } as AmountModel;
-                        const physicalAppearanceNewRemoved = houseBlock.physicalAppearance.filter((cat) => cat.id !== pa.id);
+                        const newAmountObj = { id: tg.id, amount: newValue ?? 0 } as AmountModel;
+                        const targetGroupNewRemoved = houseBlock.targetGroup.filter((cat) => cat.id !== tg.id);
                         setHouseBlock({
                             ...houseBlock,
-                            physicalAppearance: [...physicalAppearanceNewRemoved, newAmountObj],
+                            targetGroup: [...targetGroupNewRemoved, newAmountObj],
                         });
                     }
 
                     return (
                         <SingleNumberInput
-                            key={pa.id}
+                            key={tg.id}
                             // this has no translation as it is set by the user.
-                            name={pa.name}
+                            name={tg.name}
                             value={propAmount}
                             onChange={handleChange}
                             readOnly={readOnly}

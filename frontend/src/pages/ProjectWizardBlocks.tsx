@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { HouseBlock } from "../components/project-wizard/house-blocks/types";
+import { HouseBlock } from "../types/houseBlockTypes";
 import { projectWizardMap, projectWizardWithId } from "../Paths";
 import WizardLayout from "../components/project-wizard/WizardLayout";
 import { HouseBlocksForm } from "../components/HouseBlocksForm";

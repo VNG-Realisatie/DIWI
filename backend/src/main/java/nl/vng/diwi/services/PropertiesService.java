@@ -48,6 +48,10 @@ public class PropertiesService {
         return false;
     }
 
+    public List<PropertyCategoryValueState> getCategoryStatesByPropertyName(VngRepository repo, String propertyName) {
+        return repo.getPropertyDAO().getCategoryStatesByPropertyName(propertyName);
+    }
+
     public UUID createCustomProperty(VngRepository repo, PropertyModel propertyModel, ZonedDateTime createTime, UUID loggedUserUuid)
         throws VngBadRequestException {
 

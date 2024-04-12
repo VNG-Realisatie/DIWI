@@ -1,16 +1,18 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useEffect, useState } from "react";
-import { HouseBlock } from "../components/project-wizard/house-blocks/types";
+import { HouseBlock } from "../types/houseBlockTypes";
 import ProjectContext from "./ProjectContext";
 import useAlert from "../hooks/useAlert";
 import { useTranslation } from "react-i18next";
 import { CustomPropertyValue } from "../api/customPropServices";
 import * as houseBlockService from "../api/houseBlockService";
 import * as customPropServices from "../api/customPropServices";
+import { useCustomPropertyDefinitions } from "../hooks/useCustomPropertyDefinitions";
 
 type CustomPropertyValueHelper = {
     houseBlockId: string;
     customPropertyValues: CustomPropertyValue[];
 };
+
 type HouseBlockContextType = {
     houseBlocks: HouseBlock[];
     refresh: () => void;
@@ -32,6 +34,7 @@ export const HouseBlockProvider = ({ children }: PropsWithChildren) => {
     const { t } = useTranslation();
 
     const { projectId, selectedProject } = useContext(ProjectContext);
+    const { physicalAppearanceCategories, targetGroupCategories } = useCustomPropertyDefinitions();
 
     const refresh = useCallback(() => {
         projectId &&
@@ -208,26 +211,12 @@ export const HouseBlockProvider = ({ children }: PropsWithChildren) => {
                 intentionPermissionOwner: null,
                 formalPermissionOwner: null,
             },
-            physicalAppearance: {
-                tussenwoning: null,
-                tweeondereenkap: null,
-                portiekflat: null,
-                hoekwoning: null,
-                vrijstaand: null,
-                gallerijflat: null,
-            },
+            physicalAppearance: physicalAppearanceCategories?.map((cat) => ({ id: cat.id, amount: 0 })) ?? [],
             houseType: {
                 meergezinswoning: null,
                 eengezinswoning: null,
             },
-            purpose: {
-                regular: null,
-                youth: null,
-                student: null,
-                elderly: null,
-                largeFamilies: null,
-                ghz: null,
-            },
+            targetGroup: targetGroupCategories?.map((cat) => ({ id: cat.id, amount: 0 })) ?? [],
         };
     };
 
