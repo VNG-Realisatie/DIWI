@@ -23,10 +23,16 @@ const ProjectWizardBlocks = () => {
     }, [getEmptyHouseBlock]);
 
     async function saveAndRefresh() {
-        setLoading(true);
-        await saveHouseBlockWithCustomProperties(houseBlock);
-        refresh();
-        setLoading(false);
+        try {
+            setLoading(true);
+            await saveHouseBlockWithCustomProperties(houseBlock);
+            refresh();
+            setAlert(t("createProject.houseBlocksForm.notifications.successfullySaved"), "success");
+        } catch {
+            setAlert(t("createProject.houseBlocksForm.notifications.error"), "error");
+        } finally {
+            setLoading(false);
+        }
     }
 
     const handleNext = async () => {
