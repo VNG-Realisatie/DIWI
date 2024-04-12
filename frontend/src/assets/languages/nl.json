@@ -131,8 +131,7 @@
           "successfullySaved": "Woningblokken succesvol opgeslagen.",
           "successfullyUpdated": "Woningblokken succesvol geüpdatet.",
           "error": "Er is iets fout gegaan"
-        },
-        "saveBeforeCustomProps": "Sla het woningblok op zodat u de maatwerk eigenschappen kunt invullen."
+        }
       },
       "selectMapForm": {
         "title": "Teken het project in op de kaart",

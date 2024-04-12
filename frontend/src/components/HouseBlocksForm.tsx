@@ -65,7 +65,6 @@ export const HouseBlocksForm = ({ readOnly, houseBlock, setHouseBlock }: Props) 
                             columnTitleStyle: {},
                         }}
                     />
-                    {!houseBlock.houseblockId && <>{t("createProject.houseBlocksForm.saveBeforeCustomProps")}</>}
                 </Grid>
             </Grid>
         </>
