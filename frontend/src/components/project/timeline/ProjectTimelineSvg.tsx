@@ -3,7 +3,7 @@ import * as d3 from "d3";
 import { Box } from "@mui/material";
 import { getProjectTimeline } from "../../../api/projectTimeLine";
 import ProjectContext from "../../../context/ProjectContext";
-import { getProjectHouseBlocks } from "../../../api/projectsServices";
+import { getProjectHouseBlocksWithCustomProperties } from "../../../api/houseBlockServices";
 import dayjs from "dayjs";
 import type { Dayjs } from "dayjs";
 import { components } from "../../../types/schema";
@@ -52,7 +52,7 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, showToday, width, height }:
 
     useEffect(() => {
         if (projectId) {
-            getProjectHouseBlocks(projectId)
+            getProjectHouseBlocksWithCustomProperties(projectId)
                 .then((houseBlockData) => {
                     if (houseBlockData) {
                         setHouseBlockData(houseBlockData.sort((a, b) => (dayjs(a.startDate).isBefore(dayjs(b.startDate)) ? -1 : 1)));

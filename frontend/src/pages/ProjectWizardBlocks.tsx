@@ -1,19 +1,33 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { HouseBlock } from "../types/houseBlockTypes";
+import { HouseBlockWithCustomProperties } from "../types/houseBlockTypes";
 import { projectWizardMap, projectWizardWithId } from "../Paths";
 import WizardLayout from "../components/project-wizard/WizardLayout";
 import { HouseBlocksForm } from "../components/HouseBlocksForm";
 import useAlert from "../hooks/useAlert";
 import HouseBlockContext from "../context/HouseBlockContext";
 import { t } from "i18next";
+import { saveHouseBlockWithCustomProperties } from "../api/houseBlockServices";
+import useLoading from "../hooks/useLoading";
 
 const ProjectWizardBlocks = () => {
-    const { houseBlocks, addHouseBlock, getEmptyHouseBlock, updateHouseBlock } = useContext(HouseBlockContext);
-    const [houseBlock, setHouseBlock] = useState<HouseBlock>(getEmptyHouseBlock());
+    const { houseBlocks, getEmptyHouseBlock, refresh } = useContext(HouseBlockContext);
+    const [houseBlock, setHouseBlock] = useState<HouseBlockWithCustomProperties>(getEmptyHouseBlock());
     const { projectId } = useParams();
     const navigate = useNavigate();
     const { setAlert } = useAlert();
+    const { setLoading } = useLoading();
+
+    useEffect(() => {
+        setHouseBlock(getEmptyHouseBlock());
+    }, [getEmptyHouseBlock]);
+
+    async function saveAndRefresh() {
+        setLoading(true);
+        await saveHouseBlockWithCustomProperties(houseBlock);
+        refresh();
+        setLoading(false);
+    }
 
     const handleNext = async () => {
         if (
@@ -24,11 +38,7 @@ const ProjectWizardBlocks = () => {
         ) {
             setAlert(t("createProject.hasMissingRequiredAreas.hasmissingProperty"), "warning");
         } else {
-            if (houseBlock.houseblockId) {
-                updateHouseBlock(houseBlock);
-            } else {
-                addHouseBlock(houseBlock);
-            }
+            saveAndRefresh();
             if (projectId) {
                 navigate(projectWizardMap.toPath({ projectId }));
             }
@@ -36,11 +46,7 @@ const ProjectWizardBlocks = () => {
     };
 
     const handleSave = async () => {
-        if (houseBlock.houseblockId) {
-            updateHouseBlock(houseBlock);
-        } else {
-            addHouseBlock(houseBlock);
-        }
+        saveAndRefresh();
     };
 
     const handleBack = () => {

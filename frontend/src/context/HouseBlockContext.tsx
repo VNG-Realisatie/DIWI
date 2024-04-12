@@ -1,44 +1,26 @@
 import { PropsWithChildren, createContext, useCallback, useContext, useEffect, useState } from "react";
-import { HouseBlock } from "../types/houseBlockTypes";
+import { HouseBlockWithCustomProperties } from "../types/houseBlockTypes";
 import ProjectContext from "./ProjectContext";
-import useAlert from "../hooks/useAlert";
-import { useTranslation } from "react-i18next";
-import { CustomPropertyValue } from "../api/customPropServices";
-import * as houseBlockService from "../api/houseBlockService";
-import * as customPropServices from "../api/customPropServices";
+import * as houseBlockService from "../api/houseBlockServices";
 import { useCustomPropertyDefinitions } from "../hooks/useCustomPropertyDefinitions";
 
-type CustomPropertyValueHelper = {
-    houseBlockId: string;
-    customPropertyValues: CustomPropertyValue[];
-};
-
 type HouseBlockContextType = {
-    houseBlocks: HouseBlock[];
+    houseBlocks: HouseBlockWithCustomProperties[];
     refresh: () => void;
-    updateHouseBlock: (houseBlock: HouseBlock) => void;
-    addHouseBlock: (houseBlock: HouseBlock) => void;
-    // saveHouseBlocks: () => void;
-    createHouseBlock: (houseBlock: HouseBlock) => void;
-    updateCustomPropertyValues: (houseBlockId: string, customPropertyValues: CustomPropertyValue[]) => void;
-    getCustomPropertyValues: (houseBlockId: string) => CustomPropertyValue[];
-    getEmptyHouseBlock: () => HouseBlock;
+    getEmptyHouseBlock: () => HouseBlockWithCustomProperties;
 };
 
 const HouseBlockContext = createContext<HouseBlockContextType | null>(null) as React.Context<HouseBlockContextType>;
 
 export const HouseBlockProvider = ({ children }: PropsWithChildren) => {
-    const [houseBlocks, setHouseBlocks] = useState<HouseBlock[]>([]);
-    const [customPropertiesValues, setCustomPropertiesValues] = useState<CustomPropertyValueHelper[]>([]);
-    const { setAlert } = useAlert();
-    const { t } = useTranslation();
+    const [houseBlocks, setHouseBlocks] = useState<HouseBlockWithCustomProperties[]>([]);
 
     const { projectId, selectedProject } = useContext(ProjectContext);
     const { physicalAppearanceCategories, targetGroupCategories } = useCustomPropertyDefinitions();
 
     const refresh = useCallback(() => {
         projectId &&
-            houseBlockService.getProjectHouseBlocks(projectId).then((res: HouseBlock[]) => {
+            houseBlockService.getProjectHouseBlocksWithCustomProperties(projectId).then((res: HouseBlockWithCustomProperties[]) => {
                 setHouseBlocks(res);
             });
     }, [projectId]);
@@ -47,140 +29,7 @@ export const HouseBlockProvider = ({ children }: PropsWithChildren) => {
         refresh();
     }, [projectId, refresh]);
 
-    const updateCustomPropertyValues = (houseBlockId: string, customPropertyValues: CustomPropertyValue[]) => {
-        const newCustomPropertiesValues = customPropertiesValues.filter((cpv) => cpv.houseBlockId !== houseBlockId);
-        setCustomPropertiesValues([...newCustomPropertiesValues, { houseBlockId, customPropertyValues }]);
-    };
-
-    const updateHouseBlock = (houseBlock: HouseBlock) => {
-        if (
-            !houseBlock.houseblockName ||
-            !houseBlock.startDate ||
-            !houseBlock.endDate ||
-            houseBlock.ownershipValue.some((owner) => owner.amount === null || isNaN(owner.amount))
-        ) {
-            setAlert(t("createProject.hasMissingRequiredAreas.hasmissingProperty"), "warning");
-            return;
-        }
-        const updatedHouseBlock = houseBlocks.filter((hb) => hb.houseblockId !== houseBlock.houseblockId);
-        houseBlockService
-            .updateHouseBlock(houseBlock)
-            .then((res) => {
-                const customVal = customPropertiesValues.find((cpv) => cpv.houseBlockId === res.houseblockId)?.customPropertyValues ?? [];
-                Promise.all(
-                    customVal.map(
-                        (cv) =>
-                            res.houseblockId &&
-                            customPropServices
-                                .putBlockCustomPropertyValue(res.houseblockId, cv)
-                                .then((_) => false)
-                                .catch((_) => true),
-                    ),
-                ).then((res) => {
-                    if (res.includes(true)) {
-                        setAlert(t("generic.failedToSave"), "error");
-                        return;
-                    } else {
-                        setAlert(t("generic.saved"), "success");
-                    }
-                });
-                setHouseBlocks([...updatedHouseBlock, res]);
-            })
-            .catch(() => setAlert(t("generic.failedToSave"), "error"));
-    };
-
-    useEffect(() => {
-        const result: CustomPropertyValueHelper[] = [];
-        houseBlocks.forEach((hb) => {
-            if (hb && hb.houseblockId !== undefined) {
-                customPropServices.getBlockCustomPropertyValues(hb.houseblockId).then((cpv) =>
-                    result.push({
-                        //@ts-ignore
-                        houseBlockId: hb.houseblockId,
-                        customPropertyValues: cpv,
-                    }),
-                );
-            }
-        });
-        setCustomPropertiesValues(result);
-    }, [houseBlocks]);
-
-    const addHouseBlock = (houseBlock: HouseBlock) => {
-        if (
-            !houseBlock.houseblockName ||
-            !houseBlock.startDate ||
-            !houseBlock.endDate ||
-            houseBlock.ownershipValue.some((owner) => owner.amount === null || isNaN(owner.amount))
-        ) {
-            setAlert(t("createProject.hasMissingRequiredAreas.hasmissingProperty"), "warning");
-            return;
-        }
-        houseBlockService
-            .addHouseBlock(houseBlock)
-            .then((res) => {
-                setHouseBlocks([...houseBlocks, res]);
-                const customVal = customPropertiesValues.find((cpv) => cpv.houseBlockId === res.houseblockId)?.customPropertyValues ?? [];
-                Promise.all(
-                    customVal.map(
-                        (cv) =>
-                            res.houseblockId &&
-                            customPropServices
-                                .putCustomPropertyValue(res.houseblockId, cv)
-                                .then((_) => false)
-                                .catch((_) => true),
-                    ),
-                ).then((res) => {
-                    if (res.includes(true)) {
-                        setAlert(t("generic.failedToSave"), "error");
-                        return;
-                    } else {
-                        setAlert(t("generic.saved"), "success");
-                    }
-                });
-            })
-            .catch(() => setAlert(t("generic.failedToSave"), "error"));
-    };
-
-    const createHouseBlock = (houseBlock: HouseBlock) => {
-        if (
-            !houseBlock.houseblockName ||
-            !houseBlock.startDate ||
-            !houseBlock.endDate ||
-            houseBlock.ownershipValue.some((owner) => owner.amount === null || isNaN(owner.amount))
-        ) {
-            setAlert(t("createProject.hasMissingRequiredAreas.hasmissingProperty"), "warning");
-            return;
-        }
-        setHouseBlocks([...houseBlocks, houseBlock]);
-    };
-
-    const getCustomPropertyValues = (houseBlockId: string | undefined) => {
-        return customPropertiesValues.find((cpv) => cpv.houseBlockId === houseBlockId)?.customPropertyValues ?? [];
-    };
-
-    // const saveHouseBlocks = () => {
-    //     const newHouseBlocks = houseBlocks.filter((hb) => !hb.houseblockId);
-    //     newHouseBlocks.forEach((hb) => {
-    //         api.addHouseBlock(hb)
-    //             .then((res) => {
-    //                 setAlert(t("generic.saved"), "success");
-    //                 setHouseBlocks([...houseBlocks, res]);
-    //             })
-    //             .catch(() => setAlert(t("generic.failedToSave"), "error"));
-    //     });
-
-    //     const existingHouseBlocks = houseBlocks.filter((hb) => hb.houseblockId);
-    //     existingHouseBlocks.forEach((hb) => {
-    //         api.updateHouseBlock(hb)
-    //             .then((res) => {
-    //                 setAlert(t("generic.updated"), "success");
-    //                 setHouseBlocks([...houseBlocks, res]);
-    //             })
-    //             .catch(() => setAlert(t("generic.failedToUpdate"), "error"));
-    //     });
-    // };
-
-    const getEmptyHouseBlock = (): HouseBlock => {
+    const getEmptyHouseBlock = (): HouseBlockWithCustomProperties => {
         return {
             projectId: projectId,
             startDate: selectedProject?.startDate ?? null,
@@ -217,6 +66,7 @@ export const HouseBlockProvider = ({ children }: PropsWithChildren) => {
                 eengezinswoning: null,
             },
             targetGroup: targetGroupCategories?.map((cat) => ({ id: cat.id, amount: 0 })) ?? [],
+            customProperties: [],
         };
     };
 
@@ -225,12 +75,6 @@ export const HouseBlockProvider = ({ children }: PropsWithChildren) => {
             value={{
                 houseBlocks,
                 refresh,
-                updateHouseBlock,
-                addHouseBlock,
-                // saveHouseBlocks,
-                createHouseBlock,
-                updateCustomPropertyValues,
-                getCustomPropertyValues,
                 getEmptyHouseBlock,
             }}
         >
