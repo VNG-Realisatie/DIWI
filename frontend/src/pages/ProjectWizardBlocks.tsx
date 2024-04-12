@@ -25,16 +25,22 @@ const ProjectWizardBlocks = () => {
     const [expanded, setExpanded] = useState(Array.from({ length: houseBlocksState.length }, () => true));
     const [errorOccurred, setErrorOccurred] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+    const [errors, setErrors] = useState<boolean[]>(Array.from({ length: houseBlocksState.length }, () => false));
 
     const { t } = useTranslation();
 
-    const validateHouseBlock = (houseBlock: any, selectedProject: any) => {
+    const validateHouseBlock = (houseBlock: any, selectedProject: any, index: number) => {
         if (
             !houseBlock.houseblockName ||
             !houseBlock.startDate ||
             !houseBlock.endDate ||
             houseBlock.ownershipValue.some((owner: any) => owner.amount === null || isNaN(owner.amount))
         ) {
+            setErrors((prevErrors) => {
+                const newErrors = [...prevErrors];
+                newErrors[index] = true;
+                return newErrors;
+            });
             throw new Error(t("createProject.hasMissingRequiredAreas.hasmissingProperty"));
         } else if (selectedProject?.startDate && selectedProject?.endDate) {
             const houseBlockStartDate = new Date(houseBlock.startDate);
@@ -51,13 +57,14 @@ const ProjectWizardBlocks = () => {
     };
 
     const handleNext = async () => {
+        setErrors(Array.from({ length: houseBlocksState.length }, () => false));
         try {
             setErrorOccurred(false);
 
             await Promise.all(
-                houseBlocksState.map(async (houseBlock) => {
+                houseBlocksState.map(async (houseBlock, index) => {
                     try {
-                        validateHouseBlock(houseBlock, selectedProject);
+                        validateHouseBlock(houseBlock, selectedProject, index);
                         if (houseBlock.houseblockId) {
                             return updateHouseBlock(houseBlock);
                         } else {
@@ -80,13 +87,14 @@ const ProjectWizardBlocks = () => {
     };
 
     const handleSave = async () => {
+        setErrors(Array.from({ length: houseBlocksState.length }, () => false));
         try {
             setErrorOccurred(false);
 
             await Promise.all(
-                houseBlocksState.map(async (houseBlock) => {
+                houseBlocksState.map(async (houseBlock, index) => {
                     try {
-                        validateHouseBlock(houseBlock, selectedProject);
+                        validateHouseBlock(houseBlock, selectedProject, index);
                         if (houseBlock.houseblockId) {
                             return updateHouseBlock(houseBlock);
                         } else {
@@ -170,6 +178,8 @@ const ProjectWizardBlocks = () => {
     const infoText = t("createProject.houseBlocksForm.info");
     const warning = errorOccurred ? t("wizard.houseBlocks.warning") : undefined;
 
+    console.log(errors);
+
     return (
         <WizardLayout {...{ infoText, warning, handleBack, handleNext, handleSave, projectId, activeStep: 1 }}>
             {houseBlocksState.map((houseBlock, index) => (
@@ -181,6 +191,7 @@ const ProjectWizardBlocks = () => {
                             aria-controls={`panel${index + 1}-content`}
                             id={`panel${index + 1}-header`}
                         >
+                            {errors[index] === true ? "ERROR" : ""}
                             {houseBlock.houseblockId
                                 ? `${houseBlock.houseblockName}: ${houseBlock.mutation.grossPlanCapacity} ${t("createProject.houseBlocksForm.housesOn")} ${houseBlock.endDate}`
                                 : `${t("generic.houseblock")} ${index + 1}`}
