@@ -145,7 +145,9 @@ function App() {
                             element={
                                 <ProjectProvider>
                                     <ProjectDetail>
-                                        <ProjectPlotSelector />
+                                        <HouseBlockProvider>
+                                            <ProjectPlotSelector />
+                                        </HouseBlockProvider>
                                     </ProjectDetail>
                                 </ProjectProvider>
                             }
