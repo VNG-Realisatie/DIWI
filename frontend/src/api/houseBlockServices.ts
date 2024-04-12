@@ -6,17 +6,15 @@ import { getBlockCustomPropertyValues, putBlockCustomPropertyValue } from "./cus
 // exposed functionality
 export async function getProjectHouseBlocksWithCustomProperties(id: string): Promise<HouseBlockWithCustomProperties[]> {
     // first get houseblocks that belong to project
-    return getProjectHouseBlocks(id).then(async (houseBlocks) => {
-        // then get custom props for each houseblock
-        return await Promise.all(
-            houseBlocks.map((block) => {
-                if (!block.houseblockId) return { ...block, customProperties: [] };
-                return getBlockCustomPropertyValues(block.houseblockId).then((props) => {
-                    return { ...block, customProperties: props };
-                });
-            }),
-        );
-    });
+    const newHouseBlocks = await getProjectHouseBlocks(id);
+    // then get custom props for each houseblock
+    return Promise.all(
+        newHouseBlocks.map(async (block) => {
+            const hbid = (block as HouseBlock & { houseblockId: string }).houseblockId;
+            const newCustomproperties = await getBlockCustomPropertyValues(hbid);
+            return { ...block, customProperties: newCustomproperties };
+        }),
+    );
 }
 
 export async function deleteHouseBlockWithCustomProperties(id: string | undefined) {
@@ -25,30 +23,22 @@ export async function deleteHouseBlockWithCustomProperties(id: string | undefine
     throw Error("No id for houseblock to delete");
 }
 
-export async function saveHouseBlockWithCustomProperties(houseBlock: HouseBlockWithCustomProperties) {
+export async function saveHouseBlockWithCustomProperties(houseBlock: HouseBlockWithCustomProperties): Promise<HouseBlockWithCustomProperties> {
     // destructure houseblock from customproperties as they need to be sent separately
     const { customProperties, ...houseBlockNoProperties } = houseBlock;
 
     if (houseBlockNoProperties.houseblockId) {
-        return updateHouseBlock(houseBlockNoProperties).then((newHb) => {
-            const hbid = (newHb as HouseBlock & { houseblockId: string }).houseblockId;
-            // for each custom prop, send it to the backend
-            Promise.all(
-                customProperties.map((cp) => {
-                    return putBlockCustomPropertyValue(hbid, cp);
-                }),
-            );
-        });
+        const newHb = await updateHouseBlock(houseBlockNoProperties);
+        const hbid = (newHb as HouseBlock & { houseblockId: string }).houseblockId;
+        // for each custom prop, send it to the backend
+        const [...newCustomProperties] = await Promise.all(customProperties.map((cp) => putBlockCustomPropertyValue(hbid, cp)));
+        return { ...newHb, customProperties: newCustomProperties };
     } else {
-        return addHouseBlock(houseBlockNoProperties).then((newHb) => {
-            const hbid = (newHb as HouseBlock & { houseblockId: string }).houseblockId;
-            // for each custom prop, send it to the backend
-            Promise.all(
-                customProperties.map((cp) => {
-                    return putBlockCustomPropertyValue(hbid, cp);
-                }),
-            );
-        });
+        const newHb = await addHouseBlock(houseBlockNoProperties);
+        const hbid = (newHb as HouseBlock & { houseblockId: string }).houseblockId;
+        // for each custom prop, send it to the backend
+        const [...newCustomProperties] = await Promise.all(customProperties.map((cp) => putBlockCustomPropertyValue(hbid, cp)));
+        return { ...newHb, customProperties: newCustomProperties };
     }
 }
 
