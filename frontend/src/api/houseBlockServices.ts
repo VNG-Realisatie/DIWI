@@ -20,7 +20,7 @@ export async function getProjectHouseBlocksWithCustomProperties(id: string): Pro
 }
 
 export async function deleteHouseBlockWithCustomProperties(id: string | undefined) {
-    // TODO: do we need to delete custom props here too???
+    // customproperties live and die by the block, so no need to explicitly remove them.
     if (id) return deleteHouseBlock(id);
     throw Error("No id for houseblock to delete");
 }
