@@ -10,7 +10,6 @@ import { GroundPositionGroup } from "./project-wizard/house-blocks/ground-positi
 import { Programming } from "./project-wizard/house-blocks/programming/Programming";
 
 import { CustomPropertiesGroup } from "./project-wizard/house-blocks/custom-properties/CustomPropertiesGroup";
-import { useTranslation } from "react-i18next";
 
 type Props = {
     readOnly: boolean;
@@ -19,8 +18,6 @@ type Props = {
 };
 
 export const HouseBlocksForm = ({ readOnly, houseBlock, setHouseBlock }: Props) => {
-    const { t } = useTranslation();
-
     return (
         <>
             <Grid container spacing={2} alignItems="stretch">
