@@ -7,14 +7,16 @@ import { HouseBlocksForm } from "../components/HouseBlocksForm";
 import useAlert from "../hooks/useAlert";
 import HouseBlockContext from "../context/HouseBlockContext";
 import { useTranslation } from "react-i18next";
-import { Accordion, AccordionDetails, AccordionSummary, IconButton, Stack } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Dialog, DialogActions, DialogTitle, IconButton, Stack } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { deleteHouseBlock } from "../api/projectsServices";
+import ProjectContext from "../context/ProjectContext";
 
 const ProjectWizardBlocks = () => {
     const { houseBlocks, addHouseBlock, getEmptyHouseBlock, updateHouseBlock, refresh } = useContext(HouseBlockContext);
+    const { selectedProject } = useContext(ProjectContext);
     const [houseBlocksState, setHouseBlocksState] = useState<HouseBlock[]>([getEmptyHouseBlock()]);
     const { projectId } = useParams();
     const navigate = useNavigate();
@@ -22,8 +24,31 @@ const ProjectWizardBlocks = () => {
     const [canUpdate, setCanUpdate] = useState(true);
     const [expanded, setExpanded] = useState(Array.from({ length: houseBlocksState.length }, () => true));
     const [errorOccurred, setErrorOccurred] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
     const { t } = useTranslation();
+
+    const validateHouseBlock = (houseBlock: any, selectedProject: any) => {
+        if (
+            !houseBlock.houseblockName ||
+            !houseBlock.startDate ||
+            !houseBlock.endDate ||
+            houseBlock.ownershipValue.some((owner: any) => owner.amount === null || isNaN(owner.amount))
+        ) {
+            throw new Error(t("createProject.hasMissingRequiredAreas.hasmissingProperty"));
+        } else if (selectedProject?.startDate && selectedProject?.endDate) {
+            const houseBlockStartDate = new Date(houseBlock.startDate);
+            const houseBlockEndDate = new Date(houseBlock.endDate);
+            const selectedProjectStartDate = new Date(selectedProject.startDate);
+            const selectedProjectEndDate = new Date(selectedProject.endDate);
+
+            if (houseBlockStartDate < selectedProjectStartDate) {
+                throw new Error(t("wizard.houseBlocks.startDateWarning"));
+            } else if (houseBlockEndDate > selectedProjectEndDate) {
+                throw new Error(t("wizard.houseBlocks.endDateWarning"));
+            }
+        }
+    };
 
     const handleNext = async () => {
         try {
@@ -31,20 +56,16 @@ const ProjectWizardBlocks = () => {
 
             await Promise.all(
                 houseBlocksState.map(async (houseBlock) => {
-                    if (
-                        !houseBlock.houseblockName ||
-                        !houseBlock.startDate ||
-                        !houseBlock.endDate ||
-                        houseBlock.ownershipValue.some((owner) => owner.amount === null || isNaN(owner.amount))
-                    ) {
-                        setErrorOccurred(true);
-                        throw new Error(t("createProject.hasMissingRequiredAreas.hasmissingProperty"));
-                    } else {
+                    try {
+                        validateHouseBlock(houseBlock, selectedProject);
                         if (houseBlock.houseblockId) {
                             return updateHouseBlock(houseBlock);
                         } else {
                             return addHouseBlock(houseBlock);
                         }
+                    } catch (error) {
+                        setErrorOccurred(true);
+                        throw error;
                     }
                 }),
             );
@@ -57,19 +78,33 @@ const ProjectWizardBlocks = () => {
             setAlert(error.message, "warning");
         }
     };
+
     const handleSave = async () => {
-        setCanUpdate(false);
-        await Promise.all(
-            houseBlocksState.map((houseBlock) => {
-                if (houseBlock.houseblockId) {
-                    return updateHouseBlock(houseBlock);
-                } else {
-                    return addHouseBlock(houseBlock);
-                }
-            }),
-        );
-        setCanUpdate(true);
-        refresh();
+        try {
+            setErrorOccurred(false);
+
+            await Promise.all(
+                houseBlocksState.map(async (houseBlock) => {
+                    try {
+                        validateHouseBlock(houseBlock, selectedProject);
+                        if (houseBlock.houseblockId) {
+                            return updateHouseBlock(houseBlock);
+                        } else {
+                            return addHouseBlock(houseBlock);
+                        }
+                    } catch (error) {
+                        setErrorOccurred(true);
+                        throw error;
+                    }
+                }),
+            );
+
+            setCanUpdate(true);
+            refresh();
+        } catch (error: any) {
+            setErrorOccurred(true);
+            setAlert(error.message, "warning");
+        }
     };
 
     const handleBack = () => {
@@ -108,8 +143,6 @@ const ProjectWizardBlocks = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [houseBlocks, setHouseBlocksState, canUpdate]);
 
-    const infoText = t("createProject.houseBlocksForm.info");
-
     const handleAccordionChange = (index: number) => {
         setExpanded((prevExpanded) => {
             const newExpanded = [...prevExpanded];
@@ -118,58 +151,82 @@ const ProjectWizardBlocks = () => {
         });
     };
 
-    const handleDeleteHouseBlock = async (index: number, houseblockId?: string) => {
+    const handleDeleteHouseBlock = async (index: number, houseblockId?: string, name?: string) => {
         try {
             if (houseblockId) {
                 await deleteHouseBlock(houseblockId);
-                setAlert("deleted successfully", "success");
+                setAlert(t("generic.deletionSuccess", { name }), "success");
                 setHouseBlocksState((prevHouseBlocks) => prevHouseBlocks.filter((houseBlock) => houseBlock.houseblockId !== houseblockId));
             } else {
                 setHouseBlocksState((prevHouseBlocks) => prevHouseBlocks.filter((_, i) => i !== index));
             }
-        } catch (error) {
-            console.error("Error deleting house block:", error);
-            setAlert(t("errors.deleteHouseBlockError"), "error");
+        } catch (error: any) {
+            setAlert(error.message, "warning");
+        } finally {
+            setIsDialogOpen(false);
         }
     };
 
+    const infoText = t("createProject.houseBlocksForm.info");
+    const warning = errorOccurred ? t("wizard.houseBlocks.warning") : undefined;
+
     return (
-        <WizardLayout {...{ infoText, handleBack, handleNext, handleSave, projectId, activeStep: 1 }}>
+        <WizardLayout {...{ infoText, warning, handleBack, handleNext, handleSave, projectId, activeStep: 1 }}>
             {houseBlocksState.map((houseBlock, index) => (
-                <Accordion expanded={expanded[index]} onChange={() => handleAccordionChange(index)} sx={{ width: "100%" }} key={index}>
-                    <AccordionSummary
-                        sx={{ backgroundColor: "#00A9F3", color: "#ffffff" }}
-                        expandIcon={<ExpandMoreIcon sx={{ color: "#ffffff" }} />}
-                        aria-controls="panel1-content"
-                        id="panel1-header"
-                    >
-                        {houseBlock.houseblockName
-                            ? `${houseBlock.houseblockName}: ${houseBlock.mutation.grossPlanCapacity} ${t("createProject.houseBlocksForm.housesOn")} ${houseBlock.endDate}`
-                            : `${t("generic.houseblock")} ${index + 1}`}
-                        {houseBlocksState.length > 1 && (
-                            <IconButton
-                                sx={{ marginLeft: "auto" }}
-                                onClick={(event) => {
-                                    event.stopPropagation();
-                                    handleDeleteHouseBlock(index, houseBlock.houseblockId);
+                <React.Fragment key={index}>
+                    <Accordion expanded={expanded[index]} onChange={() => handleAccordionChange(index)} sx={{ width: "100%" }}>
+                        <AccordionSummary
+                            sx={{ backgroundColor: "#00A9F3", color: "#ffffff" }}
+                            expandIcon={<ExpandMoreIcon sx={{ color: "#ffffff" }} />}
+                            aria-controls={`panel${index + 1}-content`}
+                            id={`panel${index + 1}-header`}
+                        >
+                            {houseBlock.houseblockId
+                                ? `${houseBlock.houseblockName}: ${houseBlock.mutation.grossPlanCapacity} ${t("createProject.houseBlocksForm.housesOn")} ${houseBlock.endDate}`
+                                : `${t("generic.houseblock")} ${index + 1}`}
+                            {houseBlocksState.length > 1 && (
+                                <IconButton
+                                    sx={{ marginLeft: "auto" }}
+                                    onClick={(event) => {
+                                        event.stopPropagation();
+                                        setIsDialogOpen(true);
+                                    }}
+                                >
+                                    <DeleteIcon sx={{ color: "#ffffff" }} />
+                                </IconButton>
+                            )}
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <HouseBlocksForm
+                                readOnly={false}
+                                houseBlock={houseBlock}
+                                setHouseBlock={(updatedHouseBlock) => {
+                                    const updatedBlocks = [...houseBlocksState];
+                                    updatedBlocks[index] = updatedHouseBlock;
+                                    setHouseBlocksState(updatedBlocks);
                                 }}
-                            >
-                                <DeleteIcon sx={{ color: "#ffffff" }} />
-                            </IconButton>
-                        )}
-                    </AccordionSummary>
-                    <AccordionDetails>
-                        <HouseBlocksForm
-                            readOnly={false}
-                            houseBlock={houseBlock}
-                            setHouseBlock={(updatedHouseBlock) => {
-                                const updatedBlocks = [...houseBlocksState];
-                                updatedBlocks[index] = updatedHouseBlock;
-                                setHouseBlocksState(updatedBlocks);
-                            }}
-                        />
-                    </AccordionDetails>
-                </Accordion>
+                            />
+                        </AccordionDetails>
+                    </Accordion>
+                    {isDialogOpen && (
+                        <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)}>
+                            <DialogTitle>{t("wizard.houseBlocks.deleteConfirmation")}</DialogTitle>
+                            <DialogActions>
+                                <Box sx={{ display: "flex", gap: "10px" }}>
+                                    <Button onClick={() => setIsDialogOpen(false)} variant="outlined">
+                                        {t("generic.no")}
+                                    </Button>
+                                    <Button
+                                        onClick={() => handleDeleteHouseBlock(index, houseBlock.houseblockId, houseBlock.houseblockName)}
+                                        variant="contained"
+                                    >
+                                        {t("generic.yes")}
+                                    </Button>
+                                </Box>
+                            </DialogActions>
+                        </Dialog>
+                    )}
+                </React.Fragment>
             ))}
             <Stack direction="row" alignItems="center" mt={1} sx={{ cursor: "pointer" }} onClick={handleAddHouseBlock}>
                 <AddCircleIcon color="info" sx={{ fontSize: "40px" }} />
