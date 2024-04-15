@@ -1,5 +1,5 @@
 import { Grid, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
-import { HouseBlock } from "../../../types/houseBlockTypes";
+import { HouseBlockWithCustomProperties } from "../../../types/houseBlockTypes";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { AddHouseBlockButton } from "../../PlusButton";
 import { useTranslation } from "react-i18next";
@@ -12,17 +12,13 @@ type Props = {
     setOpenHouseBlockDialog: (open: boolean) => void;
 };
 export const HouseBlocksList = ({ setOpenHouseBlockDialog }: Props) => {
-    const { houseBlocks, updateHouseBlock } = useContext(HouseBlockContext);
+    const { houseBlocks } = useContext(HouseBlockContext);
     const { t } = useTranslation();
-
-    const handleUpdateHouseBlock = (houseBlock: HouseBlock) => {
-        updateHouseBlock(houseBlock);
-    };
 
     return (
         <Grid container my={2}>
             <AddHouseBlockButton onClick={() => setOpenHouseBlockDialog(true)} />
-            {houseBlocks.sort(sortHouseBlocksByNameAndId).map((hb: HouseBlock) => {
+            {houseBlocks.sort(sortHouseBlocksByNameAndId).map((hb: HouseBlockWithCustomProperties) => {
                 return (
                     <Accordion sx={{ width: "100%" }} key={hb.houseblockId}>
                         <AccordionSummary
@@ -34,7 +30,7 @@ export const HouseBlocksList = ({ setOpenHouseBlockDialog }: Props) => {
                             {hb.houseblockName}: {hb.mutation.grossPlanCapacity} {t("createProject.houseBlocksForm.housesOn")} {hb.endDate}
                         </AccordionSummary>
                         <AccordionDetails>
-                            <HouseBlocksFormWithControls houseBlock={hb} setHouseBlock={handleUpdateHouseBlock} />
+                            <HouseBlocksFormWithControls houseBlock={hb} />
                         </AccordionDetails>
                     </Accordion>
                 );

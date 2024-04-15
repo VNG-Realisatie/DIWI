@@ -1,3 +1,4 @@
+import { CustomPropertyValue } from "../api/customPropServices";
 import { MutationSelectOptions, OwnershipValueType } from "./enums";
 import { components } from "./schema";
 
@@ -41,6 +42,8 @@ export type OwnershipSingleValue = {
     value: RangeValue;
     rentalValue: RangeValue;
 };
+
+export type HouseBlockWithCustomProperties = HouseBlock & { customProperties: CustomPropertyValue[] };
 
 export type HouseBlock = {
     startDate: null | string;

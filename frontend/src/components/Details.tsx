@@ -1,10 +1,10 @@
 import { Box, List, ListItem, ListItemText, Stack, Typography } from "@mui/material";
-import { Fragment, ReactNode, useContext, useEffect, useState } from "react";
+import { Fragment, ReactNode, useContext } from "react";
 import { useTranslation } from "react-i18next";
-import { Project, getProjectHouseBlocks } from "../api/projectsServices";
+import { Project } from "../api/projectsServices";
 import { OrganizationUserAvatars } from "./OrganizationUserAvatars";
-import ProjectContext from "../context/ProjectContext";
 import { HouseBlock } from "../types/houseBlockTypes";
+import HouseBlockContext from "../context/HouseBlockContext";
 
 type Props = {
     project: Project | null;
@@ -37,7 +37,7 @@ const DetailListItem = ({ children, property }: { children: ReactNode; property:
 
 export const Details = ({ project }: Props) => {
     const { t } = useTranslation();
-    const [houseBlocks, setHouseBlocks] = useState<HouseBlock[]>();
+    const { houseBlocks } = useContext(HouseBlockContext);
 
     const getTranslatedText = (property: string, content: string) => {
         if (property === "confidentialityLevel") {
@@ -55,12 +55,6 @@ export const Details = ({ project }: Props) => {
             return content;
         }
     };
-
-    const { projectId } = useContext(ProjectContext);
-
-    useEffect(() => {
-        projectId && getProjectHouseBlocks(projectId).then((res) => setHouseBlocks(res));
-    }, [projectId]);
 
     return (
         <List

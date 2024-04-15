@@ -34,6 +34,7 @@ import "dayjs/locale/nl";
 import { HouseBlockProvider } from "./context/HouseBlockContext";
 import ProjectWizard from "./pages/ProjectWizard";
 import ProjectWizardBlocks from "./pages/ProjectWizardBlocks";
+import { LoadingProvider } from "./context/LoadingContext";
 
 function RequiresLogin() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -59,14 +60,16 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
     return (
         <ThemeProvider theme={theme}>
             <ConfigProvider>
-                <AlertProvider>
-                    <AlertPopup />
-                    <ScopedCssBaseline>
-                        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="nl" dateFormats={dateFormats}>
-                            {children}
-                        </LocalizationProvider>
-                    </ScopedCssBaseline>
-                </AlertProvider>
+                <LoadingProvider>
+                    <AlertProvider>
+                        <AlertPopup />
+                        <ScopedCssBaseline>
+                            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="nl" dateFormats={dateFormats}>
+                                {children}
+                            </LocalizationProvider>
+                        </ScopedCssBaseline>
+                    </AlertProvider>
+                </LoadingProvider>
             </ConfigProvider>
         </ThemeProvider>
     );
@@ -142,7 +145,9 @@ function App() {
                             element={
                                 <ProjectProvider>
                                     <ProjectDetail>
-                                        <ProjectPlotSelector />
+                                        <HouseBlockProvider>
+                                            <ProjectPlotSelector />
+                                        </HouseBlockProvider>
                                     </ProjectDetail>
                                 </ProjectProvider>
                             }
