@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 import { Accordion, AccordionDetails, AccordionSummary, Box, Stack } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { deleteHouseBlockWithCustomProperties } from "../api/projectsServices";
+import { deleteHouseBlockWithCustomProperties } from "../api/houseBlockServices";
 import ProjectContext from "../context/ProjectContext";
 import { DeleteButtonWithConfirm } from "../components/DeleteButtonWithConfirm";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
@@ -31,7 +31,7 @@ const ProjectWizardBlocks = () => {
     const lastAddedForm = useRef<HTMLDivElement | null>(null);
     const { setLoading } = useLoading();
 
-    async function saveAndRefresh(houseBlock : any) {
+    async function saveAndRefresh(houseBlock: HouseBlockWithCustomProperties) {
         try {
             setLoading(true);
             await saveHouseBlockWithCustomProperties(houseBlock);
@@ -46,7 +46,7 @@ const ProjectWizardBlocks = () => {
 
     const { t } = useTranslation();
 
-    const validateHouseBlock = (houseBlock: any, selectedProject: any, index: number) => {
+    const validateHouseBlock = (houseBlock: HouseBlockWithCustomProperties, selectedProject: any, index: number) => {
         if (
             !houseBlock.houseblockName ||
             !houseBlock.startDate ||
@@ -69,10 +69,6 @@ const ProjectWizardBlocks = () => {
                 throw new Error(t("wizard.houseBlocks.startDateWarning"));
             } else if (houseBlockEndDate > selectedProjectEndDate) {
                 throw new Error(t("wizard.houseBlocks.endDateWarning"));
-            } else {
-                if (projectId) {
-                    navigate(projectWizardMap.toPath({ projectId }));
-                }
             }
         }
     };
