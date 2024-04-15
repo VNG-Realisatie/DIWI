@@ -131,7 +131,7 @@ INSERT INTO diwi_testset.property_category_value (id, property_id)
     VALUES (gen_random_uuid(), prop_id)
         RETURNING id INTO prop_cat_id;
 INSERT INTO diwi_testset.property_category_value_state (id, category_value_id, value_label, create_user_id, change_start_date)
-    VALUES (gen_random_uuid(), prop_cat_id, 'Gemeente 1', '2122N426c-6e70-419c-a054-f51dd24d798b', NOW());
+    VALUES (gen_random_uuid(), prop_cat_id, 'Gemeente 1', '2122426c-6e70-419c-a054-f51dd24d798b', NOW());
 
 INSERT INTO diwi_testset.project_category_changelog_value (id, project_category_changelog_id, property_value_id)
     VALUES ('e3f58b45-26cd-4872-91dc-fc46780780cc', 'dbb45f99-d474-494f-bc40-797a0b07557d', prop_cat_id);
