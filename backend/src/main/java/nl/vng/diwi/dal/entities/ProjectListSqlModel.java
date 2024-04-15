@@ -11,12 +11,15 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import nl.vng.diwi.dal.JsonListType;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
+import nl.vng.diwi.models.SelectModel;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.Type;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 import org.hibernate.type.SqlTypes;
 
@@ -65,17 +68,17 @@ public class ProjectListSqlModel {
 
     private LocalDate endDate;
 
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(columnDefinition = "text[][]")
-    private String[][] priority;
+    @Type(value = JsonListType.class)
+    @Getter(AccessLevel.NONE)
+    private List<SelectModel> priority;
 
     @Enumerated(EnumType.STRING)
     @JdbcType(PostgreSQLEnumJdbcType.class)
     private ProjectPhase projectPhase;
 
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(columnDefinition = "text[][]")
-    private String[][] municipalityRole;
+    @Type(value = JsonListType.class)
+    @Getter(AccessLevel.NONE)
+    private List<SelectModel> municipalityRole;
 
     @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(columnDefinition = "text[]")
@@ -84,17 +87,17 @@ public class ProjectListSqlModel {
 
     private Long totalValue;
 
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(columnDefinition = "text[][]")
-    private String[][] municipality;
+    @Type(value = JsonListType.class)
+    @Getter(AccessLevel.NONE)
+    private List<SelectModel> region;
 
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(columnDefinition = "text[][]")
-    private String[][] wijk;
+    @Type(value = JsonListType.class)
+    @Getter(AccessLevel.NONE)
+    private List<SelectModel> district;
 
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(columnDefinition = "text[][]")
-    private String[][] buurt;
+    @Type(value = JsonListType.class)
+    @Getter(AccessLevel.NONE)
+    private List<SelectModel> neighbourhood;
 
     private Double latitude;
     private Double longitude;
@@ -113,4 +116,38 @@ public class ProjectListSqlModel {
         return planningPlanStatus;
     }
 
+    public List<SelectModel> getRegion() {
+        if (region == null) {
+            return new ArrayList<>();
+        }
+        return region;
+    }
+
+    public List<SelectModel> getDistrict() {
+        if (district == null) {
+            return new ArrayList<>();
+        }
+        return district;
+    }
+
+    public List<SelectModel> getNeighbourhood() {
+        if (neighbourhood == null) {
+            return new ArrayList<>();
+        }
+        return neighbourhood;
+    }
+
+    public List<SelectModel> getPriority() {
+        if (priority == null) {
+            return new ArrayList<>();
+        }
+        return priority;
+    }
+
+    public List<SelectModel> getMunicipalityRole() {
+        if (municipalityRole == null) {
+            return new ArrayList<>();
+        }
+        return municipalityRole;
+    }
 }

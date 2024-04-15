@@ -30,8 +30,16 @@ public class PropertiesService {
     public PropertiesService() {
     }
 
-    public PropertyModel getProperty(VngRepository repo, UUID customPropertyUuid) {
-        return repo.getPropertyDAO().getPropertyById(customPropertyUuid);
+    public PropertyModel getProperty(VngRepository repo, UUID propertyUuid) {
+        return repo.getPropertyDAO().getPropertyById(propertyUuid);
+    }
+
+    public UUID getPropertyUuid(VngRepository repo, String propertyName) {
+        PropertyState state = repo.getPropertyDAO().getActivePropertyStateByName(propertyName);
+        if (state != null) {
+            return state.getProperty().getId();
+        }
+        return null;
     }
 
     public List<PropertyModel> getAllProperties(VngRepository repo, ObjectType objectType, Boolean disabled, PropertyKind type) {
@@ -39,11 +47,9 @@ public class PropertiesService {
     }
 
     public boolean checkPropertyNameExists(VngRepository repo, String name, UUID currentPropertyUuid) {
-        List<PropertyState> states = repo.getPropertyDAO().getActivePropertyStateByName(name);
-        for (PropertyState s : states) {
-            if (!s.getProperty().getId().equals(currentPropertyUuid)) {
-                return true;
-            }
+        PropertyState state = repo.getPropertyDAO().getActivePropertyStateByName(name);
+        if (!state.getProperty().getId().equals(currentPropertyUuid)) {
+            return true;
         }
         return false;
     }

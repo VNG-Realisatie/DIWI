@@ -30,6 +30,9 @@ public class ProjectUpdateModel {
         projectLeaders,
         projectOwners,
         projectPhase,
+        region,
+        district,
+        neighbourhood,
         // Do not change the order - startDate and endDate must be the last ones!
         // It will cause problems in future problems and extra milestones to be created.
         // See ProjectsResourceTest.updateProjectTest_futureProject
@@ -145,7 +148,7 @@ public class ProjectUpdateModel {
                 yield null;
             }
             case projectPhase -> (value == null || !EnumUtils.isValidEnum(ProjectPhase.class, value)) ? "New project phase value is not valid." : null;
-            case municipalityRole, projectLeaders, projectOwners -> null;
+            case region, district, neighbourhood, municipalityRole, projectLeaders, projectOwners -> null;
         };
 
     }

@@ -37,6 +37,8 @@ import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.dal.entities.enums.ProjectRole;
+import nl.vng.diwi.dal.entities.enums.PropertyKind;
+import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.models.LocationModel;
@@ -199,6 +201,9 @@ public class ProjectsResource {
         if (dbCP.getDisabled() == Boolean.TRUE) {
             throw new VngBadRequestException("Custom property is disabled.");
         }
+        if (dbCP.getType() != PropertyKind.CUSTOM) {
+            throw new VngBadRequestException("Not a custom property.");
+        }
 
         LocalDate updateDate = LocalDate.now();
 
@@ -239,7 +244,7 @@ public class ProjectsResource {
                 var currentCategories = currentProjectCP.getCategories();
                 var updateCategories = projectCPUpdateModel.getCategories();
                 if (currentCategories.size() != updateCategories.size() || !currentCategories.containsAll(updateCategories)) {
-                    projectService.updateProjectCategoryCustomProperty(repo, project, projectCPUpdateModel.getCustomPropertyId(),
+                    projectService.updateProjectCategoryProperty(repo, project, projectCPUpdateModel.getCustomPropertyId(),
                             new HashSet<>(updateCategories), loggedUser.getUuid(), updateDate);
                 }
             }
@@ -264,7 +269,7 @@ public class ProjectsResource {
     @Path("/{id}/update")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public ProjectSnapshotModel updateProject(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid, ProjectUpdateModel projectUpdateModel)
+    public ProjectSnapshotModel updateProjectSingleField(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid, ProjectUpdateModel projectUpdateModel)
             throws VngNotFoundException, VngBadRequestException, VngServerErrorException {
 
         String validationError = projectUpdateModel.validate();
@@ -445,6 +450,27 @@ public class ProjectsResource {
                     projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectPhase, projectSnapshotModelToUpdate.getProjectPhase().name()));
                 }
             }
+            case region -> {
+                List<SelectModel> currentRegions = projectSnapshotModelCurrent.getRegion();
+                List<SelectModel> toUpdateRegions = projectSnapshotModelToUpdate.getRegion();
+                if (currentRegions.size() != toUpdateRegions.size() || !currentRegions.containsAll(toUpdateRegions)) {
+                    projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.region, toUpdateRegions.stream().map(s -> s.getId().toString()).toList()));
+                }
+            }
+            case district -> {
+                List<SelectModel> currentDistricts = projectSnapshotModelCurrent.getDistrict();
+                List<SelectModel> toUpdateDistricts = projectSnapshotModelToUpdate.getDistrict();
+                if (currentDistricts.size() != toUpdateDistricts.size() || !currentDistricts.containsAll(toUpdateDistricts)) {
+                        projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.district, toUpdateDistricts.stream().map(s -> s.getId().toString()).toList()));
+                }
+            }
+            case neighbourhood -> {
+                List<SelectModel> currentNeighbourhoods = projectSnapshotModelCurrent.getNeighbourhood();
+                List<SelectModel> toUpdateNeighbourhoods = projectSnapshotModelToUpdate.getNeighbourhood();
+                if (currentNeighbourhoods.size() != toUpdateNeighbourhoods.size() || !currentNeighbourhoods.containsAll(toUpdateNeighbourhoods)) {
+                    projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.neighbourhood, toUpdateNeighbourhoods.stream().map(s -> s.getId().toString()).toList()));
+                }
+            }
             case startDate -> {
                 LocalDate newStartDate = projectSnapshotModelToUpdate.getStartDate();
                 if (!Objects.equals(newStartDate, projectSnapshotModelCurrent.getStartDate())) {
@@ -463,17 +489,19 @@ public class ProjectsResource {
 
         LocalDate updateDate = LocalDate.now();
         ZonedDateTime changeDate = ZonedDateTime.now();
-        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            projectService.getCurrentProjectAndPerformPreliminaryUpdateChecks(repo, project.getId());
-            for (ProjectUpdateModel projectUpdateModel : projectUpdateModelList) {
-                String validationError = projectUpdateModel.validate();
-                if (validationError != null) {
-                    throw new VngBadRequestException(validationError);
+        if (!projectUpdateModelList.isEmpty()) {
+            try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+                projectService.getCurrentProjectAndPerformPreliminaryUpdateChecks(repo, project.getId());
+                for (ProjectUpdateModel projectUpdateModel : projectUpdateModelList) {
+                    String validationError = projectUpdateModel.validate();
+                    if (validationError != null) {
+                        throw new VngBadRequestException(validationError);
+                    }
+                    updateProjectProperty(project, projectUpdateModel, loggedUser, updateDate, changeDate);
                 }
-                updateProjectProperty(project, projectUpdateModel, loggedUser, updateDate, changeDate);
+                transaction.commit();
+                repo.getSession().clear();
             }
-            transaction.commit();
-            repo.getSession().clear();
         }
 
         return projectService.getProjectSnapshot(repo, projectUuid);
@@ -527,6 +555,21 @@ public class ProjectsResource {
             UUID municipalityRoleToAdd = projectUpdateModel.getAdd();
             UUID municipalityRoleToRemove = projectUpdateModel.getRemove();
             projectService.updateProjectMunicipalityRoles(repo, project, municipalityRoleToAdd, municipalityRoleToRemove, loggedUser.getUuid(), updateDate);
+        }
+        case region -> {
+            Set<UUID> regionCatUuids = projectUpdateModel.getValues().stream().map(UUID::fromString).collect(Collectors.toSet());
+            UUID propertyId = propertiesService.getPropertyUuid(repo, Constants.FIXED_PROPERTY_REGION);
+            projectService.updateProjectCategoryProperty(repo, project, propertyId, regionCatUuids, loggedUser.getUuid(), updateDate);
+        }
+        case district -> {
+            Set<UUID> regionCatUuids = projectUpdateModel.getValues().stream().map(UUID::fromString).collect(Collectors.toSet());
+            UUID propertyId = propertiesService.getPropertyUuid(repo, Constants.FIXED_PROPERTY_DISTRICT);
+            projectService.updateProjectCategoryProperty(repo, project, propertyId, regionCatUuids, loggedUser.getUuid(), updateDate);
+        }
+        case neighbourhood -> {
+            Set<UUID> regionCatUuids = projectUpdateModel.getValues().stream().map(UUID::fromString).collect(Collectors.toSet());
+            UUID propertyId = propertiesService.getPropertyUuid(repo, Constants.FIXED_PROPERTY_NEIGHBOURHOOD);
+            projectService.updateProjectCategoryProperty(repo, project, propertyId, regionCatUuids, loggedUser.getUuid(), updateDate);
         }
         }
     }
