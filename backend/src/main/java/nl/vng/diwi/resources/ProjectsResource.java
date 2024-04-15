@@ -272,7 +272,7 @@ public class ProjectsResource {
     public ProjectSnapshotModel updateProjectSingleField(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid, ProjectUpdateModel projectUpdateModel)
             throws VngNotFoundException, VngBadRequestException, VngServerErrorException {
 
-        String validationError = projectUpdateModel.validate();
+        String validationError = projectUpdateModel.validate(repo);
         if (validationError != null) {
             throw new VngBadRequestException(validationError);
         }
@@ -493,7 +493,7 @@ public class ProjectsResource {
             try (AutoCloseTransaction transaction = repo.beginTransaction()) {
                 projectService.getCurrentProjectAndPerformPreliminaryUpdateChecks(repo, project.getId());
                 for (ProjectUpdateModel projectUpdateModel : projectUpdateModelList) {
-                    String validationError = projectUpdateModel.validate();
+                    String validationError = projectUpdateModel.validate(repo);
                     if (validationError != null) {
                         throw new VngBadRequestException(validationError);
                     }

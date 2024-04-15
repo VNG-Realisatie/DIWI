@@ -2,10 +2,14 @@ package nl.vng.diwi.models;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import nl.vng.diwi.dal.VngRepository;
+import nl.vng.diwi.dal.entities.Property;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
+import nl.vng.diwi.dal.entities.superclasses.IdSuperclass;
+import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.models.validation.Validation;
 
 import org.apache.commons.lang3.EnumUtils;
@@ -71,7 +75,7 @@ public class ProjectUpdateModel {
         this.max = max;
     }
 
-    public String validate() {
+    public String validate(VngRepository repo) {
         if (property == null) {
             return "Property is missing";
         }
@@ -148,8 +152,44 @@ public class ProjectUpdateModel {
                 yield null;
             }
             case projectPhase -> (value == null || !EnumUtils.isValidEnum(ProjectPhase.class, value)) ? "New project phase value is not valid." : null;
-            case region, district, neighbourhood, municipalityRole, projectLeaders, projectOwners -> null;
+            case municipalityRole, projectLeaders, projectOwners -> null;
+            case region -> {
+                Property regionProperty = repo.getPropertyDAO().getActivePropertyStateByName(Constants.FIXED_PROPERTY_REGION).getProperty();
+                if (regionProperty == null) {
+                    yield "Missing region property";
+                }
+                List<UUID> regionCatUuids = regionProperty.getCategoryValues().stream().map(IdSuperclass::getId).toList();
+                if (!regionCatUuids.containsAll(getValuesAsUuids())) {
+                    yield "Invalid region property";
+                }
+                yield null;
+            }
+            case district -> {
+                Property districtProperty = repo.getPropertyDAO().getActivePropertyStateByName(Constants.FIXED_PROPERTY_DISTRICT).getProperty();
+                if (districtProperty == null) {
+                    yield "Missing district property";
+                }
+                List<UUID> districtCatUuids = districtProperty.getCategoryValues().stream().map(IdSuperclass::getId).toList();
+                if (!districtCatUuids.containsAll(getValuesAsUuids())) {
+                    yield "Invalid district property";
+                }
+                yield null;
+            }
+            case neighbourhood -> {
+                Property neighbourhoodProperty = repo.getPropertyDAO().getActivePropertyStateByName(Constants.FIXED_PROPERTY_NEIGHBOURHOOD).getProperty();
+                if (neighbourhoodProperty == null) {
+                    yield "Missing neighbourhood property";
+                }
+                List<UUID> neighbourhoodCatUuids = neighbourhoodProperty.getCategoryValues().stream().map(IdSuperclass::getId).toList();
+                if (!neighbourhoodCatUuids.containsAll(getValuesAsUuids())) {
+                    yield "Invalid neighbourhood property";
+                }
+                yield null;
+            }
         };
+    }
 
+    public List<UUID> getValuesAsUuids() {
+        return values.stream().map(UUID::fromString).toList();
     }
 }
