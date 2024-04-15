@@ -9,7 +9,7 @@ export async function getCustomPropertyValues(id: string): Promise<CustomPropert
     return getJson(`${API_URI}/projects/${id}/customproperties`);
 }
 
-export async function putCustomPropertyValues(id: string, newData: CustomPropertyValue): Promise<any> {
+export async function putCustomPropertyValue(id: string, newData: CustomPropertyValue): Promise<CustomPropertyValue> {
     return putJson(`${API_URI}/projects/${id}/customproperties`, newData);
 }
 
@@ -17,6 +17,6 @@ export async function getBlockCustomPropertyValues(id: string): Promise<CustomPr
     return getJson(`${API_URI}/houseblock/${id}/customproperties`);
 }
 
-export async function putBlockCustomPropertyValues(id: string, newData: CustomPropertyValue): Promise<any> {
+export async function putBlockCustomPropertyValue(id: string, newData: CustomPropertyValue): Promise<CustomPropertyValue> {
     return putJson(`${API_URI}/houseblock/${id}/customproperties`, newData);
 }

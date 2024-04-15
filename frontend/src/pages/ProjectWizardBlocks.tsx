@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { HouseBlock } from "../types/houseBlockTypes";
+import { HouseBlockWithCustomProperties } from "../types/houseBlockTypes";
 import { projectWizardMap, projectWizardWithId } from "../Paths";
 import WizardLayout from "../components/project-wizard/WizardLayout";
 import { HouseBlocksForm } from "../components/HouseBlocksForm";
@@ -10,15 +10,17 @@ import { useTranslation } from "react-i18next";
 import { Accordion, AccordionDetails, AccordionSummary, Box, Stack } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { deleteHouseBlock } from "../api/projectsServices";
+import { deleteHouseBlockWithCustomProperties } from "../api/projectsServices";
 import ProjectContext from "../context/ProjectContext";
 import { DeleteButtonWithConfirm } from "../components/DeleteButtonWithConfirm";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import { saveHouseBlockWithCustomProperties } from "../api/houseBlockServices";
+import useLoading from "../hooks/useLoading";
 
 const ProjectWizardBlocks = () => {
-    const { houseBlocks, addHouseBlock, getEmptyHouseBlock, updateHouseBlock, refresh } = useContext(HouseBlockContext);
+    const { houseBlocks, getEmptyHouseBlock, refresh } = useContext(HouseBlockContext);
     const { selectedProject } = useContext(ProjectContext);
-    const [houseBlocksState, setHouseBlocksState] = useState<HouseBlock[]>([getEmptyHouseBlock()]);
+    const [houseBlocksState, setHouseBlocksState] = useState<HouseBlockWithCustomProperties[]>([getEmptyHouseBlock()]);
     const { projectId } = useParams();
     const navigate = useNavigate();
     const { setAlert } = useAlert();
@@ -27,6 +29,20 @@ const ProjectWizardBlocks = () => {
     const [errorOccurred, setErrorOccurred] = useState(false);
     const [errors, setErrors] = useState<boolean[]>(Array.from({ length: houseBlocksState.length }, () => false));
     const lastAddedForm = useRef<HTMLDivElement | null>(null);
+    const { setLoading } = useLoading();
+
+    async function saveAndRefresh(houseBlock : any) {
+        try {
+            setLoading(true);
+            await saveHouseBlockWithCustomProperties(houseBlock);
+            refresh();
+            setAlert(t("createProject.houseBlocksForm.notifications.successfullySaved"), "success");
+        } catch {
+            setAlert(t("createProject.houseBlocksForm.notifications.error"), "error");
+        } finally {
+            setLoading(false);
+        }
+    }
 
     const { t } = useTranslation();
 
@@ -53,6 +69,10 @@ const ProjectWizardBlocks = () => {
                 throw new Error(t("wizard.houseBlocks.startDateWarning"));
             } else if (houseBlockEndDate > selectedProjectEndDate) {
                 throw new Error(t("wizard.houseBlocks.endDateWarning"));
+            } else {
+                if (projectId) {
+                    navigate(projectWizardMap.toPath({ projectId }));
+                }
             }
         }
     };
@@ -66,11 +86,7 @@ const ProjectWizardBlocks = () => {
                 houseBlocksState.map(async (houseBlock, index) => {
                     try {
                         validateHouseBlock(houseBlock, selectedProject, index);
-                        if (houseBlock.houseblockId) {
-                            return updateHouseBlock(houseBlock);
-                        } else {
-                            return addHouseBlock(houseBlock);
-                        }
+                        saveAndRefresh(houseBlock);
                     } catch (error) {
                         setErrorOccurred(true);
                         throw error;
@@ -96,11 +112,7 @@ const ProjectWizardBlocks = () => {
                 houseBlocksState.map(async (houseBlock, index) => {
                     try {
                         validateHouseBlock(houseBlock, selectedProject, index);
-                        if (houseBlock.houseblockId) {
-                            return updateHouseBlock(houseBlock);
-                        } else {
-                            return addHouseBlock(houseBlock);
-                        }
+                        saveAndRefresh(houseBlock);
                     } catch (error) {
                         setErrorOccurred(true);
                         throw error;
@@ -109,7 +121,6 @@ const ProjectWizardBlocks = () => {
             );
 
             setCanUpdate(true);
-            refresh();
         } catch (error: any) {
             setErrorOccurred(true);
             setAlert(error.message, "warning");
@@ -172,7 +183,7 @@ const ProjectWizardBlocks = () => {
     const handleDeleteHouseBlock = async (index: number, houseblockId?: string, name?: string) => {
         try {
             if (houseblockId) {
-                await deleteHouseBlock(houseblockId);
+                await deleteHouseBlockWithCustomProperties(houseblockId);
                 setAlert(t("generic.deletionSuccess", { name }), "success");
                 setHouseBlocksState((prevHouseBlocks) => prevHouseBlocks.filter((houseBlock) => houseBlock.houseblockId !== houseblockId));
             } else {
