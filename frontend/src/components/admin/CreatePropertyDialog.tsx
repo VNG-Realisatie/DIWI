@@ -109,9 +109,15 @@ export const CreatePropertyDialog = ({
                             );
                         })}
                     </Select>
-                    {selectedPropertyType === "CATEGORY" && <CategoryCreateOption categoryValue={categories} setCategoryValue={setCategories} />}
+                    {selectedPropertyType === "CATEGORY" && <OrdinalCategoryCreateOption categoryValue={categories} setCategoryValue={setCategories} />}
                     {selectedPropertyType === "ORDINAL" && (
-                        <OrdinalCategoryCreateOption ordinalCategoryValue={ordinals} setOrdinalCategoryValue={setOrdinalCategories} />
+                        <OrdinalCategoryCreateOption
+                            categoryValue={ordinals ? ordinals : []}
+                            setCategoryValue={(value) => {
+                                const refinedCategoryValue = value.map((item) => ("level" in item ? item : { ...item, level: 0 }));
+                                setOrdinalCategories(refinedCategoryValue);
+                            }}
+                        />
                     )}
                 </Stack>
             </DialogContent>

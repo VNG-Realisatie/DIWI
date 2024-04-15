@@ -32,7 +32,7 @@ export const Settings = () => {
             type: "CUSTOM",
             objectType: selectedObjectType,
             propertyType: selectedPropertyType,
-            disabled: !active,
+            disabled: active,
             categories:
                 categories !== null
                     ? categories.map((c) => {
@@ -42,10 +42,12 @@ export const Settings = () => {
             ordinals:
                 ordinals !== null
                     ? ordinals.map((oc) => {
+                          console.log(oc);
                           return oc;
                       })
                     : undefined,
         };
+        console.log("newPropertySettings", newProperty);
         addCustomProperty(newProperty)
             .then(() => {
                 setAlert(t("admin.settings.notifications.successfullySaved"), "success");

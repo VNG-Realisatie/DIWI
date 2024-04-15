@@ -87,14 +87,18 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
                                             {row.objectType}
                                         </TableCell>
                                         <TableCell sx={cellStyle} align="right">
-                                            {row.categories?.map((category, index) => (
-                                                <Chip key={category.id ?? "" + index} variant="outlined" label={category.name} />
-                                            ))}
+                                            {row.categories?.map(
+                                                (category, index) =>
+                                                    !category.disabled && <Chip key={category.id ?? "" + index} variant="outlined" label={category.name} />,
+                                            )}
                                             {row.ordinals
                                                 ?.sort((a, b) => a.level - b.level)
-                                                .map((ordinalCategory, index) => (
-                                                    <Chip key={ordinalCategory.id ?? "" + index} variant="outlined" label={ordinalCategory.name} />
-                                                ))}
+                                                .map(
+                                                    (ordinalCategory, index) =>
+                                                        !ordinalCategory.disabled && (
+                                                            <Chip key={ordinalCategory.id ?? "" + index} variant="outlined" label={ordinalCategory.name} />
+                                                        ),
+                                                )}
                                         </TableCell>
                                         <TableCell sx={cellStyle}>
                                             <Stack direction="row" spacing={1} justifyContent="flex-end">

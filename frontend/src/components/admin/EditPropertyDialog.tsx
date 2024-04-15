@@ -45,7 +45,7 @@ export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomPro
                 setName(property.name);
                 property.categories && setCategories(property.categories);
                 property.ordinals && setOrdinalCategories(property.ordinals);
-                setActive(property.disabled);
+                setActive(!property.disabled);
                 setSelectedObjectType(property.objectType);
                 setSelectedPropertyType(property.propertyType);
             });
@@ -60,12 +60,21 @@ export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomPro
             objectType: selectedObjectType,
             propertyType: selectedPropertyType,
             disabled: !active,
-            categories: selectedPropertyType === "CATEGORY" ? categories : undefined,
-            ordinals: selectedPropertyType === "ORDINAL" ? ordinals : undefined,
+            categories:
+                categories !== null
+                    ? categories.map((c) => {
+                          return c;
+                      })
+                    : undefined,
+            ordinals:
+                ordinals !== null
+                    ? ordinals.map((oc) => {
+                          return oc;
+                      })
+                    : undefined,
         };
         console.log("newProperty", newProperty);
         updateCustomProperty(id, newProperty).then(() => {
-            console.log("id", id);
             setAlert(t("admin.settings.notifications.successfullySaved"), "success");
             getCustomProperties().then((customProperties) => setCustomProperties(customProperties));
             setOpenDialog(false);
@@ -91,6 +100,7 @@ export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomPro
                     </InputLabel>
                     <Select
                         size="small"
+                        disabled
                         value={selectedObjectType}
                         labelId="objectType"
                         onChange={(e: SelectChangeEvent<typeof selectedObjectType>) => setSelectedObjectType(e.target.value as ObjectType)}
@@ -128,10 +138,16 @@ export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomPro
                         })}
                     </Select>
                     {selectedPropertyType === "CATEGORY" && (
-                        <CategoryCreateOption categoryValue={categories ? categories : []} setCategoryValue={setCategories} />
+                        <OrdinalCategoryCreateOption categoryValue={categories ? categories : []} setCategoryValue={setCategories} />
                     )}
                     {selectedPropertyType === "ORDINAL" && (
-                        <OrdinalCategoryCreateOption ordinalCategoryValue={ordinals ? ordinals : []} setOrdinalCategoryValue={setOrdinalCategories} />
+                        <OrdinalCategoryCreateOption
+                            categoryValue={ordinals ? ordinals : []}
+                            setCategoryValue={(value) => {
+                                const refinedCategoryValue = value.map((item) => ("level" in item ? item : { ...item, level: 0 }));
+                                setOrdinalCategories(refinedCategoryValue);
+                            }}
+                        />
                     )}
                 </Stack>
             </DialogContent>
