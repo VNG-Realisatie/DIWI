@@ -81,7 +81,7 @@ export interface paths {
         post: operations["setProjectPlots"];
     };
     "/rest/projects/{id}/update": {
-        post: operations["updateProject"];
+        post: operations["updateProjectSingleField"];
     };
     "/rest/projects/update": {
         post: operations["updateProjectSnapshot"];
@@ -305,9 +305,9 @@ export interface components {
             projectLeaders?: components["schemas"]["OrganizationModel"][];
             /** Format: int64 */
             totalValue?: number;
-            municipality?: components["schemas"]["SelectModel"][];
-            wijk?: components["schemas"]["SelectModel"][];
-            buurt?: components["schemas"]["SelectModel"][];
+            region?: components["schemas"]["SelectModel"][];
+            district?: components["schemas"]["SelectModel"][];
+            neighbourhood?: components["schemas"]["SelectModel"][];
             location?: components["schemas"]["LocationModel"];
         };
         ProjectSnapshotModel: {
@@ -343,9 +343,9 @@ export interface components {
             projectLeaders?: components["schemas"]["OrganizationModel"][];
             /** Format: int64 */
             totalValue?: number;
-            municipality?: components["schemas"]["SelectModel"][];
-            wijk?: components["schemas"]["SelectModel"][];
-            buurt?: components["schemas"]["SelectModel"][];
+            region?: components["schemas"]["SelectModel"][];
+            district?: components["schemas"]["SelectModel"][];
+            neighbourhood?: components["schemas"]["SelectModel"][];
             location?: components["schemas"]["LocationModel"];
             customProperties?: components["schemas"]["ProjectHouseblockCustomPropertyModel"][];
         };
@@ -451,6 +451,9 @@ export interface components {
                 | "projectLeaders"
                 | "projectOwners"
                 | "projectPhase"
+                | "region"
+                | "district"
+                | "neighbourhood"
                 | "startDate"
                 | "endDate";
             value?: string;
@@ -463,6 +466,7 @@ export interface components {
             min?: string;
             /** Format: uuid */
             max?: string;
+            valuesAsUuids?: string[];
         };
         OrdinalSelectDisabledModel: {
             /** Format: uuid */
@@ -916,7 +920,7 @@ export interface operations {
             };
         };
     };
-    updateProject: {
+    updateProjectSingleField: {
         parameters: {
             path: {
                 id: string;

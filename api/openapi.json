@@ -812,7 +812,7 @@
     },
     "/rest/projects/{id}/update": {
       "post": {
-        "operationId": "updateProject",
+        "operationId": "updateProjectSingleField",
         "parameters": [
           {
             "name": "id",
@@ -1587,19 +1587,19 @@
             "type": "integer",
             "format": "int64"
           },
-          "municipality": {
+          "region": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/SelectModel"
             }
           },
-          "wijk": {
+          "district": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/SelectModel"
             }
           },
-          "buurt": {
+          "neighbourhood": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/SelectModel"
@@ -1693,19 +1693,19 @@
             "type": "integer",
             "format": "int64"
           },
-          "municipality": {
+          "region": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/SelectModel"
             }
           },
-          "wijk": {
+          "district": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/SelectModel"
             }
           },
-          "buurt": {
+          "neighbourhood": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/SelectModel"
@@ -1975,6 +1975,9 @@
               "projectLeaders",
               "projectOwners",
               "projectPhase",
+              "region",
+              "district",
+              "neighbourhood",
               "startDate",
               "endDate"
             ]
@@ -2003,6 +2006,13 @@
           "max": {
             "type": "string",
             "format": "uuid"
+          },
+          "valuesAsUuids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         }
       },
