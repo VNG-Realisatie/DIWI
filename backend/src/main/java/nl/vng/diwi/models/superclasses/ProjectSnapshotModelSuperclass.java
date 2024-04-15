@@ -34,7 +34,7 @@ abstract public class ProjectSnapshotModelSuperclass extends ProjectMinimalSnaps
     private List<OrganizationModel> projectLeaders = new ArrayList<>();
 
     private Long totalValue;
-    private List<SelectModel> region = new ArrayList<>();
+    private List<SelectModel> municipality = new ArrayList<>();
     private List<SelectModel> district = new ArrayList<>();
     private List<SelectModel> neighbourhood = new ArrayList<>();
 
@@ -56,13 +56,13 @@ abstract public class ProjectSnapshotModelSuperclass extends ProjectMinimalSnaps
         this.setMunicipalityRole(sqlModel.getMunicipalityRole());
         this.setPlanningPlanStatus(sqlModel.getPlanningPlanStatus());
         this.setTotalValue(sqlModel.getTotalValue());
-        this.setRegion(sqlModel.getRegion());
+        this.setMunicipality(sqlModel.getMunicipality());
         this.setDistrict(sqlModel.getDistrict());
         this.setNeighbourhood(sqlModel.getNeighbourhood());
         this.location = new LocationModel(sqlModel.getLatitude(), sqlModel.getLongitude());
 
         Collections.sort(this.getMunicipalityRole());
-        Collections.sort(this.getRegion());
+        Collections.sort(this.getMunicipality());
         Collections.sort(this.getDistrict());
         Collections.sort(this.getNeighbourhood());
 

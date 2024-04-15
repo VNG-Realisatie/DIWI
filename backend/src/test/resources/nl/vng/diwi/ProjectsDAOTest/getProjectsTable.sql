@@ -119,7 +119,7 @@ BEGIN
     FROM
         diwi_testset.property_state
     WHERE
-            property_name = 'region'
+            property_name = 'municipality'
     LIMIT 1;
 
 INSERT INTO diwi_testset.project_category_changelog (id, project_id, start_milestone_id, end_milestone_id, create_user_id, change_start_date, property_id)

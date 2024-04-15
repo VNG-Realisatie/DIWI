@@ -450,11 +450,11 @@ public class ProjectsResource {
                     projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectPhase, projectSnapshotModelToUpdate.getProjectPhase().name()));
                 }
             }
-            case region -> {
-                List<SelectModel> currentRegions = projectSnapshotModelCurrent.getRegion();
-                List<SelectModel> toUpdateRegions = projectSnapshotModelToUpdate.getRegion();
-                if (currentRegions.size() != toUpdateRegions.size() || !currentRegions.containsAll(toUpdateRegions)) {
-                    projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.region, toUpdateRegions.stream().map(s -> s.getId().toString()).toList()));
+            case municipality -> {
+                List<SelectModel> currentMunicipality = projectSnapshotModelCurrent.getMunicipality();
+                List<SelectModel> toUpdateMunicipality = projectSnapshotModelToUpdate.getMunicipality();
+                if (currentMunicipality.size() != toUpdateMunicipality.size() || !currentMunicipality.containsAll(toUpdateMunicipality)) {
+                    projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.municipality, toUpdateMunicipality.stream().map(s -> s.getId().toString()).toList()));
                 }
             }
             case district -> {
@@ -556,20 +556,20 @@ public class ProjectsResource {
             UUID municipalityRoleToRemove = projectUpdateModel.getRemove();
             projectService.updateProjectMunicipalityRoles(repo, project, municipalityRoleToAdd, municipalityRoleToRemove, loggedUser.getUuid(), updateDate);
         }
-        case region -> {
-            Set<UUID> regionCatUuids = projectUpdateModel.getValues().stream().map(UUID::fromString).collect(Collectors.toSet());
-            UUID propertyId = propertiesService.getPropertyUuid(repo, Constants.FIXED_PROPERTY_REGION);
-            projectService.updateProjectCategoryProperty(repo, project, propertyId, regionCatUuids, loggedUser.getUuid(), updateDate);
+        case municipality -> {
+            Set<UUID> municipalityCatUuids = projectUpdateModel.getValues().stream().map(UUID::fromString).collect(Collectors.toSet());
+            UUID propertyId = propertiesService.getPropertyUuid(repo, Constants.FIXED_PROPERTY_MUNICIPALITY);
+            projectService.updateProjectCategoryProperty(repo, project, propertyId, municipalityCatUuids, loggedUser.getUuid(), updateDate);
         }
         case district -> {
-            Set<UUID> regionCatUuids = projectUpdateModel.getValues().stream().map(UUID::fromString).collect(Collectors.toSet());
+            Set<UUID> districtCatUuids = projectUpdateModel.getValues().stream().map(UUID::fromString).collect(Collectors.toSet());
             UUID propertyId = propertiesService.getPropertyUuid(repo, Constants.FIXED_PROPERTY_DISTRICT);
-            projectService.updateProjectCategoryProperty(repo, project, propertyId, regionCatUuids, loggedUser.getUuid(), updateDate);
+            projectService.updateProjectCategoryProperty(repo, project, propertyId, districtCatUuids, loggedUser.getUuid(), updateDate);
         }
         case neighbourhood -> {
-            Set<UUID> regionCatUuids = projectUpdateModel.getValues().stream().map(UUID::fromString).collect(Collectors.toSet());
+            Set<UUID> neighbourhoodCatUuids = projectUpdateModel.getValues().stream().map(UUID::fromString).collect(Collectors.toSet());
             UUID propertyId = propertiesService.getPropertyUuid(repo, Constants.FIXED_PROPERTY_NEIGHBOURHOOD);
-            projectService.updateProjectCategoryProperty(repo, project, propertyId, regionCatUuids, loggedUser.getUuid(), updateDate);
+            projectService.updateProjectCategoryProperty(repo, project, propertyId, neighbourhoodCatUuids, loggedUser.getUuid(), updateDate);
         }
         }
     }

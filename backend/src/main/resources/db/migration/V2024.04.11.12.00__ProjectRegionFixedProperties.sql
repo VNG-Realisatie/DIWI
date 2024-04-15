@@ -15,7 +15,7 @@ BEGIN
         VALUES (gen_random_uuid(), 'FIXED')
             RETURNING id INTO property_id;
     INSERT INTO diwi_testset.property_state (id, property_name, property_type, create_user_id, change_start_date, property_id, property_object_type)
-        VALUES (gen_random_uuid(), 'region', 'CATEGORY', system_user_id, NOW(), property_id, 'PROJECT');
+        VALUES (gen_random_uuid(), 'municipality', 'CATEGORY', system_user_id, NOW(), property_id, 'PROJECT');
 
     INSERT INTO diwi_testset.property (id, type)
         VALUES (gen_random_uuid(), 'FIXED')

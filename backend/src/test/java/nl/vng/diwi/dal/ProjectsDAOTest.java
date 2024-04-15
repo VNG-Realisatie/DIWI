@@ -89,9 +89,9 @@ public class ProjectsDAOTest {
         assertThat(currentProject.getPlanType().size()).isEqualTo(2);
         assertThat(currentProject.getPlanType().get(0)).isEqualTo(PlanType.HERSTRUCTURERING);
         assertThat(currentProject.getPlanType().get(1)).isEqualTo(PlanType.PAND_TRANSFORMATIE);
-        assertThat(currentProject.getRegion().size()).isEqualTo(2);
-        assertThat(currentProject.getRegion().get(0).getName()).isEqualTo("Gemeente 1");
-        assertThat(currentProject.getRegion().get(1).getName()).isEqualTo("Gemeente 2");
+        assertThat(currentProject.getMunicipality().size()).isEqualTo(2);
+        assertThat(currentProject.getMunicipality().get(0).getName()).isEqualTo("Gemeente 1");
+        assertThat(currentProject.getMunicipality().get(1).getName()).isEqualTo("Gemeente 2");
 
         ProjectListSqlModel futureProject = projects.get(2);
         assertThat(futureProject.getConfidentialityLevel()).isEqualTo(Confidentiality.EXTERN_RAPPORTAGE);
@@ -107,7 +107,7 @@ public class ProjectsDAOTest {
         //Test that only the changelog values with the start milestone at the beginning of the project are selected
         assertThat(futureProject.getPlanType().size()).isEqualTo(1);
         assertThat(futureProject.getPlanType().get(0)).isEqualTo(PlanType.UITBREIDING_OVERIG);
-        assertThat(futureProject.getRegion().size()).isEqualTo(1);
-        assertThat(futureProject.getRegion().get(0).getName()).isEqualTo("Gemeente 1");
+        assertThat(futureProject.getMunicipality().size()).isEqualTo(1);
+        assertThat(futureProject.getMunicipality().get(0).getName()).isEqualTo("Gemeente 1");
     }
 }

@@ -89,7 +89,7 @@ public class ProjectListSqlModel {
 
     @Type(value = JsonListType.class)
     @Getter(AccessLevel.NONE)
-    private List<SelectModel> region;
+    private List<SelectModel> municipality;
 
     @Type(value = JsonListType.class)
     @Getter(AccessLevel.NONE)
@@ -116,11 +116,11 @@ public class ProjectListSqlModel {
         return planningPlanStatus;
     }
 
-    public List<SelectModel> getRegion() {
-        if (region == null) {
+    public List<SelectModel> getMunicipality() {
+        if (municipality == null) {
             return new ArrayList<>();
         }
-        return region;
+        return municipality;
     }
 
     public List<SelectModel> getDistrict() {

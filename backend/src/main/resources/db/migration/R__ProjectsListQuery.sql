@@ -28,7 +28,7 @@ CREATE OR REPLACE FUNCTION get_active_and_future_projects_list (
         planningPlanStatus TEXT[],
         municipalityRole JSONB,
         totalValue BIGINT,
-        region JSONB,
+        municipality JSONB,
         district JSONB,
         neighbourhood JSONB
 	)
@@ -54,7 +54,7 @@ SELECT  q.projectId,
         q.planningPlanStatus,
         q.municipalityRoleModel    AS municipalityRole,
         q.totalValue,
-        q.regionList               AS region,
+        q.municipalityList               AS municipality,
         q.districtList             AS district,
         q.neighbourhoodList        AS neighbourhood
 FROM (
@@ -450,8 +450,8 @@ FROM (
            apg.municipality_role    AS municipalityRole,
            apg.municipality_roleModel    AS municipalityRoleModel,
            apwv.total_value         AS totalValue,
-           apr.locationList         AS regionList,
-           apr.locationNamesList    AS regionNamesList,
+           apr.locationList         AS municipalityList,
+           apr.locationNamesList    AS municipalityNamesList,
            apd.locationList         AS districtList,
            apd.locationNamesList    AS districtNamesList,
            apne.locationList         AS neighbourhoodList,
@@ -468,7 +468,7 @@ FROM (
             LEFT JOIN active_project_priorities app ON app.project_id = ap.id
             LEFT JOIN active_project_gemeenterol apg ON apg.project_id = ap.id
             LEFT JOIN active_project_woningblok_totalvalue apwv ON apwv.project_id = ap.id
-            LEFT JOIN active_project_fixed_props apr ON apr.project_id = ap.id AND apr.fixedPropertyName = 'region'
+            LEFT JOIN active_project_fixed_props apr ON apr.project_id = ap.id AND apr.fixedPropertyName = 'municipality'
             LEFT JOIN active_project_fixed_props apd ON apd.project_id = ap.id AND apd.fixedPropertyName = 'district'
             LEFT JOIN active_project_fixed_props apne ON apne.project_id = ap.id AND apne.fixedPropertyName = 'neighbourhood'
             LEFT JOIN project_users leaders ON ps.project_id = leaders.project_id AND leaders.project_rol = 'PROJECT_LEIDER'
@@ -497,8 +497,8 @@ FROM (
            fpg.municipality_role    AS municipalityRole,
            fpg.municipality_roleModel    AS municipalityRoleModel,
            fpwv.total_value         AS totalValue,
-           fpr.locationList         AS regionList,
-           fpr.locationNamesList    AS regionNamesList,
+           fpr.locationList         AS municipalityList,
+           fpr.locationNamesList    AS municipalityNamesList,
            fpd.locationList         AS districtList,
            fpd.locationNamesList    AS districtNamesList,
            fpne.locationList         AS neighbourhoodList,
@@ -515,7 +515,7 @@ FROM (
             LEFT JOIN future_project_priorities fpp ON fpp.project_id = fp.id
             LEFT JOIN future_project_gemeenterol fpg ON fpg.project_id = fp.id
             LEFT JOIN future_project_woningblok_totalvalue fpwv ON fpwv.project_id = fp.id
-            LEFT JOIN future_project_fixed_props fpr ON fpr.project_id = fp.id AND fpr.fixedPropertyName = 'region'
+            LEFT JOIN future_project_fixed_props fpr ON fpr.project_id = fp.id AND fpr.fixedPropertyName = 'municipality'
             LEFT JOIN future_project_fixed_props fpd ON fpd.project_id = fp.id AND fpd.fixedPropertyName = 'district'
             LEFT JOIN future_project_fixed_props fpne ON fpne.project_id = fp.id AND fpne.fixedPropertyName = 'neighbourhood'
             LEFT JOIN project_users leaders ON ps.project_id = leaders.project_id AND leaders.project_rol = 'PROJECT_LEIDER'
@@ -544,8 +544,8 @@ FROM (
            ppg.municipality_role    AS municipalityRole,
            ppg.municipality_roleModel    AS municipalityRoleModel,
            ppwv.total_value         AS totalValue,
-           ppr.locationList         AS regionList,
-           ppr.locationNamesList    AS regionNamesList,
+           ppr.locationList         AS municipalityList,
+           ppr.locationNamesList    AS municipalityNamesList,
            ppd.locationList         AS districtList,
            ppd.locationNamesList    AS districtNamesList,
            ppne.locationList         AS neighbourhoodList,
@@ -562,7 +562,7 @@ FROM (
             LEFT JOIN past_project_priorities ppp ON ppp.project_id = pp.id
             LEFT JOIN past_project_gemeenterol ppg ON ppg.project_id = pp.id
             LEFT JOIN past_project_woningblok_totalvalue ppwv ON ppwv.project_id = pp.id
-            LEFT JOIN past_project_fixed_props ppr ON ppr.project_id = pp.id AND ppr.fixedPropertyName = 'region'
+            LEFT JOIN past_project_fixed_props ppr ON ppr.project_id = pp.id AND ppr.fixedPropertyName = 'municipality'
             LEFT JOIN past_project_fixed_props ppd ON ppd.project_id = pp.id AND ppd.fixedPropertyName = 'district'
             LEFT JOIN past_project_fixed_props ppne ON ppne.project_id = pp.id AND ppne.fixedPropertyName = 'neighbourhood'
             LEFT JOIN project_users leaders ON ps.project_id = leaders.project_id AND leaders.project_rol = 'PROJECT_LEIDER'
@@ -580,7 +580,7 @@ FROM (
             WHEN _filterCondition_ = 'ANY_OF' AND _filterColumn_ = 'priority' THEN q.priority && _filterValues_
             WHEN _filterCondition_ = 'ANY_OF' AND _filterColumn_ = 'planningPlanStatus' THEN q.planningPlanStatus && _filterValues_
             WHEN _filterCondition_ = 'ANY_OF' AND _filterColumn_ = 'municipalityRole' THEN q.municipalityRole && _filterValues_
-            WHEN _filterCondition_ = 'ANY_OF' AND _filterColumn_ = 'region' THEN q.regionNamesList && _filterValues_
+            WHEN _filterCondition_ = 'ANY_OF' AND _filterColumn_ = 'municipality' THEN q.municipalityNamesList && _filterValues_
             WHEN _filterCondition_ = 'ANY_OF' AND _filterColumn_ = 'district' THEN q.districtNamesList && _filterValues_
             WHEN _filterCondition_ = 'ANY_OF' AND _filterColumn_ = 'neighbourhood' THEN q.neighbourhoodNamesList && _filterValues_
             WHEN _filterCondition_ = 'ANY_OF' AND _filterColumn_ = 'projectOwners' THEN q.projectOwnersInitials && _filterValues_
@@ -599,7 +599,7 @@ FROM (
         CASE WHEN _sortColumn_ = 'priority' AND _sortDirection_ = 'ASC' THEN q.priority COLLATE "diwi_numeric" END ASC,
         CASE WHEN _sortColumn_ = 'planningPlanStatus' AND _sortDirection_ = 'ASC' THEN q.planningPlanStatus END ASC,
         CASE WHEN _sortColumn_ = 'municipalityRole' AND _sortDirection_ = 'ASC' THEN q.municipalityRole END ASC,
-        CASE WHEN _sortColumn_ = 'region' AND _sortDirection_ = 'ASC' THEN q.regionNamesList END ASC,
+        CASE WHEN _sortColumn_ = 'municipality' AND _sortDirection_ = 'ASC' THEN q.municipalityNamesList END ASC,
         CASE WHEN _sortColumn_ = 'district' AND _sortDirection_ = 'ASC' THEN q.districtNamesList END ASC,
         CASE WHEN _sortColumn_ = 'neighbourhood' AND _sortDirection_ = 'ASC' THEN q.neighbourhoodNamesList END ASC,
         CASE WHEN _sortColumn_ = 'projectOwners' AND _sortDirection_ = 'ASC' THEN q.projectOwnersInitials END ASC,
@@ -615,7 +615,7 @@ FROM (
         CASE WHEN _sortColumn_ = 'priority' AND _sortDirection_ = 'DESC' THEN q.priority COLLATE "diwi_numeric" END DESC,
         CASE WHEN _sortColumn_ = 'planningPlanStatus' AND _sortDirection_ = 'DESC' THEN q.planningPlanStatus END DESC,
         CASE WHEN _sortColumn_ = 'municipalityRole' AND _sortDirection_ = 'DESC' THEN q.municipalityRole END DESC,
-        CASE WHEN _sortColumn_ = 'region' AND _sortDirection_ = 'DESC' THEN q.regionNamesList END DESC,
+        CASE WHEN _sortColumn_ = 'municipality' AND _sortDirection_ = 'DESC' THEN q.municipalityNamesList END DESC,
         CASE WHEN _sortColumn_ = 'district' AND _sortDirection_ = 'DESC' THEN q.districtNamesList END DESC,
         CASE WHEN _sortColumn_ = 'neighbourhood' AND _sortDirection_ = 'DESC' THEN q.neighbourhoodNamesList END DESC,
         CASE WHEN _sortColumn_ = 'projectOwners' AND _sortDirection_ = 'DESC' THEN q.projectOwnersInitials END DESC,

@@ -34,7 +34,7 @@ public class ProjectUpdateModel {
         projectLeaders,
         projectOwners,
         projectPhase,
-        region,
+        municipality,
         district,
         neighbourhood,
         // Do not change the order - startDate and endDate must be the last ones!
@@ -153,14 +153,14 @@ public class ProjectUpdateModel {
             }
             case projectPhase -> (value == null || !EnumUtils.isValidEnum(ProjectPhase.class, value)) ? "New project phase value is not valid." : null;
             case municipalityRole, projectLeaders, projectOwners -> null;
-            case region -> {
-                Property regionProperty = repo.getPropertyDAO().getActivePropertyStateByName(Constants.FIXED_PROPERTY_REGION).getProperty();
-                if (regionProperty == null) {
-                    yield "Missing region property";
+            case municipality -> {
+                Property municipalityProperty = repo.getPropertyDAO().getActivePropertyStateByName(Constants.FIXED_PROPERTY_MUNICIPALITY).getProperty();
+                if (municipalityProperty == null) {
+                    yield "Missing municipality property";
                 }
-                List<UUID> regionCatUuids = regionProperty.getCategoryValues().stream().map(IdSuperclass::getId).toList();
-                if (!regionCatUuids.containsAll(getValuesAsUuids())) {
-                    yield "Invalid region property";
+                List<UUID> municipalityCatUuids = municipalityProperty.getCategoryValues().stream().map(IdSuperclass::getId).toList();
+                if (!municipalityCatUuids.containsAll(getValuesAsUuids())) {
+                    yield "Invalid municipality property";
                 }
                 yield null;
             }
