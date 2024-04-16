@@ -48,7 +48,7 @@ public class PropertiesService {
 
     public boolean checkPropertyNameExists(VngRepository repo, String name, UUID currentPropertyUuid) {
         PropertyState state = repo.getPropertyDAO().getActivePropertyStateByName(name);
-        if (!state.getProperty().getId().equals(currentPropertyUuid)) {
+        if (state != null && !state.getProperty().getId().equals(currentPropertyUuid)) {
             return true;
         }
         return false;
