@@ -46,6 +46,7 @@ export type OwnershipSingleValue = {
 export type HouseBlockWithCustomProperties = HouseBlock & { customProperties: CustomPropertyValue[] };
 
 export type HouseBlock = {
+    tempId?: number;
     startDate: null | string;
     endDate: null | string;
     projectId?: string;
