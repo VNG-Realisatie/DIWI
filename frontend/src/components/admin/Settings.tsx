@@ -5,9 +5,9 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { Property, addCustomProperty, getCustomProperties } from "../../api/adminSettingServices";
 import { ObjectType, PropertyType } from "../../types/enums";
 import AlertContext from "../../context/AlertContext";
-import { CreatePropertyDialog } from "./CreatePropertyDialog";
 import { CustomPropertiesTable } from "./CustomPropertiesTable";
 import { components } from "../../types/schema";
+import PropertyDialog from "./PropertyDialog";
 
 export const rowStyle = {
     p: 1,
@@ -76,23 +76,7 @@ export const Settings = () => {
                 <AddCircleIcon color="info" sx={{ fontSize: "40px", cursor: "pointer" }} onClick={() => setOpenDialog(true)} />
                 {t("admin.settings.add")}
             </Stack>
-            <CreatePropertyDialog
-                openDialog={openDialog}
-                setOpenDialog={setOpenDialog}
-                name={name}
-                setName={setName}
-                selectedObjectType={selectedObjectType}
-                setSelectedObjectType={setSelectedObjectType}
-                selectedPropertyType={selectedPropertyType}
-                setSelectedPropertyType={setSelectedPropertyType}
-                active={active}
-                setActive={setActive}
-                handleSave={handleSave}
-                categories={categories ? categories : []}
-                setCategories={setCategories}
-                ordinals={ordinals ? ordinals : []}
-                setOrdinalCategories={setOrdinalCategories}
-            />
+            <PropertyDialog openDialog={openDialog} setOpenDialog={setOpenDialog} setCustomProperties={setCustomProperties} />
         </Stack>
     );
 };

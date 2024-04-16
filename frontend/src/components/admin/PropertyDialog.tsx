@@ -1,35 +1,30 @@
-import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    Stack,
-    TextField,
-    InputLabel,
-    Select,
-    SelectChangeEvent,
-    MenuItem,
-    DialogActions,
-    Button,
-    Tooltip,
-} from "@mui/material";
-import { t } from "i18next";
-import { ChangeEvent, useContext, useEffect, useState } from "react";
-import { ObjectType, PropertyType } from "../../types/enums";
-import { CategoryCreateOption } from "./CategoryCreateOption";
-import { propertyType } from "../../types/enums";
-import { objectType } from "../../types/enums";
-import { CategoryType, OrdinalCategoryType, Property, getCustomProperties, getCustomProperty, updateCustomProperty } from "../../api/adminSettingServices";
-import AlertContext from "../../context/AlertContext";
+import React, { ChangeEvent, useContext, useEffect, useState } from "react";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, InputLabel, MenuItem, Select, Stack, TextField, Tooltip } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
-import { OrdinalCategoryCreateOption } from "./OrdinalCategoryCreateOption";
+import { useTranslation } from "react-i18next";
+import AlertContext from "../../context/AlertContext";
+import {
+    getCustomProperty,
+    updateCustomProperty,
+    addCustomProperty,
+    CategoryType,
+    OrdinalCategoryType,
+    Property,
+    getCustomProperties,
+} from "../../api/adminSettingServices";
+import { ObjectType, PropertyType } from "../../types/enums";
+import { objectType } from "../../types/enums";
+import { propertyType } from "../../types/enums";
+import { CategoryCreateOption } from "./CategoryCreateOption";
 
-type Props = {
+interface Props {
     openDialog: boolean;
     setOpenDialog: (openDialog: boolean) => void;
-    id: string;
+    id?: string;
     setCustomProperties: (cp: Property[]) => void;
-};
-export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomProperties }: Props) => {
+}
+
+const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCustomProperties }) => {
     const [selectedObjectType, setSelectedObjectType] = useState<ObjectType>("PROJECT");
     const [selectedPropertyType, setSelectedPropertyType] = useState<PropertyType>("TEXT");
     const [active, setActive] = useState(false);
@@ -37,11 +32,11 @@ export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomPro
     const [categories, setCategories] = useState<CategoryType[]>([]);
     const [ordinals, setOrdinalCategories] = useState<OrdinalCategoryType[]>([]);
     const { setAlert } = useContext(AlertContext);
+    const { t } = useTranslation();
+
     useEffect(() => {
         if (id) {
             getCustomProperty(id).then((property) => {
-                console.log("property", property);
-                console.log("property.ordinals", property.ordinals);
                 setName(property.name);
                 property.categories && setCategories(property.categories);
                 property.ordinals && setOrdinalCategories(property.ordinals);
@@ -59,7 +54,7 @@ export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomPro
             type: "CUSTOM",
             objectType: selectedObjectType,
             propertyType: selectedPropertyType,
-            disabled: !active,
+            disabled: active,
             categories:
                 categories !== null
                     ? categories.map((c) => {
@@ -73,17 +68,31 @@ export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomPro
                       })
                     : undefined,
         };
-        console.log("newProperty", newProperty);
-        updateCustomProperty(id, newProperty).then(() => {
-            setAlert(t("admin.settings.notifications.successfullySaved"), "success");
-            getCustomProperties().then((customProperties) => setCustomProperties(customProperties));
-            setOpenDialog(false);
-        });
+
+        const resetForm = () => {
+            setName("");
+            setSelectedObjectType("PROJECT");
+            setSelectedPropertyType("TEXT");
+            setActive(false);
+            setCategories([]);
+            setOrdinalCategories([]);
+        };
+
+        const saveAction = id ? updateCustomProperty(id, newProperty) : addCustomProperty(newProperty);
+        console.log(newProperty);
+        saveAction
+            .then(() => {
+                setAlert(t("admin.settings.notifications.successfullySaved"), "success");
+                getCustomProperties().then((customProperties) => setCustomProperties(customProperties));
+                setOpenDialog(false);
+                if (!id) resetForm();
+            })
+            .catch((error) => setAlert(error.message, "warning"));
     };
 
     return (
         <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth>
-            <DialogTitle id="alert-dialog-title"> {t("admin.settings.edit")}</DialogTitle>
+            <DialogTitle id="alert-dialog-title">{id ? t("admin.settings.edit") : t("admin.settings.add")}</DialogTitle>
             <DialogContent>
                 <Stack spacing={1.5}>
                     <InputLabel variant="standard" id="name">
@@ -100,18 +109,16 @@ export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomPro
                     </InputLabel>
                     <Select
                         size="small"
-                        disabled
+                        disabled={!!id}
                         value={selectedObjectType}
                         labelId="objectType"
-                        onChange={(e: SelectChangeEvent<typeof selectedObjectType>) => setSelectedObjectType(e.target.value as ObjectType)}
+                        onChange={(e) => setSelectedObjectType(e.target.value as ObjectType)}
                     >
-                        {objectType.map((object) => {
-                            return (
-                                <MenuItem key={object} value={object}>
-                                    {object}
-                                </MenuItem>
-                            );
-                        })}
+                        {objectType.map((object) => (
+                            <MenuItem key={object} value={object}>
+                                {object}
+                            </MenuItem>
+                        ))}
                     </Select>
                     <Stack direction="row" alignItems="center">
                         <InputLabel variant="standard" id="propertyType">
@@ -121,30 +128,25 @@ export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomPro
                             <InfoIcon sx={{ fontSize: "20px", color: "#394048" }} />
                         </Tooltip>
                     </Stack>
-
                     <Select
                         size="small"
-                        disabled
+                        disabled={!!id}
                         value={selectedPropertyType}
                         labelId="propertyType"
-                        onChange={(e: SelectChangeEvent<typeof selectedPropertyType>) => setSelectedPropertyType(e.target.value as PropertyType)}
+                        onChange={(e) => setSelectedPropertyType(e.target.value as PropertyType)}
                     >
-                        {propertyType.map((property) => {
-                            return (
-                                <MenuItem key={property} value={property}>
-                                    {t(`admin.settings.propertyType.${property}`)}
-                                </MenuItem>
-                            );
-                        })}
+                        {propertyType.map((property) => (
+                            <MenuItem key={property} value={property}>
+                                {t(`admin.settings.propertyType.${property}`)}
+                            </MenuItem>
+                        ))}
                     </Select>
-                    {selectedPropertyType === "CATEGORY" && (
-                        <OrdinalCategoryCreateOption categoryValue={categories ? categories : []} setCategoryValue={setCategories} />
-                    )}
+                    {selectedPropertyType === "CATEGORY" && <CategoryCreateOption categoryValue={categories} setCategoryValue={setCategories} />}
                     {selectedPropertyType === "ORDINAL" && (
-                        <OrdinalCategoryCreateOption
+                        <CategoryCreateOption
                             categoryValue={ordinals ? ordinals : []}
                             setCategoryValue={(value) => {
-                                const refinedCategoryValue = value.map((item) => ("level" in item ? item : { ...item, level: 0 }));
+                                const refinedCategoryValue = value.map((item) => ("level" in item ? item : { ...item, level: 1 }));
                                 setOrdinalCategories(refinedCategoryValue);
                             }}
                         />
@@ -162,3 +164,5 @@ export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomPro
         </Dialog>
     );
 };
+
+export default PropertyDialog;

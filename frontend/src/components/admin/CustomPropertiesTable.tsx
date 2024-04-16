@@ -21,7 +21,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useContext, useState } from "react";
 import AlertContext from "../../context/AlertContext";
-import { EditPropertyDialog } from "./EditPropertyDialog";
+import PropertyDialog from "./PropertyDialog";
 
 const headerStyle = {
     color: "#ffffff",
@@ -159,7 +159,7 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
                     </Box>
                 </DialogActions>
             </Dialog>
-            <EditPropertyDialog setCustomProperties={setCustomProperties} openDialog={editDialogOpen} setOpenDialog={setEditDialogOpen} id={editPropertyId} />
+            <PropertyDialog setCustomProperties={setCustomProperties} openDialog={editDialogOpen} setOpenDialog={setEditDialogOpen} id={editPropertyId} />
         </>
     );
 };
