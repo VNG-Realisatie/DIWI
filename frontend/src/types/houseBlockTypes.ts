@@ -1,5 +1,5 @@
 import { CustomPropertyValue } from "../api/customPropServices";
-import { MutationSelectOptions, OwnershipValueType } from "./enums";
+import { OwnershipValueType } from "./enums";
 import { components } from "./schema";
 
 export type GeneralInformation = {
@@ -13,12 +13,7 @@ export type GeneralInformation = {
     };
 };
 
-export type MutationInformations = {
-    mutationKind: MutationSelectOptions[];
-    grossPlanCapacity: number | null;
-    netPlanCapacity: number | null;
-    demolition: number | null;
-};
+export type Mutation = components["schemas"]["Mutation"];
 
 export type AmountInformation = AmountModel[];
 
@@ -55,7 +50,7 @@ export type HouseBlock = {
     size: RangeValue;
     programming: boolean | null;
 
-    mutation: MutationInformations;
+    mutation: Mutation;
 
     ownershipValue: OwnershipSingleValue[];
 

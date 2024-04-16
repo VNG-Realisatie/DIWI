@@ -5,16 +5,16 @@ import { LabelComponent } from "../../../project/LabelComponent";
 import { useEffect, useState } from "react";
 
 type Props = {
-    houseBlockNetPlan: number | null;
-    updateHouseBlockNetPlan: (houseBlockNetPlan: number) => void;
+    houseBlockAmount: number | undefined;
+    updateHouseBlockAmount: (houseBlockNetPlan: number) => void;
     readOnly: boolean;
 };
-type NetPlanProps = {
-    houseBlockNetPlan: number | null;
-    updateHouseBlockNetPlan: (houseBlockNetPlan: number) => void;
+type AmountProps = {
+    houseBlockAmount: number | undefined;
+    updateHouseBlockAmount: (houseBlockNetPlan: number) => void;
 };
 
-export const NetPlanEditInput = ({ houseBlockNetPlan, updateHouseBlockNetPlan }: NetPlanProps) => {
+export const AmountEditInput = ({ houseBlockAmount: houseBlockNetPlan, updateHouseBlockAmount }: AmountProps) => {
     const [stringValue, setStringValue] = useState<string>("");
 
     useEffect(() => {
@@ -23,7 +23,7 @@ export const NetPlanEditInput = ({ houseBlockNetPlan, updateHouseBlockNetPlan }:
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setStringValue(e.target.value);
-        updateHouseBlockNetPlan(+e.target.value);
+        updateHouseBlockAmount(+e.target.value);
     };
 
     const onFocus = () => {
@@ -42,15 +42,15 @@ export const NetPlanEditInput = ({ houseBlockNetPlan, updateHouseBlockNetPlan }:
         <TextField type="number" id="grossPlan" size="small" variant="outlined" value={stringValue} onChange={handleChange} onFocus={onFocus} onBlur={onBlur} />
     );
 };
-export const NetPlanCapacityInput = ({ houseBlockNetPlan, updateHouseBlockNetPlan, readOnly }: Props) => {
+export const AmountInput = ({ houseBlockAmount, updateHouseBlockAmount, readOnly }: Props) => {
     return (
         <Stack>
-            <LabelComponent required={false} text={t("createProject.houseBlocksForm.netPlanCapacity")} />
+            <LabelComponent required={false} text={t("createProject.houseBlocksForm.amount")} />
 
-            {!readOnly && <NetPlanEditInput houseBlockNetPlan={houseBlockNetPlan} updateHouseBlockNetPlan={updateHouseBlockNetPlan} />}
+            {!readOnly && <AmountEditInput houseBlockAmount={houseBlockAmount} updateHouseBlockAmount={updateHouseBlockAmount} />}
             {readOnly && (
                 <InputContainer>
-                    <Typography>{houseBlockNetPlan}</Typography>
+                    <Typography>{houseBlockAmount}</Typography>
                 </InputContainer>
             )}
         </Stack>

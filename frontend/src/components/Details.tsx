@@ -103,7 +103,7 @@ export const Details = ({ project }: Props) => {
                         <Stack key={hb.houseblockId}>
                             <Typography sx={{ color: "#FFFFFF", backgroundColor: "#00A9F3", px: 2, py: 1.5 }}>{hb.houseblockName}</Typography>
                             <Box border="solid 1px #DDD" px={2} py={1.5}>
-                                <Typography>{hb.mutation.netPlanCapacity}</Typography>
+                                <Typography>{hb.mutation.amount}</Typography>
                             </Box>
                         </Stack>
                     );
