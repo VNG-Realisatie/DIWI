@@ -4,10 +4,11 @@
       "yes": "Ja",
       "no": "Nee",
       "save": "Opslaan",
+      "saved": "Opgeslagen",
       "next": "Volgende",
       "previous": "Vorig",
       "cancelChanges": "Stop veranderingen",
-      "saveChanges": "Opslaan veranderingen",
+      "saveChanges": "Veranderingen opslaan",
       "edit": "Bewerken",
       "confirmDeletion": "Weet u zeker dat u {{name}} wilt verwijderen?",
       "projectDeletion": "Project {{name}} is verwijderd",
@@ -15,7 +16,8 @@
       "cancel": "Annuleren",
       "noInfoAvailable": "Geen informatie beschikbaar",
       "updated": "Succesvol geüpdatet",
-      "failedToUpdate": "Kan niet updaten."
+      "failedToUpdate": "Update is mislukt",
+      "failedToSave": "Opslaan is mislukt"
     },
     "createProject": {
       "information": "Project informatie",
@@ -27,6 +29,7 @@
       "nameIsRequried": "Vul het veld projectnaam in",
       "informationForm": {
         "title": "Vul de projectgegevens in",
+        "info": "Vul de projectgegevens in",
         "nameLabel": "Projectnaam en projectkleur",
         "planType": "Plan Type",
         "startDate": "Start Datum",
@@ -42,6 +45,7 @@
       },
       "houseBlocksForm": {
         "title": "Vul de woningblokken in",
+        "info": "Vul de woningblok informatie in",
         "nameLabel": "Naam",
         "startDate": "Start Datum",
         "endDate": "Eind Datum",
@@ -121,11 +125,15 @@
         "largeFamilies": "Grote gezinnen",
         "notifications": {
           "successfullySaved": "Woningblokken succesvol opgeslagen.",
+          "successfullyUpdated": "Woningblokken succesvol geüpdatet.",
           "error": "Er is iets fout gegaan"
-        }
+        },
+        "saveBeforeCustomProps": "Sla het woningblok op zodat u de maatwerk eigenschappen kunt invullen."
       },
       "selectMapForm": {
         "title": "Teken het project in op de kaart",
+        "info": "Selecteer de percelen of delen van percelen voor het project in op de kaart",
+        "warning": "Er zijn geen percelen geselecteerd, dit project zal niet zichtbaar zijn op de overzichtskaart",
         "municipality": "Gemeente",
         "neighbourhood": "Wijk",
         "district": "Buurt"
@@ -165,10 +173,10 @@
       "map": "Kaart",
       "table": "Tabel",
       "createNewProject": "Nieuw project toevoegen",
-      "export":"Exporteren",
+      "export": "Exporteren",
       "exportIt": "Exporteer",
       "confirmExport": "Weet je het zeker?",
-      "cancelExport":"Annuleer",
+      "cancelExport": "Annuleer",
       "successExport": "Gelukt! Je ontvangt de bevestiging via de mail.",
       "tableColumns": {
         "projectName": "Project naam",
@@ -277,6 +285,13 @@
           "edit": "Bewerken",
           "delete": "Verwijderen",
           "actions": "Acties"
+        },
+        "propertyType" : {
+          "BOOLEAN": "Ja / Nee",
+          "NUMERIC": "Getal",
+          "ORDINAL": "Gerangschikte categorie",
+          "CATEGORY": "Categorie",
+          "TEXT": "Open tekstveld"
         },
         "add": "Voeg optioneel toe",
         "edit": "Pas optioneel veld aan",

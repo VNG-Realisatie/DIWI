@@ -5,8 +5,8 @@ services:
     build:
       context: frontend
       args:
-        REACT_APP_GIT_SHA: ${REACT_APP_GIT_SHA:?need commit hash}
-        REACT_APP_DEPLOY_DATE: ${REACT_APP_DEPLOY_DATE:?need commit date}
+        REACT_APP_GIT_SHA: ${REACT_APP_GIT_SHA:-Whoops you forgot to set the commit hash}
+        REACT_APP_DEPLOY_DATE: ${REACT_APP_DEPLOY_DATE:-Whoops you forgot to set the commit date}
     develop:
       watch:
         - action: rebuild

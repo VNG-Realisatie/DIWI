@@ -58,19 +58,21 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const { t } = useTranslation();
 
     const [selectedRows, setSelectedRows] = useState<any[]>([]);
-    const [selectedPlanTypes, setSelectedPlanTypes] = useState<SelectedOptionWithId[]>([]);
+    // const [selectedPlanTypes, setSelectedPlanTypes] = useState<SelectedOptionWithId[]>([]);
     // const [selectedMunicipality, setSelectedMunicipality] = useState<SelectedOptionWithId[]>([]);
-    const [selectedMunicipalityRole, setSelectedMunicipalityRole] = useState<SelectedOptionWithId[]>([]);
-    const [selectedPlanStatus, setSelectedPlanStatus] = useState<SelectedOptionWithId[]>([]);
+    // const [selectedMunicipalityRole, setSelectedMunicipalityRole] = useState<SelectedOptionWithId[]>([]);
+    // const [selectedPlanStatus, setSelectedPlanStatus] = useState<SelectedOptionWithId[]>([]);
     // const [selectedWijk, setSelectedWijk] = useState<SelectedOptionWithId[]>([]);
     // const [selectedBuurt, setSelectedBuurt] = useState<SelectedOptionWithId[]>([]);
     const [showDialog, setShowDialog] = useState(false);
-    const [filterModel, setFilterModel] = useState<GridFilterModel>();
+    const [filterModel, setFilterModel] = useState<GridFilterModel | undefined>();
 
     const { filterUrl, rows } = useCustomSearchParams(filterModel, paginationInfo);
 
     useEffect(() => {
-        navigate(`/projects/table${filterUrl}`);
+        if (filterUrl !== "") {
+            navigate(`/projects/table${filterUrl}`);
+        }
     }, [filterUrl, navigate, filterModel]);
 
     const handleExport = (params: GridRowParams) => {
@@ -84,47 +86,47 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
 
     const handleClose = () => setShowDialog(false);
 
-    const handlePlanTypeChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
-        const existingRecordIndex = selectedPlanTypes.findIndex((item) => item.id === id);
+    // const handlePlanTypeChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
+    //     const existingRecordIndex = selectedPlanTypes.findIndex((item) => item.id === id);
 
-        if (existingRecordIndex !== -1) {
-            const updatedSelectedPlanTypes = [...selectedPlanTypes];
-            updatedSelectedPlanTypes[existingRecordIndex] = { id, option: values };
-            setSelectedPlanTypes(updatedSelectedPlanTypes);
-        } else {
-            // If not exists, add a new record
-            setSelectedPlanTypes([...selectedPlanTypes, { id, option: values }]);
-        }
-        //Add update endpoint later
-    };
+    //     if (existingRecordIndex !== -1) {
+    //         const updatedSelectedPlanTypes = [...selectedPlanTypes];
+    //         updatedSelectedPlanTypes[existingRecordIndex] = { id, option: values };
+    //         setSelectedPlanTypes(updatedSelectedPlanTypes);
+    //     } else {
+    //         // If not exists, add a new record
+    //         setSelectedPlanTypes([...selectedPlanTypes, { id, option: values }]);
+    //     }
+    //     //Add update endpoint later
+    // };
 
-    const handleMunicipalityRoleChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
-        const existingRecordIndex = selectedMunicipalityRole.findIndex((item) => item.id === id);
+    // const handleMunicipalityRoleChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
+    //     const existingRecordIndex = selectedMunicipalityRole.findIndex((item) => item.id === id);
 
-        if (existingRecordIndex !== -1) {
-            const updatedMunicipality = [...selectedMunicipalityRole];
-            updatedMunicipality[existingRecordIndex] = { id, option: values };
-            setSelectedMunicipalityRole(updatedMunicipality);
-        } else {
-            // If not exists, add a new record
-            setSelectedMunicipalityRole([...selectedMunicipalityRole, { id, option: values }]);
-        }
-        //Add update endpoint later
-    };
+    //     if (existingRecordIndex !== -1) {
+    //         const updatedMunicipality = [...selectedMunicipalityRole];
+    //         updatedMunicipality[existingRecordIndex] = { id, option: values };
+    //         setSelectedMunicipalityRole(updatedMunicipality);
+    //     } else {
+    //         // If not exists, add a new record
+    //         setSelectedMunicipalityRole([...selectedMunicipalityRole, { id, option: values }]);
+    //     }
+    //     //Add update endpoint later
+    // };
 
-    const handleStatusChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
-        const existingRecordIndex = selectedPlanStatus.findIndex((item) => item.id === id);
+    // const handleStatusChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
+    //     const existingRecordIndex = selectedPlanStatus.findIndex((item) => item.id === id);
 
-        if (existingRecordIndex !== -1) {
-            const updatedPlanStatus = [...selectedPlanStatus];
-            updatedPlanStatus[existingRecordIndex] = { id, option: values };
-            setSelectedPlanStatus(updatedPlanStatus);
-        } else {
-            // If not exists, add a new record
-            setSelectedPlanStatus([...selectedPlanStatus, { id, option: values }]);
-        }
-        //Add update endpoint later
-    };
+    //     if (existingRecordIndex !== -1) {
+    //         const updatedPlanStatus = [...selectedPlanStatus];
+    //         updatedPlanStatus[existingRecordIndex] = { id, option: values };
+    //         setSelectedPlanStatus(updatedPlanStatus);
+    //     } else {
+    //         // If not exists, add a new record
+    //         setSelectedPlanStatus([...selectedPlanStatus, { id, option: values }]);
+    //     }
+    //     //Add update endpoint later
+    // };
 
     // const handleMunicipalityChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
     //     const existingRecordIndex = selectedMunicipality.findIndex((item) => item.id === id);
@@ -177,7 +179,8 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         {
             field: "projectName",
             headerName: t("projects.tableColumns.projectName"),
-            width: 120,
+            display: "flex",
+            width: 300,
             filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
                 return (
@@ -192,6 +195,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         {
             field: "totalValue",
             headerName: t("projects.tableColumns.totalValue"),
+            display: "flex",
             width: 120,
             filterable: false,
             preProcessEditCellProps: createErrorReport,
@@ -200,6 +204,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         {
             field: "projectOwners",
             headerName: t("projects.tableColumns.organizationName"),
+            display: "flex",
             width: 160,
             filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
@@ -214,6 +219,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         {
             field: "confidentialityLevel",
             headerName: t("projects.tableColumns.confidentialityLevel"),
+            display: "flex",
             valueOptions: confidentialityLevelOptions.map((c) => {
                 return { value: c.id, label: t(`projectTable.confidentialityLevelOptions.${c.name}`) };
             }),
@@ -225,30 +231,32 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         {
             field: "startDate",
             headerName: t("projects.tableColumns.startDate"),
+            display: "flex",
             type: "dateTime",
-            valueFormatter: (p) => dayjs(p.value).format(dateFormats.keyboardDate),
+            valueFormatter: (p) => dayjs(p).format(dateFormats.keyboardDate),
             filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
-            valueGetter: ({ value }) => value && new Date(value),
+            valueGetter: (value) => value && new Date(value),
             preProcessEditCellProps: createErrorReport,
         },
         {
             field: "endDate",
             headerName: t("projects.tableColumns.endDate"),
+            display: "flex",
             type: "dateTime",
-            valueFormatter: (p) => dayjs(p.value).format(dateFormats.keyboardDate),
+            valueFormatter: (p) => dayjs(p).format(dateFormats.keyboardDate),
             filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
-            valueGetter: ({ value }) => value && new Date(value),
+            valueGetter: (value) => value && new Date(value),
             preProcessEditCellProps: createErrorReport,
         },
         {
             field: "planType",
             headerName: t("projects.tableColumns.planType"),
+            display: "flex",
             width: 500,
-            align: "center",
             valueOptions: planTypeOptions.map((pt) => pt.id),
             type: "singleSelect",
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                return <PlanTypeCell cellValues={cellValues} selectedPlanTypes={selectedPlanTypes} handlePlanTypeChange={handlePlanTypeChange} />;
+                return <PlanTypeCell cellValues={cellValues} />;
             },
             filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
             preProcessEditCellProps: createErrorReport,
@@ -256,6 +264,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         {
             field: "priority",
             headerName: t("projects.tableColumns.priority"),
+            display: "flex",
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
                 return <>{cellValues.row?.priority?.value?.name}</>; //TODO FIX AFTER MIN MAX INTEGRATED
             },
@@ -264,21 +273,17 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         {
             field: "municipalityRole",
             headerName: t("projects.tableColumns.municipalityRole"),
+            display: "flex",
             width: 320,
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                return (
-                    <MunicipalityRoleCell
-                        cellValues={cellValues}
-                        selectedMunicipalityRole={selectedMunicipalityRole}
-                        handleMunicipalityRoleChange={handleMunicipalityRoleChange}
-                    />
-                );
+                return <MunicipalityRoleCell cellValues={cellValues} />;
             },
             preProcessEditCellProps: createErrorReport,
         },
         {
             field: "projectLeaders",
             headerName: t("projects.tableColumns.projectLeader"),
+            display: "flex",
             width: 160,
             filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
@@ -293,6 +298,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         {
             field: "projectPhase",
             headerName: t("projects.tableColumns.projectPhase"),
+            display: "flex",
             valueOptions: projectPhaseOptions.map((c) => {
                 return { value: c.id, label: t(`projectTable.projectPhaseOptions.${c.name}`) };
             }),
@@ -304,11 +310,11 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         {
             field: "planningPlanStatus",
             headerName: t("projects.tableColumns.planningPlanStatus"),
+            display: "flex",
             width: 500,
-            align: "center",
             preProcessEditCellProps: createErrorReport,
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                return <PlanningPlanStatusCell cellValues={cellValues} selectedPlanStatus={selectedPlanStatus} handleStatusChange={handleStatusChange} />;
+                return <PlanningPlanStatusCell cellValues={cellValues} />;
             },
         },
         // {

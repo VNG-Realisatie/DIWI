@@ -11,6 +11,7 @@ export async function diwiFetch(input: RequestInfo | URL, init?: RequestInit | u
     return fetch(input, options).then((response) => {
         if (response.status === 401) {
             const returnUrl = window.location.origin + window.location.pathname + window.location.search;
+            // We can't use navigate here, because navigate will use the internal router and just show a 404
             window.location.href = `${Paths.login.path}?returnUrl=${encodeURIComponent(returnUrl)}`;
         }
         return response;

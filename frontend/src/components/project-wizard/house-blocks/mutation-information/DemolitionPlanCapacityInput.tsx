@@ -2,24 +2,27 @@ import { Stack, Typography, TextField } from "@mui/material";
 import { t } from "i18next";
 import { InputContainer } from "../InputContainer";
 import { LabelComponent } from "../../../project/LabelComponent";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 type Props = {
     houseBlockDemolitionPlan: number | null;
     updateHouseBlockDemolitionPlan: (demolitionPlan: number) => void;
-    edit: boolean;
-    editForm: boolean;
+    readOnly: boolean;
 };
 type DemolitionPlanProps = {
     houseBlockDemolitionPlan: number | null;
     updateHouseBlockDemolitionPlan: (demolitionPlan: number) => void;
 };
-const DemolitionPlanEditInput = ({ houseBlockDemolitionPlan, updateHouseBlockDemolitionPlan }: DemolitionPlanProps) => {
-    const [stringValue, setStringValue] = useState<string>(String(houseBlockDemolitionPlan));
+export const DemolitionPlanEditInput = ({ houseBlockDemolitionPlan, updateHouseBlockDemolitionPlan }: DemolitionPlanProps) => {
+    const [stringValue, setStringValue] = useState<string>("");
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setStringValue(e.target.value);
         updateHouseBlockDemolitionPlan(+e.target.value);
     };
+
+    useEffect(() => {
+        setStringValue(String(houseBlockDemolitionPlan));
+    }, [houseBlockDemolitionPlan]);
 
     const onFocus = () => {
         if (stringValue === "0") {
@@ -51,21 +54,18 @@ const DemolitionPlanEditInput = ({ houseBlockDemolitionPlan, updateHouseBlockDem
         />
     );
 };
-export const DemolitionPlanCapacityInput = ({ houseBlockDemolitionPlan, updateHouseBlockDemolitionPlan, edit, editForm }: Props) => {
+export const DemolitionPlanCapacityInput = ({ houseBlockDemolitionPlan, updateHouseBlockDemolitionPlan, readOnly }: Props) => {
     return (
         <Stack>
             <LabelComponent required={false} text={t("createProject.houseBlocksForm.demolition")} />
 
-            {edit && editForm && (
+            {!readOnly && (
                 <DemolitionPlanEditInput houseBlockDemolitionPlan={houseBlockDemolitionPlan} updateHouseBlockDemolitionPlan={updateHouseBlockDemolitionPlan} />
             )}
-            {!edit && editForm && (
+            {readOnly && (
                 <InputContainer>
                     <Typography>{houseBlockDemolitionPlan}</Typography>
                 </InputContainer>
-            )}
-            {!edit && !editForm && (
-                <DemolitionPlanEditInput houseBlockDemolitionPlan={houseBlockDemolitionPlan} updateHouseBlockDemolitionPlan={updateHouseBlockDemolitionPlan} />
             )}
         </Stack>
     );

@@ -25,7 +25,7 @@ public class HouseblockBooleanCustomPropertyChangelog extends HouseblockMileston
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "eigenschap_id")
-    private CustomProperty customProperty;
+    private Property property;
 
     @Column(name = "value")
     private Boolean value;
@@ -33,7 +33,7 @@ public class HouseblockBooleanCustomPropertyChangelog extends HouseblockMileston
     @Override
     public Object getShallowCopy() {
         var newChangelog = HouseblockBooleanCustomPropertyChangelog.builder()
-            .customProperty(customProperty).value(value).build();
+            .property(property).value(value).build();
         newChangelog.setHouseblock(getHouseblock());
         newChangelog.setStartMilestone(getStartMilestone());
         newChangelog.setEndMilestone(getEndMilestone());

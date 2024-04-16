@@ -15,7 +15,7 @@ import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
-import nl.vng.diwi.services.CustomPropertiesService;
+import nl.vng.diwi.services.PropertiesService;
 import nl.vng.diwi.services.HouseblockService;
 import nl.vng.diwi.services.ProjectService;
 import nl.vng.diwi.services.ProjectServiceTest;
@@ -45,7 +45,7 @@ public class ProjectsResourceTest {
         testDb = new TestDb();
         dalFactory = testDb.getDalFactory();
         projectResource = new ProjectsResource(new GenericRepository(dalFactory.constructDal()),
-            new ProjectService(), new HouseblockService(), new CustomPropertiesService());
+            new ProjectService(), new HouseblockService(), new PropertiesService());
     }
 
     @AfterAll
@@ -65,7 +65,7 @@ public class ProjectsResourceTest {
     }
 
     @Test
-    void updateProjectTest_currentProject() throws VngNotFoundException, VngServerErrorException, VngBadRequestException {
+    void updateProjectSnapshotTest_currentProject() throws VngNotFoundException, VngServerErrorException, VngBadRequestException {
 
         UUID userUuid;
         UUID projectUuid;
@@ -94,7 +94,7 @@ public class ProjectsResourceTest {
         //call update endpoint
         LoggedUser loggedUser = new LoggedUser();
         loggedUser.setUuid(userUuid);
-        projectResource.updateProject(loggedUser, projectSnapshot);
+        projectResource.updateProjectSnapshot(loggedUser, projectSnapshot);
         repo.getSession().clear();
 
         //assert
@@ -127,7 +127,7 @@ public class ProjectsResourceTest {
 
 
     @Test
-    void updateProjectTest_futureProject() throws VngNotFoundException, VngServerErrorException, VngBadRequestException {
+    void updateProjectSnapshotTest_futureProject() throws VngNotFoundException, VngServerErrorException, VngBadRequestException {
 
         UUID userUuid;
         UUID projectUuid;
@@ -156,7 +156,7 @@ public class ProjectsResourceTest {
         //call update endpoint
         LoggedUser loggedUser = new LoggedUser();
         loggedUser.setUuid(userUuid);
-        projectResource.updateProject(loggedUser, projectSnapshot);
+        projectResource.updateProjectSnapshot(loggedUser, projectSnapshot);
         repo.getSession().clear();
 
         //assert

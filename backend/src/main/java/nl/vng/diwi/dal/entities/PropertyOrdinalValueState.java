@@ -13,17 +13,19 @@ import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.entities.superclasses.ChangeDataSuperclass;
 
 @Entity
-@Table(name = "maatwerk_categorie_waarde_state", schema = GenericRepository.VNG_SCHEMA_NAME)
+@Table(name = "property_ordinal_value_state", schema = GenericRepository.VNG_SCHEMA_NAME)
 @Getter
 @Setter
 @NoArgsConstructor
-public class CustomCategoryValueState extends ChangeDataSuperclass {
+public class PropertyOrdinalValueState extends ChangeDataSuperclass {
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "categorie_waarde_id")
-    private CustomCategoryValue customCategoryValue;
+    @JoinColumn(name = "ordinal_value_id")
+    private PropertyOrdinalValue propertyOrdinalValue;
 
-    @Column(name = "waarde_label")
+    @Column(name = "value_label")
     private String label;
 
+    @Column(name = "ordinal_level")
+    private Integer ordinalLevel;
 }

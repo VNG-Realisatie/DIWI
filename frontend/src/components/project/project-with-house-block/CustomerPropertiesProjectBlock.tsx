@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { CustomPropertyType, getCustomPropertiesWithQuery } from "../../../api/adminSettingServices";
+import { Property, getCustomPropertiesWithQuery } from "../../../api/adminSettingServices";
 import Grid from "@mui/material/Grid";
 import { CustomPropertyValue } from "../../../api/customPropServices";
 import Typography from "@mui/material/Typography";
@@ -7,14 +7,14 @@ import { CustomPropertyWidget } from "../../CustomPropertyWidget";
 import { SxProps, Theme } from "@mui/material";
 
 type Props = {
-    projectEditable: boolean;
+    readOnly: boolean;
     customValues: CustomPropertyValue[];
     setCustomValues: (updatedValues: CustomPropertyValue[]) => void;
     columnTitleStyle: SxProps<Theme> | undefined;
 };
 
-export const CustomerPropertiesProjectBlock = ({ projectEditable, customValues, setCustomValues, columnTitleStyle }: Props) => {
-    const [customDefinitions, setCustomDefinitions] = useState<CustomPropertyType[]>([]);
+export const CustomerPropertiesProjectBlock = ({ readOnly, customValues, setCustomValues, columnTitleStyle }: Props) => {
+    const [customDefinitions, setCustomDefinitions] = useState<Property[]>([]);
 
     useEffect(() => {
         getCustomPropertiesWithQuery("PROJECT").then((properties) => {
@@ -35,7 +35,7 @@ export const CustomerPropertiesProjectBlock = ({ projectEditable, customValues, 
                         <Typography sx={columnTitleStyle}>{property.name}</Typography>
 
                         <CustomPropertyWidget
-                            projectEditable={projectEditable}
+                            readOnly={readOnly}
                             customValue={customValue}
                             setCustomValue={(newValue) => {
                                 setCustomValue({ ...newValue, customPropertyId: property.id });

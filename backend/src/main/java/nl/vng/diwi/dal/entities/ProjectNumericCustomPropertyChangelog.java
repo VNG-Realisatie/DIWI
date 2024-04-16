@@ -40,7 +40,7 @@ public class ProjectNumericCustomPropertyChangelog extends MilestoneChangeDataSu
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "eigenschap_id")
-    private CustomProperty customProperty;
+    private Property property;
 
     @Column(name = "value")
     private Double value;

@@ -3,9 +3,10 @@ package nl.vng.diwi.services;
 import io.hypersistence.utils.hibernate.type.range.Range;
 import nl.vng.diwi.dal.HouseblockDAO;
 import nl.vng.diwi.dal.VngRepository;
-import nl.vng.diwi.dal.entities.CustomCategoryValue;
-import nl.vng.diwi.dal.entities.CustomOrdinalValue;
-import nl.vng.diwi.dal.entities.CustomProperty;
+import nl.vng.diwi.dal.entities.PropertyCategoryValue;
+import nl.vng.diwi.dal.entities.PropertyOrdinalValue;
+import nl.vng.diwi.dal.entities.Property;
+import nl.vng.diwi.dal.entities.HouseblockState;
 import nl.vng.diwi.dal.entities.Houseblock;
 import nl.vng.diwi.dal.entities.HouseblockAppearanceAndTypeChangelog;
 import nl.vng.diwi.dal.entities.HouseblockBooleanCustomPropertyChangelog;
@@ -59,7 +60,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -105,6 +105,26 @@ public class HouseblockService {
         return sqlHouseblocks.stream().map(HouseblockSnapshotModel::new).toList();
     }
 
+    public void deleteHouseblock(VngRepository repo, UUID houseblockUuid, UUID loggedInUserUuid) throws VngNotFoundException {
+        var now = ZonedDateTime.now();
+        var user = repo.findById(User.class, loggedInUserUuid);
+
+        var houseblock = repo.getHouseblockDAO().getCurrentHouseblock(houseblockUuid);
+
+        if (houseblock == null) {
+            logger.error("Houseblock with uuid {} was not found.", houseblockUuid);
+            throw new VngNotFoundException();
+        }
+
+        houseblock.getState().stream()
+            .filter(cl -> cl.getChangeEndDate() == null)
+            .forEach(cl -> {
+                cl.setChangeEndDate(now);
+                cl.setChangeUser(user);
+                repo.persist(cl);
+            });
+    }
+
     public Houseblock createHouseblock(VngRepository repo, HouseblockSnapshotModel houseblockSnapshotModel, Milestone startMilestone, Milestone endMilestone,
                                        UUID loggedUserUuid, ZonedDateTime now) {
 
@@ -113,6 +133,12 @@ public class HouseblockService {
         repo.persist(houseblock);
 
         User user = repo.getReferenceById(User.class, loggedUserUuid);
+
+        HouseblockState houseblockState = new HouseblockState();
+        houseblockState.setHouseblock(houseblock);
+        houseblockState.setCreateUser(user);
+        houseblockState.setChangeStartDate(now);
+        repo.persist(houseblockState);
 
         Consumer<MilestoneChangeDataSuperclass> setChangelogValues = (MilestoneChangeDataSuperclass entity) -> {
             entity.setStartMilestone(startMilestone);
@@ -320,7 +346,7 @@ public class HouseblockService {
         newChangelog.setHouseblock(houseblock);
         newChangelog.setName(newName);
 
-        HouseblockNameChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, houseblock, houseblock.getNames(), newChangelog,
+        HouseblockNameChangelog oldChangelog = prepareHouseblockChangelogValuesToUpdate(repo, project, houseblock, houseblock.getNames(), newChangelog,
             oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
 
         repo.persist(newChangelog);
@@ -502,7 +528,7 @@ public class HouseblockService {
             newChangelog.setSizeRange(Range.closed(sizeValue.getMin(), sizeValue.getMax()));
         }
 
-        HouseblockSizeChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, houseblock, houseblock.getSizes(), newChangelog,
+        HouseblockSizeChangelog oldChangelog = prepareHouseblockChangelogValuesToUpdate(repo, project, houseblock, houseblock.getSizes(), newChangelog,
             oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
 
         if (newChangelog != null) {
@@ -531,7 +557,7 @@ public class HouseblockService {
             newChangelog.setHouseblock(houseblock);
         }
 
-        HouseblockPurposeChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, houseblock, houseblock.getPurposes(), newChangelog,
+        HouseblockPurposeChangelog oldChangelog = prepareHouseblockChangelogValuesToUpdate(repo, project, houseblock, houseblock.getPurposes(), newChangelog,
             oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
 
         if (newChangelog != null) {
@@ -572,7 +598,7 @@ public class HouseblockService {
             newChangelog.setHouseblock(houseblock);
         }
 
-        HouseblockGroundPositionChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, houseblock, houseblock.getGroundPositions(), newChangelog,
+        HouseblockGroundPositionChangelog oldChangelog = prepareHouseblockChangelogValuesToUpdate(repo, project, houseblock, houseblock.getGroundPositions(), newChangelog,
             oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
 
         if (newChangelog != null) {
@@ -613,7 +639,7 @@ public class HouseblockService {
             newChangelog.setHouseblock(houseblock);
         }
 
-        HouseblockAppearanceAndTypeChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, houseblock, houseblock.getAppearanceAndTypes(), newChangelog,
+        HouseblockAppearanceAndTypeChangelog oldChangelog = prepareHouseblockChangelogValuesToUpdate(repo, project, houseblock, houseblock.getAppearanceAndTypes(), newChangelog,
             oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
 
         if (newChangelog != null) {
@@ -669,7 +695,7 @@ public class HouseblockService {
             newChangelog.setProgramming(newProgramming);
         }
 
-        HouseblockProgrammingChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, houseblock, houseblock.getProgrammings(), newChangelog,
+        HouseblockProgrammingChangelog oldChangelog = prepareHouseblockChangelogValuesToUpdate(repo, project, houseblock, houseblock.getProgrammings(), newChangelog,
             oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
 
         if (newChangelog != null) {
@@ -701,7 +727,7 @@ public class HouseblockService {
             newChangelog.setNetPlanCapacity(newMutation.getNetPlanCapacity());
         }
 
-        HouseblockMutatieChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, houseblock, houseblock.getMutaties(), newChangelog,
+        HouseblockMutatieChangelog oldChangelog = prepareHouseblockChangelogValuesToUpdate(repo, project, houseblock, houseblock.getMutaties(), newChangelog,
             oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
 
         if (newChangelog != null) {
@@ -766,9 +792,9 @@ public class HouseblockService {
             newChangelog.setHouseblock(houseblock);
             newChangelog.setCreateUser(repo.getReferenceById(User.class, loggedInUserUuid));
 
-            List<HouseblockOwnershipValueChangelog> changelos = houseblock.getOwnershipValues().stream().filter(c -> c.getId().equals(ownershipValue.getId())).toList();
+            List<HouseblockOwnershipValueChangelog> changelogs = houseblock.getOwnershipValues().stream().filter(c -> c.getId().equals(ownershipValue.getId())).toList();
 
-            HouseblockOwnershipValueChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, houseblock, changelos, newChangelog,
+            HouseblockOwnershipValueChangelog oldChangelog = prepareHouseblockChangelogValuesToUpdate(repo, project, houseblock, changelogs, newChangelog,
                 oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
 
             repo.persist(newChangelog);
@@ -812,83 +838,14 @@ public class HouseblockService {
         return newChangelog;
     }
 
-    private <T extends MilestoneChangeDataSuperclass> T prepareChangelogValuesToUpdate(VngRepository repo, Project project, Houseblock houseblock, List<T> changelogs,
+    private <T extends MilestoneChangeDataSuperclass> T prepareHouseblockChangelogValuesToUpdate(VngRepository repo, Project project, Houseblock houseblock, List<T> changelogs,
                                                                                        T newChangelog, T oldChangelogAfterUpdate, UUID loggedInUserUuid, LocalDate updateDate) {
 
         Milestone houseblockStartMilestone = houseblock.getDuration().get(0).getStartMilestone();
         Milestone houseblockEndMilestone = houseblock.getDuration().get(0).getEndMilestone();
 
-        ZonedDateTime zdtNow = ZonedDateTime.now();
-        LocalDate houseblockStartDate = (new MilestoneModel(houseblockStartMilestone)).getDate();
-        LocalDate houseblockEndDate = (new MilestoneModel(houseblockEndMilestone)).getDate();
-        boolean currentOrFutureHouseblock = true;
-
-        T oldChangelog;
-        if (newChangelog != null) {
-            newChangelog.setCreateUser(repo.getReferenceById(User.class, loggedInUserUuid));
-            newChangelog.setChangeStartDate(zdtNow);
-        }
-
-        if (houseblockStartDate.isAfter(updateDate)) {
-            updateDate = houseblockStartDate;
-        }
-
-        if (houseblockEndDate.isBefore(updateDate)) {
-            updateDate = houseblockEndDate;
-            currentOrFutureHouseblock = false;
-        }
-
-        LocalDate finalUpdateDate = updateDate;
-        boolean finalIsCurrentOrFutureHouseblock = currentOrFutureHouseblock;
-
-        oldChangelog = changelogs.stream()
-            .filter(c -> (finalIsCurrentOrFutureHouseblock && !(new MilestoneModel(c.getStartMilestone())).getDate().isAfter(finalUpdateDate)
-                && (new MilestoneModel(c.getEndMilestone())).getDate().isAfter(finalUpdateDate)) ||
-                (!finalIsCurrentOrFutureHouseblock && (new MilestoneModel(c.getEndMilestone())).getDate().equals(finalUpdateDate)))
-            .findFirst().orElse(null);
-
-        Milestone updateMilestone = projectService.getOrCreateMilestoneForProject(repo, project, updateDate, loggedInUserUuid);
-
-        if (oldChangelog != null && finalIsCurrentOrFutureHouseblock && !Objects.equals(oldChangelog.getStartMilestone().getId(), updateMilestone.getId())) {
-            oldChangelogAfterUpdate.setStartMilestone(oldChangelog.getStartMilestone());
-            oldChangelogAfterUpdate.setEndMilestone(updateMilestone);
-            oldChangelogAfterUpdate.setCreateUser(oldChangelog.getCreateUser());
-            oldChangelogAfterUpdate.setChangeStartDate(zdtNow);
-        }
-
-        if (newChangelog != null) {
-            if (finalIsCurrentOrFutureHouseblock) {
-                newChangelog.setStartMilestone(updateMilestone);
-            } else {
-                if (oldChangelog != null) {
-                    newChangelog.setStartMilestone(oldChangelog.getStartMilestone());
-                } else {
-                    newChangelog.setStartMilestone(houseblockStartMilestone);
-                }
-            }
-        }
-
-        if (oldChangelog != null) {
-            oldChangelog.setChangeEndDate(zdtNow);
-            oldChangelog.setChangeUser(repo.getReferenceById(User.class, loggedInUserUuid));
-        }
-
-        if (newChangelog != null) {
-            if (oldChangelog != null) {
-                newChangelog.setEndMilestone(oldChangelog.getEndMilestone());
-            } else {
-                LocalDate currentStartDate = (new MilestoneModel(newChangelog.getStartMilestone())).getDate();
-                UUID newEndMilestoneUuid = changelogs.stream().map(MilestoneChangeDataSuperclass::getStartMilestone)
-                    .map(MilestoneModel::new)
-                    .filter(mm -> mm.getDate().isAfter(currentStartDate))
-                    .min(Comparator.comparing(MilestoneModel::getDate))
-                    .map(MilestoneModel::getId)
-                    .orElse(houseblockEndMilestone.getId());
-                newChangelog.setEndMilestone(repo.getReferenceById(Milestone.class, newEndMilestoneUuid));
-            }
-        }
-
-        return oldChangelog;
+        return projectService.prepareChangelogValuesToUpdate(repo, project, changelogs, newChangelog, oldChangelogAfterUpdate, loggedInUserUuid,
+            houseblockStartMilestone, houseblockEndMilestone, updateDate);
     }
 
     public Houseblock getCurrentHouseblockAndPerformPreliminaryUpdateChecks(VngRepository repo, UUID houseblockId) throws VngNotFoundException {
@@ -902,6 +859,11 @@ public class HouseblockService {
         if (houseblock.getDuration().size() != 1) {
             logger.error("Houseblock with uuid {} has {} duration changelog values", houseblockId, houseblock.getDuration().size());
             throw new VngServerErrorException("Houseblock duration changelog is invalid.");
+        }
+
+        if (houseblock.getState().size() != 1) {
+            logger.error("Houseblock with uuid {} has {} state values", houseblockId, houseblock.getState().size());
+            throw new VngServerErrorException("Houseblock state is invalid.");
         }
 
         MilestoneModel houseblockStartMilestone = new MilestoneModel(houseblock.getDuration().get(0).getStartMilestone());
@@ -923,14 +885,14 @@ public class HouseblockService {
             newChangelog = new HouseblockBooleanCustomPropertyChangelog();
             newChangelog.setHouseblock(houseblock);
             newChangelog.setValue(newBooleanValue);
-            newChangelog.setCustomProperty(repo.getReferenceById(CustomProperty.class, customPropertyId));
+            newChangelog.setProperty(repo.getReferenceById(Property.class, customPropertyId));
         }
 
 
         List<HouseblockBooleanCustomPropertyChangelog> changelogs = houseblock.getBooleanCustomProperties().stream()
-            .filter(cp -> cp.getCustomProperty().getId().equals(customPropertyId)).toList();
+            .filter(cp -> cp.getProperty().getId().equals(customPropertyId)).toList();
 
-        HouseblockBooleanCustomPropertyChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, houseblock, changelogs, newChangelog,
+        HouseblockBooleanCustomPropertyChangelog oldChangelog = prepareHouseblockChangelogValuesToUpdate(repo, project, houseblock, changelogs, newChangelog,
             oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
 
         if (newChangelog != null) {
@@ -943,7 +905,7 @@ public class HouseblockService {
                 // it is a current houseblock && it had a non-null changelog before the update
                 oldChangelogAfterUpdate.setHouseblock(houseblock);
                 oldChangelogAfterUpdate.setValue(oldChangelog.getValue());
-                oldChangelogAfterUpdate.setCustomProperty(oldChangelog.getCustomProperty());
+                oldChangelogAfterUpdate.setProperty(oldChangelog.getProperty());
                 repo.persist(oldChangelogAfterUpdate);
             }
         }
@@ -957,13 +919,13 @@ public class HouseblockService {
             newChangelog = new HouseblockTextCustomPropertyChangelog();
             newChangelog.setHouseblock(houseblock);
             newChangelog.setValue(newTextValue);
-            newChangelog.setCustomProperty(repo.getReferenceById(CustomProperty.class, customPropertyId));
+            newChangelog.setProperty(repo.getReferenceById(Property.class, customPropertyId));
         }
 
         List<HouseblockTextCustomPropertyChangelog> changelogs = houseblock.getTextCustomProperties().stream()
-            .filter(cp -> cp.getCustomProperty().getId().equals(customPropertyId)).toList();
+            .filter(cp -> cp.getProperty().getId().equals(customPropertyId)).toList();
 
-        HouseblockTextCustomPropertyChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, houseblock, changelogs, newChangelog,
+        HouseblockTextCustomPropertyChangelog oldChangelog = prepareHouseblockChangelogValuesToUpdate(repo, project, houseblock, changelogs, newChangelog,
             oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
 
         if (newChangelog != null) {
@@ -976,7 +938,7 @@ public class HouseblockService {
                 // it is a current houseblock && it had a non-null changelog before the update
                 oldChangelogAfterUpdate.setHouseblock(houseblock);
                 oldChangelogAfterUpdate.setValue(oldChangelog.getValue());
-                oldChangelogAfterUpdate.setCustomProperty(oldChangelog.getCustomProperty());
+                oldChangelogAfterUpdate.setProperty(oldChangelog.getProperty());
                 repo.persist(oldChangelogAfterUpdate);
             }
         }
@@ -998,13 +960,13 @@ public class HouseblockService {
                 newChangelog.setValueRange(Range.closed(newNumericValue.getMin(), newNumericValue.getMax()));
                 newChangelog.setValueType(ValueType.RANGE);
             }
-            newChangelog.setCustomProperty(repo.getReferenceById(CustomProperty.class, customPropertyId));
+            newChangelog.setProperty(repo.getReferenceById(Property.class, customPropertyId));
         }
 
         List<HouseblockNumericCustomPropertyChangelog> changelogs = houseblock.getNumericCustomProperties().stream()
-            .filter(cp -> cp.getCustomProperty().getId().equals(customPropertyId)).toList();
+            .filter(cp -> cp.getProperty().getId().equals(customPropertyId)).toList();
 
-        HouseblockNumericCustomPropertyChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, houseblock, changelogs, newChangelog,
+        HouseblockNumericCustomPropertyChangelog oldChangelog = prepareHouseblockChangelogValuesToUpdate(repo, project, houseblock, changelogs, newChangelog,
             oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
 
         if (newChangelog != null) {
@@ -1019,7 +981,7 @@ public class HouseblockService {
                 oldChangelogAfterUpdate.setValue(oldChangelog.getValue());
                 oldChangelogAfterUpdate.setValueRange(oldChangelog.getValueRange());
                 oldChangelogAfterUpdate.setValueType(oldChangelog.getValueType());
-                oldChangelogAfterUpdate.setCustomProperty(oldChangelog.getCustomProperty());
+                oldChangelogAfterUpdate.setProperty(oldChangelog.getProperty());
                 repo.persist(oldChangelogAfterUpdate);
             }
         }
@@ -1034,20 +996,20 @@ public class HouseblockService {
             newChangelog = new HouseblockOrdinalCustomPropertyChangelog();
             newChangelog.setHouseblock(houseblock);
             if (newOrdinalValue.getValue() != null) {
-                newChangelog.setValue(repo.getReferenceById(CustomOrdinalValue.class, newOrdinalValue.getValue()));
+                newChangelog.setValue(repo.getReferenceById(PropertyOrdinalValue.class, newOrdinalValue.getValue()));
                 newChangelog.setValueType(ValueType.SINGLE_VALUE);
             } else {
-                newChangelog.setMinValue(repo.getReferenceById(CustomOrdinalValue.class, newOrdinalValue.getMin()));
-                newChangelog.setMaxValue(repo.getReferenceById(CustomOrdinalValue.class, newOrdinalValue.getMax()));
+                newChangelog.setMinValue(repo.getReferenceById(PropertyOrdinalValue.class, newOrdinalValue.getMin()));
+                newChangelog.setMaxValue(repo.getReferenceById(PropertyOrdinalValue.class, newOrdinalValue.getMax()));
                 newChangelog.setValueType(ValueType.RANGE);
             }
-            newChangelog.setCustomProperty(repo.getReferenceById(CustomProperty.class, customPropertyId));
+            newChangelog.setProperty(repo.getReferenceById(Property.class, customPropertyId));
         }
 
         List<HouseblockOrdinalCustomPropertyChangelog> changelogs = houseblock.getOrdinalCustomProperties().stream()
-            .filter(cp -> cp.getCustomProperty().getId().equals(customPropertyId)).toList();
+            .filter(cp -> cp.getProperty().getId().equals(customPropertyId)).toList();
 
-        HouseblockOrdinalCustomPropertyChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, houseblock, changelogs, newChangelog,
+        HouseblockOrdinalCustomPropertyChangelog oldChangelog = prepareHouseblockChangelogValuesToUpdate(repo, project, houseblock, changelogs, newChangelog,
             oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
 
         if (newChangelog != null) {
@@ -1063,7 +1025,7 @@ public class HouseblockService {
                 oldChangelogAfterUpdate.setMinValue(oldChangelog.getMinValue());
                 oldChangelogAfterUpdate.setMaxValue(oldChangelog.getMaxValue());
                 oldChangelogAfterUpdate.setValueType(oldChangelog.getValueType());
-                oldChangelogAfterUpdate.setCustomProperty(oldChangelog.getCustomProperty());
+                oldChangelogAfterUpdate.setProperty(oldChangelog.getProperty());
                 repo.persist(oldChangelogAfterUpdate);
             }
         }
@@ -1077,13 +1039,13 @@ public class HouseblockService {
         if (newCategoryValues != null && !newCategoryValues.isEmpty()) {
             newChangelog = new HouseblockCategoryCustomPropertyChangelog();
             newChangelog.setHouseblock(houseblock);
-            newChangelog.setCustomProperty(repo.getReferenceById(CustomProperty.class, customPropertyId));
+            newChangelog.setProperty(repo.getReferenceById(Property.class, customPropertyId));
         }
 
         List<HouseblockCategoryCustomPropertyChangelog> changelogs = houseblock.getCategoryCustomProperties().stream()
-            .filter(cp -> cp.getCustomProperty().getId().equals(customPropertyId)).toList();
+            .filter(cp -> cp.getProperty().getId().equals(customPropertyId)).toList();
 
-        HouseblockCategoryCustomPropertyChangelog oldChangelog = prepareChangelogValuesToUpdate(repo, project, houseblock, changelogs, newChangelog,
+        HouseblockCategoryCustomPropertyChangelog oldChangelog = prepareHouseblockChangelogValuesToUpdate(repo, project, houseblock, changelogs, newChangelog,
             oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
 
         if (newChangelog != null) {
@@ -1091,7 +1053,7 @@ public class HouseblockService {
             for (UUID newCategoryValue : newCategoryValues) {
                 HouseblockCategoryCustomPropertyChangelogValue newChangelogValue = new HouseblockCategoryCustomPropertyChangelogValue();
                 newChangelogValue.setCategoryChangelog(newChangelog);
-                newChangelogValue.setCategoryValue(repo.getReferenceById(CustomCategoryValue.class, newCategoryValue));
+                newChangelogValue.setCategoryValue(repo.getReferenceById(PropertyCategoryValue.class, newCategoryValue));
                 repo.persist(newChangelogValue);
             }
         }
@@ -1103,12 +1065,12 @@ public class HouseblockService {
             if (oldChangelogAfterUpdate.getStartMilestone() != null) {
                 // it is a current houseblock && it had a non-null changelog before the update
                 oldChangelogAfterUpdate.setHouseblock(houseblock);
-                oldChangelogAfterUpdate.setCustomProperty(oldChangelog.getCustomProperty());
+                oldChangelogAfterUpdate.setProperty(oldChangelog.getProperty());
                 repo.persist(oldChangelogAfterUpdate);
                 for (UUID oldCategoryValue : oldCategoryValues) {
                     HouseblockCategoryCustomPropertyChangelogValue oldChangelogValue = new HouseblockCategoryCustomPropertyChangelogValue();
                     oldChangelogValue.setCategoryChangelog(oldChangelogAfterUpdate);
-                    oldChangelogValue.setCategoryValue(repo.getReferenceById(CustomCategoryValue.class, oldCategoryValue));
+                    oldChangelogValue.setCategoryValue(repo.getReferenceById(PropertyCategoryValue.class, oldCategoryValue));
                     repo.persist(oldChangelogValue);
                 }
             }

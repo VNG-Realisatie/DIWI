@@ -211,7 +211,7 @@ const usePlotSelector = (id: string) => {
         },
         [id, mapBounds, selectedFeatureStyle],
     );
-    return { plotsChanged, handleCancelChange, handleSaveChange };
+    return { plotsChanged, selectedPlotCount: selectedPlots.length, handleCancelChange, handleSaveChange };
 };
 
 export default usePlotSelector;

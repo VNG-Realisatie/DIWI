@@ -22,7 +22,7 @@ public class VngRepository extends AbstractRepository {
 
     private OrganizationsDAO organizationDAO;
 
-    private CustomPropertiesDAO customPropertiesDAO;
+    private PropertyDAO propertyDAO;
 
     public ProjectsDAO getProjectsDAO() {
         if (projectsDAO == null) {
@@ -52,11 +52,11 @@ public class VngRepository extends AbstractRepository {
         return organizationDAO;
     }
 
-    public CustomPropertiesDAO getCustomPropertiesDAO() {
-        if (customPropertiesDAO == null) {
-            customPropertiesDAO = new CustomPropertiesDAO(session);
+    public PropertyDAO getPropertyDAO() {
+        if (propertyDAO == null) {
+            propertyDAO = new PropertyDAO(session);
         }
-        return customPropertiesDAO;
+        return propertyDAO;
     }
 
     public List<SelectModel> getMunicipalityRoles() {

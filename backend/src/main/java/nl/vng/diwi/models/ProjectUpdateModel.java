@@ -85,9 +85,6 @@ public class ProjectUpdateModel {
             case endDate -> {
                 try {
                     LocalDate endDate = LocalDate.parse(value);
-                    if (!endDate.isAfter(LocalDate.now())) {
-                        yield "Project end date must be in the future.";
-                    }
                 } catch (Exception ex) {
                     yield "Date provided is not valid.";
                 }

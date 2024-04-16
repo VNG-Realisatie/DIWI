@@ -28,6 +28,10 @@ public class Houseblock extends IdSuperclass {
     @JoinColumn(name = "project_id")
     private Project project;
 
+    @OneToMany(mappedBy="houseblock", fetch = FetchType.LAZY)
+    @Filter(name = GenericRepository.CURRENT_DATA_FILTER, condition = "change_end_date IS NULL")
+    private List<HouseblockState> state;
+
     @OneToMany(mappedBy= "houseblock", fetch = FetchType.LAZY)
     @Filter(name = GenericRepository.CURRENT_DATA_FILTER, condition = "change_end_date IS NULL")
     private List<HouseblockDurationChangelog> duration;

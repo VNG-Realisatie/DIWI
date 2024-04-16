@@ -3,6 +3,7 @@ package nl.vng.diwi.resources;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
@@ -22,7 +23,7 @@ import nl.vng.diwi.dal.entities.enums.HouseType;
 import nl.vng.diwi.dal.entities.enums.ObjectType;
 import nl.vng.diwi.dal.entities.enums.PhysicalAppearance;
 import nl.vng.diwi.dal.entities.enums.Purpose;
-import nl.vng.diwi.models.CustomPropertyModel;
+import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.models.HouseblockUpdateModel;
 import nl.vng.diwi.models.MilestoneModel;
@@ -31,7 +32,7 @@ import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
-import nl.vng.diwi.services.CustomPropertiesService;
+import nl.vng.diwi.services.PropertiesService;
 import nl.vng.diwi.services.HouseblockService;
 import nl.vng.diwi.services.ProjectService;
 
@@ -55,19 +56,19 @@ public class HouseblockResource {
     private final VngRepository repo;
     private final HouseblockService houseblockService;
     private final ProjectService projectService;
-    private final CustomPropertiesService customPropertiesService;
+    private final PropertiesService propertiesService;
 
     @Inject
     public HouseblockResource(
         GenericRepository genericRepository,
         HouseblockService houseblockService,
         ProjectService projectService,
-        CustomPropertiesService customPropertiesService) {
+        PropertiesService propertiesService) {
         this.repo = new VngRepository(genericRepository.getDal().getSession());
         this.houseblockService = houseblockService;
         this.projectService = projectService;
         this.houseblockService.setProjectService(projectService);
-        this.customPropertiesService = customPropertiesService;
+        this.propertiesService = propertiesService;
     }
 
     @GET
@@ -113,6 +114,15 @@ public class HouseblockResource {
             transaction.commit();
 
             return houseblockService.getHouseblockSnapshot(repo, houseblock.getId());
+        }
+    }
+
+    @DELETE
+    @Path("/{id}")
+    public void deleteHouseblock(@Context LoggedUser loggedUser, @PathParam("id") UUID houseblockUuid) throws VngNotFoundException {
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+            houseblockService.deleteHouseblock(repo, houseblockUuid, loggedUser.getUuid());
+            transaction.commit();
         }
     }
 
@@ -334,7 +344,7 @@ public class HouseblockResource {
                                                                                   ProjectHouseblockCustomPropertyModel houseblockCPUpdateModel)
         throws VngNotFoundException, VngBadRequestException, VngServerErrorException {
 
-        CustomPropertyModel dbCP = customPropertiesService.getCustomProperty(repo, houseblockCPUpdateModel.getCustomPropertyId());
+        PropertyModel dbCP = propertiesService.getProperty(repo, houseblockCPUpdateModel.getCustomPropertyId());
         if (dbCP == null || !dbCP.getObjectType().equals(ObjectType.WONINGBLOK)) {
             throw new VngBadRequestException("Custom property id does not match any known property.");
         }

@@ -28,6 +28,6 @@ public class HouseblockCategoryCustomPropertyChangelogValue extends IdSuperclass
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "eigenschap_waarde_id")
-    private CustomCategoryValue categoryValue;
+    private PropertyCategoryValue categoryValue;
 
 }

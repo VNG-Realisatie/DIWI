@@ -16,8 +16,9 @@ import { t } from "i18next";
 import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { ObjectType, PropertyType } from "../../types/enums";
 import { CategoryCreateOption } from "./CategoryCreateOption";
-import { objectType, propertyType } from "./constants";
-import { CategoryType, CustomPropertyType, getCustomProperties, getCustomProperty, updateCustomProperty } from "../../api/adminSettingServices";
+import { propertyType } from "../../types/enums";
+import { objectType } from "../../types/enums";
+import { CategoryType, Property, getCustomProperties, getCustomProperty, updateCustomProperty } from "../../api/adminSettingServices";
 import AlertContext from "../../context/AlertContext";
 import InfoIcon from "@mui/icons-material/Info";
 
@@ -25,7 +26,7 @@ type Props = {
     openDialog: boolean;
     setOpenDialog: (openDialog: boolean) => void;
     id: string;
-    setCustomProperties: (cp: CustomPropertyType[]) => void;
+    setCustomProperties: (cp: Property[]) => void;
 };
 export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomProperties }: Props) => {
     const [selectedObjectType, setSelectedObjectType] = useState<ObjectType>("PROJECT");
@@ -47,9 +48,10 @@ export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomPro
     }, [id]);
 
     const handleSave = () => {
-        const newProperty = {
+        const newProperty: Property = {
             id,
             name,
+            type: "CUSTOM",
             objectType: selectedObjectType,
             propertyType: selectedPropertyType,
             disabled: !active,
@@ -111,7 +113,7 @@ export const EditPropertyDialog = ({ openDialog, setOpenDialog, id, setCustomPro
                         {propertyType.map((property) => {
                             return (
                                 <MenuItem key={property} value={property}>
-                                    {property}
+                                    {t(`admin.settings.propertyType.${property}`)}
                                 </MenuItem>
                             );
                         })}

@@ -5,7 +5,7 @@ import java.util.List;
 
 import jakarta.inject.Inject;
 import nl.vng.diwi.dal.entities.*;
-import nl.vng.diwi.models.CustomPropertyModel;
+import nl.vng.diwi.models.PropertyModel;
 
 public class GenericRepository implements AutoCloseable {
 
@@ -21,13 +21,14 @@ public class GenericRepository implements AutoCloseable {
     public static List<Class<? extends Object>> getEntities() {
         List<Class<? extends Object>> entities =
             Arrays.asList(
-                CustomCategoryValue.class,
-                CustomCategoryValueState.class,
-                CustomOrdinalValue.class,
-                CustomOrdinalValueState.class,
-                CustomProperty.class,
-                CustomPropertyState.class,
+                PropertyCategoryValue.class,
+                PropertyCategoryValueState.class,
+                PropertyOrdinalValue.class,
+                PropertyOrdinalValueState.class,
+                Property.class,
+                PropertyState.class,
                 Houseblock.class,
+                HouseblockState.class,
                 HouseblockAppearanceAndTypeChangelog.class,
                 HouseblockPhysicalAppearanceChangelogValue.class,
                 HouseblockHouseTypeChangelogValue.class,
@@ -83,7 +84,7 @@ public class GenericRepository implements AutoCloseable {
                 UserToOrganization.class,
                 ProjectListSqlModel.class,
                 HouseblockSnapshotSqlModel.class,
-                CustomPropertyModel.class,
+                PropertyModel.class,
                 ProjectHouseblockCustomPropertySqlModel.class);
         return entities;
     }

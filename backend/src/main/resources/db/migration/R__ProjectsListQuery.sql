@@ -157,7 +157,7 @@ FROM (
         ),
         active_project_woningblok_totalvalue AS (
             SELECT
-                w.project_id, SUM(COALESCE(wmc.netto_plancapaciteit, 0)) AS total_value
+                w.project_id, SUM(COALESCE(wmc.bruto_plancapaciteit, 0)) AS total_value
             FROM
                 diwi_testset.woningblok_mutatie_changelog wmc
                     JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wmc.start_milestone_id AND sms.change_end_date IS NULL
@@ -214,7 +214,7 @@ FROM (
         ),
         future_projects AS (
             SELECT
-                p.id, sms.date AS startDate, ems.date AS endDate
+                p.id, sms.date AS startDate, ems.date AS endDate, sms.milestone_id AS start_milestone_id
             FROM
                 diwi_testset.project p
                     JOIN diwi_testset.project_duration_changelog pdc ON pdc.project_id = p.id AND pdc.change_end_date IS NULL
@@ -227,44 +227,36 @@ FROM (
             SELECT
                 pnc.project_id, pnc.name
             FROM
-                diwi_testset.project_name_changelog pnc
-                    JOIN diwi_testset.project_duration_changelog pdc ON pdc.project_id = pnc.project_id AND pdc.start_milestone_id = pnc.start_milestone_id AND pdc.change_end_date IS NULL
-                    JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pnc.start_milestone_id AND sms.change_end_date IS NULL
-            WHERE
-                sms.date > _now_ AND pnc.change_end_date IS NULL
+                future_projects fp
+                    JOIN diwi_testset.project_name_changelog pnc ON fp.id = pnc.project_id
+                        AND pnc.start_milestone_id = fp.start_milestone_id AND pnc.change_end_date IS NULL
         ),
         future_project_fases AS (
             SELECT
                 pfc.project_id, pfc.project_fase
             FROM
-                diwi_testset.project_fase_changelog pfc
-                    JOIN diwi_testset.project_duration_changelog pdc ON pdc.project_id = pfc.project_id AND pdc.start_milestone_id = pfc.start_milestone_id AND pdc.change_end_date IS NULL
-                    JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pfc.start_milestone_id AND sms.change_end_date IS NULL
-            WHERE
-                sms.date > _now_ AND pfc.change_end_date IS NULL
+                future_projects fp
+                    JOIN diwi_testset.project_fase_changelog pfc ON fp.id = pfc.project_id
+                        AND pfc.start_milestone_id = fp.start_milestone_id AND pfc.change_end_date IS NULL
         ),
         future_project_plan_types AS (
             SELECT
                 pptc.project_id, array_agg(pptcv.plan_type::TEXT ORDER BY pptcv.plan_type::TEXT ASC) AS plan_types
             FROM
-                diwi_testset.project_plan_type_changelog pptc
-                    JOIN diwi_testset.project_duration_changelog pdc ON pdc.project_id = pptc.project_id AND pdc.start_milestone_id = pptc.start_milestone_id AND pdc.change_end_date IS NULL
-                    JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pptc.start_milestone_id AND sms.change_end_date IS NULL
+                future_projects fp
+                    JOIN diwi_testset.project_plan_type_changelog pptc ON fp.id = pptc.project_id
+                        AND pptc.start_milestone_id = fp.start_milestone_id AND pptc.change_end_date IS NULL
                     JOIN diwi_testset.project_plan_type_changelog_value pptcv ON pptc.id = pptcv.changelog_id
-            WHERE
-                sms.date > _now_ AND pptc.change_end_date IS NULL
-            GROUP BY  pptc.project_id
+            GROUP BY pptc.project_id
         ),
         future_project_planologische_planstatus AS (
             SELECT
                 pppc.project_id, array_agg(pppcv.planologische_planstatus::TEXT ORDER BY pppcv.planologische_planstatus::TEXT ASC) AS planning_planstatus
             FROM
-                diwi_testset.project_planologische_planstatus_changelog pppc
-                    JOIN diwi_testset.project_duration_changelog pdc ON pdc.project_id = pppc.project_id AND pdc.start_milestone_id = pppc.start_milestone_id AND pdc.change_end_date IS NULL
-                    JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pppc.start_milestone_id AND sms.change_end_date IS NULL
+                future_projects fp
+                    JOIN diwi_testset.project_planologische_planstatus_changelog pppc ON fp.id = pppc.project_id
+                        AND pppc.start_milestone_id = fp.start_milestone_id AND pppc.change_end_date IS NULL
                     JOIN diwi_testset.project_planologische_planstatus_changelog_value pppcv ON pppc.id = pppcv.planologische_planstatus_changelog_id
-            WHERE
-                sms.date > _now_ AND pppc.change_end_date IS NULL
             GROUP BY  pppc.project_id
         ),
         future_project_priorities AS (
@@ -280,17 +272,15 @@ FROM (
                                                        array_agg(array[vsMax.project_priorisering_value_id::text, vsMax.ordinal_level || ' ' || vsMax.value_label])
                 END AS project_prioritiesModel
             FROM
-                diwi_testset.project_priorisering_changelog ppc
-                    JOIN diwi_testset.project_duration_changelog pdc ON pdc.project_id = ppc.project_id AND pdc.start_milestone_id = ppc.start_milestone_id AND pdc.change_end_date IS NULL
-                    JOIN diwi_testset.milestone_state sms ON sms.milestone_id = ppc.start_milestone_id AND sms.change_end_date IS NULL
+                future_projects fp
+                    JOIN diwi_testset.project_priorisering_changelog ppc ON fp.id = ppc.project_id
+                        AND ppc.start_milestone_id = fp.start_milestone_id AND ppc.change_end_date IS NULL
                     LEFT JOIN diwi_testset.project_priorisering_value_state vs
-                        ON ppc.project_priorisering_value_id = vs.project_priorisering_value_id AND vs.change_end_date IS NULL
+                           ON ppc.project_priorisering_value_id = vs.project_priorisering_value_id AND vs.change_end_date IS NULL
                     LEFT JOIN diwi_testset.project_priorisering_value_state vsMin
-                        ON ppc.project_priorisering_min_value_id = vsMin.project_priorisering_value_id AND vsMin.change_end_date IS NULL
+                           ON ppc.project_priorisering_min_value_id = vsMin.project_priorisering_value_id AND vsMin.change_end_date IS NULL
                     LEFT JOIN diwi_testset.project_priorisering_value_state vsMax
-                        ON ppc.project_priorisering_max_value_id = vsMax.project_priorisering_value_id AND vsMax.change_end_date IS NULL
-            WHERE
-                sms.date > _now_ AND ppc.change_end_date IS NULL
+                           ON ppc.project_priorisering_max_value_id = vsMax.project_priorisering_value_id AND vsMax.change_end_date IS NULL
             GROUP BY ppc.project_id, ppc.value_type
         ),
         future_project_gemeenterol AS (
@@ -299,25 +289,21 @@ FROM (
                 array_agg(array[pgvs.project_gemeenterol_value_id::TEXT, pgvs.value_label]) AS municipality_roleModel,
                 array_agg(pgvs.value_label ORDER BY pgvs.value_label ASC) AS municipality_role
             FROM
-                diwi_testset.project_gemeenterol_changelog pgc
-                    JOIN diwi_testset.project_duration_changelog pdc ON pdc.project_id = pgc.project_id AND pdc.start_milestone_id = pgc.start_milestone_id AND pdc.change_end_date IS NULL
-                    JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pgc.start_milestone_id AND sms.change_end_date IS NULL
+                future_projects fp
+                    JOIN diwi_testset.project_gemeenterol_changelog pgc ON fp.id = pgc.project_id
+                        AND pgc.start_milestone_id = fp.start_milestone_id AND pgc.change_end_date IS NULL
                     JOIN diwi_testset.project_gemeenterol_value_state pgvs
                         ON pgvs.project_gemeenterol_value_id = pgc.project_gemeenterol_value_id AND pgvs.change_end_date IS NULL
-            WHERE
-                sms.date > _now_ AND pgc.change_end_date IS NULL
             GROUP BY  pgc.project_id
         ),
         future_project_woningblok_totalvalue AS (
             SELECT
-                w.project_id, SUM(COALESCE(wmc.netto_plancapaciteit, 0)) AS total_value
+                w.project_id, SUM(COALESCE(wmc.bruto_plancapaciteit, 0)) AS total_value
             FROM
-                diwi_testset.woningblok_mutatie_changelog wmc
-                    JOIN diwi_testset.woningblok w ON wmc.woningblok_id = w.id
-                    JOIN diwi_testset.project_duration_changelog pdc ON pdc.project_id = w.project_id AND pdc.start_milestone_id = wmc.start_milestone_id AND pdc.change_end_date IS NULL
-                    JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wmc.start_milestone_id AND sms.change_end_date IS NULL
-            WHERE
-                sms.date > _now_ AND wmc.change_end_date IS NULL
+                future_projects fp
+                    JOIN diwi_testset.woningblok w ON fp.id = w.project_id
+                    JOIN diwi_testset.woningblok_mutatie_changelog wmc ON w.id = wmc.woningblok_id
+                        AND wmc.start_milestone_id = fp.start_milestone_id AND wmc.change_end_date IS NULL
             GROUP BY w.project_id
         ),
         future_project_municipality AS (
@@ -326,13 +312,11 @@ FROM (
                 array_agg(gemeentes.waarde_label ORDER BY gemeentes.waarde_label ASC) AS municipality,
                 array_agg(array[gemeentes.gemeente_id::TEXT, gemeentes.waarde_label]) AS municipalityModel
             FROM
-                diwi_testset.project_gemeente_indeling_changelog pgic
-                    JOIN diwi_testset.project_duration_changelog pdc ON pdc.project_id = pgic.project_id AND pdc.start_milestone_id = pgic.start_milestone_id AND pdc.change_end_date IS NULL
-                    JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pgic.start_milestone_id AND sms.change_end_date IS NULL
+                future_projects fp
+                    JOIN diwi_testset.project_gemeente_indeling_changelog pgic ON fp.id = pgic.project_id
+                        AND pgic.start_milestone_id = fp.start_milestone_id AND pgic.change_end_date IS NULL
                     JOIN diwi_testset.project_gemeente_indeling_changelog_gemeente pgicg ON pgicg.project_gemeente_indeling_changelog_id = pgic.id
                     JOIN diwi_testset.gemeente_state gemeentes ON gemeentes.gemeente_id = pgicg.gemeente_id AND gemeentes.change_end_date IS NULL
-            WHERE
-                sms.date > _now_ AND pgic.change_end_date IS NULL
             GROUP BY pgic.project_id
         ),
         future_project_wijk AS (
@@ -341,13 +325,11 @@ FROM (
                 array_agg(wijks.waarde_label ORDER BY wijks.waarde_label ASC) AS wijk,
                 array_agg(array[wijks.wijk_id::TEXT, wijks.waarde_label]) AS wijkModel
             FROM
-                diwi_testset.project_gemeente_indeling_changelog pgic
-                    JOIN diwi_testset.project_duration_changelog pdc ON pdc.project_id = pgic.project_id AND pdc.start_milestone_id = pgic.start_milestone_id AND pdc.change_end_date IS NULL
-                    JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pgic.start_milestone_id AND sms.change_end_date IS NULL
+                future_projects fp
+                    JOIN diwi_testset.project_gemeente_indeling_changelog pgic ON fp.id = pgic.project_id
+                        AND pgic.start_milestone_id = fp.start_milestone_id AND pgic.change_end_date IS NULL
                     JOIN diwi_testset.project_gemeente_indeling_changelog_wijk pgick ON pgick.project_gemeente_indeling_changelog_id = pgic.id
                     JOIN diwi_testset.wijk_state wijks ON wijks.wijk_id = pgick.wijk_id AND wijks.change_end_date IS NULL
-            WHERE
-                sms.date > _now_ AND pgic.change_end_date IS NULL
             GROUP BY pgic.project_id
         ),
         future_project_buurt AS (
@@ -356,13 +338,144 @@ FROM (
                 array_agg(buurts.waarde_label ORDER BY buurts.waarde_label ASC) AS buurt,
                 array_agg(array[buurts.buurt_id::TEXT, buurts.waarde_label]) AS buurtModel
             FROM
-                diwi_testset.project_gemeente_indeling_changelog pgic
-                    JOIN diwi_testset.project_duration_changelog pdc ON pdc.project_id = pgic.project_id AND pdc.start_milestone_id = pgic.start_milestone_id AND pdc.change_end_date IS NULL
-                    JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pgic.start_milestone_id AND sms.change_end_date IS NULL
+                future_projects fp
+                    JOIN diwi_testset.project_gemeente_indeling_changelog pgic ON fp.id = pgic.project_id
+                        AND pgic.start_milestone_id = fp.start_milestone_id AND pgic.change_end_date IS NULL
                     JOIN diwi_testset.project_gemeente_indeling_changelog_buurt pgicb ON pgicb.project_gemeente_indeling_changelog_id = pgic.id
                     JOIN diwi_testset.buurt_state buurts ON buurts.buurt_id = pgicb.buurt_id AND buurts.change_end_date IS NULL
+            GROUP BY pgic.project_id
+        ),
+        past_projects AS (
+            SELECT
+                p.id, sms.date AS startDate, ems.date AS endDate, ems.milestone_id AS end_milestone_id
+            FROM
+                diwi_testset.project p
+                    JOIN diwi_testset.project_duration_changelog pdc ON pdc.project_id = p.id AND pdc.change_end_date IS NULL
+                    JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pdc.start_milestone_id AND sms.change_end_date IS NULL
+                    JOIN diwi_testset.milestone_state ems ON ems.milestone_id = pdc.end_milestone_id AND ems.change_end_date IS NULL
             WHERE
-                sms.date > _now_ AND pgic.change_end_date IS NULL
+                ems.date <= _now_
+        ),
+        past_project_names AS (
+            SELECT
+                pnc.project_id, pnc.name
+            FROM
+                past_projects pp
+                    JOIN diwi_testset.project_name_changelog pnc ON pp.id = pnc.project_id
+                        AND pnc.end_milestone_id = pp.end_milestone_id AND pnc.change_end_date IS NULL
+        ),
+        past_project_fases AS (
+            SELECT
+                 pfc.project_id, pfc.project_fase
+            FROM
+                past_projects pp
+                    JOIN diwi_testset.project_fase_changelog pfc ON pp.id = pfc.project_id
+                        AND pfc.end_milestone_id = pp.end_milestone_id AND pfc.change_end_date IS NULL
+        ),
+        past_project_plan_types AS (
+            SELECT
+                pptc.project_id, array_agg(pptcv.plan_type::TEXT ORDER BY pptcv.plan_type::TEXT ASC) AS plan_types
+            FROM
+                past_projects pp
+                    JOIN diwi_testset.project_plan_type_changelog pptc ON pp.id = pptc.project_id
+                        AND pptc.end_milestone_id = pp.end_milestone_id AND pptc.change_end_date IS NULL
+                    JOIN diwi_testset.project_plan_type_changelog_value pptcv ON pptc.id = pptcv.changelog_id
+            GROUP BY pptc.project_id
+        ),
+        past_project_planologische_planstatus AS (
+            SELECT
+                pppc.project_id, array_agg(pppcv.planologische_planstatus::TEXT ORDER BY pppcv.planologische_planstatus::TEXT ASC) AS planning_planstatus
+            FROM
+                past_projects pp
+                    JOIN diwi_testset.project_planologische_planstatus_changelog pppc ON pp.id = pppc.project_id
+                        AND pppc.end_milestone_id = pp.end_milestone_id AND pppc.change_end_date IS NULL
+                    JOIN diwi_testset.project_planologische_planstatus_changelog_value pppcv ON pppc.id = pppcv.planologische_planstatus_changelog_id
+            GROUP BY pppc.project_id
+        ),
+        past_project_priorities AS (
+            SELECT
+                ppc.project_id,
+                CASE
+                    WHEN ppc.value_type = 'SINGLE_VALUE' THEN array_agg(vs.ordinal_level || ' ' || vs.value_label)
+                    WHEN ppc.value_type = 'RANGE' THEN array_agg(vsMin.ordinal_level || ' ' || vsMin.value_label) || array_agg(vsMax.ordinal_level || ' ' || vsMax.value_label)
+                    END AS project_priorities,
+                CASE
+                    WHEN ppc.value_type = 'SINGLE_VALUE' THEN  array_agg(array[vs.project_priorisering_value_id::text, vs.ordinal_level || ' ' || vs.value_label])
+                    WHEN ppc.value_type = 'RANGE' THEN array_agg(array[vsMin.project_priorisering_value_id::text, vsMin.ordinal_level || ' ' || vsMin.value_label]) ||
+                                                    array_agg(array[vsMax.project_priorisering_value_id::text, vsMax.ordinal_level || ' ' || vsMax.value_label])
+                END AS project_prioritiesModel
+            FROM
+                past_projects pp
+                    JOIN diwi_testset.project_priorisering_changelog ppc ON pp.id = ppc.project_id
+                        AND ppc.end_milestone_id = pp.end_milestone_id AND ppc.change_end_date IS NULL
+                    LEFT JOIN diwi_testset.project_priorisering_value_state vs
+                           ON ppc.project_priorisering_value_id = vs.project_priorisering_value_id AND vs.change_end_date IS NULL
+                    LEFT JOIN diwi_testset.project_priorisering_value_state vsMin
+                           ON ppc.project_priorisering_min_value_id = vsMin.project_priorisering_value_id AND vsMin.change_end_date IS NULL
+                    LEFT JOIN diwi_testset.project_priorisering_value_state vsMax
+                           ON ppc.project_priorisering_max_value_id = vsMax.project_priorisering_value_id AND vsMax.change_end_date IS NULL
+            GROUP BY ppc.project_id, ppc.value_type
+        ),
+        past_project_gemeenterol AS (
+            SELECT
+                pgc.project_id,
+                array_agg(array[pgvs.project_gemeenterol_value_id::TEXT, pgvs.value_label]) AS municipality_roleModel,
+                array_agg(pgvs.value_label ORDER BY pgvs.value_label ASC) AS municipality_role
+            FROM
+                past_projects pp
+                    JOIN diwi_testset.project_gemeenterol_changelog pgc ON pp.id = pgc.project_id
+                        AND pgc.end_milestone_id = pp.end_milestone_id AND pgc.change_end_date IS NULL
+                    JOIN diwi_testset.project_gemeenterol_value_state pgvs
+                        ON pgvs.project_gemeenterol_value_id = pgc.project_gemeenterol_value_id AND pgvs.change_end_date IS NULL
+            GROUP BY  pgc.project_id
+        ),
+        past_project_woningblok_totalvalue AS (
+            SELECT
+                w.project_id, SUM(COALESCE(wmc.bruto_plancapaciteit, 0)) AS total_value
+            FROM
+                past_projects pp
+                    JOIN diwi_testset.woningblok w ON pp.id = w.project_id
+                    JOIN diwi_testset.woningblok_mutatie_changelog wmc ON w.id = wmc.woningblok_id
+                        AND wmc.end_milestone_id = pp.end_milestone_id AND wmc.change_end_date IS NULL
+            GROUP BY w.project_id
+        ),
+        past_project_municipality AS (
+            SELECT
+                pgic.project_id,
+                array_agg(gemeentes.waarde_label ORDER BY gemeentes.waarde_label ASC) AS municipality,
+                array_agg(array[gemeentes.gemeente_id::TEXT, gemeentes.waarde_label]) AS municipalityModel
+            FROM
+                past_projects pp
+                    JOIN diwi_testset.project_gemeente_indeling_changelog pgic ON pp.id = pgic.project_id
+                        AND pgic.end_milestone_id = pp.end_milestone_id AND pgic.change_end_date IS NULL
+                    JOIN diwi_testset.project_gemeente_indeling_changelog_gemeente pgicg ON pgicg.project_gemeente_indeling_changelog_id = pgic.id
+                    JOIN diwi_testset.gemeente_state gemeentes ON gemeentes.gemeente_id = pgicg.gemeente_id AND gemeentes.change_end_date IS NULL
+            GROUP BY pgic.project_id
+        ),
+        past_project_wijk AS (
+            SELECT
+                pgic.project_id,
+                array_agg(wijks.waarde_label ORDER BY wijks.waarde_label ASC) AS wijk,
+                array_agg(array[wijks.wijk_id::TEXT, wijks.waarde_label]) AS wijkModel
+            FROM
+                past_projects pp
+                    JOIN diwi_testset.project_gemeente_indeling_changelog pgic ON pp.id = pgic.project_id
+                        AND pgic.end_milestone_id = pp.end_milestone_id AND pgic.change_end_date IS NULL
+                    JOIN diwi_testset.project_gemeente_indeling_changelog_wijk pgick ON pgick.project_gemeente_indeling_changelog_id = pgic.id
+                    JOIN diwi_testset.wijk_state wijks ON wijks.wijk_id = pgick.wijk_id AND wijks.change_end_date IS NULL
+            GROUP BY pgic.project_id
+        ),
+        past_project_buurt AS (
+            SELECT
+                pgic.project_id,
+                array_agg(buurts.waarde_label ORDER BY buurts.waarde_label ASC) AS buurt,
+                array_agg(array[buurts.buurt_id::TEXT, buurts.waarde_label]) AS buurtModel
+            FROM
+                past_projects pp
+                    JOIN diwi_testset.project_gemeente_indeling_changelog pgic ON pp.id = pgic.project_id
+                        AND pgic.end_milestone_id = pp.end_milestone_id AND pgic.change_end_date IS NULL
+                    JOIN diwi_testset.project_gemeente_indeling_changelog_buurt pgicb ON pgicb.project_gemeente_indeling_changelog_id = pgic.id
+                    JOIN diwi_testset.buurt_state buurts ON buurts.buurt_id = pgicb.buurt_id AND buurts.change_end_date IS NULL
             GROUP BY pgic.project_id
         ),
         project_users AS (
@@ -481,6 +594,53 @@ FROM (
             LEFT JOIN future_project_municipality fpwm ON fpwm.project_id = fp.id
             LEFT JOIN future_project_buurt fpwb ON fpwb.project_id = fp.id
             LEFT JOIN future_project_wijk fpww ON fpww.project_id = fp.id
+            LEFT JOIN project_users leaders ON ps.project_id = leaders.project_id AND leaders.project_rol = 'PROJECT_LEIDER'
+            LEFT JOIN project_users owners ON ps.project_id = owners.project_id AND owners.project_rol = 'OWNER'
+
+    UNION
+
+    SELECT pp.id                    AS projectId,
+           ps.id                    AS projectStateId,
+           ppn.name                 AS projectName,
+           ps.project_colour        AS projectColor,
+           ps.latitude              AS latitude,
+           ps.longitude             AS longitude,
+           ps.confidentiality_level AS confidentialityLevel,
+           owners.users                  AS projectOwners,
+           owners.users_initials         AS projectOwnersInitials,
+           pp.startDate             AS startDate,
+           to_char( pp.startDate, 'YYYY-MM-DD') AS startDateStr,
+           pp.endDate               AS endDate,
+           to_char( pp.endDate, 'YYYY-MM-DD') AS endDateStr,
+           pppt.plan_types          AS planType,
+           ppp.project_priorities   AS priority,
+           ppp.project_prioritiesModel  AS priorityModel,
+           ppf.project_fase         AS projectPhase,
+           pppp.planning_planstatus AS planningPlanStatus,
+           ppg.municipality_role    AS municipalityRole,
+           ppg.municipality_roleModel    AS municipalityRoleModel,
+           ppwv.total_value         AS totalValue,
+           ppwm.municipality        AS municipality,
+           ppwm.municipalityModel   AS municipalityModel,
+           ppww.wijk                AS wijk,
+           ppww.wijkModel           AS wijkModel,
+           ppwb.buurt               AS buurt,
+           ppwb.buurtModel          AS buurtModel,
+           leaders.users            AS projectLeaders,
+           leaders.users_initials   AS projectLeadersInitials
+    FROM
+        past_projects pp
+            LEFT JOIN diwi_testset.project_state ps ON ps.project_id = pp.id AND ps.change_end_date IS NULL
+            LEFT JOIN past_project_names ppn ON ppn.project_id = pp.id
+            LEFT JOIN past_project_plan_types pppt ON pppt.project_id = pp.id
+            LEFT JOIN past_project_fases ppf ON ppf.project_id = pp.id
+            LEFT JOIN past_project_planologische_planstatus pppp ON pppp.project_id = pp.id
+            LEFT JOIN past_project_priorities ppp ON ppp.project_id = pp.id
+            LEFT JOIN past_project_gemeenterol ppg ON ppg.project_id = pp.id
+            LEFT JOIN past_project_woningblok_totalvalue ppwv ON ppwv.project_id = pp.id
+            LEFT JOIN past_project_municipality ppwm ON ppwm.project_id = pp.id
+            LEFT JOIN past_project_buurt ppwb ON ppwb.project_id = pp.id
+            LEFT JOIN past_project_wijk ppww ON ppww.project_id = pp.id
             LEFT JOIN project_users leaders ON ps.project_id = leaders.project_id AND leaders.project_rol = 'PROJECT_LEIDER'
             LEFT JOIN project_users owners ON ps.project_id = owners.project_id AND owners.project_rol = 'OWNER'
 
