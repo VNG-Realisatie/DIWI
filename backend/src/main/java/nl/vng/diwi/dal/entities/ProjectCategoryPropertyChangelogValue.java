@@ -12,18 +12,18 @@ import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.entities.superclasses.IdSuperclass;
 
 @Entity
-@Table(name = "project_maatwerk_categorie_changelog_value", schema = GenericRepository.VNG_SCHEMA_NAME)
+@Table(name = "project_category_changelog_value", schema = GenericRepository.VNG_SCHEMA_NAME)
 @Getter
 @Setter
 @NoArgsConstructor
-public class ProjectCategoryCustomPropertyChangelogValue extends IdSuperclass {
+public class ProjectCategoryPropertyChangelogValue extends IdSuperclass {
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "project_maatwerk_categorie_changelog_id")
-    private ProjectCategoryCustomPropertyChangelog categoryChangelog;
+    @JoinColumn(name = "project_category_changelog_id")
+    private ProjectCategoryPropertyChangelog categoryChangelog;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "eigenschap_waarde_id")
+    @JoinColumn(name = "property_value_id")
     private PropertyCategoryValue categoryValue;
 
 }

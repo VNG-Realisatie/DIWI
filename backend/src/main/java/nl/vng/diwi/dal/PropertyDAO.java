@@ -33,10 +33,10 @@ public class PropertyDAO extends AbstractRepository {
 
     }
 
-    public List<PropertyState> getActivePropertyStateByName(String name) {
+    public PropertyState getActivePropertyStateByName(String name) {
         return session.createQuery("FROM PropertyState cps WHERE cps.propertyName = :name AND cps.changeEndDate IS NULL", PropertyState.class)
             .setParameter("name", name)
-            .list();
+            .getSingleResult();
     }
 
     public List<PropertyCategoryValueState> getCategoryStatesByPropertyName(String propertyName) {
