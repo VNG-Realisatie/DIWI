@@ -5,12 +5,12 @@ import { LabelComponent } from "../../../project/LabelComponent";
 import { useEffect, useState } from "react";
 
 type Props = {
-    houseBlockAmount: number | undefined;
+    houseBlockAmount: number | null;
     updateHouseBlockAmount: (houseBlockNetPlan: number) => void;
     readOnly: boolean;
 };
 type AmountProps = {
-    houseBlockAmount: number | undefined;
+    houseBlockAmount: number | null;
     updateHouseBlockAmount: (houseBlockNetPlan: number) => void;
 };
 

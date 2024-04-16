@@ -21,7 +21,7 @@ export const MutationInformationGroup = ({ houseBlock, setHouseBlock, readOnly }
             </Typography>
             <AmountInput
                 readOnly={readOnly}
-                houseBlockAmount={houseBlock.mutation.amount ?? 0}
+                houseBlockAmount={houseBlock.mutation.amount ?? null}
                 updateHouseBlockAmount={(e) =>
                     setHouseBlock({
                         ...houseBlock,
@@ -35,19 +35,19 @@ export const MutationInformationGroup = ({ houseBlock, setHouseBlock, readOnly }
             <MutationKindSelect
                 readOnly={readOnly}
                 houseBlockMutationKind={houseBlock.mutation.kind}
-                updateHouseBlockMutationKind={(event: SelectChangeEvent<MutationKind>) => {
+                updateHouseBlockMutationKind={(event: SelectChangeEvent<MutationKind | null>) => {
                     const {
                         target: { value },
                     } = event;
-                    if (typeof value !== "string") {
+
+                    value &&
                         setHouseBlock({
                             ...houseBlock,
                             mutation: {
                                 ...houseBlock.mutation,
-                                kind: value,
+                                kind: value as MutationKind,
                             },
                         });
-                    }
                 }}
             />
         </WizardCard>

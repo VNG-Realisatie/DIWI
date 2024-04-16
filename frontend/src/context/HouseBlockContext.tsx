@@ -42,8 +42,8 @@ export const HouseBlockProvider = ({ children }: PropsWithChildren) => {
             },
             programming: null,
             mutation: {
-                kind: undefined,
-                amount: 0,
+                kind: null,
+                amount: null,
             },
             ownershipValue: [
                 {

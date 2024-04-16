@@ -5,13 +5,13 @@ import { InputContainer } from "../InputContainer";
 import { LabelComponent } from "../../../project/LabelComponent";
 
 type Props = {
-    houseBlockMutationKind: MutationKind | undefined;
-    updateHouseBlockMutationKind: (event: SelectChangeEvent<MutationKind>) => void;
+    houseBlockMutationKind: MutationKind | null;
+    updateHouseBlockMutationKind: (event: SelectChangeEvent<MutationKind | null>) => void;
     readOnly: boolean;
 };
 type MutationKindProps = {
-    houseBlockMutationKind: MutationKind | undefined;
-    updateHouseBlockMutationKind: (event: SelectChangeEvent<MutationKind>) => void;
+    houseBlockMutationKind: MutationKind | null;
+    updateHouseBlockMutationKind: (event: SelectChangeEvent<MutationKind | null>) => void;
 };
 const MutationKindEditOption = ({ houseBlockMutationKind, updateHouseBlockMutationKind }: MutationKindProps) => {
     return (

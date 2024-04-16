@@ -1,5 +1,5 @@
 import { CustomPropertyValue } from "../api/customPropServices";
-import { OwnershipValueType } from "./enums";
+import { MutationKind, OwnershipValueType } from "./enums";
 import { components } from "./schema";
 
 export type GeneralInformation = {
@@ -13,7 +13,10 @@ export type GeneralInformation = {
     };
 };
 
-export type Mutation = components["schemas"]["Mutation"];
+export type Mutation = {
+    kind: MutationKind | null;
+    amount: number | null;
+};
 
 export type AmountInformation = AmountModel[];
 
