@@ -30,7 +30,7 @@ import nl.vng.diwi.models.ProjectHouseblockCustomPropertyModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
-import nl.vng.diwi.rest.pac4j.Constants;
+import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.services.PropertiesService;
 import nl.vng.diwi.services.HouseblockService;

@@ -19,7 +19,9 @@
       "failedToUpdate": "Update is mislukt",
       "failedToSave": "Opslaan is mislukt",
       "project": "Project",
-      "houseblock": "Huizenblok"
+      "houseblock": "Woningblok",
+      "true": "Ja",
+      "false": "Nee"
     },
     "createProject": {
       "information": "Project informatie",
@@ -29,6 +31,7 @@
       "completeMessage": "De wizard voor het maken van projectformulieren is voltooid. Klik op Opslaan om het proces te voltooien.",
       "successfullySaved": "Project succesvol opgeslagen.",
       "nameIsRequried": "Vul het veld projectnaam in",
+      "addAnotherHouseBlock": "Voeg nog een woningblok toe",
       "informationForm": {
         "title": "Vul de projectgegevens in",
         "info": "Vul de projectgegevens in",
@@ -129,8 +132,7 @@
           "successfullySaved": "Woningblokken succesvol opgeslagen.",
           "successfullyUpdated": "Woningblokken succesvol geüpdatet.",
           "error": "Er is iets fout gegaan"
-        },
-        "saveBeforeCustomProps": "Sla het woningblok op zodat u de maatwerk eigenschappen kunt invullen."
+        }
       },
       "selectMapForm": {
         "title": "Teken het project in op de kaart",
@@ -269,6 +271,10 @@
     },
     "wizard": {
       "houseBlocks": {
+        "deleteConfirmation": "Weet je zeker dat je woningblok wilt verwijderen?",
+        "warning": "Een of meer woningblokken zijn verkeerd ingevuld",
+        "endDateWarning": "Start Datum moet een latere datum zijn",
+        "startDateWarning": "Eind Datum moet een eerdere datum zijn",
         "generalInformation": {
           "title": "Algemene informatie"
         }

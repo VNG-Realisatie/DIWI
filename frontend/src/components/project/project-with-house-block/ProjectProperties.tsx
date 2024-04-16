@@ -1,6 +1,6 @@
 import { Grid, Typography, TextField } from "@mui/material";
 import { t } from "i18next";
-import { Organization, SelectModel } from "../../../api/projectsServices";
+import { Organization, PriorityModel, SelectModel } from "../../../api/projectsServices";
 import { OrganizationSelect } from "../../../widgets/OrganizationSelect";
 import { CellContainer } from "./CellContainer";
 import { ConfidentialityLevelEditForm } from "./ConfidentialityLevelEditForm";
@@ -17,6 +17,7 @@ import { PlanStatusOptions, PlanTypeOptions } from "../../../types/enums";
 import dayjs, { Dayjs } from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers";
 import { convertDayjsToString } from "../../../utils/convertDayjsToString";
+import { capitalizeFirstLetters } from "../../../utils/stringFunctions";
 type Props = {
     readOnly: boolean;
     name: string | null;
@@ -31,8 +32,8 @@ type Props = {
     setEndDate: (endDate: Dayjs | null) => void;
     projectPhase: string | undefined;
     setProjectPhase: (projectPhase: string | undefined) => void;
-    projectPriority: SelectModel | null;
-    setProjectPriority: (projectPriority: SelectModel | null) => void;
+    projectPriority: PriorityModel | null;
+    setProjectPriority: (projectPriority: PriorityModel | null) => void;
     selectedMunicipalityRole: SelectModel[];
     setSelectedMunicipalityRole: (selectedMunicipalityRole: SelectModel[]) => void;
     confidentialityLevel: string | undefined;
@@ -118,7 +119,7 @@ export const ProjectProperties = ({
         <Grid container my={2}>
             <Grid container>
                 <Grid item xs={12} md={1}>
-                    <Typography sx={columnTitleStyle}>{t("projects.tableColumns.projectName")}</Typography>
+                    <Typography sx={columnTitleStyle}>{capitalizeFirstLetters(t("projects.tableColumns.projectName"))}</Typography>
                     {readOnly ? (
                         <CellContainer>{name ? name : selectedProject?.projectName}</CellContainer>
                     ) : (
@@ -126,7 +127,7 @@ export const ProjectProperties = ({
                     )}
                 </Grid>
                 <Grid item xs={12} md={1}>
-                    <Typography sx={columnTitleStyle}>{t("projects.tableColumns.totalValue")}</Typography>
+                    <Typography sx={columnTitleStyle}>{capitalizeFirstLetters(t("projects.tableColumns.totalValue"))}</Typography>
                     {readOnly ? (
                         <CellContainer>{selectedProject?.totalValue ? selectedProject.totalValue : 0}</CellContainer>
                     ) : (
@@ -134,20 +135,20 @@ export const ProjectProperties = ({
                     )}
                 </Grid>
                 <Grid item xs={12} md={2}>
-                    <Typography sx={columnTitleStyle}>{t("projects.tableColumns.organizationName")}</Typography>
+                    <Typography sx={columnTitleStyle}>{capitalizeFirstLetters(t("projects.tableColumns.organizationName"))}</Typography>
                     <OrganizationSelect readOnly={readOnly} owner={owner} setOwner={setOwner} />
                 </Grid>
                 <Grid item xs={12} md={8}>
-                    <Typography sx={columnTitleStyle}>{t("projects.tableColumns.planType")}</Typography>
+                    <Typography sx={columnTitleStyle}>{capitalizeFirstLetters(t("projects.tableColumns.planType"))}</Typography>
 
                     {readOnly ? (
                         <CellContainer>
                             {planType.length > 0
                                 ? planType.map((pt: string) => {
-                                      return <span key={pt}>{t(`projectTable.planTypeOptions.${pt}`)},</span>;
+                                      return <span key={pt}>{capitalizeFirstLetters(t(`projectTable.planTypeOptions.${pt}`))},</span>;
                                   })
                                 : selectedProject?.planType?.map((pt) => {
-                                      return <span key={pt}>{t(`projectTable.planTypeOptions.${pt}`)},</span>;
+                                      return <span key={pt}>{capitalizeFirstLetters(t(`projectTable.planTypeOptions.${pt}`))},</span>;
                                   })}
                         </CellContainer>
                     ) : (
@@ -157,15 +158,15 @@ export const ProjectProperties = ({
             </Grid>
             <Grid container>
                 <Grid item xs={12} md={1.1}>
-                    <Typography sx={columnTitleStyle}>{t("projects.tableColumns.startDate")}</Typography>
+                    <Typography sx={columnTitleStyle}>{capitalizeFirstLetters(t("projects.tableColumns.startDate"))}</Typography>
                     <DateDisplayEditor readOnly={readOnly} date={startDate ? startDate : selectedProject?.startDate} onChange={handleStartDateChange} />
                 </Grid>
                 <Grid item xs={12} md={1.1}>
-                    <Typography sx={columnTitleStyle}>{t("projects.tableColumns.endDate")}</Typography>
+                    <Typography sx={columnTitleStyle}>{capitalizeFirstLetters(t("projects.tableColumns.endDate"))}</Typography>
                     <DateDisplayEditor readOnly={readOnly} date={endDate ? endDate : selectedProject?.endDate} onChange={handleEndDateChange} />
                 </Grid>
                 <Grid item xs={12} md={1.8}>
-                    <Typography sx={columnTitleStyle}>{t("projects.tableColumns.priority")}</Typography>
+                    <Typography sx={columnTitleStyle}>{capitalizeFirstLetters(t("projects.tableColumns.priority"))}</Typography>
 
                     {readOnly ? (
                         <CellContainer>
@@ -183,16 +184,18 @@ export const ProjectProperties = ({
                     )}
                 </Grid>
                 <Grid item xs={12} md={2}>
-                    <Typography sx={columnTitleStyle}>{t("projects.tableColumns.projectPhase")}</Typography>
+                    <Typography sx={columnTitleStyle}>{capitalizeFirstLetters(t("projects.tableColumns.projectPhase"))}</Typography>
 
                     {readOnly ? (
-                        <CellContainer>{t(`projectTable.projectPhaseOptions.${projectPhase ? projectPhase : selectedProject?.projectPhase}`)}</CellContainer>
+                        <CellContainer>
+                            {capitalizeFirstLetters(t(`projectTable.projectPhaseOptions.${projectPhase ? projectPhase : selectedProject?.projectPhase}`))}
+                        </CellContainer>
                     ) : (
                         <PhaseEditForm projectPhase={projectPhase} setProjectPhase={setProjectPhase} />
                     )}
                 </Grid>
                 <Grid item xs={12} md={2}>
-                    <Typography sx={columnTitleStyle}>{t("projects.tableColumns.municipalityRole")}</Typography>
+                    <Typography sx={columnTitleStyle}>{capitalizeFirstLetters(t("projects.tableColumns.municipalityRole"))}</Typography>
 
                     {readOnly ? (
                         <CellContainer>
@@ -212,7 +215,7 @@ export const ProjectProperties = ({
                     )}
                 </Grid>
                 <Grid item xs={12} md={2}>
-                    <Typography sx={columnTitleStyle}>{t("projects.tableColumns.confidentialityLevel")}</Typography>
+                    <Typography sx={columnTitleStyle}>{capitalizeFirstLetters(t("projects.tableColumns.confidentialityLevel"))}</Typography>
 
                     {readOnly ? (
                         <CellContainer>
@@ -225,22 +228,22 @@ export const ProjectProperties = ({
                     )}
                 </Grid>
                 <Grid item xs={12} md={2}>
-                    <Typography sx={columnTitleStyle}>{t("projects.tableColumns.projectLeader")}</Typography>
+                    <Typography sx={columnTitleStyle}>{capitalizeFirstLetters(t("projects.tableColumns.projectLeader"))}</Typography>
                     <OrganizationSelect readOnly={readOnly} owner={leader} setOwner={setLeader} isLeader={true} />
                 </Grid>
             </Grid>
             <Grid container>
                 <Grid item xs={12} md={12}>
-                    <Typography sx={columnTitleStyle}>{t("projects.tableColumns.planningPlanStatus")}</Typography>
+                    <Typography sx={columnTitleStyle}>{capitalizeFirstLetters(t("projects.tableColumns.planningPlanStatus"))}</Typography>
 
                     {readOnly ? (
                         <CellContainer>
                             {planStatus.length > 0
                                 ? planStatus.map((pp: string) => {
-                                      return <span key={pp}>{t(`projectTable.planningPlanStatus.${pp}`)},</span>;
+                                      return <span key={pp}>{capitalizeFirstLetters(t(`projectTable.planningPlanStatus.${pp}`))},</span>;
                                   })
                                 : selectedProject?.planningPlanStatus?.map((pp) => {
-                                      return <span key={pp}>{t(`projectTable.planningPlanStatus.${pp}`)},</span>;
+                                      return <span key={pp}>{capitalizeFirstLetters(t(`projectTable.planningPlanStatus.${pp}`))},</span>;
                                   })}
                         </CellContainer>
                     ) : (
@@ -249,7 +252,7 @@ export const ProjectProperties = ({
                 </Grid>
             </Grid>
             {/* <Grid item xs={12} md={2}>
-        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.municipality")}</Typography>
+        <Typography sx={columnTitleStyle}>{capitalizeFirstLetters(t("projects.tableColumns.municipality"))}</Typography>
 
         {readOnly ? (
             <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
@@ -266,7 +269,7 @@ export const ProjectProperties = ({
         )}
     </Grid>
     <Grid item xs={12} md={2}>
-        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.neighbourhood")}</Typography>
+        <Typography sx={columnTitleStyle}>{capitalizeFirstLetters(t("projects.tableColumns.neighbourhood"))}</Typography>
 
         {readOnly ? (
             <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
@@ -283,7 +286,7 @@ export const ProjectProperties = ({
         )}
     </Grid>
     <Grid item xs={12} md={2}>
-        <Typography sx={columnTitleStyle}>{t("projects.tableColumns.wijk")}</Typography>
+        <Typography sx={columnTitleStyle}>{capitalizeFirstLetters(t("projects.tableColumns.wijk"))}</Typography>
 
         {readOnly ? (
             <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>

@@ -35,8 +35,8 @@ abstract public class ProjectSnapshotModelSuperclass extends ProjectMinimalSnaps
 
     private Long totalValue;
     private List<SelectModel> municipality = new ArrayList<>();
-    private List<SelectModel> wijk = new ArrayList<>();
-    private List<SelectModel> buurt = new ArrayList<>();
+    private List<SelectModel> district = new ArrayList<>();
+    private List<SelectModel> neighbourhood = new ArrayList<>();
 
     private LocationModel location;
 
@@ -51,32 +51,23 @@ abstract public class ProjectSnapshotModelSuperclass extends ProjectMinimalSnaps
         this.setPlanType(sqlModel.getPlanType());
         this.setStartDate(sqlModel.getStartDate());
         this.setEndDate(sqlModel.getEndDate());
-        this.setPriority(new PriorityModel(getSelectModelListFromSqlArray(sqlModel.getPriority())));
+        this.setPriority(new PriorityModel(sqlModel.getPriority()));
         this.setProjectPhase(sqlModel.getProjectPhase());
-        this.setMunicipalityRole(getSelectModelListFromSqlArray(sqlModel.getMunicipalityRole()));
+        this.setMunicipalityRole(sqlModel.getMunicipalityRole());
         this.setPlanningPlanStatus(sqlModel.getPlanningPlanStatus());
         this.setTotalValue(sqlModel.getTotalValue());
-        this.setMunicipality(getSelectModelListFromSqlArray(sqlModel.getMunicipality()));
-        this.setWijk(getSelectModelListFromSqlArray(sqlModel.getWijk()));
-        this.setBuurt(getSelectModelListFromSqlArray(sqlModel.getBuurt()));
+        this.setMunicipality(sqlModel.getMunicipality());
+        this.setDistrict(sqlModel.getDistrict());
+        this.setNeighbourhood(sqlModel.getNeighbourhood());
         this.location = new LocationModel(sqlModel.getLatitude(), sqlModel.getLongitude());
 
         Collections.sort(this.getMunicipalityRole());
         Collections.sort(this.getMunicipality());
-        Collections.sort(this.getWijk());
-        Collections.sort(this.getBuurt());
+        Collections.sort(this.getDistrict());
+        Collections.sort(this.getNeighbourhood());
 
     }
 
-    public List<SelectModel> getSelectModelListFromSqlArray(String[][] sqlArray) {
-        List<SelectModel> result = new ArrayList<>();
-        if (sqlArray != null) {
-            for (String[] sqlSelectModel : sqlArray) {
-                result.add(new SelectModel(UUID.fromString(sqlSelectModel[0]), sqlSelectModel[1]));
-            }
-        }
-        return result;
-    }
 
     public List<OrganizationModel> getOrganizationModelListFromSqlArray(String[][] organizationUserArray) {
         List<OrganizationModel> result = new ArrayList<>();

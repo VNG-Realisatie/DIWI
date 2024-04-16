@@ -41,8 +41,9 @@ public class ProjectsDAO extends AbstractRepository {
                 "SELECT * FROM get_active_or_future_project_snapshot(:projectUuid, :now) " , ProjectListSqlModel.class)
             .setParameter("now", LocalDate.now())
             .setParameter("projectUuid", projectUuid);
-
-        return q.getSingleResultOrNull();
+        ProjectListSqlModel result = q.getSingleResultOrNull();
+        session.evict(result);
+        return result;
     }
 
 

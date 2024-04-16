@@ -91,7 +91,7 @@ public class HouseblockUpdateModel {
             }
             case physicalAppearanceAndHouseType -> {
                 for (AmountModel amountModel : amountValuesList) {
-                    if (!targetGroupUuids.contains(amountModel.getId())) {
+                    if (!physicalAppeareanceUuids.contains(amountModel.getId())) {
                         yield "Physical appearance category id is not valid.";
                     }
                 }

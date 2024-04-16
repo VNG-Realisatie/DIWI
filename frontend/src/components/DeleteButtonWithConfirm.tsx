@@ -33,7 +33,8 @@ export const DeleteButtonWithConfirm = ({ typeAndName: name, iconColor, deleteFu
             <Tooltip placement="top" title={t("generic.delete")}>
                 <DeleteForeverOutlinedIcon
                     sx={{ ml: 3, color: iconColor.toString(), cursor: "pointer" }}
-                    onClick={() => {
+                    onClick={(event) => {
+                        event.stopPropagation();
                         setIsDialogOpen(!isDialogOpen);
                     }}
                 />
@@ -44,7 +45,13 @@ export const DeleteButtonWithConfirm = ({ typeAndName: name, iconColor, deleteFu
                     <DialogTitle>{t("generic.confirmDeletion", { name })}</DialogTitle>
                     <DialogActions>
                         <Box sx={{ display: "flex", gap: "10px" }}>
-                            <Button onClick={() => setIsDialogOpen(false)} variant="outlined">
+                            <Button
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    setIsDialogOpen(false);
+                                }}
+                                variant="outlined"
+                            >
                                 {t("generic.no")}
                             </Button>
                             <Button onClick={() => handleDelete()} variant="contained">

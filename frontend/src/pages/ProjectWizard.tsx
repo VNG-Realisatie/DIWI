@@ -1,12 +1,11 @@
+import { t } from "i18next";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import useAlert from "../hooks/useAlert";
+import { projectWizardBlocks, projectWizardWithId } from "../Paths";
 import { createProject, getProject, updateProject } from "../api/projectsServices";
-import dayjs from "dayjs";
 import WizardLayout from "../components/project-wizard/WizardLayout";
 import { ProjectInformationForm } from "../components/project/ProjectInformationForm";
-import { projectWizardBlocks, projectWizardWithId } from "../Paths";
-import { t } from "i18next";
+import useAlert from "../hooks/useAlert";
 
 const ProjectWizard = () => {
     const [createProjectForm, setCreateProjectForm] = useState<any>({
@@ -74,7 +73,7 @@ const ProjectWizard = () => {
 
     useEffect(() => {
         if (projectId) {
-            getProject(projectId).then((res: any) => setCreateProjectForm({ ...res, startDate: dayjs(res.startDate), endDate: dayjs(res.endDate) }));
+            getProject(projectId).then((res) => setCreateProjectForm({ ...res, startDate: res.startDate, endDate: res.endDate }));
         }
     }, [projectId]);
 
