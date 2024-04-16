@@ -72,8 +72,8 @@ export const Settings = () => {
         <Stack mt={2} mb={5} mx={2} pb={3}>
             <Typography fontWeight={600}>{t("admin.settings.title")}</Typography>
             <CustomPropertiesTable customProperties={customProperties} setCustomProperties={setCustomProperties} />
-            <Stack direction="row" alignItems="center" mt={1} sx={{ cursor: "pointer" }} onClick={() => setOpenDialog(true)}>
-                <AddCircleIcon color="info" sx={{ fontSize: "40px" }} />
+            <Stack direction="row" alignItems="center" mt={1}>
+                <AddCircleIcon color="info" sx={{ fontSize: "40px", cursor: "pointer" }} onClick={() => setOpenDialog(true)} />
                 {t("admin.settings.add")}
             </Stack>
             <CreatePropertyDialog

@@ -13,7 +13,7 @@ import nl.vng.diwi.dal.entities.HouseblockNumericCustomPropertyChangelog;
 import nl.vng.diwi.dal.entities.HouseblockOrdinalCustomPropertyChangelog;
 import nl.vng.diwi.dal.entities.HouseblockOwnershipValueChangelog;
 import nl.vng.diwi.dal.entities.HouseblockProgrammingChangelog;
-import nl.vng.diwi.dal.entities.HouseblockPurposeChangelog;
+import nl.vng.diwi.dal.entities.HouseblockTargetGroupChangelog;
 import nl.vng.diwi.dal.entities.HouseblockSizeChangelog;
 import nl.vng.diwi.dal.entities.HouseblockSnapshotSqlModel;
 import nl.vng.diwi.dal.entities.HouseblockTextCustomPropertyChangelog;
@@ -38,7 +38,7 @@ public class HouseblockDAO extends AbstractRepository {
     public static Map<Class<? extends HouseblockMilestoneChangeDataSuperclass>, String> houseblockChangelogs = new HashMap<>();
 
     static {
-        houseblockChangelogs.put(HouseblockPurposeChangelog.class, "woningblok_doelgroep_changelog");
+        houseblockChangelogs.put(HouseblockTargetGroupChangelog.class, "woningblok_doelgroep_changelog");
         houseblockChangelogs.put(HouseblockDurationChangelog.class, "woningblok_duration_changelog");
         houseblockChangelogs.put(HouseblockOwnershipValueChangelog.class, "woningblok_eigendom_en_waarde_changelog");
         houseblockChangelogs.put(HouseblockGroundPositionChangelog.class, "woningblok_grondpositie_changelog");

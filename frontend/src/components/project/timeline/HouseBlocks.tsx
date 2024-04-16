@@ -1,5 +1,5 @@
 import type { ScaleTime } from "d3";
-import { HouseBlock } from "../../project-wizard/house-blocks/types";
+import { HouseBlock } from "../../../types/houseBlockTypes";
 import dayjs from "dayjs";
 
 type PhasesProps = {

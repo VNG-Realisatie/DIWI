@@ -15,21 +15,21 @@ import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
 import java.util.List;
 
 @Entity
-@Table(name = "project_maatwerk_categorie_changelog", schema = GenericRepository.VNG_SCHEMA_NAME)
+@Table(name = "project_category_changelog", schema = GenericRepository.VNG_SCHEMA_NAME)
 @Getter
 @Setter
 @NoArgsConstructor
-public class ProjectCategoryCustomPropertyChangelog extends MilestoneChangeDataSuperclass {
+public class ProjectCategoryPropertyChangelog extends MilestoneChangeDataSuperclass {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "project_id")
     private Project project;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "eigenschap_id")
+    @JoinColumn(name = "property_id")
     private Property property;
 
     @OneToMany(mappedBy="categoryChangelog", fetch = FetchType.LAZY)
-    private List<ProjectCategoryCustomPropertyChangelogValue> changelogCategoryValues;
+    private List<ProjectCategoryPropertyChangelogValue> changelogCategoryValues;
 
 }

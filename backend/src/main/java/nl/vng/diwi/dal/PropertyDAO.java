@@ -1,5 +1,6 @@
 package nl.vng.diwi.dal;
 
+import nl.vng.diwi.dal.entities.PropertyCategoryValueState;
 import nl.vng.diwi.dal.entities.PropertyState;
 import nl.vng.diwi.dal.entities.enums.ObjectType;
 import nl.vng.diwi.dal.entities.enums.PropertyKind;
@@ -24,17 +25,27 @@ public class PropertyDAO extends AbstractRepository {
             .list();
     }
 
-    public PropertyModel getPropertyById(UUID customPropertyUuid) {
+    public PropertyModel getPropertyById(UUID propertyUuid) {
 
-        return session.createNativeQuery("SELECT * FROM get_property_definitions(:customPropertyUuid, null, null, null) ", PropertyModel.class)
-            .setParameter("customPropertyUuid", customPropertyUuid)
+        return session.createNativeQuery("SELECT * FROM get_property_definitions(:propertyUuid, null, null, null) ", PropertyModel.class)
+            .setParameter("propertyUuid", propertyUuid)
             .getSingleResultOrNull();
 
     }
 
-    public List<PropertyState> getActivePropertyStateByName(String name) {
+    public PropertyState getActivePropertyStateByName(String name) {
         return session.createQuery("FROM PropertyState cps WHERE cps.propertyName = :name AND cps.changeEndDate IS NULL", PropertyState.class)
             .setParameter("name", name)
+            .getSingleResult();
+    }
+
+    public List<PropertyCategoryValueState> getCategoryStatesByPropertyName(String propertyName) {
+        return session.createNativeQuery(String.format("""
+            SELECT cs.* FROM %1$s.property_category_value_state cs
+                JOIN %1$s.property_category_value c ON cs.category_value_id = c.id
+                JOIN %1$s.property_state ps ON c.property_id = ps.property_id AND ps.change_end_date IS NULL
+                WHERE cs.change_end_date IS NULL AND ps.property_name = :propertyName""", GenericRepository.VNG_SCHEMA_NAME), PropertyCategoryValueState.class)
+            .setParameter("propertyName", propertyName)
             .list();
     }
 }

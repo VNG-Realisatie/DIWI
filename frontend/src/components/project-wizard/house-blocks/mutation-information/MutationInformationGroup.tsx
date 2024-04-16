@@ -1,7 +1,7 @@
 import { SelectChangeEvent, Typography } from "@mui/material";
 import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
-import { HouseBlock } from "../types";
+import { HouseBlock } from "../../../../types/houseBlockTypes";
 
 import { GrossPlanCapacityInput } from "./GrossPlanCapacityInput";
 import { NetPlanCapacityInput } from "./NetPlanCapacityInput";

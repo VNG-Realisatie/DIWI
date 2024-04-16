@@ -1,4 +1,6 @@
-import { MutationSelectOptions, OwnershipValueType } from "../../../types/enums";
+import { CustomPropertyValue } from "../api/customPropServices";
+import { MutationSelectOptions, OwnershipValueType } from "./enums";
+import { components } from "./schema";
 
 export type GeneralInformation = {
     startDate: null | string;
@@ -18,13 +20,7 @@ export type MutationInformations = {
     demolition: number | null;
 };
 
-export type PhysicalInformations = {
-    [key: string]: number | null;
-};
-
-export type PurposeInformations = {
-    [key: string]: number | null;
-};
+export type AmountInformation = AmountModel[];
 
 export type HouseTypeInformations = {
     [key: string]: number | null;
@@ -47,6 +43,8 @@ export type OwnershipSingleValue = {
     rentalValue: RangeValue;
 };
 
+export type HouseBlockWithCustomProperties = HouseBlock & { customProperties: CustomPropertyValue[] };
+
 export type HouseBlock = {
     startDate: null | string;
     endDate: null | string;
@@ -62,9 +60,11 @@ export type HouseBlock = {
 
     groundPosition: GroundPositionInformations;
 
-    physicalAppearance: PhysicalInformations;
+    physicalAppearance: AmountInformation;
 
     houseType: HouseTypeInformations;
 
-    purpose: PurposeInformations;
+    targetGroup: AmountInformation;
 };
+
+export type AmountModel = components["schemas"]["AmountModel"];
