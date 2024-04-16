@@ -130,7 +130,6 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
                                                             },
                                                         }}
                                                         onClick={() => {
-                                                            console.log(row.id);
                                                             row.id && setEditPropertyId(row.id);
                                                             setEditDialogOpen(true);
                                                         }}

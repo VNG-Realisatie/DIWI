@@ -43,7 +43,6 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
                 setActive(property.disabled);
                 setSelectedObjectType(property.objectType);
                 setSelectedPropertyType(property.propertyType);
-                console.log("property", property);
             });
         }
     }, [id]);
@@ -80,7 +79,6 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
         };
 
         const saveAction = id ? updateCustomProperty(id, newProperty) : addCustomProperty(newProperty);
-        console.log(newProperty);
         saveAction
             .then(() => {
                 setAlert(t("admin.settings.notifications.successfullySaved"), "success");

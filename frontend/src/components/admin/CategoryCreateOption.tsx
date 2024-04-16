@@ -41,8 +41,6 @@ export const CategoryCreateOption: React.FC<Props> = ({ categoryValue, setCatego
                 ? [...categoryValue, { name: newCategory, disabled: false, level: maxLevel + 1 }]
                 : [...categoryValue, { name: newCategory, disabled: false }];
 
-            console.log(hasLevels);
-
             setCategoryValue(updatedCategories);
             setNewCategory("");
         }
@@ -75,7 +73,6 @@ export const CategoryCreateOption: React.FC<Props> = ({ categoryValue, setCatego
     const handleMoveUp = (index: number) => {
         let updatedCategories = [...categoryValue].filter((c): c is OrdinalCategoryType => "level" in c).sort(sortCategories);
         let categoriesDisabled = [...categoryValue].filter((c) => c.disabled === true);
-        console.log(updatedCategories);
 
         updatedCategories[index + categoriesDisabled.length].level--;
         updatedCategories[index - 1 + categoriesDisabled.length].level++;
@@ -85,7 +82,6 @@ export const CategoryCreateOption: React.FC<Props> = ({ categoryValue, setCatego
     const handleMoveDown = (index: number) => {
         let categoriesDisabled = [...categoryValue].filter((c) => c.disabled === true);
         let updatedCategories = [...categoryValue].filter((c): c is OrdinalCategoryType => "level" in c).sort(sortCategories);
-        console.log(updatedCategories);
 
         updatedCategories[index + categoriesDisabled.length].level++;
         updatedCategories[index + 1 + categoriesDisabled.length].level--;
