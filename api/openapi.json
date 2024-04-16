@@ -1243,23 +1243,11 @@
       "Mutation": {
         "type": "object",
         "properties": {
-          "mutationKind": {
-            "uniqueItems": true,
-            "type": "array",
-            "items": {
-              "type": "string",
-              "enum": ["BOUW", "SLOOP", "TRANSFORMATIE", "SPLITSING"]
-            }
+          "kind": {
+            "type": "string",
+            "enum": ["CONSTRUCTION", "DEMOLITION"]
           },
-          "grossPlanCapacity": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "netPlanCapacity": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "demolition": {
+          "amount": {
             "type": "integer",
             "format": "int32"
           }
