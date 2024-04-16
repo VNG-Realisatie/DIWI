@@ -19,7 +19,9 @@
       "failedToUpdate": "Update is mislukt",
       "failedToSave": "Opslaan is mislukt",
       "project": "Project",
-      "houseblock": "Huizenblok"
+      "houseblock": "Huizenblok",
+      "true": "Ja",
+      "false": "Nee"
     },
     "createProject": {
       "information": "Project informatie",
@@ -129,8 +131,7 @@
           "successfullySaved": "Woningblokken succesvol opgeslagen.",
           "successfullyUpdated": "Woningblokken succesvol geüpdatet.",
           "error": "Er is iets fout gegaan"
-        },
-        "saveBeforeCustomProps": "Sla het woningblok op zodat u de maatwerk eigenschappen kunt invullen."
+        }
       },
       "selectMapForm": {
         "title": "Teken het project in op de kaart",

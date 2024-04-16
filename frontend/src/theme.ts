@@ -1,5 +1,6 @@
 import { createTheme } from "@mui/material/styles";
 import { nlNL } from "@mui/material/locale";
+import type {} from "@mui/x-data-grid/themeAugmentation";
 
 declare module "@mui/material/styles" {
     interface PaletteColor {
@@ -58,6 +59,20 @@ export const theme = createTheme(
                 styleOverrides: {
                     input: {
                         backgroundColor: "white",
+                    },
+                },
+            },
+            MuiDataGrid: {
+                styleOverrides: {
+                    cell: {
+                        borderLeft: "2px solid #ccc",
+                        borderTop: "2px solid #ccc",
+                    },
+                    columnHeader: {
+                        borderLeft: "2px solid #ccc",
+                        borderTop: "2px solid #ccc",
+                        backgroundColor: "#738092",
+                        color: "#ffffff",
                     },
                 },
             },
