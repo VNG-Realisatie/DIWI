@@ -143,9 +143,6 @@ export const ProjectsWithHouseBlock = () => {
             projectOwners: owner,
             projectLeaders: leader,
             totalValue: selectedProject?.totalValue,
-            municipality: selectedMunicipality,
-            wijk: selectedWijk,
-            buurt: selectedNeighbourhood,
         };
 
         updateProjects(updatedProjectForm)
