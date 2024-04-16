@@ -1587,7 +1587,7 @@
             "type": "integer",
             "format": "int64"
           },
-          "region": {
+          "municipality": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/SelectModel"
@@ -1693,7 +1693,7 @@
             "type": "integer",
             "format": "int64"
           },
-          "region": {
+          "municipality": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/SelectModel"
@@ -1975,7 +1975,7 @@
               "projectLeaders",
               "projectOwners",
               "projectPhase",
-              "region",
+              "municipality",
               "district",
               "neighbourhood",
               "startDate",

@@ -305,7 +305,7 @@ export interface components {
             projectLeaders?: components["schemas"]["OrganizationModel"][];
             /** Format: int64 */
             totalValue?: number;
-            region?: components["schemas"]["SelectModel"][];
+            municipality?: components["schemas"]["SelectModel"][];
             district?: components["schemas"]["SelectModel"][];
             neighbourhood?: components["schemas"]["SelectModel"][];
             location?: components["schemas"]["LocationModel"];
@@ -343,7 +343,7 @@ export interface components {
             projectLeaders?: components["schemas"]["OrganizationModel"][];
             /** Format: int64 */
             totalValue?: number;
-            region?: components["schemas"]["SelectModel"][];
+            municipality?: components["schemas"]["SelectModel"][];
             district?: components["schemas"]["SelectModel"][];
             neighbourhood?: components["schemas"]["SelectModel"][];
             location?: components["schemas"]["LocationModel"];
@@ -451,7 +451,7 @@ export interface components {
                 | "projectLeaders"
                 | "projectOwners"
                 | "projectPhase"
-                | "region"
+                | "municipality"
                 | "district"
                 | "neighbourhood"
                 | "startDate"
