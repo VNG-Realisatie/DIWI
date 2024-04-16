@@ -4,7 +4,7 @@ import { AmountEditInput } from "./AmountInput";
 
 it("should render AmountEditInput", () => {
     const updateHouseBlockAmount = jest.fn();
-    const houseBlockAmount = undefined;
+    const houseBlockAmount = null;
 
     render(<AmountEditInput houseBlockAmount={houseBlockAmount} updateHouseBlockAmount={updateHouseBlockAmount} />);
 
@@ -13,7 +13,7 @@ it("should render AmountEditInput", () => {
 
 it("should enter a number and check the value passed to update updateHouseBlockAmount", () => {
     const updateHouseBlockAmount = jest.fn();
-    const houseBlockAmount = undefined;
+    const houseBlockAmount = null;
 
     render(<AmountEditInput houseBlockAmount={houseBlockAmount} updateHouseBlockAmount={updateHouseBlockAmount} />);
 
