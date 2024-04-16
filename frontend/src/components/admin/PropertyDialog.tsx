@@ -40,9 +40,10 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
                 setName(property.name);
                 property.categories && setCategories(property.categories);
                 property.ordinals && setOrdinalCategories(property.ordinals);
-                setActive(!property.disabled);
+                setActive(property.disabled);
                 setSelectedObjectType(property.objectType);
                 setSelectedPropertyType(property.propertyType);
+                console.log("property", property);
             });
         }
     }, [id]);
