@@ -678,7 +678,7 @@ public class HouseblockService {
 
         HouseblockMutatieChangelog oldChangelogAfterUpdate = new HouseblockMutatieChangelog();
         HouseblockMutatieChangelog newChangelog = null;
-        if (newMutation != null && newMutation.getAmount() != null) {
+        if (newMutation != null && newMutation.getKind() != null) {
             newChangelog = new HouseblockMutatieChangelog();
             newChangelog.setHouseblock(houseblock);
             newChangelog.setAmount(newMutation.getAmount());
