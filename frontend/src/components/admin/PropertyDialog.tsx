@@ -55,18 +55,8 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
             objectType: selectedObjectType,
             propertyType: selectedPropertyType,
             disabled: active,
-            categories:
-                categories !== null
-                    ? categories.map((c) => {
-                          return c;
-                      })
-                    : undefined,
-            ordinals:
-                ordinals !== null
-                    ? ordinals.map((oc) => {
-                          return oc;
-                      })
-                    : undefined,
+            categories: categories !== null ? categories : undefined,
+            ordinals: ordinals !== null ? ordinals : undefined,
         };
 
         const resetForm = () => {
