@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -eux
 
+./backup.sh
+
 git pull
 
 . ./version.sh
