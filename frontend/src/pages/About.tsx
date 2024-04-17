@@ -44,6 +44,22 @@ export const About = () => {
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableBody>
                         <TableRow>
+                            <TableCell></TableCell>
+                            <TableCell>{t("about.frontend")}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>{t("about.version")}</TableCell>
+                            <TableCell>{process.env.REACT_APP_GIT_SHA ?? unavailableText}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>{t("about.deployedOn")}</TableCell>
+                            <TableCell>{process.env.REACT_APP_DEPLOY_DATE ?? unavailableText}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell></TableCell>
+                            <TableCell>{t("about.backend")}</TableCell>
+                        </TableRow>
+                        <TableRow>
                             <TableCell>{t("about.version")}</TableCell>
                             <TableCell>{version?.hash ?? unavailableText}</TableCell>
                         </TableRow>

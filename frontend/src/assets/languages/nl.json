@@ -169,6 +169,8 @@
     },
     "about": {
       "heading": "Over deze website",
+      "frontend": "Frontend",
+      "backend": "Backend",
       "version": "Versie",
       "deployedOn": "Online sinds"
     },
