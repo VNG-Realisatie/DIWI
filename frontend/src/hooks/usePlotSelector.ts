@@ -118,8 +118,13 @@ const usePlotSelector = (id: string) => {
                             p.plotFeature !== newPlot.plotFeature;
                         return notEqual;
                     });
+                    const existingPlotIndex = selectedPlots.findIndex((p) => p.plotFeature.features[0].id === newPlot.plotFeature.features[0].id);
                     if (newSelectedPlots.length !== selectedPlots.length) {
                         setSelectedPlots(newSelectedPlots);
+                    } else if (existingPlotIndex !== -1) {
+                        const updatedSelectedPlots = [...selectedPlots];
+                        updatedSelectedPlots.splice(existingPlotIndex, 1);
+                        setSelectedPlots(updatedSelectedPlots);
                     } else {
                         setSelectedPlots([...selectedPlots, newPlot]);
                     }
