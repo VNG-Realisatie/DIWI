@@ -1,20 +1,24 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import PropertyDialog from "./PropertyDialog";
 import TestComponentWrapper from "../../test/TestComponentWrapper";
 
-import { addCustomProperty } from "../../api/adminSettingServices";
+import { Property, addCustomProperty, getCustomProperties } from "../../api/adminSettingServices";
 
 jest.mock("../../api/adminSettingServices");
 
 const addCustomPropertyMock = addCustomProperty as jest.Mock;
+const getCustomPropertiesMock = getCustomProperties as jest.Mock;
 
 describe("PropertyDialog", () => {
+    const customProperties: Property[] = [];
+
     beforeEach(() => {
         addCustomPropertyMock.mockImplementation((p) => Promise.resolve({ id: "new-id", ...p }));
+        getCustomPropertiesMock.mockImplementation((p) => Promise.resolve(customProperties));
     });
 
-    it("renders without errors for new property", () => {
+    it("renders without errors for new property", async () => {
         const setOpenDialog = jest.fn();
         render(
             <TestComponentWrapper>
@@ -36,6 +40,9 @@ describe("PropertyDialog", () => {
             categories: undefined,
             ordinals: undefined,
         });
-        expect(setOpenDialog).toHaveBeenCalledWith(false);
+
+        // Wait for promises to resolve
+
+        await waitFor(() => expect(setOpenDialog).toHaveBeenCalledWith(false));
     });
 });
