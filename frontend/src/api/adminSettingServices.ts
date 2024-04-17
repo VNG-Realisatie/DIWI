@@ -4,6 +4,7 @@ import { deleteJson, getJson, postJson, putJson } from "../utils/requests";
 import { API_URI } from "../utils/urls";
 
 export type CategoryType = components["schemas"]["SelectDisabledModel"];
+export type OrdinalCategoryType = components["schemas"]["OrdinalSelectDisabledModel"];
 export type Property = components["schemas"]["PropertyModel"];
 
 export async function getCustomProperties(): Promise<Array<Property>> {

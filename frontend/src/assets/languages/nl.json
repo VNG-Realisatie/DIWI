@@ -301,8 +301,8 @@
           "CATEGORY": "Categorie",
           "TEXT": "Open tekstveld"
         },
-        "add": "Voeg optioneel toe",
-        "edit": "Pas optioneel veld aan",
+        "add": "Voeg maatwerk eigenschap toe",
+        "edit": "Pas maatwerk eigenschap aan",
         "propertyTypeInfo": "Type kan na het opslaan niet meer worden gewijzigd.",
         "notifications": {
           "successfullySaved": "Eigenschappen succesvol opgeslagen.",
