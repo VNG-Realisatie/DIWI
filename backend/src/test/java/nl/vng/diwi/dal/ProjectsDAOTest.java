@@ -84,7 +84,7 @@ public class ProjectsDAOTest {
         assertThat(currentProject.getMunicipalityRole().size()).isEqualTo(2);
         assertThat(currentProject.getMunicipalityRole().get(0).getName()).isEqualTo("Role 1 new");
         assertThat(currentProject.getMunicipalityRole().get(1).getName()).isEqualTo("Role 3");
-        assertThat(currentProject.getProjectPhase()).isEqualTo(ProjectPhase._1_INITIATIEFFASE);
+        assertThat(currentProject.getProjectPhase()).isEqualTo(ProjectPhase._1_CONCEPT);
         //Test that only the changelog value with milestones corresponding to the present moment are selected and values are sorted alphabetically
         assertThat(currentProject.getPlanType().size()).isEqualTo(2);
         assertThat(currentProject.getPlanType().get(0)).isEqualTo(PlanType.HERSTRUCTURERING);

@@ -42,7 +42,9 @@ public class ProjectsDAO extends AbstractRepository {
             .setParameter("now", LocalDate.now())
             .setParameter("projectUuid", projectUuid);
         ProjectListSqlModel result = q.getSingleResultOrNull();
-        session.evict(result);
+        if (result != null) {
+            session.evict(result);
+        }
         return result;
     }
 
