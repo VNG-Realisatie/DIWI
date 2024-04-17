@@ -37,9 +37,8 @@ const ProjectWizardBlocks = () => {
         try {
             setLoading(true);
             await saveHouseBlockWithCustomProperties(houseBlock);
-            setAlert(t("createProject.houseBlocksForm.notifications.successfullySaved"), "success");
-        } catch {
-            setAlert(t("createProject.houseBlocksForm.notifications.error"), "error");
+        } catch (error: any) {
+            throw new Error(error.message);
         } finally {
             setLoading(false);
         }
@@ -90,6 +89,7 @@ const ProjectWizardBlocks = () => {
                     }
                 }),
             );
+            setAlert(t("createProject.houseBlocksForm.notifications.successfullySaved"), "success");
             if (!errorOccurred && projectId) {
                 navigate(projectWizardMap.toPath({ projectId }));
             }
@@ -115,6 +115,7 @@ const ProjectWizardBlocks = () => {
                     }
                 }),
             );
+            setAlert(t("createProject.houseBlocksForm.notifications.successfullySaved"), "success");
             setCanUpdate(true);
         } catch (error: any) {
             setErrorOccurred(true);
