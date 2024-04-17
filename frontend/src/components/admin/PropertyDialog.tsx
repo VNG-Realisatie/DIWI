@@ -34,16 +34,18 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
     const { setAlert } = useContext(AlertContext);
     const { t } = useTranslation();
 
+    const updateDialog = (property: Property): void => {
+        setName(property.name);
+        property.categories && setCategories(property.categories);
+        property.ordinals && setOrdinalCategories(property.ordinals);
+        setActive(property.disabled);
+        setSelectedObjectType(property.objectType);
+        setSelectedPropertyType(property.propertyType);
+    };
+
     useEffect(() => {
         if (id) {
-            getCustomProperty(id).then((property) => {
-                setName(property.name);
-                property.categories && setCategories(property.categories);
-                property.ordinals && setOrdinalCategories(property.ordinals);
-                setActive(property.disabled);
-                setSelectedObjectType(property.objectType);
-                setSelectedPropertyType(property.propertyType);
-            });
+            getCustomProperty(id).then(updateDialog);
         }
     }, [id]);
 
@@ -55,8 +57,8 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
             objectType: selectedObjectType,
             propertyType: selectedPropertyType,
             disabled: active,
-            categories: categories !== null ? categories : undefined,
-            ordinals: ordinals !== null ? ordinals : undefined,
+            categories: selectedPropertyType === "CATEGORY" && categories !== null ? categories : undefined,
+            ordinals: selectedPropertyType === "ORDINAL" && ordinals !== null ? ordinals : undefined,
         };
 
         const resetForm = () => {
@@ -70,10 +72,12 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
 
         const saveAction = id ? updateCustomProperty(id, newProperty) : addCustomProperty(newProperty);
         saveAction
-            .then(() => {
+            .then((savedProperty) => {
                 setAlert(t("admin.settings.notifications.successfullySaved"), "success");
+                updateDialog(savedProperty);
                 getCustomProperties().then((customProperties) => setCustomProperties(customProperties));
                 setOpenDialog(false);
+
                 if (!id) resetForm();
             })
             .catch((error) => setAlert(error.message, "warning"));
