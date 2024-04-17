@@ -40,6 +40,9 @@ services:
       MUNICIPALITY_NAME: ${MUNICIPALITY_NAME:?Please set up a municipality name}
       DEFAULT_MAP_BOUNDS: ${DEFAULT_MAP_BOUNDS}
 
+    volumes:
+      - ./data/backend:/data
+
     ports:
       - ${BACKEND_PORT:-8080}
     depends_on:

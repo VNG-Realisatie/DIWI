@@ -30,5 +30,9 @@ services:
       MUNICIPALITY_NAME: ${MUNICIPALITY_NAME:-EINDHOVEN}
       DEFAULT_MAP_BOUNDS: ${DEFAULT_MAP_BOUNDS:-6673258.3174,577099.5636,6725464.8077,647498.0666}
       ALLOW_FLYWAY_ERRORS: ${ALLOW_FLYWAY_ERRORS:-false}
+
+    volumes:
+      - ./data/backend:/data
+
     depends_on:
       - keycloak
