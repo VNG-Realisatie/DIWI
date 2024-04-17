@@ -2,9 +2,23 @@ from pathlib import Path
 
 gemeente = 'utrecht'
 
-source_folder = Path(f"/home/wieger/Workspace/wiegers_projects/doodles/diwi/{gemeente}/source_data/")
-geo_template_path = Path(f"/home/wieger/Workspace/wiegers_projects/doodles/diwi/{gemeente}/geojson_template.geojson")
-mapping_values_path = Path(f"/home/wieger/Workspace/wiegers_projects/doodles/diwi/{gemeente}/mapping_values_to_pick.csv")
+project_path = Path().resolve()
+source_folder = Path(project_path, "source_data/")
+raw_folder = Path(project_path, 'raw_data/')
+output_path = Path(project_path, 'output/')
+geo_template_path = Path(project_path, "geojson_template.geojson")
+mapping_values_path = Path(project_path, "mapping_values_to_pick.csv")
+
+project_fasen = [
+    # projectfasen
+    '0. Concept',
+    '1. Initiatief',
+    '2. Definitie',
+    '3. Ontwerp',
+    '4. Voorbereiding',
+    '5. Realisatie',
+    '6. Nazorg',
+]
 
 required_columns = [# basic
                     'properties.parent_globalid', 'properties.globalid', 'type',
@@ -31,11 +45,13 @@ required_columns = [# basic
                     'properties.projectgegevens.projectduur.eind_project',
 
                     # projectfasen
-                    'properties.projectgegevens.projectfasen.1_initiatieffase',
-                    'properties.projectgegevens.projectfasen.2_projectfase',
-                    'properties.projectgegevens.projectfasen.3_vergunningsfase',
-                    'properties.projectgegevens.projectfasen.4_realisatiefase',
-                    'properties.projectgegevens.projectfasen.5_opleverfase',
+                    'properties.projectgegevens.projectfasen.0. Concept',
+                    'properties.projectgegevens.projectfasen.1. Initiatief',
+                    'properties.projectgegevens.projectfasen.2. Definitie',
+                    'properties.projectgegevens.projectfasen.3. Ontwerp',
+                    'properties.projectgegevens.projectfasen.4. Voorbereiding',
+                    'properties.projectgegevens.projectfasen.5. Realisatie',
+                    'properties.projectgegevens.projectfasen.6. Nazorg',
 
                     # planologisch
                     'properties.projectgegevens.planologische_planstatus.1A. Onherroepelijk',

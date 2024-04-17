@@ -35,11 +35,12 @@
                         "eind_project": null
                     },
                     "projectfasen": {
-                        "1_initiatieffase": null,
-                        "2_projectfase": null,
-                        "3_vergunningsfase": null,
-                        "4_realisatiefase": null,
-                        "5_opleverfase": null
+                        "1_initiatief": null,
+                        "2_definitie": null,
+                        "3_ontwerp": null,
+                        "4_voorbereiding": null,
+                        "5_realisatie": null,
+                        "6_nazorg": null
                     },
                     "planologische_planstatus": { 
                         "4a_niet_opgenomen_in_de_visie": null,
