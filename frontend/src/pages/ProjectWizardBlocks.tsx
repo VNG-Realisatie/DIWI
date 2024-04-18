@@ -213,7 +213,7 @@ const ProjectWizardBlocks = () => {
                             >
                                 {errors[index] === true ? <ErrorOutlineIcon sx={{ marginRight: 1, color: "#ff9800" }} /> : null}
                                 {houseBlock.houseblockId
-                                    ? `${houseBlock.houseblockName}: ${houseBlock.mutation.grossPlanCapacity} ${t("createProject.houseBlocksForm.housesOn")} ${houseBlock.endDate}`
+                                    ? `${houseBlock.houseblockName}: ${houseBlock.mutation.amount} ${t("createProject.houseBlocksForm.housesOn")} ${houseBlock.endDate}`
                                     : `${t("generic.houseblock")} ${index + 1}`}
                                 {houseBlocksState.length > 1 && (
                                     <Box sx={{ marginLeft: "auto", marginTop: "5px", marginRight: "5px" }}>

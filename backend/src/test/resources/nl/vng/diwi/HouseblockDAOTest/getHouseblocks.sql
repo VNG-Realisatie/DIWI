@@ -22,13 +22,8 @@ INSERT INTO diwi_testset.woningblok_state (id, woningblok_id, create_user_id, ch
 INSERT INTO diwi_testset.woningblok_naam_changelog (id, woningblok_id, start_milestone_id, end_milestone_id, naam, create_user_id, change_start_date)
     VALUES ('6452192f-f978-4b68-b047-262a2e34a1f8', '16dbf29e-bd3e-419e-9b2c-0bfd834c0d19', 'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '342887ab-2106-45c4-9565-a4b83f4d3362', 'Woningblok 1', '2122426c-6e70-419c-a054-f51dd24d798b', NOW());
 
-INSERT INTO diwi_testset.woningblok_mutatie_changelog (id, woningblok_id, start_milestone_id, end_milestone_id, create_user_id, change_start_date, bruto_plancapaciteit, sloop, netto_plancapaciteit)
-    VALUES ('82fbe354-97d9-462d-97d0-21a9efd0fbe2', '16dbf29e-bd3e-419e-9b2c-0bfd834c0d19', 'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '342887ab-2106-45c4-9565-a4b83f4d3362', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', 0, 0, 25);
-
-INSERT INTO diwi_testset.woningblok_mutatie_changelog_soort_value (id, woningblok_mutatie_changelog_id, mutatie_soort)
-    VALUES ('53dc07c8-0807-48ec-a570-a68cd9efa179', '82fbe354-97d9-462d-97d0-21a9efd0fbe2', 'TRANSFORMATIE');
-INSERT INTO diwi_testset.woningblok_mutatie_changelog_soort_value (id, woningblok_mutatie_changelog_id, mutatie_soort)
-    VALUES ('c2512305-3cd0-408c-a795-fe71a590740d', '82fbe354-97d9-462d-97d0-21a9efd0fbe2', 'SPLITSING');
+INSERT INTO diwi_testset.woningblok_mutatie_changelog (id, woningblok_id, start_milestone_id, end_milestone_id, create_user_id, change_start_date, mutation_kind, amount)
+    VALUES ('82fbe354-97d9-462d-97d0-21a9efd0fbe2', '16dbf29e-bd3e-419e-9b2c-0bfd834c0d19', 'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '342887ab-2106-45c4-9565-a4b83f4d3362', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', 'CONSTRUCTION', 25);
 
 INSERT INTO diwi_testset.woningblok_grondpositie_changelog (id, woningblok_id, start_milestone_id, end_milestone_id, create_user_id, change_start_date)
     VALUES ('be6b2f40-1199-458a-9883-ed8dd9164dfc', '16dbf29e-bd3e-419e-9b2c-0bfd834c0d19', 'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '342887ab-2106-45c4-9565-a4b83f4d3362', '2122426c-6e70-419c-a054-f51dd24d798b', NOW());

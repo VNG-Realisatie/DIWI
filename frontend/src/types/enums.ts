@@ -1,3 +1,5 @@
+import { components } from "./schema";
+
 export type PlanStatusOptions =
     | "_1A_ONHERROEPELIJK"
     | "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG"
@@ -13,9 +15,14 @@ export type ProjectPhaseOptions = "_1_INITIATIEFFASE" | "_2_PROJECTFASE" | "_3_V
 
 export type PlanTypeOptions = "PAND_TRANSFORMATIE" | "TRANSFORMATIEGEBIED" | "HERSTRUCTURERING" | "VERDICHTING" | "UITBREIDING_UITLEG" | "UITBREIDING_OVERIG";
 
-export type MutationSelectOptions = "BOUW" | "SLOOP" | "TRANSFORMATIE" | "SPLITSING";
-export type OwnershipValueType = "KOOPWONING" | "HUURWONING_PARTICULIERE_VERHUURDER" | "HUURWONING_WONINGCORPORATIE" | "";
-export type PropertyType = "BOOLEAN" | "CATEGORY" | "ORDINAL" | "NUMERIC" | "TEXT";
+export type MutationKind = components["schemas"]["Mutation"]["kind"];
+export const mutationKindOptions = ["CONSTRUCTION", "DEMOLITION"];
+
+export type OwnershipValueType = components["schemas"]["OwnershipValue"]["type"];
+export const ownershipValueOptions = ["KOOPWONING", "HUURWONING_PARTICULIERE_VERHUURDER", "HUURWONING_WONINGCORPORATIE"];
+
 export type ObjectType = "PROJECT" | "WONINGBLOK";
 export const objectType = ["PROJECT", "WONINGBLOK"];
+
+export type PropertyType = "BOOLEAN" | "CATEGORY" | "ORDINAL" | "NUMERIC" | "TEXT";
 export const propertyType = ["BOOLEAN", "CATEGORY", "ORDINAL", "NUMERIC", "TEXT"];
