@@ -20,85 +20,161 @@ project_fasen = [
     '6. Nazorg',
 ]
 
-required_columns = [# basic
-                    'properties.parent_globalid', 'properties.globalid', 'type',
+required_input_columns = [
+    "type",
+    "geometry.type",
+    "geometry.coordinates",
 
-                    # geometrie
-                    'geometry.type', 'geometry.coordinates',
+    "properties.globalid",
+    "properties.parent_globalid",
 
-                    # basisgegegevens
-                    'properties.projectgegevens.basisgegevens.identificatie_nr',
-                    'properties.projectgegevens.basisgegevens.naam',
+    "properties.gemeente",
+    "properties.plannaam",
 
-                    # projectgegevens
-                    'properties.projectgegevens.projectgegevens.plan_soort',
-                    'properties.projectgegevens.projectgegevens.in_programmering',
-                    'properties.projectgegevens.projectgegevens.prioritering',
-                    'properties.projectgegevens.projectgegevens.rol_gemeente',
+    "properties.jaartal",
+    "properties.jaar_start_project",
+    "properties.created",
+    "properties.oplevering_eerste",
+    "properties.oplevering_laatste",
 
-                    # rollen
-                    'properties.projectgegevens.rollen.projectleider',
-                    'properties.projectgegevens.rollen.opdrachtgever',
+    "properties.meergezins_koop1",
+    "properties.meergezins_koop2",
+    "properties.meergezins_koop3",
+    "properties.meergezins_koop4",
+    "properties.meergezins_koop_onb",
+    "properties.meergezins_huur1",
+    "properties.meergezins_huur2",
+    "properties.meergezins_huur3",
+    "properties.meergezins_huur4",
+    "properties.meergezins_huur_onb",
+    "properties.meergezins_onbekend",
+    "properties.eengezins_koop1",
+    "properties.eengezins_koop2",
+    "properties.eengezins_koop3",
+    "properties.eengezins_koop4",
+    "properties.eengezins_koop_onb",
+    "properties.eengezins_huur1",
+    "properties.eengezins_huur2",
+    "properties.eengezins_huur3",
+    "properties.eengezins_huur4",
+    "properties.eengezins_huur_onb",
+    "properties.eengezins_onbekend",
+    "properties.onbekend_koop1",
+    "properties.onbekend_koop2",
+    "properties.onbekend_koop3",
+    "properties.onbekend_koop4",
+    "properties.onbekend_koop_onb",
+    "properties.onbekend_huur1",
+    "properties.onbekend_huur2",
+    "properties.onbekend_huur3",
+    "properties.onbekend_huur4",
+    "properties.onbekend_huur_onb",
+    "properties.onbekend_onbekend",
+    "properties.sloop_meergezins_koop1",
+    "properties.sloop_meergezins_koop2",
+    "properties.sloop_meergezins_koop3",
+    "properties.sloop_meergezins_koop4",
+    "properties.sloop_meergezins_koop_onb",
+    "properties.sloop_meergezins_huur1",
+    "properties.sloop_meergezins_huur2",
+    "properties.sloop_meergezins_huur3",
+    "properties.sloop_meergezins_huur4",
+    "properties.sloop_meergezins_huur_onb",
+    "properties.sloop_meergezins_onbekend",
+    "properties.sloop_eengezins_koop1",
+    "properties.sloop_eengezins_koop2",
+    "properties.sloop_eengezins_koop3",
+    "properties.sloop_eengezins_koop4",
+    "properties.sloop_eengezins_koop_onb",
+    "properties.sloop_eengezins_huur1",
+    "properties.sloop_eengezins_huur2",
+    "properties.sloop_eengezins_huur3",
+    "properties.sloop_eengezins_huur4",
+    "properties.sloop_eengezins_huur_onb",
+    "properties.sloop_eengezins_onbekend",
+    "properties.sloop_onbekend_koop1",
+    "properties.sloop_onbekend_koop2",
+    "properties.sloop_onbekend_koop3",
+    "properties.sloop_onbekend_koop4",
+    "properties.sloop_onbekend_koop_onb",
+    "properties.sloop_onbekend_huur1",
+    "properties.sloop_onbekend_huur2",
+    "properties.sloop_onbekend_huur3",
+    "properties.sloop_onbekend_huur4",
+    "properties.sloop_onbekend_huur_onb",
+    "properties.sloop_onbekend_onbekend",
 
-                    # projectduur
-                    'properties.projectgegevens.projectduur.start_project',
-                    'properties.projectgegevens.projectduur.eind_project',
+    "properties.sloop_gerealiseerd",
+    "properties.bouw_gerealiseerd",
 
-                    # projectfasen
-                    'properties.projectgegevens.projectfasen.0. Concept',
-                    'properties.projectgegevens.projectfasen.1. Initiatief',
-                    'properties.projectgegevens.projectfasen.2. Definitie',
-                    'properties.projectgegevens.projectfasen.3. Ontwerp',
-                    'properties.projectgegevens.projectfasen.4. Voorbereiding',
-                    'properties.projectgegevens.projectfasen.5. Realisatie',
-                    'properties.projectgegevens.projectfasen.6. Nazorg',
+    "properties.plantype",
+    "properties.verhuurder_type",
+    "properties.opdrachtgever_type",
+    "properties.opdrachtgever_naam",
+    "properties.projectfase",
+    "properties.status_planologisch",
 
-                    # planologisch
-                    'properties.projectgegevens.planologische_planstatus.1A. Onherroepelijk',
-                    'properties.projectgegevens.planologische_planstatus.1B. Onherroepelijk, uitwerkingsplicht',
-                    'properties.projectgegevens.planologische_planstatus.2A. Vastgesteld',
-                    'properties.projectgegevens.planologische_planstatus.2C. Vastgesteld, wijzigingsbevoegdheid',
-                    'properties.projectgegevens.planologische_planstatus.3. In voorbereiding',
-                    'properties.projectgegevens.planologische_planstatus.4A. Visie',
-                    'properties.projectgegevens.planologische_planstatus.4B. Idee',
 
-                    # maatwerk
-                    'properties.projectgegevens.maatwerk_eigenschappen.opdrachtgever_type',
-                    'properties.projectgegevens.maatwerk_eigenschappen.percentage_opp_buitenstedelijk',
-                    'properties.projectgegevens.maatwerk_eigenschappen.provincie',
-                    'properties.projectgegevens.maatwerk_eigenschappen.regio',
-                    'properties.projectgegevens.maatwerk_eigenschappen.bestemmingsplan',
-                    'properties.projectgegevens.maatwerk_eigenschappen.toelichting_knelpunten',
-                    'properties.projectgegevens.maatwerk_eigenschappen.beoogd_woonmilieu_ABF5',
-                    'properties.projectgegevens.maatwerk_eigenschappen.status_planologisch_groep',
-                    'properties.projectgegevens.maatwerk_eigenschappen.opmerkingen_kwalitatief',
-                    'properties.projectgegevens.maatwerk_eigenschappen.woondeal',
-                    'properties.projectgegevens.maatwerk_eigenschappen.realiseerbaarheid',
-                    'properties.projectgegevens.maatwerk_eigenschappen.projectfase',
-                    'properties.projectgegevens.maatwerk_eigenschappen.projectleider',
-                    'properties.projectgegevens.maatwerk_eigenschappen.opdrachtgever',
-                    'properties.projectgegevens.maatwerk_eigenschappen.vertrouwelijkheid',
-
-                    # mutatie
-                    'properties.woning_blokken.mutatiegegevens.mutatie_type',
-                    'properties.woning_blokken.mutatiegegevens.eigendom_type',
-                    'properties.woning_blokken.mutatiegegevens.woning_type',
-                    'properties.woning_blokken.mutatiegegevens.contract_type',
-                    'properties.woning_blokken.mutatiegegevens.einddatum',
-                    'properties.woning_blokken.mutatiegegevens.aantal',
-
-                    # waarde
-                    'properties.woning_blokken.waarde.hoog',
-                    'properties.woning_blokken.locatie.gemeente',
-
-                    # locatie
-                    'properties.woning_blokken.locatie.gemeente',
-                    'properties.woning_blokken.locatie.wijk',
-                    'properties.woning_blokken.locatie.buurt',
-
-                    # maatwerk
-                    'properties.woning_blokken.maatwerk_woningeigenschappen.category_type',
-                    'properties.jaartal', 'properties.woning_blokken.waarde.laag',
-                    'properties.bouw_gerealiseerd', 'properties.flexwoningen',
-                    'properties.tijdelijke_woningen', 'properties.sloop_gerealiseerd'
 ]
+
+required_output_columns = [  # basic
+    'properties.parent_globalid', 'properties.globalid', 'type',
+
+    # geometrie
+    'geometry.type', 'geometry.coordinates',
+
+    # basisgegegevens
+    'properties.projectgegevens.basisgegevens.identificatie_nr',
+    'properties.projectgegevens.basisgegevens.naam',
+
+    # projectgegevens
+    'properties.projectgegevens.projectgegevens.plan_soort',
+    'properties.projectgegevens.projectgegevens.in_programmering',
+    'properties.projectgegevens.projectgegevens.prioritering',
+    'properties.projectgegevens.projectgegevens.rol_gemeente',
+
+    # rollen
+    'properties.projectgegevens.rollen.projectleider',
+    'properties.projectgegevens.rollen.opdrachtgever',
+
+    # projectduur
+    'properties.projectgegevens.projectduur.start_project',
+    'properties.projectgegevens.projectduur.eind_project',
+
+    # projectfasen
+    'properties.projectgegevens.projectfasen.0. Concept',
+    'properties.projectgegevens.projectfasen.1. Initiatief',
+    'properties.projectgegevens.projectfasen.2. Definitie',
+    'properties.projectgegevens.projectfasen.3. Ontwerp',
+    'properties.projectgegevens.projectfasen.4. Voorbereiding',
+    'properties.projectgegevens.projectfasen.5. Realisatie',
+    'properties.projectgegevens.projectfasen.6. Nazorg',
+
+    # planologisch
+    'properties.projectgegevens.planologische_planstatus.1A. Onherroepelijk',
+    'properties.projectgegevens.planologische_planstatus.1B. Onherroepelijk, uitwerkingsplicht',
+    'properties.projectgegevens.planologische_planstatus.2A. Vastgesteld',
+    'properties.projectgegevens.planologische_planstatus.2C. Vastgesteld, wijzigingsbevoegdheid',
+    'properties.projectgegevens.planologische_planstatus.3. In voorbereiding',
+    'properties.projectgegevens.planologische_planstatus.4A. Visie',
+    'properties.projectgegevens.planologische_planstatus.4B. Idee',
+    "properties.projectgegevens.planologische_planstatus.Onbekend",
+
+    # mutatie
+    'properties.woning_blokken.mutatiegegevens.mutatie_type',
+    'properties.woning_blokken.mutatiegegevens.eigendom_type',
+    'properties.woning_blokken.mutatiegegevens.woning_type',
+    'properties.woning_blokken.mutatiegegevens.contract_type',
+    'properties.woning_blokken.mutatiegegevens.einddatum',
+    'properties.woning_blokken.mutatiegegevens.aantal',
+
+    # waarde
+    'properties.woning_blokken.waarde.hoog',
+    'properties.woning_blokken.locatie.gemeente',
+
+    # locatie
+    'properties.woning_blokken.locatie.gemeente',
+    'properties.woning_blokken.locatie.wijk',
+    'properties.woning_blokken.locatie.buurt'
+]
+

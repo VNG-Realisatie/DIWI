@@ -14,13 +14,11 @@ geo_template = func.read_geo_file(geo_path=const.geo_template_path)
 all_gemeente_geojson_paths = func.find_all_gemeentes_files_paths(path_source=const.source_folder)
 
 dict_projects = {}
-for geo_gemeente_path in all_gemeente_geojson_paths:
-    geo_gemeente_path = '/home/wieger/Workspace/diwi/json_importer_python/utrecht/source_data/Planregistratie_gemeente_Amersfoort_Verrijkt_6924747028786393809.geojson'
-    gemeente_name = str(geo_gemeente_path).split('/')[-1].split('.')[0]
-    geo_gemeente = func.read_geo_file(geo_path=geo_gemeente_path)
 
-    df_in = pd.json_normalize(geo_gemeente['features'])
-    df_in.columns = [x.lower() for x in df_in.columns]
+gemeente_df_dict = func.fix_maatwerk(paths=all_gemeente_geojson_paths, required_columns=const.required_input_columns)
+
+for gemeente_name in gemeente_df_dict:
+    df_in = gemeente_df_dict[gemeente_name]
     df_out = func.create_df_outs(df=df_in)
 
     df_out = func.fill_type_geometry(df_out=df_out, df_in=df_in)
@@ -39,10 +37,10 @@ for geo_gemeente_path in all_gemeente_geojson_paths:
 
     # missing: grondpositie
 
-    df_out = func.add_woningblok_maatwerkeigenschappen(df_out=df_out, df_in=df_in)
+    df_out = func.add_woningblok_gerealiseerd(df_out=df_out, df_in=df_in)
 
     df_out = func.add_status_to_mutatie(df_out=df_out, df_in=df_in)
 
-    json_out = func.form_json_structure(df_out=df_out, geo_template=geo_template, required_columns=const.required_columns)
+    json_out = func.form_json_structure(df_out=df_out, df_in=df_in, geo_template=geo_template, required_input_columns=const.required_input_columns, required_output_columns=const.required_output_columns)
 
     func.write_to_geojson(json_out=json_out, output_path=const.output_path, gemeente=gemeente_name)

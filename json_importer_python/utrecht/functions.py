@@ -134,36 +134,6 @@ def add_planologische_planstatus(df_out, df_in, prefix):
     return df_out
 
 
-def add_maatwerk_eigenschappen(df_out, df_in, prefix):
-    local_prefix = f'{prefix}.maatwerk_eigenschappen'
-
-    df_out[f'{local_prefix}.opdrachtgever_type'] = df_in['properties.opdrachtgever_type']
-
-    df_out[f'{local_prefix}.percentage_opp_buitenstedelijk'] = df_in['properties.percentage_opp_buitenstedelijk'].fillna(0)
-
-    df_out[f'{local_prefix}.provincie'] = df_in['properties.provincie']
-
-    df_out[f'{local_prefix}.regio'] = df_in['properties.regio']
-    df_out[f'{local_prefix}.bestemmingsplan'] = df_in['properties.bestemmingsplan']
-
-    df_out[f'{local_prefix}.toelichting_knelpunten'] = df_in['properties.toelichting_knelpunten']
-    df_out[f'{local_prefix}.beoogd_woonmilieu_ABF5'] = df_in['properties.beoogd_woonmilieu_abf5']
-
-    df_out[f'{local_prefix}.status_planologisch_groep'] = df_in['properties.status_planologisch_groep']
-    df_out[f'{local_prefix}.opmerkingen_kwalitatief'] = df_in['properties.opmerkingen_kwalitatief']
-
-    df_out[f'{local_prefix}.woondeal'] = df_in['properties.woondeal']
-    df_out[f'{local_prefix}.realiseerbaarheid'] = df_in['properties.realiseerbaarheid']
-
-    df_out[f'{local_prefix}.projectfase'] = df_in['properties.projectfase']
-    df_out[f'{local_prefix}.projectleider'] = None
-
-    df_out[f'{local_prefix}.opdrachtgever'] = df_in['properties.opdrachtgever_naam']
-    df_out[f'{local_prefix}.vertrouwelijkheid'] = df_in['properties.vertrouwelijkheid']
-
-
-    return df_out
-
 
 def fill_projectgegevens(df_out, df_in, project_fasen):
     prefix = 'properties.projectgegevens'
@@ -174,7 +144,6 @@ def fill_projectgegevens(df_out, df_in, project_fasen):
     df_out = add_projectduur(df_out=df_out, df_in=df_in, prefix=prefix)
     df_out = add_projectfasen(df_out=df_out, df_in=df_in, prefix=prefix, project_fasen=project_fasen)
     df_out = add_planologische_planstatus(df_out=df_out, df_in=df_in, prefix=prefix)
-    df_out = add_maatwerk_eigenschappen(df_out=df_out, df_in=df_in, prefix=prefix)
 
     return df_out
 
@@ -258,11 +227,11 @@ def add_woningwaardes(df_out, df_in, koop_mapping, huur_mapping):
     df_huur = df_out[(df_out['properties.woning_blokken.mutatiegegevens.contract_type'] == 'huur') & (df_out['properties.woning_blokken.maatwerk_woningeigenschappen.category_type'] != 'onbekend')]
     df_onbekend = df_out[(df_out['properties.woning_blokken.mutatiegegevens.contract_type'] == 'onbekend') | (df_out['properties.woning_blokken.maatwerk_woningeigenschappen.category_type'] == 'onbekend')]
 
-    df_koop['jaartal_temp'] = df_koop['properties.jaartal']
+    df_koop['jaartal_temp'] = df_koop['properties.jaartal'].astype(int)
     df_koop.loc[df_koop['jaartal_temp'] < koop_mapping['jaar'].min(), 'jaartal_temp'] = koop_mapping['jaar'].min()
     df_koop.loc[df_koop['jaartal_temp'] > koop_mapping['jaar'].max(), 'jaartal_temp'] = koop_mapping['jaar'].max()
 
-    df_huur['jaartal_temp'] = df_huur['properties.jaartal']
+    df_huur['jaartal_temp'] = df_huur['properties.jaartal'].astype(int)
     df_huur.loc[df_huur['jaartal_temp'] < huur_mapping['jaar'].min(), 'jaartal_temp'] = huur_mapping['jaar'].min()
     df_huur.loc[df_huur['jaartal_temp'] > huur_mapping['jaar'].max(), 'jaartal_temp'] = huur_mapping['jaar'].max()
 
@@ -287,23 +256,15 @@ def add_locatie(df_out, df_in):
     return df_out
 
 
-def add_woningblok_maatwerkeigenschappen(df_out, df_in):
-    """
-
-        woning_blok['maatwerk_woningeigenschappen']['bouw_gerealiseerd'] = True if old_project['properties']['bouw_gerealiseerd'] == 'ja' else False
-        woning_blok['maatwerk_woningeigenschappen']['flexwoningen_aantal'] = old_project['properties']['flexwoningen']
-        woning_blok['maatwerk_woningeigenschappen']['tijdelijke_woningen_aantal'] = old_project['properties']['tijdelijke_woningen']
-        woning_blok['maatwerk_woningeigenschappen']['onbekendtype_huur_totaal'] = old_project['properties']['onbekendtype_huur_totaal']
-        woning_blok['maatwerk_woningeigenschappen']['onbekendtype_koop_totaal'] = old_project['properties']['onbekendtype_koop_totaal']
-    """
+def add_woningblok_gerealiseerd(df_out, df_in):
 
     df_in.loc[df_in['properties.bouw_gerealiseerd'] == 'Ja', 'properties.bouw_gerealiseerd'] = True
     df_in.loc[df_in['properties.bouw_gerealiseerd'] == 'Nee', 'properties.bouw_gerealiseerd'] = False
     df_in.loc[df_in['properties.sloop_gerealiseerd'] == 'Ja', 'properties.sloop_gerealiseerd'] = True
     df_in.loc[df_in['properties.sloop_gerealiseerd'] == '0', 'properties.sloop_gerealiseerd'] = False
 
-    df_temp_koop = df_in[['properties.globalid', 'properties.bouw_gerealiseerd', 'properties.flexwoningen', 'properties.tijdelijke_woningen', 'properties.sloop_gerealiseerd']]
-    df_temp_sloop = df_in[['properties.globalid', 'properties.bouw_gerealiseerd', 'properties.flexwoningen', 'properties.tijdelijke_woningen', 'properties.sloop_gerealiseerd']]
+    df_temp_koop = df_in[['properties.globalid', 'properties.bouw_gerealiseerd', 'properties.sloop_gerealiseerd']]
+    df_temp_sloop = df_in[['properties.globalid', 'properties.bouw_gerealiseerd', 'properties.sloop_gerealiseerd']]
 
     df_temp_koop['properties.sloop_gerealiseerd'] = None
     df_temp_sloop['properties.bouw_gerealiseerd'] = None
@@ -315,7 +276,7 @@ def add_woningblok_maatwerkeigenschappen(df_out, df_in):
     df_out_koop = pd.merge(left=df_out_koop, right=df_temp_koop, on=['properties.globalid'], how='left')
     df_out_sloop = pd.merge(left=df_out_sloop, right=df_temp_sloop, on=['properties.globalid'], how='left')
 
-    df_temp_koop = df_temp_koop[['properties.globalid', 'properties.bouw_gerealiseerd', 'properties.flexwoningen', 'properties.tijdelijke_woningen']]
+    df_temp_koop = df_temp_koop[['properties.globalid', 'properties.bouw_gerealiseerd']]
     df_temp_sloop = df_temp_sloop[['properties.globalid', 'properties.sloop_gerealiseerd']]
 
     df_out_onbekend = pd.merge(left=df_out_onbekend, right=df_temp_koop, on=['properties.globalid'], how='left')
@@ -325,19 +286,84 @@ def add_woningblok_maatwerkeigenschappen(df_out, df_in):
 
     return df_out.reset_index(drop=True)
 
+def remove_wrong_maatwerk_columns(df, maatwerk_columns):
+    maatwerk_columns = [x for x in maatwerk_columns if 'totaal' not in x.lower()]
 
-def prepare_for_json(df, required_columns):
+    for column in maatwerk_columns:
+        try:
+            pd.to_numeric(df[column])
+        except TypeError:
+            continue
+        except ValueError:
+            continue
+
+        if ('huur' in column.lower()) or ('koop' in column.lower()) or ('bouw' in column.lower()) or ('sloop' in column.lower()):
+            maatwerk_columns = [x for x in maatwerk_columns if x != column]
+
+    return maatwerk_columns
+
+
+def find_project_maatwerk(df_in, required_input_columns):
+    maatwerk_columns = [column for column in df_in.columns if column not in required_input_columns]
+    df_maatwerk = df_in[['properties.parent_globalid'] + maatwerk_columns]
+    project_maatwerk_columns = list(df_in[maatwerk_columns].columns[(df_maatwerk.groupby(by=['properties.parent_globalid']).nunique() == 1).all()])
+
+    project_maatwerk_columns = remove_wrong_maatwerk_columns(maatwerk_columns=project_maatwerk_columns, df=df_in)
+    return project_maatwerk_columns
+
+
+def find_woonblok_maatwerk(df_in, required_input_columns):
+    maatwerk_columns = [column for column in df_in.columns if column not in required_input_columns]
+    df_maatwerk = df_in[['properties.parent_globalid'] + maatwerk_columns]
+    woningblok_maatwerk_columns = list(df_in[maatwerk_columns].columns[(df_maatwerk.groupby(by=['properties.parent_globalid']).nunique() > 1).any()])
+
+    woningblok_maatwerk_columns = remove_wrong_maatwerk_columns(maatwerk_columns=woningblok_maatwerk_columns, df=df_in)
+
+    return woningblok_maatwerk_columns
+
+
+def prepare_for_json(df, required_output_columns):
     df = df.fillna(np.nan).replace({np.nan: None})
 
-    for column in required_columns:
+    for column in required_output_columns:
         if column not in df.columns:
             df[column] = None
 
     return df
 
 
-def form_json_structure(df_out, geo_template, required_columns):
-    df_out = prepare_for_json(df=df_out, required_columns=required_columns)
+def add_project_maatwerk_json(new_project, s_project, project_maatwerk_columns):
+    for column in project_maatwerk_columns:
+        new_column = column.split('.')[-1]
+        new_project['properties']['projectgegevens']['maatwerk_projecteigenschappen'][new_column] = s_project[column]
+    return new_project
+
+
+def add_woningblok_maatwerk_json(new_woningblok, s_woningblok, woningblok_maatwerk_columns):
+    for column in woningblok_maatwerk_columns:
+        new_column = column.split('.')[-1]
+        new_woningblok['maatwerk_woningeigenschappen'][new_column] = s_woningblok[column]
+    return new_woningblok
+
+
+def add_maatwerk_values(df_out, df_in, project_maatwerk_columns, woningblok_maatwerk_columns):
+
+    df_project_maatwerk = df_in[['properties.parent_globalid'] + project_maatwerk_columns]
+    df_woningblok_maatwerk = df_in[['properties.globalid'] + woningblok_maatwerk_columns]
+
+    df_out = pd.merge(left=df_out, right=df_project_maatwerk, on=['properties.parent_globalid'], how='left')
+    df_out = pd.merge(left=df_out, right=df_woningblok_maatwerk, on=['properties.globalid'], how='left')
+
+    return df_out
+
+
+def form_json_structure(df_out, df_in, geo_template, required_input_columns, required_output_columns):
+    df_out = prepare_for_json(df=df_out, required_output_columns=required_output_columns)
+
+    project_maatwerk_columns = find_project_maatwerk(df_in=df_in, required_input_columns=required_input_columns)
+    woningblok_maatwerk_columns = find_woonblok_maatwerk(df_in=df_in, required_input_columns=required_input_columns)
+
+    df_out = add_maatwerk_values(df_out=df_out, df_in=df_in, project_maatwerk_columns=project_maatwerk_columns, woningblok_maatwerk_columns=woningblok_maatwerk_columns)
 
     geo_out = dict(copy.deepcopy(geo_template))
     geo_project = dict(copy.deepcopy(geo_template['features'][0]))
@@ -393,22 +419,7 @@ def form_json_structure(df_out, geo_template, required_columns):
         new_project['properties']['projectgegevens']['planologische_planstatus']['4a_niet_opgenomen_in_de_visie'] = s_project['properties.projectgegevens.planologische_planstatus.4A. Visie']
         new_project['properties']['projectgegevens']['planologische_planstatus']['4b_opgenomen_in_de_visie'] = s_project['properties.projectgegevens.planologische_planstatus.4B. Idee']
 
-        # maatwerkeigenschappen
-        new_project['properties']['projectgegevens']['maatwerk_projecteigenschappen']['opdrachtgever_type'] = s_project['properties.projectgegevens.maatwerk_eigenschappen.opdrachtgever_type']
-        new_project['properties']['projectgegevens']['maatwerk_projecteigenschappen']['percentage_opp_buitenstedelijk'] = s_project['properties.projectgegevens.maatwerk_eigenschappen.percentage_opp_buitenstedelijk']
-        new_project['properties']['projectgegevens']['maatwerk_projecteigenschappen']['provincie'] = s_project['properties.projectgegevens.maatwerk_eigenschappen.provincie']
-        new_project['properties']['projectgegevens']['maatwerk_projecteigenschappen']['regio'] = s_project['properties.projectgegevens.maatwerk_eigenschappen.regio']
-        new_project['properties']['projectgegevens']['maatwerk_projecteigenschappen']['bestemmingsplan'] = s_project['properties.projectgegevens.maatwerk_eigenschappen.bestemmingsplan']
-        new_project['properties']['projectgegevens']['maatwerk_projecteigenschappen']['toelichting_knelpunten'] = s_project['properties.projectgegevens.maatwerk_eigenschappen.toelichting_knelpunten']
-        new_project['properties']['projectgegevens']['maatwerk_projecteigenschappen']['beoogd_woonmilieu_ABF5'] = s_project['properties.projectgegevens.maatwerk_eigenschappen.beoogd_woonmilieu_ABF5']
-        new_project['properties']['projectgegevens']['maatwerk_projecteigenschappen']['status_planologisch_groep'] = s_project['properties.projectgegevens.maatwerk_eigenschappen.status_planologisch_groep']
-        new_project['properties']['projectgegevens']['maatwerk_projecteigenschappen']['opmerkingen_kwalitatief'] = s_project['properties.projectgegevens.maatwerk_eigenschappen.opmerkingen_kwalitatief']
-        new_project['properties']['projectgegevens']['maatwerk_projecteigenschappen']['woondeal'] = s_project['properties.projectgegevens.maatwerk_eigenschappen.woondeal']
-        new_project['properties']['projectgegevens']['maatwerk_projecteigenschappen']['realiseerbaarheid'] = s_project['properties.projectgegevens.maatwerk_eigenschappen.realiseerbaarheid']
-        new_project['properties']['projectgegevens']['maatwerk_projecteigenschappen']['projectfase'] = s_project['properties.projectgegevens.maatwerk_eigenschappen.projectfase']
-        new_project['properties']['projectgegevens']['maatwerk_projecteigenschappen']['projectleider'] = s_project['properties.projectgegevens.maatwerk_eigenschappen.projectleider']
-        new_project['properties']['projectgegevens']['maatwerk_projecteigenschappen']['opdrachtgever'] = s_project['properties.projectgegevens.maatwerk_eigenschappen.opdrachtgever']
-        new_project['properties']['projectgegevens']['maatwerk_projecteigenschappen']['vertrouwelijkheid'] = s_project['properties.projectgegevens.maatwerk_eigenschappen.vertrouwelijkheid']
+        new_project = add_project_maatwerk_json(new_project=new_project, s_project=s_project, project_maatwerk_columns=project_maatwerk_columns)
 
         for index in df_project.index:
             s_woningblok = df_project.loc[index]
@@ -432,12 +443,8 @@ def form_json_structure(df_out, geo_template, required_columns):
             # locatie
             new_woningblok['locatie']['gemeente'] = s_woningblok['properties.woning_blokken.locatie.gemeente']
 
-            # maatwerk_eigenschappen
+            new_woningblok = add_woningblok_maatwerk_json(new_woningblok=new_woningblok, s_woningblok=s_woningblok, woningblok_maatwerk_columns=woningblok_maatwerk_columns)
             new_woningblok['maatwerk_woningeigenschappen']['category_type'] = s_woningblok['properties.woning_blokken.maatwerk_woningeigenschappen.category_type']
-            new_woningblok['maatwerk_woningeigenschappen']['bouw_gerealiseerd'] = s_woningblok['properties.bouw_gerealiseerd']
-            new_woningblok['maatwerk_woningeigenschappen']['sloop_gerealiseerd'] = s_woningblok['properties.sloop_gerealiseerd']
-            new_woningblok['maatwerk_woningeigenschappen']['flexwoningen'] = s_woningblok['properties.flexwoningen']
-            new_woningblok['maatwerk_woningeigenschappen']['tijdelijke_woningen'] = s_woningblok['properties.tijdelijke_woningen']
 
             new_project['properties']['woning_blokken'].append(new_woningblok)
 
@@ -472,7 +479,7 @@ def add_status_to_mutatie(df_out, df_in):
 
     df_out['properties.woning_blokken.mutatiegegevens.status'] = None
 
-    df_out.loc[df_out['properties.jaartal'] < datetime.datetime.now().year, 'properties.woning_blokken.mutatiegegevens.status'] = 'afgerond'
+    df_out.loc[df_out['properties.jaartal'].astype(int) < datetime.datetime.now().year, 'properties.woning_blokken.mutatiegegevens.status'] = 'afgerond'
 
     temp = df_out[['properties.globalid', 'properties.bouw_gerealiseerd', 'properties.sloop_gerealiseerd']]
     temp = temp.set_index('properties.globalid').all(axis=1)
@@ -482,3 +489,33 @@ def add_status_to_mutatie(df_out, df_in):
     df_out.loc[(df_out['properties.woning_blokken.mutatiegegevens.status'] == 'afgerond') & (df_out['woningblok_gerealiseerd'] == False), 'properties.woning_blokken.mutatiegegevens.status'] = 'afgebroken'
 
     return df_out
+
+
+def fix_maatwerk(paths, required_columns):
+    #geo_gemeente_path = '/home/wieger/Workspace/diwi/json_importer_python/utrecht/source_data/Planregistratie_gemeente_Amersfoort_Verrijkt_6924747028786393809.geojson'
+    df_out = pd.DataFrame()
+    for geo_gemeente_path in paths:
+        gemeente_name = str(geo_gemeente_path).split('/')[-1].split('.')[0]
+        print(gemeente_name)
+        geo_gemeente = read_geo_file(geo_path=geo_gemeente_path)
+
+        df_in = pd.json_normalize(geo_gemeente['features'])
+        df_in.columns = [x.lower() for x in df_in.columns]
+        df_in['gemeente'] = gemeente_name
+        df_out = pd.concat([df_out, df_in])
+
+    gemeente_df_dict = {}
+
+    for gemeente in df_out['gemeente'].unique():
+        df_gemeente = df_out[df_out['gemeente'] == gemeente]
+        empty_columns = df_gemeente.columns[df_gemeente.isna().all(axis=0)]
+        columns_to_remove = [column for column in empty_columns if column not in required_columns]
+        df_gemeente = df_gemeente[[column for column in df_gemeente.columns if column not in columns_to_remove]]
+
+        for column in required_columns:
+            if column not in df_out.columns:
+                df_gemeente[column] = None
+        df_gemeente = df_gemeente.drop('gemeente', axis=1)
+        gemeente_df_dict[gemeente] = df_gemeente
+
+    return gemeente_df_dict
