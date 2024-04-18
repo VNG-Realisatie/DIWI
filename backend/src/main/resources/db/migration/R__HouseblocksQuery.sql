@@ -16,10 +16,8 @@ CREATE OR REPLACE FUNCTION get_houseblock_snapshots (
         sizeValueRange NUMRANGE,
         sizeValueType diwi_testset.value_type,
         programming BOOL,
-        grossPlanCapacity INTEGER,
-        netPlanCapacity INTEGER,
-        demolition INTEGER,
-        mutationKind TEXT[],
+        mutationAmount INTEGER,
+        mutationKind diwi_testset.mutation_kind,
         ownershipValueList JSONB,
         noPermissionOwner INTEGER,
         intentionPermissionOwner INTEGER,
@@ -43,9 +41,7 @@ SELECT  q.projectId,
         q.sizeValueRange,
         q.sizeValueType,
         q.programming,
-        q.grossPlanCapacity,
-        q.netPlanCapacity,
-        q.demolition,
+        q.mutationAmount,
         q.mutationKind,
         q.ownershipValueList,
         q.noPermissionOwner,
@@ -139,17 +135,14 @@ FROM (
              ),
              active_woningbloks_mutation AS (
                  SELECT
-                     aw.id, wmc.sloop AS demolition, wmc.bruto_plancapaciteit AS grossPlanCapacity, wmc.netto_plancapaciteit AS netPlanCapacity,
-                     array_remove(array_agg(wmcsv.mutatie_soort::TEXT ORDER BY wmcsv.mutatie_soort::TEXT), null) AS mutationKind
+                     aw.id, wmc.mutation_kind AS mutationKind, wmc.amount AS mutationAmount
                  FROM
                      active_woningbloks aw
                          JOIN diwi_testset.woningblok_mutatie_changelog wmc ON aw.id = wmc.woningblok_id AND wmc.change_end_date IS NULL
                          JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wmc.start_milestone_id AND sms.change_end_date IS NULL
                          JOIN diwi_testset.milestone_state ems ON ems.milestone_id = wmc.end_milestone_id AND ems.change_end_date IS NULL
-                         LEFT JOIN diwi_testset.woningblok_mutatie_changelog_soort_value wmcsv ON wmcsv.woningblok_mutatie_changelog_id = wmc.id
                  WHERE
                      sms.date <= _now_ AND _now_ < ems.date
-                 GROUP BY aw.id, wmc.sloop, wmc.bruto_plancapaciteit, wmc.netto_plancapaciteit
              ),
              active_woningbloks_programming AS (
                  SELECT
@@ -261,15 +254,12 @@ FROM (
              ),
              future_woningbloks_mutation AS (
                  SELECT
-                     fw.id, wmc.sloop AS demolition, wmc.bruto_plancapaciteit AS grossPlanCapacity, wmc.netto_plancapaciteit AS netPlanCapacity,
-                     array_remove(array_agg(wmcsv.mutatie_soort::TEXT ORDER BY wmcsv.mutatie_soort::TEXT), null) AS mutationKind
+                     fw.id, wmc.mutation_kind AS mutationKind, wmc.amount AS mutationAmount
                  FROM
                      future_woningbloks fw
                          JOIN diwi_testset.woningblok_mutatie_changelog wmc ON fw.id = wmc.woningblok_id
                                     AND wmc.start_milestone_id = fw.start_milestone_id
                                     AND wmc.change_end_date IS NULL
-                         LEFT JOIN diwi_testset.woningblok_mutatie_changelog_soort_value wmcsv ON wmcsv.woningblok_mutatie_changelog_id = wmc.id
-                 GROUP BY fw.id, wmc.sloop, wmc.bruto_plancapaciteit, wmc.netto_plancapaciteit
              ),
              future_woningbloks_programming AS (
                  SELECT
@@ -375,15 +365,12 @@ FROM (
              ),
              past_woningbloks_mutation AS (
                  SELECT
-                     pw.id, wmc.sloop AS demolition, wmc.bruto_plancapaciteit AS grossPlanCapacity, wmc.netto_plancapaciteit AS netPlanCapacity,
-                     array_remove(array_agg(wmcsv.mutatie_soort::TEXT ORDER BY wmcsv.mutatie_soort::TEXT), null) AS mutationKind
+                     pw.id, wmc.mutation_kind AS mutationKind, wmc.amount AS mutationAmount
                  FROM
                      past_woningbloks pw
                          JOIN diwi_testset.woningblok_mutatie_changelog wmc ON pw.id = wmc.woningblok_id
                                     AND wmc.end_milestone_id = pw.end_milestone_id
                                     AND wmc.change_end_date IS NULL
-                         LEFT JOIN diwi_testset.woningblok_mutatie_changelog_soort_value wmcsv ON wmcsv.woningblok_mutatie_changelog_id = wmc.id
-                 GROUP BY pw.id, wmc.sloop, wmc.bruto_plancapaciteit, wmc.netto_plancapaciteit
              ),
              past_woningbloks_programming AS (
                  SELECT
@@ -426,9 +413,7 @@ FROM (
                 aws.sizeValueRange              AS sizeValueRange,
                 aws.sizeValueType               AS sizeValueType,
                 awp.programming                 AS programming,
-                awm.grossPlanCapacity           AS grossPlanCapacity,
-                awm.netPlanCapacity             AS netPlanCapacity,
-                awm.demolition                  AS demolition,
+                awm.mutationAmount              AS mutationAmount,
                 awm.mutationKind                AS mutationKind,
                 aov.ownershipValue              AS ownershipValueList,
                 awgp.noPermissionOwner          AS noPermissionOwner,
@@ -461,9 +446,7 @@ FROM (
              fws.sizeValueRange              AS sizeValueRange,
              fws.sizeValueType               AS sizeValueType,
              fwp.programming                 AS programming,
-             fwm.grossPlanCapacity           AS grossPlanCapacity,
-             fwm.netPlanCapacity             AS netPlanCapacity,
-             fwm.demolition                  AS demolition,
+             fwm.mutationAmount              AS mutationAmount,
              fwm.mutationKind                AS mutationKind,
              fov.ownershipValue              AS ownershipValueList,
              fwgp.noPermissionOwner          AS noPermissionOwner,
@@ -496,9 +479,7 @@ FROM (
                 pws.sizeValueRange              AS sizeValueRange,
                 pws.sizeValueType               AS sizeValueType,
                 pwp.programming                 AS programming,
-                pwm.grossPlanCapacity           AS grossPlanCapacity,
-                pwm.netPlanCapacity             AS netPlanCapacity,
-                pwm.demolition                  AS demolition,
+                pwm.mutationAmount              AS mutationAmount,
                 pwm.mutationKind                AS mutationKind,
                 pov.ownershipValue              AS ownershipValueList,
                 pwgp.noPermissionOwner          AS noPermissionOwner,
