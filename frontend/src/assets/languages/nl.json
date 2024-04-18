@@ -131,7 +131,7 @@
         "notifications": {
           "successfullySaved": "Woningblokken succesvol opgeslagen.",
           "successfullyUpdated": "Woningblokken succesvol geüpdatet.",
-          "error": "Er is iets fout gegaan"
+          "error": "Nieuwe of gewijzigde woningblokken met een uitroepteken konden niet worden opgeslagen, pas de informatie aan en sla nogmaals op"
         }
       },
       "selectMapForm": {
@@ -273,8 +273,10 @@
       "houseBlocks": {
         "deleteConfirmation": "Weet je zeker dat je woningblok wilt verwijderen?",
         "warning": "Een of meer woningblokken zijn verkeerd ingevuld",
-        "endDateWarning": "Start Datum moet een latere datum zijn",
-        "startDateWarning": "Eind Datum moet een eerdere datum zijn",
+        "endDateWarning": "Eind Datum moet een eerdere datum zijn",
+        "startDateWarning": "Start Datum moet een latere datum zijn",
+        "endDateWarningMissing": "​Vul het veld eind datum in",
+        "startDateWarningMissing": "​Vul het veld start datum in",
         "generalInformation": {
           "title": "Algemene informatie"
         }
