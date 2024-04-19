@@ -262,11 +262,13 @@
         "OPENBAAR": "Openbaar"
       },
       "projectPhaseOptions": {
-        "_1_INITIATIEFFASE": "1 Initiatieffase",
-        "_2_PROJECTFASE": "2 Projectfase",
-        "_3_VERGUNNINGSFASE": "3 Vergunningsfase",
-        "_4_REALISATIEFASE": "4 Realisatiefase",
-        "_5_OPLEVERINGSFASE": "5 Opleveringsfase"
+        "_1_CONCEPT": "1 Concept",
+        "_2_INITIATIVE": "2 Initiatief",
+        "_3_DEFINITION": "3 Definitie",
+        "_4_DESIGN": "4 Ontwerp",
+        "_5_PREPARATION": "5 Voorbereiding",
+        "_6_REALIZATION": "6 Realisatie",
+        "_7_AFTERCARE": "7 Nazorg"
       }
     },
     "wizard": {
