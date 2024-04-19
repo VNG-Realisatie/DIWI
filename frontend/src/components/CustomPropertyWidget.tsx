@@ -26,7 +26,7 @@ export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, cu
                 <Autocomplete
                     size="small"
                     options={[trueishLabel, falsyLabel]}
-                    value={customValue?.booleanValue ? booleanToLabel(customValue.booleanValue) : ""}
+                    value={customValue?.booleanValue !== undefined ? booleanToLabel(customValue.booleanValue) : ""}
                     onChange={(_, newValue) => {
                         const booleanValue = newValue === trueishLabel ? true : newValue === falsyLabel ? false : undefined;
                         setCustomValue({ ...customValue, booleanValue });
@@ -35,7 +35,7 @@ export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, cu
                 />
             );
         } else {
-            return <CellContainer>{customValue?.booleanValue ? booleanToLabel(customValue.booleanValue) : ""}</CellContainer>;
+            return <CellContainer>{customValue?.booleanValue !== undefined ? booleanToLabel(customValue.booleanValue) : ""}</CellContainer>;
         }
     } else if (customDefinition.propertyType === "CATEGORY") {
         if (!readOnly) {

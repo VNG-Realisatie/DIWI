@@ -206,9 +206,9 @@ As the project is meant for Dutch municipalities there are lots of Dutch terms.
 | Dutch       | English        |
 | ----------- | -------------- |
 | Peildatum   | Reference date |
+| Buurt       | Neighborhood   |
 | Wijk        | District       |
 | Gemeente    | Municipality   |
-| Buurt       | Neighborhood   |
 | Eigenaar    | Owner          |
 | Beleidsdoel | Policy goal    |
 | Perceel     | Plot           |

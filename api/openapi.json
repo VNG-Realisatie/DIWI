@@ -812,7 +812,7 @@
     },
     "/rest/projects/{id}/update": {
       "post": {
-        "operationId": "updateProject",
+        "operationId": "updateProjectSingleField",
         "parameters": [
           {
             "name": "id",
@@ -1243,23 +1243,11 @@
       "Mutation": {
         "type": "object",
         "properties": {
-          "mutationKind": {
-            "uniqueItems": true,
-            "type": "array",
-            "items": {
-              "type": "string",
-              "enum": ["BOUW", "SLOOP", "TRANSFORMATIE", "SPLITSING"]
-            }
+          "kind": {
+            "type": "string",
+            "enum": ["CONSTRUCTION", "DEMOLITION"]
           },
-          "grossPlanCapacity": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "netPlanCapacity": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "demolition": {
+          "amount": {
             "type": "integer",
             "format": "int32"
           }
@@ -1454,7 +1442,7 @@
           },
           "projectPhase": {
             "type": "string",
-            "enum": ["_1_INITIATIEFFASE", "_2_PROJECTFASE", "_3_VERGUNNINGSFASE", "_4_REALISATIEFASE", "_5_OPLEVERINGSFASE"]
+            "enum": ["_1_CONCEPT", "_2_INITIATIVE", "_3_DEFINITION", "_4_DESIGN", "_5_PREPARATION", "_6_REALIZATION", "_7_AFTERCARE"]
           },
           "projectId": {
             "type": "string",
@@ -1486,7 +1474,7 @@
           },
           "projectPhase": {
             "type": "string",
-            "enum": ["_1_INITIATIEFFASE", "_2_PROJECTFASE", "_3_VERGUNNINGSFASE", "_4_REALISATIEFASE", "_5_OPLEVERINGSFASE"]
+            "enum": ["_1_CONCEPT", "_2_INITIATIVE", "_3_DEFINITION", "_4_DESIGN", "_5_PREPARATION", "_6_REALIZATION", "_7_AFTERCARE"]
           }
         }
       },
@@ -1528,7 +1516,7 @@
           },
           "projectPhase": {
             "type": "string",
-            "enum": ["_1_INITIATIEFFASE", "_2_PROJECTFASE", "_3_VERGUNNINGSFASE", "_4_REALISATIEFASE", "_5_OPLEVERINGSFASE"]
+            "enum": ["_1_CONCEPT", "_2_INITIATIVE", "_3_DEFINITION", "_4_DESIGN", "_5_PREPARATION", "_6_REALIZATION", "_7_AFTERCARE"]
           },
           "projectId": {
             "type": "string",
@@ -1593,13 +1581,13 @@
               "$ref": "#/components/schemas/SelectModel"
             }
           },
-          "wijk": {
+          "district": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/SelectModel"
             }
           },
-          "buurt": {
+          "neighbourhood": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/SelectModel"
@@ -1634,7 +1622,7 @@
           },
           "projectPhase": {
             "type": "string",
-            "enum": ["_1_INITIATIEFFASE", "_2_PROJECTFASE", "_3_VERGUNNINGSFASE", "_4_REALISATIEFASE", "_5_OPLEVERINGSFASE"]
+            "enum": ["_1_CONCEPT", "_2_INITIATIVE", "_3_DEFINITION", "_4_DESIGN", "_5_PREPARATION", "_6_REALIZATION", "_7_AFTERCARE"]
           },
           "projectId": {
             "type": "string",
@@ -1699,13 +1687,13 @@
               "$ref": "#/components/schemas/SelectModel"
             }
           },
-          "wijk": {
+          "district": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/SelectModel"
             }
           },
-          "buurt": {
+          "neighbourhood": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/SelectModel"
@@ -1797,7 +1785,7 @@
           },
           "data": {
             "type": "string",
-            "enum": ["_1_INITIATIEFFASE", "_2_PROJECTFASE", "_3_VERGUNNINGSFASE", "_4_REALISATIEFASE", "_5_OPLEVERINGSFASE"]
+            "enum": ["_1_CONCEPT", "_2_INITIATIVE", "_3_DEFINITION", "_4_DESIGN", "_5_PREPARATION", "_6_REALIZATION", "_7_AFTERCARE"]
           }
         }
       },
@@ -1975,6 +1963,9 @@
               "projectLeaders",
               "projectOwners",
               "projectPhase",
+              "municipality",
+              "district",
+              "neighbourhood",
               "startDate",
               "endDate"
             ]
@@ -2003,6 +1994,13 @@
           "max": {
             "type": "string",
             "format": "uuid"
+          },
+          "valuesAsUuids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         }
       },

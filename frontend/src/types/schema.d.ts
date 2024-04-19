@@ -81,7 +81,7 @@ export interface paths {
         post: operations["setProjectPlots"];
     };
     "/rest/projects/{id}/update": {
-        post: operations["updateProject"];
+        post: operations["updateProjectSingleField"];
     };
     "/rest/projects/update": {
         post: operations["updateProjectSnapshot"];
@@ -167,13 +167,10 @@ export interface components {
             customProperties?: components["schemas"]["ProjectHouseblockCustomPropertyModel"][];
         };
         Mutation: {
-            mutationKind?: ("BOUW" | "SLOOP" | "TRANSFORMATIE" | "SPLITSING")[];
+            /** @enum {string} */
+            kind?: "CONSTRUCTION" | "DEMOLITION";
             /** Format: int32 */
-            grossPlanCapacity?: number;
-            /** Format: int32 */
-            netPlanCapacity?: number;
-            /** Format: int32 */
-            demolition?: number;
+            amount?: number;
         };
         OwnershipValue: {
             /** Format: uuid */
@@ -251,7 +248,7 @@ export interface components {
             /** @enum {string} */
             confidentialityLevel: "PRIVE" | "INTERN_UITVOERING" | "INTERN_RAPPORTAGE" | "EXTERN_RAPPORTAGE" | "OPENBAAR";
             /** @enum {string} */
-            projectPhase: "_1_INITIATIEFFASE" | "_2_PROJECTFASE" | "_3_VERGUNNINGSFASE" | "_4_REALISATIEFASE" | "_5_OPLEVERINGSFASE";
+            projectPhase: "_1_CONCEPT" | "_2_INITIATIVE" | "_3_DEFINITION" | "_4_DESIGN" | "_5_PREPARATION" | "_6_REALIZATION" | "_7_AFTERCARE";
             /** Format: uuid */
             projectId: string;
         };
@@ -265,7 +262,7 @@ export interface components {
             /** @enum {string} */
             confidentialityLevel: "PRIVE" | "INTERN_UITVOERING" | "INTERN_RAPPORTAGE" | "EXTERN_RAPPORTAGE" | "OPENBAAR";
             /** @enum {string} */
-            projectPhase: "_1_INITIATIEFFASE" | "_2_PROJECTFASE" | "_3_VERGUNNINGSFASE" | "_4_REALISATIEFASE" | "_5_OPLEVERINGSFASE";
+            projectPhase: "_1_CONCEPT" | "_2_INITIATIVE" | "_3_DEFINITION" | "_4_DESIGN" | "_5_PREPARATION" | "_6_REALIZATION" | "_7_AFTERCARE";
         };
         PriorityModel: {
             value?: components["schemas"]["SelectModel"];
@@ -282,7 +279,7 @@ export interface components {
             /** @enum {string} */
             confidentialityLevel: "PRIVE" | "INTERN_UITVOERING" | "INTERN_RAPPORTAGE" | "EXTERN_RAPPORTAGE" | "OPENBAAR";
             /** @enum {string} */
-            projectPhase: "_1_INITIATIEFFASE" | "_2_PROJECTFASE" | "_3_VERGUNNINGSFASE" | "_4_REALISATIEFASE" | "_5_OPLEVERINGSFASE";
+            projectPhase: "_1_CONCEPT" | "_2_INITIATIVE" | "_3_DEFINITION" | "_4_DESIGN" | "_5_PREPARATION" | "_6_REALIZATION" | "_7_AFTERCARE";
             /** Format: uuid */
             projectId: string;
             /** Format: uuid */
@@ -306,8 +303,8 @@ export interface components {
             /** Format: int64 */
             totalValue?: number;
             municipality?: components["schemas"]["SelectModel"][];
-            wijk?: components["schemas"]["SelectModel"][];
-            buurt?: components["schemas"]["SelectModel"][];
+            district?: components["schemas"]["SelectModel"][];
+            neighbourhood?: components["schemas"]["SelectModel"][];
             location?: components["schemas"]["LocationModel"];
         };
         ProjectSnapshotModel: {
@@ -320,7 +317,7 @@ export interface components {
             /** @enum {string} */
             confidentialityLevel: "PRIVE" | "INTERN_UITVOERING" | "INTERN_RAPPORTAGE" | "EXTERN_RAPPORTAGE" | "OPENBAAR";
             /** @enum {string} */
-            projectPhase: "_1_INITIATIEFFASE" | "_2_PROJECTFASE" | "_3_VERGUNNINGSFASE" | "_4_REALISATIEFASE" | "_5_OPLEVERINGSFASE";
+            projectPhase: "_1_CONCEPT" | "_2_INITIATIVE" | "_3_DEFINITION" | "_4_DESIGN" | "_5_PREPARATION" | "_6_REALIZATION" | "_7_AFTERCARE";
             /** Format: uuid */
             projectId: string;
             /** Format: uuid */
@@ -344,8 +341,8 @@ export interface components {
             /** Format: int64 */
             totalValue?: number;
             municipality?: components["schemas"]["SelectModel"][];
-            wijk?: components["schemas"]["SelectModel"][];
-            buurt?: components["schemas"]["SelectModel"][];
+            district?: components["schemas"]["SelectModel"][];
+            neighbourhood?: components["schemas"]["SelectModel"][];
             location?: components["schemas"]["LocationModel"];
             customProperties?: components["schemas"]["ProjectHouseblockCustomPropertyModel"][];
         };
@@ -385,7 +382,7 @@ export interface components {
             /** Format: uuid */
             id?: string;
             /** @enum {string} */
-            data?: "_1_INITIATIEFFASE" | "_2_PROJECTFASE" | "_3_VERGUNNINGSFASE" | "_4_REALISATIEFASE" | "_5_OPLEVERINGSFASE";
+            data?: "_1_CONCEPT" | "_2_INITIATIVE" | "_3_DEFINITION" | "_4_DESIGN" | "_5_PREPARATION" | "_6_REALIZATION" | "_7_AFTERCARE";
         };
         DatedDataModelString: {
             /** Format: date */
@@ -451,6 +448,9 @@ export interface components {
                 | "projectLeaders"
                 | "projectOwners"
                 | "projectPhase"
+                | "municipality"
+                | "district"
+                | "neighbourhood"
                 | "startDate"
                 | "endDate";
             value?: string;
@@ -463,6 +463,7 @@ export interface components {
             min?: string;
             /** Format: uuid */
             max?: string;
+            valuesAsUuids?: string[];
         };
         OrdinalSelectDisabledModel: {
             /** Format: uuid */
@@ -916,7 +917,7 @@ export interface operations {
             };
         };
     };
-    updateProject: {
+    updateProjectSingleField: {
         parameters: {
             path: {
                 id: string;

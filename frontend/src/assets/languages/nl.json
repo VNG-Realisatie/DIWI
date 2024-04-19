@@ -131,7 +131,7 @@
         "notifications": {
           "successfullySaved": "Woningblokken succesvol opgeslagen.",
           "successfullyUpdated": "Woningblokken succesvol geüpdatet.",
-          "error": "Er is iets fout gegaan"
+          "error": "Nieuwe of gewijzigde woningblokken met een uitroepteken konden niet worden opgeslagen, pas de informatie aan en sla nogmaals op"
         }
       },
       "selectMapForm": {
@@ -262,19 +262,23 @@
         "OPENBAAR": "Openbaar"
       },
       "projectPhaseOptions": {
-        "_1_INITIATIEFFASE": "1 Initiatieffase",
-        "_2_PROJECTFASE": "2 Projectfase",
-        "_3_VERGUNNINGSFASE": "3 Vergunningsfase",
-        "_4_REALISATIEFASE": "4 Realisatiefase",
-        "_5_OPLEVERINGSFASE": "5 Opleveringsfase"
+        "_1_CONCEPT": "1 Concept",
+        "_2_INITIATIVE": "2 Initiatief",
+        "_3_DEFINITION": "3 Definitie",
+        "_4_DESIGN": "4 Ontwerp",
+        "_5_PREPARATION": "5 Voorbereiding",
+        "_6_REALIZATION": "6 Realisatie",
+        "_7_AFTERCARE": "7 Nazorg"
       }
     },
     "wizard": {
       "houseBlocks": {
         "deleteConfirmation": "Weet je zeker dat je woningblok wilt verwijderen?",
         "warning": "Een of meer woningblokken zijn verkeerd ingevuld",
-        "endDateWarning": "Start Datum moet een latere datum zijn",
-        "startDateWarning": "Eind Datum moet een eerdere datum zijn",
+        "endDateWarning": "Eind Datum moet een eerdere datum zijn",
+        "startDateWarning": "Start Datum moet een latere datum zijn",
+        "endDateWarningMissing": "​Vul het veld eind datum in",
+        "startDateWarningMissing": "​Vul het veld start datum in",
         "generalInformation": {
           "title": "Algemene informatie"
         }
@@ -301,8 +305,8 @@
           "CATEGORY": "Categorie",
           "TEXT": "Open tekstveld"
         },
-        "add": "Voeg optioneel toe",
-        "edit": "Pas optioneel veld aan",
+        "add": "Voeg maatwerk eigenschap toe",
+        "edit": "Pas maatwerk eigenschap aan",
         "propertyTypeInfo": "Type kan na het opslaan niet meer worden gewijzigd.",
         "notifications": {
           "successfullySaved": "Eigenschappen succesvol opgeslagen.",
