@@ -169,6 +169,9 @@
     },
     "about": {
       "heading": "Over deze website",
+      "frontend": "Frontend",
+      "backend": "Backend",
+      "gitHash": "Git hash",
       "version": "Versie",
       "deployedOn": "Online sinds"
     },

@@ -11,12 +11,18 @@ COPY ./public ./public
 COPY ./tsconfig.json ./tsconfig.json
 COPY ./.editorconfig ./.editorconfig
 
-RUN yarn build
-
 ARG REACT_APP_GIT_SHA
 ENV REACT_APP_GIT_SHA=${REACT_APP_GIT_SHA}
+
+ARG REACT_APP_VERSION_NUMBER
+ENV REACT_APP_VERSION_NUMBER=${REACT_APP_VERSION_NUMBER}
+
+RUN yarn build
+
+# This date is behind the yarn build command on purpose as ti would slow down the build a lot
 ARG REACT_APP_DEPLOY_DATE
 ENV REACT_APP_DEPLOY_DATE=${REACT_APP_DEPLOY_DATE}
+
 RUN echo "{ \
     \"git hash\": \"$REACT_APP_GIT_SHA\",\
     \"build date\": \"$REACT_APP_DEPLOY_DATE\"\
