@@ -14,6 +14,9 @@ COPY ./.editorconfig ./.editorconfig
 ARG REACT_APP_GIT_SHA
 ENV REACT_APP_GIT_SHA=${REACT_APP_GIT_SHA}
 
+ARG REACT_APP_VERSION_NUMBER
+ENV REACT_APP_VERSION_NUMBER=${REACT_APP_VERSION_NUMBER}
+
 RUN yarn build
 
 # This date is behind the yarn build command on purpose as ti would slow down the build a lot

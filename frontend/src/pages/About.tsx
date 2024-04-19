@@ -48,15 +48,19 @@ export const About = () => {
                             <TableCell>{t("about.frontend")}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell>{t("about.version")}</TableCell>
+                            <TableCell>{t("about.gitHash")}</TableCell>
                             <TableCell>{process.env.REACT_APP_GIT_SHA ?? unavailableText}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>{t("about.version")}</TableCell>
+                            <TableCell>{process.env.REACT_APP_VERSION_NUMBER ?? unavailableText}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell></TableCell>
                             <TableCell>{t("about.backend")}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell>{t("about.version")}</TableCell>
+                            <TableCell>{t("about.gitHash")}</TableCell>
                             <TableCell>{version?.hash ?? unavailableText}</TableCell>
                         </TableRow>
                         <TableRow>
