@@ -3,19 +3,25 @@ import SaveIcon from "@mui/icons-material/Save";
 import Tooltip from "@mui/material/Tooltip";
 
 import { Box, Stack } from "@mui/material";
-import { useContext, useId } from "react";
+import { useContext, useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ProjectContext from "../../context/ProjectContext";
 import usePlotSelector from "../../hooks/usePlotSelector";
 import { Details } from "../Details";
+import { AddHouseBlockButton } from "../PlusButton";
+import { CreateHouseBlockDialog } from "../project/project-with-house-block/CreateHouseBlockDialog";
 
 const ProjectPlotSelector = () => {
     const { t } = useTranslation();
 
     const { selectedProject } = useContext(ProjectContext);
-
+    const [openHouseBlockDialog, setOpenHouseBlockDialog] = useState(false);
     const id = useId();
     const { plotsChanged, handleCancelChange, handleSaveChange } = usePlotSelector(id);
+
+    const handleAddHouseBlockClick = () => {
+        setOpenHouseBlockDialog(true);
+    };
 
     return (
         <Stack my={1} p={1} mb={10}>
@@ -36,6 +42,10 @@ const ProjectPlotSelector = () => {
                     <Details project={selectedProject} />
                 </Stack>
                 <div id={id} style={{ height: "70vh", width: "100%", paddingLeft: 8 }}></div>
+                <div style={{ position: "absolute", bottom: 100, right: 20 }}>
+                    <AddHouseBlockButton onClick={handleAddHouseBlockClick} />
+                    <CreateHouseBlockDialog openHouseBlockDialog={openHouseBlockDialog} setOpenHouseBlockDialog={setOpenHouseBlockDialog} />
+                </div>
             </Stack>
         </Stack>
     );
