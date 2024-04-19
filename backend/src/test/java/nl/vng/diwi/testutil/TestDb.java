@@ -18,7 +18,7 @@ public class TestDb implements AutoCloseable {
     private DalFactory dalFactory;
     private Map<String, String> env;
 
-    private ProjectConfig projectConfig;
+    public ProjectConfig projectConfig;
 
 
     public TestDb() throws Exception {
