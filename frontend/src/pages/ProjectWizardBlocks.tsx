@@ -180,8 +180,6 @@ const ProjectWizardBlocks = () => {
 
     const infoText = t("createProject.houseBlocksForm.info");
     const warning = errorOccurred ? t("wizard.houseBlocks.warning") : undefined;
-    console.log(houseBlocksState);
-
     return (
         <WizardLayout {...{ infoText, warning, handleBack, handleNext, handleSave, projectId, activeStep: 1 }}>
             {houseBlocksState.map((houseBlock, index) => (
