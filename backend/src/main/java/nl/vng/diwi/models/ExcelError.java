@@ -17,6 +17,12 @@ public class ExcelError {
         this.errorCode = error.errorCode;
     }
 
+    public ExcelError(Integer row, ERROR error) {
+        this.row = row;
+        this.errorMessage = error.errorMsg;
+        this.errorCode = error.errorCode;
+    }
+
     public ExcelError(Integer row, String column, String cellValue, ERROR error) {
         this.row = row;
         this.column = column;
@@ -34,6 +40,16 @@ public class ExcelError {
         WRONG_TYPE_NOT_NUMERIC("not_numeric", "A numeric value was expected, but a different type was found."),
         WRONG_TYPE_NOT_DATE("not_date", "A date value expected, but a different type was found."),
         WRONG_TYPE_UNKNOWN("unknown_type", "An unknown value type was found. A different type was expected."),
+
+        UNKNOWN_PROJECT_CATEGORY_PROPERTY("unknown_project_category_property", "A project category property with this name was not found."),
+        UNKNOWN_PROJECT_PROPERTY("unknown_project_property", "A project property with this name was not found."),
+        UNKNOWN_HOUSEBLOCK_PROPERTY("unknown_houseblock_property", "A houseblock property with this name was not found."),
+        UNKNOWN_HOUSEBLOCK_NUMERIC_PROPERTY("unknown_houseblock_numeric_property", "A houseblock numeric property with this name was not found."),
+        UNKNOWN_PROPERTY_VALUE("unknown_property_value", "The value is not defined as an active option for the property on this column."),
+        MISSING_FIXED_PROPERTY("missing_fixed_property", "The fixed property was not found"),
+
+        PROJECT_START_DATE_AFTER_END_DATE("project_dates_error", "The project start date is not before the project end date."),
+        PROJECT_DATES_WRONG_FOR_PROJECT_STATUS("project_dates_status_mismatch", "The project start date and end date are not consistent with the project status."),
 
         MISSING_PROJECT_NAME("no_project_name", "Project name is missing."),
         MISSING_PROJECT_STATUS("no_project_status", "Project status is missing or invalid"),

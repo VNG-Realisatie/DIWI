@@ -55,6 +55,13 @@ public class PropertyModel {
     @Type(value = JsonListType.class)
     private List<OrdinalSelectDisabledModel> ordinals;
 
+    public SelectDisabledModel getActiveCategoryValue(String categoryValue) {
+        if (categories != null) {
+            return categories.stream().filter(c -> c.getName().equals(categoryValue) && c.getDisabled() == Boolean.FALSE).findFirst().orElse(null);
+        }
+        return null;
+    }
+
     public String validate() {
 
         if (this.name == null || this.name.isBlank()) {

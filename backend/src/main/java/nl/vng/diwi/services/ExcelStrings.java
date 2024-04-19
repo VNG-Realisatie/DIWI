@@ -10,6 +10,8 @@ public class ExcelStrings {
 
     public static final Map<String, String> map = new HashMap<>();
 
+    public static final String DELIVERY_DATE = "Opleverdatum";
+
     static {
         map.put("Pand Transformatie", PlanType.PAND_TRANSFORMATIE.name());
         map.put("Transformatiegebied", PlanType.TRANSFORMATIEGEBIED.name());
