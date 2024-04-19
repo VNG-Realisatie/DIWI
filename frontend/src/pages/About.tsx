@@ -52,10 +52,6 @@ export const About = () => {
                             <TableCell>{process.env.REACT_APP_GIT_SHA ?? unavailableText}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell>{t("about.deployedOn")}</TableCell>
-                            <TableCell>{process.env.REACT_APP_DEPLOY_DATE ?? unavailableText}</TableCell>
-                        </TableRow>
-                        <TableRow>
                             <TableCell></TableCell>
                             <TableCell>{t("about.backend")}</TableCell>
                         </TableRow>
