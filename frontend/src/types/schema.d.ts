@@ -167,13 +167,10 @@ export interface components {
             customProperties?: components["schemas"]["ProjectHouseblockCustomPropertyModel"][];
         };
         Mutation: {
-            mutationKind?: ("BOUW" | "SLOOP" | "TRANSFORMATIE" | "SPLITSING")[];
+            /** @enum {string} */
+            kind?: "CONSTRUCTION" | "DEMOLITION";
             /** Format: int32 */
-            grossPlanCapacity?: number;
-            /** Format: int32 */
-            netPlanCapacity?: number;
-            /** Format: int32 */
-            demolition?: number;
+            amount?: number;
         };
         OwnershipValue: {
             /** Format: uuid */

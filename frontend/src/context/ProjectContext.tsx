@@ -50,7 +50,7 @@ export const ProjectProvider = ({ children }: PropsWithChildren) => {
 
     useEffect(() => {
         updateProjects();
-    }, [updateProjects, projects]);
+    }, [updateProjects]);
 
     return (
         <ProjectContext.Provider
