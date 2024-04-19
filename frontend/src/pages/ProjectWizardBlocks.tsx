@@ -99,7 +99,7 @@ const ProjectWizardBlocks = () => {
                 }),
             );
 
-            const hasErrors = res.some((response) => response.error); // Check if any error occurred
+            const hasErrors = res.some((response) => response.error);
 
             const updatedHouseBlocks = houseBlocksState.map((houseBlockState) => {
                 const result = res.find((response) => response.tempId === houseBlockState.tempId);
@@ -113,13 +113,10 @@ const ProjectWizardBlocks = () => {
             });
 
             setHouseBlocksState(updatedHouseBlocks);
-
-            // Return true if there are no errors, false otherwise
             return !hasErrors;
         } catch (error: any) {
             setErrorOccurred(true);
             setAlert(error.message, "warning");
-            // return error;
         }
     };
 
