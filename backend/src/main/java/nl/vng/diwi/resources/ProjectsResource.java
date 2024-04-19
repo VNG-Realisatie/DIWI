@@ -1,7 +1,14 @@
 package nl.vng.diwi.resources;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -26,6 +33,8 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import nl.vng.diwi.config.ProjectConfig;
 import nl.vng.diwi.dal.AutoCloseTransaction;
 import nl.vng.diwi.dal.FilterPaginationSorting;
 import nl.vng.diwi.dal.GenericRepository;
@@ -59,28 +68,43 @@ import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.security.SecurityRoleConstants;
+import nl.vng.diwi.services.ExcelImportService;
 import nl.vng.diwi.services.PropertiesService;
 import nl.vng.diwi.services.HouseblockService;
 import nl.vng.diwi.services.ProjectService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 @Path("/projects")
 @RolesAllowed({SecurityRoleConstants.Admin})
 public class ProjectsResource {
+
+    private static final Logger logger = LogManager.getLogger();
+    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+
     private final VngRepository repo;
     private final ProjectService projectService;
     private final HouseblockService houseblockService;
     private final PropertiesService propertiesService;
+    private final ProjectConfig projectConfig;
+    private final ExcelImportService excelImportService;
 
     @Inject
     public ProjectsResource(
             GenericRepository genericRepository,
             ProjectService projectService,
             HouseblockService houseblockService,
-            PropertiesService propertiesService) {
+            PropertiesService propertiesService,
+            ProjectConfig projectConfig,
+            ExcelImportService excelImportService) {
         this.repo = new VngRepository(genericRepository.getDal().getSession());
         this.projectService = projectService;
         this.houseblockService = houseblockService;
         this.propertiesService = propertiesService;
+        this.projectConfig = projectConfig;
+        this.excelImportService = excelImportService;
     }
 
     @POST
@@ -571,6 +595,50 @@ public class ProjectsResource {
             UUID propertyId = propertiesService.getPropertyUuid(repo, Constants.FIXED_PROPERTY_NEIGHBOURHOOD);
             projectService.updateProjectCategoryProperty(repo, project, propertyId, neighbourhoodCatUuids, loggedUser.getUuid(), updateDate);
         }
+        }
+    }
+
+    @POST
+    @Path("/import")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response importExcelFile(@FormDataParam("uploadFile") InputStream inputStream,
+                                    @FormDataParam("uploadFile") FormDataContentDisposition formDataContentDisposition,
+                                    @Context LoggedUser loggedUser) {
+
+        //save file to disk
+        String fileSuffix = LocalDateTime.now().format(formatter);
+        String filename = "excel_import_" + fileSuffix + ".xlsx";
+        String filePath = projectConfig.getDataDir() + filename;
+        java.nio.file.Path path = Paths.get(filePath);
+        try {
+            Files.copy(inputStream, path, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            logger.error("Could not save excel file to disk", e);
+            throw new VngServerErrorException("Could not save excel file to disk");
+        }
+
+        //process excel from file written on disk
+        try {
+            Map<String, Object> result = excelImportService.importExcel(filePath, repo, loggedUser.getUuid());
+            if (result.containsKey(ExcelImportService.errors)) {
+                deleteFile(path);
+                return Response.status(Response.Status.BAD_REQUEST).entity(result.get(ExcelImportService.errors)).build();
+            }
+            return Response.ok(result.get(ExcelImportService.result)).build();
+        } catch (Exception ex) {
+            logger.error("Error while uploading excel", ex);
+            deleteFile(path);
+            throw new VngServerErrorException("Error while uploading excel");
+        }
+
+    }
+
+    private void deleteFile(java.nio.file.Path path) {
+        try {   //delete excel file from disk since no changes were made in the database
+            Files.deleteIfExists(path);
+        } catch (IOException e) {
+            logger.error("Error while deleting excel file which failed upload {}", path, e);
         }
     }
 }
