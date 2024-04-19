@@ -83,7 +83,7 @@ def add_projectduur(df_out, df_in, prefix):
     df_out.loc[df_in['properties.jaar_start_project'].isna(), f'{local_prefix}.start_project'] = [None for x in df_in.loc[df_in['properties.jaar_start_project'].isna(), 'properties.jaartal']]
 
     df_out[f'{local_prefix}.eind_project'] = None
-    df_out[f'{local_prefix}.eind_project'] = [f"{int(x)}-12-01" if type(x) != type(None) else None for x in df_in['properties.oplevering_laatste'].fillna(np.nan).replace({np.nan: None})]
+    df_out[f'{local_prefix}.eind_project'] = [f"{int(float(x))}-12-01" if type(x) != type(None) else None for x in df_in['properties.oplevering_laatste'].fillna(np.nan).replace({np.nan: None})]
 
 
     return df_out
@@ -105,7 +105,7 @@ def add_projectfasen(df_out, df_in, prefix, project_fasen):
     df_out.loc[df_in['properties.jaar_start_project'].notna(), f'{local_prefix}.1. Initiatief'] = [f"{int(x)}-01-01" for x in df_in.loc[df_in['properties.jaar_start_project'].notna(), 'properties.jaar_start_project']]
     df_out.loc[df_in['properties.jaar_start_project'].isna(), f'{local_prefix}.1. Initiatief'] = [None for x in df_in.loc[df_in['properties.jaar_start_project'].isna(), 'properties.jaartal']]
 
-    df_out.loc[df_in['properties.oplevering_eerste'].notna(), f'{local_prefix}.5. Realisatie'] = [f"{int(x)}-06-28" for x in df_in.loc[df_in['properties.oplevering_eerste'].notna(), 'properties.oplevering_eerste']]
+    df_out.loc[df_in['properties.oplevering_eerste'].notna(), f'{local_prefix}.5. Realisatie'] = [f"{int(float(x))}-06-28" for x in df_in.loc[df_in['properties.oplevering_eerste'].notna(), 'properties.oplevering_eerste']]
 
     df_project_dates = df_in[['properties.globalid', 'properties.created', 'properties.projectfase']].pivot(index='properties.globalid', columns='properties.projectfase', values='properties.created')
     df_project_dates = df_project_dates[[column for column in df_project_dates.columns if column in project_fasen]]
