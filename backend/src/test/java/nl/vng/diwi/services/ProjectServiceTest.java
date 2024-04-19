@@ -189,13 +189,13 @@ public class ProjectServiceTest {
             Milestone middleMilestone = createMilestone(repo, project, LocalDate.now().plusDays(5), user);
             Milestone endMilestone = createMilestone(repo, project, LocalDate.now().plusDays(10), user);
             createProjectDurationChangelog(repo, project, startMilestone, endMilestone, user);
-            createProjectFaseChangelog(repo, project, ProjectPhase._4_REALISATIEFASE, middleMilestone, endMilestone, user);
+            createProjectFaseChangelog(repo, project, ProjectPhase._4_DESIGN, middleMilestone, endMilestone, user);
             transaction.commit();
             repo.getSession().clear();
         }
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            projectService.updateProjectPhase(repo, repo.findById(Project.class, projectUuid), ProjectPhase._2_PROJECTFASE, userUuid, LocalDate.now());
+            projectService.updateProjectPhase(repo, repo.findById(Project.class, projectUuid), ProjectPhase._2_INITIATIVE, userUuid, LocalDate.now());
             transaction.commit();
             repo.getSession().clear();
         }
@@ -207,13 +207,13 @@ public class ProjectServiceTest {
         assertThat(faseChangelogs.size()).isEqualTo(2);
 
         ProjectFaseChangelog newChangelog = faseChangelogs.stream()
-                .filter(c -> c.getProjectPhase().equals(ProjectPhase._2_PROJECTFASE) && c.getChangeEndDate() == null).findFirst().orElse(null);
+                .filter(c -> c.getProjectPhase().equals(ProjectPhase._2_INITIATIVE) && c.getChangeEndDate() == null).findFirst().orElse(null);
         assertThat(newChangelog).isNotNull();
         assertThat(newChangelog.getStartMilestone().getState().get(0).getDate()).isEqualTo(LocalDate.now());
         assertThat(newChangelog.getEndMilestone().getState().get(0).getDate()).isEqualTo(LocalDate.now().plusDays(5));
 
         ProjectFaseChangelog futureFaseChangelog = faseChangelogs.stream()
-                .filter(c -> c.getProjectPhase().equals(ProjectPhase._4_REALISATIEFASE) && c.getChangeEndDate() == null).findFirst().orElse(null);
+                .filter(c -> c.getProjectPhase().equals(ProjectPhase._4_DESIGN) && c.getChangeEndDate() == null).findFirst().orElse(null);
         assertThat(futureFaseChangelog).isNotNull();
         assertThat(futureFaseChangelog.getStartMilestone().getState().get(0).getDate()).isEqualTo(LocalDate.now().plusDays(5));
         assertThat(futureFaseChangelog.getEndMilestone().getState().get(0).getDate()).isEqualTo(LocalDate.now().plusDays(10));
@@ -321,7 +321,7 @@ public class ProjectServiceTest {
         projectData.setEndDate(today.plusDays(20));
         projectData.setProjectColor("abcdef");
         projectData.setConfidentialityLevel(Confidentiality.OPENBAAR);
-        projectData.setProjectPhase(ProjectPhase._3_VERGUNNINGSFASE);
+        projectData.setProjectPhase(ProjectPhase._3_DEFINITION);
 
         Project project;
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
