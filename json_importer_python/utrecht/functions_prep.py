@@ -29,6 +29,9 @@ def fix_lopik_data(path, source_path):
 
 
 def fix_delft_data(path, source_path):
+    """
+    TODO: delft has categories of houses. are these the same categories as amersfoort?
+    """
     gemeente_name = str(path).split('/')[-1].split('.')[0]
 
     gjson = func.read_geo_file(geo_path=path)
@@ -47,6 +50,7 @@ def fix_delft_data(path, source_path):
 
 
 def fix_gouda_data(path, source_path):
+    #TODO: gouda has categories of houses. are these the same categories as amersfoort?
     gemeente_name = str(path).split('/')[-1].split('.')[0]
 
     gjson = func.read_geo_file(geo_path=path)
