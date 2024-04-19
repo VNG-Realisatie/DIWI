@@ -1,11 +1,12 @@
 import { t } from "i18next";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { projectWizardBlocks, projectWizardWithId } from "../Paths";
 import { Project, createProject, getProject, updateProject } from "../api/projectsServices";
 import WizardLayout from "../components/project-wizard/WizardLayout";
 import { ProjectInformationForm } from "../components/project/ProjectInformationForm";
 import useAlert from "../hooks/useAlert";
+import ProjectContext from "../context/ProjectContext";
 
 const ProjectWizard = () => {
     const [createProjectForm, setCreateProjectForm] = useState<Partial<Project>>({
@@ -18,6 +19,7 @@ const ProjectWizard = () => {
     const { projectId } = useParams();
     const navigate = useNavigate();
     const { setAlert } = useAlert();
+    const { updateProjects } = useContext(ProjectContext);
 
     async function validateAndSave() {
         if (
@@ -51,6 +53,7 @@ const ProjectWizard = () => {
 
                 navigate(projectWizardWithId.toPath({ projectId: project.projectId }));
             }
+            updateProjects();
         } catch (error: any) {
             setAlert(error.message, "error");
             return false;
