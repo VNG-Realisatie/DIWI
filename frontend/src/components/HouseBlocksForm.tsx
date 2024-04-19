@@ -10,19 +10,26 @@ import { GroundPositionGroup } from "./project-wizard/house-blocks/ground-positi
 import { Programming } from "./project-wizard/house-blocks/programming/Programming";
 
 import { CustomPropertiesGroup } from "./project-wizard/house-blocks/custom-properties/CustomPropertiesGroup";
+import { DateValidationErrors } from "../pages/ProjectWizardBlocks";
 
 type Props = {
     readOnly: boolean;
     houseBlock: HouseBlockWithCustomProperties;
     setHouseBlock: (hb: HouseBlockWithCustomProperties) => void;
+    errors?: DateValidationErrors;
 };
 
-export const HouseBlocksForm = ({ readOnly, houseBlock, setHouseBlock }: Props) => {
+export const HouseBlocksForm = ({ readOnly, houseBlock, setHouseBlock, errors }: Props) => {
     return (
         <>
             <Grid container spacing={2} alignItems="stretch">
                 <Grid item xs={12} md={8}>
-                    <GeneralInformationGroup houseBlock={houseBlock} setHouseBlock={setHouseBlock} readOnly={readOnly} />
+                    <GeneralInformationGroup
+                        houseBlock={houseBlock}
+                        setHouseBlock={setHouseBlock}
+                        readOnly={readOnly}
+                        errors={errors ? errors : { startDateError: null, endDateError: null }}
+                    />
                 </Grid>
                 <Grid item xs={12} md={4}>
                     <MutationInformationGroup houseBlock={houseBlock} setHouseBlock={setHouseBlock} readOnly={readOnly} />
