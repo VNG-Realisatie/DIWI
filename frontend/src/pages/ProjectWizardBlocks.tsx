@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 import { Accordion, AccordionDetails, AccordionSummary, Box, Stack } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { deleteHouseBlockWithCustomProperties } from "../api/houseBlockServices";
+import { deleteHouseBlockWithCustomProperties, getProjectHouseBlocksWithCustomProperties } from "../api/houseBlockServices";
 import ProjectContext from "../context/ProjectContext";
 import { DeleteButtonWithConfirm } from "../components/DeleteButtonWithConfirm";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
@@ -25,9 +25,9 @@ export type DateValidationErrors = {
 };
 
 const ProjectWizardBlocks = () => {
-    const { houseBlocks, getEmptyHouseBlock, refresh } = useContext(HouseBlockContext);
+    const { getEmptyHouseBlock, refresh } = useContext(HouseBlockContext);
     const { selectedProject } = useContext(ProjectContext);
-    const [houseBlocksState, setHouseBlocksState] = useState<HouseBlockWithCustomProperties[]>([{ ...getEmptyHouseBlock(), tempId: generateTemporaryId() }]);
+    const [houseBlocksState, setHouseBlocksState] = useState<HouseBlockWithCustomProperties[]>([]);
     const { projectId } = useParams();
     const navigate = useNavigate();
     const { setAlert } = useAlert();
@@ -37,6 +37,21 @@ const ProjectWizardBlocks = () => {
     const lastAddedForm = useRef<HTMLDivElement | null>(null);
     const { setLoading } = useLoading();
     const [dateValidationErrors, setDateValidationErrors] = useState<Array<DateValidationErrors>>([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            let houseBlocks;
+            if (projectId) {
+                houseBlocks = await getProjectHouseBlocksWithCustomProperties(projectId);
+            }
+            if (houseBlocks && houseBlocks.length > 0) {
+                setHouseBlocksState(houseBlocks);
+            } else {
+                setHouseBlocksState([{ ...getEmptyHouseBlock(), tempId: generateTemporaryId() }]);
+            }
+        };
+        fetchData();
+    }, [getEmptyHouseBlock, projectId]);
 
     async function saveHouseBlock(houseBlock: HouseBlockWithCustomProperties) {
         try {
@@ -118,7 +133,7 @@ const ProjectWizardBlocks = () => {
                     try {
                         validateHouseBlock(houseBlock, selectedProject, index);
                         const id = await saveHouseBlock({ ...houseBlock, tempId: undefined });
-                        return { id, tempId: houseBlock.tempId, houseBlockId: houseBlock.houseblockId };
+                        return { id, tempId: houseBlock.tempId };
                     } catch (error) {
                         setErrorOccurred(true);
                         return { error };
@@ -130,10 +145,7 @@ const ProjectWizardBlocks = () => {
 
             const updatedHouseBlocks = houseBlocksState.map((houseBlockState) => {
                 const result = res.find((response) => response.tempId === houseBlockState.tempId);
-                if (result && result.id && !result.error) {
-                    if (houseBlockState.houseblockId) {
-                        return houseBlockState;
-                    }
+                if (result && result.id && !result.error && !houseBlockState.houseblockId) {
                     return { ...houseBlockState, houseblockId: result.id };
                 }
                 return houseBlockState;
@@ -164,13 +176,6 @@ const ProjectWizardBlocks = () => {
             lastAddedForm.current.scrollIntoView({ behavior: "smooth", block: "start" });
         }
     };
-
-    useEffect(() => {
-        if (houseBlocks.length >= houseBlocksState.length) {
-            setHouseBlocksState(houseBlocks);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [houseBlocks, setHouseBlocksState]);
 
     useEffect(() => {
         if (errors.every((element) => element === false)) {
@@ -212,6 +217,7 @@ const ProjectWizardBlocks = () => {
 
     const infoText = t("createProject.houseBlocksForm.info");
     const warning = errorOccurred ? t("wizard.houseBlocks.warning") : undefined;
+
     return (
         <WizardLayout {...{ infoText, warning, handleBack, handleNext, handleSave, projectId, activeStep: 1 }}>
             {houseBlocksState.map((houseBlock, index) => (
