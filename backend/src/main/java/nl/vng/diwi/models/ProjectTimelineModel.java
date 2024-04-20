@@ -95,28 +95,5 @@ public class ProjectTimelineModel extends DatedDataModelSuperClass {
             data.setEndDate(endMilestone.getDate());
             planningPlanStatus.add(data);
         }
-        for (ProjectPrioriseringChangelog item : project.getPriority()) {
-            DatedPriorityModel data = new DatedPriorityModel();
-            if (item.getMinValue() != null) {
-                data.getPriorityModel().setMin(new SelectModel(item.getMinValue().getId(),
-                    DatedPriorityModel.getLabel(item.getMinValue().getState().get(0).getOrdinalLevel(),
-                        item.getMinValue().getState().get(0).getValueLabel())));
-            }
-            if (item.getMaxValue() != null) {
-                data.getPriorityModel().setMax(new SelectModel(item.getMaxValue().getId(),
-                    DatedPriorityModel.getLabel(item.getMaxValue().getState().get(0).getOrdinalLevel(),
-                        item.getMaxValue().getState().get(0).getValueLabel())));
-            }
-            if (item.getValue() != null) {
-                data.getPriorityModel().setValue(new SelectModel(item.getValue().getId(),
-                    DatedPriorityModel.getLabel(item.getValue().getState().get(0).getOrdinalLevel(),
-                        item.getValue().getState().get(0).getValueLabel())));
-            }
-            MilestoneModel startMilestone = new MilestoneModel(item.getStartMilestone());
-            MilestoneModel endMilestone = new MilestoneModel(item.getEndMilestone());
-            data.setStartDate(startMilestone.getDate());
-            data.setEndDate(endMilestone.getDate());
-            priority.add(data);
-        }
     }
 }

@@ -1,10 +1,6 @@
 package nl.vng.diwi.dal;
 
-import java.util.List;
-
 import org.hibernate.Session;
-
-import nl.vng.diwi.models.SelectModel;
 
 public class VngRepository extends AbstractRepository {
 
@@ -57,13 +53,4 @@ public class VngRepository extends AbstractRepository {
         return propertyDAO;
     }
 
-    public List<SelectModel> getPriorities() {
-        return session.createNativeQuery(String.format("""
-            WITH priorities AS (
-                SELECT p.project_priorisering_value_id AS id, (p.ordinal_level || ' ' || p.value_label) AS name
-                FROM %s.project_priorisering_value_state p
-                WHERE p.change_end_date IS NULL )
-            SELECT * FROM priorities p
-            ORDER BY p.name COLLATE "diwi_numeric" ASC""", GenericRepository.VNG_SCHEMA_NAME), SelectModel.class).list();
-    }
 }

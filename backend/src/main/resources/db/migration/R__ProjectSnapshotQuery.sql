@@ -43,7 +43,7 @@ SELECT  q.projectId,
         q.startDate,
         q.endDate,
         q.planType,
-        q.priorityModel            AS priority,
+        q.priorityList            AS priority,
         q.projectPhase,
         q.planningPlanStatus,
         q.municipalityRoleList    AS municipalityRole,
@@ -109,27 +109,6 @@ FROM (
                      sms.date <= _now_ AND _now_ < ems.date AND pppc.change_end_date IS NULL AND pppc.project_id = _project_uuid_
                  GROUP BY pppc.project_id
              ),
-             active_project_priorities AS (
-                 SELECT ppc.project_id,
-                        CASE
-                            WHEN ppc.value_type = 'SINGLE_VALUE' THEN  to_jsonb(array_agg(jsonb_build_object('id', vs.project_priorisering_value_id, 'name', vs.ordinal_level || ' ' || vs.value_label)))
-                            WHEN ppc.value_type = 'RANGE' THEN to_jsonb(array_agg(jsonb_build_object('id', vsMin.project_priorisering_value_id, 'name', vsMin.ordinal_level || ' ' || vsMin.value_label)) ||
-                                                               array_agg(jsonb_build_object('id', vsMax.project_priorisering_value_id, 'name', vsMax.ordinal_level || ' ' || vsMax.value_label)))
-                            END AS project_prioritiesModel
-                 FROM
-                     diwi_testset.project_priorisering_changelog ppc
-                         JOIN diwi_testset.milestone_state sms ON sms.milestone_id = ppc.start_milestone_id AND sms.change_end_date IS NULL
-                         JOIN diwi_testset.milestone_state ems ON ems.milestone_id = ppc.end_milestone_id AND ems.change_end_date IS NULL
-                         LEFT JOIN diwi_testset.project_priorisering_value_state vs
-                                   ON ppc.project_priorisering_value_id = vs.project_priorisering_value_id AND vs.change_end_date IS NULL
-                         LEFT JOIN diwi_testset.project_priorisering_value_state vsMin
-                                   ON ppc.project_priorisering_min_value_id = vsMin.project_priorisering_value_id AND vsMin.change_end_date IS NULL
-                         LEFT JOIN diwi_testset.project_priorisering_value_state vsMax
-                                   ON ppc.project_priorisering_max_value_id = vsMax.project_priorisering_value_id AND vsMax.change_end_date IS NULL
-                 WHERE
-                     sms.date <= _now_ AND _now_ < ems.date AND ppc.change_end_date IS NULL AND ppc.project_id = _project_uuid_
-                 GROUP BY ppc.project_id, ppc.value_type
-             ),
              active_project_woningblok_totalvalue AS (
                  SELECT
                      w.project_id,
@@ -162,6 +141,30 @@ FROM (
                  WHERE
                      sms.date <= _now_ AND _now_ < ems.date AND pcc.change_end_date IS NULL AND pcc.project_id = _project_uuid_
                  GROUP BY pcc.project_id, ps.property_name
+             ),
+             active_project_ordinal_fixed_props AS (
+                 SELECT
+                     ppc.project_id, ps.property_name AS fixedPropertyName,
+                     CASE
+                         WHEN ppc.value_type = 'SINGLE_VALUE' THEN  to_jsonb(array_agg(jsonb_build_object('id', vs.ordinal_value_id, 'name', vs.ordinal_level || ' ' || vs.value_label)))
+                         WHEN ppc.value_type = 'RANGE' THEN to_jsonb(array_agg(jsonb_build_object('id', vsMin.ordinal_value_id, 'name', vsMin.ordinal_level || ' ' || vsMin.value_label)) ||
+                                                                     array_agg(jsonb_build_object('id', vsMax.ordinal_value_id, 'name', vsMax.ordinal_level || ' ' || vsMax.value_label)))
+                         END AS ordinalValuesList
+                 FROM
+                     diwi_testset.project_ordinal_changelog ppc
+                         JOIN diwi_testset.milestone_state sms ON sms.milestone_id = ppc.start_milestone_id AND sms.change_end_date IS NULL
+                         JOIN diwi_testset.milestone_state ems ON ems.milestone_id = ppc.end_milestone_id AND ems.change_end_date IS NULL
+                         JOIN diwi_testset.property p ON p.id = ppc.property_id AND p.type = 'FIXED'
+                         JOIN diwi_testset.property_state ps ON p.id = ps.property_id AND ps.change_end_date IS NULL
+                         LEFT JOIN diwi_testset.property_ordinal_value_state vs
+                                   ON ppc.value_id = vs.ordinal_value_id AND vs.change_end_date IS NULL
+                         LEFT JOIN diwi_testset.property_ordinal_value_state vsMin
+                                   ON ppc.min_value_id = vsMin.ordinal_value_id AND vsMin.change_end_date IS NULL
+                         LEFT JOIN diwi_testset.property_ordinal_value_state vsMax
+                                   ON ppc.max_value_id = vsMax.ordinal_value_id AND vsMax.change_end_date IS NULL
+                 WHERE
+                     sms.date <= _now_ AND _now_ < ems.date AND ppc.change_end_date IS NULL
+                 GROUP BY ppc.project_id, ps.property_name, ppc.value_type
              ),
              future_projects AS (
                  SELECT
@@ -210,26 +213,6 @@ FROM (
                         JOIN diwi_testset.project_planologische_planstatus_changelog_value pppcv ON pppc.id = pppcv.planologische_planstatus_changelog_id
                  GROUP BY  pppc.project_id
              ),
-             future_project_priorities AS (
-                 SELECT
-                     ppc.project_id,
-                     CASE
-                        WHEN ppc.value_type = 'SINGLE_VALUE' THEN  to_jsonb(array_agg(jsonb_build_object('id', vs.project_priorisering_value_id, 'name', vs.ordinal_level || ' ' || vs.value_label)))
-                        WHEN ppc.value_type = 'RANGE' THEN to_jsonb(array_agg(jsonb_build_object('id', vsMin.project_priorisering_value_id, 'name', vsMin.ordinal_level || ' ' || vsMin.value_label)) ||
-                                                            array_agg(jsonb_build_object('id', vsMax.project_priorisering_value_id, 'name', vsMax.ordinal_level || ' ' || vsMax.value_label)))
-                    END AS project_prioritiesModel
-                 FROM
-                     future_projects fp
-                        JOIN diwi_testset.project_priorisering_changelog ppc ON fp.id = ppc.project_id
-                            AND ppc.start_milestone_id = fp.start_milestone_id AND ppc.change_end_date IS NULL
-                        LEFT JOIN diwi_testset.project_priorisering_value_state vs
-                                   ON ppc.project_priorisering_value_id = vs.project_priorisering_value_id AND vs.change_end_date IS NULL
-                        LEFT JOIN diwi_testset.project_priorisering_value_state vsMin
-                                   ON ppc.project_priorisering_min_value_id = vsMin.project_priorisering_value_id AND vsMin.change_end_date IS NULL
-                        LEFT JOIN diwi_testset.project_priorisering_value_state vsMax
-                                   ON ppc.project_priorisering_max_value_id = vsMax.project_priorisering_value_id AND vsMax.change_end_date IS NULL
-                 GROUP BY ppc.project_id, ppc.value_type
-             ),
              future_project_woningblok_totalvalue AS (
                  SELECT
                      w.project_id,
@@ -258,6 +241,28 @@ FROM (
                          JOIN diwi_testset.project_category_changelog_value pccv ON pccv.project_category_changelog_id = pcc.id
                          JOIN diwi_testset.property_category_value_state pcvs ON pccv.property_value_id = pcvs.category_value_id AND pcvs.change_end_date IS NULL
                  GROUP BY pcc.project_id, ps.property_name
+             ),
+             future_project_ordinal_fixed_props AS (
+                 SELECT
+                     ppc.project_id, ps.property_name AS fixedPropertyName,
+                     CASE
+                         WHEN ppc.value_type = 'SINGLE_VALUE' THEN  to_jsonb(array_agg(jsonb_build_object('id', vs.ordinal_value_id, 'name', vs.ordinal_level || ' ' || vs.value_label)))
+                         WHEN ppc.value_type = 'RANGE' THEN to_jsonb(array_agg(jsonb_build_object('id', vsMin.ordinal_value_id, 'name', vsMin.ordinal_level || ' ' || vsMin.value_label)) ||
+                                                                     array_agg(jsonb_build_object('id', vsMax.ordinal_value_id, 'name', vsMax.ordinal_level || ' ' || vsMax.value_label)))
+                         END AS ordinalValuesList
+                 FROM
+                     future_projects fp
+                         JOIN diwi_testset.project_ordinal_changelog ppc ON fp.id = ppc.project_id
+                         AND ppc.start_milestone_id = fp.start_milestone_id AND ppc.change_end_date IS NULL
+                         JOIN diwi_testset.property p ON p.id = ppc.property_id AND p.type = 'FIXED'
+                         JOIN diwi_testset.property_state ps ON p.id = ps.property_id AND ps.change_end_date IS NULL
+                         LEFT JOIN diwi_testset.property_ordinal_value_state vs
+                                   ON ppc.value_id = vs.ordinal_value_id AND vs.change_end_date IS NULL
+                         LEFT JOIN diwi_testset.property_ordinal_value_state vsMin
+                                   ON ppc.min_value_id = vsMin.ordinal_value_id AND vsMin.change_end_date IS NULL
+                         LEFT JOIN diwi_testset.property_ordinal_value_state vsMax
+                                   ON ppc.max_value_id = vsMax.ordinal_value_id AND vsMax.change_end_date IS NULL
+                 GROUP BY ppc.project_id, ps.property_name, ppc.value_type
              ),
              past_projects AS (
                  SELECT
@@ -306,26 +311,6 @@ FROM (
                          JOIN diwi_testset.project_planologische_planstatus_changelog_value pppcv ON pppc.id = pppcv.planologische_planstatus_changelog_id
                  GROUP BY pppc.project_id
              ),
-             past_project_priorities AS (
-                 SELECT
-                     ppc.project_id,
-                     CASE
-                        WHEN ppc.value_type = 'SINGLE_VALUE' THEN  to_jsonb(array_agg(jsonb_build_object('id', vs.project_priorisering_value_id, 'name', vs.ordinal_level || ' ' || vs.value_label)))
-                        WHEN ppc.value_type = 'RANGE' THEN to_jsonb(array_agg(jsonb_build_object('id', vsMin.project_priorisering_value_id, 'name', vsMin.ordinal_level || ' ' || vsMin.value_label)) ||
-                                                            array_agg(jsonb_build_object('id', vsMax.project_priorisering_value_id, 'name', vsMax.ordinal_level || ' ' || vsMax.value_label)))
-                     END AS project_prioritiesModel
-                 FROM
-                     past_projects pp
-                         JOIN diwi_testset.project_priorisering_changelog ppc ON pp.id = ppc.project_id
-                            AND ppc.end_milestone_id = pp.end_milestone_id AND ppc.change_end_date IS NULL
-                         LEFT JOIN diwi_testset.project_priorisering_value_state vs
-                                   ON ppc.project_priorisering_value_id = vs.project_priorisering_value_id AND vs.change_end_date IS NULL
-                         LEFT JOIN diwi_testset.project_priorisering_value_state vsMin
-                                   ON ppc.project_priorisering_min_value_id = vsMin.project_priorisering_value_id AND vsMin.change_end_date IS NULL
-                         LEFT JOIN diwi_testset.project_priorisering_value_state vsMax
-                                   ON ppc.project_priorisering_max_value_id = vsMax.project_priorisering_value_id AND vsMax.change_end_date IS NULL
-                 GROUP BY ppc.project_id, ppc.value_type
-             ),
              past_project_woningblok_totalvalue AS (
                  SELECT
                      w.project_id,
@@ -354,6 +339,28 @@ FROM (
                          JOIN diwi_testset.project_category_changelog_value pccv ON pccv.project_category_changelog_id = pcc.id
                          JOIN diwi_testset.property_category_value_state pcvs ON pccv.property_value_id = pcvs.category_value_id AND pcvs.change_end_date IS NULL
                  GROUP BY pcc.project_id, ps.property_name
+             ),
+             past_project_ordinal_fixed_props AS (
+                 SELECT
+                     ppc.project_id, ps.property_name AS fixedPropertyName,
+                     CASE
+                         WHEN ppc.value_type = 'SINGLE_VALUE' THEN  to_jsonb(array_agg(jsonb_build_object('id', vs.ordinal_value_id, 'name', vs.ordinal_level || ' ' || vs.value_label)))
+                         WHEN ppc.value_type = 'RANGE' THEN to_jsonb(array_agg(jsonb_build_object('id', vsMin.ordinal_value_id, 'name', vsMin.ordinal_level || ' ' || vsMin.value_label)) ||
+                                                                     array_agg(jsonb_build_object('id', vsMax.ordinal_value_id, 'name', vsMax.ordinal_level || ' ' || vsMax.value_label)))
+                         END AS ordinalValuesList
+                 FROM
+                     past_projects pp
+                         JOIN diwi_testset.project_ordinal_changelog ppc ON pp.id = ppc.project_id
+                         AND ppc.end_milestone_id = pp.end_milestone_id AND ppc.change_end_date IS NULL
+                         JOIN diwi_testset.property p ON p.id = ppc.property_id AND p.type = 'FIXED'
+                         JOIN diwi_testset.property_state ps ON p.id = ps.property_id AND ps.change_end_date IS NULL
+                         LEFT JOIN diwi_testset.property_ordinal_value_state vs
+                                   ON ppc.value_id = vs.ordinal_value_id AND vs.change_end_date IS NULL
+                         LEFT JOIN diwi_testset.property_ordinal_value_state vsMin
+                                   ON ppc.min_value_id = vsMin.ordinal_value_id AND vsMin.change_end_date IS NULL
+                         LEFT JOIN diwi_testset.property_ordinal_value_state vsMax
+                                   ON ppc.max_value_id = vsMax.ordinal_value_id AND vsMax.change_end_date IS NULL
+                 GROUP BY ppc.project_id, ps.property_name, ppc.value_type
              ),
              project_users AS (
                  SELECT
@@ -392,7 +399,7 @@ FROM (
                 ap.startDate             AS startDate,
                 ap.endDate               AS endDate,
                 appt.plan_types          AS planType,
-                app.project_prioritiesModel  AS priorityModel,
+                apop.ordinalValuesList   AS priorityList,
                 apf.project_fase         AS projectPhase,
                 appp.planning_planstatus AS planningPlanStatus,
                 apmr.fixedPropValuesList AS municipalityRoleList,
@@ -408,8 +415,8 @@ FROM (
                  LEFT JOIN active_project_plan_types appt ON appt.project_id = ap.id
                  LEFT JOIN active_project_fases apf ON apf.project_id = ap.id
                  LEFT JOIN active_project_planologische_planstatus appp ON appp.project_id = ap.id
-                 LEFT JOIN active_project_priorities app ON app.project_id = ap.id
                  LEFT JOIN active_project_woningblok_totalvalue apwv ON apwv.project_id = ap.id
+                 LEFT JOIN active_project_ordinal_fixed_props apop ON apop.project_id = ap.id AND apop.fixedPropertyName = 'priority'
                  LEFT JOIN active_project_fixed_props apmr ON apmr.project_id = ap.id AND apmr.fixedPropertyName = 'municipalityRole'
                  LEFT JOIN active_project_fixed_props apr ON apr.project_id = ap.id AND apr.fixedPropertyName = 'municipality'
                  LEFT JOIN active_project_fixed_props apd ON apd.project_id = ap.id AND apd.fixedPropertyName = 'district'
@@ -430,7 +437,7 @@ FROM (
                 fp.startDate             AS startDate,
                 fp.endDate               AS endDate,
                 fppt.plan_types          AS planType,
-                fpp.project_prioritiesModel  AS priorityModel,
+                fpop.ordinalValuesList   AS priorityList,
                 fpf.project_fase         AS projectPhase,
                 fppp.planning_planstatus AS planningPlanStatus,
                 fpmr.fixedPropValuesList AS municipalityRoleList,
@@ -446,8 +453,8 @@ FROM (
                  LEFT JOIN future_project_plan_types fppt ON fppt.project_id = fp.id
                  LEFT JOIN future_project_fases fpf ON fpf.project_id = fp.id
                  LEFT JOIN future_project_planologische_planstatus fppp ON fppp.project_id = fp.id
-                 LEFT JOIN future_project_priorities fpp ON fpp.project_id = fp.id
                  LEFT JOIN future_project_woningblok_totalvalue fpwv ON fpwv.project_id = fp.id
+                 LEFT JOIN future_project_ordinal_fixed_props fpop ON fpop.project_id = fp.id AND fpop.fixedPropertyName = 'priority'
                  LEFT JOIN future_project_fixed_props fpmr ON fpmr.project_id = fp.id AND fpmr.fixedPropertyName = 'municipalityRole'
                  LEFT JOIN future_project_fixed_props fpr ON fpr.project_id = fp.id AND fpr.fixedPropertyName = 'municipality'
                  LEFT JOIN future_project_fixed_props fpd ON fpd.project_id = fp.id AND fpd.fixedPropertyName = 'district'
@@ -468,7 +475,7 @@ FROM (
                 pp.startDate             AS startDate,
                 pp.endDate               AS endDate,
                 pppt.plan_types          AS planType,
-                ppp.project_prioritiesModel  AS priorityModel,
+                ppop.ordinalValuesList   AS priorityList,
                 ppf.project_fase         AS projectPhase,
                 pppp.planning_planstatus AS planningPlanStatus,
                 ppmr.fixedPropValuesList AS municipalityRoleList,
@@ -484,8 +491,8 @@ FROM (
                  LEFT JOIN past_project_plan_types pppt ON pppt.project_id = pp.id
                  LEFT JOIN past_project_fases ppf ON ppf.project_id = pp.id
                  LEFT JOIN past_project_planologische_planstatus pppp ON pppp.project_id = pp.id
-                 LEFT JOIN past_project_priorities ppp ON ppp.project_id = pp.id
                  LEFT JOIN past_project_woningblok_totalvalue ppwv ON ppwv.project_id = pp.id
+                 LEFT JOIN past_project_ordinal_fixed_props ppop ON ppop.project_id = pp.id AND ppop.fixedPropertyName = 'priority'
                  LEFT JOIN past_project_fixed_props ppmr ON ppmr.project_id = pp.id AND ppmr.fixedPropertyName = 'municipalityRole'
                  LEFT JOIN past_project_fixed_props ppr ON ppr.project_id = pp.id AND ppr.fixedPropertyName = 'municipality'
                  LEFT JOIN past_project_fixed_props ppd ON ppd.project_id = pp.id AND ppd.fixedPropertyName = 'district'

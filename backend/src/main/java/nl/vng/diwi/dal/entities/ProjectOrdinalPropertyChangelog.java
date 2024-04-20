@@ -18,18 +18,18 @@ import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 @Entity
-@Table(name = "project_maatwerk_ordinaal_changelog", schema = GenericRepository.VNG_SCHEMA_NAME)
+@Table(name = "project_ordinal_changelog", schema = GenericRepository.VNG_SCHEMA_NAME)
 @Getter
 @Setter
 @NoArgsConstructor
-public class ProjectOrdinalCustomPropertyChangelog extends MilestoneChangeDataSuperclass {
+public class ProjectOrdinalPropertyChangelog extends MilestoneChangeDataSuperclass {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "project_id")
     private Project project;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "eigenschap_id")
+    @JoinColumn(name = "property_id")
     private Property property;
 
     @ManyToOne(fetch = FetchType.EAGER)

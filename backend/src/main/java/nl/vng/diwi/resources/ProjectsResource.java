@@ -61,6 +61,7 @@ import nl.vng.diwi.models.ProjectTimelineModel;
 import nl.vng.diwi.models.ProjectUpdateModel;
 import nl.vng.diwi.models.ProjectUpdateModel.ProjectProperty;
 import nl.vng.diwi.models.SelectModel;
+import nl.vng.diwi.models.SingleValueOrRangeModel;
 import nl.vng.diwi.models.superclasses.ProjectCreateSnapshotModel;
 import nl.vng.diwi.models.superclasses.ProjectMinimalSnapshotModel;
 import nl.vng.diwi.rest.VngBadRequestException;
@@ -555,7 +556,9 @@ public class ProjectsResource {
         }
         case priority -> {
             UUID priorityValue = (projectUpdateModel.getValue() == null) ? null : UUID.fromString(projectUpdateModel.getValue());
-            projectService.updateProjectPriority(repo, project, priorityValue, projectUpdateModel.getMin(), projectUpdateModel.getMax(), loggedUser.getUuid(),
+            UUID propertyId = propertiesService.getPropertyUuid(repo, Constants.FIXED_PROPERTY_PRIORITY);
+            var newPriority = new SingleValueOrRangeModel<>(priorityValue, projectUpdateModel.getMin(), projectUpdateModel.getMax());
+            projectService.updateProjectOrdinalCustomProperty(repo, project, propertyId, newPriority, loggedUser.getUuid(),
                     updateDate);
         }
         case projectPhase ->
