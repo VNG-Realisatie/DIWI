@@ -39,6 +39,7 @@ public class ExcelError {
         WRONG_TYPE_NOT_STRING("not_string", "A string value was expected, but a different type was found."),
         WRONG_TYPE_NOT_NUMERIC("not_numeric", "A numeric value was expected, but a different type was found."),
         WRONG_TYPE_NOT_DATE("not_date", "A date value expected, but a different type was found."),
+        WRONG_TYPE_NOT_BOOLEAN("not_boolean", "A true/false or 0/1 value was expected, but a different type was found."),
         WRONG_TYPE_UNKNOWN("unknown_type", "An unknown value type was found. A different type was expected."),
 
         UNKNOWN_PROJECT_CATEGORY_PROPERTY("unknown_project_category_property", "A project category property with this name was not found."),
@@ -50,6 +51,9 @@ public class ExcelError {
 
         PROJECT_START_DATE_AFTER_END_DATE("project_dates_error", "The project start date is not before the project end date."),
         PROJECT_DATES_WRONG_FOR_PROJECT_STATUS("project_dates_status_mismatch", "The project start date and end date are not consistent with the project status."),
+        PROJECT_WRONG_PHASE_DATES("wrong_project_phase_dates", "The project phase start dates are not within the project duration or are not in the right order."),
+        PROJECT_WRONG_PLAN_STATUS_DATES("wrong_project_plan_status_dates", "The project planning plan status start dates are not within the project duration or are not in the right order."),
+        PROJECT_LOCATION_INCOMPLETE("incomplete_project_location", "Project neighbourhood/district are present without district/municipality being present"),
 
         MISSING_PROJECT_NAME("no_project_name", "Project name is missing."),
         MISSING_PROJECT_STATUS("no_project_status", "Project status is missing or invalid"),
