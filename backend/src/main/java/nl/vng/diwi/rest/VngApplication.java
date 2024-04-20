@@ -26,16 +26,12 @@ import nl.vng.diwi.dal.DalFactory;
 import nl.vng.diwi.dal.Database;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.resources.AuthResource;
-import nl.vng.diwi.resources.BuurtResource;
 import nl.vng.diwi.resources.MilestoneResource;
-import nl.vng.diwi.resources.MunicipalityResource;
-import nl.vng.diwi.resources.MunicipalityRoleResource;
 import nl.vng.diwi.resources.PriorityResource;
 import nl.vng.diwi.resources.ProjectsResource;
 import nl.vng.diwi.resources.UserResource;
 import nl.vng.diwi.resources.VngOpenApiResource;
 import nl.vng.diwi.resources.OrganizationResource;
-import nl.vng.diwi.resources.WijkResource;
 import nl.vng.diwi.rest.pac4j.SecurityFilter;
 
 @ApplicationPath("rest")
@@ -98,10 +94,6 @@ public class VngApplication extends ResourceConfig {
         register(AuthResource.class);
         register(ProjectsResource.class);
         register(MilestoneResource.class);
-        register(MunicipalityResource.class);
-        register(MunicipalityRoleResource.class);
-        register(BuurtResource.class);
-        register(WijkResource.class);
         register(PriorityResource.class);
         register(HouseblockResource.class);
         register(PropertiesResource.class);

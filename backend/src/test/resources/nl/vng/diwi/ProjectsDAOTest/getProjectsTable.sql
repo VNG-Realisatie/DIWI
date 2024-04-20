@@ -51,39 +51,10 @@ INSERT INTO diwi_testset.project_name_changelog (id, start_milestone_id, end_mil
     VALUES ('c0153d9e-34bf-4da4-81b6-97d9603b875d', 'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '342887ab-2106-45c4-9565-a4b83f4d3362', '5c9fbb50-d8fd-480d-9e38-7f3b391d3110', '2122426c-6e70-419c-a054-f51dd24d798b', NOW() - interval '1 day', NULL, 'Future project Phase 1');
 INSERT INTO diwi_testset.project_name_changelog (id, start_milestone_id, end_milestone_id, project_id, create_user_id, change_start_date, change_end_date, name)
     VALUES ('2a0f5b93-b57b-42c3-aec4-415fc6277e2d', '342887ab-2106-45c4-9565-a4b83f4d3362', '7c6bfe67-6618-4a6a-9507-2cd15f88c11f', '5c9fbb50-d8fd-480d-9e38-7f3b391d3110', '2122426c-6e70-419c-a054-f51dd24d798b', NOW() - interval '1 day', NULL, 'Future project Phase 1');
-
-INSERT INTO diwi_testset.project_gemeenterol_value (id) VALUES ('47964244-4f7e-4ed5-93ba-b7667a3e8445');
-INSERT INTO diwi_testset.project_gemeenterol_value (id) VALUES ('5cdd1b67-2174-4efd-8e82-a69cb322205f');
-INSERT INTO diwi_testset.project_gemeenterol_value (id) VALUES ('49f60177-6f57-41a4-94a9-255bbb978d46');
-
-INSERT INTO diwi_testset.project_gemeenterol_value_state (id, value_label, create_user_id, change_start_date, change_end_date, project_gemeenterol_value_id)
-    VALUES ('465c80e2-749e-433d-9af2-07cf5d0b6e46', 'Role 1', '2122426c-6e70-419c-a054-f51dd24d798b', NOW() - interval '5 days', NOW() - interval '1 day', '47964244-4f7e-4ed5-93ba-b7667a3e8445');
-INSERT INTO diwi_testset.project_gemeenterol_value_state (id, value_label, create_user_id, change_start_date, change_end_date, project_gemeenterol_value_id)
-    VALUES ('36e4a034-3e09-4d1e-92c1-bca2ca98ad34', 'Role 1 new', '2122426c-6e70-419c-a054-f51dd24d798b', NOW() - interval '1 day', NULL, '47964244-4f7e-4ed5-93ba-b7667a3e8445');
-INSERT INTO diwi_testset.project_gemeenterol_value_state (id, value_label, create_user_id, change_start_date, change_end_date, project_gemeenterol_value_id)
-    VALUES ('49f60177-6f57-41a4-94a9-255bbb978d46', 'Role 2', '2122426c-6e70-419c-a054-f51dd24d798b', NOW() - interval '1 day', NULL, '5cdd1b67-2174-4efd-8e82-a69cb322205f');
-INSERT INTO diwi_testset.project_gemeenterol_value_state (id, value_label, create_user_id, change_start_date, change_end_date, project_gemeenterol_value_id)
-    VALUES ('8e58ffdd-d420-4860-b015-5b2b4112686a', 'Role 3', '2122426c-6e70-419c-a054-f51dd24d798b', NOW() - interval '1 day', NULL, '49f60177-6f57-41a4-94a9-255bbb978d46');
-
-
-INSERT INTO diwi_testset.project_gemeenterol_changelog (id, start_milestone_id, end_milestone_id, project_id, create_user_id, change_start_date, change_end_date, project_gemeenterol_value_id)
-    VALUES ('dc8b2c8c-587a-4f99-a84c-f871d4bb7e9f', '07f3a0ad-f76a-4dd9-b4c6-6eb8113968e0', '342887ab-2106-45c4-9565-a4b83f4d3362', '54a0c192-3454-4f7a-becd-96d214461987', '2122426c-6e70-419c-a054-f51dd24d798b', NOW() - interval '1 day', NULL, '47964244-4f7e-4ed5-93ba-b7667a3e8445');
-INSERT INTO diwi_testset.project_gemeenterol_changelog (id, start_milestone_id, end_milestone_id, project_id, create_user_id, change_start_date, change_end_date, project_gemeenterol_value_id)
-    VALUES ('651798c3-034e-45ef-b347-3492d0553e25', 'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '342887ab-2106-45c4-9565-a4b83f4d3362', '54a0c192-3454-4f7a-becd-96d214461987', '2122426c-6e70-419c-a054-f51dd24d798b', NOW() - interval '1 day', NULL, '5cdd1b67-2174-4efd-8e82-a69cb322205f');
-INSERT INTO diwi_testset.project_gemeenterol_changelog (id, start_milestone_id, end_milestone_id, project_id, create_user_id, change_start_date, change_end_date, project_gemeenterol_value_id)
-    VALUES ('8e58ffdd-d420-4860-b015-5b2b4112686a', '07f3a0ad-f76a-4dd9-b4c6-6eb8113968e0',  'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '54a0c192-3454-4f7a-becd-96d214461987', '2122426c-6e70-419c-a054-f51dd24d798b', NOW() - interval '1 day', NULL, '49f60177-6f57-41a4-94a9-255bbb978d46');
-INSERT INTO diwi_testset.project_gemeenterol_changelog (id, start_milestone_id, end_milestone_id, project_id, create_user_id, change_start_date, change_end_date, project_gemeenterol_value_id)
-    VALUES ('45bbdf32-4a53-46e3-91c0-14325b97998a',  'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '342887ab-2106-45c4-9565-a4b83f4d3362', '54a0c192-3454-4f7a-becd-96d214461987', '2122426c-6e70-419c-a054-f51dd24d798b', NOW() - interval '2 days', NOW() - interval '1 day', '47964244-4f7e-4ed5-93ba-b7667a3e8445');
-INSERT INTO diwi_testset.project_gemeenterol_changelog (id, start_milestone_id, end_milestone_id, project_id, create_user_id, change_start_date, change_end_date, project_gemeenterol_value_id)
-    VALUES ('89d36ee1-8a5e-4219-8b64-8fc079c33ca2', 'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '7c6bfe67-6618-4a6a-9507-2cd15f88c11f', '5c9fbb50-d8fd-480d-9e38-7f3b391d3110', '2122426c-6e70-419c-a054-f51dd24d798b', NOW() - interval '1 day', NULL, '5cdd1b67-2174-4efd-8e82-a69cb322205f');
-INSERT INTO diwi_testset.project_gemeenterol_changelog (id, start_milestone_id, end_milestone_id, project_id, create_user_id, change_start_date, change_end_date, project_gemeenterol_value_id)
-    VALUES ('7c0a174b-099a-4f69-9d6b-4202ca169982', '342887ab-2106-45c4-9565-a4b83f4d3362', '7c6bfe67-6618-4a6a-9507-2cd15f88c11f', '5c9fbb50-d8fd-480d-9e38-7f3b391d3110', '2122426c-6e70-419c-a054-f51dd24d798b', NOW() - interval '1 day', NULL, '49f60177-6f57-41a4-94a9-255bbb978d46');
-
 INSERT INTO diwi_testset.project_fase_changelog (id, start_milestone_id, end_milestone_id, project_id, create_user_id, change_start_date, change_end_date, project_fase)
     VALUES ('4ff23141-ae6e-46b7-8583-31d5bef66f26', '07f3a0ad-f76a-4dd9-b4c6-6eb8113968e0', '342887ab-2106-45c4-9565-a4b83f4d3362', '54a0c192-3454-4f7a-becd-96d214461987', '2122426c-6e70-419c-a054-f51dd24d798b', NOW() - interval '1 day', NULL, '_1_CONCEPT');
 INSERT INTO diwi_testset.project_fase_changelog (id, start_milestone_id, end_milestone_id, project_id, create_user_id, change_start_date, change_end_date, project_fase)
     VALUES ('38545e50-ecad-4f34-b784-0b050c25d02e', '342887ab-2106-45c4-9565-a4b83f4d3362', '7c6bfe67-6618-4a6a-9507-2cd15f88c11f', '5c9fbb50-d8fd-480d-9e38-7f3b391d3110', '2122426c-6e70-419c-a054-f51dd24d798b', NOW() - interval '1 day', NULL, '_1_CONCEPT');
-
 
 INSERT INTO diwi_testset.project_plan_type_changelog (id, start_milestone_id, end_milestone_id, project_id, create_user_id, change_start_date, change_end_date)
     VALUES ('39033af1-82cb-435a-8110-a0bf08dba9a6', '07f3a0ad-f76a-4dd9-b4c6-6eb8113968e0', '342887ab-2106-45c4-9565-a4b83f4d3362', '54a0c192-3454-4f7a-becd-96d214461987', '2122426c-6e70-419c-a054-f51dd24d798b', NOW() - interval '1 day', NULL);

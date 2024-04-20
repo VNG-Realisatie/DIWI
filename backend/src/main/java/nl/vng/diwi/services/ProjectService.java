@@ -36,8 +36,6 @@ import nl.vng.diwi.dal.entities.MilestoneState;
 import nl.vng.diwi.dal.entities.Project;
 import nl.vng.diwi.dal.entities.ProjectDurationChangelog;
 import nl.vng.diwi.dal.entities.ProjectFaseChangelog;
-import nl.vng.diwi.dal.entities.ProjectGemeenteRolChangelog;
-import nl.vng.diwi.dal.entities.ProjectGemeenteRolValue;
 import nl.vng.diwi.dal.entities.ProjectListSqlModel;
 import nl.vng.diwi.dal.entities.ProjectNameChangelog;
 import nl.vng.diwi.dal.entities.ProjectPlanTypeChangelog;
@@ -423,63 +421,6 @@ public class ProjectService {
             oldProjectNameChangelogAfterUpdate.setProject(project);
             oldProjectNameChangelogAfterUpdate.setName(oldProjectNameChangelog.getName());
             repo.persist(oldProjectNameChangelogAfterUpdate);
-        }
-    }
-
-    public void updateProjectMunicipalityRoles(VngRepository repo, Project project, UUID municipalityRoleToAdd, UUID municipalityRoleToRemove,
-            UUID loggedInUserUuid, LocalDate updateDate) {
-        // a project can have multiple active changelog entries for municipality roles
-
-        LocalDate projectStartDate = (new MilestoneModel(project.getDuration().get(0).getStartMilestone())).getDate();
-        if (projectStartDate.isAfter(updateDate)) {
-            updateDate = projectStartDate;
-        }
-        LocalDate finalUpdateDate = updateDate;
-
-        if (municipalityRoleToAdd != null) {
-
-            List<ProjectGemeenteRolChangelog> changelogs = project.getMunicipalityRole().stream()
-                    .filter(mrc -> mrc.getValue().getId().equals(municipalityRoleToAdd)
-                            && !(new MilestoneModel(mrc.getStartMilestone())).getDate().isAfter(finalUpdateDate)
-                            && (new MilestoneModel(mrc.getEndMilestone())).getDate().isAfter(finalUpdateDate))
-                    .toList();
-            if (!changelogs.isEmpty()) {
-                logger.info("Trying to add to project {} a municipality role {} which is already associated with this project.", project.getId(),
-                        municipalityRoleToAdd);
-                return;
-            } else {
-                ProjectGemeenteRolChangelog newChangelog = new ProjectGemeenteRolChangelog();
-                newChangelog.setValue(repo.findById(ProjectGemeenteRolValue.class, municipalityRoleToAdd));
-                newChangelog.setProject(project);
-                newChangelog.setChangeStartDate(ZonedDateTime.now());
-                newChangelog.setCreateUser(repo.getReferenceById(User.class, loggedInUserUuid));
-                newChangelog.setStartMilestone(getOrCreateMilestoneForProject(repo, project, updateDate, loggedInUserUuid));
-                UUID newEndMilestoneUuid = project.getMunicipalityRole().stream().filter(mrc -> mrc.getValue().getId().equals(municipalityRoleToAdd))
-                        .map(mr -> new MilestoneModel(mr.getStartMilestone()))
-                        .filter(mm -> mm.getDate().isAfter(finalUpdateDate))
-                        .min(Comparator.comparing(MilestoneModel::getDate))
-                        .map(MilestoneModel::getId)
-                        .orElse(project.getDuration().get(0).getEndMilestone().getId());
-                newChangelog.setEndMilestone(repo.getReferenceById(Milestone.class, newEndMilestoneUuid));
-                repo.persist(newChangelog);
-            }
-        }
-
-        if (municipalityRoleToRemove != null) {
-            List<ProjectGemeenteRolChangelog> changelogs = project.getMunicipalityRole().stream()
-                    .filter(mrc -> mrc.getValue().getId().equals(municipalityRoleToRemove)
-                            && !(new MilestoneModel(mrc.getStartMilestone())).getDate().isAfter(finalUpdateDate)
-                            && (new MilestoneModel(mrc.getEndMilestone())).getDate().isAfter(finalUpdateDate))
-                    .toList();
-            if (changelogs.isEmpty()) {
-                logger.info("Trying to remove from project {} a municipality role {} which is not associated with this project.", project.getId(),
-                        municipalityRoleToRemove);
-            } else {
-                ProjectGemeenteRolChangelog changelog = changelogs.get(0);
-                changelog.setChangeEndDate(ZonedDateTime.now());
-                changelog.setChangeUser(repo.getReferenceById(User.class, loggedInUserUuid));
-                repo.persist(changelog);
-            }
         }
     }
 

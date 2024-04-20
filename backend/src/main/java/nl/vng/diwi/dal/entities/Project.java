@@ -63,11 +63,6 @@ public class Project extends IdSuperclass {
     @JsonIgnoreProperties("project")
     @OneToMany(mappedBy="project", fetch = FetchType.LAZY)
     @Filter(name = GenericRepository.CURRENT_DATA_FILTER, condition = "change_end_date IS NULL")
-    private List<ProjectGemeenteRolChangelog> municipalityRole;
-
-    @JsonIgnoreProperties("project")
-    @OneToMany(mappedBy="project", fetch = FetchType.LAZY)
-    @Filter(name = GenericRepository.CURRENT_DATA_FILTER, condition = "change_end_date IS NULL")
     private List<OrganizationProjectRole> organizationProjectRoles;
 
     @JsonIgnoreProperties("project")

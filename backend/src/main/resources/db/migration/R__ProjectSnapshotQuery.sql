@@ -46,7 +46,7 @@ SELECT  q.projectId,
         q.priorityModel            AS priority,
         q.projectPhase,
         q.planningPlanStatus,
-        q.municipalityRoleModel    AS municipalityRole,
+        q.municipalityRoleList    AS municipalityRole,
         q.totalValue,
         q.municipalityList               AS municipality,
         q.districtList             AS district,
@@ -130,20 +130,6 @@ FROM (
                      sms.date <= _now_ AND _now_ < ems.date AND ppc.change_end_date IS NULL AND ppc.project_id = _project_uuid_
                  GROUP BY ppc.project_id, ppc.value_type
              ),
-             active_project_gemeenterol AS (
-                 SELECT
-                     pgc.project_id,
-                     to_jsonb(array_agg(jsonb_build_object('id', pgvs.project_gemeenterol_value_id, 'name', pgvs.value_label))) AS municipality_roleModel
-                 FROM
-                     diwi_testset.project_gemeenterol_changelog pgc
-                         JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pgc.start_milestone_id AND sms.change_end_date IS NULL
-                         JOIN diwi_testset.milestone_state ems ON ems.milestone_id = pgc.end_milestone_id AND ems.change_end_date IS NULL
-                         JOIN diwi_testset.project_gemeenterol_value_state pgvs
-                              ON pgvs.project_gemeenterol_value_id = pgc.project_gemeenterol_value_id AND pgvs.change_end_date IS NULL
-                 WHERE
-                     sms.date <= _now_ AND _now_ < ems.date AND pgc.change_end_date IS NULL AND pgc.project_id = _project_uuid_
-                 GROUP BY pgc.project_id
-             ),
              active_project_woningblok_totalvalue AS (
                  SELECT
                      w.project_id,
@@ -164,7 +150,7 @@ FROM (
              active_project_fixed_props AS (
                  SELECT
                      pcc.project_id, ps.property_name AS fixedPropertyName,
-                     to_jsonb(array_agg(jsonb_build_object('id', pcvs.category_value_id, 'name', pcvs.value_label))) AS locationList
+                     to_jsonb(array_agg(jsonb_build_object('id', pcvs.category_value_id, 'name', pcvs.value_label))) AS fixedPropValuesList
                  FROM
                     diwi_testset.project_category_changelog pcc
                          JOIN diwi_testset.milestone_state sms ON sms.milestone_id = pcc.start_milestone_id AND sms.change_end_date IS NULL
@@ -244,18 +230,6 @@ FROM (
                                    ON ppc.project_priorisering_max_value_id = vsMax.project_priorisering_value_id AND vsMax.change_end_date IS NULL
                  GROUP BY ppc.project_id, ppc.value_type
              ),
-             future_project_gemeenterol AS (
-                 SELECT
-                     pgc.project_id,
-                     to_jsonb(array_agg(jsonb_build_object('id', pgvs.project_gemeenterol_value_id, 'name', pgvs.value_label))) AS municipality_roleModel
-                 FROM
-                     future_projects fp
-                        JOIN diwi_testset.project_gemeenterol_changelog pgc ON fp.id = pgc.project_id
-                            AND pgc.start_milestone_id = fp.start_milestone_id AND pgc.change_end_date IS NULL
-                         JOIN diwi_testset.project_gemeenterol_value_state pgvs
-                              ON pgvs.project_gemeenterol_value_id = pgc.project_gemeenterol_value_id AND pgvs.change_end_date IS NULL
-                 GROUP BY  pgc.project_id
-             ),
              future_project_woningblok_totalvalue AS (
                  SELECT
                      w.project_id,
@@ -274,7 +248,7 @@ FROM (
              future_project_fixed_props AS (
                  SELECT
                      pcc.project_id, ps.property_name AS fixedPropertyName,
-                     to_jsonb(array_agg(jsonb_build_object('id', pcvs.category_value_id, 'name', pcvs.value_label))) AS locationList
+                     to_jsonb(array_agg(jsonb_build_object('id', pcvs.category_value_id, 'name', pcvs.value_label))) AS fixedPropValuesList
                  FROM
                      future_projects fp
                          JOIN diwi_testset.project_category_changelog pcc ON fp.id = pcc.project_id
@@ -352,18 +326,6 @@ FROM (
                                    ON ppc.project_priorisering_max_value_id = vsMax.project_priorisering_value_id AND vsMax.change_end_date IS NULL
                  GROUP BY ppc.project_id, ppc.value_type
              ),
-             past_project_gemeenterol AS (
-                 SELECT
-                     pgc.project_id,
-                     to_jsonb(array_agg(jsonb_build_object('id', pgvs.project_gemeenterol_value_id, 'name', pgvs.value_label))) AS municipality_roleModel
-                 FROM
-                     past_projects pp
-                         JOIN diwi_testset.project_gemeenterol_changelog pgc ON pp.id = pgc.project_id
-                            AND pgc.end_milestone_id = pp.end_milestone_id AND pgc.change_end_date IS NULL
-                         JOIN diwi_testset.project_gemeenterol_value_state pgvs
-                              ON pgvs.project_gemeenterol_value_id = pgc.project_gemeenterol_value_id AND pgvs.change_end_date IS NULL
-                 GROUP BY  pgc.project_id
-             ),
              past_project_woningblok_totalvalue AS (
                  SELECT
                      w.project_id,
@@ -382,7 +344,7 @@ FROM (
              past_project_fixed_props AS (
                  SELECT
                      pcc.project_id, ps.property_name AS fixedPropertyName,
-                     to_jsonb(array_agg(jsonb_build_object('id', pcvs.category_value_id, 'name', pcvs.value_label))) AS locationList
+                     to_jsonb(array_agg(jsonb_build_object('id', pcvs.category_value_id, 'name', pcvs.value_label))) AS fixedPropValuesList
                  FROM
                      past_projects pp
                          JOIN diwi_testset.project_category_changelog pcc ON pp.id = pcc.project_id
@@ -433,11 +395,11 @@ FROM (
                 app.project_prioritiesModel  AS priorityModel,
                 apf.project_fase         AS projectPhase,
                 appp.planning_planstatus AS planningPlanStatus,
-                apg.municipality_roleModel    AS municipalityRoleModel,
+                apmr.fixedPropValuesList AS municipalityRoleList,
                 apwv.total_value         AS totalValue,
-                apr.locationList         AS municipalityList,
-                apd.locationList         AS districtList,
-                apne.locationList         AS neighbourhoodList,
+                apr.fixedPropValuesList  AS municipalityList,
+                apd.fixedPropValuesList  AS districtList,
+                apne.fixedPropValuesList AS neighbourhoodList,
                 leaders.users            AS projectLeaders
          FROM
              active_projects ap
@@ -447,8 +409,8 @@ FROM (
                  LEFT JOIN active_project_fases apf ON apf.project_id = ap.id
                  LEFT JOIN active_project_planologische_planstatus appp ON appp.project_id = ap.id
                  LEFT JOIN active_project_priorities app ON app.project_id = ap.id
-                 LEFT JOIN active_project_gemeenterol apg ON apg.project_id = ap.id
                  LEFT JOIN active_project_woningblok_totalvalue apwv ON apwv.project_id = ap.id
+                 LEFT JOIN active_project_fixed_props apmr ON apmr.project_id = ap.id AND apmr.fixedPropertyName = 'municipalityRole'
                  LEFT JOIN active_project_fixed_props apr ON apr.project_id = ap.id AND apr.fixedPropertyName = 'municipality'
                  LEFT JOIN active_project_fixed_props apd ON apd.project_id = ap.id AND apd.fixedPropertyName = 'district'
                  LEFT JOIN active_project_fixed_props apne ON apne.project_id = ap.id AND apne.fixedPropertyName = 'neighbourhood'
@@ -471,11 +433,11 @@ FROM (
                 fpp.project_prioritiesModel  AS priorityModel,
                 fpf.project_fase         AS projectPhase,
                 fppp.planning_planstatus AS planningPlanStatus,
-                fpg.municipality_roleModel    AS municipalityRoleModel,
+                fpmr.fixedPropValuesList AS municipalityRoleList,
                 fpwv.total_value         AS totalValue,
-                fpr.locationList         AS municipalityList,
-                fpd.locationList         AS districtList,
-                fpne.locationList         AS neighbourhoodList,
+                fpr.fixedPropValuesList  AS municipalityList,
+                fpd.fixedPropValuesList  AS districtList,
+                fpne.fixedPropValuesList AS neighbourhoodList,
                 leaders.users            AS projectLeaders
          FROM
              future_projects fp
@@ -485,8 +447,8 @@ FROM (
                  LEFT JOIN future_project_fases fpf ON fpf.project_id = fp.id
                  LEFT JOIN future_project_planologische_planstatus fppp ON fppp.project_id = fp.id
                  LEFT JOIN future_project_priorities fpp ON fpp.project_id = fp.id
-                 LEFT JOIN future_project_gemeenterol fpg ON fpg.project_id = fp.id
                  LEFT JOIN future_project_woningblok_totalvalue fpwv ON fpwv.project_id = fp.id
+                 LEFT JOIN future_project_fixed_props fpmr ON fpmr.project_id = fp.id AND fpmr.fixedPropertyName = 'municipalityRole'
                  LEFT JOIN future_project_fixed_props fpr ON fpr.project_id = fp.id AND fpr.fixedPropertyName = 'municipality'
                  LEFT JOIN future_project_fixed_props fpd ON fpd.project_id = fp.id AND fpd.fixedPropertyName = 'district'
                  LEFT JOIN future_project_fixed_props fpne ON fpne.project_id = fp.id AND fpne.fixedPropertyName = 'neighbourhood'
@@ -509,11 +471,11 @@ FROM (
                 ppp.project_prioritiesModel  AS priorityModel,
                 ppf.project_fase         AS projectPhase,
                 pppp.planning_planstatus AS planningPlanStatus,
-                ppg.municipality_roleModel    AS municipalityRoleModel,
+                ppmr.fixedPropValuesList AS municipalityRoleList,
                 ppwv.total_value         AS totalValue,
-                ppr.locationList         AS municipalityList,
-                ppd.locationList         AS districtList,
-                ppne.locationList         AS neighbourhoodList,
+                ppr.fixedPropValuesList  AS municipalityList,
+                ppd.fixedPropValuesList  AS districtList,
+                ppne.fixedPropValuesList AS neighbourhoodList,
                 leaders.users            AS projectLeaders
          FROM
              past_projects pp
@@ -523,8 +485,8 @@ FROM (
                  LEFT JOIN past_project_fases ppf ON ppf.project_id = pp.id
                  LEFT JOIN past_project_planologische_planstatus pppp ON pppp.project_id = pp.id
                  LEFT JOIN past_project_priorities ppp ON ppp.project_id = pp.id
-                 LEFT JOIN past_project_gemeenterol ppg ON ppg.project_id = pp.id
                  LEFT JOIN past_project_woningblok_totalvalue ppwv ON ppwv.project_id = pp.id
+                 LEFT JOIN past_project_fixed_props ppmr ON ppmr.project_id = pp.id AND ppmr.fixedPropertyName = 'municipalityRole'
                  LEFT JOIN past_project_fixed_props ppr ON ppr.project_id = pp.id AND ppr.fixedPropertyName = 'municipality'
                  LEFT JOIN past_project_fixed_props ppd ON ppd.project_id = pp.id AND ppd.fixedPropertyName = 'district'
                  LEFT JOIN past_project_fixed_props ppne ON ppne.project_id = pp.id AND ppne.fixedPropertyName = 'neighbourhood'
