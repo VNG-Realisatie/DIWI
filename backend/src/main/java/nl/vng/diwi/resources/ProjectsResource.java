@@ -1,7 +1,14 @@
 package nl.vng.diwi.resources;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -26,6 +33,8 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import nl.vng.diwi.config.ProjectConfig;
 import nl.vng.diwi.dal.AutoCloseTransaction;
 import nl.vng.diwi.dal.FilterPaginationSorting;
 import nl.vng.diwi.dal.GenericRepository;
@@ -52,6 +61,7 @@ import nl.vng.diwi.models.ProjectTimelineModel;
 import nl.vng.diwi.models.ProjectUpdateModel;
 import nl.vng.diwi.models.ProjectUpdateModel.ProjectProperty;
 import nl.vng.diwi.models.SelectModel;
+import nl.vng.diwi.models.SingleValueOrRangeModel;
 import nl.vng.diwi.models.superclasses.ProjectCreateSnapshotModel;
 import nl.vng.diwi.models.superclasses.ProjectMinimalSnapshotModel;
 import nl.vng.diwi.rest.VngBadRequestException;
@@ -59,28 +69,43 @@ import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.security.SecurityRoleConstants;
+import nl.vng.diwi.services.ExcelImportService;
 import nl.vng.diwi.services.PropertiesService;
 import nl.vng.diwi.services.HouseblockService;
 import nl.vng.diwi.services.ProjectService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 @Path("/projects")
 @RolesAllowed({SecurityRoleConstants.Admin})
 public class ProjectsResource {
+
+    private static final Logger logger = LogManager.getLogger();
+    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+
     private final VngRepository repo;
     private final ProjectService projectService;
     private final HouseblockService houseblockService;
     private final PropertiesService propertiesService;
+    private final ProjectConfig projectConfig;
+    private final ExcelImportService excelImportService;
 
     @Inject
     public ProjectsResource(
             GenericRepository genericRepository,
             ProjectService projectService,
             HouseblockService houseblockService,
-            PropertiesService propertiesService) {
+            PropertiesService propertiesService,
+            ProjectConfig projectConfig,
+            ExcelImportService excelImportService) {
         this.repo = new VngRepository(genericRepository.getDal().getSession());
         this.projectService = projectService;
         this.houseblockService = houseblockService;
         this.propertiesService = propertiesService;
+        this.projectConfig = projectConfig;
+        this.excelImportService = excelImportService;
     }
 
     @POST
@@ -229,7 +254,7 @@ public class ProjectsResource {
             case NUMERIC -> {
                 var currentNumericValue = currentProjectCP.getNumericValue();
                 var updateNumericValue = projectCPUpdateModel.getNumericValue();
-                if (updateNumericValue == null || !updateNumericValue.isValid()) {
+                if (updateNumericValue == null || !updateNumericValue.isValid(false)) {
                     throw new VngBadRequestException("Numeric value does not have a valid format.");
                 }
                 if (!Objects.equals(currentNumericValue.getValue() != null ? currentNumericValue.getValue().doubleValue() : null,
@@ -249,7 +274,7 @@ public class ProjectsResource {
                 }
             }
             case ORDINAL -> {
-                if (projectCPUpdateModel.getOrdinals() == null || !projectCPUpdateModel.getOrdinals().isValid()) {
+                if (projectCPUpdateModel.getOrdinals() == null || !projectCPUpdateModel.getOrdinals().isValid(false)) {
                     throw new VngBadRequestException("Ordinal value does not have a valid format.");
                 }
                 if (!Objects.equals(currentProjectCP.getOrdinals(), projectCPUpdateModel.getOrdinals())) {
@@ -265,27 +290,29 @@ public class ProjectsResource {
         return projectService.getProjectCustomProperties(repo, projectUuid);
     }
 
-    @POST
-    @Path("/{id}/update")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public ProjectSnapshotModel updateProjectSingleField(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid, ProjectUpdateModel projectUpdateModel)
-            throws VngNotFoundException, VngBadRequestException, VngServerErrorException {
+// TODO - endpoint not currently used, there is a ticket to fix it when it will be needed
 
-        String validationError = projectUpdateModel.validate(repo);
-        if (validationError != null) {
-            throw new VngBadRequestException(validationError);
-        }
-        LocalDate updateDate = LocalDate.now();
-
-        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            Project project = projectService.getCurrentProjectAndPerformPreliminaryUpdateChecks(repo, projectUuid);
-            updateProjectProperty(project, projectUpdateModel, loggedUser, updateDate, ZonedDateTime.now());
-            transaction.commit();
-        }
-
-        return projectService.getProjectSnapshot(repo, projectUuid);
-    }
+//    @POST
+//    @Path("/{id}/update")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    public ProjectSnapshotModel updateProjectSingleField(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid, ProjectUpdateModel projectUpdateModel)
+//            throws VngNotFoundException, VngBadRequestException, VngServerErrorException {
+//
+//        String validationError = projectUpdateModel.validate(repo);
+//        if (validationError != null) {
+//            throw new VngBadRequestException(validationError);
+//        }
+//        LocalDate updateDate = LocalDate.now();
+//
+//        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+//            Project project = projectService.getCurrentProjectAndPerformPreliminaryUpdateChecks(repo, projectUuid);
+//            updateProjectProperty(project, projectUpdateModel, loggedUser, updateDate, ZonedDateTime.now());
+//            transaction.commit();
+//        }
+//
+//        return projectService.getProjectSnapshot(repo, projectUuid);
+//    }
 
     @GET
     @Path("/{id}/plots")
@@ -404,18 +431,11 @@ public class ProjectsResource {
                 }
             }
             case municipalityRole -> {
-                List<UUID> currentMunicipalityRolesIds = projectSnapshotModelCurrent.getMunicipalityRole().stream().map(SelectModel::getId).toList();
-                List<UUID> toUpdateMunicipalityRolesIds = projectSnapshotModelToUpdate.getMunicipalityRole().stream().map(SelectModel::getId).toList();
-                currentMunicipalityRolesIds.forEach(id -> {
-                    if (!toUpdateMunicipalityRolesIds.contains(id)) {
-                        projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.municipalityRole, null, id));
-                    }
-                });
-                toUpdateMunicipalityRolesIds.forEach(id -> {
-                    if (!currentMunicipalityRolesIds.contains(id)) {
-                        projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.municipalityRole, id, null));
-                    }
-                });
+                List<SelectModel> currentMunicipalityRoles = projectSnapshotModelCurrent.getMunicipalityRole();
+                List<SelectModel> toUpdateMunicipalityRoles = projectSnapshotModelToUpdate.getMunicipalityRole();
+                if (currentMunicipalityRoles.size() != toUpdateMunicipalityRoles.size() || !currentMunicipalityRoles.containsAll(toUpdateMunicipalityRoles)) {
+                    projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.municipalityRole, toUpdateMunicipalityRoles.stream().map(s -> s.getId().toString()).toList()));
+                }
             }
             case projectLeaders -> {
                 List<UUID> currentLeadersUuids = projectSnapshotModelCurrent.getProjectLeaders().stream().map(OrganizationModel::getUuid).toList();
@@ -536,7 +556,9 @@ public class ProjectsResource {
         }
         case priority -> {
             UUID priorityValue = (projectUpdateModel.getValue() == null) ? null : UUID.fromString(projectUpdateModel.getValue());
-            projectService.updateProjectPriority(repo, project, priorityValue, projectUpdateModel.getMin(), projectUpdateModel.getMax(), loggedUser.getUuid(),
+            UUID propertyId = propertiesService.getPropertyUuid(repo, Constants.FIXED_PROPERTY_PRIORITY);
+            var newPriority = new SingleValueOrRangeModel<>(priorityValue, projectUpdateModel.getMin(), projectUpdateModel.getMax());
+            projectService.updateProjectOrdinalCustomProperty(repo, project, propertyId, newPriority, loggedUser.getUuid(),
                     updateDate);
         }
         case projectPhase ->
@@ -552,9 +574,9 @@ public class ProjectsResource {
             projectService.updateProjectOrganizations(repo, project, ProjectRole.OWNER, organizationToAdd, organizationToRemove, loggedUser.getUuid());
         }
         case municipalityRole -> {
-            UUID municipalityRoleToAdd = projectUpdateModel.getAdd();
-            UUID municipalityRoleToRemove = projectUpdateModel.getRemove();
-            projectService.updateProjectMunicipalityRoles(repo, project, municipalityRoleToAdd, municipalityRoleToRemove, loggedUser.getUuid(), updateDate);
+            Set<UUID> municipalityRoleCatUuids = projectUpdateModel.getValues().stream().map(UUID::fromString).collect(Collectors.toSet());
+            UUID propertyId = propertiesService.getPropertyUuid(repo, Constants.FIXED_PROPERTY_MUNICIPALITY_ROLE);
+            projectService.updateProjectCategoryProperty(repo, project, propertyId, municipalityRoleCatUuids, loggedUser.getUuid(), updateDate);
         }
         case municipality -> {
             Set<UUID> municipalityCatUuids = projectUpdateModel.getValues().stream().map(UUID::fromString).collect(Collectors.toSet());
@@ -571,6 +593,50 @@ public class ProjectsResource {
             UUID propertyId = propertiesService.getPropertyUuid(repo, Constants.FIXED_PROPERTY_NEIGHBOURHOOD);
             projectService.updateProjectCategoryProperty(repo, project, propertyId, neighbourhoodCatUuids, loggedUser.getUuid(), updateDate);
         }
+        }
+    }
+
+    @POST
+    @Path("/import")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response importExcelFile(@FormDataParam("uploadFile") InputStream inputStream,
+                                    @FormDataParam("uploadFile") FormDataContentDisposition formDataContentDisposition,
+                                    @Context LoggedUser loggedUser) {
+
+        //save file to disk
+        String fileSuffix = LocalDateTime.now().format(formatter);
+        String filename = "excel_import_" + fileSuffix + ".xlsx";
+        String filePath = projectConfig.getDataDir() + filename;
+        java.nio.file.Path path = Paths.get(filePath);
+        try {
+            Files.copy(inputStream, path, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            logger.error("Could not save excel file to disk", e);
+            throw new VngServerErrorException("Could not save excel file to disk");
+        }
+
+        //process excel from file written on disk
+        try {
+            Map<String, Object> result = excelImportService.importExcel(filePath, repo, loggedUser.getUuid());
+            if (result.containsKey(ExcelImportService.errors)) {
+                deleteFile(path);
+                return Response.status(Response.Status.BAD_REQUEST).entity(result.get(ExcelImportService.errors)).build();
+            }
+            return Response.ok(result.get(ExcelImportService.result)).build();
+        } catch (Exception ex) {
+            logger.error("Error while uploading excel", ex);
+            deleteFile(path);
+            throw new VngServerErrorException("Error while uploading excel");
+        }
+
+    }
+
+    private void deleteFile(java.nio.file.Path path) {
+        try {   //delete excel file from disk since no changes were made in the database
+            Files.deleteIfExists(path);
+        } catch (IOException e) {
+            logger.error("Error while deleting excel file which failed upload {}", path, e);
         }
     }
 }
