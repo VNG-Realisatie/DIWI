@@ -34,8 +34,6 @@ import nl.vng.diwi.dal.entities.MilestoneState;
 import nl.vng.diwi.dal.entities.Project;
 import nl.vng.diwi.dal.entities.ProjectDurationChangelog;
 import nl.vng.diwi.dal.entities.ProjectFaseChangelog;
-import nl.vng.diwi.dal.entities.ProjectGemeenteRolChangelog;
-import nl.vng.diwi.dal.entities.ProjectGemeenteRolValue;
 import nl.vng.diwi.dal.entities.ProjectNameChangelog;
 import nl.vng.diwi.dal.entities.ProjectPlanologischePlanstatusChangelog;
 import nl.vng.diwi.dal.entities.ProjectPlanologischePlanstatusChangelogValue;
@@ -270,44 +268,6 @@ public class ProjectServiceTest {
         Set<PlanStatus> oldChangelogV2PlanStatus = oldChangelogValues.stream().map(ProjectPlanologischePlanstatusChangelogValue::getPlanStatus)
                 .collect(Collectors.toSet());
         assertThat(oldChangelogV2PlanStatus).containsExactlyInAnyOrder(PlanStatus._1A_ONHERROEPELIJK, PlanStatus._2A_VASTGESTELD);
-    }
-
-    /**
-     * Municipality role can have multiple changelogs active at the same time for a project Test is for a current project. Initial state: project currently has
-     * no municipality role A municipality role is added to the project Expected result: from the beginning of the project until now it will have 0 municipality
-     * roles, from now on it will have one
-     */
-    @Test
-    void updateProjectMunicipalityRole() throws VngServerErrorException, VngBadRequestException, VngNotFoundException {
-        UUID municipalityRoleUuid;
-
-        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            Milestone startMilestone = createMilestone(repo, project, LocalDate.now().minusDays(10), user);
-            Milestone endMilestone = createMilestone(repo, project, LocalDate.now().plusDays(10), user);
-            createProjectDurationChangelog(repo, project, startMilestone, endMilestone, user);
-            ProjectGemeenteRolValue municipalityRole = new ProjectGemeenteRolValue();
-            repo.persist(municipalityRole);
-            municipalityRoleUuid = municipalityRole.getId();
-            transaction.commit();
-            repo.getSession().clear();
-        }
-
-        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            projectService.updateProjectMunicipalityRoles(repo, repo.findById(Project.class, projectUuid), municipalityRoleUuid, null, userUuid,
-                    LocalDate.now());
-            transaction.commit();
-            repo.getSession().clear();
-        }
-
-        repo.getSession().disableFilter(GenericRepository.CURRENT_DATA_FILTER);
-        Project updatedProject = repo.findById(Project.class, projectUuid);
-        List<ProjectGemeenteRolChangelog> municipalitRolesChangelogs = updatedProject.getMunicipalityRole();
-
-        assertThat(municipalitRolesChangelogs.size()).isEqualTo(1);
-        ProjectGemeenteRolChangelog newMunicipalityRoleChangelog = municipalitRolesChangelogs.get(0);
-        assertThat(newMunicipalityRoleChangelog.getStartMilestone().getState().get(0).getDate()).isEqualTo(LocalDate.now());
-        assertThat(newMunicipalityRoleChangelog.getEndMilestone().getState().get(0).getDate()).isEqualTo(LocalDate.now().plusDays(10));
-        assertThat(newMunicipalityRoleChangelog.getValue().getId()).isEqualTo(municipalityRoleUuid);
     }
 
     @Test

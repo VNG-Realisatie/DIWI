@@ -96,10 +96,10 @@ FROM (
              ),
              active_projects_ordinalCP AS (
                  SELECT
-                     ap.id, poc.eigenschap_id, poc.value_id AS ordinal_value_id, poc.min_value_id AS ordinal_min_value_id, poc.max_value_id AS ordinal_max_value_id
+                     ap.id, poc.property_id, poc.value_id AS ordinal_value_id, poc.min_value_id AS ordinal_min_value_id, poc.max_value_id AS ordinal_max_value_id
                  FROM
                      active_projects ap
-                         JOIN diwi_testset.project_maatwerk_ordinaal_changelog poc ON ap.id = poc.project_id AND poc.change_end_date IS NULL
+                         JOIN diwi_testset.project_ordinal_changelog poc ON ap.id = poc.project_id AND poc.change_end_date IS NULL
                          JOIN diwi_testset.milestone_state sms ON sms.milestone_id = poc.start_milestone_id AND sms.change_end_date IS NULL
                          JOIN diwi_testset.milestone_state ems ON ems.milestone_id = poc.end_milestone_id AND ems.change_end_date IS NULL
                  WHERE
@@ -151,10 +151,10 @@ FROM (
              ),
              future_projects_ordinalCP AS (
                  SELECT
-                     fp.id, poc.eigenschap_id, poc.value_id AS ordinal_value_id, poc.min_value_id AS ordinal_min_value_id, poc.max_value_id AS ordinal_max_value_id
+                     fp.id, poc.property_id, poc.value_id AS ordinal_value_id, poc.min_value_id AS ordinal_min_value_id, poc.max_value_id AS ordinal_max_value_id
                  FROM
                      future_projects fp
-                         JOIN diwi_testset.project_maatwerk_ordinaal_changelog poc ON fp.id = poc.project_id
+                         JOIN diwi_testset.project_ordinal_changelog poc ON fp.id = poc.project_id
                          AND poc.start_milestone_id = fp.start_milestone_id AND poc.change_end_date IS NULL
 
              ),
@@ -204,10 +204,10 @@ FROM (
              ),
              past_projects_ordinalCP AS (
                  SELECT
-                     pp.id, poc.eigenschap_id, poc.value_id AS ordinal_value_id, poc.min_value_id AS ordinal_min_value_id, poc.max_value_id AS ordinal_max_value_id
+                     pp.id, poc.property_id, poc.value_id AS ordinal_value_id, poc.min_value_id AS ordinal_min_value_id, poc.max_value_id AS ordinal_max_value_id
                  FROM
                      past_projects pp
-                         JOIN diwi_testset.project_maatwerk_ordinaal_changelog poc ON pp.id = poc.project_id
+                         JOIN diwi_testset.project_ordinal_changelog poc ON pp.id = poc.project_id
                             AND poc.end_milestone_id = pp.end_milestone_id AND poc.change_end_date IS NULL
 
              )
@@ -295,7 +295,7 @@ FROM (
              apo.ordinal_value_id AS ordinalValueId,
              apo.ordinal_min_value_id AS ordinalMinValueId,
              apo.ordinal_max_value_id AS ordinalMaxValueId,
-             apo.eigenschap_id AS customPropertyId,
+             apo.property_id AS customPropertyId,
              'ORDINAL'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
          FROM active_projects ap
              JOIN active_projects_ordinalCP apo ON ap.id = apo.id
@@ -382,7 +382,7 @@ FROM (
              null AS numericValueType,
              null AS textValue,
              CAST (null AS UUID[])  AS categories,
-             fpo.eigenschap_id AS customPropertyId,
+             fpo.property_id AS customPropertyId,
              fpo.ordinal_value_id AS ordinalValueId,
              fpo.ordinal_min_value_id AS ordinalMinValueId,
              fpo.ordinal_max_value_id AS ordinalMaxValueId,
@@ -472,7 +472,7 @@ FROM (
              null AS numericValueType,
              null AS textValue,
              CAST (null AS UUID[])  AS categories,
-             ppo.eigenschap_id AS customPropertyId,
+             ppo.property_id AS customPropertyId,
              ppo.ordinal_value_id AS ordinalValueId,
              ppo.ordinal_min_value_id AS ordinalMinValueId,
              ppo.ordinal_max_value_id AS ordinalMaxValueId,

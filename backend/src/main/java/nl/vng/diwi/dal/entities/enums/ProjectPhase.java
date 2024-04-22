@@ -1,6 +1,9 @@
 package nl.vng.diwi.dal.entities.enums;
 
 public enum ProjectPhase {
+
+    //DO NOT CHANGE THE ORDER
+
     _1_CONCEPT,
     _2_INITIATIVE,
     _3_DEFINITION,
