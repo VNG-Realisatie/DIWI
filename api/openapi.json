@@ -1293,7 +1293,7 @@
           },
           "projectPhase": {
             "type": "string",
-            "enum": ["_1_INITIATIEFFASE", "_2_PROJECTFASE", "_3_VERGUNNINGSFASE", "_4_REALISATIEFASE", "_5_OPLEVERINGSFASE"]
+            "enum": ["_1_CONCEPT", "_2_INITIATIVE", "_3_DEFINITION", "_4_DESIGN", "_5_PREPARATION", "_6_REALIZATION", "_7_AFTERCARE"]
           },
           "projectId": {
             "type": "string",
@@ -1325,7 +1325,7 @@
           },
           "projectPhase": {
             "type": "string",
-            "enum": ["_1_INITIATIEFFASE", "_2_PROJECTFASE", "_3_VERGUNNINGSFASE", "_4_REALISATIEFASE", "_5_OPLEVERINGSFASE"]
+            "enum": ["_1_CONCEPT", "_2_INITIATIVE", "_3_DEFINITION", "_4_DESIGN", "_5_PREPARATION", "_6_REALIZATION", "_7_AFTERCARE"]
           }
         }
       },
@@ -1367,7 +1367,7 @@
           },
           "projectPhase": {
             "type": "string",
-            "enum": ["_1_INITIATIEFFASE", "_2_PROJECTFASE", "_3_VERGUNNINGSFASE", "_4_REALISATIEFASE", "_5_OPLEVERINGSFASE"]
+            "enum": ["_1_CONCEPT", "_2_INITIATIVE", "_3_DEFINITION", "_4_DESIGN", "_5_PREPARATION", "_6_REALIZATION", "_7_AFTERCARE"]
           },
           "projectId": {
             "type": "string",
@@ -1486,7 +1486,7 @@
           },
           "projectPhase": {
             "type": "string",
-            "enum": ["_1_INITIATIEFFASE", "_2_PROJECTFASE", "_3_VERGUNNINGSFASE", "_4_REALISATIEFASE", "_5_OPLEVERINGSFASE"]
+            "enum": ["_1_CONCEPT", "_2_INITIATIVE", "_3_DEFINITION", "_4_DESIGN", "_5_PREPARATION", "_6_REALIZATION", "_7_AFTERCARE"]
           },
           "projectId": {
             "type": "string",
@@ -1649,7 +1649,7 @@
           },
           "data": {
             "type": "string",
-            "enum": ["_1_INITIATIEFFASE", "_2_PROJECTFASE", "_3_VERGUNNINGSFASE", "_4_REALISATIEFASE", "_5_OPLEVERINGSFASE"]
+            "enum": ["_1_CONCEPT", "_2_INITIATIVE", "_3_DEFINITION", "_4_DESIGN", "_5_PREPARATION", "_6_REALIZATION", "_7_AFTERCARE"]
           }
         }
       },
