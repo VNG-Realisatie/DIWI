@@ -40,8 +40,8 @@ public class SingleValueOrRangeModel<T extends Comparable<? super T>> {
         } else if (value != null) {
             return min == null && max == null;
         } else {
-            if (acceptsInfiniteUpperBound) {
-                return min != null;
+            if (max == null) {
+                return min != null && acceptsInfiniteUpperBound;
             } else {
                 return min != null && max != null && min.compareTo(max) < 0;
             }
