@@ -28,7 +28,7 @@ it("should enter a range in numeric range input and check the value passed to up
     expect(updateCallBack).toHaveBeenLastCalledWith({ value: null, min: 10, max: 20 });
 });
 
-it("should handle only min and treat as value", () => {
+it("should handle only min and treat as open ended range", () => {
     const updateCallBack = jest.fn();
     const value = { value: null, min: null, max: null };
 
@@ -38,7 +38,7 @@ it("should handle only min and treat as value", () => {
     userEvent.type(input, "10-");
     userEvent.keyboard("{enter}");
 
-    expect(updateCallBack).toHaveBeenLastCalledWith({ value: 10, min: null, max: null });
+    expect(updateCallBack).toHaveBeenLastCalledWith({ value: null, min: 10, max: null });
 });
 
 it("should handle only max and treat as value", () => {
@@ -48,7 +48,7 @@ it("should handle only max and treat as value", () => {
     render(<NumericRangeInput value={value} updateCallBack={updateCallBack} labelText="hi" />);
 
     const input = screen.getByRole("textbox");
-    userEvent.type(input, "10-");
+    userEvent.type(input, "-10");
     userEvent.keyboard("{enter}");
 
     expect(updateCallBack).toHaveBeenLastCalledWith({ value: 10, min: null, max: null });

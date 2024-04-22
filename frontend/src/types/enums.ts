@@ -21,6 +21,8 @@ export const mutationKindOptions = ["CONSTRUCTION", "DEMOLITION"];
 export type OwnershipValueType = components["schemas"]["OwnershipValue"]["type"];
 export const ownershipValueOptions = ["KOOPWONING", "HUURWONING_PARTICULIERE_VERHUURDER", "HUURWONING_WONINGCORPORATIE"];
 
+export type ConfidentialityLevelOptions = "PRIVE" | "INTERN_UITVOERING" | "INTERN_RAPPORTAGE" | "EXTERN_RAPPORTAGE" | "OPENBAAR";
+
 export type ObjectType = "PROJECT" | "WONINGBLOK";
 export const objectType = ["PROJECT", "WONINGBLOK"];
 
