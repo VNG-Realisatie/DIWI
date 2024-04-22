@@ -23,11 +23,13 @@ export const planTypeOptions: GenericOptionType<PlanTypeOptions>[] = [
 ];
 
 export const projectPhaseOptions: GenericOptionType<ProjectPhaseOptions>[] = [
-    { id: "_1_INITIATIEFFASE", name: "_1_INITIATIEFFASE" },
-    { id: "_2_PROJECTFASE", name: "_2_PROJECTFASE" },
-    { id: "_3_VERGUNNINGSFASE", name: "_3_VERGUNNINGSFASE" },
-    { id: "_4_REALISATIEFASE", name: "_4_REALISATIEFASE" },
-    { id: "_5_OPLEVERINGSFASE", name: "_5_OPLEVERINGSFASE" },
+    { id: "_1_CONCEPT", name: "_1_CONCEPT" },
+    { id: "_2_INITIATIVE", name: "_2_INITIATIVE" },
+    { id: "_3_DEFINITION", name: "_3_DEFINITION" },
+    { id: "_4_DESIGN", name: "_4_DESIGN" },
+    { id: "_5_PREPARATION", name: "_5_PREPARATION" },
+    { id: "_6_REALIZATION", name: "_6_REALIZATION" },
+    { id: "_7_AFTERCARE", name: "_7_AFTERCARE" },
 ];
 
 export const confidentialityLevelOptions: OptionType[] = [

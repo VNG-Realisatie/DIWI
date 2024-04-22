@@ -12,7 +12,7 @@ const ProjectWizard = () => {
         projectColor: "#FF5733",
         projectLeaders: [],
         projectOwners: [],
-        projectPhase: "_1_INITIATIEFFASE",
+        projectPhase: "_1_CONCEPT",
         planningPlanStatus: [],
     });
     const { projectId } = useParams();
