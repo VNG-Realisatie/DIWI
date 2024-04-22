@@ -23,19 +23,19 @@ const NumericRangeLabel = ({ value }: { value: RangeValue }) => {
     const { t } = useTranslation();
     if (value.value !== null) {
         return <Typography>{value.value}</Typography>;
-    } else if (value.max != null && value.min != null) {
+    } else if (value.max !== null && value.min !== null) {
         return (
             <Typography>
                 {value.min} - {value.max}
             </Typography>
         );
-    } else if (value.min != null) {
+    } else if (value.min !== null) {
         return (
             <Typography>
                 {value.min} {t("generic.andMore")}
             </Typography>
         );
-    } else if (value.max != null) {
+    } else if (value.max !== null) {
         return (
             <Typography>
                 {value.max} {t("generic.andLess")}
