@@ -12,7 +12,7 @@ import { MenuProps } from "../../utils/menuProps";
 import { OrganizationSelect } from "../../widgets/OrganizationSelect";
 import { confidentialityLevelOptions, planTypeOptions, planningPlanStatus, projectPhaseOptions } from "../table/constants";
 import { LabelComponent } from "./LabelComponent";
-import { ProjectPhaseOptions } from "../../types/enums";
+import { ConfidentialityLevelOptions, PlanStatusOptions, ProjectPhaseOptions } from "../../types/enums";
 
 type Props = {
     setCreateProjectForm: (a: Partial<Project>) => void;
@@ -171,12 +171,12 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         getOptionLabel={(option) => option.name ?? ""}
                         value={createProjectForm?.priority?.value ?? null}
                         filterSelectedOptions
-                        onChange={(_: any, newValue: SelectModel | null) =>
+                        onChange={(_, newValue) =>
                             setCreateProjectForm({
                                 ...createProjectForm,
                                 priority: {
                                     ...createProjectForm?.priority,
-                                    value: newValue,
+                                    value: newValue || undefined,
                                 },
                             })
                         }
@@ -253,7 +253,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         onChange={(e) =>
                             setCreateProjectForm({
                                 ...createProjectForm,
-                                confidentialityLevel: e.target.value,
+                                confidentialityLevel: e.target.value as ConfidentialityLevelOptions,
                             })
                         }
                     >
@@ -279,7 +279,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         value={createProjectForm?.planningPlanStatus ?? []}
                         onChange={handlePlanStatusChange}
                         input={<OutlinedInput />}
-                        renderValue={(selected) => selected.map((s: string[]) => t(`projectTable.planningPlanStatus.${s}`)).join(", ")}
+                        renderValue={(selected) => selected.map((s: PlanStatusOptions) => t(`projectTable.planningPlanStatus.${s}`)).join(", ")}
                         MenuProps={MenuProps}
                     >
                         {planningPlanStatus.map((pt) => (
