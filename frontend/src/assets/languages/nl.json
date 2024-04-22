@@ -21,7 +21,9 @@
       "project": "Project",
       "houseblock": "Woningblok",
       "true": "Ja",
-      "false": "Nee"
+      "false": "Nee",
+      "andMore": "en meer",
+      "andLess": "en minder"
     },
     "createProject": {
       "information": "Project informatie",
