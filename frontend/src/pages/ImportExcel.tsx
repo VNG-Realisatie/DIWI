@@ -5,6 +5,7 @@ import { useState } from "react";
 import useAlert from "../hooks/useAlert";
 import { useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
+import { importExcelProjects } from "../api/importServices";
 
 type Props = {
     excelImport: boolean;
@@ -39,17 +40,21 @@ export const ImportExcel = ({ excelImport }: Props) => {
                             id="file-input"
                             type="file"
                             onChange={(e) => {
-                                //ToDo Add upload endpoint
-                                const file = e.target.files && e.target.files[0];
+                                const file = e.target.files;
                                 if (file) {
-                                    // ToDo: Add upload logic here
-                                    console.log("File uploaded:", file);
+                                    importExcelProjects(file as FileList)
+                                        .then((res) => {
+                                            console.log(res);
+                                            console.log("File uploaded:", file);
+                                            setUploaded(true);
+                                            setAlert("Excel-bestand succesvol geüpload.", "success");
+                                            navigate(Paths.importExcelProjects.path);
+                                        })
+                                        .catch((error) => {
+                                            console.error("File upload failed:", error);
+                                            setAlert("Er is een fout opgetreden bij het uploaden van het bestand.", "error");
+                                        });
                                 }
-                                setTimeout(() => {
-                                    setUploaded(true);
-                                    setAlert("Excel-bestand succesvol geüpload.", "success");
-                                    navigate(Paths.importExcelProjects.path);
-                                }, 3000);
                             }}
                         />
                     </label>
