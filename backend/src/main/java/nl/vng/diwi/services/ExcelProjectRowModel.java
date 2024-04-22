@@ -1,5 +1,6 @@
 package nl.vng.diwi.services;
 
+import io.hypersistence.utils.hibernate.type.range.Range;
 import lombok.Data;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.Houseblock;
@@ -16,6 +17,7 @@ import nl.vng.diwi.dal.entities.HouseblockMutatieChangelog;
 import nl.vng.diwi.dal.entities.HouseblockNameChangelog;
 import nl.vng.diwi.dal.entities.HouseblockNumericCustomPropertyChangelog;
 import nl.vng.diwi.dal.entities.HouseblockOrdinalCustomPropertyChangelog;
+import nl.vng.diwi.dal.entities.HouseblockOwnershipValueChangelog;
 import nl.vng.diwi.dal.entities.HouseblockPhysicalAppearanceChangelogValue;
 import nl.vng.diwi.dal.entities.HouseblockProgrammingChangelog;
 import nl.vng.diwi.dal.entities.HouseblockState;
@@ -48,6 +50,7 @@ import nl.vng.diwi.dal.entities.enums.GroundPosition;
 import nl.vng.diwi.dal.entities.enums.HouseType;
 import nl.vng.diwi.dal.entities.enums.MilestoneStatus;
 import nl.vng.diwi.dal.entities.enums.MutationType;
+import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
@@ -55,6 +58,7 @@ import nl.vng.diwi.dal.entities.enums.ProjectStatus;
 import nl.vng.diwi.dal.entities.enums.ValueType;
 import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
 import nl.vng.diwi.models.ExcelError;
+import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.models.SelectModel;
 
 import java.time.LocalDate;
@@ -75,9 +79,6 @@ public class ExcelProjectRowModel {
     private String projectName;
     private PlanType planType;
     private Boolean programming;
-
-    private String priority; //TODO
-    private String municipalityRole; //TODO
 
     private ProjectStatus projectStatus;
     private LocalDate projectStartDate;
@@ -108,7 +109,8 @@ public class ExcelProjectRowModel {
         private String name;
 
         private Map<HouseType, Integer> houseTypeMap = new HashMap<>();
-        //TODO: eigendom_en_waarde
+        private Map<OwnershipType, Integer> ownershipTypeMap = new HashMap<>();
+        private List<HouseblockSnapshotModel.OwnershipValue> ownershipValues = new ArrayList<>();
         private Map<UUID, Integer> physicalAppearanceMap = new HashMap<>();
         private Map<UUID, Integer> targetGroupMap = new HashMap<>();
         private Map<GroundPosition, Integer> groundPositionMap = new HashMap<>();
@@ -142,7 +144,7 @@ public class ExcelProjectRowModel {
                 latestDeliveryDate = projectRowModel.projectEndDate;
             }
 
-            //TODO
+            //TODO - houseblock validations
         }
     }
 
@@ -491,30 +493,32 @@ public class ExcelProjectRowModel {
             }
         }
 
-        //TODO
-//        var ownershipValues = houseblockSnapshotModel.getOwnershipValue();
-//        if (ownershipValues != null) {
-//            ownershipValues.forEach(ov -> {
-//                var ownershipValue = new HouseblockOwnershipValueChangelog();
-//                setChangelogValues.accept(ownershipValue);
-//                ownershipValue.setHouseblock(houseblock);
-//                if (ov.getValue().getValue() != null) {
-//                    ownershipValue.setValue(ov.getValue().getValue());
-//                    ownershipValue.setValueType(ValueType.SINGLE_VALUE);
-//                } else if (ov.getValue().getMin() != null && ov.getValue().getMax() != null) {
-//                    ownershipValue.setValueRange(Range.closed(ov.getValue().getMin(), ov.getValue().getMax()));
-//                }
-//                if (ov.getRentalValue().getValue() != null) {
-//                    ownershipValue.setRentalValue(ov.getRentalValue().getValue());
-//                    ownershipValue.setRentalValueType(ValueType.SINGLE_VALUE);
-//                } else if (ov.getRentalValue().getMin() != null && ov.getRentalValue().getMax() != null) {
-//                    ownershipValue.setRentalValueRange(Range.closed(ov.getRentalValue().getMin(), ov.getRentalValue().getMax()));
-//                }
-//                ownershipValue.setAmount(ov.getAmount());
-//                ownershipValue.setOwnershipType(ov.getType());
-//                repo.persist(ownershipValue);
-//            });
-//        }
+        if (houseblockRowModel.ownershipValues != null) {
+            houseblockRowModel.ownershipValues.forEach(ov -> {
+                var ownershipValue = new HouseblockOwnershipValueChangelog();
+                setChangelogValues.accept(ownershipValue);
+                ownershipValue.setHouseblock(houseblock);
+                if (ov.getValue() != null) {
+                    if (ov.getValue().getMax() == null) {
+                        ownershipValue.setValueRange(Range.closedInfinite(ov.getValue().getMin()));
+                    } else {
+                        ownershipValue.setValueRange(Range.closed(ov.getValue().getMin(), ov.getValue().getMax()));
+                    }
+                    ownershipValue.setValueType(ValueType.RANGE);
+                }
+                if (ov.getRentalValue() != null) {
+                    if (ov.getRentalValue().getMax() == null) {
+                        ownershipValue.setRentalValueRange(Range.closedInfinite(ov.getRentalValue().getMin()));
+                    } else {
+                        ownershipValue.setRentalValueRange(Range.closed(ov.getRentalValue().getMin(), ov.getRentalValue().getMax()));
+                    }
+                    ownershipValue.setRentalValueType(ValueType.RANGE);
+                }
+                ownershipValue.setAmount(ov.getAmount());
+                ownershipValue.setOwnershipType(ov.getType());
+                repo.persist(ownershipValue);
+            });
+        }
 
         if (!houseblockRowModel.getPhysicalAppearanceMap().isEmpty() || !houseblockRowModel.getHouseTypeMap().isEmpty()) {
             var appearanceAndTypeChangelog = new HouseblockAppearanceAndTypeChangelog();

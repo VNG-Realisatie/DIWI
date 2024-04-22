@@ -59,7 +59,8 @@ public class ExcelError {
         MISSING_PROJECT_STATUS("no_project_status", "Project status is missing or invalid"),
         MISSING_PROJECT_START_DATE("no_project_start_date", "Project start date is missing or invalid."),
         MISSING_PROJECT_END_DATE("no_project_end_date", "Project end date is missing or invalid."),
-        INVALID_PLAN_TYPE("invalid_plan_type", "Project plan type has an unknow value");
+        INVALID_PLAN_TYPE("invalid_plan_type", "Project plan type has an unknow value"),
+        INVALID_RANGE("invalid_numeric_range", "The value does not match a numeric range.");
 
         public final String errorMsg;
 

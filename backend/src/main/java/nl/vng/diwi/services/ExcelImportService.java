@@ -7,6 +7,7 @@ import nl.vng.diwi.dal.entities.enums.GroundPosition;
 import nl.vng.diwi.dal.entities.enums.HouseType;
 import nl.vng.diwi.dal.entities.enums.MutationType;
 import nl.vng.diwi.dal.entities.enums.ObjectType;
+import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
@@ -15,8 +16,10 @@ import nl.vng.diwi.dal.entities.enums.PropertyKind;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
 import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.models.ExcelError;
+import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.models.SelectModel;
+import nl.vng.diwi.models.SingleValueOrRangeModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.openxml4j.exceptions.NotOfficeXmlFileException;
@@ -37,6 +40,7 @@ import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -114,7 +118,7 @@ public class ExcelImportService {
                     }
                 }
 
-                if (rowCount == 4) { //headers
+                if (rowCount == 4) { //headers - set columns and propertymodel for fixedd properties
                     Iterator<Cell> cellIterator = nextRow.cellIterator();
                     while (cellIterator.hasNext()) {
                         Cell nextCell = cellIterator.next();
@@ -125,50 +129,21 @@ public class ExcelImportService {
                             ExcelTableHeader.Column excelColumn = ExcelTableHeader.Column.findByName(headerName);
                             if (excelColumn != null) {
                                 tableHeader.setColumn(excelColumn);
-                                if (excelColumn == PROJECT_MUNICIPALITY) {
-                                    PropertyModel propertyModel = activeProperties.stream().filter(p -> p.getObjectType() == ObjectType.PROJECT &&
-                                        p.getPropertyType() == PropertyType.CATEGORY && p.getType() == PropertyKind.FIXED && p.getName().equals(Constants.FIXED_PROPERTY_MUNICIPALITY)).findFirst().orElse(null);
-                                    if (propertyModel == null) {
-                                        excelErrors.add(getExcelError(nextCell, Constants.FIXED_PROPERTY_MUNICIPALITY, ExcelError.ERROR.MISSING_FIXED_PROPERTY));
-                                    } else {
-                                        tableHeader.setPropertyModel(propertyModel);
-                                    }
-                                }
-                                if (excelColumn == PROJECT_DISTRICT) {
-                                    PropertyModel propertyModel = activeProperties.stream().filter(p -> p.getObjectType() == ObjectType.PROJECT &&
-                                        p.getPropertyType() == PropertyType.CATEGORY && p.getType() == PropertyKind.FIXED && p.getName().equals(Constants.FIXED_PROPERTY_DISTRICT)).findFirst().orElse(null);
-                                    if (propertyModel == null) {
-                                        excelErrors.add(getExcelError(nextCell, Constants.FIXED_PROPERTY_DISTRICT, ExcelError.ERROR.MISSING_FIXED_PROPERTY));
-                                    } else {
-                                        tableHeader.setPropertyModel(propertyModel);
-                                    }
-                                }
-                                if (excelColumn == PROJECT_NEIGHBOURHOOD) {
-                                    PropertyModel propertyModel = activeProperties.stream().filter(p -> p.getObjectType() == ObjectType.PROJECT &&
-                                        p.getPropertyType() == PropertyType.CATEGORY && p.getType() == PropertyKind.FIXED && p.getName().equals(Constants.FIXED_PROPERTY_NEIGHBOURHOOD)).findFirst().orElse(null);
-                                    if (propertyModel == null) {
-                                        excelErrors.add(getExcelError(nextCell, Constants.FIXED_PROPERTY_NEIGHBOURHOOD, ExcelError.ERROR.MISSING_FIXED_PROPERTY));
-                                    } else {
-                                        tableHeader.setPropertyModel(propertyModel);
-                                    }
-                                }
-                                if (excelColumn == HOUSEBLOCK_PHYSICAL_APPEARANCE) {
-                                    PropertyModel propertyModel = activeProperties.stream().filter(p -> p.getObjectType() == ObjectType.WONINGBLOK &&
-                                        p.getPropertyType() == PropertyType.CATEGORY && p.getType() == PropertyKind.FIXED && p.getName().equals(Constants.FIXED_PROPERTY_PHYSICAL_APPEARANCE)).findFirst().orElse(null);
-                                    if (propertyModel == null) {
-                                        excelErrors.add(getExcelError(nextCell, Constants.FIXED_PROPERTY_PHYSICAL_APPEARANCE, ExcelError.ERROR.MISSING_FIXED_PROPERTY));
-                                    } else {
-                                        tableHeader.setPropertyModel(propertyModel);
-                                    }
-                                }
-                                if (excelColumn == HOUSEBLOCK_TARGET_GROUP) {
-                                    PropertyModel propertyModel = activeProperties.stream().filter(p -> p.getObjectType() == ObjectType.WONINGBLOK &&
-                                        p.getPropertyType() == PropertyType.CATEGORY && p.getType() == PropertyKind.FIXED && p.getName().equals(Constants.FIXED_PROPERTY_TARGET_GROUP)).findFirst().orElse(null);
-                                    if (propertyModel == null) {
-                                        excelErrors.add(getExcelError(nextCell, Constants.FIXED_PROPERTY_TARGET_GROUP, ExcelError.ERROR.MISSING_FIXED_PROPERTY));
-                                    } else {
-                                        tableHeader.setPropertyModel(propertyModel);
-                                    }
+                                switch (excelColumn) {
+                                    case PROJECT_MUNICIPALITY_ROLE -> addTableHeaderFixedPropertyModel(tableHeader,Constants.FIXED_PROPERTY_MUNICIPALITY_ROLE,
+                                        ObjectType.PROJECT, PropertyType.CATEGORY, nextCell, activeProperties, excelErrors);
+                                    case PROJECT_PRIORITY ->  addTableHeaderFixedPropertyModel(tableHeader,Constants.FIXED_PROPERTY_PRIORITY,
+                                        ObjectType.PROJECT, PropertyType.ORDINAL, nextCell, activeProperties, excelErrors);
+                                    case PROJECT_MUNICIPALITY -> addTableHeaderFixedPropertyModel(tableHeader,Constants.FIXED_PROPERTY_MUNICIPALITY,
+                                        ObjectType.PROJECT, PropertyType.CATEGORY, nextCell, activeProperties, excelErrors);
+                                    case PROJECT_DISTRICT -> addTableHeaderFixedPropertyModel(tableHeader,Constants.FIXED_PROPERTY_DISTRICT,
+                                        ObjectType.PROJECT, PropertyType.CATEGORY, nextCell, activeProperties, excelErrors);
+                                    case PROJECT_NEIGHBOURHOOD -> addTableHeaderFixedPropertyModel(tableHeader,Constants.FIXED_PROPERTY_NEIGHBOURHOOD,
+                                        ObjectType.PROJECT, PropertyType.CATEGORY, nextCell, activeProperties, excelErrors);
+                                    case HOUSEBLOCK_PHYSICAL_APPEARANCE -> addTableHeaderFixedPropertyModel(tableHeader,Constants.FIXED_PROPERTY_PHYSICAL_APPEARANCE,
+                                        ObjectType.WONINGBLOK, PropertyType.CATEGORY, nextCell, activeProperties, excelErrors);
+                                    case HOUSEBLOCK_TARGET_GROUP -> addTableHeaderFixedPropertyModel(tableHeader,Constants.FIXED_PROPERTY_TARGET_GROUP,
+                                        ObjectType.WONINGBLOK, PropertyType.CATEGORY, nextCell, activeProperties, excelErrors);
                                 }
                             }
                         }
@@ -178,7 +153,7 @@ public class ExcelImportService {
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
                 }
 
-                if (rowCount == 5) { //subheaders
+                if (rowCount == 5) { //subheaders - set subheader values and property model for columns with subheaders
                     Iterator<Cell> cellIterator = nextRow.cellIterator();
                     while (cellIterator.hasNext()) {
                         Cell nextCell = cellIterator.next();
@@ -257,6 +232,16 @@ public class ExcelImportService {
         }
     }
 
+    private void addTableHeaderFixedPropertyModel(ExcelTableHeader tableHeader, String propertyName, ObjectType objectType, PropertyType propertyType,
+                                                  Cell cell, List<PropertyModel> activeProperties, List<ExcelError> excelErrors) {
+        PropertyModel propertyModel = activeProperties.stream().filter(p -> p.getObjectType() == objectType &&
+            p.getPropertyType() == propertyType && p.getType() == PropertyKind.FIXED && p.getName().equals(propertyName)).findFirst().orElse(null);
+        if (propertyModel == null) {
+            excelErrors.add(getExcelError(cell, propertyName, ExcelError.ERROR.MISSING_FIXED_PROPERTY));
+        } else {
+            tableHeader.setPropertyModel(propertyModel);
+        }
+    }
 
     private SelectModel processExcelRow(VngRepository repo, Row row, Map<Integer, ExcelTableHeader> tableHeaderMap, DataFormatter formatter,
                                         FormulaEvaluator evaluator, List<ExcelError> excelErrors, User user, ZonedDateTime importTime) {
@@ -304,8 +289,6 @@ public class ExcelImportService {
                                 rowModel.setProgramming(programming);
                             }
                         }
-                        case PROJECT_PRIORITY -> rowModel.setPriority(getStringValue(nextCell, formatter, evaluator, rowErrors)); //TODO
-                        case PROJECT_MUNICIPALITY_ROLE -> rowModel.setMunicipalityRole(getStringValue(nextCell, formatter, evaluator, rowErrors)); //TODO
 
                         case PROJECT_ROLE -> addProjectCategoryProperty(rowModel, tableHeader.getPropertyModel(), nextCell, formatter, evaluator, rowErrors);
                         case PROJECT_MUNICIPALITY ->
@@ -364,7 +347,7 @@ public class ExcelImportService {
                         case PROJECT_PLAN_STATUS_1C_ONHERROEPELIJK_MET_BW_NODIG ->
                             addProjectPlanStatus(rowModel, PlanStatus._1C_ONHERROEPELIJK_MET_BW_NODIG, nextCell, formatter, rowErrors);
 
-                        case PROJECT_CUSTOM_PROPERTY -> {
+                        case PROJECT_CUSTOM_PROPERTY, PROJECT_PRIORITY, PROJECT_MUNICIPALITY_ROLE -> {
                             PropertyModel propertyModel = tableHeader.getPropertyModel();
                             switch (propertyModel.getPropertyType()) {
                                 case CATEGORY -> addProjectCategoryProperty(rowModel, propertyModel, nextCell, formatter, evaluator, rowErrors);
@@ -399,6 +382,13 @@ public class ExcelImportService {
                                 }
                             }
 
+                            case HOUSEBLOCK_PROPERTY_TYPE_OWNER, HOUSEBLOCK_PROPERTY_TYPE_LANDLORD, HOUSEBLOCK_PROPERTY_TYPE_HOUSING_ASSOCIATION,
+                                 HOUSEBLOCK_PROPERTY_TYPE_UNKNOWN ->
+                                addHouseblockPropertyType(houseblockRowModel, tableHeader.getColumn(), nextCell, formatter, evaluator, rowErrors);
+
+                            case HOUSEBLOCK_PROPERTY_PURCHASE_PRICE, HOUSEBLOCK_PROPERTY_LANDLORD_RENTAL_PRICE, HOUSEBLOCK_PROPERTY_HOUSING_ASSOCIATION_RENTAL_PRICE ->
+                                addHouseblockOwnershipValue(houseblockRowModel, tableHeader.getColumn(), tableHeader.getSubheader(), nextCell, formatter, evaluator, rowErrors);
+
                             case HOUSEBLOCK_GROUND_POSITION_NO_PERMISSION, HOUSEBLOCK_GROUND_POSITION_COOPERATE_INTENTION,
                                  HOUSEBLOCK_GROUND_POSITION_FORMAL_PERMISSION ->
                                 addHouseblockGroundPosition(houseblockRowModel, tableHeader.getColumn(), nextCell, formatter, evaluator, rowErrors);
@@ -432,7 +422,8 @@ public class ExcelImportService {
                             case HOUSEBLOCK_CUSTOM_PROPERTY -> {
                                 PropertyModel propertyModel = tableHeader.getPropertyModel();
                                 switch (propertyModel.getPropertyType()) {
-                                    case CATEGORY -> addHouseblockCategoryProperty(houseblockRowModel, propertyModel, nextCell, formatter, evaluator, rowErrors);
+                                    case CATEGORY ->
+                                        addHouseblockCategoryProperty(houseblockRowModel, propertyModel, nextCell, formatter, evaluator, rowErrors);
                                     case ORDINAL -> addHouseblockOrdinalProperty(houseblockRowModel, propertyModel, nextCell, formatter, evaluator, rowErrors);
                                     case NUMERIC -> addHouseblockNumericProperty(houseblockRowModel, propertyModel, nextCell, formatter, evaluator, rowErrors);
                                     case BOOLEAN -> addHouseblockBooleanProperty(houseblockRowModel, propertyModel, nextCell, formatter, evaluator, rowErrors);
@@ -498,7 +489,7 @@ public class ExcelImportService {
                 excelErrors.add(getExcelError(cell, ordinalValueStr, ExcelError.ERROR.UNKNOWN_PROPERTY_VALUE));
                 return false;
             } else {
-                rowModel.getProjectCategoryPropsMap().put(propertyModel.getId(), ordinalValue.getId());
+                rowModel.getProjectOrdinalPropsMap().put(propertyModel.getId(), ordinalValue.getId());
                 return true;
             }
         }
@@ -524,6 +515,68 @@ public class ExcelImportService {
         Boolean booleanValue = getBooleanValue(cell, formatter, evaluator, excelErrors);
         if (booleanValue != null) {
             rowModel.getProjectBooleanPropsMap().put(propertyModel.getId(), booleanValue);
+        }
+    }
+
+    private void addHouseblockPropertyType(ExcelProjectRowModel.HouseblockRowModel houseblockRowModel, ExcelTableHeader.Column column, Cell nextCell,
+                                           DataFormatter formatter, FormulaEvaluator evaluator, List<ExcelError> rowErrors) {
+        Integer ownershipTypeAmount = getIntegerValue(nextCell, formatter, evaluator, rowErrors);
+        if (ownershipTypeAmount != null && ownershipTypeAmount > 0) {
+            OwnershipType ownershipType = switch (column) {
+                case HOUSEBLOCK_PROPERTY_TYPE_OWNER -> OwnershipType.KOOPWONING;
+                case HOUSEBLOCK_PROPERTY_TYPE_LANDLORD -> OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER;
+                case HOUSEBLOCK_PROPERTY_TYPE_HOUSING_ASSOCIATION -> OwnershipType.HUURWONING_WONINGCORPORATIE;
+                default -> null;
+            };
+            houseblockRowModel.getOwnershipTypeMap().put(ownershipType, ownershipTypeAmount);
+        }
+    }
+
+    private void addHouseblockOwnershipValue(ExcelProjectRowModel.HouseblockRowModel houseblockRowModel, ExcelTableHeader.Column column, String subheader, Cell cell,
+                                             DataFormatter formatter, FormulaEvaluator evaluator, List<ExcelError> excelErrors) {
+        Integer ownershipValueAmount = getIntegerValue(cell, formatter, evaluator, excelErrors);
+        if (ownershipValueAmount != null && ownershipValueAmount > 0) {
+            SingleValueOrRangeModel<Integer> subheaderRange;
+            if (subheader.equalsIgnoreCase("Onbekend")) {
+                subheaderRange = null;
+            } else {
+                subheaderRange = new SingleValueOrRangeModel<>();
+                List<String> substringRangeStrList = Arrays.asList(subheader.replaceAll("\\s","").replaceAll(",", ".").split("-"));
+                if (substringRangeStrList.size() != 2) {
+                    excelErrors.add(getExcelError(cell, subheader, ExcelError.ERROR.INVALID_RANGE));
+                }
+                try {
+                    Double minValue = Double.parseDouble(substringRangeStrList.get(0)) * 100;
+                        subheaderRange.setMin(minValue.intValue());
+                    String maxValueStr = substringRangeStrList.get(1);
+                    if (!maxValueStr.equalsIgnoreCase("Inf")) {
+                        Double maxValue = Double.parseDouble(substringRangeStrList.get(1)) * 100;
+                        subheaderRange.setMax(maxValue.intValue());
+                    }
+                } catch (NumberFormatException e) {
+                    excelErrors.add(getExcelError(cell, subheader, ExcelError.ERROR.INVALID_RANGE));
+                }
+            }
+            HouseblockSnapshotModel.OwnershipValue ownershipValue = new HouseblockSnapshotModel.OwnershipValue();
+            ownershipValue.setAmount(ownershipValueAmount);
+            switch (column) {
+                case HOUSEBLOCK_PROPERTY_PURCHASE_PRICE -> {
+                    ownershipValue.setType(OwnershipType.KOOPWONING);
+                    ownershipValue.setValue(subheaderRange);
+                    ownershipValue.setRentalValue(null);
+                }
+                case HOUSEBLOCK_PROPERTY_LANDLORD_RENTAL_PRICE -> {
+                    ownershipValue.setType(OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER);
+                    ownershipValue.setRentalValue(subheaderRange);
+                    ownershipValue.setValue(null);
+                }
+                case HOUSEBLOCK_PROPERTY_HOUSING_ASSOCIATION_RENTAL_PRICE -> {
+                    ownershipValue.setType(OwnershipType.HUURWONING_WONINGCORPORATIE);
+                    ownershipValue.setRentalValue(subheaderRange);
+                    ownershipValue.setValue(null);
+                }
+            }
+            houseblockRowModel.getOwnershipValues().add(ownershipValue);
         }
     }
 
@@ -573,7 +626,7 @@ public class ExcelImportService {
     }
 
     private void addHouseblockOrdinalProperty(ExcelProjectRowModel.HouseblockRowModel houseblockRowModel, PropertyModel propertyModel, Cell cell,
-                                               DataFormatter formatter, FormulaEvaluator evaluator, List<ExcelError> excelErrors) {
+                                              DataFormatter formatter, FormulaEvaluator evaluator, List<ExcelError> excelErrors) {
         String ordinalValueStr = getStringValue(cell, formatter, evaluator, excelErrors);
         if (ordinalValueStr != null && !ordinalValueStr.isBlank()) {
             SelectModel ordinalValue = propertyModel.getActiveOrdinalValue(ordinalValueStr);
