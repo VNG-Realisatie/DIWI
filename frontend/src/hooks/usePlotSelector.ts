@@ -114,8 +114,7 @@ const usePlotSelector = (id: string) => {
                         const notEqual =
                             p.brkGemeenteCode !== newPlot.brkGemeenteCode ||
                             p.brkPerceelNummer !== newPlot.brkPerceelNummer ||
-                            p.brkSectie !== newPlot.brkSectie ||
-                            p.plotFeature !== newPlot.plotFeature;
+                            p.brkSectie !== newPlot.brkSectie;
                         return notEqual;
                     });
                     if (newSelectedPlots.length !== selectedPlots.length) {

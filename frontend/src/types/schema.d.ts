@@ -248,7 +248,7 @@ export interface components {
             /** @enum {string} */
             confidentialityLevel: "PRIVE" | "INTERN_UITVOERING" | "INTERN_RAPPORTAGE" | "EXTERN_RAPPORTAGE" | "OPENBAAR";
             /** @enum {string} */
-            projectPhase: "_1_INITIATIEFFASE" | "_2_PROJECTFASE" | "_3_VERGUNNINGSFASE" | "_4_REALISATIEFASE" | "_5_OPLEVERINGSFASE";
+            projectPhase: "_1_CONCEPT" | "_2_INITIATIVE" | "_3_DEFINITION" | "_4_DESIGN" | "_5_PREPARATION" | "_6_REALIZATION" | "_7_AFTERCARE";
             /** Format: uuid */
             projectId: string;
         };
@@ -262,7 +262,7 @@ export interface components {
             /** @enum {string} */
             confidentialityLevel: "PRIVE" | "INTERN_UITVOERING" | "INTERN_RAPPORTAGE" | "EXTERN_RAPPORTAGE" | "OPENBAAR";
             /** @enum {string} */
-            projectPhase: "_1_INITIATIEFFASE" | "_2_PROJECTFASE" | "_3_VERGUNNINGSFASE" | "_4_REALISATIEFASE" | "_5_OPLEVERINGSFASE";
+            projectPhase: "_1_CONCEPT" | "_2_INITIATIVE" | "_3_DEFINITION" | "_4_DESIGN" | "_5_PREPARATION" | "_6_REALIZATION" | "_7_AFTERCARE";
         };
         PriorityModel: {
             value?: components["schemas"]["SelectModel"];
@@ -279,7 +279,7 @@ export interface components {
             /** @enum {string} */
             confidentialityLevel: "PRIVE" | "INTERN_UITVOERING" | "INTERN_RAPPORTAGE" | "EXTERN_RAPPORTAGE" | "OPENBAAR";
             /** @enum {string} */
-            projectPhase: "_1_INITIATIEFFASE" | "_2_PROJECTFASE" | "_3_VERGUNNINGSFASE" | "_4_REALISATIEFASE" | "_5_OPLEVERINGSFASE";
+            projectPhase: "_1_CONCEPT" | "_2_INITIATIVE" | "_3_DEFINITION" | "_4_DESIGN" | "_5_PREPARATION" | "_6_REALIZATION" | "_7_AFTERCARE";
             /** Format: uuid */
             projectId: string;
             /** Format: uuid */
@@ -317,7 +317,7 @@ export interface components {
             /** @enum {string} */
             confidentialityLevel: "PRIVE" | "INTERN_UITVOERING" | "INTERN_RAPPORTAGE" | "EXTERN_RAPPORTAGE" | "OPENBAAR";
             /** @enum {string} */
-            projectPhase: "_1_INITIATIEFFASE" | "_2_PROJECTFASE" | "_3_VERGUNNINGSFASE" | "_4_REALISATIEFASE" | "_5_OPLEVERINGSFASE";
+            projectPhase: "_1_CONCEPT" | "_2_INITIATIVE" | "_3_DEFINITION" | "_4_DESIGN" | "_5_PREPARATION" | "_6_REALIZATION" | "_7_AFTERCARE";
             /** Format: uuid */
             projectId: string;
             /** Format: uuid */
@@ -382,7 +382,7 @@ export interface components {
             /** Format: uuid */
             id?: string;
             /** @enum {string} */
-            data?: "_1_INITIATIEFFASE" | "_2_PROJECTFASE" | "_3_VERGUNNINGSFASE" | "_4_REALISATIEFASE" | "_5_OPLEVERINGSFASE";
+            data?: "_1_CONCEPT" | "_2_INITIATIVE" | "_3_DEFINITION" | "_4_DESIGN" | "_5_PREPARATION" | "_6_REALIZATION" | "_7_AFTERCARE";
         };
         DatedDataModelString: {
             /** Format: date */

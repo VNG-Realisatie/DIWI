@@ -61,6 +61,7 @@ import nl.vng.diwi.models.ProjectTimelineModel;
 import nl.vng.diwi.models.ProjectUpdateModel;
 import nl.vng.diwi.models.ProjectUpdateModel.ProjectProperty;
 import nl.vng.diwi.models.SelectModel;
+import nl.vng.diwi.models.SingleValueOrRangeModel;
 import nl.vng.diwi.models.superclasses.ProjectCreateSnapshotModel;
 import nl.vng.diwi.models.superclasses.ProjectMinimalSnapshotModel;
 import nl.vng.diwi.rest.VngBadRequestException;
@@ -289,27 +290,29 @@ public class ProjectsResource {
         return projectService.getProjectCustomProperties(repo, projectUuid);
     }
 
-    @POST
-    @Path("/{id}/update")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public ProjectSnapshotModel updateProjectSingleField(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid, ProjectUpdateModel projectUpdateModel)
-            throws VngNotFoundException, VngBadRequestException, VngServerErrorException {
+// TODO - endpoint not currently used, there is a ticket to fix it when it will be needed
 
-        String validationError = projectUpdateModel.validate(repo);
-        if (validationError != null) {
-            throw new VngBadRequestException(validationError);
-        }
-        LocalDate updateDate = LocalDate.now();
-
-        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            Project project = projectService.getCurrentProjectAndPerformPreliminaryUpdateChecks(repo, projectUuid);
-            updateProjectProperty(project, projectUpdateModel, loggedUser, updateDate, ZonedDateTime.now());
-            transaction.commit();
-        }
-
-        return projectService.getProjectSnapshot(repo, projectUuid);
-    }
+//    @POST
+//    @Path("/{id}/update")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    public ProjectSnapshotModel updateProjectSingleField(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid, ProjectUpdateModel projectUpdateModel)
+//            throws VngNotFoundException, VngBadRequestException, VngServerErrorException {
+//
+//        String validationError = projectUpdateModel.validate(repo);
+//        if (validationError != null) {
+//            throw new VngBadRequestException(validationError);
+//        }
+//        LocalDate updateDate = LocalDate.now();
+//
+//        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+//            Project project = projectService.getCurrentProjectAndPerformPreliminaryUpdateChecks(repo, projectUuid);
+//            updateProjectProperty(project, projectUpdateModel, loggedUser, updateDate, ZonedDateTime.now());
+//            transaction.commit();
+//        }
+//
+//        return projectService.getProjectSnapshot(repo, projectUuid);
+//    }
 
     @GET
     @Path("/{id}/plots")
@@ -428,18 +431,11 @@ public class ProjectsResource {
                 }
             }
             case municipalityRole -> {
-                List<UUID> currentMunicipalityRolesIds = projectSnapshotModelCurrent.getMunicipalityRole().stream().map(SelectModel::getId).toList();
-                List<UUID> toUpdateMunicipalityRolesIds = projectSnapshotModelToUpdate.getMunicipalityRole().stream().map(SelectModel::getId).toList();
-                currentMunicipalityRolesIds.forEach(id -> {
-                    if (!toUpdateMunicipalityRolesIds.contains(id)) {
-                        projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.municipalityRole, null, id));
-                    }
-                });
-                toUpdateMunicipalityRolesIds.forEach(id -> {
-                    if (!currentMunicipalityRolesIds.contains(id)) {
-                        projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.municipalityRole, id, null));
-                    }
-                });
+                List<SelectModel> currentMunicipalityRoles = projectSnapshotModelCurrent.getMunicipalityRole();
+                List<SelectModel> toUpdateMunicipalityRoles = projectSnapshotModelToUpdate.getMunicipalityRole();
+                if (currentMunicipalityRoles.size() != toUpdateMunicipalityRoles.size() || !currentMunicipalityRoles.containsAll(toUpdateMunicipalityRoles)) {
+                    projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.municipalityRole, toUpdateMunicipalityRoles.stream().map(s -> s.getId().toString()).toList()));
+                }
             }
             case projectLeaders -> {
                 List<UUID> currentLeadersUuids = projectSnapshotModelCurrent.getProjectLeaders().stream().map(OrganizationModel::getUuid).toList();
@@ -560,7 +556,9 @@ public class ProjectsResource {
         }
         case priority -> {
             UUID priorityValue = (projectUpdateModel.getValue() == null) ? null : UUID.fromString(projectUpdateModel.getValue());
-            projectService.updateProjectPriority(repo, project, priorityValue, projectUpdateModel.getMin(), projectUpdateModel.getMax(), loggedUser.getUuid(),
+            UUID propertyId = propertiesService.getPropertyUuid(repo, Constants.FIXED_PROPERTY_PRIORITY);
+            var newPriority = new SingleValueOrRangeModel<>(priorityValue, projectUpdateModel.getMin(), projectUpdateModel.getMax());
+            projectService.updateProjectOrdinalCustomProperty(repo, project, propertyId, newPriority, loggedUser.getUuid(),
                     updateDate);
         }
         case projectPhase ->
@@ -576,9 +574,9 @@ public class ProjectsResource {
             projectService.updateProjectOrganizations(repo, project, ProjectRole.OWNER, organizationToAdd, organizationToRemove, loggedUser.getUuid());
         }
         case municipalityRole -> {
-            UUID municipalityRoleToAdd = projectUpdateModel.getAdd();
-            UUID municipalityRoleToRemove = projectUpdateModel.getRemove();
-            projectService.updateProjectMunicipalityRoles(repo, project, municipalityRoleToAdd, municipalityRoleToRemove, loggedUser.getUuid(), updateDate);
+            Set<UUID> municipalityRoleCatUuids = projectUpdateModel.getValues().stream().map(UUID::fromString).collect(Collectors.toSet());
+            UUID propertyId = propertiesService.getPropertyUuid(repo, Constants.FIXED_PROPERTY_MUNICIPALITY_ROLE);
+            projectService.updateProjectCategoryProperty(repo, project, propertyId, municipalityRoleCatUuids, loggedUser.getUuid(), updateDate);
         }
         case municipality -> {
             Set<UUID> municipalityCatUuids = projectUpdateModel.getValues().stream().map(UUID::fromString).collect(Collectors.toSet());

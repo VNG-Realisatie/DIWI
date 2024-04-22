@@ -34,7 +34,7 @@ import nl.vng.diwi.dal.entities.ProjectDurationChangelog;
 import nl.vng.diwi.dal.entities.ProjectFaseChangelog;
 import nl.vng.diwi.dal.entities.ProjectNameChangelog;
 import nl.vng.diwi.dal.entities.ProjectNumericCustomPropertyChangelog;
-import nl.vng.diwi.dal.entities.ProjectOrdinalCustomPropertyChangelog;
+import nl.vng.diwi.dal.entities.ProjectOrdinalPropertyChangelog;
 import nl.vng.diwi.dal.entities.ProjectPlanTypeChangelog;
 import nl.vng.diwi.dal.entities.ProjectPlanTypeChangelogValue;
 import nl.vng.diwi.dal.entities.ProjectPlanologischePlanstatusChangelog;
@@ -395,7 +395,7 @@ public class ExcelProjectRowModel {
 
         if (!projectOrdinalPropsMap.isEmpty()) {
             for (Map.Entry<UUID, UUID> ordinalEntry : projectOrdinalPropsMap.entrySet()) {
-                var projectOrdinalChangelog = new ProjectOrdinalCustomPropertyChangelog();
+                var projectOrdinalChangelog = new ProjectOrdinalPropertyChangelog();
                 projectOrdinalChangelog.setProject(project);
                 setChangelogValues.accept(projectOrdinalChangelog);
                 projectOrdinalChangelog.setProperty(repo.getReferenceById(Property.class, ordinalEntry.getKey()));

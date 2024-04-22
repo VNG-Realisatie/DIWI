@@ -152,7 +152,18 @@ public class ProjectUpdateModel {
                 yield null;
             }
             case projectPhase -> (value == null || !EnumUtils.isValidEnum(ProjectPhase.class, value)) ? "New project phase value is not valid." : null;
-            case municipalityRole, projectLeaders, projectOwners -> null;
+            case projectLeaders, projectOwners -> null;
+            case municipalityRole -> {
+                Property municipalityProperty = repo.getPropertyDAO().getActivePropertyStateByName(Constants.FIXED_PROPERTY_MUNICIPALITY_ROLE).getProperty();
+                if (municipalityProperty == null) {
+                    yield "Missing municipality role property";
+                }
+                List<UUID> municipalityRoleCatUuids = municipalityProperty.getCategoryValues().stream().map(IdSuperclass::getId).toList();
+                if (!municipalityRoleCatUuids.containsAll(getValuesAsUuids())) {
+                    yield "Invalid municipality role property";
+                }
+                yield null;
+            }
             case municipality -> {
                 Property municipalityProperty = repo.getPropertyDAO().getActivePropertyStateByName(Constants.FIXED_PROPERTY_MUNICIPALITY).getProperty();
                 if (municipalityProperty == null) {
