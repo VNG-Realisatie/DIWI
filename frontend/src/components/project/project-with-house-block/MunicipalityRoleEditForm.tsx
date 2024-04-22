@@ -1,26 +1,19 @@
 import { Autocomplete, TextField } from "@mui/material";
-import { useEffect, useState } from "react";
-import { getMunicipalityRoleList } from "../../../api/projectsTableServices";
 import { SelectModel } from "../../../api/projectsServices";
 
 type Props = {
     selectedMunicipalityRole: SelectModel[];
     setSelectedMunicipalityRole: (mr: SelectModel[]) => void;
+    options: SelectModel[];
 };
 
-export const MunicipalityRoleEditForm = ({ selectedMunicipalityRole, setSelectedMunicipalityRole }: Props) => {
-    const [municipalityRolesOptions, setMunicipalityRolesOptions] = useState<SelectModel[]>();
-
-    useEffect(() => {
-        getMunicipalityRoleList().then((roles) => setMunicipalityRolesOptions(roles));
-    }, []);
-
+export const MunicipalityRoleEditForm = ({ selectedMunicipalityRole, setSelectedMunicipalityRole, options }: Props) => {
     return (
         <Autocomplete
             size="small"
             multiple
             id="tags-outlined"
-            options={municipalityRolesOptions ? municipalityRolesOptions : []}
+            options={options}
             getOptionLabel={(option) => option.name}
             value={selectedMunicipalityRole}
             filterSelectedOptions
