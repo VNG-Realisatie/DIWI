@@ -57,7 +57,7 @@ export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, cu
                     {(() => {
                         const categoryId = customValue?.categories;
                         if (!categoryId) return null;
-                        const selectedCategoryIds = customDefinition?.categories?.filter((cat: any) => categoryId.includes(cat.id));
+                        const selectedCategoryIds = customDefinition?.categories?.filter((cat) => categoryId.includes(cat.id || ""));
                         const categoryValues = selectedCategoryIds?.map((c) => c.name);
                         return categoryValues ? categoryValues.join(", ") : null;
                     })()}
@@ -67,8 +67,7 @@ export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, cu
     } else if (customDefinition.propertyType === "ORDINAL") {
         const ordinalCategoryId = customValue?.ordinals?.value;
         if (!readOnly) {
-            console.log("ordinalCategoryId", ordinalCategoryId);
-            const value = customDefinition.ordinals?.find((d: any) => ordinalCategoryId?.includes(d.id));
+            const value = customDefinition.ordinals?.find((d) => ordinalCategoryId?.includes(d.id || ""));
             return (
                 <Autocomplete
                     size="small"
@@ -84,7 +83,7 @@ export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, cu
                 <CellContainer>
                     {(() => {
                         if (!ordinalCategoryId) return null;
-                        const selectedOrdinalCategoryIds = customDefinition?.ordinals?.filter((ordCat: any) => ordinalCategoryId.includes(ordCat.id));
+                        const selectedOrdinalCategoryIds = customDefinition?.ordinals?.filter((ordCat) => ordinalCategoryId.includes(ordCat.id || ""));
                         const ordinalCategoryValue = selectedOrdinalCategoryIds?.map((oc) => oc.name);
                         return ordinalCategoryValue ? ordinalCategoryValue : null;
                     })()}
