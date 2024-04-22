@@ -1,6 +1,5 @@
 package nl.vng.diwi.services;
 
-import io.hypersistence.utils.hibernate.type.range.Range;
 import lombok.Data;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.Houseblock;
