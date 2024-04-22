@@ -20,7 +20,7 @@ export const HouseBlocksList = ({ setOpenHouseBlockDialog }: Props) => {
             <AddHouseBlockButton onClick={() => setOpenHouseBlockDialog(true)} />
             {houseBlocks.sort(sortHouseBlocksByNameAndId).map((hb: HouseBlockWithCustomProperties) => {
                 return (
-                    <Accordion sx={{ width: "100%" }} key={hb.houseblockId}>
+                    <Accordion sx={{ width: "100%" }} key={hb.houseblockId} disableGutters defaultExpanded>
                         <AccordionSummary
                             sx={{ backgroundColor: "#00A9F3", color: "#ffffff" }}
                             expandIcon={<ExpandMoreIcon sx={{ color: "#ffffff" }} />}
