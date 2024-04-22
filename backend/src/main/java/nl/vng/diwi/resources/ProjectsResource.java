@@ -254,7 +254,7 @@ public class ProjectsResource {
             case NUMERIC -> {
                 var currentNumericValue = currentProjectCP.getNumericValue();
                 var updateNumericValue = projectCPUpdateModel.getNumericValue();
-                if (updateNumericValue == null || !updateNumericValue.isValid()) {
+                if (updateNumericValue == null || !updateNumericValue.isValid(false)) {
                     throw new VngBadRequestException("Numeric value does not have a valid format.");
                 }
                 if (!Objects.equals(currentNumericValue.getValue() != null ? currentNumericValue.getValue().doubleValue() : null,
@@ -274,7 +274,7 @@ public class ProjectsResource {
                 }
             }
             case ORDINAL -> {
-                if (projectCPUpdateModel.getOrdinals() == null || !projectCPUpdateModel.getOrdinals().isValid()) {
+                if (projectCPUpdateModel.getOrdinals() == null || !projectCPUpdateModel.getOrdinals().isValid(false)) {
                     throw new VngBadRequestException("Ordinal value does not have a valid format.");
                 }
                 if (!Objects.equals(currentProjectCP.getOrdinals(), projectCPUpdateModel.getOrdinals())) {

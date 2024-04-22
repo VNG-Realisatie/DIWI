@@ -499,19 +499,11 @@ public class ExcelProjectRowModel {
                 setChangelogValues.accept(ownershipValue);
                 ownershipValue.setHouseblock(houseblock);
                 if (ov.getValue() != null) {
-                    if (ov.getValue().getMax() == null) {
-                        ownershipValue.setValueRange(Range.closedInfinite(ov.getValue().getMin()));
-                    } else {
-                        ownershipValue.setValueRange(Range.closed(ov.getValue().getMin(), ov.getValue().getMax()));
-                    }
+                    ownershipValue.setValueRange(ov.getValue().toRange());
                     ownershipValue.setValueType(ValueType.RANGE);
                 }
                 if (ov.getRentalValue() != null) {
-                    if (ov.getRentalValue().getMax() == null) {
-                        ownershipValue.setRentalValueRange(Range.closedInfinite(ov.getRentalValue().getMin()));
-                    } else {
-                        ownershipValue.setRentalValueRange(Range.closed(ov.getRentalValue().getMin(), ov.getRentalValue().getMax()));
-                    }
+                    ownershipValue.setRentalValueRange(ov.getRentalValue().toRange());
                     ownershipValue.setRentalValueType(ValueType.RANGE);
                 }
                 ownershipValue.setAmount(ov.getAmount());

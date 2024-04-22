@@ -34,13 +34,27 @@ public class SingleValueOrRangeModel<T extends Comparable<? super T>> {
     }
 
     @JsonIgnore
-    public boolean isValid() {
+    public boolean isValid(boolean acceptsInfiniteUpperBound) {
         if (value == null && min == null && max == null) {
             return true;
         } else if (value != null) {
             return min == null && max == null;
         } else {
-            return min != null && max != null && min.compareTo(max) < 0;
+            if (acceptsInfiniteUpperBound) {
+                return min != null;
+            } else {
+                return min != null && max != null && min.compareTo(max) < 0;
+            }
+        }
+    }
+
+    public Range<T> toRange() {
+        if (min == null) {
+            return null;
+        } else if (max == null) {
+            return Range.closedInfinite(min);
+        } else {
+            return Range.closed(min, max);
         }
     }
 }
