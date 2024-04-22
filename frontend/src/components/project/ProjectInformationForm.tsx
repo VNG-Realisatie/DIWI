@@ -3,41 +3,25 @@ import { DatePicker } from "@mui/x-date-pickers";
 import ColorSelector from "../ColorSelector";
 
 import dayjs, { Dayjs } from "dayjs";
-import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { CategoryType, OrdinalCategoryType, getCustomProperties } from "../../api/adminSettingServices";
-import { Project, SelectModel } from "../../api/projectsServices";
+import { Project } from "../../api/projectsServices";
 import { dateFormats } from "../../localization";
+import { ConfidentialityLevelOptions, PlanStatusOptions, ProjectPhaseOptions } from "../../types/enums";
 import { MenuProps } from "../../utils/menuProps";
 import { OrganizationSelect } from "../../widgets/OrganizationSelect";
 import { confidentialityLevelOptions, planTypeOptions, planningPlanStatus, projectPhaseOptions } from "../table/constants";
 import { LabelComponent } from "./LabelComponent";
-import { ConfidentialityLevelOptions, PlanStatusOptions, ProjectPhaseOptions } from "../../types/enums";
+import { MunicipalityRoleEditForm } from "./project-with-house-block/MunicipalityRoleEditForm";
+import useProperties from "../../hooks/useProperties";
 
 type Props = {
     setCreateProjectForm: (a: Partial<Project>) => void;
     createProjectForm: Partial<Project>;
 };
-
 export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm }: Props) => {
     const { t } = useTranslation();
-    const [priorityOptionList, setPriorityOptionList] = useState<SelectModel[]>();
-    const [municipalityRolesOptions, setMunicipalityRolesOptions] = useState<SelectModel[]>();
 
-    useEffect(() => {
-        getCustomProperties().then((customProperties) => {
-            for (const customProperty of customProperties) {
-                if (customProperty.name === "priority") {
-                    const sortedOrdinals = customProperty.ordinals?.sort((a, b) => a.level - b.level);
-                    const options = sortedOrdinals?.map((ordinal) => ({ id: ordinal.id as string, name: ordinal.name }));
-                    setPriorityOptionList(options);
-                } else if (customProperty.name === "municipalityRole") {
-                    const options = customProperty.categories?.map((category: CategoryType) => ({ id: category.id as string, name: category.name }));
-                    setMunicipalityRolesOptions(options);
-                }
-            }
-        });
-    }, []);
+    const { priorityOptionList, municipalityRolesOptions } = useProperties();
 
     const handleColorChange = (newColor: string) => {
         setCreateProjectForm({
@@ -210,21 +194,10 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                 </Stack>
                 <Stack flex={1}>
                     <LabelComponent required={false} text={t("createProject.informationForm.roleMunicipality")} />
-                    <Autocomplete
-                        size="small"
-                        multiple
-                        id="tags-outlined"
+                    <MunicipalityRoleEditForm
+                        selectedMunicipalityRole={createProjectForm?.municipalityRole ?? []}
+                        setSelectedMunicipalityRole={(newValue) => setCreateProjectForm({ ...createProjectForm, municipalityRole: newValue })}
                         options={municipalityRolesOptions ?? []}
-                        getOptionLabel={(option) => option.name ?? ""}
-                        value={createProjectForm?.municipalityRole ?? []}
-                        filterSelectedOptions
-                        onChange={(_: any, newValue: SelectModel[]) =>
-                            setCreateProjectForm({
-                                ...createProjectForm,
-                                municipalityRole: newValue,
-                            })
-                        }
-                        renderInput={(params) => <TextField {...params} />}
                     />
                 </Stack>
             </Stack>

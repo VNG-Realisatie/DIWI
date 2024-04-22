@@ -18,6 +18,7 @@ import dayjs, { Dayjs } from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers";
 import { convertDayjsToString } from "../../../utils/convertDayjsToString";
 import { capitalizeFirstLetters } from "../../../utils/stringFunctions";
+import useProperties from "../../../hooks/useProperties";
 type Props = {
     readOnly: boolean;
     name: string | null;
@@ -96,6 +97,7 @@ export const ProjectProperties = ({
     // setSelectedWijk,
 }: Props) => {
     const { selectedProject } = useContext(ProjectContext);
+    const { priorityOptionList, municipalityRolesOptions } = useProperties();
 
     const handleStartDateChange = (newValue: Dayjs | null) => {
         if (newValue) {
@@ -179,8 +181,7 @@ export const ProjectProperties = ({
                             </span>
                         </CellContainer>
                     ) : (
-                        // TODO Implement later for ranges
-                        <PriorityEditForm projectPriority={projectPriority} setProjectPriority={setProjectPriority} />
+                        <PriorityEditForm projectPriority={projectPriority} setProjectPriority={setProjectPriority} options={priorityOptionList ?? []} />
                     )}
                 </Grid>
                 <Grid item xs={12} md={2}>
@@ -211,6 +212,7 @@ export const ProjectProperties = ({
                         <MunicipalityRoleEditForm
                             selectedMunicipalityRole={selectedMunicipalityRole}
                             setSelectedMunicipalityRole={setSelectedMunicipalityRole}
+                            options={municipalityRolesOptions ?? []}
                         />
                     )}
                 </Grid>

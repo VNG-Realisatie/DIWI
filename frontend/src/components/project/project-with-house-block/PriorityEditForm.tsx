@@ -1,24 +1,17 @@
-import { useEffect, useState } from "react";
-import { getPriorityList } from "../../../api/projectsTableServices";
 import { Autocomplete, TextField } from "@mui/material";
 import { PriorityModel, SelectModel } from "../../../api/projectsServices";
 
 type Props = {
     projectPriority: PriorityModel | null | undefined;
     setProjectPriority: (priority: PriorityModel | null) => void;
+    options: SelectModel[];
 };
-export const PriorityEditForm = ({ projectPriority, setProjectPriority }: Props) => {
-    const [priorityOptionList, setPriorityOptionList] = useState<SelectModel[]>();
-
-    useEffect(() => {
-        getPriorityList().then((priorityList) => setPriorityOptionList(priorityList));
-    }, []);
-
+export const PriorityEditForm = ({ projectPriority, setProjectPriority, options }: Props) => {
     return (
         <Autocomplete
             id="priority-select"
             size="small"
-            options={priorityOptionList ? priorityOptionList : []}
+            options={options}
             getOptionLabel={(option) => option.name}
             value={projectPriority?.value}
             filterSelectedOptions
