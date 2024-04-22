@@ -251,57 +251,6 @@ export const ProjectProperties = ({
                     )}
                 </Grid>
             </Grid>
-            {/* <Grid item xs={12} md={2}>
-        <Typography sx={columnTitleStyle}>{capitalizeFirstLetters(t("projects.tableColumns.municipality"))}</Typography>
-
-        {readOnly ? (
-            <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
-                {selectedMunicipality.length > 0
-                    ? selectedMunicipality.map((municipality: SelectModel) => {
-                          return <span key={municipality.id}>{municipality.name},</span>;
-                      })
-                    : selectedProject?.municipality?.map((municipality) => {
-                          return <span key={municipality.id}>{municipality.name},</span>;
-                      })}
-            </Typography>
-        ) : (
-            <MunicipalityEditForm selectedMunicipality={selectedMunicipality} setSelectedMunicipality={setSelectedMunicipality} />
-        )}
-    </Grid>
-    <Grid item xs={12} md={2}>
-        <Typography sx={columnTitleStyle}>{capitalizeFirstLetters(t("projects.tableColumns.neighbourhood"))}</Typography>
-
-        {readOnly ? (
-            <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
-                {selectedNeighbourhood.length > 0
-                    ? selectedNeighbourhood.map((neighbourhood: SelectModel) => {
-                          return <span key={neighbourhood.id}>{neighbourhood.name},</span>;
-                      })
-                    : selectedProject?.buurt?.map((neighbourhood) => {
-                          return <span key={neighbourhood.id}>{neighbourhood.name},</span>;
-                      })}
-            </Typography>
-        ) : (
-            <NeighbourhoodEditForm selectedNeighbourhood={selectedNeighbourhood} setSelectedNeighbourhood={setSelectedNeighbourhood} />
-        )}
-    </Grid>
-    <Grid item xs={12} md={2}>
-        <Typography sx={columnTitleStyle}>{capitalizeFirstLetters(t("projects.tableColumns.wijk"))}</Typography>
-
-        {readOnly ? (
-            <Typography sx={{ border: "solid 1px #ddd", p: 0.5, overflow: "hidden" }}>
-                {selectedWijk.length > 0
-                    ? selectedWijk.map((wijk: SelectModel) => {
-                          return <span key={wijk.id}>{wijk.name},</span>;
-                      })
-                    : selectedProject?.wijk?.map((wijk) => {
-                          return <span key={wijk.id}>{wijk.name},</span>;
-                      })}
-            </Typography>
-        ) : (
-            <WijkEditForm selectedWijk={selectedWijk} setSelectedWijk={setSelectedWijk} />
-        )}
-    </Grid> */}
         </Grid>
     );
 };

@@ -1,21 +1,22 @@
 import { Alert, Autocomplete, Box, ListItemText, MenuItem, OutlinedInput, Select, SelectChangeEvent, Stack, TextField, Typography } from "@mui/material";
-import ColorSelector from "../ColorSelector";
 import { DatePicker } from "@mui/x-date-pickers";
+import ColorSelector from "../ColorSelector";
 
-import { useTranslation } from "react-i18next";
-import { MenuProps } from "../../utils/menuProps";
-import { confidentialityLevelOptions, planTypeOptions, planningPlanStatus, projectPhaseOptions } from "../table/constants";
 import dayjs, { Dayjs } from "dayjs";
 import { useEffect, useState } from "react";
-import { getMunicipalityRoleList, getPriorityList } from "../../api/projectsTableServices";
-import { SelectModel } from "../../api/projectsServices";
+import { useTranslation } from "react-i18next";
+import { CategoryType, OrdinalCategoryType, getCustomProperties } from "../../api/adminSettingServices";
+import { Project, SelectModel } from "../../api/projectsServices";
 import { dateFormats } from "../../localization";
-import { LabelComponent } from "./LabelComponent";
+import { MenuProps } from "../../utils/menuProps";
 import { OrganizationSelect } from "../../widgets/OrganizationSelect";
+import { confidentialityLevelOptions, planTypeOptions, planningPlanStatus, projectPhaseOptions } from "../table/constants";
+import { LabelComponent } from "./LabelComponent";
+import { ProjectPhaseOptions } from "../../types/enums";
 
 type Props = {
-    setCreateProjectForm: (a: any) => void;
-    createProjectForm: any;
+    setCreateProjectForm: (a: Partial<Project>) => void;
+    createProjectForm: Partial<Project>;
 };
 
 export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm }: Props) => {
@@ -24,11 +25,18 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
     const [municipalityRolesOptions, setMunicipalityRolesOptions] = useState<SelectModel[]>();
 
     useEffect(() => {
-        getPriorityList().then((priorityList) => setPriorityOptionList(priorityList));
-    }, []);
-
-    useEffect(() => {
-        getMunicipalityRoleList().then((roles) => setMunicipalityRolesOptions(roles));
+        getCustomProperties().then((customProperties) => {
+            for (const customProperty of customProperties) {
+                if (customProperty.name === "priority") {
+                    const sortedOrdinals = customProperty.ordinals?.sort((a, b) => a.level - b.level);
+                    const options = sortedOrdinals?.map((ordinal) => ({ id: ordinal.id as string, name: ordinal.name }));
+                    setPriorityOptionList(options);
+                } else if (customProperty.name === "municipalityRole") {
+                    const options = customProperty.categories?.map((category: CategoryType) => ({ id: category.id as string, name: category.name }));
+                    setMunicipalityRolesOptions(options);
+                }
+            }
+        });
     }, []);
 
     const handleColorChange = (newColor: string) => {
@@ -105,7 +113,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         value={createProjectForm?.planType ?? []}
                         onChange={handlePlanTypeChange}
                         input={<OutlinedInput />}
-                        renderValue={(selected) => selected.map((s: string[]) => t(`projectTable.planTypeOptions.${s}`)).join(", ")}
+                        renderValue={(selected) => selected.map((s) => t(`projectTable.planTypeOptions.${s}`)).join(", ")}
                         MenuProps={MenuProps}
                     >
                         {planTypeOptions.map((pt) => (
@@ -127,7 +135,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         onChange={(newValue: Dayjs | null) =>
                             setCreateProjectForm({
                                 ...createProjectForm,
-                                startDate: newValue ? newValue.format("YYYY-MM-DD") : null,
+                                startDate: newValue ? newValue.format("YYYY-MM-DD") : undefined,
                             })
                         }
                     />
@@ -145,7 +153,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         onChange={(newValue: Dayjs | null) =>
                             setCreateProjectForm({
                                 ...createProjectForm,
-                                endDate: newValue ? newValue.format("YYYY-MM-DD") : null,
+                                endDate: newValue ? newValue.format("YYYY-MM-DD") : undefined,
                             })
                         }
                     />
@@ -186,7 +194,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         onChange={(e) =>
                             setCreateProjectForm({
                                 ...createProjectForm,
-                                projectPhase: e.target.value,
+                                projectPhase: e.target.value as ProjectPhaseOptions,
                             })
                         }
                     >

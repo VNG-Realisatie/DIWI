@@ -9,7 +9,6 @@ export type ProjectListModel = components["schemas"]["ProjectListModel"];
 export type Project = components["schemas"]["ProjectSnapshotModel"];
 export type ProjectSnapshotModel = components["schemas"]["ProjectSnapshotModel"];
 export type ProjectCreate = components["schemas"]["ProjectCreateSnapshotModel"];
-export type ProjectUpdate = components["schemas"]["ProjectUpdateModel"];
 export type SelectModel = components["schemas"]["SelectModel"];
 export type PriorityModel = components["schemas"]["PriorityModel"];
 
