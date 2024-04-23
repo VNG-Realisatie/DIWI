@@ -1,20 +1,20 @@
-import { Button, Stack, Typography } from "@mui/material";
+import { Button, Stack, Table, TableBody, TableCell, TableRow, Typography } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 import { ReactComponent as UploadCloud } from "../assets/uploadCloud.svg";
 import { useRef, useState } from "react";
 import useAlert from "../hooks/useAlert";
-import { useNavigate } from "react-router-dom";
-import * as Paths from "../Paths";
-import { importExcelProjects } from "../api/importServices";
+import { UploadErrorType, importExcelProjects } from "../api/importServices";
 
 type Props = {
     excelImport: boolean;
 };
+
 export const ImportExcel = ({ excelImport }: Props) => {
     const fileInputRef = useRef(null);
     const [uploaded, setUploaded] = useState(false);
+    const [errors, setErrors] = useState<Array<UploadErrorType>>([]);
+
     const { setAlert } = useAlert();
-    const navigate = useNavigate();
 
     function handleUploadStackClick(): void {
         if (fileInputRef.current) {
@@ -39,6 +39,23 @@ export const ImportExcel = ({ excelImport }: Props) => {
             <Typography fontSize="16px" mt={2}>
                 {excelImport ? "Upload ingevulde Excel template." : "Upload ingevulde Squit template."}
             </Typography>
+            {uploaded && (
+                <Stack
+                    height={180}
+                    width="100%"
+                    border="dashed 2px #ddd"
+                    alignItems="center"
+                    justifyContent="space-evenly"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                        setUploaded(false);
+                        setErrors([]);
+                        handleUploadStackClick();
+                    }}
+                >
+                    Klik hier om terug te gaan om een nieuw bestand te uploaden
+                </Stack>
+            )}
             {!uploaded && (
                 <Stack
                     mt={2}
@@ -61,20 +78,48 @@ export const ImportExcel = ({ excelImport }: Props) => {
                             if (file) {
                                 importExcelProjects(file as FileList)
                                     .then((res) => {
-                                        console.log(res);
-                                        console.log("File uploaded:", file);
                                         setUploaded(true);
-                                        setAlert("Excel-bestand succesvol geüpload.", "success");
-                                        navigate(Paths.importExcelProjects.path);
+                                        if (res.ok) {
+                                            setAlert("Excel-bestand succesvol geüpload.", "success");
+                                        } else {
+                                            // 400 errors contain relevant info in body, deal with here
+                                            setErrors(res);
+                                        }
                                     })
                                     .catch((error) => {
-                                        console.error("File upload failed:", error);
-                                        setAlert("Er is een fout opgetreden bij het uploaden van het bestand.", "error");
+                                        console.error("error", error);
                                     });
                             }
                         }}
                     />
                     Klik hier om te uploaden
+                </Stack>
+            )}
+            {errors.length > 0 && (
+                <Stack>
+                    <Typography fontSize="16px" mt={2}>
+                        {"Errors"}
+                    </Typography>
+                    <Table>
+                        <TableBody>
+                            {/* Header row */}
+                            <TableRow>
+                                <TableCell>{"Row"}</TableCell>
+                                <TableCell>{"Column"}</TableCell>
+                                <TableCell>{"Value"}</TableCell>
+                                <TableCell>{"Description"}</TableCell>
+                            </TableRow>
+                            {/* Data rows */}
+                            {errors.map((error) => (
+                                <TableRow>
+                                    <TableCell>{error.row}</TableCell>
+                                    <TableCell>{error.column}</TableCell>
+                                    <TableCell>{error.cellValue}</TableCell>
+                                    <TableCell>{error.errorMessage}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
                 </Stack>
             )}
         </Stack>

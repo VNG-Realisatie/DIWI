@@ -1,5 +1,13 @@
 import { API_URI } from "../utils/urls";
 
+export type UploadErrorType = {
+    errorCode: string;
+    row: number;
+    column: string;
+    cellValue: string;
+    errorMessage: string;
+};
+
 export const importExcelProjects = async (file: FileList) => {
     const formData = new FormData();
     //Array.from(file).forEach((f) => formData.append("file", f));
@@ -10,9 +18,9 @@ export const importExcelProjects = async (file: FileList) => {
         body: formData,
     });
 
-    if (!response.ok) {
-        throw new Error("File upload failed");
+    if (response.ok || response.status === 400) {
+        return response.json();
     }
 
-    return response.json();
+    throw new Error("File upload failed");
 };
