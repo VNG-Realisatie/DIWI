@@ -31,7 +31,6 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import nl.vng.diwi.config.ProjectConfig;
@@ -91,6 +90,7 @@ public class ProjectsResource {
     private final PropertiesService propertiesService;
     private final ProjectConfig projectConfig;
     private final ExcelImportService excelImportService;
+    private final LoggedUser loggedUser;
 
     @Inject
     public ProjectsResource(
@@ -99,19 +99,21 @@ public class ProjectsResource {
             HouseblockService houseblockService,
             PropertiesService propertiesService,
             ProjectConfig projectConfig,
-            ExcelImportService excelImportService) {
+            ExcelImportService excelImportService,
+            LoggedUser loggedUser) {
         this.repo = new VngRepository(genericRepository.getDal().getSession());
         this.projectService = projectService;
         this.houseblockService = houseblockService;
         this.propertiesService = propertiesService;
         this.projectConfig = projectConfig;
         this.excelImportService = excelImportService;
+        this.loggedUser = loggedUser;
     }
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public ProjectMinimalSnapshotModel createProject(@Context LoggedUser loggedUser, ProjectCreateSnapshotModel projectSnapshotModel)
+    public ProjectMinimalSnapshotModel createProject(ProjectCreateSnapshotModel projectSnapshotModel)
             throws VngServerErrorException, VngBadRequestException, VngNotFoundException {
         String validationError = projectSnapshotModel.validate();
         if (validationError != null) {
@@ -141,7 +143,7 @@ public class ProjectsResource {
 
     @DELETE
     @Path("/{id}")
-    public void deleteProject(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid) throws VngNotFoundException {
+    public void deleteProject(@PathParam("id") UUID projectUuid) throws VngNotFoundException {
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             projectService.deleteProject(repo, projectUuid, loggedUser.getUuid());
             transaction.commit();
@@ -214,7 +216,7 @@ public class ProjectsResource {
     @Path("/{id}/customproperties")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<ProjectHouseblockCustomPropertyModel> updateProjectCustomProperty(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid, ProjectHouseblockCustomPropertyModel projectCPUpdateModel)
+    public List<ProjectHouseblockCustomPropertyModel> updateProjectCustomProperty(@PathParam("id") UUID projectUuid, ProjectHouseblockCustomPropertyModel projectCPUpdateModel)
         throws VngNotFoundException, VngBadRequestException, VngServerErrorException {
         if (projectCPUpdateModel.getCustomPropertyId() == null){
             throw new VngBadRequestException("Custom property id must be set.");
@@ -296,7 +298,7 @@ public class ProjectsResource {
 //    @Path("/{id}/update")
 //    @Produces(MediaType.APPLICATION_JSON)
 //    @Consumes(MediaType.APPLICATION_JSON)
-//    public ProjectSnapshotModel updateProjectSingleField(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid, ProjectUpdateModel projectUpdateModel)
+//    public ProjectSnapshotModel updateProjectSingleField(@PathParam("id") UUID projectUuid, ProjectUpdateModel projectUpdateModel)
 //            throws VngNotFoundException, VngBadRequestException, VngServerErrorException {
 //
 //        String validationError = projectUpdateModel.validate(repo);
@@ -330,7 +332,7 @@ public class ProjectsResource {
     @POST
     @Path("/{id}/plots")
     @Consumes(MediaType.APPLICATION_JSON)
-    public void setProjectPlots(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid, List<PlotModel> plots) throws VngNotFoundException, VngBadRequestException {
+    public void setProjectPlots(@PathParam("id") UUID projectUuid, List<PlotModel> plots) throws VngNotFoundException, VngBadRequestException {
         Project project = projectService.getCurrentProject(repo, projectUuid);
 
         if (project == null) {
@@ -363,7 +365,7 @@ public class ProjectsResource {
     @Path("/update")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public ProjectSnapshotModel updateProjectSnapshot(@Context LoggedUser loggedUser, ProjectSnapshotModel projectSnapshotModelToUpdate)
+    public ProjectSnapshotModel updateProjectSnapshot(ProjectSnapshotModel projectSnapshotModelToUpdate)
             throws VngNotFoundException, VngBadRequestException, VngServerErrorException {
 
         UUID projectUuid = projectSnapshotModelToUpdate.getProjectId();
@@ -601,8 +603,7 @@ public class ProjectsResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public Response importExcelFile(@FormDataParam("uploadFile") InputStream inputStream,
-                                    @FormDataParam("uploadFile") FormDataContentDisposition formDataContentDisposition,
-                                    @Context LoggedUser loggedUser) {
+                                    @FormDataParam("uploadFile") FormDataContentDisposition formDataContentDisposition) {
 
         //save file to disk
         String fileSuffix = LocalDateTime.now().format(formatter);
