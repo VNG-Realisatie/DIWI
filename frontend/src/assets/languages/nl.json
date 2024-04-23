@@ -291,7 +291,7 @@
     },
     "admin": {
       "settings": {
-        "title": "Lijst met optionele velden",
+        "title": "Lijst met maatwerk velden",
         "tableHeader": {
           "name": "Naam",
           "objectType": "Project of woningblok",
