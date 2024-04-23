@@ -39,14 +39,14 @@ public class ProjectsResourceTest {
     private static TestDb testDb;
     private Dal dal;
     private VngRepository repo;
-    private ProjectsResource projectResource;
-    private User user;
-    private LoggedUser loggedUser;
+    private static ProjectsResource projectResource;
 
     @BeforeAll
     static void beforeAll() throws Exception {
         testDb = new TestDb();
         dalFactory = testDb.getDalFactory();
+        projectResource = new ProjectsResource(new GenericRepository(dalFactory.constructDal()),
+            new ProjectService(), new HouseblockService(), new PropertiesService(), testDb.projectConfig, new ExcelImportService());
     }
 
     @AfterAll
@@ -58,25 +58,6 @@ public class ProjectsResourceTest {
     void beforeEach() {
         dal = dalFactory.constructDal();
         repo = new VngRepository(dal.getSession());
-
-        UUID userUuid;
-        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            user = repo.persist(new User());
-            userUuid = user.getId();
-            transaction.commit();
-        }
-
-        loggedUser = new LoggedUser();
-        loggedUser.setUuid(userUuid);
-
-        projectResource = new ProjectsResource(
-                new GenericRepository(dalFactory.constructDal()),
-                new ProjectService(),
-                new HouseblockService(),
-                new PropertiesService(),
-                testDb.projectConfig,
-                new ExcelImportService(),
-                loggedUser);
     }
 
     @AfterEach
@@ -86,10 +67,14 @@ public class ProjectsResourceTest {
 
     @Test
     void updateProjectSnapshotTest_currentProject() throws VngNotFoundException, VngServerErrorException, VngBadRequestException {
+
+        UUID userUuid;
         UUID projectUuid;
 
         //prepare project with name and duration changelog
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+            User user = repo.persist(new User());
+            userUuid = user.getId();
             Project project = ProjectServiceTest.createProject(repo, user);
             projectUuid = project.getId();
             Milestone startMilestone = ProjectServiceTest.createMilestone(repo, project, LocalDate.now().minusDays(10), user);
@@ -108,8 +93,9 @@ public class ProjectsResourceTest {
         projectSnapshot.setStartDate(LocalDate.now().minusDays(15));
 
         //call update endpoint
-
-        projectResource.updateProjectSnapshot(projectSnapshot);
+        LoggedUser loggedUser = new LoggedUser();
+        loggedUser.setUuid(userUuid);
+        projectResource.updateProjectSnapshot(loggedUser, projectSnapshot);
         repo.getSession().clear();
 
         //assert
@@ -171,7 +157,7 @@ public class ProjectsResourceTest {
         //call update endpoint
         LoggedUser loggedUser = new LoggedUser();
         loggedUser.setUuid(userUuid);
-        projectResource.updateProjectSnapshot(projectSnapshot);
+        projectResource.updateProjectSnapshot(loggedUser, projectSnapshot);
         repo.getSession().clear();
 
         //assert
