@@ -366,7 +366,7 @@ public class HouseblockResource {
                 case NUMERIC -> {
                     var currentNumericValue = currentHouseblockCP.getNumericValue();
                     var updateNumericValue = houseblockCPUpdateModel.getNumericValue();
-                    if (updateNumericValue == null || !updateNumericValue.isValid()) {
+                    if (updateNumericValue == null || !updateNumericValue.isValid(false)) {
                         throw new VngBadRequestException("Numeric value does not have a valid format.");
                     }
                     if (!Objects.equals(currentNumericValue.getValue() != null ? currentNumericValue.getValue().doubleValue() : null,
@@ -386,7 +386,7 @@ public class HouseblockResource {
                     }
                 }
                 case ORDINAL -> {
-                    if (houseblockCPUpdateModel.getOrdinals() == null || !houseblockCPUpdateModel.getOrdinals().isValid()) {
+                    if (houseblockCPUpdateModel.getOrdinals() == null || !houseblockCPUpdateModel.getOrdinals().isValid(false)) {
                         throw new VngBadRequestException("Ordinal value does not have a valid format.");
                     }
                     if (!Objects.equals(currentHouseblockCP.getOrdinals(), houseblockCPUpdateModel.getOrdinals())) {

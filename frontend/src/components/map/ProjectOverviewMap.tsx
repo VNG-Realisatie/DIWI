@@ -18,6 +18,7 @@ import { ProjectListModel, getProjects } from "../../api/projectsServices";
 import ConfigContext from "../../context/ConfigContext";
 import { components } from "../../types/schema";
 import { mapBoundsToExtent } from "../../utils/map";
+import { AddProjectButton } from "../PlusButton";
 
 const geoMarker = (f: Feature): Style => {
     // check feature props for style
@@ -156,6 +157,9 @@ const ProjectOverviewMap = () => {
                         font: "10pt sans-serif",
                     }}
                 />
+                <div style={{ position: "absolute", bottom: 100, right: 20 }}>
+                    <AddProjectButton />
+                </div>
             </div>
         </Stack>
     );

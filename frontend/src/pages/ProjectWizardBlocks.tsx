@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 import { Accordion, AccordionDetails, AccordionSummary, Box, Stack } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { deleteHouseBlockWithCustomProperties } from "../api/houseBlockServices";
+import { deleteHouseBlockWithCustomProperties, getProjectHouseBlocksWithCustomProperties } from "../api/houseBlockServices";
 import ProjectContext from "../context/ProjectContext";
 import { DeleteButtonWithConfirm } from "../components/DeleteButtonWithConfirm";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
@@ -25,13 +25,12 @@ export type DateValidationErrors = {
 };
 
 const ProjectWizardBlocks = () => {
-    const { houseBlocks, getEmptyHouseBlock, refresh } = useContext(HouseBlockContext);
+    const { getEmptyHouseBlock, refresh } = useContext(HouseBlockContext);
     const { selectedProject } = useContext(ProjectContext);
-    const [houseBlocksState, setHouseBlocksState] = useState<HouseBlockWithCustomProperties[]>([{ ...getEmptyHouseBlock(), tempId: generateTemporaryId() }]);
+    const [houseBlocksState, setHouseBlocksState] = useState<HouseBlockWithCustomProperties[]>([]);
     const { projectId } = useParams();
     const navigate = useNavigate();
     const { setAlert } = useAlert();
-    const [canUpdate, setCanUpdate] = useState(true);
     const [expanded, setExpanded] = useState(Array.from({ length: houseBlocksState.length }, () => true));
     const [errorOccurred, setErrorOccurred] = useState(false);
     const [errors, setErrors] = useState<boolean[]>(Array.from({ length: houseBlocksState.length }, () => false));
@@ -39,12 +38,29 @@ const ProjectWizardBlocks = () => {
     const { setLoading } = useLoading();
     const [dateValidationErrors, setDateValidationErrors] = useState<Array<DateValidationErrors>>([]);
 
+    useEffect(() => {
+        const fetchData = async () => {
+            let houseBlocks;
+            if (projectId) {
+                houseBlocks = await getProjectHouseBlocksWithCustomProperties(projectId);
+            }
+            if (houseBlocks && houseBlocks.length > 0) {
+                setHouseBlocksState(houseBlocks);
+            } else {
+                setHouseBlocksState([{ ...getEmptyHouseBlock(), tempId: generateTemporaryId() }]);
+            }
+        };
+        fetchData();
+    }, [getEmptyHouseBlock, projectId]);
+
     async function saveHouseBlock(houseBlock: HouseBlockWithCustomProperties) {
         try {
             setLoading(true);
-            await saveHouseBlockWithCustomProperties(houseBlock);
-        } catch (error: any) {
-            throw new Error(error.message);
+            const res = await saveHouseBlockWithCustomProperties(houseBlock);
+            setAlert(t("createProject.houseBlocksForm.notifications.successfullySaved"), "success");
+            return res.houseblockId;
+        } catch {
+            setAlert(t("createProject.houseBlocksForm.notifications.error"), "error");
         } finally {
             setLoading(false);
         }
@@ -101,29 +117,10 @@ const ProjectWizardBlocks = () => {
     };
 
     const handleNext = async () => {
-        setErrors(Array.from({ length: houseBlocksState.length }, () => false));
-        try {
-            setErrorOccurred(false);
+        const isSuccessful: boolean | undefined = await handleSave();
+        if (!isSuccessful) return;
 
-            await Promise.all(
-                houseBlocksState.map(async (houseBlock, index) => {
-                    try {
-                        validateHouseBlock(houseBlock, selectedProject, index);
-                        saveHouseBlock({ ...houseBlock, tempId: undefined });
-                    } catch (error) {
-                        setErrorOccurred(true);
-                        throw error;
-                    }
-                }),
-            );
-            setAlert(t("createProject.houseBlocksForm.notifications.successfullySaved"), "success");
-            if (!errorOccurred && projectId) {
-                navigate(projectWizardMap.toPath({ projectId }));
-            }
-        } catch (error: any) {
-            setErrorOccurred(true);
-            setAlert(error.message, "warning");
-        }
+        if (projectId) navigate(projectWizardMap.toPath({ projectId }));
     };
 
     const handleSave = async () => {
@@ -131,24 +128,34 @@ const ProjectWizardBlocks = () => {
         try {
             setErrorOccurred(false);
 
-            await Promise.all(
+            const res = await Promise.all(
                 houseBlocksState.map(async (houseBlock, index) => {
                     try {
                         validateHouseBlock(houseBlock, selectedProject, index);
-                        saveHouseBlock({ ...houseBlock, tempId: undefined });
+                        const id = await saveHouseBlock({ ...houseBlock, tempId: undefined });
+                        return { id, tempId: houseBlock.tempId };
                     } catch (error) {
                         setErrorOccurred(true);
-                        throw error;
+                        return { error };
                     }
                 }),
             );
-            setAlert(t("createProject.houseBlocksForm.notifications.successfullySaved"), "success");
-            setCanUpdate(true);
+
+            const hasErrors = res.some((response) => response.error);
+
+            const updatedHouseBlocks = houseBlocksState.map((houseBlockState) => {
+                const result = res.find((response) => response.tempId === houseBlockState.tempId);
+                if (result && result.id && !result.error && !houseBlockState.houseblockId) {
+                    return { ...houseBlockState, houseblockId: result.id };
+                }
+                return houseBlockState;
+            });
+
+            setHouseBlocksState(updatedHouseBlocks);
+            return !hasErrors;
         } catch (error: any) {
             setErrorOccurred(true);
             setAlert(error.message, "warning");
-        } finally {
-            refresh();
         }
     };
 
@@ -169,27 +176,6 @@ const ProjectWizardBlocks = () => {
             lastAddedForm.current.scrollIntoView({ behavior: "smooth", block: "start" });
         }
     };
-
-    useEffect(() => {
-        if (houseBlocks.length > 0 && canUpdate) {
-            const updatedHouseBlocksState = houseBlocksState.map((houseBlockState) => {
-                const matchingHouseBlock = houseBlocks.find((houseBlock) => houseBlock.houseblockName === houseBlockState.houseblockName);
-                if (matchingHouseBlock) {
-                    return {
-                        ...houseBlockState,
-                        houseblockId: matchingHouseBlock.houseblockId,
-                    };
-                } else {
-                    return houseBlockState;
-                }
-            });
-            setHouseBlocksState(updatedHouseBlocksState);
-        }
-        if (houseBlocks.length >= houseBlocksState.length) {
-            setHouseBlocksState(houseBlocks);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [houseBlocks, setHouseBlocksState, canUpdate]);
 
     useEffect(() => {
         if (errors.every((element) => element === false)) {

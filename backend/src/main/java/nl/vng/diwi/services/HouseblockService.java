@@ -235,14 +235,16 @@ public class HouseblockService {
                 if (ov.getValue().getValue() != null) {
                     ownershipValue.setValue(ov.getValue().getValue());
                     ownershipValue.setValueType(ValueType.SINGLE_VALUE);
-                } else if (ov.getValue().getMin() != null && ov.getValue().getMax() != null) {
-                    ownershipValue.setValueRange(Range.closed(ov.getValue().getMin(), ov.getValue().getMax()));
+                } else if (ov.getValue().getMin() != null) {
+                    ownershipValue.setValueRange(ov.getValue().toRange());
+                    ownershipValue.setValueType(ValueType.RANGE);
                 }
                 if (ov.getRentalValue().getValue() != null) {
                     ownershipValue.setRentalValue(ov.getRentalValue().getValue());
                     ownershipValue.setRentalValueType(ValueType.SINGLE_VALUE);
-                } else if (ov.getRentalValue().getMin() != null && ov.getRentalValue().getMax() != null) {
-                    ownershipValue.setRentalValueRange(Range.closed(ov.getRentalValue().getMin(), ov.getRentalValue().getMax()));
+                } else if (ov.getRentalValue().getMin() != null) {
+                    ownershipValue.setRentalValueRange(ov.getRentalValue().toRange());
+                    ownershipValue.setRentalValueType(ValueType.RANGE);
                 }
                 ownershipValue.setAmount(ov.getAmount());
                 ownershipValue.setOwnershipType(ov.getType());
@@ -764,15 +766,15 @@ public class HouseblockService {
         newChangelog.setOwnershipType(ownershipValue.getType());
         newChangelog.setAmount(ownershipValue.getAmount());
         newChangelog.setValue(ownershipValue.getValue().getValue());
-        if (ownershipValue.getValue().getMin() != null && ownershipValue.getValue().getMax() != null) {
-            newChangelog.setValueRange(Range.closed(ownershipValue.getValue().getMin(), ownershipValue.getValue().getMax()));
+        if (ownershipValue.getValue().getMin() != null) {
+            newChangelog.setValueRange(ownershipValue.getValue().toRange());
             newChangelog.setValueType(ValueType.RANGE);
         } else {
             newChangelog.setValueType(ValueType.SINGLE_VALUE);
         }
         newChangelog.setRentalValue(ownershipValue.getRentalValue().getValue());
-        if (ownershipValue.getRentalValue().getMin() != null && ownershipValue.getRentalValue().getMax() != null) {
-            newChangelog.setRentalValueRange(Range.closed(ownershipValue.getRentalValue().getMin(), ownershipValue.getRentalValue().getMax()));
+        if (ownershipValue.getRentalValue().getMin() != null) {
+            newChangelog.setRentalValueRange(ownershipValue.getRentalValue().toRange());
             newChangelog.setRentalValueType(ValueType.RANGE);
         } else {
             newChangelog.setRentalValueType(ValueType.SINGLE_VALUE);

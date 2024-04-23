@@ -34,11 +34,13 @@ function fromStringToRange(stringValue: string) {
         const [minStr, maxStr] = inputValue.split("-");
         const min = parseFloat(minStr);
         const max = parseFloat(maxStr);
+
         if (!isNaN(min) && !isNaN(max)) {
             return { value: null, min, max };
         } else if (!isNaN(min)) {
-            return { value: min, min: null, max: null };
+            return { value: null, min, max: null };
         } else if (!isNaN(max)) {
+            // We only support open ended ranges with min value. Treat open ended range with max as value
             return { value: max, min: null, max: null };
         } else {
             return { value: null, min: null, max: null };

@@ -1,35 +1,27 @@
 import { Alert, Autocomplete, Box, ListItemText, MenuItem, OutlinedInput, Select, SelectChangeEvent, Stack, TextField, Typography } from "@mui/material";
-import ColorSelector from "../ColorSelector";
 import { DatePicker } from "@mui/x-date-pickers";
+import ColorSelector from "../ColorSelector";
 
-import { useTranslation } from "react-i18next";
-import { MenuProps } from "../../utils/menuProps";
-import { confidentialityLevelOptions, planTypeOptions, planningPlanStatus, projectPhaseOptions } from "../table/constants";
 import dayjs, { Dayjs } from "dayjs";
-import { useEffect, useState } from "react";
-import { getMunicipalityRoleList, getPriorityList } from "../../api/projectsTableServices";
-import { SelectModel } from "../../api/projectsServices";
+import { useTranslation } from "react-i18next";
+import { Project } from "../../api/projectsServices";
 import { dateFormats } from "../../localization";
-import { LabelComponent } from "./LabelComponent";
+import { ConfidentialityLevelOptions, PlanStatusOptions, ProjectPhaseOptions } from "../../types/enums";
+import { MenuProps } from "../../utils/menuProps";
 import { OrganizationSelect } from "../../widgets/OrganizationSelect";
+import { confidentialityLevelOptions, planTypeOptions, planningPlanStatus, projectPhaseOptions } from "../table/constants";
+import { LabelComponent } from "./LabelComponent";
+import { MunicipalityRoleEditForm } from "./project-with-house-block/MunicipalityRoleEditForm";
+import useProperties from "../../hooks/useProperties";
 
 type Props = {
-    setCreateProjectForm: (a: any) => void;
-    createProjectForm: any;
+    setCreateProjectForm: (a: Partial<Project>) => void;
+    createProjectForm: Partial<Project>;
 };
-
 export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm }: Props) => {
     const { t } = useTranslation();
-    const [priorityOptionList, setPriorityOptionList] = useState<SelectModel[]>();
-    const [municipalityRolesOptions, setMunicipalityRolesOptions] = useState<SelectModel[]>();
 
-    useEffect(() => {
-        getPriorityList().then((priorityList) => setPriorityOptionList(priorityList));
-    }, []);
-
-    useEffect(() => {
-        getMunicipalityRoleList().then((roles) => setMunicipalityRolesOptions(roles));
-    }, []);
+    const { priorityOptionList, municipalityRolesOptions } = useProperties();
 
     const handleColorChange = (newColor: string) => {
         setCreateProjectForm({
@@ -105,7 +97,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         value={createProjectForm?.planType ?? []}
                         onChange={handlePlanTypeChange}
                         input={<OutlinedInput />}
-                        renderValue={(selected) => selected.map((s: string[]) => t(`projectTable.planTypeOptions.${s}`)).join(", ")}
+                        renderValue={(selected) => selected.map((s) => t(`projectTable.planTypeOptions.${s}`)).join(", ")}
                         MenuProps={MenuProps}
                     >
                         {planTypeOptions.map((pt) => (
@@ -127,7 +119,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         onChange={(newValue: Dayjs | null) =>
                             setCreateProjectForm({
                                 ...createProjectForm,
-                                startDate: newValue ? newValue.format("YYYY-MM-DD") : null,
+                                startDate: newValue ? newValue.format("YYYY-MM-DD") : undefined,
                             })
                         }
                     />
@@ -145,7 +137,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         onChange={(newValue: Dayjs | null) =>
                             setCreateProjectForm({
                                 ...createProjectForm,
-                                endDate: newValue ? newValue.format("YYYY-MM-DD") : null,
+                                endDate: newValue ? newValue.format("YYYY-MM-DD") : undefined,
                             })
                         }
                     />
@@ -163,12 +155,12 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         getOptionLabel={(option) => option.name ?? ""}
                         value={createProjectForm?.priority?.value ?? null}
                         filterSelectedOptions
-                        onChange={(_: any, newValue: SelectModel | null) =>
+                        onChange={(_, newValue) =>
                             setCreateProjectForm({
                                 ...createProjectForm,
                                 priority: {
                                     ...createProjectForm?.priority,
-                                    value: newValue,
+                                    value: newValue || undefined,
                                 },
                             })
                         }
@@ -186,7 +178,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         onChange={(e) =>
                             setCreateProjectForm({
                                 ...createProjectForm,
-                                projectPhase: e.target.value,
+                                projectPhase: e.target.value as ProjectPhaseOptions,
                             })
                         }
                     >
@@ -202,21 +194,10 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                 </Stack>
                 <Stack flex={1}>
                     <LabelComponent required={false} text={t("createProject.informationForm.roleMunicipality")} />
-                    <Autocomplete
-                        size="small"
-                        multiple
-                        id="tags-outlined"
+                    <MunicipalityRoleEditForm
+                        selectedMunicipalityRole={createProjectForm?.municipalityRole ?? []}
+                        setSelectedMunicipalityRole={(newValue) => setCreateProjectForm({ ...createProjectForm, municipalityRole: newValue })}
                         options={municipalityRolesOptions ?? []}
-                        getOptionLabel={(option) => option.name ?? ""}
-                        value={createProjectForm?.municipalityRole ?? []}
-                        filterSelectedOptions
-                        onChange={(_: any, newValue: SelectModel[]) =>
-                            setCreateProjectForm({
-                                ...createProjectForm,
-                                municipalityRole: newValue,
-                            })
-                        }
-                        renderInput={(params) => <TextField {...params} />}
                     />
                 </Stack>
             </Stack>
@@ -245,7 +226,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         onChange={(e) =>
                             setCreateProjectForm({
                                 ...createProjectForm,
-                                confidentialityLevel: e.target.value,
+                                confidentialityLevel: e.target.value as ConfidentialityLevelOptions,
                             })
                         }
                     >
@@ -271,7 +252,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                         value={createProjectForm?.planningPlanStatus ?? []}
                         onChange={handlePlanStatusChange}
                         input={<OutlinedInput />}
-                        renderValue={(selected) => selected.map((s: string[]) => t(`projectTable.planningPlanStatus.${s}`)).join(", ")}
+                        renderValue={(selected) => selected.map((s: PlanStatusOptions) => t(`projectTable.planningPlanStatus.${s}`)).join(", ")}
                         MenuProps={MenuProps}
                     >
                         {planningPlanStatus.map((pt) => (

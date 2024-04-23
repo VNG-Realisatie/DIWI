@@ -1,5 +1,5 @@
 import { Grid, Select, MenuItem, TextField, IconButton, Typography } from "@mui/material";
-import { OwnershipSingleValue } from "../../../../types/houseBlockTypes";
+import { OwnershipSingleValue, RangeValue } from "../../../../types/houseBlockTypes";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { OwnershipValueType, ownershipValueOptions } from "../../../../types/enums";
 import { InputContainer } from "../InputContainer";
@@ -17,6 +17,33 @@ type OwnershipProps = {
     ownership: OwnershipSingleValue;
     index: number;
     handleInputChange: (index: number, value: OwnershipSingleValue) => void;
+};
+
+const NumericRangeLabel = ({ value }: { value: RangeValue }) => {
+    const { t } = useTranslation();
+    if (value.value !== null) {
+        return <Typography>{value.value}</Typography>;
+    } else if (value.max !== null && value.min !== null) {
+        return (
+            <Typography>
+                {value.min} - {value.max}
+            </Typography>
+        );
+    } else if (value.min !== null) {
+        return (
+            <Typography>
+                {value.min} {t("generic.andMore")}
+            </Typography>
+        );
+    } else if (value.max !== null) {
+        return (
+            <Typography>
+                {value.max} {t("generic.andLess")}
+            </Typography>
+        );
+    } else {
+        return <></>;
+    }
 };
 
 const OwnershipTypeOption = ({ handleInputChange, ownership, index }: OwnershipProps) => {
@@ -81,13 +108,7 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                 )}
                 {readOnly && (
                     <InputContainer>
-                        <Typography>
-                            {ownership?.value.value !== null
-                                ? ownership?.value.value
-                                : ownership?.value.min == null && ownership?.value.max === null
-                                  ? ""
-                                  : ownership?.value.min + "-" + ownership?.value.max}
-                        </Typography>
+                        <NumericRangeLabel value={ownership.value} />
                     </InputContainer>
                 )}
             </Grid>
@@ -101,13 +122,7 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                 )}
                 {readOnly && (
                     <InputContainer>
-                        <Typography>
-                            {ownership?.rentalValue.value !== null
-                                ? ownership?.rentalValue.value
-                                : ownership?.rentalValue.min == null && ownership?.rentalValue.max === null
-                                  ? ""
-                                  : ownership?.rentalValue.min + "-" + ownership?.rentalValue.max}
-                        </Typography>
+                        <NumericRangeLabel value={ownership.rentalValue} />
                     </InputContainer>
                 )}
             </Grid>
