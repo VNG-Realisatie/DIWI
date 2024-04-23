@@ -53,7 +53,7 @@ export const ImportExcel = ({ excelImport }: Props) => {
                         handleUploadStackClick();
                     }}
                 >
-                    Klik hier om terug te gaan om een nieuw bestand te uploaden
+                    Het bestand kon niet worden geimporteerd. Klik hier om terug te gaan om een nieuw bestand te uploaden
                 </Stack>
             )}
             {!uploaded && (
@@ -85,6 +85,7 @@ export const ImportExcel = ({ excelImport }: Props) => {
                                         } else {
                                             // 400 errors contain relevant info in body, deal with here
                                             setErrors(res);
+                                            setAlert("Excel-bestand bevat fouten", "error");
                                         }
                                     })
                                     .catch((error) => {
@@ -97,7 +98,7 @@ export const ImportExcel = ({ excelImport }: Props) => {
                 </Stack>
             )}
             {errors.length > 0 && (
-                <Stack>
+                <>
                     {/* This INFO text can be removed later or kept if valuable */}
                     <Alert severity="info">
                         <Typography> There are three levels of errors. So fixing one type could lead to others when uploading again.</Typography>
@@ -110,30 +111,32 @@ export const ImportExcel = ({ excelImport }: Props) => {
                             this row to be included.
                         </Typography>
                     </Alert>
-                    <Typography fontSize="16px" mt={2}>
-                        {"Errors"}
-                    </Typography>
-                    <Table>
-                        <TableBody>
-                            {/* Header row */}
-                            <TableRow>
-                                <TableCell>{"Row"}</TableCell>
-                                <TableCell>{"Column"}</TableCell>
-                                <TableCell>{"Value"}</TableCell>
-                                <TableCell>{"Description"}</TableCell>
-                            </TableRow>
-                            {/* Data rows */}
-                            {errors.map((error) => (
+                    <Alert severity="error">
+                        <Typography fontSize="16px" mt={2}>
+                            {"Errors"}
+                        </Typography>
+                        <Table>
+                            <TableBody>
+                                {/* Header row */}
                                 <TableRow>
-                                    <TableCell>{error.row}</TableCell>
-                                    <TableCell>{error.column}</TableCell>
-                                    <TableCell>{error.cellValue}</TableCell>
-                                    <TableCell>{error.errorMessage}</TableCell>
+                                    <TableCell>{"Row"}</TableCell>
+                                    <TableCell>{"Column"}</TableCell>
+                                    <TableCell>{"Value"}</TableCell>
+                                    <TableCell>{"Description"}</TableCell>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </Stack>
+                                {/* Data rows */}
+                                {errors.map((error) => (
+                                    <TableRow>
+                                        <TableCell>{error.row}</TableCell>
+                                        <TableCell>{error.column}</TableCell>
+                                        <TableCell>{error.cellValue}</TableCell>
+                                        <TableCell>{error.errorMessage}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </Alert>
+                </>
             )}
         </Stack>
     );
