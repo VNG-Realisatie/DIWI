@@ -1,4 +1,4 @@
-import { Button, Stack, Table, TableBody, TableCell, TableRow, Typography } from "@mui/material";
+import { Alert, Button, Stack, Table, TableBody, TableCell, TableRow, Typography } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 import { ReactComponent as UploadCloud } from "../assets/uploadCloud.svg";
 import { useRef, useState } from "react";
@@ -23,7 +23,7 @@ export const ImportExcel = ({ excelImport }: Props) => {
     }
 
     return (
-        <Stack border="solid 1px #ddd" py={3} px={15}>
+        <Stack border="solid 1px #ddd" py={3} px={15} marginBottom={"2em"}>
             <Typography fontSize="20px" fontWeight="600" sx={{ mt: 2 }}>
                 {excelImport ? "Importeren vanuit Excel" : "Importeren vanuit Squit"}
             </Typography>
@@ -76,6 +76,7 @@ export const ImportExcel = ({ excelImport }: Props) => {
                         onChange={(e) => {
                             const file = e.target.files;
                             if (file) {
+                                setErrors([]);
                                 importExcelProjects(file as FileList)
                                     .then((res) => {
                                         setUploaded(true);
@@ -97,6 +98,18 @@ export const ImportExcel = ({ excelImport }: Props) => {
             )}
             {errors.length > 0 && (
                 <Stack>
+                    {/* This INFO text can be removed later or kept if valuable */}
+                    <Alert severity="info">
+                        <Typography> There are three levels of errors. So fixing one type could lead to others when uploading again.</Typography>
+                        <Typography>
+                            Level 1 relates to reading headers: Missing custom props: stops any data/businesslogic validation for this column.
+                        </Typography>
+                        <Typography>Levels 2 & 3 relate to reading rows: Missing/invalid data: stops business logic validation for this row/cell.</Typography>
+                        <Typography>
+                            An easy way to (temporarily) disable a row is to remove the ids in column B, these numbers do not mean anything but are required for
+                            this row to be included.
+                        </Typography>
+                    </Alert>
                     <Typography fontSize="16px" mt={2}>
                         {"Errors"}
                     </Typography>
