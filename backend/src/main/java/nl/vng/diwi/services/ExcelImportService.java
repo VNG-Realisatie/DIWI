@@ -375,10 +375,7 @@ public class ExcelImportService {
                         switch (tableHeader.getColumn()) {
                             case HOUSEBLOCK_DELIVERY_DATE -> {
                                 PropertyModel propertyModel = tableHeader.getPropertyModel();
-                                boolean newDeliveryDate = addHouseblockIntegerNumericProperty(houseblockRowModel, propertyModel, nextCell, formatter, evaluator, rowErrors);
-                                if (newDeliveryDate) {
-                                    houseblockRowModel.addDeliveryDate(tableHeader.getSubheaderDateValue());
-                                }
+                                addHouseblockDeliveryDateProperty(houseblockRowModel, propertyModel, tableHeader.getSubheaderDateValue(), nextCell, formatter, evaluator, rowErrors);
                             }
 
                             case HOUSEBLOCK_PROPERTY_TYPE_OWNER, HOUSEBLOCK_PROPERTY_TYPE_LANDLORD, HOUSEBLOCK_PROPERTY_TYPE_HOUSING_ASSOCIATION,
@@ -638,14 +635,13 @@ public class ExcelImportService {
         }
     }
 
-    private boolean addHouseblockIntegerNumericProperty(ExcelProjectRowModel.HouseblockRowModel houseblockRowModel, PropertyModel propertyModel, Cell cell,
-                                                        DataFormatter formatter, FormulaEvaluator evaluator, List<ExcelError> excelErrors) {
+    private void addHouseblockDeliveryDateProperty(ExcelProjectRowModel.HouseblockRowModel houseblockRowModel, PropertyModel propertyModel, LocalDate deliveryDate, Cell cell,
+                                                      DataFormatter formatter, FormulaEvaluator evaluator, List<ExcelError> excelErrors) {
         Integer integerValue = getIntegerValue(cell, formatter, evaluator, excelErrors);
         if (integerValue != null && integerValue > 0) {
             houseblockRowModel.getHouseblockNumericPropsMap().put(propertyModel.getId(), integerValue.doubleValue());
-            return true;
+            houseblockRowModel.getDeliveryDateMap().put(deliveryDate, integerValue);
         }
-        return false;
     }
 
     private void addHouseblockNumericProperty(ExcelProjectRowModel.HouseblockRowModel houseblockRowModel, PropertyModel propertyModel, Cell cell,
