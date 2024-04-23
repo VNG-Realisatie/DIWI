@@ -58,7 +58,7 @@ export const ImportExcel = ({ excelImport }: Props) => {
                             }}
                         />
                     </label>
-                    Sleep bestanden hierheen of click om te uploaden
+                    Sleep bestanden hierheen of klik om te uploaden
                 </Stack>
             )}
         </Stack>
