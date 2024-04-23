@@ -57,8 +57,16 @@ public class ExcelError {
 
         HOUSEBLOCK_DELIVERY_DATE_AFTER_PROJECT_END_DATE("houseblock_delivery_date", "At least one housing block delivery date is after the project end date."),
         HOUSEBLOCK_HOUSING_NUMBER_NOT_POSITIVE("houseblock_housing_number", "The housing block mutation number is not greater than 0."),
-        HOUSEBLOCK_DELIVERY_TOTAL_INCORRECT("houseblock_delivery_total", "The housing block delivery information does not match the mutation amount."),
+        HOUSEBLOCK_DELIVERY_TOTAL_INCORRECT("houseblock_delivery_total", "The total of houses in Delivery section does not match the mutation amount."),
         HOUSEBLOCK_DELIVERY_DATE_BEFORE_PROJECT_DEVLIVERY_PHASE("houseblock_delivery_phase", "The housing block delivery dates are before the project delivery phase"),
+        HOUSEBLOCK_OWNERSHIP_TYPE_TOTAL_INCORRECT("houseblock_ownership_total", "The total of houses in Property type section does not match the mutation amount."),
+        HOUSEBLOCK_OWNERSHIP_OWNER_TOTAL_INCORRECT("houseblock_ownership_owner_total", "The total of houses in Home-value section does not match the owner-occupied amount."),
+        HOUSEBLOCK_OWNERSHIP_LANDLORD_TOTAL_INCORRECT("houseblock_ownership_landlord_total", "The total of houses in Rental-price-private-landlord section does not match the private-landlord amount."),
+        HOUSEBLOCK_OWNERSHIP_HOUSING_ASSOCIATION_TOTAL_INCORRECT("houseblock_ownership_housing_assoc_total", "The total of houses in Housing-association-rental-price section does not match the rent-housing-association amount."),
+        HOUSEBLOCK_HOUSE_TYPE_TOTAL_INCORRECT("houseblock_house_type_total", "The total of houses in House-type section does not match the mutation amount."),
+        HOUSEBLOCK_PHYSICAL_APPEARANCE_TOTAL_INCORRECT("houseblock_physical_appearance_total", "The total of houses in Physical-appearance section does not match the mutation amount."),
+        HOUSEBLOCK_TARGET_GROUP_TOTAL_INCORRECT("houseblock_target_group_total", "The total of houses in Target-group section does not match the mutation amount."),
+        HOUSEBLOCK_GROUND_POSITION_TOTAL_INCORRECT("houseblock_ground_position_total", "The total of houses in Ground-position section does not match the mutation amount."),
 
         MISSING_PROJECT_NAME("no_project_name", "Project name is missing."),
         MISSING_PROJECT_STATUS("no_project_status", "Project status is missing or invalid"),

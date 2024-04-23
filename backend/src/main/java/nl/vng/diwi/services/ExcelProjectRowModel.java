@@ -71,6 +71,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @Data
 public class ExcelProjectRowModel {
@@ -146,13 +147,10 @@ public class ExcelProjectRowModel {
                 rowErrors.add(new ExcelError(excelRowNo, ExcelError.ERROR.HOUSEBLOCK_HOUSING_NUMBER_NOT_POSITIVE));
             }
 
+            validateMapTotals(deliveryDateMap, mutation, excelRowNo, ExcelError.ERROR.HOUSEBLOCK_DELIVERY_TOTAL_INCORRECT, rowErrors);
             if (!deliveryDateMap.isEmpty()) {
-                Integer totalDeliveryHouses = deliveryDateMap.values().stream().reduce(0, Integer::sum);
-                if (!Objects.equals(mutation, totalDeliveryHouses)) {
-                    rowErrors.add(new ExcelError(excelRowNo, ExcelError.ERROR.HOUSEBLOCK_DELIVERY_TOTAL_INCORRECT));
-                }
                 LocalDate projectDeliveryDate = projectRowModel.getProjectPhasesMap().get(ProjectPhase._6_REALIZATION);
-                if (projectDeliveryDate != null) { //TODO: what if it is null?
+                if (projectDeliveryDate != null) {
                     deliveryDateMap.keySet().forEach(dd -> {
                         if (dd.isBefore(projectDeliveryDate)) {
                             rowErrors.add(new ExcelError(excelRowNo, ExcelError.ERROR.HOUSEBLOCK_DELIVERY_DATE_BEFORE_PROJECT_DEVLIVERY_PHASE));
@@ -162,13 +160,43 @@ public class ExcelProjectRowModel {
             }
 
             //grotte validations
-            //eigendom type validations
-            //woning waarde / Huurprijs particulier / Huurprijs woningcorporatie
-            //Woning type
-            //Fysiek voorkomen
-            //Doelgroep
-            //Grondpositie
-            //TODO - houseblock validations
+
+            validateMapTotals(ownershipTypeMap, mutation, excelRowNo, ExcelError.ERROR.HOUSEBLOCK_OWNERSHIP_TYPE_TOTAL_INCORRECT, rowErrors);
+            if (!ownershipTypeMap.isEmpty()) {
+                Map<OwnershipType, Integer> ownershipValueMap = ownershipValues.stream()
+                    .collect(Collectors.toMap(HouseblockSnapshotModel.OwnershipValue::getType, HouseblockSnapshotModel.OwnershipValue::getAmount, Integer::sum));
+
+                if (ownershipValueMap.containsKey(OwnershipType.KOOPWONING)) {
+                    if (!Objects.equals(ownershipTypeMap.get(OwnershipType.KOOPWONING), ownershipValueMap.get(OwnershipType.KOOPWONING))) {
+                        rowErrors.add(new ExcelError(excelRowNo, ExcelError.ERROR.HOUSEBLOCK_OWNERSHIP_OWNER_TOTAL_INCORRECT));
+                    }
+                }
+                if (ownershipValueMap.containsKey(OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER)) {
+                    if (!Objects.equals(ownershipTypeMap.get(OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER), ownershipValueMap.get(OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER))) {
+                        rowErrors.add(new ExcelError(excelRowNo, ExcelError.ERROR.HOUSEBLOCK_OWNERSHIP_LANDLORD_TOTAL_INCORRECT));
+                    }
+                }
+                if (ownershipValueMap.containsKey(OwnershipType.HUURWONING_WONINGCORPORATIE)) {
+                    if (!Objects.equals(ownershipTypeMap.get(OwnershipType.HUURWONING_WONINGCORPORATIE), ownershipValueMap.get(OwnershipType.HUURWONING_WONINGCORPORATIE))) {
+                        rowErrors.add(new ExcelError(excelRowNo, ExcelError.ERROR.HOUSEBLOCK_OWNERSHIP_HOUSING_ASSOCIATION_TOTAL_INCORRECT));
+                    }
+                }
+            }
+
+            validateMapTotals(houseTypeMap, mutation, excelRowNo, ExcelError.ERROR.HOUSEBLOCK_HOUSE_TYPE_TOTAL_INCORRECT, rowErrors);
+            validateMapTotals(physicalAppearanceMap, mutation, excelRowNo, ExcelError.ERROR.HOUSEBLOCK_PHYSICAL_APPEARANCE_TOTAL_INCORRECT, rowErrors);
+            validateMapTotals(targetGroupMap, mutation, excelRowNo, ExcelError.ERROR.HOUSEBLOCK_TARGET_GROUP_TOTAL_INCORRECT, rowErrors);
+            validateMapTotals(groundPositionMap, mutation, excelRowNo, ExcelError.ERROR.HOUSEBLOCK_GROUND_POSITION_TOTAL_INCORRECT, rowErrors);
+
+        }
+
+        private <T> void validateMapTotals(Map<T, Integer> map, Integer referenceTotal, Integer excelRowNo, ExcelError.ERROR error, List<ExcelError> rowErrors) {
+            if (!map.isEmpty()) {
+                Integer mapTotal = map.values().stream().reduce(0, Integer::sum);
+                if (!Objects.equals(referenceTotal, mapTotal)) {
+                    rowErrors.add(new ExcelError(excelRowNo, error));
+                }
+            }
         }
     }
 
