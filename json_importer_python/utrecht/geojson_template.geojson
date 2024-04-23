@@ -1,0 +1,103 @@
+{
+    "type": "FeatureCollection",
+    "crs": {
+        "type": "name",
+        "properties": {
+            "name": "EPSG:28992"
+        }
+    },
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": []
+            },
+            "properties": {
+                "projectgegevens": {
+                    "basisgegevens": {
+                        "identificatie_nr": null,
+                        "naam": null
+                    },
+                    "projectgegevens": {
+                        "plan_soort": null,
+                        "in_programmering": null,
+                        "prioritering": null,
+                        "rol_gemeente": null,
+                        "status": null
+                    },
+                    "rollen": {
+                        "projectleider": null,
+                        "opdrachtgever": null
+                    },
+                    "projectduur": {
+                        "start_project": null,
+                        "eind_project": null
+                    },
+                    "projectfasen": {
+                        "1_initiatief": null,
+                        "2_definitie": null,
+                        "3_ontwerp": null,
+                        "4_voorbereiding": null,
+                        "5_realisatie": null,
+                        "6_nazorg": null
+                    },
+                    "planologische_planstatus": { 
+                        "4a_niet_opgenomen_in_de_visie": null,
+                        "4b_opgenomen_in_de_visie": null,
+                        "3_in_voorbereiding": null,
+                        "2a_vastgesteld": null,
+                        "2b_vastgesteld_uitwerking_nodig": null,
+                        "2c_vastgesteld_b&w_nodig": null,
+                        "1a_onherroepelijk": null,
+                        "1b_onherroepelijk_uitwerking_nodig": null,
+                        "1c_onherroepelijk_b&w_nodig": null
+                    },
+                    "maatwerk_projecteigenschappen": {
+                    }
+                },
+                "woning_blokken": [
+                    {
+                        "mutatiegegevens": {
+                            "mutatie_type": null,
+                            "eigendom_type": null,
+                            "woning_type": null,
+                            "contract_type": null,
+                            "status": null,
+                            "aantal": null
+                        },
+                        "einddatum": null,
+                        "oplevering": [],
+                        "grootte": [],
+                        "waarde": {
+                            "hoog": null,
+                            "laag": null
+                        },
+                        "fysiek_voorkomen":[
+                            {"fysiek_voorkomen": null,
+                            "aantal": null}
+                        ],
+                        "doelgroep": [
+                            {"doelgroep_categorie": null,
+                            "aantal": null}
+                        ],
+                        "locatie": {
+                            "gemeente": null,
+                            "wijk": null,
+                            "buurt": null
+                        },
+                        "grondpositie": {
+                            "geen_toestemming_eigenaar": null,
+                            "intentie_medewerking_eigenaar": null,
+                            "formele_toestemming_eigenaar": null
+                        },
+                        "maatwerk_woningeigenschappen": {
+                            "bouw_gerealiseerd": null,
+                            "categorie_type": null
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}
