@@ -16,6 +16,7 @@ type ProjectContextType = {
     paginationInfo: GridPaginationModel;
     setPaginationInfo(info: GridPaginationModel): void;
     updateProject(): void;
+    updateProjects(): void;
 };
 
 const ProjectContext = createContext<ProjectContextType | null>(null) as React.Context<ProjectContextType>;
@@ -64,6 +65,7 @@ export const ProjectProvider = ({ children }: PropsWithChildren) => {
                 paginationInfo,
                 setPaginationInfo,
                 updateProject,
+                updateProjects,
             }}
         >
             {children}
