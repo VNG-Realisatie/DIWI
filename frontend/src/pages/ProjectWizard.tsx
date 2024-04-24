@@ -9,12 +9,18 @@ import useAlert from "../hooks/useAlert";
 import ProjectContext from "../context/ProjectContext";
 
 const ProjectWizard = () => {
-    const [createProjectForm, setCreateProjectForm] = useState<Partial<Project>>({
+    const [projectForm, setProjectForm] = useState<Project>({
         projectColor: "#FF5733",
         projectLeaders: [],
         projectOwners: [],
         projectPhase: "_1_CONCEPT",
         planningPlanStatus: [],
+        startDate: undefined,
+        endDate: undefined,
+        projectName: "",
+        projectId: "temp_id",
+        confidentialityLevel: "PRIVE",
+        customProperties: [],
     });
     const { projectId } = useParams();
     const navigate = useNavigate();
@@ -23,32 +29,36 @@ const ProjectWizard = () => {
 
     async function validateAndSave() {
         if (
-            !createProjectForm.projectName ||
-            !createProjectForm.startDate ||
-            !createProjectForm.endDate ||
-            !createProjectForm.projectColor ||
-            !createProjectForm.projectPhase ||
-            !createProjectForm.confidentialityLevel
+            !projectForm.projectName ||
+            !projectForm.startDate ||
+            !projectForm.endDate ||
+            !projectForm.projectColor ||
+            !projectForm.projectPhase ||
+            !projectForm.confidentialityLevel
         ) {
             setAlert(t("createProject.hasMissingRequiredAreas.hasmissingProperty"), "warning");
-            return;
+            return false;
         }
         try {
+            // when saved initially we can keep updating existing project
             if (projectId) {
-                await updateProject(createProjectForm as Project);
+                await updateProject(projectForm as Project);
                 setAlert(t("createProject.successfullySaved"), "success");
+                return true;
             } else {
+                // for initial save only subset of attributes is used
                 const temporaryCreateForm = {
-                    projectName: createProjectForm.projectName,
-                    projectColor: createProjectForm.projectColor,
-                    projectPhase: createProjectForm.projectPhase,
-                    confidentialityLevel: createProjectForm.confidentialityLevel,
-                    startDate: createProjectForm.startDate,
-                    endDate: createProjectForm.endDate,
+                    projectName: projectForm.projectName,
+                    projectColor: projectForm.projectColor,
+                    projectPhase: projectForm.projectPhase,
+                    confidentialityLevel: projectForm.confidentialityLevel,
+                    startDate: projectForm.startDate,
+                    endDate: projectForm.endDate,
                 };
                 const project = await createProject(temporaryCreateForm);
-                createProjectForm.projectId = project.projectId;
-                await updateProject(createProjectForm as Project);
+                // after save immediately update Id and send attibutes that have not been saved yet
+                projectForm.projectId = project.projectId;
+                await updateProject(projectForm as Project);
                 setAlert(t("createProject.successfullySaved"), "success");
 
                 navigate(projectWizardWithId.toPath({ projectId: project.projectId }));
@@ -65,15 +75,15 @@ const ProjectWizard = () => {
     };
 
     const handleNext = async () => {
-        validateAndSave();
-        if (projectId) {
+        const validateAndSaveSuccess = await validateAndSave();
+        if (validateAndSaveSuccess && projectId) {
             navigate(projectWizardBlocks.toPath({ projectId }));
         }
     };
 
     useEffect(() => {
         if (projectId) {
-            getProject(projectId).then((res) => setCreateProjectForm({ ...res, startDate: res.startDate, endDate: res.endDate }));
+            getProject(projectId).then((res) => setProjectForm({ ...res, startDate: res.startDate, endDate: res.endDate }));
         }
     }, [projectId]);
 
@@ -81,7 +91,7 @@ const ProjectWizard = () => {
 
     return (
         <WizardLayout {...{ infoText, handleNext, handleSave, projectId, activeStep: 0 }}>
-            <ProjectInformationForm setCreateProjectForm={setCreateProjectForm} createProjectForm={createProjectForm} />
+            <ProjectInformationForm setCreateProjectForm={setProjectForm} createProjectForm={projectForm} />
         </WizardLayout>
     );
 };

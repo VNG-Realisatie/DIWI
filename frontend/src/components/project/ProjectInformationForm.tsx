@@ -15,8 +15,8 @@ import { MunicipalityRoleEditForm } from "./project-with-house-block/Municipalit
 import useProperties from "../../hooks/useProperties";
 
 type Props = {
-    setCreateProjectForm: (a: Partial<Project>) => void;
-    createProjectForm: Partial<Project>;
+    setCreateProjectForm: (a: Project) => void;
+    createProjectForm: Project;
 };
 export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm }: Props) => {
     const { t } = useTranslation();
