@@ -3,7 +3,17 @@ import DownloadIcon from "@mui/icons-material/Download";
 import { ReactComponent as UploadCloud } from "../assets/uploadCloud.svg";
 import { useRef, useState } from "react";
 import useAlert from "../hooks/useAlert";
-import { UploadErrorType, importExcelProjects } from "../api/importServices";
+import { importExcelProjects } from "../api/importServices";
+import { useNavigate } from "react-router-dom";
+import * as Paths from "../Paths";
+
+export type UploadErrorType = {
+    errorCode: string;
+    row: number;
+    column: string;
+    cellValue: string;
+    errorMessage: string;
+};
 
 type Props = {
     excelImport: boolean;
@@ -11,6 +21,7 @@ type Props = {
 
 export const ImportExcel = ({ excelImport }: Props) => {
     const fileInputRef = useRef(null);
+    const navigate = useNavigate();
     const [uploaded, setUploaded] = useState(false);
     const [errors, setErrors] = useState<Array<UploadErrorType>>([]);
 
@@ -78,18 +89,20 @@ export const ImportExcel = ({ excelImport }: Props) => {
                             if (file) {
                                 setErrors([]);
                                 importExcelProjects(file as FileList)
-                                    .then((res) => {
+                                    .then(async (res) => {
                                         setUploaded(true);
                                         if (res.ok) {
                                             setAlert("Excel-bestand succesvol geüpload.", "success");
+                                            navigate(Paths.projectsTable.path);
                                         } else {
                                             // 400 errors contain relevant info in body, deal with here
-                                            setErrors(res);
-                                            setAlert("Excel-bestand bevat fouten", "error");
+                                            const newErrors = (await res.json()) as Array<UploadErrorType>;
+                                            setErrors(newErrors);
+                                            setAlert("Kon Excel-bestand niet importeren", "error");
                                         }
                                     })
                                     .catch((error) => {
-                                        console.error("error", error);
+                                        console.error("Failed to import due to error", error);
                                     });
                             }
                         }}
