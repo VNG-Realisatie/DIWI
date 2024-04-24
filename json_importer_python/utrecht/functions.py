@@ -144,6 +144,7 @@ def fill_projectgegevens(df_out, df_in, project_fasen):
     df_out = add_projectduur(df_out=df_out, df_in=df_in, prefix=prefix)
     df_out = add_projectfasen(df_out=df_out, df_in=df_in, prefix=prefix, project_fasen=project_fasen)
     df_out = add_planologische_planstatus(df_out=df_out, df_in=df_in, prefix=prefix)
+    df_out = add_locatie(df_out=df_out, df_in=df_in, prefix=prefix)
 
     return df_out
 
@@ -243,15 +244,17 @@ def add_woningwaardes(df_out, df_in, koop_mapping, huur_mapping):
     df_out = df_out.drop(['jaartal_temp', 'jaar', 'categorie'], axis=1)
     df_out = df_out.rename({'hoog': 'properties.woning_blokken.waarde.hoog', 'laag': 'properties.woning_blokken.waarde.laag'}, axis=1)
 
+    df_out.loc[(df_out['properties.woning_blokken.waarde.laag'].isna()) & (df_out['properties.woning_blokken.waarde.hoog'].notna()), 'properties.woning_blokken.waarde.laag'] = 0
 
     return df_out
 
 
-def add_locatie(df_out, df_in):
+def add_locatie(df_out, df_in, prefix):
+    local_prefix = f'{prefix}.locatie'
 
-    df_out = pd.merge(left=df_out, right=df_in[['properties.globalid', 'properties.gemeente']], on=['properties.globalid'], how='left')
-
-    df_out = df_out.rename({'properties.gemeente': 'properties.woning_blokken.locatie.gemeente'}, axis=1)
+    df_out[f'{local_prefix}.gemeente'] = df_in['properties.gemeente']
+    df_out[f'{local_prefix}.wijk'] = None
+    df_out[f'{local_prefix}.buurt'] = None
 
     return df_out
 
@@ -402,22 +405,29 @@ def form_json_structure(df_out, df_in, geo_template, required_input_columns, req
         new_project['properties']['projectgegevens']['projectduur']['eind_project'] = s_project['properties.projectgegevens.projectduur.eind_project']
 
         # projectfasen
-        new_project['properties']['projectgegevens']['projectfasen']['0_concept'] = s_project['properties.projectgegevens.projectfasen.0. Concept']
-        new_project['properties']['projectgegevens']['projectfasen']['1_initiatief'] = s_project['properties.projectgegevens.projectfasen.1. Initiatief']
-        new_project['properties']['projectgegevens']['projectfasen']['2_definitie'] = s_project['properties.projectgegevens.projectfasen.2. Definitie']
-        new_project['properties']['projectgegevens']['projectfasen']['3_ontwerp'] = s_project['properties.projectgegevens.projectfasen.3. Ontwerp']
-        new_project['properties']['projectgegevens']['projectfasen']['4_voorbereiding'] = s_project['properties.projectgegevens.projectfasen.4. Voorbereiding']
-        new_project['properties']['projectgegevens']['projectfasen']['5_realisatie'] = s_project['properties.projectgegevens.projectfasen.5. Realisatie']
-        new_project['properties']['projectgegevens']['projectfasen']['6_nazorg'] = s_project['properties.projectgegevens.projectfasen.6. Nazorg']
+        new_project['properties']['projectgegevens']['projectfasen']['_1_CONCEPT'] = s_project['properties.projectgegevens.projectfasen.0. Concept']
+        new_project['properties']['projectgegevens']['projectfasen']['_2_INITIATIVE'] = s_project['properties.projectgegevens.projectfasen.1. Initiatief']
+        new_project['properties']['projectgegevens']['projectfasen']['_3_DEFINITION'] = s_project['properties.projectgegevens.projectfasen.2. Definitie']
+        new_project['properties']['projectgegevens']['projectfasen']['_4_DESIGN'] = s_project['properties.projectgegevens.projectfasen.3. Ontwerp']
+        new_project['properties']['projectgegevens']['projectfasen']['_5_PREPARATION'] = s_project['properties.projectgegevens.projectfasen.4. Voorbereiding']
+        new_project['properties']['projectgegevens']['projectfasen']['_6_REALIZATION'] = s_project['properties.projectgegevens.projectfasen.5. Realisatie']
+        new_project['properties']['projectgegevens']['projectfasen']['_7_AFTERCARE'] = s_project['properties.projectgegevens.projectfasen.6. Nazorg']
 
         # planologische_planstatus
-        new_project['properties']['projectgegevens']['planologische_planstatus']['1a_onherroepelijk'] = s_project['properties.projectgegevens.planologische_planstatus.1A. Onherroepelijk']
-        new_project['properties']['projectgegevens']['planologische_planstatus']['1b_onherroepelijk_uitwerking_nodig'] = s_project['properties.projectgegevens.planologische_planstatus.1B. Onherroepelijk, uitwerkingsplicht']
-        new_project['properties']['projectgegevens']['planologische_planstatus']['2a_vastgesteld'] = s_project['properties.projectgegevens.planologische_planstatus.2A. Vastgesteld']
-        new_project['properties']['projectgegevens']['planologische_planstatus']['2c_vastgesteld_b&w_nodig'] = s_project['properties.projectgegevens.planologische_planstatus.2C. Vastgesteld, wijzigingsbevoegdheid']
-        new_project['properties']['projectgegevens']['planologische_planstatus']['3_in_voorbereiding'] = s_project['properties.projectgegevens.planologische_planstatus.3. In voorbereiding']
-        new_project['properties']['projectgegevens']['planologische_planstatus']['4a_niet_opgenomen_in_de_visie'] = s_project['properties.projectgegevens.planologische_planstatus.4A. Visie']
-        new_project['properties']['projectgegevens']['planologische_planstatus']['4b_opgenomen_in_de_visie'] = s_project['properties.projectgegevens.planologische_planstatus.4B. Idee']
+        new_project['properties']['projectgegevens']['planologische_planstatus']['_1A_ONHERROEPELIJK'] = s_project['properties.projectgegevens.planologische_planstatus.1A. Onherroepelijk']
+        new_project['properties']['projectgegevens']['planologische_planstatus']['_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG'] = s_project['properties.projectgegevens.planologische_planstatus.1B. Onherroepelijk, uitwerkingsplicht']
+        new_project['properties']['projectgegevens']['planologische_planstatus']['_1C_ONHERROEPELIJK_MET_BW_NODIG'] = None
+        new_project['properties']['projectgegevens']['planologische_planstatus']['_2A_VASTGESTELD'] = s_project['properties.projectgegevens.planologische_planstatus.2A. Vastgesteld']
+        new_project['properties']['projectgegevens']['planologische_planstatus']['_2B_VASTGESTELD_MET_UITWERKING_NODIG'] = None
+        new_project['properties']['projectgegevens']['planologische_planstatus']['_2C_VASTGESTELD_MET_BW_NODIG'] = s_project['properties.projectgegevens.planologische_planstatus.2C. Vastgesteld, wijzigingsbevoegdheid']
+        new_project['properties']['projectgegevens']['planologische_planstatus']['_3_IN_VOORBEREIDING'] = s_project['properties.projectgegevens.planologische_planstatus.3. In voorbereiding']
+        new_project['properties']['projectgegevens']['planologische_planstatus']['_4A_OPGENOMEN_IN_VISIE'] = s_project['properties.projectgegevens.planologische_planstatus.4A. Visie']
+        new_project['properties']['projectgegevens']['planologische_planstatus']['_4B_NIET_OPGENOMEN_IN_VISIE'] = s_project['properties.projectgegevens.planologische_planstatus.4B. Idee']
+
+        # locatie
+        new_project['properties']['projectgegevens']['locatie']['gemeente'] = s_project['properties.projectgegevens.locatie.gemeente']
+        new_project['properties']['projectgegevens']['locatie']['wijk'] = s_project['properties.projectgegevens.locatie.wijk']
+        new_project['properties']['projectgegevens']['locatie']['buurt'] = s_project['properties.projectgegevens.locatie.buurt']
 
         new_project = add_project_maatwerk_json(new_project=new_project, s_project=s_project, project_maatwerk_columns=project_maatwerk_columns)
 
@@ -437,11 +447,11 @@ def form_json_structure(df_out, df_in, geo_template, required_input_columns, req
             new_woningblok['einddatum'] = s_woningblok['properties.woning_blokken.mutatiegegevens.einddatum']
 
             # waarde
-            new_woningblok['waarde']['laag'] = s_woningblok['properties.woning_blokken.waarde.laag']
-            new_woningblok['waarde']['hoog'] = s_woningblok['properties.woning_blokken.waarde.hoog']
-
-            # locatie
-            new_woningblok['locatie']['gemeente'] = s_woningblok['properties.woning_blokken.locatie.gemeente']
+            if (s_woningblok['properties.woning_blokken.waarde.laag'] is not None) or (s_woningblok['properties.woning_blokken.waarde.hoog'] is not None):
+                new_woningblok['waarde']['laag'] = s_woningblok['properties.woning_blokken.waarde.laag']
+                new_woningblok['waarde']['hoog'] = s_woningblok['properties.woning_blokken.waarde.hoog']
+            else:
+                new_woningblok['waarde'] = None
 
             new_woningblok = add_woningblok_maatwerk_json(new_woningblok=new_woningblok, s_woningblok=s_woningblok, woningblok_maatwerk_columns=woningblok_maatwerk_columns)
             new_woningblok['maatwerk_woningeigenschappen']['category_type'] = s_woningblok['properties.woning_blokken.maatwerk_woningeigenschappen.category_type']
@@ -462,12 +472,12 @@ def write_to_geojson(json_out, output_path, gemeente):
 def add_status_to_mutatie(df_out, df_in):
     df_out['properties.projectgegevens.projectgegevens.status'] = None
 
-    df_out.loc[pd.to_datetime(df_out['properties.projectgegevens.projectduur.start_project']) > datetime.datetime.now(), 'properties.projectgegevens.projectgegevens.status'] = 'nieuw, nog niet begonnen'
+    df_out.loc[pd.to_datetime(df_out['properties.projectgegevens.projectduur.start_project']) > datetime.datetime.now(), 'properties.projectgegevens.projectgegevens.status'] = 'NEW'
     df_out.loc[(pd.to_datetime(df_out['properties.projectgegevens.projectduur.start_project']) <= datetime.datetime.now()) &
                (pd.to_datetime(df_out['properties.projectgegevens.projectduur.eind_project']) > datetime.datetime.now()),
-    'properties.projectgegevens.projectgegevens.status'] = 'actief - loopt nog'
+    'properties.projectgegevens.projectgegevens.status'] = 'ACTIVE'
 
-    df_out.loc[(pd.to_datetime(df_out['properties.projectgegevens.projectduur.eind_project']) < datetime.datetime.now()), 'properties.projectgegevens.projectgegevens.status'] = 'afgerond'
+    df_out.loc[(pd.to_datetime(df_out['properties.projectgegevens.projectduur.eind_project']) < datetime.datetime.now()), 'properties.projectgegevens.projectgegevens.status'] = 'REALIZED'
 
     temp = df_out[['properties.parent_globalid', 'properties.woning_blokken.mutatiegegevens.mutatie_type', 'properties.bouw_gerealiseerd', 'properties.sloop_gerealiseerd']].drop_duplicates()
     temp = temp[['properties.parent_globalid', 'properties.bouw_gerealiseerd', 'properties.sloop_gerealiseerd']].groupby('properties.parent_globalid').all().all(axis=1)
@@ -475,18 +485,18 @@ def add_status_to_mutatie(df_out, df_in):
     temp = temp.reset_index().rename({0: 'project_gerealiseerd'}, axis=1)
     df_out = pd.merge(left=df_out, right=temp, on='properties.parent_globalid', how='left')
 
-    df_out.loc[(df_out['properties.projectgegevens.projectgegevens.status'] == 'afgerond') & (df_out['project_gerealiseerd'] == False), 'properties.projectgegevens.projectgegevens.status'] = 'afgebroken'
+    df_out.loc[(df_out['properties.projectgegevens.projectgegevens.status'] == 'REALIZED') & (df_out['project_gerealiseerd'] == False), 'properties.projectgegevens.projectgegevens.status'] = 'TERMINATED'
 
     df_out['properties.woning_blokken.mutatiegegevens.status'] = None
 
-    df_out.loc[df_out['properties.jaartal'].astype(int) < datetime.datetime.now().year, 'properties.woning_blokken.mutatiegegevens.status'] = 'afgerond'
+    df_out.loc[df_out['properties.jaartal'].astype(int) < datetime.datetime.now().year, 'properties.woning_blokken.mutatiegegevens.status'] = 'REALIZED'
 
     temp = df_out[['properties.globalid', 'properties.bouw_gerealiseerd', 'properties.sloop_gerealiseerd']]
     temp = temp.set_index('properties.globalid').all(axis=1)
     temp = temp.reset_index().rename({0: 'woningblok_gerealiseerd'}, axis=1)
 
     df_out['woningblok_gerealiseerd'] = temp['woningblok_gerealiseerd']
-    df_out.loc[(df_out['properties.woning_blokken.mutatiegegevens.status'] == 'afgerond') & (df_out['woningblok_gerealiseerd'] == False), 'properties.woning_blokken.mutatiegegevens.status'] = 'afgebroken'
+    df_out.loc[(df_out['properties.woning_blokken.mutatiegegevens.status'] == 'REALIZED') & (df_out['woningblok_gerealiseerd'] == False), 'properties.woning_blokken.mutatiegegevens.status'] = 'TERMINATED'
 
     return df_out
 

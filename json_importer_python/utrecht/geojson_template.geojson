@@ -35,23 +35,29 @@
                         "eind_project": null
                     },
                     "projectfasen": {
-                        "1_initiatief": null,
-                        "2_definitie": null,
-                        "3_ontwerp": null,
-                        "4_voorbereiding": null,
-                        "5_realisatie": null,
-                        "6_nazorg": null
+                        "_1_CONCEPT": null,
+                        "_2_INITIATIVE": null,
+                        "_3_DEFINITION": null,
+                        "_4_DESIGN": null,
+                        "_5_PREPARATION": null,
+                        "_6_REALIZATION": null,
+                        "_7_AFTERCARE": null
                     },
                     "planologische_planstatus": { 
-                        "4a_niet_opgenomen_in_de_visie": null,
-                        "4b_opgenomen_in_de_visie": null,
-                        "3_in_voorbereiding": null,
-                        "2a_vastgesteld": null,
-                        "2b_vastgesteld_uitwerking_nodig": null,
-                        "2c_vastgesteld_b&w_nodig": null,
-                        "1a_onherroepelijk": null,
-                        "1b_onherroepelijk_uitwerking_nodig": null,
-                        "1c_onherroepelijk_b&w_nodig": null
+                        "_4A_OPGENOMEN_IN_VISIE": null,
+                        "_4B_NIET_OPGENOMEN_IN_VISIE": null,
+                        "_3_IN_VOORBEREIDING": null,
+                        "_2A_VASTGESTELD": null,
+                        "_2B_VASTGESTELD_MET_UITWERKING_NODIG": null,
+                        "_2C_VASTGESTELD_MET_BW_NODIG": null,
+                        "_1A_ONHERROEPELIJK": null,
+                        "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG": null,
+                        "_1C_ONHERROEPELIJK_MET_BW_NODIG": null
+                    },
+                    "locatie": {
+                        "gemeente": null,
+                        "wijk": null,
+                        "buurt": null
                     },
                     "maatwerk_projecteigenschappen": {
                     }
@@ -73,27 +79,14 @@
                             "hoog": null,
                             "laag": null
                         },
-                        "fysiek_voorkomen":[
-                            {"fysiek_voorkomen": null,
-                            "aantal": null}
-                        ],
-                        "doelgroep": [
-                            {"doelgroep_categorie": null,
-                            "aantal": null}
-                        ],
-                        "locatie": {
-                            "gemeente": null,
-                            "wijk": null,
-                            "buurt": null
-                        },
+                        "fysiek_voorkomen":[],
+                        "doelgroep": [],
                         "grondpositie": {
                             "geen_toestemming_eigenaar": null,
                             "intentie_medewerking_eigenaar": null,
                             "formele_toestemming_eigenaar": null
                         },
                         "maatwerk_woningeigenschappen": {
-                            "bouw_gerealiseerd": null,
-                            "categorie_type": null
                         }
                     }
                 ]

@@ -33,8 +33,6 @@ for gemeente_name in gemeente_df_dict:
 
     # missing: fysiek_voorkomen
 
-    df_out = func.add_locatie(df_out=df_out, df_in=df_in)
-
     # missing: grondpositie
 
     df_out = func.add_woningblok_gerealiseerd(df_out=df_out, df_in=df_in)
