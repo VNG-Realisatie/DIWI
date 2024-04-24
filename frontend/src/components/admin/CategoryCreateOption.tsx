@@ -1,5 +1,5 @@
 import React from "react";
-import { TextField, Box, IconButton, InputLabel, Typography, Button } from "@mui/material";
+import { TextField, Box, IconButton, InputLabel, Stack } from "@mui/material";
 import { t } from "i18next";
 import { CategoryType, OrdinalCategoryType } from "../../api/adminSettingServices";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
@@ -119,14 +119,10 @@ export const CategoryCreateOption: React.FC<Props> = ({ categoryValue, setCatego
                         </IconButton>
                     </Box>
                 ))}
-            <Box display="flex" alignItems="center" mb={1}>
-                <Button onClick={handleAddCategory} aria-label="add" sx={{ marginLeft: "10px", ":hover": { background: "none" } }}>
-                    <AddCircleIcon />
-                    <Typography ml={1} variant="inherit">
-                        {t("admin.settings.addOption")}
-                    </Typography>
-                </Button>
-            </Box>
+            <Stack direction="row" alignItems="center" mt={1}>
+                <AddCircleIcon sx={{ cursor: "pointer" }} onClick={handleAddCategory} />
+                {t("admin.settings.addOption")}
+            </Stack>
         </>
     );
 };
