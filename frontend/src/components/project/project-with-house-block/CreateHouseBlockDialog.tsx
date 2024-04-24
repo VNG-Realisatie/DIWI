@@ -5,6 +5,8 @@ import { HouseBlockWithCustomProperties } from "../../../types/houseBlockTypes";
 import { useContext, useEffect, useState } from "react";
 import HouseBlockContext from "../../../context/HouseBlockContext";
 import { saveHouseBlockWithCustomProperties } from "../../../api/houseBlockServices";
+import { validateHouseBlock } from "../../HouseBlocksFormWithControls";
+import useAlert from "../../../hooks/useAlert";
 
 type Props = {
     openHouseBlockDialog: boolean;
@@ -13,6 +15,7 @@ type Props = {
 export const CreateHouseBlockDialog = ({ openHouseBlockDialog, setOpenHouseBlockDialog }: Props) => {
     const { refresh, getEmptyHouseBlock } = useContext(HouseBlockContext);
     const [houseBlock, setHouseBlock] = useState<HouseBlockWithCustomProperties>(getEmptyHouseBlock());
+    const { setAlert } = useAlert();
 
     useEffect(() => {
         if (!openHouseBlockDialog) {
@@ -39,9 +42,11 @@ export const CreateHouseBlockDialog = ({ openHouseBlockDialog, setOpenHouseBlock
                     variant="contained"
                     color="success"
                     onClick={async () => {
-                        await saveHouseBlockWithCustomProperties(houseBlock);
-                        refresh();
-                        setOpenHouseBlockDialog(false);
+                        if (validateHouseBlock(houseBlock, setAlert)) {
+                            await saveHouseBlockWithCustomProperties(houseBlock);
+                            refresh();
+                            setOpenHouseBlockDialog(false);
+                        }
                     }}
                     autoFocus
                 >

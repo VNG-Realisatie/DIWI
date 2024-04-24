@@ -39,7 +39,18 @@ export const AmountEditInput = ({ houseBlockAmount: houseBlockNetPlan, updateHou
     };
 
     return (
-        <TextField type="number" id="grossPlan" size="small" variant="outlined" value={stringValue} onChange={handleChange} onFocus={onFocus} onBlur={onBlur} />
+        <TextField
+            type="number"
+            id="grossPlan"
+            size="small"
+            variant="outlined"
+            value={stringValue}
+            onChange={handleChange}
+            onFocus={onFocus}
+            onBlur={onBlur}
+            error={!houseBlockNetPlan || houseBlockNetPlan <= 0}
+            helperText={!houseBlockNetPlan || houseBlockNetPlan <= 0 ? t("wizard.houseBlocks.mutationAmountWarning") : ""}
+        />
     );
 };
 export const AmountInput = ({ houseBlockAmount, updateHouseBlockAmount, readOnly }: Props) => {

@@ -45,7 +45,7 @@ export const MutationKindSelect = ({ houseBlockMutationKind, updateHouseBlockMut
             )}
             {readOnly && (
                 <InputContainer>
-                    <Typography minHeight="20px">{houseBlockMutationKind}</Typography>
+                    <Typography minHeight="20px"> {houseBlockMutationKind ? t(`createProject.houseBlocksForm.${houseBlockMutationKind}`) : ""}</Typography>
                 </InputContainer>
             )}
         </Stack>
