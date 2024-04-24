@@ -81,7 +81,13 @@ const ProjectWizardBlocks = () => {
             hasErrors = true;
         }
 
-        if (!houseBlock.houseblockName || houseBlock.ownershipValue.some((owner: any) => owner.amount === null || isNaN(owner.amount))) {
+        if (
+            !houseBlock.houseblockName ||
+            !houseBlock.mutation.amount ||
+            !houseBlock.mutation.kind ||
+            houseBlock.mutation.amount <= 0 ||
+            houseBlock.ownershipValue.some((owner: any) => owner.amount === null || isNaN(owner.amount))
+        ) {
             hasErrors = true;
         }
         if (houseBlock.startDate && houseBlock.endDate && selectedProject?.startDate && selectedProject?.endDate) {

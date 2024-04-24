@@ -9,19 +9,41 @@ import { HouseBlocksForm } from "./HouseBlocksForm";
 import { DeleteButtonWithConfirm } from "./DeleteButtonWithConfirm";
 import { deleteHouseBlockWithCustomProperties, saveHouseBlockWithCustomProperties } from "../api/houseBlockServices";
 import HouseBlockContext from "../context/HouseBlockContext";
+import useAlert from "../hooks/useAlert";
 
 type Props = {
     houseBlock: HouseBlockWithCustomProperties;
+};
+
+export const validateHouseBlock = (houseBlock: HouseBlockWithCustomProperties, setAlert: any): boolean => {
+    let isValid = true;
+    if (
+        !houseBlock.endDate ||
+        !houseBlock.startDate ||
+        !houseBlock.houseblockName ||
+        !houseBlock.mutation.amount ||
+        houseBlock.mutation.amount <= 0 ||
+        !houseBlock.mutation.kind
+    ) {
+        isValid = false;
+    }
+    if (!isValid) {
+        setAlert(t("createProject.houseBlocksForm.notifications.error"), "warning");
+    }
+    return isValid;
 };
 
 export const HouseBlocksFormWithControls = ({ houseBlock }: Props) => {
     const [readOnly, setReadOnly] = useState(true);
     const [newHouseBlock, setNewHouseBlock] = useState<HouseBlockWithCustomProperties>(houseBlock);
     const { refresh } = useContext(HouseBlockContext);
+    const { setAlert } = useAlert();
 
     const handleSave = () => {
-        saveHouseBlockWithCustomProperties(newHouseBlock);
-        setReadOnly(true);
+        if (validateHouseBlock(newHouseBlock, setAlert)) {
+            saveHouseBlockWithCustomProperties(newHouseBlock);
+            setReadOnly(true);
+        }
     };
 
     const handleCancel = () => {
