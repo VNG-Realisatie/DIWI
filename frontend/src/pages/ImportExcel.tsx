@@ -103,6 +103,7 @@ export const ImportExcel = ({ excelImport }: Props) => {
                                     })
                                     .catch((error) => {
                                         console.error("Failed to import due to error", error);
+                                        setAlert("Kon Excel-bestand niet importeren", "error");
                                     });
                             }
                         }}
