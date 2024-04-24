@@ -43,6 +43,9 @@ export const ProjectsWithHouseBlock = () => {
     const [planType, setPlanType] = useState<PlanTypeOptions[]>([]);
     const [planStatus, setPlanStatus] = useState<PlanStatusOptions[]>([]);
     const [selectedMunicipalityRole, setSelectedMunicipalityRole] = useState<SelectModel[]>([]);
+    const [selectedDistrict, setSelectedDistrict] = useState<SelectModel[]>([]);
+    const [selectedMunicipality, setSelectedMunicipality] = useState<SelectModel[]>([]);
+    const [selectedNeighbourhood, setSelectedNeighbourhood] = useState<SelectModel[]>([]);
     const [projectPriority, setProjectPriority] = useState<PriorityModel | null>(null);
     const [customValues, setCustomValues] = useState<CustomPropertyValue[]>([]);
 
@@ -93,6 +96,9 @@ export const ProjectsWithHouseBlock = () => {
         setProjectPriority(selectedProject?.priority || {}); //ToDo Fix later when decided range select
         setProjectPhase(selectedProject?.projectPhase);
         setSelectedMunicipalityRole(selectedProject?.municipalityRole ?? []);
+        setSelectedMunicipality(selectedProject?.municipality ?? []);
+        setSelectedDistrict(selectedProject?.district ?? []);
+        setSelectedNeighbourhood(selectedProject?.neighbourhood ?? []);
         setConfidentialityLevel(selectedProject?.confidentialityLevel);
         setLeader(selectedProject?.projectLeaders ?? []);
         setPlanType(selectedProject?.planType?.map((type) => type) ?? []);
@@ -111,6 +117,9 @@ export const ProjectsWithHouseBlock = () => {
         selectedProject?.projectName,
         selectedProject?.projectPhase,
         selectedProject?.startDate,
+        selectedProject?.municipality,
+        selectedProject?.neighbourhood,
+        selectedProject?.district,
         setSelectedProjectColor,
     ]);
 
@@ -209,6 +218,9 @@ export const ProjectsWithHouseBlock = () => {
                     setLeader={setLeader}
                     planStatus={planStatus}
                     setPlanStatus={setPlanStatus}
+                    selectedDistrict={selectedDistrict}
+                    selectedNeighbourhood={selectedNeighbourhood}
+                    selectedMunicipality={selectedMunicipality}
                 />
 
                 <CustomerPropertiesProjectBlock {...{ readOnly, customValues, setCustomValues, columnTitleStyle }} />
