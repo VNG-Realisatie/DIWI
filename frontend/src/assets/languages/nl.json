@@ -61,6 +61,8 @@
         "netPlanCapacity": "Netto Plancapaciteit",
         "demolition": "Sloop",
         "mutationType": "Mutatiesoort",
+        "DEMOLITION": "Sloop",
+        "CONSTRUCTION": "Bouw",
         "size": "Grootte",
         "type": "Soort",
         "amount": "Aantal",
@@ -284,6 +286,8 @@
         "startDateWarning": "Start Datum moet een latere datum zijn",
         "endDateWarningMissing": "​Vul het veld eind datum in",
         "startDateWarningMissing": "​Vul het veld start datum in",
+        "mutationAmountWarning":"​Vul het veld aantal in",
+        "mutationKindWarning":"​Vul het veld mutatiesoort in",
         "generalInformation": {
           "title": "Algemene informatie"
         }
