@@ -80,11 +80,7 @@ public class ProjectsDAOTest {
         assertThat(currentProject.getEndDate()).isEqualTo(LocalDate.now().plusDays(15));
         //Test that the name changelog with the milestones corresponding to the present moment is selected
         assertThat(currentProject.getProjectName()).isEqualTo("Current project Phase 1");
-        //Test that only the changelog value with milestones corresponding to the present moment are selected and the correct gemeenterol version is used
-        assertThat(currentProject.getMunicipalityRole().size()).isEqualTo(2);
-        assertThat(currentProject.getMunicipalityRole().get(0).getName()).isEqualTo("Role 1 new");
-        assertThat(currentProject.getMunicipalityRole().get(1).getName()).isEqualTo("Role 3");
-        assertThat(currentProject.getProjectPhase()).isEqualTo(ProjectPhase._1_INITIATIEFFASE);
+        assertThat(currentProject.getProjectPhase()).isEqualTo(ProjectPhase._1_CONCEPT);
         //Test that only the changelog value with milestones corresponding to the present moment are selected and values are sorted alphabetically
         assertThat(currentProject.getPlanType().size()).isEqualTo(2);
         assertThat(currentProject.getPlanType().get(0)).isEqualTo(PlanType.HERSTRUCTURERING);
@@ -100,9 +96,6 @@ public class ProjectsDAOTest {
         assertThat(futureProject.getEndDate()).isEqualTo(LocalDate.now().plusDays(20));
         //Test that the name changelog at the project start milestone
         assertThat(futureProject.getProjectName()).isEqualTo("Future project Phase 1");
-        //Test that only the gemeenterol_changelog values with the change_end_date null and with the start milestone at the beginning of the project are selected
-        assertThat(futureProject.getMunicipalityRole().size()).isEqualTo(1);
-        assertThat(futureProject.getMunicipalityRole().get(0).getName()).isEqualTo("Role 2");
         assertThat(futureProject.getProjectPhase()).isNull();
         //Test that only the changelog values with the start milestone at the beginning of the project are selected
         assertThat(futureProject.getPlanType().size()).isEqualTo(1);

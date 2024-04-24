@@ -18,10 +18,8 @@ import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.dal.entities.enums.ValueType;
 import nl.vng.diwi.models.AmountModel;
 import org.hibernate.annotations.JdbcType;
-import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.Type;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
-import org.hibernate.type.SqlTypes;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -64,14 +62,11 @@ public class HouseblockSnapshotSqlModel {
 
     private Boolean programming;
 
-    private Integer grossPlanCapacity;
-    private Integer netPlanCapacity;
-    private Integer demolition;
+    private Integer mutationAmount;
 
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(columnDefinition = "text[]")
-    @Getter(AccessLevel.NONE)
-    private List<MutationType> mutationKind;
+    @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    private MutationType mutationKind;
 
     @Type(value = JsonListType.class)
     @Getter(AccessLevel.NONE)
@@ -91,13 +86,6 @@ public class HouseblockSnapshotSqlModel {
     @Type(value = JsonListType.class)
     @Getter(AccessLevel.NONE)
     private List<AmountModel> targetGroupList;
-
-    public List<MutationType> getMutationKind() {
-        if (mutationKind == null) {
-            return new ArrayList<>();
-        }
-        return mutationKind;
-    }
 
     public List<AmountModel> getPhysicalAppearanceList() {
         if (physicalAppearanceList == null) {

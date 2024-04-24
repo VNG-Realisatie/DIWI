@@ -7,8 +7,8 @@ export type Organization = components["schemas"]["OrganizationModel"];
 export type OrganizationUser = components["schemas"]["OrganizationUserModel"];
 export type ProjectListModel = components["schemas"]["ProjectListModel"];
 export type Project = components["schemas"]["ProjectSnapshotModel"];
+export type ProjectSnapshotModel = components["schemas"]["ProjectSnapshotModel"];
 export type ProjectCreate = components["schemas"]["ProjectCreateSnapshotModel"];
-export type ProjectUpdate = components["schemas"]["ProjectUpdateModel"];
 export type SelectModel = components["schemas"]["SelectModel"];
 export type PriorityModel = components["schemas"]["PriorityModel"];
 
@@ -78,11 +78,7 @@ export async function getProject(id: string): Promise<Project> {
     return getJson(`${API_URI}/projects/${id}`);
 }
 
-export async function updateProjects(newData: any): Promise<any> {
-    return postJson(`${API_URI}/projects/update`, newData);
-}
-
-export async function updateProject(id: string, newData: ProjectUpdate): Promise<any> {
+export async function updateProject(newData: ProjectSnapshotModel): Promise<ProjectSnapshotModel> {
     return postJson(`${API_URI}/projects/update`, newData);
 }
 

@@ -16,9 +16,6 @@ export interface paths {
     "/rest/auth/logout": {
         get: operations["logout"];
     };
-    "/rest/buurt/list": {
-        get: operations["getAllBuurts"];
-    };
     "/rest/config": {
         get: operations["getConfig"];
     };
@@ -41,17 +38,8 @@ export interface paths {
     "/rest/milestone/{id}": {
         get: operations["getMilestone"];
     };
-    "/rest/municipality/list": {
-        get: operations["getAllMunicipalities"];
-    };
-    "/rest/municipalityrole/list": {
-        get: operations["getAllMunicipalityRoles"];
-    };
     "/rest/organizations/list": {
         get: operations["getAllOrganization"];
-    };
-    "/rest/priority/list": {
-        get: operations["getAllPriorities"];
     };
     "/rest/projects": {
         post: operations["createProject"];
@@ -80,8 +68,8 @@ export interface paths {
         get: operations["getProjectPlots"];
         post: operations["setProjectPlots"];
     };
-    "/rest/projects/{id}/update": {
-        post: operations["updateProjectSingleField"];
+    "/rest/projects/import": {
+        post: operations["importExcelFile"];
     };
     "/rest/projects/update": {
         post: operations["updateProjectSnapshot"];
@@ -98,20 +86,12 @@ export interface paths {
     "/rest/users/userinfo": {
         get: operations["login_1"];
     };
-    "/rest/wijk/list": {
-        get: operations["getAllWijks"];
-    };
 }
 
 export type webhooks = Record<string, never>;
 
 export interface components {
     schemas: {
-        SelectModel: {
-            /** Format: uuid */
-            id: string;
-            name: string;
-        };
         ConfigModel: {
             defaultMapBounds?: components["schemas"]["MapBounds"];
             municipalityName?: string;
@@ -167,13 +147,10 @@ export interface components {
             customProperties?: components["schemas"]["ProjectHouseblockCustomPropertyModel"][];
         };
         Mutation: {
-            mutationKind?: ("BOUW" | "SLOOP" | "TRANSFORMATIE" | "SPLITSING")[];
+            /** @enum {string} */
+            kind?: "CONSTRUCTION" | "DEMOLITION";
             /** Format: int32 */
-            grossPlanCapacity?: number;
-            /** Format: int32 */
-            netPlanCapacity?: number;
-            /** Format: int32 */
-            demolition?: number;
+            amount?: number;
         };
         OwnershipValue: {
             /** Format: uuid */
@@ -251,7 +228,7 @@ export interface components {
             /** @enum {string} */
             confidentialityLevel: "PRIVE" | "INTERN_UITVOERING" | "INTERN_RAPPORTAGE" | "EXTERN_RAPPORTAGE" | "OPENBAAR";
             /** @enum {string} */
-            projectPhase: "_1_INITIATIEFFASE" | "_2_PROJECTFASE" | "_3_VERGUNNINGSFASE" | "_4_REALISATIEFASE" | "_5_OPLEVERINGSFASE";
+            projectPhase: "_1_CONCEPT" | "_2_INITIATIVE" | "_3_DEFINITION" | "_4_DESIGN" | "_5_PREPARATION" | "_6_REALIZATION" | "_7_AFTERCARE";
             /** Format: uuid */
             projectId: string;
         };
@@ -265,7 +242,7 @@ export interface components {
             /** @enum {string} */
             confidentialityLevel: "PRIVE" | "INTERN_UITVOERING" | "INTERN_RAPPORTAGE" | "EXTERN_RAPPORTAGE" | "OPENBAAR";
             /** @enum {string} */
-            projectPhase: "_1_INITIATIEFFASE" | "_2_PROJECTFASE" | "_3_VERGUNNINGSFASE" | "_4_REALISATIEFASE" | "_5_OPLEVERINGSFASE";
+            projectPhase: "_1_CONCEPT" | "_2_INITIATIVE" | "_3_DEFINITION" | "_4_DESIGN" | "_5_PREPARATION" | "_6_REALIZATION" | "_7_AFTERCARE";
         };
         PriorityModel: {
             value?: components["schemas"]["SelectModel"];
@@ -282,21 +259,21 @@ export interface components {
             /** @enum {string} */
             confidentialityLevel: "PRIVE" | "INTERN_UITVOERING" | "INTERN_RAPPORTAGE" | "EXTERN_RAPPORTAGE" | "OPENBAAR";
             /** @enum {string} */
-            projectPhase: "_1_INITIATIEFFASE" | "_2_PROJECTFASE" | "_3_VERGUNNINGSFASE" | "_4_REALISATIEFASE" | "_5_OPLEVERINGSFASE";
+            projectPhase: "_1_CONCEPT" | "_2_INITIATIVE" | "_3_DEFINITION" | "_4_DESIGN" | "_5_PREPARATION" | "_6_REALIZATION" | "_7_AFTERCARE";
             /** Format: uuid */
             projectId: string;
             /** Format: uuid */
             projectStateId?: string;
             planningPlanStatus?: (
-                | "_1A_ONHERROEPELIJK"
-                | "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG"
-                | "_1C_ONHERROEPELIJK_MET_BW_NODIG"
+                | "_4A_OPGENOMEN_IN_VISIE"
+                | "_4B_NIET_OPGENOMEN_IN_VISIE"
+                | "_3_IN_VOORBEREIDING"
                 | "_2A_VASTGESTELD"
                 | "_2B_VASTGESTELD_MET_UITWERKING_NODIG"
                 | "_2C_VASTGESTELD_MET_BW_NODIG"
-                | "_3_IN_VOORBEREIDING"
-                | "_4A_OPGENOMEN_IN_VISIE"
-                | "_4B_NIET_OPGENOMEN_IN_VISIE"
+                | "_1A_ONHERROEPELIJK"
+                | "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG"
+                | "_1C_ONHERROEPELIJK_MET_BW_NODIG"
             )[];
             planType?: ("PAND_TRANSFORMATIE" | "TRANSFORMATIEGEBIED" | "HERSTRUCTURERING" | "VERDICHTING" | "UITBREIDING_UITLEG" | "UITBREIDING_OVERIG")[];
             priority?: components["schemas"]["PriorityModel"];
@@ -310,6 +287,11 @@ export interface components {
             neighbourhood?: components["schemas"]["SelectModel"][];
             location?: components["schemas"]["LocationModel"];
         };
+        SelectModel: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+        };
         ProjectSnapshotModel: {
             /** Format: date */
             startDate?: string;
@@ -320,21 +302,21 @@ export interface components {
             /** @enum {string} */
             confidentialityLevel: "PRIVE" | "INTERN_UITVOERING" | "INTERN_RAPPORTAGE" | "EXTERN_RAPPORTAGE" | "OPENBAAR";
             /** @enum {string} */
-            projectPhase: "_1_INITIATIEFFASE" | "_2_PROJECTFASE" | "_3_VERGUNNINGSFASE" | "_4_REALISATIEFASE" | "_5_OPLEVERINGSFASE";
+            projectPhase: "_1_CONCEPT" | "_2_INITIATIVE" | "_3_DEFINITION" | "_4_DESIGN" | "_5_PREPARATION" | "_6_REALIZATION" | "_7_AFTERCARE";
             /** Format: uuid */
             projectId: string;
             /** Format: uuid */
             projectStateId?: string;
             planningPlanStatus?: (
-                | "_1A_ONHERROEPELIJK"
-                | "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG"
-                | "_1C_ONHERROEPELIJK_MET_BW_NODIG"
+                | "_4A_OPGENOMEN_IN_VISIE"
+                | "_4B_NIET_OPGENOMEN_IN_VISIE"
+                | "_3_IN_VOORBEREIDING"
                 | "_2A_VASTGESTELD"
                 | "_2B_VASTGESTELD_MET_UITWERKING_NODIG"
                 | "_2C_VASTGESTELD_MET_BW_NODIG"
-                | "_3_IN_VOORBEREIDING"
-                | "_4A_OPGENOMEN_IN_VISIE"
-                | "_4B_NIET_OPGENOMEN_IN_VISIE"
+                | "_1A_ONHERROEPELIJK"
+                | "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG"
+                | "_1C_ONHERROEPELIJK_MET_BW_NODIG"
             )[];
             planType?: ("PAND_TRANSFORMATIE" | "TRANSFORMATIEGEBIED" | "HERSTRUCTURERING" | "VERDICHTING" | "UITBREIDING_UITLEG" | "UITBREIDING_OVERIG")[];
             priority?: components["schemas"]["PriorityModel"];
@@ -357,15 +339,15 @@ export interface components {
             /** Format: uuid */
             id?: string;
             data?: (
-                | "_1A_ONHERROEPELIJK"
-                | "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG"
-                | "_1C_ONHERROEPELIJK_MET_BW_NODIG"
+                | "_4A_OPGENOMEN_IN_VISIE"
+                | "_4B_NIET_OPGENOMEN_IN_VISIE"
+                | "_3_IN_VOORBEREIDING"
                 | "_2A_VASTGESTELD"
                 | "_2B_VASTGESTELD_MET_UITWERKING_NODIG"
                 | "_2C_VASTGESTELD_MET_BW_NODIG"
-                | "_3_IN_VOORBEREIDING"
-                | "_4A_OPGENOMEN_IN_VISIE"
-                | "_4B_NIET_OPGENOMEN_IN_VISIE"
+                | "_1A_ONHERROEPELIJK"
+                | "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG"
+                | "_1C_ONHERROEPELIJK_MET_BW_NODIG"
             )[];
         };
         DatedDataModelListPlanType: {
@@ -385,7 +367,7 @@ export interface components {
             /** Format: uuid */
             id?: string;
             /** @enum {string} */
-            data?: "_1_INITIATIEFFASE" | "_2_PROJECTFASE" | "_3_VERGUNNINGSFASE" | "_4_REALISATIEFASE" | "_5_OPLEVERINGSFASE";
+            data?: "_1_CONCEPT" | "_2_INITIATIVE" | "_3_DEFINITION" | "_4_DESIGN" | "_5_PREPARATION" | "_6_REALIZATION" | "_7_AFTERCARE";
         };
         DatedDataModelString: {
             /** Format: date */
@@ -437,36 +419,21 @@ export interface components {
             subselectionGeometry?: components["schemas"]["ObjectNode"];
             plotFeature?: components["schemas"]["ObjectNode"];
         };
-        ProjectUpdateModel: {
-            /** @enum {string} */
-            property?:
-                | "confidentialityLevel"
-                | "location"
-                | "municipalityRole"
-                | "name"
-                | "planningPlanStatus"
-                | "planType"
-                | "priority"
-                | "projectColor"
-                | "projectLeaders"
-                | "projectOwners"
-                | "projectPhase"
-                | "municipality"
-                | "district"
-                | "neighbourhood"
-                | "startDate"
-                | "endDate";
-            value?: string;
-            values?: string[];
-            /** Format: uuid */
-            add?: string;
-            /** Format: uuid */
-            remove?: string;
-            /** Format: uuid */
-            min?: string;
-            /** Format: uuid */
-            max?: string;
-            valuesAsUuids?: string[];
+        FormDataContentDisposition: {
+            type?: string;
+            parameters?: {
+                [key: string]: string;
+            };
+            fileName?: string;
+            /** Format: date-time */
+            creationDate?: string;
+            /** Format: date-time */
+            modificationDate?: string;
+            /** Format: date-time */
+            readDate?: string;
+            /** Format: int64 */
+            size?: number;
+            name?: string;
         };
         OrdinalSelectDisabledModel: {
             /** Format: uuid */
@@ -552,21 +519,6 @@ export interface operations {
             default: {
                 content: {
                     "*/*": unknown;
-                };
-            };
-        };
-    };
-    getAllBuurts: {
-        parameters: {
-            query?: {
-                wijkId?: string[];
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                content: {
-                    "application/json": components["schemas"]["SelectModel"][];
                 };
             };
         };
@@ -691,42 +643,12 @@ export interface operations {
             };
         };
     };
-    getAllMunicipalities: {
-        responses: {
-            /** @description default response */
-            default: {
-                content: {
-                    "application/json": components["schemas"]["SelectModel"][];
-                };
-            };
-        };
-    };
-    getAllMunicipalityRoles: {
-        responses: {
-            /** @description default response */
-            default: {
-                content: {
-                    "application/json": components["schemas"]["SelectModel"][];
-                };
-            };
-        };
-    };
     getAllOrganization: {
         responses: {
             /** @description default response */
             default: {
                 content: {
                     "application/json": components["schemas"]["OrganizationModel"][];
-                };
-            };
-        };
-    };
-    getAllPriorities: {
-        responses: {
-            /** @description default response */
-            default: {
-                content: {
-                    "application/json": components["schemas"]["SelectModel"][];
                 };
             };
         };
@@ -920,22 +842,19 @@ export interface operations {
             };
         };
     };
-    updateProjectSingleField: {
-        parameters: {
-            path: {
-                id: string;
-            };
-        };
+    importExcelFile: {
         requestBody?: {
             content: {
-                "application/json": components["schemas"]["ProjectUpdateModel"];
+                "multipart/form-data": {
+                    uploadFile?: components["schemas"]["FormDataContentDisposition"];
+                };
             };
         };
         responses: {
             /** @description default response */
             default: {
                 content: {
-                    "application/json": components["schemas"]["ProjectSnapshotModel"];
+                    "application/json": unknown;
                 };
             };
         };
@@ -1043,21 +962,6 @@ export interface operations {
             default: {
                 content: {
                     "application/json": components["schemas"]["UserModel"];
-                };
-            };
-        };
-    };
-    getAllWijks: {
-        parameters: {
-            query?: {
-                gemeenteId?: string[];
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                content: {
-                    "application/json": components["schemas"]["SelectModel"][];
                 };
             };
         };

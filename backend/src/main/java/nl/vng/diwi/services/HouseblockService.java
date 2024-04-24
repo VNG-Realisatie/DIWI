@@ -18,7 +18,6 @@ import nl.vng.diwi.dal.entities.HouseblockGroundPositionChangelog;
 import nl.vng.diwi.dal.entities.HouseblockGroundPositionChangelogValue;
 import nl.vng.diwi.dal.entities.HouseblockHouseTypeChangelogValue;
 import nl.vng.diwi.dal.entities.HouseblockMutatieChangelog;
-import nl.vng.diwi.dal.entities.HouseblockMutatieChangelogTypeValue;
 import nl.vng.diwi.dal.entities.HouseblockNameChangelog;
 import nl.vng.diwi.dal.entities.HouseblockNumericCustomPropertyChangelog;
 import nl.vng.diwi.dal.entities.HouseblockOrdinalCustomPropertyChangelog;
@@ -35,7 +34,6 @@ import nl.vng.diwi.dal.entities.HouseblockProgrammingChangelog;
 import nl.vng.diwi.dal.entities.HouseblockSizeChangelog;
 import nl.vng.diwi.dal.entities.enums.GroundPosition;
 import nl.vng.diwi.dal.entities.enums.HouseType;
-import nl.vng.diwi.dal.entities.enums.MutationType;
 import nl.vng.diwi.dal.entities.enums.ValueType;
 import nl.vng.diwi.dal.entities.superclasses.HouseblockMilestoneChangeDataSuperclass;
 import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
@@ -191,19 +189,9 @@ public class HouseblockService {
             var mutatieChangelog = new HouseblockMutatieChangelog();
             setChangelogValues.accept(mutatieChangelog);
             mutatieChangelog.setHouseblock(houseblock);
-            mutatieChangelog.setGrossPlanCapacity(mutation.getGrossPlanCapacity());
-            mutatieChangelog.setNetPlanCapacity(mutation.getNetPlanCapacity());
-            mutatieChangelog.setDemolition(mutation.getDemolition());
+            mutatieChangelog.setAmount(mutation.getAmount());
+            mutatieChangelog.setMutationType(mutation.getKind());
             repo.persist(mutatieChangelog);
-
-            if (mutation.getMutationKind() != null && !mutation.getMutationKind().isEmpty()) {
-                mutation.getMutationKind().forEach(mk -> {
-                    HouseblockMutatieChangelogTypeValue mKind = new HouseblockMutatieChangelogTypeValue();
-                    mKind.setMutatieChangelog(mutatieChangelog);
-                    mKind.setMutationType(mk);
-                    repo.persist(mKind);
-                });
-            }
         }
 
         var groundPosition = houseblockSnapshotModel.getGroundPosition();
@@ -247,14 +235,16 @@ public class HouseblockService {
                 if (ov.getValue().getValue() != null) {
                     ownershipValue.setValue(ov.getValue().getValue());
                     ownershipValue.setValueType(ValueType.SINGLE_VALUE);
-                } else if (ov.getValue().getMin() != null && ov.getValue().getMax() != null) {
-                    ownershipValue.setValueRange(Range.closed(ov.getValue().getMin(), ov.getValue().getMax()));
+                } else if (ov.getValue().getMin() != null) {
+                    ownershipValue.setValueRange(ov.getValue().toRange());
+                    ownershipValue.setValueType(ValueType.RANGE);
                 }
                 if (ov.getRentalValue().getValue() != null) {
                     ownershipValue.setRentalValue(ov.getRentalValue().getValue());
                     ownershipValue.setRentalValueType(ValueType.SINGLE_VALUE);
-                } else if (ov.getRentalValue().getMin() != null && ov.getRentalValue().getMax() != null) {
-                    ownershipValue.setRentalValueRange(Range.closed(ov.getRentalValue().getMin(), ov.getRentalValue().getMax()));
+                } else if (ov.getRentalValue().getMin() != null) {
+                    ownershipValue.setRentalValueRange(ov.getRentalValue().toRange());
+                    ownershipValue.setRentalValueType(ValueType.RANGE);
                 }
                 ownershipValue.setAmount(ov.getAmount());
                 ownershipValue.setOwnershipType(ov.getType());
@@ -430,13 +420,6 @@ public class HouseblockService {
                 var newCategCPValue = HouseblockCategoryCustomPropertyChangelogValue.builder()
                     .categoryValue(cv.getCategoryValue()).categoryChangelog((HouseblockCategoryCustomPropertyChangelog) newChangelog).build();
                 repo.persist(newCategCPValue);
-            });
-        }
-        if (activeChangelog instanceof HouseblockMutatieChangelog oldMutatieChangelog) {
-            oldMutatieChangelog.getType().forEach(mv -> {
-                var newMutatieValue = HouseblockMutatieChangelogTypeValue.builder()
-                    .mutationType(mv.getMutationType()).mutatieChangelog((HouseblockMutatieChangelog) newChangelog).build();
-                repo.persist(newMutatieValue);
             });
         }
         if (activeChangelog instanceof HouseblockAppearanceAndTypeChangelog oldAppTypeChangelog) {
@@ -697,13 +680,11 @@ public class HouseblockService {
 
         HouseblockMutatieChangelog oldChangelogAfterUpdate = new HouseblockMutatieChangelog();
         HouseblockMutatieChangelog newChangelog = null;
-        if (newMutation != null && (newMutation.getDemolition() != null || newMutation.getNetPlanCapacity() != null || newMutation.getGrossPlanCapacity() != null ||
-            (newMutation.getMutationKind() != null && !newMutation.getMutationKind().isEmpty()))) {
+        if (newMutation != null && newMutation.getKind() != null) {
             newChangelog = new HouseblockMutatieChangelog();
             newChangelog.setHouseblock(houseblock);
-            newChangelog.setDemolition(newMutation.getDemolition());
-            newChangelog.setGrossPlanCapacity(newMutation.getGrossPlanCapacity());
-            newChangelog.setNetPlanCapacity(newMutation.getNetPlanCapacity());
+            newChangelog.setAmount(newMutation.getAmount());
+            newChangelog.setMutationType(newMutation.getKind());
         }
 
         HouseblockMutatieChangelog oldChangelog = prepareHouseblockChangelogValuesToUpdate(repo, project, houseblock, houseblock.getMutaties(), newChangelog,
@@ -711,14 +692,6 @@ public class HouseblockService {
 
         if (newChangelog != null) {
             repo.persist(newChangelog);
-            if (newMutation.getMutationKind() != null) {
-                for (MutationType mutationType : newMutation.getMutationKind()) {
-                    HouseblockMutatieChangelogTypeValue newChangelogValue = new HouseblockMutatieChangelogTypeValue();
-                    newChangelogValue.setMutatieChangelog(newChangelog);
-                    newChangelogValue.setMutationType(mutationType);
-                    repo.persist(newChangelogValue);
-                }
-            }
         }
 
         if (oldChangelog != null) {
@@ -726,16 +699,9 @@ public class HouseblockService {
             if (oldChangelogAfterUpdate.getStartMilestone() != null) {
                 // it is a current project && it had a non-null changelog before the update
                 oldChangelogAfterUpdate.setHouseblock(houseblock);
-                oldChangelogAfterUpdate.setDemolition(oldChangelog.getDemolition());
-                oldChangelogAfterUpdate.setNetPlanCapacity(oldChangelog.getNetPlanCapacity());
-                oldChangelogAfterUpdate.setGrossPlanCapacity(oldChangelog.getGrossPlanCapacity());
+                oldChangelogAfterUpdate.setAmount(oldChangelog.getAmount());
+                oldChangelogAfterUpdate.setMutationType(oldChangelog.getMutationType());
                 repo.persist(oldChangelogAfterUpdate);
-                for (HouseblockMutatieChangelogTypeValue type : oldChangelog.getType()) {
-                    HouseblockMutatieChangelogTypeValue oldChangelogValue = new HouseblockMutatieChangelogTypeValue();
-                    oldChangelogValue.setMutatieChangelog(oldChangelogAfterUpdate);
-                    oldChangelogValue.setMutationType(type.getMutationType());
-                    repo.persist(oldChangelogValue);
-                }
             }
         }
     }
@@ -800,15 +766,15 @@ public class HouseblockService {
         newChangelog.setOwnershipType(ownershipValue.getType());
         newChangelog.setAmount(ownershipValue.getAmount());
         newChangelog.setValue(ownershipValue.getValue().getValue());
-        if (ownershipValue.getValue().getMin() != null && ownershipValue.getValue().getMax() != null) {
-            newChangelog.setValueRange(Range.closed(ownershipValue.getValue().getMin(), ownershipValue.getValue().getMax()));
+        if (ownershipValue.getValue().getMin() != null) {
+            newChangelog.setValueRange(ownershipValue.getValue().toRange());
             newChangelog.setValueType(ValueType.RANGE);
         } else {
             newChangelog.setValueType(ValueType.SINGLE_VALUE);
         }
         newChangelog.setRentalValue(ownershipValue.getRentalValue().getValue());
-        if (ownershipValue.getRentalValue().getMin() != null && ownershipValue.getRentalValue().getMax() != null) {
-            newChangelog.setRentalValueRange(Range.closed(ownershipValue.getRentalValue().getMin(), ownershipValue.getRentalValue().getMax()));
+        if (ownershipValue.getRentalValue().getMin() != null) {
+            newChangelog.setRentalValueRange(ownershipValue.getRentalValue().toRange());
             newChangelog.setRentalValueType(ValueType.RANGE);
         } else {
             newChangelog.setRentalValueType(ValueType.SINGLE_VALUE);

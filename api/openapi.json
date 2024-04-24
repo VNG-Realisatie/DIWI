@@ -53,39 +53,6 @@
         }
       }
     },
-    "/rest/buurt/list": {
-      "get": {
-        "operationId": "getAllBuurts",
-        "parameters": [
-          {
-            "name": "wijkId",
-            "in": "query",
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "format": "uuid"
-              }
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "default response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/SelectModel"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/rest/config": {
       "get": {
         "operationId": "getConfig",
@@ -304,46 +271,6 @@
         }
       }
     },
-    "/rest/municipality/list": {
-      "get": {
-        "operationId": "getAllMunicipalities",
-        "responses": {
-          "default": {
-            "description": "default response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/SelectModel"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/rest/municipalityrole/list": {
-      "get": {
-        "operationId": "getAllMunicipalityRoles",
-        "responses": {
-          "default": {
-            "description": "default response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/SelectModel"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/rest/organizations/list": {
       "get": {
         "operationId": "getAllOrganization",
@@ -356,26 +283,6 @@
                   "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/OrganizationModel"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/rest/priority/list": {
-      "get": {
-        "operationId": "getAllPriorities",
-        "responses": {
-          "default": {
-            "description": "default response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/SelectModel"
                   }
                 }
               }
@@ -810,25 +717,19 @@
         }
       }
     },
-    "/rest/projects/{id}/update": {
+    "/rest/projects/import": {
       "post": {
-        "operationId": "updateProjectSingleField",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
+        "operationId": "importExcelFile",
         "requestBody": {
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/ProjectUpdateModel"
+                "type": "object",
+                "properties": {
+                  "uploadFile": {
+                    "$ref": "#/components/schemas/FormDataContentDisposition"
+                  }
+                }
               }
             }
           }
@@ -837,11 +738,7 @@
           "default": {
             "description": "default response",
             "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProjectSnapshotModel"
-                }
-              }
+              "application/json": {}
             }
           }
         }
@@ -1047,56 +944,10 @@
           }
         }
       }
-    },
-    "/rest/wijk/list": {
-      "get": {
-        "operationId": "getAllWijks",
-        "parameters": [
-          {
-            "name": "gemeenteId",
-            "in": "query",
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "format": "uuid"
-              }
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "default response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/SelectModel"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
     }
   },
   "components": {
     "schemas": {
-      "SelectModel": {
-        "required": ["id", "name"],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          }
-        }
-      },
       "ConfigModel": {
         "type": "object",
         "properties": {
@@ -1243,23 +1094,11 @@
       "Mutation": {
         "type": "object",
         "properties": {
-          "mutationKind": {
-            "uniqueItems": true,
-            "type": "array",
-            "items": {
-              "type": "string",
-              "enum": ["BOUW", "SLOOP", "TRANSFORMATIE", "SPLITSING"]
-            }
+          "kind": {
+            "type": "string",
+            "enum": ["CONSTRUCTION", "DEMOLITION"]
           },
-          "grossPlanCapacity": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "netPlanCapacity": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "demolition": {
+          "amount": {
             "type": "integer",
             "format": "int32"
           }
@@ -1454,7 +1293,7 @@
           },
           "projectPhase": {
             "type": "string",
-            "enum": ["_1_INITIATIEFFASE", "_2_PROJECTFASE", "_3_VERGUNNINGSFASE", "_4_REALISATIEFASE", "_5_OPLEVERINGSFASE"]
+            "enum": ["_1_CONCEPT", "_2_INITIATIVE", "_3_DEFINITION", "_4_DESIGN", "_5_PREPARATION", "_6_REALIZATION", "_7_AFTERCARE"]
           },
           "projectId": {
             "type": "string",
@@ -1486,7 +1325,7 @@
           },
           "projectPhase": {
             "type": "string",
-            "enum": ["_1_INITIATIEFFASE", "_2_PROJECTFASE", "_3_VERGUNNINGSFASE", "_4_REALISATIEFASE", "_5_OPLEVERINGSFASE"]
+            "enum": ["_1_CONCEPT", "_2_INITIATIVE", "_3_DEFINITION", "_4_DESIGN", "_5_PREPARATION", "_6_REALIZATION", "_7_AFTERCARE"]
           }
         }
       },
@@ -1528,7 +1367,7 @@
           },
           "projectPhase": {
             "type": "string",
-            "enum": ["_1_INITIATIEFFASE", "_2_PROJECTFASE", "_3_VERGUNNINGSFASE", "_4_REALISATIEFASE", "_5_OPLEVERINGSFASE"]
+            "enum": ["_1_CONCEPT", "_2_INITIATIVE", "_3_DEFINITION", "_4_DESIGN", "_5_PREPARATION", "_6_REALIZATION", "_7_AFTERCARE"]
           },
           "projectId": {
             "type": "string",
@@ -1543,15 +1382,15 @@
             "items": {
               "type": "string",
               "enum": [
-                "_1A_ONHERROEPELIJK",
-                "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG",
-                "_1C_ONHERROEPELIJK_MET_BW_NODIG",
+                "_4A_OPGENOMEN_IN_VISIE",
+                "_4B_NIET_OPGENOMEN_IN_VISIE",
+                "_3_IN_VOORBEREIDING",
                 "_2A_VASTGESTELD",
                 "_2B_VASTGESTELD_MET_UITWERKING_NODIG",
                 "_2C_VASTGESTELD_MET_BW_NODIG",
-                "_3_IN_VOORBEREIDING",
-                "_4A_OPGENOMEN_IN_VISIE",
-                "_4B_NIET_OPGENOMEN_IN_VISIE"
+                "_1A_ONHERROEPELIJK",
+                "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG",
+                "_1C_ONHERROEPELIJK_MET_BW_NODIG"
               ]
             }
           },
@@ -1610,6 +1449,19 @@
           }
         }
       },
+      "SelectModel": {
+        "required": ["id", "name"],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
       "ProjectSnapshotModel": {
         "required": ["confidentialityLevel", "projectColor", "projectId", "projectName", "projectPhase"],
         "type": "object",
@@ -1634,7 +1486,7 @@
           },
           "projectPhase": {
             "type": "string",
-            "enum": ["_1_INITIATIEFFASE", "_2_PROJECTFASE", "_3_VERGUNNINGSFASE", "_4_REALISATIEFASE", "_5_OPLEVERINGSFASE"]
+            "enum": ["_1_CONCEPT", "_2_INITIATIVE", "_3_DEFINITION", "_4_DESIGN", "_5_PREPARATION", "_6_REALIZATION", "_7_AFTERCARE"]
           },
           "projectId": {
             "type": "string",
@@ -1649,15 +1501,15 @@
             "items": {
               "type": "string",
               "enum": [
-                "_1A_ONHERROEPELIJK",
-                "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG",
-                "_1C_ONHERROEPELIJK_MET_BW_NODIG",
+                "_4A_OPGENOMEN_IN_VISIE",
+                "_4B_NIET_OPGENOMEN_IN_VISIE",
+                "_3_IN_VOORBEREIDING",
                 "_2A_VASTGESTELD",
                 "_2B_VASTGESTELD_MET_UITWERKING_NODIG",
                 "_2C_VASTGESTELD_MET_BW_NODIG",
-                "_3_IN_VOORBEREIDING",
-                "_4A_OPGENOMEN_IN_VISIE",
-                "_4B_NIET_OPGENOMEN_IN_VISIE"
+                "_1A_ONHERROEPELIJK",
+                "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG",
+                "_1C_ONHERROEPELIJK_MET_BW_NODIG"
               ]
             }
           },
@@ -1742,15 +1594,15 @@
             "items": {
               "type": "string",
               "enum": [
-                "_1A_ONHERROEPELIJK",
-                "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG",
-                "_1C_ONHERROEPELIJK_MET_BW_NODIG",
+                "_4A_OPGENOMEN_IN_VISIE",
+                "_4B_NIET_OPGENOMEN_IN_VISIE",
+                "_3_IN_VOORBEREIDING",
                 "_2A_VASTGESTELD",
                 "_2B_VASTGESTELD_MET_UITWERKING_NODIG",
                 "_2C_VASTGESTELD_MET_BW_NODIG",
-                "_3_IN_VOORBEREIDING",
-                "_4A_OPGENOMEN_IN_VISIE",
-                "_4B_NIET_OPGENOMEN_IN_VISIE"
+                "_1A_ONHERROEPELIJK",
+                "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG",
+                "_1C_ONHERROEPELIJK_MET_BW_NODIG"
               ]
             }
           }
@@ -1797,7 +1649,7 @@
           },
           "data": {
             "type": "string",
-            "enum": ["_1_INITIATIEFFASE", "_2_PROJECTFASE", "_3_VERGUNNINGSFASE", "_4_REALISATIEFASE", "_5_OPLEVERINGSFASE"]
+            "enum": ["_1_CONCEPT", "_2_INITIATIVE", "_3_DEFINITION", "_4_DESIGN", "_5_PREPARATION", "_6_REALIZATION", "_7_AFTERCARE"]
           }
         }
       },
@@ -1958,61 +1810,39 @@
           }
         }
       },
-      "ProjectUpdateModel": {
+      "FormDataContentDisposition": {
         "type": "object",
         "properties": {
-          "property": {
-            "type": "string",
-            "enum": [
-              "confidentialityLevel",
-              "location",
-              "municipalityRole",
-              "name",
-              "planningPlanStatus",
-              "planType",
-              "priority",
-              "projectColor",
-              "projectLeaders",
-              "projectOwners",
-              "projectPhase",
-              "municipality",
-              "district",
-              "neighbourhood",
-              "startDate",
-              "endDate"
-            ]
-          },
-          "value": {
+          "type": {
             "type": "string"
           },
-          "values": {
-            "type": "array",
-            "items": {
+          "parameters": {
+            "type": "object",
+            "additionalProperties": {
               "type": "string"
             }
           },
-          "add": {
-            "type": "string",
-            "format": "uuid"
+          "fileName": {
+            "type": "string"
           },
-          "remove": {
+          "creationDate": {
             "type": "string",
-            "format": "uuid"
+            "format": "date-time"
           },
-          "min": {
+          "modificationDate": {
             "type": "string",
-            "format": "uuid"
+            "format": "date-time"
           },
-          "max": {
+          "readDate": {
             "type": "string",
-            "format": "uuid"
+            "format": "date-time"
           },
-          "valuesAsUuids": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "format": "uuid"
-            }
+          "size": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
           }
         }
       },

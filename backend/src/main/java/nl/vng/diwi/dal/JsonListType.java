@@ -59,11 +59,13 @@ public class JsonListType implements DynamicParameterizedType, UserType<ArrayLis
         return ArrayList.class;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public boolean equals(ArrayList o1, ArrayList o2) {
         return Objects.equals(o1, o2);
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public int hashCode(ArrayList o) {
         return Objects.hashCode(o);

@@ -84,7 +84,7 @@ public class HouseblockUpdateModel {
                 yield null;
             }
             case name -> (value == null || value.isBlank()) ? "New houseblock name value is not valid." : null;
-            case size -> sizeValue.isValid() ? null : "Size value is not valid.";
+            case size -> sizeValue.isValid(false) ? null : "Size value is not valid.";
             case groundPosition -> {
                 valuesMap.entrySet().removeIf(entry -> entry.getValue() == null);
                 yield null;
@@ -107,8 +107,8 @@ public class HouseblockUpdateModel {
                 yield null;
             }
             case programming, mutation  -> null;
-            case ownershipValue -> (ownershipValue.getType() == null || ownershipValue.getAmount() == null || !ownershipValue.getRentalValue().isValid() ||
-                !ownershipValue.getValue().isValid()) ? "Ownership value is not valid" : null;
+            case ownershipValue -> (ownershipValue.getType() == null || ownershipValue.getAmount() == null || !ownershipValue.getRentalValue().isValid(true) ||
+                !ownershipValue.getValue().isValid(true)) ? "Ownership value is not valid" : null;
         };
 
     }

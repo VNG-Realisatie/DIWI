@@ -13,9 +13,7 @@ import nl.vng.diwi.models.superclasses.DatedDataModelSuperClass;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -55,10 +53,8 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
 
         this.programming = sqlModel.getProgramming();
 
-        this.mutation.setDemolition(sqlModel.getDemolition());
-        this.mutation.setGrossPlanCapacity(sqlModel.getGrossPlanCapacity());
-        this.mutation.setNetPlanCapacity(sqlModel.getNetPlanCapacity());
-        this.mutation.getMutationKind().addAll(sqlModel.getMutationKind());
+        this.mutation.setAmount(sqlModel.getMutationAmount());
+        this.mutation.setKind(sqlModel.getMutationKind());
 
         if (sqlModel.getOwnershipValueList() != null) {
             sqlModel.getOwnershipValueList().forEach(oSql -> this.ownershipValue.add(new OwnershipValue(oSql.getOwnershipId(), oSql.getOwnershipType(), oSql.getOwnershipAmount(),
@@ -108,6 +104,8 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
             return "Houseblock start date must be within the duration of the project.";
         } else if (projectEndDate.isBefore(this.getEndDate())) {
             return "Houseblock end date must be within the duration of the project";
+        } else if (mutation != null && mutation.getAmount() != null && mutation.getAmount() <= 0) {
+            return "Houseblock mutation amount must be greater than 0";
         }
 
         if (size != null) {
@@ -120,8 +118,7 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
             }
         }
 
-        if (mutation != null && mutation.getNetPlanCapacity() == null && mutation.getDemolition() == null &&
-            mutation.getGrossPlanCapacity() == null && (mutation.getMutationKind() == null || mutation.getMutationKind().isEmpty())) {
+        if (mutation != null && (mutation.getAmount() == null || mutation.getKind() == null)) {
             //mutation info is not present
             this.mutation = null;
         }
@@ -154,10 +151,8 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
     @Setter
     @EqualsAndHashCode
     public static class Mutation {
-        private Set<MutationType> mutationKind = new HashSet<>();
-        private Integer grossPlanCapacity;
-        private Integer netPlanCapacity;
-        private Integer demolition;
+        private MutationType kind;
+        private Integer amount;
     }
 
     @Getter

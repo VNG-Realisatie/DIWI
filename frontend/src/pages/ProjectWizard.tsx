@@ -1,23 +1,25 @@
 import { t } from "i18next";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { projectWizardBlocks, projectWizardWithId } from "../Paths";
-import { createProject, getProject, updateProject } from "../api/projectsServices";
+import { Project, createProject, getProject, updateProject } from "../api/projectsServices";
 import WizardLayout from "../components/project-wizard/WizardLayout";
 import { ProjectInformationForm } from "../components/project/ProjectInformationForm";
 import useAlert from "../hooks/useAlert";
+import ProjectContext from "../context/ProjectContext";
 
 const ProjectWizard = () => {
-    const [createProjectForm, setCreateProjectForm] = useState<any>({
+    const [createProjectForm, setCreateProjectForm] = useState<Partial<Project>>({
         projectColor: "#FF5733",
         projectLeaders: [],
         projectOwners: [],
-        projectPhase: "",
+        projectPhase: "_1_CONCEPT",
         planningPlanStatus: [],
     });
     const { projectId } = useParams();
     const navigate = useNavigate();
     const { setAlert } = useAlert();
+    const { updateProjects } = useContext(ProjectContext);
 
     async function validateAndSave() {
         if (
@@ -33,11 +35,8 @@ const ProjectWizard = () => {
         }
         try {
             if (projectId) {
-                const res = await updateProject(projectId, createProjectForm);
-                if (res.ok) {
-                    setAlert(t("createProject.successfullySaved"), "success");
-                    return true;
-                }
+                await updateProject(createProjectForm as Project);
+                setAlert(t("createProject.successfullySaved"), "success");
             } else {
                 const temporaryCreateForm = {
                     projectName: createProjectForm.projectName,
@@ -49,11 +48,12 @@ const ProjectWizard = () => {
                 };
                 const project = await createProject(temporaryCreateForm);
                 createProjectForm.projectId = project.projectId;
-                await updateProject(createProjectForm.projectId, createProjectForm);
+                await updateProject(createProjectForm as Project);
+                setAlert(t("createProject.successfullySaved"), "success");
 
                 navigate(projectWizardWithId.toPath({ projectId: project.projectId }));
-                setAlert(t("createProject.successfullySaved"), "success");
             }
+            updateProjects();
         } catch (error: any) {
             setAlert(error.message, "error");
             return false;

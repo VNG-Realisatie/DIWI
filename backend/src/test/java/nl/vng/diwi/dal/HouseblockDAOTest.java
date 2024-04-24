@@ -89,10 +89,8 @@ public class HouseblockDAOTest {
         assertThat(hb.getSizeValueRange().lower()).isEqualTo(BigDecimal.valueOf(11.1));
         assertThat(hb.getSizeValueRange().upper()).isEqualTo(BigDecimal.valueOf(22.2));
         assertThat(hb.getProgramming()).isTrue();
-        assertThat(hb.getMutationKind()).containsExactlyInAnyOrder(MutationType.SPLITSING, MutationType.TRANSFORMATIE);
-        assertThat(hb.getGrossPlanCapacity()).isEqualTo(0);
-        assertThat(hb.getNetPlanCapacity()).isEqualTo(25);
-        assertThat(hb.getDemolition()).isEqualTo(0);
+        assertThat(hb.getMutationKind()).isEqualTo(MutationType.CONSTRUCTION);
+        assertThat(hb.getMutationAmount()).isEqualTo(25);
         assertThat(hb.getOwnershipValueList().size()).isEqualTo(2);
 
         HouseblockSnapshotSqlModel.OwnershipValueSqlModel koop = hb.getOwnershipValueList().stream()

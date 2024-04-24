@@ -12,7 +12,7 @@ import { Fill, Stroke, Style } from "ol/style";
 import { StyleFunction } from "ol/style/Style";
 import queryString from "query-string";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { Plot, PlotGeoJSON, getProjectPlots, updateProjectPlots, updateProjects } from "../api/projectsServices";
+import { Plot, PlotGeoJSON, getProjectPlots, updateProjectPlots, updateProject } from "../api/projectsServices";
 import ConfigContext from "../context/ConfigContext";
 import ProjectContext from "../context/ProjectContext";
 import { extentToCenter, mapBoundsToExtent } from "../utils/map";
@@ -71,7 +71,7 @@ const usePlotSelector = (id: string) => {
                 const center = extentToCenter(extent);
                 selectedProject.location = { lat: center[0], lng: center[1] };
             }
-            await updateProjects(selectedProject);
+            await updateProject(selectedProject);
         }
     };
 
@@ -114,8 +114,7 @@ const usePlotSelector = (id: string) => {
                         const notEqual =
                             p.brkGemeenteCode !== newPlot.brkGemeenteCode ||
                             p.brkPerceelNummer !== newPlot.brkPerceelNummer ||
-                            p.brkSectie !== newPlot.brkSectie ||
-                            p.plotFeature !== newPlot.plotFeature;
+                            p.brkSectie !== newPlot.brkSectie;
                         return notEqual;
                     });
                     if (newSelectedPlots.length !== selectedPlots.length) {

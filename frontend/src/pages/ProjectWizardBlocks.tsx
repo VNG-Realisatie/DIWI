@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 import { Accordion, AccordionDetails, AccordionSummary, Box, Stack } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { deleteHouseBlockWithCustomProperties } from "../api/houseBlockServices";
+import { deleteHouseBlockWithCustomProperties, getProjectHouseBlocksWithCustomProperties } from "../api/houseBlockServices";
 import ProjectContext from "../context/ProjectContext";
 import { DeleteButtonWithConfirm } from "../components/DeleteButtonWithConfirm";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
@@ -19,25 +19,46 @@ import useLoading from "../hooks/useLoading";
 
 const generateTemporaryId = () => Date.now();
 
+export type DateValidationErrors = {
+    startDateError: string | null;
+    endDateError: string | null;
+};
+
 const ProjectWizardBlocks = () => {
-    const { houseBlocks, getEmptyHouseBlock, refresh } = useContext(HouseBlockContext);
+    const { getEmptyHouseBlock, refresh } = useContext(HouseBlockContext);
     const { selectedProject } = useContext(ProjectContext);
-    const [houseBlocksState, setHouseBlocksState] = useState<HouseBlockWithCustomProperties[]>([{ ...getEmptyHouseBlock(), tempId: generateTemporaryId() }]);
+    const [houseBlocksState, setHouseBlocksState] = useState<HouseBlockWithCustomProperties[]>([]);
     const { projectId } = useParams();
     const navigate = useNavigate();
     const { setAlert } = useAlert();
-    const [canUpdate, setCanUpdate] = useState(true);
     const [expanded, setExpanded] = useState(Array.from({ length: houseBlocksState.length }, () => true));
     const [errorOccurred, setErrorOccurred] = useState(false);
     const [errors, setErrors] = useState<boolean[]>(Array.from({ length: houseBlocksState.length }, () => false));
     const lastAddedForm = useRef<HTMLDivElement | null>(null);
     const { setLoading } = useLoading();
+    const [dateValidationErrors, setDateValidationErrors] = useState<Array<DateValidationErrors>>([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            let houseBlocks;
+            if (projectId) {
+                houseBlocks = await getProjectHouseBlocksWithCustomProperties(projectId);
+            }
+            if (houseBlocks && houseBlocks.length > 0) {
+                setHouseBlocksState(houseBlocks);
+            } else {
+                setHouseBlocksState([{ ...getEmptyHouseBlock(), tempId: generateTemporaryId() }]);
+            }
+        };
+        fetchData();
+    }, [getEmptyHouseBlock, projectId]);
 
     async function saveHouseBlock(houseBlock: HouseBlockWithCustomProperties) {
         try {
             setLoading(true);
-            await saveHouseBlockWithCustomProperties(houseBlock);
+            const res = await saveHouseBlockWithCustomProperties(houseBlock);
             setAlert(t("createProject.houseBlocksForm.notifications.successfullySaved"), "success");
+            return res.houseblockId;
         } catch {
             setAlert(t("createProject.houseBlocksForm.notifications.error"), "error");
         } finally {
@@ -48,55 +69,58 @@ const ProjectWizardBlocks = () => {
     const { t } = useTranslation();
 
     const validateHouseBlock = (houseBlock: HouseBlockWithCustomProperties, selectedProject: any, index: number) => {
-        if (
-            !houseBlock.houseblockName ||
-            !houseBlock.startDate ||
-            !houseBlock.endDate ||
-            houseBlock.ownershipValue.some((owner: any) => owner.amount === null || isNaN(owner.amount))
-        ) {
-            setErrors((prevErrors) => {
-                const newErrors = [...prevErrors];
-                newErrors[index] = true;
-                return newErrors;
-            });
-            throw new Error(t("createProject.hasMissingRequiredAreas.hasmissingProperty"));
-        } else if (selectedProject?.startDate && selectedProject?.endDate) {
+        let hasErrors = false;
+        const newDateValidationErrors: DateValidationErrors = { startDateError: null, endDateError: null };
+
+        if (!houseBlock.startDate) {
+            newDateValidationErrors.startDateError = t("wizard.houseBlocks.startDateWarningMissing");
+            hasErrors = true;
+        }
+        if (!houseBlock.endDate) {
+            newDateValidationErrors.endDateError = t("wizard.houseBlocks.endDateWarningMissing");
+            hasErrors = true;
+        }
+
+        if (!houseBlock.houseblockName || houseBlock.ownershipValue.some((owner: any) => owner.amount === null || isNaN(owner.amount))) {
+            hasErrors = true;
+        }
+        if (houseBlock.startDate && houseBlock.endDate && selectedProject?.startDate && selectedProject?.endDate) {
             const houseBlockStartDate = new Date(houseBlock.startDate);
             const houseBlockEndDate = new Date(houseBlock.endDate);
             const selectedProjectStartDate = new Date(selectedProject.startDate);
             const selectedProjectEndDate = new Date(selectedProject.endDate);
 
             if (houseBlockStartDate < selectedProjectStartDate) {
-                throw new Error(t("wizard.houseBlocks.startDateWarning"));
-            } else if (houseBlockEndDate > selectedProjectEndDate) {
-                throw new Error(t("wizard.houseBlocks.endDateWarning"));
+                newDateValidationErrors.startDateError = t("wizard.houseBlocks.startDateWarning");
+                hasErrors = true;
             }
+            if (houseBlockEndDate > selectedProjectEndDate) {
+                newDateValidationErrors.endDateError = t("wizard.houseBlocks.endDateWarning");
+                hasErrors = true;
+            }
+        }
+
+        setDateValidationErrors((prevDateValidationErrors) => {
+            const newDateValidationErrorsArray = [...prevDateValidationErrors];
+            newDateValidationErrorsArray[index] = newDateValidationErrors;
+            return newDateValidationErrorsArray;
+        });
+
+        if (hasErrors) {
+            setErrors((prevErrors) => {
+                const newErrorsArray = [...prevErrors];
+                newErrorsArray[index] = true;
+                return newErrorsArray;
+            });
+            throw new Error(t("createProject.houseBlocksForm.notifications.error"));
         }
     };
 
     const handleNext = async () => {
-        setErrors(Array.from({ length: houseBlocksState.length }, () => false));
-        try {
-            setErrorOccurred(false);
+        const isSuccessful: boolean | undefined = await handleSave();
+        if (!isSuccessful) return;
 
-            await Promise.all(
-                houseBlocksState.map(async (houseBlock, index) => {
-                    try {
-                        validateHouseBlock(houseBlock, selectedProject, index);
-                        saveHouseBlock({ ...houseBlock, tempId: undefined });
-                    } catch (error) {
-                        setErrorOccurred(true);
-                        throw error;
-                    }
-                }),
-            );
-            if (!errorOccurred && projectId) {
-                navigate(projectWizardMap.toPath({ projectId }));
-            }
-        } catch (error: any) {
-            setErrorOccurred(true);
-            setAlert(error.message, "warning");
-        }
+        if (projectId) navigate(projectWizardMap.toPath({ projectId }));
     };
 
     const handleSave = async () => {
@@ -104,23 +128,34 @@ const ProjectWizardBlocks = () => {
         try {
             setErrorOccurred(false);
 
-            await Promise.all(
+            const res = await Promise.all(
                 houseBlocksState.map(async (houseBlock, index) => {
                     try {
                         validateHouseBlock(houseBlock, selectedProject, index);
-                        saveHouseBlock({ ...houseBlock, tempId: undefined });
+                        const id = await saveHouseBlock({ ...houseBlock, tempId: undefined });
+                        return { id, tempId: houseBlock.tempId };
                     } catch (error) {
                         setErrorOccurred(true);
-                        throw error;
+                        return { error };
                     }
                 }),
             );
-            setCanUpdate(true);
+
+            const hasErrors = res.some((response) => response.error);
+
+            const updatedHouseBlocks = houseBlocksState.map((houseBlockState) => {
+                const result = res.find((response) => response.tempId === houseBlockState.tempId);
+                if (result && result.id && !result.error && !houseBlockState.houseblockId) {
+                    return { ...houseBlockState, houseblockId: result.id };
+                }
+                return houseBlockState;
+            });
+
+            setHouseBlocksState(updatedHouseBlocks);
+            return !hasErrors;
         } catch (error: any) {
             setErrorOccurred(true);
             setAlert(error.message, "warning");
-        } finally {
-            refresh();
         }
     };
 
@@ -141,27 +176,6 @@ const ProjectWizardBlocks = () => {
             lastAddedForm.current.scrollIntoView({ behavior: "smooth", block: "start" });
         }
     };
-
-    useEffect(() => {
-        if (houseBlocks.length > 0 && canUpdate) {
-            const updatedHouseBlocksState = houseBlocksState.map((houseBlockState) => {
-                const matchingHouseBlock = houseBlocks.find((houseBlock) => houseBlock.houseblockName === houseBlockState.houseblockName);
-                if (matchingHouseBlock) {
-                    return {
-                        ...houseBlockState,
-                        houseblockId: matchingHouseBlock.houseblockId,
-                    };
-                } else {
-                    return houseBlockState;
-                }
-            });
-            setHouseBlocksState(updatedHouseBlocksState);
-        }
-        if (houseBlocks.length >= houseBlocksState.length) {
-            setHouseBlocksState(houseBlocks);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [houseBlocks, setHouseBlocksState, canUpdate]);
 
     useEffect(() => {
         if (errors.every((element) => element === false)) {
@@ -191,6 +205,11 @@ const ProjectWizardBlocks = () => {
                 newErrors.splice(index, 1);
                 return newErrors;
             });
+            setDateValidationErrors((prevErrors) => {
+                const newErrors = [...prevErrors];
+                newErrors.splice(index, 1);
+                return newErrors;
+            });
         } catch (error: any) {
             setAlert(error.message, "warning");
         }
@@ -204,7 +223,7 @@ const ProjectWizardBlocks = () => {
             {houseBlocksState.map((houseBlock, index) => (
                 <React.Fragment key={houseBlock.houseblockId ?? houseBlock.tempId}>
                     <Box ref={index === houseBlocksState.length - 1 ? lastAddedForm : null}>
-                        <Accordion expanded={expanded[index]} onChange={() => handleAccordionChange(index)} sx={{ width: "100%" }}>
+                        <Accordion expanded={expanded[index]} onChange={() => handleAccordionChange(index)} sx={{ width: "100%" }} disableGutters>
                             <AccordionSummary
                                 sx={{ backgroundColor: "#00A9F3", color: "#ffffff" }}
                                 expandIcon={<ExpandMoreIcon sx={{ color: "#ffffff" }} />}
@@ -213,7 +232,7 @@ const ProjectWizardBlocks = () => {
                             >
                                 {errors[index] === true ? <ErrorOutlineIcon sx={{ marginRight: 1, color: "#ff9800" }} /> : null}
                                 {houseBlock.houseblockId
-                                    ? `${houseBlock.houseblockName}: ${houseBlock.mutation.grossPlanCapacity} ${t("createProject.houseBlocksForm.housesOn")} ${houseBlock.endDate}`
+                                    ? `${houseBlock.houseblockName}: ${houseBlock.mutation.amount} ${t("createProject.houseBlocksForm.housesOn")} ${houseBlock.endDate}`
                                     : `${t("generic.houseblock")} ${index + 1}`}
                                 {houseBlocksState.length > 1 && (
                                     <Box sx={{ marginLeft: "auto", marginTop: "5px", marginRight: "5px" }}>
@@ -237,6 +256,7 @@ const ProjectWizardBlocks = () => {
                                         updatedBlocks[index] = updatedHouseBlock;
                                         setHouseBlocksState(updatedBlocks);
                                     }}
+                                    errors={dateValidationErrors[index]}
                                 />
                             </AccordionDetails>
                         </Accordion>
