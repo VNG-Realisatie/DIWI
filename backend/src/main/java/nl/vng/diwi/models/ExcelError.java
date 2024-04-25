@@ -35,6 +35,7 @@ public class ExcelError {
 
         IO_ERROR("io_error", "The excel file could not be read. There was a problem with the upload or with the file type."),
         MISSING_DATA_SHEET("no_data_sheet", "The excel file is missing the data sheet."),
+        MISSING_TABLE_HEADERS("missing_headers", "The excel file does not contain all expected headers."),
 
         WRONG_TYPE_NOT_STRING("not_string", "A string value was expected, but a different type was found."),
         WRONG_TYPE_NOT_NUMERIC("not_numeric", "A numeric value was expected, but a different type was found."),

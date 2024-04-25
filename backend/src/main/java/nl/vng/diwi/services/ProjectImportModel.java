@@ -74,7 +74,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Data
-public class ExcelProjectRowModel {
+public class ProjectImportModel {
 
     private Integer id;
     private String projectName;
@@ -98,12 +98,12 @@ public class ExcelProjectRowModel {
     private boolean hasDistrict;
     private boolean hasNeighbourhood;
 
-    private HouseblockRowModel constructionHouseblock;
-    private HouseblockRowModel demolitionHouseblock;
+    private HouseblockImportModel constructionHouseblock;
+    private HouseblockImportModel demolitionHouseblock;
 
 
     @Data
-    public static class HouseblockRowModel {
+    public static class HouseblockImportModel {
 
         private Integer mutation;
         private MutationType mutationType;
@@ -125,7 +125,7 @@ public class ExcelProjectRowModel {
         private LocalDate latestDeliveryDate;
         private Map<LocalDate, Integer> deliveryDateMap = new HashMap<>();
 
-        public HouseblockRowModel(MutationType mutationType, Integer mutation) {
+        public HouseblockImportModel(MutationType mutationType, Integer mutation) {
             this.mutationType = mutationType;
             this.mutation = mutation;
             if (mutationType == MutationType.CONSTRUCTION) {
@@ -135,7 +135,7 @@ public class ExcelProjectRowModel {
             }
         }
 
-        public void validate(ExcelProjectRowModel projectRowModel, Integer excelRowNo, List<ExcelError> rowErrors) {
+        public void validate(ProjectImportModel projectRowModel, Integer excelRowNo, List<ExcelError> rowErrors) {
 
             latestDeliveryDate = deliveryDateMap.keySet().stream().max(LocalDate::compareTo).orElse(projectRowModel.projectEndDate);
 
@@ -469,7 +469,7 @@ public class ExcelProjectRowModel {
 
     }
 
-    public void persistHouseblocks(VngRepository repo, HouseblockRowModel houseblockRowModel, Project project, Milestone startMilestone, Milestone endMilestone,
+    public void persistHouseblocks(VngRepository repo, HouseblockImportModel houseblockRowModel, Project project, Milestone startMilestone, Milestone endMilestone,
                                    User user, ZonedDateTime importTime) {
 
         Houseblock houseblock = new Houseblock();
