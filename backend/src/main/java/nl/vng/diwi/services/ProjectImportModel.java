@@ -56,7 +56,7 @@ import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.dal.entities.enums.ProjectStatus;
 import nl.vng.diwi.dal.entities.enums.ValueType;
 import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
-import nl.vng.diwi.models.ExcelError;
+import nl.vng.diwi.models.ImportError;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.models.SelectModel;
 
@@ -98,9 +98,7 @@ public class ProjectImportModel {
     private boolean hasDistrict;
     private boolean hasNeighbourhood;
 
-    private HouseblockImportModel constructionHouseblock;
-    private HouseblockImportModel demolitionHouseblock;
-
+    private List<HouseblockImportModel> houseblocks = new ArrayList<>();
 
     @Data
     public static class HouseblockImportModel {
@@ -135,25 +133,25 @@ public class ProjectImportModel {
             }
         }
 
-        public void validate(ProjectImportModel projectRowModel, Integer excelRowNo, List<ExcelError> rowErrors) {
+        public void validate(ProjectImportModel projectRowModel, Integer excelRowNo, List<ImportError> rowErrors) {
 
             latestDeliveryDate = deliveryDateMap.keySet().stream().max(LocalDate::compareTo).orElse(projectRowModel.projectEndDate);
 
             if (latestDeliveryDate.isAfter(projectRowModel.projectEndDate)) {
-                rowErrors.add(new ExcelError(excelRowNo, ExcelError.ERROR.HOUSEBLOCK_DELIVERY_DATE_AFTER_PROJECT_END_DATE));
+                rowErrors.add(new ImportError(excelRowNo, ImportError.ERROR.HOUSEBLOCK_DELIVERY_DATE_AFTER_PROJECT_END_DATE));
             }
 
             if (mutation <= 0) {
-                rowErrors.add(new ExcelError(excelRowNo, ExcelError.ERROR.HOUSEBLOCK_HOUSING_NUMBER_NOT_POSITIVE));
+                rowErrors.add(new ImportError(excelRowNo, ImportError.ERROR.HOUSEBLOCK_HOUSING_NUMBER_NOT_POSITIVE));
             }
 
-            validateMapTotals(deliveryDateMap, mutation, excelRowNo, ExcelError.ERROR.HOUSEBLOCK_DELIVERY_TOTAL_INCORRECT, rowErrors);
+            validateMapTotals(deliveryDateMap, mutation, excelRowNo, ImportError.ERROR.HOUSEBLOCK_DELIVERY_TOTAL_INCORRECT, rowErrors);
             if (!deliveryDateMap.isEmpty()) {
                 LocalDate projectDeliveryDate = projectRowModel.getProjectPhasesMap().get(ProjectPhase._6_REALIZATION);
                 if (projectDeliveryDate != null) {
                     deliveryDateMap.keySet().forEach(dd -> {
                         if (dd.isBefore(projectDeliveryDate)) {
-                            rowErrors.add(new ExcelError(excelRowNo, ExcelError.ERROR.HOUSEBLOCK_DELIVERY_DATE_BEFORE_PROJECT_DEVLIVERY_PHASE));
+                            rowErrors.add(new ImportError(excelRowNo, ImportError.ERROR.HOUSEBLOCK_DELIVERY_DATE_BEFORE_PROJECT_DEVLIVERY_PHASE));
                         }
                     });
                 }
@@ -161,65 +159,65 @@ public class ProjectImportModel {
 
             //grotte validations
 
-            validateMapTotals(ownershipTypeMap, mutation, excelRowNo, ExcelError.ERROR.HOUSEBLOCK_OWNERSHIP_TYPE_TOTAL_INCORRECT, rowErrors);
+            validateMapTotals(ownershipTypeMap, mutation, excelRowNo, ImportError.ERROR.HOUSEBLOCK_OWNERSHIP_TYPE_TOTAL_INCORRECT, rowErrors);
             if (!ownershipTypeMap.isEmpty()) {
                 Map<OwnershipType, Integer> ownershipValueMap = ownershipValues.stream()
                     .collect(Collectors.toMap(HouseblockSnapshotModel.OwnershipValue::getType, HouseblockSnapshotModel.OwnershipValue::getAmount, Integer::sum));
 
                 if (ownershipValueMap.containsKey(OwnershipType.KOOPWONING)) {
                     if (!Objects.equals(ownershipTypeMap.get(OwnershipType.KOOPWONING), ownershipValueMap.get(OwnershipType.KOOPWONING))) {
-                        rowErrors.add(new ExcelError(excelRowNo, ExcelError.ERROR.HOUSEBLOCK_OWNERSHIP_OWNER_TOTAL_INCORRECT));
+                        rowErrors.add(new ImportError(excelRowNo, ImportError.ERROR.HOUSEBLOCK_OWNERSHIP_OWNER_TOTAL_INCORRECT));
                     }
                 }
                 if (ownershipValueMap.containsKey(OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER)) {
                     if (!Objects.equals(ownershipTypeMap.get(OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER), ownershipValueMap.get(OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER))) {
-                        rowErrors.add(new ExcelError(excelRowNo, ExcelError.ERROR.HOUSEBLOCK_OWNERSHIP_LANDLORD_TOTAL_INCORRECT));
+                        rowErrors.add(new ImportError(excelRowNo, ImportError.ERROR.HOUSEBLOCK_OWNERSHIP_LANDLORD_TOTAL_INCORRECT));
                     }
                 }
                 if (ownershipValueMap.containsKey(OwnershipType.HUURWONING_WONINGCORPORATIE)) {
                     if (!Objects.equals(ownershipTypeMap.get(OwnershipType.HUURWONING_WONINGCORPORATIE), ownershipValueMap.get(OwnershipType.HUURWONING_WONINGCORPORATIE))) {
-                        rowErrors.add(new ExcelError(excelRowNo, ExcelError.ERROR.HOUSEBLOCK_OWNERSHIP_HOUSING_ASSOCIATION_TOTAL_INCORRECT));
+                        rowErrors.add(new ImportError(excelRowNo, ImportError.ERROR.HOUSEBLOCK_OWNERSHIP_HOUSING_ASSOCIATION_TOTAL_INCORRECT));
                     }
                 }
             }
 
-            validateMapTotals(houseTypeMap, mutation, excelRowNo, ExcelError.ERROR.HOUSEBLOCK_HOUSE_TYPE_TOTAL_INCORRECT, rowErrors);
-            validateMapTotals(physicalAppearanceMap, mutation, excelRowNo, ExcelError.ERROR.HOUSEBLOCK_PHYSICAL_APPEARANCE_TOTAL_INCORRECT, rowErrors);
-            validateMapTotals(targetGroupMap, mutation, excelRowNo, ExcelError.ERROR.HOUSEBLOCK_TARGET_GROUP_TOTAL_INCORRECT, rowErrors);
-            validateMapTotals(groundPositionMap, mutation, excelRowNo, ExcelError.ERROR.HOUSEBLOCK_GROUND_POSITION_TOTAL_INCORRECT, rowErrors);
+            validateMapTotals(houseTypeMap, mutation, excelRowNo, ImportError.ERROR.HOUSEBLOCK_HOUSE_TYPE_TOTAL_INCORRECT, rowErrors);
+            validateMapTotals(physicalAppearanceMap, mutation, excelRowNo, ImportError.ERROR.HOUSEBLOCK_PHYSICAL_APPEARANCE_TOTAL_INCORRECT, rowErrors);
+            validateMapTotals(targetGroupMap, mutation, excelRowNo, ImportError.ERROR.HOUSEBLOCK_TARGET_GROUP_TOTAL_INCORRECT, rowErrors);
+            validateMapTotals(groundPositionMap, mutation, excelRowNo, ImportError.ERROR.HOUSEBLOCK_GROUND_POSITION_TOTAL_INCORRECT, rowErrors);
 
         }
 
-        private <T> void validateMapTotals(Map<T, Integer> map, Integer referenceTotal, Integer excelRowNo, ExcelError.ERROR error, List<ExcelError> rowErrors) {
+        private <T> void validateMapTotals(Map<T, Integer> map, Integer referenceTotal, Integer excelRowNo, ImportError.ERROR error, List<ImportError> rowErrors) {
             if (!map.isEmpty()) {
                 Integer mapTotal = map.values().stream().reduce(0, Integer::sum);
                 if (!Objects.equals(referenceTotal, mapTotal)) {
-                    rowErrors.add(new ExcelError(excelRowNo, error));
+                    rowErrors.add(new ImportError(excelRowNo, error));
                 }
             }
         }
     }
 
-    public void validate(Integer excelRowNo, List<ExcelError> rowErrors, LocalDate importTime) {
+    public void validate(Integer excelRowNo, List<ImportError> rowErrors, LocalDate importTime) {
         //business logic validations - all individual values are valid by this point
 
         if (!projectEndDate.isAfter(projectStartDate)) {
-            rowErrors.add(new ExcelError(excelRowNo, ExcelError.ERROR.PROJECT_START_DATE_AFTER_END_DATE));
+            rowErrors.add(new ImportError(excelRowNo, ImportError.ERROR.PROJECT_START_DATE_AFTER_END_DATE));
         }
         switch (projectStatus) {
             case NEW -> {
                 if (importTime.isAfter(projectStartDate) || importTime.isAfter(projectEndDate)) {
-                    rowErrors.add(new ExcelError(excelRowNo, ExcelError.ERROR.PROJECT_DATES_WRONG_FOR_PROJECT_STATUS));
+                    rowErrors.add(new ImportError(excelRowNo, ImportError.ERROR.PROJECT_DATES_WRONG_FOR_PROJECT_STATUS));
                 }
             }
             case ACTIVE -> {
                 if (importTime.isBefore(projectStartDate) || importTime.isAfter(projectEndDate)) {
-                    rowErrors.add(new ExcelError(excelRowNo, ExcelError.ERROR.PROJECT_DATES_WRONG_FOR_PROJECT_STATUS));
+                    rowErrors.add(new ImportError(excelRowNo, ImportError.ERROR.PROJECT_DATES_WRONG_FOR_PROJECT_STATUS));
                 }
             }
             case REALIZED, TERMINATED -> {
                 if (importTime.isBefore(projectStartDate) || importTime.isBefore(projectEndDate)) {
-                    rowErrors.add(new ExcelError(excelRowNo, ExcelError.ERROR.PROJECT_DATES_WRONG_FOR_PROJECT_STATUS));
+                    rowErrors.add(new ImportError(excelRowNo, ImportError.ERROR.PROJECT_DATES_WRONG_FOR_PROJECT_STATUS));
                 }
             }
         }
@@ -231,7 +229,7 @@ public class ProjectImportModel {
                 if (projectPhasesMap.containsKey(phase)) {
                     LocalDate phaseStartDate = projectPhasesMap.get(phase);
                     if (phaseStartDate.isBefore(projectStartDate) || !phaseStartDate.isBefore(phaseEndDate)) {
-                        rowErrors.add(new ExcelError(excelRowNo, ExcelError.ERROR.PROJECT_WRONG_PHASE_DATES));
+                        rowErrors.add(new ImportError(excelRowNo, ImportError.ERROR.PROJECT_WRONG_PHASE_DATES));
                     }
                     phaseEndDate = phaseStartDate;
                 }
@@ -245,7 +243,7 @@ public class ProjectImportModel {
                 if (projectPlanStatusesMap.containsKey(planStatus)) {
                     LocalDate planStatusStartDate = projectPlanStatusesMap.get(planStatus);
                     if (planStatusStartDate.isBefore(projectStartDate) || !planStatusStartDate.isBefore(planStatusEndDate)) {
-                        rowErrors.add(new ExcelError(excelRowNo, ExcelError.ERROR.PROJECT_WRONG_PLAN_STATUS_DATES));
+                        rowErrors.add(new ImportError(excelRowNo, ImportError.ERROR.PROJECT_WRONG_PLAN_STATUS_DATES));
                     }
                     planStatusEndDate = planStatusStartDate;
                 }
@@ -253,18 +251,13 @@ public class ProjectImportModel {
         }
 
         if (hasNeighbourhood && (!hasMunicipality || !hasDistrict)) {
-            rowErrors.add(new ExcelError(excelRowNo, ExcelError.ERROR.PROJECT_LOCATION_INCOMPLETE));
+            rowErrors.add(new ImportError(excelRowNo, ImportError.ERROR.PROJECT_LOCATION_INCOMPLETE));
         }
         if (hasDistrict && !hasMunicipality) {
-            rowErrors.add(new ExcelError(excelRowNo, ExcelError.ERROR.PROJECT_LOCATION_INCOMPLETE));
+            rowErrors.add(new ImportError(excelRowNo, ImportError.ERROR.PROJECT_LOCATION_INCOMPLETE));
         }
 
-        if (constructionHouseblock != null) {
-            constructionHouseblock.validate(this, excelRowNo, rowErrors);
-        }
-        if (demolitionHouseblock != null) {
-            demolitionHouseblock.validate(this, excelRowNo, rowErrors);
-        }
+        houseblocks.forEach(h -> h.validate(this, excelRowNo, rowErrors));
     }
 
     private MilestoneStatus getMilestoneStatus(LocalDate milestoneTime, ZonedDateTime importTime) {
@@ -457,14 +450,11 @@ public class ProjectImportModel {
             }
         }
 
-        if (constructionHouseblock != null) {
-            Milestone houseblockEndMilestone = getOrCreateProjectMilestone(repo, projectMilestones, project, constructionHouseblock.getLatestDeliveryDate(), null, user, importTime);
-            persistHouseblocks(repo, constructionHouseblock, project, startMilestone, houseblockEndMilestone, user, importTime);
-        }
-        if (demolitionHouseblock != null) {
-            Milestone houseblockEndMilestone = getOrCreateProjectMilestone(repo, projectMilestones, project, demolitionHouseblock.getLatestDeliveryDate(), null, user, importTime);
-            persistHouseblocks(repo, demolitionHouseblock, project, startMilestone, houseblockEndMilestone, user, importTime);
-        }
+        houseblocks.forEach(houseblock -> {
+                Milestone houseblockEndMilestone = getOrCreateProjectMilestone(repo, projectMilestones, project, houseblock.getLatestDeliveryDate(), null, user, importTime);
+                persistHouseblocks(repo, houseblock, project, startMilestone, houseblockEndMilestone, user, importTime);
+        });
+
         return new SelectModel(project.getId(), projectName);
 
     }

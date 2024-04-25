@@ -3,7 +3,7 @@ package nl.vng.diwi.models;
 import lombok.Data;
 
 @Data
-public class ExcelError {
+public class ImportError {
 
     private String errorCode;
     private Integer row;
@@ -12,18 +12,30 @@ public class ExcelError {
     private String errorMessage;
 
 
-    public ExcelError(ERROR error) {
+    public ImportError(ERROR error) {
         this.errorMessage = error.errorMsg;
         this.errorCode = error.errorCode;
     }
 
-    public ExcelError(Integer row, ERROR error) {
+    public ImportError(String errorCode, String errorMessage) {
+        this.errorCode = errorCode;
+        this.errorMessage = errorMessage;
+    }
+
+    public ImportError(Integer row, ERROR error) {
         this.row = row;
         this.errorMessage = error.errorMsg;
         this.errorCode = error.errorCode;
     }
 
-    public ExcelError(Integer row, String column, String cellValue, ERROR error) {
+    public ImportError(Integer row, String cellValue, ERROR error) {
+        this.row = row;
+        this.cellValue = cellValue;
+        this.errorMessage = error.errorMsg;
+        this.errorCode = error.errorCode;
+    }
+
+    public ImportError(Integer row, String column, String cellValue, ERROR error) {
         this.row = row;
         this.column = column;
         this.cellValue = cellValue;
@@ -73,6 +85,7 @@ public class ExcelError {
         MISSING_PROJECT_STATUS("no_project_status", "Project status is missing or invalid"),
         MISSING_PROJECT_START_DATE("no_project_start_date", "Project start date is missing or invalid."),
         MISSING_PROJECT_END_DATE("no_project_end_date", "Project end date is missing or invalid."),
+        MISSING_HOUSEBLOCK_MUTATION("no_houseblock_mutation", "Houseblock mutation type or amount is missing."),
         INVALID_PLAN_TYPE("invalid_plan_type", "Project plan type has an unknow value"),
         INVALID_RANGE("invalid_numeric_range", "The value does not match a numeric range.");
 
