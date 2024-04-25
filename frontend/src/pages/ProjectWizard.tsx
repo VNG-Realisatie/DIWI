@@ -4,9 +4,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { projectWizardBlocks, projectWizardWithId } from "../Paths";
 import { Project, createProject, getProject, updateProject } from "../api/projectsServices";
 import WizardLayout from "../components/project-wizard/WizardLayout";
-import { ProjectInformationForm } from "../components/project/ProjectInformationForm";
 import useAlert from "../hooks/useAlert";
 import ProjectContext from "../context/ProjectContext";
+import { ProjectForm } from "../components/ProjectForm";
 
 const ProjectWizard = () => {
     const [projectForm, setProjectForm] = useState<Project>({
@@ -91,7 +91,7 @@ const ProjectWizard = () => {
 
     return (
         <WizardLayout {...{ infoText, handleNext, handleSave, projectId, activeStep: 0 }}>
-            <ProjectInformationForm setCreateProjectForm={setProjectForm} createProjectForm={projectForm} />
+            <ProjectForm project={projectForm} setProject={setProjectForm} readOnly={false} showColorPicker={true} />
         </WizardLayout>
     );
 };

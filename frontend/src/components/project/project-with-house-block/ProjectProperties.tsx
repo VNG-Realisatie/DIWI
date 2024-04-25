@@ -138,7 +138,7 @@ export const ProjectProperties = ({
                 </Grid>
                 <Grid item xs={12} md={2}>
                     <Typography sx={columnTitleStyle}>{capitalizeFirstLetters(t("projects.tableColumns.organizationName"))}</Typography>
-                    <OrganizationSelect readOnly={readOnly} owner={owner} setOwner={setOwner} />
+                    <OrganizationSelect readOnly={readOnly} userGroup={owner} setUserGroup={setOwner} />
                 </Grid>
                 <Grid item xs={12} md={8}>
                     <Typography sx={columnTitleStyle}>{capitalizeFirstLetters(t("projects.tableColumns.planType"))}</Typography>
@@ -231,7 +231,7 @@ export const ProjectProperties = ({
                 </Grid>
                 <Grid item xs={12} md={2}>
                     <Typography sx={columnTitleStyle}>{capitalizeFirstLetters(t("projects.tableColumns.projectLeader"))}</Typography>
-                    <OrganizationSelect readOnly={readOnly} owner={leader} setOwner={setLeader} isLeader={true} />
+                    <OrganizationSelect readOnly={readOnly} userGroup={leader} setUserGroup={setLeader} />
                 </Grid>
             </Grid>
             <Grid container>

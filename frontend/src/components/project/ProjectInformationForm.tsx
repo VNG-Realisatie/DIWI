@@ -13,6 +13,7 @@ import { confidentialityLevelOptions, planTypeOptions, planningPlanStatus, proje
 import { LabelComponent } from "./LabelComponent";
 import { MunicipalityRoleEditForm } from "./project-with-house-block/MunicipalityRoleEditForm";
 import useProperties from "../../hooks/useProperties";
+import { ProjectForm } from "../ProjectForm";
 
 type Props = {
     setCreateProjectForm: (a: Project) => void;
@@ -61,6 +62,7 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
     };
     return (
         <Box mt={4}>
+            <ProjectForm project={createProjectForm} setProject={() => {}} readOnly={false} showColorPicker={true} />
             <Typography variant="h6" fontWeight="600">
                 {t("createProject.informationForm.title")}
             </Typography>
@@ -206,9 +208,8 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                     <LabelComponent required={false} text={t("createProject.informationForm.projectLeader")} />
                     <OrganizationSelect
                         readOnly={false}
-                        isLeader={true}
-                        owner={createProjectForm?.projectLeaders ? createProjectForm.projectLeaders : []}
-                        setOwner={(e) =>
+                        userGroup={createProjectForm?.projectLeaders ? createProjectForm.projectLeaders : []}
+                        setUserGroup={(e) =>
                             setCreateProjectForm({
                                 ...createProjectForm,
                                 projectLeaders: e,
@@ -269,8 +270,8 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
                     <LabelComponent required={false} text={t("createProject.informationForm.owner")} />
                     <OrganizationSelect
                         readOnly={false}
-                        owner={createProjectForm?.projectOwners ? createProjectForm.projectOwners : []}
-                        setOwner={(e) =>
+                        userGroup={createProjectForm?.projectOwners ? createProjectForm.projectOwners : []}
+                        setUserGroup={(e) =>
                             setCreateProjectForm({
                                 ...createProjectForm,
                                 projectOwners: e,

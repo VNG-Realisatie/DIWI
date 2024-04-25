@@ -34,10 +34,12 @@
       "successfullySaved": "Project succesvol opgeslagen.",
       "nameIsRequried": "Vul het veld projectnaam in",
       "addAnotherHouseBlock": "Voeg nog een woningblok toe",
+      "noCustomProps": "Er zijn geen maatwerk eigenschappen",
       "informationForm": {
         "title": "Vul de projectgegevens in",
         "info": "Vul de projectgegevens in",
-        "nameLabel": "Projectnaam en projectkleur",
+        "nameLabel": "Projectnaam",
+        "color": "Kleur",
         "planType": "Plantype",
         "startDate": "Startdatum",
         "endDate": "Einddatum",
@@ -48,7 +50,9 @@
         "projectLeader": "Projectleider",
         "confidentialityLevel": "Vertrouwelijkheidsniveau",
         "planningPlanStatus": "Planologische planstatus",
-        "owner": "Schrijfrechten"
+        "owner": "Schrijfrechten",
+        "neighbourhood": "Buurt",
+        "district": "Wijk"
       },
       "houseBlocksForm": {
         "title": "Vul de woningblokken in",
