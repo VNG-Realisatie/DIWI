@@ -384,6 +384,8 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                 </WizardCard>
             </Grid>
             {/* CUSTOM PROPERTIES */}
+            {/* could take inspiration from
+                <CustomerPropertiesProjectBlock {...{ readOnly, customValues, setCustomValues, columnTitleStyle }} /> */}
             <Grid item xs={12}>
                 <WizardCard>
                     <Typography fontWeight={600} mb={2}>

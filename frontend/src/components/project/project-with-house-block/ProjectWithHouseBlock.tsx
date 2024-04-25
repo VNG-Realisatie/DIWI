@@ -1,25 +1,21 @@
 import { Box, Popover, Stack, SxProps, Theme, Tooltip } from "@mui/material";
 import { MouseEvent, useCallback, useContext, useEffect, useState } from "react";
 import ProjectContext from "../../../context/ProjectContext";
-import ProjectColorContext from "../../../pages/ProjectDetail";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import ClearIcon from "@mui/icons-material/Clear";
 import FormatColorFillIcon from "@mui/icons-material/FormatColorFill";
 import { useTranslation } from "react-i18next";
-import dayjs, { Dayjs } from "dayjs";
 
 import { defaultColors } from "../../ColorSelector";
-import { BlockPicker, ColorResult } from "react-color";
+import { BlockPicker } from "react-color";
 
-import { PlanStatusOptions, PlanTypeOptions } from "../../../types/enums";
-import { Organization, PriorityModel, Project, SelectModel, updateProject as updateProjects } from "../../../api/projectsServices";
+import { Project, updateProject as updateProjects } from "../../../api/projectsServices";
 import AlertContext from "../../../context/AlertContext";
 import { CreateHouseBlockDialog } from "./CreateHouseBlockDialog";
 import { HouseBlocksList } from "./HouseBlocksList";
-import { CustomerPropertiesProjectBlock } from "./CustomerPropertiesProjectBlock";
 import { CustomPropertyValue, getCustomPropertyValues, putCustomPropertyValue } from "../../../api/customPropServices";
-import { ProjectProperties } from "./ProjectProperties";
+import { ProjectForm } from "../../ProjectForm";
 
 export const columnTitleStyle: SxProps<Theme> = {
     border: "solid 1px #ddd",
@@ -30,26 +26,16 @@ export const columnTitleStyle: SxProps<Theme> = {
 
 export const ProjectsWithHouseBlock = () => {
     const { selectedProject, updateProject } = useContext(ProjectContext);
-    const { selectedProjectColor, setSelectedProjectColor } = useContext(ProjectColorContext);
-    const [readOnly, setReadOnly] = useState(true);
+    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const [openColorDialog, setOpenColorDialog] = useState(false);
-    const [name, setName] = useState<string | null>("");
-    const [owner, setOwner] = useState<Organization[]>([]);
-    const [leader, setLeader] = useState<Organization[]>([]);
-    const [startDate, setStartDate] = useState<Dayjs | null>(null);
-    const [endDate, setEndDate] = useState<Dayjs | null>(null);
-    const [projectPhase, setProjectPhase] = useState<string | undefined>();
-    const [confidentialityLevel, setConfidentialityLevel] = useState<string | undefined>();
-    const [planType, setPlanType] = useState<PlanTypeOptions[]>([]);
-    const [planStatus, setPlanStatus] = useState<PlanStatusOptions[]>([]);
-    const [selectedMunicipalityRole, setSelectedMunicipalityRole] = useState<SelectModel[]>([]);
-    const [projectPriority, setProjectPriority] = useState<PriorityModel | null>(null);
+    const [openHouseBlockDialog, setOpenHouseBlockDialog] = useState(false);
+    const [readOnly, setReadOnly] = useState(true);
+
+    const [projectForm, setProjectForm] = useState<Project | null>(selectedProject);
     const [customValues, setCustomValues] = useState<CustomPropertyValue[]>([]);
 
     const { setAlert } = useContext(AlertContext);
-
-    const [openHouseBlockDialog, setOpenHouseBlockDialog] = useState(false);
-    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+    const { t } = useTranslation();
 
     useEffect(() => {
         const fetchCustomPropertyValues = async () => {
@@ -66,59 +52,21 @@ export const ProjectsWithHouseBlock = () => {
         fetchCustomPropertyValues();
     }, [selectedProject?.projectId]);
 
+    const resetProjectForm = useCallback(() => {
+        setProjectForm(selectedProject);
+    }, [selectedProject]);
+
+    useEffect(() => {
+        resetProjectForm();
+    }, [resetProjectForm, selectedProject]);
+
     const handleCancelChange = () => {
         setReadOnly(true);
-        updateChanges();
+        resetProjectForm();
     };
-
-    const { t } = useTranslation();
-
-    const handleColorChange = (newColor: ColorResult) => {
-        setSelectedProjectColor(newColor.hex);
-    };
-
-    const handleButtonClick = (event: MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
-    const updateChanges = useCallback(() => {
-        setName(selectedProject?.projectName ?? "");
-        setOwner(selectedProject?.projectOwners ?? []);
-        setStartDate(selectedProject?.startDate ? dayjs(selectedProject.startDate) : null);
-        setEndDate(selectedProject?.endDate ? dayjs(selectedProject.endDate) : null);
-        setProjectPriority(selectedProject?.priority || {}); //ToDo Fix later when decided range select
-        setProjectPhase(selectedProject?.projectPhase);
-        setSelectedMunicipalityRole(selectedProject?.municipalityRole ?? []);
-        setConfidentialityLevel(selectedProject?.confidentialityLevel);
-        setLeader(selectedProject?.projectLeaders ?? []);
-        setPlanType(selectedProject?.planType?.map((type) => type) ?? []);
-        setPlanStatus(selectedProject?.planningPlanStatus?.map((type) => type) ?? []);
-        setSelectedProjectColor(selectedProject?.projectColor ?? "");
-    }, [
-        selectedProject?.projectOwners,
-        selectedProject?.confidentialityLevel,
-        selectedProject?.endDate,
-        selectedProject?.municipalityRole,
-        selectedProject?.planType,
-        selectedProject?.projectLeaders,
-        selectedProject?.planningPlanStatus,
-        selectedProject?.priority,
-        selectedProject?.projectColor,
-        selectedProject?.projectName,
-        selectedProject?.projectPhase,
-        selectedProject?.startDate,
-        setSelectedProjectColor,
-    ]);
-
-    const open = Boolean(anchorEl);
 
     const handleProjectEdit = () => {
         setReadOnly(false);
-        updateChanges();
     };
 
     const handleCustomPropertiesSave = () => {
@@ -128,33 +76,20 @@ export const ProjectsWithHouseBlock = () => {
     };
 
     const handleProjectSave = () => {
-        const updatedProjectForm = {
-            startDate: startDate?.format("YYYY-MM-DD"),
-            endDate: endDate?.format("YYYY-MM-DD"),
-            projectId: selectedProject?.projectId,
-            projectName: name,
-            projectColor: selectedProjectColor,
-            confidentialityLevel: confidentialityLevel,
-            planType: planType,
-            priority: projectPriority,
-            projectPhase: projectPhase,
-            planningPlanStatus: planStatus,
-            municipalityRole: selectedMunicipalityRole,
-            projectOwners: owner,
-            projectLeaders: leader,
-            totalValue: selectedProject?.totalValue,
-        };
-
-        updateProjects(updatedProjectForm as Project)
-            .then(() => {
-                setReadOnly(true);
-                updateProject();
-                handleCustomPropertiesSave();
-            })
-            .catch((error) => {
-                setAlert(error.message, "error");
-            });
+        if (projectForm) {
+            updateProjects(projectForm)
+                .then(() => {
+                    setReadOnly(true);
+                    updateProject();
+                    handleCustomPropertiesSave();
+                })
+                .catch((error) => {
+                    setAlert(error.message, "error");
+                });
+        }
     };
+
+    const open = Boolean(anchorEl);
 
     return (
         <Stack my={1} mb={10}>
@@ -165,7 +100,7 @@ export const ProjectsWithHouseBlock = () => {
                             sx={{ mr: 2, color: "#FFFFFF" }}
                             onClick={(event: any) => {
                                 setOpenColorDialog(true);
-                                handleButtonClick(event);
+                                setAnchorEl(event.currentTarget);
                             }}
                         />
                     </Tooltip>
@@ -187,48 +122,35 @@ export const ProjectsWithHouseBlock = () => {
                 )}
             </Box>
             <Stack>
-                <ProjectProperties
-                    projectPhase={projectPhase}
-                    setProjectPhase={setProjectPhase}
-                    setStartDate={setStartDate}
-                    setEndDate={setEndDate}
-                    readOnly={readOnly}
-                    name={name}
-                    setName={setName}
-                    owner={owner}
-                    setOwner={setOwner}
-                    planType={planType}
-                    setPlanType={setPlanType}
-                    startDate={startDate}
-                    endDate={endDate}
-                    projectPriority={projectPriority}
-                    setProjectPriority={setProjectPriority}
-                    selectedMunicipalityRole={selectedMunicipalityRole}
-                    setSelectedMunicipalityRole={setSelectedMunicipalityRole}
-                    confidentialityLevel={confidentialityLevel}
-                    setConfidentialityLevel={setConfidentialityLevel}
-                    leader={leader}
-                    setLeader={setLeader}
-                    planStatus={planStatus}
-                    setPlanStatus={setPlanStatus}
-                />
-
-                <CustomerPropertiesProjectBlock {...{ readOnly, customValues, setCustomValues, columnTitleStyle }} />
+                {projectForm && (
+                    // this box with padding is to make the layout similar to how houseblocks look
+                    <Box padding={2}>
+                        <ProjectForm project={projectForm} setProject={setProjectForm} readOnly={readOnly} showColorPicker={false} />
+                    </Box>
+                )}
 
                 <HouseBlocksList setOpenHouseBlockDialog={setOpenHouseBlockDialog} />
+
+                {/* Dialog to select color */}
                 {openColorDialog && (
                     <Popover
                         open={open}
                         anchorEl={anchorEl}
-                        onClose={handleClose}
+                        onClose={() => setAnchorEl(null)}
                         anchorOrigin={{
                             vertical: "bottom",
                             horizontal: "center",
                         }}
                     >
-                        <BlockPicker colors={defaultColors} color={selectedProjectColor} onChange={handleColorChange} />
+                        <BlockPicker
+                            colors={defaultColors}
+                            color={projectForm?.projectColor}
+                            onChange={(newColor) => projectForm && setProjectForm({ ...projectForm, projectColor: newColor.hex })}
+                        />
                     </Popover>
                 )}
+
+                {/* Dialog to create new houseblock */}
                 <CreateHouseBlockDialog openHouseBlockDialog={openHouseBlockDialog} setOpenHouseBlockDialog={setOpenHouseBlockDialog} />
             </Stack>
         </Stack>
