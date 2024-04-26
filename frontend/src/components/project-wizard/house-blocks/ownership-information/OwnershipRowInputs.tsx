@@ -47,6 +47,7 @@ const NumericRangeLabel = ({ value }: { value: RangeValue }) => {
 };
 
 const OwnershipTypeOption = ({ handleInputChange, ownership, index }: OwnershipProps) => {
+    const { t } = useTranslation();
     return (
         <Select
             fullWidth
@@ -59,7 +60,7 @@ const OwnershipTypeOption = ({ handleInputChange, ownership, index }: OwnershipP
             {ownershipValueOptions.map((type) => {
                 return (
                     <MenuItem key={type} value={type}>
-                        {type}
+                        {t(`createProject.houseBlocksForm.ownershipAndValue.${type}`)}
                     </MenuItem>
                 );
             })}
@@ -84,13 +85,14 @@ const OwnershipAmountInput = ({ handleInputChange, ownership, index }: Ownership
 };
 
 export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handleRemoveRow, readOnly }: Props) => {
+    const { t } = useTranslation();
     return (
         <Grid container spacing={2} mt={1}>
             <Grid item xs={4}>
                 {!readOnly && <OwnershipTypeOption index={index} handleInputChange={handleInputChange} ownership={ownership} />}
                 {readOnly && (
                     <InputContainer>
-                        <Typography>{ownership?.type}</Typography>
+                        <Typography>{t(`createProject.houseBlocksForm.ownershipAndValue.${ownership?.type}`)}</Typography>
                     </InputContainer>
                 )}
             </Grid>
