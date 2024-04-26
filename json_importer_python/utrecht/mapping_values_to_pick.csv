@@ -31,7 +31,7 @@ bouw,particuliere_verhuurder,eengezins_woning,huur,1,eengezins_huur1
 bouw,particuliere_verhuurder,eengezins_woning,huur,onbekend,eengezins_huur_onb
 sloop,onbekend,meergezins_woning,onbekend,onbekend,sloop_meergezins_onbekend
 sloop,onbekend,eengezins_woning,onbekend,onbekend,sloop_eengezins_onbekend
-onbekend,onbekend,onbekend,onbekend,onbekend,onbekend_onbekend
+bouw,onbekend,onbekend,onbekend,onbekend,onbekend_onbekend
 bouw,onbekend,meergezins_woning,onbekend,onbekend,meergezins_onbekend
 bouw,onbekend,eengezins_woning,onbekend,onbekend,eengezins_onbekend
 sloop,koopwoning,onbekend,koop,4,sloop_onbekend_koop4

@@ -49,7 +49,7 @@ def add_basisgegevens(df_out, df_in, prefix):
     unique_projects[f'{local_prefix}.identificatie_nr'] = range(len(unique_projects))
 
     df_out = pd.merge(left=df_out, right=unique_projects, on=['properties.parent_globalid'], how='left')
-    df_out[f'{local_prefix}.naam'] = df_in['properties.plannaam']
+    df_out[f'{local_prefix}.naam'] = df_in['properties.plannaam'].fillna("UNKNOWN_NAME")
 
     return df_out
 
@@ -57,11 +57,13 @@ def add_basisgegevens(df_out, df_in, prefix):
 def add_projectgegevens(df_out, df_in, prefix):
     local_prefix = f'{prefix}.projectgegevens'
 
-    df_out[f'{local_prefix}.plan_soort'] = df_in['properties.plantype']
+    df_out[f'{local_prefix}.plan_soort'] = df_in['properties.plantype'].str.upper().str.replace(' ', '_')
     df_out[f'{local_prefix}.in_programmering'] = None
     df_out[f'{local_prefix}.prioritering'] = None
     df_out[f'{local_prefix}.rol_gemeente'] = None
     df_out.loc[df_in['properties.opdrachtgever_type'] == 'Gemeente', f'{local_prefix}.rol_gemeente'] = 'Opdrachtgever'
+
+    df_out[f'{local_prefix}.plan_soort'] = df_out[f'{local_prefix}.plan_soort'].replace('ONBEKEND', None)
 
     return df_out
 
@@ -82,9 +84,10 @@ def add_projectduur(df_out, df_in, prefix):
     df_out.loc[df_in['properties.jaar_start_project'].notna(), f'{local_prefix}.start_project'] = [f"{int(x)}-01-01" for x in df_in.loc[df_in['properties.jaar_start_project'].notna(), 'properties.jaar_start_project']]
     df_out.loc[df_in['properties.jaar_start_project'].isna(), f'{local_prefix}.start_project'] = [None for x in df_in.loc[df_in['properties.jaar_start_project'].isna(), 'properties.jaartal']]
 
+    df_out[f'{local_prefix}.start_project'] = df_out[f'{local_prefix}.start_project'].replace({None: '2024-01-01'})
+
     df_out[f'{local_prefix}.eind_project'] = None
     df_out[f'{local_prefix}.eind_project'] = [f"{int(float(x))}-12-01" if type(x) != type(None) else None for x in df_in['properties.oplevering_laatste'].fillna(np.nan).replace({np.nan: None})]
-
 
     return df_out
 
@@ -124,7 +127,7 @@ def add_projectfasen(df_out, df_in, prefix, project_fasen):
 def add_planologische_planstatus(df_out, df_in, prefix):
     local_prefix = f'{prefix}.planologische_planstatus'
 
-    df_in['planologisch_datum'] = [f"{x.year}-{x.month}-{x.day}" for x in pd.to_datetime(df_in['properties.created'])]
+    df_in['planologisch_datum'] = [str(x)[0:10] for x in pd.to_datetime(df_in['properties.created'])]
     temp = df_in[['properties.globalid', 'properties.status_planologisch', 'planologisch_datum']].pivot(columns=['properties.status_planologisch'],
                                                                                                         index='properties.globalid').replace(np.nan, None)
     temp.columns = [f"{local_prefix}.{x[1]}" for x in temp.columns]
@@ -132,7 +135,6 @@ def add_planologische_planstatus(df_out, df_in, prefix):
     df_out = pd.merge(left=df_out, right=temp, on=['properties.globalid'], how='left')
 
     return df_out
-
 
 
 def fill_projectgegevens(df_out, df_in, project_fasen):
@@ -212,7 +214,6 @@ def explode_huizenblokken_add_aantallen(df_out, df_in, mapping_values):
                             'properties.jaartal': f'{prefix}.mutatiegegevens.einddatum'}, axis=1)
 
     df_out = df_out.drop(['combinations', 'column'], axis=1)
-
 
     return df_out
 
@@ -332,6 +333,10 @@ def prepare_for_json(df, required_output_columns):
         if column not in df.columns:
             df[column] = None
 
+    df['properties.woning_blokken.mutatiegegevens.mutatie_type'] = df['properties.woning_blokken.mutatiegegevens.mutatie_type'].replace({'bouw': 'CONSTRUCTION', 'sloop': 'DEMOLITION', 'onbekend': None})
+    df['properties.woning_blokken.mutatiegegevens.woning_type'] = df['properties.woning_blokken.mutatiegegevens.woning_type'].replace({'eengezins_woning': 'EENGEZINSWONING', 'meergezins_woning': 'MEERGEZINSWONING', 'onbekend': None})
+    df['properties.woning_blokken.mutatiegegevens.eigendom_type'] = df['properties.woning_blokken.mutatiegegevens.eigendom_type'].replace({'koopwoning': 'KOOPWONING', 'huur_woningcorporatie': 'HUURWONING_WONINGCORPORATIE', 'particuliere_verhuurder': 'HUURWONING_PARTICULIERE_VERHUURDER', 'onbekend': None})
+    df['properties.woning_blokken.mutatiegegevens.contract_type'] = df['properties.woning_blokken.mutatiegegevens.contract_type'].replace({'koop': 'PURCHASE', 'huur': 'RENT', 'onbekend': None})
     return df
 
 
@@ -435,13 +440,14 @@ def form_json_structure(df_out, df_in, geo_template, required_input_columns, req
             s_woningblok = df_project.loc[index]
             new_woningblok = copy.deepcopy(geo_woningblok)
 
+            # name
+            new_woningblok['name'] = s_woningblok['properties.globalid']
+
             # mutatiegegevens
             new_woningblok['mutatiegegevens']['mutatie_type'] = s_woningblok['properties.woning_blokken.mutatiegegevens.mutatie_type']
             new_woningblok['mutatiegegevens']['eigendom_type'] = s_woningblok['properties.woning_blokken.mutatiegegevens.eigendom_type']
             new_woningblok['mutatiegegevens']['woning_type'] = s_woningblok['properties.woning_blokken.mutatiegegevens.woning_type']
-            new_woningblok['mutatiegegevens']['contract_type'] = s_woningblok['properties.woning_blokken.mutatiegegevens.contract_type']
             new_woningblok['mutatiegegevens']['aantal'] = s_woningblok['properties.woning_blokken.mutatiegegevens.aantal']
-            new_woningblok['mutatiegegevens']['status'] = s_woningblok['properties.woning_blokken.mutatiegegevens.status']
 
             # einddatum
             new_woningblok['einddatum'] = s_woningblok['properties.woning_blokken.mutatiegegevens.einddatum']
@@ -455,6 +461,9 @@ def form_json_structure(df_out, df_in, geo_template, required_input_columns, req
 
             new_woningblok = add_woningblok_maatwerk_json(new_woningblok=new_woningblok, s_woningblok=s_woningblok, woningblok_maatwerk_columns=woningblok_maatwerk_columns)
             new_woningblok['maatwerk_woningeigenschappen']['category_type'] = s_woningblok['properties.woning_blokken.maatwerk_woningeigenschappen.category_type']
+            new_woningblok['maatwerk_woningeigenschappen']['contract_type'] = s_woningblok['properties.woning_blokken.mutatiegegevens.contract_type']
+            new_woningblok['maatwerk_woningeigenschappen']['status'] = s_woningblok['properties.woning_blokken.mutatiegegevens.status']
+            new_woningblok['maatwerk_woningeigenschappen']['globalid'] = s_woningblok['properties.globalid']
 
             new_project['properties']['woning_blokken'].append(new_woningblok)
 
@@ -487,7 +496,7 @@ def add_status_to_mutatie(df_out, df_in):
 
     df_out.loc[(df_out['properties.projectgegevens.projectgegevens.status'] == 'REALIZED') & (df_out['project_gerealiseerd'] == False), 'properties.projectgegevens.projectgegevens.status'] = 'TERMINATED'
 
-    df_out['properties.woning_blokken.mutatiegegevens.status'] = None
+    df_out['properties.woning_blokken.mutatiegegevens.status'] = 'UNKNOWN'
 
     df_out.loc[df_out['properties.jaartal'].astype(int) < datetime.datetime.now().year, 'properties.woning_blokken.mutatiegegevens.status'] = 'REALIZED'
 

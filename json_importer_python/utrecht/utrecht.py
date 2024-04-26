@@ -18,6 +18,7 @@ dict_projects = {}
 gemeente_df_dict = func.fix_maatwerk(paths=all_gemeente_geojson_paths, required_columns=const.required_input_columns)
 
 for gemeente_name in gemeente_df_dict:
+    #gemeente_name = 'Planregistratie_gemeente_Amersfoort_Verrijkt_6924747028786393809'
     df_in = gemeente_df_dict[gemeente_name]
     df_out = func.create_df_outs(df=df_in)
 
@@ -26,7 +27,6 @@ for gemeente_name in gemeente_df_dict:
 
     df_out = func.explode_huizenblokken_add_aantallen(df_out=df_out, df_in=df_in, mapping_values=mapping_values)
 
-    # missing: oplevering
     # missing: grootte
 
     df_out = func.add_woningwaardes(df_out=df_out, df_in=df_in, koop_mapping=koop_mapping, huur_mapping=huur_mapping)

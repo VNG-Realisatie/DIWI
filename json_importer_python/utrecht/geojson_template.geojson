@@ -64,6 +64,7 @@
                 },
                 "woning_blokken": [
                     {
+                        "name": null,
                         "mutatiegegevens": {
                             "mutatie_type": null,
                             "eigendom_type": null,
@@ -73,7 +74,6 @@
                             "aantal": null
                         },
                         "einddatum": null,
-                        "oplevering": [],
                         "grootte": [],
                         "waarde": {
                             "hoog": null,
@@ -82,9 +82,9 @@
                         "fysiek_voorkomen":[],
                         "doelgroep": [],
                         "grondpositie": {
-                            "geen_toestemming_eigenaar": null,
-                            "intentie_medewerking_eigenaar": null,
-                            "formele_toestemming_eigenaar": null
+                            "GEEN_TOESTEMMING_GRONDEIGENAAR": null,
+                            "INTENTIE_MEDEWERKING_GRONDEIGENAAR": null,
+                            "FORMELE_TOESTEMMING_GRONDEIGENAAR": null
                         },
                         "maatwerk_woningeigenschappen": {
                         }
