@@ -123,10 +123,12 @@ public class ProjectImportModel {
         private LocalDate latestDeliveryDate;
         private Map<LocalDate, Integer> deliveryDateMap = new HashMap<>();
 
-        public HouseblockImportModel(MutationType mutationType, Integer mutation) {
+        public HouseblockImportModel(MutationType mutationType, Integer mutation, String name) {
             this.mutationType = mutationType;
             this.mutation = mutation;
-            if (mutationType == MutationType.CONSTRUCTION) {
+            if (name != null) {
+                this.name = name;
+            } else if (mutationType == MutationType.CONSTRUCTION) {
                 this.name = "Bouw";
             } else {
                 this.name = "Sloop";

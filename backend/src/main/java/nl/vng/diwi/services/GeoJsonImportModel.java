@@ -99,6 +99,7 @@ public class GeoJsonImportModel {
 
             BasicProjectData basicProjectData = project.getBasicProjectData();
             if (basicProjectData == null || basicProjectData.identificationNo == null) {
+                importErrors.add(new ImportError(null, ImportError.ERROR.MISSING_PROJECT_ID));
                 return null;
             }
             Integer id = basicProjectData.identificationNo;
@@ -126,7 +127,7 @@ public class GeoJsonImportModel {
                 return null;
             }
 
-            ProjectImportModel projectImportModel = new ProjectImportModel(); //TODO: name
+            ProjectImportModel projectImportModel = new ProjectImportModel();
             projectImportModel.setId(basicProjectData.identificationNo);
             projectImportModel.setProjectName(basicProjectData.name);
             projectImportModel.setProjectStartDate(projectDuration.startDate);
@@ -282,14 +283,14 @@ public class GeoJsonImportModel {
     @Data
     public static class GeoJsonHouseblock {
 
+        @JsonProperty("name")
+        private String name;
         @JsonProperty("mutatiegegevens")
         private MutationData mutationData;
         @JsonProperty("einddatum")
         private LocalDate endDate;
-        @JsonProperty("oplevering")
-        private List<Object> delivery; //unused TODO
         @JsonProperty("grootte")
-        private List<Object> size; //unused TODO
+        private List<Object> size; //unused
         @JsonProperty("waarde")
         private OwnershipValueData ownershipValue;
         @JsonProperty("fysiek_voorkomen")
@@ -304,10 +305,15 @@ public class GeoJsonImportModel {
         public ProjectImportModel.HouseblockImportModel toHouseblockImportModel(Integer projectNo, Map<String, PropertyModel> activePropertiesMap, List<ImportError> errors) {
 
             if (mutationData == null || mutationData.mutationType == null || mutationData.amount == null) {
-                errors.add(new ImportError(projectNo, ImportError.ERROR.MISSING_HOUSEBLOCK_MUTATION)); //TODO: just ignore?
+                errors.add(new ImportError(projectNo, ImportError.ERROR.MISSING_HOUSEBLOCK_MUTATION));
                 return null;
             }
-            ProjectImportModel.HouseblockImportModel houseblockImportModel = new ProjectImportModel.HouseblockImportModel(mutationData.mutationType, mutationData.amount);
+            if (name == null) {
+                errors.add(new ImportError(projectNo, ImportError.ERROR.MISSING_HOUSEBLOCK_NAME));
+                return null;
+            }
+
+            ProjectImportModel.HouseblockImportModel houseblockImportModel = new ProjectImportModel.HouseblockImportModel(mutationData.mutationType, mutationData.amount, name);
 
             if (mutationData.houseType != null) {
                 houseblockImportModel.getHouseTypeMap().put(mutationData.houseType, mutationData.amount);
@@ -334,7 +340,7 @@ public class GeoJsonImportModel {
                     if (!valueRange.isValid(true)) {
                         errors.add(new ImportError(projectNo, ownershipValue.toString(), ImportError.ERROR.INVALID_RANGE));
                     } else {
-                        if (mutationData.ownershipType == OwnershipType.KOOPWONING) { //TODO? use contract type??
+                        if (mutationData.ownershipType == OwnershipType.KOOPWONING) {
                             ov.setValue(valueRange);
                         } else {
                             ov.setRentalValue(valueRange);
@@ -405,9 +411,9 @@ public class GeoJsonImportModel {
         @JsonProperty("woning_type")
         private HouseType houseType;
         @JsonProperty("status")
-        private ProjectStatus houseblockStatus; //TODO unused
+        private ProjectStatus houseblockStatus; //unused
         @JsonProperty("contract_type")
-        private String contractType; // TODO unused
+        private String contractType; //unused
         @JsonProperty("aantal")
         private Integer amount;
     }

@@ -371,9 +371,9 @@ public class ExcelImportService {
                     Integer mutationAmount = getIntegerValue(nextCell, formatter, evaluator, rowErrors);
                     if (mutationAmount != null && mutationAmount > 0) {
                         if (tableHeader.getColumn() == HOUSEBLOCK_MUTATION_BUILD) {
-                            rowModel.getHouseblocks().add(new ProjectImportModel.HouseblockImportModel(MutationType.CONSTRUCTION, mutationAmount));
+                            rowModel.getHouseblocks().add(new ProjectImportModel.HouseblockImportModel(MutationType.CONSTRUCTION, mutationAmount, null));
                         } else {
-                            rowModel.getHouseblocks().add(new ProjectImportModel.HouseblockImportModel(MutationType.DEMOLITION, mutationAmount));
+                            rowModel.getHouseblocks().add(new ProjectImportModel.HouseblockImportModel(MutationType.DEMOLITION, mutationAmount, null));
                         }
                     }
                 }

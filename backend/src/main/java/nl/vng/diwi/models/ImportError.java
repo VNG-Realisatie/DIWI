@@ -82,10 +82,12 @@ public class ImportError {
         HOUSEBLOCK_GROUND_POSITION_TOTAL_INCORRECT("houseblock_ground_position_total", "The total of houses in Ground-position section does not match the mutation amount."),
 
         MISSING_PROJECT_NAME("no_project_name", "Project name is missing."),
+        MISSING_PROJECT_ID("no_project_identificationNo", "Project identification number is missing."),
         MISSING_PROJECT_STATUS("no_project_status", "Project status is missing or invalid"),
         MISSING_PROJECT_START_DATE("no_project_start_date", "Project start date is missing or invalid."),
         MISSING_PROJECT_END_DATE("no_project_end_date", "Project end date is missing or invalid."),
         MISSING_HOUSEBLOCK_MUTATION("no_houseblock_mutation", "Houseblock mutation type or amount is missing."),
+        MISSING_HOUSEBLOCK_NAME("no_houseblock_name", "Houseblock name is missing."),
         INVALID_PLAN_TYPE("invalid_plan_type", "Project plan type has an unknow value"),
         INVALID_RANGE("invalid_numeric_range", "The value does not match a numeric range.");
 
