@@ -61,16 +61,15 @@ public class GeoJsonImportService {
                     GeoJsonImportModel geoJsonImportModel = MAPPER.convertValue(feature.getProperties(), GeoJsonImportModel.class);
                     ProjectImportModel projectImportModel = geoJsonImportModel.toProjectImportModel(activePropertiesMap, featureErrors);
 
-                    GeoJsonObject featureGeometry = feature.getGeometry();
-                    if (featureGeometry != null) {
-                        if (featureGeometry.getCrs() == null) {
-                            featureGeometry.setCrs(geoJsonObject.getCrs());
-                        }
-                        String geometryStr = MAPPER.writeValueAsString(featureGeometry);
-                        projectImportModel.getProjectStringPropsMap().put(geometryPropertyId, geometryStr);
-                    }
-
                     if (featureErrors.isEmpty()) { //no errors validating individual fields
+                        GeoJsonObject featureGeometry = feature.getGeometry();
+                        if (featureGeometry != null) {
+                            if (featureGeometry.getCrs() == null) {
+                                featureGeometry.setCrs(geoJsonObject.getCrs());
+                            }
+                            String geometryStr = MAPPER.writeValueAsString(featureGeometry);
+                            projectImportModel.getProjectStringPropsMap().put(geometryPropertyId, geometryStr);
+                        }
                         projectImportModel.validate(projectImportModel.getId(), featureErrors, importTime.toLocalDate()); //business logic validation
                     }
                     if (featureErrors.isEmpty()) { //still no errors
