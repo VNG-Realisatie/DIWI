@@ -5,11 +5,13 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import nl.vng.diwi.dal.AutoCloseTransaction;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.User;
+import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.models.ImportError;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.models.SelectModel;
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
+import org.geojson.GeoJsonObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,13 +48,27 @@ public class GeoJsonImportService {
             List<PropertyModel> activeProperties = repo.getPropertyDAO().getPropertiesList(null, false, null);
             Map<String, PropertyModel> activePropertiesMap = activeProperties.stream().collect(Collectors.toMap(PropertyModel::getName, Function.identity()));
 
+            UUID geometryPropertyId = activeProperties.stream().filter(p -> p.getName().equals(Constants.FIXED_PROPERTY_GEOMETRY))
+                .map(PropertyModel::getId).findFirst().orElse(null);
+            if (geometryPropertyId == null) {
+                return Map.of(ExcelImportService.errors, new ImportError(0, Constants.FIXED_PROPERTY_GEOMETRY, ImportError.ERROR.MISSING_FIXED_PROPERTY));
+            }
+
             User user = repo.getReferenceById(User.class, loggedInUserUuid);
             for (Feature feature : geoJsonObject.getFeatures()) {
                 List<ImportError> featureErrors = new ArrayList<>();
                 try {
                     GeoJsonImportModel geoJsonImportModel = MAPPER.convertValue(feature.getProperties(), GeoJsonImportModel.class);
                     ProjectImportModel projectImportModel = geoJsonImportModel.toProjectImportModel(activePropertiesMap, featureErrors);
-                    //TODO: add crs + coordinates object as custom properties;
+
+                    GeoJsonObject featureGeometry = feature.getGeometry();
+                    if (featureGeometry != null) {
+                        if (featureGeometry.getCrs() == null) {
+                            featureGeometry.setCrs(geoJsonObject.getCrs());
+                        }
+                        String geometryStr = MAPPER.writeValueAsString(featureGeometry);
+                        projectImportModel.getProjectStringPropsMap().put(geometryPropertyId, geometryStr);
+                    }
 
                     if (featureErrors.isEmpty()) { //no errors validating individual fields
                         projectImportModel.validate(projectImportModel.getId(), featureErrors, importTime.toLocalDate()); //business logic validation

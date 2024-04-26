@@ -39,7 +39,7 @@ import nl.vng.diwi.dal.entities.ProjectPlanTypeChangelogValue;
 import nl.vng.diwi.dal.entities.ProjectPlanologischePlanstatusChangelog;
 import nl.vng.diwi.dal.entities.ProjectPlanologischePlanstatusChangelogValue;
 import nl.vng.diwi.dal.entities.ProjectState;
-import nl.vng.diwi.dal.entities.ProjectTextCustomPropertyChangelog;
+import nl.vng.diwi.dal.entities.ProjectTextPropertyChangelog;
 import nl.vng.diwi.dal.entities.Property;
 import nl.vng.diwi.dal.entities.PropertyCategoryValue;
 import nl.vng.diwi.dal.entities.PropertyOrdinalValue;
@@ -405,7 +405,7 @@ public class ProjectImportModel {
 
         if (!projectStringPropsMap.isEmpty()) {
             for (Map.Entry<UUID, String> stringEntry : projectStringPropsMap.entrySet()) {
-                var projectTextChangelog = new ProjectTextCustomPropertyChangelog();
+                var projectTextChangelog = new ProjectTextPropertyChangelog();
                 projectTextChangelog.setProject(project);
                 setChangelogValues.accept(projectTextChangelog);
                 projectTextChangelog.setProperty(repo.getReferenceById(Property.class, stringEntry.getKey()));

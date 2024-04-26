@@ -11,4 +11,6 @@ public class Constants {
 
     public static final String FIXED_PROPERTY_MUNICIPALITY_ROLE = "municipalityRole";
     public static final String FIXED_PROPERTY_PRIORITY = "priority";
+
+    public static final String FIXED_PROPERTY_GEOMETRY = "geometry";
 }

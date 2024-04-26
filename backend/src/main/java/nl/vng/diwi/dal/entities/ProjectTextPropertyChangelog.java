@@ -13,18 +13,18 @@ import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
 
 @Entity
-@Table(name = "project_maatwerk_text_changelog", schema = GenericRepository.VNG_SCHEMA_NAME)
+@Table(name = "project_text_changelog", schema = GenericRepository.VNG_SCHEMA_NAME)
 @Getter
 @Setter
 @NoArgsConstructor
-public class ProjectTextCustomPropertyChangelog extends MilestoneChangeDataSuperclass {
+public class ProjectTextPropertyChangelog extends MilestoneChangeDataSuperclass {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "project_id")
     private Project project;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "eigenschap_id")
+    @JoinColumn(name = "property_id")
     private Property property;
 
     @Column(name = "value")
