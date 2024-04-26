@@ -23,7 +23,8 @@ export const validateHouseBlock = (houseBlock: HouseBlockWithCustomProperties, s
         !houseBlock.houseblockName ||
         !houseBlock.mutation.amount ||
         houseBlock.mutation.amount <= 0 ||
-        !houseBlock.mutation.kind
+        !houseBlock.mutation.kind ||
+        houseBlock.ownershipValue.some((owner: any) => owner.amount < 0 || !Number.isInteger(owner.amount))
     ) {
         isValid = false;
     }
