@@ -32,6 +32,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import nl.vng.diwi.config.ProjectConfig;
@@ -602,7 +603,9 @@ public class ProjectsResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response importExcelFile(@FormDataParam("uploadFile") InputStream inputStream,
                                     @FormDataParam("uploadFile") FormDataContentDisposition formDataContentDisposition,
-                                    @Context LoggedUser loggedUser) {
+                                    ContainerRequestContext requestContext) {
+
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
 
         //save file to disk
         String fileSuffix = LocalDateTime.now().format(formatter);

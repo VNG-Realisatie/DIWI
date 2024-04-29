@@ -9,7 +9,7 @@ type AlertContextType = {
 
 const ALERT_TIME = 5000;
 
-const AlertContext = createContext<AlertContextType>({
+const AlertContext: React.Context<AlertContextType> = createContext<AlertContextType>({
     text: "",
     type: "success",
     setAlert: (text: string, type: AlertColor) => {},

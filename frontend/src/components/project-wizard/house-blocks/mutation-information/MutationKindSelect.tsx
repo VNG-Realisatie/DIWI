@@ -1,4 +1,4 @@
-import { Stack, Select, MenuItem, SelectChangeEvent, OutlinedInput, Typography } from "@mui/material";
+import { Stack, Select, MenuItem, SelectChangeEvent, OutlinedInput, Typography, FormHelperText } from "@mui/material";
 import { t } from "i18next";
 import { MutationKind, mutationKindOptions } from "../../../../types/enums";
 import { InputContainer } from "../InputContainer";
@@ -15,23 +15,31 @@ type MutationKindProps = {
 };
 const MutationKindEditOption = ({ houseBlockMutationKind, updateHouseBlockMutationKind }: MutationKindProps) => {
     return (
-        <Select
-            size="small"
-            labelId="mutationtype"
-            id="fase"
-            value={houseBlockMutationKind}
-            label={t("createProject.houseBlocksForm.mutationType")}
-            onChange={updateHouseBlockMutationKind}
-            input={<OutlinedInput />}
-        >
-            {mutationKindOptions.map((m) => {
-                return (
-                    <MenuItem key={m} value={m}>
-                        {m}
-                    </MenuItem>
-                );
-            })}
-        </Select>
+        <>
+            <Select
+                size="small"
+                labelId="mutationtype"
+                id="fase"
+                value={houseBlockMutationKind}
+                label={t("createProject.houseBlocksForm.mutationType")}
+                onChange={updateHouseBlockMutationKind}
+                input={<OutlinedInput />}
+                error={!houseBlockMutationKind}
+            >
+                {mutationKindOptions.map((m) => {
+                    return (
+                        <MenuItem key={m} value={m}>
+                            {t(`createProject.houseBlocksForm.${m}`)}
+                        </MenuItem>
+                    );
+                })}
+            </Select>
+            {!houseBlockMutationKind && (
+                <FormHelperText sx={{ paddingLeft: "12px", paddingRight: "15px", color: "#d32f2f" }}>
+                    {t("wizard.houseBlocks.mutationKindWarning")}
+                </FormHelperText>
+            )}
+        </>
     );
 };
 
@@ -45,7 +53,7 @@ export const MutationKindSelect = ({ houseBlockMutationKind, updateHouseBlockMut
             )}
             {readOnly && (
                 <InputContainer>
-                    <Typography minHeight="20px">{houseBlockMutationKind}</Typography>
+                    <Typography minHeight="20px"> {houseBlockMutationKind ? t(`createProject.houseBlocksForm.${houseBlockMutationKind}`) : ""}</Typography>
                 </InputContainer>
             )}
         </Stack>

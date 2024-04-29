@@ -61,6 +61,8 @@
         "netPlanCapacity": "Netto plancapaciteit",
         "demolition": "Sloop",
         "mutationType": "Mutatiesoort",
+        "DEMOLITION": "Sloop",
+        "CONSTRUCTION": "Bouw",
         "size": "Woonoppervlak in m2",
         "type": "Soort",
         "amount": "Aantal",
@@ -201,7 +203,7 @@
         "projectPhase": "Projectfase",
         "planningPlanStatus": "Planologische planstatus",
         "municipality": "Regio",
-        "wijk": "Wijk",
+        "district": "Wijk",
         "neighbourhood": "Buurt",
         "selectPlanType": "Selecteer plantype",
         "selectMunicipalityRole": "Selecteer gemeente rol",
@@ -284,6 +286,8 @@
         "startDateWarning": "Opvoerdatum in project moet een latere datum zijn",
         "endDateWarningMissing": "​Vul het veld Datum laatste oplevering in",
         "startDateWarningMissing": "​Vul het veld Opvoerdatum in project in",
+        "mutationAmountWarning": "​Vul het veld aantal in met een positief getal",
+        "mutationKindWarning": "​Vul het veld mutatiesoort in",
         "generalInformation": {
           "title": "Algemene informatie"
         }
