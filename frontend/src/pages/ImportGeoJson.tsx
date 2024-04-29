@@ -1,9 +1,9 @@
-import { Alert, Button, Stack, Table, TableBody, TableCell, TableRow, Typography } from "@mui/material";
-import { ReactComponent as UploadCloud } from "../assets/uploadCloud.svg";
+import { Alert, Stack, Table, TableBody, TableCell, TableRow, Typography } from "@mui/material";
 import { useRef, useState } from "react";
+import { importGeoJsonProjects } from "../api/importServices";
+import { ReactComponent as UploadCloud } from "../assets/uploadCloud.svg";
 import useAlert from "../hooks/useAlert";
 import { UploadErrorType } from "./ImportExcel";
-import { importGeoJsonProjects } from "../api/importServices";
 
 export const ImportGeoJson = () => {
     const fileInputRef = useRef(null);
