@@ -1,5 +1,42 @@
-## DIWI RELEASE 1.1.3
+# Change log
 
+## DIWI RELEASE 1.2.0
+
+Options for project properties like
+
+Also added in this release is the experimental excel importer. Only available for administrators at the moment.
+
+### ADDED
+
+- the excel importer.
+- blocks in a project can now be deleted.
+- make categories for fixed properties editable
+- added separate front end commit hash to about page to make it easier to check if you need to refresh.
+- implement ordinal fixed and custom properties
+- allow renaming options for fixed and custom properties
+
+### REMOVED
+
+- remove unused plotting library
+
+### CHANGED
+
+- prepare database for drawing inside of plots
+- change UI to match design more closely
+- remove unused map data from repository
+- change default map bounds to the netherlands instead of eindhoven.
+- simplified house block mutation. You can now only set demolition or construction and an amount.
+
+### FIXED
+
+- fixed duplicated error notifications
+- fixed project not being saved when clicking next in wizard
+- handle errors when saving custom properties
+- lots of fixes in language and capitalization
+- fix issues with end date of project changing when savin existing project again.
+- fix issue with custom properties not refreshing when saving them
+
+## DIWI RELEASE 1.1.3
 
 ### ADDED
 
@@ -10,11 +47,9 @@
 - delete woningblok back end functionality has been added (front end yet to be done).
 - implemented ranges for 'grootte' field.
 
-
 ### REMOVED
 
 - actor/role tables were removed from the data base; the user and role setup was redesigned.
-
 
 ### CHANGED
 
@@ -28,7 +63,6 @@
 - duplicate custom field names will receive a numeric postfix.
 - Some technical terms (e.g. boolean, numeric, etc) were replaced with more user friendly terminology.
 - visual layouts were changed for a clear indication of editability/non-editability.
-
 
 ### FIXED
 
