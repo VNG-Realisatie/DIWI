@@ -229,7 +229,7 @@ const ProjectWizardBlocks = () => {
             {houseBlocksState.map((houseBlock, index) => (
                 <React.Fragment key={houseBlock.houseblockId ?? houseBlock.tempId}>
                     <Box ref={index === houseBlocksState.length - 1 ? lastAddedForm : null}>
-                        <Accordion expanded={expanded[index]} onChange={() => handleAccordionChange(index)} sx={{ width: "100%" }}>
+                        <Accordion expanded={expanded[index]} onChange={() => handleAccordionChange(index)} sx={{ width: "100%" }} disableGutters>
                             <AccordionSummary
                                 sx={{ backgroundColor: "#00A9F3", color: "#ffffff" }}
                                 expandIcon={<ExpandMoreIcon sx={{ color: "#ffffff" }} />}
@@ -238,7 +238,9 @@ const ProjectWizardBlocks = () => {
                             >
                                 {errors[index] === true ? <ErrorOutlineIcon sx={{ marginRight: 1, color: "#ff9800" }} /> : null}
                                 {houseBlock.houseblockId
-                                    ? `${houseBlock.houseblockName}: ${houseBlock.mutation.amount} ${t("createProject.houseBlocksForm.housesOn")} ${houseBlock.endDate}`
+                                    ? `${houseBlock.houseblockName}: ${houseBlock.mutation.amount} ${t("createProject.houseBlocksForm.housesOn")} ${
+                                          houseBlock.endDate
+                                      }`
                                     : `${t("generic.houseblock")} ${index + 1}`}
                                 {houseBlocksState.length > 1 && (
                                     <Box sx={{ marginLeft: "auto", marginTop: "5px", marginRight: "5px" }}>
