@@ -86,7 +86,7 @@ const ProjectWizardBlocks = () => {
             !houseBlock.mutation.amount ||
             !houseBlock.mutation.kind ||
             houseBlock.mutation.amount <= 0 ||
-            houseBlock.ownershipValue.some((owner: any) => owner.amount === null || isNaN(owner.amount))
+            houseBlock.ownershipValue.some((owner: any) => owner.amount < 0 || !Number.isInteger(owner.amount))
         ) {
             hasErrors = true;
         }
@@ -138,7 +138,14 @@ const ProjectWizardBlocks = () => {
                 houseBlocksState.map(async (houseBlock, index) => {
                     try {
                         validateHouseBlock(houseBlock, selectedProject, index);
-                        const id = await saveHouseBlock({ ...houseBlock, tempId: undefined });
+
+                        const filteredOwnershipValue = houseBlock.ownershipValue.filter((ownership) => ownership.amount > 0);
+                        const updatedHouseBlock = {
+                            ...houseBlock,
+                            ownershipValue: filteredOwnershipValue,
+                            tempId: undefined,
+                        };
+                        const id = await saveHouseBlock(updatedHouseBlock);
                         return { id, tempId: houseBlock.tempId };
                     } catch (error) {
                         setErrorOccurred(true);
