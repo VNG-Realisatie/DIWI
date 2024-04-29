@@ -31,6 +31,7 @@ export const exchangedata = createPathObject(config.baseurl + "exchangedata");
 export const exportExcel = createPathObject(config.baseurl + "exchangedata/exportexcel");
 export const exportProvince = createPathObject(config.baseurl + "exchangedata/exportprovince");
 export const importExcel = createPathObject(config.baseurl + "exchangedata/importexcel");
+export const importGeoJson = createPathObject(config.baseurl + "exchangedata/importgeojson");
 export const importSquit = createPathObject(config.baseurl + "exchangedata/importsquit");
 export const importExcelProjects = createPathObject(config.baseurl + "exchangedata/importexcel/projects");
 export const importSquitProjects = createPathObject(config.baseurl + "exchangedata/importsquit/projects");

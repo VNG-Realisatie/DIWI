@@ -35,6 +35,7 @@ import { HouseBlockProvider } from "./context/HouseBlockContext";
 import ProjectWizard from "./pages/ProjectWizard";
 import ProjectWizardBlocks from "./pages/ProjectWizardBlocks";
 import { LoadingProvider } from "./context/LoadingContext";
+import { ImportGeoJson } from "./pages/ImportGeoJson";
 
 function RequiresLogin() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -179,6 +180,7 @@ function App() {
                         <Route path={Paths.dashboard.path} element={<DashboardProjects />} />
                         <Route path={Paths.exchangedata.path} element={<ExchangeData />} />
                         <Route path={Paths.importExcel.path} element={<ImportExcel excelImport />} />
+                        <Route path={Paths.importGeoJson.path} element={<ImportGeoJson />} />
                         <Route path={Paths.importSquit.path} element={<ImportExcel excelImport={false} />} />
                         <Route
                             path={Paths.exportExcel.path}
