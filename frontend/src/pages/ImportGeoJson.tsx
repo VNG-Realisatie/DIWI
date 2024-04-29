@@ -1,5 +1,4 @@
 import { Alert, Button, Stack, Table, TableBody, TableCell, TableRow, Typography } from "@mui/material";
-import DownloadIcon from "@mui/icons-material/Download";
 import { ReactComponent as UploadCloud } from "../assets/uploadCloud.svg";
 import { useRef, useState } from "react";
 import useAlert from "../hooks/useAlert";

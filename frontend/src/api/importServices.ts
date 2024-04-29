@@ -18,7 +18,6 @@ export const importExcelProjects = async (file: FileList) => {
 
 export const importGeoJsonProjects = async (file: FileList) => {
     const formData = new FormData();
-    //Array.from(file).forEach((f) => formData.append("file", f));
     formData.append("uploadFile", file[0]);
 
     const response = await fetch(`${API_URI}/projects/import?fileType=GEOJSON`, {
