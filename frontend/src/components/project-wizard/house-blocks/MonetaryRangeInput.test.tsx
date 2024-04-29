@@ -91,3 +91,17 @@ it.each([
 
     expect(updateCallBack).toHaveBeenLastCalledWith({ value: expected, min: null, max: null });
 });
+
+it("should limit the input to only accept up to two numbers after the comma", () => {
+    const updateCallBack = jest.fn();
+    const value = { value: null, min: null, max: null };
+
+    render(<MonetaryRangeInput value={value} updateCallBack={updateCallBack} labelText="hi" />);
+
+    const input = screen.getByRole("textbox");
+    userEvent.type(input, "1,234");
+    userEvent.keyboard("{enter}");
+
+    expect(updateCallBack).toHaveBeenLastCalledWith({ value: 123, min: null, max: null });
+    expect(screen.getByRole("textbox")).toHaveValue("1,23");
+});

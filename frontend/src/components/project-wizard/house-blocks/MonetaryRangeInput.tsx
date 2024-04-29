@@ -40,7 +40,11 @@ const parseMonetary = (value: string) => {
     const [euros, cents] = value.split(decimalSeparator);
     let result = parseInt(euros) * 100;
     if (cents !== undefined) {
-        result += parseInt(cents);
+        let parsedCents = parseInt(cents);
+        if (cents.length === 1) {
+            parsedCents *= 10;
+        }
+        result += parsedCents;
     }
     return result;
 };
@@ -78,10 +82,19 @@ export const MonetaryRangeInput = ({ labelText, value, updateCallBack }: Props) 
     }, [value]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setStringValue(e.target.value);
+        const newValue = e.target.value;
+        if (!newValue.includes(decimalSeparator) || newValue.split(decimalSeparator)[1].length <= 2) {
+            setStringValue(newValue);
+        }
+    };
+
+    const onFocus = () => {
+        if (stringValue === "0,00") setStringValue("");
     };
 
     const onBlur = () => {
+        if (stringValue === "") return setStringValue("0,00");
+
         const range = fromStringToRange(stringValue);
         updateCallBack(range);
     };
@@ -101,6 +114,7 @@ export const MonetaryRangeInput = ({ labelText, value, updateCallBack }: Props) 
             value={stringValue}
             onChange={handleChange}
             onBlur={onBlur}
+            onFocus={onFocus}
             onKeyUp={handleKey}
         />
     );
