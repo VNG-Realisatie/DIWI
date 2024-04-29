@@ -30,7 +30,8 @@ CREATE OR REPLACE FUNCTION get_active_and_future_projects_list (
         totalValue BIGINT,
         municipality JSONB,
         district JSONB,
-        neighbourhood JSONB
+        neighbourhood JSONB,
+        geometry TEXT
 	)
 	LANGUAGE plpgsql
 AS $$
@@ -56,7 +57,8 @@ SELECT  q.projectId,
         q.totalValue,
         q.municipalityList               AS municipality,
         q.districtList             AS district,
-        q.neighbourhoodList        AS neighbourhood
+        q.neighbourhoodList        AS neighbourhood,
+        null                       AS geometry
 FROM (
 
     WITH
