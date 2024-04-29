@@ -4,7 +4,6 @@ import GeoJSON from "ol/format/GeoJSON.js";
 import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
 import { OSM, TileWMS, Vector as VectorSource } from "ol/source";
-import { Point, LineString, Polygon } from "ol/geom";
 import _ from "lodash";
 import { defaults as defaultControls } from "ol/control.js";
 import { Extent } from "ol/extent";
@@ -75,10 +74,6 @@ const usePlotSelector = (id: string) => {
         }
     };
 
-    const areBoundingBoxesEqual = (bbox1: [number, number, number, number] | Extent, bbox2: [number, number, number, number] | Extent): boolean => {
-        return bbox1.every((val, idx) => val === bbox2[idx]);
-    };
-
     const handleClick = useCallback(
         (e: any) => {
             const map: Map = e.map;
@@ -86,34 +81,12 @@ const usePlotSelector = (id: string) => {
 
             const features = map.getFeaturesAtPixel(e.pixel);
 
-            let alreadySelected = false;
-            let alreadySelectedIndex = -1;
-
-            if (features && features.length > 0) {
-                const topFeature = features[0];
-                const geometry = topFeature.getGeometry();
-
-                if (geometry instanceof Point || geometry instanceof LineString || geometry instanceof Polygon) {
-                    const featureBoundingBox = geometry.getExtent();
-
-                    alreadySelectedIndex = selectedPlots.findIndex((plot) => {
-                        const plotGeoJSON = new GeoJSON().readFeature(plot.plotFeature.features[0]);
-                        const plotGeometry = plotGeoJSON.getGeometry();
-
-                        if (plotGeometry instanceof Point || plotGeometry instanceof LineString || plotGeometry instanceof Polygon) {
-                            const plotBoundingBox = plotGeometry.getExtent();
-                            return areBoundingBoxesEqual(plotBoundingBox, featureBoundingBox);
-                        }
-
-                        return false;
-                    });
-
-                    alreadySelected = alreadySelectedIndex !== -1;
-                }
-            }
-
-            if (alreadySelected) {
-                const newSelectedPlots = [...selectedPlots.slice(0, alreadySelectedIndex), ...selectedPlots.slice(alreadySelectedIndex + 1)];
+            if (features.length > 0) {
+                const newSelectedPlots = selectedPlots.filter((plot) => {
+                    const id = plot.plotFeature.features[0].id;
+                    const clickedFeatureId = features[0].getId();
+                    return id !== clickedFeatureId;
+                });
                 setSelectedPlots(newSelectedPlots);
             } else {
                 const bboxSize = 1;
