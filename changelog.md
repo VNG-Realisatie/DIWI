@@ -2,7 +2,7 @@
 
 ## DIWI RELEASE 1.2.0
 
-Options for project properties like
+Options for project properties like priority can now be configured.
 
 Also added in this release is the experimental excel importer. Only available for administrators at the moment.
 
@@ -33,7 +33,7 @@ Also added in this release is the experimental excel importer. Only available fo
 - fixed project not being saved when clicking next in wizard
 - handle errors when saving custom properties
 - lots of fixes in language and capitalization
-- fix issues with end date of project changing when savin existing project again.
+- fix issues with end date of project changing when saving existing project again.
 - fix issue with custom properties not refreshing when saving them
 
 ## DIWI RELEASE 1.1.3
