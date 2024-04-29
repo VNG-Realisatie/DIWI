@@ -1,8 +1,56 @@
 # vng
 
+## Script
+
+A description of the scripts in the project
+
+### addUsers.sh
+
+Add an admin user to the local development keycloak instance
+
+### compose.dev.sh
+
+Helper script to run one of the compose files in the project
+
+### deploy.backend.dev.sh
+
+Run the backend against a database outside of docker.
+
+Start a local keycloak instance as well.
+
+Shouldn't require any extra configuration by default, but does require a diwi database to be present.
+
+### deploy.keycloak.dev.sh
+
+Starts a keycloak instance in a docker container
+
+### deployNoPull.sh
+
+Deploy the production version with pulling new changes.
+
+### deploy.sh
+
+Deploy the production instance after pulling the latest changes.
+
+### kcadm.sh
+
+Helper script to run the keycloak CLI in the keycloak container
+
+### mergeBackToDevelop.sh
+
+Helper script to create a merge request to merge back changes from the release branch to the develop branch.
+
+### update-types.sh
+
+Update the openapi json file as well as the typescript types derived from it.
+
+### version.sh
+
+Create env vars with version info.
+
 ## Development
 
-## Setup the DB
+### Setup the DB
 
 Set up the database and the user:
 
@@ -142,19 +190,6 @@ java -jar ~/Downloads/lombok.jar
 - Set the path of the application to / by clicking the edit button and changing `/vng` to `/`.
 - Click the play button in the servers view to start the server.
 
-## Deploy on production
-
-- Copy `.env.production.example` to `.env`
-- Set a secure password for the database in the .env file
-- Configure keycloak with a new client and enter the parameters in the .env file
-- Call `./deploy.sh`
-
-## Development
-
-### Calling the backend from the front end
-
-To make sure we don't get redirect responses when we do `fetch` requests we need to use the wrapper `diwiFetch` from `src/utils/request.ts`.
-
 ### HTTP API guidelines
 
 We use the following query parameters for paginated queries:
@@ -198,6 +233,17 @@ FROM
 WHERE
     gs.change_start_date <= :reference_date AND (gs.change_end_date IS NULL OR gs.change_end_date > :reference_date)
 ```
+
+### Calling the backend from the front end
+
+To make sure we don't get redirect responses when we do `fetch` requests we need to use the wrapper `diwiFetch` from `src/utils/request.ts`.
+
+## Deploy on production
+
+- Copy `.env.production.example` to `.env`
+- Set a secure password for the database in the .env file
+- Configure keycloak with a new client and enter the parameters in the .env file
+- Call `./deploy.sh`
 
 ## Glossary
 
