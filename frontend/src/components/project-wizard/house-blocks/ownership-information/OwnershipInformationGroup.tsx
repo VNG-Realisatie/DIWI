@@ -19,7 +19,7 @@ export const OwnershipInformationGroup = ({ houseBlock, setHouseBlock, readOnly 
                 ...houseBlock.ownershipValue,
                 {
                     type: undefined,
-                    amount: null,
+                    amount: 0,
                     value: { value: 0, min: null, max: null },
                     rentalValue: { value: 0, min: null, max: null },
                 },
