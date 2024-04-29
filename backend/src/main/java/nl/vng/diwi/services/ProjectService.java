@@ -23,7 +23,7 @@ import nl.vng.diwi.dal.entities.ProjectCategoryPropertyChangelog;
 import nl.vng.diwi.dal.entities.ProjectCategoryPropertyChangelogValue;
 import nl.vng.diwi.dal.entities.ProjectNumericCustomPropertyChangelog;
 import nl.vng.diwi.dal.entities.ProjectOrdinalPropertyChangelog;
-import nl.vng.diwi.dal.entities.ProjectTextCustomPropertyChangelog;
+import nl.vng.diwi.dal.entities.ProjectTextPropertyChangelog;
 import nl.vng.diwi.models.ProjectHouseblockCustomPropertyModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
 import org.apache.logging.log4j.LogManager;
@@ -540,19 +540,19 @@ public class ProjectService {
 
     public void updateProjectTextCustomProperty(VngRepository repo, Project project, UUID customPropertyId, String newTextValue, UUID loggedInUserUuid,
             LocalDate updateDate) {
-        ProjectTextCustomPropertyChangelog oldChangelogAfterUpdate = new ProjectTextCustomPropertyChangelog();
-        ProjectTextCustomPropertyChangelog newChangelog = null;
+        ProjectTextPropertyChangelog oldChangelogAfterUpdate = new ProjectTextPropertyChangelog();
+        ProjectTextPropertyChangelog newChangelog = null;
         if (newTextValue != null) {
-            newChangelog = new ProjectTextCustomPropertyChangelog();
+            newChangelog = new ProjectTextPropertyChangelog();
             newChangelog.setProject(project);
             newChangelog.setValue(newTextValue);
             newChangelog.setProperty(repo.getReferenceById(Property.class, customPropertyId));
         }
 
-        List<ProjectTextCustomPropertyChangelog> changelogs = project.getTextCustomProperties().stream()
+        List<ProjectTextPropertyChangelog> changelogs = project.getTextCustomProperties().stream()
                 .filter(cp -> cp.getProperty().getId().equals(customPropertyId)).toList();
 
-        ProjectTextCustomPropertyChangelog oldChangelog = prepareProjectChangelogValuesToUpdate(repo, project, changelogs, newChangelog,
+        ProjectTextPropertyChangelog oldChangelog = prepareProjectChangelogValuesToUpdate(repo, project, changelogs, newChangelog,
                 oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
 
         if (newChangelog != null) {

@@ -72,10 +72,10 @@ FROM (
              ),
              active_projects_textCP AS (
                  SELECT
-                     ap.id, ptc.eigenschap_id, ptc.value
+                     ap.id, ptc.property_id, ptc.value
                  FROM
                      active_projects ap
-                         JOIN diwi_testset.project_maatwerk_text_changelog ptc ON ap.id = ptc.project_id AND ptc.change_end_date IS NULL
+                         JOIN diwi_testset.project_text_changelog ptc ON ap.id = ptc.project_id AND ptc.change_end_date IS NULL
                          JOIN diwi_testset.milestone_state sms ON sms.milestone_id = ptc.start_milestone_id AND sms.change_end_date IS NULL
                          JOIN diwi_testset.milestone_state ems ON ems.milestone_id = ptc.end_milestone_id AND ems.change_end_date IS NULL
                  WHERE
@@ -133,10 +133,10 @@ FROM (
              ),
              future_projects_textCP AS (
                  SELECT
-                     fp.id, ptc.eigenschap_id, ptc.value
+                     fp.id, ptc.property_id, ptc.value
                  FROM
                      future_projects fp
-                         JOIN diwi_testset.project_maatwerk_text_changelog ptc ON fp.id = ptc.project_id
+                         JOIN diwi_testset.project_text_changelog ptc ON fp.id = ptc.project_id
                          AND ptc.start_milestone_id = fp.start_milestone_id AND ptc.change_end_date IS NULL
              ),
              future_projects_categoriesCP AS (
@@ -186,10 +186,10 @@ FROM (
              ),
              past_projects_textCP AS (
                  SELECT
-                     pp.id, ptc.eigenschap_id, ptc.value
+                     pp.id, ptc.property_id, ptc.value
                  FROM
                      past_projects pp
-                         JOIN diwi_testset.project_maatwerk_text_changelog ptc ON pp.id = ptc.project_id
+                         JOIN diwi_testset.project_text_changelog ptc ON pp.id = ptc.project_id
                             AND ptc.end_milestone_id = pp.end_milestone_id AND ptc.change_end_date IS NULL
              ),
              past_projects_categoriesCP AS (
@@ -259,7 +259,7 @@ FROM (
              CAST (null AS UUID) AS ordinalValueId,
              CAST (null AS UUID) AS ordinalMinValueId,
              CAST (null AS UUID) AS ordinalMaxValueId,
-             apt.eigenschap_id AS customPropertyId,
+             apt.property_id AS customPropertyId,
              'TEXT'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
          FROM active_projects ap
                 JOIN active_projects_textCP apt ON ap.id = apt.id
@@ -349,7 +349,7 @@ FROM (
              CAST (null AS UUID) AS ordinalValueId,
              CAST (null AS UUID) AS ordinalMinValueId,
              CAST (null AS UUID) AS ordinalMaxValueId,
-             fpt.eigenschap_id AS customPropertyId,
+             fpt.property_id AS customPropertyId,
              'TEXT'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
          FROM future_projects fp
                   JOIN future_projects_textCP fpt ON fp.id = fpt.id
@@ -439,7 +439,7 @@ FROM (
              CAST (null AS UUID) AS ordinalValueId,
              CAST (null AS UUID) AS ordinalMinValueId,
              CAST (null AS UUID) AS ordinalMaxValueId,
-             ppt.eigenschap_id AS customPropertyId,
+             ppt.property_id AS customPropertyId,
              'TEXT'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
          FROM past_projects pp
              JOIN past_projects_textCP ppt ON pp.id = ppt.id

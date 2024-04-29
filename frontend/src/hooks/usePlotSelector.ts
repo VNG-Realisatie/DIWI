@@ -74,6 +74,10 @@ const usePlotSelector = (id: string) => {
         }
     };
 
+    const areBoundingBoxesEqual = (bbox1: [number, number, number, number] | Extent, bbox2: [number, number, number, number] | Extent): boolean => {
+        return bbox1.every((val, idx) => val === bbox2[idx]);
+    };
+
     const handleClick = useCallback(
         (e: any) => {
             const map: Map = e.map;
