@@ -1,5 +1,5 @@
 import { Box, Popover, Stack, SxProps, Theme, Tooltip } from "@mui/material";
-import { MouseEvent, useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import ProjectContext from "../../../context/ProjectContext";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";

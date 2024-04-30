@@ -13,6 +13,7 @@ import { dateFormats } from "../localization";
 import { ConfidentialityLevelOptions, PlanStatusOptions, ProjectPhaseOptions } from "../types/enums";
 import { OrganizationSelect } from "../widgets/OrganizationSelect";
 import useProperties from "../hooks/useProperties";
+import { CustomPropertiesProject } from "./project/project-with-house-block/CustomerPropertiesProjectBlock";
 
 type Props = {
     readOnly: boolean;
@@ -384,35 +385,17 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                 </WizardCard>
             </Grid>
             {/* CUSTOM PROPERTIES */}
-            {/* could take inspiration from
-                <CustomerPropertiesProjectBlock {...{ readOnly, customValues, setCustomValues, columnTitleStyle }} /> */}
             <Grid item xs={12}>
                 <WizardCard>
                     <Typography fontWeight={600} mb={2}>
                         {t(`customProperties.title`)}
                     </Typography>
                     <Grid container spacing={2} alignItems="stretch">
-                        {project.customProperties &&
-                            project.customProperties.length > 0 &&
-                            project.customProperties.map((prop) => (
-                                <Grid item xs={12}>
-                                    <Stack direction="row">
-                                        <LabelComponent
-                                            required={false /* TODO make depend on type of customprop? */}
-                                            readOnly={readOnly}
-                                            text={prop.customPropertyId ?? "propname" /* TODO lookup name from custompropertydict*/}
-                                        />
-                                        TODO make value selector based on type of custom prop
-                                    </Stack>
-                                </Grid>
-                            ))}
-                        {/* No custom props */}
-                        {!project.customProperties ||
-                            (project.customProperties.length <= 0 && (
-                                <Grid item xs={12}>
-                                    <Typography fontStyle={readOnly ? "italic" : "normal"}>{t("createProject.noCustomProps")}</Typography>
-                                </Grid>
-                            ))}
+                        <CustomPropertiesProject
+                            readOnly={readOnly}
+                            customValues={project.customProperties ?? []}
+                            setCustomValues={(newValue) => setProject({ ...project, customProperties: newValue })}
+                        />
                     </Grid>
                 </WizardCard>
             </Grid>
