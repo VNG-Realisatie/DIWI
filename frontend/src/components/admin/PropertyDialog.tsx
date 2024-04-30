@@ -142,6 +142,7 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
                                 const refinedCategoryValue = value.map((item) => ("level" in item ? item : { ...item, level: 1 }));
                                 setOrdinalCategories(refinedCategoryValue);
                             }}
+                            ordered={true}
                         />
                     )}
                 </Stack>

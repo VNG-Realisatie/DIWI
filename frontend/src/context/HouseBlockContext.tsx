@@ -48,7 +48,7 @@ export const HouseBlockProvider = ({ children }: PropsWithChildren) => {
             ownershipValue: [
                 {
                     type: "KOOPWONING",
-                    amount: null,
+                    amount: 0,
                     value: { value: 0, min: null, max: null },
                     rentalValue: { value: 0, min: null, max: null },
                 },

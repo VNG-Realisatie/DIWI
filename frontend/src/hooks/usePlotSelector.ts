@@ -4,7 +4,6 @@ import GeoJSON from "ol/format/GeoJSON.js";
 import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
 import { OSM, TileWMS, Vector as VectorSource } from "ol/source";
-
 import _ from "lodash";
 import { defaults as defaultControls } from "ol/control.js";
 import { Extent } from "ol/extent";
@@ -77,52 +76,57 @@ const usePlotSelector = (id: string) => {
 
     const handleClick = useCallback(
         (e: any) => {
-            // @ts-ignore
-            const loc = e.coordinate;
-            const bboxSize = 1;
-            const bbox = `${loc[0] - bboxSize},${loc[1] - bboxSize},${loc[0] + bboxSize},${loc[1] + bboxSize}`;
-            const url = queryString.stringifyUrl({
-                url: baseUrlKadasterWms,
-                query: {
-                    QUERY_LAYERS: "Perceel",
-                    INFO_FORMAT: "application/json",
-                    REQUEST: "GetFeatureInfo",
-                    SERVICE: "WMS",
-                    VERSION: "1.3.0",
-                    HEIGHT: "101", // What?
-                    WIDTH: "101", // What?
-                    I: "50", // What?
-                    J: "50", // What?
-                    layers: "Perceel",
-                    CRS: "EPSG:3857",
-                    BBOX: bbox,
-                },
-            });
+            const map: Map = e.map;
+            if (!map) return;
 
-            fetch(url)
-                .then((res) => res.json())
-                .then((result): void => {
-                    const plotFeature = result as PlotGeoJSON;
-                    const properties = plotFeature.features[0].properties;
-                    const newPlot: Plot = {
-                        brkGemeenteCode: properties.kadastraleGemeenteCode,
-                        brkPerceelNummer: parseInt(properties.perceelnummer),
-                        brkSectie: properties.sectie,
-                        plotFeature: plotFeature,
-                    };
-                    const newSelectedPlots = selectedPlots.filter((p) => {
-                        const notEqual =
-                            p.brkGemeenteCode !== newPlot.brkGemeenteCode ||
-                            p.brkPerceelNummer !== newPlot.brkPerceelNummer ||
-                            p.brkSectie !== newPlot.brkSectie;
-                        return notEqual;
-                    });
-                    if (newSelectedPlots.length !== selectedPlots.length) {
-                        setSelectedPlots(newSelectedPlots);
-                    } else {
-                        setSelectedPlots([...selectedPlots, newPlot]);
-                    }
+            const features = map.getFeaturesAtPixel(e.pixel);
+
+            if (features.length > 0) {
+                const newSelectedPlots = selectedPlots.filter((plot) => {
+                    const id = plot.plotFeature.features[0].id;
+                    const clickedFeatureId = features[0].getId();
+                    return id !== clickedFeatureId;
                 });
+                setSelectedPlots(newSelectedPlots);
+            } else {
+                const bboxSize = 1;
+                const loc = e.coordinate;
+                const bbox = `${loc[0] - bboxSize},${loc[1] - bboxSize},${loc[0] + bboxSize},${loc[1] + bboxSize}`;
+
+                const url = queryString.stringifyUrl({
+                    url: baseUrlKadasterWms,
+                    query: {
+                        QUERY_LAYERS: "Perceel",
+                        INFO_FORMAT: "application/json",
+                        REQUEST: "GetFeatureInfo",
+                        SERVICE: "WMS",
+                        VERSION: "1.3.0",
+                        HEIGHT: 101,
+                        WIDTH: 101,
+                        I: 50,
+                        J: 50,
+                        layers: "Perceel",
+                        CRS: "EPSG:3857",
+                        BBOX: bbox,
+                    },
+                });
+
+                fetch(url)
+                    .then((res) => res.json())
+                    .then((result) => {
+                        const plotFeature = result as PlotGeoJSON;
+                        const properties = plotFeature.features[0].properties;
+
+                        const newPlot: Plot = {
+                            brkGemeenteCode: properties.kadastraleGemeenteCode,
+                            brkPerceelNummer: parseInt(properties.perceelnummer),
+                            brkSectie: properties.sectie,
+                            plotFeature,
+                        };
+
+                        setSelectedPlots([...selectedPlots, newPlot]);
+                    });
+            }
         },
         [selectedPlots],
     );

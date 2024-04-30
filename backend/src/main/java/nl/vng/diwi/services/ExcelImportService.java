@@ -15,7 +15,7 @@ import nl.vng.diwi.dal.entities.enums.ProjectStatus;
 import nl.vng.diwi.dal.entities.enums.PropertyKind;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
 import nl.vng.diwi.generic.Constants;
-import nl.vng.diwi.models.ExcelError;
+import nl.vng.diwi.models.ImportError;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.models.SelectModel;
@@ -45,6 +45,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -61,14 +62,14 @@ public class ExcelImportService {
 
     public Map<String, Object> importExcel(String excelFilePath, VngRepository repo, UUID loggedInUserUuid) {
 
-        List<ExcelError> excelErrors = new ArrayList<>();
+        List<ImportError> excelErrors = new ArrayList<>();
         List<SelectModel> excelProjects = new ArrayList<>();
 
         try (InputStream inputStream = new FileInputStream(excelFilePath); Workbook workbook = new XSSFWorkbook(inputStream)) {
 
             Sheet dataSheet = workbook.getSheetAt(0);
             if (dataSheet == null) {
-                return Map.of(errors, List.of(new ExcelError(ExcelError.ERROR.MISSING_DATA_SHEET)));
+                return Map.of(errors, List.of(new ImportError(ImportError.ERROR.MISSING_DATA_SHEET)));
             }
 
             DataFormatter dateFormatter = new DataFormatter();
@@ -111,7 +112,7 @@ public class ExcelImportService {
                         }
                     }
 
-                    if (rowCount == 4) { //headers - set columns and propertymodel for fixedd properties
+                    if (rowCount == 4) { //headers - set columns and propertymodel for fixed properties
                         Iterator<Cell> cellIterator = nextRow.cellIterator();
                         while (cellIterator.hasNext()) {
                             Cell nextCell = cellIterator.next();
@@ -146,6 +147,14 @@ public class ExcelImportService {
                         tableHeaderMap = tableHeaderMap.entrySet().stream()
                             .filter(h -> h.getValue().getColumn() != null)
                             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+                        Set<String> foundHeaders = tableHeaderMap.values().stream().map(v -> v.getColumn().name).collect(Collectors.toSet());;
+                        Set<String> missingHeaders = Arrays.stream(values()).map(v -> v.name).collect(Collectors.toSet());
+                        missingHeaders.removeAll(foundHeaders);
+                        if (!missingHeaders.isEmpty()) {
+                            excelErrors.add(new ImportError(rowCount, null, String.join(", ", missingHeaders), ImportError.ERROR.MISSING_TABLE_HEADERS));
+                            return Map.of(errors, excelErrors);
+                        }
                     }
 
                     if (rowCount == 5) { //subheaders - set subheader values and property model for columns with subheaders
@@ -165,7 +174,7 @@ public class ExcelImportService {
                                             PropertyModel propertyModel = activeProperties.stream().filter(p -> p.getObjectType() == ObjectType.PROJECT &&
                                                 p.getPropertyType() == PropertyType.CATEGORY && p.getType() == PropertyKind.CUSTOM && p.getName().equals(subheader)).findFirst().orElse(null);
                                             if (propertyModel == null) {
-                                                excelErrors.add(getExcelError(nextCell, subheader, ExcelError.ERROR.UNKNOWN_PROJECT_CATEGORY_PROPERTY));
+                                                excelErrors.add(getExcelError(nextCell, subheader, ImportError.ERROR.UNKNOWN_PROJECT_CATEGORY_PROPERTY));
                                             } else {
                                                 tableHeader.setPropertyModel(propertyModel);
                                             }
@@ -174,7 +183,7 @@ public class ExcelImportService {
                                             PropertyModel propertyModel = activeProperties.stream().filter(p -> p.getObjectType() == ObjectType.PROJECT &&
                                                 p.getType() == PropertyKind.CUSTOM && p.getName().equals(subheader)).findFirst().orElse(null);
                                             if (propertyModel == null) {
-                                                excelErrors.add(getExcelError(nextCell, subheader, ExcelError.ERROR.UNKNOWN_PROJECT_PROPERTY));
+                                                excelErrors.add(getExcelError(nextCell, subheader, ImportError.ERROR.UNKNOWN_PROJECT_PROPERTY));
                                             } else {
                                                 tableHeader.setPropertyModel(propertyModel);
                                             }
@@ -185,7 +194,7 @@ public class ExcelImportService {
                                             PropertyModel propertyModel = activeProperties.stream().filter(p -> p.getObjectType() == ObjectType.WONINGBLOK &&
                                                 p.getPropertyType() == PropertyType.NUMERIC && p.getType() == PropertyKind.CUSTOM && p.getName().equals(propertyName)).findFirst().orElse(null);
                                             if (propertyModel == null) {
-                                                excelErrors.add(getExcelError(nextCell, subheader, ExcelError.ERROR.UNKNOWN_HOUSEBLOCK_NUMERIC_PROPERTY));
+                                                excelErrors.add(getExcelError(nextCell, subheader, ImportError.ERROR.UNKNOWN_HOUSEBLOCK_NUMERIC_PROPERTY));
                                             } else {
                                                 tableHeader.setPropertyModel(propertyModel);
                                             }
@@ -194,7 +203,7 @@ public class ExcelImportService {
                                             PropertyModel propertyModel = activeProperties.stream().filter(p -> p.getObjectType() == ObjectType.WONINGBLOK &&
                                                 p.getType() == PropertyKind.CUSTOM && p.getName().equals(subheader)).findFirst().orElse(null);
                                             if (propertyModel == null) {
-                                                excelErrors.add(getExcelError(nextCell, subheader, ExcelError.ERROR.UNKNOWN_HOUSEBLOCK_PROPERTY));
+                                                excelErrors.add(getExcelError(nextCell, subheader, ImportError.ERROR.UNKNOWN_HOUSEBLOCK_PROPERTY));
                                             } else {
                                                 tableHeader.setPropertyModel(propertyModel);
                                             }
@@ -227,26 +236,26 @@ public class ExcelImportService {
             }
         } catch (IOException | NotOfficeXmlFileException e) { //excelFile could not be read. Return error.
             logger.error("Error creating workbook", e);
-            return Map.of(errors, List.of(new ExcelError(ExcelError.ERROR.IO_ERROR)));
+            return Map.of(errors, List.of(new ImportError(ImportError.ERROR.IO_ERROR)));
         }
     }
 
     private void addTableHeaderFixedPropertyModel(ExcelTableHeader tableHeader, String propertyName, ObjectType objectType, PropertyType propertyType,
-                                                  Cell cell, List<PropertyModel> activeProperties, List<ExcelError> excelErrors) {
+                                                  Cell cell, List<PropertyModel> activeProperties, List<ImportError> excelErrors) {
         PropertyModel propertyModel = activeProperties.stream().filter(p -> p.getObjectType() == objectType &&
             p.getPropertyType() == propertyType && p.getType() == PropertyKind.FIXED && p.getName().equals(propertyName)).findFirst().orElse(null);
         if (propertyModel == null) {
-            excelErrors.add(getExcelError(cell, propertyName, ExcelError.ERROR.MISSING_FIXED_PROPERTY));
+            excelErrors.add(getExcelError(cell, propertyName, ImportError.ERROR.MISSING_FIXED_PROPERTY));
         } else {
             tableHeader.setPropertyModel(propertyModel);
         }
     }
 
     private SelectModel processExcelRow(VngRepository repo, Row row, Map<Integer, ExcelTableHeader> tableHeaderMap, DataFormatter formatter,
-                                        FormulaEvaluator evaluator, List<ExcelError> excelErrors, User user, ZonedDateTime importTime) {
-        ExcelProjectRowModel rowModel = new ExcelProjectRowModel();
+                                        FormulaEvaluator evaluator, List<ImportError> excelErrors, User user, ZonedDateTime importTime) {
+        ProjectImportModel rowModel = new ProjectImportModel();
 
-        List<ExcelError> rowErrors = new ArrayList<>();
+        List<ImportError> rowErrors = new ArrayList<>();
 
         Iterator<Cell> cellIterator = row.cellIterator();
         while (cellIterator.hasNext()) {
@@ -266,7 +275,7 @@ public class ExcelImportService {
                         case PROJECT_NAME -> {
                             String projectName = getStringValue(nextCell, formatter, evaluator, rowErrors);
                             if (projectName == null || projectName.isBlank()) {
-                                rowErrors.add(getExcelError(nextCell, projectName, ExcelError.ERROR.MISSING_PROJECT_NAME));
+                                rowErrors.add(getExcelError(nextCell, projectName, ImportError.ERROR.MISSING_PROJECT_NAME));
                             } else {
                                 rowModel.setProjectName(projectName);
                             }
@@ -276,7 +285,7 @@ public class ExcelImportService {
                             if (excelPlanType != null && !excelPlanType.isBlank()) {
                                 String planTypeStr = ExcelStrings.map.get(excelPlanType);
                                 if (planTypeStr == null) {
-                                    rowErrors.add(getExcelError(nextCell, excelPlanType, ExcelError.ERROR.INVALID_PLAN_TYPE));
+                                    rowErrors.add(getExcelError(nextCell, excelPlanType, ImportError.ERROR.INVALID_PLAN_TYPE));
                                 } else {
                                     rowModel.setPlanType(PlanType.valueOf(planTypeStr));
                                 }
@@ -300,7 +309,7 @@ public class ExcelImportService {
                         case PROJECT_STATUS -> {
                             String excelProjectStatus = getStringValue(nextCell, formatter, evaluator, rowErrors);
                             if (excelProjectStatus == null || excelProjectStatus.isBlank() || ExcelStrings.map.get(excelProjectStatus) == null) {
-                                rowErrors.add(getExcelError(nextCell, excelProjectStatus, ExcelError.ERROR.MISSING_PROJECT_STATUS));
+                                rowErrors.add(getExcelError(nextCell, excelProjectStatus, ImportError.ERROR.MISSING_PROJECT_STATUS));
                             } else {
                                 rowModel.setProjectStatus(ProjectStatus.valueOf(ExcelStrings.map.get(excelProjectStatus)));
                             }
@@ -308,14 +317,14 @@ public class ExcelImportService {
                         case PROJECT_START_DATE -> {
                             LocalDate projectStartDate = getLocalDateValue(nextCell, formatter, rowErrors);
                             if (projectStartDate == null) {
-                                rowErrors.add(getExcelError(nextCell, null, ExcelError.ERROR.MISSING_PROJECT_START_DATE));
+                                rowErrors.add(getExcelError(nextCell, null, ImportError.ERROR.MISSING_PROJECT_START_DATE));
                             }
                             rowModel.setProjectStartDate(getLocalDateValue(nextCell, formatter, rowErrors));
                         }
                         case PROJECT_END_DATE -> {
                             LocalDate projectEndDate = getLocalDateValue(nextCell, formatter, rowErrors);
                             if (projectEndDate == null) {
-                                rowErrors.add(getExcelError(nextCell, null, ExcelError.ERROR.MISSING_PROJECT_END_DATE));
+                                rowErrors.add(getExcelError(nextCell, null, ImportError.ERROR.MISSING_PROJECT_END_DATE));
                             }
                             rowModel.setProjectEndDate(getLocalDateValue(nextCell, formatter, rowErrors));
                         }
@@ -362,23 +371,21 @@ public class ExcelImportService {
                     Integer mutationAmount = getIntegerValue(nextCell, formatter, evaluator, rowErrors);
                     if (mutationAmount != null && mutationAmount > 0) {
                         if (tableHeader.getColumn() == HOUSEBLOCK_MUTATION_BUILD) {
-                            rowModel.setConstructionHouseblock(new ExcelProjectRowModel.HouseblockRowModel(MutationType.CONSTRUCTION, mutationAmount));
+                            rowModel.getHouseblocks().add(new ProjectImportModel.HouseblockImportModel(MutationType.CONSTRUCTION, mutationAmount, null));
                         } else {
-                            rowModel.setDemolitionHouseblock(new ExcelProjectRowModel.HouseblockRowModel(MutationType.DEMOLITION, mutationAmount));
+                            rowModel.getHouseblocks().add(new ProjectImportModel.HouseblockImportModel(MutationType.DEMOLITION, mutationAmount, null));
                         }
                     }
                 }
 
                 if (tableHeader.getSection() == ExcelTableHeader.Section.CONSTRUCTION_DATA || tableHeader.getSection() == ExcelTableHeader.Section.DEMOLITION_DATA) {
-                    ExcelProjectRowModel.HouseblockRowModel houseblockRowModel = (tableHeader.getSection() == ExcelTableHeader.Section.CONSTRUCTION_DATA) ? rowModel.getConstructionHouseblock() : rowModel.getDemolitionHouseblock();
+                    MutationType houseblockMutationType = (tableHeader.getSection() == ExcelTableHeader.Section.CONSTRUCTION_DATA) ? MutationType.CONSTRUCTION : MutationType.DEMOLITION;
+                    ProjectImportModel.HouseblockImportModel houseblockRowModel = rowModel.getHouseblocks().stream().filter(h -> h.getMutationType() == houseblockMutationType).findFirst().orElse(null);
                     if (houseblockRowModel != null) {
                         switch (tableHeader.getColumn()) {
                             case HOUSEBLOCK_DELIVERY_DATE -> {
                                 PropertyModel propertyModel = tableHeader.getPropertyModel();
-                                boolean newDeliveryDate = addHouseblockIntegerNumericProperty(houseblockRowModel, propertyModel, nextCell, formatter, evaluator, rowErrors);
-                                if (newDeliveryDate) {
-                                    houseblockRowModel.addDeliveryDate(tableHeader.getSubheaderDateValue());
-                                }
+                                addHouseblockDeliveryDateProperty(houseblockRowModel, propertyModel, tableHeader.getSubheaderDateValue(), nextCell, formatter, evaluator, rowErrors);
                             }
 
                             case HOUSEBLOCK_PROPERTY_TYPE_OWNER, HOUSEBLOCK_PROPERTY_TYPE_LANDLORD, HOUSEBLOCK_PROPERTY_TYPE_HOUSING_ASSOCIATION,
@@ -398,7 +405,7 @@ public class ExcelImportService {
                                 if (targetGroupAmount != null && targetGroupAmount > 0) {
                                     SelectModel categoryValue = tableHeader.getPropertyModel().getActiveCategoryValue(tableHeader.getSubheader());
                                     if (categoryValue == null) {
-                                        excelErrors.add(getExcelError(nextCell, tableHeader.getSubheader(), ExcelError.ERROR.UNKNOWN_PROPERTY_VALUE));
+                                        excelErrors.add(getExcelError(nextCell, tableHeader.getSubheader(), ImportError.ERROR.UNKNOWN_PROPERTY_VALUE));
                                     } else {
                                         houseblockRowModel.getTargetGroupMap().put(categoryValue.getId(), targetGroupAmount);
                                     }
@@ -409,7 +416,7 @@ public class ExcelImportService {
                                 if (physicalAppearanceAmount != null && physicalAppearanceAmount > 0) {
                                     SelectModel categoryValue = tableHeader.getPropertyModel().getActiveCategoryValue(tableHeader.getSubheader());
                                     if (categoryValue == null) {
-                                        excelErrors.add(getExcelError(nextCell, tableHeader.getSubheader(), ExcelError.ERROR.UNKNOWN_PROPERTY_VALUE));
+                                        excelErrors.add(getExcelError(nextCell, tableHeader.getSubheader(), ImportError.ERROR.UNKNOWN_PROPERTY_VALUE));
                                     } else {
                                         houseblockRowModel.getPhysicalAppearanceMap().put(categoryValue.getId(), physicalAppearanceAmount);
                                     }
@@ -452,26 +459,26 @@ public class ExcelImportService {
         }
     }
 
-    public void addProjectPhase(ExcelProjectRowModel rowModel, ProjectPhase phase, Cell cell, DataFormatter formatter, List<ExcelError> excelErrors) {
+    public void addProjectPhase(ProjectImportModel rowModel, ProjectPhase phase, Cell cell, DataFormatter formatter, List<ImportError> excelErrors) {
         LocalDate phaseStartDate = getLocalDateValue(cell, formatter, excelErrors);
         if (phaseStartDate != null) {
             rowModel.getProjectPhasesMap().put(phase, phaseStartDate);
         }
     }
 
-    public void addProjectPlanStatus(ExcelProjectRowModel rowModel, PlanStatus planStatus, Cell cell, DataFormatter formatter, List<ExcelError> excelErrors) {
+    public void addProjectPlanStatus(ProjectImportModel rowModel, PlanStatus planStatus, Cell cell, DataFormatter formatter, List<ImportError> excelErrors) {
         LocalDate planStatusStartDate = getLocalDateValue(cell, formatter, excelErrors);
         if (planStatusStartDate != null) {
             rowModel.getProjectPlanStatusesMap().put(planStatus, planStatusStartDate);
         }
     }
 
-    private boolean addProjectCategoryProperty(ExcelProjectRowModel rowModel, PropertyModel propertyModel, Cell cell, DataFormatter formatter, FormulaEvaluator evaluator, List<ExcelError> excelErrors) {
+    private boolean addProjectCategoryProperty(ProjectImportModel rowModel, PropertyModel propertyModel, Cell cell, DataFormatter formatter, FormulaEvaluator evaluator, List<ImportError> excelErrors) {
         String categoryValueStr = getStringValue(cell, formatter, evaluator, excelErrors);
         if (categoryValueStr != null && !categoryValueStr.isBlank()) {
             SelectModel categoryValue = propertyModel.getActiveCategoryValue(categoryValueStr);
             if (categoryValue == null) {
-                excelErrors.add(getExcelError(cell, categoryValueStr, ExcelError.ERROR.UNKNOWN_PROPERTY_VALUE));
+                excelErrors.add(getExcelError(cell, categoryValueStr, ImportError.ERROR.UNKNOWN_PROPERTY_VALUE));
                 return false;
             } else {
                 rowModel.getProjectCategoryPropsMap().put(propertyModel.getId(), categoryValue.getId());
@@ -481,12 +488,12 @@ public class ExcelImportService {
         return false;
     }
 
-    private boolean addProjectOrdinalProperty(ExcelProjectRowModel rowModel, PropertyModel propertyModel, Cell cell, DataFormatter formatter, FormulaEvaluator evaluator, List<ExcelError> excelErrors) {
+    private boolean addProjectOrdinalProperty(ProjectImportModel rowModel, PropertyModel propertyModel, Cell cell, DataFormatter formatter, FormulaEvaluator evaluator, List<ImportError> excelErrors) {
         String ordinalValueStr = getStringValue(cell, formatter, evaluator, excelErrors);
         if (ordinalValueStr != null && !ordinalValueStr.isBlank()) {
             SelectModel ordinalValue = propertyModel.getActiveOrdinalValue(ordinalValueStr);
             if (ordinalValue == null) {
-                excelErrors.add(getExcelError(cell, ordinalValueStr, ExcelError.ERROR.UNKNOWN_PROPERTY_VALUE));
+                excelErrors.add(getExcelError(cell, ordinalValueStr, ImportError.ERROR.UNKNOWN_PROPERTY_VALUE));
                 return false;
             } else {
                 rowModel.getProjectOrdinalPropsMap().put(propertyModel.getId(), ordinalValue.getId());
@@ -496,7 +503,7 @@ public class ExcelImportService {
         return false;
     }
 
-    private void addProjectTextProperty(ExcelProjectRowModel rowModel, PropertyModel propertyModel, Cell cell, DataFormatter formatter, FormulaEvaluator evaluator, List<ExcelError> excelErrors) {
+    private void addProjectTextProperty(ProjectImportModel rowModel, PropertyModel propertyModel, Cell cell, DataFormatter formatter, FormulaEvaluator evaluator, List<ImportError> excelErrors) {
         String textValue = getStringValue(cell, formatter, evaluator, excelErrors);
         if (textValue != null && !textValue.isBlank()) {
             rowModel.getProjectStringPropsMap().put(propertyModel.getId(), textValue);
@@ -504,22 +511,22 @@ public class ExcelImportService {
     }
 
 
-    private void addProjectNumericProperty(ExcelProjectRowModel rowModel, PropertyModel propertyModel, Cell cell, DataFormatter formatter, FormulaEvaluator evaluator, List<ExcelError> excelErrors) {
+    private void addProjectNumericProperty(ProjectImportModel rowModel, PropertyModel propertyModel, Cell cell, DataFormatter formatter, FormulaEvaluator evaluator, List<ImportError> excelErrors) {
         Double doubleValue = getDoubleValue(cell, formatter, evaluator, excelErrors);
         if (doubleValue != null) {
             rowModel.getProjectNumericPropsMap().put(propertyModel.getId(), doubleValue);
         }
     }
 
-    private void addProjectBooleanProperty(ExcelProjectRowModel rowModel, PropertyModel propertyModel, Cell cell, DataFormatter formatter, FormulaEvaluator evaluator, List<ExcelError> excelErrors) {
+    private void addProjectBooleanProperty(ProjectImportModel rowModel, PropertyModel propertyModel, Cell cell, DataFormatter formatter, FormulaEvaluator evaluator, List<ImportError> excelErrors) {
         Boolean booleanValue = getBooleanValue(cell, formatter, evaluator, excelErrors);
         if (booleanValue != null) {
             rowModel.getProjectBooleanPropsMap().put(propertyModel.getId(), booleanValue);
         }
     }
 
-    private void addHouseblockPropertyType(ExcelProjectRowModel.HouseblockRowModel houseblockRowModel, ExcelTableHeader.Column column, Cell nextCell,
-                                           DataFormatter formatter, FormulaEvaluator evaluator, List<ExcelError> rowErrors) {
+    private void addHouseblockPropertyType(ProjectImportModel.HouseblockImportModel houseblockRowModel, ExcelTableHeader.Column column, Cell nextCell,
+                                           DataFormatter formatter, FormulaEvaluator evaluator, List<ImportError> rowErrors) {
         Integer ownershipTypeAmount = getIntegerValue(nextCell, formatter, evaluator, rowErrors);
         if (ownershipTypeAmount != null && ownershipTypeAmount > 0) {
             OwnershipType ownershipType = switch (column) {
@@ -532,8 +539,8 @@ public class ExcelImportService {
         }
     }
 
-    private void addHouseblockOwnershipValue(ExcelProjectRowModel.HouseblockRowModel houseblockRowModel, ExcelTableHeader.Column column, String subheader, Cell cell,
-                                             DataFormatter formatter, FormulaEvaluator evaluator, List<ExcelError> excelErrors) {
+    private void addHouseblockOwnershipValue(ProjectImportModel.HouseblockImportModel houseblockRowModel, ExcelTableHeader.Column column, String subheader, Cell cell,
+                                             DataFormatter formatter, FormulaEvaluator evaluator, List<ImportError> excelErrors) {
         Integer ownershipValueAmount = getIntegerValue(cell, formatter, evaluator, excelErrors);
         if (ownershipValueAmount != null && ownershipValueAmount > 0) {
             SingleValueOrRangeModel<Integer> subheaderRange;
@@ -543,7 +550,7 @@ public class ExcelImportService {
                 subheaderRange = new SingleValueOrRangeModel<>();
                 List<String> substringRangeStrList = Arrays.asList(subheader.replaceAll("\\s", "").replaceAll(",", ".").split("-"));
                 if (substringRangeStrList.size() != 2) {
-                    excelErrors.add(getExcelError(cell, subheader, ExcelError.ERROR.INVALID_RANGE));
+                    excelErrors.add(getExcelError(cell, subheader, ImportError.ERROR.INVALID_RANGE));
                 }
                 try {
                     Double minValue = Double.parseDouble(substringRangeStrList.get(0)) * 100;
@@ -554,7 +561,7 @@ public class ExcelImportService {
                         subheaderRange.setMax(maxValue.intValue());
                     }
                 } catch (NumberFormatException e) {
-                    excelErrors.add(getExcelError(cell, subheader, ExcelError.ERROR.INVALID_RANGE));
+                    excelErrors.add(getExcelError(cell, subheader, ImportError.ERROR.INVALID_RANGE));
                 }
             }
             HouseblockSnapshotModel.OwnershipValue ownershipValue = new HouseblockSnapshotModel.OwnershipValue();
@@ -580,7 +587,7 @@ public class ExcelImportService {
         }
     }
 
-    private void addHouseblockHouseType(ExcelProjectRowModel.HouseblockRowModel houseblockRowModel, ExcelTableHeader.Column column, Cell nextCell, DataFormatter formatter, FormulaEvaluator evaluator, List<ExcelError> rowErrors) {
+    private void addHouseblockHouseType(ProjectImportModel.HouseblockImportModel houseblockRowModel, ExcelTableHeader.Column column, Cell nextCell, DataFormatter formatter, FormulaEvaluator evaluator, List<ImportError> rowErrors) {
         Integer houseTypeAmount = getIntegerValue(nextCell, formatter, evaluator, rowErrors);
         if (houseTypeAmount != null && houseTypeAmount > 0) {
             HouseType houseType = switch (column) {
@@ -592,7 +599,7 @@ public class ExcelImportService {
         }
     }
 
-    private void addHouseblockGroundPosition(ExcelProjectRowModel.HouseblockRowModel houseblockRowModel, ExcelTableHeader.Column column, Cell nextCell, DataFormatter formatter, FormulaEvaluator evaluator, List<ExcelError> rowErrors) {
+    private void addHouseblockGroundPosition(ProjectImportModel.HouseblockImportModel houseblockRowModel, ExcelTableHeader.Column column, Cell nextCell, DataFormatter formatter, FormulaEvaluator evaluator, List<ImportError> rowErrors) {
         Integer groundPosAmount = getIntegerValue(nextCell, formatter, evaluator, rowErrors);
         if (groundPosAmount != null && groundPosAmount > 0) {
             GroundPosition groundPosition = switch (column) {
@@ -605,66 +612,65 @@ public class ExcelImportService {
         }
     }
 
-    private void addHouseblockTextProperty(ExcelProjectRowModel.HouseblockRowModel houseblockRowModel, PropertyModel propertyModel, Cell cell, DataFormatter formatter, FormulaEvaluator evaluator, List<ExcelError> excelErrors) {
+    private void addHouseblockTextProperty(ProjectImportModel.HouseblockImportModel houseblockRowModel, PropertyModel propertyModel, Cell cell, DataFormatter formatter, FormulaEvaluator evaluator, List<ImportError> excelErrors) {
         String textValue = getStringValue(cell, formatter, evaluator, excelErrors);
         if (textValue != null && !textValue.isBlank()) {
             houseblockRowModel.getHouseblockStringPropsMap().put(propertyModel.getId(), textValue);
         }
     }
 
-    private void addHouseblockCategoryProperty(ExcelProjectRowModel.HouseblockRowModel houseblockRowModel, PropertyModel propertyModel, Cell cell,
-                                               DataFormatter formatter, FormulaEvaluator evaluator, List<ExcelError> excelErrors) {
+    private void addHouseblockCategoryProperty(ProjectImportModel.HouseblockImportModel houseblockRowModel, PropertyModel propertyModel, Cell cell,
+                                               DataFormatter formatter, FormulaEvaluator evaluator, List<ImportError> excelErrors) {
         String categoryValueStr = getStringValue(cell, formatter, evaluator, excelErrors);
         if (categoryValueStr != null && !categoryValueStr.isBlank()) {
             SelectModel categoryValue = propertyModel.getActiveCategoryValue(categoryValueStr);
             if (categoryValue == null) {
-                excelErrors.add(getExcelError(cell, categoryValueStr, ExcelError.ERROR.UNKNOWN_PROPERTY_VALUE));
+                excelErrors.add(getExcelError(cell, categoryValueStr, ImportError.ERROR.UNKNOWN_PROPERTY_VALUE));
             } else {
                 houseblockRowModel.getHouseblockCategoryPropsMap().put(propertyModel.getId(), categoryValue.getId());
             }
         }
     }
 
-    private void addHouseblockOrdinalProperty(ExcelProjectRowModel.HouseblockRowModel houseblockRowModel, PropertyModel propertyModel, Cell cell,
-                                              DataFormatter formatter, FormulaEvaluator evaluator, List<ExcelError> excelErrors) {
+    private void addHouseblockOrdinalProperty(ProjectImportModel.HouseblockImportModel houseblockRowModel, PropertyModel propertyModel, Cell cell,
+                                              DataFormatter formatter, FormulaEvaluator evaluator, List<ImportError> excelErrors) {
         String ordinalValueStr = getStringValue(cell, formatter, evaluator, excelErrors);
         if (ordinalValueStr != null && !ordinalValueStr.isBlank()) {
             SelectModel ordinalValue = propertyModel.getActiveOrdinalValue(ordinalValueStr);
             if (ordinalValue == null) {
-                excelErrors.add(getExcelError(cell, ordinalValueStr, ExcelError.ERROR.UNKNOWN_PROPERTY_VALUE));
+                excelErrors.add(getExcelError(cell, ordinalValueStr, ImportError.ERROR.UNKNOWN_PROPERTY_VALUE));
             } else {
                 houseblockRowModel.getHouseblockOrdinalPropsMap().put(propertyModel.getId(), ordinalValue.getId());
             }
         }
     }
 
-    private boolean addHouseblockIntegerNumericProperty(ExcelProjectRowModel.HouseblockRowModel houseblockRowModel, PropertyModel propertyModel, Cell cell,
-                                                        DataFormatter formatter, FormulaEvaluator evaluator, List<ExcelError> excelErrors) {
+    private void addHouseblockDeliveryDateProperty(ProjectImportModel.HouseblockImportModel houseblockRowModel, PropertyModel propertyModel, LocalDate deliveryDate, Cell cell,
+                                                   DataFormatter formatter, FormulaEvaluator evaluator, List<ImportError> excelErrors) {
         Integer integerValue = getIntegerValue(cell, formatter, evaluator, excelErrors);
         if (integerValue != null && integerValue > 0) {
             houseblockRowModel.getHouseblockNumericPropsMap().put(propertyModel.getId(), integerValue.doubleValue());
-            return true;
+            houseblockRowModel.getDeliveryDateMap().put(deliveryDate, integerValue);
         }
-        return false;
     }
 
-    private void addHouseblockNumericProperty(ExcelProjectRowModel.HouseblockRowModel houseblockRowModel, PropertyModel propertyModel, Cell cell,
-                                              DataFormatter formatter, FormulaEvaluator evaluator, List<ExcelError> excelErrors) {
+    private void addHouseblockNumericProperty(ProjectImportModel.HouseblockImportModel houseblockRowModel, PropertyModel propertyModel, Cell cell,
+                                              DataFormatter formatter, FormulaEvaluator evaluator, List<ImportError> excelErrors) {
         Double doubleValue = getDoubleValue(cell, formatter, evaluator, excelErrors);
         if (doubleValue != null && doubleValue > 0) {
             houseblockRowModel.getHouseblockNumericPropsMap().put(propertyModel.getId(), doubleValue);
         }
     }
 
-    private void addHouseblockBooleanProperty(ExcelProjectRowModel.HouseblockRowModel houseblockRowModel, PropertyModel propertyModel, Cell cell,
-                                              DataFormatter formatter, FormulaEvaluator evaluator, List<ExcelError> excelErrors) {
+    private void addHouseblockBooleanProperty(ProjectImportModel.HouseblockImportModel houseblockRowModel, PropertyModel propertyModel, Cell cell,
+                                              DataFormatter formatter, FormulaEvaluator evaluator, List<ImportError> excelErrors) {
         Boolean booleanValue = getBooleanValue(cell, formatter, evaluator, excelErrors);
         if (booleanValue != null) {
             houseblockRowModel.getHouseblockBooleanPropsMap().put(propertyModel.getId(), booleanValue);
         }
     }
 
-    private Boolean getBooleanValue(Cell cell, DataFormatter formatter, FormulaEvaluator evaluator, List<ExcelError> excelErrors) {
+    private Boolean getBooleanValue(Cell cell, DataFormatter formatter, FormulaEvaluator evaluator, List<ImportError> excelErrors) {
         String stringValue = getStringValue(cell, formatter, evaluator, excelErrors);
         if (stringValue == null || stringValue.isBlank()) {
             return null;
@@ -673,12 +679,12 @@ public class ExcelImportService {
         } else if (stringValue.equalsIgnoreCase("false") || stringValue.equals("0")) {
             return Boolean.FALSE;
         } else {
-            excelErrors.add(getExcelError(cell, null, ExcelError.ERROR.WRONG_TYPE_NOT_BOOLEAN));
+            excelErrors.add(getExcelError(cell, null, ImportError.ERROR.WRONG_TYPE_NOT_BOOLEAN));
             return null;
         }
     }
 
-    private String getStringValue(Cell cell, DataFormatter formatter, FormulaEvaluator evaluator, List<ExcelError> excelErrors) {
+    private String getStringValue(Cell cell, DataFormatter formatter, FormulaEvaluator evaluator, List<ImportError> excelErrors) {
         return switch (cell.getCellType()) {
             case BLANK -> null;
             case BOOLEAN -> cell.getBooleanCellValue() ? Boolean.TRUE.toString() : Boolean.FALSE.toString();
@@ -691,25 +697,25 @@ public class ExcelImportService {
                     case NUMERIC -> String.valueOf(formulaCellValue.getNumberValue()).trim();
                     case BOOLEAN -> formulaCellValue.getBooleanValue() ? Boolean.TRUE.toString() : Boolean.FALSE.toString();
                     default -> {
-                        excelErrors.add(getExcelError(cell, null, ExcelError.ERROR.WRONG_TYPE_NOT_STRING));
+                        excelErrors.add(getExcelError(cell, null, ImportError.ERROR.WRONG_TYPE_NOT_STRING));
                         yield null;
                     }
                 };
             }
             default -> {
-                excelErrors.add(getExcelError(cell, null, ExcelError.ERROR.WRONG_TYPE_NOT_STRING));
+                excelErrors.add(getExcelError(cell, null, ImportError.ERROR.WRONG_TYPE_NOT_STRING));
                 yield null;
             }
         };
     }
 
-    private Double getDoubleValue(Cell cell, DataFormatter formatter, FormulaEvaluator evaluator, List<ExcelError> excelErrors) {
+    private Double getDoubleValue(Cell cell, DataFormatter formatter, FormulaEvaluator evaluator, List<ImportError> excelErrors) {
         Object dblCellValue = switch (cell.getCellType()) {
             case BLANK -> null;
             case STRING -> cell.getStringCellValue().trim();
             case NUMERIC -> {   //check it's not date formatted
                 if (DateUtil.isCellDateFormatted(cell)) {
-                    excelErrors.add(getExcelError(cell, formatter.formatCellValue(cell), ExcelError.ERROR.WRONG_TYPE_NOT_NUMERIC));
+                    excelErrors.add(getExcelError(cell, formatter.formatCellValue(cell), ImportError.ERROR.WRONG_TYPE_NOT_NUMERIC));
                     yield null;
                 } else {
                     yield cell.getNumericCellValue();
@@ -721,13 +727,13 @@ public class ExcelImportService {
                     case STRING -> formulaCellValue.getStringValue().trim();
                     case NUMERIC -> formulaCellValue.getNumberValue();
                     default -> {
-                        excelErrors.add(getExcelError(cell, formatter.formatCellValue(cell), ExcelError.ERROR.WRONG_TYPE_NOT_NUMERIC));
+                        excelErrors.add(getExcelError(cell, formatter.formatCellValue(cell), ImportError.ERROR.WRONG_TYPE_NOT_NUMERIC));
                         yield null;
                     }
                 };
             }
             default -> {
-                excelErrors.add(getExcelError(cell, formatter.formatCellValue(cell), ExcelError.ERROR.WRONG_TYPE_NOT_NUMERIC));
+                excelErrors.add(getExcelError(cell, formatter.formatCellValue(cell), ImportError.ERROR.WRONG_TYPE_NOT_NUMERIC));
                 yield null;
             }
         };
@@ -740,7 +746,7 @@ public class ExcelImportService {
             try {
                 return Double.parseDouble((String) dblCellValue);
             } catch (NumberFormatException ex) {
-                excelErrors.add(getExcelError(cell, formatter.formatCellValue(cell), ExcelError.ERROR.WRONG_TYPE_NOT_NUMERIC));
+                excelErrors.add(getExcelError(cell, formatter.formatCellValue(cell), ImportError.ERROR.WRONG_TYPE_NOT_NUMERIC));
                 return null;
             }
         }
@@ -749,7 +755,7 @@ public class ExcelImportService {
         return (Double) dblCellValue;
     }
 
-    private Integer getIntegerValue(Cell cell, DataFormatter formatter, FormulaEvaluator evaluator, List<ExcelError> excelErrors) {
+    private Integer getIntegerValue(Cell cell, DataFormatter formatter, FormulaEvaluator evaluator, List<ImportError> excelErrors) {
         Double doubleValue = getDoubleValue(cell, formatter, evaluator, excelErrors);
         if (doubleValue != null) {
             return doubleValue.intValue();
@@ -757,7 +763,7 @@ public class ExcelImportService {
         return null;
     }
 
-    private LocalDate getLocalDateValue(Cell cell, DataFormatter formatter, List<ExcelError> excelErrors) {
+    private LocalDate getLocalDateValue(Cell cell, DataFormatter formatter, List<ImportError> excelErrors) {
         return switch (cell.getCellType()) {
             case BLANK -> null;
             case NUMERIC -> {   //we can only extract date from cell formatted as date
@@ -767,14 +773,14 @@ public class ExcelImportService {
                 yield null;
             }
             default -> {
-                excelErrors.add(getExcelError(cell, formatter.formatCellValue(cell), ExcelError.ERROR.WRONG_TYPE_NOT_DATE));
+                excelErrors.add(getExcelError(cell, formatter.formatCellValue(cell), ImportError.ERROR.WRONG_TYPE_NOT_DATE));
                 yield null;
             }
         };
     }
 
-    private ExcelError getExcelError(Cell cell, String cellValue, ExcelError.ERROR error) {
+    private ImportError getExcelError(Cell cell, String cellValue, ImportError.ERROR error) {
         String columnString = CellReference.convertNumToColString(cell.getColumnIndex());
-        return new ExcelError(cell.getRowIndex() + 1, columnString, cellValue, error);
+        return new ImportError(cell.getRowIndex() + 1, columnString, cellValue, error);
     }
 }

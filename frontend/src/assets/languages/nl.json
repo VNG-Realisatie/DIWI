@@ -5,8 +5,8 @@
       "no": "Nee",
       "save": "Opslaan",
       "saved": "Opgeslagen",
-      "next": "Volgende",
-      "previous": "Vorig",
+      "next": "Opslaan en volgende",
+      "previous": "Opslaan en vorige",
       "cancelChanges": "Stop veranderingen",
       "saveChanges": "Veranderingen opslaan",
       "edit": "Bewerken",
@@ -65,6 +65,8 @@
         "netPlanCapacity": "Netto plancapaciteit",
         "demolition": "Sloop",
         "mutationType": "Mutatiesoort",
+        "DEMOLITION": "Sloop",
+        "CONSTRUCTION": "Bouw",
         "size": "Woonoppervlak in m2",
         "type": "Soort",
         "amount": "Aantal",
@@ -205,7 +207,7 @@
         "projectPhase": "Projectfase",
         "planningPlanStatus": "Planologische planstatus",
         "municipality": "Regio",
-        "wijk": "Wijk",
+        "district": "Wijk",
         "neighbourhood": "Buurt",
         "selectPlanType": "Selecteer plantype",
         "selectMunicipalityRole": "Selecteer gemeente rol",
@@ -288,6 +290,8 @@
         "startDateWarning": "Opvoerdatum in project moet een latere datum zijn",
         "endDateWarningMissing": "​Vul het veld Datum laatste oplevering in",
         "startDateWarningMissing": "​Vul het veld Opvoerdatum in project in",
+        "mutationAmountWarning": "​Vul het veld aantal in met een positief getal",
+        "mutationKindWarning": "​Vul het veld mutatiesoort in",
         "generalInformation": {
           "title": "Algemene informatie"
         }
@@ -315,6 +319,7 @@
           "TEXT": "Open tekstveld"
         },
         "add": "Voeg maatwerk eigenschap toe",
+        "addOption": "Voeg optie toe",
         "edit": "Pas maatwerk eigenschap aan",
         "propertyTypeInfo": "Type kan na het opslaan niet meer worden gewijzigd.",
         "notifications": {

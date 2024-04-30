@@ -1,27 +1,12 @@
-import { Alert, Button, Stack, Table, TableBody, TableCell, TableRow, Typography } from "@mui/material";
-import DownloadIcon from "@mui/icons-material/Download";
-import { ReactComponent as UploadCloud } from "../assets/uploadCloud.svg";
+import { Alert, Stack, Table, TableBody, TableCell, TableRow, Typography } from "@mui/material";
 import { useRef, useState } from "react";
+import { importGeoJsonProjects } from "../api/importServices";
+import { ReactComponent as UploadCloud } from "../assets/uploadCloud.svg";
 import useAlert from "../hooks/useAlert";
-import { importExcelProjects } from "../api/importServices";
-import { useNavigate } from "react-router-dom";
-import * as Paths from "../Paths";
+import { UploadErrorType } from "./ImportExcel";
 
-export type UploadErrorType = {
-    errorCode: string;
-    row: number;
-    column: string;
-    cellValue: string;
-    errorMessage: string;
-};
-
-type Props = {
-    excelImport: boolean;
-};
-
-export const ImportExcel = ({ excelImport }: Props) => {
+export const ImportGeoJson = () => {
     const fileInputRef = useRef(null);
-    const navigate = useNavigate();
     const [uploaded, setUploaded] = useState(false);
     const [errors, setErrors] = useState<Array<UploadErrorType>>([]);
 
@@ -36,19 +21,10 @@ export const ImportExcel = ({ excelImport }: Props) => {
     return (
         <Stack border="solid 1px #ddd" py={3} px={15} marginBottom={"2em"}>
             <Typography fontSize="20px" fontWeight="600" sx={{ mt: 2 }}>
-                {excelImport ? "Importeren vanuit Excel" : "Importeren vanuit Squit"}
+                Importeren vanuit GeoJSON
             </Typography>
-            <Button
-                variant="outlined"
-                endIcon={<DownloadIcon />}
-                sx={{ my: 3, width: "310px" }}
-                href={require("../assets/Excel_Import.xlsx")}
-                download="Excel Import.xlsx"
-            >
-                Download Excel template hier
-            </Button>
             <Typography fontSize="16px" mt={2}>
-                {excelImport ? "Upload ingevulde Excel template." : "Upload ingevulde Squit template."}
+                Upload ingevulde GeoJSON template.
             </Typography>
             {uploaded && (
                 <Stack
@@ -88,22 +64,19 @@ export const ImportExcel = ({ excelImport }: Props) => {
                             const file = e.target.files;
                             if (file) {
                                 setErrors([]);
-                                importExcelProjects(file as FileList)
-                                    .then(async (res) => {
+                                importGeoJsonProjects(file as FileList)
+                                    .then((res) => {
                                         setUploaded(true);
                                         if (res.ok) {
-                                            setAlert("Excel-bestand succesvol geüpload.", "success");
-                                            navigate(Paths.projectsTable.path);
+                                            setAlert("GeoJSON-bestand succesvol geüpload.", "success");
                                         } else {
                                             // 400 errors contain relevant info in body, deal with here
-                                            const newErrors = (await res.json()) as Array<UploadErrorType>;
-                                            setErrors(newErrors);
-                                            setAlert("Kon Excel-bestand niet importeren", "error");
+                                            setErrors(res);
+                                            setAlert("GeoJSON-bestand bevat fouten", "error");
                                         }
                                     })
                                     .catch((error) => {
-                                        console.error("Failed to import due to error", error);
-                                        setAlert("Kon Excel-bestand niet importeren", "error");
+                                        console.error("error", error);
                                     });
                             }
                         }}

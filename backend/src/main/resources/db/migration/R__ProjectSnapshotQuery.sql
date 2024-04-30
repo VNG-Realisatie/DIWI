@@ -24,7 +24,8 @@ CREATE OR REPLACE FUNCTION get_active_or_future_project_snapshot (
         totalValue BIGINT,
         municipality JSONB,
         district JSONB,
-        neighbourhood JSONB
+        neighbourhood JSONB,
+        geometry TEXT
 	)
 	LANGUAGE plpgsql
 AS $$
@@ -50,7 +51,8 @@ SELECT  q.projectId,
         q.totalValue,
         q.municipalityList               AS municipality,
         q.districtList             AS district,
-        q.neighbourhoodList        AS neighbourhood
+        q.neighbourhoodList        AS neighbourhood,
+        q.geometry                 AS geometry
 FROM (
 
          WITH
@@ -166,6 +168,19 @@ FROM (
                      sms.date <= _now_ AND _now_ < ems.date AND ppc.change_end_date IS NULL
                  GROUP BY ppc.project_id, ps.property_name, ppc.value_type
              ),
+             active_project_text_fixed_props AS (
+                 SELECT
+                     ppc.project_id, ps.property_name AS fixedPropertyName, ppc.value as fixedPropertyValue
+                 FROM
+                     diwi_testset.project_text_changelog ppc
+                         JOIN diwi_testset.milestone_state sms ON sms.milestone_id = ppc.start_milestone_id AND sms.change_end_date IS NULL
+                         JOIN diwi_testset.milestone_state ems ON ems.milestone_id = ppc.end_milestone_id AND ems.change_end_date IS NULL
+                         JOIN diwi_testset.property p ON p.id = ppc.property_id AND p.type = 'FIXED'
+                         JOIN diwi_testset.property_state ps ON p.id = ps.property_id AND ps.change_end_date IS NULL
+                 WHERE
+                     sms.date <= _now_ AND _now_ < ems.date AND ppc.change_end_date IS NULL
+                 GROUP BY ppc.project_id, ps.property_name, ppc.value
+             ),
              future_projects AS (
                  SELECT
                      p.id, sms.date AS startDate, ems.date AS endDate, sms.milestone_id AS start_milestone_id
@@ -263,6 +278,17 @@ FROM (
                          LEFT JOIN diwi_testset.property_ordinal_value_state vsMax
                                    ON ppc.max_value_id = vsMax.ordinal_value_id AND vsMax.change_end_date IS NULL
                  GROUP BY ppc.project_id, ps.property_name, ppc.value_type
+             ),
+             future_project_text_fixed_props AS (
+                 SELECT
+                     ppc.project_id, ps.property_name AS fixedPropertyName, ppc.value as fixedPropertyValue
+                 FROM
+                     future_projects fp
+                         JOIN diwi_testset.project_text_changelog ppc ON fp.id = ppc.project_id
+                            AND ppc.start_milestone_id = fp.start_milestone_id AND ppc.change_end_date IS NULL
+                         JOIN diwi_testset.property p ON p.id = ppc.property_id AND p.type = 'FIXED'
+                         JOIN diwi_testset.property_state ps ON p.id = ps.property_id AND ps.change_end_date IS NULL
+                 GROUP BY ppc.project_id, ps.property_name, ppc.value
              ),
              past_projects AS (
                  SELECT
@@ -362,6 +388,17 @@ FROM (
                                    ON ppc.max_value_id = vsMax.ordinal_value_id AND vsMax.change_end_date IS NULL
                  GROUP BY ppc.project_id, ps.property_name, ppc.value_type
              ),
+             past_project_text_fixed_props AS (
+                 SELECT
+                     ppc.project_id, ps.property_name AS fixedPropertyName, ppc.value as fixedPropertyValue
+                 FROM
+                     past_projects pp
+                         JOIN diwi_testset.project_text_changelog ppc ON pp.id = ppc.project_id
+                            AND ppc.end_milestone_id = pp.end_milestone_id AND ppc.change_end_date IS NULL
+                         JOIN diwi_testset.property p ON p.id = ppc.property_id AND p.type = 'FIXED'
+                         JOIN diwi_testset.property_state ps ON p.id = ps.property_id AND ps.change_end_date IS NULL
+                 GROUP BY ppc.project_id, ps.property_name, ppc.value
+             ),
              project_users AS (
                  SELECT
                      q.project_id    AS project_id,
@@ -407,7 +444,8 @@ FROM (
                 apr.fixedPropValuesList  AS municipalityList,
                 apd.fixedPropValuesList  AS districtList,
                 apne.fixedPropValuesList AS neighbourhoodList,
-                leaders.users            AS projectLeaders
+                leaders.users            AS projectLeaders,
+                apg.fixedPropertyValue   AS geometry
          FROM
              active_projects ap
                  LEFT JOIN diwi_testset.project_state ps ON ps.project_id = ap.id AND ps.change_end_date IS NULL
@@ -421,6 +459,7 @@ FROM (
                  LEFT JOIN active_project_fixed_props apr ON apr.project_id = ap.id AND apr.fixedPropertyName = 'municipality'
                  LEFT JOIN active_project_fixed_props apd ON apd.project_id = ap.id AND apd.fixedPropertyName = 'district'
                  LEFT JOIN active_project_fixed_props apne ON apne.project_id = ap.id AND apne.fixedPropertyName = 'neighbourhood'
+                 LEFT JOIN active_project_text_fixed_props apg ON apg.project_id = ap.id AND apg.fixedPropertyName = 'geometry'
                  LEFT JOIN project_users leaders ON ps.project_id = leaders.project_id AND leaders.project_rol = 'PROJECT_LEIDER'
                  LEFT JOIN project_users owners ON ps.project_id = owners.project_id AND owners.project_rol = 'OWNER'
 
@@ -445,7 +484,8 @@ FROM (
                 fpr.fixedPropValuesList  AS municipalityList,
                 fpd.fixedPropValuesList  AS districtList,
                 fpne.fixedPropValuesList AS neighbourhoodList,
-                leaders.users            AS projectLeaders
+                leaders.users            AS projectLeaders,
+                fpg.fixedPropertyValue   AS geometry
          FROM
              future_projects fp
                  LEFT JOIN diwi_testset.project_state ps ON ps.project_id = fp.id AND ps.change_end_date IS NULL
@@ -459,6 +499,7 @@ FROM (
                  LEFT JOIN future_project_fixed_props fpr ON fpr.project_id = fp.id AND fpr.fixedPropertyName = 'municipality'
                  LEFT JOIN future_project_fixed_props fpd ON fpd.project_id = fp.id AND fpd.fixedPropertyName = 'district'
                  LEFT JOIN future_project_fixed_props fpne ON fpne.project_id = fp.id AND fpne.fixedPropertyName = 'neighbourhood'
+                 LEFT JOIN future_project_text_fixed_props fpg ON fpg.project_id = fp.id AND fpg.fixedPropertyName = 'geometry'
                  LEFT JOIN project_users leaders ON ps.project_id = leaders.project_id AND leaders.project_rol = 'PROJECT_LEIDER'
                  LEFT JOIN project_users owners ON ps.project_id = owners.project_id AND owners.project_rol = 'OWNER'
 
@@ -483,7 +524,8 @@ FROM (
                 ppr.fixedPropValuesList  AS municipalityList,
                 ppd.fixedPropValuesList  AS districtList,
                 ppne.fixedPropValuesList AS neighbourhoodList,
-                leaders.users            AS projectLeaders
+                leaders.users            AS projectLeaders,
+                ppg.fixedPropertyValue   AS geometry
          FROM
              past_projects pp
                  LEFT JOIN diwi_testset.project_state ps ON ps.project_id = pp.id AND ps.change_end_date IS NULL
@@ -497,6 +539,7 @@ FROM (
                  LEFT JOIN past_project_fixed_props ppr ON ppr.project_id = pp.id AND ppr.fixedPropertyName = 'municipality'
                  LEFT JOIN past_project_fixed_props ppd ON ppd.project_id = pp.id AND ppd.fixedPropertyName = 'district'
                  LEFT JOIN past_project_fixed_props ppne ON ppne.project_id = pp.id AND ppne.fixedPropertyName = 'neighbourhood'
+                 LEFT JOIN past_project_text_fixed_props ppg ON ppg.project_id = pp.id AND ppg.fixedPropertyName = 'geometry'
                  LEFT JOIN project_users leaders ON ps.project_id = leaders.project_id AND leaders.project_rol = 'PROJECT_LEIDER'
                  LEFT JOIN project_users owners ON ps.project_id = owners.project_id AND owners.project_rol = 'OWNER'
 

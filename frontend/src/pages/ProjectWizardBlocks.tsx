@@ -81,7 +81,13 @@ const ProjectWizardBlocks = () => {
             hasErrors = true;
         }
 
-        if (!houseBlock.houseblockName || houseBlock.ownershipValue.some((owner: any) => owner.amount === null || isNaN(owner.amount))) {
+        if (
+            !houseBlock.houseblockName ||
+            !houseBlock.mutation.amount ||
+            !houseBlock.mutation.kind ||
+            houseBlock.mutation.amount <= 0 ||
+            houseBlock.ownershipValue.some((owner: any) => owner.amount < 0 || !Number.isInteger(owner.amount))
+        ) {
             hasErrors = true;
         }
         if (houseBlock.startDate && houseBlock.endDate && selectedProject?.startDate && selectedProject?.endDate) {
@@ -132,7 +138,14 @@ const ProjectWizardBlocks = () => {
                 houseBlocksState.map(async (houseBlock, index) => {
                     try {
                         validateHouseBlock(houseBlock, selectedProject, index);
-                        const id = await saveHouseBlock({ ...houseBlock, tempId: undefined });
+
+                        const filteredOwnershipValue = houseBlock.ownershipValue.filter((ownership) => ownership.amount > 0);
+                        const updatedHouseBlock = {
+                            ...houseBlock,
+                            ownershipValue: filteredOwnershipValue,
+                            tempId: undefined,
+                        };
+                        const id = await saveHouseBlock(updatedHouseBlock);
                         return { id, tempId: houseBlock.tempId };
                     } catch (error) {
                         setErrorOccurred(true);
@@ -232,7 +245,9 @@ const ProjectWizardBlocks = () => {
                             >
                                 {errors[index] === true ? <ErrorOutlineIcon sx={{ marginRight: 1, color: "#ff9800" }} /> : null}
                                 {houseBlock.houseblockId
-                                    ? `${houseBlock.houseblockName}: ${houseBlock.mutation.amount} ${t("createProject.houseBlocksForm.housesOn")} ${houseBlock.endDate}`
+                                    ? `${houseBlock.houseblockName}: ${houseBlock.mutation.amount} ${t("createProject.houseBlocksForm.housesOn")} ${
+                                          houseBlock.endDate
+                                      }`
                                     : `${t("generic.houseblock")} ${index + 1}`}
                                 {houseBlocksState.length > 1 && (
                                     <Box sx={{ marginLeft: "auto", marginTop: "5px", marginRight: "5px" }}>

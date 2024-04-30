@@ -57,6 +57,24 @@ export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, cu
                 renderInput={(params) => <TextField {...params} size="small" />}
             />
         );
+    } else if (customDefinition.propertyType === "ORDINAL") {
+        const value = customDefinition.ordinals?.find((d) => customValue?.ordinals?.value?.includes(d.id as string));
+        return (
+            <Autocomplete
+                size="small"
+                disabled={readOnly}
+                sx={{
+                    "& .MuiInputBase-input.Mui-disabled": {
+                        backgroundColor: "#0000", // set 0 opacity when disabled
+                    },
+                }}
+                options={customDefinition.ordinals?.filter((oc) => !oc.disabled).sort((a, b) => a.level - b.level) || []}
+                getOptionLabel={(option) => option?.name || ""}
+                value={value}
+                onChange={(_, newValue) => setCustomValue({ ...customValue, ordinals: { value: newValue?.id as string } })}
+                renderInput={(params) => <TextField {...params} size="small" sx={{ minWidth: "200px" }} />}
+            />
+        );
     } else if (customDefinition.propertyType === "NUMERIC") {
         return (
             <TextField
