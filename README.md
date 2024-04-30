@@ -26,7 +26,7 @@ Starts a keycloak instance in a docker container
 
 ### deployNoPull.sh
 
-Deploy the production version with pulling new changes.
+Deploy the production version without pulling new changes.
 
 ### deploy.sh
 
