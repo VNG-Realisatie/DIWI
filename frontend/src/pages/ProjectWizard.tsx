@@ -42,7 +42,7 @@ const ProjectWizard = () => {
         try {
             // when saved initially we can keep updating existing project
             if (projectId) {
-                await updateProject(projectForm as Project);
+                await updateProject(projectForm);
                 setAlert(t("createProject.successfullySaved"), "success");
                 return true;
             } else {
@@ -58,7 +58,7 @@ const ProjectWizard = () => {
                 const project = await createProject(temporaryCreateForm);
                 // after save immediately update Id and send attibutes that have not been saved yet
                 projectForm.projectId = project.projectId;
-                await updateProject(projectForm as Project);
+                await updateProject(projectForm);
                 setAlert(t("createProject.successfullySaved"), "success");
 
                 navigate(projectWizardWithId.toPath({ projectId: project.projectId }));
