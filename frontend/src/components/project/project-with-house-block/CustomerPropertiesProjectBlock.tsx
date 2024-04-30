@@ -19,6 +19,7 @@ export const CustomPropertiesProject = ({ readOnly, customValues, setCustomValue
 
     useEffect(() => {
         getCustomPropertiesWithQuery("PROJECT").then((properties) => {
+            // Make sure to filter out no longer active properties
             setCustomDefinitions(properties.filter((property) => !property.disabled));
         });
     }, []);
@@ -33,7 +34,7 @@ export const CustomPropertiesProject = ({ readOnly, customValues, setCustomValue
             {customDefinitions.length > 0 &&
                 customDefinitions
                     .filter(
-                        // Make sure to filter out default and no longer active properties
+                        // Make sure to filter out default properties
                         (property) =>
                             !(
                                 property.name === "district" ||
