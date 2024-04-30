@@ -67,9 +67,11 @@
         "rent": "Huur",
         "ownershipAndValue": {
           "title": "Eigendom en waarde",
-          "KOOPWONING": "Koopwoning",
-          "HUURWONING_PARTICULIERE_VERHUURDER": "Huurwoning Particuliere Verhuurder",
-          "HUURWONING_WONINGCORPORATIE": "Huurwoning Woningcorporatie"
+          "type": {
+            "KOOPWONING": "Koopwoning",
+            "HUURWONING_PARTICULIERE_VERHUURDER": "Huurwoning Particuliere Verhuurder",
+            "HUURWONING_WONINGCORPORATIE": "Huurwoning Woningcorporatie"
+          }
         },
         "ownerOccupiedHome": "Koopwoning",
         "rentalPropertyPrivate": "Huurwoning particuliere verhuurder",

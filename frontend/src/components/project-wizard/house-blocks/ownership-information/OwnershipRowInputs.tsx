@@ -60,7 +60,7 @@ const OwnershipTypeOption = ({ handleInputChange, ownership, index }: OwnershipP
             {ownershipValueOptions.map((type) => {
                 return (
                     <MenuItem key={type} value={type}>
-                        {t(`createProject.houseBlocksForm.ownershipAndValue.${type}`)}
+                        {t(`createProject.houseBlocksForm.ownershipAndValue.type.${type}`)}
                     </MenuItem>
                 );
             })}
@@ -92,7 +92,7 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                 {!readOnly && <OwnershipTypeOption index={index} handleInputChange={handleInputChange} ownership={ownership} />}
                 {readOnly && (
                     <InputContainer>
-                        <Typography>{t(`createProject.houseBlocksForm.ownershipAndValue.${ownership?.type}`)}</Typography>
+                        <Typography>{t(`createProject.houseBlocksForm.ownershipAndValue.type.${ownership?.type}`)}</Typography>
                     </InputContainer>
                 )}
             </Grid>
