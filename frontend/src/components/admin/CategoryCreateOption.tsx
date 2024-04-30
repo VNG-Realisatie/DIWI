@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { TextField, Box, IconButton, InputLabel } from "@mui/material";
+import React from "react";
+import { TextField, Box, IconButton, InputLabel, Stack } from "@mui/material";
 import { t } from "i18next";
 import { CategoryType, OrdinalCategoryType } from "../../api/adminSettingServices";
-import AddIcon from "@mui/icons-material/Add";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
@@ -10,13 +10,10 @@ import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 type Props = {
     categoryValue: (CategoryType | OrdinalCategoryType)[];
     setCategoryValue: (value: (CategoryType | OrdinalCategoryType)[]) => void;
+    ordered?: boolean;
 };
 
-export const CategoryCreateOption: React.FC<Props> = ({ categoryValue, setCategoryValue }) => {
-    const [newCategory, setNewCategory] = useState<string>("");
-
-    const hasLevels = categoryValue.some((category) => "level" in category);
-
+export const CategoryCreateOption: React.FC<Props> = ({ categoryValue, setCategoryValue, ordered }) => {
     const sortCategories = (a: OrdinalCategoryType | CategoryType, b: OrdinalCategoryType | CategoryType) => {
         if (a.disabled !== b.disabled) {
             return a.disabled ? -1 : 1;
@@ -28,22 +25,19 @@ export const CategoryCreateOption: React.FC<Props> = ({ categoryValue, setCatego
     };
 
     const handleAddCategory = () => {
-        if (newCategory.trim() !== "") {
-            let maxLevel = 0;
-            if (hasLevels) {
-                const ordinalCategories = categoryValue.filter((c): c is OrdinalCategoryType => !c.disabled);
-                if (ordinalCategories.length > 0) {
-                    maxLevel = Math.max(...ordinalCategories.map((c: OrdinalCategoryType) => c.level));
-                }
+        let maxLevel = 0;
+        if (ordered) {
+            const ordinalCategories = categoryValue.filter((c) => !c.disabled);
+            if (ordinalCategories.length > 0) {
+                maxLevel = Math.max(...ordinalCategories.filter((c): c is OrdinalCategoryType => "level" in c).map((c) => c.level));
             }
-
-            let updatedCategories = hasLevels
-                ? [...categoryValue, { name: newCategory, disabled: false, level: maxLevel + 1 }]
-                : [...categoryValue, { name: newCategory, disabled: false }];
-
-            setCategoryValue(updatedCategories);
-            setNewCategory("");
         }
+
+        let updatedCategories = ordered
+            ? [...categoryValue, { name: "", disabled: false, level: maxLevel + 1 }]
+            : [...categoryValue, { name: "", disabled: false }];
+
+        setCategoryValue(updatedCategories.sort(sortCategories));
     };
 
     const handleCategoryChange = (index: number, newValue: string) => {
@@ -76,7 +70,7 @@ export const CategoryCreateOption: React.FC<Props> = ({ categoryValue, setCatego
 
         updatedCategories[index + categoriesDisabled.length].level--;
         updatedCategories[index - 1 + categoriesDisabled.length].level++;
-        setCategoryValue(updatedCategories);
+        setCategoryValue(updatedCategories.sort(sortCategories));
     };
 
     const handleMoveDown = (index: number) => {
@@ -85,9 +79,8 @@ export const CategoryCreateOption: React.FC<Props> = ({ categoryValue, setCatego
 
         updatedCategories[index + categoriesDisabled.length].level++;
         updatedCategories[index + 1 + categoriesDisabled.length].level--;
-        setCategoryValue(updatedCategories);
+        setCategoryValue(updatedCategories.sort(sortCategories));
     };
-
     return (
         <>
             <InputLabel variant="standard" id="categories">
@@ -98,7 +91,7 @@ export const CategoryCreateOption: React.FC<Props> = ({ categoryValue, setCatego
                 .sort(sortCategories)
                 .map((category, index) => (
                     <Box key={category.id ?? index} display="flex" alignItems="center" mb={1}>
-                        {hasLevels && <InputLabel style={{ marginRight: "8px", overflow: "visible" }}>{index + 1}.</InputLabel>}
+                        {ordered && <InputLabel style={{ marginRight: "8px", overflow: "visible" }}>{index + 1}.</InputLabel>}
                         <TextField
                             size="small"
                             fullWidth
@@ -107,7 +100,7 @@ export const CategoryCreateOption: React.FC<Props> = ({ categoryValue, setCatego
                             placeholder={t("admin.settings.add")}
                             variant="outlined"
                         />
-                        {hasLevels && (
+                        {ordered && (
                             <>
                                 <IconButton aria-label="move-up" onClick={() => handleMoveUp(index)} disabled={index === 0}>
                                     <ArrowUpwardIcon />
@@ -126,24 +119,10 @@ export const CategoryCreateOption: React.FC<Props> = ({ categoryValue, setCatego
                         </IconButton>
                     </Box>
                 ))}
-            <Box display="flex" alignItems="center" mb={1}>
-                {hasLevels && (
-                    <InputLabel style={{ marginRight: "8px", overflow: "visible" }}>{categoryValue.filter((c) => c.disabled === false).length + 1}</InputLabel>
-                )}
-                <TextField
-                    size="small"
-                    fullWidth
-                    value={newCategory}
-                    onChange={(e) => setNewCategory(e.target.value)}
-                    placeholder={t("admin.settings.add")}
-                    variant="outlined"
-                />
-            </Box>
-            <Box display="flex" alignItems="center" mb={1}>
-                <IconButton aria-label="add" onClick={handleAddCategory}>
-                    <AddIcon />
-                </IconButton>
-            </Box>
+            <Stack direction="row" alignItems="center" mt={1}>
+                <AddCircleIcon sx={{ cursor: "pointer" }} onClick={handleAddCategory} />
+                {t("admin.settings.addOption")}
+            </Stack>
         </>
     );
 };

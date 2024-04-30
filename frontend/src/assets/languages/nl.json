@@ -315,6 +315,7 @@
           "TEXT": "Open tekstveld"
         },
         "add": "Voeg maatwerk eigenschap toe",
+        "addOption": "Voeg optie toe",
         "edit": "Pas maatwerk eigenschap aan",
         "propertyTypeInfo": "Type kan na het opslaan niet meer worden gewijzigd.",
         "notifications": {
