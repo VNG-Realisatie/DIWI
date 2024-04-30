@@ -25,7 +25,7 @@ const ProjectPlotSelector = () => {
 
     return (
         <Stack my={1} p={1} mb={10}>
-            <Box sx={{ cursor: "pointer" }} position="absolute" right={10} top={55}>
+            <Box sx={{ cursor: "pointer" }} position="absolute" right={105} top={17}>
                 {plotsChanged && (
                     <>
                         <Tooltip placement="top" title={t("generic.cancelChanges")}>
