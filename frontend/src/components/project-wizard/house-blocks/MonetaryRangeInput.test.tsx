@@ -150,3 +150,43 @@ it("should set the input value to '0,00' on blur if the input is empty", () => {
     expect(screen.getByRole("textbox")).toHaveValue("0,00");
     expect(updateCallBack).not.toHaveBeenCalled();
 });
+
+it("should handle a range with one comma and one hyphen", () => {
+    const updateCallBack = jest.fn();
+    const value = { value: null, min: null, max: null };
+
+    render(<MonetaryRangeInput value={value} updateCallBack={updateCallBack} labelText="hi" />);
+
+    const input = screen.getByRole("textbox");
+    userEvent.type(input, "10,20-3");
+    userEvent.keyboard("{enter}");
+
+    expect(updateCallBack).toHaveBeenLastCalledWith({ value: null, min: 1020, max: 300 });
+});
+
+it("should handle a range with one hyphen and two commas", () => {
+    const updateCallBack = jest.fn();
+    const value = { value: null, min: null, max: null };
+
+    render(<MonetaryRangeInput value={value} updateCallBack={updateCallBack} labelText="hi" />);
+
+    const input = screen.getByRole("textbox");
+    userEvent.type(input, "10,2-20,30");
+    userEvent.keyboard("{enter}");
+
+    expect(updateCallBack).toHaveBeenLastCalledWith({ value: null, min: 1020, max: 2030 });
+});
+
+it("should not allow characters except for hyphens and commas", () => {
+    const updateCallBack = jest.fn();
+    const value = { value: null, min: null, max: null };
+
+    render(<MonetaryRangeInput value={value} updateCallBack={updateCallBack} labelText="hi" />);
+
+    const input = screen.getByRole("textbox");
+    userEvent.type(input, "10,2a-20,30");
+    userEvent.keyboard("{enter}");
+
+    expect(screen.getByRole("textbox")).toHaveValue("10,2-20,30");
+    expect(updateCallBack).toHaveBeenLastCalledWith({ value: null, min: 1020, max: 2030 });
+});

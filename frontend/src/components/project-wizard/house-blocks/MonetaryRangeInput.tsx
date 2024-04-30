@@ -83,9 +83,17 @@ export const MonetaryRangeInput = ({ labelText, value, updateCallBack }: Props) 
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value;
-        if (!newValue.includes(decimalSeparator) || newValue.split(decimalSeparator)[1].length <= 2) {
-            setStringValue(newValue);
-        }
+        const isValidInput = /^-?\d*(,\d{0,2})?(-\d*(,?\d{0,2})?)?$/.test(newValue);
+        /*
+            ^ = Start of the string
+            -? = Zero or one hyphen
+            \d* = Zero or more digits
+            (,\d{0,2})? = 0 to 1 comma followed by 0 to 2 digits
+            (-\d*(,?\d{0,2})?)? = 0 to 1 hyphen followed by 0 or more digits, optionally followed by a comma and 0 to 2 digits
+            $ End of string
+        */
+
+        if (isValidInput) setStringValue(newValue);
     };
 
     const onFocus = () => {
