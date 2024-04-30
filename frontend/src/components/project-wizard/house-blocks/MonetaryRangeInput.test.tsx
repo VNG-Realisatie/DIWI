@@ -79,6 +79,11 @@ it.each([
     ["100,00", 10000],
     ["1", 100],
     ["10", 1000],
+    ["1,1", 110],
+    ["1,0", 100],
+    ["100,1", 10010],
+    ["100,0", 10000],
+    ["1", 100],
 ])("should convert euros to cents", (input, expected) => {
     const updateCallBack = jest.fn();
     const value = { value: null, min: null, max: null };
@@ -102,6 +107,46 @@ it("should limit the input to only accept up to two numbers after the comma", ()
     userEvent.type(input, "1,234");
     userEvent.keyboard("{enter}");
 
-    expect(updateCallBack).toHaveBeenLastCalledWith({ value: 123, min: null, max: null });
     expect(screen.getByRole("textbox")).toHaveValue("1,23");
+    expect(updateCallBack).toHaveBeenLastCalledWith({ value: 123, min: null, max: null });
+});
+
+it("should not limit the input length if there is no comma", () => {
+    const updateCallBack = jest.fn();
+    const value = { value: null, min: null, max: null };
+
+    render(<MonetaryRangeInput value={value} updateCallBack={updateCallBack} labelText="hi" />);
+
+    const input = screen.getByRole("textbox");
+    userEvent.type(input, "123456");
+    userEvent.keyboard("{enter}");
+
+    expect(screen.getByRole("textbox")).toHaveValue("123456");
+    expect(updateCallBack).toHaveBeenLastCalledWith({ value: 12345600, min: null, max: null });
+});
+
+it("should clear the input value on focus if it's '0,00'", () => {
+    const updateCallBack = jest.fn();
+    const value = { value: null, min: null, max: null };
+
+    render(<MonetaryRangeInput value={value} updateCallBack={updateCallBack} labelText="hi" />);
+
+    const input = screen.getByRole("textbox");
+    userEvent.click(input);
+
+    expect(screen.getByRole("textbox")).toHaveValue("");
+    expect(updateCallBack).not.toHaveBeenCalled();
+});
+
+it("should set the input value to '0,00' on blur if the input is empty", () => {
+    const updateCallBack = jest.fn();
+    const value = { value: null, min: null, max: null };
+
+    render(<MonetaryRangeInput value={value} updateCallBack={updateCallBack} labelText="hi" />);
+
+    const input = screen.getByRole("textbox");
+    userEvent.type(input, "{enter}");
+
+    expect(screen.getByRole("textbox")).toHaveValue("0,00");
+    expect(updateCallBack).not.toHaveBeenCalled();
 });
