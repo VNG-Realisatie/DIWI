@@ -1,26 +1,25 @@
+import { t } from "i18next";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import useAlert from "../hooks/useAlert";
-import { createProject, getProject, updateProject } from "../api/projectsServices";
-import dayjs from "dayjs";
+import { projectWizardBlocks, projectWizardWithId } from "../Paths";
+import { Project, createProject, getProject, updateProject } from "../api/projectsServices";
 import WizardLayout from "../components/project-wizard/WizardLayout";
 import { ProjectInformationForm } from "../components/project/ProjectInformationForm";
-import { projectWizardBlocks, projectWizardWithId } from "../Paths";
-import { t } from "i18next";
+import useAlert from "../hooks/useAlert";
 
 const ProjectWizard = () => {
-    const [createProjectForm, setCreateProjectForm] = useState<any>({
+    const [createProjectForm, setCreateProjectForm] = useState<Partial<Project>>({
         projectColor: "#FF5733",
         projectLeaders: [],
         projectOwners: [],
-        projectPhase: "",
+        projectPhase: "_1_CONCEPT",
         planningPlanStatus: [],
     });
     const { projectId } = useParams();
     const navigate = useNavigate();
     const { setAlert } = useAlert();
 
-    const handleSave = async () => {
+    async function validateAndSave() {
         if (
             !createProjectForm.projectName ||
             !createProjectForm.startDate ||
@@ -34,11 +33,8 @@ const ProjectWizard = () => {
         }
         try {
             if (projectId) {
-                const res = await updateProject(projectId, createProjectForm);
-                if (res.ok) {
-                    setAlert(t("createProject.successfullySaved"), "success");
-                    return true;
-                }
+                await updateProject(createProjectForm as Project);
+                setAlert(t("createProject.successfullySaved"), "success");
             } else {
                 const temporaryCreateForm = {
                     projectName: createProjectForm.projectName,
@@ -50,18 +46,23 @@ const ProjectWizard = () => {
                 };
                 const project = await createProject(temporaryCreateForm);
                 createProjectForm.projectId = project.projectId;
-                await updateProject(createProjectForm.projectId, createProjectForm);
+                await updateProject(createProjectForm as Project);
+                setAlert(t("createProject.successfullySaved"), "success");
 
                 navigate(projectWizardWithId.toPath({ projectId: project.projectId }));
-                setAlert(t("createProject.successfullySaved"), "success");
             }
         } catch (error: any) {
             setAlert(error.message, "error");
             return false;
         }
+    }
+
+    const handleSave = async () => {
+        validateAndSave();
     };
 
     const handleNext = async () => {
+        validateAndSave();
         if (projectId) {
             navigate(projectWizardBlocks.toPath({ projectId }));
         }
@@ -69,7 +70,7 @@ const ProjectWizard = () => {
 
     useEffect(() => {
         if (projectId) {
-            getProject(projectId).then((res: any) => setCreateProjectForm({ ...res, startDate: dayjs(res.startDate), endDate: dayjs(res.endDate) }));
+            getProject(projectId).then((res) => setCreateProjectForm({ ...res, startDate: res.startDate, endDate: res.endDate }));
         }
     }, [projectId]);
 

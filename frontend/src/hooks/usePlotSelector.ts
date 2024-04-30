@@ -12,7 +12,7 @@ import { Fill, Stroke, Style } from "ol/style";
 import { StyleFunction } from "ol/style/Style";
 import queryString from "query-string";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { Plot, PlotGeoJSON, getProjectPlots, updateProjectPlots, updateProjects } from "../api/projectsServices";
+import { Plot, PlotGeoJSON, getProjectPlots, updateProjectPlots, updateProject } from "../api/projectsServices";
 import ConfigContext from "../context/ConfigContext";
 import ProjectContext from "../context/ProjectContext";
 import { extentToCenter, mapBoundsToExtent } from "../utils/map";
@@ -71,7 +71,7 @@ const usePlotSelector = (id: string) => {
                 const center = extentToCenter(extent);
                 selectedProject.location = { lat: center[0], lng: center[1] };
             }
-            await updateProjects(selectedProject);
+            await updateProject(selectedProject);
         }
     };
 
@@ -102,21 +102,19 @@ const usePlotSelector = (id: string) => {
             fetch(url)
                 .then((res) => res.json())
                 .then((result): void => {
-                    const geojson = result as PlotGeoJSON;
-                    const properties = geojson.features[0].properties;
+                    const plotFeature = result as PlotGeoJSON;
+                    const properties = plotFeature.features[0].properties;
                     const newPlot: Plot = {
                         brkGemeenteCode: properties.kadastraleGemeenteCode,
                         brkPerceelNummer: parseInt(properties.perceelnummer),
                         brkSectie: properties.sectie,
-                        brkSelectie: "TBD", // TODO what to put here?
-                        geoJson: geojson,
+                        plotFeature: plotFeature,
                     };
                     const newSelectedPlots = selectedPlots.filter((p) => {
                         const notEqual =
                             p.brkGemeenteCode !== newPlot.brkGemeenteCode ||
                             p.brkPerceelNummer !== newPlot.brkPerceelNummer ||
-                            p.brkSectie !== newPlot.brkSectie ||
-                            p.brkSelectie !== newPlot.brkSelectie;
+                            p.brkSectie !== newPlot.brkSectie;
                         return notEqual;
                     });
                     if (newSelectedPlots.length !== selectedPlots.length) {
@@ -137,7 +135,7 @@ const usePlotSelector = (id: string) => {
             setPlotsChanged(changed);
             selectedPlotLayerSource.clear();
             for (const selectedPlot of selectedPlots) {
-                const geojson = new GeoJSON().readFeatures(selectedPlot.geoJson);
+                const geojson = new GeoJSON().readFeatures(selectedPlot.plotFeature);
                 selectedPlotLayerSource.addFeatures(geojson);
             }
 

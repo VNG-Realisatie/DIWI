@@ -42,10 +42,11 @@ public class ProjectRegistryLinkChangelogValue extends IdSuperclass {
     @Column(name = "brk_perceelnummer")
     private Long brkPerceelNummer;
 
-    @Column(name = "brk_selectie")
-    private String brkSelectie;
+    @Type(JsonType.class)
+    @Column(name = "subselection_geometry", columnDefinition = "json")
+    private ObjectNode subselectionGeometry;
 
     @Type(JsonType.class)
-    @Column(name = "geojson", columnDefinition = "json")
-    private ObjectNode geoJson;
+    @Column(name = "plot_feature", columnDefinition = "json")
+    private ObjectNode plotFeature;
 }

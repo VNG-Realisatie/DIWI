@@ -12,15 +12,17 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nonnull;
+
 import io.hypersistence.utils.hibernate.type.range.Range;
 import nl.vng.diwi.dal.entities.PropertyCategoryValue;
 import nl.vng.diwi.dal.entities.PropertyOrdinalValue;
 import nl.vng.diwi.dal.entities.Property;
 import nl.vng.diwi.dal.entities.ProjectBooleanCustomPropertyChangelog;
-import nl.vng.diwi.dal.entities.ProjectCategoryCustomPropertyChangelog;
-import nl.vng.diwi.dal.entities.ProjectCategoryCustomPropertyChangelogValue;
+import nl.vng.diwi.dal.entities.ProjectCategoryPropertyChangelog;
+import nl.vng.diwi.dal.entities.ProjectCategoryPropertyChangelogValue;
 import nl.vng.diwi.dal.entities.ProjectNumericCustomPropertyChangelog;
-import nl.vng.diwi.dal.entities.ProjectOrdinalCustomPropertyChangelog;
+import nl.vng.diwi.dal.entities.ProjectOrdinalPropertyChangelog;
 import nl.vng.diwi.dal.entities.ProjectTextCustomPropertyChangelog;
 import nl.vng.diwi.models.ProjectHouseblockCustomPropertyModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
@@ -34,16 +36,12 @@ import nl.vng.diwi.dal.entities.MilestoneState;
 import nl.vng.diwi.dal.entities.Project;
 import nl.vng.diwi.dal.entities.ProjectDurationChangelog;
 import nl.vng.diwi.dal.entities.ProjectFaseChangelog;
-import nl.vng.diwi.dal.entities.ProjectGemeenteRolChangelog;
-import nl.vng.diwi.dal.entities.ProjectGemeenteRolValue;
 import nl.vng.diwi.dal.entities.ProjectListSqlModel;
 import nl.vng.diwi.dal.entities.ProjectNameChangelog;
 import nl.vng.diwi.dal.entities.ProjectPlanTypeChangelog;
 import nl.vng.diwi.dal.entities.ProjectPlanTypeChangelogValue;
 import nl.vng.diwi.dal.entities.ProjectPlanologischePlanstatusChangelog;
 import nl.vng.diwi.dal.entities.ProjectPlanologischePlanstatusChangelogValue;
-import nl.vng.diwi.dal.entities.ProjectPrioriseringChangelog;
-import nl.vng.diwi.dal.entities.ProjectPrioriseringValue;
 import nl.vng.diwi.dal.entities.ProjectRegistryLinkChangelog;
 import nl.vng.diwi.dal.entities.ProjectRegistryLinkChangelogValue;
 import nl.vng.diwi.dal.entities.ProjectState;
@@ -147,8 +145,8 @@ public class ProjectService {
                     .brkGemeenteCode(plot.getBrkGemeenteCode())
                     .brkPerceelNummer(plot.getBrkPerceelNummer())
                     .brkSectie(plot.getBrkSectie())
-                    .brkSelectie(plot.getBrkSelectie())
-                    .geoJson(plot.getGeoJson())
+                    .subselectionGeometry(plot.getSubselectionGeometry())
+                    .plotFeature(plot.getPlotFeature())
                     .projectRegistryLinkChangelog(newCl)
                     .build());
             }
@@ -166,8 +164,8 @@ public class ProjectService {
                         .brkGemeenteCode(oldClValue.getBrkGemeenteCode())
                         .brkPerceelNummer(oldClValue.getBrkPerceelNummer())
                         .brkSectie(oldClValue.getBrkSectie())
-                        .brkSelectie(oldClValue.getBrkSelectie())
-                        .geoJson(oldClValue.getGeoJson())
+                        .subselectionGeometry(oldClValue.getSubselectionGeometry())
+                        .plotFeature(oldClValue.getPlotFeature())
                         .projectRegistryLinkChangelog(oldClAfterUpdate)
                         .build());
                 }
@@ -424,64 +422,7 @@ public class ProjectService {
         }
     }
 
-    public void updateProjectMunicipalityRoles(VngRepository repo, Project project, UUID municipalityRoleToAdd, UUID municipalityRoleToRemove,
-            UUID loggedInUserUuid, LocalDate updateDate) {
-        // a project can have multiple active changelog entries for municipality roles
-
-        LocalDate projectStartDate = (new MilestoneModel(project.getDuration().get(0).getStartMilestone())).getDate();
-        if (projectStartDate.isAfter(updateDate)) {
-            updateDate = projectStartDate;
-        }
-        LocalDate finalUpdateDate = updateDate;
-
-        if (municipalityRoleToAdd != null) {
-
-            List<ProjectGemeenteRolChangelog> changelogs = project.getMunicipalityRole().stream()
-                    .filter(mrc -> mrc.getValue().getId().equals(municipalityRoleToAdd)
-                            && !(new MilestoneModel(mrc.getStartMilestone())).getDate().isAfter(finalUpdateDate)
-                            && (new MilestoneModel(mrc.getEndMilestone())).getDate().isAfter(finalUpdateDate))
-                    .toList();
-            if (!changelogs.isEmpty()) {
-                logger.info("Trying to add to project {} a municipality role {} which is already associated with this project.", project.getId(),
-                        municipalityRoleToAdd);
-                return;
-            } else {
-                ProjectGemeenteRolChangelog newChangelog = new ProjectGemeenteRolChangelog();
-                newChangelog.setValue(repo.findById(ProjectGemeenteRolValue.class, municipalityRoleToAdd));
-                newChangelog.setProject(project);
-                newChangelog.setChangeStartDate(ZonedDateTime.now());
-                newChangelog.setCreateUser(repo.getReferenceById(User.class, loggedInUserUuid));
-                newChangelog.setStartMilestone(getOrCreateMilestoneForProject(repo, project, updateDate, loggedInUserUuid));
-                UUID newEndMilestoneUuid = project.getMunicipalityRole().stream().filter(mrc -> mrc.getValue().getId().equals(municipalityRoleToAdd))
-                        .map(mr -> new MilestoneModel(mr.getStartMilestone()))
-                        .filter(mm -> mm.getDate().isAfter(finalUpdateDate))
-                        .min(Comparator.comparing(MilestoneModel::getDate))
-                        .map(MilestoneModel::getId)
-                        .orElse(project.getDuration().get(0).getEndMilestone().getId());
-                newChangelog.setEndMilestone(repo.getReferenceById(Milestone.class, newEndMilestoneUuid));
-                repo.persist(newChangelog);
-            }
-        }
-
-        if (municipalityRoleToRemove != null) {
-            List<ProjectGemeenteRolChangelog> changelogs = project.getMunicipalityRole().stream()
-                    .filter(mrc -> mrc.getValue().getId().equals(municipalityRoleToRemove)
-                            && !(new MilestoneModel(mrc.getStartMilestone())).getDate().isAfter(finalUpdateDate)
-                            && (new MilestoneModel(mrc.getEndMilestone())).getDate().isAfter(finalUpdateDate))
-                    .toList();
-            if (changelogs.isEmpty()) {
-                logger.info("Trying to remove from project {} a municipality role {} which is not associated with this project.", project.getId(),
-                        municipalityRoleToRemove);
-            } else {
-                ProjectGemeenteRolChangelog changelog = changelogs.get(0);
-                changelog.setChangeEndDate(ZonedDateTime.now());
-                changelog.setChangeUser(repo.getReferenceById(User.class, loggedInUserUuid));
-                repo.persist(changelog);
-            }
-        }
-    }
-
-    public void updateProjectPlanStatus(VngRepository repo, Project project, Set<PlanStatus> newProjectPlanStatuses, UUID loggedInUserUuid,
+    public void updateProjectPlanStatus(VngRepository repo, Project project, @Nonnull Set<PlanStatus> newProjectPlanStatuses, UUID loggedInUserUuid,
             LocalDate updateDate) {
 
         ProjectPlanologischePlanstatusChangelog oldPlanStatusChangelogAfterUpdate = new ProjectPlanologischePlanstatusChangelog();
@@ -524,7 +465,7 @@ public class ProjectService {
         }
     }
 
-    public void updateProjectPlanTypes(VngRepository repo, Project project, Set<PlanType> newProjectPlanTypes, UUID loggedInUserUuid, LocalDate updateDate) {
+    public void updateProjectPlanTypes(VngRepository repo, Project project, @Nonnull Set<PlanType> newProjectPlanTypes, UUID loggedInUserUuid, LocalDate updateDate) {
 
         ProjectPlanTypeChangelog oldPlanTypeChangelogAfterUpdate = new ProjectPlanTypeChangelog();
         ProjectPlanTypeChangelog newPlanTypeChangelog = null;
@@ -670,26 +611,26 @@ public class ProjectService {
         }
     }
 
-    public void updateProjectCategoryCustomProperty(VngRepository repo, Project project, UUID customPropertyId, Set<UUID> newCategoryValues,
-            UUID loggedInUserUuid, LocalDate updateDate) {
-        ProjectCategoryCustomPropertyChangelog oldChangelogAfterUpdate = new ProjectCategoryCustomPropertyChangelog();
-        ProjectCategoryCustomPropertyChangelog newChangelog = null;
+    public void updateProjectCategoryProperty(VngRepository repo, Project project, UUID propertyId, Set<UUID> newCategoryValues,
+                                              UUID loggedInUserUuid, LocalDate updateDate) {
+        ProjectCategoryPropertyChangelog oldChangelogAfterUpdate = new ProjectCategoryPropertyChangelog();
+        ProjectCategoryPropertyChangelog newChangelog = null;
         if (newCategoryValues != null && !newCategoryValues.isEmpty()) {
-            newChangelog = new ProjectCategoryCustomPropertyChangelog();
+            newChangelog = new ProjectCategoryPropertyChangelog();
             newChangelog.setProject(project);
-            newChangelog.setProperty(repo.getReferenceById(Property.class, customPropertyId));
+            newChangelog.setProperty(repo.getReferenceById(Property.class, propertyId));
         }
 
-        List<ProjectCategoryCustomPropertyChangelog> changelogs = project.getCategoryCustomProperties().stream()
-                .filter(cp -> cp.getProperty().getId().equals(customPropertyId)).toList();
+        List<ProjectCategoryPropertyChangelog> changelogs = project.getCategoryProperties().stream()
+                .filter(cp -> cp.getProperty().getId().equals(propertyId)).toList();
 
-        ProjectCategoryCustomPropertyChangelog oldChangelog = prepareProjectChangelogValuesToUpdate(repo, project, changelogs, newChangelog,
+        ProjectCategoryPropertyChangelog oldChangelog = prepareProjectChangelogValuesToUpdate(repo, project, changelogs, newChangelog,
                 oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
 
         if (newChangelog != null) {
             repo.persist(newChangelog);
             for (UUID newCategoryValue : newCategoryValues) {
-                ProjectCategoryCustomPropertyChangelogValue newChangelogValue = new ProjectCategoryCustomPropertyChangelogValue();
+                ProjectCategoryPropertyChangelogValue newChangelogValue = new ProjectCategoryPropertyChangelogValue();
                 newChangelogValue.setCategoryChangelog(newChangelog);
                 newChangelogValue.setCategoryValue(repo.getReferenceById(PropertyCategoryValue.class, newCategoryValue));
                 repo.persist(newChangelogValue);
@@ -706,7 +647,7 @@ public class ProjectService {
                 oldChangelogAfterUpdate.setProperty(oldChangelog.getProperty());
                 repo.persist(oldChangelogAfterUpdate);
                 for (UUID oldCategoryValue : oldCategoryValues) {
-                    ProjectCategoryCustomPropertyChangelogValue oldChangelogValue = new ProjectCategoryCustomPropertyChangelogValue();
+                    ProjectCategoryPropertyChangelogValue oldChangelogValue = new ProjectCategoryPropertyChangelogValue();
                     oldChangelogValue.setCategoryChangelog(oldChangelogAfterUpdate);
                     oldChangelogValue.setCategoryValue(repo.getReferenceById(PropertyCategoryValue.class, oldCategoryValue));
                     repo.persist(oldChangelogValue);
@@ -717,10 +658,10 @@ public class ProjectService {
 
     public void updateProjectOrdinalCustomProperty(VngRepository repo, Project project, UUID customPropertyId, SingleValueOrRangeModel<UUID> newOrdinalValue,
             UUID loggedInUserUuid, LocalDate updateDate) {
-        ProjectOrdinalCustomPropertyChangelog oldChangelogAfterUpdate = new ProjectOrdinalCustomPropertyChangelog();
-        ProjectOrdinalCustomPropertyChangelog newChangelog = null;
+        ProjectOrdinalPropertyChangelog oldChangelogAfterUpdate = new ProjectOrdinalPropertyChangelog();
+        ProjectOrdinalPropertyChangelog newChangelog = null;
         if (newOrdinalValue.getValue() != null || newOrdinalValue.getMin() != null || newOrdinalValue.getMax() != null) {
-            newChangelog = new ProjectOrdinalCustomPropertyChangelog();
+            newChangelog = new ProjectOrdinalPropertyChangelog();
             newChangelog.setProject(project);
             if (newOrdinalValue.getValue() != null) {
                 newChangelog.setValue(repo.getReferenceById(PropertyOrdinalValue.class, newOrdinalValue.getValue()));
@@ -733,10 +674,10 @@ public class ProjectService {
             newChangelog.setProperty(repo.getReferenceById(Property.class, customPropertyId));
         }
 
-        List<ProjectOrdinalCustomPropertyChangelog> changelogs = project.getOrdinalCustomProperties().stream()
+        List<ProjectOrdinalPropertyChangelog> changelogs = project.getOrdinalCustomProperties().stream()
                 .filter(cp -> cp.getProperty().getId().equals(customPropertyId)).toList();
 
-        ProjectOrdinalCustomPropertyChangelog oldChangelog = prepareProjectChangelogValuesToUpdate(repo, project, changelogs, newChangelog,
+        ProjectOrdinalPropertyChangelog oldChangelog = prepareProjectChangelogValuesToUpdate(repo, project, changelogs, newChangelog,
                 oldChangelogAfterUpdate, loggedInUserUuid, updateDate);
 
         if (newChangelog != null) {
@@ -782,47 +723,6 @@ public class ProjectService {
                 oldProjectFaseChangelogAfterUpdate.setProject(project);
                 oldProjectFaseChangelogAfterUpdate.setProjectPhase(oldProjectFaseChangelog.getProjectPhase());
                 repo.persist(oldProjectFaseChangelogAfterUpdate);
-            }
-        }
-    }
-
-    public void updateProjectPriority(VngRepository repo, Project project, UUID priorityValue, UUID priorityMin, UUID priorityMax, UUID loggedInUserUuid,
-            LocalDate updateDate) {
-
-        ProjectPrioriseringChangelog oldPriorityChangelogAfterUpdate = new ProjectPrioriseringChangelog();
-        ProjectPrioriseringChangelog newPriorityChangelog = null;
-        if (priorityValue != null || priorityMin != null || priorityMax != null) {
-            newPriorityChangelog = new ProjectPrioriseringChangelog();
-            newPriorityChangelog.setProject(project);
-            newPriorityChangelog.setValue((priorityValue != null) ? repo.getReferenceById(ProjectPrioriseringValue.class, priorityValue) : null);
-            newPriorityChangelog.setMinValue((priorityMin != null) ? repo.getReferenceById(ProjectPrioriseringValue.class, priorityMin) : null);
-            newPriorityChangelog.setMaxValue((priorityMax != null) ? repo.getReferenceById(ProjectPrioriseringValue.class, priorityMax) : null);
-            newPriorityChangelog.setValueType((priorityValue != null) ? ValueType.SINGLE_VALUE : ValueType.RANGE);
-        }
-        ProjectPrioriseringChangelog oldPriorityChangelog = prepareProjectChangelogValuesToUpdate(repo, project, project.getPriority(), newPriorityChangelog,
-                oldPriorityChangelogAfterUpdate, loggedInUserUuid, updateDate);
-        if (newPriorityChangelog != null) {
-            repo.persist(newPriorityChangelog);
-        }
-        if (oldPriorityChangelog != null) {
-            UUID oldPriorityValue = (oldPriorityChangelog.getValue() == null) ? null : oldPriorityChangelog.getValue().getId();
-            UUID oldPriorityMinValue = (oldPriorityChangelog.getMinValue() == null) ? null : oldPriorityChangelog.getMinValue().getId();
-            UUID oldPriorityMaxValue = (oldPriorityChangelog.getMaxValue() == null) ? null : oldPriorityChangelog.getMaxValue().getId();
-            if (Objects.equals(oldPriorityValue, priorityValue) && Objects.equals(oldPriorityMinValue, priorityMin) &&
-                    Objects.equals(oldPriorityMaxValue, priorityMax)) {
-                logger.info("Trying to update the project {} with the same project priority value {}, min value {} and max value {} that it already has.",
-                        project.getId(), priorityValue, priorityMin, priorityMax);
-                return;
-            }
-            repo.persist(oldPriorityChangelog);
-            if (oldPriorityChangelogAfterUpdate.getStartMilestone() != null) {
-                // it is a current project && it had a non-null changelog before the update
-                oldPriorityChangelogAfterUpdate.setProject(project);
-                oldPriorityChangelogAfterUpdate.setValue(oldPriorityChangelog.getValue());
-                oldPriorityChangelogAfterUpdate.setMinValue(oldPriorityChangelog.getMinValue());
-                oldPriorityChangelogAfterUpdate.setMaxValue(oldPriorityChangelog.getMaxValue());
-                oldPriorityChangelogAfterUpdate.setValueType(oldPriorityChangelog.getValueType());
-                repo.persist(oldPriorityChangelogAfterUpdate);
             }
         }
     }

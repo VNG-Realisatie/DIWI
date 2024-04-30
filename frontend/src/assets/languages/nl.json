@@ -11,13 +11,19 @@
       "saveChanges": "Veranderingen opslaan",
       "edit": "Bewerken",
       "confirmDeletion": "Weet u zeker dat u {{name}} wilt verwijderen?",
-      "projectDeletion": "Project {{name}} is verwijderd",
+      "deletionSuccess": "{{name}} is verwijderd",
       "delete": "Verwijderen",
       "cancel": "Annuleren",
       "noInfoAvailable": "Geen informatie beschikbaar",
       "updated": "Succesvol geüpdatet",
       "failedToUpdate": "Update is mislukt",
-      "failedToSave": "Opslaan is mislukt"
+      "failedToSave": "Opslaan is mislukt",
+      "project": "Project",
+      "houseblock": "Woningblok",
+      "true": "Ja",
+      "false": "Nee",
+      "andMore": "en meer",
+      "andLess": "en minder"
     },
     "createProject": {
       "information": "Project informatie",
@@ -27,6 +33,7 @@
       "completeMessage": "De wizard voor het maken van projectformulieren is voltooid. Klik op Opslaan om het proces te voltooien.",
       "successfullySaved": "Project succesvol opgeslagen.",
       "nameIsRequried": "Vul het veld projectnaam in",
+      "addAnotherHouseBlock": "Voeg nog een woningblok toe",
       "informationForm": {
         "title": "Vul de projectgegevens in",
         "info": "Vul de projectgegevens in",
@@ -54,6 +61,8 @@
         "netPlanCapacity": "Netto Plancapaciteit",
         "demolition": "Sloop",
         "mutationType": "Mutatiesoort",
+        "DEMOLITION": "Sloop",
+        "CONSTRUCTION": "Bouw",
         "size": "Grootte",
         "type": "Soort",
         "amount": "Aantal",
@@ -126,9 +135,8 @@
         "notifications": {
           "successfullySaved": "Woningblokken succesvol opgeslagen.",
           "successfullyUpdated": "Woningblokken succesvol geüpdatet.",
-          "error": "Er is iets fout gegaan"
-        },
-        "saveBeforeCustomProps": "Sla het woningblok op zodat u de maatwerk eigenschappen kunt invullen."
+          "error": "Nieuwe of gewijzigde woningblokken met een uitroepteken konden niet worden opgeslagen, pas de informatie aan en sla nogmaals op"
+        }
       },
       "selectMapForm": {
         "title": "Teken het project in op de kaart",
@@ -165,6 +173,9 @@
     },
     "about": {
       "heading": "Over deze website",
+      "frontend": "Frontend",
+      "backend": "Backend",
+      "gitHash": "Git hash",
       "version": "Versie",
       "deployedOn": "Online sinds"
     },
@@ -192,7 +203,7 @@
         "projectPhase": "Project Fase",
         "planningPlanStatus": "Planologische Plan Status",
         "municipality": "Regio",
-        "wijk": "Wijk",
+        "district": "Wijk",
         "neighbourhood": "Buurt",
         "selectPlanType": "Selecteer plan type",
         "selectMunicipalityRole": "Selecteer gemeente rol",
@@ -258,15 +269,25 @@
         "OPENBAAR": "Openbaar"
       },
       "projectPhaseOptions": {
-        "_1_INITIATIEFFASE": "1 Initiatieffase",
-        "_2_PROJECTFASE": "2 Projectfase",
-        "_3_VERGUNNINGSFASE": "3 Vergunningsfase",
-        "_4_REALISATIEFASE": "4 Realisatiefase",
-        "_5_OPLEVERINGSFASE": "5 Opleveringsfase"
+        "_1_CONCEPT": "1 Concept",
+        "_2_INITIATIVE": "2 Initiatief",
+        "_3_DEFINITION": "3 Definitie",
+        "_4_DESIGN": "4 Ontwerp",
+        "_5_PREPARATION": "5 Voorbereiding",
+        "_6_REALIZATION": "6 Realisatie",
+        "_7_AFTERCARE": "7 Nazorg"
       }
     },
     "wizard": {
       "houseBlocks": {
+        "deleteConfirmation": "Weet je zeker dat je woningblok wilt verwijderen?",
+        "warning": "Een of meer woningblokken zijn verkeerd ingevuld",
+        "endDateWarning": "Eind Datum moet een eerdere datum zijn",
+        "startDateWarning": "Start Datum moet een latere datum zijn",
+        "endDateWarningMissing": "​Vul het veld eind datum in",
+        "startDateWarningMissing": "​Vul het veld start datum in",
+        "mutationAmountWarning": "​Vul het veld aantal in met een positief getal",
+        "mutationKindWarning": "​Vul het veld mutatiesoort in",
         "generalInformation": {
           "title": "Algemene informatie"
         }
@@ -286,15 +307,15 @@
           "delete": "Verwijderen",
           "actions": "Acties"
         },
-        "propertyType" : {
+        "propertyType": {
           "BOOLEAN": "Ja / Nee",
           "NUMERIC": "Getal",
           "ORDINAL": "Gerangschikte categorie",
           "CATEGORY": "Categorie",
           "TEXT": "Open tekstveld"
         },
-        "add": "Voeg optioneel toe",
-        "edit": "Pas optioneel veld aan",
+        "add": "Voeg maatwerk eigenschap toe",
+        "edit": "Pas maatwerk eigenschap aan",
         "propertyTypeInfo": "Type kan na het opslaan niet meer worden gewijzigd.",
         "notifications": {
           "successfullySaved": "Eigenschappen succesvol opgeslagen.",

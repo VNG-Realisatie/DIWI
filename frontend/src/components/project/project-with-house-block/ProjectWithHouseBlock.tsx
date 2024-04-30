@@ -8,18 +8,17 @@ import ClearIcon from "@mui/icons-material/Clear";
 import FormatColorFillIcon from "@mui/icons-material/FormatColorFill";
 import { useTranslation } from "react-i18next";
 import dayjs, { Dayjs } from "dayjs";
-import { formatDate } from "../../../utils/formatDate";
 
 import { defaultColors } from "../../ColorSelector";
 import { BlockPicker, ColorResult } from "react-color";
 
 import { PlanStatusOptions, PlanTypeOptions } from "../../../types/enums";
-import { Organization, PriorityModel, SelectModel, updateProjects } from "../../../api/projectsServices";
+import { Organization, PriorityModel, Project, SelectModel, updateProject as updateProjects } from "../../../api/projectsServices";
 import AlertContext from "../../../context/AlertContext";
 import { CreateHouseBlockDialog } from "./CreateHouseBlockDialog";
 import { HouseBlocksList } from "./HouseBlocksList";
 import { CustomerPropertiesProjectBlock } from "./CustomerPropertiesProjectBlock";
-import { CustomPropertyValue, getCustomPropertyValues, putCustomPropertyValues } from "../../../api/customPropServices";
+import { CustomPropertyValue, getCustomPropertyValues, putCustomPropertyValue } from "../../../api/customPropServices";
 import { ProjectProperties } from "./ProjectProperties";
 
 export const columnTitleStyle: SxProps<Theme> = {
@@ -44,9 +43,9 @@ export const ProjectsWithHouseBlock = () => {
     const [planType, setPlanType] = useState<PlanTypeOptions[]>([]);
     const [planStatus, setPlanStatus] = useState<PlanStatusOptions[]>([]);
     const [selectedMunicipalityRole, setSelectedMunicipalityRole] = useState<SelectModel[]>([]);
+    const [selectedDistrict, setSelectedDistrict] = useState<SelectModel[]>([]);
     const [selectedMunicipality, setSelectedMunicipality] = useState<SelectModel[]>([]);
     const [selectedNeighbourhood, setSelectedNeighbourhood] = useState<SelectModel[]>([]);
-    const [selectedWijk, setSelectedWijk] = useState<SelectModel[]>([]);
     const [projectPriority, setProjectPriority] = useState<PriorityModel | null>(null);
     const [customValues, setCustomValues] = useState<CustomPropertyValue[]>([]);
 
@@ -92,25 +91,23 @@ export const ProjectsWithHouseBlock = () => {
     const updateChanges = useCallback(() => {
         setName(selectedProject?.projectName ?? "");
         setOwner(selectedProject?.projectOwners ?? []);
-        setStartDate(selectedProject?.startDate ? dayjs(formatDate(selectedProject.startDate)).endOf("day") : null);
-        setEndDate(selectedProject?.endDate ? dayjs(formatDate(selectedProject.endDate)).endOf("day") : null);
+        setStartDate(selectedProject?.startDate ? dayjs(selectedProject.startDate) : null);
+        setEndDate(selectedProject?.endDate ? dayjs(selectedProject.endDate) : null);
         setProjectPriority(selectedProject?.priority || {}); //ToDo Fix later when decided range select
         setProjectPhase(selectedProject?.projectPhase);
-        setSelectedNeighbourhood(selectedProject?.buurt ?? []);
-        setSelectedMunicipality(selectedProject?.municipality ?? []);
         setSelectedMunicipalityRole(selectedProject?.municipalityRole ?? []);
+        setSelectedMunicipality(selectedProject?.municipality ?? []);
+        setSelectedDistrict(selectedProject?.district ?? []);
+        setSelectedNeighbourhood(selectedProject?.neighbourhood ?? []);
         setConfidentialityLevel(selectedProject?.confidentialityLevel);
         setLeader(selectedProject?.projectLeaders ?? []);
         setPlanType(selectedProject?.planType?.map((type) => type) ?? []);
         setPlanStatus(selectedProject?.planningPlanStatus?.map((type) => type) ?? []);
-        setSelectedWijk(selectedProject?.wijk ?? []);
         setSelectedProjectColor(selectedProject?.projectColor ?? "");
     }, [
         selectedProject?.projectOwners,
-        selectedProject?.buurt,
         selectedProject?.confidentialityLevel,
         selectedProject?.endDate,
-        selectedProject?.municipality,
         selectedProject?.municipalityRole,
         selectedProject?.planType,
         selectedProject?.projectLeaders,
@@ -120,7 +117,9 @@ export const ProjectsWithHouseBlock = () => {
         selectedProject?.projectName,
         selectedProject?.projectPhase,
         selectedProject?.startDate,
-        selectedProject?.wijk,
+        selectedProject?.municipality,
+        selectedProject?.neighbourhood,
+        selectedProject?.district,
         setSelectedProjectColor,
     ]);
 
@@ -131,33 +130,31 @@ export const ProjectsWithHouseBlock = () => {
         updateChanges();
     };
 
-    const updatedProjectForm = {
-        startDate: startDate,
-        endDate: endDate,
-        projectId: selectedProject?.projectId,
-        projectName: name,
-        projectColor: selectedProjectColor,
-        confidentialityLevel: confidentialityLevel,
-        planType: planType,
-        priority: projectPriority,
-        projectPhase: projectPhase,
-        planningPlanStatus: planStatus,
-        municipalityRole: selectedMunicipalityRole,
-        projectOwners: owner,
-        projectLeaders: leader,
-        totalValue: selectedProject?.totalValue,
-        municipality: selectedMunicipality,
-        wijk: selectedWijk,
-        buurt: selectedNeighbourhood,
-    };
     const handleCustomPropertiesSave = () => {
         customValues.forEach((value) => {
-            putCustomPropertyValues(selectedProject?.projectId as string, value).catch((error: any) => setAlert(error.message, "error"));
+            putCustomPropertyValue(selectedProject?.projectId as string, value).catch((error: any) => setAlert(error.message, "error"));
         });
     };
 
     const handleProjectSave = () => {
-        updateProjects(updatedProjectForm)
+        const updatedProjectForm = {
+            startDate: startDate?.format("YYYY-MM-DD"),
+            endDate: endDate?.format("YYYY-MM-DD"),
+            projectId: selectedProject?.projectId,
+            projectName: name,
+            projectColor: selectedProjectColor,
+            confidentialityLevel: confidentialityLevel,
+            planType: planType,
+            priority: projectPriority,
+            projectPhase: projectPhase,
+            planningPlanStatus: planStatus,
+            municipalityRole: selectedMunicipalityRole,
+            projectOwners: owner,
+            projectLeaders: leader,
+            totalValue: selectedProject?.totalValue,
+        };
+
+        updateProjects(updatedProjectForm as Project)
             .then(() => {
                 setReadOnly(true);
                 updateProject();
@@ -221,12 +218,9 @@ export const ProjectsWithHouseBlock = () => {
                     setLeader={setLeader}
                     planStatus={planStatus}
                     setPlanStatus={setPlanStatus}
-                    // selectedMunicipality,
-                    // setSelectedMunicipality,
-                    // selectedNeighbourhood,
-                    // setSelectedNeighbourhood,
-                    // selectedWijk,
-                    // setSelectedWijk,
+                    selectedDistrict={selectedDistrict}
+                    selectedNeighbourhood={selectedNeighbourhood}
+                    selectedMunicipality={selectedMunicipality}
                 />
 
                 <CustomerPropertiesProjectBlock {...{ readOnly, customValues, setCustomValues, columnTitleStyle }} />

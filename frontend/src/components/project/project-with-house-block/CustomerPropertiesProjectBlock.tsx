@@ -31,18 +31,27 @@ export const CustomerPropertiesProjectBlock = ({ readOnly, customValues, setCust
             {customDefinitions.map((property) => {
                 const customValue = customValues?.find((cv) => cv.customPropertyId === property.id);
                 return (
-                    <Grid item xs={6} md={"auto"} key={property.id}>
-                        <Typography sx={columnTitleStyle}>{property.name}</Typography>
+                    // make sure to not display some fixed props here as they have their own respective widgets
+                    !(
+                        property.name === "municipalityRole" ||
+                        property.name === "municipality" ||
+                        property.name === "district" ||
+                        property.name === "neighbourhood" ||
+                        property.name === "priority"
+                    ) && (
+                        <Grid item xs={6} md={"auto"} key={property.id}>
+                            <Typography sx={columnTitleStyle}>{property.name}</Typography>
 
-                        <CustomPropertyWidget
-                            readOnly={readOnly}
-                            customValue={customValue}
-                            setCustomValue={(newValue) => {
-                                setCustomValue({ ...newValue, customPropertyId: property.id });
-                            }}
-                            customDefinition={property}
-                        />
-                    </Grid>
+                            <CustomPropertyWidget
+                                readOnly={readOnly}
+                                customValue={customValue}
+                                setCustomValue={(newValue) => {
+                                    setCustomValue({ ...newValue, customPropertyId: property.id });
+                                }}
+                                customDefinition={property}
+                            />
+                        </Grid>
+                    )
                 );
             })}
         </Grid>

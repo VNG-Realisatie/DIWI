@@ -2,6 +2,7 @@ import { Autocomplete, TextField } from "@mui/material";
 import { Property } from "../api/adminSettingServices";
 import { CustomPropertyValue } from "../api/customPropServices";
 import { CellContainer } from "./project/project-with-house-block/CellContainer";
+import { useTranslation } from "react-i18next";
 
 type Props = {
     readOnly: boolean;
@@ -11,19 +12,30 @@ type Props = {
 };
 
 export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, customDefinition }: Props) => {
+    const { t } = useTranslation();
+    const trueishLabel = t("generic.true");
+    const falsyLabel = t("generic.false");
+
+    function booleanToLabel(value: boolean) {
+        return value === true ? trueishLabel : falsyLabel;
+    }
+
     if (customDefinition.propertyType === "BOOLEAN") {
         if (!readOnly) {
             return (
                 <Autocomplete
                     size="small"
-                    options={["true", "false"]}
-                    value={customValue?.booleanValue?.toString() || ""}
-                    onChange={(_, newValue) => setCustomValue({ ...customValue, booleanValue: newValue === "true" ? true : false })}
+                    options={[trueishLabel, falsyLabel]}
+                    value={customValue?.booleanValue !== undefined ? booleanToLabel(customValue.booleanValue) : ""}
+                    onChange={(_, newValue) => {
+                        const booleanValue = newValue === trueishLabel ? true : newValue === falsyLabel ? false : undefined;
+                        setCustomValue({ ...customValue, booleanValue });
+                    }}
                     renderInput={(params) => <TextField {...params} size="small" />}
                 />
             );
         } else {
-            return <CellContainer>{customValue?.booleanValue?.toString() || ""}</CellContainer>;
+            return <CellContainer>{customValue?.booleanValue !== undefined ? booleanToLabel(customValue.booleanValue) : ""}</CellContainer>;
         }
     } else if (customDefinition.propertyType === "CATEGORY") {
         if (!readOnly) {

@@ -1,6 +1,7 @@
 package nl.vng.diwi.dal;
 
 import nl.vng.diwi.dal.entities.HouseblockSnapshotSqlModel;
+import nl.vng.diwi.dal.entities.PropertyCategoryValueState;
 import nl.vng.diwi.dal.entities.enums.MutationType;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.testutil.TestDb;
@@ -16,7 +17,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -86,10 +89,8 @@ public class HouseblockDAOTest {
         assertThat(hb.getSizeValueRange().lower()).isEqualTo(BigDecimal.valueOf(11.1));
         assertThat(hb.getSizeValueRange().upper()).isEqualTo(BigDecimal.valueOf(22.2));
         assertThat(hb.getProgramming()).isTrue();
-        assertThat(hb.getMutationKind()).containsExactlyInAnyOrder(MutationType.SPLITSING, MutationType.TRANSFORMATIE);
-        assertThat(hb.getGrossPlanCapacity()).isEqualTo(0);
-        assertThat(hb.getNetPlanCapacity()).isEqualTo(25);
-        assertThat(hb.getDemolition()).isEqualTo(0);
+        assertThat(hb.getMutationKind()).isEqualTo(MutationType.CONSTRUCTION);
+        assertThat(hb.getMutationAmount()).isEqualTo(25);
         assertThat(hb.getOwnershipValueList().size()).isEqualTo(2);
 
         HouseblockSnapshotSqlModel.OwnershipValueSqlModel koop = hb.getOwnershipValueList().stream()
@@ -112,21 +113,25 @@ public class HouseblockDAOTest {
         assertThat(hb.getIntentionPermissionOwner()).isEqualTo(20);
         assertThat(hb.getFormalPermissionOwner()).isEqualTo(10);
 
-        assertThat(hb.getTussenwoning()).isEqualTo(5);
-        assertThat(hb.getTweeondereenkap()).isEqualTo(35);
-        assertThat(hb.getPortiekflat()).isEqualTo(55);
-        assertThat(hb.getHoekwoning()).isEqualTo(15);
-        assertThat(hb.getVrijstaand()).isEqualTo(25);
-        assertThat(hb.getGallerijflat()).isEqualTo(45);
+        List<PropertyCategoryValueState> paVals = repo.getPropertyDAO().getCategoryStatesByPropertyName("physicalAppearance");
+        Map<String, UUID> paMap = paVals.stream().collect(Collectors.toMap(PropertyCategoryValueState::getLabel, cs -> cs.getCategoryValue().getId()));
+        assertThat(hb.getPhysicalAppearanceList().stream().filter(pa -> pa.getId().equals(paMap.get("Tussenwoning"))).findFirst().get().getAmount()).isEqualTo(5);
+        assertThat(hb.getPhysicalAppearanceList().stream().filter(pa -> pa.getId().equals(paMap.get("Twee onder een kap"))).findFirst().get().getAmount()).isEqualTo(35);
+        assertThat(hb.getPhysicalAppearanceList().stream().filter(pa -> pa.getId().equals(paMap.get("Portiekflat"))).findFirst().get().getAmount()).isEqualTo(55);
+        assertThat(hb.getPhysicalAppearanceList().stream().filter(pa -> pa.getId().equals(paMap.get("Hoekwoning"))).findFirst().get().getAmount()).isEqualTo(15);
+        assertThat(hb.getPhysicalAppearanceList().stream().filter(pa -> pa.getId().equals(paMap.get("Vrijstaand"))).findFirst().get().getAmount()).isEqualTo(25);
+        assertThat(hb.getPhysicalAppearanceList().stream().filter(pa -> pa.getId().equals(paMap.get("Gallerijflat"))).findFirst().get().getAmount()).isEqualTo(45);
 
         assertThat(hb.getMeergezinswoning()).isEqualTo(67);
         assertThat(hb.getEengezinswoning()).isEqualTo(103);
 
-        assertThat(hb.getRegular()).isEqualTo(3);
-        assertThat(hb.getYouth()).isEqualTo(6);
-        assertThat(hb.getStudent()).isEqualTo(9);
-        assertThat(hb.getElderly()).isEqualTo(12);
-        assertThat(hb.getLargeFamilies()).isEqualTo(18);
-        assertThat(hb.getGHZ()).isEqualTo(15);
+        List<PropertyCategoryValueState> tgVals = repo.getPropertyDAO().getCategoryStatesByPropertyName("targetGroup");
+        Map<String, UUID> tgMap = tgVals.stream().collect(Collectors.toMap(PropertyCategoryValueState::getLabel, cs -> cs.getCategoryValue().getId()));
+        assertThat(hb.getTargetGroupList().stream().filter(tg -> tg.getId().equals(tgMap.get("Regulier"))).findFirst().get().getAmount()).isEqualTo(3);
+        assertThat(hb.getTargetGroupList().stream().filter(tg -> tg.getId().equals(tgMap.get("Jongeren"))).findFirst().get().getAmount()).isEqualTo(6);
+        assertThat(hb.getTargetGroupList().stream().filter(tg -> tg.getId().equals(tgMap.get("Student"))).findFirst().get().getAmount()).isEqualTo(9);
+        assertThat(hb.getTargetGroupList().stream().filter(tg -> tg.getId().equals(tgMap.get("Ouderen"))).findFirst().get().getAmount()).isEqualTo(12);
+        assertThat(hb.getTargetGroupList().stream().filter(tg -> tg.getId().equals(tgMap.get("Grote gezinnen"))).findFirst().get().getAmount()).isEqualTo(18);
+        assertThat(hb.getTargetGroupList().stream().filter(tg -> tg.getId().equals(tgMap.get("GHZ"))).findFirst().get().getAmount()).isEqualTo(15);
     }
 }

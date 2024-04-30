@@ -1,11 +1,11 @@
-import { Grid, Select, MenuItem, TextField, IconButton, Typography } from "@mui/material";
-import { ownershipValueOptions } from "../constants";
-import { OwnershipSingleValue } from "../types";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { OwnershipValueType } from "../../../../types/enums";
-import { InputContainer } from "../InputContainer";
+import { Grid, IconButton, MenuItem, Select, TextField, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { NumericRangeInput } from "../NumericRangeInput";
+import { OwnershipValueType, ownershipValueOptions } from "../../../../types/enums";
+import { OwnershipSingleValue } from "../../../../types/houseBlockTypes";
+import { InputContainer } from "../InputContainer";
+import { MonetaryRangeInput } from "../MonetaryRangeInput";
+import MonetaryRangeLabel from "../MonetaryRangeLabel";
 
 type Props = {
     ownership: OwnershipSingleValue;
@@ -49,10 +49,10 @@ const OwnershipAmountInput = ({ handleInputChange, ownership, index }: Ownership
             type="number"
             required
             fullWidth
-            value={ownership.amount !== null && !Number.isNaN(ownership.amount) ? ownership.amount : ""}
+            value={ownership.amount !== 0 && !Number.isNaN(ownership.amount) ? ownership.amount : ""}
             onChange={(e) => handleInputChange(index, { ...ownership, amount: parseInt(e.target.value) })}
-            error={!ownership.amount}
-            helperText={!ownership.amount ? t("createProject.hasMissingRequiredAreas.amount") : ""}
+            error={ownership.amount < 0 || !Number.isInteger(ownership.amount)}
+            helperText={ownership.amount < 0 || !Number.isInteger(ownership.amount) ? t("createProject.hasMissingRequiredAreas.amount") : ""}
         />
     );
 };
@@ -78,23 +78,21 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
             </Grid>
             <Grid item xs={2}>
                 {!readOnly && (
-                    <NumericRangeInput value={ownership.value} labelText="Value" updateCallBack={(e) => handleInputChange(index, { ...ownership, value: e })} />
+                    <MonetaryRangeInput
+                        value={ownership.value}
+                        labelText="Value"
+                        updateCallBack={(e) => handleInputChange(index, { ...ownership, value: e })}
+                    />
                 )}
                 {readOnly && (
                     <InputContainer>
-                        <Typography>
-                            {ownership?.value.value !== null
-                                ? ownership?.value.value
-                                : ownership?.value.min == null && ownership?.value.max === null
-                                  ? ""
-                                  : ownership?.value.min + "-" + ownership?.value.max}
-                        </Typography>
+                        <MonetaryRangeLabel value={ownership.value} />
                     </InputContainer>
                 )}
             </Grid>
             <Grid item xs={2}>
                 {!readOnly && (
-                    <NumericRangeInput
+                    <MonetaryRangeInput
                         value={ownership.rentalValue}
                         labelText="RentalValue"
                         updateCallBack={(e) => handleInputChange(index, { ...ownership, rentalValue: e })}
@@ -102,13 +100,7 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                 )}
                 {readOnly && (
                     <InputContainer>
-                        <Typography>
-                            {ownership?.rentalValue.value !== null
-                                ? ownership?.rentalValue.value
-                                : ownership?.rentalValue.min == null && ownership?.rentalValue.max === null
-                                  ? ""
-                                  : ownership?.rentalValue.min + "-" + ownership?.rentalValue.max}
-                        </Typography>
+                        <MonetaryRangeLabel value={ownership.rentalValue} />
                     </InputContainer>
                 )}
             </Grid>

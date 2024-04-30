@@ -13,9 +13,7 @@ import nl.vng.diwi.models.superclasses.DatedDataModelSuperClass;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -35,11 +33,11 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
 
     private GroundPosition groundPosition = new GroundPosition();
 
-    private PhysicalAppearance physicalAppearance = new PhysicalAppearance();
+    private List<AmountModel> physicalAppearance = new ArrayList<>();
 
     private HouseType houseType = new HouseType();
 
-    private Purpose purpose = new Purpose();
+    private List<AmountModel> targetGroup = new ArrayList<>();
 
     private List<ProjectHouseblockCustomPropertyModel> customProperties = new ArrayList<>();
 
@@ -55,10 +53,8 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
 
         this.programming = sqlModel.getProgramming();
 
-        this.mutation.setDemolition(sqlModel.getDemolition());
-        this.mutation.setGrossPlanCapacity(sqlModel.getGrossPlanCapacity());
-        this.mutation.setNetPlanCapacity(sqlModel.getNetPlanCapacity());
-        this.mutation.getMutationKind().addAll(sqlModel.getMutationKind());
+        this.mutation.setAmount(sqlModel.getMutationAmount());
+        this.mutation.setKind(sqlModel.getMutationKind());
 
         if (sqlModel.getOwnershipValueList() != null) {
             sqlModel.getOwnershipValueList().forEach(oSql -> this.ownershipValue.add(new OwnershipValue(oSql.getOwnershipId(), oSql.getOwnershipType(), oSql.getOwnershipAmount(),
@@ -70,22 +66,12 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
         this.groundPosition.setIntentionPermissionOwner(sqlModel.getIntentionPermissionOwner());
         this.groundPosition.setNoPermissionOwner(sqlModel.getNoPermissionOwner());
 
-        this.physicalAppearance.setGallerijflat(sqlModel.getGallerijflat());
-        this.physicalAppearance.setHoekwoning(sqlModel.getHoekwoning());
-        this.physicalAppearance.setVrijstaand(sqlModel.getVrijstaand());
-        this.physicalAppearance.setTweeondereenkap(sqlModel.getTweeondereenkap());
-        this.physicalAppearance.setPortiekflat(sqlModel.getPortiekflat());
-        this.physicalAppearance.setTussenwoning(sqlModel.getTussenwoning());
+        this.physicalAppearance.addAll(sqlModel.getPhysicalAppearanceList());
 
         this.houseType.setEengezinswoning(sqlModel.getEengezinswoning());
         this.houseType.setMeergezinswoning(sqlModel.getMeergezinswoning());
 
-        this.purpose.setRegular(sqlModel.getRegular());
-        this.purpose.setYouth(sqlModel.getYouth());
-        this.purpose.setStudent(sqlModel.getStudent());
-        this.purpose.setElderly(sqlModel.getElderly());
-        this.purpose.setGHZ(sqlModel.getGHZ());
-        this.purpose.setLargeFamilies(sqlModel.getLargeFamilies());
+        this.targetGroup.addAll(sqlModel.getTargetGroupList());
     }
 
     public boolean isSizeEqualTo(SingleValueOrRangeModel<BigDecimal> otherSize) {
@@ -118,6 +104,8 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
             return "Houseblock start date must be within the duration of the project.";
         } else if (projectEndDate.isBefore(this.getEndDate())) {
             return "Houseblock end date must be within the duration of the project";
+        } else if (mutation != null && mutation.getAmount() != null && mutation.getAmount() <= 0) {
+            return "Houseblock mutation amount must be greater than 0";
         }
 
         if (size != null) {
@@ -130,8 +118,7 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
             }
         }
 
-        if (mutation != null && mutation.getNetPlanCapacity() == null && mutation.getDemolition() == null &&
-            mutation.getGrossPlanCapacity() == null && (mutation.getMutationKind() == null || mutation.getMutationKind().isEmpty())) {
+        if (mutation != null && (mutation.getAmount() == null || mutation.getKind() == null)) {
             //mutation info is not present
             this.mutation = null;
         }
@@ -142,9 +129,7 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
             this.groundPosition = null;
         }
 
-        if (physicalAppearance != null && physicalAppearance.getTussenwoning() == null && physicalAppearance.getTweeondereenkap() == null &&
-            physicalAppearance.getPortiekflat() == null && physicalAppearance.getHoekwoning() == null && physicalAppearance.getVrijstaand() == null &&
-            physicalAppearance.getGallerijflat() == null) {
+        if (physicalAppearance != null && physicalAppearance.isEmpty()) {
             //physical appearance info is not present
             this.physicalAppearance = null;
         }
@@ -154,10 +139,9 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
             this.houseType = null;
         }
 
-        if (purpose != null && purpose.getRegular() == null && purpose.getYouth() == null && purpose.getStudent() == null &&
-            purpose.getElderly() == null && purpose.getGHZ() == null && purpose.getLargeFamilies() == null) {
-            //purpose info is not present
-            this.purpose = null;
+        if (targetGroup != null && targetGroup.isEmpty()) {
+            //target group info is not present
+            this.targetGroup = null;
         }
 
         return null;
@@ -167,10 +151,8 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
     @Setter
     @EqualsAndHashCode
     public static class Mutation {
-        private Set<MutationType> mutationKind = new HashSet<>();
-        private Integer grossPlanCapacity;
-        private Integer netPlanCapacity;
-        private Integer demolition;
+        private MutationType kind;
+        private Integer amount;
     }
 
     @Getter
@@ -198,33 +180,9 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
     @Getter
     @Setter
     @EqualsAndHashCode
-    public static class PhysicalAppearance {
-        private Integer tussenwoning;
-        private Integer tweeondereenkap;
-        private Integer portiekflat;
-        private Integer hoekwoning;
-        private Integer vrijstaand;
-        private Integer gallerijflat;
-    }
-
-    @Getter
-    @Setter
-    @EqualsAndHashCode
     public static class HouseType {
         private Integer meergezinswoning;
         private Integer eengezinswoning;
-    }
-
-    @Getter
-    @Setter
-    @EqualsAndHashCode
-    public static class Purpose {
-        private Integer regular;
-        private Integer youth;
-        private Integer student;
-        private Integer elderly;
-        private Integer GHZ;
-        private Integer largeFamilies;
     }
 
 }

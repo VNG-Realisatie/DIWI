@@ -48,6 +48,8 @@ public class ProjectConfig {
     private final String dbUser;
     private final String dbPass;
 
+    private final String dataDir;
+
     private final boolean pac4jCentralLogout;
     private final Config pac4jConfig;
 
@@ -79,6 +81,8 @@ public class ProjectConfig {
         this.dbName = env.getOrDefault("DIWI_DB_NAME", "diwi");
         this.dbUser = env.getOrDefault("DIWI_DB_USERNAME", "diwi");
         this.dbPass = env.getOrDefault("DIWI_DB_PASSWORD", "diwi");
+
+        this.dataDir = env.getOrDefault("DATA_DIR", "/data");
 
         if (kcAuthServerUrl != null) {
             final KeycloakOidcConfiguration keycloakConfig = new KeycloakOidcConfiguration();

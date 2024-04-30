@@ -22,13 +22,8 @@ INSERT INTO diwi_testset.woningblok_state (id, woningblok_id, create_user_id, ch
 INSERT INTO diwi_testset.woningblok_naam_changelog (id, woningblok_id, start_milestone_id, end_milestone_id, naam, create_user_id, change_start_date)
     VALUES ('6452192f-f978-4b68-b047-262a2e34a1f8', '16dbf29e-bd3e-419e-9b2c-0bfd834c0d19', 'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '342887ab-2106-45c4-9565-a4b83f4d3362', 'Woningblok 1', '2122426c-6e70-419c-a054-f51dd24d798b', NOW());
 
-INSERT INTO diwi_testset.woningblok_mutatie_changelog (id, woningblok_id, start_milestone_id, end_milestone_id, create_user_id, change_start_date, bruto_plancapaciteit, sloop, netto_plancapaciteit)
-    VALUES ('82fbe354-97d9-462d-97d0-21a9efd0fbe2', '16dbf29e-bd3e-419e-9b2c-0bfd834c0d19', 'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '342887ab-2106-45c4-9565-a4b83f4d3362', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', 0, 0, 25);
-
-INSERT INTO diwi_testset.woningblok_mutatie_changelog_soort_value (id, woningblok_mutatie_changelog_id, mutatie_soort)
-    VALUES ('53dc07c8-0807-48ec-a570-a68cd9efa179', '82fbe354-97d9-462d-97d0-21a9efd0fbe2', 'TRANSFORMATIE');
-INSERT INTO diwi_testset.woningblok_mutatie_changelog_soort_value (id, woningblok_mutatie_changelog_id, mutatie_soort)
-    VALUES ('c2512305-3cd0-408c-a795-fe71a590740d', '82fbe354-97d9-462d-97d0-21a9efd0fbe2', 'SPLITSING');
+INSERT INTO diwi_testset.woningblok_mutatie_changelog (id, woningblok_id, start_milestone_id, end_milestone_id, create_user_id, change_start_date, mutation_kind, amount)
+    VALUES ('82fbe354-97d9-462d-97d0-21a9efd0fbe2', '16dbf29e-bd3e-419e-9b2c-0bfd834c0d19', 'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '342887ab-2106-45c4-9565-a4b83f4d3362', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', 'CONSTRUCTION', 25);
 
 INSERT INTO diwi_testset.woningblok_grondpositie_changelog (id, woningblok_id, start_milestone_id, end_milestone_id, create_user_id, change_start_date)
     VALUES ('be6b2f40-1199-458a-9883-ed8dd9164dfc', '16dbf29e-bd3e-419e-9b2c-0bfd834c0d19', 'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '342887ab-2106-45c4-9565-a4b83f4d3362', '2122426c-6e70-419c-a054-f51dd24d798b', NOW());
@@ -41,37 +36,49 @@ INSERT INTO diwi_testset.woningblok_grondpositie_changelog_value (id, woningblok
 
 INSERT INTO diwi_testset.woningblok_type_en_fysiek_changelog (id, woningblok_id, start_milestone_id, end_milestone_id, create_user_id, change_start_date)
     VALUES ('7690992c-33ac-4069-b774-f2089d440c38', '16dbf29e-bd3e-419e-9b2c-0bfd834c0d19', 'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '342887ab-2106-45c4-9565-a4b83f4d3362', '2122426c-6e70-419c-a054-f51dd24d798b', NOW());
-INSERT INTO diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value (id, woningblok_type_en_fysiek_voorkomen_changelog_id, fysiek_voorkomen, amount)
-    VALUES ('84f76396-50d2-4d97-947e-5db7f1c62ec0', '7690992c-33ac-4069-b774-f2089d440c38', 'TUSSENWONING', 5);
-INSERT INTO diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value (id, woningblok_type_en_fysiek_voorkomen_changelog_id, fysiek_voorkomen, amount)
-    VALUES ('3ffce17b-82ae-4a63-8d3c-4bfd68627b4d', '7690992c-33ac-4069-b774-f2089d440c38', 'HOEKWONING', 15);
-INSERT INTO diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value (id, woningblok_type_en_fysiek_voorkomen_changelog_id, fysiek_voorkomen, amount)
-    VALUES ('d5c6efa8-b712-4d49-a1c7-b0040016134d', '7690992c-33ac-4069-b774-f2089d440c38', 'TWEE_ONDER_EEN_KAP', 35);
-INSERT INTO diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value (id, woningblok_type_en_fysiek_voorkomen_changelog_id, fysiek_voorkomen, amount)
-    VALUES ('80986454-7e42-4195-af78-0e998647c7ac', '7690992c-33ac-4069-b774-f2089d440c38', 'VRIJSTAAND', 25);
-INSERT INTO diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value (id, woningblok_type_en_fysiek_voorkomen_changelog_id, fysiek_voorkomen, amount)
-    VALUES ('e10ff5b4-9abf-41e8-80c6-7940c00ab912', '7690992c-33ac-4069-b774-f2089d440c38', 'PORTIEKFLAT', 55);
-INSERT INTO diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value (id, woningblok_type_en_fysiek_voorkomen_changelog_id, fysiek_voorkomen, amount)
-    VALUES ('d9a921b9-f206-45f9-94e9-c63eb137c2ea', '7690992c-33ac-4069-b774-f2089d440c38', 'GALLERIJFLAT', 45);
+INSERT INTO diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value (id, woningblok_type_en_fysiek_voorkomen_changelog_id, property_value_id, amount)
+    SELECT '84f76396-50d2-4d97-947e-5db7f1c62ec0', '7690992c-33ac-4069-b774-f2089d440c38', category_value_id, 5
+           FROM diwi_testset.property_category_value_state WHERE value_label = 'Tussenwoning' AND change_end_date IS NULL;
+INSERT INTO diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value (id, woningblok_type_en_fysiek_voorkomen_changelog_id, property_value_id, amount)
+    SELECT '3ffce17b-82ae-4a63-8d3c-4bfd68627b4d', '7690992c-33ac-4069-b774-f2089d440c38', category_value_id, 15
+        FROM diwi_testset.property_category_value_state WHERE value_label = 'Hoekwoning' AND change_end_date IS NULL;
+INSERT INTO diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value (id, woningblok_type_en_fysiek_voorkomen_changelog_id, property_value_id, amount)
+    SELECT 'd5c6efa8-b712-4d49-a1c7-b0040016134d', '7690992c-33ac-4069-b774-f2089d440c38', category_value_id, 35
+        FROM diwi_testset.property_category_value_state WHERE value_label = 'Twee onder een kap' AND change_end_date IS NULL;
+INSERT INTO diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value (id, woningblok_type_en_fysiek_voorkomen_changelog_id, property_value_id, amount)
+    SELECT '80986454-7e42-4195-af78-0e998647c7ac', '7690992c-33ac-4069-b774-f2089d440c38', category_value_id, 25
+        FROM diwi_testset.property_category_value_state WHERE value_label = 'Vrijstaand' AND change_end_date IS NULL;
+INSERT INTO diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value (id, woningblok_type_en_fysiek_voorkomen_changelog_id, property_value_id, amount)
+    SELECT 'e10ff5b4-9abf-41e8-80c6-7940c00ab912', '7690992c-33ac-4069-b774-f2089d440c38', category_value_id, 55
+        FROM diwi_testset.property_category_value_state WHERE value_label = 'Portiekflat' AND change_end_date IS NULL;
+INSERT INTO diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value (id, woningblok_type_en_fysiek_voorkomen_changelog_id, property_value_id, amount)
+    SELECT 'd9a921b9-f206-45f9-94e9-c63eb137c2ea', '7690992c-33ac-4069-b774-f2089d440c38', category_value_id, 45
+        FROM diwi_testset.property_category_value_state WHERE value_label = 'Gallerijflat' AND change_end_date IS NULL;
 INSERT INTO diwi_testset.woningblok_type_en_fysiek_changelog_type_value (id, woningblok_type_en_fysiek_voorkomen_changelog_id, woning_type, amount)
     VALUES ('9e9730ed-8083-458c-9ed9-2046ecd79fd9', '7690992c-33ac-4069-b774-f2089d440c38', 'EENGEZINSWONING', 103);
 INSERT INTO diwi_testset.woningblok_type_en_fysiek_changelog_type_value (id, woningblok_type_en_fysiek_voorkomen_changelog_id, woning_type, amount)
     VALUES ('51c588c4-bf81-47b4-a61b-282c9967817b', '7690992c-33ac-4069-b774-f2089d440c38', 'MEERGEZINSWONING', 67);
 
 INSERT INTO diwi_testset.woningblok_doelgroep_changelog (id, woningblok_id, start_milestone_id, end_milestone_id, create_user_id, change_start_date)
-VALUES ('b44386c9-3ebb-4168-aac6-ca6bc751fa42', '16dbf29e-bd3e-419e-9b2c-0bfd834c0d19', 'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '342887ab-2106-45c4-9565-a4b83f4d3362', '2122426c-6e70-419c-a054-f51dd24d798b', NOW());
-INSERT INTO diwi_testset.woningblok_doelgroep_changelog_value (id, woningblok_doelgroep_changelog_id, doelgroep, amount)
-VALUES ('de2b5b08-db8f-4db4-bc6c-7c9349689165', 'b44386c9-3ebb-4168-aac6-ca6bc751fa42', 'REGULIER', 3);
-INSERT INTO diwi_testset.woningblok_doelgroep_changelog_value (id, woningblok_doelgroep_changelog_id, doelgroep, amount)
-VALUES ('25506e80-5286-4043-8392-8aa86a19baea', 'b44386c9-3ebb-4168-aac6-ca6bc751fa42', 'JONGEREN', 6);
-INSERT INTO diwi_testset.woningblok_doelgroep_changelog_value (id, woningblok_doelgroep_changelog_id, doelgroep, amount)
-VALUES ('3896ff5b-acc2-4907-8165-75cbedf4534f', 'b44386c9-3ebb-4168-aac6-ca6bc751fa42', 'STUDENTEN', 9);
-INSERT INTO diwi_testset.woningblok_doelgroep_changelog_value (id, woningblok_doelgroep_changelog_id, doelgroep, amount)
-VALUES ('46e70cfe-9519-4d9e-bb4e-a6840ed75731', 'b44386c9-3ebb-4168-aac6-ca6bc751fa42', 'OUDEREN', 12);
-INSERT INTO diwi_testset.woningblok_doelgroep_changelog_value (id, woningblok_doelgroep_changelog_id, doelgroep, amount)
-VALUES ('4db78b78-8341-43ff-bd49-52e67af336b3', 'b44386c9-3ebb-4168-aac6-ca6bc751fa42', 'GEHANDICAPTEN_EN_ZORG', 15);
-INSERT INTO diwi_testset.woningblok_doelgroep_changelog_value (id, woningblok_doelgroep_changelog_id, doelgroep, amount)
-VALUES ('46340e62-0ea4-4986-a422-1cdea0c9a4c7', 'b44386c9-3ebb-4168-aac6-ca6bc751fa42', 'GROTE_GEZINNEN', 18);
+    VALUES ('b44386c9-3ebb-4168-aac6-ca6bc751fa42', '16dbf29e-bd3e-419e-9b2c-0bfd834c0d19', 'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '342887ab-2106-45c4-9565-a4b83f4d3362', '2122426c-6e70-419c-a054-f51dd24d798b', NOW());
+INSERT INTO diwi_testset.woningblok_doelgroep_changelog_value (id, woningblok_doelgroep_changelog_id, property_value_id, amount)
+    SELECT 'de2b5b08-db8f-4db4-bc6c-7c9349689165', 'b44386c9-3ebb-4168-aac6-ca6bc751fa42', category_value_id, 3
+        FROM diwi_testset.property_category_value_state WHERE value_label = 'Regulier' AND change_end_date IS NULL;
+INSERT INTO diwi_testset.woningblok_doelgroep_changelog_value (id, woningblok_doelgroep_changelog_id, property_value_id, amount)
+    SELECT '25506e80-5286-4043-8392-8aa86a19baea', 'b44386c9-3ebb-4168-aac6-ca6bc751fa42', category_value_id, 6
+        FROM diwi_testset.property_category_value_state WHERE value_label = 'Jongeren' AND change_end_date IS NULL;
+INSERT INTO diwi_testset.woningblok_doelgroep_changelog_value (id, woningblok_doelgroep_changelog_id, property_value_id, amount)
+    SELECT '3896ff5b-acc2-4907-8165-75cbedf4534f', 'b44386c9-3ebb-4168-aac6-ca6bc751fa42', category_value_id, 9
+        FROM diwi_testset.property_category_value_state WHERE value_label = 'Student' AND change_end_date IS NULL;
+INSERT INTO diwi_testset.woningblok_doelgroep_changelog_value (id, woningblok_doelgroep_changelog_id, property_value_id, amount)
+    SELECT '46e70cfe-9519-4d9e-bb4e-a6840ed75731', 'b44386c9-3ebb-4168-aac6-ca6bc751fa42', category_value_id, 12
+        FROM diwi_testset.property_category_value_state WHERE value_label = 'Ouderen' AND change_end_date IS NULL;
+INSERT INTO diwi_testset.woningblok_doelgroep_changelog_value (id, woningblok_doelgroep_changelog_id, property_value_id, amount)
+    SELECT '4db78b78-8341-43ff-bd49-52e67af336b3', 'b44386c9-3ebb-4168-aac6-ca6bc751fa42', category_value_id, 15
+        FROM diwi_testset.property_category_value_state WHERE value_label = 'GHZ' AND change_end_date IS NULL;
+INSERT INTO diwi_testset.woningblok_doelgroep_changelog_value (id, woningblok_doelgroep_changelog_id, property_value_id, amount)
+    SELECT '46340e62-0ea4-4986-a422-1cdea0c9a4c7', 'b44386c9-3ebb-4168-aac6-ca6bc751fa42', category_value_id, 18
+        FROM diwi_testset.property_category_value_state WHERE value_label = 'Grote gezinnen' AND change_end_date IS NULL;
 
 INSERT INTO diwi_testset.woningblok_programmering_changelog (id, woningblok_id, start_milestone_id, end_milestone_id, create_user_id, change_start_date, programmering)
 VALUES ('61ab6cfb-54ac-4beb-9227-43207792cfa2', '16dbf29e-bd3e-419e-9b2c-0bfd834c0d19', 'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '342887ab-2106-45c4-9565-a4b83f4d3362', '2122426c-6e70-419c-a054-f51dd24d798b', NOW(), true);

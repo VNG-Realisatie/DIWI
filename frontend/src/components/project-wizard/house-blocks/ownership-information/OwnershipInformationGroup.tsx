@@ -1,7 +1,7 @@
 import { Grid, IconButton, Stack, Typography } from "@mui/material";
 import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
-import { HouseBlock, OwnershipSingleValue } from "../types";
+import { HouseBlock, OwnershipSingleValue } from "../../../../types/houseBlockTypes";
 import AddIcon from "@mui/icons-material/Add";
 import { OwnershipRowInputs } from "./OwnershipRowInputs";
 
@@ -18,8 +18,8 @@ export const OwnershipInformationGroup = ({ houseBlock, setHouseBlock, readOnly 
             ownershipValue: [
                 ...houseBlock.ownershipValue,
                 {
-                    type: "",
-                    amount: null,
+                    type: undefined,
+                    amount: 0,
                     value: { value: 0, min: null, max: null },
                     rentalValue: { value: 0, min: null, max: null },
                 },

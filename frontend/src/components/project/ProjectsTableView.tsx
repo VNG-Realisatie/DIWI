@@ -29,6 +29,7 @@ import useCustomSearchParams from "../../hooks/useCustomSearchParams";
 import { AddProjectButton } from "../PlusButton";
 import dayjs from "dayjs";
 import { dateFormats } from "../../localization";
+import { capitalizeFirstLetters } from "../../utils/stringFunctions";
 
 interface RowData {
     id: number;
@@ -178,7 +179,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const columns: GridColDef[] = [
         {
             field: "projectName",
-            headerName: t("projects.tableColumns.projectName"),
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.projectName")),
             display: "flex",
             width: 300,
             filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
@@ -194,7 +195,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         },
         {
             field: "totalValue",
-            headerName: t("projects.tableColumns.totalValue"),
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.totalValue")),
             display: "flex",
             width: 120,
             filterable: false,
@@ -203,7 +204,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
 
         {
             field: "projectOwners",
-            headerName: t("projects.tableColumns.organizationName"),
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.organizationName")),
             display: "flex",
             width: 160,
             filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
@@ -218,7 +219,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         },
         {
             field: "confidentialityLevel",
-            headerName: t("projects.tableColumns.confidentialityLevel"),
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.confidentialityLevel")),
             display: "flex",
             valueOptions: confidentialityLevelOptions.map((c) => {
                 return { value: c.id, label: t(`projectTable.confidentialityLevelOptions.${c.name}`) };
@@ -230,7 +231,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         },
         {
             field: "startDate",
-            headerName: t("projects.tableColumns.startDate"),
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.startDate")),
             display: "flex",
             type: "dateTime",
             valueFormatter: (p) => dayjs(p).format(dateFormats.keyboardDate),
@@ -240,7 +241,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         },
         {
             field: "endDate",
-            headerName: t("projects.tableColumns.endDate"),
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.endDate")),
             display: "flex",
             type: "dateTime",
             valueFormatter: (p) => dayjs(p).format(dateFormats.keyboardDate),
@@ -250,7 +251,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         },
         {
             field: "planType",
-            headerName: t("projects.tableColumns.planType"),
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.planType")),
             display: "flex",
             width: 500,
             valueOptions: planTypeOptions.map((pt) => pt.id),
@@ -263,7 +264,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         },
         {
             field: "priority",
-            headerName: t("projects.tableColumns.priority"),
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.priority")),
             display: "flex",
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
                 return <>{cellValues.row?.priority?.value?.name}</>; //TODO FIX AFTER MIN MAX INTEGRATED
@@ -272,7 +273,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         },
         {
             field: "municipalityRole",
-            headerName: t("projects.tableColumns.municipalityRole"),
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.municipalityRole")),
             display: "flex",
             width: 320,
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
@@ -282,7 +283,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         },
         {
             field: "projectLeaders",
-            headerName: t("projects.tableColumns.projectLeader"),
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.projectLeader")),
             display: "flex",
             width: 160,
             filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
@@ -297,7 +298,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         },
         {
             field: "projectPhase",
-            headerName: t("projects.tableColumns.projectPhase"),
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.projectPhase")),
             display: "flex",
             valueOptions: projectPhaseOptions.map((c) => {
                 return { value: c.id, label: t(`projectTable.projectPhaseOptions.${c.name}`) };
@@ -309,7 +310,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         },
         {
             field: "planningPlanStatus",
-            headerName: t("projects.tableColumns.planningPlanStatus"),
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.planningPlanStatus")),
             display: "flex",
             width: 500,
             preProcessEditCellProps: createErrorReport,
@@ -319,7 +320,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         },
         // {
         //     field: "municipality",
-        //     headerName: t("projects.tableColumns.municipality"),
+        //     headerName: capitalizeFirstLetters(t("projects.tableColumns.municipality")),
         //     width: 320,
         //     renderCell: (cellValues: GridRenderCellParams<Project>) => {
         //         return (
@@ -330,7 +331,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         // },
         // {
         //     field: "wijk",
-        //     headerName: t("projects.tableColumns.wijk"),
+        //     headerName: capitalizeFirstLetters(t("projects.tableColumns.wijk")),
         //     width: 320,
         //     renderCell: (cellValues: GridRenderCellParams<Project>) => {
         //         return <WijkCell cellValues={cellValues} selectedWijk={selectedWijk} handleWijkChange={handleWijkChange} />;
@@ -339,7 +340,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         // },
         // {
         //     field: "buurt",
-        //     headerName: t("projects.tableColumns.neighbourhood"),
+        //     headerName: capitalizeFirstLetters(t("projects.tableColumns.neighbourhood")),
         //     width: 320,
         //     renderCell: (cellValues: GridRenderCellParams<Project>) => {
         //         return <BuurtCell cellValues={cellValues} selectedNeighbourhood={selectedBuurt} handleNeighbourhoodChange={handleBuurtChange} />;

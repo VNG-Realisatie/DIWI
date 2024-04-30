@@ -1,17 +1,21 @@
 import { Dialog, DialogContent, DialogActions, Button } from "@mui/material";
 import { t } from "i18next";
 import { HouseBlocksForm } from "../../HouseBlocksForm";
-import { HouseBlock } from "../../project-wizard/house-blocks/types";
+import { HouseBlockWithCustomProperties } from "../../../types/houseBlockTypes";
 import { useContext, useEffect, useState } from "react";
 import HouseBlockContext from "../../../context/HouseBlockContext";
+import { saveHouseBlockWithCustomProperties } from "../../../api/houseBlockServices";
+import { validateHouseBlock } from "../../HouseBlocksFormWithControls";
+import useAlert from "../../../hooks/useAlert";
 
 type Props = {
     openHouseBlockDialog: boolean;
     setOpenHouseBlockDialog: (openDialog: boolean) => void;
 };
 export const CreateHouseBlockDialog = ({ openHouseBlockDialog, setOpenHouseBlockDialog }: Props) => {
-    const { addHouseBlock, getEmptyHouseBlock } = useContext(HouseBlockContext);
-    const [houseBlock, setHouseBlock] = useState<HouseBlock>(getEmptyHouseBlock());
+    const { refresh, getEmptyHouseBlock } = useContext(HouseBlockContext);
+    const [houseBlock, setHouseBlock] = useState<HouseBlockWithCustomProperties>(getEmptyHouseBlock());
+    const { setAlert } = useAlert();
 
     useEffect(() => {
         if (!openHouseBlockDialog) {
@@ -37,9 +41,12 @@ export const CreateHouseBlockDialog = ({ openHouseBlockDialog, setOpenHouseBlock
                 <Button
                     variant="contained"
                     color="success"
-                    onClick={() => {
-                        addHouseBlock(houseBlock);
-                        setOpenHouseBlockDialog(false);
+                    onClick={async () => {
+                        if (validateHouseBlock(houseBlock, setAlert)) {
+                            await saveHouseBlockWithCustomProperties(houseBlock);
+                            refresh();
+                            setOpenHouseBlockDialog(false);
+                        }
                     }}
                     autoFocus
                 >

@@ -1,14 +1,14 @@
-import { getJson, postJson, deleteJson, putJson, postJsonNoResponse } from "../utils/requests";
+import { getJson, postJson, deleteJson, postJsonNoResponse } from "../utils/requests";
 import { components } from "../types/schema";
 import { API_URI } from "../utils/urls";
-import { HouseBlock } from "../components/project-wizard/house-blocks/types";
+import { GeoJSONGeometry, GeoJSONMultiPolygon, GeoJSONPolygon } from "ol/format/GeoJSON";
 
 export type Organization = components["schemas"]["OrganizationModel"];
 export type OrganizationUser = components["schemas"]["OrganizationUserModel"];
 export type ProjectListModel = components["schemas"]["ProjectListModel"];
 export type Project = components["schemas"]["ProjectSnapshotModel"];
+export type ProjectSnapshotModel = components["schemas"]["ProjectSnapshotModel"];
 export type ProjectCreate = components["schemas"]["ProjectCreateSnapshotModel"];
-export type ProjectUpdate = components["schemas"]["ProjectUpdateModel"];
 export type SelectModel = components["schemas"]["SelectModel"];
 export type PriorityModel = components["schemas"]["PriorityModel"];
 
@@ -19,10 +19,7 @@ export type PlotGeoJSON = {
             id: string;
             type: string;
             bbox: number[];
-            geometry: {
-                type: string;
-                coordinates: number[][][];
-            };
+            geometry: GeoJSONGeometry;
             properties: {
                 AKRKadastraleGemeenteCodeCode: string;
                 AKRKadastraleGemeenteCodeWaarde: string;
@@ -63,7 +60,11 @@ type SizeData = {
 // The generated plot model doesn't work as the geojson definition is not correct.
 // Replace by PlotGeoJSON for now.
 type OgPlot = components["schemas"]["PlotModel"];
-export type Plot = Pick<OgPlot, Exclude<keyof OgPlot, "geoJson">> & { geoJson: PlotGeoJSON };
+// export type Plot = Pick<OgPlot, Exclude<keyof OgPlot, "geoJson">> & { plotFeature: PlotGeoJSON };
+export type Plot = Omit<OgPlot, "subselectionGeometry" | "plotFeature"> & {
+    plotFeature: PlotGeoJSON;
+    subSelectionGeometry?: GeoJSONMultiPolygon | GeoJSONPolygon;
+};
 
 export async function getProjects(pageNumber: number, pageSize: number): Promise<Array<Project>> {
     return getJson(`${API_URI}/projects/table?pageNumber=${pageNumber}&pageSize=${pageSize}`);
@@ -77,11 +78,7 @@ export async function getProject(id: string): Promise<Project> {
     return getJson(`${API_URI}/projects/${id}`);
 }
 
-export async function updateProjects(newData: any): Promise<any> {
-    return postJson(`${API_URI}/projects/update`, newData);
-}
-
-export async function updateProject(id: string, newData: ProjectUpdate): Promise<any> {
+export async function updateProject(newData: ProjectSnapshotModel): Promise<ProjectSnapshotModel> {
     return postJson(`${API_URI}/projects/update`, newData);
 }
 
@@ -91,18 +88,6 @@ export async function deleteProject(id: string | null) {
 
 export async function createProject(projectData: ProjectCreate): Promise<Project> {
     return postJson(`${API_URI}/projects`, projectData);
-}
-
-export async function getProjectHouseBlocks(id: string): Promise<HouseBlock[]> {
-    return getJson(`${API_URI}/projects/${id}/houseblocks`);
-}
-
-export async function addHouseBlock(newData: HouseBlock): Promise<HouseBlock> {
-    return postJson(`${API_URI}/houseblock/add`, newData);
-}
-
-export async function updateHouseBlock(newData: HouseBlock): Promise<HouseBlock> {
-    return putJson(`${API_URI}/houseblock/update`, newData);
 }
 
 export async function getProjectPlots(id: string): Promise<Plot[]> {

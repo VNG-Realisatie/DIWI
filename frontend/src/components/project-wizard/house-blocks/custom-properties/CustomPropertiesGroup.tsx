@@ -40,17 +40,20 @@ export const CustomPropertiesGroup = ({ readOnly, customPropertyValues, setCusto
                     const customValue = customPropertyValues?.find((cv) => cv.customPropertyId === property.id);
 
                     return (
-                        <Stack width="100%">
-                            <LabelComponent required text={property.name} />{" "}
-                            <CustomPropertyWidget
-                                readOnly={readOnly}
-                                customValue={customValue}
-                                setCustomValue={(newValue) => {
-                                    setCustomValue({ ...newValue, customPropertyId: property.id });
-                                }}
-                                customDefinition={property}
-                            />
-                        </Stack>
+                        // make sure to not display physicalAppearance and targetGroup here as they have their own respective widgets
+                        !(property.name === "physicalAppearance" || property.name === "targetGroup") && (
+                            <Stack key={property.id} width="100%">
+                                <LabelComponent required text={property.name} />{" "}
+                                <CustomPropertyWidget
+                                    readOnly={readOnly}
+                                    customValue={customValue}
+                                    setCustomValue={(newValue) => {
+                                        setCustomValue({ ...newValue, customPropertyId: property.id });
+                                    }}
+                                    customDefinition={property}
+                                />
+                            </Stack>
+                        )
                     );
                 })}
         </WizardCard>

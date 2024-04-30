@@ -1,13 +1,11 @@
 import { SelectChangeEvent, Typography } from "@mui/material";
 import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
-import { HouseBlock } from "../types";
+import { HouseBlock } from "../../../../types/houseBlockTypes";
 
-import { GrossPlanCapacityInput } from "./GrossPlanCapacityInput";
-import { NetPlanCapacityInput } from "./NetPlanCapacityInput";
-import { DemolitionPlanCapacityInput } from "./DemolitionPlanCapacityInput";
+import { AmountInput } from "./AmountInput";
 import { MutationKindSelect } from "./MutationKindSelect";
-import { MutationSelectOptions } from "../../../../types/enums";
+import { MutationKind } from "../../../../types/enums";
 
 export type MutationInformationProps = {
     houseBlock: HouseBlock;
@@ -21,61 +19,35 @@ export const MutationInformationGroup = ({ houseBlock, setHouseBlock, readOnly }
             <Typography fontWeight={600} mb={2}>
                 {t("createProject.houseBlocksForm.mutationData")}
             </Typography>
-            <GrossPlanCapacityInput
+            <AmountInput
                 readOnly={readOnly}
-                houseBlockGrossPlan={houseBlock.mutation.grossPlanCapacity}
-                updateHouseBlockGrossPlan={(e) =>
+                houseBlockAmount={houseBlock.mutation.amount ?? null}
+                updateHouseBlockAmount={(e) =>
                     setHouseBlock({
                         ...houseBlock,
                         mutation: {
                             ...houseBlock.mutation,
-                            grossPlanCapacity: e,
-                        },
-                    })
-                }
-            />
-            <DemolitionPlanCapacityInput
-                readOnly={readOnly}
-                houseBlockDemolitionPlan={houseBlock.mutation.demolition}
-                updateHouseBlockDemolitionPlan={(e) =>
-                    setHouseBlock({
-                        ...houseBlock,
-                        mutation: {
-                            ...houseBlock.mutation,
-                            demolition: e,
-                        },
-                    })
-                }
-            />
-            <NetPlanCapacityInput
-                readOnly={readOnly}
-                houseBlockNetPlan={houseBlock.mutation.netPlanCapacity}
-                updateHouseBlockNetPlan={(e) =>
-                    setHouseBlock({
-                        ...houseBlock,
-                        mutation: {
-                            ...houseBlock.mutation,
-                            netPlanCapacity: e,
+                            amount: e,
                         },
                     })
                 }
             />
             <MutationKindSelect
                 readOnly={readOnly}
-                houseBlockMutationKind={houseBlock.mutation.mutationKind}
-                updateHouseBlockMutationKind={(event: SelectChangeEvent<MutationSelectOptions[]>) => {
+                houseBlockMutationKind={houseBlock.mutation.kind}
+                updateHouseBlockMutationKind={(event: SelectChangeEvent<MutationKind | null>) => {
                     const {
                         target: { value },
                     } = event;
-                    if (typeof value !== "string") {
+
+                    value &&
                         setHouseBlock({
                             ...houseBlock,
                             mutation: {
                                 ...houseBlock.mutation,
-                                mutationKind: value,
+                                kind: value as MutationKind,
                             },
                         });
-                    }
                 }}
             />
         </WizardCard>

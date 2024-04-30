@@ -14,28 +14,6 @@ INSERT INTO diwi_testset."user" (id) VALUES ('72efb41f-e4ac-439d-8c95-c498cef4af
 INSERT INTO diwi_testset."user" (id) VALUES ('f0ee8f85-78a5-47a1-8eba-8a06a93f1eee');
 INSERT INTO diwi_testset."user" (id) VALUES ('9caa1a9f-dd1f-4937-8d49-880894282cc2');
 
-
---
--- Data for Name: buurt; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
---
-
-INSERT INTO diwi_testset.buurt (id) VALUES ('adab9c68-2f38-4ad9-9817-55fa5b02eabd');
-
-
---
--- Data for Name: wijk; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
---
-
-INSERT INTO diwi_testset.wijk (id) VALUES ('2359418d-2f79-459d-b0e5-a37621769fa0');
-INSERT INTO diwi_testset.wijk (id) VALUES ('50dee083-5e49-4940-9657-681873365fc4');
-
-
---
--- Data for Name: buurt_state; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
---
-
-INSERT INTO diwi_testset.buurt_state (id, buurt_id, wijk_id, waarde_label, create_user_id, change_start_date, change_end_date) VALUES ('9c9ac498-2a1e-4f92-97c7-21deaa13d213', 'adab9c68-2f38-4ad9-9817-55fa5b02eabd', '2359418d-2f79-459d-b0e5-a37621769fa0', 'Buurt 1', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL);
-
 --
 -- Data for Name: project; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
 --
@@ -56,21 +34,6 @@ INSERT INTO diwi_testset.milestone (id, project_id) VALUES ('7c6bfe67-6618-4a6a-
 INSERT INTO diwi_testset.milestone (id, project_id) VALUES ('1c155b85-29e3-4fec-85a2-96bda344fe8a', '5c9fbb50-d8fd-480d-9e38-7f3b391d3110');
 INSERT INTO diwi_testset.milestone (id, project_id) VALUES ('529ca978-1d23-418a-a94c-bd219454a587', '5c9fbb50-d8fd-480d-9e38-7f3b391d3110');
 INSERT INTO diwi_testset.milestone (id, project_id) VALUES ('4237d087-3d45-4acf-a1a6-0a67b754608e', '5c9fbb50-d8fd-480d-9e38-7f3b391d3110');
-
---
--- Data for Name: gemeente; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
---
-
-INSERT INTO diwi_testset.gemeente (id) VALUES ('28ccc875-589a-49ba-8180-f6e91fb48d8c');
-INSERT INTO diwi_testset.gemeente (id) VALUES ('5fe8c4c0-ed20-4629-b429-b499217e4218');
-
-
---
--- Data for Name: gemeente_state; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
---
-
-INSERT INTO diwi_testset.gemeente_state (id, gemeente_id, waarde_label, create_user_id, change_start_date, change_end_date) VALUES ('15a52ebd-4a89-457c-a3b6-8763bcc3aae2', '28ccc875-589a-49ba-8180-f6e91fb48d8c', 'Gemeente 1', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL);
-INSERT INTO diwi_testset.gemeente_state (id, gemeente_id, waarde_label, create_user_id, change_start_date, change_end_date) VALUES ('83bc4cd9-4bf1-4371-ab1f-7763818be272', '5fe8c4c0-ed20-4629-b429-b499217e4218', 'Gemeente 2', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL);
 
 
 --
@@ -120,38 +83,10 @@ INSERT INTO diwi_testset.project_duration_changelog (id, start_milestone_id, end
 -- Data for Name: project_fase_changelog; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
 --
 
-INSERT INTO diwi_testset.project_fase_changelog (id, start_milestone_id, end_milestone_id, project_id, create_user_id, change_start_date, change_end_date, project_fase) VALUES ('4ff23141-ae6e-46b7-8583-31d5bef66f26', '292414eb-4a4e-405c-954b-e01bb355bc9b', '07f3a0ad-f76a-4dd9-b4c6-6eb8113968e0', '466da5e2-c96f-4856-aa17-6b37a1c21edc', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-10 20:06:32+02', NULL, '_1_INITIATIEFFASE');
-INSERT INTO diwi_testset.project_fase_changelog (id, start_milestone_id, end_milestone_id, project_id, create_user_id, change_start_date, change_end_date, project_fase) VALUES ('38545e50-ecad-4f34-b784-0b050c25d02e', '1c155b85-29e3-4fec-85a2-96bda344fe8a', '4237d087-3d45-4acf-a1a6-0a67b754608e', '5c9fbb50-d8fd-480d-9e38-7f3b391d3110', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-04 20:06:32+02', NULL, '_1_INITIATIEFFASE');
-INSERT INTO diwi_testset.project_fase_changelog (id, start_milestone_id, end_milestone_id, project_id, create_user_id, change_start_date, change_end_date, project_fase) VALUES ('99518d7c-a909-41ca-8814-894b703ed65c', '4237d087-3d45-4acf-a1a6-0a67b754608e', '529ca978-1d23-418a-a94c-bd219454a587', '5c9fbb50-d8fd-480d-9e38-7f3b391d3110', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-04 20:06:32+02', NULL, '_3_VERGUNNINGSFASE');
-INSERT INTO diwi_testset.project_fase_changelog (id, start_milestone_id, end_milestone_id, project_id, create_user_id, change_start_date, change_end_date, project_fase) VALUES ('9af79780-4aae-479e-9351-1b59906c01d2', 'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '342887ab-2106-45c4-9565-a4b83f4d3362', '54a0c192-3454-4f7a-becd-96d214461987', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-04 20:06:32+02', NULL, '_3_VERGUNNINGSFASE');
-
-
---
--- Data for Name: project_gemeenterol_value; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
---
-
-INSERT INTO diwi_testset.project_gemeenterol_value (id) VALUES ('47964244-4f7e-4ed5-93ba-b7667a3e8445');
-INSERT INTO diwi_testset.project_gemeenterol_value (id) VALUES ('5cdd1b67-2174-4efd-8e82-a69cb322205f');
-
-
---
--- Data for Name: project_gemeenterol_changelog; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
---
-
-INSERT INTO diwi_testset.project_gemeenterol_changelog (id, start_milestone_id, end_milestone_id, project_id, create_user_id, change_start_date, change_end_date, project_gemeenterol_value_id) VALUES ('dc8b2c8c-587a-4f99-a84c-f871d4bb7e9f', '292414eb-4a4e-405c-954b-e01bb355bc9b', '07f3a0ad-f76a-4dd9-b4c6-6eb8113968e0', '466da5e2-c96f-4856-aa17-6b37a1c21edc', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-16 20:06:32+02', NULL, '5cdd1b67-2174-4efd-8e82-a69cb322205f');
-INSERT INTO diwi_testset.project_gemeenterol_changelog (id, start_milestone_id, end_milestone_id, project_id, create_user_id, change_start_date, change_end_date, project_gemeenterol_value_id) VALUES ('651798c3-034e-45ef-b347-3492d0553e25', '292414eb-4a4e-405c-954b-e01bb355bc9b', '07f3a0ad-f76a-4dd9-b4c6-6eb8113968e0', '466da5e2-c96f-4856-aa17-6b37a1c21edc', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-16 20:06:32+02', NULL, '47964244-4f7e-4ed5-93ba-b7667a3e8445');
-INSERT INTO diwi_testset.project_gemeenterol_changelog (id, start_milestone_id, end_milestone_id, project_id, create_user_id, change_start_date, change_end_date, project_gemeenterol_value_id) VALUES ('45bbdf32-4a53-46e3-91c0-14325b97998a', '7c6bfe67-6618-4a6a-9507-2cd15f88c11f', '342887ab-2106-45c4-9565-a4b83f4d3362', '54a0c192-3454-4f7a-becd-96d214461987', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-04 20:06:32+02', NULL, '47964244-4f7e-4ed5-93ba-b7667a3e8445');
-INSERT INTO diwi_testset.project_gemeenterol_changelog (id, start_milestone_id, end_milestone_id, project_id, create_user_id, change_start_date, change_end_date, project_gemeenterol_value_id) VALUES ('89d36ee1-8a5e-4219-8b64-8fc079c33ca2', '4237d087-3d45-4acf-a1a6-0a67b754608e', '529ca978-1d23-418a-a94c-bd219454a587', '5c9fbb50-d8fd-480d-9e38-7f3b391d3110', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-04 20:06:32+02', NULL, '47964244-4f7e-4ed5-93ba-b7667a3e8445');
-INSERT INTO diwi_testset.project_gemeenterol_changelog (id, start_milestone_id, end_milestone_id, project_id, create_user_id, change_start_date, change_end_date, project_gemeenterol_value_id) VALUES ('7c0a174b-099a-4f69-9d6b-4202ca169982', '4237d087-3d45-4acf-a1a6-0a67b754608e', '529ca978-1d23-418a-a94c-bd219454a587', '5c9fbb50-d8fd-480d-9e38-7f3b391d3110', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-04 20:06:32+02', NULL, '5cdd1b67-2174-4efd-8e82-a69cb322205f');
-
-
---
--- Data for Name: project_gemeenterol_value_state; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
---
-
-INSERT INTO diwi_testset.project_gemeenterol_value_state (id, value_label, create_user_id, change_start_date, change_end_date, project_gemeenterol_value_id) VALUES ('465c80e2-749e-433d-9af2-07cf5d0b6e46', 'Role 1', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-16 20:06:32+02', NULL, '47964244-4f7e-4ed5-93ba-b7667a3e8445');
-INSERT INTO diwi_testset.project_gemeenterol_value_state (id, value_label, create_user_id, change_start_date, change_end_date, project_gemeenterol_value_id) VALUES ('36e4a034-3e09-4d1e-92c1-bca2ca98ad34', 'Role 2', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-16 20:06:32+02', NULL, '5cdd1b67-2174-4efd-8e82-a69cb322205f');
-
+INSERT INTO diwi_testset.project_fase_changelog (id, start_milestone_id, end_milestone_id, project_id, create_user_id, change_start_date, change_end_date, project_fase) VALUES ('4ff23141-ae6e-46b7-8583-31d5bef66f26', '292414eb-4a4e-405c-954b-e01bb355bc9b', '07f3a0ad-f76a-4dd9-b4c6-6eb8113968e0', '466da5e2-c96f-4856-aa17-6b37a1c21edc', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-10 20:06:32+02', NULL, '_1_CONCEPT');
+INSERT INTO diwi_testset.project_fase_changelog (id, start_milestone_id, end_milestone_id, project_id, create_user_id, change_start_date, change_end_date, project_fase) VALUES ('38545e50-ecad-4f34-b784-0b050c25d02e', '1c155b85-29e3-4fec-85a2-96bda344fe8a', '4237d087-3d45-4acf-a1a6-0a67b754608e', '5c9fbb50-d8fd-480d-9e38-7f3b391d3110', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-04 20:06:32+02', NULL, '_1_CONCEPT');
+INSERT INTO diwi_testset.project_fase_changelog (id, start_milestone_id, end_milestone_id, project_id, create_user_id, change_start_date, change_end_date, project_fase) VALUES ('99518d7c-a909-41ca-8814-894b703ed65c', '4237d087-3d45-4acf-a1a6-0a67b754608e', '529ca978-1d23-418a-a94c-bd219454a587', '5c9fbb50-d8fd-480d-9e38-7f3b391d3110', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-04 20:06:32+02', NULL, '_5_PREPARATION');
+INSERT INTO diwi_testset.project_fase_changelog (id, start_milestone_id, end_milestone_id, project_id, create_user_id, change_start_date, change_end_date, project_fase) VALUES ('9af79780-4aae-479e-9351-1b59906c01d2', 'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '342887ab-2106-45c4-9565-a4b83f4d3362', '54a0c192-3454-4f7a-becd-96d214461987', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-04 20:06:32+02', NULL, '_5_PREPARATION');
 
 --
 -- Data for Name: project_name_changelog; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
@@ -211,34 +146,6 @@ INSERT INTO diwi_testset.project_planologische_planstatus_changelog_value (id, p
 INSERT INTO diwi_testset.project_planologische_planstatus_changelog_value (id, planologische_planstatus_changelog_id, planologische_planstatus) VALUES ('60883b15-1e2b-4825-84b7-c8e82bc75671', 'ce37c83a-e6f7-478e-86e0-743a3d5696c4', '_2A_VASTGESTELD');
 INSERT INTO diwi_testset.project_planologische_planstatus_changelog_value (id, planologische_planstatus_changelog_id, planologische_planstatus) VALUES ('401dfb55-6f89-4f89-b925-00796291a61d', 'ce37c83a-e6f7-478e-86e0-743a3d5696c4', '_3_IN_VOORBEREIDING');
 
-
---
--- Data for Name: project_priorisering_value; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
---
-
-INSERT INTO diwi_testset.project_priorisering_value (id) VALUES ('49390d77-08de-4993-969f-2264d8f4ca8c');
-INSERT INTO diwi_testset.project_priorisering_value (id) VALUES ('04d1fc97-bb25-4246-8413-9ec5a1044db7');
-INSERT INTO diwi_testset.project_priorisering_value (id) VALUES ('6a91fb22-a44a-4da9-b5f3-933596522e10');
-
-
---
--- Data for Name: project_priorisering_changelog; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
---
-
-INSERT INTO diwi_testset.project_priorisering_changelog (id, start_milestone_id, end_milestone_id, project_id, create_user_id, change_start_date, change_end_date, project_priorisering_value_id, value_type, project_priorisering_min_value_id, project_priorisering_max_value_id) VALUES ('9e2999f1-d22b-46cb-971b-b3a1d9ae1bcb', '292414eb-4a4e-405c-954b-e01bb355bc9b', '07f3a0ad-f76a-4dd9-b4c6-6eb8113968e0', '466da5e2-c96f-4856-aa17-6b37a1c21edc', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-17 20:06:32+02', NULL, NULL, 'RANGE', '49390d77-08de-4993-969f-2264d8f4ca8c', '6a91fb22-a44a-4da9-b5f3-933596522e10');
-INSERT INTO diwi_testset.project_priorisering_changelog (id, start_milestone_id, end_milestone_id, project_id, create_user_id, change_start_date, change_end_date, project_priorisering_value_id, value_type, project_priorisering_min_value_id, project_priorisering_max_value_id) VALUES ('e1f3cc1e-b475-4f75-9b77-2c2c0d6d3f81', '4237d087-3d45-4acf-a1a6-0a67b754608e', '529ca978-1d23-418a-a94c-bd219454a587', '5c9fbb50-d8fd-480d-9e38-7f3b391d3110', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-04 20:06:32+02', NULL, '04d1fc97-bb25-4246-8413-9ec5a1044db7', 'SINGLE_VALUE', NULL, NULL);
-INSERT INTO diwi_testset.project_priorisering_changelog (id, start_milestone_id, end_milestone_id, project_id, create_user_id, change_start_date, change_end_date, project_priorisering_value_id, value_type, project_priorisering_min_value_id, project_priorisering_max_value_id) VALUES ('4e6b7d8d-7cab-4f4c-86d5-7bc9252cdd25', 'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '342887ab-2106-45c4-9565-a4b83f4d3362', '54a0c192-3454-4f7a-becd-96d214461987', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-04 20:06:32+02', NULL, NULL, 'RANGE', '04d1fc97-bb25-4246-8413-9ec5a1044db7', '6a91fb22-a44a-4da9-b5f3-933596522e10');
-
-
---
--- Data for Name: project_priorisering_value_state; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
---
-
-INSERT INTO diwi_testset.project_priorisering_value_state (id, value_label, ordinal_level, create_user_id, change_start_date, change_end_date, project_priorisering_value_id) VALUES ('291a6e8a-143c-4c89-8ca9-dc739655fa11', 'low', 1, '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-16 20:06:32+02', NULL, '49390d77-08de-4993-969f-2264d8f4ca8c');
-INSERT INTO diwi_testset.project_priorisering_value_state (id, value_label, ordinal_level, create_user_id, change_start_date, change_end_date, project_priorisering_value_id) VALUES ('ce7bc56d-5dfe-45fe-baad-c9bbd603fc72', 'medium', 2, '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-16 20:06:32+02', NULL, '04d1fc97-bb25-4246-8413-9ec5a1044db7');
-INSERT INTO diwi_testset.project_priorisering_value_state (id, value_label, ordinal_level, create_user_id, change_start_date, change_end_date, project_priorisering_value_id) VALUES ('cfac114f-6a5f-45fb-bed2-ba167d910325', 'high', 3, '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-16 20:06:32+02', NULL, '6a91fb22-a44a-4da9-b5f3-933596522e10');
-
-
 --
 -- Data for Name: project_state; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
 --
@@ -266,69 +173,3 @@ INSERT INTO diwi_testset.user_to_organization (id, user_id, organization_id, cre
 INSERT INTO diwi_testset.user_to_organization (id, user_id, organization_id, create_user_id, change_start_date, change_end_date) VALUES ('523f040f-76a5-454b-aafc-58a50f523728', 'f0ee8f85-78a5-47a1-8eba-8a06a93f1eee', '018d1d85-639f-701c-b73f-0f35f98409bc', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-01 20:06:32+02', NULL);
 INSERT INTO diwi_testset.user_to_organization (id, user_id, organization_id, create_user_id, change_start_date, change_end_date) VALUES ('82feaa13-97aa-4982-8463-b9ed3c2ed9de', 'f0ee8f85-78a5-47a1-8eba-8a06a93f1eee', 'a0fd243b-667b-428e-a3f1-bb0fcee141d9', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-01 20:06:32+02', NULL);
 INSERT INTO diwi_testset.user_to_organization (id, user_id, organization_id, create_user_id, change_start_date, change_end_date) VALUES ('2f3aa610-5390-484b-868f-6514e56dff73', '9caa1a9f-dd1f-4937-8d49-880894282cc2', 'a0fd243b-667b-428e-a3f1-bb0fcee141d9', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-01 20:06:32+02', NULL);
-
-
---
--- Data for Name: wijk_state; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
---
-
-INSERT INTO diwi_testset.wijk_state (id, wijk_id, gemeente_id, waarde_label, create_user_id, change_start_date, change_end_date) VALUES ('2617d9c3-1f9e-4285-a695-c6ff32781558', '2359418d-2f79-459d-b0e5-a37621769fa0', '28ccc875-589a-49ba-8180-f6e91fb48d8c', 'Wijk 1', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL);
-INSERT INTO diwi_testset.wijk_state (id, wijk_id, gemeente_id, waarde_label, create_user_id, change_start_date, change_end_date) VALUES ('3daf29a2-7a92-4f02-81e3-90e1d6779381', '50dee083-5e49-4940-9657-681873365fc4', '28ccc875-589a-49ba-8180-f6e91fb48d8c', 'Wijk 2', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL);
-
-
---
--- Data for Name: woningblok; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
---
-
-INSERT INTO diwi_testset.woningblok (id, project_id) VALUES ('8c401741-8c23-4cfd-ab49-b3b710758be2', '466da5e2-c96f-4856-aa17-6b37a1c21edc');
-INSERT INTO diwi_testset.woningblok (id, project_id) VALUES ('16dbf29e-bd3e-419e-9b2c-0bfd834c0d19', '54a0c192-3454-4f7a-becd-96d214461987');
-
-
---
--- Data for Name: project_gemeente_indeling_changelog; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
---
-
-INSERT INTO diwi_testset.project_gemeente_indeling_changelog (id, project_id, start_milestone_id, end_milestone_id, create_user_id, change_start_date, change_end_date) VALUES ('dbb45f99-d474-494f-bc40-797a0b07557d', '466da5e2-c96f-4856-aa17-6b37a1c21edc', '292414eb-4a4e-405c-954b-e01bb355bc9b', '07f3a0ad-f76a-4dd9-b4c6-6eb8113968e0', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL);
-INSERT INTO diwi_testset.project_gemeente_indeling_changelog (id, project_id, start_milestone_id, end_milestone_id, create_user_id, change_start_date, change_end_date) VALUES ('d26445d8-a207-4c25-877d-57be6ffd86e4', '466da5e2-c96f-4856-aa17-6b37a1c21edc', '292414eb-4a4e-405c-954b-e01bb355bc9b', '07f3a0ad-f76a-4dd9-b4c6-6eb8113968e0', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL);
-INSERT INTO diwi_testset.project_gemeente_indeling_changelog (id, project_id, start_milestone_id, end_milestone_id, create_user_id, change_start_date, change_end_date) VALUES ('00ecd109-560c-4624-af92-d96da64b407a', '466da5e2-c96f-4856-aa17-6b37a1c21edc', '292414eb-4a4e-405c-954b-e01bb355bc9b', '07f3a0ad-f76a-4dd9-b4c6-6eb8113968e0', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL);
-INSERT INTO diwi_testset.project_gemeente_indeling_changelog (id, project_id, start_milestone_id, end_milestone_id, create_user_id, change_start_date, change_end_date) VALUES ('fd9075e6-207f-41c0-986b-aef261d131cd', '54a0c192-3454-4f7a-becd-96d214461987', 'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '7c6bfe67-6618-4a6a-9507-2cd15f88c11f', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL);
-INSERT INTO diwi_testset.project_gemeente_indeling_changelog (id, project_id, start_milestone_id, end_milestone_id, create_user_id, change_start_date, change_end_date) VALUES ('c16f88c6-9a52-402b-a749-f9e82884c4b2', '54a0c192-3454-4f7a-becd-96d214461987', '7c6bfe67-6618-4a6a-9507-2cd15f88c11f', '342887ab-2106-45c4-9565-a4b83f4d3362', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL);
-
-
---
--- Data for Name: project_gemeente_indeling_changelog_buurt; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
---
-
-INSERT INTO diwi_testset.project_gemeente_indeling_changelog_buurt (id, project_gemeente_indeling_changelog_id, buurt_id) VALUES ('773a6975-e478-4996-9ae7-9e8adb2ce7b6', 'd26445d8-a207-4c25-877d-57be6ffd86e4', 'adab9c68-2f38-4ad9-9817-55fa5b02eabd');
-INSERT INTO diwi_testset.project_gemeente_indeling_changelog_buurt (id, project_gemeente_indeling_changelog_id, buurt_id) VALUES ('d23716ff-ab83-4315-bb71-cd11bcb82836', 'fd9075e6-207f-41c0-986b-aef261d131cd', 'adab9c68-2f38-4ad9-9817-55fa5b02eabd');
-
-
---
--- Data for Name: project_gemeente_indeling_changelog_gemeente; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
---
-
-INSERT INTO diwi_testset.project_gemeente_indeling_changelog_gemeente (id, project_gemeente_indeling_changelog_id, gemeente_id) VALUES ('e3f58b45-26cd-4872-91dc-fc46780780cc', '00ecd109-560c-4624-af92-d96da64b407a', '28ccc875-589a-49ba-8180-f6e91fb48d8c');
-INSERT INTO diwi_testset.project_gemeente_indeling_changelog_gemeente (id, project_gemeente_indeling_changelog_id, gemeente_id) VALUES ('858dfe33-9441-4f33-a0e1-2c0709c5d170', 'fd9075e6-207f-41c0-986b-aef261d131cd', '5fe8c4c0-ed20-4629-b429-b499217e4218');
-INSERT INTO diwi_testset.project_gemeente_indeling_changelog_gemeente (id, project_gemeente_indeling_changelog_id, gemeente_id) VALUES ('b62d327d-a97c-4403-a7ca-4649c8827870', 'c16f88c6-9a52-402b-a749-f9e82884c4b2', '28ccc875-589a-49ba-8180-f6e91fb48d8c');
-
-
---
--- Data for Name: project_gemeente_indeling_changelog_wijk; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
---
-
-INSERT INTO diwi_testset.project_gemeente_indeling_changelog_wijk (id, project_gemeente_indeling_changelog_id, wijk_id) VALUES ('e17d808f-6d09-44af-8cd3-57cc11e72e0f', 'dbb45f99-d474-494f-bc40-797a0b07557d', '2359418d-2f79-459d-b0e5-a37621769fa0');
-INSERT INTO diwi_testset.project_gemeente_indeling_changelog_wijk (id, project_gemeente_indeling_changelog_id, wijk_id) VALUES ('57036e13-c24f-4abc-b8a4-55ffa3d8482d', 'dbb45f99-d474-494f-bc40-797a0b07557d', '50dee083-5e49-4940-9657-681873365fc4');
-INSERT INTO diwi_testset.project_gemeente_indeling_changelog_wijk (id, project_gemeente_indeling_changelog_id, wijk_id) VALUES ('bbc2e1f4-57d9-438a-aeb1-ca6f8ed34b1c', 'c16f88c6-9a52-402b-a749-f9e82884c4b2', '2359418d-2f79-459d-b0e5-a37621769fa0');
-INSERT INTO diwi_testset.project_gemeente_indeling_changelog_wijk (id, project_gemeente_indeling_changelog_id, wijk_id) VALUES ('07054958-27e2-48c6-a76b-c62f439ac6a0', 'fd9075e6-207f-41c0-986b-aef261d131cd', '50dee083-5e49-4940-9657-681873365fc4');
-
-
---
--- Data for Name: woningblok_mutatie_changelog; Type: TABLE DATA; Schema: diwi_testset; Owner: vng
---
-
-INSERT INTO diwi_testset.woningblok_mutatie_changelog (id, woningblok_id, start_milestone_id, end_milestone_id, create_user_id, change_start_date, change_end_date, bruto_plancapaciteit, sloop, netto_plancapaciteit) VALUES ('960095b0-a37a-4c81-a0f9-d74f759729ef', '8c401741-8c23-4cfd-ab49-b3b710758be2', '292414eb-4a4e-405c-954b-e01bb355bc9b', '07f3a0ad-f76a-4dd9-b4c6-6eb8113968e0', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL, NULL, NULL, 50);
-INSERT INTO diwi_testset.woningblok_mutatie_changelog (id, woningblok_id, start_milestone_id, end_milestone_id, create_user_id, change_start_date, change_end_date, bruto_plancapaciteit, sloop, netto_plancapaciteit) VALUES ('e1a3d71e-6276-4736-adc3-21ad718828ed', '8c401741-8c23-4cfd-ab49-b3b710758be2', '292414eb-4a4e-405c-954b-e01bb355bc9b', '07f3a0ad-f76a-4dd9-b4c6-6eb8113968e0', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL, 100, NULL, NULL);
-INSERT INTO diwi_testset.woningblok_mutatie_changelog (id, woningblok_id, start_milestone_id, end_milestone_id, create_user_id, change_start_date, change_end_date, bruto_plancapaciteit, sloop, netto_plancapaciteit) VALUES ('b6389bbd-3ec7-4387-8e53-96c21fb50f52', '8c401741-8c23-4cfd-ab49-b3b710758be2', '292414eb-4a4e-405c-954b-e01bb355bc9b', '07f3a0ad-f76a-4dd9-b4c6-6eb8113968e0', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL, NULL, NULL, 20);
-INSERT INTO diwi_testset.woningblok_mutatie_changelog (id, woningblok_id, start_milestone_id, end_milestone_id, create_user_id, change_start_date, change_end_date, bruto_plancapaciteit, sloop, netto_plancapaciteit) VALUES ('82fbe354-97d9-462d-97d0-21a9efd0fbe2', '16dbf29e-bd3e-419e-9b2c-0bfd834c0d19', 'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '7c6bfe67-6618-4a6a-9507-2cd15f88c11f', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL, 0, 0, 25);
-INSERT INTO diwi_testset.woningblok_mutatie_changelog (id, woningblok_id, start_milestone_id, end_milestone_id, create_user_id, change_start_date, change_end_date, bruto_plancapaciteit, sloop, netto_plancapaciteit) VALUES ('fec2a70e-29c8-4138-a7a4-87b14b925567', '16dbf29e-bd3e-419e-9b2c-0bfd834c0d19', '7c6bfe67-6618-4a6a-9507-2cd15f88c11f', '342887ab-2106-45c4-9565-a4b83f4d3362', '2122426c-6e70-419c-a054-f51dd24d798b', '2024-01-05 20:06:32+02', NULL, 0, 0, 35);
-

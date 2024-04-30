@@ -5,7 +5,10 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -16,6 +19,7 @@ public class HouseblockUpdateModel {
     private Boolean booleanValue;
     private SingleValueOrRangeModel<BigDecimal> sizeValue;
     private Map<Object, Integer> valuesMap;
+    private List<AmountModel> amountValuesList;
     private HouseblockSnapshotModel.OwnershipValue ownershipValue;
     private HouseblockSnapshotModel.Mutation mutationValue;
     private ActionType actionType;
@@ -35,6 +39,17 @@ public class HouseblockUpdateModel {
         this.valuesMap = valuesMap;
     }
 
+    public HouseblockUpdateModel(HouseblockProperty property, List<AmountModel> amountValuesList) {
+        this.property = property;
+        this.amountValuesList = amountValuesList;
+    }
+
+    public HouseblockUpdateModel(HouseblockProperty property, List<AmountModel> amountValuesList, Map<Object, Integer> valuesMap) {
+        this.property = property;
+        this.valuesMap = valuesMap;
+        this.amountValuesList = amountValuesList;
+    }
+
     public HouseblockUpdateModel(HouseblockProperty property, SingleValueOrRangeModel<BigDecimal> singleValueOrRangeModel) {
         this.property = property;
         this.sizeValue = singleValueOrRangeModel;
@@ -52,6 +67,9 @@ public class HouseblockUpdateModel {
     }
 
     public String validate() {
+        return validate(new ArrayList<>(), new ArrayList<>());
+    }
+    public String validate(List<UUID> targetGroupUuids, List<UUID> physicalAppeareanceUuids) {
         if (property == null) {
             return "Property is missing";
         }
@@ -66,14 +84,31 @@ public class HouseblockUpdateModel {
                 yield null;
             }
             case name -> (value == null || value.isBlank()) ? "New houseblock name value is not valid." : null;
-            case size -> sizeValue.isValid() ? null : "Size value is not valid.";
-            case purpose, groundPosition, physicalAppearanceAndHouseType -> {
+            case size -> sizeValue.isValid(false) ? null : "Size value is not valid.";
+            case groundPosition -> {
                 valuesMap.entrySet().removeIf(entry -> entry.getValue() == null);
                 yield null;
             }
+            case physicalAppearanceAndHouseType -> {
+                for (AmountModel amountModel : amountValuesList) {
+                    if (!physicalAppeareanceUuids.contains(amountModel.getId())) {
+                        yield "Physical appearance category id is not valid.";
+                    }
+                }
+                valuesMap.entrySet().removeIf(entry -> entry.getValue() == null);
+                yield null;
+            }
+            case targetGroup -> {
+                for (AmountModel amountModel : amountValuesList) {
+                    if (!targetGroupUuids.contains(amountModel.getId())) {
+                        yield "Target group category id is not valid.";
+                    }
+                }
+                yield null;
+            }
             case programming, mutation  -> null;
-            case ownershipValue -> (ownershipValue.getType() == null || ownershipValue.getAmount() == null || !ownershipValue.getRentalValue().isValid() ||
-                !ownershipValue.getValue().isValid()) ? "Ownership value is not valid" : null;
+            case ownershipValue -> (ownershipValue.getType() == null || ownershipValue.getAmount() == null || !ownershipValue.getRentalValue().isValid(true) ||
+                !ownershipValue.getValue().isValid(true)) ? "Ownership value is not valid" : null;
         };
 
     }
@@ -83,7 +118,7 @@ public class HouseblockUpdateModel {
         groundPosition,
         mutation,
         ownershipValue,
-        purpose,
+        targetGroup,
         physicalAppearanceAndHouseType,
         programming,
         size,

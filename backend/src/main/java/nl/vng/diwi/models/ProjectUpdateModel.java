@@ -2,10 +2,14 @@ package nl.vng.diwi.models;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import nl.vng.diwi.dal.VngRepository;
+import nl.vng.diwi.dal.entities.Property;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
+import nl.vng.diwi.dal.entities.superclasses.IdSuperclass;
+import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.models.validation.Validation;
 
 import org.apache.commons.lang3.EnumUtils;
@@ -30,6 +34,9 @@ public class ProjectUpdateModel {
         projectLeaders,
         projectOwners,
         projectPhase,
+        municipality,
+        district,
+        neighbourhood,
         // Do not change the order - startDate and endDate must be the last ones!
         // It will cause problems in future problems and extra milestones to be created.
         // See ProjectsResourceTest.updateProjectTest_futureProject
@@ -68,7 +75,7 @@ public class ProjectUpdateModel {
         this.max = max;
     }
 
-    public String validate() {
+    public String validate(VngRepository repo) {
         if (property == null) {
             return "Property is missing";
         }
@@ -145,8 +152,55 @@ public class ProjectUpdateModel {
                 yield null;
             }
             case projectPhase -> (value == null || !EnumUtils.isValidEnum(ProjectPhase.class, value)) ? "New project phase value is not valid." : null;
-            case municipalityRole, projectLeaders, projectOwners -> null;
+            case projectLeaders, projectOwners -> null;
+            case municipalityRole -> {
+                Property municipalityProperty = repo.getPropertyDAO().getActivePropertyStateByName(Constants.FIXED_PROPERTY_MUNICIPALITY_ROLE).getProperty();
+                if (municipalityProperty == null) {
+                    yield "Missing municipality role property";
+                }
+                List<UUID> municipalityRoleCatUuids = municipalityProperty.getCategoryValues().stream().map(IdSuperclass::getId).toList();
+                if (!municipalityRoleCatUuids.containsAll(getValuesAsUuids())) {
+                    yield "Invalid municipality role property";
+                }
+                yield null;
+            }
+            case municipality -> {
+                Property municipalityProperty = repo.getPropertyDAO().getActivePropertyStateByName(Constants.FIXED_PROPERTY_MUNICIPALITY).getProperty();
+                if (municipalityProperty == null) {
+                    yield "Missing municipality property";
+                }
+                List<UUID> municipalityCatUuids = municipalityProperty.getCategoryValues().stream().map(IdSuperclass::getId).toList();
+                if (!municipalityCatUuids.containsAll(getValuesAsUuids())) {
+                    yield "Invalid municipality property";
+                }
+                yield null;
+            }
+            case district -> {
+                Property districtProperty = repo.getPropertyDAO().getActivePropertyStateByName(Constants.FIXED_PROPERTY_DISTRICT).getProperty();
+                if (districtProperty == null) {
+                    yield "Missing district property";
+                }
+                List<UUID> districtCatUuids = districtProperty.getCategoryValues().stream().map(IdSuperclass::getId).toList();
+                if (!districtCatUuids.containsAll(getValuesAsUuids())) {
+                    yield "Invalid district property";
+                }
+                yield null;
+            }
+            case neighbourhood -> {
+                Property neighbourhoodProperty = repo.getPropertyDAO().getActivePropertyStateByName(Constants.FIXED_PROPERTY_NEIGHBOURHOOD).getProperty();
+                if (neighbourhoodProperty == null) {
+                    yield "Missing neighbourhood property";
+                }
+                List<UUID> neighbourhoodCatUuids = neighbourhoodProperty.getCategoryValues().stream().map(IdSuperclass::getId).toList();
+                if (!neighbourhoodCatUuids.containsAll(getValuesAsUuids())) {
+                    yield "Invalid neighbourhood property";
+                }
+                yield null;
+            }
         };
+    }
 
+    public List<UUID> getValuesAsUuids() {
+        return values.stream().map(UUID::fromString).toList();
     }
 }

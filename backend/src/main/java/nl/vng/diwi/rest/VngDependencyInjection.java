@@ -1,5 +1,6 @@
 package nl.vng.diwi.rest;
 
+import nl.vng.diwi.services.ExcelImportService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.hk2.api.Factory;
@@ -96,6 +97,7 @@ public class VngDependencyInjection extends AbstractBinder {
         bind(new OrganizationsService()).to(OrganizationsService.class);
         bind(new HouseblockService()).to(HouseblockService.class);
         bind(new PropertiesService()).to(PropertiesService.class);
+        bind(new ExcelImportService()).to(ExcelImportService.class);
 
     }
 }
