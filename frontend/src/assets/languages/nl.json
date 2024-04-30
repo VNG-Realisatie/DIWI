@@ -67,7 +67,14 @@
         "type": "Soort",
         "amount": "Aantal",
         "rent": "Huur",
-        "ownershipAndValue": "Eigendom en waarde",
+        "ownershipAndValue": {
+          "title": "Eigendom en waarde",
+          "type": {
+            "KOOPWONING": "Koopwoning",
+            "HUURWONING_PARTICULIERE_VERHUURDER": "Huurwoning Particuliere Verhuurder",
+            "HUURWONING_WONINGCORPORATIE": "Huurwoning Woningcorporatie"
+          }
+        },
         "ownerOccupiedHome": "Koopwoning",
         "rentalPropertyPrivate": "Huurwoning particuliere verhuurder",
         "rentalPropertyHousingAssociation": "Huurwoning woningcorporatie",
@@ -313,6 +320,10 @@
           "ORDINAL": "Gerangschikte categorie",
           "CATEGORY": "Categorie",
           "TEXT": "Open tekstveld"
+        },
+        "objectType": {
+          "PROJECT": "Project",
+          "WONINGBLOK": "Woningblok"
         },
         "add": "Voeg maatwerk eigenschap toe",
         "addOption": "Voeg optie toe",
