@@ -26,6 +26,7 @@ export const CreateHouseBlockDialog = ({ openHouseBlockDialog, setOpenHouseBlock
     return (
         <Dialog open={openHouseBlockDialog} onClose={() => setOpenHouseBlockDialog(false)} maxWidth="xl">
             <DialogContent>
+                TEST
                 <HouseBlocksForm houseBlock={houseBlock} setHouseBlock={setHouseBlock} readOnly={false} />
             </DialogContent>
             <DialogActions>

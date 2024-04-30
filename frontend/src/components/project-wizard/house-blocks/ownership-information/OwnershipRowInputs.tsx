@@ -20,6 +20,10 @@ type OwnershipProps = {
     handleInputChange: (index: number, value: OwnershipSingleValue) => void;
 };
 
+export const isOwnershipAmountValid = (amount: number): boolean => {
+    return Number.isInteger(amount) && amount >= 0;
+};
+
 const OwnershipTypeOption = ({ handleInputChange, ownership, index }: OwnershipProps) => {
     return (
         <Select
@@ -42,6 +46,7 @@ const OwnershipTypeOption = ({ handleInputChange, ownership, index }: OwnershipP
 };
 const OwnershipAmountInput = ({ handleInputChange, ownership, index }: OwnershipProps) => {
     const { t } = useTranslation();
+    const isAmountValid = isOwnershipAmountValid(ownership.amount);
     return (
         <TextField
             size="small"
@@ -51,8 +56,8 @@ const OwnershipAmountInput = ({ handleInputChange, ownership, index }: Ownership
             fullWidth
             value={ownership.amount !== 0 && !Number.isNaN(ownership.amount) ? ownership.amount : ""}
             onChange={(e) => handleInputChange(index, { ...ownership, amount: parseInt(e.target.value) })}
-            error={ownership.amount < 0 || !Number.isInteger(ownership.amount)}
-            helperText={ownership.amount < 0 || !Number.isInteger(ownership.amount) ? t("createProject.hasMissingRequiredAreas.amount") : ""}
+            error={!isAmountValid}
+            helperText={!isAmountValid ? t("createProject.hasMissingRequiredAreas.amount") : ""}
         />
     );
 };

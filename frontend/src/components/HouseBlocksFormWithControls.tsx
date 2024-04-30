@@ -10,6 +10,7 @@ import { DeleteButtonWithConfirm } from "./DeleteButtonWithConfirm";
 import { deleteHouseBlockWithCustomProperties, saveHouseBlockWithCustomProperties } from "../api/houseBlockServices";
 import HouseBlockContext from "../context/HouseBlockContext";
 import useAlert from "../hooks/useAlert";
+import { isOwnershipAmountValid } from "./project-wizard/house-blocks/ownership-information/OwnershipRowInputs";
 
 type Props = {
     houseBlock: HouseBlockWithCustomProperties;
@@ -17,6 +18,7 @@ type Props = {
 
 export const validateHouseBlock = (houseBlock: HouseBlockWithCustomProperties, setAlert: any): boolean => {
     let isValid = true;
+    const invalidOwnershipAmount = houseBlock.ownershipValue.some((owner) => !isOwnershipAmountValid(owner.amount));
     if (
         !houseBlock.endDate ||
         !houseBlock.startDate ||
@@ -24,7 +26,7 @@ export const validateHouseBlock = (houseBlock: HouseBlockWithCustomProperties, s
         !houseBlock.mutation.amount ||
         houseBlock.mutation.amount <= 0 ||
         !houseBlock.mutation.kind ||
-        houseBlock.ownershipValue.some((owner: any) => owner.amount < 0 || !Number.isInteger(owner.amount))
+        invalidOwnershipAmount
     ) {
         isValid = false;
     }
