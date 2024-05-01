@@ -22,8 +22,10 @@ export const CustomPropertiesHouseblock = ({ readOnly, customPropertyValues, set
 
     useEffect(() => {
         getCustomPropertiesWithQuery("WONINGBLOK").then((properties) => {
-            // Make sure to filter out no longer active properties
-            setCustomDefinitions(properties.filter((property) => !property.disabled));
+            // Make sure to filter out no longer active and 'default' properties
+            setCustomDefinitions(
+                properties.filter((property) => !property.disabled && !(property.name === "physicalAppearance" || property.name === "targetGroup")),
+            );
         });
     }, []);
 
@@ -38,25 +40,22 @@ export const CustomPropertiesHouseblock = ({ readOnly, customPropertyValues, set
                 {t(`${translationPath}.title`)}
             </Typography>
             {customDefinitions.length > 0 &&
-                customDefinitions
-                    // Make sure to not display 'default' houseblock props
-                    .filter((property) => !(property.name === "physicalAppearance" || property.name === "targetGroup"))
-                    .map((property) => {
-                        const customValue = customPropertyValues?.find((cv) => cv.customPropertyId === property.id);
-                        return (
-                            <Stack key={property.id} width="100%">
-                                <LabelComponent required text={property.name} />{" "}
-                                <CustomPropertyWidget
-                                    readOnly={readOnly}
-                                    customValue={customValue}
-                                    setCustomValue={(newValue) => {
-                                        setCustomValue({ ...newValue, customPropertyId: property.id });
-                                    }}
-                                    customDefinition={property}
-                                />
-                            </Stack>
-                        );
-                    })}
+                customDefinitions.map((property) => {
+                    const customValue = customPropertyValues?.find((cv) => cv.customPropertyId === property.id);
+                    return (
+                        <Stack key={property.id} width="100%">
+                            <LabelComponent required text={property.name} />{" "}
+                            <CustomPropertyWidget
+                                readOnly={readOnly}
+                                customValue={customValue}
+                                setCustomValue={(newValue) => {
+                                    setCustomValue({ ...newValue, customPropertyId: property.id });
+                                }}
+                                customDefinition={property}
+                            />
+                        </Stack>
+                    );
+                })}
             {/* No custom props */}
             {(!customDefinitions || customDefinitions.length <= 0) && (
                 <Stack>

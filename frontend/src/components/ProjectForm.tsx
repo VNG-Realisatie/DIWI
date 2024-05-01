@@ -13,7 +13,7 @@ import { dateFormats } from "../localization";
 import { ConfidentialityLevelOptions, PlanStatusOptions, ProjectPhaseOptions } from "../types/enums";
 import { OrganizationSelect } from "../widgets/OrganizationSelect";
 import useProperties from "../hooks/useProperties";
-import { CustomPropertiesProject } from "./project/project-with-house-block/CustomerPropertiesProjectBlock";
+import { CustomPropertiesProject } from "./project/project-with-house-block/CustomPropertiesProject";
 
 type Props = {
     readOnly: boolean;
