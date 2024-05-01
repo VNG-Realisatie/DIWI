@@ -40,8 +40,9 @@ const HouseBlockAccordionWithControls = ({ houseBlock, refresh }: HouseBlockAcco
     const [expanded, setExpanded] = useState(false);
     const { t } = useTranslation();
 
-    const handleSave = () => {
-        saveHouseBlockWithCustomProperties(newHouseBlock);
+    const handleSave = async () => {
+        await saveHouseBlockWithCustomProperties(newHouseBlock);
+        refresh();
         setReadOnly(true);
     };
 

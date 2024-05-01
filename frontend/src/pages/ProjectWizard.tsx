@@ -91,7 +91,7 @@ const ProjectWizard = () => {
 
     return (
         <WizardLayout {...{ infoText, handleNext, handleSave, projectId, activeStep: 0 }}>
-            <ProjectForm project={projectForm} setProject={setProjectForm} readOnly={false} showColorPicker={true} />
+            <ProjectForm project={projectForm} setProject={setProjectForm} readOnly={false} showColorPicker={true} showAmounts={false} />
         </WizardLayout>
     );
 };

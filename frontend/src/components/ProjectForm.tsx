@@ -14,12 +14,16 @@ import { ConfidentialityLevelOptions, PlanStatusOptions, ProjectPhaseOptions } f
 import { OrganizationSelect } from "../widgets/OrganizationSelect";
 import useProperties from "../hooks/useProperties";
 import { CustomPropertiesProject } from "./project/project-with-house-block/CustomPropertiesProject";
+import { CellContainer } from "./project/project-with-house-block/CellContainer";
+import { useContext } from "react";
+import HouseBlockContext from "../context/HouseBlockContext";
 
 type Props = {
     readOnly: boolean;
     project: Project;
     setProject: (project: Project) => void;
     showColorPicker?: boolean;
+    showAmounts?: boolean;
 };
 
 const datePickerStyle = {
@@ -32,8 +36,19 @@ const datePickerStyle = {
     },
 };
 
-export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = false }: Props) => {
+export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = false, showAmounts = true }: Props) => {
     const { priorityOptionList, municipalityRolesOptions } = useProperties();
+    const { houseBlocks } = useContext(HouseBlockContext);
+
+    const constructionAmount = houseBlocks
+        .filter((hb) => hb.mutation.kind === "CONSTRUCTION")
+        .map((hb) => hb.mutation.amount ?? 0)
+        .reduce((a, b) => a + b, 0);
+
+    const demolitionAmount = houseBlocks
+        .filter((hb) => hb.mutation.kind === "DEMOLITION")
+        .map((hb) => hb.mutation.amount ?? 0)
+        .reduce((a, b) => a + b, 0);
 
     return (
         <Grid container spacing={2} alignItems="stretch">
@@ -363,27 +378,35 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                 </WizardCard>
             </Grid>
             {/* AMOUNTS BLOCK */}
-            <Grid item xs={12}>
-                <WizardCard>
-                    <Grid container spacing={2} alignItems="stretch">
-                        {/* Demolition */}
-                        <Grid item xs={12} md={4}>
-                            <LabelComponent required={false} readOnly={readOnly} text={t("createProject.houseBlocksForm.demolition")} />
-                            TODO
+            {showAmounts && (
+                <Grid item xs={12}>
+                    <WizardCard>
+                        <Grid container spacing={2} alignItems="stretch">
+                            {/* Demolition */}
+                            <Grid item xs={12} md={4}>
+                                <LabelComponent required={false} readOnly={readOnly} text={t("createProject.houseBlocksForm.demolition")} />
+                                <CellContainer>
+                                    <LabelComponent required={false} readOnly={true} text={demolitionAmount.toString()} />
+                                </CellContainer>
+                            </Grid>
+                            {/* Construction */}
+                            <Grid item xs={12} md={4}>
+                                <LabelComponent required={false} readOnly={readOnly} text={t("createProject.houseBlocksForm.grossPlanCapacity")} />
+                                <CellContainer>
+                                    <LabelComponent required={false} readOnly={true} text={constructionAmount.toString()} />
+                                </CellContainer>
+                            </Grid>
+                            {/* Total */}
+                            <Grid item xs={12} md={4}>
+                                <LabelComponent required={false} readOnly={readOnly} text={t("createProject.houseBlocksForm.netPlanCapacity")} />
+                                <CellContainer>
+                                    <LabelComponent required={false} readOnly={true} text={(constructionAmount - demolitionAmount).toString()} />
+                                </CellContainer>
+                            </Grid>
                         </Grid>
-                        {/* Construction */}
-                        <Grid item xs={12} md={4}>
-                            <LabelComponent required={false} readOnly={readOnly} text={t("createProject.houseBlocksForm.grossPlanCapacity")} />
-                            TODO
-                        </Grid>
-                        {/* Total */}
-                        <Grid item xs={12} md={4}>
-                            <LabelComponent required={false} readOnly={readOnly} text={t("createProject.houseBlocksForm.netPlanCapacity")} />
-                            TODO
-                        </Grid>
-                    </Grid>
-                </WizardCard>
-            </Grid>
+                    </WizardCard>
+                </Grid>
+            )}
             {/* CUSTOM PROPERTIES */}
             <Grid item xs={12}>
                 <WizardCard>
