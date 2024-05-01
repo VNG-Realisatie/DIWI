@@ -1,5 +1,4 @@
-import { useContext, useEffect, useState } from "react";
-import ProjectContext from "../context/ProjectContext";
+import { useEffect, useState } from "react";
 import { AvatarGroup, TextField, Autocomplete, Checkbox } from "@mui/material";
 import { OrganizationUserAvatars } from "../components/OrganizationUserAvatars";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
@@ -12,54 +11,42 @@ const checkedIcon = <CheckBoxIcon />;
 
 type Props = {
     readOnly: boolean;
-    owner: Organization[];
-    setOwner: (owner: Organization[]) => void;
-    isLeader?: boolean;
+    userGroup: Organization[];
+    setUserGroup: (owner: Organization[]) => void;
 };
 
-export const OrganizationSelect = ({ readOnly, owner, setOwner, isLeader }: Props) => {
-    const { selectedProject } = useContext(ProjectContext);
+export const OrganizationSelect = ({ readOnly, userGroup, setUserGroup }: Props) => {
     const [ownerOptions, setOwnerOptions] = useState<Organization[]>();
 
     useEffect(() => {
         getOrganizationList().then((organizations) => setOwnerOptions(organizations));
     }, []);
 
-    if (readOnly) {
-        if (isLeader) {
-            return (
-                <AvatarGroup max={3}>
-                    <OrganizationUserAvatars organizations={selectedProject?.projectLeaders} />
-                </AvatarGroup>
-            );
-        } else {
-            return (
-                <AvatarGroup max={3}>
-                    <OrganizationUserAvatars organizations={selectedProject?.projectOwners} />
-                </AvatarGroup>
-            );
-        }
-    } else {
-        return (
-            <Autocomplete
-                multiple
-                size="small"
-                options={ownerOptions ? ownerOptions : []}
-                getOptionLabel={(option) => option.name}
-                isOptionEqualToValue={(option, value) => option.uuid === value.uuid}
-                value={owner}
-                onChange={(_: any, newValue: Organization[]) => setOwner(newValue)}
-                renderOption={(props, option, { selected }) => (
-                    <li {...props}>
-                        <Checkbox icon={icon} checkedIcon={checkedIcon} style={{ marginRight: 8 }} checked={selected} />
-                        {option.name}
-                        <AvatarGroup max={3}>
-                            <OrganizationUserAvatars organizations={[option]} />
-                        </AvatarGroup>
-                    </li>
-                )}
-                renderInput={(params) => <TextField {...params} />}
-            />
-        );
-    }
+    return (
+        <Autocomplete
+            multiple
+            size="small"
+            disabled={readOnly}
+            sx={{
+                "& .MuiInputBase-input.Mui-disabled": {
+                    backgroundColor: "#0000", // set 0 opacity when disabled
+                },
+            }}
+            options={ownerOptions ? ownerOptions : []}
+            getOptionLabel={(option) => option.name}
+            isOptionEqualToValue={(option, value) => option.uuid === value.uuid}
+            value={userGroup}
+            onChange={(_: any, newValue: Organization[]) => setUserGroup(newValue)}
+            renderOption={(props, option, { selected }) => (
+                <li {...props}>
+                    <Checkbox icon={icon} checkedIcon={checkedIcon} style={{ marginRight: 8 }} checked={selected} />
+                    {option.name}
+                    <AvatarGroup max={3}>
+                        <OrganizationUserAvatars organizations={[option]} />
+                    </AvatarGroup>
+                </li>
+            )}
+            renderInput={(params) => <TextField {...params} />}
+        />
+    );
 };
