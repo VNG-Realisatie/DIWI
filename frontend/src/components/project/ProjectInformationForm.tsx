@@ -13,6 +13,7 @@ import { confidentialityLevelOptions, planTypeOptions, planningPlanStatus, proje
 import { LabelComponent } from "./LabelComponent";
 import { MunicipalityRoleEditForm } from "./project-with-house-block/MunicipalityRoleEditForm";
 import useProperties from "../../hooks/useProperties";
+import NameInput from "./inputs/NameInput";
 
 type Props = {
     setCreateProjectForm: (a: Partial<Project>) => void;
@@ -59,6 +60,13 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
             color: "red",
         },
     };
+
+    const updateProjectName = (e: any) => {
+        setCreateProjectForm({
+            ...createProjectForm,
+            projectName: e.target.value,
+        });
+    };
     return (
         <Box mt={4}>
             <Typography variant="h6" fontWeight="600">
@@ -67,20 +75,13 @@ export const ProjectInformationForm = ({ setCreateProjectForm, createProjectForm
             <LabelComponent required text="createProject.informationForm.nameLabel" />
             <Stack direction="row" alignItems="center" justifyContent="space-between">
                 <Stack width="100%">
-                    <TextField
-                        required
-                        id="projectname"
-                        size="small"
-                        variant="outlined"
+                    <NameInput
+                        mandatory={true}
                         value={createProjectForm?.projectName ?? ""}
-                        onChange={(e) => {
-                            setCreateProjectForm({
-                                ...createProjectForm,
-                                projectName: e.target.value,
-                            });
-                        }}
+                        setValue={updateProjectName}
+                        readOnly={false}
+                        errorText={t("createProject.hasMissingRequiredAreas.name")}
                     />
-                    {!createProjectForm.projectName && <Alert severity="warning">{t("createProject.hasMissingRequiredAreas.name")}</Alert>}
                 </Stack>
 
                 <ColorSelector selectedColor={createProjectForm?.projectColor} defaultColor="#FF5733" onColorChange={handleColorChange} />
