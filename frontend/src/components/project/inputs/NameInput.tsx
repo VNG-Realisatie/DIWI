@@ -1,5 +1,6 @@
-import { Box, TextField, Typography } from "@mui/material";
+import { Stack, TextField, Typography } from "@mui/material";
 import { InputContainer } from "../../project-wizard/house-blocks/InputContainer";
+import { LabelComponent } from "../LabelComponent";
 
 type Props = {
     title?: string;
@@ -9,20 +10,28 @@ type Props = {
     readOnly: boolean;
     mandatory: boolean;
     errorText?: string;
+    label?: string;
 };
 
-const NameInput = ({ title, value, setValue, nullable, readOnly, mandatory, errorText }: Props) => {
+const shouldDisplayError = (mandatory: boolean, value: string) => {
+    return mandatory && (!value || value.trim() === "");
+};
+
+const NameInput = ({ title, value, setValue, nullable, readOnly, mandatory, errorText, label }: Props) => {
+    const hasError = shouldDisplayError(mandatory, value);
     return (
-        <Box>
+        <Stack width="100%">
+            {label && <LabelComponent required={mandatory} text={label} />}
             {!readOnly && (
                 <TextField
+                    required={mandatory}
                     sx={{ width: "100%" }}
                     size="small"
                     variant="outlined"
                     value={value ?? ""}
                     onChange={setValue}
-                    error={mandatory && !value}
-                    helperText={mandatory && !value ? errorText : ""}
+                    error={hasError}
+                    helperText={hasError ? errorText : ""}
                 />
             )}
             {readOnly && (
@@ -30,7 +39,7 @@ const NameInput = ({ title, value, setValue, nullable, readOnly, mandatory, erro
                     <Typography>{value ?? ""}</Typography>
                 </InputContainer>
             )}
-        </Box>
+        </Stack>
     );
 };
 
