@@ -25,6 +25,7 @@ export const CustomPropertiesProject = ({ readOnly, customValues, setCustomValue
                     (property) =>
                         !property.disabled &&
                         !(
+                            property.name === "geometry" ||
                             property.name === "district" ||
                             property.name === "municipality" ||
                             property.name === "municipalityRole" ||
