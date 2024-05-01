@@ -2,7 +2,7 @@ import { t } from "i18next";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { projectWizardBlocks, projectWizardWithId } from "../Paths";
-import { Project, createProject, getProject, updateProject } from "../api/projectsServices";
+import { Project, createProject, getProject, updateProjectWithCustomProperties } from "../api/projectsServices";
 import WizardLayout from "../components/project-wizard/WizardLayout";
 import useAlert from "../hooks/useAlert";
 import ProjectContext from "../context/ProjectContext";
@@ -42,7 +42,7 @@ const ProjectWizard = () => {
         try {
             // when saved initially we can keep updating existing project
             if (projectId) {
-                await updateProject(projectForm);
+                await updateProjectWithCustomProperties(projectForm);
                 setAlert(t("createProject.successfullySaved"), "success");
                 return true;
             } else {
@@ -58,7 +58,7 @@ const ProjectWizard = () => {
                 const project = await createProject(temporaryCreateForm);
                 // after save immediately update Id and send attibutes that have not been saved yet
                 projectForm.projectId = project.projectId;
-                await updateProject(projectForm);
+                await updateProjectWithCustomProperties(projectForm);
                 setAlert(t("createProject.successfullySaved"), "success");
 
                 navigate(projectWizardWithId.toPath({ projectId: project.projectId }));

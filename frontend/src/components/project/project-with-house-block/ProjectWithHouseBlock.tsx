@@ -10,12 +10,12 @@ import { useTranslation } from "react-i18next";
 import { defaultColors } from "../../ColorSelector";
 import { BlockPicker } from "react-color";
 
-import { Project, updateProject as updateProjects } from "../../../api/projectsServices";
+import { Project, updateProjectWithCustomProperties } from "../../../api/projectsServices";
 import AlertContext from "../../../context/AlertContext";
 import { CreateHouseBlockDialog } from "./CreateHouseBlockDialog";
 import { HouseBlocksList } from "./HouseBlocksList";
-import { CustomPropertyValue, getCustomPropertyValues, putCustomPropertyValue } from "../../../api/customPropServices";
 import { ProjectForm } from "../../ProjectForm";
+import useLoading from "../../../hooks/useLoading";
 
 export const columnTitleStyle: SxProps<Theme> = {
     border: "solid 1px #ddd",
@@ -32,25 +32,10 @@ export const ProjectsWithHouseBlock = () => {
     const [readOnly, setReadOnly] = useState(true);
 
     const [projectForm, setProjectForm] = useState<Project | null>(selectedProject);
-    const [customValues, setCustomValues] = useState<CustomPropertyValue[]>([]);
 
     const { setAlert } = useContext(AlertContext);
+    const { setLoading } = useLoading();
     const { t } = useTranslation();
-
-    useEffect(() => {
-        const fetchCustomPropertyValues = async () => {
-            if (selectedProject?.projectId) {
-                try {
-                    const values = await getCustomPropertyValues(selectedProject?.projectId);
-                    setCustomValues(values);
-                } catch (error) {
-                    console.error("Error fetching custom property values:", error);
-                }
-            }
-        };
-
-        fetchCustomPropertyValues();
-    }, [selectedProject?.projectId]);
 
     const resetProjectForm = useCallback(() => {
         setProjectForm(selectedProject);
@@ -69,23 +54,19 @@ export const ProjectsWithHouseBlock = () => {
         setReadOnly(false);
     };
 
-    const handleCustomPropertiesSave = () => {
-        customValues.forEach((value) => {
-            putCustomPropertyValue(selectedProject?.projectId as string, value).catch((error: any) => setAlert(error.message, "error"));
-        });
-    };
-
-    const handleProjectSave = () => {
+    const handleProjectSave = async () => {
         if (projectForm) {
-            updateProjects(projectForm)
-                .then(() => {
-                    setReadOnly(true);
-                    updateProject();
-                    handleCustomPropertiesSave();
-                })
-                .catch((error) => {
-                    setAlert(error.message, "error");
-                });
+            try {
+                setLoading(true);
+                const newProjectForm = await updateProjectWithCustomProperties(projectForm);
+                setAlert(t("createProject.houseBlocksForm.notifications.successfullySaved"), "success");
+                setProjectForm(newProjectForm);
+                updateProject();
+            } catch {
+                setAlert(t("createProject.houseBlocksForm.notifications.error"), "error");
+            } finally {
+                setLoading(false);
+            }
         }
     };
 
