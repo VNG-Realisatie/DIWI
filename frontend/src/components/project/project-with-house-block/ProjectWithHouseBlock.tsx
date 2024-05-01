@@ -59,6 +59,7 @@ export const ProjectsWithHouseBlock = () => {
                 setAlert(t("createProject.houseBlocksForm.notifications.error"), "error");
             } finally {
                 setLoading(false);
+                setReadOnly(true);
             }
         }
     };
