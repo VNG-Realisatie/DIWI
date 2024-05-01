@@ -375,6 +375,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             }}
         >
             <DataGrid
+                autoHeight
                 sx={{
                     borderRadius: 0,
                 }}
