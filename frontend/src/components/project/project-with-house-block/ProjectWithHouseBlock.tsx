@@ -1,4 +1,4 @@
-import { Box, Popover, Stack, SxProps, Theme, Tooltip } from "@mui/material";
+import { Box, Popover, Stack, Tooltip } from "@mui/material";
 import { useCallback, useContext, useEffect, useState } from "react";
 import ProjectContext from "../../../context/ProjectContext";
 import EditIcon from "@mui/icons-material/Edit";
@@ -16,13 +16,6 @@ import { CreateHouseBlockDialog } from "./CreateHouseBlockDialog";
 import { HouseBlocksList } from "./HouseBlocksList";
 import { ProjectForm } from "../../ProjectForm";
 import useLoading from "../../../hooks/useLoading";
-
-export const columnTitleStyle: SxProps<Theme> = {
-    border: "solid 1px #ddd",
-    p: 0.6,
-    color: "#FFFFFF",
-    backgroundColor: "#738092",
-};
 
 export const ProjectsWithHouseBlock = () => {
     const { selectedProject, updateProject } = useContext(ProjectContext);
