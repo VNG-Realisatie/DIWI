@@ -3,12 +3,15 @@ import { render, screen } from "@testing-library/react";
 import { ProjectProvider } from "../context/ProjectContext";
 import TestComponentWrapper from "../test/TestComponentWrapper";
 import ProjectWizard from "./ProjectWizard";
+import { HouseBlockProvider } from "../context/HouseBlockContext";
 
 test("renders project wizard page 1", () => {
     render(
         <TestComponentWrapper>
             <ProjectProvider>
-                <ProjectWizard />
+                <HouseBlockProvider>
+                    <ProjectWizard />
+                </HouseBlockProvider>
             </ProjectProvider>
         </TestComponentWrapper>,
     );
