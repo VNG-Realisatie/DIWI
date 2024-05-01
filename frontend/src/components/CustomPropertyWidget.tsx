@@ -1,7 +1,6 @@
 import { Autocomplete, TextField } from "@mui/material";
 import { Property } from "../api/adminSettingServices";
 import { CustomPropertyValue } from "../api/customPropServices";
-import { CellContainer } from "./project/project-with-house-block/CellContainer";
 import { useTranslation } from "react-i18next";
 
 type Props = {
@@ -21,102 +20,95 @@ export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, cu
     }
 
     if (customDefinition.propertyType === "BOOLEAN") {
-        if (!readOnly) {
-            return (
-                <Autocomplete
-                    size="small"
-                    options={[trueishLabel, falsyLabel]}
-                    value={customValue?.booleanValue !== undefined ? booleanToLabel(customValue.booleanValue) : ""}
-                    onChange={(_, newValue) => {
-                        const booleanValue = newValue === trueishLabel ? true : newValue === falsyLabel ? false : undefined;
-                        setCustomValue({ ...customValue, booleanValue });
-                    }}
-                    renderInput={(params) => <TextField {...params} size="small" />}
-                />
-            );
-        } else {
-            return <CellContainer>{customValue?.booleanValue !== undefined ? booleanToLabel(customValue.booleanValue) : ""}</CellContainer>;
-        }
+        return (
+            <Autocomplete
+                size="small"
+                disabled={readOnly}
+                sx={{
+                    "& .MuiInputBase-input.Mui-disabled": {
+                        backgroundColor: "#0000", // set 0 opacity when disabled
+                    },
+                }}
+                options={[trueishLabel, falsyLabel]}
+                value={customValue?.booleanValue !== undefined ? booleanToLabel(customValue.booleanValue) : ""}
+                onChange={(_, newValue) => {
+                    const booleanValue = newValue === trueishLabel ? true : newValue === falsyLabel ? false : undefined;
+                    setCustomValue({ ...customValue, booleanValue });
+                }}
+                renderInput={(params) => <TextField {...params} size="small" />}
+            />
+        );
     } else if (customDefinition.propertyType === "CATEGORY") {
-        if (!readOnly) {
-            const values = customValue?.categories?.map((val) => customDefinition.categories?.find((d) => val === d.id));
-            return (
-                <Autocomplete
-                    size="small"
-                    options={customDefinition.categories?.filter((c) => !c.disabled) || []}
-                    getOptionLabel={(option) => option?.name || ""}
-                    value={values}
-                    multiple
-                    onChange={(_, newValue) => setCustomValue({ ...customValue, categories: newValue.map((c) => c?.id as string) })}
-                    renderInput={(params) => <TextField {...params} size="small" />}
-                />
-            );
-        } else {
-            return (
-                <CellContainer>
-                    {(() => {
-                        const categoryId = customValue?.categories;
-                        if (!categoryId) return null;
-                        const selectedCategoryIds = customDefinition?.categories?.filter((cat) => categoryId.includes(cat.id || ""));
-                        const categoryValues = selectedCategoryIds?.map((c) => c.name);
-                        return categoryValues ? categoryValues.join(", ") : null;
-                    })()}
-                </CellContainer>
-            );
-        }
+        const values = customValue?.categories?.map((val) => customDefinition.categories?.find((d) => val === d.id));
+        return (
+            <Autocomplete
+                size="small"
+                disabled={readOnly}
+                sx={{
+                    "& .MuiInputBase-input.Mui-disabled": {
+                        backgroundColor: "#0000", // set 0 opacity when disabled
+                    },
+                }}
+                options={customDefinition.categories || []}
+                getOptionLabel={(option) => option?.name || ""}
+                value={values}
+                multiple
+                onChange={(_, newValue) => setCustomValue({ ...customValue, categories: newValue.map((c) => c?.id as string) })}
+                renderInput={(params) => <TextField {...params} size="small" />}
+            />
+        );
     } else if (customDefinition.propertyType === "ORDINAL") {
-        const ordinalCategoryId = customValue?.ordinals?.value;
-        if (!readOnly) {
-            const value = customDefinition.ordinals?.find((d) => ordinalCategoryId?.includes(d.id || ""));
-            return (
-                <Autocomplete
-                    size="small"
-                    options={customDefinition.ordinals?.filter((oc) => !oc.disabled).sort((a, b) => a.level - b.level) || []}
-                    getOptionLabel={(option) => option?.name || ""}
-                    value={value}
-                    onChange={(_, newValue) => setCustomValue({ ...customValue, ordinals: { value: newValue?.id as string } })}
-                    renderInput={(params) => <TextField {...params} size="small" sx={{ minWidth: "200px" }} />}
-                />
-            );
-        } else {
-            return (
-                <CellContainer>
-                    {(() => {
-                        if (!ordinalCategoryId) return null;
-                        const selectedOrdinalCategoryIds = customDefinition?.ordinals?.filter((ordCat) => ordinalCategoryId.includes(ordCat.id || ""));
-                        const ordinalCategoryValue = selectedOrdinalCategoryIds?.map((oc) => oc.name);
-                        return ordinalCategoryValue ? ordinalCategoryValue : null;
-                    })()}
-                </CellContainer>
-            );
-        }
+        const value = customDefinition.ordinals?.find((d) => customValue?.ordinals?.value?.includes(d.id as string));
+        return (
+            <Autocomplete
+                size="small"
+                disabled={readOnly}
+                sx={{
+                    "& .MuiInputBase-input.Mui-disabled": {
+                        backgroundColor: "#0000", // set 0 opacity when disabled
+                    },
+                }}
+                options={customDefinition.ordinals?.filter((oc) => !oc.disabled).sort((a, b) => a.level - b.level) || []}
+                getOptionLabel={(option) => option?.name || ""}
+                value={value}
+                onChange={(_, newValue) => setCustomValue({ ...customValue, ordinals: { value: newValue?.id as string } })}
+                renderInput={(params) => <TextField {...params} size="small" sx={{ minWidth: "200px" }} />}
+            />
+        );
     } else if (customDefinition.propertyType === "NUMERIC") {
-        if (!readOnly) {
-            return (
-                <TextField
-                    variant="outlined"
-                    size="small"
-                    type="number"
-                    value={customValue?.numericValue?.value || 0}
-                    onChange={(e) => setCustomValue({ ...customValue, numericValue: { value: parseFloat(e.target.value) } })}
-                />
-            );
-        } else {
-            return <CellContainer>{customValue?.numericValue?.value || 0}</CellContainer>;
-        }
+        return (
+            <TextField
+                fullWidth
+                variant="outlined"
+                size="small"
+                disabled={readOnly}
+                sx={{
+                    "& .MuiInputBase-input.Mui-disabled": {
+                        backgroundColor: "#0000", // set 0 opacity when disabled
+                    },
+                }}
+                type="number"
+                value={customValue?.numericValue?.value || 0}
+                onChange={(e) => setCustomValue({ ...customValue, numericValue: { value: parseFloat(e.target.value) } })}
+            />
+        );
     } else if (customDefinition.propertyType === "TEXT") {
-        if (!readOnly) {
-            return (
-                <TextField
-                    variant="outlined"
-                    size="small"
-                    value={customValue?.textValue || ""}
-                    onChange={(e) => setCustomValue({ ...customValue, textValue: e.target.value })}
-                />
-            );
-        } else {
-            return <CellContainer>{customValue?.textValue || ""}</CellContainer>;
-        }
+        return (
+            <TextField
+                fullWidth
+                variant="outlined"
+                size="small"
+                disabled={readOnly}
+                sx={{
+                    "& .MuiInputBase-input.Mui-disabled": {
+                        backgroundColor: "#0000", // set 0 opacity when disabled
+                    },
+                }}
+                value={customValue?.textValue || ""}
+                onChange={(e) => setCustomValue({ ...customValue, textValue: e.target.value })}
+            />
+        );
+        // TODO add ORDINAL!
     } else {
         return null;
     }

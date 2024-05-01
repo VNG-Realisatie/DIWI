@@ -9,7 +9,7 @@ import { HouseTypeGroup } from "./project-wizard/house-blocks/house-type/HouseTy
 import { GroundPositionGroup } from "./project-wizard/house-blocks/ground-position/GroundPositionGroup";
 import { Programming } from "./project-wizard/house-blocks/programming/Programming";
 
-import { CustomPropertiesGroup } from "./project-wizard/house-blocks/custom-properties/CustomPropertiesGroup";
+import { CustomPropertiesHouseblock } from "./project-wizard/house-blocks/custom-properties/CustomPropertiesHouseblock";
 import { DateValidationErrors } from "../pages/ProjectWizardBlocks";
 
 type Props = {
@@ -61,7 +61,7 @@ export const HouseBlocksForm = ({ readOnly, houseBlock, setHouseBlock, errors }:
             </Grid>
             <Grid container spacing={2} alignItems="stretch" mt={0.5}>
                 <Grid item xs={12}>
-                    <CustomPropertiesGroup
+                    <CustomPropertiesHouseblock
                         {...{
                             readOnly,
                             customPropertyValues: houseBlock?.customProperties ?? [],
