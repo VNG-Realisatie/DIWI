@@ -102,6 +102,8 @@ public class ProjectListSqlModel {
     private Double latitude;
     private Double longitude;
 
+    private String geometry;
+
     public List<PlanType> getPlanType() {
         if (planType == null) {
             return new ArrayList<>();

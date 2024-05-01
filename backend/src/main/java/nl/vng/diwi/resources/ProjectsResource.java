@@ -31,6 +31,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.MediaType;
@@ -49,6 +50,7 @@ import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.dal.entities.enums.ProjectRole;
 import nl.vng.diwi.dal.entities.enums.PropertyKind;
 import nl.vng.diwi.generic.Constants;
+import nl.vng.diwi.models.ImportFileType;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.models.LocationModel;
@@ -71,6 +73,7 @@ import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.security.SecurityRoleConstants;
 import nl.vng.diwi.services.ExcelImportService;
+import nl.vng.diwi.services.GeoJsonImportService;
 import nl.vng.diwi.services.PropertiesService;
 import nl.vng.diwi.services.HouseblockService;
 import nl.vng.diwi.services.ProjectService;
@@ -92,6 +95,7 @@ public class ProjectsResource {
     private final PropertiesService propertiesService;
     private final ProjectConfig projectConfig;
     private final ExcelImportService excelImportService;
+    private final GeoJsonImportService geoJsonImportService;
 
     @Inject
     public ProjectsResource(
@@ -100,13 +104,15 @@ public class ProjectsResource {
             HouseblockService houseblockService,
             PropertiesService propertiesService,
             ProjectConfig projectConfig,
-            ExcelImportService excelImportService) {
+            ExcelImportService excelImportService,
+            GeoJsonImportService geoJsonImportService) {
         this.repo = new VngRepository(genericRepository.getDal().getSession());
         this.projectService = projectService;
         this.houseblockService = houseblockService;
         this.propertiesService = propertiesService;
         this.projectConfig = projectConfig;
         this.excelImportService = excelImportService;
+        this.geoJsonImportService = geoJsonImportService;
     }
 
     @POST
@@ -601,8 +607,9 @@ public class ProjectsResource {
     @Path("/import")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response importExcelFile(@FormDataParam("uploadFile") InputStream inputStream,
+    public Response importFile(@FormDataParam("uploadFile") InputStream inputStream,
                                     @FormDataParam("uploadFile") FormDataContentDisposition formDataContentDisposition,
+                                    @QueryParam("fileType") ImportFileType fileType,
                                     ContainerRequestContext requestContext) {
 
         var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
@@ -619,9 +626,14 @@ public class ProjectsResource {
             throw new VngServerErrorException("Could not save excel file to disk");
         }
 
-        //process excel from file written on disk
+        //process import from file written on disk
         try {
-            Map<String, Object> result = excelImportService.importExcel(filePath, repo, loggedUser.getUuid());
+            Map<String, Object> result;
+            if (fileType == ImportFileType.GEOJSON) {
+                result = geoJsonImportService.importGeoJson(filePath, repo, loggedUser.getUuid());
+            } else {
+                result = excelImportService.importExcel(filePath, repo, loggedUser.getUuid());
+            }
             if (result.containsKey(ExcelImportService.errors)) {
                 deleteFile(path);
                 return Response.status(Response.Status.BAD_REQUEST).entity(result.get(ExcelImportService.errors)).build();

@@ -49,7 +49,7 @@ export const OwnershipInformationGroup = ({ houseBlock, setHouseBlock, readOnly 
     return (
         <WizardCard>
             <Typography fontWeight={600} mb={2}>
-                {t(`${translationPath}.ownershipAndValue`)}
+                {t(`${translationPath}.ownershipAndValue.title`)}
             </Typography>
             <Stack direction="row" alignItems="center" spacing={2} my={1}>
                 <Typography fontWeight={600} flex={4.2}>

@@ -40,7 +40,11 @@ const parseMonetary = (value: string) => {
     const [euros, cents] = value.split(decimalSeparator);
     let result = parseInt(euros) * 100;
     if (cents !== undefined) {
-        result += parseInt(cents);
+        let parsedCents = parseInt(cents);
+        if (cents.length === 1) {
+            parsedCents *= 10;
+        }
+        result += parsedCents;
     }
     return result;
 };
@@ -78,10 +82,27 @@ export const MonetaryRangeInput = ({ labelText, value, updateCallBack }: Props) 
     }, [value]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setStringValue(e.target.value);
+        const newValue = e.target.value;
+        const isValidInput = /^-?\d*(,\d{0,2})?(-\d*(,?\d{0,2})?)?$/.test(newValue);
+        /*
+            ^ = Start of the string
+            -? = Zero or one hyphen
+            \d* = Zero or more digits
+            (,\d{0,2})? = 0 to 1 comma followed by 0 to 2 digits
+            (-\d*(,?\d{0,2})?)? = 0 to 1 hyphen followed by 0 or more digits, optionally followed by a comma and 0 to 2 digits
+            $ End of string
+        */
+
+        if (isValidInput) setStringValue(newValue);
+    };
+
+    const onFocus = () => {
+        if (stringValue === "0,00") setStringValue("");
     };
 
     const onBlur = () => {
+        if (stringValue === "") return setStringValue("0,00");
+
         const range = fromStringToRange(stringValue);
         updateCallBack(range);
     };
@@ -101,6 +122,7 @@ export const MonetaryRangeInput = ({ labelText, value, updateCallBack }: Props) 
             value={stringValue}
             onChange={handleChange}
             onBlur={onBlur}
+            onFocus={onFocus}
             onKeyUp={handleKey}
         />
     );

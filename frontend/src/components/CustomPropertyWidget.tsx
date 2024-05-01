@@ -43,7 +43,7 @@ export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, cu
             return (
                 <Autocomplete
                     size="small"
-                    options={customDefinition.categories || []}
+                    options={customDefinition.categories?.filter((c) => !c.disabled) || []}
                     getOptionLabel={(option) => option?.name || ""}
                     value={values}
                     multiple
@@ -57,9 +57,35 @@ export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, cu
                     {(() => {
                         const categoryId = customValue?.categories;
                         if (!categoryId) return null;
-                        const selectedCategoryIds = customDefinition?.categories?.filter((cat: any) => categoryId.includes(cat.id));
+                        const selectedCategoryIds = customDefinition?.categories?.filter((cat) => categoryId.includes(cat.id || ""));
                         const categoryValues = selectedCategoryIds?.map((c) => c.name);
                         return categoryValues ? categoryValues.join(", ") : null;
+                    })()}
+                </CellContainer>
+            );
+        }
+    } else if (customDefinition.propertyType === "ORDINAL") {
+        const ordinalCategoryId = customValue?.ordinals?.value;
+        if (!readOnly) {
+            const value = customDefinition.ordinals?.find((d) => ordinalCategoryId?.includes(d.id || ""));
+            return (
+                <Autocomplete
+                    size="small"
+                    options={customDefinition.ordinals?.filter((oc) => !oc.disabled).sort((a, b) => a.level - b.level) || []}
+                    getOptionLabel={(option) => option?.name || ""}
+                    value={value}
+                    onChange={(_, newValue) => setCustomValue({ ...customValue, ordinals: { value: newValue?.id as string } })}
+                    renderInput={(params) => <TextField {...params} size="small" sx={{ minWidth: "200px" }} />}
+                />
+            );
+        } else {
+            return (
+                <CellContainer>
+                    {(() => {
+                        if (!ordinalCategoryId) return null;
+                        const selectedOrdinalCategoryIds = customDefinition?.ordinals?.filter((ordCat) => ordinalCategoryId.includes(ordCat.id || ""));
+                        const ordinalCategoryValue = selectedOrdinalCategoryIds?.map((oc) => oc.name);
+                        return ordinalCategoryValue ? ordinalCategoryValue : null;
                     })()}
                 </CellContainer>
             );

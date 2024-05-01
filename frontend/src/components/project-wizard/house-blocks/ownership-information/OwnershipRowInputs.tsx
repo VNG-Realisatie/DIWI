@@ -20,7 +20,12 @@ type OwnershipProps = {
     handleInputChange: (index: number, value: OwnershipSingleValue) => void;
 };
 
+export const isOwnershipAmountValid = (amount: number): boolean => {
+    return Number.isInteger(amount) && amount >= 0;
+};
+
 const OwnershipTypeOption = ({ handleInputChange, ownership, index }: OwnershipProps) => {
+    const { t } = useTranslation();
     return (
         <Select
             fullWidth
@@ -33,7 +38,7 @@ const OwnershipTypeOption = ({ handleInputChange, ownership, index }: OwnershipP
             {ownershipValueOptions.map((type) => {
                 return (
                     <MenuItem key={type} value={type}>
-                        {type}
+                        {t(`createProject.houseBlocksForm.ownershipAndValue.type.${type}`)}
                     </MenuItem>
                 );
             })}
@@ -42,6 +47,7 @@ const OwnershipTypeOption = ({ handleInputChange, ownership, index }: OwnershipP
 };
 const OwnershipAmountInput = ({ handleInputChange, ownership, index }: OwnershipProps) => {
     const { t } = useTranslation();
+    const isAmountValid = isOwnershipAmountValid(ownership.amount);
     return (
         <TextField
             size="small"
@@ -51,20 +57,21 @@ const OwnershipAmountInput = ({ handleInputChange, ownership, index }: Ownership
             fullWidth
             value={ownership.amount !== 0 && !Number.isNaN(ownership.amount) ? ownership.amount : ""}
             onChange={(e) => handleInputChange(index, { ...ownership, amount: parseInt(e.target.value) })}
-            error={ownership.amount < 0 || !Number.isInteger(ownership.amount)}
-            helperText={ownership.amount < 0 || !Number.isInteger(ownership.amount) ? t("createProject.hasMissingRequiredAreas.amount") : ""}
+            error={!isAmountValid}
+            helperText={!isAmountValid ? t("createProject.hasMissingRequiredAreas.amount") : ""}
         />
     );
 };
 
 export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handleRemoveRow, readOnly }: Props) => {
+    const { t } = useTranslation();
     return (
         <Grid container spacing={2} mt={1}>
             <Grid item xs={4}>
                 {!readOnly && <OwnershipTypeOption index={index} handleInputChange={handleInputChange} ownership={ownership} />}
                 {readOnly && (
                     <InputContainer>
-                        <Typography>{ownership?.type}</Typography>
+                        <Typography>{t(`createProject.houseBlocksForm.ownershipAndValue.type.${ownership?.type}`)}</Typography>
                     </InputContainer>
                 )}
             </Grid>
