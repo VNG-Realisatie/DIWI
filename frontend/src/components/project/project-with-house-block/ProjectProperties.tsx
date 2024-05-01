@@ -93,8 +93,7 @@ export const ProjectProperties = ({
     // setSelectedMunicipality,
     selectedNeighbourhood,
     // setSelectedNeighbourhood,
-    selectedDistrict,
-    // setSelectedWijk,
+    selectedDistrict, // setSelectedWijk,
 }: Props) => {
     const { selectedProject } = useContext(ProjectContext);
     const { priorityOptionList, municipalityRolesOptions } = useProperties();
@@ -251,46 +250,6 @@ export const ProjectProperties = ({
                     ) : (
                         <PlanStatusEditForm planStatus={planStatus} setPlanStatus={setPlanStatus} />
                     )}
-                </Grid>
-                {/* For now properties below are temporarily readonly */}
-                <Grid item xs={12} md={3}>
-                    <Typography sx={columnTitleStyle}>{capitalizeFirstLetters(t("projects.tableColumns.municipality"))}</Typography>
-
-                    <CellContainer>
-                        {selectedMunicipality.length > 0
-                            ? selectedMunicipality.map((mr: SelectModel) => {
-                                  return <span key={mr.id}>{mr.name}</span>;
-                              })
-                            : selectedProject?.municipality?.map((mr) => {
-                                  return <span key={mr.id}>{mr.name}</span>;
-                              })}
-                    </CellContainer>
-                </Grid>
-                <Grid item xs={12} md={3}>
-                    <Typography sx={columnTitleStyle}>{capitalizeFirstLetters(t("projects.tableColumns.district"))}</Typography>
-
-                    <CellContainer>
-                        {selectedDistrict.length > 0
-                            ? selectedDistrict.map((mr: SelectModel) => {
-                                  return <span key={mr.id}>{mr.name}</span>;
-                              })
-                            : selectedProject?.district?.map((mr) => {
-                                  return <span key={mr.id}>{mr.name}</span>;
-                              })}
-                    </CellContainer>
-                </Grid>
-                <Grid item xs={12} md={3}>
-                    <Typography sx={columnTitleStyle}>{capitalizeFirstLetters(t("projects.tableColumns.neighbourhood"))}</Typography>
-
-                    <CellContainer>
-                        {selectedNeighbourhood.length > 0
-                            ? selectedNeighbourhood.map((mr: SelectModel) => {
-                                  return <span key={mr.id}>{mr.name}</span>;
-                              })
-                            : selectedProject?.neighbourhood?.map((mr) => {
-                                  return <span key={mr.id}>{mr.name}</span>;
-                              })}
-                    </CellContainer>
                 </Grid>
             </Grid>
         </Grid>
