@@ -12,6 +12,8 @@ import { sortHouseBlockByNameAndId as sortHouseBlocksByNameAndId } from "../../.
 import { deleteHouseBlockWithCustomProperties, saveHouseBlockWithCustomProperties } from "../../../api/houseBlockServices";
 import { DeleteButtonWithConfirm } from "../../DeleteButtonWithConfirm";
 import { HouseBlocksForm } from "../../HouseBlocksForm";
+import { validateHouseBlock } from "../../HouseBlocksFormWithControls";
+import useAlert from "../../../hooks/useAlert";
 
 type Props = {
     setOpenHouseBlockDialog: (open: boolean) => void;
@@ -39,11 +41,14 @@ const HouseBlockAccordionWithControls = ({ houseBlock, refresh }: HouseBlockAcco
     const [readOnly, setReadOnly] = useState(true);
     const [expanded, setExpanded] = useState(false);
     const { t } = useTranslation();
+    const { setAlert } = useAlert();
 
     const handleSave = async () => {
+        if (validateHouseBlock(houseBlock, setAlert)) {
         await saveHouseBlockWithCustomProperties(newHouseBlock);
         refresh();
         setReadOnly(true);
+        }
     };
 
     const handleCancel = () => {
