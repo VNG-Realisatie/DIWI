@@ -13,7 +13,7 @@ type Props = {
     setCustomPropertyValues: (updatedValues: CustomPropertyValue[]) => void;
 };
 
-export const CustomPropertiesGroup = ({ readOnly, customPropertyValues, setCustomPropertyValues }: Props) => {
+export const CustomPropertiesHouseblock = ({ readOnly, customPropertyValues, setCustomPropertyValues }: Props) => {
     const [customDefinitions, setCustomDefinitions] = useState<Property[]>([]);
 
     const { t } = useTranslation();
@@ -21,7 +21,10 @@ export const CustomPropertiesGroup = ({ readOnly, customPropertyValues, setCusto
     const translationPath = "customProperties";
 
     useEffect(() => {
-        getCustomPropertiesWithQuery("WONINGBLOK").then((customProperties) => setCustomDefinitions(customProperties));
+        getCustomPropertiesWithQuery("WONINGBLOK").then((properties) => {
+            // Make sure to filter out no longer active properties
+            setCustomDefinitions(properties.filter((property) => !property.disabled));
+        });
     }, []);
 
     const setCustomValue = (newValue: CustomPropertyValue) => {
@@ -34,14 +37,13 @@ export const CustomPropertiesGroup = ({ readOnly, customPropertyValues, setCusto
             <Typography fontWeight={600} mb={2}>
                 {t(`${translationPath}.title`)}
             </Typography>
-            {customDefinitions
-                .filter((p) => !p.disabled)
-                .map((property) => {
-                    const customValue = customPropertyValues?.find((cv) => cv.customPropertyId === property.id);
-
-                    return (
-                        // make sure to not display physicalAppearance and targetGroup here as they have their own respective widgets
-                        !(property.name === "physicalAppearance" || property.name === "targetGroup") && (
+            {customDefinitions.length > 0 &&
+                customDefinitions
+                    // Make sure to not display 'default' houseblock props
+                    .filter((property) => !(property.name === "physicalAppearance" || property.name === "targetGroup"))
+                    .map((property) => {
+                        const customValue = customPropertyValues?.find((cv) => cv.customPropertyId === property.id);
+                        return (
                             <Stack key={property.id} width="100%">
                                 <LabelComponent required text={property.name} />{" "}
                                 <CustomPropertyWidget
@@ -53,9 +55,14 @@ export const CustomPropertiesGroup = ({ readOnly, customPropertyValues, setCusto
                                     customDefinition={property}
                                 />
                             </Stack>
-                        )
-                    );
-                })}
+                        );
+                    })}
+            {/* No custom props */}
+            {(!customDefinitions || customDefinitions.length <= 0) && (
+                <Stack>
+                    <Typography fontStyle={readOnly ? "italic" : "normal"}>{t("createProject.noCustomProps")}</Typography>
+                </Stack>
+            )}
         </WizardCard>
     );
 };
