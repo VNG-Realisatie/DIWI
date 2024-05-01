@@ -2,6 +2,7 @@ import { getJson, postJson, deleteJson, postJsonNoResponse } from "../utils/requ
 import { components } from "../types/schema";
 import { API_URI } from "../utils/urls";
 import { GeoJSONGeometry, GeoJSONMultiPolygon, GeoJSONPolygon } from "ol/format/GeoJSON";
+import { putCustomPropertyValue } from "./customPropServices";
 
 export type Organization = components["schemas"]["OrganizationModel"];
 export type OrganizationUser = components["schemas"]["OrganizationUserModel"];
@@ -65,6 +66,19 @@ export type Plot = Omit<OgPlot, "subselectionGeometry" | "plotFeature"> & {
     plotFeature: PlotGeoJSON;
     subSelectionGeometry?: GeoJSONMultiPolygon | GeoJSONPolygon;
 };
+
+export async function updateProjectWithCustomProperties(project: Project): Promise<Project> {
+    // destructure houseblock from customproperties as they need to be sent separately
+    const { customProperties, ...projectNoProperties } = project;
+    const newProject = await updateProject(projectNoProperties);
+
+    if (customProperties) {
+        // for each custom prop, send it to the backend
+        const [...newCustomProperties] = await Promise.all(customProperties.map((cp) => putCustomPropertyValue(project.projectId, cp)));
+        return { ...newProject, customProperties: newCustomProperties };
+    }
+    return newProject;
+}
 
 export async function getProjects(pageNumber: number, pageSize: number): Promise<Array<Project>> {
     return getJson(`${API_URI}/projects/table?pageNumber=${pageNumber}&pageSize=${pageSize}`);
