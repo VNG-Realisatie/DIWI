@@ -38,7 +38,9 @@ const datePickerStyle = {
 
 export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = false, showAmounts = true }: Props) => {
     const { priorityOptionList, municipalityRolesOptions } = useProperties();
-    const { houseBlocks } = useContext(HouseBlockContext);
+
+    const context = useContext(HouseBlockContext);
+    const houseBlocks = context ? context.houseBlocks : [];
 
     const constructionAmount = houseBlocks
         .filter((hb) => hb.mutation.kind === "CONSTRUCTION")
