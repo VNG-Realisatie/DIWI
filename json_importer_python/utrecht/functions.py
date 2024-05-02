@@ -89,7 +89,7 @@ def add_projectduur(df_out, df_in, prefix):
     df_out[f'{local_prefix}.eind_project'] = None
     df_out[f'{local_prefix}.eind_project'] = [f"{int(float(x))}-12-01" if type(x) != type(None) else None for x in df_in['properties.oplevering_laatste'].fillna(np.nan).replace({np.nan: None})]
 
-    empty_start_dates_indexes = df_out[f'{local_prefix}.start_project'].isna().index
+    empty_start_dates_indexes = df_out[df_out[f'{local_prefix}.start_project'].isna()].index
     df_out.loc[empty_start_dates_indexes, f'{local_prefix}.start_project'] = (pd.to_datetime(df_out.loc[empty_start_dates_indexes, f'{local_prefix}.eind_project']) - datetime.timedelta(days=1)).astype(str)
 
     return df_out
