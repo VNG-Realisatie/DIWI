@@ -3,10 +3,9 @@ import { InputContainer } from "../../project-wizard/house-blocks/InputContainer
 import { LabelComponent } from "../LabelComponent";
 
 type Props = {
-    title?: string;
     value: string;
     setValue: any;
-    nullable?: boolean;
+    nullable?: boolean; //not implemented
     readOnly: boolean;
     mandatory: boolean;
     errorText?: string;
@@ -17,7 +16,7 @@ const shouldDisplayError = (mandatory: boolean, value: string) => {
     return mandatory && (!value || value.trim() === "");
 };
 
-const NameInput = ({ title, value, setValue, nullable, readOnly, mandatory, errorText, label }: Props) => {
+const NameInput = ({ value, setValue, readOnly, mandatory, errorText, label }: Props) => {
     const hasError = shouldDisplayError(mandatory, value);
     return (
         <Stack width="100%">
