@@ -4,9 +4,9 @@ import { t } from "i18next";
 import { HouseBlock } from "../../../../types/houseBlockTypes";
 import { HouseBlockSize, SizeInput } from "./SizeInput";
 import { NameInput } from "./NameInput";
-import { StartDatePicker } from "./StartDatePicker";
-import { EndDatePicker } from "./EndDatePicker";
 import { DateValidationErrors } from "../../../../pages/ProjectWizardBlocks";
+import { Dayjs } from "dayjs";
+import DateInput from "../../../project/inputs/DateInput";
 
 export type GeneralInformationProps = {
     houseBlock: HouseBlock;
@@ -16,6 +16,15 @@ export type GeneralInformationProps = {
 };
 
 export const GeneralInformationGroup = ({ readOnly, houseBlock, setHouseBlock, errors }: GeneralInformationProps) => {
+    const updateHouseBlockStartDate = (e: Dayjs | null) => {
+        const newStartDate = e ? e.format("YYYY-MM-DD") : null;
+        setHouseBlock({ ...houseBlock, startDate: newStartDate });
+    };
+
+    const updateHouseBlockEndDate = (e: Dayjs | null) => {
+        const newEndDate = e ? e.format("YYYY-MM-DD") : null; //
+        setHouseBlock({ ...houseBlock, endDate: newEndDate });
+    };
     return (
         <WizardCard>
             <Typography fontWeight={600} mb={2}>
@@ -31,19 +40,23 @@ export const GeneralInformationGroup = ({ readOnly, houseBlock, setHouseBlock, e
                 houseBlockSize={houseBlock.size}
                 updateHouseBlockSize={(houseBlockSize: HouseBlockSize) => setHouseBlock({ ...houseBlock, size: houseBlockSize })}
             />
-            <StartDatePicker
+            <DateInput
                 readOnly={readOnly}
-                houseBlockStartDate={houseBlock.startDate}
-                updateHouseBlockStartDate={(e) => {
-                    setHouseBlock({ ...houseBlock, startDate: e ? e.format("YYYY-MM-DD") : null });
-                }}
-                errors={errors}
+                value={houseBlock.startDate}
+                setValue={updateHouseBlockStartDate}
+                error={errors.startDateError}
+                mandatory={true}
+                label={t("createProject.houseBlocksForm.startDate")}
+                errorText={t("wizard.houseBlocks.startDateWarningMissing")}
             />
-            <EndDatePicker
+            <DateInput
                 readOnly={readOnly}
-                houseBlockEndDate={houseBlock.endDate}
-                updateHouseBlockEndDate={(e) => setHouseBlock({ ...houseBlock, endDate: e ? e.format("YYYY-MM-DD") : null })}
-                errors={errors}
+                value={houseBlock.endDate}
+                setValue={updateHouseBlockEndDate}
+                error={errors.endDateError}
+                mandatory={true}
+                label={t("createProject.houseBlocksForm.endDate")}
+                errorText={t("wizard.houseBlocks.endDateWarningMissing")}
             />
         </WizardCard>
     );
