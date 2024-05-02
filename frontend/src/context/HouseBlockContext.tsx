@@ -10,7 +10,48 @@ type HouseBlockContextType = {
     getEmptyHouseBlock: () => HouseBlockWithCustomProperties;
 };
 
-const HouseBlockContext = createContext<HouseBlockContextType | null>(null) as React.Context<HouseBlockContextType>;
+const defaultHouseBlockContext: HouseBlockContextType = {
+    houseBlocks: [],
+    refresh: () => {},
+    getEmptyHouseBlock: () => ({
+        projectId: "",
+        startDate: null,
+        endDate: null,
+        houseblockName: "",
+        size: {
+            value: 0,
+            min: null,
+            max: null,
+        },
+        programming: null,
+        mutation: {
+            kind: null,
+            amount: null,
+        },
+        ownershipValue: [
+            {
+                type: "KOOPWONING",
+                amount: 0,
+                value: { value: 0, min: null, max: null },
+                rentalValue: { value: 0, min: null, max: null },
+            },
+        ],
+        groundPosition: {
+            noPermissionOwner: null,
+            intentionPermissionOwner: null,
+            formalPermissionOwner: null,
+        },
+        physicalAppearance: [],
+        houseType: {
+            meergezinswoning: null,
+            eengezinswoning: null,
+        },
+        targetGroup: [],
+        customProperties: [],
+    }),
+};
+
+const HouseBlockContext = createContext<HouseBlockContextType>(defaultHouseBlockContext);
 
 export const HouseBlockProvider = ({ children }: PropsWithChildren) => {
     const [houseBlocks, setHouseBlocks] = useState<HouseBlockWithCustomProperties[]>([]);
@@ -19,9 +60,21 @@ export const HouseBlockProvider = ({ children }: PropsWithChildren) => {
     const { physicalAppearanceCategories, targetGroupCategories } = useCustomPropertyDefinitions();
 
     const refresh = useCallback(() => {
-        projectId &&
-            houseBlockService.getProjectHouseBlocksWithCustomProperties(projectId).then((res: HouseBlockWithCustomProperties[]) => {
-                setHouseBlocks(res);
+        if (!projectId) {
+            setHouseBlocks([]);
+            return;
+        }
+        houseBlockService
+            .getProjectHouseBlocksWithCustomProperties(projectId)
+            .then((res: HouseBlockWithCustomProperties[]) => {
+                if (!res || res.length === 0) {
+                    setHouseBlocks([]);
+                } else {
+                    setHouseBlocks(res);
+                }
+            })
+            .catch(() => {
+                setHouseBlocks([]);
             });
     }, [projectId]);
 
