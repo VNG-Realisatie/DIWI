@@ -52,7 +52,8 @@
         "planningPlanStatus": "Planologische planstatus",
         "owner": "Schrijfrechten",
         "neighbourhood": "Buurt",
-        "district": "Wijk"
+        "district": "Wijk",
+        "municipality": "Gemeente"
       },
       "houseBlocksForm": {
         "title": "Vul de woningblokken in",
@@ -213,7 +214,7 @@
         "projectLeader": "Projectleider",
         "projectPhase": "Projectfase",
         "planningPlanStatus": "Planologische planstatus",
-        "municipality": "Regio",
+        "municipality": "Gemeente",
         "district": "Wijk",
         "neighbourhood": "Buurt",
         "selectPlanType": "Selecteer plantype",
