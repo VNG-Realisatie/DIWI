@@ -78,7 +78,7 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
                                 !row.disabled && (
                                     <TableRow key={row.name + row.propertyType + row.objectType + index}>
                                         <TableCell component="th" scope="row" sx={cellStyle}>
-                                            {row.name}
+                                            {row.type === "FIXED" ? t(`admin.settings.fixedPropertyType.${row.name}`) : row.name}
                                         </TableCell>
                                         <TableCell sx={cellStyle} align="right">
                                             {t(`admin.settings.propertyType.${row.propertyType}`)}

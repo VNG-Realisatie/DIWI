@@ -318,6 +318,16 @@
           "delete": "Verwijderen",
           "actions": "Acties"
         },
+        "fixedPropertyType": {
+          "municipality": "Gemeente",
+          "district": "Wijk",
+          "neighbourhood": "Buurt",
+          "municipalityRole": "Rol Gemeente",
+          "physicalAppearance": "Fysiek Voorkomen",
+          "priority": "Prioriteit",
+          "targetGroup": "Doelgroep",
+          "geometry": "Geometrie"
+        },
         "propertyType": {
           "BOOLEAN": "Ja / Nee",
           "NUMERIC": "Getal",
