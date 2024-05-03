@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.entities.superclasses.ChangeDataSuperclass;
+import nl.vng.diwi.security.UserRole;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -30,4 +31,8 @@ public class UserState extends ChangeDataSuperclass {
 
     @Column(name = "identity_provider_id")
     private String identityProviderId;
+    
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    private UserRole userRole;
 }
