@@ -17,6 +17,7 @@ import { CustomPropertiesProject } from "./project/project-with-house-block/Cust
 import { CellContainer } from "./project/project-with-house-block/CellContainer";
 import { useContext } from "react";
 import HouseBlockContext from "../context/HouseBlockContext";
+import DateInput from "./project/inputs/DateInput";
 
 type Props = {
     readOnly: boolean;
@@ -38,6 +39,7 @@ const datePickerStyle = {
 
 export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = false, showAmounts = true }: Props) => {
     const { priorityOptionList, municipalityRolesOptions } = useProperties();
+
     const { houseBlocks } = useContext(HouseBlockContext);
 
     const constructionAmount = houseBlocks
@@ -49,6 +51,16 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
         .filter((hb) => hb.mutation.kind === "DEMOLITION")
         .map((hb) => hb.mutation.amount ?? 0)
         .reduce((a, b) => a + b, 0);
+
+    const updateHouseBlockStartDate = (e: Dayjs | null) => {
+        const newStartDate = e ? e.format("YYYY-MM-DD") : undefined;
+        setProject({ ...project, startDate: newStartDate });
+    };
+
+    const updateHouseBlockEndDate = (e: Dayjs | null) => {
+        const newEndDate = e ? e.format("YYYY-MM-DD") : undefined; //
+        setProject({ ...project, endDate: newEndDate });
+    };
 
     return (
         <Grid container spacing={2} alignItems="stretch">
@@ -139,46 +151,25 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                         </Grid>
                         {/* Start date */}
                         <Grid item xs={12} md={4}>
-                            <LabelComponent required readOnly={readOnly} text={t("createProject.informationForm.startDate")} />
-                            <DatePicker
-                                sx={datePickerStyle}
-                                format={dateFormats.keyboardDate}
-                                disabled={readOnly}
-                                slotProps={{
-                                    textField: {
-                                        size: "small",
-                                        fullWidth: true,
-                                    },
-                                }}
-                                value={project?.startDate ? dayjs(project?.startDate) : null}
-                                onChange={(newValue: Dayjs | null) =>
-                                    setProject({
-                                        ...project,
-                                        startDate: newValue ? newValue.format("YYYY-MM-DD") : undefined,
-                                    })
-                                }
+                            <DateInput
+                                readOnly={readOnly}
+                                value={project?.startDate ? project?.startDate : null}
+                                setValue={updateHouseBlockStartDate}
+                                mandatory={true}
+                                label={t("createProject.informationForm.startDate")}
+                                errorText={t("createProject.hasMissingRequiredAreas.startDate")}
                             />
-                            {!project.startDate && <Alert severity="warning">{t("createProject.hasMissingRequiredAreas.startDate")}</Alert>}
                         </Grid>
                         {/* End date */}
                         <Grid item xs={12} md={4}>
-                            <LabelComponent required readOnly={readOnly} text={t("createProject.informationForm.endDate")} />
-                            <DatePicker
-                                sx={datePickerStyle}
-                                format={dateFormats.keyboardDate}
-                                disabled={readOnly}
-                                slotProps={{
-                                    textField: { size: "small", fullWidth: true },
-                                }}
-                                value={project?.endDate ? dayjs(project?.endDate) : null}
-                                onChange={(newValue: Dayjs | null) =>
-                                    setProject({
-                                        ...project,
-                                        endDate: newValue ? newValue.format("YYYY-MM-DD") : undefined,
-                                    })
-                                }
+                            <DateInput
+                                readOnly={readOnly}
+                                value={project?.endDate ? project?.endDate : null}
+                                setValue={updateHouseBlockEndDate}
+                                mandatory={true}
+                                label={t("createProject.informationForm.endDate")}
+                                errorText={t("createProject.hasMissingRequiredAreas.endDate")}
                             />
-                            {!project.endDate && <Alert severity="warning">{t("createProject.hasMissingRequiredAreas.endDate")}</Alert>}
                         </Grid>
 
                         {/* Priority */}

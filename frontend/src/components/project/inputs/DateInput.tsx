@@ -1,9 +1,10 @@
-import { Stack, Typography } from "@mui/material";
+import { Stack, SxProps, Typography } from "@mui/material";
 import { InputContainer } from "../../project-wizard/house-blocks/InputContainer";
 import { LabelComponent } from "../LabelComponent";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { convertDayjsToString } from "../../../utils/convertDayjsToString";
+import { dateFormats } from "../../../localization";
 
 type Props = {
     value: string | null;
@@ -32,10 +33,13 @@ const DateInput = ({ value, setValue, readOnly, mandatory, error, label, errorTe
             {label && <LabelComponent required={mandatory} text={label} />}
             {!readOnly && (
                 <DatePicker
+                    format={dateFormats.keyboardDate}
                     value={value ? dayjs(value) : null}
                     onChange={setValue}
                     slotProps={{
                         textField: {
+                            size: "small",
+                            fullWidth: true,
                             variant: "outlined",
                             error: errorMessage ? true : false,
                             helperText: errorMessage,
