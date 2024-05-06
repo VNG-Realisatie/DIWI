@@ -15,7 +15,6 @@ import { Plot, PlotGeoJSON, getProjectPlots, updateProjectPlots, updateProject }
 import ConfigContext from "../context/ConfigContext";
 import ProjectContext from "../context/ProjectContext";
 import { extentToCenter, mapBoundsToExtent } from "../utils/map";
-
 const baseUrlKadasterWms = "https://service.pdok.nl/kadaster/kadastralekaart/wms/v5_0";
 
 const usePlotSelector = (id: string) => {
@@ -70,7 +69,7 @@ const usePlotSelector = (id: string) => {
                 const center = extentToCenter(extent);
                 selectedProject.location = { lat: center[0], lng: center[1] };
             }
-            await updateProject(selectedProject);
+            await updateProject({ ...selectedProject, geometry: null });
         }
     };
 
@@ -190,9 +189,21 @@ const usePlotSelector = (id: string) => {
 
             setSelectedPlotLayerSource(source);
 
+            const projectGeometrySource = new VectorSource();
+            const projectGeometryLayer = new VectorLayer({
+                source: projectGeometrySource,
+                style: new Style({
+                    fill: new Fill({ color: "rgba(0, 0, 0, 0)" }),
+                    stroke: new Stroke({ color: "#000000", width: 5 }),
+                }),
+            });
+            if (selectedProject?.geometry) {
+                const geojson = new GeoJSON().readFeatures(selectedProject.geometry);
+                projectGeometrySource.addFeatures(geojson);
+            }
             const newMap = new Map({
                 target: id,
-                layers: [osmLayer, kadasterLayers, selectedPlotLayer],
+                layers: [osmLayer, kadasterLayers, projectGeometryLayer, selectedPlotLayer],
                 view: new View({
                     center: extentToCenter(mapBoundsToExtent(mapBounds)),
                     zoom: 12,
@@ -211,7 +222,7 @@ const usePlotSelector = (id: string) => {
                 }
             };
         },
-        [id, mapBounds, selectedFeatureStyle],
+        [id, mapBounds, selectedFeatureStyle, selectedProject?.geometry],
     );
     return { plotsChanged, selectedPlotCount: selectedPlots.length, handleCancelChange, handleSaveChange };
 };
