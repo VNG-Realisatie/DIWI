@@ -30,7 +30,7 @@ export const GeneralInformationGroup = ({ readOnly, houseBlock, setHouseBlock, e
                 value={houseBlock.houseblockName}
                 setValue={handleNameChange}
                 mandatory={true}
-                label={t("createProject.houseBlocksForm.nameLabel")}
+                title={t("createProject.houseBlocksForm.nameLabel")}
                 errorText={t("createProject.nameIsRequried")}
             />
             <SizeInput

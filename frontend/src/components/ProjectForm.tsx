@@ -68,7 +68,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                     value={project?.projectName}
                                     setValue={handleNameChange}
                                     mandatory={true}
-                                    label={t("createProject.informationForm.nameLabel")}
+                                    title={t("createProject.informationForm.nameLabel")}
                                     errorText={t("createProject.hasMissingRequiredAreas.name")}
                                 />
                             </Stack>
