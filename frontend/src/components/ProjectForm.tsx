@@ -17,7 +17,7 @@ import { CustomPropertiesProject } from "./project/project-with-house-block/Cust
 import { CellContainer } from "./project/project-with-house-block/CellContainer";
 import { useContext } from "react";
 import HouseBlockContext from "../context/HouseBlockContext";
-import NameInput from "./project/inputs/NameInput";
+import TextInput from "./project/inputs/TextInput";
 
 type Props = {
     readOnly: boolean;
@@ -63,7 +63,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                         {/* Name */}
                         <Grid item xs={12} md={showColorPicker ? 8 : 12}>
                             <Stack width="100%">
-                                <NameInput
+                                <TextInput
                                     readOnly={readOnly}
                                     value={project?.projectName}
                                     setValue={handleNameChange}

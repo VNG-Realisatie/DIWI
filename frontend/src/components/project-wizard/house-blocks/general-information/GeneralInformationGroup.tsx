@@ -6,7 +6,7 @@ import { HouseBlockSize, SizeInput } from "./SizeInput";
 import { StartDatePicker } from "./StartDatePicker";
 import { EndDatePicker } from "./EndDatePicker";
 import { DateValidationErrors } from "../../../../pages/ProjectWizardBlocks";
-import NameInput from "../../../project/inputs/NameInput";
+import TetxInput from "../../../project/inputs/TextInput";
 
 export type GeneralInformationProps = {
     houseBlock: HouseBlock;
@@ -25,7 +25,7 @@ export const GeneralInformationGroup = ({ readOnly, houseBlock, setHouseBlock, e
             <Typography fontWeight={600} mb={2}>
                 {t("wizard.houseBlocks.generalInformation.title")}
             </Typography>
-            <NameInput
+            <TetxInput
                 readOnly={readOnly}
                 value={houseBlock.houseblockName}
                 setValue={handleNameChange}

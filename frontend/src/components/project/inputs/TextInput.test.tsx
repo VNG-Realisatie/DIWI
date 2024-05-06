@@ -1,21 +1,21 @@
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import NameInput from "./NameInput";
+import TextInput from "./TextInput";
 
-describe("NameInput component", () => {
+describe("TextInput component", () => {
     test("should render with a label", () => {
         const label = "TEST";
-        render(<NameInput value="" setValue={() => {}} readOnly={false} mandatory={true} title={label} />);
+        render(<TextInput value="" setValue={() => {}} readOnly={false} mandatory={true} title={label} />);
         expect(screen.getByText((text) => text.includes(label))).toBeInTheDocument();
     });
 
     test("should render TextField when not read-only", () => {
-        render(<NameInput value="" setValue={() => {}} readOnly={false} mandatory={true} />);
+        render(<TextInput value="" setValue={() => {}} readOnly={false} mandatory={true} />);
         expect(screen.getByRole("textbox")).toBeInTheDocument();
     });
 
     test("should render TextField but it should be disabled when read-only", () => {
-        render(<NameInput value="Test Value" setValue={() => {}} readOnly={true} mandatory={true} />);
+        render(<TextInput value="Test Value" setValue={() => {}} readOnly={true} mandatory={true} />);
 
         const textField = screen.getByRole("textbox");
         expect(textField).toBeInTheDocument();
@@ -25,7 +25,7 @@ describe("NameInput component", () => {
 
     test("should display error when mandatory but value is empty", () => {
         const errorText = "This field is required";
-        render(<NameInput value="" setValue={() => {}} readOnly={false} mandatory={true} errorText={errorText} title="Name" />);
+        render(<TextInput value="" setValue={() => {}} readOnly={false} mandatory={true} errorText={errorText} title="Name" />);
 
         expect(screen.getByText(errorText)).toBeInTheDocument();
     });
