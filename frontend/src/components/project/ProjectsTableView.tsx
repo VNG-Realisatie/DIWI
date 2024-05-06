@@ -7,6 +7,7 @@ import {
     GridPreProcessEditCellProps,
     GridRenderCellParams,
     GridRowParams,
+    GridSortModel,
     getGridSingleSelectOperators,
     getGridStringOperators,
 } from "@mui/x-data-grid";
@@ -67,8 +68,9 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     // const [selectedBuurt, setSelectedBuurt] = useState<SelectedOptionWithId[]>([]);
     const [showDialog, setShowDialog] = useState(false);
     const [filterModel, setFilterModel] = useState<GridFilterModel | undefined>();
+    const [sortModel, setSortModel] = useState<GridSortModel | undefined>();
 
-    const { filterUrl, rows } = useCustomSearchParams(filterModel, paginationInfo);
+    const { filterUrl, rows } = useCustomSearchParams(sortModel, filterModel, paginationInfo);
 
     useEffect(() => {
         if (filterUrl !== "") {
@@ -366,6 +368,10 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         }
     };
 
+    const handleSortModelChange = (newSortModel: GridSortModel) => {
+        setSortModel(newSortModel);
+    };
+
     return (
         <Stack
             width="100%"
@@ -407,6 +413,8 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 }
                 filterModel={filterModel}
                 onFilterModelChange={handleFilterModelChange}
+                sortModel={sortModel}
+                onSortModelChange={handleSortModelChange}
             />
             <Dialog open={showDialog} onClose={handleClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
                 <DialogTitle id="alert-dialog-title">{t("projects.confirmExport")}</DialogTitle>
