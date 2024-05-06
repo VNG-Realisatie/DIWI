@@ -1,8 +1,9 @@
-import { render, fireEvent, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import DateInput from "./DateInput"; // Adjust the import path as needed
+import DateInput from "./DateInput";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import userEvent from "@testing-library/user-event";
 
 const renderWithLocalization = (ui: any) => {
     return render(<LocalizationProvider dateAdapter={AdapterDayjs}>{ui}</LocalizationProvider>);
@@ -28,11 +29,17 @@ describe("DateInput Component Tests", () => {
     });
 
     it("should not be editable when readOnly is true", () => {
-        renderWithLocalization(<DateInput value={"2023-01-01"} setValue={() => {}} readOnly mandatory={true} errorText="Required" />);
+        render(
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DateInput value={"2023-01-01"} setValue={() => {}} readOnly={true} mandatory={true} errorText="Required" />
+            </LocalizationProvider>,
+        );
+        const dateInput = screen.getByRole("textbox");
+        expect(dateInput).toBeDisabled();
 
-        expect(screen.queryByRole("textbox")).toBeNull();
+        userEvent.click(dateInput);
+        expect(screen.queryByRole("dialog")).toBeNull();
 
-        const displayedDate = screen.getByText("01-01-2023");
-        expect(displayedDate).toBeInTheDocument();
+        expect(dateInput).toHaveValue("01-01-2023");
     });
 });

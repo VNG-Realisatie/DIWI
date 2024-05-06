@@ -46,7 +46,7 @@ export const GeneralInformationGroup = ({ readOnly, houseBlock, setHouseBlock, e
                 setValue={updateHouseBlockStartDate}
                 error={errors.startDateError}
                 mandatory={true}
-                label={t("createProject.houseBlocksForm.startDate")}
+                title={t("createProject.houseBlocksForm.startDate")}
                 errorText={t("wizard.houseBlocks.startDateWarningMissing")}
             />
             <DateInput
@@ -55,7 +55,7 @@ export const GeneralInformationGroup = ({ readOnly, houseBlock, setHouseBlock, e
                 setValue={updateHouseBlockEndDate}
                 error={errors.endDateError}
                 mandatory={true}
-                label={t("createProject.houseBlocksForm.endDate")}
+                title={t("createProject.houseBlocksForm.endDate")}
                 errorText={t("wizard.houseBlocks.endDateWarningMissing")}
             />
         </WizardCard>

@@ -1,10 +1,7 @@
-import { Stack, SxProps, Typography } from "@mui/material";
-import { InputContainer } from "../../project-wizard/house-blocks/InputContainer";
-import { LabelComponent } from "../LabelComponent";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
-import { convertDayjsToString } from "../../../utils/convertDayjsToString";
 import { dateFormats } from "../../../localization";
+import InputLabelStack from "./InputLabelStack";
 
 type Props = {
     value: string | null;
@@ -13,7 +10,7 @@ type Props = {
     readOnly: boolean;
     mandatory: boolean;
     error?: string | undefined | null;
-    label?: string;
+    title?: string;
     errorText: string;
 };
 
@@ -26,33 +23,31 @@ const getDateErrorMessage = (error: string | undefined | null, value: string | n
     }
     return null;
 };
-const DateInput = ({ value, setValue, readOnly, mandatory, error, label, errorText }: Props) => {
+const DateInput = ({ value, setValue, readOnly, mandatory, error, title, errorText }: Props) => {
     const errorMessage = getDateErrorMessage(error, value, errorText);
     return (
-        <Stack width="100%">
-            {label && <LabelComponent required={mandatory} text={label} />}
-            {!readOnly && (
-                <DatePicker
-                    format={dateFormats.keyboardDate}
-                    value={value ? dayjs(value) : null}
-                    onChange={setValue}
-                    slotProps={{
-                        textField: {
-                            size: "small",
-                            fullWidth: true,
-                            variant: "outlined",
-                            error: errorMessage ? true : false,
-                            helperText: errorMessage,
-                        },
-                    }}
-                />
-            )}
-            {readOnly && (
-                <InputContainer>
-                    <Typography>{convertDayjsToString(dayjs(value))}</Typography>
-                </InputContainer>
-            )}
-        </Stack>
+        <InputLabelStack mandatory={mandatory} title={title || ""}>
+            <DatePicker
+                format={dateFormats.keyboardDate}
+                value={value ? dayjs(value) : null}
+                onChange={setValue}
+                disabled={readOnly}
+                slotProps={{
+                    textField: {
+                        size: "small",
+                        fullWidth: true,
+                        variant: "outlined",
+                        error: errorMessage ? true : false,
+                        helperText: errorMessage,
+                    },
+                }}
+                sx={{
+                    "& .MuiInputBase-input.Mui-disabled": {
+                        backgroundColor: "#0000",
+                    },
+                }}
+            />
+        </InputLabelStack>
     );
 };
 

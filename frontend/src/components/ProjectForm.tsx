@@ -7,9 +7,7 @@ import { LabelComponent } from "./project/LabelComponent";
 import ColorSelector from "./ColorSelector";
 import { MenuProps } from "../utils/menuProps";
 import { confidentialityLevelOptions, planTypeOptions, planningPlanStatus, projectPhaseOptions } from "./table/constants";
-import { DatePicker } from "@mui/x-date-pickers";
-import dayjs, { Dayjs } from "dayjs";
-import { dateFormats } from "../localization";
+import { Dayjs } from "dayjs";
 import { ConfidentialityLevelOptions, PlanStatusOptions, ProjectPhaseOptions } from "../types/enums";
 import { OrganizationSelect } from "../widgets/OrganizationSelect";
 import useProperties from "../hooks/useProperties";
@@ -25,16 +23,6 @@ type Props = {
     setProject: (project: Project) => void;
     showColorPicker?: boolean;
     showAmounts?: boolean;
-};
-
-const datePickerStyle = {
-    "& .MuiFormHelperText-root": {
-        color: "red",
-        width: "100%",
-    },
-    "& .MuiInputBase-input.Mui-disabled": {
-        backgroundColor: "#0000", // set 0 opacity when disabled
-    },
 };
 
 export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = false, showAmounts = true }: Props) => {
@@ -156,7 +144,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 value={project?.startDate ? project?.startDate : null}
                                 setValue={updateHouseBlockStartDate}
                                 mandatory={true}
-                                label={t("createProject.informationForm.startDate")}
+                                title={t("createProject.informationForm.startDate")}
                                 errorText={t("createProject.hasMissingRequiredAreas.startDate")}
                             />
                         </Grid>
@@ -167,7 +155,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 value={project?.endDate ? project?.endDate : null}
                                 setValue={updateHouseBlockEndDate}
                                 mandatory={true}
-                                label={t("createProject.informationForm.endDate")}
+                                title={t("createProject.informationForm.endDate")}
                                 errorText={t("createProject.hasMissingRequiredAreas.endDate")}
                             />
                         </Grid>
