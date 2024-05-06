@@ -37,6 +37,7 @@ public class ProjectUpdateModel {
         municipality,
         district,
         neighbourhood,
+        geometry,
         // Do not change the order - startDate and endDate must be the last ones!
         // It will cause problems in future problems and extra milestones to be created.
         // See ProjectsResourceTest.updateProjectTest_futureProject
@@ -195,6 +196,10 @@ public class ProjectUpdateModel {
                 if (!neighbourhoodCatUuids.containsAll(getValuesAsUuids())) {
                     yield "Invalid neighbourhood property";
                 }
+                yield null;
+            }
+            case geometry -> {
+                //TODO: add validation to check if string is valid geojson
                 yield null;
             }
         };
