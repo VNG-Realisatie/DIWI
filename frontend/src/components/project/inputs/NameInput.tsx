@@ -20,22 +20,22 @@ const NameInput = ({ value, setValue, readOnly, mandatory, errorText, title }: P
     const hasError = shouldDisplayError(mandatory, value);
     return (
         <InputLabelStack mandatory={mandatory} title={title || ""}>
-            {!readOnly ? (
-                <TextField
-                    required={mandatory}
-                    sx={{ width: "100%" }}
-                    size="small"
-                    variant="outlined"
-                    value={value ?? ""}
-                    onChange={setValue}
-                    error={hasError}
-                    helperText={hasError ? errorText : ""}
-                />
-            ) : (
-                <InputContainer>
-                    <Typography>{value ?? ""}</Typography>
-                </InputContainer>
-            )}
+            <TextField
+                required={mandatory}
+                sx={{
+                    width: "100%",
+                    "& .MuiInputBase-input.Mui-disabled": {
+                        backgroundColor: "transparent",
+                    },
+                }}
+                size="small"
+                variant="outlined"
+                value={value ?? ""}
+                onChange={setValue}
+                error={hasError}
+                helperText={hasError ? errorText : ""}
+                disabled={readOnly}
+            />
         </InputLabelStack>
     );
 };

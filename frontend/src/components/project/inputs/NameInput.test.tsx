@@ -14,10 +14,13 @@ describe("NameInput component", () => {
         expect(screen.getByRole("textbox")).toBeInTheDocument();
     });
 
-    test("should not render TextField when read-only", () => {
+    test("should render TextField but it should be disabled when read-only", () => {
         render(<NameInput value="Test Value" setValue={() => {}} readOnly={true} mandatory={true} />);
-        expect(screen.queryByRole("textbox")).toBeNull();
-        expect(screen.getByText("Test Value")).toBeInTheDocument();
+
+        const textField = screen.getByRole("textbox");
+        expect(textField).toBeInTheDocument();
+
+        expect(textField).toBeDisabled();
     });
 
     test("should display error when mandatory but value is empty", () => {
