@@ -231,7 +231,8 @@
       "characteristics": "Eigenschappen",
       "timeline": "Tijdlijn",
       "colorEdit": "Kleur bewerken",
-      "createNewHouseBlock": "Nieuw woningblok toevoegen"
+      "createNewHouseBlock": "Nieuw woningblok toevoegen",
+      "explanation": "Op deze pagina vul je de basisgegevens van je woningbouwproject in"
     },
     "exchangeData": {
       "title": "Data uitwisselen",

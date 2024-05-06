@@ -53,6 +53,9 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
     return (
         <Grid container spacing={2} alignItems="stretch">
             <Grid item xs={12}>
+                <Typography ml={2} mt={2} mb={2}>
+                    <strong>{t(`projectDetail.explanation`)}</strong>
+                </Typography>
                 <WizardCard>
                     <Grid container spacing={2} alignItems="stretch">
                         {/* Name */}
