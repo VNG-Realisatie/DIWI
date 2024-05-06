@@ -1,5 +1,4 @@
-import { TextField, Typography } from "@mui/material";
-import { InputContainer } from "../../project-wizard/house-blocks/InputContainer";
+import { TextField } from "@mui/material";
 import InputLabelStack from "./InputLabelStack";
 
 type Props = {
@@ -16,7 +15,7 @@ const shouldDisplayError = (mandatory: boolean, value: string) => {
     return mandatory && (!value || value.trim() === "");
 };
 
-const NameInput = ({ value, setValue, readOnly, mandatory, errorText, title }: Props) => {
+const TextInput = ({ value, setValue, readOnly, mandatory, errorText, title }: Props) => {
     const hasError = shouldDisplayError(mandatory, value);
     return (
         <InputLabelStack mandatory={mandatory} title={title || ""}>
@@ -40,4 +39,4 @@ const NameInput = ({ value, setValue, readOnly, mandatory, errorText, title }: P
     );
 };
 
-export default NameInput;
+export default TextInput;
