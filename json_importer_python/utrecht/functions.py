@@ -88,7 +88,7 @@ def add_projectduur(df_out, df_in, prefix):
     df_out[f'{local_prefix}.start_project'] = df_in[datetime_columns].min(axis=1)
 
     df_out[f'{local_prefix}.eind_project'] = None
-    df_out[f'{local_prefix}.eind_project'] = [f"{int(float(x.year))}-12-01" if type(x) != type(None) else None for x in df_in['properties.oplevering_laatste'].fillna(np.nan).replace({np.nan: None})]
+    df_out[f'{local_prefix}.eind_project'] = [f"{int(float(x.year))}-12-31" if type(x) != type(None) else None for x in df_in['properties.oplevering_laatste'].fillna(np.nan).replace({np.nan: None})]
 
     df_out_startdates = df_out[['properties.parent_globalid', f'{local_prefix}.start_project']].groupby(by=['properties.parent_globalid']).min().reset_index()
     df_out_enddates = df_out[['properties.parent_globalid', f'{local_prefix}.eind_project']].groupby(by=['properties.parent_globalid']).max().reset_index()
@@ -118,7 +118,14 @@ def add_projectfasen(df_out, df_in, prefix, project_fasen):
     df_out[f'{local_prefix}.5. Realisatie'] = None
     df_out[f'{local_prefix}.6. Nazorg'] = None
 
-    df_out = pd.merge(df_out, df_in[['properties.globalid', 'properties.jaar_start_project', 'properties.jaartal', 'properties.oplevering_eerste']], on='properties.globalid')
+    df_out = pd.merge(df_out, df_in[['properties.globalid', 'properties.jaar_start_project', 'properties.jaartal', 'properties.oplevering_eerste', 'properties.projectfase']], on='properties.globalid')
+
+    df_out.loc[pd.to_datetime(df_out['properties.projectgegevens.projectduur.start_project']) > datetime.datetime.now(), 'properties.projectgegevens.projectduur.start_project'] = '2024-01-01'
+
+
+    #global_ids_active = list(df_project_dates.loc[(df_project_dates[project_fasen[3:-1]].notna().any(axis=1)) & (pd.to_datetime(df_project_dates['properties.projectgegevens.projectduur.eind_project']) > datetime.datetime.now())].index)
+
+    #df_out.loc[df_out['properties.globalid'].isin(global_ids_active), 'properties.projectgegevens.projectduur.start_project'] = '2024-01-01'
 
     df_in = pd.merge(left=df_in, right=df_out[['properties.globalid', 'properties.projectgegevens.projectduur.start_project']], on='properties.globalid')
 
@@ -131,16 +138,16 @@ def add_projectfasen(df_out, df_in, prefix, project_fasen):
 
     df_project_dates = pd.merge(left=df_project_dates.reset_index(), right=df_out[['properties.globalid', 'properties.oplevering_eerste', 'properties.projectgegevens.projectduur.start_project', 'properties.projectgegevens.projectduur.eind_project']], on=['properties.globalid']).set_index('properties.globalid')
 
-    df_project_dates.loc[(df_project_dates['properties.oplevering_eerste'].notna()) & (df_project_dates['5. Realisatie'].isna()), '5. Realisatie'] = df_project_dates.loc[(df_project_dates['properties.oplevering_eerste'].notna()) & (df_project_dates['5. Realisatie'].isna()), 'properties.oplevering_eerste']
+    indexes = list(df_project_dates[(df_project_dates[project_fasen].isna().all(axis=1))].index)
+    df_out.loc[df_out['properties.globalid'].isin(indexes), f'{local_prefix}.0. Concept'] = df_out.loc[df_out['properties.globalid'].isin(indexes), 'properties.projectgegevens.projectduur.start_project']
 
     indexes = df_out.loc[(pd.to_datetime(df_out['properties.projectgegevens.projectduur.start_project']) < datetime.datetime.now()) & (pd.to_datetime(df_out['properties.projectgegevens.projectduur.eind_project']) > datetime.datetime.now())].index
-    df_out.loc[indexes, '1. Initiatief'] = df_out.loc[indexes, 'properties.projectgegevens.projectduur.start_project']
+    df_out.loc[indexes, f'{local_prefix}.1. Initiatief'] = df_out.loc[indexes, 'properties.projectgegevens.projectduur.start_project']
 
-    indexes = df_out.loc[(pd.to_datetime(df_out['properties.projectgegevens.projectduur.start_project']) > datetime.datetime.now())].index
-    df_out.loc[indexes, '0. Concept'] = df_out.loc[indexes, 'properties.projectgegevens.projectduur.start_project']
+    df_project_dates.loc[(df_project_dates['properties.oplevering_eerste'].notna()) & (df_project_dates['5. Realisatie'].isna()), '5. Realisatie'] = df_project_dates.loc[(df_project_dates['properties.oplevering_eerste'].notna()) & (df_project_dates['5. Realisatie'].isna()), 'properties.oplevering_eerste']
 
     indexes = df_out.loc[(pd.to_datetime(df_out['properties.projectgegevens.projectduur.eind_project']) < datetime.datetime.now())].index
-    df_out.loc[indexes, '5. Realisatie'] = df_out.loc[indexes, 'properties.projectgegevens.projectduur.start_project']
+    df_out.loc[indexes, f'{local_prefix}.5. Realisatie'] = df_out.loc[indexes, 'properties.projectgegevens.projectduur.start_project']
 
     df_project_dates = df_project_dates.drop('properties.oplevering_eerste', axis=1)
     df_project_dates = df_project_dates.drop('properties.projectgegevens.projectduur.start_project', axis=1)
@@ -149,7 +156,7 @@ def add_projectfasen(df_out, df_in, prefix, project_fasen):
     df_project_dates = df_project_dates.dropna(how='all', axis=1)
 
     df_project_dates = df_project_dates[[column for column in df_project_dates.columns if column in project_fasen]]
-    df_project_dates = df_project_dates.drop('1. Initiatief', axis=1)
+    #df_project_dates = df_project_dates.drop('1. Initiatief', axis=1)
 
     for column in df_project_dates:
         df_project_dates[column] = pd.to_datetime(df_project_dates[column]).dt.strftime('%Y-%m-%d')
@@ -189,10 +196,10 @@ def add_projectfasen(df_out, df_in, prefix, project_fasen):
 def add_planologische_planstatus(df_out, df_in, prefix):
     local_prefix = f'{prefix}.planologische_planstatus'
 
-    df_in['planologisch_datum'] = df_in['properties.created']
+    #df_in['planologisch_datum'] = df_in['properties.created']
 
     df_in = pd.merge(left=df_in, right=df_out[['properties.globalid', 'properties.projectgegevens.projectduur.start_project', 'properties.projectgegevens.projectduur.eind_project']], on=['properties.globalid'])
-
+    df_in['planologisch_datum'] = df_in['properties.projectgegevens.projectduur.start_project']
     df_in.loc[pd.to_datetime(df_in['properties.projectgegevens.projectduur.eind_project']) < datetime.datetime.now(), 'planologisch_datum'] = df_in.loc[pd.to_datetime(df_in['properties.projectgegevens.projectduur.eind_project']) < datetime.datetime.now(), 'properties.projectgegevens.projectduur.start_project']
 
     temp = df_in[['properties.globalid', 'properties.status_planologisch', 'planologisch_datum']].pivot(columns=['properties.status_planologisch'],
