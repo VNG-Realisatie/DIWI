@@ -3,7 +3,7 @@ DROP COLUMN IF EXISTS "role";
 
 DROP TYPE IF EXISTS diwi_testset.user_role;
 CREATE TYPE diwi_testset.user_role AS ENUM ( 
-	'Admin',
+    'Admin',
     'UserPlus',
     'User',
     'Management',
