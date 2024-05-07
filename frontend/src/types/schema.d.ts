@@ -69,7 +69,7 @@ export interface paths {
         post: operations["setProjectPlots"];
     };
     "/rest/projects/import": {
-        post: operations["importExcelFile"];
+        post: operations["importFile"];
     };
     "/rest/projects/update": {
         post: operations["updateProjectSnapshot"];
@@ -286,6 +286,7 @@ export interface components {
             district?: components["schemas"]["SelectModel"][];
             neighbourhood?: components["schemas"]["SelectModel"][];
             location?: components["schemas"]["LocationModel"];
+            geometry?: string | null;
         };
         SelectModel: {
             /** Format: uuid */
@@ -329,6 +330,7 @@ export interface components {
             district?: components["schemas"]["SelectModel"][];
             neighbourhood?: components["schemas"]["SelectModel"][];
             location?: components["schemas"]["LocationModel"];
+            geometry?: string | null;
             customProperties?: components["schemas"]["ProjectHouseblockCustomPropertyModel"][];
         };
         DatedDataModelListPlanStatus: {
@@ -842,7 +844,12 @@ export interface operations {
             };
         };
     };
-    importExcelFile: {
+    importFile: {
+        parameters: {
+            query?: {
+                fileType?: "GEOJSON" | "EXCEL";
+            };
+        };
         requestBody?: {
             content: {
                 "multipart/form-data": {
