@@ -67,7 +67,7 @@ export const ProjectsWithHouseBlock = () => {
     const open = Boolean(anchorEl);
 
     return (
-        <Stack my={1} mb={10}>
+        <Stack mb={10}>
             <Box sx={{ cursor: "pointer" }} position="absolute" right={100} top={17}>
                 {!readOnly && (
                     <Tooltip placement="top" title={t("projectDetail.colorEdit")}>
@@ -99,7 +99,7 @@ export const ProjectsWithHouseBlock = () => {
             <Stack>
                 {projectForm && (
                     // this box with padding is to make the layout similar to how houseblocks look
-                    <Box padding={2}>
+                    <Box padding={2} paddingTop={1}>
                         <ProjectForm project={projectForm} setProject={setProjectForm} readOnly={readOnly} showColorPicker={false} />
                     </Box>
                 )}
