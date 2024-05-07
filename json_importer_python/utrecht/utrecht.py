@@ -20,6 +20,7 @@ gemeente_df_dict = func.fix_maatwerk(paths=all_gemeente_geojson_paths, required_
 for gemeente_name in gemeente_df_dict:
     #gemeente_name = 'Planregistratie_gemeente_Amersfoort_Verrijkt_6924747028786393809'
     df_in = gemeente_df_dict[gemeente_name]
+    df_in = func.set_datetime_columns(df_in=df_in)
     df_out = func.create_df_outs(df=df_in)
 
     df_out = func.fill_type_geometry(df_out=df_out, df_in=df_in)
@@ -38,6 +39,8 @@ for gemeente_name in gemeente_df_dict:
     df_out = func.add_woningblok_gerealiseerd(df_out=df_out, df_in=df_in)
 
     df_out = func.add_status_to_mutatie(df_out=df_out, df_in=df_in)
+
+    df_out, df_in = func.set_datetimes_to_string(df_out=df_out, df_in=df_in)
 
     json_out = func.form_json_structure(df_out=df_out, df_in=df_in, geo_template=geo_template, required_input_columns=const.required_input_columns, required_output_columns=const.required_output_columns)
 
