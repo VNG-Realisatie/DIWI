@@ -121,7 +121,10 @@ const usePlotSelector = (id: string) => {
                     .then((result) => {
                         const plotFeature = result as PlotGeoJSON;
 
-                        if (plotFeature.features.length === 0) return;
+                        if (plotFeature.features.length === 0) {
+                            // There is no plot at this location
+                            return;
+                        }
 
                         const properties = plotFeature.features[0].properties;
 
