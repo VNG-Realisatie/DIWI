@@ -498,6 +498,13 @@ public class ProjectsResource {
                     projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.neighbourhood, toUpdateNeighbourhoods.stream().map(s -> s.getId().toString()).toList()));
                 }
             }
+            case geometry -> {
+                var currentGeometry = projectSnapshotModelCurrent.getGeometry();
+                var toGeometry = projectSnapshotModelToUpdate.getGeometry();
+                if (!Objects.equals(currentGeometry, toGeometry)) {
+                    projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.geometry, toGeometry));
+                }
+            }
             case startDate -> {
                 LocalDate newStartDate = projectSnapshotModelToUpdate.getStartDate();
                 if (!Objects.equals(newStartDate, projectSnapshotModelCurrent.getStartDate())) {
@@ -599,6 +606,10 @@ public class ProjectsResource {
             Set<UUID> neighbourhoodCatUuids = projectUpdateModel.getValues().stream().map(UUID::fromString).collect(Collectors.toSet());
             UUID propertyId = propertiesService.getPropertyUuid(repo, Constants.FIXED_PROPERTY_NEIGHBOURHOOD);
             projectService.updateProjectCategoryProperty(repo, project, propertyId, neighbourhoodCatUuids, loggedUser.getUuid(), updateDate);
+        }
+        case geometry -> {
+            UUID propertyId = propertiesService.getPropertyUuid(repo, Constants.FIXED_PROPERTY_GEOMETRY);
+            projectService.updateProjectTextCustomProperty(repo, project, propertyId, projectUpdateModel.getValue(),loggedUser.getUuid(), updateDate);
         }
         }
     }

@@ -5,6 +5,9 @@ import { SelectModel } from "../api/projectsServices";
 const useProperties = () => {
     const [priorityOptionList, setPriorityOptionList] = useState<SelectModel[]>();
     const [municipalityRolesOptions, setMunicipalityRolesOptions] = useState<SelectModel[]>();
+    const [districtOptions, setDistrictOptions] = useState<SelectModel[]>();
+    const [neighbourhoodOptions, setNeighbourhoodOptions] = useState<SelectModel[]>();
+    const [municipalityOptions, setMunicipalityOptions] = useState<SelectModel[]>();
     const [properties, setProperties] = useState<Property[]>();
 
     useEffect(() => {
@@ -18,11 +21,20 @@ const useProperties = () => {
                 } else if (customProperty.name === "municipalityRole") {
                     const options = customProperty.categories?.map((category: CategoryType) => ({ id: category.id as string, name: category.name }));
                     setMunicipalityRolesOptions(options);
+                } else if (customProperty.name === "district") {
+                    const options = customProperty.categories?.map((category: CategoryType) => ({ id: category.id as string, name: category.name }));
+                    setDistrictOptions(options);
+                } else if (customProperty.name === "neighbourhood") {
+                    const options = customProperty.categories?.map((category: CategoryType) => ({ id: category.id as string, name: category.name }));
+                    setNeighbourhoodOptions(options);
+                } else if (customProperty.name === "municipality") {
+                    const options = customProperty.categories?.map((category: CategoryType) => ({ id: category.id as string, name: category.name }));
+                    setMunicipalityOptions(options);
                 }
             }
         });
     }, []);
-    return { priorityOptionList, municipalityRolesOptions, properties };
+    return { priorityOptionList, municipalityRolesOptions, properties, districtOptions, neighbourhoodOptions, municipalityOptions };
 };
 
 export default useProperties;
