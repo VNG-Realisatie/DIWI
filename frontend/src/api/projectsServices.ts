@@ -15,37 +15,35 @@ export type PriorityModel = components["schemas"]["PriorityModel"];
 
 export type PlotGeoJSON = {
     type: string;
-    features: [
-        {
-            id: string;
-            type: string;
-            bbox: number[];
-            geometry: GeoJSONGeometry;
-            properties: {
-                AKRKadastraleGemeenteCodeCode: string;
-                AKRKadastraleGemeenteCodeWaarde: string;
-                beginGeldigheid: string;
-                identificatieLokaalID: string;
-                identificatieNamespace: string;
-                kadastraleGemeenteCode: string;
-                kadastraleGemeenteWaarde: string;
-                kadastraleGrootteWaarde: string;
-                perceelnummer: string;
-                perceelnummerPlaatscoordinaatX: string;
-                perceelnummerPlaatscoordinaatY: string;
-                perceelnummerRotatie: string;
-                perceelnummerVerschuivingDeltaX: string;
-                perceelnummerVerschuivingDeltaY: string;
-                sectie: string;
-                soortGrootteCode: string;
-                soortGrootteWaarde: string;
-                statusHistorieCode: string;
-                statusHistorieWaarde: string;
-                tijdstipRegistratie: string;
-                volgnummer: string;
-            };
-        },
-    ];
+    features: {
+        id: string;
+        type: string;
+        bbox: number[];
+        geometry: GeoJSONGeometry;
+        properties: {
+            AKRKadastraleGemeenteCodeCode: string;
+            AKRKadastraleGemeenteCodeWaarde: string;
+            beginGeldigheid: string;
+            identificatieLokaalID: string;
+            identificatieNamespace: string;
+            kadastraleGemeenteCode: string;
+            kadastraleGemeenteWaarde: string;
+            kadastraleGrootteWaarde: string;
+            perceelnummer: string;
+            perceelnummerPlaatscoordinaatX: string;
+            perceelnummerPlaatscoordinaatY: string;
+            perceelnummerRotatie: string;
+            perceelnummerVerschuivingDeltaX: string;
+            perceelnummerVerschuivingDeltaY: string;
+            sectie: string;
+            soortGrootteCode: string;
+            soortGrootteWaarde: string;
+            statusHistorieCode: string;
+            statusHistorieWaarde: string;
+            tijdstipRegistratie: string;
+            volgnummer: string;
+        };
+    }[];
     crs: {
         properties: {
             name: string;
