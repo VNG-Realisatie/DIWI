@@ -52,7 +52,8 @@
         "planningPlanStatus": "Planologische planstatus",
         "owner": "Schrijfrechten",
         "neighbourhood": "Buurt",
-        "district": "Wijk"
+        "district": "Wijk",
+        "municipality": "Gemeente"
       },
       "houseBlocksForm": {
         "title": "Vul de woningblokken in",
@@ -213,7 +214,7 @@
         "projectLeader": "Projectleider",
         "projectPhase": "Projectfase",
         "planningPlanStatus": "Planologische planstatus",
-        "municipality": "Regio",
+        "municipality": "Gemeente",
         "district": "Wijk",
         "neighbourhood": "Buurt",
         "selectPlanType": "Selecteer plantype",
@@ -230,7 +231,8 @@
       "characteristics": "Eigenschappen",
       "timeline": "Tijdlijn",
       "colorEdit": "Kleur bewerken",
-      "createNewHouseBlock": "Nieuw woningblok toevoegen"
+      "createNewHouseBlock": "Nieuw woningblok toevoegen",
+      "explanation": "Op deze pagina vul je de basisgegevens van je woningbouwproject in"
     },
     "exchangeData": {
       "title": "Data uitwisselen",
@@ -317,6 +319,16 @@
           "edit": "Bewerken",
           "delete": "Verwijderen",
           "actions": "Acties"
+        },
+        "fixedPropertyType": {
+          "municipality": "Gemeente",
+          "district": "Wijk",
+          "neighbourhood": "Buurt",
+          "municipalityRole": "Rol Gemeente",
+          "physicalAppearance": "Fysiek Voorkomen",
+          "priority": "Prioriteit",
+          "targetGroup": "Doelgroep",
+          "geometry": "Geometrie"
         },
         "propertyType": {
           "BOOLEAN": "Ja / Nee",

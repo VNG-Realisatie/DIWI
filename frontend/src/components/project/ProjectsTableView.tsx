@@ -13,18 +13,12 @@ import {
 } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
-import { AvatarGroup, Box, Button, Dialog, DialogActions, DialogTitle, Stack, Typography } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogTitle, Stack, Typography } from "@mui/material";
 import useAlert from "../../hooks/useAlert";
 import { Project } from "../../api/projectsServices";
 import { useTranslation } from "react-i18next";
-import { PlanTypeCell } from "../table/PlanTypeCell";
-import { MunicipalityRoleCell } from "../table/MunicipalityRoleCell";
-import { PlanningPlanStatusCell } from "../table/PlanningPlanStatusCell";
-// import { WijkCell } from "../table/WijkCell";
-// import { BuurtCell } from "../table/NeighbourhoodCell";
-// import { MunicipalityCell } from "../table/MunicipalityCell";
+import { CategoriesCell } from "../table/CategoriesCell";
 import { confidentialityLevelOptions, planTypeOptions, projectPhaseOptions } from "../table/constants";
-import { OrganizationUserAvatars } from "../OrganizationUserAvatars";
 import ProjectContext from "../../context/ProjectContext";
 import useCustomSearchParams from "../../hooks/useCustomSearchParams";
 import { AddProjectButton } from "../PlusButton";
@@ -60,12 +54,6 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const { t } = useTranslation();
 
     const [selectedRows, setSelectedRows] = useState<any[]>([]);
-    // const [selectedPlanTypes, setSelectedPlanTypes] = useState<SelectedOptionWithId[]>([]);
-    // const [selectedMunicipality, setSelectedMunicipality] = useState<SelectedOptionWithId[]>([]);
-    // const [selectedMunicipalityRole, setSelectedMunicipalityRole] = useState<SelectedOptionWithId[]>([]);
-    // const [selectedPlanStatus, setSelectedPlanStatus] = useState<SelectedOptionWithId[]>([]);
-    // const [selectedWijk, setSelectedWijk] = useState<SelectedOptionWithId[]>([]);
-    // const [selectedBuurt, setSelectedBuurt] = useState<SelectedOptionWithId[]>([]);
     const [showDialog, setShowDialog] = useState(false);
     const [filterModel, setFilterModel] = useState<GridFilterModel | undefined>();
     const [sortModel, setSortModel] = useState<GridSortModel | undefined>();
@@ -88,90 +76,6 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     };
 
     const handleClose = () => setShowDialog(false);
-
-    // const handlePlanTypeChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
-    //     const existingRecordIndex = selectedPlanTypes.findIndex((item) => item.id === id);
-
-    //     if (existingRecordIndex !== -1) {
-    //         const updatedSelectedPlanTypes = [...selectedPlanTypes];
-    //         updatedSelectedPlanTypes[existingRecordIndex] = { id, option: values };
-    //         setSelectedPlanTypes(updatedSelectedPlanTypes);
-    //     } else {
-    //         // If not exists, add a new record
-    //         setSelectedPlanTypes([...selectedPlanTypes, { id, option: values }]);
-    //     }
-    //     //Add update endpoint later
-    // };
-
-    // const handleMunicipalityRoleChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
-    //     const existingRecordIndex = selectedMunicipalityRole.findIndex((item) => item.id === id);
-
-    //     if (existingRecordIndex !== -1) {
-    //         const updatedMunicipality = [...selectedMunicipalityRole];
-    //         updatedMunicipality[existingRecordIndex] = { id, option: values };
-    //         setSelectedMunicipalityRole(updatedMunicipality);
-    //     } else {
-    //         // If not exists, add a new record
-    //         setSelectedMunicipalityRole([...selectedMunicipalityRole, { id, option: values }]);
-    //     }
-    //     //Add update endpoint later
-    // };
-
-    // const handleStatusChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
-    //     const existingRecordIndex = selectedPlanStatus.findIndex((item) => item.id === id);
-
-    //     if (existingRecordIndex !== -1) {
-    //         const updatedPlanStatus = [...selectedPlanStatus];
-    //         updatedPlanStatus[existingRecordIndex] = { id, option: values };
-    //         setSelectedPlanStatus(updatedPlanStatus);
-    //     } else {
-    //         // If not exists, add a new record
-    //         setSelectedPlanStatus([...selectedPlanStatus, { id, option: values }]);
-    //     }
-    //     //Add update endpoint later
-    // };
-
-    // const handleMunicipalityChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
-    //     const existingRecordIndex = selectedMunicipality.findIndex((item) => item.id === id);
-
-    //     if (existingRecordIndex !== -1) {
-    //         const updateMunicipality = [...selectedMunicipality];
-    //         updateMunicipality[existingRecordIndex] = { id, option: values };
-    //         setSelectedMunicipality(updateMunicipality);
-    //     } else {
-    //         // If not exists, add a new record
-    //         setSelectedMunicipality([...selectedMunicipality, { id, option: values }]);
-    //     }
-    //     //Add update endpoint later
-    // };
-
-    // const handleWijkChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
-    //     const existingRecordIndex = selectedWijk.findIndex((item) => item.id === id);
-
-    //     if (existingRecordIndex !== -1) {
-    //         const updateWijk = [...selectedWijk];
-    //         updateWijk[existingRecordIndex] = { id, option: values };
-    //         setSelectedWijk(updateWijk);
-    //     } else {
-    //         // If not exists, add a new record
-    //         setSelectedWijk([...selectedWijk, { id, option: values }]);
-    //     }
-    //     //Add update endpoint later
-    // };
-
-    // const handleBuurtChange = (_: React.ChangeEvent<{}>, values: OptionType[], id: string) => {
-    //     const existingRecordIndex = selectedBuurt.findIndex((item) => item.id === id);
-
-    //     if (existingRecordIndex !== -1) {
-    //         const updateBuurt = [...selectedBuurt];
-    //         updateBuurt[existingRecordIndex] = { id, option: values };
-    //         setSelectedBuurt(updateBuurt);
-    //     } else {
-    //         // If not exists, add a new record
-    //         setSelectedBuurt([...selectedBuurt, { id, option: values }]);
-    //     }
-    //     //Add update endpoint later
-    // };
 
     const createErrorReport = (params: GridPreProcessEditCellProps) => {
         const hasError = params.props.value.length < 3;
@@ -201,22 +105,6 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             display: "flex",
             width: 120,
             filterable: false,
-            preProcessEditCellProps: createErrorReport,
-        },
-
-        {
-            field: "projectOwners",
-            headerName: capitalizeFirstLetters(t("projects.tableColumns.organizationName")),
-            display: "flex",
-            width: 160,
-            filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
-            renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                return (
-                    <AvatarGroup max={3}>
-                        <OrganizationUserAvatars organizations={cellValues?.row.projectOwners} />
-                    </AvatarGroup>
-                );
-            },
             preProcessEditCellProps: createErrorReport,
         },
         {
@@ -259,7 +147,8 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             valueOptions: planTypeOptions.map((pt) => pt.id),
             type: "singleSelect",
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                return <PlanTypeCell cellValues={cellValues} />;
+                const defaultPlanTypes = cellValues.row.planType?.map((c) => ({ id: c, name: t(`projectTable.planTypeOptions.${c}`) })) || [];
+                return <CategoriesCell cellValues={defaultPlanTypes} />;
             },
             filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
             preProcessEditCellProps: createErrorReport,
@@ -279,22 +168,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             display: "flex",
             width: 320,
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                return <MunicipalityRoleCell cellValues={cellValues} />;
-            },
-            preProcessEditCellProps: createErrorReport,
-        },
-        {
-            field: "projectLeaders",
-            headerName: capitalizeFirstLetters(t("projects.tableColumns.projectLeader")),
-            display: "flex",
-            width: 160,
-            filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
-            renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                return (
-                    <AvatarGroup max={3}>
-                        <OrganizationUserAvatars organizations={cellValues?.row.projectLeaders} />
-                    </AvatarGroup>
-                );
+                return <CategoriesCell cellValues={cellValues?.row?.municipalityRole || []} />;
             },
             preProcessEditCellProps: createErrorReport,
         },
@@ -317,38 +191,43 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             width: 500,
             preProcessEditCellProps: createErrorReport,
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                return <PlanningPlanStatusCell cellValues={cellValues} />;
+                const fixedProperties = cellValues?.row?.planningPlanStatus?.map((fp) => ({ id: fp, name: t(`projectTable.planningPlanStatus.${fp}`) })) || [];
+                return <CategoriesCell cellValues={fixedProperties} />;
             },
         },
-        // {
-        //     field: "municipality",
-        //     headerName: capitalizeFirstLetters(t("projects.tableColumns.municipality")),
-        //     width: 320,
-        //     renderCell: (cellValues: GridRenderCellParams<Project>) => {
-        //         return (
-        //             <MunicipalityCell cellValues={cellValues} selectedMunicipality={selectedMunicipality} handleMunicipalityChange={handleMunicipalityChange} />
-        //         );
-        //     },
-        //     preProcessEditCellProps: createErrorReport,
-        // },
-        // {
-        //     field: "wijk",
-        //     headerName: capitalizeFirstLetters(t("projects.tableColumns.wijk")),
-        //     width: 320,
-        //     renderCell: (cellValues: GridRenderCellParams<Project>) => {
-        //         return <WijkCell cellValues={cellValues} selectedWijk={selectedWijk} handleWijkChange={handleWijkChange} />;
-        //     },
-        //     preProcessEditCellProps: createErrorReport,
-        // },
-        // {
-        //     field: "buurt",
-        //     headerName: capitalizeFirstLetters(t("projects.tableColumns.neighbourhood")),
-        //     width: 320,
-        //     renderCell: (cellValues: GridRenderCellParams<Project>) => {
-        //         return <BuurtCell cellValues={cellValues} selectedNeighbourhood={selectedBuurt} handleNeighbourhoodChange={handleBuurtChange} />;
-        //     },
-        //     preProcessEditCellProps: createErrorReport,
-        // },
+        {
+            field: "municipality",
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.municipality")),
+            display: "flex",
+            width: 320,
+            renderCell: (cellValues: GridRenderCellParams<Project>) => {
+                const fixedProperties = cellValues?.row?.municipality || [];
+                return <CategoriesCell cellValues={fixedProperties} />;
+            },
+            preProcessEditCellProps: createErrorReport,
+        },
+        {
+            field: "wijk",
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.district")),
+            display: "flex",
+            width: 320,
+            renderCell: (cellValues: GridRenderCellParams<Project>) => {
+                const fixedProperties = cellValues?.row?.district || [];
+                return <CategoriesCell cellValues={fixedProperties} />;
+            },
+            preProcessEditCellProps: createErrorReport,
+        },
+        {
+            field: "buurt",
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.neighbourhood")),
+            display: "flex",
+            width: 320,
+            renderCell: (cellValues: GridRenderCellParams<Project>) => {
+                const fixedProperties = cellValues?.row?.neighbourhood || [];
+                return <CategoriesCell cellValues={fixedProperties} />;
+            },
+            preProcessEditCellProps: createErrorReport,
+        },
     ];
 
     const handleFilterModelChange = (newModel: GridFilterModel) => {
