@@ -149,7 +149,7 @@ public class GeoJsonImportModel {
                     PropertyModel propertyModel = activePropertiesMap.get(rolesEntry.getKey());
                     if (propertyModel == null || propertyModel.getObjectType() != ObjectType.PROJECT || propertyModel.getType() != PropertyKind.CUSTOM ||
                         propertyModel.getPropertyType() != PropertyType.CATEGORY) {
-                        importErrors.add(new ImportError(id, roleValue, ImportError.ERROR.UNKNOWN_PROJECT_CATEGORY_PROPERTY));
+                        importErrors.add(new ImportError(id, rolesEntry.getKey(), ImportError.ERROR.UNKNOWN_PROJECT_PROPERTY));
                     } else {
                         projectImportModel.getProjectCategoryPropsMap().put(propertyModel.getId(), getCategoryValue(roleValue, propertyModel, id, importErrors));
                     }
