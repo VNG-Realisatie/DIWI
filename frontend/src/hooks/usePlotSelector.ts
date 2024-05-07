@@ -1,28 +1,31 @@
-import { Map, View } from "ol";
-
+import _ from "lodash";
+import { Map, MapBrowserEvent, View } from "ol";
+import { defaults as defaultControls } from "ol/control.js";
+import { Listener } from "ol/events";
+import { Extent } from "ol/extent";
 import GeoJSON from "ol/format/GeoJSON.js";
 import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
 import { OSM, TileWMS, Vector as VectorSource } from "ol/source";
-import _ from "lodash";
-import { defaults as defaultControls } from "ol/control.js";
-import { Extent } from "ol/extent";
 import { Fill, Stroke, Style } from "ol/style";
 import { StyleFunction } from "ol/style/Style";
 import queryString from "query-string";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { Plot, PlotGeoJSON, getProjectPlots, updateProjectPlots, updateProject } from "../api/projectsServices";
+import { Plot, PlotGeoJSON, getProjectPlots, updateProject, updateProjectPlots } from "../api/projectsServices";
 import ConfigContext from "../context/ConfigContext";
 import ProjectContext from "../context/ProjectContext";
 import { extentToCenter, mapBoundsToExtent } from "../utils/map";
+
 const baseUrlKadasterWms = "https://service.pdok.nl/kadaster/kadastralekaart/wms/v5_0";
 
+const projection = "EPSG:3857";
 const usePlotSelector = (id: string) => {
     const { selectedProject } = useContext(ProjectContext);
     const { mapBounds } = useContext(ConfigContext);
 
     const [map, setMap] = useState<Map>();
     const [selectedPlotLayerSource, setSelectedPlotLayerSource] = useState<VectorSource>();
+    const [projectLayerSource, setProjectLayerSource] = useState<VectorSource>();
 
     const [originalSelectedPlots, setOriginalSelectedPlots] = useState<Plot[] | null>(null);
     const [selectedPlots, setSelectedPlots] = useState<Plot[]>([]);
@@ -74,11 +77,14 @@ const usePlotSelector = (id: string) => {
     };
 
     const handleClick = useCallback(
-        (e: any) => {
+        (e: MapBrowserEvent<UIEvent>) => {
             const map: Map = e.map;
             if (!map) return;
 
-            const features = map.getFeaturesAtPixel(e.pixel);
+            const features = map.getFeaturesAtPixel(e.pixel, { layerFilter: (layer) => layer.getSource() === selectedPlotLayerSource });
+            features.forEach((feature) => {
+                console.log("feature", feature);
+            });
 
             if (features.length > 0) {
                 const newSelectedPlots = selectedPlots.filter((plot) => {
@@ -114,6 +120,9 @@ const usePlotSelector = (id: string) => {
                     .then((res) => res.json())
                     .then((result) => {
                         const plotFeature = result as PlotGeoJSON;
+
+                        if (plotFeature.features.length === 0) return;
+
                         const properties = plotFeature.features[0].properties;
 
                         const newPlot: Plot = {
@@ -127,7 +136,7 @@ const usePlotSelector = (id: string) => {
                     });
             }
         },
-        [selectedPlots],
+        [selectedPlotLayerSource, selectedPlots],
     );
 
     useEffect(
@@ -154,6 +163,33 @@ const usePlotSelector = (id: string) => {
     );
 
     useEffect(
+        function updateProjectGeometry() {
+            if (!projectLayerSource) {
+                return;
+            }
+
+            projectLayerSource.clear();
+
+            if (selectedProject?.geometry) {
+                const geometry = JSON.parse(selectedProject.geometry);
+
+                const feature = new GeoJSON().readFeature(
+                    {
+                        type: "Feature",
+                        geometry,
+                        properties: {},
+                    },
+                    {
+                        featureProjection: projection,
+                    },
+                );
+
+                projectLayerSource.addFeature(feature);
+            }
+        },
+        [projectLayerSource, selectedProject?.geometry],
+    );
+    useEffect(
         function zoomToExtent() {
             if (extent) {
                 map?.getView().fit(extent);
@@ -165,9 +201,9 @@ const usePlotSelector = (id: string) => {
     useEffect(() => {
         if (!map) return;
 
-        map.addEventListener("click", handleClick);
+        map.addEventListener("click", handleClick as Listener);
         return () => {
-            map.removeEventListener("click", handleClick);
+            map.removeEventListener("click", handleClick as Listener);
         };
     }, [handleClick, map]);
 
@@ -184,12 +220,13 @@ const usePlotSelector = (id: string) => {
                 }),
             });
 
-            const source = new VectorSource();
-            const selectedPlotLayer = new VectorLayer({ source, style: selectedFeatureStyle as StyleFunction });
+            const selectedPlotSource = new VectorSource();
+            const selectedPlotLayer = new VectorLayer({ source: selectedPlotSource, style: selectedFeatureStyle as StyleFunction });
 
-            setSelectedPlotLayerSource(source);
+            setSelectedPlotLayerSource(selectedPlotSource);
 
             const projectGeometrySource = new VectorSource();
+
             const projectGeometryLayer = new VectorLayer({
                 source: projectGeometrySource,
                 style: new Style({
@@ -197,19 +234,19 @@ const usePlotSelector = (id: string) => {
                     stroke: new Stroke({ color: "#000000", width: 5 }),
                 }),
             });
-            if (selectedProject?.geometry) {
-                const geojson = new GeoJSON().readFeatures(selectedProject.geometry);
-                projectGeometrySource.addFeatures(geojson);
-            }
+            setProjectLayerSource(projectGeometrySource);
+
             const newMap = new Map({
                 target: id,
-                layers: [osmLayer, kadasterLayers, projectGeometryLayer, selectedPlotLayer],
+                layers: [osmLayer, projectGeometryLayer, kadasterLayers, selectedPlotLayer],
                 view: new View({
                     center: extentToCenter(mapBoundsToExtent(mapBounds)),
                     zoom: 12,
+                    projection: projection,
                 }),
                 controls: defaultControls({ attribution: false }),
             });
+
             setMap(newMap);
             const extent = mapBoundsToExtent(mapBounds);
             newMap.getView().fit(extent);
@@ -222,7 +259,7 @@ const usePlotSelector = (id: string) => {
                 }
             };
         },
-        [id, mapBounds, selectedFeatureStyle, selectedProject?.geometry],
+        [id, mapBounds, selectedFeatureStyle],
     );
     return { plotsChanged, selectedPlotCount: selectedPlots.length, handleCancelChange, handleSaveChange };
 };
