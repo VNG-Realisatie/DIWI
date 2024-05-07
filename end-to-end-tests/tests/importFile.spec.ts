@@ -17,6 +17,12 @@ test("Import file failed", async ({ page }) => {
     await pm.navigateTo().loginPage();
     await pm.navigateTo().importExcelPage();
     await page.locator('input[type="file"]').setInputFiles(filePath);
-    const errorIcon = await page.locator('[data-testid="ErrorOutlineIcon"]').first();
-    await expect(errorIcon).toBeVisible();
+    const rowError= await page.locator("tr").last().locator("td").nth(0).innerText();
+    const columnError= await page.locator("tr").last().locator("td").nth(1).innerText();
+    const valueError= await page.locator("tr").last().locator("td").nth(2).innerText();
+    const DescriptionError= await page.locator("tr").last().locator("td").nth(3).innerText();
+    await expect(rowError).toContain("4");
+    await expect(columnError).toContain("");
+    await expect(valueError).toContain("Plan soort");
+    await expect(DescriptionError).toContain("The excel file does not contain all expected headers.");
 });
