@@ -145,6 +145,9 @@ def add_projectfasen(df_out, df_in, prefix, project_fasen):
 
         previous_columns.append(project_fase_column)
 
+    for column in project_fasen:
+        df_out[column] = pd.to_datetime(temp[column]).dt.strftime('%Y-%m-%d').astype(str)
+
     return df_out
 
 
