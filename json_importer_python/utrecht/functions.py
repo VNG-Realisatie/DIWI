@@ -87,6 +87,11 @@ def add_projectduur(df_out, df_in, prefix):
     df_out[f'{local_prefix}.eind_project'] = None
     df_out[f'{local_prefix}.eind_project'] = [f"{int(float(x.year))}-12-01" if type(x) != type(None) else None for x in df_in['properties.oplevering_laatste'].fillna(np.nan).replace({np.nan: None})]
 
+    df_out_startdates = df_out[['properties.parent_globalid', f'{local_prefix}.start_project']].groupby(by=['properties.parent_globalid']).min().reset_index()
+    df_out_enddates = df_out[['properties.parent_globalid', f'{local_prefix}.eind_project']].groupby(by=['properties.parent_globalid']).max().reset_index()
+
+    df_out[f'{local_prefix}.start_project'] = pd.merge(left=df_out, right=df_out_startdates, on=['properties.parent_globalid'])[f'{local_prefix}.start_project_y']
+    df_out[f'{local_prefix}.eind_project'] = pd.merge(left=df_out, right=df_out_enddates, on=['properties.parent_globalid'])[f'{local_prefix}.eind_project_y']
 
     return df_out
 
@@ -181,6 +186,8 @@ def explode_huizenblokken_add_aantallen(df_out, df_in, mapping_values):
     koop_1,2,3,4,onbekend x huur_1,2,3,4, onbekend
     """
 
+    #df_out = df_out[df_out['properties.parent_globalid'] == '{96B43568-0CF4-4B11-9D71-3328046EEA62}']  # TODO: remove
+
     # TODO: use the lowest-level fields for the conditions. e.g. "sloop_meergezins_onbekend"
 
     prefix = 'properties.woning_blokken'
@@ -224,7 +231,7 @@ def explode_huizenblokken_add_aantallen(df_out, df_in, mapping_values):
 
     df_huizenblokken = pd.merge(left=df_huizenblokken, right=temp_jaartal, on =['properties.globalid'], how='left')
 
-    df_out = pd.merge(left=df_out, right=df_huizenblokken, on='properties.globalid')
+    df_out = pd.merge(left=df_out, right=df_huizenblokken, on='properties.globalid', how='left')
 
     df_out['aantal'] = df_out['aantal'].abs()
 
@@ -380,7 +387,9 @@ def add_woningblok_maatwerk_json(new_woningblok, s_woningblok, woningblok_maatwe
 def add_maatwerk_values(df_out, df_in, project_maatwerk_columns, woningblok_maatwerk_columns):
 
     df_project_maatwerk = df_in[['properties.parent_globalid'] + project_maatwerk_columns].replace({np.nan: None})
+    df_project_maatwerk = df_project_maatwerk.loc[df_project_maatwerk['properties.parent_globalid'].drop_duplicates().index]
     df_woningblok_maatwerk = df_in[['properties.globalid'] + woningblok_maatwerk_columns].replace({np.nan: None})
+    df_woningblok_maatwerk = df_woningblok_maatwerk[df_woningblok_maatwerk['properties.globalid'].isin(df_out['properties.globalid'])]
 
     df_out = pd.merge(left=df_out, right=df_project_maatwerk, on=['properties.parent_globalid'], how='left')
     df_out = pd.merge(left=df_out, right=df_woningblok_maatwerk, on=['properties.globalid'], how='left')
