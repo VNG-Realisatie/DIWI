@@ -199,7 +199,9 @@ public class ProjectUpdateModel {
                 yield null;
             }
             case geometry -> {
-                //TODO: add validation to check if string is valid geojson
+                if (value != null) {
+                    yield "Project geometry can only be set while importing from GeoJSON.";
+                }
                 yield null;
             }
         };
