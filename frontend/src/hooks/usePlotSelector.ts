@@ -20,7 +20,7 @@ const baseUrlKadasterWms = "https://service.pdok.nl/kadaster/kadastralekaart/wms
 
 const projection = "EPSG:3857";
 const usePlotSelector = (id: string) => {
-    const { selectedProject } = useContext(ProjectContext);
+    const { selectedProject, setSelectedProject } = useContext(ProjectContext);
     const { mapBounds } = useContext(ConfigContext);
 
     const [map, setMap] = useState<Map>();
@@ -72,7 +72,10 @@ const usePlotSelector = (id: string) => {
                 const center = extentToCenter(extent);
                 selectedProject.location = { lat: center[0], lng: center[1] };
             }
-            await updateProject({ ...selectedProject, geometry: null });
+            if (selectedPlots.length > 0) {
+                const newProject = await updateProject({ ...selectedProject, geometry: null });
+                setSelectedProject(newProject);
+            }
         }
     };
 
