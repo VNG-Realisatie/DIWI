@@ -6,8 +6,11 @@
   "author": "Emiel Rombouts <erombouts@phinion.com>",
   "license": "MIT",
   "devDependencies": {
-    "@playwright/test": "^1.41.2",
+    "@playwright/test": "^1.44.0",
     "@types/node": "^20.11.16"
   },
-  "scripts": {}
+  "scripts": {},
+  "dependencies": {
+    "os": "^0.1.2"
+  }
 }
