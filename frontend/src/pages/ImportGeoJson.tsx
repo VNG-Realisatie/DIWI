@@ -67,7 +67,7 @@ export const ImportGeoJson = () => {
                                 importGeoJsonProjects(file as FileList)
                                     .then((res) => {
                                         setUploaded(true);
-                                        if (res.ok) {
+                                        if (res[0].id && res[0].name) {
                                             setAlert("GeoJSON-bestand succesvol geüpload.", "success");
                                         } else {
                                             // 400 errors contain relevant info in body, deal with here
