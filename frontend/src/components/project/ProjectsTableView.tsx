@@ -76,7 +76,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         if (filterUrl !== "") {
             navigate(`/projects/table${filterUrl}`);
         }
-    }, [filterUrl, navigate, filterModel]);
+    }, [filterUrl, navigate, filterModel, sortModel]);
 
     const handleExport = (params: GridRowParams) => {
         const clickedRow: RowData = params.row as RowData;
@@ -351,20 +351,17 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         // },
     ];
 
-    const handleFilterModelChange = (newModel: GridFilterModel, details: GridCallbackDetails) => {
-        if (details.reason === "deleteFilterItem") {
-            if (newModel.items.some((item) => item.value == null)) {
-                const updatedFilterModel = {
-                    items: newModel.items.map((item) => ({
-                        ...item,
-                        value: item.value == null ? "" : item.value,
-                    })),
-                };
-                setFilterModel(updatedFilterModel);
-            }
-        }
-        if (newModel.items.length > 0) {
+    const handleFilterModelChange = (newModel: GridFilterModel) => {
+        if (newModel.items.some((item) => item.value)) {
             setFilterModel(newModel);
+        } else {
+            const updatedFilterModel: GridFilterModel = {
+                items: newModel.items.map((item) => ({
+                    ...item,
+                    value: undefined,
+                })),
+            };
+            setFilterModel(updatedFilterModel);
         }
     };
 
@@ -398,7 +395,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 onPaginationModelChange={(model: GridPaginationModel, _: GridCallbackDetails) => {
                     setPaginationInfo({ page: model.page + 1, pageSize: model.pageSize });
                 }}
-                rowCount={totalProjectCount}
+                rowCount={filterModel?.items.some((item) => item.value) ? rows.length : totalProjectCount}
                 paginationMode="server"
                 onRowClick={
                     showCheckBox
