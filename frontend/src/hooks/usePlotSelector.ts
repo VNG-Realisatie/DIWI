@@ -85,9 +85,6 @@ const usePlotSelector = (id: string) => {
             if (!map) return;
 
             const features = map.getFeaturesAtPixel(e.pixel, { layerFilter: (layer) => layer.getSource() === selectedPlotLayerSource });
-            features.forEach((feature) => {
-                console.log("feature", feature);
-            });
 
             if (features.length > 0) {
                 const newSelectedPlots = selectedPlots.filter((plot) => {
