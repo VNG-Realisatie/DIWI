@@ -47,10 +47,10 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static nl.vng.diwi.security.SecurityRoleConstants.UserPlus;
+import static nl.vng.diwi.security.SecurityRoleConstants.USER_PLUS;
 
 @Path("/houseblock")
-@RolesAllowed({UserPlus})
+@RolesAllowed({USER_PLUS})
 public class HouseblockResource {
 
     private final VngRepository repo;

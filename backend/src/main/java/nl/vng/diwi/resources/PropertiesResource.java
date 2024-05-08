@@ -22,7 +22,7 @@ import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.security.LoggedUser;
-import static nl.vng.diwi.security.SecurityRoleConstants.UserPlus;
+import static nl.vng.diwi.security.SecurityRoleConstants.USER_PLUS;
 import nl.vng.diwi.services.PropertiesService;
 
 import java.time.ZonedDateTime;
@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Path("/properties")
-@RolesAllowed({UserPlus})
+@RolesAllowed({USER_PLUS})
 public class PropertiesResource {
 
     private final VngRepository repo;

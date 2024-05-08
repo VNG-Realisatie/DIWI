@@ -1,6 +1,6 @@
 package nl.vng.diwi.resources;
 
-import static nl.vng.diwi.security.SecurityRoleConstants.UserPlus;
+import static nl.vng.diwi.security.SecurityRoleConstants.USER_PLUS;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.services.OrganizationsService;
 
 @Path("/organizations")
-@RolesAllowed({UserPlus})
+@RolesAllowed({USER_PLUS})
 public class OrganizationResource {
 
     private final VngRepository repo;

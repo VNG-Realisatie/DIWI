@@ -1,12 +1,12 @@
 package nl.vng.diwi.security;
 
 public enum UserRole {
-    Admin(SecurityRoleConstants.Admin),
-    UserPlus(SecurityRoleConstants.UserPlus),
-    User(SecurityRoleConstants.User),
-    Management(SecurityRoleConstants.Management),
-    Council(SecurityRoleConstants.Council),
-    External(SecurityRoleConstants.External);
+    Admin(SecurityRoleConstants.ADMIN),
+    UserPlus(SecurityRoleConstants.USER_PLUS),
+    User(SecurityRoleConstants.USER),
+    Management(SecurityRoleConstants.MANAGEMENT),
+    Council(SecurityRoleConstants.COUNCIL),
+    External(SecurityRoleConstants.EXTERNAL);
     
     public final String name;
 
