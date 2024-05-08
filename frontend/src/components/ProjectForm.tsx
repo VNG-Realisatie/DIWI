@@ -16,6 +16,7 @@ import { CellContainer } from "./project/project-with-house-block/CellContainer"
 import { useContext } from "react";
 import HouseBlockContext from "../context/HouseBlockContext";
 import DateInput from "./project/inputs/DateInput";
+import CategoryInput from "./project/inputs/CategoryInput";
 
 type Props = {
     readOnly: boolean;
@@ -45,7 +46,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
     };
 
     const updateHouseBlockEndDate = (e: Dayjs | null) => {
-        const newEndDate = e ? e.format("YYYY-MM-DD") : undefined; //
+        const newEndDate = e ? e.format("YYYY-MM-DD") : undefined;
         setProject({ ...project, endDate: newEndDate });
     };
 
@@ -167,22 +168,10 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
 
                         {/* Priority */}
                         <Grid item xs={12} md={4}>
-                            <LabelComponent required={false} readOnly={readOnly} text={t("createProject.informationForm.priority")} />
-                            <Autocomplete
-                                id="priority-select"
-                                size="small"
-                                disabled={readOnly}
-                                sx={{
-                                    "& .MuiInputBase-input.Mui-disabled": {
-                                        backgroundColor: "#0000", // set 0 opacity when disabled
-                                    },
-                                }}
-                                fullWidth
-                                options={priorityOptionList ?? []}
-                                getOptionLabel={(option) => option.name ?? ""}
-                                value={project?.priority?.value ?? null}
-                                filterSelectedOptions
-                                onChange={(_, newValue) =>
+                            <CategoryInput
+                                readOnly={readOnly}
+                                values={project?.priority?.value ?? null}
+                                setValue={(_: any, newValue: any) =>
                                     setProject({
                                         ...project,
                                         priority: {
@@ -191,7 +180,10 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                         },
                                     })
                                 }
-                                renderInput={(params) => <TextField {...params} />}
+                                mandatory={false}
+                                title={t("createProject.informationForm.priority")}
+                                options={priorityOptionList ?? []}
+                                multiple={false}
                             />
                         </Grid>
 
@@ -230,23 +222,14 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
 
                         {/* Role municipality */}
                         <Grid item xs={12} md={4}>
-                            <LabelComponent required={false} readOnly={readOnly} text={t("createProject.informationForm.roleMunicipality")} />
-                            <Autocomplete
-                                size="small"
-                                disabled={readOnly}
-                                sx={{
-                                    "& .MuiInputBase-input.Mui-disabled": {
-                                        backgroundColor: "#0000", // set 0 opacity when disabled
-                                    },
-                                }}
-                                multiple
-                                id="tags-outlined"
+                            <CategoryInput
+                                readOnly={readOnly}
+                                values={project?.municipalityRole ?? []}
+                                setValue={(_: any, newValue: any) => setProject({ ...project, municipalityRole: newValue })}
+                                mandatory={false}
+                                title={t("createProject.informationForm.roleMunicipality")}
                                 options={municipalityRolesOptions ?? []}
-                                getOptionLabel={(option) => option.name}
-                                value={project?.municipalityRole ?? []}
-                                filterSelectedOptions
-                                onChange={(_, newValue) => setProject({ ...project, municipalityRole: newValue })}
-                                renderInput={(params) => <TextField {...params} />}
+                                multiple={true}
                             />
                         </Grid>
 
@@ -339,67 +322,40 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
 
                         {/* Municipality */}
                         <Grid item xs={12} md={4}>
-                            <LabelComponent required={false} readOnly={readOnly} text={t("createProject.informationForm.municipality")} />
-                            <Autocomplete
-                                size="small"
-                                disabled={readOnly}
-                                sx={{
-                                    "& .MuiInputBase-input.Mui-disabled": {
-                                        backgroundColor: "#0000", // set 0 opacity when disabled
-                                    },
-                                }}
-                                multiple
-                                id="tags-outlined"
+                            <CategoryInput
+                                readOnly={readOnly}
+                                values={project?.municipality ?? []}
+                                setValue={(_: any, newValue: any) => setProject({ ...project, municipality: newValue })}
+                                mandatory={false}
+                                title={t("createProject.informationForm.municipality")}
                                 options={municipalityOptions ?? []}
-                                getOptionLabel={(option) => option.name}
-                                value={project?.municipality ?? []}
-                                filterSelectedOptions
-                                onChange={(_, newValue) => setProject({ ...project, municipality: newValue })}
-                                renderInput={(params) => <TextField {...params} />}
+                                multiple={true}
                             />
                         </Grid>
 
                         {/* District */}
                         <Grid item xs={12} md={4}>
-                            <LabelComponent required={false} readOnly={readOnly} text={t("createProject.informationForm.district")} />
-                            <Autocomplete
-                                size="small"
-                                disabled={readOnly}
-                                sx={{
-                                    "& .MuiInputBase-input.Mui-disabled": {
-                                        backgroundColor: "#0000", // set 0 opacity when disabled
-                                    },
-                                }}
-                                multiple
-                                id="tags-outlined"
+                            <CategoryInput
+                                readOnly={readOnly}
+                                values={project?.district ?? []}
+                                setValue={(_: any, newValue: any) => setProject({ ...project, district: newValue })}
+                                mandatory={false}
+                                title={t("createProject.informationForm.district")}
                                 options={districtOptions ?? []}
-                                getOptionLabel={(option) => option.name}
-                                value={project?.district ?? []}
-                                filterSelectedOptions
-                                onChange={(_, newValue) => setProject({ ...project, district: newValue })}
-                                renderInput={(params) => <TextField {...params} />}
+                                multiple={true}
                             />
                         </Grid>
 
                         {/* Neighbourhood */}
                         <Grid item xs={12} md={4}>
-                            <LabelComponent required={false} readOnly={readOnly} text={t("createProject.informationForm.neighbourhood")} />
-                            <Autocomplete
-                                size="small"
-                                disabled={readOnly}
-                                sx={{
-                                    "& .MuiInputBase-input.Mui-disabled": {
-                                        backgroundColor: "#0000", // set 0 opacity when disabled
-                                    },
-                                }}
-                                multiple
-                                id="tags-outlined"
+                            <CategoryInput
+                                readOnly={readOnly}
+                                values={project?.neighbourhood ?? []}
+                                setValue={(_: any, newValue: any) => setProject({ ...project, neighbourhood: newValue })}
+                                mandatory={false}
+                                title={t("createProject.informationForm.neighbourhood")}
                                 options={neighbourhoodOptions ?? []}
-                                getOptionLabel={(option) => option.name}
-                                value={project?.neighbourhood ?? []}
-                                filterSelectedOptions
-                                onChange={(_, newValue) => setProject({ ...project, neighbourhood: newValue })}
-                                renderInput={(params) => <TextField {...params} />}
+                                multiple={true}
                             />
                         </Grid>
                     </Grid>
