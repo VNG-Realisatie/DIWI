@@ -9,14 +9,14 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("Import file success", async ({ page }) => {
-    const filePath = `${os.homedir()}/workspace/diwi/end-to-end-tests/excel-importer.xlsx`;
+    const filePath = `excel-importer.xlsx`;
 
     await page.locator('input[type="file"]').setInputFiles(filePath);
     await expect(page).toHaveURL("http://localhost:3000/projects/table");
 });
 
 test("Import file failed", async ({ page }) => {
-    const filePath = `${os.homedir()}/workspace/diwi/end-to-end-tests/excel-false.xlsx`;
+    const filePath = `excel-false.xlsx`;
 
     await page.locator('input[type="file"]').setInputFiles(filePath);
 
@@ -25,8 +25,8 @@ test("Import file failed", async ({ page }) => {
     const valueError = await page.locator("tr").last().locator("td").nth(2).innerText();
     const DescriptionError = await page.locator("tr").last().locator("td").nth(3).innerText();
 
-    await expect(rowError).toContain("4");
-    await expect(columnError).toContain("");
-    await expect(valueError).toContain("Plan soort");
-    await expect(DescriptionError).toContain("The excel file does not contain all expected headers.");
+    expect(rowError).toContain("4");
+    expect(columnError).toContain("");
+    expect(valueError).toContain("Plan soort");
+    expect(DescriptionError).toContain("The excel file does not contain all expected headers.");
 });
