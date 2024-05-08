@@ -9,7 +9,6 @@ CREATE OR REPLACE FUNCTION get_active_or_future_project_snapshot (
         projectStateId UUID,
         projectName TEXT,
         projectOwnersArray TEXT[][],
-        projectLeadersArray TEXT[][],
         projectColor TEXT,
         latitude FLOAT8,
         longitude FLOAT8,
@@ -36,7 +35,6 @@ SELECT  q.projectId,
         q.projectStateId,
         q.projectName,
         q.projectOwners            AS projectOwnersArray,
-        q.projectLeaders           AS projectLeadersArray,
         q.projectColor,
         q.latitude,
         q.longitude,
@@ -402,12 +400,10 @@ FROM (
              project_users AS (
                  SELECT
                      q.project_id    AS project_id,
-                     q.project_rol   AS project_rol,
                      array_agg(array[q.organization_id::TEXT, q.organization_name, q.user_id::TEXT, q.user_initials, q.user_last_name, q.user_first_name]) AS users
                  FROM (
                           SELECT DISTINCT
                               ps.project_id as project_id,
-                              otp.project_rol AS project_rol,
                               us.user_id AS user_id,
                               LEFT(us.last_name, 1) || LEFT(us.first_name,1) AS user_initials,
                               us.last_name AS user_last_name,
@@ -422,7 +418,7 @@ FROM (
                           WHERE
                               ps.change_end_date IS NULL AND ps.project_id = _project_uuid_
                       ) AS q
-                 GROUP BY q.project_id, q.project_rol
+                 GROUP BY q.project_id
              )
 
          SELECT ap.id                    AS projectId,
@@ -444,7 +440,6 @@ FROM (
                 apr.fixedPropValuesList  AS municipalityList,
                 apd.fixedPropValuesList  AS districtList,
                 apne.fixedPropValuesList AS neighbourhoodList,
-                leaders.users            AS projectLeaders,
                 apg.fixedPropertyValue   AS geometry
          FROM
              active_projects ap
@@ -460,8 +455,7 @@ FROM (
                  LEFT JOIN active_project_fixed_props apd ON apd.project_id = ap.id AND apd.fixedPropertyName = 'district'
                  LEFT JOIN active_project_fixed_props apne ON apne.project_id = ap.id AND apne.fixedPropertyName = 'neighbourhood'
                  LEFT JOIN active_project_text_fixed_props apg ON apg.project_id = ap.id AND apg.fixedPropertyName = 'geometry'
-                 LEFT JOIN project_users leaders ON ps.project_id = leaders.project_id AND leaders.project_rol = 'PROJECT_LEIDER'
-                 LEFT JOIN project_users owners ON ps.project_id = owners.project_id AND owners.project_rol = 'OWNER'
+                 LEFT JOIN project_users owners ON ps.project_id = owners.project_id
 
          UNION
 
@@ -484,7 +478,6 @@ FROM (
                 fpr.fixedPropValuesList  AS municipalityList,
                 fpd.fixedPropValuesList  AS districtList,
                 fpne.fixedPropValuesList AS neighbourhoodList,
-                leaders.users            AS projectLeaders,
                 fpg.fixedPropertyValue   AS geometry
          FROM
              future_projects fp
@@ -500,8 +493,7 @@ FROM (
                  LEFT JOIN future_project_fixed_props fpd ON fpd.project_id = fp.id AND fpd.fixedPropertyName = 'district'
                  LEFT JOIN future_project_fixed_props fpne ON fpne.project_id = fp.id AND fpne.fixedPropertyName = 'neighbourhood'
                  LEFT JOIN future_project_text_fixed_props fpg ON fpg.project_id = fp.id AND fpg.fixedPropertyName = 'geometry'
-                 LEFT JOIN project_users leaders ON ps.project_id = leaders.project_id AND leaders.project_rol = 'PROJECT_LEIDER'
-                 LEFT JOIN project_users owners ON ps.project_id = owners.project_id AND owners.project_rol = 'OWNER'
+                 LEFT JOIN project_users owners ON ps.project_id = owners.project_id
 
          UNION
 
@@ -524,7 +516,6 @@ FROM (
                 ppr.fixedPropValuesList  AS municipalityList,
                 ppd.fixedPropValuesList  AS districtList,
                 ppne.fixedPropValuesList AS neighbourhoodList,
-                leaders.users            AS projectLeaders,
                 ppg.fixedPropertyValue   AS geometry
          FROM
              past_projects pp
@@ -540,8 +531,7 @@ FROM (
                  LEFT JOIN past_project_fixed_props ppd ON ppd.project_id = pp.id AND ppd.fixedPropertyName = 'district'
                  LEFT JOIN past_project_fixed_props ppne ON ppne.project_id = pp.id AND ppne.fixedPropertyName = 'neighbourhood'
                  LEFT JOIN past_project_text_fixed_props ppg ON ppg.project_id = pp.id AND ppg.fixedPropertyName = 'geometry'
-                 LEFT JOIN project_users leaders ON ps.project_id = leaders.project_id AND leaders.project_rol = 'PROJECT_LEIDER'
-                 LEFT JOIN project_users owners ON ps.project_id = owners.project_id AND owners.project_rol = 'OWNER'
+                 LEFT JOIN project_users owners ON ps.project_id = owners.project_id
 
      ) AS q
 WHERE q.projectId = _project_uuid_ LIMIT 1;

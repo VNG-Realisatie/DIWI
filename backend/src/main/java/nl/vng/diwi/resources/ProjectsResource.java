@@ -47,7 +47,6 @@ import nl.vng.diwi.dal.entities.enums.ObjectType;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
-import nl.vng.diwi.dal.entities.enums.ProjectRole;
 import nl.vng.diwi.dal.entities.enums.PropertyKind;
 import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.models.ImportFileType;
@@ -444,20 +443,6 @@ public class ProjectsResource {
                     projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.municipalityRole, toUpdateMunicipalityRoles.stream().map(s -> s.getId().toString()).toList()));
                 }
             }
-            case projectLeaders -> {
-                List<UUID> currentLeadersUuids = projectSnapshotModelCurrent.getProjectLeaders().stream().map(OrganizationModel::getUuid).toList();
-                List<UUID> toUpdateLeadersUuids = projectSnapshotModelToUpdate.getProjectLeaders().stream().map(OrganizationModel::getUuid).toList();
-                currentLeadersUuids.forEach(uuid -> {
-                    if (!toUpdateLeadersUuids.contains(uuid)) {
-                        projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectLeaders, null, uuid));
-                    }
-                });
-                toUpdateLeadersUuids.forEach(uuid -> {
-                    if (!currentLeadersUuids.contains(uuid)) {
-                        projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectLeaders, uuid, null));
-                    }
-                });
-            }
             case projectOwners -> {
                 List<UUID> currentOwnersUuids = projectSnapshotModelCurrent.getProjectOwners().stream().map(OrganizationModel::getUuid).toList();
                 List<UUID> toUpdateOwnersUuids = projectSnapshotModelToUpdate.getProjectOwners().stream().map(OrganizationModel::getUuid).toList();
@@ -577,15 +562,10 @@ public class ProjectsResource {
         }
         case projectPhase ->
             projectService.updateProjectPhase(repo, project, ProjectPhase.valueOf(projectUpdateModel.getValue()), loggedUser.getUuid(), updateDate);
-        case projectLeaders -> {
-            UUID organizationToAdd = projectUpdateModel.getAdd();
-            UUID organizationToRemove = projectUpdateModel.getRemove();
-            projectService.updateProjectOrganizations(repo, project, ProjectRole.PROJECT_LEIDER, organizationToAdd, organizationToRemove, loggedUser.getUuid());
-        }
         case projectOwners -> {
             UUID organizationToAdd = projectUpdateModel.getAdd();
             UUID organizationToRemove = projectUpdateModel.getRemove();
-            projectService.updateProjectOrganizations(repo, project, ProjectRole.OWNER, organizationToAdd, organizationToRemove, loggedUser.getUuid());
+            projectService.updateProjectOrganizations(repo, project, organizationToAdd, organizationToRemove, loggedUser.getUuid());
         }
         case municipalityRole -> {
             Set<UUID> municipalityRoleCatUuids = projectUpdateModel.getValues().stream().map(UUID::fromString).collect(Collectors.toSet());
