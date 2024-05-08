@@ -26,8 +26,7 @@ type Props = {
 };
 
 export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = false, showAmounts = true }: Props) => {
-    const { priorityOptionList, municipalityRolesOptions } = useProperties();
-
+    const { priorityOptionList, municipalityRolesOptions, districtOptions, neighbourhoodOptions, municipalityOptions } = useProperties();
     const { houseBlocks } = useContext(HouseBlockContext);
 
     const constructionAmount = houseBlocks
@@ -53,6 +52,9 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
     return (
         <Grid container spacing={2} alignItems="stretch">
             <Grid item xs={12}>
+                <Typography ml={2} mt={2} mb={2}>
+                    <strong>{t(`projectDetail.explanation`)}</strong>
+                </Typography>
                 <WizardCard>
                     <Grid container spacing={2} alignItems="stretch">
                         {/* Name */}
@@ -99,6 +101,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 />
                             </Grid>
                         )}
+
                         {/* Plan type */}
                         <Grid item xs={12} md={4}>
                             <LabelComponent required={false} readOnly={readOnly} text={t("createProject.informationForm.planType")} />
@@ -137,6 +140,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 ))}
                             </Select>
                         </Grid>
+
                         {/* Start date */}
                         <Grid item xs={12} md={4}>
                             <DateInput
@@ -148,6 +152,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 errorText={t("createProject.hasMissingRequiredAreas.startDate")}
                             />
                         </Grid>
+
                         {/* End date */}
                         <Grid item xs={12} md={4}>
                             <DateInput
@@ -189,6 +194,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 renderInput={(params) => <TextField {...params} />}
                             />
                         </Grid>
+
                         {/* Phase */}
                         <Grid item xs={12} md={4}>
                             <LabelComponent required readOnly={readOnly} text={t("createProject.informationForm.projectPhase")} />
@@ -221,6 +227,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                             </Select>
                             {!project.projectPhase && <Alert severity="warning">{t("createProject.hasMissingRequiredAreas.projectPhase")}</Alert>}
                         </Grid>
+
                         {/* Role municipality */}
                         <Grid item xs={12} md={4}>
                             <LabelComponent required={false} readOnly={readOnly} text={t("createProject.informationForm.roleMunicipality")} />
@@ -243,20 +250,21 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                             />
                         </Grid>
 
-                        {/* Project lead */}
+                        {/* Owner */}
                         <Grid item xs={12} md={4}>
-                            <LabelComponent required={false} readOnly={readOnly} text={t("createProject.informationForm.projectLeader")} />
+                            <LabelComponent required={false} readOnly={readOnly} text={t("createProject.informationForm.owner")} />
                             <OrganizationSelect
                                 readOnly={readOnly}
-                                userGroup={project?.projectLeaders ? project.projectLeaders : []}
+                                userGroup={project?.projectOwners ? project.projectOwners : []}
                                 setUserGroup={(e) =>
                                     setProject({
                                         ...project,
-                                        projectLeaders: e,
+                                        projectOwners: e,
                                     })
                                 }
                             />
                         </Grid>
+
                         {/* Confidentiality */}
                         <Grid item xs={12} md={4}>
                             <LabelComponent required readOnly={readOnly} text={t("createProject.informationForm.confidentialityLevel")} />
@@ -329,29 +337,70 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                             </Select>
                         </Grid>
 
-                        {/* Owner */}
+                        {/* Municipality */}
                         <Grid item xs={12} md={4}>
-                            <LabelComponent required={false} readOnly={readOnly} text={t("createProject.informationForm.owner")} />
-                            <OrganizationSelect
-                                readOnly={readOnly}
-                                userGroup={project?.projectOwners ? project.projectOwners : []}
-                                setUserGroup={(e) =>
-                                    setProject({
-                                        ...project,
-                                        projectOwners: e,
-                                    })
-                                }
+                            <LabelComponent required={false} readOnly={readOnly} text={t("createProject.informationForm.municipality")} />
+                            <Autocomplete
+                                size="small"
+                                disabled={readOnly}
+                                sx={{
+                                    "& .MuiInputBase-input.Mui-disabled": {
+                                        backgroundColor: "#0000", // set 0 opacity when disabled
+                                    },
+                                }}
+                                multiple
+                                id="tags-outlined"
+                                options={municipalityOptions ?? []}
+                                getOptionLabel={(option) => option.name}
+                                value={project?.municipality ?? []}
+                                filterSelectedOptions
+                                onChange={(_, newValue) => setProject({ ...project, municipality: newValue })}
+                                renderInput={(params) => <TextField {...params} />}
                             />
                         </Grid>
+
                         {/* District */}
                         <Grid item xs={12} md={4}>
                             <LabelComponent required={false} readOnly={readOnly} text={t("createProject.informationForm.district")} />
-                            TODO
+                            <Autocomplete
+                                size="small"
+                                disabled={readOnly}
+                                sx={{
+                                    "& .MuiInputBase-input.Mui-disabled": {
+                                        backgroundColor: "#0000", // set 0 opacity when disabled
+                                    },
+                                }}
+                                multiple
+                                id="tags-outlined"
+                                options={districtOptions ?? []}
+                                getOptionLabel={(option) => option.name}
+                                value={project?.district ?? []}
+                                filterSelectedOptions
+                                onChange={(_, newValue) => setProject({ ...project, district: newValue })}
+                                renderInput={(params) => <TextField {...params} />}
+                            />
                         </Grid>
+
                         {/* Neighbourhood */}
                         <Grid item xs={12} md={4}>
                             <LabelComponent required={false} readOnly={readOnly} text={t("createProject.informationForm.neighbourhood")} />
-                            TODO
+                            <Autocomplete
+                                size="small"
+                                disabled={readOnly}
+                                sx={{
+                                    "& .MuiInputBase-input.Mui-disabled": {
+                                        backgroundColor: "#0000", // set 0 opacity when disabled
+                                    },
+                                }}
+                                multiple
+                                id="tags-outlined"
+                                options={neighbourhoodOptions ?? []}
+                                getOptionLabel={(option) => option.name}
+                                value={project?.neighbourhood ?? []}
+                                filterSelectedOptions
+                                onChange={(_, newValue) => setProject({ ...project, neighbourhood: newValue })}
+                                renderInput={(params) => <TextField {...params} />}
+                            />
                         </Grid>
                     </Grid>
                 </WizardCard>

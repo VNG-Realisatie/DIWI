@@ -43,7 +43,7 @@
                         "_6_REALIZATION": null,
                         "_7_AFTERCARE": null
                     },
-                    "planologische_planstatus": { 
+                    "planologische_planstatus": {
                         "_4A_OPGENOMEN_IN_VISIE": null,
                         "_4B_NIET_OPGENOMEN_IN_VISIE": null,
                         "_3_IN_VOORBEREIDING": null,
@@ -59,8 +59,7 @@
                         "wijk": null,
                         "buurt": null
                     },
-                    "maatwerk_projecteigenschappen": {
-                    }
+                    "maatwerk_projecteigenschappen": {}
                 },
                 "woning_blokken": [
                     {
@@ -79,15 +78,14 @@
                             "hoog": null,
                             "laag": null
                         },
-                        "fysiek_voorkomen":[],
+                        "fysiek_voorkomen": [],
                         "doelgroep": [],
                         "grondpositie": {
                             "GEEN_TOESTEMMING_GRONDEIGENAAR": null,
                             "INTENTIE_MEDEWERKING_GRONDEIGENAAR": null,
                             "FORMELE_TOESTEMMING_GRONDEIGENAAR": null
                         },
-                        "maatwerk_woningeigenschappen": {
-                        }
+                        "maatwerk_woningeigenschappen": {}
                     }
                 ]
             }

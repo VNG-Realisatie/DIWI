@@ -7,7 +7,7 @@ path_amersfoort = Path(const.raw_folder, 'Planregistratie_gemeente_Amersfoort_Ve
 path_debilt = Path(const.raw_folder, 'Planregistratie_gemeente_DeBilt_Verrijkt_-7744626119962991092.geojson')
 path_lopik = Path(const.raw_folder, 'Planregistratie_gemeente_Lopik_Verrijkt.geojson')
 path_delft = Path(const.raw_folder, 'Planregistratie_wonen_PROD_gemeente_Delft_DashViewTable_-5500969873566723689.geojson')
-path_gouda = Path(const.raw_folder, 'Planregistratie_wonen_PROD_gemeente_Gouda_DashViewTable_-8910411200974258597.geojson')
+path_gouda = Path(const.raw_folder, 'Meest recente versiPlanregistratie_wonen_PROD_gemeente_Gouda_DashViewTable_4623342626701809631.geojson')
 
 
 func.fix_amersfoort_data(path=path_amersfoort, source_path=const.source_folder)

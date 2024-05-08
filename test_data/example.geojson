@@ -10,29 +10,38 @@
         {
             "type": "Feature",
             "geometry": {
-                "type": "Polygon",
-                "coordinates": []
+                "coordinates": [
+                    [
+                        [5.217347025154737, 52.09520665608511],
+                        [5.198482035056742, 51.9477854055269],
+                        [5.539912939977199, 51.93615677353034],
+                        [5.538026322500372, 52.16699992864457],
+                        [5.306004358715057, 52.14616471875365],
+                        [5.217347025154737, 52.09520665608511]
+                    ]
+                ],
+                "type": "Polygon"
             },
             "properties": {
                 "projectgegevens": {
                     "basisgegevens": {
-                        "identificatie_nr": null,
-                        "naam": null
+                        "identificatie_nr": 1,
+                        "naam": "geojson import nr 1"
                     },
                     "projectgegevens": {
                         "plan_soort": null,
                         "in_programmering": null,
                         "prioritering": null,
                         "rol_gemeente": null,
-                        "status": null
+                        "status": "ACTIVE"
                     },
                     "rollen": {
                         "projectleider": null,
                         "opdrachtgever": null
                     },
                     "projectduur": {
-                        "start_project": null,
-                        "eind_project": null
+                        "start_project": "2024-01-01",
+                        "eind_project": "2024-12-31"
                     },
                     "projectfasen": {
                         "_1_CONCEPT": null,
@@ -43,7 +52,7 @@
                         "_6_REALIZATION": null,
                         "_7_AFTERCARE": null
                     },
-                    "planologische_planstatus": { 
+                    "planologische_planstatus": {
                         "_4A_OPGENOMEN_IN_VISIE": null,
                         "_4B_NIET_OPGENOMEN_IN_VISIE": null,
                         "_3_IN_VOORBEREIDING": null,
@@ -59,19 +68,18 @@
                         "wijk": null,
                         "buurt": null
                     },
-                    "maatwerk_projecteigenschappen": {
-                    }
+                    "maatwerk_projecteigenschappen": {}
                 },
                 "woning_blokken": [
                     {
-                        "name": null,
+                        "name": "GeoJSON project 1 blok 1",
                         "mutatiegegevens": {
-                            "mutatie_type": null,
+                            "mutatie_type": "CONSTRUCTION",
                             "eigendom_type": null,
                             "woning_type": null,
                             "contract_type": null,
                             "status": null,
-                            "aantal": null
+                            "aantal": 1
                         },
                         "einddatum": null,
                         "grootte": [],
@@ -79,15 +87,14 @@
                             "hoog": null,
                             "laag": null
                         },
-                        "fysiek_voorkomen":[],
+                        "fysiek_voorkomen": [],
                         "doelgroep": [],
                         "grondpositie": {
                             "GEEN_TOESTEMMING_GRONDEIGENAAR": null,
                             "INTENTIE_MEDEWERKING_GRONDEIGENAAR": null,
                             "FORMELE_TOESTEMMING_GRONDEIGENAAR": null
                         },
-                        "maatwerk_woningeigenschappen": {
-                        }
+                        "maatwerk_woningeigenschappen": {}
                     }
                 ]
             }
