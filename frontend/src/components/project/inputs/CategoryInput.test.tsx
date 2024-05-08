@@ -56,7 +56,8 @@ describe("CategoryInput Component", () => {
         const autocompleteInput = screen.getByRole("combobox");
         fireEvent.change(autocompleteInput, { target: { value: "" } });
 
-        const clearButton = document.querySelector('[aria-label="Clear"]');
+        const clearButton = screen.getByLabelText("Clear");
+
         if (clearButton) {
             fireEvent.click(clearButton);
         }
