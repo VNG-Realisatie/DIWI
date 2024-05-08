@@ -3,7 +3,7 @@ package nl.vng.diwi.security;
 /*
  * These values are used to 
  */
-public final class UserActions {
+public final class UserActionConstants {
     public static final String ViewCustomProperties = "ViewCustomProperties";
     public static final String EditCustomProperties = "EditCustomProperties";
     
