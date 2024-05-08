@@ -16,15 +16,6 @@ export type GeneralInformationProps = {
 };
 
 export const GeneralInformationGroup = ({ readOnly, houseBlock, setHouseBlock, errors }: GeneralInformationProps) => {
-    const updateHouseBlockStartDate = (e: Dayjs | null) => {
-        const newStartDate = e ? e.format("YYYY-MM-DD") : null;
-        setHouseBlock({ ...houseBlock, startDate: newStartDate });
-    };
-
-    const updateHouseBlockEndDate = (e: Dayjs | null) => {
-        const newEndDate = e ? e.format("YYYY-MM-DD") : null; //
-        setHouseBlock({ ...houseBlock, endDate: newEndDate });
-    };
     return (
         <WizardCard>
             <Typography fontWeight={600} mb={2}>
@@ -43,7 +34,10 @@ export const GeneralInformationGroup = ({ readOnly, houseBlock, setHouseBlock, e
             <DateInput
                 readOnly={readOnly}
                 value={houseBlock.startDate}
-                setValue={updateHouseBlockStartDate}
+                setValue={(e: Dayjs | null) => {
+                    const newStartDate = e ? e.format("YYYY-MM-DD") : null;
+                    setHouseBlock({ ...houseBlock, startDate: newStartDate });
+                }}
                 error={errors.startDateError}
                 mandatory={true}
                 title={t("createProject.houseBlocksForm.startDate")}
@@ -52,7 +46,10 @@ export const GeneralInformationGroup = ({ readOnly, houseBlock, setHouseBlock, e
             <DateInput
                 readOnly={readOnly}
                 value={houseBlock.endDate}
-                setValue={updateHouseBlockEndDate}
+                setValue={(e: Dayjs | null) => {
+                    const newEndDate = e ? e.format("YYYY-MM-DD") : null;
+                    setHouseBlock({ ...houseBlock, endDate: newEndDate });
+                }}
                 error={errors.endDateError}
                 mandatory={true}
                 title={t("createProject.houseBlocksForm.endDate")}

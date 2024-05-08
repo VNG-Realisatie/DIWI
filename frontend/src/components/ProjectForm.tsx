@@ -1,6 +1,6 @@
 import Grid from "@mui/material/Grid";
 import { Project } from "../api/projectsServices";
-import { Alert, Autocomplete, ListItemText, MenuItem, OutlinedInput, Select, Stack, TextField, Typography } from "@mui/material";
+import { Alert, ListItemText, MenuItem, OutlinedInput, Select, Stack, TextField, Typography } from "@mui/material";
 import { t } from "i18next";
 import { WizardCard } from "./project-wizard/WizardCard";
 import { LabelComponent } from "./project/LabelComponent";
@@ -39,16 +39,6 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
         .filter((hb) => hb.mutation.kind === "DEMOLITION")
         .map((hb) => hb.mutation.amount ?? 0)
         .reduce((a, b) => a + b, 0);
-
-    const updateHouseBlockStartDate = (e: Dayjs | null) => {
-        const newStartDate = e ? e.format("YYYY-MM-DD") : undefined;
-        setProject({ ...project, startDate: newStartDate });
-    };
-
-    const updateHouseBlockEndDate = (e: Dayjs | null) => {
-        const newEndDate = e ? e.format("YYYY-MM-DD") : undefined;
-        setProject({ ...project, endDate: newEndDate });
-    };
 
     return (
         <Grid container spacing={2} alignItems="stretch">
@@ -147,7 +137,10 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                             <DateInput
                                 readOnly={readOnly}
                                 value={project?.startDate ? project?.startDate : null}
-                                setValue={updateHouseBlockStartDate}
+                                setValue={(e: Dayjs | null) => {
+                                    const newStartDate = e ? e.format("YYYY-MM-DD") : undefined;
+                                    setProject({ ...project, startDate: newStartDate });
+                                }}
                                 mandatory={true}
                                 title={t("createProject.informationForm.startDate")}
                                 errorText={t("createProject.hasMissingRequiredAreas.startDate")}
@@ -159,7 +152,10 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                             <DateInput
                                 readOnly={readOnly}
                                 value={project?.endDate ? project?.endDate : null}
-                                setValue={updateHouseBlockEndDate}
+                                setValue={(e: Dayjs | null) => {
+                                    const newEndDate = e ? e.format("YYYY-MM-DD") : undefined;
+                                    setProject({ ...project, endDate: newEndDate });
+                                }}
                                 mandatory={true}
                                 title={t("createProject.informationForm.endDate")}
                                 errorText={t("createProject.hasMissingRequiredAreas.endDate")}

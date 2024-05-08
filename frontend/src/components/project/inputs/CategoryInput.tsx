@@ -1,32 +1,29 @@
 import InputLabelStack from "./InputLabelStack";
-import { Autocomplete, Chip, ListItemText, MenuItem, OutlinedInput, Select, TextField } from "@mui/material";
-import { MenuProps } from "../../../utils/menuProps";
-import { t } from "i18next";
+import { Autocomplete, AutocompleteChangeDetails, AutocompleteChangeReason, TextField } from "@mui/material";
 
-type Props = {
-    values: any;
-    setValue: any;
-    nullable?: boolean; //not implemented
+type Option = {
+    id: string | number;
+    name: string;
+};
+
+type SetValueFunction = (event: any, value: Option | Option[] | null, reason: AutocompleteChangeReason, details?: AutocompleteChangeDetails<Option>) => void;
+
+type CategoryInputProps = {
+    values: Option[] | Option | null;
+    setValue: SetValueFunction;
+    nullable?: boolean; // Not implemented
     readOnly: boolean;
     mandatory: boolean;
-    error?: string | undefined | null;
     title?: string;
-    errorText?: string;
-    options: Array<any>;
-    translationPath?: string;
+    options: Option[];
     multiple: boolean;
 };
 
-const getDateErrorMessage = (error: string | undefined | null, value: string | null, errorText: string): string | null => {
-    if (error) {
-        return error;
-    }
-    if (!value) {
-        return errorText;
-    }
-    return null;
+const isOptionEqualToValue = (option: Option, value: Option): boolean => {
+    return option.id === value.id;
 };
-const EnumInput = ({ values, setValue, readOnly, mandatory, error, title, errorText, options, translationPath, multiple }: Props) => {
+
+const CategoryInput = ({ values, setValue, readOnly, mandatory, title, options, multiple }: CategoryInputProps) => {
     return (
         <InputLabelStack mandatory={mandatory} title={title || ""}>
             <Autocomplete
@@ -38,6 +35,7 @@ const EnumInput = ({ values, setValue, readOnly, mandatory, error, title, errorT
                         backgroundColor: "#0000",
                     },
                 }}
+                isOptionEqualToValue={isOptionEqualToValue}
                 fullWidth
                 options={options ?? []}
                 getOptionLabel={(option) => option.name ?? ""}
@@ -50,4 +48,4 @@ const EnumInput = ({ values, setValue, readOnly, mandatory, error, title, errorT
     );
 };
 
-export default EnumInput;
+export default CategoryInput;
