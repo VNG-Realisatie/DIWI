@@ -1,7 +1,7 @@
 package nl.vng.diwi.security;
 
 /*
- * These values are used to 
+ * These values are used to initialize the enum security.dal.entities.UserAction
  */
 public final class UserActionConstants {
     public static final String VIEW_CUSTOM_PROPERTIES = "ViewCustomProperties";
