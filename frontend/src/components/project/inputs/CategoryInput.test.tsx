@@ -36,8 +36,6 @@ describe("CategoryInput Component", () => {
 
         const autocompleteInput = screen.getByRole("combobox");
         fireEvent.click(autocompleteInput);
-
-        // Wait for potential listbox to appear
         await waitFor(() => expect(screen.queryByRole("listbox")).toBeNull());
     });
 
