@@ -6,6 +6,7 @@ import { HouseBlock } from "../../../../types/houseBlockTypes";
 import { AmountInput } from "./AmountInput";
 import { MutationKindSelect } from "./MutationKindSelect";
 import { MutationKind } from "../../../../types/enums";
+import { TooltipInfo } from "../../../../widgets/TooltipInfo";
 
 export type MutationInformationProps = {
     houseBlock: HouseBlock;
@@ -16,8 +17,15 @@ export type MutationInformationProps = {
 export const MutationInformationGroup = ({ houseBlock, setHouseBlock, readOnly }: MutationInformationProps) => {
     return (
         <WizardCard>
-            <Typography fontWeight={600} mb={2}>
+            <Typography
+                fontWeight={600}
+                mb={2}
+                sx={{
+                    display: "flex",
+                }}
+            >
                 {t("createProject.houseBlocksForm.mutationData")}
+                <TooltipInfo text={t("tooltipInfo.mutatieGegevens.title")} />
             </Typography>
             <AmountInput
                 readOnly={readOnly}

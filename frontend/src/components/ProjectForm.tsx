@@ -105,7 +105,12 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
 
                         {/* Plan type */}
                         <Grid item xs={12} md={4}>
-                            <LabelComponent required={false} readOnly={readOnly} text={t("createProject.informationForm.planType")} />
+                            <LabelComponent
+                                required={false}
+                                readOnly={readOnly}
+                                text={t("createProject.informationForm.planType")}
+                                tooltipInfoText={`${t("tooltipInfo.plantype.title")}`}
+                            />
                             <Select
                                 fullWidth
                                 disabled={readOnly}
@@ -434,21 +439,36 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                         <Grid container spacing={2} alignItems="stretch">
                             {/* Demolition */}
                             <Grid item xs={12} md={4}>
-                                <LabelComponent required={false} readOnly={readOnly} text={t("createProject.houseBlocksForm.demolition")} />
+                                <LabelComponent
+                                    required={false}
+                                    readOnly={readOnly}
+                                    text={t("createProject.houseBlocksForm.demolition")}
+                                    tooltipInfoText={t("tooltipInfo.mutatieGegevens.sloop")}
+                                />
                                 <CellContainer>
                                     <LabelComponent required={false} readOnly={true} text={demolitionAmount.toString()} />
                                 </CellContainer>
                             </Grid>
                             {/* Construction */}
                             <Grid item xs={12} md={4}>
-                                <LabelComponent required={false} readOnly={readOnly} text={t("createProject.houseBlocksForm.grossPlanCapacity")} />
+                                <LabelComponent
+                                    required={false}
+                                    readOnly={readOnly}
+                                    text={t("createProject.houseBlocksForm.grossPlanCapacity")}
+                                    tooltipInfoText={t("tooltipInfo.mutatieGegevens.brutoPlancapaciteit")}
+                                />
                                 <CellContainer>
                                     <LabelComponent required={false} readOnly={true} text={constructionAmount.toString()} />
                                 </CellContainer>
                             </Grid>
                             {/* Total */}
                             <Grid item xs={12} md={4}>
-                                <LabelComponent required={false} readOnly={readOnly} text={t("createProject.houseBlocksForm.netPlanCapacity")} />
+                                <LabelComponent
+                                    required={false}
+                                    readOnly={readOnly}
+                                    text={t("createProject.houseBlocksForm.netPlanCapacity")}
+                                    tooltipInfoText={t("tooltipInfo.mutatieGegevens.nettoPlancapaciteit")}
+                                />
                                 <CellContainer>
                                     <LabelComponent required={false} readOnly={true} text={(constructionAmount - demolitionAmount).toString()} />
                                 </CellContainer>

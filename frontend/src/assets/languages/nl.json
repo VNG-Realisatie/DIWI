@@ -357,6 +357,41 @@
     "projectPhase": "Projectfase",
     "planType": "Plan Type",
     "totalValue": "Aantal",
-    "projectOwners": "Schrijfrechten"
+    "projectOwners": "Schrijfrechten",
+    "tooltipInfo": {
+      "mutatieGegevens": {
+        "title": "Enkel zelfstandige woningen tellen mee.",
+        "brutoPlancapaciteit": "Het totaal aantal woningen dat binnen het woningbouwplan volgens de planning gerealiseerd gaat worden.",
+        "sloop": "Het totaal aantal woningen dat binnen het woningbouwplan volgens de planning gesloopt gaat worden.",
+        "nettoPlancapaciteit": "Het totaal aantal geplande toe te voegen nieuwe woningen minus het aantal geplande te onttrekken bestaande woningen.",
+        "mutatieSoort": "Bouw of sloop."
+      },
+      "plantype": {
+        "title": "Aangegeven dient te worden welk plantype het meest dominant is binnen het plan.",
+        "pandTransformatie": "Locatie waarbij door woningtoevoeging in bestaande niet-woonpanden (ver- en nieuwbouw) binnen bestaand stedelijk gebied de gebruiksfunctie van een of meerdere verblijfsobjecten in het pand verandert. \nBestaande niet- woonpanden wordt hierbij niet gesloopt.",
+        "transformatiegebied": "Locatie waarbij door woningtoevoeging op al dan niet bebouwde gronden (verbouw, nieuwbouw en functiewijziging) binnen bestaand stedelijk gebied de planologische functie verandert. Met uitzondering van agrarische gronden (zie uitbreiding) en verdichtingsplannen (zie verdichting). \nBestaande (niet-)woongebouwen worden hierbij overwegend gesloopt en vervangen door nieuwe woongebouwen.",
+        "herstructurering": "Locatie waarbij door woningtoevoeging (nieuwbouw en splitsing) en/of woningonttrekking (sloop en samenvoeging) de samenstelling van de bestaande woningvoorraad binnen bestaand stedelijk gebied verandert zonder ingrijpende wijziging van de planologische functie.",
+        "verdichting": "Locatie waarbij woningen worden toegevoegd door nieuwbouw aan of op bestaande panden en op al dan niet bebouwde gronden binnen bestaand stedelijk gebied, zoals niet-woonpanden, sportvelden of groenstroken.",
+        "uitbreidingUitleg": "Locatie waarbij door woningtoevoeging (nieuwbouw) 12 of meer woningen worden gerealiseerd die er volgt buiten bestaand stedelijk gebied zijn gepland op grond die voorheen een agrarische bestemming had; ook wel uitleglocatie genoemd.",
+        "uitbreidingOverig": "Locatie waarbij door woningtoevoeging (nieuwbouw) 11 of minder woningen worden gerealiseerd waardoor buiten het bestaand stedelijk gebied de woningvoorraad toeneemt."
+      },
+      "planologischePlanstatus": {
+        "title": "Harde plannen zijn de hiervoor genoemde categorieën 1A. 1B, 2A en 2B. Zachte plannen zijn de hiervoor genoemde categorieën 1C, 2C, 3, 4A en 4B. Nog onrijpe plannen zijn de hiervoor genoemde categorieën 5A en 5B. Deze “interne” plannen tellen niet mee als plancapaciteit. Gemeenten zijn vrij om deze onrijpe plannen wel of niet aan te leveren.",
+        "1A": "Het bestemmingsplan voor het woningbouwplan is onherroepelijk. Er is sprake van een rechtstreekse bouwtitel. (hard)",
+        "1B": "Het bestemmingsplan voor het woningbouwplan is onherroepelijk maar uitwerking is nog nodig voordat een omgevingsvergunning voor bouwen verleend kan worden. (hard)",
+        "1C": "Het bestemmingsplan voor het woningbouwplan is onherroepelijk maar het woningbouwplan kan alleen via een wijziging door BenW tot stand komen op basis waarvan een bouwvergunning kan worden verleend. (zacht)",
+        "2A": "Het bestemmingsplan voor het woningbouwplan is vastgesteld door de gemeenteraad maar is nog niet onherroepelijk. (hard)",
+        "2B": "Het bestemmingsplan voor het woningbouwplan is vastgesteld door de gemeenteraad maar nog niet onherroepelijk en er is een uitwerking nodig voordat een omgevingsvergunning voor bouwen verleend kan worden. (hard)",
+        "2C": "Het bestemmingsplan voor het woningbouwplan is vastgesteld maar nog niet onherroepelijk en het woningbouwplan kan alleen via een wijziging door B en W tot stand komen op basis waarvan een bouwvergunning kan worden verleend. (zacht)",
+        "3": "Het bestemmingsplan voor het woningbouwplan is in voorbereiding maar nog niet vastgesteld door de gemeenteraad. (zacht)",
+        "4A": "Potentieel, visie: Het woningbouwplan heeft wel een locatie op het oog, er is wel beginselbereidheid vanuit het college van B&W. Het bestemmingsplan voor het woningbouwplan is nog niet in voorbereiding, maar het woningbouwplan is wel opgenomen in een ruimtelijke structuur-, omgevings- en/ of woonvisie. (zacht)",
+        "4B": "Potentieel, idee: Het woningbouwplan heeft wel een locatie op het oog, er is wel beginselbereidheid vanuit het college van B&W. Het bestemmingsplan voor het woningbouwplan is nog niet in voorbereiding en het woningbouwplan is niet opgenomen in een ruimtelijke structuur-, omgevings- en/ of woonvisie. (zacht)"
+      },
+      "woningtype": {
+        "meergezinswoningen": "Woning die samen met andere woningen of (bedrijfs)ruimten een geheel pand vormen.",
+        "eengezinswoningen": "Woningen die tevens een geheel pand vormen.",
+        "onbekend": "Het woningtype is vooralsnog onbekend."
+      }
+    }
   }
 }
