@@ -71,7 +71,7 @@ import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
-import static nl.vng.diwi.security.SecurityRoleConstants.USER_PLUS;
+import static nl.vng.diwi.security.UserActionConstants.CAN_OWN_PROJECTS;
 import nl.vng.diwi.services.ExcelImportService;
 import nl.vng.diwi.services.GeoJsonImportService;
 import nl.vng.diwi.services.PropertiesService;
@@ -83,7 +83,7 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
 @Path("/projects")
-@RolesAllowed({USER_PLUS})
+@RolesAllowed({CAN_OWN_PROJECTS})
 public class ProjectsResource {
 
     private static final Logger logger = LogManager.getLogger();
