@@ -1,21 +1,21 @@
 package nl.vng.diwi.security;
 
 public enum UserAction {
-    ViewCustomProperties(UserActionConstants.ViewCustomProperties),
-    EditCustomProperties(UserActionConstants.EditCustomProperties),
+    ViewCustomProperties(UserActionConstants.VIEW_CUSTOM_PROPERTIES),
+    EditCustomProperties(UserActionConstants.EDIT_CUSTOMER_PROPERTIES),
     
-    ViewOwnProjects(UserActionConstants.ViewOwnProjects),
-    EditOwnProjects(UserActionConstants.EditOwnProjects),
+    ViewOwnProjects(UserActionConstants.VIEW_OWN_PROJECTS),
+    EditOwnProjects(UserActionConstants.EDIT_OWN_PROJECTS),
     
-    ViewOthersProjects(UserActionConstants.ViewOthersProjects),
-    EditOthersProjects(UserActionConstants.EditOthersProjects),
-    ChangeOwner(UserActionConstants.ChangeOwner),
+    ViewOthersProjects(UserActionConstants.VIEW_OTHERS_PROJECTS),
+    EditOthersProjects(UserActionConstants.EDIT_OTHERS_PROJECTS),
+    ChangeOwner(UserActionConstants.CHANGE_OWNER),
     
-    ViewUsers(UserActionConstants.ViewUsers),
-    EditUsers(UserActionConstants.EditUsers),
+    ViewUsers(UserActionConstants.VIEW_USERS),
+    EditUsers(UserActionConstants.EDIT_USERS),
     
-    ImportProjects(UserActionConstants.ImportProjects),
-    ExportProjects(UserActionConstants.ExportProjects);
+    ImportProjects(UserActionConstants.IMPORT_PROJECTS),
+    ExportProjects(UserActionConstants.EXPORT_PROJECTS);
     
     public final String name;
 
