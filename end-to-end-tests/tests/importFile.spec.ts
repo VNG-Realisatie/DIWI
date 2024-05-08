@@ -19,10 +19,12 @@ test("Import file failed", async ({ page }) => {
     const filePath = `${os.homedir()}/workspace/diwi/end-to-end-tests/excel-false.xlsx`;
 
     await page.locator('input[type="file"]').setInputFiles(filePath);
+
     const rowError = await page.locator("tr").last().locator("td").nth(0).innerText();
     const columnError = await page.locator("tr").last().locator("td").nth(1).innerText();
     const valueError = await page.locator("tr").last().locator("td").nth(2).innerText();
     const DescriptionError = await page.locator("tr").last().locator("td").nth(3).innerText();
+
     await expect(rowError).toContain("4");
     await expect(columnError).toContain("");
     await expect(valueError).toContain("Plan soort");
