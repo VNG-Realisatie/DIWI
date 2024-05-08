@@ -26,7 +26,7 @@ export const importGeoJsonProjects = async (file: FileList) => {
     });
 
     if (response.ok || response.status === 400) {
-        return response.json();
+        return response;
     }
 
     throw new Error("File upload failed");
