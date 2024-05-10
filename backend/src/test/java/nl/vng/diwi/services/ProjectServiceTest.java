@@ -280,7 +280,7 @@ public class ProjectServiceTest {
         projectData.setStartDate(today.plusDays(10));
         projectData.setEndDate(today.plusDays(20));
         projectData.setProjectColor("abcdef");
-        projectData.setConfidentialityLevel(Confidentiality.OPENBAAR);
+        projectData.setConfidentialityLevel(Confidentiality.PUBLIC);
         projectData.setProjectPhase(ProjectPhase._3_DEFINITION);
 
         Project project;
@@ -622,7 +622,7 @@ public class ProjectServiceTest {
         ProjectState projectState = new ProjectState();
         projectState.setProject(project);
         projectState.setCreateUser(user);
-        projectState.setConfidentiality(Confidentiality.OPENBAAR);
+        projectState.setConfidentiality(Confidentiality.PUBLIC);
         projectState.setChangeStartDate(ZonedDateTime.now());
         projectState.setColor("#123456");
         repo.persist(projectState);

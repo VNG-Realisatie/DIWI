@@ -226,7 +226,14 @@ export interface components {
             projectName: string;
             projectColor: string;
             /** @enum {string} */
-            confidentialityLevel: "PRIVE" | "INTERN_UITVOERING" | "INTERN_RAPPORTAGE" | "EXTERN_RAPPORTAGE" | "OPENBAAR";
+            confidentialityLevel:
+                | "PRIVATE"
+                | "INTERNAL_CIVIL"
+                | "INTERNAL_MANAGEMENT"
+                | "INTERNAL_COUNCIL"
+                | "EXTERNAL_REGIONAL"
+                | "EXTERNAL_GOVERNMENTAL"
+                | "PUBLIC";
             /** @enum {string} */
             projectPhase: "_1_CONCEPT" | "_2_INITIATIVE" | "_3_DEFINITION" | "_4_DESIGN" | "_5_PREPARATION" | "_6_REALIZATION" | "_7_AFTERCARE";
             /** Format: uuid */
@@ -240,7 +247,14 @@ export interface components {
             projectName: string;
             projectColor: string;
             /** @enum {string} */
-            confidentialityLevel: "PRIVE" | "INTERN_UITVOERING" | "INTERN_RAPPORTAGE" | "EXTERN_RAPPORTAGE" | "OPENBAAR";
+            confidentialityLevel:
+                | "PRIVATE"
+                | "INTERNAL_CIVIL"
+                | "INTERNAL_MANAGEMENT"
+                | "INTERNAL_COUNCIL"
+                | "EXTERNAL_REGIONAL"
+                | "EXTERNAL_GOVERNMENTAL"
+                | "PUBLIC";
             /** @enum {string} */
             projectPhase: "_1_CONCEPT" | "_2_INITIATIVE" | "_3_DEFINITION" | "_4_DESIGN" | "_5_PREPARATION" | "_6_REALIZATION" | "_7_AFTERCARE";
         };
@@ -257,7 +271,14 @@ export interface components {
             projectName: string;
             projectColor: string;
             /** @enum {string} */
-            confidentialityLevel: "PRIVE" | "INTERN_UITVOERING" | "INTERN_RAPPORTAGE" | "EXTERN_RAPPORTAGE" | "OPENBAAR";
+            confidentialityLevel:
+                | "PRIVATE"
+                | "INTERNAL_CIVIL"
+                | "INTERNAL_MANAGEMENT"
+                | "INTERNAL_COUNCIL"
+                | "EXTERNAL_REGIONAL"
+                | "EXTERNAL_GOVERNMENTAL"
+                | "PUBLIC";
             /** @enum {string} */
             projectPhase: "_1_CONCEPT" | "_2_INITIATIVE" | "_3_DEFINITION" | "_4_DESIGN" | "_5_PREPARATION" | "_6_REALIZATION" | "_7_AFTERCARE";
             /** Format: uuid */
@@ -300,7 +321,14 @@ export interface components {
             projectName: string;
             projectColor: string;
             /** @enum {string} */
-            confidentialityLevel: "PRIVE" | "INTERN_UITVOERING" | "INTERN_RAPPORTAGE" | "EXTERN_RAPPORTAGE" | "OPENBAAR";
+            confidentialityLevel:
+                | "PRIVATE"
+                | "INTERNAL_CIVIL"
+                | "INTERNAL_MANAGEMENT"
+                | "INTERNAL_COUNCIL"
+                | "EXTERNAL_REGIONAL"
+                | "EXTERNAL_GOVERNMENTAL"
+                | "PUBLIC";
             /** @enum {string} */
             projectPhase: "_1_CONCEPT" | "_2_INITIATIVE" | "_3_DEFINITION" | "_4_DESIGN" | "_5_PREPARATION" | "_6_REALIZATION" | "_7_AFTERCARE";
             /** Format: uuid */
@@ -395,7 +423,14 @@ export interface components {
             projectName?: components["schemas"]["DatedDataModelString"][];
             projectColor?: string;
             /** @enum {string} */
-            confidentialityLevel?: "PRIVE" | "INTERN_UITVOERING" | "INTERN_RAPPORTAGE" | "EXTERN_RAPPORTAGE" | "OPENBAAR";
+            confidentialityLevel?:
+                | "PRIVATE"
+                | "INTERNAL_CIVIL"
+                | "INTERNAL_MANAGEMENT"
+                | "INTERNAL_COUNCIL"
+                | "EXTERNAL_REGIONAL"
+                | "EXTERNAL_GOVERNMENTAL"
+                | "PUBLIC";
             location?: components["schemas"]["LocationModel"];
             planType?: components["schemas"]["DatedDataModelListPlanType"][];
             priority?: components["schemas"]["DatedPriorityModel"][];

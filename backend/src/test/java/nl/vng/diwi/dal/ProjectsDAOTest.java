@@ -74,7 +74,7 @@ public class ProjectsDAOTest {
 
         ProjectListSqlModel currentProject = projects.get(1);
         //Test that only the project_state with change_end_date = NULL is taken into account
-        assertThat(currentProject.getConfidentialityLevel()).isEqualTo(Confidentiality.OPENBAAR);
+        assertThat(currentProject.getConfidentialityLevel()).isEqualTo(Confidentiality.PUBLIC);
         assertThat(currentProject.getProjectColor()).isEqualTo("#223344");
         assertThat(currentProject.getStartDate()).isEqualTo(LocalDate.now().minusDays(5));
         assertThat(currentProject.getEndDate()).isEqualTo(LocalDate.now().plusDays(15));
@@ -90,7 +90,7 @@ public class ProjectsDAOTest {
         assertThat(currentProject.getMunicipality().get(1).getName()).isEqualTo("Gemeente 2");
 
         ProjectListSqlModel futureProject = projects.get(2);
-        assertThat(futureProject.getConfidentialityLevel()).isEqualTo(Confidentiality.EXTERN_RAPPORTAGE);
+        assertThat(futureProject.getConfidentialityLevel()).isEqualTo(Confidentiality.EXTERNAL_REGIONAL);
         assertThat(futureProject.getProjectColor()).isEqualTo("#456456");
         assertThat(futureProject.getStartDate()).isEqualTo(LocalDate.now().plusDays(10));
         assertThat(futureProject.getEndDate()).isEqualTo(LocalDate.now().plusDays(20));
