@@ -11,7 +11,6 @@ import nl.vng.diwi.dal.entities.Project;
 import nl.vng.diwi.dal.entities.ProjectHouseblockCustomPropertySqlModel;
 import nl.vng.diwi.dal.entities.ProjectState;
 import nl.vng.diwi.dal.entities.User;
-import nl.vng.diwi.dal.entities.enums.ProjectRole;
 import nl.vng.diwi.dal.entities.ProjectListSqlModel;
 import org.hibernate.Session;
 import org.hibernate.query.SelectionQuery;
@@ -99,12 +98,11 @@ public class ProjectsDAO extends AbstractRepository {
         return query.getSingleResultOrNull();
     }
 
-    public void linkToOrganization(User user, ZonedDateTime changeStartDate, Project project, ProjectRole projectRole, UUID organizationUuid) {
+    public void linkToOrganization(User user, ZonedDateTime changeStartDate, Project project, UUID organizationUuid) {
         var orgToProject = new OrganizationToProject();
         orgToProject.setProject(project);
         orgToProject.setCreateUser(user);
         orgToProject.setChangeStartDate(changeStartDate);
-        orgToProject.setProjectRole(projectRole);
 
         orgToProject.setOrganization(session.get(Organization.class, organizationUuid));
         session.persist(orgToProject);

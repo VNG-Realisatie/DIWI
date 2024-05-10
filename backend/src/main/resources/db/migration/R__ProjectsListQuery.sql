@@ -15,7 +15,6 @@ CREATE OR REPLACE FUNCTION get_active_and_future_projects_list (
         projectStateId UUID,
         projectName TEXT,
         projectOwnersArray TEXT[][],
-        projectLeadersArray TEXT[][],
         projectColor TEXT,
         latitude FLOAT8,
         longitude FLOAT8,
@@ -42,7 +41,6 @@ SELECT  q.projectId,
         q.projectStateId,
         q.projectName,
         q.projectOwners            AS projectOwnersArray,
-        q.projectLeaders           AS projectLeadersArray,
         q.projectColor,
         q.latitude,
         q.longitude,
@@ -388,13 +386,11 @@ FROM (
         project_users AS (
             SELECT
                 q.project_id    AS project_id,
-                q.project_rol   AS project_rol,
                 array_agg(array[q.organization_id::TEXT, q.organization_name, q.user_id::TEXT, q.user_initials, q.user_last_name, q.user_first_name]) AS users,
                 array_agg(q.user_initials ORDER BY q.user_initials)      AS users_initials
             FROM (
                 SELECT DISTINCT
                     ps.project_id as project_id,
-                    otp.project_rol AS project_rol,
                     us.user_id AS user_id,
                     LEFT(us.last_name, 1) || LEFT(us.first_name,1) AS user_initials,
                     us.last_name AS user_last_name,
@@ -409,7 +405,7 @@ FROM (
                 WHERE
                     ps.change_end_date IS NULL
                 ) AS q
-            GROUP BY q.project_id, q.project_rol
+            GROUP BY q.project_id
         )
 
     SELECT ap.id                    AS projectId,
@@ -438,9 +434,7 @@ FROM (
            apd.fixedPropValuesList         AS districtList,
            apd.fixedPropValuesNamesList    AS districtNamesList,
            apne.fixedPropValuesList         AS neighbourhoodList,
-           apne.fixedPropValuesNamesList   AS neighbourhoodNamesList,
-           leaders.users            AS projectLeaders,
-           leaders.users_initials   AS projectLeadersInitials
+           apne.fixedPropValuesNamesList   AS neighbourhoodNamesList
     FROM
         active_projects ap
             LEFT JOIN diwi_testset.project_state ps ON ps.project_id = ap.id AND ps.change_end_date IS NULL
@@ -454,8 +448,7 @@ FROM (
             LEFT JOIN active_project_fixed_props apr ON apr.project_id = ap.id AND apr.fixedPropertyName = 'municipality'
             LEFT JOIN active_project_fixed_props apd ON apd.project_id = ap.id AND apd.fixedPropertyName = 'district'
             LEFT JOIN active_project_fixed_props apne ON apne.project_id = ap.id AND apne.fixedPropertyName = 'neighbourhood'
-            LEFT JOIN project_users leaders ON ps.project_id = leaders.project_id AND leaders.project_rol = 'PROJECT_LEIDER'
-            LEFT JOIN project_users owners ON ps.project_id = owners.project_id AND owners.project_rol = 'OWNER'
+            LEFT JOIN project_users owners ON ps.project_id = owners.project_id
 
     UNION
 
@@ -485,9 +478,7 @@ FROM (
            fpd.fixedPropValuesList         AS districtList,
            fpd.fixedPropValuesNamesList    AS districtNamesList,
            fpne.fixedPropValuesList         AS neighbourhoodList,
-           fpne.fixedPropValuesNamesList   AS neighbourhoodNamesList,
-           leaders.users            AS projectLeaders,
-           leaders.users_initials   AS projectLeadersInitials
+           fpne.fixedPropValuesNamesList   AS neighbourhoodNamesList
     FROM
         future_projects fp
             LEFT JOIN diwi_testset.project_state ps ON ps.project_id = fp.id AND ps.change_end_date IS NULL
@@ -501,8 +492,7 @@ FROM (
             LEFT JOIN future_project_fixed_props fpr ON fpr.project_id = fp.id AND fpr.fixedPropertyName = 'municipality'
             LEFT JOIN future_project_fixed_props fpd ON fpd.project_id = fp.id AND fpd.fixedPropertyName = 'district'
             LEFT JOIN future_project_fixed_props fpne ON fpne.project_id = fp.id AND fpne.fixedPropertyName = 'neighbourhood'
-            LEFT JOIN project_users leaders ON ps.project_id = leaders.project_id AND leaders.project_rol = 'PROJECT_LEIDER'
-            LEFT JOIN project_users owners ON ps.project_id = owners.project_id AND owners.project_rol = 'OWNER'
+            LEFT JOIN project_users owners ON ps.project_id = owners.project_id
 
     UNION
 
@@ -532,9 +522,7 @@ FROM (
            ppd.fixedPropValuesList         AS districtList,
            ppd.fixedPropValuesNamesList    AS districtNamesList,
            ppne.fixedPropValuesList         AS neighbourhoodList,
-           ppne.fixedPropValuesNamesList   AS neighbourhoodNamesList,
-           leaders.users            AS projectLeaders,
-           leaders.users_initials   AS projectLeadersInitials
+           ppne.fixedPropValuesNamesList   AS neighbourhoodNamesList
     FROM
         past_projects pp
             LEFT JOIN diwi_testset.project_state ps ON ps.project_id = pp.id AND ps.change_end_date IS NULL
@@ -548,8 +536,7 @@ FROM (
             LEFT JOIN past_project_fixed_props ppr ON ppr.project_id = pp.id AND ppr.fixedPropertyName = 'municipality'
             LEFT JOIN past_project_fixed_props ppd ON ppd.project_id = pp.id AND ppd.fixedPropertyName = 'district'
             LEFT JOIN past_project_fixed_props ppne ON ppne.project_id = pp.id AND ppne.fixedPropertyName = 'neighbourhood'
-            LEFT JOIN project_users leaders ON ps.project_id = leaders.project_id AND leaders.project_rol = 'PROJECT_LEIDER'
-            LEFT JOIN project_users owners ON ps.project_id = owners.project_id AND owners.project_rol = 'OWNER'
+            LEFT JOIN project_users owners ON ps.project_id = owners.project_id
 
 ) AS q
   WHERE
@@ -567,7 +554,6 @@ FROM (
             WHEN _filterCondition_ = 'ANY_OF' AND _filterColumn_ = 'district' THEN q.districtNamesList && _filterValues_
             WHEN _filterCondition_ = 'ANY_OF' AND _filterColumn_ = 'neighbourhood' THEN q.neighbourhoodNamesList && _filterValues_
             WHEN _filterCondition_ = 'ANY_OF' AND _filterColumn_ = 'projectOwners' THEN q.projectOwnersInitials && _filterValues_
-            WHEN _filterCondition_ = 'ANY_OF' AND _filterColumn_ = 'projectLeaders' THEN q.projectLeadersInitials && _filterValues_
             WHEN _filterColumn_ IS NULL THEN 1 = 1
         END
 
@@ -586,7 +572,6 @@ FROM (
         CASE WHEN _sortColumn_ = 'district' AND _sortDirection_ = 'ASC' THEN q.districtNamesList END ASC,
         CASE WHEN _sortColumn_ = 'neighbourhood' AND _sortDirection_ = 'ASC' THEN q.neighbourhoodNamesList END ASC,
         CASE WHEN _sortColumn_ = 'projectOwners' AND _sortDirection_ = 'ASC' THEN q.projectOwnersInitials END ASC,
-        CASE WHEN _sortColumn_ = 'projectLeaders' AND _sortDirection_ = 'ASC' THEN q.projectLeadersInitials END ASC,
 
         CASE WHEN _sortColumn_ = 'projectName' AND _sortDirection_ = 'DESC' THEN q.projectName END DESC,
         CASE WHEN _sortColumn_ = 'totalValue' AND _sortDirection_ = 'DESC' THEN q.totalValue END DESC,
@@ -601,8 +586,7 @@ FROM (
         CASE WHEN _sortColumn_ = 'municipality' AND _sortDirection_ = 'DESC' THEN q.municipalityNamesList END DESC,
         CASE WHEN _sortColumn_ = 'district' AND _sortDirection_ = 'DESC' THEN q.districtNamesList END DESC,
         CASE WHEN _sortColumn_ = 'neighbourhood' AND _sortDirection_ = 'DESC' THEN q.neighbourhoodNamesList END DESC,
-        CASE WHEN _sortColumn_ = 'projectOwners' AND _sortDirection_ = 'DESC' THEN q.projectOwnersInitials END DESC,
-        CASE WHEN _sortColumn_ = 'projectLeaders' AND _sortDirection_ = 'DESC' THEN q.projectLeadersInitials END DESC
+        CASE WHEN _sortColumn_ = 'projectOwners' AND _sortDirection_ = 'DESC' THEN q.projectOwnersInitials END DESC
 
     LIMIT _limit_ OFFSET _offset_;
 
