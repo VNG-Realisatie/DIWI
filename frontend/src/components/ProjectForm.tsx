@@ -97,6 +97,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                     });
                                 }}
                                 multiple={true}
+                                translationPath="projectTable.planTypeOptions."
                             />
                         </Grid>
 
@@ -169,6 +170,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 }}
                                 multiple={false}
                                 error={t("createProject.hasMissingRequiredAreas.projectPhase")}
+                                translationPath="projectTable.projectPhaseOptions."
                             />
                         </Grid>
 
@@ -218,6 +220,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 }}
                                 multiple={false}
                                 error={t("createProject.hasMissingRequiredAreas.confidentialityLevel")}
+                                translationPath="projectTable.confidentialityLevelOptions."
                             />
                         </Grid>
                         {/* Planning plan status */}
@@ -235,6 +238,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                     });
                                 }}
                                 multiple={true}
+                                translationPath="projectTable.planningPlanStatus."
                             />
                         </Grid>
 

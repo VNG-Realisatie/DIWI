@@ -1,5 +1,6 @@
 import InputLabelStack from "./InputLabelStack";
 import { Autocomplete, AutocompleteChangeDetails, AutocompleteChangeReason, TextField } from "@mui/material";
+import { t } from "i18next";
 
 type Option = {
     id: string | number;
@@ -15,23 +16,11 @@ type CategoryInputProps = {
     readOnly: boolean;
     mandatory: boolean;
     title?: string;
-    options: Option[];
+    options: any; //Option[]
     multiple: boolean;
     error?: string;
+    translationPath?: string;
 };
-
-const formatString = (str: string) => {
-    const formattedString = str.replace(/_/g, " ").trimStart();
-    return formattedString.charAt(0).toUpperCase() + formattedString.slice(1).toLowerCase();
-};
-
-const formatOptions = (options: any) => {
-    return options.map((option: any) => ({
-        ...option,
-        name: formatString(option.name),
-    }));
-};
-
 const isOptionEqualToValue = (option: Option, value: Option): boolean => {
     return option.id === value.id;
 };
@@ -42,9 +31,8 @@ const getErrorHelperText = (mandatory: boolean, readOnly: boolean, values: any, 
     return { hasError, helperText };
 };
 
-const CategoryInput = ({ values, setValue, readOnly, mandatory, title, options, multiple, error }: CategoryInputProps) => {
+const CategoryInput = ({ values, setValue, readOnly, mandatory, title, options, multiple, error, translationPath = "" }: CategoryInputProps) => {
     const { hasError, helperText } = getErrorHelperText(mandatory, readOnly, values, error);
-    const formattedOptions = formatOptions(options);
     return (
         <InputLabelStack mandatory={mandatory} title={title || ""}>
             <Autocomplete
@@ -56,10 +44,18 @@ const CategoryInput = ({ values, setValue, readOnly, mandatory, title, options, 
                         backgroundColor: "#0000",
                     },
                 }}
-                isOptionEqualToValue={isOptionEqualToValue}
+                // isOptionEqualToValue={isOptionEqualToValue}
                 fullWidth
-                options={formattedOptions ?? []}
-                getOptionLabel={(option) => formatString(option.name) ?? ""}
+                options={options ?? []}
+                getOptionLabel={(option) => {
+                    if (option && option.name) {
+                        return t(`${translationPath}${option.name}`);
+                    }
+                    if (option) {
+                        return t(`${translationPath}${option}`);
+                    }
+                    return "";
+                }}
                 value={values ?? null}
                 filterSelectedOptions
                 onChange={setValue}
