@@ -10,7 +10,7 @@ import { confidentialityLevelOptions, planTypeOptions, planningPlanStatus, proje
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from "dayjs";
 import { dateFormats } from "../localization";
-import { ConfidentialityLevelOptions, PlanStatusOptions, ProjectPhaseOptions } from "../types/enums";
+import { ConfidentialityLevel, PlanStatusOptions, ProjectPhaseOptions } from "../types/enums";
 import { OrganizationSelect } from "../widgets/OrganizationSelect";
 import useProperties from "../hooks/useProperties";
 import { CustomPropertiesProject } from "./project/project-with-house-block/CustomPropertiesProject";
@@ -297,7 +297,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 onChange={(e) =>
                                     setProject({
                                         ...project,
-                                        confidentialityLevel: e.target.value as ConfidentialityLevelOptions,
+                                        confidentialityLevel: e.target.value as ConfidentialityLevel,
                                     })
                                 }
                             >
