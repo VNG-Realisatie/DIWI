@@ -11,7 +11,6 @@ import { ProjectForm } from "../components/ProjectForm";
 const ProjectWizard = () => {
     const [projectForm, setProjectForm] = useState<Project>({
         projectColor: "#FF5733",
-        projectLeaders: [],
         projectOwners: [],
         projectPhase: "_1_CONCEPT",
         planningPlanStatus: [],

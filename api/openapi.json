@@ -1426,12 +1426,6 @@
               "$ref": "#/components/schemas/OrganizationModel"
             }
           },
-          "projectLeaders": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/OrganizationModel"
-            }
-          },
           "totalValue": {
             "type": "integer",
             "format": "int64"
@@ -1543,12 +1537,6 @@
             }
           },
           "projectOwners": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/OrganizationModel"
-            }
-          },
-          "projectLeaders": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/OrganizationModel"
@@ -1767,12 +1755,6 @@
             }
           },
           "projectOwners": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/OrganizationModel"
-            }
-          },
-          "projectLeaders": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/OrganizationModel"

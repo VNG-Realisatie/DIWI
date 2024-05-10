@@ -31,7 +31,6 @@ abstract public class ProjectSnapshotModelSuperclass extends ProjectMinimalSnaps
     private PriorityModel priority = new PriorityModel();
     private List<SelectModel> municipalityRole = new ArrayList<>();
     private List<OrganizationModel> projectOwners = new ArrayList<>();
-    private List<OrganizationModel> projectLeaders = new ArrayList<>();
 
     private Long totalValue;
     private List<SelectModel> municipality = new ArrayList<>();
@@ -47,7 +46,6 @@ abstract public class ProjectSnapshotModelSuperclass extends ProjectMinimalSnaps
         this.setProjectStateId(sqlModel.getProjectStateId());
         this.setProjectName(sqlModel.getProjectName());
         this.setProjectOwners(getOrganizationModelListFromSqlArray(sqlModel.getProjectOwnersArray()));
-        this.setProjectLeaders(getOrganizationModelListFromSqlArray(sqlModel.getProjectLeadersArray()));
         this.setProjectColor(sqlModel.getProjectColor());
         this.setConfidentialityLevel(sqlModel.getConfidentialityLevel());
         this.setPlanType(sqlModel.getPlanType());
