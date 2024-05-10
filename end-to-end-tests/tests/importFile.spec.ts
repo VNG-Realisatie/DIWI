@@ -1,6 +1,5 @@
 import { test, expect } from "@playwright/test";
 import { PageManager } from "../page-objects/pageManager";
-import * as os from "os";
 
 test.beforeEach(async ({ page }) => {
     const pm = new PageManager(page);
