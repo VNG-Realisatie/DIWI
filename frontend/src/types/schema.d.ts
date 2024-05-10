@@ -279,7 +279,6 @@ export interface components {
             priority?: components["schemas"]["PriorityModel"];
             municipalityRole?: components["schemas"]["SelectModel"][];
             projectOwners?: components["schemas"]["OrganizationModel"][];
-            projectLeaders?: components["schemas"]["OrganizationModel"][];
             /** Format: int64 */
             totalValue?: number;
             municipality?: components["schemas"]["SelectModel"][];
@@ -323,7 +322,6 @@ export interface components {
             priority?: components["schemas"]["PriorityModel"];
             municipalityRole?: components["schemas"]["SelectModel"][];
             projectOwners?: components["schemas"]["OrganizationModel"][];
-            projectLeaders?: components["schemas"]["OrganizationModel"][];
             /** Format: int64 */
             totalValue?: number;
             municipality?: components["schemas"]["SelectModel"][];
@@ -405,7 +403,6 @@ export interface components {
             municipalityRole?: components["schemas"]["DatedDataModelString"][];
             planningPlanStatus?: components["schemas"]["DatedDataModelListPlanStatus"][];
             projectOwners?: components["schemas"]["OrganizationModel"][];
-            projectLeaders?: components["schemas"]["OrganizationModel"][];
             /** Format: int64 */
             totalValue?: number;
             municipality?: string[];
