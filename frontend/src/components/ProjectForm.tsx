@@ -87,41 +87,20 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
 
                         {/* Plan type */}
                         <Grid item xs={12} md={4}>
-                            <LabelComponent required={false} readOnly={readOnly} text={t("createProject.informationForm.planType")} />
-                            <Select
-                                fullWidth
-                                disabled={readOnly}
-                                sx={{
-                                    "& .MuiInputBase-input.Mui-disabled": {
-                                        backgroundColor: "#0000", // set 0 opacity when disabled
-                                    },
+                            <CategoryInput
+                                readOnly={readOnly}
+                                mandatory={false}
+                                title={t("createProject.informationForm.planType")}
+                                options={planTypeOptions}
+                                values={project?.planType ?? []}
+                                setValue={(_, newValue) => {
+                                    setProject({
+                                        ...project,
+                                        planType: newValue,
+                                    });
                                 }}
-                                size="small"
-                                labelId="plantype"
-                                id="plan-type-checkbox"
-                                multiple
-                                value={project?.planType ?? []}
-                                onChange={(event) => {
-                                    const {
-                                        target: { value },
-                                    } = event;
-                                    if (typeof value !== "string") {
-                                        setProject({
-                                            ...project,
-                                            planType: value,
-                                        });
-                                    }
-                                }}
-                                input={<OutlinedInput />}
-                                renderValue={(selected) => selected.map((s) => t(`projectTable.planTypeOptions.${s}`)).join(", ")}
-                                MenuProps={MenuProps}
-                            >
-                                {planTypeOptions.map((pt) => (
-                                    <MenuItem key={pt.id} value={pt.id}>
-                                        <ListItemText primary={t(`projectTable.planTypeOptions.${pt.name}`)} />
-                                    </MenuItem>
-                                ))}
-                            </Select>
+                                multiple={true}
+                            />
                         </Grid>
 
                         {/* Start date */}
@@ -226,37 +205,23 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
 
                         {/* Confidentiality */}
                         <Grid item xs={12} md={4}>
-                            <LabelComponent required readOnly={readOnly} text={t("createProject.informationForm.confidentialityLevel")} />
-                            <Select
-                                fullWidth
-                                labelId="confidentialityLevel"
-                                size="small"
-                                disabled={readOnly}
-                                sx={{
-                                    "& .MuiInputBase-input.Mui-disabled": {
-                                        backgroundColor: "#0000", // set 0 opacity when disabled
-                                    },
+                            <CategoryInput
+                                readOnly={readOnly}
+                                mandatory={true}
+                                title={t("createProject.informationForm.confidentialityLevel")}
+                                options={confidentialityLevelOptions}
+                                values={project?.confidentialityLevel ? confidentialityLevelOptions.find((cl) => cl.id === project.confidentialityLevel) : null}
+                                setValue={(_, newValue) => {
+                                    if (newValue && newValue.id) {
+                                        setProject({
+                                            ...project,
+                                            confidentialityLevel: newValue.id,
+                                        });
+                                    }
                                 }}
-                                id="confidentiality-level-select"
-                                value={project?.confidentialityLevel ?? ""}
-                                onChange={(e) =>
-                                    setProject({
-                                        ...project,
-                                        confidentialityLevel: e.target.value as ConfidentialityLevelOptions,
-                                    })
-                                }
-                            >
-                                {confidentialityLevelOptions.map((ppo) => {
-                                    return (
-                                        <MenuItem key={ppo.id} value={ppo.id ?? ""}>
-                                            {t(`projectTable.confidentialityLevelOptions.${ppo.name}`)}
-                                        </MenuItem>
-                                    );
-                                })}
-                            </Select>
-                            {!project.confidentialityLevel && (
-                                <Alert severity="warning">{t("createProject.hasMissingRequiredAreas.confidentialityLevel")}</Alert>
-                            )}
+                                multiple={false}
+                                error={t("createProject.hasMissingRequiredAreas.confidentialityLevel")}
+                            />
                         </Grid>
                         {/* Planning plan status */}
                         <Grid item xs={12} md={4}>
