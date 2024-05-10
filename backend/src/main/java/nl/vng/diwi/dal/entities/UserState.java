@@ -6,6 +6,9 @@ import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.entities.superclasses.ChangeDataSuperclass;
 import nl.vng.diwi.security.UserRole;
 
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
@@ -34,5 +37,6 @@ public class UserState extends ChangeDataSuperclass {
     
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
     private UserRole userRole;
 }
