@@ -26,9 +26,12 @@ describe("GIS Utils", () => {
             const rdToEtrs89Coords = proj4("EPSG:28992", "EPSG:4258", rdCoords);
             const etrs89ToRdCoords = proj4("EPSG:4258", "EPSG:28992", etrsCoords);
 
+            // The 0 decimal places means it is accurate to about 1 meter as rd coordinates are in meters
+            // We can increase the accuracy if we improve the transform parameters
             expect(etrs89ToRdCoords[0]).toBeCloseTo(rdCoords[0], 0);
             expect(etrs89ToRdCoords[1]).toBeCloseTo(rdCoords[1], 0);
 
+            // I etr89 coordinates are in degrees, so a higher accruacy will be equivalent to meter level accuracy
             expect(rdToEtrs89Coords[0]).toBeCloseTo(etrsCoords[0], 5);
             expect(rdToEtrs89Coords[1]).toBeCloseTo(etrsCoords[1], 5);
 
@@ -36,6 +39,7 @@ describe("GIS Utils", () => {
             const rdTo3857 = proj4("EPSG:28992", "EPSG:3857", rdCoords);
             const etrs89To3857 = proj4("EPSG:4258", "EPSG:3857", etrsCoords);
 
+            // These are in meters again, so 0 decimal places is about 1 meter accuracy
             expect(rdTo3857[0]).toBeCloseTo(etrs89To3857[0], 0);
             expect(rdTo3857[1]).toBeCloseTo(etrs89To3857[1], 0);
         });
