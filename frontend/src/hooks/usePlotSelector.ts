@@ -16,18 +16,9 @@ import ConfigContext from "../context/ConfigContext";
 import ProjectContext from "../context/ProjectContext";
 import { extentToCenter, mapBoundsToExtent } from "../utils/map";
 
-import { register } from "ol/proj/proj4.js";
-import proj4 from "proj4";
-
 const baseUrlKadasterWms = "https://service.pdok.nl/kadaster/kadastralekaart/wms/v5_0";
 
 const projection = "EPSG:3857";
-
-proj4.defs(
-    "EPSG:28992",
-    "+proj=sterea +lat_0=52.1561605555556 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +towgs84=565.4171,50.3319,465.5524,1.9342,-1.6677,9.1019,4.0725 +units=m +no_defs +type=crs",
-);
-register(proj4);
 
 const usePlotSelector = (id: string) => {
     const { selectedProject, setSelectedProject } = useContext(ProjectContext);
@@ -187,7 +178,7 @@ const usePlotSelector = (id: string) => {
                 const geometry = JSON.parse(selectedProject.geometry);
 
                 const options = {
-                    featureProjection: projection,
+                    featureProjection: map?.getView().getProjection(),
                 };
                 const geojsonFeature = {
                     type: "Feature",
@@ -201,7 +192,7 @@ const usePlotSelector = (id: string) => {
                 projectLayerSource.addFeature(feature);
             }
         },
-        [projectLayerSource, selectedProject?.geometry],
+        [projectLayerSource, selectedProject?.geometry, map],
     );
     useEffect(
         function zoomToExtent() {
