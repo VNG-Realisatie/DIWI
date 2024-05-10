@@ -1,14 +1,12 @@
 import Grid from "@mui/material/Grid";
 import { Project } from "../api/projectsServices";
-import { Alert, ListItemText, MenuItem, OutlinedInput, Select, Stack, TextField, Typography } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import { t } from "i18next";
 import { WizardCard } from "./project-wizard/WizardCard";
 import { LabelComponent } from "./project/LabelComponent";
 import ColorSelector from "./ColorSelector";
-import { MenuProps } from "../utils/menuProps";
 import { confidentialityLevelOptions, planTypeOptions, planningPlanStatus, projectPhaseOptions } from "./table/constants";
 import { Dayjs } from "dayjs";
-import { ConfidentialityLevelOptions, PlanStatusOptions } from "../types/enums";
 import { OrganizationSelect } from "../widgets/OrganizationSelect";
 import useProperties from "../hooks/useProperties";
 import { CustomPropertiesProject } from "./project/project-with-house-block/CustomPropertiesProject";
@@ -41,10 +39,6 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
         .map((hb) => hb.mutation.amount ?? 0)
         .reduce((a, b) => a + b, 0);
 
-    const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const newName = event.target.value.trimStart();
-        setProject({ ...project, projectName: newName });
-    };
     return (
         <Grid container spacing={2} alignItems="stretch">
             <Grid item xs={12}>
@@ -59,7 +53,10 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 <TextInput
                                     readOnly={readOnly}
                                     value={project?.projectName}
-                                    setValue={handleNameChange}
+                                    setValue={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                        const newName = event.target.value.trimStart();
+                                        setProject({ ...project, projectName: newName });
+                                    }}
                                     mandatory={true}
                                     title={t("createProject.informationForm.nameLabel")}
                                     errorText={t("createProject.hasMissingRequiredAreas.name")}
@@ -92,11 +89,11 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 mandatory={false}
                                 title={t("createProject.informationForm.planType")}
                                 options={planTypeOptions}
-                                values={project?.planType ?? []}
+                                values={planTypeOptions.filter((option) => (project.planType || []).includes(option.id))}
                                 setValue={(_, newValue) => {
                                     setProject({
                                         ...project,
-                                        planType: newValue,
+                                        planType: newValue.map((option: any) => option.id),
                                     });
                                 }}
                                 multiple={true}
@@ -225,40 +222,20 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                         </Grid>
                         {/* Planning plan status */}
                         <Grid item xs={12} md={4}>
-                            <LabelComponent required={false} readOnly={readOnly} text={t("createProject.informationForm.planningPlanStatus")} />
-                            <Select
-                                fullWidth
-                                size="small"
-                                disabled={readOnly}
-                                sx={{
-                                    "& .MuiInputBase-input.Mui-disabled": {
-                                        backgroundColor: "#0000", // set 0 opacity when disabled
-                                    },
+                            <CategoryInput
+                                readOnly={readOnly}
+                                mandatory={false}
+                                title={t("createProject.informationForm.planningPlanStatus")}
+                                options={planningPlanStatus}
+                                values={planningPlanStatus.filter((option) => (project.planningPlanStatus || []).includes(option.id))}
+                                setValue={(_, newValue) => {
+                                    setProject({
+                                        ...project,
+                                        planningPlanStatus: newValue.map((option: any) => option.id),
+                                    });
                                 }}
-                                id="plan-status-checkbox"
-                                multiple
-                                value={project?.planningPlanStatus ?? []}
-                                onChange={(event) => {
-                                    const {
-                                        target: { value },
-                                    } = event;
-                                    if (typeof value !== "string") {
-                                        setProject({
-                                            ...project,
-                                            planningPlanStatus: value,
-                                        });
-                                    }
-                                }}
-                                input={<OutlinedInput />}
-                                renderValue={(selected) => selected.map((s: PlanStatusOptions) => t(`projectTable.planningPlanStatus.${s}`)).join(", ")}
-                                MenuProps={MenuProps}
-                            >
-                                {planningPlanStatus.map((pt) => (
-                                    <MenuItem key={pt.id} value={pt.id ?? null}>
-                                        <ListItemText primary={t(`projectTable.planningPlanStatus.${pt.name}`)} />
-                                    </MenuItem>
-                                ))}
-                            </Select>
+                                multiple={true}
+                            />
                         </Grid>
 
                         {/* Municipality */}

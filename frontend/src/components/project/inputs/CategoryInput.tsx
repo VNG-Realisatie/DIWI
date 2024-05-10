@@ -20,6 +20,18 @@ type CategoryInputProps = {
     error?: string;
 };
 
+const formatString = (str: string) => {
+    const formattedString = str.replace(/_/g, " ").trimStart();
+    return formattedString.charAt(0).toUpperCase() + formattedString.slice(1).toLowerCase();
+};
+
+const formatOptions = (options: any) => {
+    return options.map((option: any) => ({
+        ...option,
+        name: formatString(option.name),
+    }));
+};
+
 const isOptionEqualToValue = (option: Option, value: Option): boolean => {
     return option.id === value.id;
 };
@@ -32,6 +44,7 @@ const getErrorHelperText = (mandatory: boolean, readOnly: boolean, values: any, 
 
 const CategoryInput = ({ values, setValue, readOnly, mandatory, title, options, multiple, error }: CategoryInputProps) => {
     const { hasError, helperText } = getErrorHelperText(mandatory, readOnly, values, error);
+    const formattedOptions = formatOptions(options);
     return (
         <InputLabelStack mandatory={mandatory} title={title || ""}>
             <Autocomplete
@@ -45,8 +58,8 @@ const CategoryInput = ({ values, setValue, readOnly, mandatory, title, options, 
                 }}
                 isOptionEqualToValue={isOptionEqualToValue}
                 fullWidth
-                options={options ?? []}
-                getOptionLabel={(option) => option.name ?? ""}
+                options={formattedOptions ?? []}
+                getOptionLabel={(option) => formatString(option.name) ?? ""}
                 value={values ?? null}
                 filterSelectedOptions
                 onChange={setValue}
