@@ -8,7 +8,7 @@ import ColorSelector from "./ColorSelector";
 import { MenuProps } from "../utils/menuProps";
 import { confidentialityLevelOptions, planTypeOptions, planningPlanStatus, projectPhaseOptions } from "./table/constants";
 import { Dayjs } from "dayjs";
-import { ConfidentialityLevelOptions, PlanStatusOptions, ProjectPhaseOptions } from "../types/enums";
+import { ConfidentialityLevelOptions, PlanStatusOptions } from "../types/enums";
 import { OrganizationSelect } from "../widgets/OrganizationSelect";
 import useProperties from "../hooks/useProperties";
 import { CustomPropertiesProject } from "./project/project-with-house-block/CustomPropertiesProject";
@@ -185,35 +185,23 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
 
                         {/* Phase */}
                         <Grid item xs={12} md={4}>
-                            <LabelComponent required readOnly={readOnly} text={t("createProject.informationForm.projectPhase")} />
-                            <Select
-                                fullWidth
-                                size="small"
-                                disabled={readOnly}
-                                sx={{
-                                    "& .MuiInputBase-input.Mui-disabled": {
-                                        backgroundColor: "#0000", // set 0 opacity when disabled
-                                    },
+                            <CategoryInput
+                                readOnly={readOnly}
+                                mandatory={true}
+                                title={t("createProject.informationForm.projectPhase")}
+                                options={projectPhaseOptions}
+                                values={project?.projectPhase ? projectPhaseOptions.find((p) => p.id === project.projectPhase) : null}
+                                setValue={(_, newValue) => {
+                                    if (newValue && newValue.id) {
+                                        setProject({
+                                            ...project,
+                                            projectPhase: newValue.id,
+                                        });
+                                    }
                                 }}
-                                labelId="projectPhase"
-                                id="project-phase-select"
-                                value={project?.projectPhase ?? ""}
-                                onChange={(e) =>
-                                    setProject({
-                                        ...project,
-                                        projectPhase: e.target.value as ProjectPhaseOptions,
-                                    })
-                                }
-                            >
-                                {projectPhaseOptions.map((ppo) => {
-                                    return (
-                                        <MenuItem key={ppo.id} value={ppo.id}>
-                                            {t(`projectTable.projectPhaseOptions.${ppo.name}`)}
-                                        </MenuItem>
-                                    );
-                                })}
-                            </Select>
-                            {!project.projectPhase && <Alert severity="warning">{t("createProject.hasMissingRequiredAreas.projectPhase")}</Alert>}
+                                multiple={false}
+                                error={t("createProject.hasMissingRequiredAreas.projectPhase")}
+                            />
                         </Grid>
 
                         {/* Role municipality */}

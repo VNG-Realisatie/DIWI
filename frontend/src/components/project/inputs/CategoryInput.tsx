@@ -6,10 +6,10 @@ type Option = {
     name: string;
 };
 
-type SetValueFunction = (event: any, value: Option | Option[] | null, reason: AutocompleteChangeReason, details?: AutocompleteChangeDetails<Option>) => void;
+type SetValueFunction = (event: any, value: any, reason: AutocompleteChangeReason, details?: AutocompleteChangeDetails<Option>) => void;
 
 type CategoryInputProps = {
-    values: Option[] | Option | null;
+    values: any;
     setValue: SetValueFunction;
     nullable?: boolean; // Not implemented
     readOnly: boolean;
@@ -17,13 +17,21 @@ type CategoryInputProps = {
     title?: string;
     options: Option[];
     multiple: boolean;
+    error?: string;
 };
 
 const isOptionEqualToValue = (option: Option, value: Option): boolean => {
     return option.id === value.id;
 };
 
-const CategoryInput = ({ values, setValue, readOnly, mandatory, title, options, multiple }: CategoryInputProps) => {
+const getErrorHelperText = (mandatory: boolean, readOnly: boolean, values: any, error?: string) => {
+    const hasError = mandatory && !values && !readOnly;
+    const helperText = hasError ? error : "";
+    return { hasError, helperText };
+};
+
+const CategoryInput = ({ values, setValue, readOnly, mandatory, title, options, multiple, error }: CategoryInputProps) => {
+    const { hasError, helperText } = getErrorHelperText(mandatory, readOnly, values, error);
     return (
         <InputLabelStack mandatory={mandatory} title={title || ""}>
             <Autocomplete
@@ -42,7 +50,11 @@ const CategoryInput = ({ values, setValue, readOnly, mandatory, title, options, 
                 value={values ?? null}
                 filterSelectedOptions
                 onChange={setValue}
-                renderInput={(params) => <TextField {...params} />}
+                renderInput={(params) => (
+                    <>
+                        <TextField {...params} variant="outlined" error={hasError} helperText={helperText} />
+                    </>
+                )}
             />
         </InputLabelStack>
     );
