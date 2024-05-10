@@ -44,7 +44,7 @@ const CategoryInput = ({ values, setValue, readOnly, mandatory, title, options, 
                         backgroundColor: "#0000",
                     },
                 }}
-                // isOptionEqualToValue={isOptionEqualToValue}
+                isOptionEqualToValue={isOptionEqualToValue}
                 fullWidth
                 options={options ?? []}
                 getOptionLabel={(option) => {
