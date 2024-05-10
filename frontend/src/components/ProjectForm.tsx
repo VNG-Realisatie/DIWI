@@ -15,8 +15,9 @@ import { CustomPropertiesProject } from "./project/project-with-house-block/Cust
 import { CellContainer } from "./project/project-with-house-block/CellContainer";
 import { useContext } from "react";
 import HouseBlockContext from "../context/HouseBlockContext";
-import DateInput from "./project/inputs/DateInput";
+import TextInput from "./project/inputs/TextInput";
 import CategoryInput from "./project/inputs/CategoryInput";
+import DateInput from "./project/inputs/DateInput";
 
 type Props = {
     readOnly: boolean;
@@ -40,6 +41,10 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
         .map((hb) => hb.mutation.amount ?? 0)
         .reduce((a, b) => a + b, 0);
 
+    const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const newName = event.target.value.trimStart();
+        setProject({ ...project, projectName: newName });
+    };
     return (
         <Grid container spacing={2} alignItems="stretch">
             <Grid item xs={12}>
@@ -51,27 +56,14 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                         {/* Name */}
                         <Grid item xs={12} md={showColorPicker ? 8 : 12}>
                             <Stack width="100%">
-                                <LabelComponent required readOnly={readOnly} text="createProject.informationForm.nameLabel" />
-                                <TextField
-                                    required
-                                    disabled={readOnly}
-                                    sx={{
-                                        "& .MuiInputBase-input.Mui-disabled": {
-                                            backgroundColor: "#0000", // set 0 opacity when disabled
-                                        },
-                                    }}
-                                    id="projectname"
-                                    size="small"
-                                    variant="outlined"
-                                    value={project?.projectName ?? ""}
-                                    onChange={(e) => {
-                                        setProject({
-                                            ...project,
-                                            projectName: e.target.value,
-                                        });
-                                    }}
+                                <TextInput
+                                    readOnly={readOnly}
+                                    value={project?.projectName}
+                                    setValue={handleNameChange}
+                                    mandatory={true}
+                                    title={t("createProject.informationForm.nameLabel")}
+                                    errorText={t("createProject.hasMissingRequiredAreas.name")}
                                 />
-                                {!project.projectName && <Alert severity="warning">{t("createProject.hasMissingRequiredAreas.name")}</Alert>}
                             </Stack>
                         </Grid>
                         {/* Color: on the wizard page include this, on the project details this is excluded */}
