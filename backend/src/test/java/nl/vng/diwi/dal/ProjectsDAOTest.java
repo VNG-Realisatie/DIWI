@@ -5,6 +5,8 @@ import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.models.ProjectListModel;
 import nl.vng.diwi.dal.entities.ProjectListSqlModel;
+import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.security.UserRole;
 import nl.vng.diwi.testutil.TestDb;
 import org.junit.jupiter.api.*;
 
@@ -67,7 +69,9 @@ public class ProjectsDAOTest {
             transaction.commit();
         }
 
-        List<ProjectListSqlModel> projects = repo.getProjectsDAO().getProjectsTable(filtering);
+        LoggedUser loggedUser = new LoggedUser();
+        loggedUser.setRole(UserRole.UserPlus);
+        List<ProjectListSqlModel> projects = repo.getProjectsDAO().getProjectsTable(filtering, loggedUser);
 
         //There are 3 projects. One in the past, one ongoing, one in the future. All are returned.
         assertThat(projects.size()).isEqualTo(3);

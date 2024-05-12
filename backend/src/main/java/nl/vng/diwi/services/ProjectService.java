@@ -26,6 +26,7 @@ import nl.vng.diwi.dal.entities.ProjectOrdinalPropertyChangelog;
 import nl.vng.diwi.dal.entities.ProjectTextPropertyChangelog;
 import nl.vng.diwi.models.ProjectHouseblockCustomPropertyModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
+import nl.vng.diwi.security.LoggedUser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -72,9 +73,9 @@ public class ProjectService {
         return repo.getProjectsDAO().getCurrentProject(uuid);
     }
 
-    public ProjectSnapshotModel getProjectSnapshot(VngRepository repo, UUID projectUuid) throws VngNotFoundException {
+    public ProjectSnapshotModel getProjectSnapshot(VngRepository repo, UUID projectUuid, LoggedUser loggedUser) throws VngNotFoundException {
 
-        ProjectListSqlModel projectModel = repo.getProjectsDAO().getProjectByUuid(projectUuid);
+        ProjectListSqlModel projectModel = repo.getProjectsDAO().getProjectByUuid(projectUuid, loggedUser);
 
         if (projectModel == null) {
             logger.error("Project with uuid {} was not found.", projectUuid);
@@ -87,8 +88,8 @@ public class ProjectService {
         return snapshotModel;
     }
 
-    public List<ProjectListModel> getProjectsTable(VngRepository repo, FilterPaginationSorting filtering) {
-        List<ProjectListSqlModel> projectsTable = repo.getProjectsDAO().getProjectsTable(filtering);
+    public List<ProjectListModel> getProjectsTable(VngRepository repo, FilterPaginationSorting filtering, LoggedUser loggedUser) {
+        List<ProjectListSqlModel> projectsTable = repo.getProjectsDAO().getProjectsTable(filtering, loggedUser);
         List<ProjectListModel> result = projectsTable.stream().map(ProjectListModel::new).toList();
         return result;
     }
