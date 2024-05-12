@@ -42,6 +42,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -83,6 +84,7 @@ public class ExcelImportService {
 
             Iterator<Row> iterator = dataSheet.iterator();
             int rowCount = 0;
+            int sectionRow = 0;
 
             try (AutoCloseTransaction transaction = repo.beginTransaction()) {
 
@@ -91,9 +93,10 @@ public class ExcelImportService {
                     Row nextRow = iterator.next();
                     rowCount++;
 
-                    if (rowCount == 2) { //sections
+                    if (sectionRow == 0) { //sections
                         ExcelTableHeader.Section lastSection = null; //sections
                         Iterator<Cell> cellIterator = nextRow.cellIterator();
+                        Set<ExcelTableHeader.Section> sections = new HashSet<>();
                         while (cellIterator.hasNext()) {
                             Cell nextCell = cellIterator.next();
                             int columnIndex = nextCell.getColumnIndex();
@@ -101,6 +104,7 @@ public class ExcelImportService {
                             ExcelTableHeader.Section excelSection = ExcelTableHeader.Section.findByName(sectionName);
                             if (excelSection != null) {
                                 lastSection = excelSection;
+                                sections.add(excelSection);
                             }
                             if (lastSection == ExcelTableHeader.Section.CONTROL_CONSTRUCTION) {
                                 break;
@@ -110,9 +114,12 @@ public class ExcelImportService {
                                 tableHeaderMap.put(columnIndex, tableHeader);
                             }
                         }
+                        if (!sections.isEmpty()) {
+                            sectionRow = rowCount;
+                        }
                     }
 
-                    if (rowCount == 4) { //headers - set columns and propertymodel for fixed properties
+                    if (rowCount == sectionRow + 2) { //headers - set columns and propertymodel for fixed properties
                         Iterator<Cell> cellIterator = nextRow.cellIterator();
                         while (cellIterator.hasNext()) {
                             Cell nextCell = cellIterator.next();
@@ -157,7 +164,7 @@ public class ExcelImportService {
                         }
                     }
 
-                    if (rowCount == 5) { //subheaders - set subheader values and property model for columns with subheaders
+                    if (rowCount == sectionRow + 3) { //subheaders - set subheader values and property model for columns with subheaders
                         Iterator<Cell> cellIterator = nextRow.cellIterator();
                         while (cellIterator.hasNext()) {
                             Cell nextCell = cellIterator.next();
@@ -218,7 +225,7 @@ public class ExcelImportService {
                         }
                     }
 
-                    if (rowCount > 5) {
+                    if (rowCount > sectionRow + 3) {
                         SelectModel excelProject = processExcelRow(repo, nextRow, tableHeaderMap, dateFormatter, formulaEvaluator, excelErrors,
                             user, importTime);
                         if (excelProject != null) {
