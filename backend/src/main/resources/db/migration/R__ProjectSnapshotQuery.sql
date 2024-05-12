@@ -536,11 +536,13 @@ FROM (
                  LEFT JOIN project_users owners ON ps.project_id = owners.project_id
 
      ) AS q
-WHERE q.projectId = _project_uuid_ AND                    (
-    ( _user_uuid_::TEXT IN (select owners.id from unnest(q.projectOwners) with ordinality owners(id,n) where owners.n % 6 = 3)) OR
+WHERE q.projectId = _project_uuid_ AND
+    (
+      ( _user_uuid_::TEXT IN (select owners.id from unnest(q.projectOwners) with ordinality owners(id,n) where owners.n % 6 = 3)) OR
       ( _user_role_ IN ('User', 'UserPlus') AND q.confidentialityLevel != 'PRIVATE') OR
       ( _user_role_ = 'Management' AND q.confidentialityLevel NOT IN ('PRIVATE', 'INTERNAL_CIVIL') ) OR
       ( _user_role_ = 'Council' AND q.confidentialityLevel NOT IN ('PRIVATE', 'INTERNAL_CIVIL', 'INTERNAL_MANAGEMENT') )
-    ) LIMIT 1;
+    )
+    LIMIT 1;
 
 END;$$
