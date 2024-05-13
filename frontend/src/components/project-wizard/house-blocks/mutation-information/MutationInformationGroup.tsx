@@ -21,7 +21,7 @@ export const MutationInformationGroup = ({ houseBlock, setHouseBlock, readOnly }
             <SingleNumberInput
                 name={t("createProject.houseBlocksForm.amount")}
                 value={houseBlock.mutation.amount ?? null}
-                onChange={(e) =>
+                onChange={(e: any) =>
                     setHouseBlock({
                         ...houseBlock,
                         mutation: {
@@ -33,6 +33,7 @@ export const MutationInformationGroup = ({ houseBlock, setHouseBlock, readOnly }
                 readOnly={readOnly}
                 mandatory={true}
                 error={t("wizard.houseBlocks.mutationAmountWarning")}
+                isInputLabel={true}
             />
             <MutationKindSelect
                 readOnly={readOnly}

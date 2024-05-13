@@ -27,7 +27,7 @@ export const HouseTypeGroup = ({ houseBlock, setHouseBlock, readOnly }: HouseTyp
             </Stack>
             <SingleNumberInput
                 value={houseBlock?.houseType?.meergezinswoning}
-                onChange={(e) =>
+                onChange={(e: any) =>
                     houseBlock &&
                     setHouseBlock({
                         ...houseBlock,
@@ -44,7 +44,7 @@ export const HouseTypeGroup = ({ houseBlock, setHouseBlock, readOnly }: HouseTyp
             />
             <SingleNumberInput
                 value={houseBlock?.houseType?.eengezinswoning}
-                onChange={(e) =>
+                onChange={(e: any) =>
                     houseBlock &&
                     setHouseBlock({
                         ...houseBlock,
