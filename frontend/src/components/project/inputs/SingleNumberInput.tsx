@@ -1,6 +1,5 @@
 import { Stack, Typography, TextField } from "@mui/material";
 import InputLabelStack from "./InputLabelStack";
-import { OwnershipSingleValue } from "../../../types/houseBlockTypes";
 
 type SingleNumberEdit = {
     name?: string;
