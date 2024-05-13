@@ -11,6 +11,7 @@ type Props = {
     value: ValueType;
     updateCallBack: (value: ValueType) => void;
     labelText?: string;
+    disabled?: boolean;
 };
 
 const decimalSeparator = ",";
@@ -51,7 +52,7 @@ const parseMonetary = (value: string) => {
 
 function fromStringToRange(stringValue: string) {
     const inputValue = stringValue;
-    if (inputValue === "") {
+    if (inputValue === "" || inputValue === "0,00") {
         return { value: null, min: null, max: null };
     } else if (inputValue.includes("-")) {
         const [minStr, maxStr] = inputValue.split("-");
@@ -74,8 +75,8 @@ function fromStringToRange(stringValue: string) {
     }
 }
 
-export const MonetaryRangeInput = ({ labelText, value, updateCallBack }: Props) => {
-    const [stringValue, setStringValue] = useState<string>(fromRangeToString(value));
+export const MonetaryRangeInput = ({ labelText, value, updateCallBack, disabled }: Props) => {
+    const [stringValue, setStringValue] = useState<string | null>(fromRangeToString(value));
 
     useEffect(() => {
         setStringValue(fromRangeToString(value));
@@ -103,8 +104,10 @@ export const MonetaryRangeInput = ({ labelText, value, updateCallBack }: Props) 
     const onBlur = () => {
         if (stringValue === "") return setStringValue("0,00");
 
-        const range = fromStringToRange(stringValue);
-        updateCallBack(range);
+        if (stringValue !== null) {
+            const range = fromStringToRange(stringValue);
+            updateCallBack(range);
+        }
     };
 
     function handleKey(event: React.KeyboardEvent<HTMLDivElement>): void {
@@ -112,6 +115,17 @@ export const MonetaryRangeInput = ({ labelText, value, updateCallBack }: Props) 
             onBlur();
         }
     }
+
+    useEffect(() => {
+        if (disabled) {
+            setStringValue(null);
+            updateCallBack({ value: 0, min: null, max: null });
+        } else {
+            if (stringValue === "") return setStringValue("0,00");
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [disabled]);
+
     return (
         <TextField
             id="size"
@@ -119,11 +133,12 @@ export const MonetaryRangeInput = ({ labelText, value, updateCallBack }: Props) 
             variant="outlined"
             prefix="€"
             label={labelText}
-            value={stringValue}
+            value={!disabled ? stringValue : ""}
             onChange={handleChange}
             onBlur={onBlur}
             onFocus={onFocus}
             onKeyUp={handleKey}
+            disabled={disabled}
         />
     );
 };
