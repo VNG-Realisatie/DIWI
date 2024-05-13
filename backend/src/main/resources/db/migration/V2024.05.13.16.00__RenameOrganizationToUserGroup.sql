@@ -1,4 +1,4 @@
-ALTER TABLE diwi_testset.userGroup RENAME TO usergroup;
+ALTER TABLE diwi_testset.organization RENAME TO usergroup;
 ALTER TABLE diwi_testset.organization_state RENAME TO usergroup_state;
 
 ALTER TABLE diwi_testset.usergroup_state
