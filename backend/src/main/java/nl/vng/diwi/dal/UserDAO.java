@@ -1,5 +1,6 @@
 package nl.vng.diwi.dal;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.Session;
@@ -20,6 +21,13 @@ public class UserDAO extends AbstractRepository {
                         "WHERE user.id = :userId AND changeEndDate is null", UserState.class)
                 .setParameter("userId", uuid)
                 .uniqueResult();
+    }
+
+    public List<UserState> getAllUsers() {
+        return session
+            .createQuery("FROM UserState us " +
+                "WHERE changeEndDate is null ORDER BY us.lastName ASC ", UserState.class)
+            .list();
     }
 
     public UserState getUserByIdentityProviderId(String identityProviderId) {
