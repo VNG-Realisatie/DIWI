@@ -400,7 +400,7 @@ FROM (
              project_users AS (
                  SELECT
                      q.project_id    AS project_id,
-                     array_agg(array[q.organization_id::TEXT, q.organization_name, q.user_id::TEXT, q.user_initials, q.user_last_name, q.user_first_name]) AS users
+                     array_agg(array[q.usergroup_id::TEXT, q.usergroup_name, q.user_id::TEXT, q.user_initials, q.user_last_name, q.user_first_name]) AS users
                  FROM (
                           SELECT DISTINCT
                               ps.project_id as project_id,
@@ -408,12 +408,12 @@ FROM (
                               LEFT(us.last_name, 1) || LEFT(us.first_name,1) AS user_initials,
                               us.last_name AS user_last_name,
                               us.first_name AS user_first_name,
-                              os.organization_id AS organization_id,
-                              os.naam AS organization_name
+                              os.usergroup_id AS usergroup_id,
+                              os.naam AS usergroup_name
                           FROM diwi_testset.project_state ps
-                              JOIN diwi_testset.organization_to_project otp ON ps.project_id = otp.project_id AND otp.change_end_date IS NULL
-                              JOIN diwi_testset.organization_state os ON otp.organization_id = os.organization_id AND os.change_end_date IS NULL
-                              JOIN diwi_testset.user_to_organization uto ON otp.organization_id = uto.organization_id
+                              JOIN diwi_testset.usergroup_to_project otp ON ps.project_id = otp.project_id AND otp.change_end_date IS NULL
+                              JOIN diwi_testset.usergroup_state os ON otp.usergroup_id = os.usergroup_id AND os.change_end_date IS NULL
+                              JOIN diwi_testset.user_to_usergroup uto ON otp.usergroup_id = uto.usergroup_id
                               JOIN diwi_testset.user_state us ON uto.user_id = us.user_id AND us.change_end_date IS NULL
                           WHERE
                               ps.change_end_date IS NULL AND ps.project_id = _project_uuid_

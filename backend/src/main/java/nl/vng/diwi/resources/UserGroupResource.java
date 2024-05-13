@@ -13,31 +13,30 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.VngRepository;
-import nl.vng.diwi.models.OrganizationModel;
+import nl.vng.diwi.models.UserGroupModel;
 import nl.vng.diwi.security.LoggedUser;
-import nl.vng.diwi.services.OrganizationsService;
+import nl.vng.diwi.services.UserGroupService;
 
-@Path("/organizations")
+@Path("/groups")
 @RolesAllowed({CAN_OWN_PROJECTS})
-public class OrganizationResource {
+public class UserGroupResource {
 
     private final VngRepository repo;
-    private final OrganizationsService organizationsService;
+    private final UserGroupService userGroupService;
 
     @Inject
-    public OrganizationResource(
+    public UserGroupResource(
         GenericRepository genericRepository,
-        OrganizationsService organizationsService) {
+        UserGroupService userGroupService) {
         this.repo = new VngRepository(genericRepository.getDal().getSession());
-        this.organizationsService = organizationsService;
+        this.userGroupService = userGroupService;
     }
 
     @GET
-    @Path("/list")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<OrganizationModel> getAllOrganization(@Context LoggedUser loggedUser) {
+    public List<UserGroupModel> getAllUserGroups(@Context LoggedUser loggedUser) {
 
-        return organizationsService.getAllOrganizations(repo);
+        return userGroupService.getAllUserGroups(repo);
 
     }
 
