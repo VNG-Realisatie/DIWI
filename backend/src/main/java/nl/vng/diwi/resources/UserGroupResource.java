@@ -11,6 +11,7 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -58,10 +59,34 @@ public class UserGroupResource {
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
 
+            if (newUserGroup.getName() == null || newUserGroup.getName().isEmpty()) {
+                throw new VngBadRequestException("Missing usergroup name.");
+            }
+
             UserGroup newGroup = userGroupService.createUserGroup(repo, newUserGroup, loggedUser.getUuid());
             transaction.commit();
 
             List<UserGroupUserModel> userGroupModel = repo.getUsergroupDAO().getUserGroupUsers(newGroup.getId());
+            return UserGroupModel.fromUserGroupUserModelListToUserGroupModelList(userGroupModel).get(0);
+        }
+    }
+
+    @PUT
+    @Path("/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public UserGroupModel updateUserGroup(@PathParam("id") UUID groupId, UserGroupModel updatedUserGroup, @Context LoggedUser loggedUser) throws VngBadRequestException, VngNotFoundException {
+
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+
+            if (updatedUserGroup.getName() == null || updatedUserGroup.getName().isEmpty()) {
+                throw new VngBadRequestException("Missing usergroup name.");
+            }
+            updatedUserGroup.setUuid(groupId);
+            userGroupService.updateUserGroup(repo, updatedUserGroup, loggedUser.getUuid());
+            transaction.commit();
+
+            List<UserGroupUserModel> userGroupModel = repo.getUsergroupDAO().getUserGroupUsers(groupId);
             return UserGroupModel.fromUserGroupUserModelListToUserGroupModelList(userGroupModel).get(0);
         }
     }

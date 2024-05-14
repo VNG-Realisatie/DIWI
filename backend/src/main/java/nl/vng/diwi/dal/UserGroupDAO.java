@@ -20,7 +20,7 @@ public class UserGroupDAO extends AbstractRepository {
         String querySql = String.format("""
                 SELECT ug.id AS userGroupUuid,
                     ugs.naam AS userGroupName,
-                    us.id AS uuid,
+                    us.user_id AS uuid,
                     us.last_name AS lastName,
                     us.first_name AS firstName,
                     LEFT(us.last_name, 1) || LEFT(us.first_name,1) AS initials
@@ -42,7 +42,7 @@ public class UserGroupDAO extends AbstractRepository {
         return session.createNativeQuery(String.format("""
                 SELECT ug.id AS userGroupUuid,
                     ugs.naam AS userGroupName,
-                    us.id AS uuid,
+                    us.user_id AS uuid,
                     us.last_name AS lastName,
                     us.first_name AS firstName,
                     LEFT(us.last_name, 1) || LEFT(us.first_name,1) AS initials

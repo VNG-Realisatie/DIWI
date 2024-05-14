@@ -65,6 +65,68 @@ public class UserGroupService {
         return newGroup;
     }
 
+
+    public void updateUserGroup(VngRepository repo, UserGroupModel updatedUserGroup, UUID loggedInUserUuid) throws VngNotFoundException, VngBadRequestException {
+
+        UUID groupId = updatedUserGroup.getUuid();
+        UserGroup userGroup = repo.getUsergroupDAO().getCurrentUserGroup(groupId);
+        if (userGroup == null) {
+            logger.error("UserGroup with uuid {} was not found.", groupId);
+            throw new VngNotFoundException();
+        }
+        if (userGroup.getSingleUser() == Boolean.TRUE) {
+            throw new VngBadRequestException("Cannot update single-user usergroups.");
+        }
+
+        List<UserGroupUserModel> oldUserGroupModel = repo.getUsergroupDAO().getUserGroupUsers(updatedUserGroup.getUuid());
+        UserGroupModel oldUserGroup = UserGroupModel.fromUserGroupUserModelListToUserGroupModelList(oldUserGroupModel).get(0);
+
+        ZonedDateTime now = ZonedDateTime.now();
+        User user = repo.findById(User.class, loggedInUserUuid);
+
+        if (!oldUserGroup.getName().equals(updatedUserGroup.getName())) {
+            userGroup.getState().stream()
+                .filter(ugs -> ugs.getChangeEndDate() == null)
+                .forEach(ugs -> {
+                    ugs.setChangeEndDate(now);
+                    ugs.setChangeUser(user);
+                    repo.persist(ugs);
+                });
+            UserGroupState newGroupState = new UserGroupState();
+            newGroupState.setUserGroup(userGroup);
+            newGroupState.setCreateUser(user);
+            newGroupState.setChangeStartDate(now);
+            newGroupState.setName(updatedUserGroup.getName());
+            repo.persist(newGroupState);
+        }
+
+        List<UUID> oldUserList = oldUserGroupModel.stream().map(UserGroupUserModel::getUuid).toList();
+        List<UUID> newUserList = updatedUserGroup.getUsers().stream().map(UserGroupUserModel::getUuid).toList();
+
+        List<UUID> usersToRemove = oldUserList.stream().filter(o -> !newUserList.contains(o)).toList();
+        List<UUID> usersToAdd = newUserList.stream().filter(n -> !oldUserList.contains(n)).toList();
+
+        userGroup.getUserToUserGroups().stream()
+            .filter(utug -> utug.getChangeEndDate() == null)
+            .forEach(utug -> {
+                if (usersToRemove.contains(utug.getUser().getId())) {
+                    utug.setChangeEndDate(now);
+                    utug.setChangeUser(user);
+                    repo.persist(utug);
+                }
+            });
+
+        usersToAdd.forEach(u -> {
+            UserToUserGroup utug = new UserToUserGroup();
+            utug.setUserGroup(userGroup);
+            utug.setUser(repo.getReferenceById(User.class, u));
+            utug.setCreateUser(user);
+            utug.setChangeStartDate(now);
+            repo.persist(utug);
+        });
+
+    }
+
     public void deleteUserGroup(VngRepository repo, UUID groupId, UUID loggedInUserUuid) throws VngNotFoundException, VngBadRequestException {
         ZonedDateTime now = ZonedDateTime.now();
         User user = repo.findById(User.class, loggedInUserUuid);
@@ -79,11 +141,11 @@ public class UserGroupService {
         }
 
         userGroup.getState().stream()
-            .filter(cl -> cl.getChangeEndDate() == null)
-            .forEach(cl -> {
-                cl.setChangeEndDate(now);
-                cl.setChangeUser(user);
-                repo.persist(cl);
+            .filter(ugs -> ugs.getChangeEndDate() == null)
+            .forEach(ugs -> {
+                ugs.setChangeEndDate(now);
+                ugs.setChangeUser(user);
+                repo.persist(ugs);
             });
     }
 }
