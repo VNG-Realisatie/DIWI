@@ -124,6 +124,7 @@ public class SecurityFilter implements ContainerRequestFilter {
                 userDao.persist(userEntity);
 
                 var group =  new UserGroup();
+                group.setSingleUser(true);
                 userGroupDAO.persist(group);
 
                 var groupState = new UserGroupState();
