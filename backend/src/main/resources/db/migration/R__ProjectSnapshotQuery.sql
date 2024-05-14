@@ -408,13 +408,13 @@ FROM (
                               LEFT(us.last_name, 1) || LEFT(us.first_name,1) AS user_initials,
                               us.last_name AS user_last_name,
                               us.first_name AS user_first_name,
-                              os.usergroup_id AS usergroup_id,
-                              os.naam AS usergroup_name
+                              ugs.usergroup_id AS usergroup_id,
+                              ugs.naam AS usergroup_name
                           FROM diwi_testset.project_state ps
-                              JOIN diwi_testset.usergroup_to_project otp ON ps.project_id = otp.project_id AND otp.change_end_date IS NULL
-                              JOIN diwi_testset.usergroup_state os ON otp.usergroup_id = os.usergroup_id AND os.change_end_date IS NULL
-                              JOIN diwi_testset.user_to_usergroup uto ON otp.usergroup_id = uto.usergroup_id
-                              JOIN diwi_testset.user_state us ON uto.user_id = us.user_id AND us.change_end_date IS NULL
+                              JOIN diwi_testset.usergroup_to_project ugtp ON ps.project_id = ugtp.project_id AND ugtp.change_end_date IS NULL
+                              JOIN diwi_testset.usergroup_state ugs ON ugtp.usergroup_id = ugs.usergroup_id AND ugs.change_end_date IS NULL
+                              JOIN diwi_testset.user_to_usergroup utug ON ugtp.usergroup_id = utug.usergroup_id
+                              JOIN diwi_testset.user_state us ON utug.user_id = us.user_id AND us.change_end_date IS NULL
                           WHERE
                               ps.change_end_date IS NULL AND ps.project_id = _project_uuid_
                       ) AS q
