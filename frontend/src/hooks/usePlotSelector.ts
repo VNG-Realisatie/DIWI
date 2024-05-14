@@ -73,7 +73,7 @@ const usePlotSelector = (id: string) => {
                 selectedProject.location = { lat: center[0], lng: center[1] };
             }
             if (selectedPlots.length > 0) {
-                const newProject = await updateProject({ ...selectedProject, geometry: null });
+                const newProject = await updateProject({ ...selectedProject, geometry: undefined });
                 setSelectedProject(newProject);
             }
         }
