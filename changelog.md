@@ -2,7 +2,7 @@
 
 ## DIWI RELEASE 1.3.0
 
-This release is focused on the experimental geojson importer, which is only available for administrators at the moment, aswell as a redesign of the project details and correcting naming issues.
+This release is focused on the experimental geojson importer, which is only available for administrators at the moment, as well as a redesign of the project details and correcting naming issues.
 
 ### ADDED
 
