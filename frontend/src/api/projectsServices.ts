@@ -4,8 +4,7 @@ import { API_URI } from "../utils/urls";
 import { GeoJSONGeometry, GeoJSONMultiPolygon, GeoJSONPolygon } from "ol/format/GeoJSON";
 import { putCustomPropertyValue } from "./customPropServices";
 
-export type Organization = components["schemas"]["OrganizationModel"];
-export type OrganizationUser = components["schemas"]["OrganizationUserModel"];
+export type UserGroup = components["schemas"]["UserGroupModel"];
 export type ProjectListModel = components["schemas"]["ProjectListModel"];
 export type Project = components["schemas"]["ProjectSnapshotModel"];
 export type ProjectSnapshotModel = components["schemas"]["ProjectSnapshotModel"];

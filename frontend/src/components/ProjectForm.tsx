@@ -11,7 +11,7 @@ import { DatePicker } from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from "dayjs";
 import { dateFormats } from "../localization";
 import { ConfidentialityLevel, PlanStatusOptions, ProjectPhaseOptions } from "../types/enums";
-import { OrganizationSelect } from "../widgets/OrganizationSelect";
+import { UserGroupSelect } from "../widgets/UserGroupSelect";
 import useProperties from "../hooks/useProperties";
 import { CustomPropertiesProject } from "./project/project-with-house-block/CustomPropertiesProject";
 import { CellContainer } from "./project/project-with-house-block/CellContainer";
@@ -267,7 +267,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                         {/* Owner */}
                         <Grid item xs={12} md={4}>
                             <LabelComponent required={false} readOnly={readOnly} text={t("createProject.informationForm.owner")} />
-                            <OrganizationSelect
+                            <UserGroupSelect
                                 readOnly={readOnly}
                                 userGroup={project?.projectOwners ? project.projectOwners : []}
                                 setUserGroup={(e) =>

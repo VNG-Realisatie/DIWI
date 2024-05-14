@@ -386,7 +386,7 @@ FROM (
         project_users AS (
             SELECT
                 q.project_id    AS project_id,
-                array_agg(array[q.organization_id::TEXT, q.organization_name, q.user_id::TEXT, q.user_initials, q.user_last_name, q.user_first_name]) AS users,
+                array_agg(array[q.usergroup_id::TEXT, q.usergroup_name, q.user_id::TEXT, q.user_initials, q.user_last_name, q.user_first_name]) AS users,
                 array_agg(q.user_initials ORDER BY q.user_initials)      AS users_initials
             FROM (
                 SELECT DISTINCT
@@ -395,13 +395,13 @@ FROM (
                     LEFT(us.last_name, 1) || LEFT(us.first_name,1) AS user_initials,
                     us.last_name AS user_last_name,
                     us.first_name AS user_first_name,
-                    os.organization_id AS organization_id,
-                    os.naam AS organization_name
+                    ugs.usergroup_id AS usergroup_id,
+                    ugs.naam AS usergroup_name
                 FROM diwi_testset.project_state ps
-                    JOIN diwi_testset.organization_to_project otp ON ps.project_id = otp.project_id AND otp.change_end_date IS NULL
-                    JOIN diwi_testset.organization_state os ON otp.organization_id = os.organization_id AND os.change_end_date IS NULL
-                    JOIN diwi_testset.user_to_organization uto ON otp.organization_id = uto.organization_id
-                    JOIN diwi_testset.user_state us ON uto.user_id = us.user_id AND us.change_end_date IS NULL
+                    JOIN diwi_testset.usergroup_to_project ugtp ON ps.project_id = ugtp.project_id AND ugtp.change_end_date IS NULL
+                    JOIN diwi_testset.usergroup_state ugs ON ugtp.usergroup_id = ugs.usergroup_id AND ugs.change_end_date IS NULL
+                    JOIN diwi_testset.user_to_usergroup utug ON ugtp.usergroup_id = utug.usergroup_id
+                    JOIN diwi_testset.user_state us ON utug.user_id = us.user_id AND us.change_end_date IS NULL
                 WHERE
                     ps.change_end_date IS NULL
                 ) AS q
