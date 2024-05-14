@@ -7,5 +7,5 @@ export async function filterTable(query: string) {
 }
 
 export async function getOrganizationList(): Promise<Array<UserGroup>> {
-    return getJson(`${API_URI}/groups/list`);
+    return getJson(`${API_URI}/groups`);
 }
