@@ -22,7 +22,12 @@ export const SingleNumberInput = ({ name, value, onChange, readOnly, mandatory, 
             label={placeholder}
             required={mandatory}
             disabled={readOnly}
-            sx={{ flex: 1 }}
+            sx={{
+                flex: 1,
+                "& .MuiInputBase-input.Mui-disabled": {
+                    backgroundColor: "#0000",
+                },
+            }}
             InputProps={{
                 inputProps: {
                     min: 0,

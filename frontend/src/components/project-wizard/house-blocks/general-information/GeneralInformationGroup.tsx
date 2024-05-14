@@ -2,11 +2,11 @@ import { Typography } from "@mui/material";
 import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
 import { HouseBlock } from "../../../../types/houseBlockTypes";
-import { HouseBlockSize, SizeInput } from "./SizeInput";
 import { StartDatePicker } from "./StartDatePicker";
 import { EndDatePicker } from "./EndDatePicker";
 import { DateValidationErrors } from "../../../../pages/ProjectWizardBlocks";
 import TetxInput from "../../../project/inputs/TextInput";
+import RangeNumberInput from "../../../project/inputs/RangeNumberInput";
 
 export type GeneralInformationProps = {
     houseBlock: HouseBlock;
@@ -14,7 +14,6 @@ export type GeneralInformationProps = {
     readOnly: boolean;
     errors: DateValidationErrors;
 };
-
 export const GeneralInformationGroup = ({ readOnly, houseBlock, setHouseBlock, errors }: GeneralInformationProps) => {
     const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const newName = event.target.value.trimStart();
@@ -33,10 +32,12 @@ export const GeneralInformationGroup = ({ readOnly, houseBlock, setHouseBlock, e
                 title={t("createProject.houseBlocksForm.nameLabel")}
                 errorText={t("createProject.nameIsRequried")}
             />
-            <SizeInput
+            <RangeNumberInput
                 readOnly={readOnly}
-                houseBlockSize={houseBlock.size}
-                updateHouseBlockSize={(houseBlockSize: HouseBlockSize) => setHouseBlock({ ...houseBlock, size: houseBlockSize })}
+                value={houseBlock.size}
+                updateCallBack={(houseBlockSize: any) => setHouseBlock({ ...houseBlock, size: houseBlockSize })}
+                mandatory={false}
+                title={t("createProject.houseBlocksForm.size")}
             />
             <StartDatePicker
                 readOnly={readOnly}

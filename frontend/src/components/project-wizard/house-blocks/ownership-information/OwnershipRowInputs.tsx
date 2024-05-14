@@ -4,8 +4,7 @@ import { useTranslation } from "react-i18next";
 import { OwnershipValueType, ownershipValueOptions } from "../../../../types/enums";
 import { OwnershipSingleValue } from "../../../../types/houseBlockTypes";
 import { InputContainer } from "../InputContainer";
-import { MonetaryRangeInput } from "../MonetaryRangeInput";
-import MonetaryRangeLabel from "../MonetaryRangeLabel";
+import RangeNumberInput from "../../../project/inputs/RangeNumberInput";
 
 type Props = {
     ownership: OwnershipSingleValue;
@@ -84,32 +83,24 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                 )}
             </Grid>
             <Grid item xs={2}>
-                {!readOnly && (
-                    <MonetaryRangeInput
-                        value={ownership.value}
-                        labelText="Value"
-                        updateCallBack={(e) => handleInputChange(index, { ...ownership, value: e })}
-                    />
-                )}
-                {readOnly && (
-                    <InputContainer>
-                        <MonetaryRangeLabel value={ownership.value} />
-                    </InputContainer>
-                )}
+                <RangeNumberInput
+                    value={ownership.value}
+                    labelText="Value"
+                    updateCallBack={(e) => handleInputChange(index, { ...ownership, value: e })}
+                    readOnly={readOnly}
+                    mandatory={false}
+                    isMonetary={true}
+                />
             </Grid>
             <Grid item xs={2}>
-                {!readOnly && (
-                    <MonetaryRangeInput
-                        value={ownership.rentalValue}
-                        labelText="RentalValue"
-                        updateCallBack={(e) => handleInputChange(index, { ...ownership, rentalValue: e })}
-                    />
-                )}
-                {readOnly && (
-                    <InputContainer>
-                        <MonetaryRangeLabel value={ownership.rentalValue} />
-                    </InputContainer>
-                )}
+                <RangeNumberInput
+                    value={ownership.rentalValue}
+                    labelText="RentalValue"
+                    updateCallBack={(e) => handleInputChange(index, { ...ownership, rentalValue: e })}
+                    readOnly={readOnly}
+                    mandatory={false}
+                    isMonetary={true}
+                />
             </Grid>
             <Grid item xs={1}>
                 {!readOnly && (
