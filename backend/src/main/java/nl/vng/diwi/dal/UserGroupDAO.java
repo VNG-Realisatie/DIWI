@@ -1,8 +1,10 @@
 package nl.vng.diwi.dal;
 
+import nl.vng.diwi.dal.entities.UserGroup;
 import nl.vng.diwi.dal.entities.UserGroupState;
 import nl.vng.diwi.models.UserGroupUserModel;
 import org.hibernate.Session;
+import org.hibernate.query.SelectionQuery;
 
 import java.util.List;
 import java.util.UUID;
@@ -96,5 +98,14 @@ public class UserGroupDAO extends AbstractRepository {
         return session.createQuery("FROM UserGroupState ugs WHERE ugs.name = :userGroupName AND ugs.changeEndDate IS NULL", UserGroupState.class)
             .setParameter("userGroupName", userGroupName)
             .list();
+    }
+
+    public UserGroup getCurrentUserGroup(UUID userGroupId) {
+        session.enableFilter(GenericRepository.CURRENT_DATA_FILTER);
+        String statement = "FROM UserGroup ug WHERE ug.id = :userGroupId";
+        SelectionQuery<UserGroup> query = session
+            .createSelectionQuery(statement, UserGroup.class)
+            .setParameter("userGroupId", userGroupId);
+        return query.getSingleResultOrNull();
     }
 }

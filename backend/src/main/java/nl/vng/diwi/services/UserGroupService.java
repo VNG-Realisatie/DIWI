@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import nl.vng.diwi.dal.AutoCloseTransaction;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.dal.entities.UserGroup;
@@ -15,8 +14,14 @@ import nl.vng.diwi.dal.entities.superclasses.ChangeDataSuperclass;
 import nl.vng.diwi.models.UserGroupModel;
 import nl.vng.diwi.models.UserGroupUserModel;
 import nl.vng.diwi.rest.VngBadRequestException;
+import nl.vng.diwi.rest.VngNotFoundException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class UserGroupService {
+
+    private static final Logger logger = LogManager.getLogger();
+
     public UserGroupService() {
     }
 
@@ -26,42 +31,59 @@ public class UserGroupService {
         return UserGroupModel.fromUserGroupUserModelListToUserGroupModelList(userGroupUserList);
     }
 
-    public UserGroupModel createUserGroup(VngRepository repo, UserGroupModel newUserGroupModel, UUID loggedUserId) throws VngBadRequestException {
+    public UserGroup createUserGroup(VngRepository repo, UserGroupModel newUserGroupModel, UUID loggedUserId) throws VngBadRequestException {
 
         List<UserGroupState> states = repo.getUsergroupDAO().findActiveUserGroupStateByName(newUserGroupModel.getName());
         if (!states.isEmpty()) {
             throw new VngBadRequestException("User group name is already in use.");
         }
 
-        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            ZonedDateTime now = ZonedDateTime.now();
-            User createUser = repo.getReferenceById(User.class, loggedUserId);
-            Consumer<ChangeDataSuperclass> setChangeValues = (ChangeDataSuperclass entity) -> {
-                entity.setCreateUser(createUser);
-                entity.setChangeStartDate(now);
-            };
+        ZonedDateTime now = ZonedDateTime.now();
+        User createUser = repo.getReferenceById(User.class, loggedUserId);
+        Consumer<ChangeDataSuperclass> setChangeValues = (ChangeDataSuperclass entity) -> {
+            entity.setCreateUser(createUser);
+            entity.setChangeStartDate(now);
+        };
 
-            UserGroup newGroup = new UserGroup();
-            newGroup.setSingleUser(false);
-            repo.persist(newGroup);
+        UserGroup newGroup = new UserGroup();
+        newGroup.setSingleUser(false);
+        repo.persist(newGroup);
 
-            UserGroupState newGroupState = new UserGroupState();
-            newGroupState.setUserGroup(newGroup);
-            newGroupState.setName(newUserGroupModel.getName());
-            setChangeValues.accept(newGroupState);
-            repo.persist(newGroupState);
+        UserGroupState newGroupState = new UserGroupState();
+        newGroupState.setUserGroup(newGroup);
+        newGroupState.setName(newUserGroupModel.getName());
+        setChangeValues.accept(newGroupState);
+        repo.persist(newGroupState);
 
-            for (UserGroupUserModel userModel : newUserGroupModel.getUsers()) {
-                UserToUserGroup userToUserGroup = new UserToUserGroup();
-                userToUserGroup.setUserGroup(newGroup);
-                userToUserGroup.setUser(repo.getReferenceById(User.class, userModel.getUuid()));
-                setChangeValues.accept(userToUserGroup);
-                repo.persist(userToUserGroup);
-            }
-            transaction.commit();
-
-            List<UserGroupUserModel> userGroupModel = repo.getUsergroupDAO().getUserGroupUsers(newGroup.getId());
-            return UserGroupModel.fromUserGroupUserModelListToUserGroupModelList(userGroupModel).get(0);
+        for (UserGroupUserModel userModel : newUserGroupModel.getUsers()) {
+            UserToUserGroup userToUserGroup = new UserToUserGroup();
+            userToUserGroup.setUserGroup(newGroup);
+            userToUserGroup.setUser(repo.getReferenceById(User.class, userModel.getUuid()));
+            setChangeValues.accept(userToUserGroup);
+            repo.persist(userToUserGroup);
         }
+        return newGroup;
+    }
+
+    public void deleteUserGroup(VngRepository repo, UUID groupId, UUID loggedInUserUuid) throws VngNotFoundException, VngBadRequestException {
+        ZonedDateTime now = ZonedDateTime.now();
+        User user = repo.findById(User.class, loggedInUserUuid);
+
+        UserGroup userGroup = repo.getUsergroupDAO().getCurrentUserGroup(groupId);
+        if (userGroup == null) {
+            logger.error("UserGroup with uuid {} was not found.", groupId);
+            throw new VngNotFoundException();
+        }
+        if (userGroup.getSingleUser() == Boolean.TRUE) {
+            throw new VngBadRequestException("Cannot delete single-user usergroups.");
+        }
+
+        userGroup.getState().stream()
+            .filter(cl -> cl.getChangeEndDate() == null)
+            .forEach(cl -> {
+                cl.setChangeEndDate(now);
+                cl.setChangeUser(user);
+                repo.persist(cl);
+            });
     }
 }
