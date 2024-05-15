@@ -2,12 +2,11 @@ import { useEffect, useState } from "react";
 import UsersTable from "../components/admin/user-management/UsersTable";
 import { getGroups, getUsers } from "../api/userSerivces";
 import GroupUserTable from "../components/admin/user-management/GroupUserTable";
-import { Box, Button, Dialog, DialogActions, DialogTitle, Stack } from "@mui/material";
+import { Stack } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { t } from "i18next";
 import { addGroup } from "../api/userSerivces";
 import useAlert from "../hooks/useAlert";
-import TextInput from "../components/project/inputs/TextInput";
 import GroupDialog from "../components/admin/user-management/GroupDialog";
 
 const UserManagement = () => {
@@ -19,13 +18,16 @@ const UserManagement = () => {
     const { setAlert } = useAlert();
     useEffect(() => {
         getUsers().then((data) => setUsers(data));
+    }, []);
+
+    useEffect(() => {
         getGroups().then((data) => setUserGroups(data));
     }, []);
 
     let testGroup: any;
     if (users.length > 0) {
         testGroup = {
-            name: "fdfd",
+            name: "test1",
             users: [
                 { uuid: users[1].id, firstName: users[1].firstName, lastName: users[1].lastName },
                 { uuid: users[0].id, firstName: users[0].firstName, lastName: users[0].lastName },
@@ -35,7 +37,7 @@ const UserManagement = () => {
 
     const handleAddGroup = async () => {
         try {
-            const data = await addGroup(testGroup);
+            const data = await addGroup(newGroup);
             console.log(data);
             setUserGroups([...userGroups, data]);
         } catch (error: any) {

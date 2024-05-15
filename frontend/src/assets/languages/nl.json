@@ -309,6 +309,27 @@
       }
     },
     "admin": {
+      "userManagement":{
+        "title": "Gebruikersbeheer",
+        "tableHeader": {
+          "name": {
+            "firstName": "Voornaam",
+            "lastName": "Achternaam"
+          },
+          "email": "E-mail",
+          "role": "Rol",
+          "active": "Actief",
+          "edit": "Bewerken",
+          "delete": "Verwijderen",
+          "actions": "Acties"
+        },
+        "add": "Voeg gebruiker toe",
+        "edit": "Pas gebruiker aan",
+        "notifications": {
+          "successfullySaved": "Gebruiker succesvol opgeslagen.",
+          "successfullyDeleted": "Gebruiker succesvol verwijderd."
+        }
+      },
       "settings": {
         "title": "Lijst met maatwerk velden",
         "tableHeader": {
