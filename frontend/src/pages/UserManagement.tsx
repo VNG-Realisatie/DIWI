@@ -8,6 +8,7 @@ import { t } from "i18next";
 import { addGroup } from "../api/userSerivces";
 import useAlert from "../hooks/useAlert";
 import TextInput from "../components/project/inputs/TextInput";
+import GroupDialog from "../components/admin/user-management/GroupDialog";
 
 const UserManagement = () => {
     const [users, setUsers] = useState<any[]>([]);
@@ -61,35 +62,14 @@ const UserManagement = () => {
                 <AddCircleIcon color="primary" sx={{ fontSize: "40px" }} />
                 {t("createProject.addAnotherHouseBlock")} {/* needs translation */}
             </Stack>
-            {isGroupDialogOpen && (
-                <Dialog open={isGroupDialogOpen} onClose={() => setIsGroupDialogOpen(false)}>
-                    <DialogTitle>Voeg een groep toe</DialogTitle>
-                    <DialogActions>
-                        <TextInput
-                            readOnly={false}
-                            value={newGroup.name}
-                            setValue={(value: any) => setNewGroup({ ...newGroup, name: value })}
-                            mandatory={true}
-                            title={t("createProject.informationForm.nameLabel")}
-                            errorText={t("createProject.hasMissingRequiredAreas.name")}
-                        />
-                        <Box sx={{ display: "flex", gap: "10px" }}>
-                            <Button
-                                onClick={(event) => {
-                                    event.stopPropagation();
-                                    setIsGroupDialogOpen(false);
-                                }}
-                                variant="outlined"
-                            >
-                                {t("generic.no")}
-                            </Button>
-                            <Button onClick={handleAddGroup} variant="contained">
-                                {t("generic.yes")}
-                            </Button>
-                        </Box>
-                    </DialogActions>
-                </Dialog>
-            )}
+            <GroupDialog
+                open={isGroupDialogOpen}
+                onClose={() => setIsGroupDialogOpen(false)}
+                newGroup={newGroup}
+                setNewGroup={setNewGroup}
+                handleAddGroup={handleAddGroup}
+                users={users}
+            />
         </>
     );
 };
