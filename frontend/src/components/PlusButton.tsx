@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { theme } from "../theme";
 import * as Paths from "../Paths";
 
-type PlusButtonProps = {
+export type PlusButtonProps = {
     color: string | undefined;
     link: string | (() => void);
     text: string;
