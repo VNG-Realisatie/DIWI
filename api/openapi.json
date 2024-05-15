@@ -271,26 +271,6 @@
         }
       }
     },
-    "/rest/organizations/list": {
-      "get": {
-        "operationId": "getAllOrganization",
-        "responses": {
-          "default": {
-            "description": "default response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/OrganizationModel"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/rest/projects": {
       "post": {
         "operationId": "createProject",
@@ -938,6 +918,46 @@
         }
       }
     },
+    "/rest/groups": {
+      "get": {
+        "operationId": "getAllUserGroups",
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserGroupModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rest/users": {
+      "get": {
+        "operationId": "getAllUsers",
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/rest/users/userinfo": {
       "get": {
         "operationId": "login_1",
@@ -947,7 +967,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserModel"
+                  "$ref": "#/components/schemas/UserInfoModel"
                 }
               }
             }
@@ -1242,43 +1262,6 @@
           }
         }
       },
-      "OrganizationModel": {
-        "required": ["name", "uuid"],
-        "type": "object",
-        "properties": {
-          "uuid": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "users": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/OrganizationUserModel"
-            }
-          }
-        }
-      },
-      "OrganizationUserModel": {
-        "type": "object",
-        "properties": {
-          "uuid": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "firstName": {
-            "type": "string"
-          },
-          "lastName": {
-            "type": "string"
-          },
-          "initials": {
-            "type": "string"
-          }
-        }
-      },
       "ProjectMinimalSnapshotModel": {
         "required": ["confidentialityLevel", "projectColor", "projectId", "projectName", "projectPhase"],
         "type": "object",
@@ -1423,7 +1406,7 @@
           "projectOwners": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/OrganizationModel"
+              "$ref": "#/components/schemas/UserGroupModel"
             }
           },
           "totalValue": {
@@ -1465,6 +1448,43 @@
             "format": "uuid"
           },
           "name": {
+            "type": "string"
+          }
+        }
+      },
+      "UserGroupModel": {
+        "required": ["name", "uuid"],
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "users": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserGroupUserModel"
+            }
+          }
+        }
+      },
+      "UserGroupUserModel": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "initials": {
             "type": "string"
           }
         }
@@ -1539,7 +1559,7 @@
           "projectOwners": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/OrganizationModel"
+              "$ref": "#/components/schemas/UserGroupModel"
             }
           },
           "totalValue": {
@@ -1757,7 +1777,7 @@
           "projectOwners": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/OrganizationModel"
+              "$ref": "#/components/schemas/UserGroupModel"
             }
           },
           "totalValue": {
@@ -1921,6 +1941,29 @@
         }
       },
       "UserModel": {
+        "required": ["email", "firstName", "id", "lastName", "role"],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["Admin", "UserPlus", "User", "Management", "Council", "External"]
+          }
+        }
+      },
+      "UserInfoModel": {
         "required": ["firstName", "initials", "lastName", "uuid"],
         "type": "object",
         "properties": {

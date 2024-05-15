@@ -1,14 +1,13 @@
 package nl.vng.diwi.models;
 
-import java.util.UUID;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import nl.vng.diwi.dal.entities.UserState;
-import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.security.UserRole;
+
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -16,29 +15,22 @@ import nl.vng.diwi.security.LoggedUser;
 public class UserModel {
 
     @JsonProperty(required = true)
-    UUID uuid;
+    private UUID id;
     @JsonProperty(required = true)
-    String firstName;
+    private String firstName;
     @JsonProperty(required = true)
-    String lastName;
+    private String lastName;
     @JsonProperty(required = true)
-    String initials;
+    private String email;
+    @JsonProperty(required = true)
+    private UserRole role;
 
     public UserModel(UserState user) {
-        this.uuid = user.getId();
+        this.id = user.getId();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
-        this.initials = createInitials();
+        this.email = user.getEmail();
+        this.role = user.getUserRole();
     }
 
-    public UserModel(LoggedUser loggedUser) {
-        this.uuid = loggedUser.getUuid();
-        this.firstName = loggedUser.getFirstName();
-        this.lastName = loggedUser.getLastName();
-        this.initials = createInitials();
-    }
-
-    private String createInitials() {
-        return this.getFirstName().substring(0, 1) + this.getLastName().substring(0, 1);
-    }
 }
