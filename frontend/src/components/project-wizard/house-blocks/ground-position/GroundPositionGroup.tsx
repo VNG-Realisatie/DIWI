@@ -44,7 +44,7 @@ export const GroundPositionGroup = ({ houseBlock, setHouseBlock, readOnly }: Gro
             />
             <SingleNumberInput
                 value={houseBlock?.groundPosition?.intentionPermissionOwner}
-                onChange={(e: any) =>
+                onChange={(e) =>
                     houseBlock &&
                     setHouseBlock({
                         ...houseBlock,
@@ -61,7 +61,7 @@ export const GroundPositionGroup = ({ houseBlock, setHouseBlock, readOnly }: Gro
             />
             <SingleNumberInput
                 value={houseBlock?.groundPosition?.formalPermissionOwner}
-                onChange={(e: any) =>
+                onChange={(e) =>
                     houseBlock &&
                     setHouseBlock({
                         ...houseBlock,

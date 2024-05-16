@@ -21,7 +21,7 @@ export const MutationInformationGroup = ({ houseBlock, setHouseBlock, readOnly }
             <SingleNumberInput
                 name={t("createProject.houseBlocksForm.amount")}
                 value={houseBlock.mutation.amount ?? null}
-                onChange={(e: any) =>
+                onChange={(e) =>
                     setHouseBlock({
                         ...houseBlock,
                         mutation: {

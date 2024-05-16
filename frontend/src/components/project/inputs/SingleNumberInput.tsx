@@ -4,7 +4,7 @@ import InputLabelStack from "./InputLabelStack";
 type SingleNumberEdit = {
     name?: string;
     value: number | null;
-    onChange: any;
+    onChange: (newValue: number | null) => void;
     readOnly: boolean;
     mandatory: boolean;
     error?: string;
