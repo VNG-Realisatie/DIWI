@@ -34,7 +34,7 @@ export const MutationInformationGroup = ({ houseBlock, setHouseBlock, readOnly }
             />
             <CategoryInput
                 readOnly={readOnly}
-                values={houseBlock.mutation.kind}
+                values={houseBlock.mutation.kind ? { id: houseBlock.mutation.kind, name: houseBlock.mutation.kind } : null}
                 setValue={(_, newValue) => {
                     newValue &&
                         setHouseBlock({
@@ -47,7 +47,7 @@ export const MutationInformationGroup = ({ houseBlock, setHouseBlock, readOnly }
                 }}
                 mandatory={true}
                 title={t("createProject.houseBlocksForm.mutationType")}
-                options={mutationKindOptions}
+                options={mutationKindOptions.map((value) => ({ id: value, name: value }))}
                 multiple={false}
                 error={t("wizard.houseBlocks.mutationKindWarning")}
                 translationPath="createProject.houseBlocksForm."

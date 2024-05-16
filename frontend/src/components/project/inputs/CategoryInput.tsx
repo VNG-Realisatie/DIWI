@@ -10,13 +10,13 @@ type Option = {
 type SetValueFunction = (event: any, value: any, reason: AutocompleteChangeReason, details?: AutocompleteChangeDetails<Option>) => void;
 
 type CategoryInputProps = {
-    values: any;
+    values: Option | Option[] | null;
     setValue: SetValueFunction;
     nullable?: boolean; // Not implemented
     readOnly: boolean;
     mandatory: boolean;
     title?: string;
-    options: any; //Option[]
+    options: Option[];
     multiple: boolean;
     error?: string;
     translationPath?: string;
@@ -56,7 +56,7 @@ const CategoryInput = ({ values, setValue, readOnly, mandatory, title, options, 
                     }
                     return "";
                 }}
-                value={values ?? null}
+                value={values}
                 filterSelectedOptions
                 onChange={setValue}
                 renderInput={(params) => (

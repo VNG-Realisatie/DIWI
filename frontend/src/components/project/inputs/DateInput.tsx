@@ -1,11 +1,11 @@
 import { DatePicker } from "@mui/x-date-pickers";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { dateFormats } from "../../../localization";
 import InputLabelStack from "./InputLabelStack";
 
 type Props = {
     value: string | null;
-    setValue: any;
+    setValue: (value: Dayjs | null) => void;
     nullable?: boolean; //not implemented
     readOnly: boolean;
     mandatory: boolean;

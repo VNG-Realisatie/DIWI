@@ -49,10 +49,10 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
             <Grid item xs={4}>
                 <CategoryInput
                     readOnly={readOnly}
-                    values={ownership.type}
+                    values={ownership.type ? { id: ownership.type, name: ownership.type } : null}
                     setValue={(_, newValue) => handleInputChange(index, { ...ownership, type: newValue as OwnershipValueType })}
                     mandatory={false}
-                    options={ownershipValueOptions}
+                    options={ownershipValueOptions.map((value) => ({ id: value, name: value }))}
                     multiple={false}
                     translationPath="createProject.houseBlocksForm.ownershipAndValue.type."
                 />

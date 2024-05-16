@@ -159,7 +159,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 mandatory={true}
                                 title={t("createProject.informationForm.projectPhase")}
                                 options={projectPhaseOptions}
-                                values={project?.projectPhase ? projectPhaseOptions.find((p) => p.id === project.projectPhase) : null}
+                                values={(project?.projectPhase && projectPhaseOptions.find((p) => p.id === project.projectPhase)) || null}
                                 setValue={(_, newValue) => {
                                     if (newValue && newValue.id) {
                                         setProject({
@@ -209,7 +209,9 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 mandatory={true}
                                 title={t("createProject.informationForm.confidentialityLevel")}
                                 options={confidentialityLevelOptions}
-                                values={project?.confidentialityLevel ? confidentialityLevelOptions.find((cl) => cl.id === project.confidentialityLevel) : null}
+                                values={
+                                    (project?.confidentialityLevel && confidentialityLevelOptions.find((cl) => cl.id === project.confidentialityLevel)) || null
+                                }
                                 setValue={(_, newValue) => {
                                     if (newValue && newValue.id) {
                                         setProject({
