@@ -137,6 +137,18 @@ If some values values seem optional in the openapi definition, but they are not,
 
 ### Setup Backend development
 
+#### Setup test DB
+
+The tests expect a db called diwi_test owned by the diwi user
+
+```shell
+dropdb diwi_test # Optional when database already exists
+createuser diwi
+psql -c "ALTER USER \"diwi\" WITH PASSWORD 'diwi'"
+createdb diwi_test -O diwi
+
+```
+
 #### Install Eclipse for java EE
 
 - Download the installer (https://www.eclipse.org/downloads/)
