@@ -15,7 +15,7 @@ public class UserGroupDAO extends AbstractRepository {
         super(session);
     }
 
-    public List<UserGroupUserModel> getUserGroupUsersList(boolean includeSingleUser) {
+    public List<UserGroupUserModel> getAllUserGroupsUsersList(boolean includeSingleUser) {
 
         String querySql = String.format("""
                 SELECT ug.id AS userGroupUuid,
