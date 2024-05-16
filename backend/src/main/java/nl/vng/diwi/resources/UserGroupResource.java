@@ -1,6 +1,6 @@
 package nl.vng.diwi.resources;
 
-import static nl.vng.diwi.security.UserActionConstants.CAN_OWN_PROJECTS;
+import nl.vng.diwi.security.UserActionConstants;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.services.UserGroupService;
 
 @Path("/groups")
-@RolesAllowed({CAN_OWN_PROJECTS})
+@RolesAllowed("BLOCKED_BY_DEFAULT") // This forces us to make sure each end-point has action(s) assigned, so we never have things open by default.
 public class UserGroupResource {
 
     private final VngRepository repo;
@@ -33,6 +33,7 @@ public class UserGroupResource {
     }
 
     @GET
+    @RolesAllowed({UserActionConstants.VIEW_GROUPS})
     @Produces(MediaType.APPLICATION_JSON)
     public List<UserGroupModel> getAllUserGroups(@Context LoggedUser loggedUser) {
 

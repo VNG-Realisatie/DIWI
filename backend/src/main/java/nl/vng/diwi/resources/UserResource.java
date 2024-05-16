@@ -1,5 +1,6 @@
 package nl.vng.diwi.resources;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -10,10 +11,12 @@ import nl.vng.diwi.dal.UserDAO;
 import nl.vng.diwi.models.UserInfoModel;
 import nl.vng.diwi.models.UserModel;
 import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.security.UserActionConstants;
 
 import java.util.List;
 
 @Path("/users")
+// Specifically no @RolesAllowed("BLOCKED_BY_DEFAULT") because userinfo should always be accessible
 public class UserResource {
 
     private final UserDAO userDao;
@@ -24,6 +27,7 @@ public class UserResource {
     }
 
     @GET
+    @RolesAllowed(UserActionConstants.VIEW_USERS)
     @Produces(MediaType.APPLICATION_JSON)
     public List<UserModel> getAllUsers() {
         return userDao.getAllUsers().stream().map(UserModel::new).toList();
