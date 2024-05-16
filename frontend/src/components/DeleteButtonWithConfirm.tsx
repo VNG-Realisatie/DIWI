@@ -32,7 +32,7 @@ export const DeleteButtonWithConfirm = ({ typeAndName: name, iconColor, deleteFu
         <>
             <Tooltip placement="top" title={t("generic.delete")}>
                 <DeleteForeverOutlinedIcon
-                    sx={{ ml: 3, color: iconColor.toString(), cursor: "pointer" }}
+                    sx={{ ml: 2, color: iconColor.toString(), cursor: "pointer" }}
                     onClick={(event) => {
                         event.stopPropagation();
                         setIsDialogOpen(!isDialogOpen);

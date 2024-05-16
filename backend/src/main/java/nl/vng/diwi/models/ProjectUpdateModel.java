@@ -37,6 +37,7 @@ public class ProjectUpdateModel {
         municipality,
         district,
         neighbourhood,
+        geometry,
         // Do not change the order - startDate and endDate must be the last ones!
         // It will cause problems in future problems and extra milestones to be created.
         // See ProjectsResourceTest.updateProjectTest_futureProject
@@ -194,6 +195,12 @@ public class ProjectUpdateModel {
                 List<UUID> neighbourhoodCatUuids = neighbourhoodProperty.getCategoryValues().stream().map(IdSuperclass::getId).toList();
                 if (!neighbourhoodCatUuids.containsAll(getValuesAsUuids())) {
                     yield "Invalid neighbourhood property";
+                }
+                yield null;
+            }
+            case geometry -> {
+                if (value != null) {
+                    yield "Project geometry can only be set while importing from GeoJSON.";
                 }
                 yield null;
             }

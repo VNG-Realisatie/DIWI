@@ -5,8 +5,8 @@
       "no": "Nee",
       "save": "Opslaan",
       "saved": "Opgeslagen",
-      "next": "Volgende",
-      "previous": "Vorig",
+      "next": "Opslaan en volgende",
+      "previous": "Opslaan en vorige",
       "cancelChanges": "Stop veranderingen",
       "saveChanges": "Veranderingen opslaan",
       "edit": "Bewerken",
@@ -26,7 +26,7 @@
       "andLess": "en minder"
     },
     "createProject": {
-      "information": "Project informatie",
+      "information": "Projectinformatie",
       "houseBlocks": "Woningblokken",
       "signupOnTheMap": "Intekenen op de kaart",
       "timeline": "Tijdlijn",
@@ -34,57 +34,69 @@
       "successfullySaved": "Project succesvol opgeslagen.",
       "nameIsRequried": "Vul het veld projectnaam in",
       "addAnotherHouseBlock": "Voeg nog een woningblok toe",
+      "noCustomProps": "Er zijn geen maatwerk eigenschappen",
       "informationForm": {
         "title": "Vul de projectgegevens in",
         "info": "Vul de projectgegevens in",
-        "nameLabel": "Projectnaam en projectkleur",
-        "planType": "Plan Type",
-        "startDate": "Start Datum",
-        "endDate": "Eind Datum",
-        "priority": "Priorisering",
-        "projectPhase": "Project Fase",
-        "roleMunicipality": "Rol Gemeente",
+        "nameLabel": "Projectnaam",
+        "color": "Kleur",
+        "planType": "Plantype",
+        "startDate": "Startdatum",
+        "endDate": "Einddatum",
+        "priority": "Prioritering",
+        "projectPhase": "Projectfase",
+        "roleMunicipality": "Rol gemeente",
         "programming": "Programmering",
-        "projectLeader": "Project Leider",
-        "confidentialityLevel": "Vertrouwlijkheidsniveau",
-        "planningPlanStatus": "Planologische Plan Status",
-        "owner": "Eigenaar"
+        "projectLeader": "Projectleider",
+        "confidentialityLevel": "Vertrouwelijkheidsniveau",
+        "planningPlanStatus": "Planologische planstatus",
+        "owner": "Schrijfrechten",
+        "neighbourhood": "Buurt",
+        "district": "Wijk",
+        "municipality": "Gemeente"
       },
       "houseBlocksForm": {
         "title": "Vul de woningblokken in",
         "info": "Vul de woningblok informatie in",
-        "nameLabel": "Naam",
-        "startDate": "Start Datum",
-        "endDate": "Eind Datum",
+        "nameLabel": "Naam van dit onderdeel van je woningbouwproject",
+        "startDate": "Opvoerdatum in project",
+        "endDate": "Datum laatste oplevering",
         "mutationData": "Mutatie gegevens",
         "grossPlanCapacity": "Bruto plancapaciteit",
-        "netPlanCapacity": "Netto Plancapaciteit",
+        "netPlanCapacity": "Netto plancapaciteit",
         "demolition": "Sloop",
         "mutationType": "Mutatiesoort",
         "DEMOLITION": "Sloop",
         "CONSTRUCTION": "Bouw",
-        "size": "Grootte",
+        "size": "Woonoppervlak in m2",
         "type": "Soort",
         "amount": "Aantal",
         "rent": "Huur",
-        "ownershipAndValue": "Eigendom en waarde",
+        "ownershipAndValue": {
+          "title": "Eigendom en waarde",
+          "type": {
+            "KOOPWONING": "Koopwoning",
+            "HUURWONING_PARTICULIERE_VERHUURDER": "Huurwoning Particuliere Verhuurder",
+            "HUURWONING_WONINGCORPORATIE": "Huurwoning Woningcorporatie"
+          }
+        },
         "ownerOccupiedHome": "Koopwoning",
-        "rentalPropertyPrivate": "Huurwoning Particuliere verhuurder",
-        "rentalPropertyHousingAssociation": "Huurwoning Woningcorporatie",
+        "rentalPropertyPrivate": "Huurwoning particuliere verhuurder",
+        "rentalPropertyHousingAssociation": "Huurwoning woningcorporatie",
         "value": "Waarde",
         "rentalAmount": "Huurbedrag",
-        "noPermissionFromLandOwner": "Geen toestemming Grondeigenaar",
-        "intentionToCooperateWithTheLandowner": "Intentie medewerking Grondeigenaar",
-        "formalPermissionFromLandOwner": "Formele toestemming van Grondeigenaar",
+        "noPermissionFromLandOwner": "Geen toestemming grondeigenaar",
+        "intentionToCooperateWithTheLandowner": "Intentie medewerking grondeigenaar",
+        "formalPermissionFromLandOwner": "Formele toestemming van grondeigenaar",
         "housesOn": "woningen op",
         "physicalAppearance": {
           "title": "Fysiek voorkomen",
           "tussenwoning": "Tussenwoning",
-          "tweeondereenkap": "Twee onder een kap",
-          "portiekflat": "Portiekflat",
+          "tweeondereenkap": "Twee onder één kap",
+          "portiekflat": "Appartement met portiek",
           "hoekwoning": "Hoekwoning",
           "vrijstaand": "Vrijstaand",
-          "gallerijflat": "Gallerijflat",
+          "gallerijflat": "Appartement met gallerij",
           "houseType": "Soort woning",
           "value": "Aantal"
         },
@@ -92,9 +104,9 @@
           "title": "Doelgroep",
           "regular": "Regulier",
           "youth": "Jongeren",
-          "student": "Student",
-          "elderly": "Ouderen",
-          "ghz": "GHZ",
+          "student": "Studenten",
+          "elderly": "Senioren",
+          "ghz": "Gehandicaptenzorg",
           "largeFamilies": "Grote gezinnen",
           "typeOfResidents": "Soorten bewoners",
           "value": "Aantal"
@@ -119,18 +131,18 @@
         },
         "terracedHouse": "Tussenwoning",
         "cornerHouse": "Hoekwoning",
-        "semidetached": "Twee onder een kap",
+        "semidetached": "Twee onder één kap",
         "detached": "Vrijstaand",
-        "porticoApartment": "Portiekflat",
-        "galleryFlat": "Gallerijflat",
+        "porticoApartment": "Appartement met portiek",
+        "galleryFlat": "Appartement met gallerij",
         "singleFamilyHome": "Eengezinswoning",
         "multiFamilyHome": "Meergezinswoning",
         "goal": "Doel",
         "regular": "Regulier",
         "youngPeople": "Jongeren",
         "students": "Studenten",
-        "elderly": "Ouderen",
-        "disabilityAndCare": "Gehandicapter en zorg",
+        "elderly": "Senioren",
+        "disabilityAndCare": "Gehandicapten en zorg",
         "largeFamilies": "Grote gezinnen",
         "notifications": {
           "successfullySaved": "Woningblokken succesvol opgeslagen.",
@@ -140,7 +152,7 @@
       },
       "selectMapForm": {
         "title": "Teken het project in op de kaart",
-        "info": "Selecteer de percelen of delen van percelen voor het project in op de kaart",
+        "info": "Selecteer de percelen of delen van percelen voor het project op de kaart",
         "warning": "Er zijn geen percelen geselecteerd, dit project zal niet zichtbaar zijn op de overzichtskaart",
         "municipality": "Gemeente",
         "neighbourhood": "Wijk",
@@ -156,10 +168,10 @@
       },
       "hasMissingRequiredAreas": {
         "name": "Naam ontbreekt",
-        "startDate": "Start datum ontbreekt",
-        "endDate": "Eind datum ontbreekt",
-        "projectPhase": "Project Fase ontbreekt",
-        "confidentialityLevel": "Vertrouwlijkheidsniveau  ontbreekt",
+        "startDate": "Startdatum ontbreekt",
+        "endDate": "Einddatum ontbreekt",
+        "projectPhase": "Projectfase ontbreekt",
+        "confidentialityLevel": "Vertrouwelijkheidsniveau  ontbreekt",
         "amount": "Aantal ontbreekt",
         "hasmissingProperty": "Formulier heeft ontbrekende eigenschappen"
       }
@@ -192,20 +204,20 @@
       "tableColumns": {
         "projectName": "Project naam",
         "totalValue": "Totaal aantal",
-        "organizationName": "Eigenaar",
-        "confidentialityLevel": "Vertrouwlijkheidsniveau",
-        "startDate": "Start Datum",
-        "endDate": "Eind Datum",
-        "planType": "Plan Type",
-        "priority": "Priorisering",
-        "municipalityRole": "Rol Gemeente",
-        "projectLeader": "Project Leider",
-        "projectPhase": "Project Fase",
-        "planningPlanStatus": "Planologische Plan Status",
-        "municipality": "Regio",
+        "organizationName": "Schrijfrechten",
+        "confidentialityLevel": "Vertrouwelijkheidsniveau",
+        "startDate": "Startdatum",
+        "endDate": "Einddatum",
+        "planType": "Plantype",
+        "priority": "Prioritering",
+        "municipalityRole": "Rol gemeente",
+        "projectLeader": "Projectleider",
+        "projectPhase": "Projectfase",
+        "planningPlanStatus": "Planologische planstatus",
+        "municipality": "Gemeente",
         "district": "Wijk",
         "neighbourhood": "Buurt",
-        "selectPlanType": "Selecteer plan type",
+        "selectPlanType": "Selecteer plantype",
         "selectMunicipalityRole": "Selecteer gemeente rol",
         "selecMunicipality": "Selecteer gemeente",
         "selectPlanningPlanStatus": "Selecteer toestand",
@@ -219,7 +231,8 @@
       "characteristics": "Eigenschappen",
       "timeline": "Tijdlijn",
       "colorEdit": "Kleur bewerken",
-      "createNewHouseBlock": "Nieuw woningblok toevoegen"
+      "createNewHouseBlock": "Nieuw woningblok toevoegen",
+      "explanation": "Op deze pagina vul je de basisgegevens van je woningbouwproject in"
     },
     "exchangeData": {
       "title": "Data uitwisselen",
@@ -254,7 +267,7 @@
         "_4B_NIET_OPGENOMEN_IN_VISIE": "4B Niet opgenomen in visie"
       },
       "planTypeOptions": {
-        "PAND_TRANSFORMATIE": "Pand Transformatie",
+        "PAND_TRANSFORMATIE": "Pandtransformatie",
         "TRANSFORMATIEGEBIED": "Transformatiegebied",
         "HERSTRUCTURERING": "Herstructurering",
         "VERDICHTING": "Verdichting",
@@ -282,10 +295,10 @@
       "houseBlocks": {
         "deleteConfirmation": "Weet je zeker dat je woningblok wilt verwijderen?",
         "warning": "Een of meer woningblokken zijn verkeerd ingevuld",
-        "endDateWarning": "Eind Datum moet een eerdere datum zijn",
-        "startDateWarning": "Start Datum moet een latere datum zijn",
-        "endDateWarningMissing": "​Vul het veld eind datum in",
-        "startDateWarningMissing": "​Vul het veld start datum in",
+        "endDateWarning": "Einddatum moet een eerdere datum zijn",
+        "startDateWarning": "Opvoerdatum in project moet een latere datum zijn",
+        "endDateWarningMissing": "​Vul het veld Datum laatste oplevering in",
+        "startDateWarningMissing": "​Vul het veld Opvoerdatum in project in",
         "mutationAmountWarning": "​Vul het veld aantal in met een positief getal",
         "mutationKindWarning": "​Vul het veld mutatiesoort in",
         "generalInformation": {
@@ -295,7 +308,7 @@
     },
     "admin": {
       "settings": {
-        "title": "Lijst met optionele velden",
+        "title": "Lijst met maatwerk velden",
         "tableHeader": {
           "name": "Naam",
           "objectType": "Project of woningblok",
@@ -307,6 +320,16 @@
           "delete": "Verwijderen",
           "actions": "Acties"
         },
+        "fixedPropertyType": {
+          "municipality": "Gemeente",
+          "district": "Wijk",
+          "neighbourhood": "Buurt",
+          "municipalityRole": "Rol Gemeente",
+          "physicalAppearance": "Fysiek Voorkomen",
+          "priority": "Prioriteit",
+          "targetGroup": "Doelgroep",
+          "geometry": "Geometrie"
+        },
         "propertyType": {
           "BOOLEAN": "Ja / Nee",
           "NUMERIC": "Getal",
@@ -314,7 +337,12 @@
           "CATEGORY": "Categorie",
           "TEXT": "Open tekstveld"
         },
+        "objectType": {
+          "PROJECT": "Project",
+          "WONINGBLOK": "Woningblok"
+        },
         "add": "Voeg maatwerk eigenschap toe",
+        "addOption": "Voeg optie toe",
         "edit": "Pas maatwerk eigenschap aan",
         "propertyTypeInfo": "Type kan na het opslaan niet meer worden gewijzigd.",
         "notifications": {
@@ -326,9 +354,9 @@
     "customProperties": {
       "title": "Maatwerk eigenschappen"
     },
-    "projectPhase": "Project Fase",
+    "projectPhase": "Projectfase",
     "planType": "Plan Type",
     "totalValue": "Aantal",
-    "projectOwners": "Eigenaar"
+    "projectOwners": "Schrijfrechten"
   }
 }

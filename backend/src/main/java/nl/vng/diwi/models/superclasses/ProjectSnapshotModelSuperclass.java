@@ -40,6 +40,8 @@ abstract public class ProjectSnapshotModelSuperclass extends ProjectMinimalSnaps
 
     private LocationModel location;
 
+    private String geometry;
+
     public ProjectSnapshotModelSuperclass(ProjectListSqlModel sqlModel) {
         this.setProjectId(sqlModel.getProjectId());
         this.setProjectStateId(sqlModel.getProjectStateId());
@@ -60,6 +62,7 @@ abstract public class ProjectSnapshotModelSuperclass extends ProjectMinimalSnaps
         this.setDistrict(sqlModel.getDistrict());
         this.setNeighbourhood(sqlModel.getNeighbourhood());
         this.location = new LocationModel(sqlModel.getLatitude(), sqlModel.getLongitude());
+        this.geometry = sqlModel.getGeometry();
 
         Collections.sort(this.getMunicipalityRole());
         Collections.sort(this.getMunicipality());

@@ -719,7 +719,17 @@
     },
     "/rest/projects/import": {
       "post": {
-        "operationId": "importExcelFile",
+        "operationId": "importFile",
+        "parameters": [
+          {
+            "name": "fileType",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["GEOJSON", "EXCEL"]
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "multipart/form-data": {
@@ -1446,6 +1456,9 @@
           },
           "location": {
             "$ref": "#/components/schemas/LocationModel"
+          },
+          "geometry": {
+            "type": "string"
           }
         }
       },
@@ -1565,6 +1578,9 @@
           },
           "location": {
             "$ref": "#/components/schemas/LocationModel"
+          },
+          "geometry": {
+            "type": "string"
           },
           "customProperties": {
             "type": "array",

@@ -5,6 +5,9 @@ htpasswd
 /data/*
 !/data/.gitkeep
 
+/backup/*
+!/backup/.gitkeep
+
 sql/json/
 /.metadata/
 

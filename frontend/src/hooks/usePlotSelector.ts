@@ -1,30 +1,32 @@
-import { Map, View } from "ol";
-
-import GeoJSON from "ol/format/GeoJSON.js";
+import _ from "lodash";
+import { Map, MapBrowserEvent, View } from "ol";
+import { defaults as defaultControls } from "ol/control.js";
+import { Listener } from "ol/events";
+import { Extent } from "ol/extent";
+import { GeoJSON } from "ol/format";
 import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
 import { OSM, TileWMS, Vector as VectorSource } from "ol/source";
-
-import _ from "lodash";
-import { defaults as defaultControls } from "ol/control.js";
-import { Extent } from "ol/extent";
 import { Fill, Stroke, Style } from "ol/style";
 import { StyleFunction } from "ol/style/Style";
 import queryString from "query-string";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { Plot, PlotGeoJSON, getProjectPlots, updateProjectPlots, updateProject } from "../api/projectsServices";
+import { Plot, PlotGeoJSON, getProjectPlots, updateProject, updateProjectPlots } from "../api/projectsServices";
 import ConfigContext from "../context/ConfigContext";
 import ProjectContext from "../context/ProjectContext";
 import { extentToCenter, mapBoundsToExtent } from "../utils/map";
 
 const baseUrlKadasterWms = "https://service.pdok.nl/kadaster/kadastralekaart/wms/v5_0";
 
+const projection = "EPSG:3857";
+
 const usePlotSelector = (id: string) => {
-    const { selectedProject } = useContext(ProjectContext);
+    const { selectedProject, setSelectedProject } = useContext(ProjectContext);
     const { mapBounds } = useContext(ConfigContext);
 
     const [map, setMap] = useState<Map>();
     const [selectedPlotLayerSource, setSelectedPlotLayerSource] = useState<VectorSource>();
+    const [projectLayerSource, setProjectLayerSource] = useState<VectorSource>();
 
     const [originalSelectedPlots, setOriginalSelectedPlots] = useState<Plot[] | null>(null);
     const [selectedPlots, setSelectedPlots] = useState<Plot[]>([]);
@@ -71,60 +73,74 @@ const usePlotSelector = (id: string) => {
                 const center = extentToCenter(extent);
                 selectedProject.location = { lat: center[0], lng: center[1] };
             }
-            await updateProject(selectedProject);
+            if (selectedPlots.length > 0) {
+                const newProject = await updateProject({ ...selectedProject, geometry: null });
+                setSelectedProject(newProject);
+            }
         }
     };
 
     const handleClick = useCallback(
-        (e: any) => {
-            // @ts-ignore
-            const loc = e.coordinate;
-            const bboxSize = 1;
-            const bbox = `${loc[0] - bboxSize},${loc[1] - bboxSize},${loc[0] + bboxSize},${loc[1] + bboxSize}`;
-            const url = queryString.stringifyUrl({
-                url: baseUrlKadasterWms,
-                query: {
-                    QUERY_LAYERS: "Perceel",
-                    INFO_FORMAT: "application/json",
-                    REQUEST: "GetFeatureInfo",
-                    SERVICE: "WMS",
-                    VERSION: "1.3.0",
-                    HEIGHT: "101", // What?
-                    WIDTH: "101", // What?
-                    I: "50", // What?
-                    J: "50", // What?
-                    layers: "Perceel",
-                    CRS: "EPSG:3857",
-                    BBOX: bbox,
-                },
-            });
+        (e: MapBrowserEvent<UIEvent>) => {
+            const map: Map = e.map;
+            if (!map) return;
 
-            fetch(url)
-                .then((res) => res.json())
-                .then((result): void => {
-                    const plotFeature = result as PlotGeoJSON;
-                    const properties = plotFeature.features[0].properties;
-                    const newPlot: Plot = {
-                        brkGemeenteCode: properties.kadastraleGemeenteCode,
-                        brkPerceelNummer: parseInt(properties.perceelnummer),
-                        brkSectie: properties.sectie,
-                        plotFeature: plotFeature,
-                    };
-                    const newSelectedPlots = selectedPlots.filter((p) => {
-                        const notEqual =
-                            p.brkGemeenteCode !== newPlot.brkGemeenteCode ||
-                            p.brkPerceelNummer !== newPlot.brkPerceelNummer ||
-                            p.brkSectie !== newPlot.brkSectie;
-                        return notEqual;
-                    });
-                    if (newSelectedPlots.length !== selectedPlots.length) {
-                        setSelectedPlots(newSelectedPlots);
-                    } else {
-                        setSelectedPlots([...selectedPlots, newPlot]);
-                    }
+            const features = map.getFeaturesAtPixel(e.pixel, { layerFilter: (layer) => layer.getSource() === selectedPlotLayerSource });
+
+            if (features.length > 0) {
+                const newSelectedPlots = selectedPlots.filter((plot) => {
+                    const id = plot.plotFeature.features[0].id;
+                    const clickedFeatureId = features[0].getId();
+                    return id !== clickedFeatureId;
                 });
+                setSelectedPlots(newSelectedPlots);
+            } else {
+                const bboxSize = 1;
+                const loc = e.coordinate;
+                const bbox = `${loc[0] - bboxSize},${loc[1] - bboxSize},${loc[0] + bboxSize},${loc[1] + bboxSize}`;
+
+                const url = queryString.stringifyUrl({
+                    url: baseUrlKadasterWms,
+                    query: {
+                        QUERY_LAYERS: "Perceel",
+                        INFO_FORMAT: "application/json",
+                        REQUEST: "GetFeatureInfo",
+                        SERVICE: "WMS",
+                        VERSION: "1.3.0",
+                        HEIGHT: 101,
+                        WIDTH: 101,
+                        I: 50,
+                        J: 50,
+                        layers: "Perceel",
+                        CRS: "EPSG:3857",
+                        BBOX: bbox,
+                    },
+                });
+
+                fetch(url)
+                    .then((res) => res.json())
+                    .then((result) => {
+                        const plotFeature = result as PlotGeoJSON;
+
+                        if (plotFeature.features.length === 0) {
+                            // There is no plot at this location
+                            return;
+                        }
+
+                        const properties = plotFeature.features[0].properties;
+
+                        const newPlot: Plot = {
+                            brkGemeenteCode: properties.kadastraleGemeenteCode,
+                            brkPerceelNummer: parseInt(properties.perceelnummer),
+                            brkSectie: properties.sectie,
+                            plotFeature,
+                        };
+
+                        setSelectedPlots([...selectedPlots, newPlot]);
+                    });
+            }
         },
-        [selectedPlots],
+        [selectedPlotLayerSource, selectedPlots],
     );
 
     useEffect(
@@ -151,6 +167,34 @@ const usePlotSelector = (id: string) => {
     );
 
     useEffect(
+        function updateProjectGeometry() {
+            if (!projectLayerSource) {
+                return;
+            }
+
+            projectLayerSource.clear();
+
+            if (selectedProject?.geometry) {
+                const geometry = JSON.parse(selectedProject.geometry);
+
+                const options = {
+                    featureProjection: map?.getView().getProjection(),
+                };
+                const geojsonFeature = {
+                    type: "Feature",
+                    crs: geometry.crs,
+                    geometry,
+                    properties: {},
+                };
+                // Convert geometry to a feature while converting the projection
+                const feature = new GeoJSON().readFeature(geojsonFeature, options);
+
+                projectLayerSource.addFeature(feature);
+            }
+        },
+        [projectLayerSource, selectedProject?.geometry, map],
+    );
+    useEffect(
         function zoomToExtent() {
             if (extent) {
                 map?.getView().fit(extent);
@@ -162,9 +206,9 @@ const usePlotSelector = (id: string) => {
     useEffect(() => {
         if (!map) return;
 
-        map.addEventListener("click", handleClick);
+        map.addEventListener("click", handleClick as Listener);
         return () => {
-            map.removeEventListener("click", handleClick);
+            map.removeEventListener("click", handleClick as Listener);
         };
     }, [handleClick, map]);
 
@@ -181,20 +225,33 @@ const usePlotSelector = (id: string) => {
                 }),
             });
 
-            const source = new VectorSource();
-            const selectedPlotLayer = new VectorLayer({ source, style: selectedFeatureStyle as StyleFunction });
+            const selectedPlotSource = new VectorSource();
+            const selectedPlotLayer = new VectorLayer({ source: selectedPlotSource, style: selectedFeatureStyle as StyleFunction });
 
-            setSelectedPlotLayerSource(source);
+            setSelectedPlotLayerSource(selectedPlotSource);
+
+            const projectGeometrySource = new VectorSource();
+
+            const projectGeometryLayer = new VectorLayer({
+                source: projectGeometrySource,
+                style: new Style({
+                    fill: new Fill({ color: "rgba(0, 0, 0, 0)" }),
+                    stroke: new Stroke({ color: "#000000", width: 5 }),
+                }),
+            });
+            setProjectLayerSource(projectGeometrySource);
 
             const newMap = new Map({
                 target: id,
-                layers: [osmLayer, kadasterLayers, selectedPlotLayer],
+                layers: [osmLayer, projectGeometryLayer, kadasterLayers, selectedPlotLayer],
                 view: new View({
                     center: extentToCenter(mapBoundsToExtent(mapBounds)),
                     zoom: 12,
+                    projection: projection,
                 }),
                 controls: defaultControls({ attribution: false }),
             });
+
             setMap(newMap);
             const extent = mapBoundsToExtent(mapBounds);
             newMap.getView().fit(extent);
