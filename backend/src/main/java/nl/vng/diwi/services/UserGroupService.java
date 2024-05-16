@@ -77,6 +77,10 @@ public class UserGroupService {
         if (userGroup.getSingleUser() == Boolean.TRUE) {
             throw new VngBadRequestException("Cannot update single-user usergroups.");
         }
+        List<UserGroupState> states = repo.getUsergroupDAO().findActiveUserGroupStateByName(updatedUserGroup.getName());
+        if (!states.isEmpty()) {
+            throw new VngBadRequestException("Cannot update as name is already in use.");
+        }
 
         List<UserGroupUserModel> oldUserGroupModel = repo.getUsergroupDAO().getUserGroupUsers(updatedUserGroup.getUuid());
         UserGroupModel oldUserGroup = UserGroupModel.fromUserGroupUserModelListToUserGroupModelList(oldUserGroupModel).get(0);
