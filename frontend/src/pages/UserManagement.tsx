@@ -9,12 +9,17 @@ import { addGroup } from "../api/userSerivces";
 import useAlert from "../hooks/useAlert";
 import GroupDialog from "../components/admin/user-management/GroupDialog";
 
+const emptyGroupForm = {
+    name: "",
+    users: [],
+};
+
 const UserManagement = () => {
     const [users, setUsers] = useState<any[]>([]);
     const [userGroups, setUserGroups] = useState<any[]>([]);
     const [isGroupDialogOpen, setIsGroupDialogOpen] = useState<boolean>(false);
     const [isUserDialogOpen, setIsUserDialogOpen] = useState<boolean>(false);
-    const [newGroup, setNewGroup] = useState<any>({});
+    const [newGroup, setNewGroup] = useState<any>(emptyGroupForm);
     const { setAlert } = useAlert();
     useEffect(() => {
         getUsers().then((data) => setUsers(data));
@@ -24,31 +29,22 @@ const UserManagement = () => {
         getGroups().then((data) => setUserGroups(data));
     }, []);
 
-    let testGroup: any;
-    if (users.length > 0) {
-        testGroup = {
-            name: "test1",
-            users: [
-                { uuid: users[1].id, firstName: users[1].firstName, lastName: users[1].lastName },
-                { uuid: users[0].id, firstName: users[0].firstName, lastName: users[0].lastName },
-            ],
-        };
-    }
-
     const handleAddGroup = async () => {
         try {
             const data = await addGroup(newGroup);
-            console.log(data);
             setUserGroups([...userGroups, data]);
+            setNewGroup(emptyGroupForm);
         } catch (error: any) {
             setAlert(error.message, "warning");
+        } finally {
+            setIsGroupDialogOpen(false);
         }
     };
 
     const handleAddUser = () => {
         // Implement this function to add a user
     };
-
+    console.log(userGroups);
     return (
         <>
             <UsersTable rows={users} />
@@ -58,7 +54,7 @@ const UserManagement = () => {
                 {t("createProject.addAnotherHouseBlock")} {/* needs translation */}
             </Stack>
 
-            <GroupUserTable rows={userGroups} />
+            <GroupUserTable rows={userGroups} users={users} setUserGroups={setUserGroups} userGroups={userGroups} />
 
             <Stack direction="row" alignItems="center" mt={1} sx={{ cursor: "pointer" }} onClick={() => setIsGroupDialogOpen(true)}>
                 <AddCircleIcon color="primary" sx={{ fontSize: "40px" }} />

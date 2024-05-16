@@ -49,7 +49,11 @@ const GroupDialog = ({ open, onClose, newGroup, setNewGroup, handleAddGroup, use
                         onAbort={() => {}}
                         value={newGroup.users}
                         onChange={(_, newValue) => {
-                            setNewGroup({ ...newGroup, users: newValue });
+                            const transformedUsers = newValue.map((user: any) => {
+                                const { id, email, role, ...otherProps } = user;
+                                return { uuid: id, ...otherProps };
+                            });
+                            setNewGroup({ ...newGroup, users: transformedUsers });
                         }}
                         filterSelectedOptions
                         renderInput={(params) => (
