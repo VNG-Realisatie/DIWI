@@ -1,9 +1,10 @@
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Grid, IconButton, MenuItem, Select, TextField, Typography } from "@mui/material";
+import { Grid, IconButton, TextField, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { OwnershipValueType, ownershipValueOptions } from "../../../../types/enums";
 import { OwnershipSingleValue } from "../../../../types/houseBlockTypes";
 import { InputContainer } from "../InputContainer";
+import CategoryInput from "../../../project/inputs/CategoryInput";
 import RangeNumberInput from "../../../project/inputs/RangeNumberInput";
 
 type Props = {
@@ -23,27 +24,6 @@ export const isOwnershipAmountValid = (amount: number): boolean => {
     return Number.isInteger(amount) && amount >= 0;
 };
 
-const OwnershipTypeOption = ({ handleInputChange, ownership, index }: OwnershipProps) => {
-    const { t } = useTranslation();
-    return (
-        <Select
-            fullWidth
-            size="small"
-            id="demo-simple-select"
-            value={ownership.type}
-            label="Type"
-            onChange={(e) => handleInputChange(index, { ...ownership, type: e.target.value as OwnershipValueType })}
-        >
-            {ownershipValueOptions.map((type) => {
-                return (
-                    <MenuItem key={type} value={type}>
-                        {t(`createProject.houseBlocksForm.ownershipAndValue.type.${type}`)}
-                    </MenuItem>
-                );
-            })}
-        </Select>
-    );
-};
 const OwnershipAmountInput = ({ handleInputChange, ownership, index }: OwnershipProps) => {
     const { t } = useTranslation();
     const isAmountValid = isOwnershipAmountValid(ownership.amount);
@@ -63,16 +43,18 @@ const OwnershipAmountInput = ({ handleInputChange, ownership, index }: Ownership
 };
 
 export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handleRemoveRow, readOnly }: Props) => {
-    const { t } = useTranslation();
     return (
         <Grid container spacing={2} mt={1}>
             <Grid item xs={4}>
-                {!readOnly && <OwnershipTypeOption index={index} handleInputChange={handleInputChange} ownership={ownership} />}
-                {readOnly && (
-                    <InputContainer>
-                        <Typography>{t(`createProject.houseBlocksForm.ownershipAndValue.type.${ownership?.type}`)}</Typography>
-                    </InputContainer>
-                )}
+                <CategoryInput
+                    readOnly={readOnly}
+                    values={ownership.type ? { id: ownership.type, name: ownership.type } : null}
+                    setValue={(_, newValue) => handleInputChange(index, { ...ownership, type: newValue as OwnershipValueType })}
+                    mandatory={false}
+                    options={ownershipValueOptions.map((value) => ({ id: value, name: value }))}
+                    multiple={false}
+                    translationPath="createProject.houseBlocksForm.ownershipAndValue.type."
+                />
             </Grid>
             <Grid item xs={2}>
                 {!readOnly && <OwnershipAmountInput index={index} handleInputChange={handleInputChange} ownership={ownership} />}

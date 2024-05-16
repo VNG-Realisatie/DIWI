@@ -1,10 +1,11 @@
-import { SelectChangeEvent, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
 import { HouseBlock } from "../../../../types/houseBlockTypes";
-import { MutationKindSelect } from "./MutationKindSelect";
-import { MutationKind } from "../../../../types/enums";
 import { SingleNumberInput } from "../../../project/inputs/SingleNumberInput";
+import { MutationKind, mutationKindOptions } from "../../../../types/enums";
+import CategoryInput from "../../../project/inputs/CategoryInput";
+import { AmountInput } from "./AmountInput";
 
 export type MutationInformationProps = {
     houseBlock: HouseBlock;
@@ -35,23 +36,25 @@ export const MutationInformationGroup = ({ houseBlock, setHouseBlock, readOnly }
                 error={t("wizard.houseBlocks.mutationAmountWarning")}
                 isInputLabel={true}
             />
-            <MutationKindSelect
+            <CategoryInput
                 readOnly={readOnly}
-                houseBlockMutationKind={houseBlock.mutation.kind}
-                updateHouseBlockMutationKind={(event: SelectChangeEvent<MutationKind | null>) => {
-                    const {
-                        target: { value },
-                    } = event;
-
-                    value &&
+                values={houseBlock.mutation.kind ? { id: houseBlock.mutation.kind, name: houseBlock.mutation.kind } : null}
+                setValue={(_, newValue) => {
+                    newValue &&
                         setHouseBlock({
                             ...houseBlock,
                             mutation: {
                                 ...houseBlock.mutation,
-                                kind: value as MutationKind,
+                                kind: newValue as MutationKind,
                             },
                         });
                 }}
+                mandatory={true}
+                title={t("createProject.houseBlocksForm.mutationType")}
+                options={mutationKindOptions.map((value) => ({ id: value, name: value }))}
+                multiple={false}
+                error={t("wizard.houseBlocks.mutationKindWarning")}
+                translationPath="createProject.houseBlocksForm."
             />
         </WizardCard>
     );
