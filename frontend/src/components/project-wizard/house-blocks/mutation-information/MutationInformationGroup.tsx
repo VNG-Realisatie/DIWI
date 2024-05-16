@@ -5,7 +5,6 @@ import { HouseBlock } from "../../../../types/houseBlockTypes";
 import { SingleNumberInput } from "../../../project/inputs/SingleNumberInput";
 import { MutationKind, mutationKindOptions } from "../../../../types/enums";
 import CategoryInput from "../../../project/inputs/CategoryInput";
-import { AmountInput } from "./AmountInput";
 
 export type MutationInformationProps = {
     houseBlock: HouseBlock;

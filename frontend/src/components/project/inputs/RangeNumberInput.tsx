@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TextField } from "@mui/material";
 import InputLabelStack from "./InputLabelStack";
 
@@ -18,38 +18,89 @@ type Props = {
     title?: string;
 };
 
+const decimalSeparator = ",";
+
+function formatValue(val: number | null): string {
+    return val !== null ? String(val) : "";
+}
+
+function formatMonetaryValue(val: number | null) {
+    if (val === null) {
+        return "";
+    } else {
+        const euros = Math.floor(val / 100);
+        const cents = val % 100;
+        return `${euros}${decimalSeparator}${cents.toString().padStart(2, "0")}`;
+    }
+}
+
+function parseMonetary(value: string) {
+    const [euros, cents] = value.split(decimalSeparator);
+    let result = parseInt(euros) * 100;
+    if (cents !== undefined) {
+        let parsedCents = parseInt(cents);
+        if (cents.length === 1) {
+            parsedCents *= 10;
+        }
+        result += parsedCents;
+    }
+    return result;
+}
+
+function fromMonetaryToString(value: any): string {
+    let inputValue = "";
+    if (value.value !== null) {
+        inputValue = formatMonetaryValue(value.value);
+    } else if (value.min !== null || value.max !== null) {
+        inputValue = `${formatMonetaryValue(value.min)}-${formatMonetaryValue(value.max)}`;
+    }
+    return inputValue;
+}
+
+function fromRangeToString(value: ValueType, isMonetary: boolean): string {
+    if (isMonetary) {
+        return fromMonetaryToString(value);
+    } else {
+        if (value.value !== null) {
+            return formatValue(value.value);
+        } else if (value.min !== null || value.max !== null) {
+            return `${formatValue(value.min)}-${formatValue(value.max)}`;
+        }
+        return "";
+    }
+}
+
+function fromStringToRange(stringValue: string, isMonetary: boolean): ValueType {
+    const inputValue = stringValue;
+    if (inputValue === "") {
+        return { value: null, min: null, max: null };
+    } else if (inputValue.includes("-")) {
+        const [minStr, maxStr] = inputValue.split("-");
+        const min = isMonetary ? parseMonetary(minStr) : parseFloat(minStr);
+        const max = isMonetary ? parseMonetary(maxStr) : parseFloat(maxStr);
+
+        if (!isNaN(min) && !isNaN(max)) {
+            return { value: null, min, max };
+        } else if (!isNaN(min)) {
+            return { value: null, min, max: null };
+        } else if (!isNaN(max)) {
+            // We only support open-ended ranges with min value. Treat open-ended range with max as value
+            return { value: max, min: null, max: null };
+        } else {
+            return { value: null, min: null, max: null };
+        }
+    } else {
+        const newValue = isMonetary ? parseMonetary(inputValue) : parseFloat(inputValue);
+        return { value: newValue, min: null, max: null };
+    }
+}
+
 const RangeNumberInput = ({ labelText, value, updateCallBack, isMonetary = false, readOnly, mandatory, title }: Props) => {
     const [stringValue, setStringValue] = useState<string>("");
 
-    const fromMonetaryToString = useCallback((value: any): string => {
-        let inputValue = "";
-        if (value.value !== null) {
-            inputValue = formatMonetaryValue(value.value);
-        } else if (value.min !== null || value.max !== null) {
-            inputValue = `${formatMonetaryValue(value.min)}-${formatMonetaryValue(value.max)}`;
-        }
-        return inputValue;
-    }, []);
-
-    const fromRangeToString = useCallback(
-        (value: ValueType): string => {
-            if (isMonetary) {
-                return fromMonetaryToString(value);
-            } else {
-                if (value.value !== null) {
-                    return formatValue(value.value);
-                } else if (value.min !== null || value.max !== null) {
-                    return `${formatValue(value.min)}-${formatValue(value.max)}`;
-                }
-                return "";
-            }
-        },
-        [isMonetary, fromMonetaryToString],
-    );
-
     useEffect(() => {
-        setStringValue(fromRangeToString(value));
-    }, [value, fromRangeToString]);
+        setStringValue(fromRangeToString(value, isMonetary));
+    }, [value, isMonetary]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value;
@@ -66,7 +117,7 @@ const RangeNumberInput = ({ labelText, value, updateCallBack, isMonetary = false
         if (isMonetary) {
             if (stringValue === "") return setStringValue("0,00");
         }
-        const range = fromStringToRange(stringValue);
+        const range = fromStringToRange(stringValue, isMonetary);
         updateCallBack(range);
     };
 
@@ -75,60 +126,6 @@ const RangeNumberInput = ({ labelText, value, updateCallBack, isMonetary = false
             handleBlur();
         }
     }
-    function formatValue(val: number | null): string {
-        return val !== null ? String(val) : "";
-    }
-
-    function fromStringToRange(stringValue: string): ValueType {
-        const inputValue = stringValue;
-        if (inputValue === "") {
-            return { value: null, min: null, max: null };
-        } else if (inputValue.includes("-")) {
-            const [minStr, maxStr] = inputValue.split("-");
-            const min = isMonetary ? parseMonetary(minStr) : parseFloat(minStr);
-            const max = isMonetary ? parseMonetary(maxStr) : parseFloat(maxStr);
-
-            if (!isNaN(min) && !isNaN(max)) {
-                return { value: null, min, max };
-            } else if (!isNaN(min)) {
-                return { value: null, min, max: null };
-            } else if (!isNaN(max)) {
-                // We only support open-ended ranges with min value. Treat open-ended range with max as value
-                return { value: max, min: null, max: null };
-            } else {
-                return { value: null, min: null, max: null };
-            }
-        } else {
-            const newValue = isMonetary ? parseMonetary(inputValue) : parseFloat(inputValue);
-            return { value: newValue, min: null, max: null };
-        }
-    }
-
-    const decimalSeparator = ",";
-
-    /** Monetary values are stored as ints in cents. Convert this to displaying euros */
-    const formatMonetaryValue = (val: number | null) => {
-        if (val === null) {
-            return "";
-        } else {
-            const euros = Math.floor(val / 100);
-            const cents = val % 100;
-            return `${euros}${decimalSeparator}${cents.toString().padStart(2, "0")}`;
-        }
-    };
-
-    const parseMonetary = (value: string) => {
-        const [euros, cents] = value.split(decimalSeparator);
-        let result = parseInt(euros) * 100;
-        if (cents !== undefined) {
-            let parsedCents = parseInt(cents);
-            if (cents.length === 1) {
-                parsedCents *= 10;
-            }
-            result += parsedCents;
-        }
-        return result;
-    };
 
     return (
         <InputLabelStack title={title || ""} mandatory={mandatory}>

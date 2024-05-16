@@ -2,7 +2,6 @@ import { Typography } from "@mui/material";
 import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
 import { HouseBlock } from "../../../../types/houseBlockTypes";
-import { HouseBlockSize, SizeInput } from "./SizeInput";
 import { DateValidationErrors } from "../../../../pages/ProjectWizardBlocks";
 import TetxInput from "../../../project/inputs/TextInput";
 import { Dayjs } from "dayjs";
