@@ -3,10 +3,10 @@ import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
 import { HouseBlock } from "../../../../types/houseBlockTypes";
 import { HouseBlockSize, SizeInput } from "./SizeInput";
-import { StartDatePicker } from "./StartDatePicker";
-import { EndDatePicker } from "./EndDatePicker";
 import { DateValidationErrors } from "../../../../pages/ProjectWizardBlocks";
 import TetxInput from "../../../project/inputs/TextInput";
+import { Dayjs } from "dayjs";
+import DateInput from "../../../project/inputs/DateInput";
 
 export type GeneralInformationProps = {
     houseBlock: HouseBlock;
@@ -38,19 +38,29 @@ export const GeneralInformationGroup = ({ readOnly, houseBlock, setHouseBlock, e
                 houseBlockSize={houseBlock.size}
                 updateHouseBlockSize={(houseBlockSize: HouseBlockSize) => setHouseBlock({ ...houseBlock, size: houseBlockSize })}
             />
-            <StartDatePicker
+            <DateInput
                 readOnly={readOnly}
-                houseBlockStartDate={houseBlock.startDate}
-                updateHouseBlockStartDate={(e) => {
-                    setHouseBlock({ ...houseBlock, startDate: e ? e.format("YYYY-MM-DD") : null });
+                value={houseBlock.startDate}
+                setValue={(e: Dayjs | null) => {
+                    const newStartDate = e ? e.format("YYYY-MM-DD") : null;
+                    setHouseBlock({ ...houseBlock, startDate: newStartDate });
                 }}
-                errors={errors}
+                error={errors.startDateError}
+                mandatory={true}
+                title={t("createProject.houseBlocksForm.startDate")}
+                errorText={t("wizard.houseBlocks.startDateWarningMissing")}
             />
-            <EndDatePicker
+            <DateInput
                 readOnly={readOnly}
-                houseBlockEndDate={houseBlock.endDate}
-                updateHouseBlockEndDate={(e) => setHouseBlock({ ...houseBlock, endDate: e ? e.format("YYYY-MM-DD") : null })}
-                errors={errors}
+                value={houseBlock.endDate}
+                setValue={(e: Dayjs | null) => {
+                    const newEndDate = e ? e.format("YYYY-MM-DD") : null;
+                    setHouseBlock({ ...houseBlock, endDate: newEndDate });
+                }}
+                error={errors.endDateError}
+                mandatory={true}
+                title={t("createProject.houseBlocksForm.endDate")}
+                errorText={t("wizard.houseBlocks.endDateWarningMissing")}
             />
         </WizardCard>
     );
