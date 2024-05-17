@@ -67,8 +67,7 @@ const GroupDialog = ({ open, onClose, newGroup, setNewGroup, handleAddGroup, use
             <DialogActions>
                 <Box sx={{ display: "flex", gap: "10px" }}>
                     <Button
-                        onClick={(event) => {
-                            event.stopPropagation();
+                        onClick={() => {
                             onClose();
                         }}
                         variant="outlined"

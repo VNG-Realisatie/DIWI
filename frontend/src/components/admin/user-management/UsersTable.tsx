@@ -21,17 +21,17 @@ const UsersTable = ({ rows }: Props) => {
     const { t } = useTranslation();
 
     const columns = [
-        { field: "firstName", headerName: t("admin.userManagement.tableHeader.name.firstName"), width: 130, sortable: true },
-        { field: "lastName", headerName: t("admin.userManagement.tableHeader.name.lastName"), width: 130, sortable: true },
-        { field: "email", headerName: t("admin.userManagement.tableHeader.email"), width: 200, sortable: true },
-        { field: "role", headerName: t("admin.userManagement.tableHeader.role"), width: 200, sortable: true },
+        { field: "firstName", headerName: t("admin.userManagement.tableHeader.name.firstName"), flex: 1.5, sortable: true },
+        { field: "lastName", headerName: t("admin.userManagement.tableHeader.name.lastName"), flex: 1.5, sortable: true },
+        { field: "email", headerName: t("admin.userManagement.tableHeader.email"), flex: 1.5, sortable: true },
+        { field: "role", headerName: t("admin.userManagement.tableHeader.role"), flex: 1, sortable: true },
         {
             field: "acties",
             headerName: t("admin.userManagement.tableHeader.actions"),
-            width: 130,
+            flex: 0.5,
             sortable: true,
             renderCell: (params: any) => (
-                <Box display="flex">
+                <Box display="flex" alignItems="center" justifyContent="center" style={{ height: "100%" }} gap="10px">
                     <EditOutlinedIcon style={{ cursor: "pointer" }} color="primary" onClick={() => handleEdit(params.row)} />
                     <DeleteForeverOutlinedIcon style={{ cursor: "pointer" }} color="error" onClick={() => handleDelete(params.row)} />
                 </Box>
@@ -41,9 +41,19 @@ const UsersTable = ({ rows }: Props) => {
     return (
         <>
             <Typography variant="h6" gutterBottom component="div">
-                User management Gebruikers
+                {t("admin.userManagement.titleUser")}
             </Typography>
-            <DataGrid rows={rows} columns={columns} />
+            <DataGrid
+                autoHeight
+                rows={rows}
+                columns={columns}
+                initialState={{
+                    pagination: {
+                        paginationModel: { page: 0, pageSize: 10 },
+                    },
+                }}
+                pageSizeOptions={[5, 10, 25]}
+            />
         </>
     );
 };
