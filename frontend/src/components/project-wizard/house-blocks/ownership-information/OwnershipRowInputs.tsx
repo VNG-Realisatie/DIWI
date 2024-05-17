@@ -30,7 +30,7 @@ const OwnershipAmountInput = ({ handleInputChange, ownership, index }: Ownership
     return (
         <TextField
             size="small"
-            label="Amount"
+            label={t("createProject.houseBlocksForm.amount")}
             type="number"
             required
             fullWidth
@@ -43,6 +43,7 @@ const OwnershipAmountInput = ({ handleInputChange, ownership, index }: Ownership
 };
 
 export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handleRemoveRow, readOnly }: Props) => {
+    const { t } = useTranslation();
     return (
         <Grid container spacing={2} mt={1}>
             <Grid item xs={4}>
@@ -67,7 +68,7 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
             <Grid item xs={2}>
                 <RangeNumberInput
                     value={ownership.value}
-                    labelText="Value"
+                    labelText={t("createProject.houseBlocksForm.value")}
                     updateCallBack={(e) => handleInputChange(index, { ...ownership, value: e })}
                     readOnly={readOnly}
                     mandatory={false}
@@ -77,7 +78,7 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
             <Grid item xs={2}>
                 <RangeNumberInput
                     value={ownership.rentalValue}
-                    labelText="RentalValue"
+                    labelText={t("createProject.houseBlocksForm.rentalAmount")}
                     updateCallBack={(e) => handleInputChange(index, { ...ownership, rentalValue: e })}
                     readOnly={readOnly}
                     mandatory={false}
