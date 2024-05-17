@@ -1,6 +1,7 @@
-import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import { t } from "i18next";
 import TextInput from "../../project/inputs/TextInput";
+import CategoryInput from "../../project/inputs/CategoryInput";
 
 type GroupDialogProps = {
     open: boolean;
@@ -14,7 +15,7 @@ type GroupDialogProps = {
 const GroupDialog = ({ open, onClose, newGroup, setNewGroup, handleAddGroup, users }: GroupDialogProps) => {
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-            <DialogTitle>Voeg een groep toe</DialogTitle>
+            <DialogTitle>{t("admin.userManagement.addGroup")}</DialogTitle>
             <DialogContent>
                 <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                     <TextInput
@@ -23,44 +24,25 @@ const GroupDialog = ({ open, onClose, newGroup, setNewGroup, handleAddGroup, use
                         setValue={(event: any) => {
                             setNewGroup({ ...newGroup, name: event.target.value });
                         }}
-                        mandatory={false}
-                        title={t("createProject.informationForm.nameLabel")}
-                        errorText={t("createProject.hasMissingRequiredAreas.name")}
+                        mandatory={true}
+                        title={t("admin.userManagement.groupName")}
+                        errorText={t("admin.userManagement.errors.groupName")}
                     />
-                    {/* Category input should be reused here */}
-                    <Autocomplete
-                        multiple={true}
-                        size="small"
-                        disabled={false}
-                        sx={{
-                            "& .MuiInputBase-input.Mui-disabled": {
-                                backgroundColor: "#0000",
-                            },
-                        }}
-                        fullWidth
+                    <CategoryInput
+                        readOnly={false}
+                        mandatory={true}
+                        title={t("admin.userManagement.addMember")}
                         options={users ?? []}
-                        getOptionLabel={(option) => {
-                            if (option) {
-                                return `${option.firstName[0]}${option.lastName[0]}`; // Display initials
-                            }
-
-                            return "";
-                        }}
-                        onAbort={() => {}}
-                        value={newGroup.users}
-                        onChange={(_, newValue) => {
+                        values={newGroup.users}
+                        setValue={(_, newValue) => {
                             const transformedUsers = newValue.map((user: any) => {
                                 const { id, email, role, ...otherProps } = user;
                                 return { uuid: id, ...otherProps };
                             });
                             setNewGroup({ ...newGroup, users: transformedUsers });
                         }}
-                        filterSelectedOptions
-                        renderInput={(params) => (
-                            <>
-                                <TextField {...params} variant="outlined" />
-                            </>
-                        )}
+                        multiple={true}
+                        error={t("admin.userManagement.errors.addMember")}
                     />
                 </Box>
             </DialogContent>

@@ -323,16 +323,28 @@
           "edit": "Bewerken",
           "delete": "Verwijderen",
           "actions": "Acties",
-          "groupeName" : "Groepen",
+          "groupes" : "Groepen",
         "users" : "Gebruikers"
         },
+        "groupName": "Group naam",
+        "addMember": "Leden toevoegen",
+
         "addUser": "Gebruiker toevoegen",
         "addGroup": "Groep toevoegen",
         "add": "Voeg gebruiker toe",
         "edit": "Pas gebruiker aan",
         "groupDeleteSuccess" : "Groep is verwijderd",
         "groupDeleteConfirmation" : "Weet je zeker dat je de groep wilt verwijderen?",
-        "groupUpdateSuccess" : "Groep is geüpdatet"
+        "groupUpdateSuccess" : "Groep is geüpdatet",
+        "errors" : {
+          "addMember": "Leden moeten worden toegevoegd",
+          "groupName": "Vul de groepnaam in",
+          "firstName": "Vul de voornaam in",
+          "lastName": "Vul de achternaam in",
+          "email": "Vul het e-mailadres in",
+          "role": "Selecteer een rol"
+
+        }
 
       },
       "settings": {

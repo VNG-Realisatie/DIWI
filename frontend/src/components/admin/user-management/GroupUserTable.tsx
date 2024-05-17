@@ -18,15 +18,15 @@ type Props = {
 
 const GroupUserTable = ({ rows, users, userGroups, setUserGroups }: Props) => {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-    const [groupToDelete, setGroupToDelete] = useState<any>(null);
+    const [groupToDelete, setGroupToDelete] = useState<string | null>(null);
     const [editDialogOpen, setEditDialogOpen] = useState(false);
-    const [groupToEdit, setGroupToEdit] = useState<any>(null);
+    const [groupToEdit, setGroupToEdit] = useState<Group | null>(null);
     const { setAlert } = useAlert();
     const { t } = useTranslation();
     const columns = [
         {
             field: "name",
-            headerName: t("admin.userManagement.tableHeader.groupeName"),
+            headerName: t("admin.userManagement.tableHeader.groupes"),
             sortable: true,
             flex: 2,
         },
@@ -60,7 +60,7 @@ const GroupUserTable = ({ rows, users, userGroups, setUserGroups }: Props) => {
     };
 
     const handleUpdateGroup = async () => {
-        if (groupToEdit) {
+        if (groupToEdit && groupToEdit.uuid) {
             try {
                 const updatedGroup = await updateGroup(groupToEdit.uuid, groupToEdit);
                 setUserGroups(userGroups.map((group) => (group.uuid === updatedGroup.uuid ? updatedGroup : group)));

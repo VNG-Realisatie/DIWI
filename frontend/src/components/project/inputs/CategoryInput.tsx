@@ -5,6 +5,8 @@ import { t } from "i18next";
 type Option = {
     id: string | number;
     name: string;
+    firstName?: string;
+    lastName?: string;
 };
 
 type SetValueFunction = (event: any, value: any, reason: AutocompleteChangeReason, details?: AutocompleteChangeDetails<Option>) => void;
@@ -26,7 +28,7 @@ const isOptionEqualToValue = (option: Option, value: Option): boolean => {
 };
 
 const getErrorHelperText = (mandatory: boolean, readOnly: boolean, values: any, error?: string) => {
-    const hasError = mandatory && !values && !readOnly;
+    const hasError = mandatory && (!values || values.length === 0) && !readOnly;
     const helperText = hasError ? error : "";
     return { hasError, helperText };
 };
@@ -50,6 +52,9 @@ const CategoryInput = ({ values, setValue, readOnly, mandatory, title, options, 
                 getOptionLabel={(option) => {
                     if (option && option.name) {
                         return t(`${translationPath}${option.name}`);
+                    }
+                    if (option && option.firstName && option.lastName) {
+                        return `${option.firstName[0]}${option.lastName[0]}`;
                     }
                     if (option) {
                         return t(`${translationPath}${option}`);
