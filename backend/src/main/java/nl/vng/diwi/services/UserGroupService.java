@@ -27,7 +27,7 @@ public class UserGroupService {
 
     public List<UserGroupModel> getAllUserGroups(VngRepository repo, boolean includeSingleUser) {
 
-        List<UserGroupUserModel> userGroupUserList = repo.getUsergroupDAO().getUserGroupUsersList(includeSingleUser);
+        List<UserGroupUserModel> userGroupUserList = repo.getUsergroupDAO().getAllUserGroupsUsersList(includeSingleUser);
         return UserGroupModel.fromUserGroupUserModelListToUserGroupModelList(userGroupUserList);
     }
 
