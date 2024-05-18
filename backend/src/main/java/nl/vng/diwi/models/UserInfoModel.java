@@ -13,7 +13,7 @@ import nl.vng.diwi.security.UserAction;
 
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
 public class UserInfoModel extends UserModel{
 
     @JsonProperty(required = true)
