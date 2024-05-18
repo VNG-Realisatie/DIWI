@@ -83,7 +83,6 @@ public class ExcelImportService {
             ZonedDateTime importTime = ZonedDateTime.now();
 
             Iterator<Row> iterator = dataSheet.iterator();
-            int rowCount = 0;
             int sectionRow = 0;
 
             try (AutoCloseTransaction transaction = repo.beginTransaction()) {
@@ -91,7 +90,7 @@ public class ExcelImportService {
                 User user = repo.getReferenceById(User.class, loggedInUserUuid);
                 while (iterator.hasNext()) {
                     Row nextRow = iterator.next();
-                    rowCount++;
+                    int rowCount = nextRow.getRowNum();
 
                     if (sectionRow == 0) { //sections
                         ExcelTableHeader.Section lastSection = null; //sections
