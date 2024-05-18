@@ -1,5 +1,7 @@
 package nl.vng.diwi.models;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -28,7 +30,7 @@ public class UserInfoModel {
     @JsonProperty(required = true)
     UserRole role;
     @JsonProperty(required = false)
-    UserAction[] allowedActions;
+    List<UserAction> allowedActions = new ArrayList<>();
 
     public UserInfoModel(UserState user) {
         this.uuid = user.getId();
@@ -36,7 +38,7 @@ public class UserInfoModel {
         this.lastName = user.getLastName();
         this.initials = createInitials();
         this.role = user.getUserRole();
-        this.allowedActions = user.getUserRole().allowedActions.toArray(new UserAction[0]);
+        this.allowedActions.addAll(user.getUserRole().allowedActions);
     }
 
     public UserInfoModel(LoggedUser loggedUser) {
@@ -45,7 +47,7 @@ public class UserInfoModel {
         this.lastName = loggedUser.getLastName();
         this.initials = createInitials();
         this.role = loggedUser.getRole();
-        this.allowedActions = loggedUser.getRole().allowedActions.toArray(new UserAction[0]);
+        this.allowedActions.addAll(loggedUser.getRole().allowedActions);
     }
 
     private String createInitials() {
