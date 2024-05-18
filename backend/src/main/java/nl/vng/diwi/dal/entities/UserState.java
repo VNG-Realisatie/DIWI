@@ -42,4 +42,10 @@ public class UserState extends ChangeDataSuperclass {
 
     @Column(name = "email")
     private String email;
+
+    @Column(name = "organization")
+    private String organization;
+
+    @Column(name = "phone_number")
+    private String phoneNumber;
 }

@@ -15,15 +15,19 @@ import java.util.UUID;
 public class UserModel {
 
     @JsonProperty(required = true)
-    private UUID id;
+    protected UUID id;
     @JsonProperty(required = true)
-    private String firstName;
+    protected String firstName;
     @JsonProperty(required = true)
-    private String lastName;
+    protected String lastName;
     @JsonProperty(required = true)
-    private String email;
+    protected String email;
     @JsonProperty(required = true)
-    private UserRole role;
+    protected UserRole role;
+    @JsonProperty(required = true)
+    protected String organization;
+    @JsonProperty(required = true)
+    protected String phoneNumber;
 
     public UserModel(UserState user) {
         this.id = user.getId();
@@ -31,6 +35,8 @@ public class UserModel {
         this.lastName = user.getLastName();
         this.email = user.getEmail();
         this.role = user.getUserRole();
+        this.organization = user.getOrganization();
+        this.phoneNumber = user.getPhoneNumber();
     }
 
 }
