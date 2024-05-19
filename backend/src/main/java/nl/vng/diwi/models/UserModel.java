@@ -30,13 +30,24 @@ public class UserModel {
     protected String phoneNumber;
 
     public UserModel(UserState user) {
-        this.id = user.getId();
+        this.id = user.getUser().getId();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.email = user.getEmail();
         this.role = user.getUserRole();
         this.organization = user.getOrganization();
         this.phoneNumber = user.getPhoneNumber();
+    }
+
+    public String validate() {
+        if (firstName == null || lastName == null || email == null || role == null) {
+            return "Missing mandatory fields";
+        }
+        //TODO: validate email
+        if (phoneNumber != null) {
+            //TODO: validate phone
+        }
+        return null;
     }
 
 }
