@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import nl.vng.diwi.dal.entities.UserState;
 import nl.vng.diwi.security.UserRole;
+import org.apache.commons.validator.routines.EmailValidator;
 
 import java.util.UUID;
 
@@ -43,7 +44,9 @@ public class UserModel {
         if (firstName == null || lastName == null || email == null || role == null) {
             return "Missing mandatory fields";
         }
-        //TODO: validate email
+        if (!EmailValidator.getInstance().isValid(email)) {
+            return "Invalid email address";
+        }
         if (phoneNumber != null) {
             //TODO: validate phone
         }

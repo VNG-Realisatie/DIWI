@@ -64,9 +64,9 @@ public class UserResource {
             throw new VngBadRequestException(validationError);
         }
 
-        UserState sameNameUser = userDao.getUserByName(newUser.getFirstName(), newUser.getLastName()); //TODO: unique name? or unique email? or both?
-        if (sameNameUser != null) {
-            throw new VngBadRequestException("User with this name already exists.");
+        UserState sameEmailUser = userDao.getUserByEmail(newUser.getEmail());
+        if (sameEmailUser != null) {
+            throw new VngBadRequestException("User with this email already exists.");
         }
 
         try (AutoCloseTransaction transaction = userDao.beginTransaction()) {
@@ -99,9 +99,9 @@ public class UserResource {
             throw new VngBadRequestException(validationError);
         }
 
-        UserState sameNameUser = userDao.getUserByName(updatedUser.getFirstName(), updatedUser.getLastName()); //TODO: unique name? or unique email? or both?
-        if (sameNameUser != null && !sameNameUser.getUser().getId().equals(userId)) {
-            throw new VngBadRequestException("User with this name already exists.");
+        UserState sameEmailUser = userDao.getUserByEmail(updatedUser.getEmail());
+        if (sameEmailUser != null && !sameEmailUser.getUser().getId().equals(userId)) {
+            throw new VngBadRequestException("User with this email already exists.");
         }
 
         try (AutoCloseTransaction transaction = userDao.beginTransaction()) {
