@@ -1,13 +1,15 @@
 package nl.vng.diwi.services;
 
+import jakarta.inject.Inject;
+import lombok.Getter;
 import nl.vng.diwi.dal.UserDAO;
+import nl.vng.diwi.dal.UserGroupDAO;
 import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.dal.entities.UserGroup;
 import nl.vng.diwi.dal.entities.UserGroupState;
 import nl.vng.diwi.dal.entities.UserState;
 import nl.vng.diwi.dal.entities.UserToUserGroup;
 import nl.vng.diwi.models.UserModel;
-import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,14 +17,21 @@ import org.apache.logging.log4j.Logger;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
+@Getter
 public class UserService {
 
     private static final Logger logger = LogManager.getLogger();
 
-    public UserService() {
+    private UserDAO userDAO;
+    private UserGroupDAO userGroupDAO;
+
+    @Inject
+    public UserService(UserDAO userDAO, UserGroupDAO userGroupDAO) {
+        this.userDAO = userDAO;
+        this.userGroupDAO = userGroupDAO;
     }
 
-    public UserState createUser(UserDAO userDAO, UserModel userModel, String identityProviderId, UUID loggedInUserUuid) throws VngBadRequestException {
+    public UserState createUser(UserModel userModel, String identityProviderId, UUID loggedInUserUuid) {
 
         ZonedDateTime now = ZonedDateTime.now();
         User loggedUser = userDAO.getReferenceById(User.class, loggedInUserUuid);
@@ -65,7 +74,7 @@ public class UserService {
         return userEntity;
     }
 
-    public UserState updateUser(UserDAO userDAO, UserModel userModel, UUID loggedInUserUuid) {
+    public UserState updateUser(UserModel userModel, UUID loggedInUserUuid) {
 
         ZonedDateTime now = ZonedDateTime.now();
         User loggedUser = userDAO.getReferenceById(User.class, loggedInUserUuid);
@@ -92,9 +101,23 @@ public class UserService {
     }
 
 
-    public void deleteUser(UserDAO userDAO, UUID userId, UUID loggedInUserUuid) throws VngNotFoundException {
+    public void deleteUser(UUID userId, UUID loggedInUserUuid) throws VngNotFoundException {
         ZonedDateTime now = ZonedDateTime.now();
-        User user = userDAO.findById(User.class, loggedInUserUuid);
+        User loggedUser = userDAO.findById(User.class, loggedInUserUuid);
+
+        UUID usergroupUuid = userGroupDAO.findSingleUserUserGroup(userId);
+        if (usergroupUuid == null) {
+            logger.error("Single-user usergroup for userId {} was not found.", userId);
+        } else {
+            UserGroup userGroup = userGroupDAO.getCurrentUserGroup(usergroupUuid);
+            userGroup.getState().stream()
+                .filter(ugs -> ugs.getChangeEndDate() == null)
+                .forEach(ugs -> {
+                    ugs.setChangeEndDate(now);
+                    ugs.setChangeUser(loggedUser);
+                    userGroupDAO.persist(ugs);
+                });
+        }
 
         UserState userState = userDAO.getUserById(userId);
         if (userState == null) {
@@ -102,9 +125,7 @@ public class UserService {
             throw new VngNotFoundException();
         }
         userState.setChangeEndDate(now);
-        userState.setChangeUser(user);
+        userState.setChangeUser(loggedUser);
         userDAO.persist(userState);
-
-        //TODO: delete single-user usergroup
     }
 }

@@ -1,5 +1,6 @@
 package nl.vng.diwi.dal;
 
+import jakarta.inject.Inject;
 import nl.vng.diwi.dal.entities.UserGroup;
 import nl.vng.diwi.dal.entities.UserGroupState;
 import nl.vng.diwi.models.UserGroupUserModel;
@@ -11,6 +12,7 @@ import java.util.UUID;
 
 public class UserGroupDAO extends AbstractRepository {
 
+    @Inject
     public UserGroupDAO(Session session) {
         super(session);
     }
@@ -67,6 +69,16 @@ public class UserGroupDAO extends AbstractRepository {
             .setParameter("projectId", projectUuid)
             .setParameter("groupId", groupUuid)
             .getSingleResultOrNull();
+    }
+
+    public UUID findSingleUserUserGroup(UUID userUuid) {
+        return session.createNativeQuery(String.format("""
+                SELECT ug.id
+                    FROM %1$s.usergroup ug
+                        LEFT JOIN %1$s.user_to_usergroup utug ON ug.id = utug.usergroup_id
+                WHERE ug.single_user = true AND utug.user_id = :userId""", GenericRepository.VNG_SCHEMA_NAME), UUID.class)
+            .setParameter("userId", userUuid)
+            .uniqueResult();
     }
 
     public void addUserGroupToProject(UUID projectUuid, UUID groupToAdd, UUID loggedInUserUuid) {

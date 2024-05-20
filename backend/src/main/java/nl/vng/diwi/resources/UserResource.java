@@ -12,7 +12,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import nl.vng.diwi.dal.AutoCloseTransaction;
-import nl.vng.diwi.dal.UserDAO;
 import nl.vng.diwi.dal.entities.UserState;
 import nl.vng.diwi.models.UserInfoModel;
 import nl.vng.diwi.models.UserModel;
@@ -27,19 +26,17 @@ import java.util.UUID;
 @Path("/users")
 public class UserResource {
 
-    private final UserDAO userDao;
     private final UserService userService;
 
     @Inject
-    public UserResource(UserDAO repo, UserService userService) {
-        this.userDao = repo;
+    public UserResource(UserService userService) {
         this.userService = userService;
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<UserModel> getAllUsers() {
-        return userDao.getAllUsers().stream().map(UserModel::new).toList();
+        return userService.getUserDAO().getAllUsers().stream().map(UserModel::new).toList();
     }
 
     @GET
@@ -47,7 +44,7 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     public UserModel getUser(@PathParam("userId") UUID userId) throws VngNotFoundException {
 
-        UserState state = userDao.getUserById(userId);
+        UserState state = userService.getUserDAO().getUserById(userId);
         if (state == null) {
             throw new VngNotFoundException("User with id " + userId + " not found");
         }
@@ -64,17 +61,17 @@ public class UserResource {
             throw new VngBadRequestException(validationError);
         }
 
-        UserState sameEmailUser = userDao.getUserByEmail(newUser.getEmail());
+        UserState sameEmailUser = userService.getUserDAO().getUserByEmail(newUser.getEmail());
         if (sameEmailUser != null) {
             throw new VngBadRequestException("User with this email already exists.");
         }
 
-        try (AutoCloseTransaction transaction = userDao.beginTransaction()) {
+        try (AutoCloseTransaction transaction = userService.getUserDAO().beginTransaction()) {
 
             //TODO: create user in keycloak
             String identityProviderId = "identityProviderId"; //TODO
 
-            UserState newUserEntity = userService.createUser(userDao, newUser, identityProviderId, loggedUser.getUuid());
+            UserState newUserEntity = userService.createUser(newUser, identityProviderId, loggedUser.getUuid());
             transaction.commit();
 
             //TODO: send welcome email
@@ -89,7 +86,7 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     public UserModel updateUser(@PathParam("id") UUID userId, UserModel updatedUser, @Context LoggedUser loggedUser) throws VngBadRequestException, VngNotFoundException {
 
-        UserState state = userDao.getUserById(userId);
+        UserState state = userService.getUserDAO().getUserById(userId);
         if (state == null) {
             throw new VngNotFoundException("User with id " + userId + " not found");
         }
@@ -99,17 +96,17 @@ public class UserResource {
             throw new VngBadRequestException(validationError);
         }
 
-        UserState sameEmailUser = userDao.getUserByEmail(updatedUser.getEmail());
+        UserState sameEmailUser = userService.getUserDAO().getUserByEmail(updatedUser.getEmail());
         if (sameEmailUser != null && !sameEmailUser.getUser().getId().equals(userId)) {
             throw new VngBadRequestException("User with this email already exists.");
         }
 
-        try (AutoCloseTransaction transaction = userDao.beginTransaction()) {
+        try (AutoCloseTransaction transaction = userService.getUserDAO().beginTransaction()) {
 
             //TODO: update user in keycloak?? what fields are allowed to be updated??
 
             updatedUser.setId(userId);
-            UserState updatedUserEntity = userService.updateUser(userDao, updatedUser, loggedUser.getUuid());
+            UserState updatedUserEntity = userService.updateUser(updatedUser, loggedUser.getUuid());
             transaction.commit();
 
             return new UserModel(updatedUserEntity);
@@ -121,8 +118,8 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     public void deleteUser(@PathParam("userId") UUID userId, @Context LoggedUser loggedUser) throws VngNotFoundException {
 
-        try (AutoCloseTransaction transaction = userDao.beginTransaction()) {
-            userService.deleteUser(userDao, userId, loggedUser.getUuid());
+        try (AutoCloseTransaction transaction = userService.getUserDAO().beginTransaction()) {
+            userService.deleteUser(userId, loggedUser.getUuid());
             transaction.commit();
         }
 
@@ -132,7 +129,7 @@ public class UserResource {
     @Path("/userinfo")
     @Produces(MediaType.APPLICATION_JSON)
     public UserInfoModel login(@Context LoggedUser loggedUser) {
-        UserState state = userDao.getUserById(loggedUser.getUuid());
+        UserState state = userService.getUserDAO().getUserById(loggedUser.getUuid());
         return new UserInfoModel(state);
     }
 
