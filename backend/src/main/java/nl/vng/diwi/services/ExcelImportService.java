@@ -64,7 +64,7 @@ public class ExcelImportService {
     public Map<String, Object> importExcel(String excelFilePath, VngRepository repo, UUID loggedInUserUuid) {
 
         List<ImportError> excelErrors = new ArrayList<>();
-        List<SelectModel> excelProjects = new ArrayList<>();
+        Map<Integer, ProjectImportModel> excelProjectMap = new HashMap<>();
 
         try (InputStream inputStream = new FileInputStream(excelFilePath); Workbook workbook = new XSSFWorkbook(inputStream)) {
 
@@ -225,14 +225,27 @@ public class ExcelImportService {
                     }
 
                     if (rowCount > sectionRow + 3) {
-                        SelectModel excelProject = processExcelRow(repo, nextRow, tableHeaderMap, dateFormatter, formulaEvaluator, excelErrors,
-                            user, importTime);
-                        if (excelProject != null) {
-                            excelProjects.add(excelProject);
+                        ProjectImportModel rowModel = processExcelRow(nextRow, tableHeaderMap, dateFormatter, formulaEvaluator, excelErrors, importTime);
+                        if (rowModel != null) {
+                            if (excelProjectMap.containsKey(rowModel.getId())) {
+                                ProjectImportModel existingProject = excelProjectMap.get(rowModel.getId());
+                                if (existingProject.hasSameProjectLevelData(rowModel)) {
+                                    existingProject.getHouseblocks().addAll(rowModel.getHouseblocks());
+                                } else {
+                                    excelErrors.add(new ImportError(rowCount, ImportError.ERROR.PROJECT_LEVEL_DATA_INVALID));
+                                }
+                            } else {
+                                excelProjectMap.put(rowModel.getId(), rowModel);
+                            }
                         }
                     }
                 }
                 if (excelErrors.isEmpty()) {
+                    List<SelectModel> excelProjects = new ArrayList<>();
+                    for (ProjectImportModel rowModel : excelProjectMap.values()) {
+                        SelectModel selectModel = rowModel.persistProjectAndHouseblocks(repo, user, importTime);
+                        excelProjects.add(selectModel);
+                    }
                     transaction.commit();
                     return Map.of(result, excelProjects);
                 } else {
@@ -257,8 +270,8 @@ public class ExcelImportService {
         }
     }
 
-    private SelectModel processExcelRow(VngRepository repo, Row row, Map<Integer, ExcelTableHeader> tableHeaderMap, DataFormatter formatter,
-                                        FormulaEvaluator evaluator, List<ImportError> excelErrors, User user, ZonedDateTime importTime) {
+    private ProjectImportModel processExcelRow(Row row, Map<Integer, ExcelTableHeader> tableHeaderMap, DataFormatter formatter,
+                                        FormulaEvaluator evaluator, List<ImportError> excelErrors, ZonedDateTime importTime) {
         ProjectImportModel rowModel = new ProjectImportModel();
 
         List<ImportError> rowErrors = new ArrayList<>();
@@ -458,7 +471,7 @@ public class ExcelImportService {
         }
 
         if (rowErrors.isEmpty()) { //still no errors
-            return rowModel.persistProjectAndHouseblocks(repo, user, importTime);
+            return rowModel;
         } else {
             excelErrors.addAll(rowErrors);
             return null;
