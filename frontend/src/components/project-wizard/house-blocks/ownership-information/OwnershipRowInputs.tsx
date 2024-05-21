@@ -44,13 +44,16 @@ const OwnershipAmountInput = ({ handleInputChange, ownership, index }: Ownership
 };
 
 export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handleRemoveRow, readOnly }: Props) => {
+    const isKoopwoning = ownership.type === "KOOPWONING";
+    const isHuurwoning = ownership.type === "HUURWONING_PARTICULIERE_VERHUURDER" || ownership.type === "HUURWONING_WONINGCORPORATIE";
+
     return (
         <Grid container spacing={2} mt={1}>
             <Grid item xs={4}>
                 <CategoryInput
                     readOnly={readOnly}
                     values={ownership.type ? { id: ownership.type, name: ownership.type } : null}
-                    setValue={(_, newValue) => handleInputChange(index, { ...ownership, type: newValue as OwnershipValueType })}
+                    setValue={(_, newValue) => handleInputChange(index, { ...ownership, type: newValue ? (newValue.id as OwnershipValueType) : undefined })}
                     mandatory={false}
                     options={ownershipValueOptions.map((value) => ({ id: value, name: value }))}
                     multiple={false}
@@ -71,11 +74,12 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                         value={ownership.value}
                         labelText="Value"
                         updateCallBack={(e) => handleInputChange(index, { ...ownership, value: e })}
+                        disabled={isHuurwoning}
                     />
                 )}
                 {readOnly && (
                     <InputContainer>
-                        <MonetaryRangeLabel value={ownership.value} />
+                        <MonetaryRangeLabel value={!isHuurwoning ? ownership.value : { ...ownership.value, value: null }} />
                     </InputContainer>
                 )}
             </Grid>
@@ -85,11 +89,12 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                         value={ownership.rentalValue}
                         labelText="RentalValue"
                         updateCallBack={(e) => handleInputChange(index, { ...ownership, rentalValue: e })}
+                        disabled={isKoopwoning}
                     />
                 )}
                 {readOnly && (
                     <InputContainer>
-                        <MonetaryRangeLabel value={ownership.rentalValue} />
+                        <MonetaryRangeLabel value={!isKoopwoning ? ownership.rentalValue : { ...ownership.value, value: null }} />
                     </InputContainer>
                 )}
             </Grid>
