@@ -2,8 +2,7 @@ import { Typography } from "@mui/material";
 import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
 import { HouseBlock } from "../../../../types/houseBlockTypes";
-
-import { AmountInput } from "./AmountInput";
+import { SingleNumberInput } from "../../../project/inputs/SingleNumberInput";
 import { MutationKind, mutationKindOptions } from "../../../../types/enums";
 import CategoryInput from "../../../project/inputs/CategoryInput";
 
@@ -19,10 +18,10 @@ export const MutationInformationGroup = ({ houseBlock, setHouseBlock, readOnly }
             <Typography fontWeight={600} mb={2}>
                 {t("createProject.houseBlocksForm.mutationData")}
             </Typography>
-            <AmountInput
-                readOnly={readOnly}
-                houseBlockAmount={houseBlock.mutation.amount ?? null}
-                updateHouseBlockAmount={(e) =>
+            <SingleNumberInput
+                name={t("createProject.houseBlocksForm.amount")}
+                value={houseBlock.mutation.amount ?? null}
+                onChange={(e) =>
                     setHouseBlock({
                         ...houseBlock,
                         mutation: {
@@ -31,6 +30,10 @@ export const MutationInformationGroup = ({ houseBlock, setHouseBlock, readOnly }
                         },
                     })
                 }
+                readOnly={readOnly}
+                mandatory={true}
+                error={t("wizard.houseBlocks.mutationAmountWarning")}
+                isInputLabel={true}
             />
             <CategoryInput
                 readOnly={readOnly}

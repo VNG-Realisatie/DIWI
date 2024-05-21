@@ -4,9 +4,8 @@ import { useTranslation } from "react-i18next";
 import { OwnershipValueType, ownershipValueOptions } from "../../../../types/enums";
 import { OwnershipSingleValue } from "../../../../types/houseBlockTypes";
 import { InputContainer } from "../InputContainer";
-import { MonetaryRangeInput } from "../MonetaryRangeInput";
-import MonetaryRangeLabel from "../MonetaryRangeLabel";
 import CategoryInput from "../../../project/inputs/CategoryInput";
+import RangeNumberInput from "../../../project/inputs/RangeNumberInput";
 
 type Props = {
     ownership: OwnershipSingleValue;
@@ -44,6 +43,7 @@ const OwnershipAmountInput = ({ handleInputChange, ownership, index }: Ownership
 };
 
 export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handleRemoveRow, readOnly }: Props) => {
+    const { t } = useTranslation();
     const isKoopwoning = ownership.type === "KOOPWONING";
     const isHuurwoning = ownership.type === "HUURWONING_PARTICULIERE_VERHUURDER" || ownership.type === "HUURWONING_WONINGCORPORATIE";
 
@@ -69,34 +69,24 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                 )}
             </Grid>
             <Grid item xs={2}>
-                {!readOnly && (
-                    <MonetaryRangeInput
-                        value={ownership.value}
-                        labelText={t("createProject.houseBlocksForm.value")}
-                        updateCallBack={(e) => handleInputChange(index, { ...ownership, value: e })}
-                        disabled={isHuurwoning}
-                    />
-                )}
-                {readOnly && (
-                    <InputContainer>
-                        <MonetaryRangeLabel value={!isHuurwoning ? ownership.value : { ...ownership.value, value: null }} />
-                    </InputContainer>
-                )}
+                <RangeNumberInput
+                    value={!isHuurwoning ? ownership.value : { ...ownership.value, value: null }}
+                    labelText={t("createProject.houseBlocksForm.value")}
+                    updateCallBack={(e) => handleInputChange(index, { ...ownership, value: e })}
+                    readOnly={readOnly}
+                    mandatory={false}
+                    isMonetary={true}
+                />
             </Grid>
             <Grid item xs={2}>
-                {!readOnly && (
-                    <MonetaryRangeInput
-                        value={ownership.rentalValue}
-                        labelText={t("createProject.houseBlocksForm.rentalAmount")}
-                        updateCallBack={(e) => handleInputChange(index, { ...ownership, rentalValue: e })}
-                        disabled={isKoopwoning}
-                    />
-                )}
-                {readOnly && (
-                    <InputContainer>
-                        <MonetaryRangeLabel value={!isKoopwoning ? ownership.rentalValue : { ...ownership.value, value: null }} />
-                    </InputContainer>
-                )}
+                <RangeNumberInput
+                    value={!isKoopwoning ? ownership.rentalValue : { ...ownership.value, value: null }}
+                    labelText={t("createProject.houseBlocksForm.rentalAmount")}
+                    updateCallBack={(e) => handleInputChange(index, { ...ownership, rentalValue: e })}
+                    readOnly={readOnly}
+                    mandatory={false}
+                    isMonetary={true}
+                />
             </Grid>
             <Grid item xs={1}>
                 {!readOnly && (
