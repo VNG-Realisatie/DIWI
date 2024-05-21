@@ -43,14 +43,18 @@ const OwnershipAmountInput = ({ handleInputChange, ownership, index }: Ownership
 };
 
 export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handleRemoveRow, readOnly }: Props) => {
+
     const { t } = useTranslation();
+    const isKoopwoning = ownership.type === "KOOPWONING";
+    const isHuurwoning = ownership.type === "HUURWONING_PARTICULIERE_VERHUURDER" || ownership.type === "HUURWONING_WONINGCORPORATIE";
+
     return (
         <Grid container spacing={2} mt={1}>
             <Grid item xs={4}>
                 <CategoryInput
                     readOnly={readOnly}
                     values={ownership.type ? { id: ownership.type, name: ownership.type } : null}
-                    setValue={(_, newValue) => handleInputChange(index, { ...ownership, type: newValue as OwnershipValueType })}
+                    setValue={(_, newValue) => handleInputChange(index, { ...ownership, type: newValue ? (newValue.id as OwnershipValueType) : undefined })}
                     mandatory={false}
                     options={ownershipValueOptions.map((value) => ({ id: value, name: value }))}
                     multiple={false}
@@ -67,7 +71,7 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
             </Grid>
             <Grid item xs={2}>
                 <RangeNumberInput
-                    value={ownership.value}
+                value={!isHuurwoning ? ownership.value : { ...ownership.value, value: null }}
                     labelText={t("createProject.houseBlocksForm.value")}
                     updateCallBack={(e) => handleInputChange(index, { ...ownership, value: e })}
                     readOnly={readOnly}
@@ -77,7 +81,7 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
             </Grid>
             <Grid item xs={2}>
                 <RangeNumberInput
-                    value={ownership.rentalValue}
+                    value={!isKoopwoning ? ownership.rentalValue : { ...ownership.value, value: null }}
                     labelText={t("createProject.houseBlocksForm.rentalAmount")}
                     updateCallBack={(e) => handleInputChange(index, { ...ownership, rentalValue: e })}
                     readOnly={readOnly}
