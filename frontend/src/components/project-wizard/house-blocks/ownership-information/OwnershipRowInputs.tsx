@@ -31,7 +31,7 @@ const OwnershipAmountInput = ({ handleInputChange, ownership, index }: Ownership
     return (
         <TextField
             size="small"
-            label="Amount"
+            label={t("createProject.houseBlocksForm.amount")}
             type="number"
             required
             fullWidth
@@ -72,7 +72,7 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                 {!readOnly && (
                     <MonetaryRangeInput
                         value={ownership.value}
-                        labelText="Value"
+                        labelText={t("createProject.houseBlocksForm.value")}
                         updateCallBack={(e) => handleInputChange(index, { ...ownership, value: e })}
                         disabled={isHuurwoning}
                     />
@@ -87,7 +87,7 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                 {!readOnly && (
                     <MonetaryRangeInput
                         value={ownership.rentalValue}
-                        labelText="RentalValue"
+                        labelText={t("createProject.houseBlocksForm.rentalAmount")}
                         updateCallBack={(e) => handleInputChange(index, { ...ownership, rentalValue: e })}
                         disabled={isKoopwoning}
                     />
