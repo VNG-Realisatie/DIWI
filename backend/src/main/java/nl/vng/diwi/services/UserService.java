@@ -51,6 +51,9 @@ public class UserService {
         userEntity.setUserRole(userModel.getRole());
         userEntity.setPhoneNumber(userModel.getPhoneNumber());
         userEntity.setOrganization(userModel.getOrganization());
+        userEntity.setDepartment(userModel.getDepartment());
+        userEntity.setContactPerson(userModel.getContactPerson());
+        userEntity.setPrefixes(userModel.getPrefixes());
         userDAO.persist(userEntity);
 
         UserGroup group =  new UserGroup();
@@ -95,6 +98,9 @@ public class UserService {
         newUserEntity.setUserRole(userModel.getRole());
         newUserEntity.setPhoneNumber(userModel.getPhoneNumber());
         newUserEntity.setOrganization(userModel.getOrganization());
+        newUserEntity.setDepartment(userModel.getDepartment());
+        newUserEntity.setContactPerson(userModel.getContactPerson());
+        newUserEntity.setPrefixes(userModel.getPrefixes());
         userDAO.persist(newUserEntity);
 
         if (!userModel.getLastName().equals(oldUserEntity.getLastName()) || !userModel.getFirstName().equals(oldUserEntity.getFirstName())) {

@@ -29,6 +29,12 @@ public class UserModel {
     protected String organization;
     @JsonProperty(required = true)
     protected String phoneNumber;
+    @JsonProperty(required = true)
+    protected String department;
+    @JsonProperty(required = true)
+    protected String contactPerson;
+    @JsonProperty(required = true)
+    protected String prefixes;
 
     public UserModel(UserState user) {
         this.id = user.getUser().getId();
@@ -38,6 +44,9 @@ public class UserModel {
         this.role = user.getUserRole();
         this.organization = user.getOrganization();
         this.phoneNumber = user.getPhoneNumber();
+        this.department = user.getDepartment();
+        this.contactPerson = user.getContactPerson();
+        this.prefixes = user.getPrefixes();
     }
 
     public String validate() {

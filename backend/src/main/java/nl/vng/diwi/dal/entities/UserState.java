@@ -48,4 +48,13 @@ public class UserState extends ChangeDataSuperclass {
 
     @Column(name = "phone_number")
     private String phoneNumber;
+
+    @Column(name = "contact_person")
+    private String contactPerson;
+
+    @Column(name = "department")
+    private String department;
+
+    @Column(name = "prefixes")
+    private String prefixes;
 }
