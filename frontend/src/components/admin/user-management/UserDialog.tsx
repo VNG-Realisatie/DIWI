@@ -8,7 +8,7 @@ type UserDialogProps = {
     onClose: () => void;
     newUser: User;
     setNewUser: (user: any) => void;
-    handleAddUser: () => void;
+    handleAddUser: any;
 };
 
 const UserDialog = ({ open, onClose, newUser, setNewUser, handleAddUser }: UserDialogProps) => {

@@ -1,4 +1,4 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
@@ -8,6 +8,7 @@ import useAlert from "../../../hooks/useAlert";
 import GroupDialog from "./GroupDialog";
 import { Group, User } from "../../../pages/UserManagement";
 import { useTranslation } from "react-i18next";
+import DeleteDialogWithConfirmation from "./DeleteDialogWithConfirmation";
 
 type Props = {
     rows: any[];
@@ -43,7 +44,7 @@ const GroupUserTable = ({ rows, users, userGroups, setUserGroups }: Props) => {
         {
             field: "acties",
             headerName: t("admin.userManagement.tableHeader.actions"),
-            sortable: true,
+            sortable: false,
             flex: 1,
             renderCell: (params: any) => (
                 <Box display="flex" alignItems="center" justifyContent="center" style={{ height: "100%" }} gap="10px">
@@ -54,7 +55,7 @@ const GroupUserTable = ({ rows, users, userGroups, setUserGroups }: Props) => {
         },
     ];
 
-    const handleEdit = (group: any) => {
+    const handleEdit = (group: Group) => {
         setGroupToEdit(group);
         setEditDialogOpen(true);
     };
@@ -108,19 +109,12 @@ const GroupUserTable = ({ rows, users, userGroups, setUserGroups }: Props) => {
                 }}
                 pageSizeOptions={[5, 10, 25]}
             />
-            <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
-                <DialogContent>
-                    <DialogContentText>{t("admin.userManagement.groupDeleteConfirmation")}</DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setDeleteDialogOpen(false)} variant="outlined">
-                        {t("generic.no")}
-                    </Button>
-                    <Button onClick={handleDelete} variant="contained">
-                        {t("generic.yes")}
-                    </Button>
-                </DialogActions>
-            </Dialog>
+            <DeleteDialogWithConfirmation
+                open={deleteDialogOpen}
+                onClose={() => setDeleteDialogOpen(false)}
+                onConfirm={handleDelete}
+                dialogContentText="admin.userManagement.groupDeleteConfirmation"
+            />
             {groupToEdit && (
                 <GroupDialog
                     open={editDialogOpen}
