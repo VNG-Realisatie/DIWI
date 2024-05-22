@@ -108,6 +108,7 @@ const GroupUserTable = ({ rows, users, userGroups, setUserGroups }: Props) => {
                     },
                 }}
                 pageSizeOptions={[5, 10, 25]}
+                disableRowSelectionOnClick
             />
             <DeleteDialogWithConfirmation
                 open={deleteDialogOpen}
@@ -126,6 +127,7 @@ const GroupUserTable = ({ rows, users, userGroups, setUserGroups }: Props) => {
                         setEditDialogOpen(false);
                     }}
                     users={users}
+                    title={t("admin.userManagement.editGroup")}
                 />
             )}
         </Box>

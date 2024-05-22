@@ -318,7 +318,10 @@
             "lastName": "Achternaam"
           },
           "email": "E-mail",
+          "phone": "Telefoonnummer",
+          "organization": "Organisatie",
           "role": "Type gebruiker",
+          "department": "Afdeling",
           "active": "Actief",
           "edit": "Bewerken",
           "delete": "Verwijderen",
@@ -331,6 +334,8 @@
 
         "addUser": "Gebruiker toevoegen",
         "addGroup": "Groep toevoegen",
+        "editUser": "Gebruiker aanpassen",
+        "editGroup": "Groep aanpassen",
         "add": "Voeg gebruiker toe",
         "edit": "Pas gebruiker aan",
         "groupDeleteSuccess" : "Groep is verwijderd",
@@ -344,10 +349,12 @@
           "firstName": "Vul de voornaam in",
           "lastName": "Vul de achternaam in",
           "email": "Vul het e-mailadres in",
-          "role": "Selecteer een rol"
+          "role": "Selecteer een rol",
+          "phone": "Vul het telefoonnummer in",
+          "organization": "Vul de organisatie in",
+          "department": "Vul de afdeling in"
 
         }
-
       },
       "settings": {
         "title": "Lijst met maatwerk velden",

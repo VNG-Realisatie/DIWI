@@ -9,13 +9,14 @@ type Props = {
     mandatory: boolean;
     errorText?: string;
     title?: string;
+    type?: string;
 };
 
 const shouldDisplayError = (mandatory: boolean, value: string) => {
     return mandatory && (!value || value.trim() === "");
 };
 
-const TextInput = ({ value, setValue, readOnly, mandatory, errorText, title }: Props) => {
+const TextInput = ({ value, setValue, readOnly, mandatory, errorText, title, type = "text" }: Props) => {
     const hasError = shouldDisplayError(mandatory, value);
     return (
         <InputLabelStack mandatory={mandatory} title={title || ""}>
@@ -34,6 +35,7 @@ const TextInput = ({ value, setValue, readOnly, mandatory, errorText, title }: P
                 error={hasError}
                 helperText={hasError ? errorText : ""}
                 disabled={readOnly}
+                type={type}
             />
         </InputLabelStack>
     );

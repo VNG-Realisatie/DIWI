@@ -21,6 +21,9 @@ const emptyUserForm: User = {
     email: "",
     role: "",
     initials: "",
+    phone: "",
+    organization: "",
+    department: "",
 };
 
 export type User = {
@@ -30,6 +33,9 @@ export type User = {
     email?: string;
     role?: string;
     initials?: string;
+    phone?: string;
+    organization?: string;
+    department?: string;
 };
 
 export type Group = {
@@ -92,6 +98,7 @@ const UserManagement = () => {
                 setNewGroup={setNewGroup}
                 handleAddGroup={handleAddGroup}
                 users={users}
+                title={t("admin.userManagement.addGroup")}
             />
             <UserDialog
                 open={isUserDialogOpen}
@@ -99,6 +106,7 @@ const UserManagement = () => {
                 newUser={newUser}
                 setNewUser={setNewUser}
                 handleAddUser={handleAddUser}
+                title={t("admin.userManagement.addUser")}
             />
         </Box>
     );

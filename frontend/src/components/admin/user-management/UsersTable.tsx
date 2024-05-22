@@ -70,6 +70,7 @@ const UsersTable = ({ rows }: Props) => {
                     },
                 }}
                 pageSizeOptions={[5, 10, 25]}
+                disableRowSelectionOnClick
             />
             <DeleteDialogWithConfirmation
                 open={deleteDialogOpen}
@@ -84,6 +85,7 @@ const UsersTable = ({ rows }: Props) => {
                     newUser={userToEdit}
                     setNewUser={setUserToEdit}
                     handleAddUser={handleUpdateUser}
+                    title={t("admin.userManagement.editUser")}
                 />
             )}
         </>

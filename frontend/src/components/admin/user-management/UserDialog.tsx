@@ -1,4 +1,4 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid } from "@mui/material";
 import { t } from "i18next";
 import TextInput from "../../project/inputs/TextInput";
 import { User } from "../../../pages/UserManagement";
@@ -11,14 +11,15 @@ type UserDialogProps = {
     newUser: User;
     setNewUser: (user: any) => void;
     handleAddUser: any;
+    title?: string;
 };
 
-const UserDialog = ({ open, onClose, newUser, setNewUser, handleAddUser }: UserDialogProps) => {
+const UserDialog = ({ open, onClose, newUser, setNewUser, handleAddUser, title }: UserDialogProps) => {
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-            <DialogTitle>{t("admin.userManagement.addUser")}</DialogTitle>
+            <DialogTitle>{title}</DialogTitle>
             <DialogContent>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                <Box sx={{ display: "flex", flexDirection: "column", gap: "10px", marginX: "30px" }}>
                     <TextInput
                         readOnly={false}
                         value={newUser.firstName ?? ""}
@@ -39,15 +40,53 @@ const UserDialog = ({ open, onClose, newUser, setNewUser, handleAddUser }: UserD
                         title={t("admin.userManagement.tableHeader.name.lastName")}
                         errorText={t("admin.userManagement.errors.lastName")}
                     />
+                    <Grid container spacing={2}>
+                        <Grid item xs={4}>
+                            <TextInput
+                                readOnly={false}
+                                value={newUser.phone ?? ""}
+                                setValue={(event: any) => {
+                                    setNewUser({ ...newUser, phone: event.target.value });
+                                }}
+                                mandatory={true}
+                                title={t("admin.userManagement.tableHeader.phone")}
+                                errorText={t("admin.userManagement.errors.phone")}
+                                type="tel"
+                            />
+                        </Grid>
+                        <Grid item xs={8}>
+                            <TextInput
+                                readOnly={false}
+                                value={newUser.email ?? ""}
+                                setValue={(event: any) => {
+                                    setNewUser({ ...newUser, email: event.target.value });
+                                }}
+                                mandatory={true}
+                                title={t("admin.userManagement.tableHeader.email")}
+                                errorText={t("admin.userManagement.errors.email")}
+                                type="email"
+                            />
+                        </Grid>
+                    </Grid>
                     <TextInput
                         readOnly={false}
-                        value={newUser.email ?? ""}
+                        value={newUser.organization ?? ""}
                         setValue={(event: any) => {
-                            setNewUser({ ...newUser, email: event.target.value });
+                            setNewUser({ ...newUser, organization: event.target.value });
                         }}
                         mandatory={true}
-                        title={t("admin.userManagement.tableHeader.email")}
-                        errorText={t("admin.userManagement.errors.email")}
+                        title={t("admin.userManagement.tableHeader.organization")}
+                        errorText={t("admin.userManagement.errors.organization")}
+                    />
+                    <TextInput
+                        readOnly={false}
+                        value={newUser.department ?? ""}
+                        setValue={(event: any) => {
+                            setNewUser({ ...newUser, department: event.target.value });
+                        }}
+                        mandatory={true}
+                        title={t("admin.userManagement.tableHeader.department")}
+                        errorText={t("admin.userManagement.errors.department")}
                     />
                     {/* Options need to be translated */}
                     <CategoryInput
@@ -77,10 +116,10 @@ const UserDialog = ({ open, onClose, newUser, setNewUser, handleAddUser }: UserD
                         }}
                         variant="outlined"
                     >
-                        {t("generic.no")}
+                        {t("generic.cancel")}
                     </Button>
                     <Button onClick={handleAddUser} variant="contained">
-                        {t("generic.yes")}
+                        {t("generic.save")}
                     </Button>
                 </Box>
             </DialogActions>

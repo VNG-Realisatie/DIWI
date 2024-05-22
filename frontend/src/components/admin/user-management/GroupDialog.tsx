@@ -10,14 +10,15 @@ type GroupDialogProps = {
     setNewGroup: (group: any) => void;
     handleAddGroup: () => void;
     users: any[];
+    title: string;
 };
 
-const GroupDialog = ({ open, onClose, newGroup, setNewGroup, handleAddGroup, users }: GroupDialogProps) => {
+const GroupDialog = ({ open, onClose, newGroup, setNewGroup, handleAddGroup, users, title }: GroupDialogProps) => {
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-            <DialogTitle>{t("admin.userManagement.addGroup")}</DialogTitle>
+            <DialogTitle>{title}</DialogTitle>
             <DialogContent>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                <Box sx={{ display: "flex", flexDirection: "column", gap: "10px", marginX: "30px" }}>
                     <TextInput
                         readOnly={false}
                         value={newGroup.name}
@@ -54,10 +55,10 @@ const GroupDialog = ({ open, onClose, newGroup, setNewGroup, handleAddGroup, use
                         }}
                         variant="outlined"
                     >
-                        {t("generic.no")}
+                        {t("generic.cancel")}
                     </Button>
                     <Button onClick={handleAddGroup} variant="contained">
-                        {t("generic.yes")}
+                        {t("generic.save")}
                     </Button>
                 </Box>
             </DialogActions>
