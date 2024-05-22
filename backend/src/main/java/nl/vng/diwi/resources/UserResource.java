@@ -69,7 +69,7 @@ public class UserResource {
         try (AutoCloseTransaction transaction = userService.getUserDAO().beginTransaction()) {
 
             //TODO: create user in keycloak
-            String identityProviderId = "identityProviderId"; //TODO
+            String identityProviderId = "identityProviderId"; //TODO - get from keycloak
 
             UserState newUserEntity = userService.createUser(newUser, identityProviderId, loggedUser.getUuid());
             transaction.commit();
@@ -103,7 +103,7 @@ public class UserResource {
 
         try (AutoCloseTransaction transaction = userService.getUserDAO().beginTransaction()) {
 
-            //TODO: update user in keycloak?? what fields are allowed to be updated??
+            //TODO: update email / last name / first name in keycloak
 
             updatedUser.setId(userId);
             UserState updatedUserEntity = userService.updateUser(updatedUser, loggedUser.getUuid());
@@ -119,6 +119,8 @@ public class UserResource {
     public void deleteUser(@PathParam("userId") UUID userId, @Context LoggedUser loggedUser) throws VngNotFoundException {
 
         try (AutoCloseTransaction transaction = userService.getUserDAO().beginTransaction()) {
+
+            //TODO: delete/disable user in keycloak
             userService.deleteUser(userId, loggedUser.getUuid());
             transaction.commit();
         }

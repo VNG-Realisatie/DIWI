@@ -22,8 +22,8 @@ public class UserService {
 
     private static final Logger logger = LogManager.getLogger();
 
-    private UserDAO userDAO;
-    private UserGroupDAO userGroupDAO;
+    private final UserDAO userDAO;
+    private final UserGroupDAO userGroupDAO;
 
     @Inject
     public UserService(UserDAO userDAO, UserGroupDAO userGroupDAO) {

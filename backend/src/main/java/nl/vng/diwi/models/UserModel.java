@@ -47,9 +47,6 @@ public class UserModel {
         if (!EmailValidator.getInstance().isValid(email)) {
             return "Invalid email address";
         }
-        if (phoneNumber != null) {
-            //TODO: validate phone
-        }
         return null;
     }
 
