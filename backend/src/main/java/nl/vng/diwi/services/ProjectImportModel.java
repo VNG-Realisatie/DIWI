@@ -152,7 +152,9 @@ public class ProjectImportModel {
 
         public void validate(ProjectImportModel projectRowModel, Integer excelRowNo, List<ImportError> rowErrors) {
 
-            latestDeliveryDate = deliveryDateMap.keySet().stream().max(LocalDate::compareTo).orElse(projectRowModel.projectEndDate);
+            if (latestDeliveryDate == null) {
+                latestDeliveryDate = deliveryDateMap.keySet().stream().max(LocalDate::compareTo).orElse(projectRowModel.projectEndDate);
+            }
 
             if (latestDeliveryDate.isAfter(projectRowModel.projectEndDate)) {
                 rowErrors.add(new ImportError(excelRowNo, ImportError.ERROR.HOUSEBLOCK_DELIVERY_DATE_AFTER_PROJECT_END_DATE));
