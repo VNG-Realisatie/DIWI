@@ -97,6 +97,28 @@ public class UserService {
         newUserEntity.setOrganization(userModel.getOrganization());
         userDAO.persist(newUserEntity);
 
+        if (!userModel.getLastName().equals(oldUserEntity.getLastName()) || !userModel.getFirstName().equals(oldUserEntity.getFirstName())) {
+            UUID usergroupUuid = userGroupDAO.findSingleUserUserGroup(userModel.getId());
+            if (usergroupUuid == null) {
+                logger.error("Single-user usergroup for userId {} was not found.", userModel.getId());
+            } else {
+                UserGroup userGroup = userGroupDAO.getCurrentUserGroup(usergroupUuid);
+                userGroup.getState().stream()
+                    .filter(ugs -> ugs.getChangeEndDate() == null)
+                    .forEach(ugs -> {
+                        ugs.setChangeEndDate(now);
+                        ugs.setChangeUser(loggedUser);
+                        userGroupDAO.persist(ugs);
+                    });
+
+                UserGroupState newGroupState = new UserGroupState();
+                newGroupState.setUserGroup(userGroup);
+                newGroupState.setName(userModel.getFirstName() + " " + userModel.getLastName());
+                newGroupState.setCreateUser(loggedUser);
+                newGroupState.setChangeStartDate(now);
+                userGroupDAO.persist(newGroupState);
+            }
+        }
         return newUserEntity;
     }
 
