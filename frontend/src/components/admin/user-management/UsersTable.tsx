@@ -9,10 +9,6 @@ import useAlert from "../../../hooks/useAlert";
 import UserDialog from "./UserDialog";
 import DeleteDialogWithConfirmation from "./DeleteDialogWithConfirmation";
 
-function handleDelete(row: any) {
-    // Handle the delete action
-}
-
 type Props = {
     rows: any[];
 };

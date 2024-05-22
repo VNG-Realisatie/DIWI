@@ -37,7 +37,7 @@ const GroupUserTable = ({ rows, users, userGroups, setUserGroups }: Props) => {
             sortable: true,
             flex: 4,
             renderCell: (cellValues: any) => {
-                const users = cellValues?.row?.users.map((user: User) => user.initials).join(", ");
+                const users = cellValues?.row?.users.map((user: User) => user.firstName + " " + user.lastName).join(", ");
                 return users; //how do we want to display them??
             },
         },

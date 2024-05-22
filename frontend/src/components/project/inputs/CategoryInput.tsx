@@ -54,7 +54,7 @@ const CategoryInput = ({ values, setValue, readOnly, mandatory, title, options, 
                         return t(`${translationPath}${option.name}`);
                     }
                     if (option && option.firstName && option.lastName) {
-                        return `${option.firstName[0]}${option.lastName[0]}`;
+                        return `${option.firstName}${option.lastName}`;
                     }
                     if (option) {
                         return t(`${translationPath}${option}`);

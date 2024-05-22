@@ -2,6 +2,8 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle } from "
 import { t } from "i18next";
 import TextInput from "../../project/inputs/TextInput";
 import { User } from "../../../pages/UserManagement";
+import CategoryInput from "../../project/inputs/CategoryInput";
+import { roleTypeOptions } from "../../../types/enums";
 
 type UserDialogProps = {
     open: boolean;
@@ -47,16 +49,23 @@ const UserDialog = ({ open, onClose, newUser, setNewUser, handleAddUser }: UserD
                         title={t("admin.userManagement.tableHeader.email")}
                         errorText={t("admin.userManagement.errors.email")}
                     />
-                    {/* should use category input */}
-                    <TextInput
+                    {/* Options need to be translated */}
+                    <CategoryInput
                         readOnly={false}
-                        value={newUser.role ?? ""}
-                        setValue={(event: any) => {
-                            setNewUser({ ...newUser, role: event.target.value });
-                        }}
                         mandatory={true}
                         title={t("admin.userManagement.tableHeader.role")}
-                        errorText={t("admin.userManagement.errors.role")}
+                        options={roleTypeOptions.map((role) => ({ id: role, name: role }))}
+                        values={newUser?.role ? { id: newUser.role, name: newUser.role } : null}
+                        setValue={(_, newValue) => {
+                            if (newValue && newValue.id) {
+                                setNewUser({
+                                    ...newUser,
+                                    role: newValue.id,
+                                });
+                            }
+                        }}
+                        multiple={false}
+                        error={t("admin.userManagement.errors.role")}
                     />
                 </Box>
             </DialogContent>
