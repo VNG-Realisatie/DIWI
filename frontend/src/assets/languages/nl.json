@@ -318,7 +318,7 @@
             "lastName": "Achternaam"
           },
           "email": "E-mail",
-          "role": "Rol",
+          "role": "Type gebruiker",
           "active": "Actief",
           "edit": "Bewerken",
           "delete": "Verwijderen",
