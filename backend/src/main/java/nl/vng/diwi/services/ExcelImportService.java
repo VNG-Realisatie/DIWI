@@ -42,6 +42,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +64,7 @@ public class ExcelImportService {
     public Map<String, Object> importExcel(String excelFilePath, VngRepository repo, UUID loggedInUserUuid) {
 
         List<ImportError> excelErrors = new ArrayList<>();
-        List<SelectModel> excelProjects = new ArrayList<>();
+        Map<Integer, ProjectImportModel> excelProjectMap = new HashMap<>();
 
         try (InputStream inputStream = new FileInputStream(excelFilePath); Workbook workbook = new XSSFWorkbook(inputStream)) {
 
@@ -82,18 +83,19 @@ public class ExcelImportService {
             ZonedDateTime importTime = ZonedDateTime.now();
 
             Iterator<Row> iterator = dataSheet.iterator();
-            int rowCount = 0;
+            int sectionRow = 0;
 
             try (AutoCloseTransaction transaction = repo.beginTransaction()) {
 
                 User user = repo.getReferenceById(User.class, loggedInUserUuid);
                 while (iterator.hasNext()) {
                     Row nextRow = iterator.next();
-                    rowCount++;
+                    int rowCount = nextRow.getRowNum();
 
-                    if (rowCount == 2) { //sections
+                    if (sectionRow == 0) { //sections
                         ExcelTableHeader.Section lastSection = null; //sections
                         Iterator<Cell> cellIterator = nextRow.cellIterator();
+                        Set<ExcelTableHeader.Section> sections = new HashSet<>();
                         while (cellIterator.hasNext()) {
                             Cell nextCell = cellIterator.next();
                             int columnIndex = nextCell.getColumnIndex();
@@ -101,6 +103,7 @@ public class ExcelImportService {
                             ExcelTableHeader.Section excelSection = ExcelTableHeader.Section.findByName(sectionName);
                             if (excelSection != null) {
                                 lastSection = excelSection;
+                                sections.add(excelSection);
                             }
                             if (lastSection == ExcelTableHeader.Section.CONTROL_CONSTRUCTION) {
                                 break;
@@ -110,9 +113,12 @@ public class ExcelImportService {
                                 tableHeaderMap.put(columnIndex, tableHeader);
                             }
                         }
+                        if (!sections.isEmpty()) {
+                            sectionRow = rowCount;
+                        }
                     }
 
-                    if (rowCount == 4) { //headers - set columns and propertymodel for fixed properties
+                    if (rowCount == sectionRow + 2) { //headers - set columns and propertymodel for fixed properties
                         Iterator<Cell> cellIterator = nextRow.cellIterator();
                         while (cellIterator.hasNext()) {
                             Cell nextCell = cellIterator.next();
@@ -157,7 +163,7 @@ public class ExcelImportService {
                         }
                     }
 
-                    if (rowCount == 5) { //subheaders - set subheader values and property model for columns with subheaders
+                    if (rowCount == sectionRow + 3) { //subheaders - set subheader values and property model for columns with subheaders
                         Iterator<Cell> cellIterator = nextRow.cellIterator();
                         while (cellIterator.hasNext()) {
                             Cell nextCell = cellIterator.next();
@@ -218,15 +224,28 @@ public class ExcelImportService {
                         }
                     }
 
-                    if (rowCount > 5) {
-                        SelectModel excelProject = processExcelRow(repo, nextRow, tableHeaderMap, dateFormatter, formulaEvaluator, excelErrors,
-                            user, importTime);
-                        if (excelProject != null) {
-                            excelProjects.add(excelProject);
+                    if (rowCount > sectionRow + 3) {
+                        ProjectImportModel rowModel = processExcelRow(nextRow, tableHeaderMap, dateFormatter, formulaEvaluator, excelErrors, importTime);
+                        if (rowModel != null) {
+                            if (excelProjectMap.containsKey(rowModel.getId())) {
+                                ProjectImportModel existingProject = excelProjectMap.get(rowModel.getId());
+                                if (existingProject.hasSameProjectLevelData(rowModel)) {
+                                    existingProject.getHouseblocks().addAll(rowModel.getHouseblocks());
+                                } else {
+                                    excelErrors.add(new ImportError(rowCount, ImportError.ERROR.PROJECT_LEVEL_DATA_INVALID));
+                                }
+                            } else {
+                                excelProjectMap.put(rowModel.getId(), rowModel);
+                            }
                         }
                     }
                 }
                 if (excelErrors.isEmpty()) {
+                    List<SelectModel> excelProjects = new ArrayList<>();
+                    for (ProjectImportModel rowModel : excelProjectMap.values()) {
+                        SelectModel selectModel = rowModel.persistProjectAndHouseblocks(repo, user, importTime);
+                        excelProjects.add(selectModel);
+                    }
                     transaction.commit();
                     return Map.of(result, excelProjects);
                 } else {
@@ -251,8 +270,8 @@ public class ExcelImportService {
         }
     }
 
-    private SelectModel processExcelRow(VngRepository repo, Row row, Map<Integer, ExcelTableHeader> tableHeaderMap, DataFormatter formatter,
-                                        FormulaEvaluator evaluator, List<ImportError> excelErrors, User user, ZonedDateTime importTime) {
+    private ProjectImportModel processExcelRow(Row row, Map<Integer, ExcelTableHeader> tableHeaderMap, DataFormatter formatter,
+                                               FormulaEvaluator evaluator, List<ImportError> excelErrors, ZonedDateTime importTime) {
         ProjectImportModel rowModel = new ProjectImportModel();
 
         List<ImportError> rowErrors = new ArrayList<>();
@@ -452,7 +471,7 @@ public class ExcelImportService {
         }
 
         if (rowErrors.isEmpty()) { //still no errors
-            return rowModel.persistProjectAndHouseblocks(repo, user, importTime);
+            return rowModel;
         } else {
             excelErrors.addAll(rowErrors);
             return null;

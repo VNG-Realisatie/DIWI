@@ -100,6 +100,21 @@ public class ProjectImportModel {
 
     private List<HouseblockImportModel> houseblocks = new ArrayList<>();
 
+    public boolean hasSameProjectLevelData(ProjectImportModel other) {
+        return Objects.equals(this.projectName, other.projectName) &&
+            Objects.equals(this.planType, other.planType) &&
+            Objects.equals(this.programming, other.programming) &&
+            Objects.equals(this.projectStatus, other.projectStatus) &&
+            Objects.equals(this.projectStartDate, other.projectStartDate) &&
+            Objects.equals(this.projectPhasesMap, other.projectPhasesMap) &&
+            Objects.equals(this.projectCategoryPropsMap, other.projectCategoryPropsMap) &&
+            Objects.equals(this.projectPlanStatusesMap, other.projectPlanStatusesMap) &&
+            Objects.equals(this.projectStringPropsMap, other.projectStringPropsMap) &&
+            Objects.equals(this.projectBooleanPropsMap, other.projectBooleanPropsMap) &&
+            Objects.equals(this.projectNumericPropsMap, other.projectNumericPropsMap) &&
+            Objects.equals(this.projectOrdinalPropsMap, other.projectOrdinalPropsMap);
+    }
+
     @Data
     public static class HouseblockImportModel {
 
@@ -137,9 +152,7 @@ public class ProjectImportModel {
 
         public void validate(ProjectImportModel projectRowModel, Integer excelRowNo, List<ImportError> rowErrors) {
 
-            if (latestDeliveryDate == null) {
-                latestDeliveryDate = deliveryDateMap.keySet().stream().max(LocalDate::compareTo).orElse(projectRowModel.projectEndDate);
-            }
+            latestDeliveryDate = deliveryDateMap.keySet().stream().max(LocalDate::compareTo).orElse(projectRowModel.projectEndDate);
 
             if (latestDeliveryDate.isAfter(projectRowModel.projectEndDate)) {
                 rowErrors.add(new ImportError(excelRowNo, ImportError.ERROR.HOUSEBLOCK_DELIVERY_DATE_AFTER_PROJECT_END_DATE));
@@ -455,8 +468,8 @@ public class ProjectImportModel {
         }
 
         houseblocks.forEach(houseblock -> {
-                Milestone houseblockEndMilestone = getOrCreateProjectMilestone(repo, projectMilestones, project, houseblock.getLatestDeliveryDate(), null, user, importTime);
-                persistHouseblocks(repo, houseblock, project, startMilestone, houseblockEndMilestone, user, importTime);
+            Milestone houseblockEndMilestone = getOrCreateProjectMilestone(repo, projectMilestones, project, houseblock.getLatestDeliveryDate(), null, user, importTime);
+            persistHouseblocks(repo, houseblock, project, startMilestone, houseblockEndMilestone, user, importTime);
         });
 
         return new SelectModel(project.getId(), projectName);
