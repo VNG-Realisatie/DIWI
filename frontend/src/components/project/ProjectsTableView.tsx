@@ -114,9 +114,12 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             filterable: false,
             preProcessEditCellProps: createErrorReport,
             renderCell: (cellValues) => {
-                return cellValues.row.projectOwners && cellValues.row.projectOwners.length > 0 ? (
-                    <OrganizationSelect readOnly={true} userGroup={cellValues.row.projectOwners} setUserGroup={() => {}} />
-                ) : null;
+                return (
+                    cellValues.row.projectOwners &&
+                    cellValues.row.projectOwners.length > 0 && (
+                        <OrganizationSelect readOnly={true} userGroup={cellValues.row.projectOwners} setUserGroup={() => {}} />
+                    )
+                );
             },
         },
         {
@@ -192,9 +195,12 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             filterable: false,
             preProcessEditCellProps: createErrorReport,
             renderCell: (cellValues) => {
-                return cellValues.row.projectLeaders && cellValues.row.projectLeaders.length > 0 ? (
-                    <OrganizationSelect readOnly={true} userGroup={cellValues.row.projectLeaders} setUserGroup={() => {}} />
-                ) : null;
+                return (
+                    cellValues.row.projectLeaders &&
+                    cellValues.row.projectLeaders.length > 0 && (
+                        <OrganizationSelect readOnly={true} userGroup={cellValues.row.projectLeaders} setUserGroup={() => {}} />
+                    )
+                );
             },
         },
         {
