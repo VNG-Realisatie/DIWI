@@ -9,6 +9,7 @@ import { addGroup } from "../api/userSerivces";
 import useAlert from "../hooks/useAlert";
 import GroupDialog from "../components/admin/user-management/GroupDialog";
 import UserDialog from "../components/admin/user-management/UserDialog";
+import useAllowedActions from "../hooks/useAllowedActions";
 
 const emptyGroupForm: Group = {
     name: "",
@@ -52,6 +53,7 @@ const UserManagement = () => {
     const [newGroup, setNewGroup] = useState<Group>(emptyGroupForm);
     const [newUser, setNewUser] = useState<User>(emptyUserForm);
     const { setAlert } = useAlert();
+    const allowedActions = useAllowedActions();
     useEffect(() => {
         getUsers().then((data) => setUsers(data));
     }, []);
@@ -75,22 +77,25 @@ const UserManagement = () => {
     const handleAddUser = () => {
         // Implement this function to add a user
     };
-    console.log(users);
     return (
         <Box sx={{ marginBottom: "90px" }}>
             <UsersTable rows={users} />
 
-            <Stack direction="row" alignItems="center" mt={1} sx={{ cursor: "pointer" }} onClick={() => setIsUserDialogOpen(true)}>
-                <AddCircleIcon color="primary" sx={{ fontSize: "40px" }} />
-                {t("admin.userManagement.addUser")}
-            </Stack>
+            {allowedActions.includes("EDIT_USERS") && (
+                <Stack direction="row" alignItems="center" mt={1} sx={{ cursor: "pointer" }} onClick={() => setIsGroupDialogOpen(true)}>
+                    <AddCircleIcon color="primary" sx={{ fontSize: "40px" }} />
+                    {t("admin.userManagement.addGroup")}
+                </Stack>
+            )}
 
             <GroupUserTable rows={userGroups} users={users} setUserGroups={setUserGroups} userGroups={userGroups} />
+            {allowedActions.includes("EDIT_USERS") && (
+                <Stack direction="row" alignItems="center" mt={1} sx={{ cursor: "pointer" }} onClick={() => setIsGroupDialogOpen(true)}>
+                    <AddCircleIcon color="primary" sx={{ fontSize: "40px" }} />
+                    {t("admin.userManagement.addGroup")}
+                </Stack>
+            )}
 
-            <Stack direction="row" alignItems="center" mt={1} sx={{ cursor: "pointer" }} onClick={() => setIsGroupDialogOpen(true)}>
-                <AddCircleIcon color="primary" sx={{ fontSize: "40px" }} />
-                {t("admin.userManagement.addGroup")}
-            </Stack>
             <GroupDialog
                 open={isGroupDialogOpen}
                 onClose={() => setIsGroupDialogOpen(false)}

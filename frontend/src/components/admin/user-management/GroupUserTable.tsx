@@ -9,6 +9,7 @@ import GroupDialog from "./GroupDialog";
 import { Group, User } from "../../../pages/UserManagement";
 import { useTranslation } from "react-i18next";
 import DeleteDialogWithConfirmation from "./DeleteDialogWithConfirmation";
+import useAllowedActions from "../../../hooks/useAllowedActions";
 
 type Props = {
     rows: any[];
@@ -24,6 +25,7 @@ const GroupUserTable = ({ rows, users, userGroups, setUserGroups }: Props) => {
     const [groupToEdit, setGroupToEdit] = useState<Group | null>(null);
     const { setAlert } = useAlert();
     const { t } = useTranslation();
+    const allowedActions = useAllowedActions();
     const columns = [
         {
             field: "name",
@@ -48,8 +50,12 @@ const GroupUserTable = ({ rows, users, userGroups, setUserGroups }: Props) => {
             flex: 1,
             renderCell: (params: any) => (
                 <Box display="flex" alignItems="center" justifyContent="center" style={{ height: "100%" }} gap="10px">
-                    <EditOutlinedIcon style={{ cursor: "pointer" }} color="primary" onClick={() => handleEdit(params.row)} />
-                    <DeleteForeverOutlinedIcon style={{ cursor: "pointer" }} color="error" onClick={() => handleDeleteDialogOpen(params.row.uuid)} />
+                    {allowedActions.includes("EDIT_USERS") && (
+                        <>
+                            <EditOutlinedIcon style={{ cursor: "pointer" }} color="primary" onClick={() => handleEdit(params.row)} />
+                            <DeleteForeverOutlinedIcon style={{ cursor: "pointer" }} color="error" onClick={() => handleDeleteDialogOpen(params.row.uuid)} />
+                        </>
+                    )}
                 </Box>
             ),
         },

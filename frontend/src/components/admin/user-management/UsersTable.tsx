@@ -8,6 +8,7 @@ import { User } from "../../../pages/UserManagement";
 import useAlert from "../../../hooks/useAlert";
 import UserDialog from "./UserDialog";
 import DeleteDialogWithConfirmation from "./DeleteDialogWithConfirmation";
+import useAllowedActions from "../../../hooks/useAllowedActions";
 
 type Props = {
     rows: any[];
@@ -19,6 +20,7 @@ const UsersTable = ({ rows }: Props) => {
     const [editUserOpen, setUserDialogOpen] = useState(false);
     const [userToEdit, setUserToEdit] = useState<User | null>(null);
     const { setAlert } = useAlert();
+    const allowedActions = useAllowedActions();
 
     const { t } = useTranslation();
     const handleEdit = (user: User) => {
@@ -49,8 +51,12 @@ const UsersTable = ({ rows }: Props) => {
             sortable: true,
             renderCell: (params: any) => (
                 <Box display="flex" alignItems="center" justifyContent="center" style={{ height: "100%" }} gap="10px">
-                    <EditOutlinedIcon style={{ cursor: "pointer" }} color="primary" onClick={() => handleEdit(params.row)} />
-                    <DeleteForeverOutlinedIcon style={{ cursor: "pointer" }} color="error" onClick={() => handleDeleteDialogOpen(params.row.uuid)} />
+                    {allowedActions.includes("EDIT_USERS") && (
+                        <>
+                            <EditOutlinedIcon style={{ cursor: "pointer" }} color="primary" onClick={() => handleEdit(params.row)} />
+                            <DeleteForeverOutlinedIcon style={{ cursor: "pointer" }} color="error" onClick={() => handleDeleteDialogOpen(params.row.uuid)} />
+                        </>
+                    )}
                 </Box>
             ),
         },
