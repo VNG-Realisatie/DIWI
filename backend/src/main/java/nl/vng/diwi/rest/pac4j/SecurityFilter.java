@@ -31,6 +31,7 @@ import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.dal.entities.UserState;
 import nl.vng.diwi.dal.entities.UserToOrganization;
 import nl.vng.diwi.rest.VngServerErrorException;
+import nl.vng.diwi.rest.VngServerNotAllowedException;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.security.LoginContext;
 import nl.vng.diwi.security.UserRole;
@@ -82,8 +83,7 @@ public class SecurityFilter implements ContainerRequestFilter {
             return null;
         };
 
-        try
-        {
+        try {
             DefaultSecurityLogic securityLogic = new DefaultSecurityLogic();
             securityLogic.perform(pac4jConfig, securityGrantedAccessAdapter, null, DefaultAuthorizers.IS_AUTHENTICATED,
                     null, new JEEFrameworkParameters(httpRequest, httpResponse));
@@ -93,7 +93,7 @@ public class SecurityFilter implements ContainerRequestFilter {
         }
     }
 
-    private UserState getUserForProfile(UserProfile profile) {
+    private UserState getUserForProfile(UserProfile profile) throws Exception {
         Session session = dalFactory.constructDal().getSession();
         var userDao = new UserDAO(session);
         var organizationsDAO = new OrganizationsDAO(session);
@@ -106,6 +106,13 @@ public class SecurityFilter implements ContainerRequestFilter {
 
             var userEntity = userDao.getUserByIdentityProviderId(profileUuid);
             if (userEntity == null) {
+                // user does not exist in diwi database
+                var hasDiwiAdminRole = profile.getRoles().contains("diwi-admin"); // must match role name defined in
+                                                                                  // keycloak!
+                if (!hasDiwiAdminRole) {
+                    throw new VngServerNotAllowedException(
+                            "Cannot add keycloak user {" + profileUuid + "}, wrong role.");
+                }
                 ZonedDateTime now = ZonedDateTime.now();
                 User systemUser = userDao.getSystemUser();
 
@@ -120,10 +127,10 @@ public class SecurityFilter implements ContainerRequestFilter {
                 userEntity.setLastName((String) lastName);
                 userEntity.setUser(newUser);
                 userEntity.setIdentityProviderId(profileUuid);
-                userEntity.setUserRole(UserRole.Admin); // Any user that is 'comming' from keycloak should not be able to view projects
+                userEntity.setUserRole(UserRole.Admin); // Keycload users should by default not see projects
                 userDao.persist(userEntity);
 
-                var org =  new Organization();
+                var org = new Organization();
                 organizationsDAO.persist(org);
 
                 var orgState = new OrganizationState();
