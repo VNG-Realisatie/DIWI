@@ -1,5 +1,17 @@
 # Change log
 
+## DIWI RELEASE 1.3.1
+
+### ADDED
+
+- Multi house block imports in excel importer.
+
+### FIXED
+
+- Translations for ownership inputs were added.
+- Disabled categories for physical appearance don't show up anymore.
+- Clicking back in project wizard for house blocks saves the house blocks.
+
 ## DIWI RELEASE 1.3.0
 
 This release is focused on the experimental geojson importer, which is only available for administrators at the moment, as well as a redesign of the project details and correcting naming issues.
