@@ -31,7 +31,7 @@ import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.dal.entities.UserState;
 import nl.vng.diwi.dal.entities.UserToOrganization;
 import nl.vng.diwi.rest.VngServerErrorException;
-import nl.vng.diwi.rest.VngServerNotAllowedException;
+import nl.vng.diwi.rest.VngNotAllowedException;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.security.LoginContext;
 import nl.vng.diwi.security.UserRole;
@@ -63,30 +63,33 @@ public class SecurityFilter implements ContainerRequestFilter {
         if (Constants.REST_AUTH_LOGOUT.equals(requestContext.getUriInfo().getAbsolutePath().getPath())) {
             return;
         }
+        
+        log.error("REQ context: " + requestContext.getUriInfo().getAbsolutePath().getPath());
 
         Config pac4jConfig = config.getPac4jConfig();
         if (pac4jConfig == null) {
             return;
         }
 
-        SecurityGrantedAccessAdapter securityGrantedAccessAdapter = (ctx, sessionStore, profiles) -> {
-            for (var profile : profiles) {
-                var userEntity = getUserForProfile(profile);
-
-                LoggedUser loggedUser = new LoggedUser(userEntity);
-                requestContext.setProperty("loggedUser", loggedUser);
-                final LoginContext context = new LoginContext(loggedUser);
-                requestContext.setSecurityContext(context);
-
-                break;
-            }
-            return null;
-        };
-
         try {
+            SecurityGrantedAccessAdapter securityGrantedAccessAdapter = (ctx, sessionStore, profiles) -> {
+                for (var profile : profiles) {
+                    var userEntity = getUserForProfile(profile);
+
+                    LoggedUser loggedUser = new LoggedUser(userEntity);
+                    requestContext.setProperty("loggedUser", loggedUser);
+                    final LoginContext context = new LoginContext(loggedUser);
+                    requestContext.setSecurityContext(context);
+
+                    break;
+                }
+                return null;
+            };
             DefaultSecurityLogic securityLogic = new DefaultSecurityLogic();
             securityLogic.perform(pac4jConfig, securityGrantedAccessAdapter, null, DefaultAuthorizers.IS_AUTHENTICATED,
                     null, new JEEFrameworkParameters(httpRequest, httpResponse));
+        } catch (VngNotAllowedException e) {
+            throw e;
         } catch (TechnicalException | NullPointerException e) {
             log.info("config: {}", config);
             throw new VngServerErrorException("Server error", e);
@@ -107,11 +110,11 @@ public class SecurityFilter implements ContainerRequestFilter {
             var userEntity = userDao.getUserByIdentityProviderId(profileUuid);
             if (userEntity == null) {
                 // user does not exist in diwi database
-                var hasDiwiAdminRole = profile.getRoles().contains("diwi-admin"); // must match role name defined in
-                                                                                  // keycloak!
+                // must match role name defined in keycloak!
+                var hasDiwiAdminRole = profile.getRoles().contains("diwi-admin");
                 if (!hasDiwiAdminRole) {
-                    throw new VngServerNotAllowedException(
-                            "Cannot add keycloak user {" + profileUuid + "}, wrong role.");
+                    throw new VngNotAllowedException("User not allowed", new Exception(
+                            "Could not create diwi account for keycloak user " + profileUuid + ", missing role."));
                 }
                 ZonedDateTime now = ZonedDateTime.now();
                 User systemUser = userDao.getSystemUser();

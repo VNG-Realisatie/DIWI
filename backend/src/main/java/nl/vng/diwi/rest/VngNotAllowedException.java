@@ -9,22 +9,22 @@ import nl.vng.diwi.models.ErrorResponse;
 
 @Log4j2
 @Provider
-public class VngServerNotAllowedException extends RuntimeException implements ExceptionMapper<VngServerNotAllowedException> {
+public class VngNotAllowedException extends RuntimeException implements ExceptionMapper<VngNotAllowedException> {
 
-    public VngServerNotAllowedException() {
+    public VngNotAllowedException() {
     }
 
-    public VngServerNotAllowedException(String message) {
+    public VngNotAllowedException(String message) {
         super(message);
     }
 
-    public VngServerNotAllowedException(String message, Exception e) {
+    public VngNotAllowedException(String message, Exception e) {
         super(message, e);
     }
 
     @Override
-    public Response toResponse(VngServerNotAllowedException exception) {
-        log.error("server exception", exception);
+    public Response toResponse(VngNotAllowedException exception) {
+        log.error("VngNotAllowedException", exception);
         return Response.status(Response.Status.FORBIDDEN)
                 .entity(new ErrorResponse(exception.getMessage()))
                 .type(MediaType.APPLICATION_JSON_TYPE).build();
