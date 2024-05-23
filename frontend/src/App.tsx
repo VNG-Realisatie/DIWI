@@ -36,6 +36,7 @@ import ProjectWizard from "./pages/ProjectWizard";
 import ProjectWizardBlocks from "./pages/ProjectWizardBlocks";
 import { LoadingProvider } from "./context/LoadingContext";
 import { ImportGeoJson } from "./pages/ImportGeoJson";
+import { Unauthorized } from "./pages/Unauthorized";
 
 function RequiresLogin() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -50,28 +51,35 @@ function RequiresLogin() {
                 }
             })
             .catch((error) => {
+                console.log(error);
                 setAlert(error.message, "error");
+                setIsLoggedIn(false);
             });
     }, [setAlert, navigate]);
 
-    return isLoggedIn ? <Layout /> : null;
+    return isLoggedIn ? (
+        <ConfigProvider>
+            {/* configprovider does a fetch, so first check login for this specific one */}
+            <Layout />
+        </ConfigProvider>
+    ) : (
+        <Unauthorized />
+    );
 }
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
     return (
         <ThemeProvider theme={theme}>
-            <ConfigProvider>
-                <LoadingProvider>
-                    <AlertProvider>
-                        <AlertPopup />
-                        <ScopedCssBaseline>
-                            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="nl" dateFormats={dateFormats}>
-                                {children}
-                            </LocalizationProvider>
-                        </ScopedCssBaseline>
-                    </AlertProvider>
-                </LoadingProvider>
-            </ConfigProvider>
+            <LoadingProvider>
+                <AlertProvider>
+                    <AlertPopup />
+                    <ScopedCssBaseline>
+                        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="nl" dateFormats={dateFormats}>
+                            {children}
+                        </LocalizationProvider>
+                    </ScopedCssBaseline>
+                </AlertProvider>
+            </LoadingProvider>
         </ThemeProvider>
     );
 };

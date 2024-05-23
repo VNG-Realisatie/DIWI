@@ -18,6 +18,7 @@
       "updated": "Succesvol geüpdatet",
       "failedToUpdate": "Update is mislukt",
       "failedToSave": "Opslaan is mislukt",
+      "unauthorized": "Inloggen is mislukt",
       "project": "Project",
       "houseblock": "Woningblok",
       "true": "Ja",
