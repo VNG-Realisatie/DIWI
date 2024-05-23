@@ -24,6 +24,7 @@ import { AddProjectButton } from "../PlusButton";
 import dayjs from "dayjs";
 import { dateFormats } from "../../localization";
 import { capitalizeFirstLetters } from "../../utils/stringFunctions";
+import { OrganizationSelect } from "../../widgets/OrganizationSelect";
 
 interface RowData {
     id: number;
@@ -106,6 +107,19 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             preProcessEditCellProps: createErrorReport,
         },
         {
+            field: "projectOwners",
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.projectOwners")),
+            display: "flex",
+            width: 270,
+            filterable: false,
+            preProcessEditCellProps: createErrorReport,
+            renderCell: (cellValues) => {
+                return cellValues.row.projectOwners && cellValues.row.projectOwners.length > 0 ? (
+                    <OrganizationSelect readOnly={true} userGroup={cellValues.row.projectOwners} setUserGroup={() => {}} />
+                ) : null;
+            },
+        },
+        {
             field: "confidentialityLevel",
             headerName: capitalizeFirstLetters(t("projects.tableColumns.confidentialityLevel")),
             display: "flex",
@@ -169,6 +183,19 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 return <CategoriesCell cellValues={cellValues?.row?.municipalityRole || []} />;
             },
             preProcessEditCellProps: createErrorReport,
+        },
+        {
+            field: "projectLeaders",
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.projectLeader")),
+            display: "flex",
+            width: 270,
+            filterable: false,
+            preProcessEditCellProps: createErrorReport,
+            renderCell: (cellValues) => {
+                return cellValues.row.projectLeaders && cellValues.row.projectLeaders.length > 0 ? (
+                    <OrganizationSelect readOnly={true} userGroup={cellValues.row.projectLeaders} setUserGroup={() => {}} />
+                ) : null;
+            },
         },
         {
             field: "projectPhase",
