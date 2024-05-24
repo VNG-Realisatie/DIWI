@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { AvatarGroup, TextField, Autocomplete, Checkbox } from "@mui/material";
+import { TextField, Autocomplete, Checkbox } from "@mui/material";
 import { OrganizationUserAvatars } from "../components/OrganizationUserAvatars";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
@@ -31,19 +31,22 @@ export const OrganizationSelect = ({ readOnly, userGroup, setUserGroup }: Props)
                 "& .MuiInputBase-input.Mui-disabled": {
                     backgroundColor: "#0000", // set 0 opacity when disabled
                 },
+                "& .MuiInputBase-root": {
+                    paddingBottom: "3px !important",
+                    paddingTop: "3px !important",
+                },
             }}
             options={ownerOptions ? ownerOptions : []}
             getOptionLabel={(option) => option.name}
             isOptionEqualToValue={(option, value) => option.uuid === value.uuid}
             value={userGroup}
+            renderTags={(values) => <OrganizationUserAvatars organizations={values} />}
             onChange={(_: any, newValue: Organization[]) => setUserGroup(newValue)}
             renderOption={(props, option, { selected }) => (
                 <li {...props}>
-                    <Checkbox icon={icon} checkedIcon={checkedIcon} style={{ marginRight: 8 }} checked={selected} />
+                    <Checkbox icon={icon} checkedIcon={checkedIcon} checked={selected} />
                     {option.name}
-                    <AvatarGroup max={3}>
-                        <OrganizationUserAvatars organizations={[option]} />
-                    </AvatarGroup>
+                    <OrganizationUserAvatars organizations={[option]} />
                 </li>
             )}
             renderInput={(params) => <TextField {...params} />}
