@@ -13,15 +13,6 @@ type Props = {
     setCustomProperties: (customProperties: Property[]) => void;
 };
 
-const headerStyle = {
-    color: "#ffffff",
-    fontWeight: "600",
-    border: "solid 1px #BDBDBD",
-};
-const cellStyle = {
-    border: "solid 1px #BDBDBD",
-};
-
 export const CustomPropertiesTable = ({ customProperties, setCustomProperties }: Props) => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -46,43 +37,33 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
         {
             field: "name",
             headerName: t("admin.settings.tableHeader.name"),
-            display: "flex",
-            width: 400,
+            flex: 0.5,
             renderCell: (params) => (params.row.type === "FIXED" ? t(`admin.settings.fixedPropertyType.${params.row.name}`) : params.row.name),
             filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
-            headerClassName: "header-style",
-            cellClassName: "cell-style",
             filterable: true,
             sortable: true,
         },
         {
             field: "propertyType",
             headerName: t("admin.settings.tableHeader.propertyType"),
-            display: "flex",
-            width: 200,
+            flex: 0.25,
             renderCell: (params) => t(`admin.settings.propertyType.${params.row.propertyType}`),
             filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
-            headerClassName: "header-style",
-            cellClassName: "cell-style",
             filterable: true,
             sortable: true,
         },
         {
             field: "objectType",
             headerName: t("admin.settings.tableHeader.objectType"),
-            display: "flex",
-            width: 200,
+            flex: 0.25,
             renderCell: (params) => t(`admin.settings.objectType.${params.row.objectType}`),
-            headerClassName: "header-style",
-            cellClassName: "cell-style",
             filterable: false,
             sortable: false,
         },
         {
             field: "categories",
             headerName: t("admin.settings.tableHeader.categories"),
-            display: "flex",
-            width: 700,
+            flex: 1,
             renderCell: (params) => (
                 <Box>
                     {params.row.categories?.map(
@@ -97,8 +78,6 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
                         )}
                 </Box>
             ),
-            headerClassName: "header-style",
-            cellClassName: "cell-style",
             filterable: false,
             sortable: false,
         },
@@ -150,10 +129,7 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
                 }
                 return actions;
             },
-            display: "flex",
-            width: 194,
-            headerClassName: "header-style",
-            cellClassName: "cell-style",
+            flex: 0.25,
             headerAlign: "right",
             align: "right",
             filterable: false,
@@ -163,13 +139,7 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
 
     return (
         <>
-            <Stack
-                width="100%"
-                sx={{
-                    margin: "0 auto",
-                    overflowX: "auto",
-                }}
-            >
+            <Stack>
                 <DataGrid
                     rows={customProperties.filter((row) => !row.disabled)}
                     rowHeight={70}
@@ -182,10 +152,6 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
                     }}
                     pageSizeOptions={[5, 10, 25, 50, 100]}
                     getRowId={(row) => row.id}
-                    sx={{
-                        "& .header-style": headerStyle,
-                        "& .cell-style": cellStyle,
-                    }}
                     autoHeight
                 />
             </Stack>
