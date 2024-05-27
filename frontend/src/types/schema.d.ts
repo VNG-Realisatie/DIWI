@@ -3,6 +3,8 @@
  * Do not make direct changes to the file.
  */
 
+import { AllowedActions } from "../hooks/useAllowedActions";
+
 export interface paths {
     "/rest/auth/callback": {
         get: operations["callback"];
@@ -503,6 +505,7 @@ export interface components {
             firstName: string;
             lastName: string;
             initials: string;
+            allowedActions?: AllowedActions[];
         };
     };
     responses: never;

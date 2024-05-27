@@ -10,6 +10,7 @@ import * as Paths from "../Paths";
 import { useTranslation } from "react-i18next";
 import { useContext } from "react";
 import ConfigContext from "../context/ConfigContext";
+import useAllowedActions from "../hooks/useAllowedActions";
 
 type SideBarProps = {
     open: boolean;
@@ -29,6 +30,7 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
     const theme = useTheme();
     const { t } = useTranslation();
     const { municipalityName } = useContext(ConfigContext);
+    const allowedActions = useAllowedActions();
 
     return (
         <Drawer variant="persistent" anchor="left" open={open}>
@@ -45,13 +47,18 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
 
             <List sx={{ ml: 3 }}>
                 <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>{t("sidebar.projects")}</Typography>
-                {projectMenuItems.map((menuItem) => (
-                    <Link key={menuItem.text} to={`/${menuItem.url}`} style={{ color: "#FFFFFF", textDecoration: "none" }}>
+                <Link key="Overzicht projecten" to="/projects/table" style={{ color: "#FFFFFF", textDecoration: "none" }}>
+                    <ListItemButton onClick={handleDrawerClose}>
+                        <ListItemText primary="Overzicht projecten" />
+                    </ListItemButton>
+                </Link>
+                {allowedActions.includes("CREATE_NEW_PROJECT") && (
+                    <Link key="Project toevoegen" to="/project/create" style={{ color: "#FFFFFF", textDecoration: "none" }}>
                         <ListItemButton onClick={handleDrawerClose}>
-                            <ListItemText primary={menuItem.text} />
+                            <ListItemText primary="Project toevoegen" />
                         </ListItemButton>
                     </Link>
-                ))}
+                )}
             </List>
             {/* <List sx={{ ml: 3 }}>
                 <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>{t("sidebar.dashboards")}</Typography>

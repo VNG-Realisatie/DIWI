@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { theme } from "../theme";
 import * as Paths from "../Paths";
+import useAllowedActions from "../hooks/useAllowedActions";
 
 type PlusButtonProps = {
     color: string | undefined;
@@ -81,6 +82,7 @@ function PlusButton({ color, link, text }: PlusButtonProps) {
 }
 
 export const AddHouseBlockButton: React.FC<{ onClick: () => void }> = ({ onClick }) => {
+    const allowedActions = useAllowedActions();
     const { t } = useTranslation();
     const handleClick = () => {
         onClick();
@@ -92,10 +94,11 @@ export const AddHouseBlockButton: React.FC<{ onClick: () => void }> = ({ onClick
         text: t("projectDetail.createNewHouseBlock"),
     };
 
-    return <PlusButton {...buttonProps} />;
+    return allowedActions.includes("CREATE_NEW_PROJECT") ? <PlusButton {...buttonProps} /> : null;
 };
 
 export const AddProjectButton: React.FC = () => {
+    const allowedActions = useAllowedActions();
     const { t } = useTranslation();
     const buttonProps: PlusButtonProps = {
         color: theme.palette.primary.customDarkBlue,
@@ -103,5 +106,5 @@ export const AddProjectButton: React.FC = () => {
         text: t("projects.createNewProject"),
     };
 
-    return <PlusButton {...buttonProps} />;
+    return allowedActions.includes("CREATE_NEW_PROJECT") ? <PlusButton {...buttonProps} /> : null;
 };
