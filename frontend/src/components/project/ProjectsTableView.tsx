@@ -188,22 +188,6 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             preProcessEditCellProps: createErrorReport,
         },
         {
-            field: "projectLeaders",
-            headerName: capitalizeFirstLetters(t("projects.tableColumns.projectLeader")),
-            display: "flex",
-            width: 270,
-            filterable: false,
-            preProcessEditCellProps: createErrorReport,
-            renderCell: (cellValues) => {
-                return (
-                    cellValues.row.projectLeaders &&
-                    cellValues.row.projectLeaders.length > 0 && (
-                        <OrganizationSelect readOnly={true} userGroup={cellValues.row.projectLeaders} setUserGroup={() => {}} />
-                    )
-                );
-            },
-        },
-        {
             field: "projectPhase",
             headerName: capitalizeFirstLetters(t("projects.tableColumns.projectPhase")),
             display: "flex",
