@@ -24,6 +24,7 @@ import { AddProjectButton } from "../PlusButton";
 import dayjs from "dayjs";
 import { dateFormats } from "../../localization";
 import { capitalizeFirstLetters } from "../../utils/stringFunctions";
+import useAllowedActions from "../../hooks/useAllowedActions";
 
 interface RowData {
     id: number;
@@ -57,6 +58,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const [filterModel, setFilterModel] = useState<GridFilterModel | undefined>();
 
     const { filterUrl, rows } = useCustomSearchParams(filterModel, paginationInfo);
+    const allowedActions = useAllowedActions();
 
     useEffect(() => {
         if (filterUrl !== "") {
@@ -303,7 +305,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                     </Button>
                 </DialogActions>
             </Dialog>
-            {showCheckBox && (
+            {showCheckBox && allowedActions.includes("EXPORT_PROJECTS") && (
                 <Button
                     sx={{ width: "130px", my: 2, ml: "auto" }}
                     variant="contained"

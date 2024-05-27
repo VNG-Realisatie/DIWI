@@ -12,7 +12,7 @@ export type AllowedActions =
     | "VIEW_OTHERS_PROJECTS";
 
 const allowedActionsArray: AllowedActions[] = [
-    // "EDIT_CUSTOM_PROPERTIES",
+    "EDIT_CUSTOM_PROPERTIES",
     "EDIT_USERS",
     "CAN_OWN_PROJECTS",
     "CHANGE_PROJECT_OWNER",
