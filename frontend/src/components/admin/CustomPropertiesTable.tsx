@@ -7,6 +7,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useContext, useState } from "react";
 import AlertContext from "../../context/AlertContext";
 import PropertyDialog from "./PropertyDialog";
+import useAllowedActions from "../../hooks/useAllowedActions";
 
 type Props = {
     customProperties: Property[];
@@ -20,6 +21,7 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
     const [deletePropertyInfo, setDeletePropertyInfo] = useState({ name: "", id: "" });
     const [editPropertyId, setEditPropertyId] = useState("");
     const { t } = useTranslation();
+    const allowedActions = useAllowedActions();
 
     const handleDelete = async (id: string, name: string) => {
         setDialogOpen(true);
@@ -86,28 +88,30 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
             type: "actions",
             headerName: t("admin.settings.tableHeader.actions"),
             getActions: (params) => {
-                const actions = [
-                    <Tooltip title={t("admin.settings.tableHeader.edit")} key="edit">
-                        <GridActionsCellItem
-                            size="large"
-                            icon={<EditIcon />}
-                            label={t("admin.settings.tableHeader.edit")}
-                            disabled={params.row.disabled}
-                            onClick={() => {
-                                setEditPropertyId(params.row.id);
-                                setEditDialogOpen(true);
-                            }}
-                            sx={{
-                                bgcolor: "#31456F",
-                                color: "white",
-                                "&:hover": {
-                                    bgcolor: "navy",
-                                },
-                            }}
-                        />
-                    </Tooltip>,
-                ];
-                if (params.row.type === "CUSTOM") {
+                const actions = allowedActions.includes("EDIT_CUSTOM_PROPERTIES")
+                    ? [
+                          <Tooltip title={t("admin.settings.tableHeader.edit")} key="edit">
+                              <GridActionsCellItem
+                                  size="large"
+                                  icon={<EditIcon />}
+                                  label={t("admin.settings.tableHeader.edit")}
+                                  disabled={params.row.disabled}
+                                  onClick={() => {
+                                      setEditPropertyId(params.row.id);
+                                      setEditDialogOpen(true);
+                                  }}
+                                  sx={{
+                                      bgcolor: "#31456F",
+                                      color: "white",
+                                      "&:hover": {
+                                          bgcolor: "navy",
+                                      },
+                                  }}
+                              />
+                          </Tooltip>,
+                      ]
+                    : [];
+                if (params.row.type === "CUSTOM" && allowedActions.includes("EDIT_CUSTOM_PROPERTIES")) {
                     actions.unshift(
                         <Tooltip title={t("admin.settings.tableHeader.delete")} key="delete">
                             <GridActionsCellItem

@@ -3,7 +3,6 @@ import { styled, useTheme } from "@mui/material/styles";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { projectMenuItems } from "../widgets/constants";
 import { Link } from "react-router-dom";
 
 import * as Paths from "../Paths";
@@ -86,12 +85,16 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
                 </Link>
             </List> */}
             <List sx={{ ml: 3 }}>
-                <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>{t("sidebar.settings")}</Typography>
-                <Link to={Paths.userSettings.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
-                    <ListItemButton>
-                        <ListItemText primary={t("customProperties.title")} />
-                    </ListItemButton>
-                </Link>
+                {allowedActions.includes("EDIT_CUSTOM_PROPERTIES") && (
+                    <>
+                        <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>{t("sidebar.settings")}</Typography>
+                        <Link to={Paths.userSettings.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
+                            <ListItemButton>
+                                <ListItemText primary={t("customProperties.title")} />
+                            </ListItemButton>
+                        </Link>
+                    </>
+                )}
             </List>
         </Drawer>
     );
