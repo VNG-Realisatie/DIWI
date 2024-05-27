@@ -67,6 +67,7 @@ public class ImportError {
         PROJECT_WRONG_PHASE_DATES("wrong_project_phase_dates", "The project phase start dates are not within the project duration or are not in the right order."),
         PROJECT_WRONG_PLAN_STATUS_DATES("wrong_project_plan_status_dates", "The project planning plan status start dates are not within the project duration or are not in the right order."),
         PROJECT_LOCATION_INCOMPLETE("incomplete_project_location", "Project neighbourhood/district are present without district/municipality being present"),
+        PROJECT_OWNER_UNKNOWN("project_owner_unknown", "The owner email is missing or does not belong to any active users."),
 
         HOUSEBLOCK_DELIVERY_DATE_AFTER_PROJECT_END_DATE("houseblock_delivery_date", "At least one housing block delivery date is after the project end date."),
         HOUSEBLOCK_HOUSING_NUMBER_NOT_POSITIVE("houseblock_housing_number", "The housing block mutation number is not greater than 0."),
@@ -86,6 +87,7 @@ public class ImportError {
         MISSING_PROJECT_STATUS("no_project_status", "Project status is missing or invalid"),
         MISSING_PROJECT_START_DATE("no_project_start_date", "Project start date is missing or invalid."),
         MISSING_PROJECT_END_DATE("no_project_end_date", "Project end date is missing or invalid."),
+        MISSING_PROJECT_CONFIDENTIALITY("no_project_confidentiality", "Project confidentiality level is missing or invalid."),
         MISSING_HOUSEBLOCK_MUTATION("no_houseblock_mutation", "Houseblock mutation type or amount is missing."),
         MISSING_HOUSEBLOCK_NAME("no_houseblock_name", "Houseblock name is missing."),
         INVALID_PLAN_TYPE("invalid_plan_type", "Project plan type has an unknow value"),

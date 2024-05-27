@@ -3,6 +3,7 @@ package nl.vng.diwi.services;
 import nl.vng.diwi.dal.AutoCloseTransaction;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.User;
+import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.GroundPosition;
 import nl.vng.diwi.dal.entities.enums.HouseType;
 import nl.vng.diwi.dal.entities.enums.MutationType;
@@ -328,6 +329,21 @@ public class ExcelImportService {
                             }
                             rowModel.setProjectEndDate(getLocalDateValue(nextCell, formatter, rowErrors));
                         }
+                        case PROJECT_CONFIDENTIALITY -> {
+                            String confidentialityStr = getStringValue(nextCell, formatter, evaluator, excelErrors);
+                            Confidentiality confidentiality = null;
+                            if (confidentialityStr != null && !confidentialityStr.isBlank()) {
+                                String confidentialityEnumStr = ExcelStrings.map.get(confidentialityStr);
+                                confidentiality = (confidentialityEnumStr != null) ? Confidentiality.valueOf(confidentialityEnumStr) : null;
+                            }
+                            if (confidentiality != null) {
+                                rowModel.setConfidentialityLevel(confidentiality);
+                            } else {
+                                rowErrors.add(getExcelError(nextCell, null, ImportError.ERROR.MISSING_PROJECT_CONFIDENTIALITY));
+                            }
+                        }
+                        case PROJECT_OWNER -> rowModel.setOwnerEmail(getStringValue(nextCell, formatter, evaluator, excelErrors));
+
 
                         case PROJECT_PHASE_1_CONCEPT -> addProjectPhase(rowModel, ProjectPhase._1_CONCEPT, nextCell, formatter, rowErrors);
                         case PROJECT_PHASE_2_INITIATIVE -> addProjectPhase(rowModel, ProjectPhase._2_INITIATIVE, nextCell, formatter, rowErrors);
@@ -448,7 +464,7 @@ public class ExcelImportService {
         }
 
         if (rowErrors.isEmpty()) { //no errors validating individual fields
-            rowModel.validate(row.getRowNum() + 1, rowErrors, importTime.toLocalDate()); //business logic validation
+            rowModel.validate(repo, row.getRowNum() + 1, rowErrors, importTime.toLocalDate()); //business logic validation
         }
 
         if (rowErrors.isEmpty()) { //still no errors
