@@ -5,6 +5,7 @@ import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import { Organization } from "../api/projectsServices";
 import { getOrganizationList } from "../api/projectsTableServices";
+import useAllowedActions from "../hooks/useAllowedActions";
 
 const icon = <CheckBoxOutlineBlankIcon />;
 const checkedIcon = <CheckBoxIcon />;
@@ -17,6 +18,7 @@ type Props = {
 
 export const OrganizationSelect = ({ readOnly, userGroup, setUserGroup }: Props) => {
     const [ownerOptions, setOwnerOptions] = useState<Organization[]>();
+    const allowedActions = useAllowedActions();
 
     useEffect(() => {
         getOrganizationList().then((organizations) => setOwnerOptions(organizations));
@@ -26,7 +28,7 @@ export const OrganizationSelect = ({ readOnly, userGroup, setUserGroup }: Props)
         <Autocomplete
             multiple
             size="small"
-            disabled={readOnly}
+            disabled={readOnly || !allowedActions.includes("CHANGE_PROJECT_OWNER")}
             sx={{
                 "& .MuiInputBase-input.Mui-disabled": {
                     backgroundColor: "#0000", // set 0 opacity when disabled
