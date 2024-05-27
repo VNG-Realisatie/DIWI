@@ -16,7 +16,6 @@ import { CreateHouseBlockDialog } from "./CreateHouseBlockDialog";
 import { HouseBlocksList } from "./HouseBlocksList";
 import { ProjectForm } from "../../ProjectForm";
 import useLoading from "../../../hooks/useLoading";
-import useAllowedActions from "../../../hooks/useAllowedActions";
 
 export const ProjectsWithHouseBlock = () => {
     const { selectedProject, updateProject } = useContext(ProjectContext);
@@ -30,7 +29,6 @@ export const ProjectsWithHouseBlock = () => {
     const { setAlert } = useContext(AlertContext);
     const { setLoading } = useLoading();
     const { t } = useTranslation();
-    const allowedActions = useAllowedActions();
 
     const resetProjectForm = useCallback(() => {
         setProjectForm(selectedProject);
@@ -82,23 +80,19 @@ export const ProjectsWithHouseBlock = () => {
                         />
                     </Tooltip>
                 )}
-                {allowedActions.includes("EDIT_PROJECTS") && (
+                {readOnly && (
+                    <Tooltip placement="top" title={t("generic.edit")}>
+                        <EditIcon sx={{ color: "#FFFFFF" }} onClick={handleProjectEdit} />
+                    </Tooltip>
+                )}
+                {!readOnly && (
                     <>
-                        {readOnly && (
-                            <Tooltip placement="top" title={t("generic.edit")}>
-                                <EditIcon sx={{ color: "#FFFFFF" }} onClick={handleProjectEdit} />
-                            </Tooltip>
-                        )}
-                        {!readOnly && (
-                            <>
-                                <Tooltip placement="top" title={t("generic.cancelChanges")}>
-                                    <ClearIcon sx={{ mr: 2, color: "#FFFFFF" }} onClick={handleCancelChange} />
-                                </Tooltip>
-                                <Tooltip placement="top" title={t("generic.saveChanges")}>
-                                    <SaveIcon sx={{ color: "#FFFFFF" }} onClick={handleProjectSave} />
-                                </Tooltip>
-                            </>
-                        )}
+                        <Tooltip placement="top" title={t("generic.cancelChanges")}>
+                            <ClearIcon sx={{ mr: 2, color: "#FFFFFF" }} onClick={handleCancelChange} />
+                        </Tooltip>
+                        <Tooltip placement="top" title={t("generic.saveChanges")}>
+                            <SaveIcon sx={{ color: "#FFFFFF" }} onClick={handleProjectSave} />
+                        </Tooltip>
                     </>
                 )}
             </Box>

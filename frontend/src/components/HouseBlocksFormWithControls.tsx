@@ -11,7 +11,6 @@ import { deleteHouseBlockWithCustomProperties, saveHouseBlockWithCustomPropertie
 import HouseBlockContext from "../context/HouseBlockContext";
 import useAlert from "../hooks/useAlert";
 import { isOwnershipAmountValid } from "./project-wizard/house-blocks/ownership-information/OwnershipRowInputs";
-import useAllowedActions from "../hooks/useAllowedActions";
 
 type Props = {
     houseBlock: HouseBlockWithCustomProperties;
@@ -42,7 +41,6 @@ export const HouseBlocksFormWithControls = ({ houseBlock }: Props) => {
     const [newHouseBlock, setNewHouseBlock] = useState<HouseBlockWithCustomProperties>(houseBlock);
     const { refresh } = useContext(HouseBlockContext);
     const { setAlert } = useAlert();
-    const allowedActions = useAllowedActions();
 
     const handleSave = () => {
         if (validateHouseBlock(newHouseBlock, setAlert)) {
@@ -59,23 +57,19 @@ export const HouseBlocksFormWithControls = ({ houseBlock }: Props) => {
     return (
         <Box mt={4}>
             <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={2} mb={2}>
-                {allowedActions.includes("EDIT_PROJECTS") && (
+                {readOnly && (
+                    <Tooltip placement="top" title={t("generic.edit")}>
+                        <EditIcon sx={{ cursor: "pointer" }} onClick={() => setReadOnly(false)} />
+                    </Tooltip>
+                )}
+                {!readOnly && (
                     <>
-                        {readOnly && (
-                            <Tooltip placement="top" title={t("generic.edit")}>
-                                <EditIcon sx={{ cursor: "pointer" }} onClick={() => setReadOnly(false)} />
-                            </Tooltip>
-                        )}
-                        {!readOnly && (
-                            <>
-                                <Tooltip placement="top" title={t("generic.cancelChanges")}>
-                                    <ClearIcon sx={{ cursor: "pointer" }} onClick={handleCancel} />
-                                </Tooltip>
-                                <Tooltip placement="top" title={t("generic.saveChanges")}>
-                                    <SaveIcon sx={{ cursor: "pointer" }} onClick={handleSave} />
-                                </Tooltip>
-                            </>
-                        )}
+                        <Tooltip placement="top" title={t("generic.cancelChanges")}>
+                            <ClearIcon sx={{ cursor: "pointer" }} onClick={handleCancel} />
+                        </Tooltip>
+                        <Tooltip placement="top" title={t("generic.saveChanges")}>
+                            <SaveIcon sx={{ cursor: "pointer" }} onClick={handleSave} />
+                        </Tooltip>
                     </>
                 )}
                 {houseBlock.houseblockId && (
