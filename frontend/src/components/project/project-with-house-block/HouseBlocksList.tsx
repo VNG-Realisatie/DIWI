@@ -14,6 +14,7 @@ import { DeleteButtonWithConfirm } from "../../DeleteButtonWithConfirm";
 import { HouseBlocksForm } from "../../HouseBlocksForm";
 import { validateHouseBlock } from "../../HouseBlocksFormWithControls";
 import useAlert from "../../../hooks/useAlert";
+import { useCustomPropertyDefinitions } from "../../../hooks/useCustomPropertyDefinitions";
 
 type Props = {
     setOpenHouseBlockDialog: (open: boolean) => void;
@@ -42,10 +43,17 @@ const HouseBlockAccordionWithControls = ({ houseBlock, refresh }: HouseBlockAcco
     const [expanded, setExpanded] = useState(false);
     const { t } = useTranslation();
     const { setAlert } = useAlert();
+    const { targetGroupDisabledCategories, physicalAppearanceDisabledCategories } = useCustomPropertyDefinitions();
 
     const handleSave = async () => {
         if (validateHouseBlock(houseBlock, setAlert)) {
-            await saveHouseBlockWithCustomProperties(newHouseBlock);
+            const filteredHouseBlock = {
+                ...houseBlock,
+                targetGroup: houseBlock.targetGroup.filter((tg) => !targetGroupDisabledCategories.map((cat) => cat.id).includes(tg.id)),
+                physicalAppearance: houseBlock.physicalAppearance.filter((pa) => !physicalAppearanceDisabledCategories.map((cat) => cat.id).includes(pa.id)),
+            };
+
+            await saveHouseBlockWithCustomProperties(filteredHouseBlock);
             refresh();
             setReadOnly(true);
         }

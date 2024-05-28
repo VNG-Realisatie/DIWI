@@ -7,9 +7,9 @@ type CategoriesStrict = Required<Categories>;
 
 export const useCustomPropertyDefinitions = () => {
     const [physicalAppearanceCategories, setPhysicalAppearances] = useState<Array<CategoriesStrict>>();
-    const [physicalAppearanceDisabledCategories, setPhysicalAppearanceDisabledCategories] = useState<Array<CategoriesStrict>>();
+    const [physicalAppearanceDisabledCategories, setPhysicalAppearanceDisabledCategories] = useState<Array<CategoriesStrict>>([]);
     const [targetGroupCategories, setTargetGroup] = useState<Array<CategoriesStrict>>();
-    const [targetGroupDisabledCategories, setTargetGroupDisabledCategories] = useState<Array<CategoriesStrict>>();
+    const [targetGroupDisabledCategories, setTargetGroupDisabledCategories] = useState<Array<CategoriesStrict>>([]);
 
     useEffect(() => {
         getCustomProperties().then((res) => {
