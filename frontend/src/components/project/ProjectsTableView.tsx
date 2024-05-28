@@ -25,7 +25,7 @@ import { AddProjectButton } from "../PlusButton";
 import dayjs from "dayjs";
 import { dateFormats } from "../../localization";
 import { capitalizeFirstLetters } from "../../utils/stringFunctions";
-import { OrganizationSelect } from "../../widgets/OrganizationSelect";
+import { UserGroupSelect } from "../../widgets/UserGroupSelect";
 
 interface RowData {
     id: number;
@@ -119,7 +119,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 return (
                     cellValues.row.projectOwners &&
                     cellValues.row.projectOwners.length > 0 && (
-                        <OrganizationSelect readOnly={true} userGroup={cellValues.row.projectOwners} setUserGroup={() => {}} />
+                        <UserGroupSelect readOnly={true} userGroup={cellValues.row.projectOwners} setUserGroup={() => {}} />
                     )
                 );
             },
