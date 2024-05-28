@@ -118,11 +118,22 @@ const ProjectWizardBlocks = () => {
         }
     };
 
-    const handleNext = async () => {
+    const navigateToStep = async (direction: "next" | "back") => {
         const isSuccessful: boolean | undefined = await handleSave();
         if (!isSuccessful) return;
 
-        if (projectId) navigate(projectWizardMap.toPath({ projectId }));
+        if (projectId) {
+            const newPath = direction === "next" ? projectWizardMap.toPath({ projectId }) : projectWizardWithId.toPath({ projectId });
+            navigate(newPath);
+        }
+    };
+
+    const handleNext = async () => {
+        await navigateToStep("next");
+    };
+
+    const handleBack = async () => {
+        await navigateToStep("back");
     };
 
     const handleSave = async () => {
@@ -165,12 +176,6 @@ const ProjectWizardBlocks = () => {
         } catch (error: any) {
             setErrorOccurred(true);
             setAlert(error.message, "warning");
-        }
-    };
-
-    const handleBack = () => {
-        if (projectId) {
-            navigate(projectWizardWithId.toPath({ projectId }));
         }
     };
 

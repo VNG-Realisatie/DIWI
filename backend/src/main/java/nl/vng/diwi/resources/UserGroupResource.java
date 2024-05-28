@@ -19,8 +19,6 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import nl.vng.diwi.dal.AutoCloseTransaction;
-import nl.vng.diwi.dal.GenericRepository;
-import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.UserGroup;
 import nl.vng.diwi.models.UserGroupModel;
 import nl.vng.diwi.models.UserGroupUserModel;
@@ -33,14 +31,10 @@ import nl.vng.diwi.services.UserGroupService;
 @RolesAllowed({CAN_OWN_PROJECTS})
 public class UserGroupResource {
 
-    private final VngRepository repo;
     private final UserGroupService userGroupService;
 
     @Inject
-    public UserGroupResource(
-        GenericRepository genericRepository,
-        UserGroupService userGroupService) {
-        this.repo = new VngRepository(genericRepository.getDal().getSession());
+    public UserGroupResource(UserGroupService userGroupService) {
         this.userGroupService = userGroupService;
     }
 
@@ -48,7 +42,7 @@ public class UserGroupResource {
     @Produces(MediaType.APPLICATION_JSON)
     public List<UserGroupModel> getAllUserGroups(@QueryParam("includeSingleUser") boolean includeSingleUser) {
 
-        return userGroupService.getAllUserGroups(repo, includeSingleUser);
+        return userGroupService.getAllUserGroups(includeSingleUser);
 
     }
 
@@ -57,16 +51,16 @@ public class UserGroupResource {
     @Produces(MediaType.APPLICATION_JSON)
     public UserGroupModel createUserGroup(UserGroupModel newUserGroup, @Context LoggedUser loggedUser) throws VngBadRequestException {
 
-        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+        try (AutoCloseTransaction transaction = userGroupService.getUserGroupDAO().beginTransaction()) {
 
             if (newUserGroup.getName() == null || newUserGroup.getName().isEmpty()) {
                 throw new VngBadRequestException("Missing usergroup name.");
             }
 
-            UserGroup newGroup = userGroupService.createUserGroup(repo, newUserGroup, loggedUser.getUuid());
+            UserGroup newGroup = userGroupService.createUserGroup(newUserGroup, loggedUser.getUuid());
             transaction.commit();
 
-            List<UserGroupUserModel> userGroupModel = repo.getUsergroupDAO().getUserGroupUsers(newGroup.getId());
+            List<UserGroupUserModel> userGroupModel = userGroupService.getUserGroupDAO().getUserGroupUsers(newGroup.getId());
             return UserGroupModel.fromUserGroupUserModelListToUserGroupModelList(userGroupModel).get(0);
         }
     }
@@ -77,16 +71,16 @@ public class UserGroupResource {
     @Produces(MediaType.APPLICATION_JSON)
     public UserGroupModel updateUserGroup(@PathParam("id") UUID groupId, UserGroupModel updatedUserGroup, @Context LoggedUser loggedUser) throws VngBadRequestException, VngNotFoundException {
 
-        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+        try (AutoCloseTransaction transaction = userGroupService.getUserGroupDAO().beginTransaction()) {
 
             if (updatedUserGroup.getName() == null || updatedUserGroup.getName().isEmpty()) {
                 throw new VngBadRequestException("Missing usergroup name.");
             }
             updatedUserGroup.setUuid(groupId);
-            userGroupService.updateUserGroup(repo, updatedUserGroup, loggedUser.getUuid());
+            userGroupService.updateUserGroup(updatedUserGroup, loggedUser.getUuid());
             transaction.commit();
 
-            List<UserGroupUserModel> userGroupModel = repo.getUsergroupDAO().getUserGroupUsers(groupId);
+            List<UserGroupUserModel> userGroupModel = userGroupService.getUserGroupDAO().getUserGroupUsers(groupId);
             return UserGroupModel.fromUserGroupUserModelListToUserGroupModelList(userGroupModel).get(0);
         }
     }
@@ -95,8 +89,8 @@ public class UserGroupResource {
     @Path("/{id}")
     public void deleteUserGroup(@Context LoggedUser loggedUser, @PathParam("id") UUID groupId) throws VngNotFoundException, VngBadRequestException {
 
-        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            userGroupService.deleteUserGroup(repo, groupId, loggedUser.getUuid());
+        try (AutoCloseTransaction transaction = userGroupService.getUserGroupDAO().beginTransaction()) {
+            userGroupService.deleteUserGroup(groupId, loggedUser.getUuid());
             transaction.commit();
         }
     }
