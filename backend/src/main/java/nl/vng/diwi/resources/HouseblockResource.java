@@ -47,10 +47,10 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static nl.vng.diwi.security.UserActionConstants.CAN_OWN_PROJECTS;
+import nl.vng.diwi.security.UserActionConstants;
 
 @Path("/houseblock")
-@RolesAllowed({CAN_OWN_PROJECTS})
+@RolesAllowed("BLOCKED_BY_DEFAULT") // This forces us to make sure each end-point has action(s) assigned, so we never have things open by default.
 public class HouseblockResource {
 
     private final VngRepository repo;
@@ -73,6 +73,7 @@ public class HouseblockResource {
 
     @GET
     @Path("/{uuid}")
+    @RolesAllowed({UserActionConstants.VIEW_OWN_PROJECTS, UserActionConstants.VIEW_OTHERS_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
     public HouseblockSnapshotModel getCurrentHouseblockSnapshot(@PathParam("uuid") UUID houseblockUuid) throws VngNotFoundException {
 
@@ -82,6 +83,7 @@ public class HouseblockResource {
 
     @GET
     @Path("/{id}/customproperties")
+    @RolesAllowed({UserActionConstants.VIEW_OWN_PROJECTS, UserActionConstants.VIEW_OTHERS_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public List<ProjectHouseblockCustomPropertyModel> getProjectCustomProperties(@PathParam("id") UUID houseblockUuid) {
@@ -92,6 +94,7 @@ public class HouseblockResource {
 
     @POST
     @Path("/add")
+    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public HouseblockSnapshotModel createHouseblock(@Context LoggedUser loggedUser, HouseblockSnapshotModel houseblockSnapshotModel)
@@ -119,6 +122,7 @@ public class HouseblockResource {
 
     @DELETE
     @Path("/{id}")
+    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
     public void deleteHouseblock(@Context LoggedUser loggedUser, @PathParam("id") UUID houseblockUuid) throws VngNotFoundException {
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             houseblockService.deleteHouseblock(repo, houseblockUuid, loggedUser.getUuid());
@@ -128,6 +132,7 @@ public class HouseblockResource {
 
     @PUT
     @Path("/update")
+    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public HouseblockSnapshotModel updateHouseblock(@Context LoggedUser loggedUser, HouseblockSnapshotModel houseblockModelToUpdate)
@@ -326,6 +331,7 @@ public class HouseblockResource {
 
     @PUT
     @Path("/{id}/customproperties")
+    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public List<ProjectHouseblockCustomPropertyModel> updateProjectCustomProperty(@Context LoggedUser loggedUser, @PathParam("id") UUID houseblockUuid,
