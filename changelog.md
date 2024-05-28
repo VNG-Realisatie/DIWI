@@ -8,6 +8,7 @@
 
 ### FIXED
 
+- Fix plots of old projects not showing up on project map.
 - Translations for ownership inputs were added.
 - Disabled categories for physical appearance don't show up anymore.
 - Clicking back in project wizard for house blocks saves the house blocks.
