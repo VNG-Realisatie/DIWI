@@ -317,6 +317,7 @@ export interface components {
             firstName?: string;
             lastName?: string;
             initials?: string;
+            allowedActions?: AllowedActions[];
         };
         ProjectSnapshotModel: {
             /** Format: date */
