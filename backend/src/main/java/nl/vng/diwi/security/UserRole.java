@@ -36,6 +36,7 @@ public enum UserRole {
 
     // Basic user that can access only relevant projects and edit only those.
     User(List.of(
+            UserAction.VIEW_GROUPS,
             UserAction.VIEW_CONFIG,
             UserAction.VIEW_CUSTOM_PROPERTIES,
             UserAction.CAN_OWN_PROJECTS,
@@ -46,18 +47,21 @@ public enum UserRole {
 
     // Identical to Council currently, might be able to own/edit in future?
     Management(List.of(
+            UserAction.VIEW_GROUPS,
             UserAction.VIEW_CONFIG,
             UserAction.VIEW_CUSTOM_PROPERTIES,
             UserAction.VIEW_OTHERS_PROJECTS)),
 
     // User that only needs overviews, does not edit projects.
     Council(List.of(
+            UserAction.VIEW_GROUPS,
             UserAction.VIEW_CONFIG,
             UserAction.VIEW_CUSTOM_PROPERTIES,
             UserAction.VIEW_OTHERS_PROJECTS)),
 
     // User that needs to access and edit existing projects, but cannot create them.
     External(List.of(
+            UserAction.VIEW_GROUPS,
             UserAction.VIEW_CONFIG,
             UserAction.VIEW_CUSTOM_PROPERTIES,
             UserAction.CAN_OWN_PROJECTS,
