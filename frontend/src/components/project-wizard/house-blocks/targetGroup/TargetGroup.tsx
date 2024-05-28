@@ -15,18 +15,16 @@ export type TargetGroupProps = {
 
 export const TargetGroup = ({ houseBlock, setHouseBlock, readOnly }: TargetGroupProps) => {
     const translationPath = "createProject.houseBlocksForm.purpose";
-    const { targetGroupCategories } = useCustomPropertyDefinitions();
+    const { targetGroupCategories, targetGroupDisabledCategories } = useCustomPropertyDefinitions();
 
     // update houseblock so it will have amounts for every category
     useEffect(() => {
         const missingCategories = targetGroupCategories?.filter((cat) => !houseBlock.targetGroup.map((cat) => cat.id).includes(cat.id));
-        if (missingCategories && missingCategories.length > 0) {
-            const missingAmountObj = missingCategories.map((cat) => ({ id: cat.id, amount: 0 })) ?? [];
-            const newPhysicalAppearances = [...houseBlock.targetGroup, ...missingAmountObj];
-            setHouseBlock({ ...houseBlock, targetGroup: newPhysicalAppearances });
-        }
-    }, [houseBlock, targetGroupCategories, setHouseBlock]);
-
+        const missingAmountObj = missingCategories?.map((cat) => ({ id: cat.id, amount: 0 })) ?? [];
+        const disabledCategoryIds = targetGroupDisabledCategories?.map((cat) => cat.id) ?? [];
+        const combinedTargetGroup = [...houseBlock.targetGroup, ...missingAmountObj].filter((cat) => !disabledCategoryIds.includes(cat.id));
+        setHouseBlock({ ...houseBlock, targetGroup: combinedTargetGroup });
+    }, [houseBlock, targetGroupCategories, targetGroupDisabledCategories, setHouseBlock]);
     return (
         <WizardCard>
             <Typography fontWeight={600} mb={2}>
