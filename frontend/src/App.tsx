@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import { ScopedCssBaseline, ThemeProvider } from "@mui/material";
 import "./App.css";
@@ -36,35 +36,48 @@ import ProjectWizard from "./pages/ProjectWizard";
 import ProjectWizardBlocks from "./pages/ProjectWizardBlocks";
 import { LoadingProvider } from "./context/LoadingContext";
 import { ImportGeoJson } from "./pages/ImportGeoJson";
-import { Unauthorized } from "./pages/Unauthorized";
+import { Forbidden } from "./pages/Forbidden";
+
+type LoginStatus = "UNKNOWN" | "AUTHORIZED" | "FORBIDDEN";
 
 function RequiresLogin() {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [loginStatus, setLoginStatus] = useState<LoginStatus>("UNKNOWN");
     const { setAlert } = useContext(AlertContext);
-    const navigate = useNavigate();
 
     useEffect(() => {
         diwiFetch(Paths.loggedIn.path)
             .then((res) => {
+                console.log("diwifetchres", res);
                 if (res.ok) {
-                    setIsLoggedIn(true);
+                    setLoginStatus("AUTHORIZED");
+                } else if (res.status === 401) {
+                    // UNAUTHORIZED
+                    setLoginStatus("UNKNOWN");
+                } else if (res.status === 403) {
+                    // FORBIDDEN
+                    setLoginStatus("FORBIDDEN");
                 }
             })
             .catch((error) => {
-                console.log(error);
+                console.log("diwifetcherror", error.message);
                 setAlert(error.message, "error");
-                setIsLoggedIn(false);
+                setLoginStatus("UNKNOWN");
             });
-    }, [setAlert, navigate]);
+    }, [setAlert]);
 
-    return isLoggedIn ? (
-        <ConfigProvider>
-            {/* configprovider does a fetch, so first check login for this specific one */}
-            <Layout />
-        </ConfigProvider>
-    ) : (
-        <Unauthorized />
-    );
+    if (loginStatus === "FORBIDDEN") {
+        return <Forbidden />;
+    }
+    if (loginStatus === "AUTHORIZED") {
+        return (
+            <ConfigProvider>
+                {/* configprovider does a fetch, so first check login for this specific one */}
+                <Layout />
+            </ConfigProvider>
+        );
+    }
+    // UNKNOWN = default just returns null so page stays empty and we can redirect
+    return null;
 }
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
