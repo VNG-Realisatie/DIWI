@@ -44,14 +44,12 @@ public enum UserRole {
     Management(List.of(
             UserAction.VIEW_CONFIG,
             UserAction.VIEW_CUSTOM_PROPERTIES,
-            UserAction.VIEW_OTHERS_PROJECTS,
-            UserAction.VIEW_OWN_PROJECTS)),
+            UserAction.VIEW_OTHERS_PROJECTS)),
 
     Council(List.of(
             UserAction.VIEW_CONFIG,
             UserAction.VIEW_CUSTOM_PROPERTIES,
-            UserAction.VIEW_OTHERS_PROJECTS,
-            UserAction.VIEW_OWN_PROJECTS)),
+            UserAction.VIEW_OTHERS_PROJECTS)),
 
     External(List.of(
             UserAction.VIEW_CONFIG,
