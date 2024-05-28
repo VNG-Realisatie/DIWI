@@ -1,6 +1,7 @@
 package nl.vng.diwi.security;
 
 import java.security.Principal;
+
 import jakarta.ws.rs.core.SecurityContext;
 
 public class LoginContext implements SecurityContext {
@@ -21,8 +22,12 @@ public class LoginContext implements SecurityContext {
     }
 
     @Override
-    public boolean isUserInRole(final String role) {
-        return  loggedUser.getRole().toString().equals(role);
+    public boolean isUserInRole(final String userAction) {
+        // the function name is a bit strange maybe but @RolesAllowed should contain UserAction 
+        // in this function we determine if that action is allowed for the role of the loggedUser
+        UserRole role = loggedUser.getRole();
+        UserAction action = UserAction.valueOf(userAction);
+        return role.allowedActions.contains(action);
     }
 
     @Override

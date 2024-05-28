@@ -1299,7 +1299,7 @@
           },
           "confidentialityLevel": {
             "type": "string",
-            "enum": ["PRIVE", "INTERN_UITVOERING", "INTERN_RAPPORTAGE", "EXTERN_RAPPORTAGE", "OPENBAAR"]
+            "enum": ["PRIVATE", "INTERNAL_CIVIL", "INTERNAL_MANAGEMENT", "INTERNAL_COUNCIL", "EXTERNAL_REGIONAL", "EXTERNAL_GOVERNMENTAL", "PUBLIC"]
           },
           "projectPhase": {
             "type": "string",
@@ -1331,7 +1331,7 @@
           },
           "confidentialityLevel": {
             "type": "string",
-            "enum": ["PRIVE", "INTERN_UITVOERING", "INTERN_RAPPORTAGE", "EXTERN_RAPPORTAGE", "OPENBAAR"]
+            "enum": ["PRIVATE", "INTERNAL_CIVIL", "INTERNAL_MANAGEMENT", "INTERNAL_COUNCIL", "EXTERNAL_REGIONAL", "EXTERNAL_GOVERNMENTAL", "PUBLIC"]
           },
           "projectPhase": {
             "type": "string",
@@ -1373,7 +1373,7 @@
           },
           "confidentialityLevel": {
             "type": "string",
-            "enum": ["PRIVE", "INTERN_UITVOERING", "INTERN_RAPPORTAGE", "EXTERN_RAPPORTAGE", "OPENBAAR"]
+            "enum": ["PRIVATE", "INTERNAL_CIVIL", "INTERNAL_MANAGEMENT", "INTERNAL_COUNCIL", "EXTERNAL_REGIONAL", "EXTERNAL_GOVERNMENTAL", "PUBLIC"]
           },
           "projectPhase": {
             "type": "string",
@@ -1421,12 +1421,6 @@
             }
           },
           "projectOwners": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/OrganizationModel"
-            }
-          },
-          "projectLeaders": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/OrganizationModel"
@@ -1495,7 +1489,7 @@
           },
           "confidentialityLevel": {
             "type": "string",
-            "enum": ["PRIVE", "INTERN_UITVOERING", "INTERN_RAPPORTAGE", "EXTERN_RAPPORTAGE", "OPENBAAR"]
+            "enum": ["PRIVATE", "INTERNAL_CIVIL", "INTERNAL_MANAGEMENT", "INTERNAL_COUNCIL", "EXTERNAL_REGIONAL", "EXTERNAL_GOVERNMENTAL", "PUBLIC"]
           },
           "projectPhase": {
             "type": "string",
@@ -1543,12 +1537,6 @@
             }
           },
           "projectOwners": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/OrganizationModel"
-            }
-          },
-          "projectLeaders": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/OrganizationModel"
@@ -1731,7 +1719,7 @@
           },
           "confidentialityLevel": {
             "type": "string",
-            "enum": ["PRIVE", "INTERN_UITVOERING", "INTERN_RAPPORTAGE", "EXTERN_RAPPORTAGE", "OPENBAAR"]
+            "enum": ["PRIVATE", "INTERNAL_CIVIL", "INTERNAL_MANAGEMENT", "INTERNAL_COUNCIL", "EXTERNAL_REGIONAL", "EXTERNAL_GOVERNMENTAL", "PUBLIC"]
           },
           "location": {
             "$ref": "#/components/schemas/LocationModel"
@@ -1767,12 +1755,6 @@
             }
           },
           "projectOwners": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/OrganizationModel"
-            }
-          },
-          "projectLeaders": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/OrganizationModel"

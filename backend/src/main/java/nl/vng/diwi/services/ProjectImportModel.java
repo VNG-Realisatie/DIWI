@@ -345,7 +345,7 @@ public class ProjectImportModel {
         state.setProject(project);
         state.setCreateUser(user);
         state.setChangeStartDate(importTime);
-        state.setConfidentiality(Confidentiality.PRIVE);
+        state.setConfidentiality(Confidentiality.PRIVATE);
         state.setColor("#000000");
         repo.persist(state);
 

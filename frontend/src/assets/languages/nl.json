@@ -276,11 +276,13 @@
         "UITBREIDING_OVERIG": "Uitbreiding overig"
       },
       "confidentialityLevelOptions": {
-        "PRIVE": "Prive",
-        "INTERN_UITVOERING": "Intern uitvoering",
-        "INTERN_RAPPORTAGE": "Intern rapportage",
-        "EXTERN_RAPPORTAGE": "Extern rapportage",
-        "OPENBAAR": "Openbaar"
+        "PRIVATE": "Prive",
+        "INTERNAL_CIVIL": "Intern ambtelijk",
+        "INTERNAL_MANAGEMENT": "Intern bestuurlijk",
+        "INTERNAL_COUNCIL": "Intern raad",
+        "EXTERNAL_REGIONAL": "Extern woonregio",
+        "EXTERNAL_GOVERNMENTAL": "Extern mede-overheden",
+        "PUBLIC": "Openbaar"
       },
       "projectPhaseOptions": {
         "_1_CONCEPT": "1 Concept",

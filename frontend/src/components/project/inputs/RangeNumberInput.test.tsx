@@ -1,12 +1,66 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MonetaryRangeInput } from "./MonetaryRangeInput";
+import RangeNumberInput from "./RangeNumberInput";
 
 it("should enter a number in numeric range input and check the value passed to update callback", () => {
     const updateCallBack = jest.fn();
     const value = { value: null, min: null, max: null };
 
-    render(<MonetaryRangeInput value={value} updateCallBack={updateCallBack} labelText="hi" />);
+    render(<RangeNumberInput value={value} updateCallBack={updateCallBack} mandatory={false} readOnly={false} />);
+
+    const input = screen.getByRole("textbox");
+    userEvent.type(input, "10");
+    userEvent.keyboard("{enter}");
+
+    expect(updateCallBack).toHaveBeenLastCalledWith({ value: 10, min: null, max: null });
+});
+
+it("should enter a range in numeric range input and check the value passed to update callback", () => {
+    const updateCallBack = jest.fn();
+    const value = { value: null, min: null, max: null };
+
+    render(<RangeNumberInput value={value} updateCallBack={updateCallBack} mandatory={false} readOnly={false} />);
+
+    const input = screen.getByRole("textbox");
+    userEvent.type(input, "10-20");
+    userEvent.keyboard("{enter}");
+
+    expect(updateCallBack).toHaveBeenLastCalledWith({ value: null, min: 10, max: 20 });
+});
+
+it("should handle only min and treat as open ended range", () => {
+    const updateCallBack = jest.fn();
+    const value = { value: null, min: null, max: null };
+
+    render(<RangeNumberInput value={value} updateCallBack={updateCallBack} mandatory={false} readOnly={false} />);
+
+    const input = screen.getByRole("textbox");
+    userEvent.type(input, "10-");
+    userEvent.keyboard("{enter}");
+
+    expect(updateCallBack).toHaveBeenLastCalledWith({ value: null, min: 10, max: null });
+});
+
+it("should handle only max and treat as value", () => {
+    const updateCallBack = jest.fn();
+    const value = { value: null, min: null, max: null };
+
+    render(<RangeNumberInput value={value} updateCallBack={updateCallBack} mandatory={false} readOnly={false} />);
+
+    const input = screen.getByRole("textbox");
+    userEvent.type(input, "-10");
+    userEvent.keyboard("{enter}");
+
+    expect(updateCallBack).toHaveBeenLastCalledWith({ value: 10, min: null, max: null });
+});
+
+// Tests for isMonetary = true
+
+it("should enter a number in monetary range input and check the value passed to update callback", () => {
+    const updateCallBack = jest.fn();
+    const value = { value: null, min: null, max: null };
+
+    render(<RangeNumberInput value={value} updateCallBack={updateCallBack} mandatory={false} readOnly={false} isMonetary={true} />);
 
     const input = screen.getByRole("textbox");
     userEvent.type(input, "10");
@@ -15,11 +69,11 @@ it("should enter a number in numeric range input and check the value passed to u
     expect(updateCallBack).toHaveBeenLastCalledWith({ value: 1000, min: null, max: null });
 });
 
-it("should enter a range in numeric range input and check the value passed to update callback", () => {
+it("should enter a range in monetary range input and check the value passed to update callback", () => {
     const updateCallBack = jest.fn();
     const value = { value: null, min: null, max: null };
 
-    render(<MonetaryRangeInput value={value} updateCallBack={updateCallBack} labelText="hi" />);
+    render(<RangeNumberInput value={value} updateCallBack={updateCallBack} mandatory={false} readOnly={false} isMonetary={true} />);
 
     const input = screen.getByRole("textbox");
     userEvent.type(input, "10-20");
@@ -28,11 +82,11 @@ it("should enter a range in numeric range input and check the value passed to up
     expect(updateCallBack).toHaveBeenLastCalledWith({ value: null, min: 1000, max: 2000 });
 });
 
-it("should handle only min and treat as open ended range", () => {
+it("should handle only min and treat as open ended range in monetary range input", () => {
     const updateCallBack = jest.fn();
     const value = { value: null, min: null, max: null };
 
-    render(<MonetaryRangeInput value={value} updateCallBack={updateCallBack} labelText="hi" />);
+    render(<RangeNumberInput value={value} updateCallBack={updateCallBack} mandatory={false} readOnly={false} isMonetary={true} />);
 
     const input = screen.getByRole("textbox");
     userEvent.type(input, "10-");
@@ -41,11 +95,11 @@ it("should handle only min and treat as open ended range", () => {
     expect(updateCallBack).toHaveBeenLastCalledWith({ value: null, min: 1000, max: null });
 });
 
-it("should handle only max and treat as value", () => {
+it("should handle only max and treat as value in monetary range input", () => {
     const updateCallBack = jest.fn();
     const value = { value: null, min: null, max: null };
 
-    render(<MonetaryRangeInput value={value} updateCallBack={updateCallBack} labelText="hi" />);
+    render(<RangeNumberInput value={value} updateCallBack={updateCallBack} mandatory={false} readOnly={false} isMonetary={true} />);
 
     const input = screen.getByRole("textbox");
     userEvent.type(input, "-10");
@@ -65,7 +119,7 @@ it.each([
     const updateCallBack = jest.fn();
     const value = { value: input, min: null, max: null };
 
-    render(<MonetaryRangeInput value={value} updateCallBack={updateCallBack} labelText="hi" />);
+    render(<RangeNumberInput value={value} updateCallBack={updateCallBack} labelText="hi" mandatory={false} readOnly={false} isMonetary={true} />);
 
     expect(screen.getByRole("textbox")).toHaveValue(expected);
 });
@@ -88,7 +142,7 @@ it.each([
     const updateCallBack = jest.fn();
     const value = { value: null, min: null, max: null };
 
-    render(<MonetaryRangeInput value={value} updateCallBack={updateCallBack} labelText="hi" />);
+    render(<RangeNumberInput value={value} updateCallBack={updateCallBack} labelText="hi" mandatory={false} readOnly={false} isMonetary={true} />);
 
     const textbox = screen.getByRole("textbox");
     userEvent.type(textbox, input);
@@ -101,7 +155,7 @@ it("should limit the input to only accept up to two numbers after the comma", ()
     const updateCallBack = jest.fn();
     const value = { value: null, min: null, max: null };
 
-    render(<MonetaryRangeInput value={value} updateCallBack={updateCallBack} labelText="hi" />);
+    render(<RangeNumberInput value={value} updateCallBack={updateCallBack} labelText="hi" mandatory={false} readOnly={false} isMonetary={true} />);
 
     const input = screen.getByRole("textbox");
     userEvent.type(input, "1,234");
@@ -115,7 +169,7 @@ it("should not limit the input length if there is no comma", () => {
     const updateCallBack = jest.fn();
     const value = { value: null, min: null, max: null };
 
-    render(<MonetaryRangeInput value={value} updateCallBack={updateCallBack} labelText="hi" />);
+    render(<RangeNumberInput value={value} updateCallBack={updateCallBack} labelText="hi" mandatory={false} readOnly={false} isMonetary={true} />);
 
     const input = screen.getByRole("textbox");
     userEvent.type(input, "123456");
@@ -129,7 +183,7 @@ it("should clear the input value on focus if it's '0,00'", () => {
     const updateCallBack = jest.fn();
     const value = { value: null, min: null, max: null };
 
-    render(<MonetaryRangeInput value={value} updateCallBack={updateCallBack} labelText="hi" />);
+    render(<RangeNumberInput value={value} updateCallBack={updateCallBack} labelText="hi" mandatory={false} readOnly={false} isMonetary={true} />);
 
     const input = screen.getByRole("textbox");
     userEvent.click(input);
@@ -142,7 +196,7 @@ it("should set the input value to '0,00' on blur if the input is empty", () => {
     const updateCallBack = jest.fn();
     const value = { value: null, min: null, max: null };
 
-    render(<MonetaryRangeInput value={value} updateCallBack={updateCallBack} labelText="hi" />);
+    render(<RangeNumberInput value={value} updateCallBack={updateCallBack} labelText="hi" mandatory={false} readOnly={false} isMonetary={true} />);
 
     const input = screen.getByRole("textbox");
     userEvent.type(input, "{enter}");
@@ -155,7 +209,7 @@ it("should handle a range with one comma and one hyphen", () => {
     const updateCallBack = jest.fn();
     const value = { value: null, min: null, max: null };
 
-    render(<MonetaryRangeInput value={value} updateCallBack={updateCallBack} labelText="hi" />);
+    render(<RangeNumberInput value={value} updateCallBack={updateCallBack} labelText="hi" mandatory={false} readOnly={false} isMonetary={true} />);
 
     const input = screen.getByRole("textbox");
     userEvent.type(input, "10,20-3");
@@ -168,7 +222,7 @@ it("should handle a range with one hyphen and two commas", () => {
     const updateCallBack = jest.fn();
     const value = { value: null, min: null, max: null };
 
-    render(<MonetaryRangeInput value={value} updateCallBack={updateCallBack} labelText="hi" />);
+    render(<RangeNumberInput value={value} updateCallBack={updateCallBack} labelText="hi" mandatory={false} readOnly={false} isMonetary={true} />);
 
     const input = screen.getByRole("textbox");
     userEvent.type(input, "10,2-20,30");
@@ -181,7 +235,7 @@ it("should not allow characters except for hyphens and commas", () => {
     const updateCallBack = jest.fn();
     const value = { value: null, min: null, max: null };
 
-    render(<MonetaryRangeInput value={value} updateCallBack={updateCallBack} labelText="hi" />);
+    render(<RangeNumberInput value={value} updateCallBack={updateCallBack} labelText="hi" mandatory={false} readOnly={false} isMonetary={true} />);
 
     const input = screen.getByRole("textbox");
     userEvent.type(input, "10,2a-20,30");
