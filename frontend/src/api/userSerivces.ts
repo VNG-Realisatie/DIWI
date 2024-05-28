@@ -12,6 +12,17 @@ export async function getUsers(): Promise<User[]> {
     return getJson(`${API_URI}/users`);
 }
 
+export async function addUser(data: any): Promise<any> {
+    return postJson(`${API_URI}/users`, data);
+}
+export async function deleteUser(id: string): Promise<any> {
+    return deleteJson(`${API_URI}/users/${id}`);
+}
+
+export async function updateUser(id: string, data: User): Promise<any> {
+    return putJson(`${API_URI}/users/${id}`, data);
+}
+
 export async function getGroups(): Promise<any> {
     return getJson(`${API_URI}/groups`);
 }

@@ -10,6 +10,7 @@ import useAlert from "../hooks/useAlert";
 import GroupDialog from "../components/admin/user-management/GroupDialog";
 import UserDialog from "../components/admin/user-management/UserDialog";
 import useAllowedActions from "../hooks/useAllowedActions";
+import { addUser } from "../api/userSerivces";
 
 const emptyGroupForm: Group = {
     name: "",
@@ -73,16 +74,24 @@ const UserManagement = () => {
             setIsGroupDialogOpen(false);
         }
     };
-
-    const handleAddUser = () => {
-        // Implement this function to add a user
+    //doesnt work
+    const handleAddUser = async () => {
+        try {
+            const { initials, phone, organization, department, email, ...filteredNewUser } = newUser;
+            const data = await addUser(filteredNewUser);
+            setUsers([...users, data]);
+            setNewUser(emptyUserForm);
+            setAlert("User added successfully", "success");
+        } catch (error: any) {
+            setAlert(error.message, "warning");
+        }
     };
     return (
         <Box sx={{ marginBottom: "90px" }}>
             <UsersTable rows={users} />
 
             {allowedActions.includes("EDIT_USERS") && (
-                <Stack direction="row" alignItems="center" mt={1} sx={{ cursor: "pointer" }} onClick={() => setIsGroupDialogOpen(true)}>
+                <Stack direction="row" alignItems="center" mt={1} sx={{ cursor: "pointer" }} onClick={() => setIsUserDialogOpen(true)}>
                     <AddCircleIcon color="primary" sx={{ fontSize: "40px" }} />
                     {t("admin.userManagement.addUser")}
                 </Stack>

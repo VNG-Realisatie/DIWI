@@ -9,6 +9,7 @@ import useAlert from "../../../hooks/useAlert";
 import UserDialog from "./UserDialog";
 import DeleteDialogWithConfirmation from "./DeleteDialogWithConfirmation";
 import useAllowedActions from "../../../hooks/useAllowedActions";
+import { deleteUser, updateUser } from "../../../api/userSerivces";
 
 type Props = {
     rows: any[];
@@ -36,9 +37,14 @@ const UsersTable = ({ rows }: Props) => {
         setDeleteDialogOpen(true);
     };
     const handleDelete = async () => {
-        if (userToDelete === null) return;
-        setAlert("user deleted", "success");
-        // Delete the user
+        if (userToDelete) {
+            try {
+                await deleteUser(userToDelete);
+                setAlert("success", "success");
+            } catch (error) {
+                setAlert("error", "error");
+            }
+        }
     };
 
     const columns = [
@@ -56,7 +62,7 @@ const UsersTable = ({ rows }: Props) => {
                     {allowedActions.includes("EDIT_USERS") && (
                         <>
                             <EditOutlinedIcon style={{ cursor: "pointer" }} color="primary" onClick={() => handleEdit(params.row)} />
-                            <DeleteForeverOutlinedIcon style={{ cursor: "pointer" }} color="error" onClick={() => handleDeleteDialogOpen(params.row.uuid)} />
+                            <DeleteForeverOutlinedIcon style={{ cursor: "pointer" }} color="error" onClick={() => handleDeleteDialogOpen(params.row.id)} />
                         </>
                     )}
                 </Box>
