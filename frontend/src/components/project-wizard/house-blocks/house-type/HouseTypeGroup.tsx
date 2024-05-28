@@ -2,7 +2,7 @@ import { Stack, Typography } from "@mui/material";
 import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
 import { HouseBlock } from "../../../../types/houseBlockTypes";
-import { SingleNumberInput } from "../physical-appearence/SingleNumberInput";
+import { SingleNumberInput } from "../../../project/inputs/SingleNumberInput";
 
 export type HouseTypeInformationProps = {
     houseBlock: HouseBlock;
@@ -40,6 +40,7 @@ export const HouseTypeGroup = ({ houseBlock, setHouseBlock, readOnly }: HouseTyp
                 readOnly={readOnly}
                 name={t(`${translationPath}.meergezinswoning`)}
                 translationPath={translationPath}
+                mandatory={false}
             />
             <SingleNumberInput
                 value={houseBlock?.houseType?.eengezinswoning}
@@ -56,6 +57,7 @@ export const HouseTypeGroup = ({ houseBlock, setHouseBlock, readOnly }: HouseTyp
                 readOnly={readOnly}
                 name={t(`${translationPath}.eengezinswoning`)}
                 translationPath={translationPath}
+                mandatory={false}
             />
         </WizardCard>
     );

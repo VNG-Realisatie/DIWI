@@ -3,7 +3,7 @@ import { Map, MapBrowserEvent, View } from "ol";
 import { defaults as defaultControls } from "ol/control.js";
 import { Listener } from "ol/events";
 import { Extent } from "ol/extent";
-import GeoJSON from "ol/format/GeoJSON.js";
+import { GeoJSON } from "ol/format";
 import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
 import { OSM, TileWMS, Vector as VectorSource } from "ol/source";
@@ -19,6 +19,7 @@ import { extentToCenter, mapBoundsToExtent } from "../utils/map";
 const baseUrlKadasterWms = "https://service.pdok.nl/kadaster/kadastralekaart/wms/v5_0";
 
 const projection = "EPSG:3857";
+
 const usePlotSelector = (id: string) => {
     const { selectedProject, setSelectedProject } = useContext(ProjectContext);
     const { mapBounds } = useContext(ConfigContext);
@@ -176,21 +177,22 @@ const usePlotSelector = (id: string) => {
             if (selectedProject?.geometry) {
                 const geometry = JSON.parse(selectedProject.geometry);
 
-                const feature = new GeoJSON().readFeature(
-                    {
-                        type: "Feature",
-                        geometry,
-                        properties: {},
-                    },
-                    {
-                        featureProjection: projection,
-                    },
-                );
+                const options = {
+                    featureProjection: map?.getView().getProjection(),
+                };
+                const geojsonFeature = {
+                    type: "Feature",
+                    crs: geometry.crs,
+                    geometry,
+                    properties: {},
+                };
+                // Convert geometry to a feature while converting the projection
+                const feature = new GeoJSON().readFeature(geojsonFeature, options);
 
                 projectLayerSource.addFeature(feature);
             }
         },
-        [projectLayerSource, selectedProject?.geometry],
+        [projectLayerSource, selectedProject?.geometry, map],
     );
     useEffect(
         function zoomToExtent() {

@@ -149,7 +149,7 @@ public class GeoJsonImportModel {
                     PropertyModel propertyModel = activePropertiesMap.get(rolesEntry.getKey());
                     if (propertyModel == null || propertyModel.getObjectType() != ObjectType.PROJECT || propertyModel.getType() != PropertyKind.CUSTOM ||
                         propertyModel.getPropertyType() != PropertyType.CATEGORY) {
-                        importErrors.add(new ImportError(id, roleValue, ImportError.ERROR.UNKNOWN_PROJECT_CATEGORY_PROPERTY));
+                        importErrors.add(new ImportError(id, rolesEntry.getKey(), ImportError.ERROR.UNKNOWN_PROJECT_PROPERTY));
                     } else {
                         projectImportModel.getProjectCategoryPropsMap().put(propertyModel.getId(), getCategoryValue(roleValue, propertyModel, id, importErrors));
                     }
@@ -378,7 +378,7 @@ public class GeoJsonImportModel {
                 if (customPropValue != null && !customPropValue.isBlank()) {
                     PropertyModel propertyModel = activePropertiesMap.get(customPropEntry.getKey());
                     if (propertyModel == null || propertyModel.getObjectType() != ObjectType.WONINGBLOK || propertyModel.getType() != PropertyKind.CUSTOM) {
-                        errors.add(new ImportError(projectNo, customPropEntry.getKey(), ImportError.ERROR.UNKNOWN_PROJECT_PROPERTY));
+                        errors.add(new ImportError(projectNo, customPropEntry.getKey(), ImportError.ERROR.UNKNOWN_HOUSEBLOCK_PROPERTY));
                     } else {
                         switch (propertyModel.getPropertyType()) {
                             case TEXT -> houseblockImportModel.getHouseblockStringPropsMap().put(propertyModel.getId(), customPropEntry.getValue());
