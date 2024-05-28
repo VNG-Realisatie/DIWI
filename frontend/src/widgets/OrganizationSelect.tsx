@@ -31,9 +31,9 @@ export const OrganizationSelect = ({ readOnly, userGroup, setUserGroup }: Props)
                 "& .MuiInputBase-input.Mui-disabled": {
                     backgroundColor: "#0000", // set 0 opacity when disabled
                 },
-                "& .MuiInputBase-root": {
-                    paddingBottom: "3px !important",
-                    paddingTop: "3px !important",
+                "& .MuiOutlinedInput-root.MuiInputBase-sizeSmall": {
+                    paddingBottom: "3px",
+                    paddingTop: "3px",
                 },
             }}
             options={ownerOptions ? ownerOptions : []}
