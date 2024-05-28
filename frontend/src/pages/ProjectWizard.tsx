@@ -53,6 +53,7 @@ const ProjectWizard = () => {
                     confidentialityLevel: projectForm.confidentialityLevel,
                     startDate: projectForm.startDate,
                     endDate: projectForm.endDate,
+                    projectOwners: [],
                 };
                 const project = await createProject(temporaryCreateForm);
                 // after save immediately update Id and send attibutes that have not been saved yet
