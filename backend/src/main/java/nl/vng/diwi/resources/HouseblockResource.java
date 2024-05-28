@@ -47,10 +47,10 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static nl.vng.diwi.security.SecurityRoleConstants.Admin;
+import static nl.vng.diwi.security.UserActionConstants.CAN_OWN_PROJECTS;
 
 @Path("/houseblock")
-@RolesAllowed({Admin})
+@RolesAllowed({CAN_OWN_PROJECTS})
 public class HouseblockResource {
 
     private final VngRepository repo;

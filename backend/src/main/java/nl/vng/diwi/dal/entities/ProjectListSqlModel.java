@@ -49,10 +49,6 @@ public class ProjectListSqlModel {
     @Column(columnDefinition = "text[][]")
     private String[][] projectOwnersArray;
 
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(columnDefinition = "text[][]")
-    private String[][] projectLeadersArray;
-
     private String projectColor;
 
     @Enumerated(EnumType.STRING)

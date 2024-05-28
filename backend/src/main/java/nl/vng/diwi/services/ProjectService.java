@@ -51,7 +51,6 @@ import nl.vng.diwi.dal.entities.enums.MilestoneStatus;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
-import nl.vng.diwi.dal.entities.enums.ProjectRole;
 import nl.vng.diwi.dal.entities.enums.ValueType;
 import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
 import nl.vng.diwi.models.MilestoneModel;
@@ -103,18 +102,28 @@ public class ProjectService {
 
     public List<PlotModel> getCurrentPlots(Project project) {
 
-        Milestone projectStartMilestone = project.getDuration().get(0).getStartMilestone();
+        var projectStartMilestone = project.getDuration().get(0).getStartMilestone();
         LocalDate projectStartDate = (new MilestoneModel(projectStartMilestone)).getDate();
+
+        var projectEndMilestone = project.getDuration().get(0).getEndMilestone();
+        var projectEndDate = (new MilestoneModel(projectEndMilestone)).getDate();
 
         LocalDate referenceDate = LocalDate.now();
         if (projectStartDate.isAfter(referenceDate)) {
             referenceDate = projectStartDate;
         }
-        LocalDate finalReferenceDate = referenceDate;
+        else if (projectEndDate.isBefore(referenceDate)) {
+            referenceDate = projectEndDate;
+        }
+        final LocalDate finalReferenceDate = referenceDate;
 
-        var currentChangelog = project.getRegistryLinks().stream()
-            .filter(pc -> !(new MilestoneModel(pc.getStartMilestone())).getDate().isAfter(finalReferenceDate)
-                && (new MilestoneModel(pc.getEndMilestone())).getDate().isAfter(finalReferenceDate))
+        List<ProjectRegistryLinkChangelog> registryLinks = project.getRegistryLinks();
+        var currentChangelog = registryLinks.stream()
+            .filter(pc -> {
+                LocalDate startDate = (new MilestoneModel(pc.getStartMilestone())).getDate();
+                LocalDate endDate = (new MilestoneModel(pc.getEndMilestone())).getDate();
+                return (!startDate.isAfter(finalReferenceDate)) && (endDate.isAfter(finalReferenceDate) || endDate.isEqual(finalReferenceDate));
+            })
             .findFirst().orElse(null);
 
         if (currentChangelog != null) {
@@ -365,28 +374,28 @@ public class ProjectService {
         }
     }
 
-    public void updateProjectOrganizations(VngRepository repo, Project project, ProjectRole projectRole, UUID organizationToAdd,
+    public void updateProjectOrganizations(VngRepository repo, Project project, UUID organizationToAdd,
             UUID organizationToRemove, UUID loggedInUserUuid) {
 
         UUID projectUuid = project.getId();
 
         if (organizationToAdd != null) {
-            UUID organizationToProjectUuid = repo.getOrganizationDAO().findOrganizationForProject(projectUuid, organizationToAdd, projectRole);
+            UUID organizationToProjectUuid = repo.getOrganizationDAO().findOrganizationForProject(projectUuid, organizationToAdd);
             if (organizationToProjectUuid != null) {
-                logger.info("Trying to add to project {} a {} organization {} which is already associated with this project.", projectUuid, projectRole,
+                logger.info("Trying to add to project {} an organization {} which is already associated with this project.", projectUuid,
                         organizationToAdd);
             } else {
-                repo.getOrganizationDAO().addOrganizationToProject(projectUuid, organizationToAdd, projectRole, loggedInUserUuid);
+                repo.getOrganizationDAO().addOrganizationToProject(projectUuid, organizationToAdd, loggedInUserUuid);
             }
         }
 
         if (organizationToRemove != null) {
-            UUID organizationToProjectUuid = repo.getOrganizationDAO().findOrganizationForProject(projectUuid, organizationToRemove, projectRole);
+            UUID organizationToProjectUuid = repo.getOrganizationDAO().findOrganizationForProject(projectUuid, organizationToRemove);
             if (organizationToProjectUuid == null) {
-                logger.info("Trying to remove from project {} a {} organization {} which is not associated with this project.", projectUuid, projectRole,
+                logger.info("Trying to remove from project {} an organization {} which is not associated with this project.", projectUuid,
                         organizationToRemove);
             } else {
-                repo.getOrganizationDAO().removeOrganizationFromProject(projectUuid, organizationToRemove, projectRole, loggedInUserUuid);
+                repo.getOrganizationDAO().removeOrganizationFromProject(projectUuid, organizationToRemove, loggedInUserUuid);
             }
         }
     }

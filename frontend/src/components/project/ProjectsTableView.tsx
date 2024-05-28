@@ -7,6 +7,7 @@ import {
     GridPreProcessEditCellProps,
     GridRenderCellParams,
     GridRowParams,
+    GridSortModel,
     getGridSingleSelectOperators,
     getGridStringOperators,
 } from "@mui/x-data-grid";
@@ -24,6 +25,7 @@ import { AddProjectButton } from "../PlusButton";
 import dayjs from "dayjs";
 import { dateFormats } from "../../localization";
 import { capitalizeFirstLetters } from "../../utils/stringFunctions";
+import { OrganizationSelect } from "../../widgets/OrganizationSelect";
 
 interface RowData {
     id: number;
@@ -55,14 +57,15 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const [selectedRows, setSelectedRows] = useState<any[]>([]);
     const [showDialog, setShowDialog] = useState(false);
     const [filterModel, setFilterModel] = useState<GridFilterModel | undefined>();
+    const [sortModel, setSortModel] = useState<GridSortModel | undefined>();
 
-    const { filterUrl, rows } = useCustomSearchParams(filterModel, paginationInfo);
+    const { filterUrl, rows } = useCustomSearchParams(sortModel, filterModel, paginationInfo);
 
     useEffect(() => {
         if (filterUrl !== "") {
             navigate(`/projects/table${filterUrl}`);
         }
-    }, [filterUrl, navigate, filterModel]);
+    }, [filterUrl, navigate, filterModel, sortModel]);
 
     const handleExport = (params: GridRowParams) => {
         const clickedRow: RowData = params.row as RowData;
@@ -104,6 +107,22 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             width: 120,
             filterable: false,
             preProcessEditCellProps: createErrorReport,
+        },
+        {
+            field: "projectOwners",
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.projectOwners")),
+            display: "flex",
+            width: 270,
+            filterable: false,
+            preProcessEditCellProps: createErrorReport,
+            renderCell: (cellValues) => {
+                return (
+                    cellValues.row.projectOwners &&
+                    cellValues.row.projectOwners.length > 0 && (
+                        <OrganizationSelect readOnly={true} userGroup={cellValues.row.projectOwners} setUserGroup={() => {}} />
+                    )
+                );
+            },
         },
         {
             field: "confidentialityLevel",
@@ -228,21 +247,22 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         },
     ];
 
-    const handleFilterModelChange = (newModel: GridFilterModel, details: GridCallbackDetails) => {
-        if (details.reason === "deleteFilterItem") {
-            if (newModel.items.some((item) => item.value == null)) {
-                const updatedFilterModel = {
-                    items: newModel.items.map((item) => ({
-                        ...item,
-                        value: item.value == null ? "" : item.value,
-                    })),
-                };
-                setFilterModel(updatedFilterModel);
-            }
-        }
-        if (newModel.items.length > 0) {
+    const handleFilterModelChange = (newModel: GridFilterModel) => {
+        if (newModel.items.some((item) => item.value)) {
             setFilterModel(newModel);
+        } else {
+            const updatedFilterModel: GridFilterModel = {
+                items: newModel.items.map((item) => ({
+                    ...item,
+                    value: undefined,
+                })),
+            };
+            setFilterModel(updatedFilterModel);
         }
+    };
+
+    const handleSortModelChange = (newSortModel: GridSortModel) => {
+        setSortModel(newSortModel);
     };
 
     return (
@@ -271,7 +291,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 onPaginationModelChange={(model: GridPaginationModel, _: GridCallbackDetails) => {
                     setPaginationInfo({ page: model.page + 1, pageSize: model.pageSize });
                 }}
-                rowCount={totalProjectCount}
+                rowCount={filterModel?.items.some((item) => item.value) ? rows.length : totalProjectCount}
                 paginationMode="server"
                 onRowClick={
                     showCheckBox
@@ -286,6 +306,8 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 }
                 filterModel={filterModel}
                 onFilterModelChange={handleFilterModelChange}
+                sortModel={sortModel}
+                onSortModelChange={handleSortModelChange}
             />
             <Dialog open={showDialog} onClose={handleClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
                 <DialogTitle id="alert-dialog-title">{t("projects.confirmExport")}</DialogTitle>
