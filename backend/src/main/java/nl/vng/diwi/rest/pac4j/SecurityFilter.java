@@ -63,8 +63,6 @@ public class SecurityFilter implements ContainerRequestFilter {
         if (Constants.REST_AUTH_LOGOUT.equals(requestContext.getUriInfo().getAbsolutePath().getPath())) {
             return;
         }
-        
-        log.error("REQ context: " + requestContext.getUriInfo().getAbsolutePath().getPath());
 
         Config pac4jConfig = config.getPac4jConfig();
         if (pac4jConfig == null) {
