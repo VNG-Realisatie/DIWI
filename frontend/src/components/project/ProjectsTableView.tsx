@@ -25,11 +25,8 @@ import { AddProjectButton } from "../PlusButton";
 import dayjs from "dayjs";
 import { dateFormats } from "../../localization";
 import { capitalizeFirstLetters } from "../../utils/stringFunctions";
-<<<<<<< frontend/src/components/project/ProjectsTableView.tsx
 import useAllowedActions from "../../hooks/useAllowedActions";
-=======
 import { UserGroupSelect } from "../../widgets/UserGroupSelect";
->>>>>>> frontend/src/components/project/ProjectsTableView.tsx
 
 interface RowData {
     id: number;
