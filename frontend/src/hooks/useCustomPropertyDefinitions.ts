@@ -12,11 +12,11 @@ export const useCustomPropertyDefinitions = () => {
     useEffect(() => {
         getCustomProperties().then((res) => {
             const pa = res.filter((prop) => prop.objectType === "WONINGBLOK" && prop.name === "physicalAppearance")[0];
-            const paCategories = pa?.categories?.filter((cat) => cat.id !== undefined) as CategoriesStrict[];
+            const paCategories = pa?.categories?.filter((cat) => cat.id !== undefined && !cat.disabled) as CategoriesStrict[];
             setPhysicalAppearances(paCategories);
 
             const tg = res.filter((prop) => prop.objectType === "WONINGBLOK" && prop.name === "targetGroup")[0];
-            const tgCategories = tg?.categories?.filter((cat) => cat.id !== undefined) as CategoriesStrict[];
+            const tgCategories = tg?.categories?.filter((cat) => cat.id !== undefined && !cat.disabled) as CategoriesStrict[];
             setTargetGroup(tgCategories);
         });
     }, []);

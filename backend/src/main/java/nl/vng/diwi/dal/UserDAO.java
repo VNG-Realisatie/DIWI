@@ -38,6 +38,14 @@ public class UserDAO extends AbstractRepository {
                 .uniqueResult();
     }
 
+    public UserState getUserByEmail(String email) {
+        return session
+            .createQuery("FROM UserState us " +
+                "WHERE us.email = :email AND us.changeEndDate IS NULL ", UserState.class)
+            .setParameter("email", email)
+            .uniqueResult();
+    }
+
     public User getSystemUser() {
         return session.createQuery("FROM User WHERE systemUser = TRUE", User.class)
                 .setMaxResults(1)

@@ -271,7 +271,7 @@ public class ExcelImportService {
     }
 
     private ProjectImportModel processExcelRow(Row row, Map<Integer, ExcelTableHeader> tableHeaderMap, DataFormatter formatter,
-                                        FormulaEvaluator evaluator, List<ImportError> excelErrors, ZonedDateTime importTime) {
+                                               FormulaEvaluator evaluator, List<ImportError> excelErrors, ZonedDateTime importTime) {
         ProjectImportModel rowModel = new ProjectImportModel();
 
         List<ImportError> rowErrors = new ArrayList<>();
