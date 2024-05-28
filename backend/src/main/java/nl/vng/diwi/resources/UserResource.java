@@ -9,6 +9,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import nl.vng.diwi.dal.AutoCloseTransaction;
@@ -130,7 +131,9 @@ public class UserResource {
     @GET
     @Path("/userinfo")
     @Produces(MediaType.APPLICATION_JSON)
-    public UserInfoModel login(@Context LoggedUser loggedUser) {
+    public UserInfoModel userInfo(ContainerRequestContext requestContext) {
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
+
         UserState state = userService.getUserDAO().getUserById(loggedUser.getUuid());
         return new UserInfoModel(state);
     }
