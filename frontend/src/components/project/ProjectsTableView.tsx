@@ -25,6 +25,7 @@ import { AddProjectButton } from "../PlusButton";
 import dayjs from "dayjs";
 import { dateFormats } from "../../localization";
 import { capitalizeFirstLetters } from "../../utils/stringFunctions";
+import { OrganizationSelect } from "../../widgets/OrganizationSelect";
 
 interface RowData {
     id: number;
@@ -106,6 +107,22 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             width: 120,
             filterable: false,
             preProcessEditCellProps: createErrorReport,
+        },
+        {
+            field: "projectOwners",
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.projectOwners")),
+            display: "flex",
+            width: 270,
+            filterable: false,
+            preProcessEditCellProps: createErrorReport,
+            renderCell: (cellValues) => {
+                return (
+                    cellValues.row.projectOwners &&
+                    cellValues.row.projectOwners.length > 0 && (
+                        <OrganizationSelect readOnly={true} userGroup={cellValues.row.projectOwners} setUserGroup={() => {}} />
+                    )
+                );
+            },
         },
         {
             field: "confidentialityLevel",

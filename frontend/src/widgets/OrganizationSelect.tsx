@@ -33,7 +33,17 @@ export const OrganizationSelect = ({ readOnly, userGroup, setUserGroup }: Props)
                 },
             }}
             options={ownerOptions ? ownerOptions : []}
-            getOptionLabel={(option) => option.name}
+            getOptionLabel={(option) => {
+                return (
+                    option.users
+                        ?.map((user) => {
+                            const firstInitial = user.firstName ? user.firstName[0] : "";
+                            const lastInitial = user.lastName ? user.lastName[0] : "";
+                            return `${firstInitial}${lastInitial}`;
+                        })
+                        .join(" ") || ""
+                );
+            }}
             isOptionEqualToValue={(option, value) => option.uuid === value.uuid}
             value={userGroup}
             onChange={(_: any, newValue: Organization[]) => setUserGroup(newValue)}

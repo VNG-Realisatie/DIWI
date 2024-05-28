@@ -470,8 +470,8 @@ public class ProjectImportModel {
         }
 
         houseblocks.forEach(houseblock -> {
-                Milestone houseblockEndMilestone = getOrCreateProjectMilestone(repo, projectMilestones, project, houseblock.getLatestDeliveryDate(), null, user, importTime);
-                persistHouseblocks(repo, houseblock, project, startMilestone, houseblockEndMilestone, user, importTime);
+            Milestone houseblockEndMilestone = getOrCreateProjectMilestone(repo, projectMilestones, project, houseblock.getLatestDeliveryDate(), null, user, importTime);
+            persistHouseblocks(repo, houseblock, project, startMilestone, houseblockEndMilestone, user, importTime);
         });
 
         return new SelectModel(project.getId(), projectName);
