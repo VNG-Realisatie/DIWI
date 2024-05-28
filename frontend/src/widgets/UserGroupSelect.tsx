@@ -1,27 +1,26 @@
 import { useEffect, useState } from "react";
 import { AvatarGroup, TextField, Autocomplete, Checkbox } from "@mui/material";
-import { OrganizationUserAvatars } from "../components/OrganizationUserAvatars";
+import { UserGroupAvatars } from "../components/UserGroupAvatars";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import { Organization } from "../api/projectsServices";
 import { getOrganizationList } from "../api/projectsTableServices";
-import useAllowedActions from "../hooks/useAllowedActions";
 
 const icon = <CheckBoxOutlineBlankIcon />;
 const checkedIcon = <CheckBoxIcon />;
 
 type Props = {
     readOnly: boolean;
-    userGroup: Organization[];
-    setUserGroup: (owner: Organization[]) => void;
+    userGroup: UserGroup[];
+    setUserGroup: (owner: UserGroup[]) => void;
 };
 
-export const OrganizationSelect = ({ readOnly, userGroup, setUserGroup }: Props) => {
-    const [ownerOptions, setOwnerOptions] = useState<Organization[]>();
+export const UserGroupSelect = ({ readOnly, userGroup, setUserGroup }: Props) => {
+    const [ownerOptions, setOwnerOptions] = useState<UserGroup[]>();
     const allowedActions = useAllowedActions();
 
     useEffect(() => {
-        getOrganizationList().then((organizations) => setOwnerOptions(organizations));
+        getUserGroupList().then((groups) => setOwnerOptions(groups));
     }, []);
 
     return (
@@ -38,13 +37,13 @@ export const OrganizationSelect = ({ readOnly, userGroup, setUserGroup }: Props)
             getOptionLabel={(option) => option.name}
             isOptionEqualToValue={(option, value) => option.uuid === value.uuid}
             value={userGroup}
-            onChange={(_: any, newValue: Organization[]) => setUserGroup(newValue)}
+            onChange={(_: any, newValue: UserGroup[]) => setUserGroup(newValue)}
             renderOption={(props, option, { selected }) => (
                 <li {...props}>
                     <Checkbox icon={icon} checkedIcon={checkedIcon} style={{ marginRight: 8 }} checked={selected} />
                     {option.name}
                     <AvatarGroup max={3}>
-                        <OrganizationUserAvatars organizations={[option]} />
+                        <UserGroupAvatars groups={[option]} />
                     </AvatarGroup>
                 </li>
             )}
@@ -52,3 +51,5 @@ export const OrganizationSelect = ({ readOnly, userGroup, setUserGroup }: Props)
         />
     );
 };
+
+export default UserGroupSelect;

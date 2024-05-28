@@ -23,13 +23,13 @@ import jakarta.ws.rs.core.Context;
 import lombok.extern.log4j.Log4j2;
 import nl.vng.diwi.config.ProjectConfig;
 import nl.vng.diwi.dal.DalFactory;
-import nl.vng.diwi.dal.OrganizationsDAO;
+import nl.vng.diwi.dal.UserGroupDAO;
 import nl.vng.diwi.dal.UserDAO;
-import nl.vng.diwi.dal.entities.Organization;
-import nl.vng.diwi.dal.entities.OrganizationState;
+import nl.vng.diwi.dal.entities.UserGroup;
+import nl.vng.diwi.dal.entities.UserGroupState;
 import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.dal.entities.UserState;
-import nl.vng.diwi.dal.entities.UserToOrganization;
+import nl.vng.diwi.dal.entities.UserToUserGroup;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.security.LoginContext;
@@ -96,7 +96,7 @@ public class SecurityFilter implements ContainerRequestFilter {
     private UserState getUserForProfile(UserProfile profile) {
         Session session = dalFactory.constructDal().getSession();
         var userDao = new UserDAO(session);
-        var organizationsDAO = new OrganizationsDAO(session);
+        var userGroupDAO = new UserGroupDAO(session);
 
         try (var transaction = userDao.beginTransaction()) {
             var profileUuid = profile.getId();
@@ -123,22 +123,23 @@ public class SecurityFilter implements ContainerRequestFilter {
                 userEntity.setUserRole(UserRole.Admin); // Any user that is 'comming' from keycloak should not be able to view projects
                 userDao.persist(userEntity);
 
-                var org =  new Organization();
-                organizationsDAO.persist(org);
+                var group =  new UserGroup();
+                group.setSingleUser(true);
+                userGroupDAO.persist(group);
 
-                var orgState = new OrganizationState();
-                orgState.setChangeStartDate(now);
-                orgState.setCreateUser(systemUser);
-                orgState.setName(userEntity.getFirstName() + " " + userEntity.getLastName());
-                orgState.setOrganization(org);
-                organizationsDAO.persist(orgState);
+                var groupState = new UserGroupState();
+                groupState.setChangeStartDate(now);
+                groupState.setCreateUser(systemUser);
+                groupState.setName(userEntity.getFirstName() + " " + userEntity.getLastName());
+                groupState.setUserGroup(group);
+                userGroupDAO.persist(groupState);
 
-                var orgToUser = new UserToOrganization();
-                orgToUser.setChangeStartDate(now);
-                orgToUser.setCreateUser(systemUser);
-                orgToUser.setOrganization(org);
-                orgToUser.setUser(newUser);
-                organizationsDAO.persist(orgToUser);
+                var groupToUser = new UserToUserGroup();
+                groupToUser.setChangeStartDate(now);
+                groupToUser.setCreateUser(systemUser);
+                groupToUser.setUserGroup(group);
+                groupToUser.setUser(newUser);
+                userGroupDAO.persist(groupToUser);
 
                 transaction.commit();
             }

@@ -40,9 +40,6 @@ export interface paths {
     "/rest/milestone/{id}": {
         get: operations["getMilestone"];
     };
-    "/rest/organizations/list": {
-        get: operations["getAllOrganization"];
-    };
     "/rest/projects": {
         post: operations["createProject"];
     };
@@ -84,6 +81,12 @@ export interface paths {
         get: operations["getProperty"];
         put: operations["updateProperty"];
         delete: operations["disableCustomProperty"];
+    };
+    "/rest/groups": {
+        get: operations["getAllUserGroups"];
+    };
+    "/rest/users": {
+        get: operations["getAllUsers"];
     };
     "/rest/users/userinfo": {
         get: operations["login_1"];
@@ -207,19 +210,6 @@ export interface components {
             date?: string;
             description?: string;
         };
-        OrganizationModel: {
-            /** Format: uuid */
-            uuid: string;
-            name: string;
-            users?: components["schemas"]["OrganizationUserModel"][];
-        };
-        OrganizationUserModel: {
-            /** Format: uuid */
-            uuid?: string;
-            firstName?: string;
-            lastName?: string;
-            initials?: string;
-        };
         ProjectMinimalSnapshotModel: {
             /** Format: date */
             startDate?: string;
@@ -301,19 +291,32 @@ export interface components {
             planType?: ("PAND_TRANSFORMATIE" | "TRANSFORMATIEGEBIED" | "HERSTRUCTURERING" | "VERDICHTING" | "UITBREIDING_UITLEG" | "UITBREIDING_OVERIG")[];
             priority?: components["schemas"]["PriorityModel"];
             municipalityRole?: components["schemas"]["SelectModel"][];
-            projectOwners?: components["schemas"]["OrganizationModel"][];
+            projectOwners?: components["schemas"]["UserGroupModel"][];
             /** Format: int64 */
             totalValue?: number;
             municipality?: components["schemas"]["SelectModel"][];
             district?: components["schemas"]["SelectModel"][];
             neighbourhood?: components["schemas"]["SelectModel"][];
             location?: components["schemas"]["LocationModel"];
-            geometry?: string | null;
+            geometry?: string;
         };
         SelectModel: {
             /** Format: uuid */
             id: string;
             name: string;
+        };
+        UserGroupModel: {
+            /** Format: uuid */
+            uuid: string;
+            name: string;
+            users?: components["schemas"]["UserGroupUserModel"][];
+        };
+        UserGroupUserModel: {
+            /** Format: uuid */
+            uuid?: string;
+            firstName?: string;
+            lastName?: string;
+            initials?: string;
         };
         ProjectSnapshotModel: {
             /** Format: date */
@@ -351,14 +354,14 @@ export interface components {
             planType?: ("PAND_TRANSFORMATIE" | "TRANSFORMATIEGEBIED" | "HERSTRUCTURERING" | "VERDICHTING" | "UITBREIDING_UITLEG" | "UITBREIDING_OVERIG")[];
             priority?: components["schemas"]["PriorityModel"];
             municipalityRole?: components["schemas"]["SelectModel"][];
-            projectOwners?: components["schemas"]["OrganizationModel"][];
+            projectOwners?: components["schemas"]["UserGroupModel"][];
             /** Format: int64 */
             totalValue?: number;
             municipality?: components["schemas"]["SelectModel"][];
             district?: components["schemas"]["SelectModel"][];
             neighbourhood?: components["schemas"]["SelectModel"][];
             location?: components["schemas"]["LocationModel"];
-            geometry?: string | null;
+            geometry?: string;
             customProperties?: components["schemas"]["ProjectHouseblockCustomPropertyModel"][];
         };
         DatedDataModelListPlanStatus: {
@@ -439,7 +442,7 @@ export interface components {
             projectPhase?: components["schemas"]["DatedDataModelProjectPhase"][];
             municipalityRole?: components["schemas"]["DatedDataModelString"][];
             planningPlanStatus?: components["schemas"]["DatedDataModelListPlanStatus"][];
-            projectOwners?: components["schemas"]["OrganizationModel"][];
+            projectOwners?: components["schemas"]["UserGroupModel"][];
             /** Format: int64 */
             totalValue?: number;
             municipality?: string[];
@@ -500,6 +503,15 @@ export interface components {
             disabled: boolean;
         };
         UserModel: {
+            /** Format: uuid */
+            id: string;
+            firstName: string;
+            lastName: string;
+            email: string;
+            /** @enum {string} */
+            role: "Admin" | "UserPlus" | "User" | "Management" | "Council" | "External";
+        };
+        UserInfoModel: {
             /** Format: uuid */
             uuid: string;
             firstName: string;
@@ -676,16 +688,6 @@ export interface operations {
             default: {
                 content: {
                     "application/json": components["schemas"]["MilestoneModel"];
-                };
-            };
-        };
-    };
-    getAllOrganization: {
-        responses: {
-            /** @description default response */
-            default: {
-                content: {
-                    "application/json": components["schemas"]["OrganizationModel"][];
                 };
             };
         };
@@ -998,12 +1000,32 @@ export interface operations {
             };
         };
     };
+    getAllUserGroups: {
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["UserGroupModel"][];
+                };
+            };
+        };
+    };
+    getAllUsers: {
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["UserModel"][];
+                };
+            };
+        };
+    };
     login_1: {
         responses: {
             /** @description default response */
             default: {
                 content: {
-                    "application/json": components["schemas"]["UserModel"];
+                    "application/json": components["schemas"]["UserInfoModel"];
                 };
             };
         };

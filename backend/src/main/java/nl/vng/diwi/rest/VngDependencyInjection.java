@@ -21,7 +21,7 @@ import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.services.PropertiesService;
 import nl.vng.diwi.services.HouseblockService;
 import nl.vng.diwi.services.MilestoneService;
-import nl.vng.diwi.services.OrganizationsService;
+import nl.vng.diwi.services.UserGroupService;
 import nl.vng.diwi.services.ProjectService;
 
 public class VngDependencyInjection extends AbstractBinder {
@@ -95,7 +95,7 @@ public class VngDependencyInjection extends AbstractBinder {
 
         bind(new MilestoneService()).to(MilestoneService.class);
         bind(new ProjectService()).to(ProjectService.class);
-        bind(new OrganizationsService()).to(OrganizationsService.class);
+        bind(new UserGroupService()).to(UserGroupService.class);
         bind(new HouseblockService()).to(HouseblockService.class);
         bind(new PropertiesService()).to(PropertiesService.class);
         bind(new ExcelImportService()).to(ExcelImportService.class);
