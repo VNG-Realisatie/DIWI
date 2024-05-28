@@ -130,7 +130,7 @@ public class SecurityFilter implements ContainerRequestFilter {
                 userEntity.setLastName((String) lastName);
                 userEntity.setUser(newUser);
                 userEntity.setIdentityProviderId(profileUuid);
-                userEntity.setUserRole(UserRole.Admin); // Keycload users should by default not see projects
+                userEntity.setUserRole(UserRole.Admin); // Keycloak users should by default not see projects
                 userDao.persist(userEntity);
 
                 var org = new Organization();
