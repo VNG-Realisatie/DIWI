@@ -62,6 +62,7 @@ import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
 import nl.vng.diwi.models.ImportError;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.models.SelectModel;
+import nl.vng.diwi.security.UserAction;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -210,7 +211,7 @@ public class ProjectImportModel {
 
         if (ownerEmail != null) {
             UserState userState = repo.getUserDAO().getUserByEmail(ownerEmail);
-            if (userState != null) { //TODO: role validation
+            if (userState != null && userState.getUserRole().allowedActions.contains(UserAction.CAN_OWN_PROJECTS)) {
                 ownerUserGroupUuid = repo.getUsergroupDAO().findSingleUserUserGroup(userState.getUser().getId());
             }
         }

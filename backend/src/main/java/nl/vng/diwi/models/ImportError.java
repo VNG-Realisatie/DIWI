@@ -67,7 +67,7 @@ public class ImportError {
         PROJECT_WRONG_PHASE_DATES("wrong_project_phase_dates", "The project phase start dates are not within the project duration or are not in the right order."),
         PROJECT_WRONG_PLAN_STATUS_DATES("wrong_project_plan_status_dates", "The project planning plan status start dates are not within the project duration or are not in the right order."),
         PROJECT_LOCATION_INCOMPLETE("incomplete_project_location", "Project neighbourhood/district are present without district/municipality being present"),
-        PROJECT_OWNER_UNKNOWN("project_owner_unknown", "The owner email is missing or does not belong to any active users."),
+        PROJECT_OWNER_UNKNOWN("project_owner_unknown", "The owner email is missing or does not belong to any active users who has the right to own projects."),
 
         HOUSEBLOCK_DELIVERY_DATE_AFTER_PROJECT_END_DATE("houseblock_delivery_date", "At least one housing block delivery date is after the project end date."),
         HOUSEBLOCK_HOUSING_NUMBER_NOT_POSITIVE("houseblock_housing_number", "The housing block mutation number is not greater than 0."),
