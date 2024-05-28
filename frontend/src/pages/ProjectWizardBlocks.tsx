@@ -73,15 +73,6 @@ const ProjectWizardBlocks = () => {
         let hasErrors = false;
         const newDateValidationErrors: DateValidationErrors = { startDateError: null, endDateError: null };
 
-        if (!houseBlock.startDate) {
-            newDateValidationErrors.startDateError = t("wizard.houseBlocks.startDateWarningMissing");
-            hasErrors = true;
-        }
-        if (!houseBlock.endDate) {
-            newDateValidationErrors.endDateError = t("wizard.houseBlocks.endDateWarningMissing");
-            hasErrors = true;
-        }
-
         const invalidOwnershipAmount = houseBlock.ownershipValue.some((owner) => !isOwnershipAmountValid(owner.amount));
 
         if (
@@ -89,7 +80,9 @@ const ProjectWizardBlocks = () => {
             !houseBlock.mutation.amount ||
             !houseBlock.mutation.kind ||
             houseBlock.mutation.amount <= 0 ||
-            invalidOwnershipAmount
+            invalidOwnershipAmount ||
+            !houseBlock.startDate ||
+            !houseBlock.endDate
         ) {
             hasErrors = true;
         }
@@ -125,11 +118,22 @@ const ProjectWizardBlocks = () => {
         }
     };
 
-    const handleNext = async () => {
+    const navigateToStep = async (direction: "next" | "back") => {
         const isSuccessful: boolean | undefined = await handleSave();
         if (!isSuccessful) return;
 
-        if (projectId) navigate(projectWizardMap.toPath({ projectId }));
+        if (projectId) {
+            const newPath = direction === "next" ? projectWizardMap.toPath({ projectId }) : projectWizardWithId.toPath({ projectId });
+            navigate(newPath);
+        }
+    };
+
+    const handleNext = async () => {
+        await navigateToStep("next");
+    };
+
+    const handleBack = async () => {
+        await navigateToStep("back");
     };
 
     const handleSave = async () => {
@@ -172,12 +176,6 @@ const ProjectWizardBlocks = () => {
         } catch (error: any) {
             setErrorOccurred(true);
             setAlert(error.message, "warning");
-        }
-    };
-
-    const handleBack = () => {
-        if (projectId) {
-            navigate(projectWizardWithId.toPath({ projectId }));
         }
     };
 

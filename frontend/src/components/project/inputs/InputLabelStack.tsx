@@ -9,7 +9,7 @@ type InputLabelStackProps = {
 
 const InputLabelStack = ({ title, children, mandatory }: InputLabelStackProps) => {
     return (
-        <Stack width="100%">
+        <Stack width="100%" data-testid="input-label-stack">
             <LabelComponent required={mandatory} text={title} />
             {children}
         </Stack>
