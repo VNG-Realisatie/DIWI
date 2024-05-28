@@ -36,6 +36,8 @@ const UsersTable = ({ rows }: Props) => {
         setDeleteDialogOpen(true);
     };
     const handleDelete = async () => {
+        if (userToDelete === null) return;
+        setAlert("user deleted", "success");
         // Delete the user
     };
 

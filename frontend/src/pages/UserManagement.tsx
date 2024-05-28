@@ -84,7 +84,7 @@ const UserManagement = () => {
             {allowedActions.includes("EDIT_USERS") && (
                 <Stack direction="row" alignItems="center" mt={1} sx={{ cursor: "pointer" }} onClick={() => setIsGroupDialogOpen(true)}>
                     <AddCircleIcon color="primary" sx={{ fontSize: "40px" }} />
-                    {t("admin.userManagement.addGroup")}
+                    {t("admin.userManagement.addUser")}
                 </Stack>
             )}
 
