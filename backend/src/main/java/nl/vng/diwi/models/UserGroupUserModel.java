@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class OrganizationUserModel {
+public class UserGroupUserModel {
 
     UUID uuid;
     String firstName;
@@ -16,8 +16,8 @@ public class OrganizationUserModel {
     String initials;
 
     @JsonIgnore
-    UUID organizationUuid;
+    UUID userGroupUuid;
     @JsonIgnore
-    String organizationName;
+    String userGroupName;
 
 }
