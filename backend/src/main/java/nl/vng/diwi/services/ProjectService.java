@@ -24,6 +24,8 @@ import nl.vng.diwi.dal.entities.ProjectCategoryPropertyChangelogValue;
 import nl.vng.diwi.dal.entities.ProjectNumericCustomPropertyChangelog;
 import nl.vng.diwi.dal.entities.ProjectOrdinalPropertyChangelog;
 import nl.vng.diwi.dal.entities.ProjectTextPropertyChangelog;
+import nl.vng.diwi.dal.entities.UserGroup;
+import nl.vng.diwi.dal.entities.UserGroupToProject;
 import nl.vng.diwi.models.ProjectHouseblockCustomPropertyModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
 import org.apache.logging.log4j.LogManager;
@@ -102,18 +104,28 @@ public class ProjectService {
 
     public List<PlotModel> getCurrentPlots(Project project) {
 
-        Milestone projectStartMilestone = project.getDuration().get(0).getStartMilestone();
+        var projectStartMilestone = project.getDuration().get(0).getStartMilestone();
         LocalDate projectStartDate = (new MilestoneModel(projectStartMilestone)).getDate();
+
+        var projectEndMilestone = project.getDuration().get(0).getEndMilestone();
+        var projectEndDate = (new MilestoneModel(projectEndMilestone)).getDate();
 
         LocalDate referenceDate = LocalDate.now();
         if (projectStartDate.isAfter(referenceDate)) {
             referenceDate = projectStartDate;
         }
-        LocalDate finalReferenceDate = referenceDate;
+        else if (projectEndDate.isBefore(referenceDate)) {
+            referenceDate = projectEndDate;
+        }
+        final LocalDate finalReferenceDate = referenceDate;
 
-        var currentChangelog = project.getRegistryLinks().stream()
-            .filter(pc -> !(new MilestoneModel(pc.getStartMilestone())).getDate().isAfter(finalReferenceDate)
-                && (new MilestoneModel(pc.getEndMilestone())).getDate().isAfter(finalReferenceDate))
+        List<ProjectRegistryLinkChangelog> registryLinks = project.getRegistryLinks();
+        var currentChangelog = registryLinks.stream()
+            .filter(pc -> {
+                LocalDate startDate = (new MilestoneModel(pc.getStartMilestone())).getDate();
+                LocalDate endDate = (new MilestoneModel(pc.getEndMilestone())).getDate();
+                return (!startDate.isAfter(finalReferenceDate)) && (endDate.isAfter(finalReferenceDate) || endDate.isEqual(finalReferenceDate));
+            })
             .findFirst().orElse(null);
 
         if (currentChangelog != null) {
@@ -239,6 +251,15 @@ public class ProjectService {
         planStatus.setProject(project);
         setChangelogValues.accept(planStatus);
         repo.persist(planStatus);
+
+        projectData.getProjectOwners().forEach(ug -> {
+            UserGroupToProject ugtp = new UserGroupToProject();
+            ugtp.setProject(project);
+            ugtp.setUserGroup(repo.getReferenceById(UserGroup.class, ug.getUuid()));
+            ugtp.setCreateUser(user);
+            ugtp.setChangeStartDate(now);
+            repo.persist(ugtp);
+        });
 
         return project;
     }

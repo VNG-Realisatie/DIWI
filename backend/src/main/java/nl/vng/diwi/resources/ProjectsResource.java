@@ -459,6 +459,9 @@ public class ProjectsResource {
             case projectOwners -> {
                 List<UUID> currentOwnersUuids = projectSnapshotModelCurrent.getProjectOwners().stream().map(UserGroupModel::getUuid).toList();
                 List<UUID> toUpdateOwnersUuids = projectSnapshotModelToUpdate.getProjectOwners().stream().map(UserGroupModel::getUuid).toList();
+                if (toUpdateOwnersUuids.isEmpty()) {
+                    throw new VngBadRequestException("Missing project owners property");
+                }
                 currentOwnersUuids.forEach(uuid -> {
                     if (!toUpdateOwnersUuids.contains(uuid)) {
                         projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectOwners, null, uuid));

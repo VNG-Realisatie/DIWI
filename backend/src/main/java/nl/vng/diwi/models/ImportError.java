@@ -62,6 +62,7 @@ public class ImportError {
         UNKNOWN_PROPERTY_VALUE("unknown_property_value", "The value is not defined as an active option for the property on this column."),
         MISSING_FIXED_PROPERTY("missing_fixed_property", "The fixed property was not found"),
 
+        PROJECT_LEVEL_DATA_INVALID("project_level_data_invalid", "Project level data does not match data of previous project with the same id."),
         PROJECT_START_DATE_AFTER_END_DATE("project_dates_error", "The project start date is not before the project end date."),
         PROJECT_DATES_WRONG_FOR_PROJECT_STATUS("project_dates_status_mismatch", "The project start date and end date are not consistent with the project status."),
         PROJECT_WRONG_PHASE_DATES("wrong_project_phase_dates", "The project phase start dates are not within the project duration or are not in the right order."),

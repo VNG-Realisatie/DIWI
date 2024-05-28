@@ -87,7 +87,9 @@ abstract public class ProjectSnapshotModelSuperclass extends ProjectMinimalSnaps
         UserGroupUserModel groupUser = new UserGroupUserModel();
         groupUser.setUserGroupUuid(UUIDUtil.uuid(sqlUserData[0]));
         groupUser.setUserGroupName(sqlUserData[1]);
-        groupUser.setUuid(UUIDUtil.uuid(sqlUserData[2]));
+        if (sqlUserData[2] != null) {
+            groupUser.setUuid(UUIDUtil.uuid(sqlUserData[2]));
+        }
         groupUser.setInitials(sqlUserData[3]);
         groupUser.setLastName(sqlUserData[4]);
         groupUser.setFirstName(sqlUserData[5]);

@@ -1,6 +1,7 @@
 package nl.vng.diwi.models;
 
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -8,44 +9,28 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import nl.vng.diwi.dal.entities.UserState;
-import nl.vng.diwi.security.LoggedUser;
-import nl.vng.diwi.security.UserRole;
 import nl.vng.diwi.security.UserAction;
 
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode
-public class UserInfoModel {
+@EqualsAndHashCode(callSuper = true)
+public class UserInfoModel extends UserModel{
 
     @JsonProperty(required = true)
-    UUID uuid;
-    @JsonProperty(required = true)
-    String firstName;
-    @JsonProperty(required = true)
-    String lastName;
-    @JsonProperty(required = true)
-    String initials;
-    @JsonProperty(required = true)
-    UserRole role;
+    private String initials;
     @JsonProperty(required = false)
-    UserAction[] allowedActions;
+    private List<UserAction> allowedActions = new ArrayList<>();
 
     public UserInfoModel(UserState user) {
-        this.uuid = user.getId();
+        this.id = user.getId();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
-        this.initials = createInitials();
+        this.email = user.getEmail();
         this.role = user.getUserRole();
-        this.allowedActions = user.getUserRole().allowedActions.toArray(new UserAction[0]);
-    }
-
-    public UserInfoModel(LoggedUser loggedUser) {
-        this.uuid = loggedUser.getUuid();
-        this.firstName = loggedUser.getFirstName();
-        this.lastName = loggedUser.getLastName();
+        this.organization = user.getOrganization();
+        this.phoneNumber = user.getPhoneNumber();
         this.initials = createInitials();
-        this.role = loggedUser.getRole();
-        this.allowedActions = loggedUser.getRole().allowedActions.toArray(new UserAction[0]);
+        this.allowedActions.addAll(user.getUserRole().allowedActions);
     }
 
     private String createInitials() {

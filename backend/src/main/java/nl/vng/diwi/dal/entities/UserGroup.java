@@ -2,6 +2,7 @@ package nl.vng.diwi.dal.entities;
 
 import java.util.List;
 
+import jakarta.persistence.Column;
 import org.hibernate.annotations.Filter;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -28,4 +29,11 @@ public class UserGroup extends IdSuperclass {
     @Filter(name = GenericRepository.CURRENT_DATA_FILTER, condition = "change_end_date IS NULL")
     private List<UserGroupState> state;
 
+    @JsonIgnoreProperties("userGroup")
+    @OneToMany(mappedBy= "userGroup", fetch = FetchType.LAZY)
+    @Filter(name = GenericRepository.CURRENT_DATA_FILTER, condition = "change_end_date IS NULL")
+    private List<UserToUserGroup> userToUserGroups;
+
+    @Column(name = "single_user")
+    private Boolean singleUser;
 }
