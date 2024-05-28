@@ -9,7 +9,7 @@ import useAlert from "../../../hooks/useAlert";
 import UserDialog from "./UserDialog";
 import DeleteDialogWithConfirmation from "./DeleteDialogWithConfirmation";
 import useAllowedActions from "../../../hooks/useAllowedActions";
-import { deleteUser, updateUser } from "../../../api/userSerivces";
+import { deleteUser } from "../../../api/userSerivces";
 
 type Props = {
     rows: any[];
