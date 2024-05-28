@@ -3,8 +3,9 @@ import { AvatarGroup, TextField, Autocomplete, Checkbox } from "@mui/material";
 import { UserGroupAvatars } from "../components/UserGroupAvatars";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
-import { Organization } from "../api/projectsServices";
+import { UserGroup } from "../api/projectsServices";
 import { getOrganizationList } from "../api/projectsTableServices";
+import useAllowedActions from "../hooks/useAllowedActions";
 
 const icon = <CheckBoxOutlineBlankIcon />;
 const checkedIcon = <CheckBoxIcon />;
@@ -20,7 +21,7 @@ export const UserGroupSelect = ({ readOnly, userGroup, setUserGroup }: Props) =>
     const allowedActions = useAllowedActions();
 
     useEffect(() => {
-        getUserGroupList().then((groups) => setOwnerOptions(groups));
+        getOrganizationList().then((groups) => setOwnerOptions(groups));
     }, []);
 
     return (
