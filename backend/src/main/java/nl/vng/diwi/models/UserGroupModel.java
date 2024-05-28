@@ -34,7 +34,9 @@ public class UserGroupModel {
                 UserGroupModel userGroupModel = new UserGroupModel();
                 userGroupModel.setUuid(userGroupUserModel.getUserGroupUuid());
                 userGroupModel.setName(userGroupUserModel.getUserGroupName());
-                userGroupModel.getUsers().add(userGroupUserModel);
+                if (userGroupUserModel.getUuid() != null) {
+                    userGroupModel.getUsers().add(userGroupUserModel);
+                }
                 userGroupUsersMap.put(userGroupModel.getUuid(), userGroupModel);
             }
         }

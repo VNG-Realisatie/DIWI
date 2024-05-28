@@ -2,8 +2,10 @@ package nl.vng.diwi.services;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.User;
@@ -27,7 +29,7 @@ public class UserGroupService {
 
     public List<UserGroupModel> getAllUserGroups(VngRepository repo, boolean includeSingleUser) {
 
-        List<UserGroupUserModel> userGroupUserList = repo.getUsergroupDAO().getUserGroupUsersList(includeSingleUser);
+        List<UserGroupUserModel> userGroupUserList = repo.getUsergroupDAO().getAllUserGroupsUsersList(includeSingleUser);
         return UserGroupModel.fromUserGroupUserModelListToUserGroupModelList(userGroupUserList);
     }
 
@@ -76,6 +78,11 @@ public class UserGroupService {
         }
         if (userGroup.getSingleUser() == Boolean.TRUE) {
             throw new VngBadRequestException("Cannot update single-user usergroups.");
+        }
+        Set<UUID> sameNameGroupIds = repo.getUsergroupDAO().findActiveUserGroupStateByName(updatedUserGroup.getName())
+            .stream().map(s -> s.getUserGroup().getId()).filter(id -> !id.equals(groupId)).collect(Collectors.toSet());
+        if (!sameNameGroupIds.isEmpty()) {
+            throw new VngBadRequestException("Cannot update as name is already in use.");
         }
 
         List<UserGroupUserModel> oldUserGroupModel = repo.getUsergroupDAO().getUserGroupUsers(updatedUserGroup.getUuid());

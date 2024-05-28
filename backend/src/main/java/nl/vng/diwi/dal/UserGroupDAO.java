@@ -15,7 +15,7 @@ public class UserGroupDAO extends AbstractRepository {
         super(session);
     }
 
-    public List<UserGroupUserModel> getUserGroupUsersList(boolean includeSingleUser) {
+    public List<UserGroupUserModel> getAllUserGroupsUsersList(boolean includeSingleUser) {
 
         String querySql = String.format("""
                 SELECT ug.id AS userGroupUuid,
@@ -26,8 +26,8 @@ public class UserGroupDAO extends AbstractRepository {
                     LEFT(us.last_name, 1) || LEFT(us.first_name,1) AS initials
                 FROM %1$s.userGroup ug
                     JOIN %1$s.usergroup_state ugs ON ug.id = ugs.usergroup_id AND ugs.change_end_date IS NULL
-                    JOIN %1$s.user_to_usergroup utug ON utug.usergroup_id = ugs.usergroup_id AND utug.change_end_date IS NULL
-                    JOIN %1$s.user_state us ON us.user_id = utug.user_id AND us.change_end_date IS NULL """, GenericRepository.VNG_SCHEMA_NAME) +
+                    LEFT JOIN %1$s.user_to_usergroup utug ON utug.usergroup_id = ugs.usergroup_id AND utug.change_end_date IS NULL
+                    LEFT JOIN %1$s.user_state us ON us.user_id = utug.user_id AND us.change_end_date IS NULL """, GenericRepository.VNG_SCHEMA_NAME) +
                 (includeSingleUser ? "" : " WHERE ug.single_user = false ") +
                 " ORDER BY userGroupName, initials, lastName, firstName ";
 
@@ -48,8 +48,8 @@ public class UserGroupDAO extends AbstractRepository {
                     LEFT(us.last_name, 1) || LEFT(us.first_name,1) AS initials
                 FROM %1$s.userGroup ug
                     JOIN %1$s.usergroup_state ugs ON ug.id = ugs.usergroup_id AND ugs.change_end_date IS NULL
-                    JOIN %1$s.user_to_usergroup utug ON utug.usergroup_id = ugs.usergroup_id AND utug.change_end_date IS NULL
-                    JOIN %1$s.user_state us ON us.user_id = utug.user_id AND us.change_end_date IS NULL
+                    LEFT JOIN %1$s.user_to_usergroup utug ON utug.usergroup_id = ugs.usergroup_id AND utug.change_end_date IS NULL
+                    LEFT JOIN %1$s.user_state us ON us.user_id = utug.user_id AND us.change_end_date IS NULL
                 WHERE ug.id = :groupId """, GenericRepository.VNG_SCHEMA_NAME), Object[].class)
             .setTupleTransformer(new BeanTransformer<>(UserGroupUserModel.class))
             .setParameter("groupId", groupId)

@@ -24,6 +24,8 @@ import nl.vng.diwi.dal.entities.ProjectCategoryPropertyChangelogValue;
 import nl.vng.diwi.dal.entities.ProjectNumericCustomPropertyChangelog;
 import nl.vng.diwi.dal.entities.ProjectOrdinalPropertyChangelog;
 import nl.vng.diwi.dal.entities.ProjectTextPropertyChangelog;
+import nl.vng.diwi.dal.entities.UserGroup;
+import nl.vng.diwi.dal.entities.UserGroupToProject;
 import nl.vng.diwi.models.ProjectHouseblockCustomPropertyModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
 import org.apache.logging.log4j.LogManager;
@@ -239,6 +241,15 @@ public class ProjectService {
         planStatus.setProject(project);
         setChangelogValues.accept(planStatus);
         repo.persist(planStatus);
+
+        projectData.getProjectOwners().forEach(ug -> {
+            UserGroupToProject ugtp = new UserGroupToProject();
+            ugtp.setProject(project);
+            ugtp.setUserGroup(repo.getReferenceById(UserGroup.class, ug.getUuid()));
+            ugtp.setCreateUser(user);
+            ugtp.setChangeStartDate(now);
+            repo.persist(ugtp);
+        });
 
         return project;
     }
