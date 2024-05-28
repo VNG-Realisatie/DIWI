@@ -3,6 +3,8 @@ package nl.vng.diwi.security;
 import java.util.List;
 
 public enum UserRole {
+    // User that only configures the system, but does not use it.
+    // Should NOT have access to projects.
     Admin(List.of(
         UserAction.VIEW_API,
         UserAction.VIEW_USERS,
@@ -32,6 +34,7 @@ public enum UserRole {
             UserAction.IMPORT_PROJECTS,
             UserAction.EXPORT_PROJECTS)),
 
+    // Basic user that can access only relevant projects and edit only those.
     User(List.of(
             UserAction.VIEW_CONFIG,
             UserAction.VIEW_CUSTOM_PROPERTIES,
@@ -41,16 +44,19 @@ public enum UserRole {
             UserAction.EDIT_OWN_PROJECTS,
             UserAction.CREATE_NEW_PROJECT)),
 
+    // Identical to Council currently, might be able to own/edit in future?
     Management(List.of(
             UserAction.VIEW_CONFIG,
             UserAction.VIEW_CUSTOM_PROPERTIES,
             UserAction.VIEW_OTHERS_PROJECTS)),
 
+    // User that only needs overviews, does not edit projects.
     Council(List.of(
             UserAction.VIEW_CONFIG,
             UserAction.VIEW_CUSTOM_PROPERTIES,
             UserAction.VIEW_OTHERS_PROJECTS)),
 
+    // User that needs to access and edit existing projects, but cannot create them.
     External(List.of(
             UserAction.VIEW_CONFIG,
             UserAction.VIEW_CUSTOM_PROPERTIES,

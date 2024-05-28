@@ -37,6 +37,8 @@ public final class UserActionConstants {
      * ANYTHING project related has an additional 'filter' in the form of confidentiality level!
      * This should be implemented in the request that is fetching the specific data as there the 
      * confidentiality information is available.
+     * 
+     * Currently this 'ownership' is conceptually liked to havering 'write' access, so make sure to assing roles accordingly.
      */    
     public static final String CAN_OWN_PROJECTS = "CAN_OWN_PROJECTS";
     
