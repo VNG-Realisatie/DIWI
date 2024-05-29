@@ -15,9 +15,10 @@ type Props = {
     setUserGroup: (owner: UserGroup[]) => void;
 };
 
+const isSingleUserIncluded = true;
+
 export const UserGroupSelect = ({ readOnly, userGroup, setUserGroup }: Props) => {
     const [ownerOptions, setOwnerOptions] = useState<UserGroup[]>();
-    const isSingleUserIncluded = true;
 
     useEffect(() => {
         getUserGroupList(isSingleUserIncluded).then((groups) => setOwnerOptions(groups));
