@@ -108,7 +108,8 @@ public class SecurityFilter implements ContainerRequestFilter {
                 // must match role name defined in keycloak!
                 var hasDiwiAdminRole = profile.getRoles().contains("diwi-admin");
                 if (!hasDiwiAdminRole) {
-                    // TODO return empty/anonymous user
+                    // create empty userstate as we want to block any further actions by this user.
+                    userEntity = new UserState();
                 }
                 ZonedDateTime now = ZonedDateTime.now();
                 User systemUser = userDao.getSystemUser();
