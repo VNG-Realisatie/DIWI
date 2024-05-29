@@ -14,6 +14,10 @@ export async function diwiFetch(input: RequestInfo | URL, init?: RequestInit | u
             // We can't use navigate here, because navigate will use the internal router and just show a 404
             window.location.href = `${Paths.login.path}?returnUrl=${encodeURIComponent(returnUrl)}`;
         }
+        if (response.status === 403) {
+            // Forbidden just redirect to that page
+            window.location.href = Paths.forbidden.path;
+        }
         return response;
     });
 }
