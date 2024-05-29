@@ -1,5 +1,6 @@
 package nl.vng.diwi.resources;
 
+import jakarta.ws.rs.container.ContainerRequestContext;
 import nl.vng.diwi.dal.AutoCloseTransaction;
 import nl.vng.diwi.dal.Dal;
 import nl.vng.diwi.dal.DalFactory;
@@ -33,6 +34,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -111,9 +113,11 @@ public class ProjectsResourceTest {
         projectSnapshot.setStartDate(LocalDate.now().minusDays(15));
 
         //call update endpoint
+        ContainerRequestContext requestContext = Mockito.mock(ContainerRequestContext.class);
         LoggedUser loggedUser = new LoggedUser();
         loggedUser.setUuid(userUuid);
-        projectResource.updateProjectSnapshot(loggedUser, projectSnapshot);
+        Mockito.when(requestContext.getProperty("loggedUser")).thenReturn(loggedUser);
+        projectResource.updateProjectSnapshot(requestContext, projectSnapshot);
         repo.getSession().clear();
 
         //assert
@@ -184,9 +188,11 @@ public class ProjectsResourceTest {
         projectSnapshot.setStartDate(LocalDate.now().minusDays(1));
 
         //call update endpoint
+        ContainerRequestContext requestContext = Mockito.mock(ContainerRequestContext.class);
         LoggedUser loggedUser = new LoggedUser();
         loggedUser.setUuid(userUuid);
-        projectResource.updateProjectSnapshot(loggedUser, projectSnapshot);
+        Mockito.when(requestContext.getProperty("loggedUser")).thenReturn(loggedUser);
+        projectResource.updateProjectSnapshot(requestContext, projectSnapshot);
         repo.getSession().clear();
 
         //assert

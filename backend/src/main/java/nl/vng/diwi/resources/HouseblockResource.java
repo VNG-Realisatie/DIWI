@@ -10,7 +10,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.MediaType;
 import nl.vng.diwi.dal.AutoCloseTransaction;
 import nl.vng.diwi.dal.GenericRepository;
@@ -97,8 +97,10 @@ public class HouseblockResource {
     @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public HouseblockSnapshotModel createHouseblock(@Context LoggedUser loggedUser, HouseblockSnapshotModel houseblockSnapshotModel)
+    public HouseblockSnapshotModel createHouseblock(ContainerRequestContext requestContext, HouseblockSnapshotModel houseblockSnapshotModel)
         throws VngNotFoundException, VngBadRequestException {
+
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             Project project = projectService.getCurrentProject(repo, houseblockSnapshotModel.getProjectId());
@@ -123,7 +125,9 @@ public class HouseblockResource {
     @DELETE
     @Path("/{id}")
     @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
-    public void deleteHouseblock(@Context LoggedUser loggedUser, @PathParam("id") UUID houseblockUuid) throws VngNotFoundException {
+    public void deleteHouseblock(ContainerRequestContext requestContext, @PathParam("id") UUID houseblockUuid) throws VngNotFoundException {
+
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             houseblockService.deleteHouseblock(repo, houseblockUuid, loggedUser.getUuid());
             transaction.commit();
@@ -135,8 +139,10 @@ public class HouseblockResource {
     @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public HouseblockSnapshotModel updateHouseblock(@Context LoggedUser loggedUser, HouseblockSnapshotModel houseblockModelToUpdate)
+    public HouseblockSnapshotModel updateHouseblock(ContainerRequestContext requestContext, HouseblockSnapshotModel houseblockModelToUpdate)
         throws VngNotFoundException, VngBadRequestException {
+
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
 
         UUID houseblockUuid = houseblockModelToUpdate.getHouseblockId();
         HouseblockSnapshotModel houseblockCurrentValues = houseblockService.getHouseblockSnapshot(repo, houseblockUuid);
@@ -334,9 +340,11 @@ public class HouseblockResource {
     @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<ProjectHouseblockCustomPropertyModel> updateProjectCustomProperty(@Context LoggedUser loggedUser, @PathParam("id") UUID houseblockUuid,
+    public List<ProjectHouseblockCustomPropertyModel> updateProjectCustomProperty(ContainerRequestContext requestContext, @PathParam("id") UUID houseblockUuid,
                                                                                   ProjectHouseblockCustomPropertyModel houseblockCPUpdateModel)
         throws VngNotFoundException, VngBadRequestException, VngServerErrorException {
+
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
 
         PropertyModel dbCP = propertiesService.getProperty(repo, houseblockCPUpdateModel.getCustomPropertyId());
         if (dbCP == null || !dbCP.getObjectType().equals(ObjectType.WONINGBLOK)) {
