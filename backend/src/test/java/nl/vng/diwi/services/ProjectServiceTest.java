@@ -322,7 +322,7 @@ public class ProjectServiceTest {
 
         List<Tuple> changelogs = repo
             .getSession()
-            .createNativeQuery("SELECT change_end_date, change_user_id FROM diwi_testset.project_duration_changelog WHERE project_id = :projectUuid",
+            .createNativeQuery("SELECT change_end_date, change_user_id FROM diwi.project_duration_changelog WHERE project_id = :projectUuid",
                 Tuple.class)
             .setParameter("projectUuid", projectUuid)
             .list();

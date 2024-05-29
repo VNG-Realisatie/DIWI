@@ -9,7 +9,7 @@ import nl.vng.diwi.models.PropertyModel;
 
 public class GenericRepository implements AutoCloseable {
 
-    public static final String VNG_SCHEMA_NAME = "diwi_testset";
+    public static final String VNG_SCHEMA_NAME = "diwi";
     public static final String CURRENT_DATA_FILTER = "current";
     private Dal dal;
 

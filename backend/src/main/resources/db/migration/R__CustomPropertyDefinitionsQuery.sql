@@ -11,9 +11,9 @@ OR REPLACE FUNCTION get_property_definitions (
 	RETURNS TABLE (
         id UUID,
         name TEXT,
-        type diwi_testset.property_type,
-        objectType diwi_testset.maatwerk_object_soort,
-        propertyType diwi_testset.maatwerk_eigenschap_type,
+        type diwi.property_type,
+        objectType diwi.maatwerk_object_soort,
+        propertyType diwi.maatwerk_eigenschap_type,
         disabled BOOL,
         categories JSONB,
         ordinals JSONB
@@ -36,26 +36,26 @@ SELECT cp.id                                                                    
            jsonb_build_object('id', ordState.ordinal_value_id, 'name', ordState.value_label, 'level', ordState.ordinal_level,
                               'disabled', ordState.change_end_date IS NOT NULL)) FILTER (WHERE ordState.ordinal_value_id IS NOT NULL)) AS ordinals
 
-FROM diwi_testset.property cp
+FROM diwi.property cp
     LEFT JOIN LATERAL (
         SELECT *
-            FROM diwi_testset.property_state cps
+            FROM diwi.property_state cps
             WHERE cps.property_id = cp.id
             ORDER BY cps.change_start_date DESC
         LIMIT 1) cpState ON TRUE
 
-    LEFT JOIN diwi_testset.property_category_value cat ON cat.property_id = cp.id
+    LEFT JOIN diwi.property_category_value cat ON cat.property_id = cp.id
     LEFT JOIN LATERAL (
         SELECT cs.category_value_id, cs.value_label, cs.change_end_date
-            FROM diwi_testset.property_category_value_state cs
+            FROM diwi.property_category_value_state cs
             WHERE cs.category_value_id = cat.id
             ORDER BY cs.change_start_date DESC
         LIMIT 1) catState ON TRUE
 
-    LEFT JOIN diwi_testset.property_ordinal_value ord ON ord.property_id = cp.id
+    LEFT JOIN diwi.property_ordinal_value ord ON ord.property_id = cp.id
     LEFT JOIN LATERAL (
         SELECT os.ordinal_value_id, os.value_label, os.ordinal_level, os.change_end_date
-            FROM diwi_testset.property_ordinal_value_state os
+            FROM diwi.property_ordinal_value_state os
             WHERE os.ordinal_value_id = ord.id
             ORDER BY os.change_start_date DESC
         LIMIT 1) ordState ON TRUE
@@ -64,7 +64,7 @@ FROM diwi_testset.property cp
 WHERE
     CASE
         WHEN _cp_uuid_ IS NOT NULL THEN cp.id = _cp_uuid_
-        WHEN _cp_object_type_ IS NOT NULL THEN cpState.property_object_type = CAST (_cp_object_type_ AS diwi_testset.maatwerk_object_soort)
+        WHEN _cp_object_type_ IS NOT NULL THEN cpState.property_object_type = CAST (_cp_object_type_ AS diwi.maatwerk_object_soort)
         ELSE 1 = 1
     END
 
@@ -79,7 +79,7 @@ WHERE
     AND
 
     CASE
-        WHEN _cp_type_ IS NOT NULL THEN cp.type = CAST (_cp_type_ AS diwi_testset.property_type)
+        WHEN _cp_type_ IS NOT NULL THEN cp.type = CAST (_cp_type_ AS diwi.property_type)
         ELSE 1 = 1
     END
 
