@@ -5,6 +5,7 @@ import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import { UserGroup } from "../api/projectsServices";
 import { getOrganizationList as getUserGroupList } from "../api/projectsTableServices";
+import { set } from "lodash";
 
 const icon = <CheckBoxOutlineBlankIcon />;
 const checkedIcon = <CheckBoxIcon />;
@@ -17,9 +18,10 @@ type Props = {
 
 export const UserGroupSelect = ({ readOnly, userGroup, setUserGroup }: Props) => {
     const [ownerOptions, setOwnerOptions] = useState<UserGroup[]>();
+    const isSingleUserIncluded = true;
 
     useEffect(() => {
-        getUserGroupList().then((groups) => setOwnerOptions(groups));
+        getUserGroupList(isSingleUserIncluded).then((groups) => setOwnerOptions(groups));
     }, []);
 
     return (
@@ -47,6 +49,9 @@ export const UserGroupSelect = ({ readOnly, userGroup, setUserGroup }: Props) =>
                         })
                         .join(" ") || ""
                 );
+            }}
+            onChange={(_, value) => {
+                setUserGroup(value);
             }}
             isOptionEqualToValue={(option, value) => option.uuid === value.uuid}
             value={userGroup}
