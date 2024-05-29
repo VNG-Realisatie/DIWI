@@ -29,6 +29,7 @@ import { dateFormats } from "./localization";
 import { ProjectTimeline } from "./pages/ProjectTimeline";
 import ProjectPlotSelector from "./components/map/ProjectPlotSelector";
 import { ConfigProvider } from "./context/ConfigContext";
+import { UserProvider } from "./context/UserContext";
 import { ProjectWizardMap } from "./pages/ProjectWizardMap";
 import "dayjs/locale/nl";
 import { HouseBlockProvider } from "./context/HouseBlockContext";
@@ -59,10 +60,12 @@ function RequiresLogin() {
 
     if (kcAuthenticated) {
         return (
-            <ConfigProvider>
-                {/* configprovider does a fetch, so first check login for this specific one */}
-                <Layout />
-            </ConfigProvider>
+            <UserProvider>
+                <ConfigProvider>
+                    {/* configprovider does a fetch, so first check login for this specific one */}
+                    <Layout />
+                </ConfigProvider>
+            </UserProvider>
         );
     }
     // default just returns null so page stays empty and we can redirect
