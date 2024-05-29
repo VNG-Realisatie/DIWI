@@ -101,6 +101,7 @@ function App() {
         <Providers>
             <BrowserRouter>
                 <Routes>
+                    <Route path={Paths.forbidden.path} element={<Forbidden />} />
                     <Route path="/" element={<RequiresLogin />}>
                         <Route
                             index
