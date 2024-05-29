@@ -38,37 +38,26 @@ import { LoadingProvider } from "./context/LoadingContext";
 import { ImportGeoJson } from "./pages/ImportGeoJson";
 import { Forbidden } from "./pages/Forbidden";
 
-type LoginStatus = "UNKNOWN" | "AUTHORIZED" | "FORBIDDEN";
-
 function RequiresLogin() {
-    const [loginStatus, setLoginStatus] = useState<LoginStatus>("UNKNOWN");
+    const [kcAuthenticated, setKcAuthenticated] = useState<boolean>(false);
     const { setAlert } = useContext(AlertContext);
 
     useEffect(() => {
         diwiFetch(Paths.loggedIn.path)
             .then((res) => {
-                console.log("diwifetchres", res);
                 if (res.ok) {
-                    setLoginStatus("AUTHORIZED");
-                } else if (res.status === 401) {
-                    // UNAUTHORIZED
-                    setLoginStatus("UNKNOWN");
-                } else if (res.status === 403) {
-                    // FORBIDDEN
-                    setLoginStatus("FORBIDDEN");
+                    setKcAuthenticated(true);
+                } else {
+                    setKcAuthenticated(false);
                 }
             })
             .catch((error) => {
-                console.log("diwifetcherror", error.message);
                 setAlert(error.message, "error");
-                setLoginStatus("UNKNOWN");
+                setKcAuthenticated(false);
             });
     }, [setAlert]);
 
-    if (loginStatus === "FORBIDDEN") {
-        return <Forbidden />;
-    }
-    if (loginStatus === "AUTHORIZED") {
+    if (kcAuthenticated) {
         return (
             <ConfigProvider>
                 {/* configprovider does a fetch, so first check login for this specific one */}
@@ -76,7 +65,7 @@ function RequiresLogin() {
             </ConfigProvider>
         );
     }
-    // UNKNOWN = default just returns null so page stays empty and we can redirect
+    // default just returns null so page stays empty and we can redirect
     return null;
 }
 
