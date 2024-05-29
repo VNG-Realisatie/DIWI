@@ -2,7 +2,7 @@ import { Stack, Typography } from "@mui/material";
 import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
 import { HouseBlock } from "../../../../types/houseBlockTypes";
-import { SingleNumberInput } from "../physical-appearence/SingleNumberInput";
+import { SingleNumberInput } from "../../../project/inputs/SingleNumberInput";
 
 export type GroundPositionInformationProps = {
     houseBlock: HouseBlock;
@@ -27,7 +27,7 @@ export const GroundPositionGroup = ({ houseBlock, setHouseBlock, readOnly }: Gro
             </Stack>
             <SingleNumberInput
                 value={houseBlock?.groundPosition?.noPermissionOwner}
-                onChange={(e) =>
+                onChange={(e: any) =>
                     houseBlock &&
                     setHouseBlock({
                         ...houseBlock,
@@ -40,6 +40,7 @@ export const GroundPositionGroup = ({ houseBlock, setHouseBlock, readOnly }: Gro
                 readOnly={readOnly}
                 name={t(`${translationPath}.noPermissionOwner`)}
                 translationPath={translationPath}
+                mandatory={false}
             />
             <SingleNumberInput
                 value={houseBlock?.groundPosition?.intentionPermissionOwner}
@@ -56,6 +57,7 @@ export const GroundPositionGroup = ({ houseBlock, setHouseBlock, readOnly }: Gro
                 readOnly={readOnly}
                 name={t(`${translationPath}.intentionPermissionOwner`)}
                 translationPath={translationPath}
+                mandatory={false}
             />
             <SingleNumberInput
                 value={houseBlock?.groundPosition?.formalPermissionOwner}
@@ -72,6 +74,7 @@ export const GroundPositionGroup = ({ houseBlock, setHouseBlock, readOnly }: Gro
                 readOnly={readOnly}
                 name={t(`${translationPath}.formalPermissionOwner`)}
                 translationPath={translationPath}
+                mandatory={false}
             />
         </WizardCard>
     );

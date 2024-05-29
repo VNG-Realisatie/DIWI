@@ -350,12 +350,13 @@ public class ProjectServiceTest {
         try (var transaction = repo.beginTransaction()) {
             createProjectDurationChangelog(repo, project, startMilestone, endMilestone, user);
 
-            var oldChangelog = createPlot(geoJson, gemeenteCode + "old", brkPerceelNummer, brkSectie, subselectionGeometry);
+            var oldChangelog = createPlot(project, geoJson, gemeenteCode + "old", brkPerceelNummer, brkSectie,
+                    subselectionGeometry, startMilestone, endMilestone);
             oldChangelog.setChangeEndDate(now);
             oldChangelog.setChangeUser(user);
             repo.persist(oldChangelog);
 
-            createPlot(geoJson, gemeenteCode, brkPerceelNummer, brkSectie, subselectionGeometry);
+            createPlot(project, geoJson, gemeenteCode, brkPerceelNummer, brkSectie, subselectionGeometry, startMilestone, endMilestone);
             transaction.commit();
             repo.getSession().clear();
         }
@@ -377,6 +378,42 @@ public class ProjectServiceTest {
     }
 
     @Test
+    void getPlotsForOldProject() {
+        UUID projectUuid;
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+            var project = createProject(repo, user);
+            projectUuid = project.getId();
+            var startMilestone = createMilestone(repo, project, LocalDate.now().minusDays(10), user);
+            var endMilestone = createMilestone(repo, project, LocalDate.now().minusDays(5), user);
+            createProjectDurationChangelog(repo, project, startMilestone, endMilestone, user);
+            createPlot(
+                    project,
+                    JsonNodeFactory.instance.objectNode().put("geojson", "ish"),
+                    "gemeente",
+                    1234l,
+                    "sectie",
+                    JsonNodeFactory.instance.objectNode().put("subselectionGeometry", "geometry"),
+                    startMilestone,
+                    endMilestone);
+            transaction.commit();
+            repo.getSession().clear();
+        }
+
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+            var project = projectService.getCurrentProject(repo, projectUuid);
+            List<PlotModel> plots = projectService.getCurrentPlots(project);
+            var expected = PlotModel.builder()
+                    .brkGemeenteCode("gemeente")
+                    .brkPerceelNummer(1234l)
+                    .brkSectie("sectie")
+                    .plotFeature(JsonNodeFactory.instance.objectNode().put("geojson", "ish"))
+                    .subselectionGeometry(JsonNodeFactory.instance.objectNode().put("subselectionGeometry", "geometry"))
+                    .build();
+            assertThat(plots).containsExactlyInAnyOrder(expected);
+        }
+    }
+
+    @Test
     void setPlots() throws Exception {
 
         ObjectNode geoJson = JsonNodeFactory.instance.objectNode().put("geojson", "ish");
@@ -388,12 +425,13 @@ public class ProjectServiceTest {
         // Create an old and a current changelog already so we can test these are replaced.
         try (var transaction = repo.beginTransaction()) {
             createProjectDurationChangelog(repo, project, startMilestone, endMilestone, user);
-            var oldChangelog = createPlot(geoJson, gemeenteCode + "old", brkPerceelNummer, brkSectie, subselectionGeometry);
+            var oldChangelog = createPlot(project, geoJson, gemeenteCode + "old", brkPerceelNummer, brkSectie,
+                    subselectionGeometry, startMilestone, endMilestone);
             oldChangelog.setChangeEndDate(now);
             oldChangelog.setChangeUser(user);
             repo.persist(oldChangelog);
 
-            createPlot(geoJson, gemeenteCode, brkPerceelNummer, brkSectie, subselectionGeometry);
+            createPlot(project, geoJson, gemeenteCode, brkPerceelNummer, brkSectie, subselectionGeometry, startMilestone, endMilestone);
 
             transaction.commit();
             repo.getSession().clear();
@@ -418,7 +456,9 @@ public class ProjectServiceTest {
 
         try (var transaction = repo.beginTransaction()) {
             var actualCls = repo.getSession()
-                    .createQuery("FROM ProjectRegistryLinkChangelog cl WHERE cl.changeEndDate is null", ProjectRegistryLinkChangelog.class)
+                    .createQuery("FROM ProjectRegistryLinkChangelog cl WHERE cl.changeEndDate is null AND cl.project.id = :projectId",
+                            ProjectRegistryLinkChangelog.class)
+                    .setParameter("projectId", projectUuid)
                     .list();
 
             assertThat(actualCls).hasSize(2);
@@ -432,14 +472,15 @@ public class ProjectServiceTest {
                     .projectRegistryLinkChangelog(actualCls.get(0))
                     .build());
 
-            var newChangelog = actualCls.stream().filter(c -> c.getStartMilestone().getState().get(0).getDate().equals(LocalDate.now())).findAny().get();
+            var newChangelog = actualCls.stream()
+                    .filter(c -> c.getStartMilestone().getState().get(0).getDate().equals(LocalDate.now())).findAny()
+                    .get();
             assertThat(newChangelog.getValues())
                     .usingRecursiveComparison(ignoreId)
                     .isEqualTo(expected);
         }
 
     }
-
 
     @Test
     void prepareChangelogValuesToUpdate_FutureProject() {
@@ -579,7 +620,8 @@ public class ProjectServiceTest {
         }
     }
 
-    private ProjectRegistryLinkChangelog createPlot(ObjectNode geoJson, String gemeenteCode, long brkPerceelNummer, String brkSectie, ObjectNode subselectionGeometry) {
+    private ProjectRegistryLinkChangelog createPlot(Project project, ObjectNode geoJson, String gemeenteCode, long brkPerceelNummer,
+            String brkSectie, ObjectNode subselectionGeometry, Milestone startMilestone, Milestone endMilestone) {
         ProjectRegistryLinkChangelog changelog = ProjectRegistryLinkChangelog.builder()
                 .project(project)
                 .build();

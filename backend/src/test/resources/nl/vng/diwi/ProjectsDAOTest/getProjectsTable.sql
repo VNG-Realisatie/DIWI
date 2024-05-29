@@ -1,6 +1,6 @@
 INSERT INTO diwi."user" (id) VALUES ('2122426c-6e70-419c-a054-f51dd24d798b');
 
-INSERT INTO diwi.organization (id) VALUES ('018d1d85-639f-701c-b73f-0f35f98409bc');
+INSERT INTO diwi.userGroup (id) VALUES ('018d1d85-639f-701c-b73f-0f35f98409bc');
 
 INSERT INTO diwi.project (id) VALUES ('466da5e2-c96f-4856-aa17-6b37a1c21edc');
 INSERT INTO diwi.project (id) VALUES ('54a0c192-3454-4f7a-becd-96d214461987');

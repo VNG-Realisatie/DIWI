@@ -1,5 +1,29 @@
 # Change log
 
+## DIWI RELEASE 1.3.0
+
+This release is focused on the experimental geojson importer, which is only available for administrators at the moment, as well as a redesign of the project details and correcting naming issues.
+
+### ADDED
+
+- The geojson importer
+
+### CHANGED
+
+- Project editor has been redesigned to match project wizard.
+- gemeente/buurt/wijk have been converted to be fixed properties. They always exist, but the categories are editable.
+
+### REMOVED
+
+- Projectleider has been removed from the detail form and the backend.
+- Amount validation in 'Eigendom en waarde' segment has been removed.
+
+### FIXED
+
+- Changed a few instances where English, rather than Dutch, was used in the front end.
+- Adressed an issue where totals were not updated on saving, but had to be refreshed.
+- Fixed an issue where map editor became collapsible instead of saveable.
+
 ## DIWI RELEASE 1.2.0
 
 Options for project properties like priority can now be configured.

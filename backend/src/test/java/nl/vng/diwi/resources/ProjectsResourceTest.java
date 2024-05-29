@@ -9,6 +9,11 @@ import nl.vng.diwi.dal.entities.Milestone;
 import nl.vng.diwi.dal.entities.Project;
 import nl.vng.diwi.dal.entities.ProjectNameChangelog;
 import nl.vng.diwi.dal.entities.User;
+import nl.vng.diwi.dal.entities.UserGroup;
+import nl.vng.diwi.dal.entities.UserGroupState;
+import nl.vng.diwi.dal.entities.UserGroupToProject;
+import nl.vng.diwi.dal.entities.UserState;
+import nl.vng.diwi.dal.entities.UserToUserGroup;
 import nl.vng.diwi.models.MilestoneModel;
 import nl.vng.diwi.models.ProjectSnapshotModel;
 import nl.vng.diwi.rest.VngBadRequestException;
@@ -30,6 +35,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -75,8 +81,11 @@ public class ProjectsResourceTest {
 
         //prepare project with name and duration changelog
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            User user = repo.persist(new User());
+            User user = new User();
+            UserGroup userGroup = new UserGroup();
+            persistUserAndUserGroup(repo, user, userGroup);
             userUuid = user.getId();
+
             Project project = ProjectServiceTest.createProject(repo, user);
             projectUuid = project.getId();
             Milestone startMilestone = ProjectServiceTest.createMilestone(repo, project, LocalDate.now().minusDays(10), user);
@@ -85,6 +94,13 @@ public class ProjectsResourceTest {
             ProjectServiceTest.createProjectDurationChangelog(repo, project, startMilestone, endMilestone, user);
             ProjectServiceTest.createProjectNameChangelog(repo, project, "Name 1", startMilestone, middleMilestone, user);
             ProjectServiceTest.createProjectNameChangelog(repo, project, "Name 2", middleMilestone, endMilestone, user);
+            UserGroupToProject ugtp = new UserGroupToProject();
+            ugtp.setUserGroup(userGroup);
+            ugtp.setProject(project);
+            ugtp.setCreateUser(user);
+            ugtp.setChangeStartDate(ZonedDateTime.now());
+            repo.persist(ugtp);
+
             transaction.commit();
             repo.getSession().clear();
         }
@@ -139,8 +155,11 @@ public class ProjectsResourceTest {
 
         //prepare project with name and duration changelog
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            User user = repo.persist(new User());
+            User user = new User();
+            UserGroup userGroup = new UserGroup();
+            persistUserAndUserGroup(repo, user, userGroup);
             userUuid = user.getId();
+
             Project project = ProjectServiceTest.createProject(repo, user);
             projectUuid = project.getId();
             Milestone startMilestone = ProjectServiceTest.createMilestone(repo, project, LocalDate.now().plusDays(5), user);
@@ -149,6 +168,14 @@ public class ProjectsResourceTest {
             ProjectServiceTest.createProjectDurationChangelog(repo, project, startMilestone, endMilestone, user);
             ProjectServiceTest.createProjectNameChangelog(repo, project, "Name 1", startMilestone, middleMilestone, user);
             ProjectServiceTest.createProjectNameChangelog(repo, project, "Name 2", middleMilestone, endMilestone, user);
+
+            UserGroupToProject ugtp = new UserGroupToProject();
+            ugtp.setUserGroup(userGroup);
+            ugtp.setProject(project);
+            ugtp.setCreateUser(user);
+            ugtp.setChangeStartDate(ZonedDateTime.now());
+            repo.persist(ugtp);
+
             transaction.commit();
             repo.getSession().clear();
         }
@@ -189,4 +216,35 @@ public class ProjectsResourceTest {
         assertThat(new MilestoneModel(futureNameChangelog.getEndMilestone()).getDate()).isEqualTo(LocalDate.now().plusDays(15));
     }
 
+
+    private void persistUserAndUserGroup(VngRepository repo, User user, UserGroup userGroup) {
+        repo.persist(user);
+
+        userGroup.setSingleUser(true);
+        repo.persist(userGroup);
+
+        UserState userState = new UserState();
+        userState.setChangeStartDate(ZonedDateTime.now());
+        userState.setUser(user);
+        userState.setFirstName("FN");
+        userState.setLastName("LN");
+        userState.setCreateUser(user);
+        userState.setIdentityProviderId("identityProviderId");
+        userState.setUserRole(UserRole.UserPlus);
+        repo.persist(userState);
+
+        UserGroupState userGroupState = new UserGroupState();
+        userGroupState.setName("UG");
+        userGroupState.setUserGroup(userGroup);
+        userGroupState.setCreateUser(user);
+        userGroupState.setChangeStartDate(ZonedDateTime.now());
+        repo.persist(userGroupState);
+
+        UserToUserGroup utug = new UserToUserGroup();
+        utug.setUser(user);
+        utug.setUserGroup(userGroup);
+        utug.setCreateUser(user);
+        utug.setChangeStartDate(ZonedDateTime.now());
+        repo.persist(utug);
+    }
 }
