@@ -7,7 +7,7 @@ import { theme } from "../theme";
 import * as Paths from "../Paths";
 import useAllowedActions from "../hooks/useAllowedActions";
 
-type PlusButtonProps = {
+export type PlusButtonProps = {
     color: string | undefined;
     link: string | (() => void);
     text: string;

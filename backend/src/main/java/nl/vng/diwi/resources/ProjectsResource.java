@@ -70,7 +70,7 @@ import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
-import static nl.vng.diwi.security.UserActionConstants.CAN_OWN_PROJECTS;
+import nl.vng.diwi.security.UserActionConstants;
 import nl.vng.diwi.services.ExcelImportService;
 import nl.vng.diwi.services.GeoJsonImportService;
 import nl.vng.diwi.services.PropertiesService;
@@ -82,7 +82,7 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
 @Path("/projects")
-@RolesAllowed({CAN_OWN_PROJECTS})
+@RolesAllowed("BLOCKED_BY_DEFAULT") // This forces us to make sure each end-point has action(s) assigned, so we never have things open by default.
 public class ProjectsResource {
 
     private static final Logger logger = LogManager.getLogger();
@@ -115,6 +115,7 @@ public class ProjectsResource {
     }
 
     @POST
+    @RolesAllowed({UserActionConstants.CREATE_NEW_PROJECT})
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public ProjectMinimalSnapshotModel createProject(@Context LoggedUser loggedUser, ProjectCreateSnapshotModel projectSnapshotModel)
@@ -140,6 +141,7 @@ public class ProjectsResource {
 
     @GET
     @Path("/{id}")
+    @RolesAllowed({UserActionConstants.VIEW_OWN_PROJECTS, UserActionConstants.VIEW_OTHERS_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
     public ProjectSnapshotModel getCurrentProjectSnapshot(@PathParam("id") UUID projectUuid) throws VngNotFoundException {
         return projectService.getProjectSnapshot(repo, projectUuid);
@@ -147,6 +149,7 @@ public class ProjectsResource {
 
     @DELETE
     @Path("/{id}")
+    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
     public void deleteProject(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid) throws VngNotFoundException {
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             projectService.deleteProject(repo, projectUuid, loggedUser.getUuid());
@@ -156,6 +159,7 @@ public class ProjectsResource {
 
     @GET
     @Path("/{id}/timeline")
+    @RolesAllowed({UserActionConstants.VIEW_OWN_PROJECTS, UserActionConstants.VIEW_OTHERS_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
     public ProjectTimelineModel getCurrentProjectTimeline(@PathParam("id") UUID projectUuid) throws VngNotFoundException {
 
@@ -170,6 +174,7 @@ public class ProjectsResource {
 
     @GET
     @Path("/table")
+    @RolesAllowed({UserActionConstants.VIEW_OWN_PROJECTS, UserActionConstants.VIEW_OTHERS_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
     public List<ProjectListModel> getAllProjects(@BeanParam FilterPaginationSorting filtering)
             throws VngBadRequestException {
@@ -188,6 +193,7 @@ public class ProjectsResource {
 
     @GET
     @Path("/table/size")
+    @RolesAllowed({UserActionConstants.VIEW_OWN_PROJECTS, UserActionConstants.VIEW_OTHERS_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
     public Map<String, Integer> getAllProjectsListSize(@BeanParam FilterPaginationSorting filtering) {
 
@@ -198,6 +204,7 @@ public class ProjectsResource {
 
     @GET
     @Path("/{id}/houseblocks")
+    @RolesAllowed({UserActionConstants.VIEW_OWN_PROJECTS, UserActionConstants.VIEW_OTHERS_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public List<HouseblockSnapshotModel> getProjectHouseblocks(@PathParam("id") UUID projectUuid) {
@@ -208,6 +215,7 @@ public class ProjectsResource {
 
     @GET
     @Path("/{id}/customproperties")
+    @RolesAllowed({UserActionConstants.VIEW_OWN_PROJECTS, UserActionConstants.VIEW_OTHERS_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public List<ProjectHouseblockCustomPropertyModel> getProjectCustomProperties(@PathParam("id") UUID projectUuid) {
@@ -218,6 +226,7 @@ public class ProjectsResource {
 
     @PUT
     @Path("/{id}/customproperties")
+    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public List<ProjectHouseblockCustomPropertyModel> updateProjectCustomProperty(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid, ProjectHouseblockCustomPropertyModel projectCPUpdateModel)
@@ -300,6 +309,7 @@ public class ProjectsResource {
 
 //    @POST
 //    @Path("/{id}/update")
+//    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
 //    @Produces(MediaType.APPLICATION_JSON)
 //    @Consumes(MediaType.APPLICATION_JSON)
 //    public ProjectSnapshotModel updateProjectSingleField(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid, ProjectUpdateModel projectUpdateModel)
@@ -322,6 +332,7 @@ public class ProjectsResource {
 
     @GET
     @Path("/{id}/plots")
+    @RolesAllowed({UserActionConstants.VIEW_OWN_PROJECTS, UserActionConstants.VIEW_OTHERS_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
     public List<PlotModel> getProjectPlots(@PathParam("id") UUID projectUuid) throws VngNotFoundException {
         Project project = projectService.getCurrentProject(repo, projectUuid);
@@ -335,6 +346,7 @@ public class ProjectsResource {
 
     @POST
     @Path("/{id}/plots")
+    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
     @Consumes(MediaType.APPLICATION_JSON)
     public void setProjectPlots(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid, List<PlotModel> plots) throws VngNotFoundException, VngBadRequestException {
         Project project = projectService.getCurrentProject(repo, projectUuid);
@@ -367,6 +379,7 @@ public class ProjectsResource {
 
     @POST
     @Path("/update")
+    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public ProjectSnapshotModel updateProjectSnapshot(@Context LoggedUser loggedUser, ProjectSnapshotModel projectSnapshotModelToUpdate)
@@ -599,6 +612,7 @@ public class ProjectsResource {
 
     @POST
     @Path("/import")
+    @RolesAllowed({UserActionConstants.IMPORT_PROJECTS})
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public Response importFile(@FormDataParam("uploadFile") InputStream inputStream,

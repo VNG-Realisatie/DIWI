@@ -22,7 +22,7 @@ import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.security.LoggedUser;
-import static nl.vng.diwi.security.UserActionConstants.CAN_OWN_PROJECTS;
+import nl.vng.diwi.security.UserActionConstants;
 import nl.vng.diwi.services.PropertiesService;
 
 import java.time.ZonedDateTime;
@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Path("/properties")
-@RolesAllowed({CAN_OWN_PROJECTS})
+@RolesAllowed("BLOCKED_BY_DEFAULT") // This forces us to make sure each end-point has action(s) assigned, so we never have things open by default.
 public class PropertiesResource {
 
     private final VngRepository repo;
@@ -43,6 +43,7 @@ public class PropertiesResource {
     }
 
     @GET
+    @RolesAllowed({UserActionConstants.VIEW_OWN_PROJECTS, UserActionConstants.VIEW_OTHERS_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
     public List<PropertyModel> getAllProperties(@QueryParam("objectType") ObjectType objectType, @QueryParam("disabled") Boolean disabled,
                                                 @QueryParam("type") PropertyKind type) {
@@ -53,6 +54,7 @@ public class PropertiesResource {
 
     @GET
     @Path("/{id}")
+    @RolesAllowed({UserActionConstants.VIEW_OWN_PROJECTS, UserActionConstants.VIEW_OTHERS_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
     public PropertyModel getProperty(@PathParam("id") UUID customPropertyUuid) throws VngNotFoundException {
 
@@ -67,6 +69,7 @@ public class PropertiesResource {
     }
 
     @POST
+    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public PropertyModel createCustomProperty(@Context LoggedUser loggedUser, PropertyModel propertyModel) throws VngBadRequestException {
@@ -87,6 +90,7 @@ public class PropertiesResource {
 
     @PUT
     @Path("/{id}")
+    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public PropertyModel updateProperty(@Context LoggedUser loggedUser, @PathParam("id") UUID customPropertyUuid,
@@ -110,6 +114,7 @@ public class PropertiesResource {
 
     @DELETE
     @Path("/{id}")
+    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
     public PropertyModel disableCustomProperty(@Context LoggedUser loggedUser, @PathParam("id") UUID customPropertyUuid)
         throws VngNotFoundException {
