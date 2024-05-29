@@ -37,7 +37,7 @@ type HouseBlockAccordionProps = {
     refresh: () => void;
 };
 
-const HouseBlockAccordionWithControls = ({ houseBlock, refresh }: HouseBlockAccordionProps) => {
+export const HouseBlockAccordionWithControls = ({ houseBlock, refresh }: HouseBlockAccordionProps) => {
     const [newHouseBlock, setNewHouseBlock] = useState<HouseBlockWithCustomProperties>(houseBlock);
     const [readOnly, setReadOnly] = useState(true);
     const [expanded, setExpanded] = useState(false);
@@ -93,6 +93,7 @@ const HouseBlockAccordionWithControls = ({ houseBlock, refresh }: HouseBlockAcco
                             <Tooltip placement="top" title={t("generic.edit")}>
                                 <EditIcon
                                     sx={{ cursor: "pointer" }}
+                                    data-testid="edit-houseblock"
                                     onClick={(event) => {
                                         event.stopPropagation();
                                         if (!expanded) setExpanded(true);
@@ -114,6 +115,7 @@ const HouseBlockAccordionWithControls = ({ houseBlock, refresh }: HouseBlockAcco
                                 <Tooltip placement="top" title={t("generic.saveChanges")}>
                                     <SaveIcon
                                         sx={{ cursor: "pointer" }}
+                                        data-testid="save-houseblock"
                                         onClick={(event) => {
                                             event.stopPropagation();
                                             handleSave();

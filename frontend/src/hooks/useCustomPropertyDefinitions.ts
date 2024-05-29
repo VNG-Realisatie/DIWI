@@ -3,7 +3,7 @@ import { getCustomProperties } from "../api/adminSettingServices";
 import { components } from "../types/schema";
 
 type Categories = components["schemas"]["SelectDisabledModel"];
-type CategoriesStrict = Required<Categories>;
+export type CategoriesStrict = Required<Categories>;
 
 export const useCustomPropertyDefinitions = () => {
     const [physicalAppearanceCategories, setPhysicalAppearances] = useState<Array<CategoriesStrict>>();
