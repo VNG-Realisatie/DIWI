@@ -31,7 +31,6 @@ import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.dal.entities.UserState;
 import nl.vng.diwi.dal.entities.UserToOrganization;
 import nl.vng.diwi.rest.VngServerErrorException;
-import nl.vng.diwi.rest.VngNotAllowedException;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.security.LoginContext;
 import nl.vng.diwi.security.UserRole;
@@ -86,8 +85,6 @@ public class SecurityFilter implements ContainerRequestFilter {
             DefaultSecurityLogic securityLogic = new DefaultSecurityLogic();
             securityLogic.perform(pac4jConfig, securityGrantedAccessAdapter, null, DefaultAuthorizers.IS_AUTHENTICATED,
                     null, new JEEFrameworkParameters(httpRequest, httpResponse));
-        } catch (VngNotAllowedException e) {
-            throw e;
         } catch (TechnicalException | NullPointerException e) {
             log.info("config: {}", config);
             throw new VngServerErrorException("Server error", e);
@@ -111,8 +108,7 @@ public class SecurityFilter implements ContainerRequestFilter {
                 // must match role name defined in keycloak!
                 var hasDiwiAdminRole = profile.getRoles().contains("diwi-admin");
                 if (!hasDiwiAdminRole) {
-                    throw new VngNotAllowedException("User not allowed", new Exception(
-                            "Could not create diwi account for keycloak user " + profileUuid + ", missing role."));
+                    // TODO return empty/anonymous user
                 }
                 ZonedDateTime now = ZonedDateTime.now();
                 User systemUser = userDao.getSystemUser();
