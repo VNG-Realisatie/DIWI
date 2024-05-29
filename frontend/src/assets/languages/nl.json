@@ -19,12 +19,14 @@
       "failedToUpdate": "Update is mislukt",
       "failedToSave": "Opslaan is mislukt",
       "forbidden": "Inloggen is mislukt",
+      "nodiwiaccount": "Dit account heeft geen gekoppelde diwi gebruiker",
       "project": "Project",
       "houseblock": "Woningblok",
       "true": "Ja",
       "false": "Nee",
       "andMore": "en meer",
-      "andLess": "en minder"
+      "andLess": "en minder",
+      "logout": "Uitloggen"
     },
     "createProject": {
       "information": "Projectinformatie",
