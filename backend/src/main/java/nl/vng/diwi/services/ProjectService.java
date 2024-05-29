@@ -24,6 +24,8 @@ import nl.vng.diwi.dal.entities.ProjectCategoryPropertyChangelogValue;
 import nl.vng.diwi.dal.entities.ProjectNumericCustomPropertyChangelog;
 import nl.vng.diwi.dal.entities.ProjectOrdinalPropertyChangelog;
 import nl.vng.diwi.dal.entities.ProjectTextPropertyChangelog;
+import nl.vng.diwi.dal.entities.UserGroup;
+import nl.vng.diwi.dal.entities.UserGroupToProject;
 import nl.vng.diwi.models.ProjectHouseblockCustomPropertyModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
 import org.apache.logging.log4j.LogManager;
@@ -250,6 +252,15 @@ public class ProjectService {
         setChangelogValues.accept(planStatus);
         repo.persist(planStatus);
 
+        projectData.getProjectOwners().forEach(ug -> {
+            UserGroupToProject ugtp = new UserGroupToProject();
+            ugtp.setProject(project);
+            ugtp.setUserGroup(repo.getReferenceById(UserGroup.class, ug.getUuid()));
+            ugtp.setCreateUser(user);
+            ugtp.setChangeStartDate(now);
+            repo.persist(ugtp);
+        });
+
         return project;
     }
 
@@ -374,28 +385,28 @@ public class ProjectService {
         }
     }
 
-    public void updateProjectOrganizations(VngRepository repo, Project project, UUID organizationToAdd,
-            UUID organizationToRemove, UUID loggedInUserUuid) {
+    public void updateProjectUserGroups(VngRepository repo, Project project, UUID userGroupToAdd,
+                                        UUID userGroupToRemove, UUID loggedInUserUuid) {
 
         UUID projectUuid = project.getId();
 
-        if (organizationToAdd != null) {
-            UUID organizationToProjectUuid = repo.getOrganizationDAO().findOrganizationForProject(projectUuid, organizationToAdd);
-            if (organizationToProjectUuid != null) {
-                logger.info("Trying to add to project {} an organization {} which is already associated with this project.", projectUuid,
-                        organizationToAdd);
+        if (userGroupToAdd != null) {
+            UUID groupToProjectUuid = repo.getUsergroupDAO().findUserGroupForProject(projectUuid, userGroupToAdd);
+            if (groupToProjectUuid != null) {
+                logger.info("Trying to add to project {} an usergroup {} which is already associated with this project.", projectUuid,
+                        userGroupToAdd);
             } else {
-                repo.getOrganizationDAO().addOrganizationToProject(projectUuid, organizationToAdd, loggedInUserUuid);
+                repo.getUsergroupDAO().addUserGroupToProject(projectUuid, userGroupToAdd, loggedInUserUuid);
             }
         }
 
-        if (organizationToRemove != null) {
-            UUID organizationToProjectUuid = repo.getOrganizationDAO().findOrganizationForProject(projectUuid, organizationToRemove);
-            if (organizationToProjectUuid == null) {
-                logger.info("Trying to remove from project {} an organization {} which is not associated with this project.", projectUuid,
-                        organizationToRemove);
+        if (userGroupToRemove != null) {
+            UUID groupToProjectUuid = repo.getUsergroupDAO().findUserGroupForProject(projectUuid, userGroupToRemove);
+            if (groupToProjectUuid == null) {
+                logger.info("Trying to remove from project {} an usergroup {} which is not associated with this project.", projectUuid,
+                        userGroupToRemove);
             } else {
-                repo.getOrganizationDAO().removeOrganizationFromProject(projectUuid, organizationToRemove, loggedInUserUuid);
+                repo.getUsergroupDAO().removeUserGroupFromProject(projectUuid, userGroupToRemove, loggedInUserUuid);
             }
         }
     }

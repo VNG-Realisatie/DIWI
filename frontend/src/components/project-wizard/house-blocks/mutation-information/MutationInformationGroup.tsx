@@ -3,7 +3,7 @@ import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
 import { HouseBlock } from "../../../../types/houseBlockTypes";
 import { SingleNumberInput } from "../../../project/inputs/SingleNumberInput";
-import { MutationKind, mutationKindOptions } from "../../../../types/enums";
+import { mutationKindOptions } from "../../../../types/enums";
 import CategoryInput from "../../../project/inputs/CategoryInput";
 
 export type MutationInformationProps = {
@@ -44,7 +44,7 @@ export const MutationInformationGroup = ({ houseBlock, setHouseBlock, readOnly }
                             ...houseBlock,
                             mutation: {
                                 ...houseBlock.mutation,
-                                kind: newValue as MutationKind,
+                                kind: newValue.id,
                             },
                         });
                 }}

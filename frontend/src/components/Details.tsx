@@ -2,7 +2,7 @@ import { Box, List, ListItem, ListItemText, Stack, Typography } from "@mui/mater
 import { Fragment, ReactNode, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { Project } from "../api/projectsServices";
-import { OrganizationUserAvatars } from "./OrganizationUserAvatars";
+import { UserGroupAvatars } from "./UserGroupAvatars";
 import { HouseBlock } from "../types/houseBlockTypes";
 import HouseBlockContext from "../context/HouseBlockContext";
 
@@ -95,7 +95,7 @@ export const Details = ({ project }: Props) => {
                     return <Fragment key={property} />;
                 })}
             <DetailListItem property="projectOwners">
-                <OrganizationUserAvatars organizations={project?.projectOwners} />
+                <UserGroupAvatars groups={project?.projectOwners} />
             </DetailListItem>
             {houseBlocks &&
                 houseBlocks.map((hb: HouseBlock) => {
