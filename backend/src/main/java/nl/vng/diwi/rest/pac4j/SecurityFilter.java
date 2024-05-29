@@ -2,6 +2,7 @@ package nl.vng.diwi.rest.pac4j;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
+import java.util.UUID;
 
 import org.hibernate.Session;
 import org.pac4j.core.authorization.authorizer.DefaultAuthorizers;
@@ -72,8 +73,17 @@ public class SecurityFilter implements ContainerRequestFilter {
             SecurityGrantedAccessAdapter securityGrantedAccessAdapter = (ctx, sessionStore, profiles) -> {
                 for (var profile : profiles) {
                     var userEntity = getUserForProfile(profile);
+                    LoggedUser loggedUser;
 
-                    LoggedUser loggedUser = new LoggedUser(userEntity);
+                    if (userEntity == null) {
+                        loggedUser = new LoggedUser();
+                        loggedUser.setFirstName("X");
+                        loggedUser.setLastName("X");
+                        loggedUser.setUuid(UUID.fromString(profile.getId()));
+                        loggedUser.setIdentityProviderId(UUID.fromString(profile.getId()));
+                    } else {
+                        loggedUser = new LoggedUser(userEntity);
+                    }
                     requestContext.setProperty("loggedUser", loggedUser);
                     final LoginContext context = new LoginContext(loggedUser);
                     requestContext.setSecurityContext(context);
@@ -107,46 +117,47 @@ public class SecurityFilter implements ContainerRequestFilter {
                 // user does not exist in diwi database
                 // must match role name defined in keycloak!
                 var hasDiwiAdminRole = profile.getRoles().contains("diwi-admin");
-                if (!hasDiwiAdminRole) {
-                    // create empty userstate as we want to block any further actions by this user.
+                if (hasDiwiAdminRole) {
+                    ZonedDateTime now = ZonedDateTime.now();
+                    User systemUser = userDao.getSystemUser();
+
+                    var newUser = new User();
+                    newUser.setSystemUser(false);
+                    userDao.persist(newUser);
+
                     userEntity = new UserState();
+                    userEntity.setChangeStartDate(now);
+                    userEntity.setCreateUser(systemUser);
+                    userEntity.setFirstName((String) firsttName);
+                    userEntity.setLastName((String) lastName);
+                    userEntity.setUser(newUser);
+                    userEntity.setIdentityProviderId(profileUuid);
+                    userEntity.setUserRole(UserRole.Admin); // Keycloak users should by default not see projects
+                    userDao.persist(userEntity);
+
+                    var group = new UserGroup();
+                    group.setSingleUser(true);
+                    userGroupDAO.persist(group);
+
+                    var groupState = new UserGroupState();
+                    groupState.setChangeStartDate(now);
+                    groupState.setCreateUser(systemUser);
+                    groupState.setName(userEntity.getFirstName() + " " + userEntity.getLastName());
+                    groupState.setUserGroup(group);
+                    userGroupDAO.persist(groupState);
+
+                    var groupToUser = new UserToUserGroup();
+                    groupToUser.setChangeStartDate(now);
+                    groupToUser.setCreateUser(systemUser);
+                    groupToUser.setUserGroup(group);
+                    groupToUser.setUser(newUser);
+                    userGroupDAO.persist(groupToUser);
+
+                    transaction.commit();
+                } else {
+                    // create empty userstate as we want to block any further actions by this user.
+                    userEntity = null;
                 }
-                ZonedDateTime now = ZonedDateTime.now();
-                User systemUser = userDao.getSystemUser();
-
-                var newUser = new User();
-                newUser.setSystemUser(false);
-                userDao.persist(newUser);
-
-                userEntity = new UserState();
-                userEntity.setChangeStartDate(now);
-                userEntity.setCreateUser(systemUser);
-                userEntity.setFirstName((String) firsttName);
-                userEntity.setLastName((String) lastName);
-                userEntity.setUser(newUser);
-                userEntity.setIdentityProviderId(profileUuid);
-                userEntity.setUserRole(UserRole.Admin); // Keycloak users should by default not see projects
-                userDao.persist(userEntity);
-
-                var group =  new UserGroup();
-                group.setSingleUser(true);
-                userGroupDAO.persist(group);
-
-                var groupState = new UserGroupState();
-                groupState.setChangeStartDate(now);
-                groupState.setCreateUser(systemUser);
-                groupState.setName(userEntity.getFirstName() + " " + userEntity.getLastName());
-                groupState.setUserGroup(group);
-                userGroupDAO.persist(groupState);
-
-                var groupToUser = new UserToUserGroup();
-                groupToUser.setChangeStartDate(now);
-                groupToUser.setCreateUser(systemUser);
-                groupToUser.setUserGroup(group);
-                groupToUser.setUser(newUser);
-                userGroupDAO.persist(groupToUser);
-
-                transaction.commit();
             }
             return userEntity;
 
