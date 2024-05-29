@@ -4,6 +4,7 @@ import { t } from "i18next";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import RadioButtonChecked from "@mui/icons-material/RadioButtonChecked";
+import { TooltipInfo } from "../../widgets/TooltipInfo";
 
 const CustomStepIcon: React.FC<CustomStepIconProps> = ({ active, completed }) => {
     if (completed) {
@@ -47,7 +48,11 @@ const WizardLayout = ({ children, handleBack, handleNext, handleSave, activeStep
                     </Step>
                 ))}
             </Stepper>
-            <Alert severity="info">{infoText}</Alert>
+            <Alert severity="info">
+                {infoText}
+                {activeStep === 1 && <TooltipInfo text={t("tooltipInfo.woningblok.title")} />}
+                {activeStep === 2 && <TooltipInfo text={t("tooltipInfo.selecteerPercelen.title")} />}
+            </Alert>
             {children}
             <Stack direction="row" alignItems="center" justifyContent="flex-end" py={2}>
                 {warning && (

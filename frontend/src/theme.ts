@@ -76,6 +76,13 @@ export const theme = createTheme(
                     },
                 },
             },
+            MuiTooltip: {
+                styleOverrides: {
+                    tooltip: {
+                        maxWidth: 500,
+                    },
+                },
+            },
         },
         palette: {
             primary: {

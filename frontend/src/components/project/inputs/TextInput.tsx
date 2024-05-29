@@ -9,16 +9,17 @@ type Props = {
     mandatory: boolean;
     errorText?: string;
     title?: string;
+    tooltipInfoText?: string;
 };
 
 const shouldDisplayError = (mandatory: boolean, value: string) => {
     return mandatory && (!value || value.trim() === "");
 };
 
-const TextInput = ({ value, setValue, readOnly, mandatory, errorText, title }: Props) => {
+const TextInput = ({ value, setValue, readOnly, mandatory, errorText, title, tooltipInfoText }: Props) => {
     const hasError = shouldDisplayError(mandatory, value);
     return (
-        <InputLabelStack mandatory={mandatory} title={title || ""}>
+        <InputLabelStack mandatory={mandatory} title={title || ""} tooltipInfoText={tooltipInfoText}>
             <TextField
                 required={mandatory}
                 sx={{

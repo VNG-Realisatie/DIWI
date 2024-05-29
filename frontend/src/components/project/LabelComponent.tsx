@@ -15,7 +15,7 @@ export const LabelComponent = ({ text, required, readOnly = false, tooltipInfoTe
         <Typography variant="subtitle1" fontWeight="500" fontStyle={readOnly ? "italic" : "normal"}>
             {t(text)}
             {required ? " *" : ""}
-            {tooltipInfoText && <TooltipInfo text={tooltipInfoText} />}
+            {tooltipInfoText && <TooltipInfo text={t(`${tooltipInfoText}title`)} />}
         </Typography>
     );
 };

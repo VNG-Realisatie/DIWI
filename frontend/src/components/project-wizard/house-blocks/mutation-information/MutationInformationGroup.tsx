@@ -6,7 +6,6 @@ import { SingleNumberInput } from "../../../project/inputs/SingleNumberInput";
 import { mutationKindOptions } from "../../../../types/enums";
 import CategoryInput from "../../../project/inputs/CategoryInput";
 
-import { TooltipInfo } from "../../../../widgets/TooltipInfo";
 export type MutationInformationProps = {
     houseBlock: HouseBlock;
     setHouseBlock(houseBlock: HouseBlock): void;
@@ -24,7 +23,6 @@ export const MutationInformationGroup = ({ houseBlock, setHouseBlock, readOnly }
                 }}
             >
                 {t("createProject.houseBlocksForm.mutationData")}
-                <TooltipInfo text={t("tooltipInfo.mutatieGegevens.title")} />
             </Typography>
             <SingleNumberInput
                 name={t("createProject.houseBlocksForm.amount")}
@@ -62,6 +60,7 @@ export const MutationInformationGroup = ({ houseBlock, setHouseBlock, readOnly }
                 multiple={false}
                 error={t("wizard.houseBlocks.mutationKindWarning")}
                 translationPath="createProject.houseBlocksForm."
+                tooltipInfoText="tooltipInfo.mutatieSoort."
             />
         </WizardCard>
     );

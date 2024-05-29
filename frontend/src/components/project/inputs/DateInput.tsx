@@ -12,6 +12,7 @@ type Props = {
     error?: string | undefined | null;
     title?: string;
     errorText: string;
+    tooltipInfoText?: string;
 };
 
 const getDateErrorMessage = (error: string | undefined | null, value: string | null, errorText: string): string | null => {
@@ -23,10 +24,10 @@ const getDateErrorMessage = (error: string | undefined | null, value: string | n
     }
     return null;
 };
-const DateInput = ({ value, setValue, readOnly, mandatory, error, title, errorText }: Props) => {
+const DateInput = ({ value, setValue, readOnly, mandatory, error, title, errorText, tooltipInfoText }: Props) => {
     const errorMessage = getDateErrorMessage(error, value, errorText);
     return (
-        <InputLabelStack mandatory={mandatory} title={title || ""}>
+        <InputLabelStack mandatory={mandatory} title={title || ""} tooltipInfoText={tooltipInfoText}>
             <DatePicker
                 format={dateFormats.keyboardDate}
                 value={value ? dayjs(value) : null}
