@@ -1,6 +1,7 @@
 DROP FUNCTION IF EXISTS get_active_or_future_project_custom_properties;
+DROP FUNCTION IF EXISTS diwi.get_active_or_future_project_custom_properties;
 
-CREATE OR REPLACE FUNCTION get_active_or_future_project_custom_properties (
+CREATE OR REPLACE FUNCTION diwi.get_active_or_future_project_custom_properties (
   _project_uuid_ uuid,
   _now_ date
 )

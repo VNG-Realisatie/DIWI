@@ -1,6 +1,7 @@
 DROP FUNCTION IF EXISTS get_houseblock_custom_properties;
+DROP FUNCTION IF EXISTS diwi.get_houseblock_custom_properties;
 
-CREATE OR REPLACE FUNCTION get_houseblock_custom_properties (
+CREATE OR REPLACE FUNCTION diwi.get_houseblock_custom_properties (
   _woningblok_uuid_ uuid,
   _now_ date
 )

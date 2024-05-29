@@ -1,6 +1,7 @@
 DROP FUNCTION IF EXISTS get_active_and_future_projects_list;
+DROP FUNCTION IF EXISTS diwi.get_active_and_future_projects_list;
 
-CREATE OR REPLACE FUNCTION get_active_and_future_projects_list (
+CREATE OR REPLACE FUNCTION diwi.get_active_and_future_projects_list (
   _now_ date,
   _offset_ int,
   _limit_ int,

@@ -1,8 +1,9 @@
 DROP FUNCTION IF EXISTS get_customproperty_definitions;
 DROP FUNCTION IF EXISTS get_property_definitions;
+DROP FUNCTION IF EXISTS diwi.get_property_definitions;
 
 CREATE
-OR REPLACE FUNCTION get_property_definitions (
+OR REPLACE FUNCTION diwi.get_property_definitions (
   _cp_uuid_ UUID,
   _cp_object_type_ VARCHAR,
   _cp_disabled_ BOOL,

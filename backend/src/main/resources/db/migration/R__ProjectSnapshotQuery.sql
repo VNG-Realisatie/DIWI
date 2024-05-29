@@ -1,6 +1,7 @@
 DROP FUNCTION IF EXISTS get_active_or_future_project_snapshot;
+DROP FUNCTION IF EXISTS diwi.get_active_or_future_project_snapshot;
 
-CREATE OR REPLACE FUNCTION get_active_or_future_project_snapshot (
+CREATE OR REPLACE FUNCTION diwi.get_active_or_future_project_snapshot (
   _project_uuid_ uuid,
   _now_ date,
   _user_role_ text,
