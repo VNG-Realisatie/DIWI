@@ -10,45 +10,47 @@ type HouseBlockContextType = {
     getEmptyHouseBlock: () => HouseBlockWithCustomProperties;
 };
 
+export const getEmptyHouseBlock: () => HouseBlockWithCustomProperties = () => ({
+    projectId: "",
+    startDate: null,
+    endDate: null,
+    houseblockName: "",
+    size: {
+        value: 0,
+        min: null,
+        max: null,
+    },
+    programming: null,
+    mutation: {
+        kind: null,
+        amount: null,
+    },
+    ownershipValue: [
+        {
+            type: "KOOPWONING",
+            amount: 0,
+            value: { value: 0, min: null, max: null },
+            rentalValue: { value: 0, min: null, max: null },
+        },
+    ],
+    groundPosition: {
+        noPermissionOwner: null,
+        intentionPermissionOwner: null,
+        formalPermissionOwner: null,
+    },
+    physicalAppearance: [],
+    houseType: {
+        meergezinswoning: null,
+        eengezinswoning: null,
+    },
+    targetGroup: [],
+    customProperties: [],
+});
+
 const defaultHouseBlockContext: HouseBlockContextType = {
     houseBlocks: [],
     refresh: () => {},
-    getEmptyHouseBlock: () => ({
-        projectId: "",
-        startDate: null,
-        endDate: null,
-        houseblockName: "",
-        size: {
-            value: 0,
-            min: null,
-            max: null,
-        },
-        programming: null,
-        mutation: {
-            kind: null,
-            amount: null,
-        },
-        ownershipValue: [
-            {
-                type: "KOOPWONING",
-                amount: 0,
-                value: { value: 0, min: null, max: null },
-                rentalValue: { value: 0, min: null, max: null },
-            },
-        ],
-        groundPosition: {
-            noPermissionOwner: null,
-            intentionPermissionOwner: null,
-            formalPermissionOwner: null,
-        },
-        physicalAppearance: [],
-        houseType: {
-            meergezinswoning: null,
-            eengezinswoning: null,
-        },
-        targetGroup: [],
-        customProperties: [],
-    }),
+    getEmptyHouseBlock: getEmptyHouseBlock,
 };
 
 const HouseBlockContext = createContext<HouseBlockContextType>(defaultHouseBlockContext);
@@ -133,4 +135,5 @@ export const HouseBlockProvider = ({ children }: PropsWithChildren) => {
         </HouseBlockContext.Provider>
     );
 };
+
 export default HouseBlockContext;
