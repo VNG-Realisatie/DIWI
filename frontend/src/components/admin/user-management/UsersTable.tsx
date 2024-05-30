@@ -9,7 +9,7 @@ import useAlert from "../../../hooks/useAlert";
 import UserDialog from "./UserDialog";
 import DeleteDialogWithConfirmation from "./DeleteDialogWithConfirmation";
 import useAllowedActions from "../../../hooks/useAllowedActions";
-import { deleteUser } from "../../../api/userSerivces";
+import { deleteUser, updateUser } from "../../../api/userSerivces";
 
 type Props = {
     rows: any[];
@@ -29,8 +29,16 @@ const UsersTable = ({ rows }: Props) => {
         setUserDialogOpen(true);
     };
 
-    const handleUpdateUser = async (user: User) => {
-        // Update the user
+    const handleUpdateUser = async () => {
+        if (userToEdit && userToEdit.id) {
+            try {
+                const data = await updateUser(userToEdit.id, userToEdit);
+                console.log(data);
+                setAlert("success", "success");
+            } catch (error: any) {
+                setAlert(error.message, "error");
+            }
+        }
     };
     const handleDeleteDialogOpen = (id: string) => {
         setUserToDelete(id);
@@ -50,7 +58,10 @@ const UsersTable = ({ rows }: Props) => {
     const columns = [
         { field: "firstName", headerName: t("admin.userManagement.tableHeader.name.firstName"), flex: 1.5, sortable: true },
         { field: "lastName", headerName: t("admin.userManagement.tableHeader.name.lastName"), flex: 1.5, sortable: true },
+        { field: "phoneNumber", headerName: t("admin.userManagement.tableHeader.phone"), flex: 1.5, sortable: true },
         { field: "email", headerName: t("admin.userManagement.tableHeader.email"), flex: 1.5, sortable: true },
+        { field: "organization", headerName: t("admin.userManagement.tableHeader.organization"), flex: 1.5, sortable: true },
+        { field: "department", headerName: t("admin.userManagement.tableHeader.department"), flex: 1.5, sortable: true },
         { field: "role", headerName: t("admin.userManagement.tableHeader.role"), flex: 1, sortable: true },
         {
             field: "acties",

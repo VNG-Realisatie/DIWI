@@ -349,12 +349,11 @@
           "groupName": "Vul de groepnaam in",
           "firstName": "Vul de voornaam in",
           "lastName": "Vul de achternaam in",
-          "email": "Vul het e-mailadres in",
+          "email": "Vul een geldig e-mailadres in",
           "role": "Selecteer een rol",
-          "phone": "Vul het telefoonnummer in",
+          "phone": "Vul een geldig telefoonnummer in",
           "organization": "Vul de organisatie in",
           "department": "Vul de afdeling in"
-
         }
       },
       "settings": {
