@@ -11,7 +11,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.MediaType;
 import nl.vng.diwi.dal.AutoCloseTransaction;
 import nl.vng.diwi.dal.GenericRepository;
@@ -72,7 +72,9 @@ public class PropertiesResource {
     @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public PropertyModel createCustomProperty(@Context LoggedUser loggedUser, PropertyModel propertyModel) throws VngBadRequestException {
+    public PropertyModel createCustomProperty(PropertyModel propertyModel, ContainerRequestContext requestContext) throws VngBadRequestException {
+
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
 
@@ -93,8 +95,10 @@ public class PropertiesResource {
     @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public PropertyModel updateProperty(@Context LoggedUser loggedUser, @PathParam("id") UUID customPropertyUuid,
+    public PropertyModel updateProperty(@PathParam("id") UUID customPropertyUuid, ContainerRequestContext requestContext,
                                         PropertyModel propertyModel) throws VngNotFoundException, VngBadRequestException {
+
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
 
@@ -116,8 +120,10 @@ public class PropertiesResource {
     @Path("/{id}")
     @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
-    public PropertyModel disableCustomProperty(@Context LoggedUser loggedUser, @PathParam("id") UUID customPropertyUuid)
+    public PropertyModel disableCustomProperty(@PathParam("id") UUID customPropertyUuid, ContainerRequestContext requestContext)
         throws VngNotFoundException {
+
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
 

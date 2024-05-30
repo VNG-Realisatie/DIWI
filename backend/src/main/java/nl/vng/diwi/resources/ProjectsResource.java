@@ -32,7 +32,6 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -118,8 +117,11 @@ public class ProjectsResource {
     @RolesAllowed({UserActionConstants.CREATE_NEW_PROJECT})
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public ProjectMinimalSnapshotModel createProject(@Context LoggedUser loggedUser, ProjectCreateSnapshotModel projectSnapshotModel)
+    public ProjectMinimalSnapshotModel createProject(ContainerRequestContext requestContext, ProjectCreateSnapshotModel projectSnapshotModel)
             throws VngServerErrorException, VngBadRequestException, VngNotFoundException {
+
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
+
         String validationError = projectSnapshotModel.validate();
         if (validationError != null) {
             throw new VngBadRequestException(validationError);
@@ -143,14 +145,16 @@ public class ProjectsResource {
     @Path("/{id}")
     @RolesAllowed({UserActionConstants.VIEW_OWN_PROJECTS, UserActionConstants.VIEW_OTHERS_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
-    public ProjectSnapshotModel getCurrentProjectSnapshot(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid) throws VngNotFoundException {
+    public ProjectSnapshotModel getCurrentProjectSnapshot(ContainerRequestContext requestContext, @PathParam("id") UUID projectUuid) throws VngNotFoundException {
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
         return projectService.getProjectSnapshot(repo, projectUuid, loggedUser);
     }
 
     @DELETE
     @Path("/{id}")
     @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
-    public void deleteProject(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid) throws VngNotFoundException {
+    public void deleteProject(ContainerRequestContext requestContext, @PathParam("id") UUID projectUuid) throws VngNotFoundException {
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             projectService.deleteProject(repo, projectUuid, loggedUser.getUuid());
             transaction.commit();
@@ -176,8 +180,10 @@ public class ProjectsResource {
     @Path("/table")
     @RolesAllowed({UserActionConstants.VIEW_OWN_PROJECTS, UserActionConstants.VIEW_OTHERS_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ProjectListModel> getAllProjects(@BeanParam FilterPaginationSorting filtering, @Context LoggedUser loggedUser)
+    public List<ProjectListModel> getAllProjects(@BeanParam FilterPaginationSorting filtering, ContainerRequestContext requestContext)
             throws VngBadRequestException {
+
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
 
         if (filtering.getSortColumn() != null && !ProjectListModel.SORTABLE_COLUMNS.contains(filtering.getSortColumn())) {
             throw new VngBadRequestException("Sort column not supported.");
@@ -195,7 +201,9 @@ public class ProjectsResource {
     @Path("/table/size")
     @RolesAllowed({UserActionConstants.VIEW_OWN_PROJECTS, UserActionConstants.VIEW_OTHERS_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
-    public Map<String, Integer> getAllProjectsListSize(@BeanParam FilterPaginationSorting filtering, @Context LoggedUser loggedUser) {
+    public Map<String, Integer> getAllProjectsListSize(@BeanParam FilterPaginationSorting filtering, ContainerRequestContext requestContext) {
+
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
 
         Integer projectsCount = repo.getProjectsDAO().getProjectsTableCount(filtering, loggedUser);
 
@@ -229,8 +237,11 @@ public class ProjectsResource {
     @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<ProjectHouseblockCustomPropertyModel> updateProjectCustomProperty(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid, ProjectHouseblockCustomPropertyModel projectCPUpdateModel)
+    public List<ProjectHouseblockCustomPropertyModel> updateProjectCustomProperty(ContainerRequestContext requestContext, @PathParam("id") UUID projectUuid, ProjectHouseblockCustomPropertyModel projectCPUpdateModel)
         throws VngNotFoundException, VngBadRequestException, VngServerErrorException {
+
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
+
         if (projectCPUpdateModel.getCustomPropertyId() == null){
             throw new VngBadRequestException("Custom property id must be set.");
         }
@@ -348,7 +359,9 @@ public class ProjectsResource {
     @Path("/{id}/plots")
     @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
     @Consumes(MediaType.APPLICATION_JSON)
-    public void setProjectPlots(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid, List<PlotModel> plots) throws VngNotFoundException, VngBadRequestException {
+    public void setProjectPlots(ContainerRequestContext requestContext, @PathParam("id") UUID projectUuid, List<PlotModel> plots) throws VngNotFoundException, VngBadRequestException {
+
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
         Project project = projectService.getCurrentProject(repo, projectUuid);
 
         if (project == null) {
@@ -382,8 +395,10 @@ public class ProjectsResource {
     @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public ProjectSnapshotModel updateProjectSnapshot(@Context LoggedUser loggedUser, ProjectSnapshotModel projectSnapshotModelToUpdate)
+    public ProjectSnapshotModel updateProjectSnapshot(ContainerRequestContext requestContext, ProjectSnapshotModel projectSnapshotModelToUpdate)
             throws VngNotFoundException, VngBadRequestException, VngServerErrorException {
+
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
 
         UUID projectUuid = projectSnapshotModelToUpdate.getProjectId();
         Project project = projectService.getCurrentProject(repo, projectUuid);

@@ -1,5 +1,6 @@
 package nl.vng.diwi.resources;
 
+import jakarta.ws.rs.container.ContainerRequestContext;
 import nl.vng.diwi.dal.AutoCloseTransaction;
 import nl.vng.diwi.dal.Dal;
 import nl.vng.diwi.dal.DalFactory;
@@ -33,6 +34,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -109,13 +111,16 @@ public class ProjectsResourceTest {
         loggedUser.setRole(UserRole.UserPlus);
         loggedUser.setUuid(userUuid);
 
+        ContainerRequestContext requestContext = Mockito.mock(ContainerRequestContext.class);
+        Mockito.when(requestContext.getProperty("loggedUser")).thenReturn(loggedUser);
+
         //prepare update model with modified name and start date
-        ProjectSnapshotModel projectSnapshot = projectResource.getCurrentProjectSnapshot(loggedUser, projectUuid);
+        ProjectSnapshotModel projectSnapshot = projectResource.getCurrentProjectSnapshot(requestContext, projectUuid);
         projectSnapshot.setProjectName("Name 1 updated");
         projectSnapshot.setStartDate(LocalDate.now().minusDays(15));
 
         //call update endpoint
-        projectResource.updateProjectSnapshot(loggedUser, projectSnapshot);
+        projectResource.updateProjectSnapshot(requestContext, projectSnapshot);
         repo.getSession().clear();
 
         //assert
@@ -184,13 +189,16 @@ public class ProjectsResourceTest {
         loggedUser.setUuid(userUuid);
         loggedUser.setRole(UserRole.UserPlus);
 
+        ContainerRequestContext requestContext = Mockito.mock(ContainerRequestContext.class);
+        Mockito.when(requestContext.getProperty("loggedUser")).thenReturn(loggedUser);
+
         //prepare update model with modified name and start date
-        ProjectSnapshotModel projectSnapshot = projectResource.getCurrentProjectSnapshot(loggedUser, projectUuid);
+        ProjectSnapshotModel projectSnapshot = projectResource.getCurrentProjectSnapshot(requestContext, projectUuid);
         projectSnapshot.setProjectName("Name 1 updated");
         projectSnapshot.setStartDate(LocalDate.now().minusDays(1));
 
         //call update endpoint
-        projectResource.updateProjectSnapshot(loggedUser, projectSnapshot);
+        projectResource.updateProjectSnapshot(requestContext, projectSnapshot);
         repo.getSession().clear();
 
         //assert

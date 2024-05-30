@@ -1,5 +1,6 @@
 package nl.vng.diwi.resources;
 
+import jakarta.ws.rs.container.ContainerRequestContext;
 import nl.vng.diwi.dal.AutoCloseTransaction;
 import nl.vng.diwi.dal.Dal;
 import nl.vng.diwi.dal.DalFactory;
@@ -27,6 +28,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -104,9 +106,11 @@ public class HouseblockResourceTest {
         houseblockSnapshot.setEndDate(LocalDate.now().plusDays(9));
 
         //call update endpoint
+        ContainerRequestContext requestContext =  Mockito.mock(ContainerRequestContext.class);
         LoggedUser loggedUser = new LoggedUser();
         loggedUser.setUuid(userUuid);
-        houseblockResource.updateHouseblock(loggedUser, houseblockSnapshot);
+        Mockito.when(requestContext.getProperty("loggedUser")).thenReturn(loggedUser);
+        houseblockResource.updateHouseblock(requestContext, houseblockSnapshot);
         repo.getSession().clear();
 
         //assert
