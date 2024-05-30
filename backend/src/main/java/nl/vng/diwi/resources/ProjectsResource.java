@@ -145,7 +145,8 @@ public class ProjectsResource {
     @Path("/{id}")
     @RolesAllowed({UserActionConstants.VIEW_OWN_PROJECTS, UserActionConstants.VIEW_OTHERS_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
-    public ProjectSnapshotModel getCurrentProjectSnapshot(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid) throws VngNotFoundException {
+    public ProjectSnapshotModel getCurrentProjectSnapshot(ContainerRequestContext requestContext, @PathParam("id") UUID projectUuid) throws VngNotFoundException {
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
         return projectService.getProjectSnapshot(repo, projectUuid, loggedUser);
     }
 
@@ -179,8 +180,10 @@ public class ProjectsResource {
     @Path("/table")
     @RolesAllowed({UserActionConstants.VIEW_OWN_PROJECTS, UserActionConstants.VIEW_OTHERS_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ProjectListModel> getAllProjects(@BeanParam FilterPaginationSorting filtering, @Context LoggedUser loggedUser)
+    public List<ProjectListModel> getAllProjects(@BeanParam FilterPaginationSorting filtering, ContainerRequestContext requestContext)
             throws VngBadRequestException {
+
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
 
         if (filtering.getSortColumn() != null && !ProjectListModel.SORTABLE_COLUMNS.contains(filtering.getSortColumn())) {
             throw new VngBadRequestException("Sort column not supported.");
@@ -198,7 +201,9 @@ public class ProjectsResource {
     @Path("/table/size")
     @RolesAllowed({UserActionConstants.VIEW_OWN_PROJECTS, UserActionConstants.VIEW_OTHERS_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
-    public Map<String, Integer> getAllProjectsListSize(@BeanParam FilterPaginationSorting filtering, @Context LoggedUser loggedUser) {
+    public Map<String, Integer> getAllProjectsListSize(@BeanParam FilterPaginationSorting filtering, ContainerRequestContext requestContext) {
+
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
 
         Integer projectsCount = repo.getProjectsDAO().getProjectsTableCount(filtering, loggedUser);
 

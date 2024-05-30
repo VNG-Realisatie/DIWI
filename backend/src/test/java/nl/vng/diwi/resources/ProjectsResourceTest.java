@@ -111,14 +111,15 @@ public class ProjectsResourceTest {
         loggedUser.setRole(UserRole.UserPlus);
         loggedUser.setUuid(userUuid);
 
+        ContainerRequestContext requestContext = Mockito.mock(ContainerRequestContext.class);
+        Mockito.when(requestContext.getProperty("loggedUser")).thenReturn(loggedUser);
+
         //prepare update model with modified name and start date
-        ProjectSnapshotModel projectSnapshot = projectResource.getCurrentProjectSnapshot(loggedUser, projectUuid);
+        ProjectSnapshotModel projectSnapshot = projectResource.getCurrentProjectSnapshot(requestContext, projectUuid);
         projectSnapshot.setProjectName("Name 1 updated");
         projectSnapshot.setStartDate(LocalDate.now().minusDays(15));
 
         //call update endpoint
-        ContainerRequestContext requestContext = Mockito.mock(ContainerRequestContext.class);
-        Mockito.when(requestContext.getProperty("loggedUser")).thenReturn(loggedUser);
         projectResource.updateProjectSnapshot(requestContext, projectSnapshot);
         repo.getSession().clear();
 
@@ -188,14 +189,15 @@ public class ProjectsResourceTest {
         loggedUser.setUuid(userUuid);
         loggedUser.setRole(UserRole.UserPlus);
 
+        ContainerRequestContext requestContext = Mockito.mock(ContainerRequestContext.class);
+        Mockito.when(requestContext.getProperty("loggedUser")).thenReturn(loggedUser);
+
         //prepare update model with modified name and start date
-        ProjectSnapshotModel projectSnapshot = projectResource.getCurrentProjectSnapshot(loggedUser, projectUuid);
+        ProjectSnapshotModel projectSnapshot = projectResource.getCurrentProjectSnapshot(requestContext, projectUuid);
         projectSnapshot.setProjectName("Name 1 updated");
         projectSnapshot.setStartDate(LocalDate.now().minusDays(1));
 
         //call update endpoint
-        ContainerRequestContext requestContext = Mockito.mock(ContainerRequestContext.class);
-        Mockito.when(requestContext.getProperty("loggedUser")).thenReturn(loggedUser);
         projectResource.updateProjectSnapshot(requestContext, projectSnapshot);
         repo.getSession().clear();
 
