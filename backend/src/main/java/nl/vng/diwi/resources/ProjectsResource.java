@@ -131,7 +131,7 @@ public class ProjectsResource {
             Project project = projectService.createProject(repo, loggedUser.getUuid(), projectSnapshotModel, now);
             transaction.commit();
 
-            ProjectSnapshotModel projectSnapshot = projectService.getProjectSnapshot(repo, project.getId());
+            ProjectSnapshotModel projectSnapshot = projectService.getProjectSnapshot(repo, project.getId(), loggedUser);
 
             return projectSnapshot;
         } catch (ConstraintViolationException ex) {
@@ -143,8 +143,8 @@ public class ProjectsResource {
     @Path("/{id}")
     @RolesAllowed({UserActionConstants.VIEW_OWN_PROJECTS, UserActionConstants.VIEW_OTHERS_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
-    public ProjectSnapshotModel getCurrentProjectSnapshot(@PathParam("id") UUID projectUuid) throws VngNotFoundException {
-        return projectService.getProjectSnapshot(repo, projectUuid);
+    public ProjectSnapshotModel getCurrentProjectSnapshot(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid) throws VngNotFoundException {
+        return projectService.getProjectSnapshot(repo, projectUuid, loggedUser);
     }
 
     @DELETE
@@ -176,7 +176,7 @@ public class ProjectsResource {
     @Path("/table")
     @RolesAllowed({UserActionConstants.VIEW_OWN_PROJECTS, UserActionConstants.VIEW_OTHERS_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ProjectListModel> getAllProjects(@BeanParam FilterPaginationSorting filtering)
+    public List<ProjectListModel> getAllProjects(@BeanParam FilterPaginationSorting filtering, @Context LoggedUser loggedUser)
             throws VngBadRequestException {
 
         if (filtering.getSortColumn() != null && !ProjectListModel.SORTABLE_COLUMNS.contains(filtering.getSortColumn())) {
@@ -187,7 +187,7 @@ public class ProjectsResource {
             filtering.setSortColumn(ProjectListModel.DEFAULT_SORT_COLUMN);
         }
 
-        return projectService.getProjectsTable(repo, filtering);
+        return projectService.getProjectsTable(repo, filtering, loggedUser);
 
     }
 
@@ -195,9 +195,9 @@ public class ProjectsResource {
     @Path("/table/size")
     @RolesAllowed({UserActionConstants.VIEW_OWN_PROJECTS, UserActionConstants.VIEW_OTHERS_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
-    public Map<String, Integer> getAllProjectsListSize(@BeanParam FilterPaginationSorting filtering) {
+    public Map<String, Integer> getAllProjectsListSize(@BeanParam FilterPaginationSorting filtering, @Context LoggedUser loggedUser) {
 
-        Integer projectsCount = repo.getProjectsDAO().getProjectsTableCount(filtering);
+        Integer projectsCount = repo.getProjectsDAO().getProjectsTableCount(filtering, loggedUser);
 
         return Map.of("size", projectsCount);
     }
@@ -391,7 +391,7 @@ public class ProjectsResource {
             throw new VngNotFoundException();
         }
 
-        ProjectSnapshotModel projectSnapshotModelCurrent = projectService.getProjectSnapshot(repo, projectUuid);
+        ProjectSnapshotModel projectSnapshotModelCurrent = projectService.getProjectSnapshot(repo, projectUuid, loggedUser);
 
         List<ProjectUpdateModel> projectUpdateModelList = new ArrayList<>();
         for (ProjectUpdateModel.ProjectProperty projectProperty : ProjectUpdateModel.ProjectProperty.values()) {
@@ -539,7 +539,7 @@ public class ProjectsResource {
             }
         }
 
-        return projectService.getProjectSnapshot(repo, projectUuid);
+        return projectService.getProjectSnapshot(repo, projectUuid, loggedUser);
     }
 
     private void updateProjectProperty(Project project, ProjectUpdateModel projectUpdateModel, LoggedUser loggedUser, LocalDate updateDate, ZonedDateTime changeDate)

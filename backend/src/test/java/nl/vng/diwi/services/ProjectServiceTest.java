@@ -9,6 +9,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.security.UserRole;
 import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -292,7 +294,9 @@ public class ProjectServiceTest {
         }
 
         try (var transaction = repo.beginTransaction()) {
-            var actual = projectService.getProjectSnapshot(repo, project.getId());
+            LoggedUser loggedUser = new LoggedUser();
+            loggedUser.setRole(UserRole.UserPlus);
+            var actual = projectService.getProjectSnapshot(repo, project.getId(), loggedUser);
 
             assertThat(actual.getProjectId()).isNotNull();
             assertThat(actual.getProjectStateId()).isNotNull();

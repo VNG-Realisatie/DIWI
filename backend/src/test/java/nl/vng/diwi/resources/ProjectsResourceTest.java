@@ -105,14 +105,16 @@ public class ProjectsResourceTest {
             repo.getSession().clear();
         }
 
+        LoggedUser loggedUser = new LoggedUser();
+        loggedUser.setRole(UserRole.UserPlus);
+        loggedUser.setUuid(userUuid);
+
         //prepare update model with modified name and start date
-        ProjectSnapshotModel projectSnapshot = projectResource.getCurrentProjectSnapshot(projectUuid);
+        ProjectSnapshotModel projectSnapshot = projectResource.getCurrentProjectSnapshot(loggedUser, projectUuid);
         projectSnapshot.setProjectName("Name 1 updated");
         projectSnapshot.setStartDate(LocalDate.now().minusDays(15));
 
         //call update endpoint
-        LoggedUser loggedUser = new LoggedUser();
-        loggedUser.setUuid(userUuid);
         projectResource.updateProjectSnapshot(loggedUser, projectSnapshot);
         repo.getSession().clear();
 
@@ -178,14 +180,16 @@ public class ProjectsResourceTest {
             repo.getSession().clear();
         }
 
+        LoggedUser loggedUser = new LoggedUser();
+        loggedUser.setUuid(userUuid);
+        loggedUser.setRole(UserRole.UserPlus);
+
         //prepare update model with modified name and start date
-        ProjectSnapshotModel projectSnapshot = projectResource.getCurrentProjectSnapshot(projectUuid);
+        ProjectSnapshotModel projectSnapshot = projectResource.getCurrentProjectSnapshot(loggedUser, projectUuid);
         projectSnapshot.setProjectName("Name 1 updated");
         projectSnapshot.setStartDate(LocalDate.now().minusDays(1));
 
         //call update endpoint
-        LoggedUser loggedUser = new LoggedUser();
-        loggedUser.setUuid(userUuid);
         projectResource.updateProjectSnapshot(loggedUser, projectSnapshot);
         repo.getSession().clear();
 

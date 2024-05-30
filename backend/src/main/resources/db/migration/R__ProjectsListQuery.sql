@@ -8,7 +8,9 @@ CREATE OR REPLACE FUNCTION get_active_and_future_projects_list (
   _sortDirection_ text,
   _filterColumn_ text,
   _filterValues_ text[],
-  _filterCondition_ text
+  _filterCondition_ text,
+  _user_role_ text,
+  _user_uuid_ uuid
 )
 	RETURNS TABLE (
         projectId UUID,
@@ -540,6 +542,13 @@ FROM (
 
 ) AS q
   WHERE
+    (
+      ( _user_uuid_::TEXT IN (select owners.id from unnest(q.projectOwners) with ordinality owners(id,n) where owners.n % 6 = 3)) OR
+      ( _user_role_ IN ('User', 'UserPlus') AND q.confidentialityLevel != 'PRIVATE') OR
+      ( _user_role_ = 'Management' AND q.confidentialityLevel NOT IN ('PRIVATE', 'INTERNAL_CIVIL') ) OR
+      ( _user_role_ = 'Council' AND q.confidentialityLevel NOT IN ('PRIVATE', 'INTERNAL_CIVIL', 'INTERNAL_MANAGEMENT') )
+    )
+    AND
         CASE
             WHEN _filterCondition_ = 'CONTAINS' AND _filterColumn_  = 'projectName' THEN q.projectName ILIKE '%' || _filterValues_[1] || '%'
             WHEN _filterCondition_ = 'CONTAINS' AND  _filterColumn_  = 'startDate' THEN q.startDateStr ILIKE '%' || _filterValues_[1] || '%'
