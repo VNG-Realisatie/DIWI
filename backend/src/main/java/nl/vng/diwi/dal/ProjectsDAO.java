@@ -8,6 +8,7 @@ import nl.vng.diwi.dal.entities.Project;
 import nl.vng.diwi.dal.entities.ProjectHouseblockCustomPropertySqlModel;
 import nl.vng.diwi.dal.entities.ProjectState;
 import nl.vng.diwi.dal.entities.ProjectListSqlModel;
+import nl.vng.diwi.security.LoggedUser;
 import org.hibernate.Session;
 import org.hibernate.query.SelectionQuery;
 
@@ -31,11 +32,13 @@ public class ProjectsDAO extends AbstractRepository {
         return query.getSingleResultOrNull();
     }
 
-    public ProjectListSqlModel getProjectByUuid(UUID projectUuid) {
+    public ProjectListSqlModel getProjectByUuid(UUID projectUuid, LoggedUser loggedUser) {
         SelectionQuery<ProjectListSqlModel> q = session.createNativeQuery(
-                "SELECT * FROM get_active_or_future_project_snapshot(:projectUuid, :now) " , ProjectListSqlModel.class)
+                "SELECT * FROM get_active_or_future_project_snapshot(:projectUuid, :now, :userRole, :userUuid) " , ProjectListSqlModel.class)
             .setParameter("now", LocalDate.now())
-            .setParameter("projectUuid", projectUuid);
+            .setParameter("projectUuid", projectUuid)
+            .setParameter("userRole", loggedUser.getRole().name())
+            .setParameter("userUuid", loggedUser.getUuid());
         ProjectListSqlModel result = q.getSingleResultOrNull();
         if (result != null) {
             session.evict(result);
@@ -54,10 +57,10 @@ public class ProjectsDAO extends AbstractRepository {
         return result;
     }
 
-    public List<ProjectListSqlModel> getProjectsTable(FilterPaginationSorting filtering) {
+    public List<ProjectListSqlModel> getProjectsTable(FilterPaginationSorting filtering, LoggedUser loggedUser) {
         SelectionQuery<ProjectListSqlModel> q = session.createNativeQuery("""
                 SELECT * FROM get_active_and_future_projects_list(:now, :offset, :limit, :sortColumn, :sortDirection,
-                    :filterColumn, CAST(:filterValue AS text[]), :filterCondition) """ , ProjectListSqlModel.class)
+                    :filterColumn, CAST(:filterValue AS text[]), :filterCondition, :userRole, :userUuid) """ , ProjectListSqlModel.class)
             .setParameter("now", LocalDate.now())
             .setParameter("offset", filtering.getFirstResultIndex())
             .setParameter("limit", filtering.getPageSize())
@@ -65,15 +68,17 @@ public class ProjectsDAO extends AbstractRepository {
             .setParameter("sortDirection", filtering.getSortDirection().name())
             .setParameter("filterColumn", filtering.getFilterColumn())
             .setParameter("filterValue", filtering.getFilterColumn() == null ? null :fromJavaListToSqlArrayLiteral(filtering.getFilterValue()))
-            .setParameter("filterCondition", filtering.getFilterColumn() == null ? null : filtering.getFilterCondition().name());
+            .setParameter("filterCondition", filtering.getFilterColumn() == null ? null : filtering.getFilterCondition().name())
+            .setParameter("userRole", loggedUser.getRole().name())
+            .setParameter("userUuid", loggedUser.getUuid());
 
         return q.getResultList();
     }
 
-    public Integer getProjectsTableCount(FilterPaginationSorting filtering) {
+    public Integer getProjectsTableCount(FilterPaginationSorting filtering, LoggedUser loggedUser) {
         return session.createNativeQuery("""
                 SELECT COUNT(*) FROM get_active_and_future_projects_list(:now, :offset, :limit, :sortColumn, :sortDirection,
-                :filterColumn, CAST(:filterValue AS text[]), :filterCondition) """, Integer.class)
+                :filterColumn, CAST(:filterValue AS text[]), :filterCondition, :userRole, :userUuid) """, Integer.class)
             .setParameter("now", LocalDate.now())
             .setParameter("offset", 0)
             .setParameter("limit", Integer.MAX_VALUE)
@@ -82,6 +87,8 @@ public class ProjectsDAO extends AbstractRepository {
             .setParameter("filterColumn", filtering.getFilterColumn())
             .setParameter("filterValue", filtering.getFilterColumn() == null ? null : fromJavaListToSqlArrayLiteral(filtering.getFilterValue()))
             .setParameter("filterCondition", filtering.getFilterColumn() == null ? null :filtering.getFilterCondition().name())
+            .setParameter("userRole", loggedUser.getRole().name())
+            .setParameter("userUuid", loggedUser.getUuid())
             .uniqueResult();
     }
 
