@@ -1,6 +1,7 @@
 package nl.vng.diwi.rest;
 
 import nl.vng.diwi.dal.UserGroupDAO;
+import nl.vng.diwi.security.MailService;
 import nl.vng.diwi.services.ExcelImportService;
 import nl.vng.diwi.services.GeoJsonImportService;
 import nl.vng.diwi.services.UserService;
@@ -87,6 +88,7 @@ public class VngDependencyInjection extends AbstractBinder {
     protected void configure() {
         bind(projectConfig).to(ProjectConfig.class);
         bind(dalFactory).to(DalFactory.class);
+        bind(new MailService(projectConfig.getMailConfig())).to(MailService.class);
 
         bindFactory(SessionFactory.class).to(Session.class).in(RequestScoped.class);
         bind(Dal.class).to(Dal.class).in(RequestScoped.class);
