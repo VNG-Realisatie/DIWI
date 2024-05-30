@@ -33,8 +33,9 @@ public class ProjectsDAO extends AbstractRepository {
     }
 
     public ProjectListSqlModel getProjectByUuid(UUID projectUuid, LoggedUser loggedUser) {
-        SelectionQuery<ProjectListSqlModel> q = session.createNativeQuery(
-                "SELECT * FROM get_active_or_future_project_snapshot(:projectUuid, :now, :userRole, :userUuid) " , ProjectListSqlModel.class)
+        SelectionQuery<ProjectListSqlModel> q = session.createNativeQuery(String.format(
+                "SELECT * FROM %s.get_active_or_future_project_snapshot(:projectUuid, :now, :userRole, :userUuid) ", GenericRepository.VNG_SCHEMA_NAME),
+                ProjectListSqlModel.class)
             .setParameter("now", LocalDate.now())
             .setParameter("projectUuid", projectUuid)
             .setParameter("userRole", loggedUser.getRole().name())
@@ -48,8 +49,9 @@ public class ProjectsDAO extends AbstractRepository {
 
 
     public List<ProjectHouseblockCustomPropertySqlModel> getProjectCustomProperties(UUID projectUuid) {
-        List<ProjectHouseblockCustomPropertySqlModel> result = session.createNativeQuery(
-                "SELECT * FROM get_active_or_future_project_custom_properties(:projectUuid, :now) " , ProjectHouseblockCustomPropertySqlModel.class)
+        List<ProjectHouseblockCustomPropertySqlModel> result = session.createNativeQuery(String.format(
+                "SELECT * FROM %s.get_active_or_future_project_custom_properties(:projectUuid, :now) ", GenericRepository.VNG_SCHEMA_NAME),
+                ProjectHouseblockCustomPropertySqlModel.class)
             .setParameter("now", LocalDate.now())
             .setParameter("projectUuid", projectUuid)
             .list();
@@ -58,9 +60,9 @@ public class ProjectsDAO extends AbstractRepository {
     }
 
     public List<ProjectListSqlModel> getProjectsTable(FilterPaginationSorting filtering, LoggedUser loggedUser) {
-        SelectionQuery<ProjectListSqlModel> q = session.createNativeQuery("""
-                SELECT * FROM get_active_and_future_projects_list(:now, :offset, :limit, :sortColumn, :sortDirection,
-                    :filterColumn, CAST(:filterValue AS text[]), :filterCondition, :userRole, :userUuid) """ , ProjectListSqlModel.class)
+        SelectionQuery<ProjectListSqlModel> q = session.createNativeQuery(String.format("""
+                SELECT * FROM %s.get_active_and_future_projects_list(:now, :offset, :limit, :sortColumn, :sortDirection,
+                    :filterColumn, CAST(:filterValue AS text[]), :filterCondition, :userRole, :userUuid) """, GenericRepository.VNG_SCHEMA_NAME) , ProjectListSqlModel.class)
             .setParameter("now", LocalDate.now())
             .setParameter("offset", filtering.getFirstResultIndex())
             .setParameter("limit", filtering.getPageSize())
@@ -76,9 +78,9 @@ public class ProjectsDAO extends AbstractRepository {
     }
 
     public Integer getProjectsTableCount(FilterPaginationSorting filtering, LoggedUser loggedUser) {
-        return session.createNativeQuery("""
-                SELECT COUNT(*) FROM get_active_and_future_projects_list(:now, :offset, :limit, :sortColumn, :sortDirection,
-                :filterColumn, CAST(:filterValue AS text[]), :filterCondition, :userRole, :userUuid) """, Integer.class)
+        return session.createNativeQuery(String.format("""
+                SELECT COUNT(*) FROM %s.get_active_and_future_projects_list(:now, :offset, :limit, :sortColumn, :sortDirection,
+                :filterColumn, CAST(:filterValue AS text[]), :filterCondition, :userRole, :userUuid) """, GenericRepository.VNG_SCHEMA_NAME), Integer.class)
             .setParameter("now", LocalDate.now())
             .setParameter("offset", 0)
             .setParameter("limit", Integer.MAX_VALUE)
