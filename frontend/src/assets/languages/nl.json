@@ -243,7 +243,8 @@
       "system": "Systeem x",
       "squit": "Squit",
       "province": "Provincie",
-      "newData": "Nieuwe data koppeling instellen"
+      "newData": "Nieuwe data koppeling instellen",
+      "importForbidden": "Importeren is niet toegestaan. Neem contact op met uw beheerder"
     },
     "policy": {
       "name": "Naam:",
