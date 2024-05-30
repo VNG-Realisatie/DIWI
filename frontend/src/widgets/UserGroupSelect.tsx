@@ -4,7 +4,7 @@ import { UserGroupAvatars } from "../components/UserGroupAvatars";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import { UserGroup } from "../api/projectsServices";
-import { getOrganizationList } from "../api/projectsTableServices";
+import { getUserGroupList } from "../api/projectsTableServices";
 import useAllowedActions from "../hooks/useAllowedActions";
 
 const icon = <CheckBoxOutlineBlankIcon />;
@@ -16,12 +16,14 @@ type Props = {
     setUserGroup: (owner: UserGroup[]) => void;
 };
 
+const isSingleUserIncluded = true;
+
 export const UserGroupSelect = ({ readOnly, userGroup, setUserGroup }: Props) => {
     const [ownerOptions, setOwnerOptions] = useState<UserGroup[]>();
     const allowedActions = useAllowedActions();
 
     useEffect(() => {
-        getOrganizationList().then((groups) => setOwnerOptions(groups));
+        getUserGroupList(isSingleUserIncluded).then((groups) => setOwnerOptions(groups));
     }, []);
 
     return (
