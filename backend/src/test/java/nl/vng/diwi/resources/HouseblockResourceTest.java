@@ -1,6 +1,5 @@
 package nl.vng.diwi.resources;
 
-import jakarta.ws.rs.container.ContainerRequestContext;
 import nl.vng.diwi.dal.AutoCloseTransaction;
 import nl.vng.diwi.dal.Dal;
 import nl.vng.diwi.dal.DalFactory;
@@ -106,11 +105,9 @@ public class HouseblockResourceTest {
         houseblockSnapshot.setEndDate(LocalDate.now().plusDays(9));
 
         //call update endpoint
-        ContainerRequestContext requestContext =  Mockito.mock(ContainerRequestContext.class);
         LoggedUser loggedUser = new LoggedUser();
         loggedUser.setUuid(userUuid);
-        Mockito.when(requestContext.getProperty("loggedUser")).thenReturn(loggedUser);
-        houseblockResource.updateHouseblock(requestContext, houseblockSnapshot);
+        houseblockResource.updateHouseblock(loggedUser, houseblockSnapshot);
         repo.getSession().clear();
 
         //assert

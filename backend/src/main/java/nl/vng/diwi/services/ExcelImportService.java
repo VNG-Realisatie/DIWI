@@ -226,7 +226,7 @@ public class ExcelImportService {
                     }
 
                     if (rowCount > sectionRow + 3) {
-                        ProjectImportModel rowModel = processExcelRow(nextRow, tableHeaderMap, dateFormatter, formulaEvaluator, excelErrors, importTime);
+                        ProjectImportModel rowModel = processExcelRow(repo, nextRow, tableHeaderMap, dateFormatter, formulaEvaluator, excelErrors, importTime);
                         if (rowModel != null) {
                             if (excelProjectMap.containsKey(rowModel.getId())) {
                                 ProjectImportModel existingProject = excelProjectMap.get(rowModel.getId());
@@ -271,7 +271,7 @@ public class ExcelImportService {
         }
     }
 
-    private ProjectImportModel processExcelRow(Row row, Map<Integer, ExcelTableHeader> tableHeaderMap, DataFormatter formatter,
+    private ProjectImportModel processExcelRow(VngRepository repo, Row row, Map<Integer, ExcelTableHeader> tableHeaderMap, DataFormatter formatter,
                                                FormulaEvaluator evaluator, List<ImportError> excelErrors, ZonedDateTime importTime) {
         ProjectImportModel rowModel = new ProjectImportModel();
 

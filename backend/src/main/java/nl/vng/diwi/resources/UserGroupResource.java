@@ -1,6 +1,7 @@
 package nl.vng.diwi.resources;
 
 import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.Context;
 import nl.vng.diwi.security.UserActionConstants;
 
 import java.util.List;
@@ -50,9 +51,7 @@ public class UserGroupResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public UserGroupModel createUserGroup(UserGroupModel newUserGroup, ContainerRequestContext requestContext) throws VngBadRequestException {
-
-        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
+    public UserGroupModel createUserGroup(UserGroupModel newUserGroup, @Context LoggedUser loggedUser) throws VngBadRequestException {
 
         try (AutoCloseTransaction transaction = userGroupService.getUserGroupDAO().beginTransaction()) {
 
@@ -72,9 +71,7 @@ public class UserGroupResource {
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public UserGroupModel updateUserGroup(@PathParam("id") UUID groupId, UserGroupModel updatedUserGroup, ContainerRequestContext requestContext) throws VngBadRequestException, VngNotFoundException {
-
-        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
+    public UserGroupModel updateUserGroup(@PathParam("id") UUID groupId, UserGroupModel updatedUserGroup, @Context LoggedUser loggedUser) throws VngBadRequestException, VngNotFoundException {
 
         try (AutoCloseTransaction transaction = userGroupService.getUserGroupDAO().beginTransaction()) {
 

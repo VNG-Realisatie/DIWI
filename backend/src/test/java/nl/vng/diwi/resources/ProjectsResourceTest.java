@@ -120,7 +120,7 @@ public class ProjectsResourceTest {
         projectSnapshot.setStartDate(LocalDate.now().minusDays(15));
 
         //call update endpoint
-        projectResource.updateProjectSnapshot(requestContext, projectSnapshot);
+        projectResource.updateProjectSnapshot(loggedUser, projectSnapshot);
         repo.getSession().clear();
 
         //assert
@@ -198,7 +198,7 @@ public class ProjectsResourceTest {
         projectSnapshot.setStartDate(LocalDate.now().minusDays(1));
 
         //call update endpoint
-        projectResource.updateProjectSnapshot(requestContext, projectSnapshot);
+        projectResource.updateProjectSnapshot(loggedUser, projectSnapshot);
         repo.getSession().clear();
 
         //assert
