@@ -167,11 +167,11 @@
         "is": "is"
       },
       "hasMissingRequiredAreas": {
-        "name": "Naam ontbreekt",
-        "startDate": "Startdatum ontbreekt",
-        "endDate": "Einddatum ontbreekt",
-        "projectPhase": "Projectfase ontbreekt",
-        "confidentialityLevel": "Vertrouwelijkheidsniveau  ontbreekt",
+        "name": "Vul het veld projectnaam in",
+        "startDate": "Vul het veld startdatum in",
+        "endDate": "Vul het veld einddatum in",
+        "projectPhase": "Vul het veld projectfase in",
+        "confidentialityLevel": "Vul het veld vertrouwelijkheidsniveau in",
         "amount": "Aantal ontbreekt",
         "hasmissingProperty": "Formulier heeft ontbrekende eigenschappen"
       }

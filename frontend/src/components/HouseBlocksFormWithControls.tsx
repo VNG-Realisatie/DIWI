@@ -1,4 +1,4 @@
-import { Box, Stack, Tooltip } from "@mui/material";
+import { AlertColor, Box, Stack, Tooltip } from "@mui/material";
 import { HouseBlockWithCustomProperties } from "../types/houseBlockTypes";
 import { useContext, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
@@ -16,7 +16,7 @@ type Props = {
     houseBlock: HouseBlockWithCustomProperties;
 };
 
-export const validateHouseBlock = (houseBlock: HouseBlockWithCustomProperties, setAlert: any): boolean => {
+export const validateHouseBlock = (houseBlock: HouseBlockWithCustomProperties, setAlert: (message: string, type: AlertColor) => void): boolean => {
     let isValid = true;
     const invalidOwnershipAmount = houseBlock.ownershipValue.some((owner) => !isOwnershipAmountValid(owner.amount));
     if (
