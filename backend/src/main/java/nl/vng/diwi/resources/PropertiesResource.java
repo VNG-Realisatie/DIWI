@@ -12,6 +12,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import nl.vng.diwi.dal.AutoCloseTransaction;
 import nl.vng.diwi.dal.GenericRepository;
@@ -72,9 +73,7 @@ public class PropertiesResource {
     @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public PropertyModel createCustomProperty(PropertyModel propertyModel, ContainerRequestContext requestContext) throws VngBadRequestException {
-
-        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
+    public PropertyModel createCustomProperty(PropertyModel propertyModel, @Context LoggedUser loggedUser) throws VngBadRequestException {
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
 
@@ -95,10 +94,8 @@ public class PropertiesResource {
     @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public PropertyModel updateProperty(@PathParam("id") UUID customPropertyUuid, ContainerRequestContext requestContext,
+    public PropertyModel updateProperty(@PathParam("id") UUID customPropertyUuid, @Context LoggedUser loggedUser,
                                         PropertyModel propertyModel) throws VngNotFoundException, VngBadRequestException {
-
-        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
 
