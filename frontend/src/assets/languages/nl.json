@@ -243,7 +243,26 @@
       "system": "Systeem x",
       "squit": "Squit",
       "province": "Provincie",
-      "newData": "Nieuwe data koppeling instellen"
+      "newData": "Nieuwe data koppeling instellen",
+      "importName": {
+        "excel": "Importeren vanuit Excel",
+        "squit": "Importeren vanuit Squit",
+        "geojson": "Importeren vanuit GeoJSON"
+    },
+    "download": {
+      "excel": "Download Excel template hier",
+        "squit": "Download Excel template hier",
+        "geojson": "Download GeoJSON template hier"
+    },
+    "upload": {
+        "excel": "Upload ingevulde Excel template.",
+        "squit": "Upload ingevulde Squit template.",
+        "geojson": "Upload ingevulde GeoJSON template."
+    },
+    "errorInfo1": "There are three levels of errors. So fixing one type could lead to others when uploading again.",
+    "errorInfo2": "Level 1 relates to reading headers: Missing custom props: stops any data/businesslogic validation for this column.",
+    "errorInfo3": "Levels 2 & 3 relate to reading rows: Missing/invalid data: stops business logic validation for this row/cell.",
+    "errorInfo4": "An easy way to (temporarily) disable a row is to remove the ids in column B, these numbers do not mean anything but are required for this row to be included."
     },
     "policy": {
       "name": "Naam:",
