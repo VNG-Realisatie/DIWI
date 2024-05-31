@@ -12,10 +12,11 @@ import useAllowedActions from "../../../hooks/useAllowedActions";
 import { deleteUser, updateUser } from "../../../api/userSerivces";
 
 type Props = {
-    rows: any[];
+    rows: User[];
+    setUsers: (users: User[]) => void;
 };
 
-const UsersTable = ({ rows }: Props) => {
+const UsersTable = ({ rows, setUsers }: Props) => {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [userToDelete, setUserToDelete] = useState<string | null>(null);
     const [editUserOpen, setUserDialogOpen] = useState(false);
@@ -32,11 +33,13 @@ const UsersTable = ({ rows }: Props) => {
     const handleUpdateUser = async () => {
         if (userToEdit && userToEdit.id) {
             try {
-                const data = await updateUser(userToEdit.id, userToEdit);
-                console.log(data);
-                setAlert("success", "success");
+                const updatedUser = await updateUser(userToEdit.id, userToEdit);
+                setAlert(t("admin.userManagement.userUpdateSuccess"), "success");
+                setUsers(rows.map((user) => (user.id === updatedUser.id ? updatedUser : user)));
             } catch (error: any) {
                 setAlert(error.message, "error");
+            } finally {
+                setUserDialogOpen(false);
             }
         }
     };
@@ -48,9 +51,12 @@ const UsersTable = ({ rows }: Props) => {
         if (userToDelete) {
             try {
                 await deleteUser(userToDelete);
-                setAlert("success", "success");
-            } catch (error) {
-                setAlert("error", "error");
+                setAlert(t("admin.userManagement.userDeleteSuccess"), "success");
+                setUsers(rows.filter((user) => user.id !== userToDelete));
+            } catch (error: any) {
+                setAlert(error.message, "error");
+            } finally {
+                setDeleteDialogOpen(false);
             }
         }
     };

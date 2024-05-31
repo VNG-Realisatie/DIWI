@@ -37,7 +37,7 @@ const GroupDialog = ({ open, onClose, newGroup, setNewGroup, handleAddGroup, use
                         values={newGroup.users}
                         setValue={(_, newValue) => {
                             const transformedUsers = newValue.map((user: any) => {
-                                const { id, email, role, ...otherProps } = user;
+                                const { id, email, role, phoneNumber, organization, department, prefixes, contactPerson, ...otherProps } = user;
                                 return { uuid: id, ...otherProps };
                             });
                             setNewGroup({ ...newGroup, users: transformedUsers });

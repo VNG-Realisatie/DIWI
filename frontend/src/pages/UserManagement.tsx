@@ -71,27 +71,30 @@ const UserManagement = () => {
             const data = await addGroup(newGroup);
             setUserGroups([...userGroups, data]);
             setNewGroup(emptyGroupForm);
+            setAlert(t("admin.userManagement.groupAddSuccess"), "success");
         } catch (error: any) {
             setAlert(error.message, "warning");
         } finally {
             setIsGroupDialogOpen(false);
         }
     };
-    //doesnt work
+
     const handleAddUser = async () => {
         try {
             const data = await addUser(newUser);
             console.log(data);
             setUsers([...users, data]);
             setNewUser(emptyUserForm);
-            setAlert("User added successfully", "success");
+            setAlert(t("admin.userManagement.userAddSuccess"), "success");
         } catch (error: any) {
             setAlert(error.message, "error");
+        } finally {
+            setIsUserDialogOpen(false);
         }
     };
     return (
         <Box sx={{ marginBottom: "90px" }}>
-            <UsersTable rows={users} />
+            <UsersTable rows={users} setUsers={setUsers} />
 
             {allowedActions.includes("EDIT_USERS") && (
                 <Stack direction="row" alignItems="center" mt={1} sx={{ cursor: "pointer" }} onClick={() => setIsUserDialogOpen(true)}>
