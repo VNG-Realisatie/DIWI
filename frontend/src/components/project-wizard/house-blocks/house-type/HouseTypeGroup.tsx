@@ -3,6 +3,7 @@ import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
 import { HouseBlock } from "../../../../types/houseBlockTypes";
 import { SingleNumberInput } from "../../../project/inputs/SingleNumberInput";
+import { TooltipInfo } from "../../../../widgets/TooltipInfo";
 
 export type HouseTypeInformationProps = {
     houseBlock: HouseBlock;
@@ -16,6 +17,7 @@ export const HouseTypeGroup = ({ houseBlock, setHouseBlock, readOnly }: HouseTyp
         <WizardCard>
             <Typography fontWeight={600} mb={2}>
                 {t(`${translationPath}.title`)}
+                <TooltipInfo text={t("tooltipInfo.woningtype.title")} />
             </Typography>
             <Stack direction="row" alignItems="center" spacing={3} my={1}>
                 <Typography fontWeight={600} flex={3}>
@@ -41,6 +43,7 @@ export const HouseTypeGroup = ({ houseBlock, setHouseBlock, readOnly }: HouseTyp
                 name={t(`${translationPath}.meergezinswoning`)}
                 translationPath={translationPath}
                 mandatory={false}
+                tooltipInfoText="tooltipInfo.woningtype.meergezinswoningen"
             />
             <SingleNumberInput
                 value={houseBlock?.houseType?.eengezinswoning}
@@ -58,6 +61,7 @@ export const HouseTypeGroup = ({ houseBlock, setHouseBlock, readOnly }: HouseTyp
                 name={t(`${translationPath}.eengezinswoning`)}
                 translationPath={translationPath}
                 mandatory={false}
+                tooltipInfoText="tooltipInfo.woningtype.eengezinswoningen"
             />
         </WizardCard>
     );

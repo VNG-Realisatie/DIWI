@@ -4,6 +4,7 @@ import { t } from "i18next";
 import { HouseBlock, OwnershipSingleValue } from "../../../../types/houseBlockTypes";
 import AddIcon from "@mui/icons-material/Add";
 import { OwnershipRowInputs } from "./OwnershipRowInputs";
+import { TooltipInfo } from "../../../../widgets/TooltipInfo";
 
 export type OwnershipInformationProps = {
     houseBlock: HouseBlock;
@@ -54,6 +55,7 @@ export const OwnershipInformationGroup = ({ houseBlock, setHouseBlock, readOnly 
             <Stack direction="row" alignItems="center" spacing={2} my={1}>
                 <Typography fontWeight={600} flex={4.2}>
                     {t(`${translationPath}.type`)}
+                    <TooltipInfo text={t(`tooltipInfo.soort.title`)} />
                 </Typography>
                 <Typography fontWeight={600} flex={2}>
                     {t(`${translationPath}.amount`)}

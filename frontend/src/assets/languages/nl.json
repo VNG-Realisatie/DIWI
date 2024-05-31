@@ -411,7 +411,7 @@
         "INTERNAL_CIVIL": "Dit plan is voor jezelf en voor je collega's die werken aan woningbouw zichtbaar.",
         "INTERNAL_MANAGEMENT": "Dit plan is voor jezelf, je collega's zichtbaar en het college van b&w zichtbaar.",
         "INTERNAL_COUNCIL": "Dit plan is voor jezelf, je collega's, het college van b&w en de gemeenteraad zichtbaar.",
-        "EXTERNAL_REGIONAL": "Dit plan is zichtbaar alle interne gebruikersgroepen én voor provincies en Rijk. Woningbouwplannen met een harde planstatus (zie planologische planstatus) moeten altijd op dit niveau worden gezet. Ook zachte woningbouwplannen waarvan alle onderdelen van 'de Basisset' met omwonenden gecommuniceerd zijn moet op dit niveau worden gezet.",
+        "EXTERNAL_GOVERNMENTAL": "Dit plan is zichtbaar alle interne gebruikersgroepen én voor provincies en Rijk. Woningbouwplannen met een harde planstatus (zie planologische planstatus) moeten altijd op dit niveau worden gezet. Ook zachte woningbouwplannen waarvan alle onderdelen van 'de Basisset' met omwonenden gecommuniceerd zijn moet op dit niveau worden gezet.",
         "PUBLIC": "Dit plan is zichtbaar voor iedereen."
       },
       "planologischePlanstatus": {
@@ -456,6 +456,9 @@
       },
       "soort": {
         "title": "Hier kan je per deelplan aangeven wat je bouwprogramma is.\n\nVerschillende prijsgrenzen\nDIWI vertaalt de input over prijzen in de rapportage-, dashboard- en exportfunctie automatisch naar prijscategoriën. Dat doet DIWI op basis van vooraf ingestelde prijsgrenzen. De prijsgrenzen van het Rijk zijn interbestuurlijk vastgesteld en worden jaarlijks geïndexeerd. VNG zorgt dat deze categoriën automatisch aangepast worden bij nieuwe ontwikkelingen. Je kan ook lokale prijsgrenzen aanmaken, als de gemeenteraad die heeft vastgesteld. Dat kan bij de optie [naam]. Je moet deze categorie dan zelf bijhouden.\n\nAangegeven dient te worden in absolute aantallen hoeveel woningen vallen in de categorieën betaalbare koopwoningen (Rijksgrens), sociale huurwoningen door marktpartijen, sociale huurwoningen door woningcorporaties, middenhuurwoningen door marktpartijen, middenhuurwoningen door woningcorporaties, het aantal overige woningen en het aantal woningen waarvan prijssegment of eigendom (nog) onbekend zijn."
+      },
+      "deelplan": {
+        "title": "Vul hier de naam van je deelplan in. Bijvoorbeeld 'Fase 1', of 'Ontwikkelgebied tender CPO'."
       }
     }
   }

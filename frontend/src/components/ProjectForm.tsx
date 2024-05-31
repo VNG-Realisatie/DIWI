@@ -105,6 +105,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 multiple={true}
                                 translationPath="projectTable.planTypeOptions."
                                 tooltipInfoText={"tooltipInfo.plantype."}
+                                hasTooltipOption={true}
                             />
                         </Grid>
 
@@ -182,6 +183,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 error={t("createProject.hasMissingRequiredAreas.projectPhase")}
                                 translationPath="projectTable.projectPhaseOptions."
                                 tooltipInfoText={"tooltipInfo.projectFase."}
+                                hasTooltipOption={true}
                             />
                         </Grid>
 
@@ -196,6 +198,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 options={municipalityRolesOptions ?? []}
                                 multiple={true}
                                 tooltipInfoText={"tooltipInfo.rolGemeente."}
+                                hasTooltipOption={true}
                             />
                         </Grid>
 
@@ -241,6 +244,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 error={t("createProject.hasMissingRequiredAreas.confidentialityLevel")}
                                 translationPath="projectTable.confidentialityLevelOptions."
                                 tooltipInfoText={"tooltipInfo.vertrouwelijkheidsniveau."}
+                                hasTooltipOption={true}
                             />
                         </Grid>
                         {/* Planning plan status */}
@@ -260,6 +264,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 multiple={true}
                                 translationPath="projectTable.planningPlanStatus."
                                 tooltipInfoText={"tooltipInfo.planologischePlanstatus."}
+                                hasTooltipOption={true}
                             />
                         </Grid>
 

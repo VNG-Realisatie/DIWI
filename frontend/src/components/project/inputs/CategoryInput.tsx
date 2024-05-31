@@ -22,6 +22,7 @@ type CategoryInputProps = {
     error?: string;
     translationPath?: string;
     tooltipInfoText?: string;
+    hasTooltipOption?: boolean;
 };
 const isOptionEqualToValue = (option: Option, value: Option): boolean => {
     return option.id === value.id;
@@ -44,6 +45,7 @@ const CategoryInput = ({
     error,
     translationPath = "",
     tooltipInfoText,
+    hasTooltipOption = false,
 }: CategoryInputProps) => {
     const { hasError, helperText } = getErrorHelperText(mandatory, readOnly, values, error);
     return (
@@ -70,7 +72,7 @@ const CategoryInput = ({
                     return "";
                 }}
                 renderOption={(props, option) =>
-                    tooltipInfoText ? (
+                    hasTooltipOption ? (
                         <li {...props}>
                             {t(`${translationPath}${option.name}`)}
                             {<TooltipInfo text={t(`${tooltipInfoText}${option.name}`)} />}
@@ -81,7 +83,7 @@ const CategoryInput = ({
                 }
                 renderTags={(tagValue, getTagProps) =>
                     tagValue.map((option, index) =>
-                        tooltipInfoText ? (
+                        hasTooltipOption ? (
                             <Chip
                                 {...getTagProps({ index })}
                                 key={option.id}
