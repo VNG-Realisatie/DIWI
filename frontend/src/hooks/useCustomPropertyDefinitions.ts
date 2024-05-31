@@ -3,23 +3,29 @@ import { getCustomProperties } from "../api/adminSettingServices";
 import { components } from "../types/schema";
 
 type Categories = components["schemas"]["SelectDisabledModel"];
-type CategoriesStrict = Required<Categories>;
+export type CategoriesStrict = Required<Categories>;
 
 export const useCustomPropertyDefinitions = () => {
     const [physicalAppearanceCategories, setPhysicalAppearances] = useState<Array<CategoriesStrict>>();
+    const [physicalAppearanceDisabledCategories, setPhysicalAppearanceDisabledCategories] = useState<Array<CategoriesStrict>>([]);
     const [targetGroupCategories, setTargetGroup] = useState<Array<CategoriesStrict>>();
+    const [targetGroupDisabledCategories, setTargetGroupDisabledCategories] = useState<Array<CategoriesStrict>>([]);
 
     useEffect(() => {
         getCustomProperties().then((res) => {
             const pa = res.filter((prop) => prop.objectType === "WONINGBLOK" && prop.name === "physicalAppearance")[0];
             const paCategories = pa?.categories?.filter((cat) => cat.id !== undefined && !cat.disabled) as CategoriesStrict[];
+            const disabledPaCategories = pa?.categories?.filter((cat) => cat.id !== undefined && cat.disabled) as CategoriesStrict[];
             setPhysicalAppearances(paCategories);
+            setPhysicalAppearanceDisabledCategories(disabledPaCategories);
 
             const tg = res.filter((prop) => prop.objectType === "WONINGBLOK" && prop.name === "targetGroup")[0];
             const tgCategories = tg?.categories?.filter((cat) => cat.id !== undefined && !cat.disabled) as CategoriesStrict[];
+            const disabledTgCategories = tg?.categories?.filter((cat) => cat.id !== undefined && cat.disabled) as CategoriesStrict[];
             setTargetGroup(tgCategories);
+            setTargetGroupDisabledCategories(disabledTgCategories);
         });
     }, []);
 
-    return { physicalAppearanceCategories, targetGroupCategories };
+    return { physicalAppearanceCategories, targetGroupCategories, physicalAppearanceDisabledCategories, targetGroupDisabledCategories };
 };
