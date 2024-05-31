@@ -11,6 +11,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import nl.vng.diwi.dal.AutoCloseTransaction;
 import nl.vng.diwi.dal.entities.UserState;
@@ -67,9 +68,7 @@ public class UserResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public UserModel createUser(UserModel newUser, ContainerRequestContext requestContext) throws VngBadRequestException {
-
-        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
+    public UserModel createUser(UserModel newUser, @Context LoggedUser loggedUser) throws VngBadRequestException {
 
         String validationError = newUser.validate();
         if (validationError != null) {
@@ -105,9 +104,7 @@ public class UserResource {
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public UserModel updateUser(@PathParam("id") UUID userId, UserModel updatedUser, ContainerRequestContext requestContext) throws VngBadRequestException, VngNotFoundException {
-
-        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
+    public UserModel updateUser(@PathParam("id") UUID userId, UserModel updatedUser, @Context LoggedUser loggedUser) throws VngBadRequestException, VngNotFoundException {
 
         UserState state = userService.getUserDAO().getUserById(userId);
         if (state == null) {
