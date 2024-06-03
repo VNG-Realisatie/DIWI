@@ -4,7 +4,6 @@ import { useRef, useState } from "react";
 import { importExcelProjects, importGeoJsonProjects } from "../api/importServices";
 import { ReactComponent as UploadCloud } from "../assets/uploadCloud.svg";
 import useAlert from "../hooks/useAlert";
-import { UploadErrorType } from "./ImportExcel";
 import { useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
 import { t } from "i18next";
@@ -13,6 +12,14 @@ type FunctionalityType = "excel" | "squit" | "geojson";
 
 type Props = {
     functionality: FunctionalityType;
+};
+
+export type UploadErrorType = {
+    errorCode: string;
+    row: number;
+    column: string;
+    cellValue: string;
+    errorMessage: string;
 };
 
 export const ImportPage = ({ functionality }: Props) => {
@@ -62,7 +69,7 @@ export const ImportPage = ({ functionality }: Props) => {
                         handleUploadStackClick();
                     }}
                 >
-                    Het bestand kon niet worden geimporteerd. Klik hier om terug te gaan om een nieuw bestand te uploaden
+                    {t("exchangeData.notifications.importFailedGoBack")}
                 </Stack>
             )}
             {!uploaded && (
@@ -90,23 +97,23 @@ export const ImportPage = ({ functionality }: Props) => {
                                     .then(async (res) => {
                                         setUploaded(true);
                                         if (res.ok) {
-                                            setAlert("Bestand succesvol geüpload.", "success");
+                                            setAlert(t("exchangeData.download.notifications.importSuccess"), "success");
                                             navigate(Paths.projectsTable.path);
                                         } else {
                                             // 400 errors contain relevant info in body, deal with here
                                             const newErrors = (await res.json()) as Array<UploadErrorType>;
                                             setErrors(newErrors);
-                                            setAlert("Kon bestand niet importeren", "error");
+                                            setAlert(t("exchangeData.download.notifications.importFailed"), "error");
                                         }
                                     })
                                     .catch((error) => {
                                         console.error("Failed to import due to error", error);
-                                        setAlert("Kon bestand niet importeren", "error");
+                                        setAlert(t("exchangeData.download.notifications.importFailed"), "error");
                                     });
                             }
                         }}
                     />
-                    Klik hier om te uploaden
+                    {t("exchangeData.upload.hint")}
                 </Stack>
             )}
             {errors.length > 0 && (
@@ -120,24 +127,22 @@ export const ImportPage = ({ functionality }: Props) => {
                     </Alert>
                     <Alert severity="error">
                         <Typography fontSize="16px" mt={2}>
-                            {"Errors"}
+                            {t("exchangeData.errorTable.errors")}
                         </Typography>
                         <Table>
                             <TableBody>
-                                {/* Header row */}
                                 <TableRow>
-                                    <TableCell>{"Row"}</TableCell>
-                                    <TableCell>{"Column"}</TableCell>
-                                    <TableCell>{"Value"}</TableCell>
-                                    <TableCell>{"Description"}</TableCell>
+                                    <TableCell>{t("exchangeData.errorTable.row")}</TableCell>
+                                    <TableCell>{t("exchangeData.errorTable.column")}</TableCell>
+                                    <TableCell>{t("exchangeData.errorTable.value")}</TableCell>
+                                    <TableCell>{t("exchangeData.errorTable.description")}</TableCell>
                                 </TableRow>
-                                {/* Data rows */}
                                 {errors.map((error) => (
                                     <TableRow>
                                         <TableCell>{error.row}</TableCell>
                                         <TableCell>{error.column}</TableCell>
                                         <TableCell>{error.cellValue}</TableCell>
-                                        <TableCell>{error.errorMessage}</TableCell>
+                                        <TableCell>{t(`exchangeData.${error.errorCode}`)}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
