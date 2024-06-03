@@ -57,7 +57,7 @@
     "start": "vite",
     "build": "vite build",
     "test": "vitest",
-    "test:ci": "yarn test --testResultsProcessor=\"jest-junit\" --watchAll=false --ci --coverage",
+    "test:ci": "vitest run --reporter=junit --outputFile=junit.xml",
     "eject": "vite eject",
     "format": "prettier --write src/",
     "format:check": "prettier --check src/",
