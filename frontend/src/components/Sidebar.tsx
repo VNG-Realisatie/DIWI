@@ -48,16 +48,16 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
             <Divider />
 
             <List sx={{ ml: 3 }}>
-                <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>{t("sidebar.projects")}</Typography>
-                <Link key="Overzicht projecten" to="/projects/table" style={{ color: "#FFFFFF", textDecoration: "none" }}>
+                <Typography sx={typographyStyles}>{t("sidebar.projects")}</Typography>
+                <Link key="Overzicht projecten" to="/projects/table" style={linkStyles}>
                     <ListItemButton onClick={handleDrawerClose}>
-                        <ListItemText primary="Overzicht projecten" />
+                        <ListItemText primary={t("sidebar.projectOverview")} />
                     </ListItemButton>
                 </Link>
                 {allowedActions.includes("CREATE_NEW_PROJECT") && (
-                    <Link key="Project toevoegen" to="/project/create" style={{ color: "#FFFFFF", textDecoration: "none" }}>
+                    <Link key="Project toevoegen" to="/project/create" style={linkStyles}>
                         <ListItemButton onClick={handleDrawerClose}>
-                            <ListItemText primary="Project toevoegen" />
+                            <ListItemText primary={t("sidebar.addProject")} />
                         </ListItemButton>
                     </Link>
                 )}
@@ -88,15 +88,15 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
                 </Link>
             </List> */}
             <List sx={{ ml: 3 }}>
-                <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>{t("sidebar.settings")}</Typography>
-                <Link to={Paths.userSettings.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
+                <Typography sx={typographyStyles}>{t("sidebar.settings")}</Typography>
+                <Link to={Paths.userSettings.path} style={linkStyles} onClick={handleDrawerClose}>
                     <ListItemButton>
                         <ListItemText primary={t("customProperties.title")} />
                     </ListItemButton>
                 </Link>
             </List>
             <List sx={{ ml: 3 }}>
-                <Link to={Paths.userManagement.path} style={linkStyles}>
+                <Link to={Paths.userManagement.path} style={linkStyles} onClick={handleDrawerClose}>
                     <Typography sx={typographyStyles}>{t("sidebar.users")}</Typography>
                 </Link>
             </List>

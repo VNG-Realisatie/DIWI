@@ -181,7 +181,9 @@
       "dashboards": "Dashboards",
       "users": "Gebruikers",
       "dataExchange": "Data uitwisselen",
-      "settings": "Instellingen"
+      "settings": "Instellingen",
+      "addProject": "Project toevoegen",
+      "projectOverview": "Overzicht Projecten"
     },
     "about": {
       "heading": "Over deze website",
