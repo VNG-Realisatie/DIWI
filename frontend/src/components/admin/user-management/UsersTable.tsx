@@ -51,7 +51,13 @@ const UsersTable = ({ rows }: Props) => {
         { field: "firstName", headerName: t("admin.userManagement.tableHeader.name.firstName"), flex: 1.5, sortable: true },
         { field: "lastName", headerName: t("admin.userManagement.tableHeader.name.lastName"), flex: 1.5, sortable: true },
         { field: "email", headerName: t("admin.userManagement.tableHeader.email"), flex: 1.5, sortable: true },
-        { field: "role", headerName: t("admin.userManagement.tableHeader.role"), flex: 1, sortable: true },
+        {
+            field: "role",
+            headerName: t("admin.userManagement.tableHeader.role"),
+            flex: 1,
+            sortable: true,
+            renderCell: (params: any) => t(`admin.userManagement.roles.${params.value}`),
+        },
         {
             field: "acties",
             headerName: t("admin.userManagement.tableHeader.actions"),
