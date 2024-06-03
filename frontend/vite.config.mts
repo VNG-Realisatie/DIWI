@@ -11,5 +11,6 @@ export default defineConfig({
             "^/rest/.*": "http://localhost:8080/",
         },
     },
+    assetsInclude: "**/*.xlsx",
     plugins: [react()],
 });

@@ -1,6 +1,7 @@
 #!/bin/bash
+SCRIPT_DIR=$(dirname -- "${BASH_SOURCE[0]}") &> /dev/null && pwd
 
-REACT_APP_VERSION_NUMBER=$(sed -n 's/.*"version": "\(.*\)",/\1/p' package.json)
+REACT_APP_VERSION_NUMBER=$(sed -n 's/.*"version": "\(.*\)",/\1/p' "$SCRIPT_DIR/frontend/package.json")
 export REACT_APP_VERSION_NUMBER
 
 REACT_APP_GIT_SHA=$(git rev-parse HEAD)
