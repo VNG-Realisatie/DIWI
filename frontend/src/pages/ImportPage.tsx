@@ -97,18 +97,18 @@ export const ImportPage = ({ functionality }: Props) => {
                                     .then(async (res) => {
                                         setUploaded(true);
                                         if (res.ok) {
-                                            setAlert(t("exchangeData.download.notifications.importSuccess"), "success");
+                                            setAlert(t("exchangeData.notifications.importSuccess"), "success");
                                             navigate(Paths.projectsTable.path);
                                         } else {
                                             // 400 errors contain relevant info in body, deal with here
                                             const newErrors = (await res.json()) as Array<UploadErrorType>;
                                             setErrors(newErrors);
-                                            setAlert(t("exchangeData.download.notifications.importFailed"), "error");
+                                            setAlert(t("exchangeData.notifications.importFailed"), "error");
                                         }
                                     })
                                     .catch((error) => {
                                         console.error("Failed to import due to error", error);
-                                        setAlert(t("exchangeData.download.notifications.importFailed"), "error");
+                                        setAlert(t("exchangeData.notifications.importFailed"), "error");
                                     });
                             }
                         }}
