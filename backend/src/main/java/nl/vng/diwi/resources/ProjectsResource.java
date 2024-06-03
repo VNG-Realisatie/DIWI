@@ -32,8 +32,8 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import nl.vng.diwi.config.ProjectConfig;
@@ -120,6 +120,7 @@ public class ProjectsResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public ProjectMinimalSnapshotModel createProject(@Context LoggedUser loggedUser, ProjectCreateSnapshotModel projectSnapshotModel)
             throws VngServerErrorException, VngBadRequestException, VngNotFoundException {
+
         String validationError = projectSnapshotModel.validate();
         if (validationError != null) {
             throw new VngBadRequestException(validationError);
@@ -131,7 +132,7 @@ public class ProjectsResource {
             Project project = projectService.createProject(repo, loggedUser.getUuid(), projectSnapshotModel, now);
             transaction.commit();
 
-            ProjectSnapshotModel projectSnapshot = projectService.getProjectSnapshot(repo, project.getId());
+            ProjectSnapshotModel projectSnapshot = projectService.getProjectSnapshot(repo, project.getId(), loggedUser);
 
             return projectSnapshot;
         } catch (ConstraintViolationException ex) {
@@ -143,14 +144,16 @@ public class ProjectsResource {
     @Path("/{id}")
     @RolesAllowed({UserActionConstants.VIEW_OWN_PROJECTS, UserActionConstants.VIEW_OTHERS_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
-    public ProjectSnapshotModel getCurrentProjectSnapshot(@PathParam("id") UUID projectUuid) throws VngNotFoundException {
-        return projectService.getProjectSnapshot(repo, projectUuid);
+    public ProjectSnapshotModel getCurrentProjectSnapshot(ContainerRequestContext requestContext, @PathParam("id") UUID projectUuid) throws VngNotFoundException {
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
+        return projectService.getProjectSnapshot(repo, projectUuid, loggedUser);
     }
 
     @DELETE
     @Path("/{id}")
     @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
-    public void deleteProject(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid) throws VngNotFoundException {
+    public void deleteProject(ContainerRequestContext requestContext, @PathParam("id") UUID projectUuid) throws VngNotFoundException {
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             projectService.deleteProject(repo, projectUuid, loggedUser.getUuid());
             transaction.commit();
@@ -176,8 +179,10 @@ public class ProjectsResource {
     @Path("/table")
     @RolesAllowed({UserActionConstants.VIEW_OWN_PROJECTS, UserActionConstants.VIEW_OTHERS_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ProjectListModel> getAllProjects(@BeanParam FilterPaginationSorting filtering)
+    public List<ProjectListModel> getAllProjects(@BeanParam FilterPaginationSorting filtering, ContainerRequestContext requestContext)
             throws VngBadRequestException {
+
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
 
         if (filtering.getSortColumn() != null && !ProjectListModel.SORTABLE_COLUMNS.contains(filtering.getSortColumn())) {
             throw new VngBadRequestException("Sort column not supported.");
@@ -187,7 +192,7 @@ public class ProjectsResource {
             filtering.setSortColumn(ProjectListModel.DEFAULT_SORT_COLUMN);
         }
 
-        return projectService.getProjectsTable(repo, filtering);
+        return projectService.getProjectsTable(repo, filtering, loggedUser);
 
     }
 
@@ -195,9 +200,11 @@ public class ProjectsResource {
     @Path("/table/size")
     @RolesAllowed({UserActionConstants.VIEW_OWN_PROJECTS, UserActionConstants.VIEW_OTHERS_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
-    public Map<String, Integer> getAllProjectsListSize(@BeanParam FilterPaginationSorting filtering) {
+    public Map<String, Integer> getAllProjectsListSize(@BeanParam FilterPaginationSorting filtering, ContainerRequestContext requestContext) {
 
-        Integer projectsCount = repo.getProjectsDAO().getProjectsTableCount(filtering);
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
+
+        Integer projectsCount = repo.getProjectsDAO().getProjectsTableCount(filtering, loggedUser);
 
         return Map.of("size", projectsCount);
     }
@@ -231,6 +238,7 @@ public class ProjectsResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public List<ProjectHouseblockCustomPropertyModel> updateProjectCustomProperty(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid, ProjectHouseblockCustomPropertyModel projectCPUpdateModel)
         throws VngNotFoundException, VngBadRequestException, VngServerErrorException {
+
         if (projectCPUpdateModel.getCustomPropertyId() == null){
             throw new VngBadRequestException("Custom property id must be set.");
         }
@@ -349,6 +357,7 @@ public class ProjectsResource {
     @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
     @Consumes(MediaType.APPLICATION_JSON)
     public void setProjectPlots(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid, List<PlotModel> plots) throws VngNotFoundException, VngBadRequestException {
+
         Project project = projectService.getCurrentProject(repo, projectUuid);
 
         if (project == null) {
@@ -391,7 +400,7 @@ public class ProjectsResource {
             throw new VngNotFoundException();
         }
 
-        ProjectSnapshotModel projectSnapshotModelCurrent = projectService.getProjectSnapshot(repo, projectUuid);
+        ProjectSnapshotModel projectSnapshotModelCurrent = projectService.getProjectSnapshot(repo, projectUuid, loggedUser);
 
         List<ProjectUpdateModel> projectUpdateModelList = new ArrayList<>();
         for (ProjectUpdateModel.ProjectProperty projectProperty : ProjectUpdateModel.ProjectProperty.values()) {
@@ -539,7 +548,7 @@ public class ProjectsResource {
             }
         }
 
-        return projectService.getProjectSnapshot(repo, projectUuid);
+        return projectService.getProjectSnapshot(repo, projectUuid, loggedUser);
     }
 
     private void updateProjectProperty(Project project, ProjectUpdateModel projectUpdateModel, LoggedUser loggedUser, LocalDate updateDate, ZonedDateTime changeDate)

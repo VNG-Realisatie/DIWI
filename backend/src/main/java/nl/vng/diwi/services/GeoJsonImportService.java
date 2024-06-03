@@ -70,7 +70,7 @@ public class GeoJsonImportService {
                             String geometryStr = MAPPER.writeValueAsString(featureGeometry);
                             projectImportModel.getProjectStringPropsMap().put(geometryPropertyId, geometryStr);
                         }
-                        projectImportModel.validate(projectImportModel.getId(), featureErrors, importTime.toLocalDate()); //business logic validation
+                        projectImportModel.validate(repo, projectImportModel.getId(), featureErrors, importTime.toLocalDate()); //business logic validation
                     }
                     if (featureErrors.isEmpty()) { //still no errors
                         geoJsonProjects.add(projectImportModel.persistProjectAndHouseblocks(repo, user, importTime));

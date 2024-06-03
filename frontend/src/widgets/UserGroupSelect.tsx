@@ -52,6 +52,9 @@ export const UserGroupSelect = ({ readOnly, userGroup, setUserGroup }: Props) =>
                         .join(" ") || ""
                 );
             }}
+            onChange={(_, value) => {
+                setUserGroup(value);
+            }}
             isOptionEqualToValue={(option, value) => option.uuid === value.uuid}
             value={userGroup}
             renderTags={(groups) => <UserGroupAvatars groups={groups} />}

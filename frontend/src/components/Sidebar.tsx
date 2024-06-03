@@ -25,6 +25,9 @@ const DrawerHeader = styled("div")(({ theme }) => ({
     justifyContent: "space-between",
 }));
 
+const typographyStyles = { fontSize: "20px", fontWeight: "600" };
+const linkStyles = { color: "#FFFFFF", textDecoration: "none" };
+
 export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
     const theme = useTheme();
     const { t } = useTranslation();
@@ -85,16 +88,17 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
                 </Link>
             </List> */}
             <List sx={{ ml: 3 }}>
-                {allowedActions.includes("EDIT_CUSTOM_PROPERTIES") && (
-                    <>
-                        <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>{t("sidebar.settings")}</Typography>
-                        <Link to={Paths.userSettings.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
-                            <ListItemButton>
-                                <ListItemText primary={t("customProperties.title")} />
-                            </ListItemButton>
-                        </Link>
-                    </>
-                )}
+                <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>{t("sidebar.settings")}</Typography>
+                <Link to={Paths.userSettings.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
+                    <ListItemButton>
+                        <ListItemText primary={t("customProperties.title")} />
+                    </ListItemButton>
+                </Link>
+            </List>
+            <List sx={{ ml: 3 }}>
+                <Link to={Paths.userManagement.path} style={linkStyles}>
+                    <Typography sx={typographyStyles}>{t("sidebar.users")}</Typography>
+                </Link>
             </List>
         </Drawer>
     );
