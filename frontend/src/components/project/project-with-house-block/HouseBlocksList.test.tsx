@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { vi } from "vitest";
-import { getCustomProperties, getCustomPropertiesWithQuery } from "../../../api/adminSettingServices";
+import { getCustomProperties } from "../../../api/adminSettingServices";
 import { saveHouseBlockWithCustomProperties } from "../../../api/houseBlockServices";
 import { getEmptyHouseBlock } from "../../../context/HouseBlockContext";
 import TestComponentWrapper from "../../../test/TestComponentWrapper";
