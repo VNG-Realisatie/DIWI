@@ -13,8 +13,8 @@ type Props = {
     readOnly: boolean;
     userGroup: UserGroup[];
     setUserGroup: (owner: UserGroup[]) => void;
-    mandatory?: boolean;
-    errorText?: string;
+    mandatory: boolean;
+    errorText: string;
 };
 
 const isSingleUserIncluded = true;
@@ -25,7 +25,7 @@ const shouldDisplayError = (mandatory: boolean, userGroup: UserGroup[]) => {
 
 export const UserGroupSelect = ({ readOnly, userGroup, setUserGroup, mandatory, errorText }: Props) => {
     const [ownerOptions, setOwnerOptions] = useState<UserGroup[]>();
-    const hasError = shouldDisplayError(mandatory ? true : false, userGroup);
+    const hasError = shouldDisplayError(mandatory, userGroup);
 
     useEffect(() => {
         getUserGroupList(isSingleUserIncluded).then((groups) => setOwnerOptions(groups));

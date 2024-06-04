@@ -119,7 +119,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 return (
                     cellValues.row.projectOwners &&
                     cellValues.row.projectOwners.length > 0 && (
-                        <UserGroupSelect readOnly={true} userGroup={cellValues.row.projectOwners} setUserGroup={() => {}} />
+                        <UserGroupSelect mandatory={false} errorText="" readOnly={true} userGroup={cellValues.row.projectOwners} setUserGroup={() => {}} />
                     )
                 );
             },
