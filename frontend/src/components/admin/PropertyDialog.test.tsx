@@ -1,11 +1,11 @@
-import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import PropertyDialog from "./PropertyDialog";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import TestComponentWrapper from "../../test/TestComponentWrapper";
+import PropertyDialog from "./PropertyDialog";
 
+import { vi } from "vitest";
 import { Property, addCustomProperty, getCustomProperties } from "../../api/adminSettingServices";
 
-jest.mock("../../api/adminSettingServices");
+vi.mock("../../api/adminSettingServices");
 
 const addCustomPropertyMock = addCustomProperty as jest.Mock;
 const getCustomPropertiesMock = getCustomProperties as jest.Mock;

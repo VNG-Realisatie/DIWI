@@ -1,25 +1,31 @@
-import { screen, fireEvent, render } from "@testing-library/react";
-import { getCustomProperties } from "../../../api/adminSettingServices";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { act } from "react-dom/test-utils";
+import { vi } from "vitest";
+import { getCustomProperties, getCustomPropertiesWithQuery } from "../../../api/adminSettingServices";
 import { saveHouseBlockWithCustomProperties } from "../../../api/houseBlockServices";
 import { getEmptyHouseBlock } from "../../../context/HouseBlockContext";
+import TestComponentWrapper from "../../../test/TestComponentWrapper";
 import { HouseBlockWithCustomProperties } from "../../../types/houseBlockTypes";
 import { HouseBlockAccordionWithControls } from "./HouseBlocksList";
-import TestComponentWrapper from "../../../test/TestComponentWrapper";
-import { act } from "react-dom/test-utils";
 
-// mock saveHouseBlockWithCustomProperties
-jest.mock("../../../api/houseBlockServices", () => ({
-    ...jest.requireActual("../../../api/houseBlockServices"),
-    saveHouseBlockWithCustomProperties: vi.fn(),
-}));
+vi.mock("../../../api/houseBlockServices", async (importOriginal) => {
+    const actual = await importOriginal<typeof import("../../../api/houseBlockServices")>();
+    return {
+        ...actual,
+        saveHouseBlockWithCustomProperties: vi.fn(),
+    };
+});
 
 const saveHouseBlockWithCustomPropertiesMock = saveHouseBlockWithCustomProperties as jest.Mock;
 
-//mock getCustomProperties
-jest.mock("../../../api/adminSettingServices", () => ({
-    ...jest.requireActual("../../../api/adminSettingServices"),
-    getCustomProperties: vi.fn(),
-}));
+vi.mock("../../../api/adminSettingServices", async (importOriginal) => {
+    const actual = await importOriginal<typeof import("../../../api/adminSettingServices")>();
+    return {
+        ...actual,
+        getCustomProperties: vi.fn().mockResolvedValue([]),
+        getCustomPropertiesWithQuery: vi.fn().mockResolvedValue([]),
+    };
+});
 
 const getCustomPropertiesMock = getCustomProperties as jest.Mock;
 

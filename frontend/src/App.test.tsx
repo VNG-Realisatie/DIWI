@@ -10,6 +10,14 @@ vi.mock("query-string", () => ({
     stringify: vi.fn(),
 }));
 
+vi.mock("./api/userServices", () => ({
+    getCurrentUser: vi.fn().mockResolvedValue({}),
+}));
+
+vi.mock("utils/requests", () => ({
+    getJson: vi.fn().mockResolvedValue({}),
+}));
+
 test("renders projecten", () => {
     render(
         <MemoryRouter>
