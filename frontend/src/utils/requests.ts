@@ -15,8 +15,8 @@ export async function diwiFetch(input: RequestInfo | URL, init?: RequestInit | u
             window.location.href = `${Paths.login.path}?returnUrl=${encodeURIComponent(returnUrl)}`;
         }
         if (response.status === 403) {
-            // Forbidden just redirect to that page
-            window.location.href = Paths.forbidden.path;
+            // not sure what we want to do here, probably nothing?
+            console.error("Blocked by server while trying to diwiFetch:", input);
         }
         return response;
     });
