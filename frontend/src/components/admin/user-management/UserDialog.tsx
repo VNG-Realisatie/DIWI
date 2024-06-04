@@ -88,7 +88,6 @@ const UserDialog = ({ open, onClose, newUser, setNewUser, handleAddUser, title }
                         title={t("admin.userManagement.tableHeader.department")}
                         errorText={t("admin.userManagement.errors.department")}
                     />
-                    {/* Options need to be translated */}
                     <CategoryInput
                         readOnly={false}
                         mandatory={true}
@@ -106,7 +105,7 @@ const UserDialog = ({ open, onClose, newUser, setNewUser, handleAddUser, title }
                         multiple={false}
                         error={t("admin.userManagement.errors.role")}
                     />
-                    <TextInput
+                    {/* <TextInput
                         readOnly={false}
                         value={newUser.contactPerson ?? ""}
                         setValue={(event: any) => {
@@ -123,7 +122,7 @@ const UserDialog = ({ open, onClose, newUser, setNewUser, handleAddUser, title }
                         }}
                         mandatory={false}
                         title={t("admin.userManagement.tableHeader.prefixes")}
-                    />
+                    /> */}
                 </Box>
             </DialogContent>
             <DialogActions>
