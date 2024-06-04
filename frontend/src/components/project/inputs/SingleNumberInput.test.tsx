@@ -9,7 +9,7 @@ describe("SingleNumberInput component", () => {
     });
 
     it("calls onChange callback with entered value", () => {
-        const handleChange = jest.fn();
+        const handleChange = vi.fn();
         render(<SingleNumberInput value={null} onChange={handleChange} readOnly={false} mandatory={false} />);
         const input = screen.getByRole("spinbutton");
         userEvent.type(input, "42");

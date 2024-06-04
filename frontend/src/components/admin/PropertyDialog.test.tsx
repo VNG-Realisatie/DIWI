@@ -19,10 +19,10 @@ describe("PropertyDialog", () => {
     });
 
     it("renders without errors for new property", async () => {
-        const setOpenDialog = jest.fn();
+        const setOpenDialog = vi.fn();
         render(
             <TestComponentWrapper>
-                <PropertyDialog openDialog={true} setOpenDialog={setOpenDialog} setCustomProperties={jest.fn()} />
+                <PropertyDialog openDialog={true} setOpenDialog={setOpenDialog} setCustomProperties={vi.fn()} />
             </TestComponentWrapper>,
         );
 

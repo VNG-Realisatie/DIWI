@@ -6,8 +6,8 @@ import ConfigContext from "./context/ConfigContext";
 
 vi.mock("query-string", () => ({
     //mock whatever you use from query-string
-    parse: jest.fn(),
-    stringify: jest.fn(),
+    parse: vi.fn(),
+    stringify: vi.fn(),
 }));
 
 test("renders projecten", () => {

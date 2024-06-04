@@ -10,7 +10,7 @@ import { act } from "react-dom/test-utils";
 // mock saveHouseBlockWithCustomProperties
 jest.mock("../../../api/houseBlockServices", () => ({
     ...jest.requireActual("../../../api/houseBlockServices"),
-    saveHouseBlockWithCustomProperties: jest.fn(),
+    saveHouseBlockWithCustomProperties: vi.fn(),
 }));
 
 const saveHouseBlockWithCustomPropertiesMock = saveHouseBlockWithCustomProperties as jest.Mock;
@@ -18,7 +18,7 @@ const saveHouseBlockWithCustomPropertiesMock = saveHouseBlockWithCustomPropertie
 //mock getCustomProperties
 jest.mock("../../../api/adminSettingServices", () => ({
     ...jest.requireActual("../../../api/adminSettingServices"),
-    getCustomProperties: jest.fn(),
+    getCustomProperties: vi.fn(),
 }));
 
 const getCustomPropertiesMock = getCustomProperties as jest.Mock;
@@ -87,7 +87,7 @@ it.each([{ disabled: true }, { disabled: false }])("should save houseblock with 
 
     render(
         <TestComponentWrapper>
-            <HouseBlockAccordionWithControls houseBlock={houseBlock} refresh={jest.fn()} />
+            <HouseBlockAccordionWithControls houseBlock={houseBlock} refresh={vi.fn()} />
         </TestComponentWrapper>,
     );
 
