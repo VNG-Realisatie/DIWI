@@ -72,7 +72,7 @@ public class ImportError {
         HOUSEBLOCK_DELIVERY_DATE_AFTER_PROJECT_END_DATE("houseblock_delivery_date", "At least one housing block delivery date is after the project end date."),
         HOUSEBLOCK_HOUSING_NUMBER_NOT_POSITIVE("houseblock_housing_number", "The housing block mutation number is not greater than 0."),
         HOUSEBLOCK_DELIVERY_TOTAL_INCORRECT("houseblock_delivery_total", "The total of houses in Delivery section does not match the mutation amount."),
-        HOUSEBLOCK_DELIVERY_DATE_BEFORE_PROJECT_DEVLIVERY_PHASE("houseblock_delivery_phase", "The housing block delivery dates are before the project delivery phase"),
+        HOUSEBLOCK_DELIVERY_DATE_BEFORE_PROJECT_DELIVERY_PHASE("houseblock_delivery_phase", "The housing block delivery dates are before the project delivery phase"),
         HOUSEBLOCK_OWNERSHIP_TYPE_TOTAL_INCORRECT("houseblock_ownership_total", "The total of houses in Property type section does not match the mutation amount."),
         HOUSEBLOCK_OWNERSHIP_OWNER_TOTAL_INCORRECT("houseblock_ownership_owner_total", "The total of houses in Home-value section does not match the owner-occupied amount."),
         HOUSEBLOCK_OWNERSHIP_LANDLORD_TOTAL_INCORRECT("houseblock_ownership_landlord_total", "The total of houses in Rental-price-private-landlord section does not match the private-landlord amount."),

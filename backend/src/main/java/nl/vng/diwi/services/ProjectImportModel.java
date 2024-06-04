@@ -136,6 +136,7 @@ public class ProjectImportModel {
         private Map<UUID, UUID> houseblockOrdinalPropsMap = new HashMap<>();
 
         private LocalDate latestDeliveryDate;
+        private LocalDate earliestDeliveryDate;
         private Map<LocalDate, Integer> deliveryDateMap = new HashMap<>();
 
         public HouseblockImportModel(MutationType mutationType, Integer mutation, String name) {
@@ -155,6 +156,9 @@ public class ProjectImportModel {
             if (latestDeliveryDate == null) {
                 latestDeliveryDate = deliveryDateMap.keySet().stream().max(LocalDate::compareTo).orElse(projectRowModel.projectEndDate);
             }
+            if (earliestDeliveryDate == null) {
+                earliestDeliveryDate = deliveryDateMap.keySet().stream().min(LocalDate::compareTo).orElse(projectRowModel.projectEndDate);
+            }
 
             if (latestDeliveryDate.isAfter(projectRowModel.projectEndDate)) {
                 rowErrors.add(new ImportError(excelRowNo, ImportError.ERROR.HOUSEBLOCK_DELIVERY_DATE_AFTER_PROJECT_END_DATE));
@@ -170,7 +174,7 @@ public class ProjectImportModel {
                 if (projectDeliveryDate != null) {
                     deliveryDateMap.keySet().forEach(dd -> {
                         if (dd.isBefore(projectDeliveryDate)) {
-                            rowErrors.add(new ImportError(excelRowNo, ImportError.ERROR.HOUSEBLOCK_DELIVERY_DATE_BEFORE_PROJECT_DEVLIVERY_PHASE));
+                            rowErrors.add(new ImportError(excelRowNo, ImportError.ERROR.HOUSEBLOCK_DELIVERY_DATE_BEFORE_PROJECT_DELIVERY_PHASE));
                         }
                     });
                 }
@@ -506,7 +510,8 @@ public class ProjectImportModel {
         var deliveryDateChangelog = new HouseblockDeliveryDateChangelog();
         setChangelogValues.accept(deliveryDateChangelog);
         deliveryDateChangelog.setHouseblock(houseblock);
-        deliveryDateChangelog.setExpectedDeliveryDate(houseblockRowModel.latestDeliveryDate);
+        deliveryDateChangelog.setLatestDeliveryDate(houseblockRowModel.latestDeliveryDate);
+        deliveryDateChangelog.setEarliestDeliveryDate(houseblockRowModel.earliestDeliveryDate);
         repo.persist(deliveryDateChangelog);
 
         var nameChangelog = new HouseblockNameChangelog();
