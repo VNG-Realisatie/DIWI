@@ -25,6 +25,9 @@ const DrawerHeader = styled("div")(({ theme }) => ({
     justifyContent: "space-between",
 }));
 
+const typographyStyles = { fontSize: "20px", fontWeight: "600" };
+const linkStyles = { color: "#FFFFFF", textDecoration: "none" };
+
 export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
     const theme = useTheme();
     const { t } = useTranslation();
@@ -44,9 +47,9 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
             <Divider />
 
             <List sx={{ ml: 3 }}>
-                <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>{t("sidebar.projects")}</Typography>
+                <Typography sx={typographyStyles}>{t("sidebar.projects")}</Typography>
                 {projectMenuItems.map((menuItem) => (
-                    <Link key={menuItem.text} to={`/${menuItem.url}`} style={{ color: "#FFFFFF", textDecoration: "none" }}>
+                    <Link key={menuItem.text} to={`/${menuItem.url}`} style={linkStyles}>
                         <ListItemButton onClick={handleDrawerClose}>
                             <ListItemText primary={menuItem.text} />
                         </ListItemButton>
@@ -79,11 +82,16 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
                 </Link>
             </List> */}
             <List sx={{ ml: 3 }}>
-                <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>{t("sidebar.settings")}</Typography>
-                <Link to={Paths.userSettings.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
+                <Typography sx={typographyStyles}>{t("sidebar.settings")}</Typography>
+                <Link to={Paths.userSettings.path} style={linkStyles}>
                     <ListItemButton>
                         <ListItemText primary={t("customProperties.title")} />
                     </ListItemButton>
+                </Link>
+            </List>
+            <List sx={{ ml: 3 }}>
+                <Link to={Paths.userManagement.path} style={linkStyles}>
+                    <Typography sx={typographyStyles}>{t("sidebar.users")}</Typography>
                 </Link>
             </List>
         </Drawer>

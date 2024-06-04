@@ -19,9 +19,14 @@ import nl.vng.diwi.models.UserInfoModel;
 import nl.vng.diwi.models.UserModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
+import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.security.MailException;
+import nl.vng.diwi.security.MailService;
 import nl.vng.diwi.security.UserActionConstants;
 import nl.vng.diwi.services.UserService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 import java.util.UUID;
@@ -30,11 +35,15 @@ import java.util.UUID;
 // Specifically no @RolesAllowed("BLOCKED_BY_DEFAULT") because userinfo should always be accessible
 public class UserResource {
 
+    private static Logger logger = LogManager.getLogger();
+
     private final UserService userService;
+    private final MailService mailService;
 
     @Inject
-    public UserResource(UserService userService) {
+    public UserResource(UserService userService, MailService mailService) {
         this.userService = userService;
+        this.mailService = mailService;
     }
 
     @GET
@@ -79,7 +88,13 @@ public class UserResource {
             UserState newUserEntity = userService.createUser(newUser, identityProviderId, loggedUser.getUuid());
             transaction.commit();
 
-            //TODO: send welcome email
+            try {
+                mailService.sendWelcomeMail(newUserEntity.getEmail());
+                //TODO: trigger password reset email in keycloak
+            } catch (MailException e) {
+                logger.error("Failed to send welcome mail", e);
+                throw new VngServerErrorException("Failed to send welcome mail");
+            }
 
             return new UserModel(newUserEntity);
         }
