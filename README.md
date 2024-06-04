@@ -255,6 +255,7 @@ To make sure we don't get redirect responses when we do `fetch` requests we need
 - Copy `.env.production.example` to `.env`
 - Set a secure password for the database in the .env file
 - Configure keycloak with a new client and enter the parameters in the .env file
+- Enter the parameters for the email server in the .env file
 - Call `./deploy.sh`
 
 ## Glossary
