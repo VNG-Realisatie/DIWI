@@ -2,14 +2,20 @@ package nl.vng.diwi.models;
 
 import lombok.Data;
 
+import java.util.UUID;
+
 @Data
 public class ImportError {
 
     private String errorCode;
     private Integer row;
+    private Integer identificationNumber;
+    private String houseblockName;
     private String column;
-    private String cellValue;
+    private String propertyName;
+    private String value;
     private String errorMessage;
+    private UUID customPropertyId;
 
 
     public ImportError(ERROR error) {
@@ -22,25 +28,44 @@ public class ImportError {
         this.errorMessage = errorMessage;
     }
 
-    public ImportError(Integer row, ERROR error) {
+    public ImportError(Integer row, String propertyName, ERROR error) {
         this.row = row;
+        this.propertyName = propertyName;
         this.errorMessage = error.errorMsg;
         this.errorCode = error.errorCode;
     }
 
-    public ImportError(Integer row, String cellValue, ERROR error) {
+    public ImportError(Integer row, Integer identificationNumber, String houseblockName, ERROR error) {
         this.row = row;
-        this.cellValue = cellValue;
+        this.identificationNumber = identificationNumber;
+        this.houseblockName = houseblockName;
         this.errorMessage = error.errorMsg;
         this.errorCode = error.errorCode;
     }
 
-    public ImportError(Integer row, String column, String cellValue, ERROR error) {
+    public ImportError(Integer row, String column, Integer identificationNumber, String houseblockName, String value, UUID customPropertyId, ERROR error) {
         this.row = row;
         this.column = column;
-        this.cellValue = cellValue;
+        this.identificationNumber = identificationNumber;
+        this.houseblockName = houseblockName;
+        this.value = value;
+        this.customPropertyId = customPropertyId;
         this.errorMessage = error.errorMsg;
         this.errorCode = error.errorCode;
+    }
+
+    public ImportError(Integer identificationNumber, String houseblockName, String propertyName, String value, ERROR error) {
+        this(identificationNumber, houseblockName, propertyName, value, null, error);
+    }
+
+    public ImportError(Integer identificationNumber, String houseblockName, String propertyName, String value, UUID customPropertyId, ERROR error) {
+        this.identificationNumber = identificationNumber;
+        this.houseblockName = houseblockName;
+        this.propertyName = propertyName;
+        this.value = value;
+        this.errorMessage = error.errorMsg;
+        this.errorCode = error.errorCode;
+        this.customPropertyId = customPropertyId;
     }
 
     public enum ERROR {
