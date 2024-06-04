@@ -1,9 +1,10 @@
 import { render, screen } from "@testing-library/react";
-import { Layout } from "./components/Layout";
 import { MemoryRouter } from "react-router-dom";
+import { expect, test, vi } from "vitest";
+import { Layout } from "./components/Layout";
 import ConfigContext from "./context/ConfigContext";
 
-jest.mock("query-string", () => ({
+vi.mock("query-string", () => ({
     //mock whatever you use from query-string
     parse: jest.fn(),
     stringify: jest.fn(),
