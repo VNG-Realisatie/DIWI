@@ -37,6 +37,7 @@ import ProjectWizard from "./pages/ProjectWizard";
 import ProjectWizardBlocks from "./pages/ProjectWizardBlocks";
 import { LoadingProvider } from "./context/LoadingContext";
 import { ImportGeoJson } from "./pages/ImportGeoJson";
+import UserManagement from "./pages/UserManagement";
 import { Forbidden } from "./pages/Forbidden";
 
 function RequiresLogin() {
@@ -245,6 +246,7 @@ function App() {
                             }
                         />
                         <Route path={Paths.userSettings.path} element={<Settings />} />
+                        <Route path={Paths.userManagement.path} element={<UserManagement />} />
                         <Route path={Paths.importExcelProjects.path} element={<ImportedProjects type="Excel" />} />
                         <Route path={Paths.importSquitProjects.path} element={<ImportedProjects type="Squit" />} />
                         <Route path={Paths.about.path} element={<About />} />

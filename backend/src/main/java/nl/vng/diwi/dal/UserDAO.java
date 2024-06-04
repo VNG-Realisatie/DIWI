@@ -41,8 +41,8 @@ public class UserDAO extends AbstractRepository {
     public UserState getUserByEmail(String email) {
         return session
             .createQuery("FROM UserState us " +
-                "WHERE us.email = :email AND us.changeEndDate IS NULL ", UserState.class)
-            .setParameter("email", email)
+                "WHERE lower(us.email) = :email AND us.changeEndDate IS NULL ", UserState.class)
+            .setParameter("email", email.toLowerCase())
             .uniqueResult();
     }
 

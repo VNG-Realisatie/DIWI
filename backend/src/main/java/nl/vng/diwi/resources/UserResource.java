@@ -122,7 +122,9 @@ public class UserResource {
     @DELETE
     @Path("/{userId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public void deleteUser(@PathParam("userId") UUID userId, @Context LoggedUser loggedUser) throws VngNotFoundException {
+    public void deleteUser(@PathParam("userId") UUID userId, ContainerRequestContext requestContext) throws VngNotFoundException {
+
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
 
         try (AutoCloseTransaction transaction = userService.getUserDAO().beginTransaction()) {
 

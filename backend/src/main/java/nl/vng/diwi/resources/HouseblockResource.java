@@ -10,6 +10,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import nl.vng.diwi.dal.AutoCloseTransaction;
@@ -123,7 +124,9 @@ public class HouseblockResource {
     @DELETE
     @Path("/{id}")
     @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
-    public void deleteHouseblock(@Context LoggedUser loggedUser, @PathParam("id") UUID houseblockUuid) throws VngNotFoundException {
+    public void deleteHouseblock(ContainerRequestContext requestContext, @PathParam("id") UUID houseblockUuid) throws VngNotFoundException {
+
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             houseblockService.deleteHouseblock(repo, houseblockUuid, loggedUser.getUuid());
             transaction.commit();

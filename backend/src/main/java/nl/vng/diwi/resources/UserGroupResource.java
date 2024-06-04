@@ -1,5 +1,7 @@
 package nl.vng.diwi.resources;
 
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.Context;
 import nl.vng.diwi.security.UserActionConstants;
 
 import java.util.List;
@@ -16,7 +18,6 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import nl.vng.diwi.dal.AutoCloseTransaction;
 import nl.vng.diwi.dal.entities.UserGroup;
@@ -88,7 +89,9 @@ public class UserGroupResource {
 
     @DELETE
     @Path("/{id}")
-    public void deleteUserGroup(@Context LoggedUser loggedUser, @PathParam("id") UUID groupId) throws VngNotFoundException, VngBadRequestException {
+    public void deleteUserGroup(@PathParam("id") UUID groupId, ContainerRequestContext requestContext) throws VngNotFoundException, VngBadRequestException {
+
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
 
         try (AutoCloseTransaction transaction = userGroupService.getUserGroupDAO().beginTransaction()) {
             userGroupService.deleteUserGroup(groupId, loggedUser.getUuid());
