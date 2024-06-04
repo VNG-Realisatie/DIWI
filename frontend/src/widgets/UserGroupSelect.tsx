@@ -20,7 +20,6 @@ type Props = {
 const isSingleUserIncluded = true;
 
 const shouldDisplayError = (mandatory: boolean, userGroup: UserGroup[]) => {
-    console.log(userGroup);
     return mandatory && userGroup.length === 0;
 };
 
