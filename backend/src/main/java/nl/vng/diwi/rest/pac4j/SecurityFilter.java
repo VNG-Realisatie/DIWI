@@ -79,7 +79,7 @@ public class SecurityFilter implements ContainerRequestFilter {
                         loggedUser = new LoggedUser();
                         loggedUser.setFirstName("X");
                         loggedUser.setLastName("X");
-                        loggedUser.setUuid(UUID.fromString(profile.getId()));
+                        loggedUser.setUuid(null);
                         loggedUser.setIdentityProviderId(UUID.fromString(profile.getId()));
                     } else {
                         loggedUser = new LoggedUser(userEntity);
