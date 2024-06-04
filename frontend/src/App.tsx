@@ -41,6 +41,7 @@ import { Forbidden } from "./pages/Forbidden";
 
 function RequiresLogin() {
     const [kcAuthenticated, setKcAuthenticated] = useState<boolean>(false);
+    const [isDiwiUser, setIsDiwiUser] = useState<boolean>(false);
     const { setAlert } = useContext(AlertContext);
 
     useEffect(() => {
@@ -58,15 +59,46 @@ function RequiresLogin() {
             });
     }, [setAlert]);
 
+    useEffect(() => {
+        if (kcAuthenticated) {
+            fetch(Paths.userInfo.path)
+                .then((response) => {
+                    if (response.ok) {
+                        setIsDiwiUser(true);
+                    }
+                    if (response.status === 401) {
+                        const returnUrl = window.location.origin + window.location.pathname + window.location.search;
+                        // We can't use navigate here, because navigate will use the internal router and just show a 404
+                        window.location.href = `${Paths.login.path}?returnUrl=${encodeURIComponent(returnUrl)}`;
+                        setKcAuthenticated(false);
+                        setIsDiwiUser(false);
+                    }
+                    if (response.status === 403) {
+                        // Forbidden just redirect to that page
+                        setIsDiwiUser(false);
+                    }
+                })
+                .catch(() => {
+                    setIsDiwiUser(false);
+                });
+        } else {
+            setIsDiwiUser(false);
+        }
+    }, [kcAuthenticated]);
+
     if (kcAuthenticated) {
-        return (
-            <UserProvider>
-                <ConfigProvider>
-                    {/* configprovider does a fetch, so first check login for this specific one */}
-                    <Layout />
-                </ConfigProvider>
-            </UserProvider>
-        );
+        if (isDiwiUser) {
+            return (
+                <UserProvider>
+                    <ConfigProvider>
+                        {/* configprovider does a fetch, so first check login for this specific one */}
+                        <Layout />
+                    </ConfigProvider>
+                </UserProvider>
+            );
+        } else {
+            return <Forbidden />;
+        }
     }
     // default just returns null so page stays empty and we can redirect
     return null;
