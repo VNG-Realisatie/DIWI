@@ -37,10 +37,15 @@ services:
       KC_RESOURCE_NAME: ${KC_RESOURCE_NAME:?oidc config needed}
       MUNICIPALITY_NAME: ${MUNICIPALITY_NAME:?Please set up a municipality name}
       DEFAULT_MAP_BOUNDS: ${DEFAULT_MAP_BOUNDS}
-
+      MAIL_USERNAME: ${MAIL_USERNAME?-Please set up mail username}
+      MAIL_PASSWORD: ${MAIL_PASSWORD?-Please set up mail password}
+      MAIL_SMTP_HOST: ${MAIL_SMTP_HOST?-Please set up mail host}
+      MAIL_SMTP_PORT: ${MAIL_SMTP_PORT:-465}
+      MAIL_SMTP_AUTH: ${MAIL_SMTP_AUTH:-true}
+      MAIL_SMTP_STARTTLS: ${MAIL_SMTP_STARTTLS:-true}
+      MAIL_SMTP_SSL: ${MAIL_SMTP_SSL:-true}
     volumes:
       - ./data/backend:/data
-
     ports:
       - ${BACKEND_PORT:-8080}
     depends_on:
