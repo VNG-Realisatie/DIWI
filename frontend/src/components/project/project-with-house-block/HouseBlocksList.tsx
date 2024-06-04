@@ -61,7 +61,7 @@ export const HouseBlockAccordionWithControls = ({ houseBlock, refresh }: HouseBl
                 refresh();
                 setReadOnly(true);
             } catch (error: any) {
-                setAlert(t("createProject.houseBlocksForm.notifications.genericError"), "error");
+                setAlert(error.message, "warning");
             }
         }
     };
