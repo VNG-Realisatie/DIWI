@@ -43,7 +43,7 @@ export const home = createPathObject(config.baseurl + "home");
 export const about = createPathObject(config.baseurl + "about");
 export const forbidden = createPathObject(config.baseurl + "forbidden");
 
-export const userInfo = createPathObject(config.baseurl + "users/userinfo");
+export const userInfo = createPathObject(config.baseurl + "rest/users/userinfo");
 
 export const userSettings = createPathObject(config.baseurl + "admin/settings");
 
