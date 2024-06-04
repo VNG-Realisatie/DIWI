@@ -1,11 +1,18 @@
 import { Alert, Button, Stack, Table, TableBody, TableCell, TableRow, Typography } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
-import { ReactComponent as UploadCloud } from "../assets/uploadCloud.svg";
 import { useRef, useState } from "react";
+import { importExcelProjects, importGeoJsonProjects } from "../api/importServices";
+import { ReactComponent as UploadCloud } from "../assets/uploadCloud.svg";
 import useAlert from "../hooks/useAlert";
-import { importExcelProjects } from "../api/importServices";
 import { useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
+import { t } from "i18next";
+
+type FunctionalityType = "excel" | "squit" | "geojson";
+
+type Props = {
+    functionality: FunctionalityType;
+};
 
 export type UploadErrorType = {
     errorCode: string;
@@ -15,11 +22,7 @@ export type UploadErrorType = {
     errorMessage: string;
 };
 
-type Props = {
-    excelImport: boolean;
-};
-
-export const ImportExcel = ({ excelImport }: Props) => {
+export const ImportPage = ({ functionality }: Props) => {
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
     const [uploaded, setUploaded] = useState(false);
@@ -33,22 +36,24 @@ export const ImportExcel = ({ excelImport }: Props) => {
         }
     }
 
+    const importFunction = functionality === "geojson" ? importGeoJsonProjects : importExcelProjects;
+
     return (
         <Stack border="solid 1px #ddd" py={3} px={15} marginBottom={"2em"}>
             <Typography fontSize="20px" fontWeight="600" sx={{ mt: 2 }}>
-                {excelImport ? "Importeren vanuit Excel" : "Importeren vanuit Squit"}
+                {t(`exchangeData.importName.${functionality}`)}
             </Typography>
             <Button
                 variant="outlined"
                 endIcon={<DownloadIcon />}
                 sx={{ my: 3, width: "310px" }}
-                href={require("../assets/Excel_Import.xlsx")}
-                download="Excel Import.xlsx"
+                href={require(functionality === "geojson" ? "../assets/geojson_template.geojson" : "../assets/Excel_Import.xlsx")}
+                download={functionality === "geojson" ? "geojson_template.geojson" : "Excel Import.xlsx"}
             >
-                Download Excel template hier
+                {t(`exchangeData.download.${functionality}`)}
             </Button>
             <Typography fontSize="16px" mt={2}>
-                {excelImport ? "Upload ingevulde Excel template." : "Upload ingevulde Squit template."}
+                {t(`exchangeData.upload.${functionality}`)}
             </Typography>
             {uploaded && (
                 <Stack
@@ -64,7 +69,7 @@ export const ImportExcel = ({ excelImport }: Props) => {
                         handleUploadStackClick();
                     }}
                 >
-                    Het bestand kon niet worden geimporteerd. Klik hier om terug te gaan om een nieuw bestand te uploaden
+                    {t("exchangeData.notifications.importFailedGoBack")}
                 </Stack>
             )}
             {!uploaded && (
@@ -88,63 +93,56 @@ export const ImportExcel = ({ excelImport }: Props) => {
                             const file = e.target.files;
                             if (file) {
                                 setErrors([]);
-                                importExcelProjects(file as FileList)
+                                importFunction(file as FileList)
                                     .then(async (res) => {
                                         setUploaded(true);
                                         if (res.ok) {
-                                            setAlert("Excel-bestand succesvol geüpload.", "success");
+                                            setAlert(t("exchangeData.notifications.importSuccess"), "success");
                                             navigate(Paths.projectsTable.path);
                                         } else {
                                             // 400 errors contain relevant info in body, deal with here
                                             const newErrors = (await res.json()) as Array<UploadErrorType>;
                                             setErrors(newErrors);
-                                            setAlert("Kon Excel-bestand niet importeren", "error");
+                                            setAlert(t("exchangeData.notifications.importFailed"), "error");
                                         }
                                     })
                                     .catch((error) => {
                                         console.error("Failed to import due to error", error);
-                                        setAlert("Kon Excel-bestand niet importeren", "error");
+                                        setAlert(t("exchangeData.notifications.importFailed"), "error");
                                     });
                             }
                         }}
                     />
-                    Klik hier om te uploaden
+                    {t("exchangeData.upload.hint")}
                 </Stack>
             )}
             {errors.length > 0 && (
                 <>
                     {/* This INFO text can be removed later or kept if valuable */}
                     <Alert severity="info">
-                        <Typography> There are three levels of errors. So fixing one type could lead to others when uploading again.</Typography>
-                        <Typography>
-                            Level 1 relates to reading headers: Missing custom props: stops any data/businesslogic validation for this column.
-                        </Typography>
-                        <Typography>Levels 2 & 3 relate to reading rows: Missing/invalid data: stops business logic validation for this row/cell.</Typography>
-                        <Typography>
-                            An easy way to (temporarily) disable a row is to remove the ids in column B, these numbers do not mean anything but are required for
-                            this row to be included.
-                        </Typography>
+                        <Typography>{t("exchangeData.errorInfo1")}</Typography>
+                        <Typography>{t("exchangeData.errorInfo2")}</Typography>
+                        <Typography>{t("exchangeData.errorInfo3")}</Typography>
+                        <Typography>{t("exchangeData.errorInfo4")}</Typography>
                     </Alert>
                     <Alert severity="error">
                         <Typography fontSize="16px" mt={2}>
-                            {"Errors"}
+                            {t("exchangeData.errorTable.errors")}
                         </Typography>
                         <Table>
                             <TableBody>
-                                {/* Header row */}
                                 <TableRow>
-                                    <TableCell>{"Row"}</TableCell>
-                                    <TableCell>{"Column"}</TableCell>
-                                    <TableCell>{"Value"}</TableCell>
-                                    <TableCell>{"Description"}</TableCell>
+                                    <TableCell>{t("exchangeData.errorTable.row")}</TableCell>
+                                    <TableCell>{t("exchangeData.errorTable.column")}</TableCell>
+                                    <TableCell>{t("exchangeData.errorTable.value")}</TableCell>
+                                    <TableCell>{t("exchangeData.errorTable.description")}</TableCell>
                                 </TableRow>
-                                {/* Data rows */}
                                 {errors.map((error) => (
                                     <TableRow>
                                         <TableCell>{error.row}</TableCell>
                                         <TableCell>{error.column}</TableCell>
                                         <TableCell>{error.cellValue}</TableCell>
-                                        <TableCell>{error.errorMessage}</TableCell>
+                                        <TableCell>{t(`exchangeData.${error.errorCode}`)}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
