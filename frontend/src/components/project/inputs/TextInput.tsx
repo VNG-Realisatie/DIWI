@@ -23,14 +23,6 @@ const shouldDisplayError = (mandatory: boolean, value: string, type: string) => 
             return true;
         }
     }
-
-    if (type === "tel") {
-        const telRegex = /^\+?[1-9]\d{1,14}$/;
-        if (!telRegex.test(value)) {
-            return true;
-        }
-    }
-
     return false;
 };
 
