@@ -76,33 +76,6 @@
     "lint:ci": "eslint --max-warnings 0 --format junit --output-file eslint.xml src/",
     "create-types": "openapi-typescript ../api/openapi.json -o src/types/schema.d.ts && prettier --write ../api/openapi.json src/types/schema.d.ts"
   },
-  "eslintConfig": {
-    "env": {
-      "browser": true,
-      "es2020": true
-    },
-    "extends": [
-      "eslint:recommended",
-      "plugin:@typescript-eslint/recommended",
-      "plugin:react-hooks/recommended"
-    ],
-    "ignorePatterns": [
-      "dist",
-      ".eslintrc.cjs"
-    ],
-    "parser": "@typescript-eslint/parser",
-    "plugins": [
-      "react-refresh"
-    ],
-    "rules": {
-      "react-refresh/only-export-components": [
-        "warn",
-        {
-          "allowConstantExport": true
-        }
-      ]
-    }
-  },
   "browserslist": {
     "production": [
       ">0.2%",
