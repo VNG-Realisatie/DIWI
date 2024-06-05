@@ -80,12 +80,14 @@ it.each([{ disabled: true }, { disabled: false }])("should save houseblock with 
     houseBlock.targetGroup = [{ id: targetGroupCategoryId, amount: 1000 }];
 
     getCustomPropertiesMock.mockReturnValue({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         then: (cb: any) => {
             act(() => cb(customPropertyDefinitions));
         },
     });
 
     saveHouseBlockWithCustomPropertiesMock.mockReturnValue({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         then: (cb: any) => {
             act(cb);
         },

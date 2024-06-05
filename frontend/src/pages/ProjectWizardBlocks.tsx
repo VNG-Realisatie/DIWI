@@ -226,6 +226,7 @@ const ProjectWizardBlocks = () => {
                 newErrors.splice(index, 1);
                 return newErrors;
             });
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             setAlert(error.message, "warning");
         }

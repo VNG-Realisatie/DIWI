@@ -1,9 +1,7 @@
 import {
     DataGrid,
-    GridCallbackDetails,
     GridColDef,
     GridFilterModel,
-    GridPaginationModel,
     GridPreProcessEditCellProps,
     GridRenderCellParams,
     GridRowParams,

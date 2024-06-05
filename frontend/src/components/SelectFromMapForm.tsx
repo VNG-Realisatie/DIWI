@@ -5,6 +5,7 @@ import buurt from "../api/json/buurt.json";
 import gemeente from "../api/json/gemeente.json";
 import { useTranslation } from "react-i18next";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const SelectFromMapForm = (props: any) => {
     const { t } = useTranslation();
     return (

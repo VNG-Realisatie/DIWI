@@ -35,6 +35,7 @@ export const GeneralInformationGroup = ({ readOnly, houseBlock, setHouseBlock, e
             <RangeNumberInput
                 readOnly={readOnly}
                 value={houseBlock.size}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 updateCallBack={(houseBlockSize: any) => setHouseBlock({ ...houseBlock, size: houseBlockSize })}
                 mandatory={false}
                 title={t("createProject.houseBlocksForm.size")}

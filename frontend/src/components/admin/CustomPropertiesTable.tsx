@@ -27,7 +27,7 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
     };
 
     const handleDialogDelete = () =>
-        deleteCustomProperty(deletePropertyInfo.id).then((res) => {
+        deleteCustomProperty(deletePropertyInfo.id).then(() => {
             setAlert(t("admin.settings.notifications.successfullyDeleted"), "success");
             setDialogOpen(false);
             getCustomProperties().then((customProperties) => setCustomProperties(customProperties));

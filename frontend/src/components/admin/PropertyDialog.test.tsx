@@ -15,7 +15,7 @@ describe("PropertyDialog", () => {
 
     beforeEach(() => {
         addCustomPropertyMock.mockImplementation((p) => Promise.resolve({ id: "new-id", ...p }));
-        getCustomPropertiesMock.mockImplementation((p) => Promise.resolve(customProperties));
+        getCustomPropertiesMock.mockImplementation(() => Promise.resolve(customProperties));
     });
 
     it("renders without errors for new property", async () => {

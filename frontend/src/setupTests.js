@@ -6,6 +6,8 @@ import { initReactI18next } from "react-i18next";
 
 import en from "./assets/languages/en.json";
 import nl from "./assets/languages/nl.json";
+import { global } from "node";
+
 Object.assign(global, { TextDecoder, TextEncoder });
 
 // Resize observer isn't implemented by default in jest. Make a fake here.
