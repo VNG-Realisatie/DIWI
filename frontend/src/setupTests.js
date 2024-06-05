@@ -1,4 +1,4 @@
-import "@testing-library/jest-dom";
+import "@testing-library/jest-dom/vitest";
 import { TextDecoder, TextEncoder } from "util";
 
 import i18next from "i18next";
@@ -18,7 +18,7 @@ window.ResizeObserver = class ResizeObserver {
 
 // Configure i18next to use the ci locale, causing the text to be the same as the key
 i18next.use(initReactI18next).init({
-    lng: "cimode",
+    lng: "ci-mode",
     resources: {
         en,
         nl,
