@@ -10,6 +10,7 @@ import { drawerWidth, theme } from "../theme";
 import * as Paths from "../Paths";
 import { getCurrentUser } from "../api/userSerivces";
 import { User } from "../pages/UserManagement";
+import { t } from "i18next";
 
 type Props = {
     open: boolean;
@@ -72,7 +73,7 @@ export const Header = ({ open, handleDrawerOpen }: Props) => {
                 <Stack width="100%" direction="row" alignItems="center" justifyContent="flex-end">
                     <Stack width="100%" direction="column" alignItems="end" justifyContent="flex-end">
                         <Typography sx={typographyStyles}>{user && user?.firstName + " " + user?.lastName}</Typography>
-                        <Typography sx={typographyStyles}>{user && user?.role}</Typography>
+                        <Typography sx={typographyStyles}>{user && t(`admin.userManagement.roles.${user?.role}`)}</Typography>
                     </Stack>
                     <IconButton
                         onClick={handleClick}
