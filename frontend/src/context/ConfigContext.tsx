@@ -28,6 +28,11 @@ export const ConfigProvider = ({ children }: PropsWithChildren) => {
             .then((config) => {
                 setMapBounds(config.defaultMapBounds);
                 setMunicipalityName(config.municipalityName);
+                if (config.municipalityName && config.municipalityName.trim() !== "") {
+                    document.title = "DIWI " + config.municipalityName;
+                } else {
+                    document.title = "VNG DIWI";
+                }
             })
             .catch((e) => {
                 console.log(e);
