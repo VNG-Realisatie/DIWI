@@ -45,7 +45,7 @@ export const ImportErrors = ({ errors }: ImportErrorProps) => {
                             <TableRow>
                                 <TableCell>{error.row}</TableCell>
                                 <TableCell>{error.column}</TableCell>
-                                <TableCell>{error.cellValue}</TableCell>
+                                <TableCell>{error.value}</TableCell>
                                 <TableCell>{error.errorMessage}</TableCell>
                             </TableRow>
                         ))}
