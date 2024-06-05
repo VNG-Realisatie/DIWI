@@ -357,6 +357,15 @@
           "phone": "Vul een geldig telefoonnummer in",
           "organization": "Vul de organisatie in",
           "department": "Vul de afdeling in"
+
+        },
+        "roles": {
+          "Admin": "Admin",
+          "User": "Gebruiker",
+          "UserPlus": "Hoofdgebruiker",
+          "ManagementUser": "Collegelid en management",
+          "Councilor": "Raadslid",
+          "External": "Externe gebruiker"
         }
       },
       "settings": {
