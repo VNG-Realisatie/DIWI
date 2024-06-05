@@ -29,7 +29,7 @@ export const ImportErrors = ({ errors }: ImportErrorProps) => {
                 <Typography>{t("import.description.level2&3")}</Typography>
                 <Typography>{t("import.description.disabling")}</Typography>
             </Alert>
-            <Alert severity="error">
+            <Alert severity="error" sx={{ "& .MuiAlert-message": { width: "100%" } }}>
                 <Typography fontSize="16px" mb={2}>
                     {t("import.errorsTitle")}
                 </Typography>
