@@ -18,7 +18,7 @@ const ProjectWizard = () => {
         endDate: undefined,
         projectName: "",
         projectId: "temp_id",
-        confidentialityLevel: "PRIVATE",
+        confidentialityLevel: undefined,
         customProperties: [],
     });
     const { projectId } = useParams();

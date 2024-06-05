@@ -213,12 +213,10 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                     (project?.confidentialityLevel && confidentialityLevelOptions.find((cl) => cl.id === project.confidentialityLevel)) || null
                                 }
                                 setValue={(_, newValue) => {
-                                    if (newValue && newValue.id) {
-                                        setProject({
-                                            ...project,
-                                            confidentialityLevel: newValue.id,
-                                        });
-                                    }
+                                    setProject({
+                                        ...project,
+                                        confidentialityLevel: newValue ? newValue.id : undefined,
+                                    });
                                 }}
                                 multiple={false}
                                 error={t("createProject.hasMissingRequiredAreas.confidentialityLevel")}
