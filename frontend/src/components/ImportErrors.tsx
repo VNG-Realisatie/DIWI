@@ -2,15 +2,17 @@ import { Alert, Typography, Table, TableBody, TableRow, TableCell } from "@mui/m
 import { t } from "i18next";
 
 export type ImportErrorType = {
-    errorCode: string;
-    row: number;
-    identificationNumber: number;
-    houseblockName: string;
-    column: string;
-    propertyName: string;
-    value: string;
-    errorMessage: string;
-    customPropertyId: string; // UUID
+    // only two guaranteed props
+    errorCode: string; // short string indicating what error occured, see errorCodes in translation file(s)
+    errorMessage: string; // English description = always same for errorCode, we need to use translation instead
+    // optional props
+    row: number | undefined;
+    column: string | undefined;
+    value: string | undefined;
+    propertyName: string | undefined;
+    houseblockName: string | undefined;
+    identificationNumber: number | undefined;
+    customPropertyId: string | undefined; // UUID
 };
 
 type ImportErrorProps = { errors: Array<ImportErrorType> };
