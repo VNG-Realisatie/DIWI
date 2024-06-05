@@ -63,7 +63,6 @@ export const ImportErrors = ({ errors }: ImportErrorProps) => {
                                         <PropertyListItem label={t("import.errorProperties.houseblockName")} value={error.houseblockName} />
                                         <PropertyListItem label={t("import.errorProperties.identificationNumber")} value={error.identificationNumber} />
                                         <PropertyListItem label={t("import.errorProperties.customPropertyId")} value={error.customPropertyId} />
-                                        <PropertyListItem label={t("import.errorProperties.errorCode")} value={error.errorCode} />
                                     </List>
                                 </AccordionDetails>
                             </Accordion>
