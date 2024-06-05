@@ -3,9 +3,13 @@ import { Alert, Typography, Table, TableBody, TableRow, TableCell } from "@mui/m
 export type ImportErrorType = {
     errorCode: string;
     row: number;
+    identificationNumber: number;
+    houseblockName: string;
     column: string;
-    cellValue: string;
+    propertyName: string;
+    value: string;
     errorMessage: string;
+    customPropertyId: string; // UUID
 };
 
 type ImportErrorProps = { errors: Array<ImportErrorType> };
