@@ -1,6 +1,7 @@
 import { Alert, Typography, Stack, Accordion, AccordionSummary, AccordionDetails, List, ListItem } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { t } from "i18next";
+import { capitalizeFirstLetters } from "../utils/stringFunctions";
 
 export type ImportErrorType = {
     // only two guaranteed props
@@ -36,19 +37,33 @@ export const ImportErrors = ({ errors }: ImportErrorProps) => {
                     {errors.map((error) => {
                         return (
                             <Accordion defaultExpanded>
-                                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                <AccordionSummary
+                                    expandIcon={<ExpandMoreIcon />}
+                                    sx={{
+                                        backgroundColor: "lightgray",
+                                    }}
+                                >
                                     <Typography>{t(`import.errorCodes.${error.errorCode}`)}</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails>
-                                    <List>
+                                    <List
+                                        dense
+                                        sx={{
+                                            listStyleType: "disc",
+                                            pl: 2,
+                                            "& .MuiListItem-root": {
+                                                display: "list-item",
+                                            },
+                                        }}
+                                    >
                                         <PropertyListItem label={t("import.errorProperties.row")} value={error.row} />
                                         <PropertyListItem label={t("import.errorProperties.column")} value={error.column} />
-                                        <PropertyListItem label={t("import.errorProperties.errorCode")} value={error.errorCode} />
                                         <PropertyListItem label={t("import.errorProperties.value")} value={error.value} />
                                         <PropertyListItem label={t("import.errorProperties.propertyName")} value={error.propertyName} />
                                         <PropertyListItem label={t("import.errorProperties.houseblockName")} value={error.houseblockName} />
                                         <PropertyListItem label={t("import.errorProperties.identificationNumber")} value={error.identificationNumber} />
                                         <PropertyListItem label={t("import.errorProperties.customPropertyId")} value={error.customPropertyId} />
+                                        <PropertyListItem label={t("import.errorProperties.errorCode")} value={error.errorCode} />
                                     </List>
                                 </AccordionDetails>
                             </Accordion>
@@ -73,7 +88,7 @@ const PropertyListItem = ({ label, value }: PropertyListItemProps) => {
             return (
                 <ListItem>
                     <Typography>
-                        {label}: {displayValue}
+                        {capitalizeFirstLetters(label)}: {displayValue}
                     </Typography>
                 </ListItem>
             );
