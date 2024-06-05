@@ -1,13 +1,15 @@
 import MenuIcon from "@mui/icons-material/Menu";
-import { Avatar, IconButton, Menu, MenuItem, Stack, Toolbar } from "@mui/material";
+import { IconButton, Menu, MenuItem, Stack, Toolbar, Typography } from "@mui/material";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import { styled } from "@mui/material/styles";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 import { useEffect, useState } from "react";
-import { drawerWidth } from "../theme";
+import { drawerWidth, theme } from "../theme";
 
 import * as Paths from "../Paths";
-import { User, getCurrentUser } from "../api/userSerivces";
+import { getCurrentUser } from "../api/userSerivces";
+import { User } from "../pages/UserManagement";
 
 type Props = {
     open: boolean;
@@ -33,6 +35,13 @@ const AppBar = styled(MuiAppBar, {
         }),
     }),
 }));
+
+const typographyStyles = {
+    fontStyle: "italic",
+    fontSize: "12px",
+    color: theme.palette.primary.main,
+};
+
 export const Header = ({ open, handleDrawerOpen }: Props) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [user, setUser] = useState<User | null>(null);
@@ -61,6 +70,10 @@ export const Header = ({ open, handleDrawerOpen }: Props) => {
                     <MenuIcon />
                 </IconButton>
                 <Stack width="100%" direction="row" alignItems="center" justifyContent="flex-end">
+                    <Stack width="100%" direction="column" alignItems="end" justifyContent="flex-end">
+                        <Typography sx={typographyStyles}>{user && user?.firstName + " " + user?.lastName}</Typography>
+                        <Typography sx={typographyStyles}>{user && user?.role}</Typography>
+                    </Stack>
                     <IconButton
                         onClick={handleClick}
                         size="small"
@@ -68,7 +81,7 @@ export const Header = ({ open, handleDrawerOpen }: Props) => {
                         aria-haspopup="true"
                         aria-expanded={openProfile ? "true" : undefined}
                     >
-                        <Avatar sx={{ width: 35, height: 35, cursor: "pointer" }}>{user?.initials}</Avatar>
+                        <AccountCircleIcon sx={{ fontSize: "42px" }} color="primary" />
                     </IconButton>
                     <Menu
                         id="profile-menu"
