@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SingleNumberInput } from "./SingleNumberInput";
+import { vi } from "vitest";
 
 describe("SingleNumberInput component", () => {
     it("renders with error message when mandatory and value is not provided", () => {
