@@ -69,6 +69,7 @@ const ProjectWizardBlocks = () => {
 
     const { t } = useTranslation();
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const validateHouseBlock = (houseBlock: HouseBlockWithCustomProperties, selectedProject: any, index: number) => {
         let hasErrors = false;
         const newDateValidationErrors: DateValidationErrors = { startDateError: null, endDateError: null };
@@ -173,6 +174,7 @@ const ProjectWizardBlocks = () => {
 
             setHouseBlocksState(updatedHouseBlocks);
             return !hasErrors;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             setErrorOccurred(true);
             setAlert(error.message, "warning");

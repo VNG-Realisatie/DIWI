@@ -136,7 +136,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                             <CategoryInput
                                 readOnly={readOnly}
                                 values={project?.priority?.value ?? null}
-                                setValue={(_: any, newValue: any) =>
+                                setValue={(_, newValue) =>
                                     setProject({
                                         ...project,
                                         priority: {
