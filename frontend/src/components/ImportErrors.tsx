@@ -30,7 +30,7 @@ export const ImportErrors = ({ errors }: ImportErrorProps) => {
                 <Typography>{t("import.description.disabling")}</Typography>
             </Alert>
             <Alert severity="error">
-                <Typography fontSize="16px" mt={2}>
+                <Typography fontSize="16px" mb={2}>
                     {t("import.errorsTitle")}
                 </Typography>
                 <Stack>
