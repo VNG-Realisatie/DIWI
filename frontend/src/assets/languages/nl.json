@@ -26,7 +26,7 @@
       "andLess": "en minder"
     },
     "import": {
-      "title": "Import fouten",
+      "errorsTitle": "Import fouten",
       "description": {
         "intro": "Er zijn drie niveaus voor fouten. Het oplossen van een fout op een niveau kan bij de volgende upload leiden tot een fout op een ander niveau.",
         "level1": "Niveau 1 leest de kolom namen; missende (maatwerk) eigenschappen, stop validatie voor data & business logic.",
