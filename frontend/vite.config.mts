@@ -13,16 +13,4 @@ export default defineConfig({
     },
     assetsInclude: "**/*.xlsx",
     plugins: [react()],
-    test: {
-        globals: true,
-        environment: "jsdom",
-        setupFiles: "./src/setupTests.ts",
-        css: true,
-        reporters: ["verbose"],
-        coverage: {
-            reporter: ["html"],
-            include: ["src/**/*"],
-            exclude: ["src/i18n.tsx", "src/index.tsx", "src/reportWebVitals.ts"],
-        },
-    },
 });
