@@ -92,8 +92,8 @@ const UserDialog = ({ open, onClose, newUser, setNewUser, handleAddUser, title }
                         readOnly={false}
                         mandatory={true}
                         title={t("admin.userManagement.tableHeader.role")}
-                        options={roleTypeOptions.map((role) => ({ id: role, name: role }))}
-                        values={newUser?.role ? { id: newUser.role, name: newUser.role } : null}
+                        options={roleTypeOptions.map((role) => ({ id: role, name: t(`admin.userManagement.roles.${role}`) }))}
+                        values={newUser?.role ? { id: newUser.role, name: t(`admin.userManagement.roles.${newUser.role}`) } : null}
                         setValue={(_, newValue) => {
                             if (newValue && newValue.id) {
                                 setNewUser({
