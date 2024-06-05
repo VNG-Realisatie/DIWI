@@ -1,6 +1,6 @@
 import i18next from "i18next";
 import { initReactI18next } from "react-i18next";
-import "@testing-library/jest-dom/vitest";
+import "@testing-library/jest-dom/extend-expect";
 
 import en from "./assets/languages/en.json";
 import nl from "./assets/languages/nl.json";
