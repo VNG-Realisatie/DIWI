@@ -1,4 +1,5 @@
 import { Alert, Typography, Table, TableBody, TableRow, TableCell } from "@mui/material";
+import { t } from "i18next";
 
 export type ImportErrorType = {
     errorCode: string;
@@ -19,17 +20,14 @@ export const ImportErrors = ({ errors }: ImportErrorProps) => {
         <>
             {/* This INFO text can be removed later or kept if valuable */}
             <Alert severity="info">
-                <Typography> There are three levels of errors. So fixing one type could lead to others when uploading again.</Typography>
-                <Typography>Level 1 relates to reading headers: Missing custom props: stops any data/businesslogic validation for this column.</Typography>
-                <Typography>Levels 2 & 3 relate to reading rows: Missing/invalid data: stops business logic validation for this row/cell.</Typography>
-                <Typography>
-                    An easy way to (temporarily) disable a row is to remove the ids in column B, these numbers do not mean anything but are required for this
-                    row to be included.
-                </Typography>
+                <Typography>{t("import.description.intro")}</Typography>
+                <Typography>{t("import.description.level1")}</Typography>
+                <Typography>{t("import.description.level2&3")}</Typography>
+                <Typography>{t("import.description.disabling")}</Typography>
             </Alert>
             <Alert severity="error">
                 <Typography fontSize="16px" mt={2}>
-                    {"Errors"}
+                    {t("import.title")}
                 </Typography>
                 <Table>
                     <TableBody>
