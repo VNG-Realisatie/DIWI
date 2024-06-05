@@ -6,7 +6,7 @@ import useAlert from "../hooks/useAlert";
 import { importExcelProjects } from "../api/importServices";
 import { useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
-import { UploadErrorType, ImportErrors } from "../components/ImportErrors";
+import { ImportErrorType, ImportErrors } from "../components/ImportErrors";
 
 type Props = {
     excelImport: boolean;
@@ -16,7 +16,7 @@ export const ImportExcel = ({ excelImport }: Props) => {
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
     const [uploaded, setUploaded] = useState(false);
-    const [errors, setErrors] = useState<Array<UploadErrorType>>([]);
+    const [errors, setErrors] = useState<Array<ImportErrorType>>([]);
 
     const { setAlert } = useAlert();
 
@@ -89,7 +89,7 @@ export const ImportExcel = ({ excelImport }: Props) => {
                                             navigate(Paths.projectsTable.path);
                                         } else {
                                             // 400 errors contain relevant info in body, deal with here
-                                            const newErrors = (await res.json()) as Array<UploadErrorType>;
+                                            const newErrors = (await res.json()) as Array<ImportErrorType>;
                                             setErrors(newErrors);
                                             setAlert("Kon Excel-bestand niet importeren", "error");
                                         }

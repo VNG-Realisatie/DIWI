@@ -1,6 +1,6 @@
 import { Alert, Typography, Table, TableBody, TableRow, TableCell } from "@mui/material";
 
-export type UploadErrorType = {
+export type ImportErrorType = {
     errorCode: string;
     row: number;
     column: string;
@@ -8,7 +8,7 @@ export type UploadErrorType = {
     errorMessage: string;
 };
 
-type ImportErrorProps = { errors: Array<UploadErrorType> };
+type ImportErrorProps = { errors: Array<ImportErrorType> };
 
 export const ImportErrors = ({ errors }: ImportErrorProps) => {
     return (

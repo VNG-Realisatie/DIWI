@@ -5,13 +5,13 @@ import { ReactComponent as UploadCloud } from "../assets/uploadCloud.svg";
 import useAlert from "../hooks/useAlert";
 import { useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
-import { ImportErrors, UploadErrorType } from "../components/ImportErrors";
+import { ImportErrors, ImportErrorType } from "../components/ImportErrors";
 
 export const ImportGeoJson = () => {
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
     const [uploaded, setUploaded] = useState(false);
-    const [errors, setErrors] = useState<Array<UploadErrorType>>([]);
+    const [errors, setErrors] = useState<Array<ImportErrorType>>([]);
 
     const { setAlert } = useAlert();
 
@@ -92,7 +92,7 @@ export const ImportGeoJson = () => {
                                             navigate(Paths.projectsTable.path);
                                         } else {
                                             // 400 errors contain relevant info in body, deal with here
-                                            const newErrors = (await res.json()) as Array<UploadErrorType>;
+                                            const newErrors = (await res.json()) as Array<ImportErrorType>;
                                             setErrors(newErrors);
                                             setAlert("Kon Excel-bestand niet importeren", "error");
                                         }
