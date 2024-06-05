@@ -9,7 +9,7 @@ module.exports = {
     plugins: ["react-refresh"],
     rules: {
         "no-empty-function": "off",
-        "@typescript-eslint/no-empty-function": "error",
+        "@typescript-eslint/no-empty-function": "off",
         "react-refresh/only-export-components": [
             "warn",
             {
