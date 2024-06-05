@@ -100,7 +100,7 @@ public class VngApplication extends ResourceConfig {
 
         // Flyway migrations
         try{
-            Database.upgrade(projectConfig.getDbUrl(), projectConfig.getDbUser(), projectConfig.getDbPass(), projectConfig.getDbName());
+            Database.upgrade(projectConfig.getDbUrl(), projectConfig.getDbUser(), projectConfig.getDbPass());
         }
         catch (FlywayValidateException e) {
             logger.error(e.getMessage());

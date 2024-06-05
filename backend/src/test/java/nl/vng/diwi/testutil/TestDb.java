@@ -72,7 +72,7 @@ public class TestDb implements AutoCloseable {
         dalFactory.close();
 
         dalFactory = new DalFactory(new ProjectConfig(env), GenericRepository.getEntities());
-        Database.upgrade(projectConfig.getDbUrl(), projectConfig.getDbUser(), projectConfig.getDbPass(), version, projectConfig.getDbName());
+        Database.upgrade(projectConfig.getDbUrl(), projectConfig.getDbUser(), projectConfig.getDbPass(), version);
     }
 
     public DalFactory getDalFactory() {

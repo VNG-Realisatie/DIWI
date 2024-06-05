@@ -5,26 +5,21 @@ import org.apache.logging.log4j.Logger;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
 
-import java.util.Map;
-
 public class Database {
     private static Logger logger = LogManager.getLogger();
 
     /**
      * Upgrade db to the latest schema.
      */
-    public static void upgrade(String url, String username, String password, String dbName) {
-        upgrade(url, username, password, null, dbName);
+    public static void upgrade(String url, String username, String password) {
+        upgrade(url, username, password, null);
     }
 
-    public static void upgrade(String url, String username, String password, String version, String dbName) {
+    public static void upgrade(String url, String username, String password, String version) {
         logger.info("Upgrading db");
         FluentConfiguration configuration = Flyway
             .configure()
             .dataSource(url, username, password)
-            .placeholderPrefix("${flyway.")
-            .placeholderSuffix("}")
-            .placeholders(Map.of("db.name", dbName))
             .baselineOnMigrate(true)
             .outOfOrder(true);
         if (version != null) {
