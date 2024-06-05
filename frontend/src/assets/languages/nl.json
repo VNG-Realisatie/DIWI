@@ -30,7 +30,7 @@
       "description": {
         "intro": "Er zijn drie niveaus voor fouten. Het oplossen van een fout op een niveau kan bij de volgende upload leiden tot een fout op een ander niveau.",
         "level1": "Niveau 1 leest de kolom namen; missende (maatwerk) eigenschappen, stop validatie voor data & business logic.",
-        "level2&3": "Niveau 2 e& 3 leest de rijen (cellen); missdende/invalide data, stopt validatie van business logic voor de rij/cell.",
+        "level2&3": "Niveau 2 e& 3 leest de rijen (cellen); missende/invalide data, stopt validatie van business logic voor de rij/cell.",
         "disabling": "Een simpele manier om (tijdelijk) een rij niet mee te nemen in de import is door de ID in kolom B te verwijderen. Deze ID's betekenen niks maar zijn wel nodig om de rij te importeren."
       }
     },
