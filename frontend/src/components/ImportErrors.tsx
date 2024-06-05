@@ -29,7 +29,7 @@ export const ImportErrors = ({ errors }: ImportErrorProps) => {
             </Alert>
             <Alert severity="error">
                 <Typography fontSize="16px" mt={2}>
-                    {t("import.title")}
+                    {t("import.errorsTitle")}
                 </Typography>
                 <Table>
                     <TableBody>
