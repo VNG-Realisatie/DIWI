@@ -1,4 +1,5 @@
-import { Alert, Typography, Table, TableBody, TableRow, TableCell } from "@mui/material";
+import { Alert, Typography, Stack, Accordion, AccordionSummary, AccordionDetails, List, ListItem } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { t } from "i18next";
 
 export type ImportErrorType = {
@@ -31,27 +32,52 @@ export const ImportErrors = ({ errors }: ImportErrorProps) => {
                 <Typography fontSize="16px" mt={2}>
                     {t("import.errorsTitle")}
                 </Typography>
-                <Table>
-                    <TableBody>
-                        {/* Header row */}
-                        <TableRow>
-                            <TableCell>{"Row"}</TableCell>
-                            <TableCell>{"Column"}</TableCell>
-                            <TableCell>{"Value"}</TableCell>
-                            <TableCell>{"Description"}</TableCell>
-                        </TableRow>
-                        {/* Data rows */}
-                        {errors.map((error) => (
-                            <TableRow>
-                                <TableCell>{error.row}</TableCell>
-                                <TableCell>{error.column}</TableCell>
-                                <TableCell>{error.value}</TableCell>
-                                <TableCell>{error.errorMessage}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                <Stack>
+                    {errors.map((error) => {
+                        return (
+                            <Accordion defaultExpanded>
+                                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                    <Typography>{t(`import.errorCodes.${error.errorCode}`)}</Typography>
+                                </AccordionSummary>
+                                <AccordionDetails>
+                                    <List>
+                                        <PropertyListItem label={t("import.errorProperties.row")} value={error.row} />
+                                        <PropertyListItem label={t("import.errorProperties.column")} value={error.column} />
+                                        <PropertyListItem label={t("import.errorProperties.errorCode")} value={error.errorCode} />
+                                        <PropertyListItem label={t("import.errorProperties.value")} value={error.value} />
+                                        <PropertyListItem label={t("import.errorProperties.propertyName")} value={error.propertyName} />
+                                        <PropertyListItem label={t("import.errorProperties.houseblockName")} value={error.houseblockName} />
+                                        <PropertyListItem label={t("import.errorProperties.identificationNumber")} value={error.identificationNumber} />
+                                        <PropertyListItem label={t("import.errorProperties.customPropertyId")} value={error.customPropertyId} />
+                                    </List>
+                                </AccordionDetails>
+                            </Accordion>
+                        );
+                    })}
+                </Stack>
             </Alert>
         </>
     );
+};
+
+type PropertyListItemProps = {
+    label: string;
+    value: string | number | undefined;
+};
+
+const PropertyListItem = ({ label, value }: PropertyListItemProps) => {
+    if (value) {
+        let displayValue = typeof value === "number" ? value.toString() : value;
+        displayValue = displayValue.trim();
+        if (displayValue !== "") {
+            return (
+                <ListItem>
+                    <Typography>
+                        {label}: {displayValue}
+                    </Typography>
+                </ListItem>
+            );
+        }
+    }
+    return <></>;
 };
