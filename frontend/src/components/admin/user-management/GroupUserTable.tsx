@@ -2,7 +2,7 @@ import { Box, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
-import { deleteGroup, updateGroup } from "../../../api/userSerivces";
+import { deleteGroup, updateGroup } from "../../../api/userServices";
 import { useState } from "react";
 import useAlert from "../../../hooks/useAlert";
 import GroupDialog from "./GroupDialog";

@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import UsersTable from "../components/admin/user-management/UsersTable";
-import { getGroups, getUsers } from "../api/userSerivces";
+import { getGroups, getUsers } from "../api/userServices";
 import GroupUserTable from "../components/admin/user-management/GroupUserTable";
 import { Box, Stack } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { t } from "i18next";
-import { addGroup } from "../api/userSerivces";
+import { addGroup } from "../api/userServices";
 import useAlert from "../hooks/useAlert";
 import GroupDialog from "../components/admin/user-management/GroupDialog";
 import UserDialog from "../components/admin/user-management/UserDialog";
 import useAllowedActions from "../hooks/useAllowedActions";
-import { addUser } from "../api/userSerivces";
+import { addUser } from "../api/userServices";
 import { RoleType } from "../types/enums";
 
 const emptyGroupForm: Group = {
