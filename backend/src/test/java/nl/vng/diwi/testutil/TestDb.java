@@ -64,10 +64,6 @@ public class TestDb implements AutoCloseable {
                 session.createNativeMutationQuery("DROP SCHEMA IF EXISTS \"diwi\" CASCADE").executeUpdate();
                 transaction.commit();
             }
-            try (var transaction = dal.beginTransaction()) {
-                session.createNativeMutationQuery("CREATE SCHEMA \"public\"").executeUpdate();
-                transaction.commit();
-            }
         }
         dalFactory.close();
 
