@@ -2,7 +2,7 @@ import { Button, Stack, Typography } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 import { useRef, useState } from "react";
 import { importExcelProjects, importGeoJsonProjects } from "../api/importServices";
-import { ReactComponent as UploadCloud } from "../assets/uploadCloud.svg";
+import UploadCloud from "../assets/uploadCloud.svg";
 import useAlert from "../hooks/useAlert";
 import { useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
