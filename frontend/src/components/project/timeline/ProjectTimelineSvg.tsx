@@ -42,7 +42,6 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, showToday, width, height }:
         if (projectId) {
             getProjectTimeline(projectId)
                 .then((projectData) => {
-                    console.log(projectData);
                     const phaseData = projectData?.projectPhase;
                     if (phaseData) {
                         setProjectPhaseData(projectData.projectPhase);
