@@ -44,6 +44,9 @@ import nl.vng.diwi.dal.entities.Property;
 import nl.vng.diwi.dal.entities.PropertyCategoryValue;
 import nl.vng.diwi.dal.entities.PropertyOrdinalValue;
 import nl.vng.diwi.dal.entities.User;
+import nl.vng.diwi.dal.entities.UserGroup;
+import nl.vng.diwi.dal.entities.UserGroupToProject;
+import nl.vng.diwi.dal.entities.UserState;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.GroundPosition;
 import nl.vng.diwi.dal.entities.enums.HouseType;
@@ -59,6 +62,7 @@ import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
 import nl.vng.diwi.models.ImportError;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.models.SelectModel;
+import nl.vng.diwi.security.UserAction;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -80,6 +84,9 @@ public class ProjectImportModel {
     private String projectName;
     private PlanType planType;
     private Boolean programming;
+    private Confidentiality confidentialityLevel;
+    private String ownerEmail;
+    private UUID ownerUserGroupUuid;
 
     private ProjectStatus projectStatus;
     private LocalDate projectStartDate;
@@ -221,7 +228,18 @@ public class ProjectImportModel {
         }
     }
 
-    public void validate(Integer excelRowNo, List<ImportError> rowErrors, LocalDate importTime) {
+    public void validate(VngRepository repo, Integer excelRowNo, List<ImportError> rowErrors, LocalDate importTime) {
+
+        if (ownerEmail != null) {
+            UserState userState = repo.getUserDAO().getUserByEmail(ownerEmail);
+            if (userState != null && userState.getUserRole().allowedActions.contains(UserAction.CAN_OWN_PROJECTS)) {
+                ownerUserGroupUuid = repo.getUsergroupDAO().findSingleUserUserGroup(userState.getUser().getId());
+            }
+        }
+        if (ownerUserGroupUuid == null) {
+            rowErrors.add(new ImportError(excelRowNo, ownerEmail, ImportError.ERROR.PROJECT_OWNER_UNKNOWN));
+        }
+
         //business logic validations - all individual values are valid by this point
 
         if (!projectEndDate.isAfter(projectStartDate)) {
@@ -349,9 +367,16 @@ public class ProjectImportModel {
         state.setProject(project);
         state.setCreateUser(user);
         state.setChangeStartDate(importTime);
-        state.setConfidentiality(Confidentiality.PRIVATE);
+        state.setConfidentiality(confidentialityLevel);
         state.setColor("#000000");
         repo.persist(state);
+
+        UserGroupToProject ugtp = new UserGroupToProject();
+        ugtp.setProject(project);
+        ugtp.setChangeStartDate(importTime);
+        ugtp.setCreateUser(user);
+        ugtp.setUserGroup(repo.findById(UserGroup.class, ownerUserGroupUuid));
+        repo.persist(ugtp);
 
         if (planType != null) {
             var planTypeChangelog = new ProjectPlanTypeChangelog();

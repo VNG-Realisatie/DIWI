@@ -1,6 +1,7 @@
 DROP FUNCTION IF EXISTS get_houseblock_custom_properties;
+DROP FUNCTION IF EXISTS diwi.get_houseblock_custom_properties;
 
-CREATE OR REPLACE FUNCTION get_houseblock_custom_properties (
+CREATE OR REPLACE FUNCTION diwi.get_houseblock_custom_properties (
   _woningblok_uuid_ uuid,
   _now_ date
 )
@@ -9,13 +10,13 @@ CREATE OR REPLACE FUNCTION get_houseblock_custom_properties (
         booleanValue BOOL,
         numericValue FLOAT8,
         numericValueRange NUMRANGE,
-        numericValueType diwi_testset.value_type,
+        numericValueType diwi.value_type,
         textValue TEXT,
         categories UUID[],
         ordinalValueId UUID,
         ordinalMinValueId UUID,
         ordinalMaxValueId UUID,
-        propertyType diwi_testset.maatwerk_eigenschap_type
+        propertyType diwi.maatwerk_eigenschap_type
 	)
 	LANGUAGE plpgsql
 AS $$
@@ -42,11 +43,11 @@ FROM (
                  SELECT
                      p.id, sms.date AS startDate, ems.date AS endDate
                  FROM
-                     diwi_testset.woningblok p
-                         JOIN diwi_testset.woningblok_state ws ON ws.woningblok_id = p.id AND ws.change_end_date IS NULL
-                         JOIN diwi_testset.woningblok_duration_changelog wdc ON wdc.woningblok_id = p.id AND wdc.change_end_date IS NULL
-                         JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wdc.start_milestone_id AND sms.change_end_date IS NULL
-                         JOIN diwi_testset.milestone_state ems ON ems.milestone_id = wdc.end_milestone_id AND ems.change_end_date IS NULL
+                     diwi.woningblok p
+                         JOIN diwi.woningblok_state ws ON ws.woningblok_id = p.id AND ws.change_end_date IS NULL
+                         JOIN diwi.woningblok_duration_changelog wdc ON wdc.woningblok_id = p.id AND wdc.change_end_date IS NULL
+                         JOIN diwi.milestone_state sms ON sms.milestone_id = wdc.start_milestone_id AND sms.change_end_date IS NULL
+                         JOIN diwi.milestone_state ems ON ems.milestone_id = wdc.end_milestone_id AND ems.change_end_date IS NULL
                  WHERE  sms.date <= _now_ AND _now_ < ems.date AND p.id = _woningblok_uuid_
              ),
              active_woningbloks_booleanCP AS (
@@ -54,9 +55,9 @@ FROM (
                      ap.id, wbc.eigenschap_id, wbc.value
                  FROM
                      active_woningbloks ap
-                         JOIN diwi_testset.woningblok_maatwerk_boolean_changelog wbc ON ap.id = wbc.woningblok_id AND wbc.change_end_date IS NULL
-                         JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wbc.start_milestone_id AND sms.change_end_date IS NULL
-                         JOIN diwi_testset.milestone_state ems ON ems.milestone_id = wbc.end_milestone_id AND ems.change_end_date IS NULL
+                         JOIN diwi.woningblok_maatwerk_boolean_changelog wbc ON ap.id = wbc.woningblok_id AND wbc.change_end_date IS NULL
+                         JOIN diwi.milestone_state sms ON sms.milestone_id = wbc.start_milestone_id AND sms.change_end_date IS NULL
+                         JOIN diwi.milestone_state ems ON ems.milestone_id = wbc.end_milestone_id AND ems.change_end_date IS NULL
                  WHERE
                      sms.date <= _now_ AND _now_ < ems.date
              ),
@@ -65,9 +66,9 @@ FROM (
                      ap.id, wnc.eigenschap_id, wnc.value, wnc.value_range, wnc.value_type
                  FROM
                      active_woningbloks ap
-                         JOIN diwi_testset.woningblok_maatwerk_numeriek_changelog wnc ON ap.id = wnc.woningblok_id AND wnc.change_end_date IS NULL
-                         JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wnc.start_milestone_id AND sms.change_end_date IS NULL
-                         JOIN diwi_testset.milestone_state ems ON ems.milestone_id = wnc.end_milestone_id AND ems.change_end_date IS NULL
+                         JOIN diwi.woningblok_maatwerk_numeriek_changelog wnc ON ap.id = wnc.woningblok_id AND wnc.change_end_date IS NULL
+                         JOIN diwi.milestone_state sms ON sms.milestone_id = wnc.start_milestone_id AND sms.change_end_date IS NULL
+                         JOIN diwi.milestone_state ems ON ems.milestone_id = wnc.end_milestone_id AND ems.change_end_date IS NULL
                  WHERE
                      sms.date <= _now_ AND _now_ < ems.date
              ),
@@ -76,9 +77,9 @@ FROM (
                      ap.id, wtc.eigenschap_id, wtc.value
                  FROM
                      active_woningbloks ap
-                         JOIN diwi_testset.woningblok_maatwerk_text_changelog wtc ON ap.id = wtc.woningblok_id AND wtc.change_end_date IS NULL
-                         JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wtc.start_milestone_id AND sms.change_end_date IS NULL
-                         JOIN diwi_testset.milestone_state ems ON ems.milestone_id = wtc.end_milestone_id AND ems.change_end_date IS NULL
+                         JOIN diwi.woningblok_maatwerk_text_changelog wtc ON ap.id = wtc.woningblok_id AND wtc.change_end_date IS NULL
+                         JOIN diwi.milestone_state sms ON sms.milestone_id = wtc.start_milestone_id AND sms.change_end_date IS NULL
+                         JOIN diwi.milestone_state ems ON ems.milestone_id = wtc.end_milestone_id AND ems.change_end_date IS NULL
                  WHERE
                      sms.date <= _now_ AND _now_ < ems.date
              ),
@@ -87,10 +88,10 @@ FROM (
                      ap.id, wcc.eigenschap_id, array_agg(wccv.eigenschap_waarde_id) AS categories
                  FROM
                      active_woningbloks ap
-                         JOIN diwi_testset.woningblok_maatwerk_categorie_changelog wcc ON ap.id = wcc.woningblok_id AND wcc.change_end_date IS NULL
-                         JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wcc.start_milestone_id AND sms.change_end_date IS NULL
-                         JOIN diwi_testset.milestone_state ems ON ems.milestone_id = wcc.end_milestone_id AND ems.change_end_date IS NULL
-                         LEFT JOIN diwi_testset.woningblok_maatwerk_categorie_changelog_value wccv ON wccv.woningblok_maatwerk_categorie_changelog_id = wcc.id
+                         JOIN diwi.woningblok_maatwerk_categorie_changelog wcc ON ap.id = wcc.woningblok_id AND wcc.change_end_date IS NULL
+                         JOIN diwi.milestone_state sms ON sms.milestone_id = wcc.start_milestone_id AND sms.change_end_date IS NULL
+                         JOIN diwi.milestone_state ems ON ems.milestone_id = wcc.end_milestone_id AND ems.change_end_date IS NULL
+                         LEFT JOIN diwi.woningblok_maatwerk_categorie_changelog_value wccv ON wccv.woningblok_maatwerk_categorie_changelog_id = wcc.id
                  WHERE
                      sms.date <= _now_ AND _now_ < ems.date
                  GROUP BY ap.id, wcc.eigenschap_id
@@ -100,9 +101,9 @@ FROM (
                      ap.id, woc.eigenschap_id, woc.value_id AS ordinal_value_id, woc.min_value_id AS ordinal_min_value_id, woc.max_value_id AS ordinal_max_value_id
                  FROM
                      active_woningbloks ap
-                         JOIN diwi_testset.woningblok_maatwerk_ordinaal_changelog woc ON ap.id = woc.woningblok_id AND woc.change_end_date IS NULL
-                         JOIN diwi_testset.milestone_state sms ON sms.milestone_id = woc.start_milestone_id AND sms.change_end_date IS NULL
-                         JOIN diwi_testset.milestone_state ems ON ems.milestone_id = woc.end_milestone_id AND ems.change_end_date IS NULL
+                         JOIN diwi.woningblok_maatwerk_ordinaal_changelog woc ON ap.id = woc.woningblok_id AND woc.change_end_date IS NULL
+                         JOIN diwi.milestone_state sms ON sms.milestone_id = woc.start_milestone_id AND sms.change_end_date IS NULL
+                         JOIN diwi.milestone_state ems ON ems.milestone_id = woc.end_milestone_id AND ems.change_end_date IS NULL
                  WHERE
                      sms.date <= _now_ AND _now_ < ems.date
              ),
@@ -110,11 +111,11 @@ FROM (
                  SELECT
                      p.id, sms.milestone_id AS start_milestone_id
                  FROM
-                     diwi_testset.woningblok p
-                         JOIN diwi_testset.woningblok_state ws ON ws.woningblok_id = p.id AND ws.change_end_date IS NULL
-                         JOIN diwi_testset.woningblok_duration_changelog wdc ON wdc.woningblok_id = p.id AND wdc.change_end_date IS NULL
-                         JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wdc.start_milestone_id AND sms.change_end_date IS NULL
-                         JOIN diwi_testset.milestone_state ems ON ems.milestone_id = wdc.end_milestone_id AND ems.change_end_date IS NULL
+                     diwi.woningblok p
+                         JOIN diwi.woningblok_state ws ON ws.woningblok_id = p.id AND ws.change_end_date IS NULL
+                         JOIN diwi.woningblok_duration_changelog wdc ON wdc.woningblok_id = p.id AND wdc.change_end_date IS NULL
+                         JOIN diwi.milestone_state sms ON sms.milestone_id = wdc.start_milestone_id AND sms.change_end_date IS NULL
+                         JOIN diwi.milestone_state ems ON ems.milestone_id = wdc.end_milestone_id AND ems.change_end_date IS NULL
                  WHERE sms.date > _now_  AND p.id = _woningblok_uuid_
              ),
              future_woningbloks_numericCP AS (
@@ -122,7 +123,7 @@ FROM (
                      fp.id, wnc.eigenschap_id, wnc.value, wnc.value_range, wnc.value_type
                  FROM
                      future_woningbloks fp
-                         JOIN diwi_testset.woningblok_maatwerk_numeriek_changelog wnc ON fp.id = wnc.woningblok_id
+                         JOIN diwi.woningblok_maatwerk_numeriek_changelog wnc ON fp.id = wnc.woningblok_id
                             AND wnc.start_milestone_id = fp.start_milestone_id AND wnc.change_end_date IS NULL
              ),
              future_woningbloks_booleanCP AS (
@@ -130,7 +131,7 @@ FROM (
                      fp.id, wbc.eigenschap_id, wbc.value
                  FROM
                      future_woningbloks fp
-                         JOIN diwi_testset.woningblok_maatwerk_boolean_changelog wbc ON fp.id = wbc.woningblok_id
+                         JOIN diwi.woningblok_maatwerk_boolean_changelog wbc ON fp.id = wbc.woningblok_id
                          AND wbc.start_milestone_id = fp.start_milestone_id AND wbc.change_end_date IS NULL
              ),
              future_woningbloks_textCP AS (
@@ -138,7 +139,7 @@ FROM (
                      fp.id, wtc.eigenschap_id, wtc.value
                  FROM
                      future_woningbloks fp
-                         JOIN diwi_testset.woningblok_maatwerk_text_changelog wtc ON fp.id = wtc.woningblok_id
+                         JOIN diwi.woningblok_maatwerk_text_changelog wtc ON fp.id = wtc.woningblok_id
                          AND wtc.start_milestone_id = fp.start_milestone_id AND wtc.change_end_date IS NULL
              ),
              future_woningbloks_categoriesCP AS (
@@ -146,9 +147,9 @@ FROM (
                      fp.id, wcc.eigenschap_id, array_agg(wccv.eigenschap_waarde_id) AS categories
                  FROM
                      future_woningbloks fp
-                         JOIN diwi_testset.woningblok_maatwerk_categorie_changelog wcc ON fp.id = wcc.woningblok_id
+                         JOIN diwi.woningblok_maatwerk_categorie_changelog wcc ON fp.id = wcc.woningblok_id
                             AND wcc.start_milestone_id = fp.start_milestone_id AND wcc.change_end_date IS NULL
-                         LEFT JOIN diwi_testset.woningblok_maatwerk_categorie_changelog_value wccv ON wccv.woningblok_maatwerk_categorie_changelog_id = wcc.id
+                         LEFT JOIN diwi.woningblok_maatwerk_categorie_changelog_value wccv ON wccv.woningblok_maatwerk_categorie_changelog_id = wcc.id
                  GROUP BY fp.id, wcc.eigenschap_id
              ),
              future_woningbloks_ordinalCP AS (
@@ -156,7 +157,7 @@ FROM (
                      fp.id, woc.eigenschap_id, woc.value_id AS ordinal_value_id, woc.min_value_id AS ordinal_min_value_id, woc.max_value_id AS ordinal_max_value_id
                  FROM
                      future_woningbloks fp
-                         JOIN diwi_testset.woningblok_maatwerk_ordinaal_changelog woc ON fp.id = woc.woningblok_id
+                         JOIN diwi.woningblok_maatwerk_ordinaal_changelog woc ON fp.id = woc.woningblok_id
                          AND woc.start_milestone_id = fp.start_milestone_id AND woc.change_end_date IS NULL
 
              ),
@@ -164,11 +165,11 @@ FROM (
                  SELECT
                      p.id, ems.milestone_id AS end_milestone_id
                  FROM
-                     diwi_testset.woningblok p
-                         JOIN diwi_testset.woningblok_state ws ON ws.woningblok_id = p.id AND ws.change_end_date IS NULL
-                         JOIN diwi_testset.woningblok_duration_changelog wdc ON wdc.woningblok_id = p.id AND wdc.change_end_date IS NULL
-                         JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wdc.start_milestone_id AND sms.change_end_date IS NULL
-                         JOIN diwi_testset.milestone_state ems ON ems.milestone_id = wdc.end_milestone_id AND ems.change_end_date IS NULL
+                     diwi.woningblok p
+                         JOIN diwi.woningblok_state ws ON ws.woningblok_id = p.id AND ws.change_end_date IS NULL
+                         JOIN diwi.woningblok_duration_changelog wdc ON wdc.woningblok_id = p.id AND wdc.change_end_date IS NULL
+                         JOIN diwi.milestone_state sms ON sms.milestone_id = wdc.start_milestone_id AND sms.change_end_date IS NULL
+                         JOIN diwi.milestone_state ems ON ems.milestone_id = wdc.end_milestone_id AND ems.change_end_date IS NULL
                  WHERE ems.date <= _now_  AND p.id = _woningblok_uuid_
              ),
              past_woningbloks_numericCP AS (
@@ -176,7 +177,7 @@ FROM (
                      pw.id, wnc.eigenschap_id, wnc.value, wnc.value_range, wnc.value_type
                  FROM
                      past_woningbloks pw
-                         JOIN diwi_testset.woningblok_maatwerk_numeriek_changelog wnc ON pw.id = wnc.woningblok_id
+                         JOIN diwi.woningblok_maatwerk_numeriek_changelog wnc ON pw.id = wnc.woningblok_id
                             AND wnc.end_milestone_id = pw.end_milestone_id AND wnc.change_end_date IS NULL
              ),
              past_woningbloks_booleanCP AS (
@@ -184,7 +185,7 @@ FROM (
                      pw.id, wbc.eigenschap_id, wbc.value
                  FROM
                      past_woningbloks pw
-                         JOIN diwi_testset.woningblok_maatwerk_boolean_changelog wbc ON pw.id = wbc.woningblok_id
+                         JOIN diwi.woningblok_maatwerk_boolean_changelog wbc ON pw.id = wbc.woningblok_id
                          AND wbc.end_milestone_id = pw.end_milestone_id AND wbc.change_end_date IS NULL
              ),
              past_woningbloks_textCP AS (
@@ -192,7 +193,7 @@ FROM (
                      pw.id, wtc.eigenschap_id, wtc.value
                  FROM
                      past_woningbloks pw
-                         JOIN diwi_testset.woningblok_maatwerk_text_changelog wtc ON pw.id = wtc.woningblok_id
+                         JOIN diwi.woningblok_maatwerk_text_changelog wtc ON pw.id = wtc.woningblok_id
                          AND wtc.end_milestone_id = pw.end_milestone_id AND wtc.change_end_date IS NULL
              ),
              past_woningbloks_categoriesCP AS (
@@ -200,9 +201,9 @@ FROM (
                      pw.id, wcc.eigenschap_id, array_agg(wccv.eigenschap_waarde_id) AS categories
                  FROM
                      past_woningbloks pw
-                         JOIN diwi_testset.woningblok_maatwerk_categorie_changelog wcc ON pw.id = wcc.woningblok_id
+                         JOIN diwi.woningblok_maatwerk_categorie_changelog wcc ON pw.id = wcc.woningblok_id
                             AND wcc.end_milestone_id = pw.end_milestone_id AND wcc.change_end_date IS NULL
-                         LEFT JOIN diwi_testset.woningblok_maatwerk_categorie_changelog_value wccv ON wccv.woningblok_maatwerk_categorie_changelog_id = wcc.id
+                         LEFT JOIN diwi.woningblok_maatwerk_categorie_changelog_value wccv ON wccv.woningblok_maatwerk_categorie_changelog_id = wcc.id
                  GROUP BY pw.id, wcc.eigenschap_id
              ),
              past_woningbloks_ordinalCP AS (
@@ -210,7 +211,7 @@ FROM (
                      pw.id, woc.eigenschap_id, woc.value_id AS ordinal_value_id, woc.min_value_id AS ordinal_min_value_id, woc.max_value_id AS ordinal_max_value_id
                  FROM
                      past_woningbloks pw
-                         JOIN diwi_testset.woningblok_maatwerk_ordinaal_changelog woc ON pw.id = woc.woningblok_id
+                         JOIN diwi.woningblok_maatwerk_ordinaal_changelog woc ON pw.id = woc.woningblok_id
                          AND woc.end_milestone_id = pw.end_milestone_id AND woc.change_end_date IS NULL
              )
 
@@ -219,14 +220,14 @@ FROM (
              apb.value AS booleanValue,
              CAST (null AS FLOAT8) AS numericValue,
              CAST (null AS NUMRANGE) AS numericValueRange,
-             CAST (null AS diwi_testset.value_type) AS numericValueType,
+             CAST (null AS diwi.value_type) AS numericValueType,
              null AS textValue,
              CAST (null AS UUID[]) AS categories,
              CAST (null AS UUID) AS ordinalValueId,
              CAST (null AS UUID) AS ordinalMinValueId,
              CAST (null AS UUID) AS ordinalMaxValueId,
              apb.eigenschap_id AS customPropertyId,
-             'BOOLEAN'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
+             'BOOLEAN'::"diwi"."maatwerk_eigenschap_type" AS propertyType
          FROM active_woningbloks ap
                 JOIN active_woningbloks_booleanCP apb ON ap.id = apb.id
 
@@ -244,7 +245,7 @@ FROM (
              CAST (null AS UUID) AS ordinalMinValueId,
              CAST (null AS UUID) AS ordinalMaxValueId,
              apn.eigenschap_id AS customPropertyId,
-             'NUMERIC'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
+             'NUMERIC'::"diwi"."maatwerk_eigenschap_type" AS propertyType
          FROM active_woningbloks ap
                 JOIN active_woningbloks_numericCP apn ON ap.id = apn.id
 
@@ -262,7 +263,7 @@ FROM (
              CAST (null AS UUID) AS ordinalMinValueId,
              CAST (null AS UUID) AS ordinalMaxValueId,
              apt.eigenschap_id AS customPropertyId,
-             'TEXT'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
+             'TEXT'::"diwi"."maatwerk_eigenschap_type" AS propertyType
          FROM active_woningbloks ap
                 JOIN active_woningbloks_textCP apt ON ap.id = apt.id
 
@@ -280,7 +281,7 @@ FROM (
              CAST (null AS UUID) AS ordinalMinValueId,
              CAST (null AS UUID) AS ordinalMaxValueId,
              apc.eigenschap_id AS customPropertyId,
-             'CATEGORY'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
+             'CATEGORY'::"diwi"."maatwerk_eigenschap_type" AS propertyType
          FROM active_woningbloks ap
              JOIN active_woningbloks_categoriesCP apc ON ap.id = apc.id
 
@@ -298,7 +299,7 @@ FROM (
              apo.ordinal_min_value_id AS ordinalMinValueId,
              apo.ordinal_max_value_id AS ordinalMaxValueId,
              apo.eigenschap_id AS customPropertyId,
-             'ORDINAL'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
+             'ORDINAL'::"diwi"."maatwerk_eigenschap_type" AS propertyType
          FROM active_woningbloks ap
              JOIN active_woningbloks_ordinalCP apo ON ap.id = apo.id
 
@@ -309,14 +310,14 @@ FROM (
              fpb.value AS booleanValue,
              CAST (null AS FLOAT8) AS numericValue,
              CAST (null AS NUMRANGE) AS numericValueRange,
-             CAST (null AS diwi_testset.value_type) AS numericValueType,
+             CAST (null AS diwi.value_type) AS numericValueType,
              null AS textValue,
              CAST (null AS UUID[]) AS categories,
              CAST (null AS UUID) AS ordinalValueId,
              CAST (null AS UUID) AS ordinalMinValueId,
              CAST (null AS UUID) AS ordinalMaxValueId,
              fpb.eigenschap_id AS customPropertyId,
-             'BOOLEAN'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
+             'BOOLEAN'::"diwi"."maatwerk_eigenschap_type" AS propertyType
          FROM future_woningbloks fp
                   JOIN future_woningbloks_booleanCP fpb ON fp.id = fpb.id
 
@@ -334,7 +335,7 @@ FROM (
              CAST (null AS UUID) AS ordinalMinValueId,
              CAST (null AS UUID) AS ordinalMaxValueId,
              fpn.eigenschap_id AS customPropertyId,
-             'NUMERIC'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
+             'NUMERIC'::"diwi"."maatwerk_eigenschap_type" AS propertyType
          FROM future_woningbloks fp
                   JOIN future_woningbloks_numericCP fpn ON fp.id = fpn.id
 
@@ -352,7 +353,7 @@ FROM (
              CAST (null AS UUID) AS ordinalMinValueId,
              CAST (null AS UUID) AS ordinalMaxValueId,
              fpt.eigenschap_id AS customPropertyId,
-             'TEXT'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
+             'TEXT'::"diwi"."maatwerk_eigenschap_type" AS propertyType
          FROM future_woningbloks fp
                   JOIN future_woningbloks_textCP fpt ON fp.id = fpt.id
 
@@ -370,7 +371,7 @@ FROM (
              CAST (null AS UUID) AS ordinalMinValueId,
              CAST (null AS UUID) AS ordinalMaxValueId,
              fpc.eigenschap_id AS customPropertyId,
-             'CATEGORY'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
+             'CATEGORY'::"diwi"."maatwerk_eigenschap_type" AS propertyType
          FROM future_woningbloks fp
              JOIN future_woningbloks_categoriesCP fpc ON fp.id = fpc.id
 
@@ -388,7 +389,7 @@ FROM (
              fpo.ordinal_value_id AS ordinalValueId,
              fpo.ordinal_min_value_id AS ordinalMinValueId,
              fpo.ordinal_max_value_id AS ordinalMaxValueId,
-             'ORDINAL'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
+             'ORDINAL'::"diwi"."maatwerk_eigenschap_type" AS propertyType
          FROM future_woningbloks fp
              JOIN future_woningbloks_ordinalCP fpo ON fp.id = fpo.id
 
@@ -399,14 +400,14 @@ FROM (
              pwb.value AS booleanValue,
              CAST (null AS FLOAT8) AS numericValue,
              CAST (null AS NUMRANGE) AS numericValueRange,
-             CAST (null AS diwi_testset.value_type) AS numericValueType,
+             CAST (null AS diwi.value_type) AS numericValueType,
              null AS textValue,
              CAST (null AS UUID[]) AS categories,
              CAST (null AS UUID) AS ordinalValueId,
              CAST (null AS UUID) AS ordinalMinValueId,
              CAST (null AS UUID) AS ordinalMaxValueId,
              pwb.eigenschap_id AS customPropertyId,
-             'BOOLEAN'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
+             'BOOLEAN'::"diwi"."maatwerk_eigenschap_type" AS propertyType
          FROM past_woningbloks pw
              JOIN past_woningbloks_booleanCP pwb ON pw.id = pwb.id
 
@@ -424,7 +425,7 @@ FROM (
              CAST (null AS UUID) AS ordinalMinValueId,
              CAST (null AS UUID) AS ordinalMaxValueId,
              pwn.eigenschap_id AS customPropertyId,
-             'NUMERIC'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
+             'NUMERIC'::"diwi"."maatwerk_eigenschap_type" AS propertyType
          FROM past_woningbloks pw
              JOIN past_woningbloks_numericCP pwn ON pw.id = pwn.id
 
@@ -442,7 +443,7 @@ FROM (
              CAST (null AS UUID) AS ordinalMinValueId,
              CAST (null AS UUID) AS ordinalMaxValueId,
              pwt.eigenschap_id AS customPropertyId,
-             'TEXT'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
+             'TEXT'::"diwi"."maatwerk_eigenschap_type" AS propertyType
          FROM past_woningbloks pw
              JOIN past_woningbloks_textCP pwt ON pw.id = pwt.id
 
@@ -460,7 +461,7 @@ FROM (
              CAST (null AS UUID) AS ordinalMinValueId,
              CAST (null AS UUID) AS ordinalMaxValueId,
              pwc.eigenschap_id AS customPropertyId,
-             'CATEGORY'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
+             'CATEGORY'::"diwi"."maatwerk_eigenschap_type" AS propertyType
          FROM past_woningbloks pw
              JOIN past_woningbloks_categoriesCP pwc ON pw.id = pwc.id
 
@@ -478,13 +479,13 @@ FROM (
              pwo.ordinal_value_id AS ordinalValueId,
              pwo.ordinal_min_value_id AS ordinalMinValueId,
              pwo.ordinal_max_value_id AS ordinalMaxValueId,
-             'ORDINAL'::"diwi_testset"."maatwerk_eigenschap_type" AS propertyType
+             'ORDINAL'::"diwi"."maatwerk_eigenschap_type" AS propertyType
          FROM past_woningbloks pw
              JOIN past_woningbloks_ordinalCP pwo ON pw.id = pwo.id
 
      ) AS q
 
-        JOIN diwi_testset.property_state cps ON cps.property_id = q.customPropertyId AND cps.change_end_date IS NULL
+        JOIN diwi.property_state cps ON cps.property_id = q.customPropertyId AND cps.change_end_date IS NULL
 
 WHERE q.woningblokId = _woningblok_uuid_;
 

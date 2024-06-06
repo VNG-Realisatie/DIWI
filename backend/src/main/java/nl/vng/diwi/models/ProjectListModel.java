@@ -12,7 +12,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 public class ProjectListModel extends ProjectSnapshotModelSuperclass {
 
-    public static final List<String> SORTABLE_COLUMNS = List.of("projectName", "projectOwners", "confidentialityLevel", "organizationName",
+    public static final List<String> SORTABLE_COLUMNS = List.of("projectName", "projectOwners", "confidentialityLevel",
         "planType", "startDate", "endDate", "priority", "projectPhase", "municipalityRole", "planningPlanStatus", "totalValue", "municipality", "wijk", "buurt");
     public static final String DEFAULT_SORT_COLUMN = "startDate";
 

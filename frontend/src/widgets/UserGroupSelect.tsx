@@ -1,25 +1,27 @@
 import { useEffect, useState } from "react";
 import { TextField, Autocomplete, Checkbox } from "@mui/material";
-import { OrganizationUserAvatars } from "../components/OrganizationUserAvatars";
+import { UserGroupAvatars } from "../components/UserGroupAvatars";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
-import { Organization } from "../api/projectsServices";
-import { getOrganizationList } from "../api/projectsTableServices";
+import { UserGroup } from "../api/projectsServices";
+import { getUserGroupList } from "../api/projectsTableServices";
 
 const icon = <CheckBoxOutlineBlankIcon />;
 const checkedIcon = <CheckBoxIcon />;
 
 type Props = {
     readOnly: boolean;
-    userGroup: Organization[];
-    setUserGroup: (owner: Organization[]) => void;
+    userGroup: UserGroup[];
+    setUserGroup: (owner: UserGroup[]) => void;
 };
 
-export const OrganizationSelect = ({ readOnly, userGroup, setUserGroup }: Props) => {
-    const [ownerOptions, setOwnerOptions] = useState<Organization[]>();
+const isSingleUserIncluded = true;
+
+export const UserGroupSelect = ({ readOnly, userGroup, setUserGroup }: Props) => {
+    const [ownerOptions, setOwnerOptions] = useState<UserGroup[]>();
 
     useEffect(() => {
-        getOrganizationList().then((organizations) => setOwnerOptions(organizations));
+        getUserGroupList(isSingleUserIncluded).then((groups) => setOwnerOptions(groups));
     }, []);
 
     return (
@@ -48,18 +50,22 @@ export const OrganizationSelect = ({ readOnly, userGroup, setUserGroup }: Props)
                         .join(" ") || ""
                 );
             }}
+            onChange={(_, value) => {
+                setUserGroup(value);
+            }}
             isOptionEqualToValue={(option, value) => option.uuid === value.uuid}
             value={userGroup}
-            renderTags={(values) => <OrganizationUserAvatars organizations={values} />}
-            onChange={(_, newValue: Organization[]) => setUserGroup(newValue)}
+            renderTags={(groups) => <UserGroupAvatars groups={groups} />}
             renderOption={(props, option, { selected }) => (
                 <li {...props}>
                     <Checkbox icon={icon} checkedIcon={checkedIcon} checked={selected} />
                     {option.name}
-                    <OrganizationUserAvatars organizations={[option]} />
+                    <UserGroupAvatars groups={[option]} />
                 </li>
             )}
             renderInput={(params) => <TextField {...params} />}
         />
     );
 };
+
+export default UserGroupSelect;

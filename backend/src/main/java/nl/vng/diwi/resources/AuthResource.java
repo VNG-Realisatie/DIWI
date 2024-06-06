@@ -21,6 +21,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 
 @Path("/auth")
+// Specifically no @RolesAllowed("BLOCKED_BY_DEFAULT") because some of these endpoints are prior to logging in and having access to role/action information.
 public class AuthResource {
 
     @Context

@@ -38,9 +38,6 @@ export interface paths {
     "/rest/milestone/{id}": {
         get: operations["getMilestone"];
     };
-    "/rest/organizations/list": {
-        get: operations["getAllOrganization"];
-    };
     "/rest/projects": {
         post: operations["createProject"];
     };
@@ -83,8 +80,27 @@ export interface paths {
         put: operations["updateProperty"];
         delete: operations["disableCustomProperty"];
     };
+    "/rest/groups": {
+        get: operations["getAllUserGroups"];
+        post: operations["createUserGroup"];
+    };
+    "/rest/groups/{id}": {
+        put: operations["updateUserGroup"];
+        delete: operations["deleteUserGroup"];
+    };
+    "/rest/users": {
+        get: operations["getAllUsers"];
+        post: operations["createUser"];
+    };
+    "/rest/users/{userId}": {
+        get: operations["getUser"];
+        delete: operations["deleteUser"];
+    };
+    "/rest/users/{id}": {
+        put: operations["updateUser"];
+    };
     "/rest/users/userinfo": {
-        get: operations["login_1"];
+        get: operations["userInfo"];
     };
 }
 
@@ -205,19 +221,6 @@ export interface components {
             date?: string;
             description?: string;
         };
-        OrganizationModel: {
-            /** Format: uuid */
-            uuid: string;
-            name: string;
-            users?: components["schemas"]["OrganizationUserModel"][];
-        };
-        OrganizationUserModel: {
-            /** Format: uuid */
-            uuid?: string;
-            firstName?: string;
-            lastName?: string;
-            initials?: string;
-        };
         ProjectMinimalSnapshotModel: {
             /** Format: date */
             startDate?: string;
@@ -236,8 +239,22 @@ export interface components {
                 | "PUBLIC";
             /** @enum {string} */
             projectPhase: "_1_CONCEPT" | "_2_INITIATIVE" | "_3_DEFINITION" | "_4_DESIGN" | "_5_PREPARATION" | "_6_REALIZATION" | "_7_AFTERCARE";
+            projectOwners: components["schemas"]["UserGroupModel"][];
             /** Format: uuid */
             projectId: string;
+        };
+        UserGroupModel: {
+            /** Format: uuid */
+            uuid: string;
+            name: string;
+            users?: components["schemas"]["UserGroupUserModel"][];
+        };
+        UserGroupUserModel: {
+            /** Format: uuid */
+            uuid?: string;
+            firstName?: string;
+            lastName?: string;
+            initials?: string;
         };
         ProjectCreateSnapshotModel: {
             /** Format: date */
@@ -257,6 +274,7 @@ export interface components {
                 | "PUBLIC";
             /** @enum {string} */
             projectPhase: "_1_CONCEPT" | "_2_INITIATIVE" | "_3_DEFINITION" | "_4_DESIGN" | "_5_PREPARATION" | "_6_REALIZATION" | "_7_AFTERCARE";
+            projectOwners: components["schemas"]["UserGroupModel"][];
         };
         PriorityModel: {
             value?: components["schemas"]["SelectModel"];
@@ -281,6 +299,7 @@ export interface components {
                 | "PUBLIC";
             /** @enum {string} */
             projectPhase: "_1_CONCEPT" | "_2_INITIATIVE" | "_3_DEFINITION" | "_4_DESIGN" | "_5_PREPARATION" | "_6_REALIZATION" | "_7_AFTERCARE";
+            projectOwners: components["schemas"]["UserGroupModel"][];
             /** Format: uuid */
             projectId: string;
             /** Format: uuid */
@@ -299,14 +318,13 @@ export interface components {
             planType?: ("PAND_TRANSFORMATIE" | "TRANSFORMATIEGEBIED" | "HERSTRUCTURERING" | "VERDICHTING" | "UITBREIDING_UITLEG" | "UITBREIDING_OVERIG")[];
             priority?: components["schemas"]["PriorityModel"];
             municipalityRole?: components["schemas"]["SelectModel"][];
-            projectOwners?: components["schemas"]["OrganizationModel"][];
             /** Format: int64 */
             totalValue?: number;
             municipality?: components["schemas"]["SelectModel"][];
             district?: components["schemas"]["SelectModel"][];
             neighbourhood?: components["schemas"]["SelectModel"][];
             location?: components["schemas"]["LocationModel"];
-            geometry?: string | null;
+            geometry?: string;
         };
         SelectModel: {
             /** Format: uuid */
@@ -331,6 +349,7 @@ export interface components {
                 | "PUBLIC";
             /** @enum {string} */
             projectPhase: "_1_CONCEPT" | "_2_INITIATIVE" | "_3_DEFINITION" | "_4_DESIGN" | "_5_PREPARATION" | "_6_REALIZATION" | "_7_AFTERCARE";
+            projectOwners: components["schemas"]["UserGroupModel"][];
             /** Format: uuid */
             projectId: string;
             /** Format: uuid */
@@ -349,14 +368,13 @@ export interface components {
             planType?: ("PAND_TRANSFORMATIE" | "TRANSFORMATIEGEBIED" | "HERSTRUCTURERING" | "VERDICHTING" | "UITBREIDING_UITLEG" | "UITBREIDING_OVERIG")[];
             priority?: components["schemas"]["PriorityModel"];
             municipalityRole?: components["schemas"]["SelectModel"][];
-            projectOwners?: components["schemas"]["OrganizationModel"][];
             /** Format: int64 */
             totalValue?: number;
             municipality?: components["schemas"]["SelectModel"][];
             district?: components["schemas"]["SelectModel"][];
             neighbourhood?: components["schemas"]["SelectModel"][];
             location?: components["schemas"]["LocationModel"];
-            geometry?: string | null;
+            geometry?: string;
             customProperties?: components["schemas"]["ProjectHouseblockCustomPropertyModel"][];
         };
         DatedDataModelListPlanStatus: {
@@ -437,7 +455,7 @@ export interface components {
             projectPhase?: components["schemas"]["DatedDataModelProjectPhase"][];
             municipalityRole?: components["schemas"]["DatedDataModelString"][];
             planningPlanStatus?: components["schemas"]["DatedDataModelListPlanStatus"][];
-            projectOwners?: components["schemas"]["OrganizationModel"][];
+            projectOwners?: components["schemas"]["UserGroupModel"][];
             /** Format: int64 */
             totalValue?: number;
             municipality?: string[];
@@ -499,10 +517,42 @@ export interface components {
         };
         UserModel: {
             /** Format: uuid */
-            uuid: string;
+            id: string;
             firstName: string;
             lastName: string;
+            email: string;
+            /** @enum {string} */
+            role: "Admin" | "UserPlus" | "User" | "Management" | "Council" | "External";
+            organization: string;
+            phoneNumber: string;
+            department: string;
+            contactPerson: string;
+            prefixes: string;
+        };
+        UserInfoModel: {
+            /** Format: uuid */
+            id: string;
+            firstName: string;
+            lastName: string;
+            email: string;
+            /** @enum {string} */
+            role: "Admin" | "UserPlus" | "User" | "Management" | "Council" | "External";
+            organization: string;
+            phoneNumber: string;
+            department: string;
+            contactPerson: string;
+            prefixes: string;
             initials: string;
+            allowedActions?: (
+                | "EDIT_USERS"
+                | "EDIT_CUSTOM_PROPERTIES"
+                | "CAN_OWN_PROJECTS"
+                | "CHANGE_PROJECT_OWNER"
+                | "VIEW_OTHERS_PROJECTS"
+                | "CREATE_NEW_PROJECT"
+                | "IMPORT_PROJECTS"
+                | "EXPORT_PROJECTS"
+            )[];
         };
     };
     responses: never;
@@ -673,16 +723,6 @@ export interface operations {
             default: {
                 content: {
                     "application/json": components["schemas"]["MilestoneModel"];
-                };
-            };
-        };
-    };
-    getAllOrganization: {
-        responses: {
-            /** @description default response */
-            default: {
-                content: {
-                    "application/json": components["schemas"]["OrganizationModel"][];
                 };
             };
         };
@@ -995,12 +1035,152 @@ export interface operations {
             };
         };
     };
-    login_1: {
+    getAllUserGroups: {
+        parameters: {
+            query?: {
+                includeSingleUser?: boolean;
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["UserGroupModel"][];
+                };
+            };
+        };
+    };
+    createUserGroup: {
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["UserGroupModel"];
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["UserGroupModel"];
+                };
+            };
+        };
+    };
+    updateUserGroup: {
+        parameters: {
+            path: {
+                id: string;
+            };
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["UserGroupModel"];
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["UserGroupModel"];
+                };
+            };
+        };
+    };
+    deleteUserGroup: {
+        parameters: {
+            path: {
+                id: string;
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "*/*": unknown;
+                };
+            };
+        };
+    };
+    getAllUsers: {
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["UserModel"][];
+                };
+            };
+        };
+    };
+    createUser: {
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["UserModel"];
+            };
+        };
         responses: {
             /** @description default response */
             default: {
                 content: {
                     "application/json": components["schemas"]["UserModel"];
+                };
+            };
+        };
+    };
+    getUser: {
+        parameters: {
+            path: {
+                userId: string;
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["UserModel"];
+                };
+            };
+        };
+    };
+    deleteUser: {
+        parameters: {
+            path: {
+                userId: string;
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    updateUser: {
+        parameters: {
+            path: {
+                id: string;
+            };
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["UserModel"];
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["UserModel"];
+                };
+            };
+        };
+    };
+    userInfo: {
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["UserInfoModel"];
                 };
             };
         };
