@@ -8,6 +8,7 @@
 # testing
 /coverage
 /junit.xml
+/eslint.xml
 
 # production
 /build
