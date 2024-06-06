@@ -8,7 +8,7 @@ import { ChangeEvent } from "react";
 type GroupDialogProps = {
     open: boolean;
     onClose: () => void;
-    newGroup: Group
+    newGroup: Group;
     setNewGroup: (group: Group) => void;
     handleAddGroup: () => void;
     users: User[];
@@ -39,6 +39,7 @@ const GroupDialog = ({ open, onClose, newGroup, setNewGroup, handleAddGroup, use
                         values={newGroup.users}
                         setValue={(_, newValue) => {
                             const transformedUsers = newValue.map((user: User) => {
+                                // @ts-ignore
                                 const { id, email, role, phoneNumber, organization, department, prefixes, contactPerson, ...otherProps } = user;
                                 return { uuid: id, ...otherProps };
                             });
