@@ -181,7 +181,9 @@
       "dashboards": "Dashboards",
       "users": "Gebruikers",
       "dataExchange": "Data uitwisselen",
-      "settings": "Instellingen"
+      "settings": "Instellingen",
+      "addProject": "Project toevoegen",
+      "projectOverview": "Overzicht projecten"
     },
     "about": {
       "heading": "Over deze website",
@@ -243,7 +245,8 @@
       "system": "Systeem x",
       "squit": "Squit",
       "province": "Provincie",
-      "newData": "Nieuwe data koppeling instellen"
+      "newData": "Nieuwe data koppeling instellen",
+      "importForbidden": "Importeren is niet toegestaan. Neem contact op met uw beheerder"
     },
     "policy": {
       "name": "Naam:",

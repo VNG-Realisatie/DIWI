@@ -6,12 +6,15 @@ import useAlert from "../hooks/useAlert";
 import { UploadErrorType } from "./ImportExcel";
 import { useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
+import useAllowedActions from "../hooks/useAllowedActions";
+import ImportNotAllowed from "./ImportNotAllowed";
 
 export const ImportGeoJson = () => {
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
     const [uploaded, setUploaded] = useState(false);
     const [errors, setErrors] = useState<Array<UploadErrorType>>([]);
+    const allowedActions = useAllowedActions();
 
     const { setAlert } = useAlert();
 
@@ -19,6 +22,10 @@ export const ImportGeoJson = () => {
         if (fileInputRef.current) {
             (fileInputRef.current as HTMLElement).click();
         }
+    }
+
+    if (!allowedActions.includes("IMPORT_PROJECTS")) {
+        return <ImportNotAllowed />;
     }
 
     return (
@@ -29,23 +36,6 @@ export const ImportGeoJson = () => {
             <Typography fontSize="16px" mt={2}>
                 Upload ingevulde GeoJSON template.
             </Typography>
-            {uploaded && (
-                <Stack
-                    height={180}
-                    width="100%"
-                    border="dashed 2px #ddd"
-                    alignItems="center"
-                    justifyContent="space-evenly"
-                    style={{ cursor: "pointer" }}
-                    onClick={() => {
-                        setUploaded(false);
-                        setErrors([]);
-                        handleUploadStackClick();
-                    }}
-                >
-                    Het bestand kon niet worden geimporteerd. Klik hier om terug te gaan om een nieuw bestand te uploaden
-                </Stack>
-            )}
             {uploaded && (
                 <Stack
                     height={180}

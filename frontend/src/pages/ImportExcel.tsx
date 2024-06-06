@@ -6,6 +6,8 @@ import useAlert from "../hooks/useAlert";
 import { importExcelProjects } from "../api/importServices";
 import { useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
+import useAllowedActions from "../hooks/useAllowedActions";
+import ImportNotAllowed from "./ImportNotAllowed";
 
 export type UploadErrorType = {
     errorCode: string;
@@ -26,11 +28,16 @@ export const ImportExcel = ({ excelImport }: Props) => {
     const [errors, setErrors] = useState<Array<UploadErrorType>>([]);
 
     const { setAlert } = useAlert();
+    const allowedActions = useAllowedActions();
 
     function handleUploadStackClick(): void {
         if (fileInputRef.current) {
             (fileInputRef.current as HTMLElement).click();
         }
+    }
+
+    if (!allowedActions.includes("IMPORT_PROJECTS")) {
+        return <ImportNotAllowed />;
     }
 
     return (

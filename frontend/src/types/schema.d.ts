@@ -255,7 +255,18 @@ export interface components {
             firstName?: string;
             lastName?: string;
             initials?: string;
+            allowedActions?: (
+                | "EDIT_USERS"
+                | "EDIT_CUSTOM_PROPERTIES"
+                | "CAN_OWN_PROJECTS"
+                | "CHANGE_PROJECT_OWNER"
+                | "VIEW_OTHERS_PROJECTS"
+                | "CREATE_NEW_PROJECT"
+                | "IMPORT_PROJECTS"
+                | "EXPORT_PROJECTS"
+            )[];
         };
+
         ProjectCreateSnapshotModel: {
             /** Format: date */
             startDate?: string;
