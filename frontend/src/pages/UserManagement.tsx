@@ -73,8 +73,10 @@ const UserManagement = () => {
             setUserGroups([...userGroups, data]);
             setNewGroup(emptyGroupForm);
             setAlert(t("admin.userManagement.groupAddSuccess"), "success");
-        } catch (error: any) {
-            setAlert(error.message, "warning");
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                setAlert(error.message, "error");
+            }
         } finally {
             setIsGroupDialogOpen(false);
         }
@@ -87,8 +89,10 @@ const UserManagement = () => {
             setUsers([...users, data]);
             setNewUser(emptyUserForm);
             setAlert(t("admin.userManagement.userAddSuccess"), "success");
-        } catch (error: any) {
-            setAlert(error.message, "error");
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                setAlert(error.message, "error");
+            }
         } finally {
             setIsUserDialogOpen(false);
         }

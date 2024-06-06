@@ -71,8 +71,10 @@ const GroupUserTable = ({ rows, users, setUserGroups }: Props) => {
                 const updatedGroup = await updateGroup(groupToEdit.uuid, groupToEdit);
                 setUserGroups(rows.map((group) => (group.uuid === updatedGroup.uuid ? updatedGroup : group)));
                 setAlert(t("admin.userManagement.groupUpdateSuccess"), "success");
-            } catch (error: any) {
-                setAlert(error.message, "warning");
+            } catch (error: unknown) {
+                if (error instanceof Error) {
+                    setAlert(error.message, "error");
+                }
             } finally {
                 setEditDialogOpen(false);
             }
@@ -89,8 +91,10 @@ const GroupUserTable = ({ rows, users, setUserGroups }: Props) => {
                 await deleteGroup(groupToDelete);
                 setUserGroups(rows.filter((group) => group.uuid !== groupToDelete));
                 setAlert(t("admin.userManagement.groupDeleteSuccess"), "success");
-            } catch (error: any) {
-                setAlert(error.message, "warning");
+            } catch (error: unknown) {
+                if (error instanceof Error) {
+                    setAlert(error.message, "error");
+                }
             } finally {
                 setDeleteDialogOpen(false);
             }

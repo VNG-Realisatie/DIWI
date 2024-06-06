@@ -35,9 +35,11 @@ const UsersTable = ({ rows, setUsers }: Props) => {
             try {
                 const updatedUser = await updateUser(userToEdit.id, userToEdit);
                 setAlert(t("admin.userManagement.userUpdateSuccess"), "success");
-                setUsers(rows.map((user) => (user.id === updatedUser.id ? updatedUser : user)));
-            } catch (error: any) {
-                setAlert(error.message, "error");
+                setUsers(rows.map((user) => (user.id === updatedUser.uuid ? updatedUser : user)));
+            } catch (error: unknown) {
+                if (error instanceof Error) {
+                    setAlert(error.message, "error");
+                }
             } finally {
                 setUserDialogOpen(false);
             }
@@ -53,8 +55,10 @@ const UsersTable = ({ rows, setUsers }: Props) => {
                 await deleteUser(userToDelete);
                 setAlert(t("admin.userManagement.userDeleteSuccess"), "success");
                 setUsers(rows.filter((user) => user.id !== userToDelete));
-            } catch (error: any) {
-                setAlert(error.message, "error");
+            } catch (error: unknown) {
+                if (error instanceof Error) {
+                    setAlert(error.message, "error");
+                }
             } finally {
                 setDeleteDialogOpen(false);
             }
