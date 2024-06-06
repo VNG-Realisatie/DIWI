@@ -3,8 +3,8 @@ import { Autocomplete, AutocompleteChangeDetails, AutocompleteChangeReason, Text
 import { t } from "i18next";
 
 type Option = {
-    id: string | number;
-    name: string;
+    id?: string | number;
+    name?: string;
     firstName?: string;
     lastName?: string;
 };

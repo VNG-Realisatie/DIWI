@@ -14,6 +14,7 @@ import { addUser } from "../api/userServices";
 import { RoleType } from "../types/enums";
 
 const emptyGroupForm: Group = {
+    uuid: "",
     name: "",
     users: [],
 };
@@ -44,9 +45,9 @@ export type User = {
 };
 
 export type Group = {
-    uuid?: string;
-    name?: string;
-    users?: User[];
+    uuid: string;
+    name: string;
+    users: User[];
 };
 
 const UserManagement = () => {
@@ -103,7 +104,7 @@ const UserManagement = () => {
                 </Stack>
             )}
 
-            <GroupUserTable rows={userGroups} users={users} setUserGroups={setUserGroups} userGroups={userGroups} />
+            <GroupUserTable rows={userGroups} users={users} setUserGroups={setUserGroups} />
 
             {allowedActions.includes("EDIT_USERS") && (
                 <Stack direction="row" alignItems="center" mt={1} sx={{ cursor: "pointer" }} onClick={() => setIsGroupDialogOpen(true)}>
