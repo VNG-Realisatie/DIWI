@@ -1,5 +1,15 @@
 # Change log
 
+## DIWI RELEASE 1.3.2
+
+### ADDED
+
+- Log first and last delivery date of hous blocks during import
+
+### CHANGED
+
+- Improved error messages when importing. e.g. show property and option names for missing custom properties.
+
 ## DIWI RELEASE 1.3.1
 
 ### ADDED
