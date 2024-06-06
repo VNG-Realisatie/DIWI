@@ -1,4 +1,4 @@
-import { Alert, Button, Stack, Table, TableBody, TableCell, TableRow, Typography } from "@mui/material";
+import { Button, Stack, Typography } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 import { useRef, useState } from "react";
 import { importExcelProjects, importGeoJsonProjects } from "../api/importServices";
@@ -6,6 +6,7 @@ import { ReactComponent as UploadCloud } from "../assets/uploadCloud.svg";
 import useAlert from "../hooks/useAlert";
 import { useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
+import { ImportErrorType, ImportErrors } from "../components/ImportErrors";
 import { t } from "i18next";
 
 type FunctionalityType = "excel" | "squit" | "geojson";
@@ -14,19 +15,11 @@ type Props = {
     functionality: FunctionalityType;
 };
 
-export type UploadErrorType = {
-    errorCode: string;
-    row: number;
-    column: string;
-    cellValue: string;
-    errorMessage: string;
-};
-
 export const ImportPage = ({ functionality }: Props) => {
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
     const [uploaded, setUploaded] = useState(false);
-    const [errors, setErrors] = useState<Array<UploadErrorType>>([]);
+    const [errors, setErrors] = useState<Array<ImportErrorType>>([]);
 
     const { setAlert } = useAlert();
 
@@ -101,7 +94,7 @@ export const ImportPage = ({ functionality }: Props) => {
                                             navigate(Paths.projectsTable.path);
                                         } else {
                                             // 400 errors contain relevant info in body, deal with here
-                                            const newErrors = (await res.json()) as Array<UploadErrorType>;
+                                            const newErrors = (await res.json()) as Array<ImportErrorType>;
                                             setErrors(newErrors);
                                             setAlert(t("exchangeData.notifications.importFailed"), "error");
                                         }
@@ -116,40 +109,7 @@ export const ImportPage = ({ functionality }: Props) => {
                     {t("exchangeData.upload.hint")}
                 </Stack>
             )}
-            {errors.length > 0 && (
-                <>
-                    {/* This INFO text can be removed later or kept if valuable */}
-                    <Alert severity="info">
-                        <Typography>{t("exchangeData.errorInfo1")}</Typography>
-                        <Typography>{t("exchangeData.errorInfo2")}</Typography>
-                        <Typography>{t("exchangeData.errorInfo3")}</Typography>
-                        <Typography>{t("exchangeData.errorInfo4")}</Typography>
-                    </Alert>
-                    <Alert severity="error">
-                        <Typography fontSize="16px" mt={2}>
-                            {t("exchangeData.errorTable.errors")}
-                        </Typography>
-                        <Table>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell>{t("exchangeData.errorTable.row")}</TableCell>
-                                    <TableCell>{t("exchangeData.errorTable.column")}</TableCell>
-                                    <TableCell>{t("exchangeData.errorTable.value")}</TableCell>
-                                    <TableCell>{t("exchangeData.errorTable.description")}</TableCell>
-                                </TableRow>
-                                {errors.map((error) => (
-                                    <TableRow>
-                                        <TableCell>{error.row}</TableCell>
-                                        <TableCell>{error.column}</TableCell>
-                                        <TableCell>{error.cellValue}</TableCell>
-                                        <TableCell>{t(`exchangeData.${error.errorCode}`)}</TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </Alert>
-                </>
-            )}
+            {errors.length > 0 && <ImportErrors errors={errors} />}
         </Stack>
     );
 };
