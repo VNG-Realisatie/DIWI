@@ -146,7 +146,7 @@ dropdb diwi_test # Optional when database already exists
 createuser diwi
 psql -c "ALTER USER \"diwi\" WITH PASSWORD 'diwi'"
 createdb diwi_test -O diwi
-
+psql -d diwi_test -c 'ALTER SCHEMA "public" OWNER TO "diwi"'
 ```
 
 #### Install Eclipse for java EE
