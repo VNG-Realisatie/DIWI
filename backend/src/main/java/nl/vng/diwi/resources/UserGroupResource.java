@@ -49,6 +49,7 @@ public class UserGroupResource {
     }
 
     @POST
+    @RolesAllowed({UserActionConstants.EDIT_GROUPS})
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public UserGroupModel createUserGroup(UserGroupModel newUserGroup, @Context LoggedUser loggedUser) throws VngBadRequestException {
@@ -69,6 +70,7 @@ public class UserGroupResource {
 
     @PUT
     @Path("/{id}")
+    @RolesAllowed({UserActionConstants.EDIT_GROUPS})
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public UserGroupModel updateUserGroup(@PathParam("id") UUID groupId, UserGroupModel updatedUserGroup, @Context LoggedUser loggedUser) throws VngBadRequestException, VngNotFoundException {
@@ -89,6 +91,7 @@ public class UserGroupResource {
 
     @DELETE
     @Path("/{id}")
+    @RolesAllowed({UserActionConstants.EDIT_GROUPS})
     public void deleteUserGroup(@PathParam("id") UUID groupId, ContainerRequestContext requestContext) throws VngNotFoundException, VngBadRequestException {
 
         var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
