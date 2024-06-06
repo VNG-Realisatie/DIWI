@@ -1,5 +1,5 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import CategoryInput from "./CategoryInput";
 
 describe("CategoryInput Component", () => {
@@ -40,7 +40,7 @@ describe("CategoryInput Component", () => {
     });
 
     it("should be clearable", () => {
-        const mockSetValue = jest.fn();
+        const mockSetValue = vi.fn();
         render(
             <CategoryInput
                 values={options[0]}

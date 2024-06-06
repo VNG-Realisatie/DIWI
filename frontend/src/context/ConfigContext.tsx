@@ -2,7 +2,7 @@ import { PropsWithChildren, createContext, useCallback, useEffect, useState } fr
 import { MapBounds, getConfig } from "../api/configServices";
 
 type ConfigContextType = {
-    municipalityName: String;
+    municipalityName: string;
     mapBounds: MapBounds;
 };
 
@@ -20,7 +20,7 @@ const defaultNetherlandsMapBounds = {
 const ConfigContext = createContext<ConfigContextType | null>(null) as React.Context<ConfigContextType>;
 
 export const ConfigProvider = ({ children }: PropsWithChildren) => {
-    const [municipalityName, setMunicipalityName] = useState<String>("");
+    const [municipalityName, setMunicipalityName] = useState<string>("");
     const [mapBounds, setMapBounds] = useState<MapBounds>(defaultNetherlandsMapBounds);
 
     const updateConfigSettings = useCallback(() => {

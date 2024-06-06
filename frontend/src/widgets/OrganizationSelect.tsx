@@ -51,7 +51,7 @@ export const OrganizationSelect = ({ readOnly, userGroup, setUserGroup }: Props)
             isOptionEqualToValue={(option, value) => option.uuid === value.uuid}
             value={userGroup}
             renderTags={(values) => <OrganizationUserAvatars organizations={values} />}
-            onChange={(_: any, newValue: Organization[]) => setUserGroup(newValue)}
+            onChange={(_, newValue: Organization[]) => setUserGroup(newValue)}
             renderOption={(props, option, { selected }) => (
                 <li {...props}>
                     <Checkbox icon={icon} checkedIcon={checkedIcon} checked={selected} />

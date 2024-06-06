@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 
 const ProjectColorContext = createContext({
     selectedProjectColor: "",
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     setSelectedProjectColor: (color: string) => {},
 });
 

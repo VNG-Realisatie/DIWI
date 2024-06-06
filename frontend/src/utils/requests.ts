@@ -44,6 +44,7 @@ export async function getJson(url: string) {
     return res.json();
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function postJsonNoResponse(url: string, data: any) {
     const body = JSON.stringify(data);
 
@@ -65,12 +66,14 @@ export async function postJsonNoResponse(url: string, data: any) {
     return res;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function postJson(url: string, data: any) {
     const res = await postJsonNoResponse(url, data);
 
     return res.json();
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function putJson(url: string, data: any) {
     const body = JSON.stringify(data);
 
