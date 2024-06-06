@@ -47,7 +47,6 @@ import nl.vng.diwi.dal.entities.enums.ObjectType;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
-import nl.vng.diwi.dal.entities.enums.ProjectRole;
 import nl.vng.diwi.dal.entities.enums.PropertyKind;
 import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.models.ImportFileType;
@@ -71,7 +70,7 @@ import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
-import nl.vng.diwi.security.SecurityRoleConstants;
+import static nl.vng.diwi.security.UserActionConstants.CAN_OWN_PROJECTS;
 import nl.vng.diwi.services.ExcelImportService;
 import nl.vng.diwi.services.GeoJsonImportService;
 import nl.vng.diwi.services.PropertiesService;
@@ -83,7 +82,7 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
 @Path("/projects")
-@RolesAllowed({SecurityRoleConstants.Admin})
+@RolesAllowed({CAN_OWN_PROJECTS})
 public class ProjectsResource {
 
     private static final Logger logger = LogManager.getLogger();
@@ -444,20 +443,6 @@ public class ProjectsResource {
                     projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.municipalityRole, toUpdateMunicipalityRoles.stream().map(s -> s.getId().toString()).toList()));
                 }
             }
-            case projectLeaders -> {
-                List<UUID> currentLeadersUuids = projectSnapshotModelCurrent.getProjectLeaders().stream().map(OrganizationModel::getUuid).toList();
-                List<UUID> toUpdateLeadersUuids = projectSnapshotModelToUpdate.getProjectLeaders().stream().map(OrganizationModel::getUuid).toList();
-                currentLeadersUuids.forEach(uuid -> {
-                    if (!toUpdateLeadersUuids.contains(uuid)) {
-                        projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectLeaders, null, uuid));
-                    }
-                });
-                toUpdateLeadersUuids.forEach(uuid -> {
-                    if (!currentLeadersUuids.contains(uuid)) {
-                        projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectLeaders, uuid, null));
-                    }
-                });
-            }
             case projectOwners -> {
                 List<UUID> currentOwnersUuids = projectSnapshotModelCurrent.getProjectOwners().stream().map(OrganizationModel::getUuid).toList();
                 List<UUID> toUpdateOwnersUuids = projectSnapshotModelToUpdate.getProjectOwners().stream().map(OrganizationModel::getUuid).toList();
@@ -577,15 +562,10 @@ public class ProjectsResource {
         }
         case projectPhase ->
             projectService.updateProjectPhase(repo, project, ProjectPhase.valueOf(projectUpdateModel.getValue()), loggedUser.getUuid(), updateDate);
-        case projectLeaders -> {
-            UUID organizationToAdd = projectUpdateModel.getAdd();
-            UUID organizationToRemove = projectUpdateModel.getRemove();
-            projectService.updateProjectOrganizations(repo, project, ProjectRole.PROJECT_LEIDER, organizationToAdd, organizationToRemove, loggedUser.getUuid());
-        }
         case projectOwners -> {
             UUID organizationToAdd = projectUpdateModel.getAdd();
             UUID organizationToRemove = projectUpdateModel.getRemove();
-            projectService.updateProjectOrganizations(repo, project, ProjectRole.OWNER, organizationToAdd, organizationToRemove, loggedUser.getUuid());
+            projectService.updateProjectOrganizations(repo, project, organizationToAdd, organizationToRemove, loggedUser.getUuid());
         }
         case municipalityRole -> {
             Set<UUID> municipalityRoleCatUuids = projectUpdateModel.getValues().stream().map(UUID::fromString).collect(Collectors.toSet());

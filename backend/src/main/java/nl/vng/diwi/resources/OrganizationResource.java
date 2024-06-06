@@ -1,6 +1,6 @@
 package nl.vng.diwi.resources;
 
-import static nl.vng.diwi.security.SecurityRoleConstants.Admin;
+import static nl.vng.diwi.security.UserActionConstants.CAN_OWN_PROJECTS;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.services.OrganizationsService;
 
 @Path("/organizations")
-@RolesAllowed({Admin})
+@RolesAllowed({CAN_OWN_PROJECTS})
 public class OrganizationResource {
 
     private final VngRepository repo;

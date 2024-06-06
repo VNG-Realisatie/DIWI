@@ -57,7 +57,7 @@ class ProjectMinimalSnapshotModelTest {
         model.setEndDate(LocalDate.now().plusDays(2));
         model.setProjectName("name");
         model.setProjectColor("#abcdef");
-        model.setConfidentialityLevel(Confidentiality.OPENBAAR);
+        model.setConfidentialityLevel(Confidentiality.PUBLIC);
         model.setProjectPhase(ProjectPhase._1_CONCEPT);
         model.setStartDate(LocalDate.now().minusDays(3));
         model.setEndDate(LocalDate.now().plusDays(3));

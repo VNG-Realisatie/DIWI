@@ -31,7 +31,6 @@ public class ProjectUpdateModel {
         planType,
         priority,
         projectColor,
-        projectLeaders,
         projectOwners,
         projectPhase,
         municipality,
@@ -153,7 +152,7 @@ public class ProjectUpdateModel {
                 yield null;
             }
             case projectPhase -> (value == null || !EnumUtils.isValidEnum(ProjectPhase.class, value)) ? "New project phase value is not valid." : null;
-            case projectLeaders, projectOwners -> null;
+            case projectOwners -> null;
             case municipalityRole -> {
                 Property municipalityProperty = repo.getPropertyDAO().getActivePropertyStateByName(Constants.FIXED_PROPERTY_MUNICIPALITY_ROLE).getProperty();
                 if (municipalityProperty == null) {

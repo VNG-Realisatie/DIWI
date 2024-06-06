@@ -1,18 +1,21 @@
 import { Button, Stack, Typography } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
-import { ReactComponent as UploadCloud } from "../assets/uploadCloud.svg";
 import { useRef, useState } from "react";
+import { importExcelProjects, importGeoJsonProjects } from "../api/importServices";
+import { ReactComponent as UploadCloud } from "../assets/uploadCloud.svg";
 import useAlert from "../hooks/useAlert";
-import { importExcelProjects } from "../api/importServices";
 import { useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
 import { ImportErrorType, ImportErrors } from "../components/ImportErrors";
+import { t } from "i18next";
+
+type FunctionalityType = "excel" | "squit" | "geojson";
 
 type Props = {
-    excelImport: boolean;
+    functionality: FunctionalityType;
 };
 
-export const ImportExcel = ({ excelImport }: Props) => {
+export const ImportPage = ({ functionality }: Props) => {
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
     const [uploaded, setUploaded] = useState(false);
@@ -26,22 +29,24 @@ export const ImportExcel = ({ excelImport }: Props) => {
         }
     }
 
+    const importFunction = functionality === "geojson" ? importGeoJsonProjects : importExcelProjects;
+
     return (
         <Stack border="solid 1px #ddd" py={3} px={15} marginBottom={"2em"}>
             <Typography fontSize="20px" fontWeight="600" sx={{ mt: 2 }}>
-                {excelImport ? "Importeren vanuit Excel" : "Importeren vanuit Squit"}
+                {t(`exchangeData.importName.${functionality}`)}
             </Typography>
             <Button
                 variant="outlined"
                 endIcon={<DownloadIcon />}
                 sx={{ my: 3, width: "310px" }}
-                href={require("../assets/Excel_Import.xlsx")}
-                download="Excel Import.xlsx"
+                href={require(functionality === "geojson" ? "../assets/geojson_template.geojson" : "../assets/Excel_Import.xlsx")}
+                download={functionality === "geojson" ? "geojson_template.geojson" : "Excel Import.xlsx"}
             >
-                Download Excel template hier
+                {t(`exchangeData.download.${functionality}`)}
             </Button>
             <Typography fontSize="16px" mt={2}>
-                {excelImport ? "Upload ingevulde Excel template." : "Upload ingevulde Squit template."}
+                {t(`exchangeData.upload.${functionality}`)}
             </Typography>
             {uploaded && (
                 <Stack
@@ -57,7 +62,7 @@ export const ImportExcel = ({ excelImport }: Props) => {
                         handleUploadStackClick();
                     }}
                 >
-                    Het bestand kon niet worden geimporteerd. Klik hier om terug te gaan om een nieuw bestand te uploaden
+                    {t("exchangeData.notifications.importFailedGoBack")}
                 </Stack>
             )}
             {!uploaded && (
@@ -81,27 +86,27 @@ export const ImportExcel = ({ excelImport }: Props) => {
                             const file = e.target.files;
                             if (file) {
                                 setErrors([]);
-                                importExcelProjects(file as FileList)
+                                importFunction(file as FileList)
                                     .then(async (res) => {
                                         setUploaded(true);
                                         if (res.ok) {
-                                            setAlert("Excel-bestand succesvol geüpload.", "success");
+                                            setAlert(t("exchangeData.notifications.importSuccess"), "success");
                                             navigate(Paths.projectsTable.path);
                                         } else {
                                             // 400 errors contain relevant info in body, deal with here
                                             const newErrors = (await res.json()) as Array<ImportErrorType>;
                                             setErrors(newErrors);
-                                            setAlert("Kon Excel-bestand niet importeren", "error");
+                                            setAlert(t("exchangeData.notifications.importFailed"), "error");
                                         }
                                     })
                                     .catch((error) => {
                                         console.error("Failed to import due to error", error);
-                                        setAlert("Kon Excel-bestand niet importeren", "error");
+                                        setAlert(t("exchangeData.notifications.importFailed"), "error");
                                     });
                             }
                         }}
                     />
-                    Klik hier om te uploaden
+                    {t("exchangeData.upload.hint")}
                 </Stack>
             )}
             {errors.length > 0 && <ImportErrors errors={errors} />}

@@ -33,6 +33,7 @@ import nl.vng.diwi.dal.entities.UserToOrganization;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.security.LoginContext;
+import nl.vng.diwi.security.UserRole;
 
 @Log4j2
 @Priority(Priorities.AUTHENTICATION)
@@ -119,6 +120,7 @@ public class SecurityFilter implements ContainerRequestFilter {
                 userEntity.setLastName((String) lastName);
                 userEntity.setUser(newUser);
                 userEntity.setIdentityProviderId(profileUuid);
+                userEntity.setUserRole(UserRole.Admin); // Any user that is 'comming' from keycloak should not be able to view projects
                 userDao.persist(userEntity);
 
                 var org =  new Organization();
