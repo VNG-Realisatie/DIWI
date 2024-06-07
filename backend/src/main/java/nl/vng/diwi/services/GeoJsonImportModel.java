@@ -123,7 +123,7 @@ public class GeoJsonImportModel {
             if (projectData == null || projectData.getStatus() == null) {
                 importErrors.add(new ImportError(id, null, "projectgegevens -> status", null, ImportError.ERROR.MISSING_PROJECT_STATUS));
             } else if (projectData.getConfidentialityLevel() == null) {
-                importErrors.add(new ImportError(id, ImportError.ERROR.MISSING_PROJECT_CONFIDENTIALITY));
+                importErrors.add(new ImportError(id, null, "projectgegevens -> vertrouwelijkheid", null, ImportError.ERROR.MISSING_PROJECT_CONFIDENTIALITY));
             }
 
             if (!importErrors.isEmpty()) {

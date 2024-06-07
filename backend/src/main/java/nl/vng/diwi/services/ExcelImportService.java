@@ -351,7 +351,7 @@ public class ExcelImportService {
                             rowModel.setProjectEndDate(getLocalDateValue(rowModel.getId(), null, nextCell, formatter, rowErrors));
                         }
                         case PROJECT_CONFIDENTIALITY -> {
-                            String confidentialityStr = getStringValue(nextCell, formatter, evaluator, excelErrors);
+                            String confidentialityStr = getStringValue(rowModel.getId(), null, nextCell, formatter, evaluator, excelErrors);
                             Confidentiality confidentiality = null;
                             if (confidentialityStr != null && !confidentialityStr.isBlank()) {
                                 String confidentialityEnumStr = ExcelStrings.map.get(confidentialityStr);
@@ -360,10 +360,10 @@ public class ExcelImportService {
                             if (confidentiality != null) {
                                 rowModel.setConfidentialityLevel(confidentiality);
                             } else {
-                                rowErrors.add(getExcelError(nextCell, null, ImportError.ERROR.MISSING_PROJECT_CONFIDENTIALITY));
+                                rowErrors.add(getExcelError(rowModel.getId(), null, nextCell, null, ImportError.ERROR.MISSING_PROJECT_CONFIDENTIALITY));
                             }
                         }
-                        case PROJECT_OWNER -> rowModel.setOwnerEmail(getStringValue(nextCell, formatter, evaluator, excelErrors));
+                        case PROJECT_OWNER -> rowModel.setOwnerEmail(getStringValue(rowModel.getId(), null, nextCell, formatter, evaluator, excelErrors));
 
 
                         case PROJECT_PHASE_1_CONCEPT -> addProjectPhase(rowModel, ProjectPhase._1_CONCEPT, nextCell, formatter, rowErrors);
