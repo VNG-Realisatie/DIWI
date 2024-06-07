@@ -50,9 +50,10 @@ export const ImportErrors = ({ errors }: ImportErrorProps) => {
                                         dense
                                         sx={{
                                             listStyleType: "disc",
-                                            pl: 2,
+                                            pl: 1,
                                             "& .MuiListItem-root": {
                                                 display: "list-item",
+                                                padding: 0,
                                             },
                                         }}
                                     >
