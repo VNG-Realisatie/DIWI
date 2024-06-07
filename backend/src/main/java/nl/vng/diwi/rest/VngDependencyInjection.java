@@ -8,6 +8,7 @@ import nl.vng.diwi.services.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.hk2.api.Factory;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.process.internal.RequestScoped;
 import org.hibernate.Session;
@@ -96,7 +97,7 @@ public class VngDependencyInjection extends AbstractBinder {
         bind(UserDAO.class).to(UserDAO.class).in(RequestScoped.class);
         bind(UserGroupDAO.class).to(UserGroupDAO.class).in(RequestScoped.class);
 
-        bindFactory(LoggedUserFactory.class).to(LoggedUser.class).in(RequestScoped.class);
+        bindFactory(LoggedUserFactory.class).to(LoggedUser.class).in(PerLookup.class);
 
         bind(new MilestoneService()).to(MilestoneService.class);
         bind(new ProjectService()).to(ProjectService.class);
