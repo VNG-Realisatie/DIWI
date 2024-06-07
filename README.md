@@ -6,7 +6,7 @@ A description of the scripts in the project
 
 ### addUsers.sh
 
-Add an admin user to the local development keycloak instance
+Add an admin user to the local development keycloak instance, it will also create a diwi admin role and assign it to the admin user.
 
 ### compose.dev.sh
 
@@ -73,8 +73,19 @@ First drop the database. For this you need to stop the backend and close any exi
 ```shell
 dropdb diwi
 ```
-
 Then you can execute the steps in [the setup chapter](#setup-the-db).
+
+### Resetting the keycloak database
+
+First remove the data/keycloak directory.
+
+```shell
+sudo rm -r data/keycloak
+```
+Then add the user(s) again using the addUsers.sh script. You only have to do this once.
+```shell
+./addUsers.sh
+```
 
 ### Front end development
 
@@ -199,7 +210,7 @@ java -jar ~/Downloads/lombok.jar
 - In the next window, move the backend to the configured side.
 - Double click the server in the servers view. This opens the run configuration. (You can also go here from the dropdown next to the play button in the toolbar.)
 - Click the modules tab at the bottom of the run configuration.
-- Set the path of the application to / by clicking the edit button and changing `/vng` to `/`.
+- Set the path of the application to / by clicking the edit button and changing `/diwi` to `/`.
 - Click the play button in the servers view to start the server.
 
 ### HTTP API guidelines
