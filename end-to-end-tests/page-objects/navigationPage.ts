@@ -27,4 +27,7 @@ export class NavigationPage extends HelperBase {
     async importExcelPage() {
         await this.page.goto("http://localhost:3000/exchangedata/importexcel");
     }
+    async projectCreatePage() {
+        await this.page.goto("http://localhost:3000/project/create");
+    }
 }
