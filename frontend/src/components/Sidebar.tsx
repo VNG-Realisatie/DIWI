@@ -88,12 +88,16 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
                 </Link>
             </List> */}
             <List sx={{ ml: 3 }}>
-                <Typography sx={typographyStyles}>{t("sidebar.settings")}</Typography>
-                <Link to={Paths.userSettings.path} style={linkStyles} onClick={handleDrawerClose}>
-                    <ListItemButton>
-                        <ListItemText primary={t("customProperties.title")} />
-                    </ListItemButton>
-                </Link>
+                {allowedActions.includes("VIEW_CUSTOM_PROPERTIES") && (
+                    <>
+                        <Typography sx={typographyStyles}>{t("sidebar.settings")}</Typography>
+                        <Link to={Paths.userSettings.path} style={linkStyles} onClick={handleDrawerClose}>
+                            <ListItemButton>
+                                <ListItemText primary={t("customProperties.title")} />
+                            </ListItemButton>
+                        </Link>
+                    </>
+                )}
             </List>
             <List sx={{ ml: 3 }}>
                 <Link to={Paths.userManagement.path} style={linkStyles} onClick={handleDrawerClose}>

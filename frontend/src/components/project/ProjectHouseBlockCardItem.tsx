@@ -27,7 +27,7 @@ export const ProjectHouseBlockCardItem = (props: any) => {
                 {hb.naam ? hb.naam : "Geen Naam"}
                 {
                     <Box sx={{ cursor: "pointer" }}>
-                        {editable && allowedActions.includes("CREATE_NEW_PROJECT") ? (
+                        {editable && allowedActions.includes("EDIT_OWN_PROJECTS") ? (
                             <SaveIcon onClick={() => setEditable(false)} />
                         ) : (
                             <EditIcon onClick={() => setEditable(true)} />

@@ -8,6 +8,7 @@ import { useContext, useState } from "react";
 import AlertContext from "../../context/AlertContext";
 import PropertyDialog from "./PropertyDialog";
 import useAllowedActions from "../../hooks/useAllowedActions";
+import ActionNotAllowed from "../../pages/ActionNotAllowed";
 
 type Props = {
     customProperties: Property[];
@@ -22,6 +23,10 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
     const [editPropertyId, setEditPropertyId] = useState("");
     const { t } = useTranslation();
     const allowedActions = useAllowedActions();
+
+    if (!allowedActions.includes("VIEW_CUSTOM_PROPERTIES")) {
+        return <ActionNotAllowed errorMessage={t("customProperties.forbidden")} />;
+    }
 
     const handleDelete = async (id: string, name: string) => {
         setDialogOpen(true);

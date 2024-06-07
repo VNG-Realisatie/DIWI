@@ -71,7 +71,7 @@ export const ProjectsWithHouseBlock = () => {
     return (
         <Stack mb={10}>
             <Box sx={{ cursor: "pointer" }} position="absolute" right={100} top={17}>
-                {allowedActions.includes("CREATE_NEW_PROJECT") && (
+                {allowedActions.includes("EDIT_OWN_PROJECTS") && (
                     <>
                         {!readOnly && (
                             <Tooltip placement="top" title={t("projectDetail.colorEdit")}>
