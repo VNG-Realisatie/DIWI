@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { TextField } from "@mui/material";
+import { InputAdornment, TextField, Typography } from "@mui/material";
 import InputLabelStack from "./InputLabelStack";
+import EuroIcon from "@mui/icons-material/Euro";
 
 export type ValueType = {
     value: null | number;
@@ -72,9 +73,9 @@ function fromRangeToString(value: ValueType, isMonetary: boolean): string {
     }
 }
 
-function fromStringToRange(stringValue: string, isMonetary: boolean): ValueType {
+function fromStringToRange(stringValue: string | null, isMonetary: boolean): ValueType {
     const inputValue = stringValue;
-    if (inputValue === "") {
+    if (inputValue === null) {
         return { value: null, min: null, max: null };
     } else if (inputValue.includes("-")) {
         const [minStr, maxStr] = inputValue.split("-");
@@ -98,7 +99,7 @@ function fromStringToRange(stringValue: string, isMonetary: boolean): ValueType 
 }
 
 const RangeNumberInput = ({ labelText, value, updateCallBack, isMonetary = false, readOnly, mandatory, title }: Props) => {
-    const [stringValue, setStringValue] = useState<string>("");
+    const [stringValue, setStringValue] = useState<string | null>(null);
 
     useEffect(() => {
         setStringValue(fromRangeToString(value, isMonetary));
@@ -112,15 +113,15 @@ const RangeNumberInput = ({ labelText, value, updateCallBack, isMonetary = false
     };
 
     const handleFocus = () => {
-        if (stringValue === "0,00") setStringValue("");
+        if (stringValue === "0,00") setStringValue(null);
     };
 
     const handleBlur = () => {
         if (isMonetary) {
-            if (stringValue === "") return setStringValue("0,00");
+            if (stringValue === null) return;
         }
         const range = fromStringToRange(stringValue, isMonetary);
-        updateCallBack(range);
+        stringValue ?? updateCallBack(range);
     };
 
     function handleKey(event: React.KeyboardEvent<HTMLDivElement>): void {
@@ -137,19 +138,43 @@ const RangeNumberInput = ({ labelText, value, updateCallBack, isMonetary = false
                 id="size"
                 size="small"
                 variant="outlined"
-                label={labelText}
-                value={stringValue}
+                label={!stringValue ? (mandatory ? labelText : "Leeg") : ""}
+                InputLabelProps={{
+                    shrink: false,
+                    sx: {
+                        "&.Mui-focused": {
+                            display: "none",
+                        },
+                        fontStyle: "italic",
+                        color: "rgba(0, 0, 0, 0.3)",
+                        transform: isMonetary ? "translate(34px, 9px)" : null,
+                    },
+                }}
+                value={stringValue ?? ""}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 onFocus={handleFocus}
                 onKeyUp={handleKey}
                 InputProps={{
-                    startAdornment: isMonetary ? "€" : "",
+                    startAdornment: isMonetary && (
+                        <InputAdornment position="start" sx={{ pointerEvents: "none" }}>
+                            <EuroIcon fontSize="inherit" />
+                        </InputAdornment>
+                    ),
+                    endAdornment: (
+                        <InputAdornment onClick={() => setStringValue(null)} position="end" sx={{ ":hover": { cursor: "pointer" } }}>
+                            <Typography fontStyle="italic" fontSize={12} sx={{ textDecoration: "underline" }}>
+                                Leeg maken
+                            </Typography>
+                        </InputAdornment>
+                    ),
                 }}
                 sx={{
                     "& .MuiInputBase-input.Mui-disabled": {
                         backgroundColor: "#0000",
                     },
+                    "& .MuiInputBase-adornedEnd": { backgroundColor: "white" },
+                    "& .MuiInputAdornment-positionStart": { marginRight: "2px" },
                 }}
             />
         </InputLabelStack>
