@@ -11,6 +11,7 @@ import GroupDialog from "../components/admin/user-management/GroupDialog";
 import UserDialog from "../components/admin/user-management/UserDialog";
 import useAllowedActions from "../hooks/useAllowedActions";
 import { addUser } from "../api/userSerivces";
+import { RoleType } from "../types/enums";
 
 const emptyGroupForm: Group = {
     name: "",
@@ -21,23 +22,25 @@ const emptyUserForm: User = {
     firstName: "",
     lastName: "",
     email: "",
-    role: "",
-    initials: "",
-    phone: "",
+    role: undefined,
     organization: "",
+    phoneNumber: "",
     department: "",
+    contactPerson: "",
+    prefixes: "",
 };
 
 export type User = {
-    uuid?: string;
+    id?: string;
     firstName?: string;
     lastName?: string;
     email?: string;
-    role?: string;
-    initials?: string;
-    phone?: string;
+    role?: RoleType;
     organization?: string;
+    phoneNumber?: string;
     department?: string;
+    contactPerson?: string;
+    prefixes?: string;
 };
 
 export type Group = {
@@ -68,27 +71,30 @@ const UserManagement = () => {
             const data = await addGroup(newGroup);
             setUserGroups([...userGroups, data]);
             setNewGroup(emptyGroupForm);
+            setAlert(t("admin.userManagement.groupAddSuccess"), "success");
         } catch (error: any) {
             setAlert(error.message, "warning");
         } finally {
             setIsGroupDialogOpen(false);
         }
     };
-    //doesnt work
+
     const handleAddUser = async () => {
         try {
-            const { initials, phone, organization, department, email, ...filteredNewUser } = newUser;
-            const data = await addUser(filteredNewUser);
+            const data = await addUser(newUser);
+            console.log(data);
             setUsers([...users, data]);
             setNewUser(emptyUserForm);
-            setAlert("User added successfully", "success");
+            setAlert(t("admin.userManagement.userAddSuccess"), "success");
         } catch (error: any) {
-            setAlert(error.message, "warning");
+            setAlert(error.message, "error");
+        } finally {
+            setIsUserDialogOpen(false);
         }
     };
     return (
         <Box sx={{ marginBottom: "90px" }}>
-            <UsersTable rows={users} />
+            <UsersTable rows={users} setUsers={setUsers} />
 
             {allowedActions.includes("EDIT_USERS") && (
                 <Stack direction="row" alignItems="center" mt={1} sx={{ cursor: "pointer" }} onClick={() => setIsUserDialogOpen(true)}>

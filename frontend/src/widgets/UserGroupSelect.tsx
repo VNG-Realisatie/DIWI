@@ -5,6 +5,7 @@ import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import { UserGroup } from "../api/projectsServices";
 import { getUserGroupList } from "../api/projectsTableServices";
+import useAllowedActions from "../hooks/useAllowedActions";
 
 const icon = <CheckBoxOutlineBlankIcon />;
 const checkedIcon = <CheckBoxIcon />;
@@ -26,6 +27,7 @@ const shouldDisplayError = (mandatory: boolean, userGroup: UserGroup[]) => {
 export const UserGroupSelect = ({ readOnly, userGroup, setUserGroup, mandatory, errorText }: Props) => {
     const [ownerOptions, setOwnerOptions] = useState<UserGroup[]>();
     const hasError = shouldDisplayError(mandatory, userGroup);
+    const allowedActions = useAllowedActions();
 
     useEffect(() => {
         getUserGroupList(isSingleUserIncluded).then((groups) => setOwnerOptions(groups));
@@ -35,7 +37,7 @@ export const UserGroupSelect = ({ readOnly, userGroup, setUserGroup, mandatory, 
         <Autocomplete
             multiple
             size="small"
-            disabled={readOnly}
+            disabled={readOnly || !allowedActions.includes("CHANGE_PROJECT_OWNER")}
             sx={{
                 "& .MuiInputBase-input.Mui-disabled": {
                     backgroundColor: "#0000", // set 0 opacity when disabled

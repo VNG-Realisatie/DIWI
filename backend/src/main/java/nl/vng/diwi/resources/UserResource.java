@@ -55,6 +55,7 @@ public class UserResource {
 
     @GET
     @Path("/{userId}")
+    @RolesAllowed(UserActionConstants.VIEW_USERS)
     @Produces(MediaType.APPLICATION_JSON)
     public UserModel getUser(@PathParam("userId") UUID userId) throws VngNotFoundException {
 
@@ -66,6 +67,7 @@ public class UserResource {
     }
 
     @POST
+    @RolesAllowed(UserActionConstants.EDIT_USERS)
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public UserModel createUser(UserModel newUser, @Context LoggedUser loggedUser) throws VngBadRequestException {
@@ -102,6 +104,7 @@ public class UserResource {
 
     @PUT
     @Path("/{id}")
+    @RolesAllowed(UserActionConstants.EDIT_USERS)
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public UserModel updateUser(@PathParam("id") UUID userId, UserModel updatedUser, @Context LoggedUser loggedUser) throws VngBadRequestException, VngNotFoundException {
@@ -135,6 +138,7 @@ public class UserResource {
 
     @DELETE
     @Path("/{userId}")
+    @RolesAllowed(UserActionConstants.EDIT_USERS)
     @Produces(MediaType.APPLICATION_JSON)
     public void deleteUser(@PathParam("userId") UUID userId, ContainerRequestContext requestContext) throws VngNotFoundException {
 

@@ -44,11 +44,11 @@ const UserDialog = ({ open, onClose, newUser, setNewUser, handleAddUser, title }
                         <Grid item xs={4}>
                             <TextInput
                                 readOnly={false}
-                                value={newUser.phone ?? ""}
+                                value={newUser.phoneNumber ?? ""}
                                 setValue={(event: any) => {
-                                    setNewUser({ ...newUser, phone: event.target.value });
+                                    setNewUser({ ...newUser, phoneNumber: event.target.value });
                                 }}
-                                mandatory={true}
+                                mandatory={false}
                                 title={t("admin.userManagement.tableHeader.phone")}
                                 errorText={t("admin.userManagement.errors.phone")}
                                 type="tel"
@@ -74,7 +74,7 @@ const UserDialog = ({ open, onClose, newUser, setNewUser, handleAddUser, title }
                         setValue={(event: any) => {
                             setNewUser({ ...newUser, organization: event.target.value });
                         }}
-                        mandatory={true}
+                        mandatory={false}
                         title={t("admin.userManagement.tableHeader.organization")}
                         errorText={t("admin.userManagement.errors.organization")}
                     />
@@ -84,17 +84,16 @@ const UserDialog = ({ open, onClose, newUser, setNewUser, handleAddUser, title }
                         setValue={(event: any) => {
                             setNewUser({ ...newUser, department: event.target.value });
                         }}
-                        mandatory={true}
+                        mandatory={false}
                         title={t("admin.userManagement.tableHeader.department")}
                         errorText={t("admin.userManagement.errors.department")}
                     />
-                    {/* Options need to be translated */}
                     <CategoryInput
                         readOnly={false}
                         mandatory={true}
                         title={t("admin.userManagement.tableHeader.role")}
-                        options={roleTypeOptions.map((role) => ({ id: role, name: role }))}
-                        values={newUser?.role ? { id: newUser.role, name: newUser.role } : null}
+                        options={roleTypeOptions.map((role) => ({ id: role, name: t(`admin.userManagement.roles.${role}`) }))}
+                        values={newUser?.role ? { id: newUser.role, name: t(`admin.userManagement.roles.${newUser.role}`) } : null}
                         setValue={(_, newValue) => {
                             if (newValue && newValue.id) {
                                 setNewUser({
@@ -106,6 +105,24 @@ const UserDialog = ({ open, onClose, newUser, setNewUser, handleAddUser, title }
                         multiple={false}
                         error={t("admin.userManagement.errors.role")}
                     />
+                    {/* <TextInput
+                        readOnly={false}
+                        value={newUser.contactPerson ?? ""}
+                        setValue={(event: any) => {
+                            setNewUser({ ...newUser, contactPerson: event.target.value });
+                        }}
+                        mandatory={false}
+                        title={t("admin.userManagement.tableHeader.contactPerson")}
+                    />
+                    <TextInput
+                        readOnly={false}
+                        value={newUser.prefixes ?? ""}
+                        setValue={(event: any) => {
+                            setNewUser({ ...newUser, prefixes: event.target.value });
+                        }}
+                        mandatory={false}
+                        title={t("admin.userManagement.tableHeader.prefixes")}
+                    /> */}
                 </Box>
             </DialogContent>
             <DialogActions>
