@@ -1,5 +1,9 @@
 {
   "translation": {
+    "pageTitle": {
+      "default": "VNG DIWI",
+      "prefix": "DIWI"
+    },
     "generic": {
       "yes": "Ja",
       "no": "Nee",
@@ -339,7 +343,6 @@
         "description": "Beschrijving",
         "errors": "Fouten"
       },
-
       "io_error": "Het Excel-bestand kon niet worden gelezen. Er was een probleem met de upload of met het bestandstype.",
       "no_data_sheet": "Het Excel-bestand mist het gegevensblad.",
       "missing_headers": "Het Excel-bestand bevat niet alle verwachte koppen.",
