@@ -236,7 +236,8 @@
         "projectPhase": "Vul het veld projectfase in",
         "confidentialityLevel": "Vul het veld vertrouwelijkheidsniveau in",
         "amount": "Aantal ontbreekt",
-        "hasmissingProperty": "Formulier heeft ontbrekende eigenschappen"
+        "hasmissingProperty": "Formulier heeft ontbrekende eigenschappen",
+        "owner": "Vul het veld shrijfrechten in"
       }
     },
     "sidebar": {

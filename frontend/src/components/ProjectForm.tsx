@@ -191,7 +191,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
 
                         {/* Owner */}
                         <Grid item xs={12} md={4}>
-                            <LabelComponent required={false} readOnly={readOnly} text={t("createProject.informationForm.owner")} />
+                            <LabelComponent required={true} readOnly={readOnly} text={t("createProject.informationForm.owner")} />
                             <UserGroupSelect
                                 readOnly={readOnly}
                                 userGroup={project?.projectOwners ? project.projectOwners : []}
@@ -201,6 +201,8 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                         projectOwners: e,
                                     })
                                 }
+                                mandatory={true}
+                                errorText={t("createProject.hasMissingRequiredAreas.owner")}
                             />
                         </Grid>
 
