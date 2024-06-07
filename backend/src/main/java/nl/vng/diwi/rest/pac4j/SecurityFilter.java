@@ -82,8 +82,7 @@ public class SecurityFilter implements ContainerRequestFilter {
             return null;
         };
 
-        try
-        {
+        try {
             DefaultSecurityLogic securityLogic = new DefaultSecurityLogic();
             securityLogic.perform(pac4jConfig, securityGrantedAccessAdapter, null, DefaultAuthorizers.IS_AUTHENTICATED,
                     null, new JEEFrameworkParameters(httpRequest, httpResponse));
@@ -101,8 +100,9 @@ public class SecurityFilter implements ContainerRequestFilter {
         try (var transaction = userDao.beginTransaction()) {
             var profileUuid = profile.getId();
 
-            var firsttName = profile.getAttribute("given_name");
-            var lastName = profile.getAttribute("family_name");
+            var authFirstName = profile.getAttribute("given_name");
+            var authLastName = profile.getAttribute("family_name");
+            var authEmail = profile.getAttribute("email");
 
             var userEntity = userDao.getUserByIdentityProviderId(profileUuid);
             if (userEntity == null) {
@@ -116,14 +116,15 @@ public class SecurityFilter implements ContainerRequestFilter {
                 userEntity = new UserState();
                 userEntity.setChangeStartDate(now);
                 userEntity.setCreateUser(systemUser);
-                userEntity.setFirstName((String) firsttName);
-                userEntity.setLastName((String) lastName);
+                userEntity.setFirstName((String) authFirstName);
+                userEntity.setLastName((String) authLastName);
                 userEntity.setUser(newUser);
                 userEntity.setIdentityProviderId(profileUuid);
-                userEntity.setUserRole(UserRole.Admin); // Any user that is 'comming' from keycloak should not be able to view projects
+                // Any user that is 'coming' from keycloak should not be able to view projects
+                userEntity.setUserRole(UserRole.Admin);
                 userDao.persist(userEntity);
 
-                var group =  new UserGroup();
+                var group = new UserGroup();
                 group.setSingleUser(true);
                 userGroupDAO.persist(group);
 
@@ -140,11 +141,24 @@ public class SecurityFilter implements ContainerRequestFilter {
                 groupToUser.setUserGroup(group);
                 groupToUser.setUser(newUser);
                 userGroupDAO.persist(groupToUser);
-
-                transaction.commit();
             }
+            // check if email, first/last name are set in diwi, if not set from auth data
+            if (nullOrEmpty(userEntity.getFirstName()) && !nullOrEmpty((String) authFirstName)) {
+                userEntity.setFirstName((String) authFirstName);
+            }
+            if (nullOrEmpty(userEntity.getLastName()) && !nullOrEmpty((String) authLastName)) {
+                userEntity.setLastName((String) authLastName);
+            }
+            if (nullOrEmpty(userEntity.getEmail()) && !nullOrEmpty((String) authEmail)) {
+                userEntity.setEmail((String) authEmail);
+            }
+            transaction.commit();
             return userEntity;
 
         }
+    }
+
+    private boolean nullOrEmpty(String s) {
+        return s == null || s.isBlank();
     }
 }
