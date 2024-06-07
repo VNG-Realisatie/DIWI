@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { drawerWidth, theme } from "../theme";
 
 import * as Paths from "../Paths";
-import { getCurrentUser } from "../api/userSerivces";
+import { getCurrentUser } from "../api/userServices";
 import { User } from "../pages/UserManagement";
 import { t } from "i18next";
 

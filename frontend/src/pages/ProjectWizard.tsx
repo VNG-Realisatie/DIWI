@@ -65,6 +65,7 @@ const ProjectWizard = () => {
                 navigate(projectWizardWithId.toPath({ projectId: project.projectId }));
             }
             updateProjects();
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             setAlert(error.message, "error");
             return false;

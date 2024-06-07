@@ -17,6 +17,7 @@ type Props = {
     houseBlock: HouseBlockWithCustomProperties;
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const validateHouseBlock = (houseBlock: HouseBlockWithCustomProperties, setAlert: (message: string, type: AlertColor) => void): boolean => {
     let isValid = true;
     const invalidOwnershipAmount = houseBlock.ownershipValue.some((owner) => !isOwnershipAmountValid(owner.amount));

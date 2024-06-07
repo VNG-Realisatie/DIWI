@@ -19,7 +19,7 @@ export const UserGroupAvatars = (props: { groups?: UserGroup[] | null }) => {
         >
             {props.groups.map((owner) => {
                 return owner.users?.map((user) => {
-                    let isUserDuplicated = users.has(user.uuid);
+                    const isUserDuplicated = users.has(user.uuid);
                     users.add(user.uuid);
                     return isUserDuplicated ? null : <Avatar key={user.uuid} {...stringAvatar(`${user.firstName} ${user.lastName}`)} />;
                 });

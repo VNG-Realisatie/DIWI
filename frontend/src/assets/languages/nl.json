@@ -25,6 +25,69 @@
       "andMore": "en meer",
       "andLess": "en minder"
     },
+    "import": {
+      "errorsTitle": "Import fouten",
+      "description": {
+        "intro": "Er zijn drie niveaus voor fouten. Het oplossen van een fout op een niveau kan bij de volgende upload leiden tot een fout op een ander niveau.",
+        "level1": "Niveau 1 leest de kolom namen; missende (maatwerk) eigenschappen, stopt validatie voor data & business logic.",
+        "level2&3": "Niveau 2 & 3 leest de rijen (cellen); missende/invalide data, stopt validatie van business logic voor de rij/cell.",
+        "disabling": "Een simpele manier om (tijdelijk) een rij niet mee te nemen in de import is door de ID in kolom B te verwijderen. Deze ID's betekenen niks maar zijn wel nodig om de rij te importeren."
+      },
+      "errorProperties": {
+        "errorMessage": "melding",
+        "errorCode": "fout code",
+        "row": "rij",
+        "column": "kolom",
+        "value": "waarde",
+        "houseBlockName": "huizenblok",
+        "propertyName": "eigenschap",
+        "identificationCode": "identificatie code",
+        "customPropertyId": "maatwerk eigenschap id"
+      },
+      "errorCodes": {
+        "io_error": "Het Excel-bestand kon niet worden gelezen. Er was een probleem met de upload of met het bestandstype.",
+        "no_data_sheet": "Het Excel-bestand mist het gegevensblad.",
+        "missing_headers": "Het Excel-bestand bevat niet alle verwachte koppen.",
+        "not_string": "Er werd een tekenreeks verwacht, maar er werd een ander type gevonden.",
+        "not_numeric": "Er werd een numerieke waarde verwacht, maar er werd een ander type gevonden.",
+        "not_date": "Er werd een datumwaarde verwacht, maar er werd een ander type gevonden.",
+        "not_boolean": "Er werd een waar/niet-waar of 0/1 waarde verwacht, maar er werd een ander type gevonden.",
+        "unknown_type": "Er werd een onbekend waardetype gevonden. Er werd een ander type verwacht.",
+        "unknown_project_category_property": "Een projectcategorie-eigenschap met deze naam is niet gevonden.",
+        "unknown_project_property": "Een projecteigenschap met deze naam is niet gevonden.",
+        "unknown_houseblock_property": "Een huisblokeigenschap met deze naam is niet gevonden.",
+        "unknown_houseblock_numeric_property": "Een numerieke huisblokeigenschap met deze naam is niet gevonden.",
+        "unknown_property_value": "De waarde is niet gedefinieerd als een actieve optie voor de eigenschap in deze kolom.",
+        "missing_fixed_property": "De vaste eigenschap is niet gevonden",
+        "project_level_data_invalid": "Projectniveau-gegevens komen niet overeen met gegevens van vorig project met dezelfde id.",
+        "project_start_date_after_end_date": "De startdatum van het project is niet voor de einddatum van het project.",
+        "project_dates_wrong_for_project_status": "De start- en einddatum van het project komen niet overeen met de projectstatus.",
+        "project_wrong_phase_dates": "De startdata van de projectfase vallen niet binnen de projectduur of zijn niet in de juiste volgorde.",
+        "project_wrong_plan_status_dates": "De startdata van de projectplanningsplanstatus vallen niet binnen de projectduur of zijn niet in de juiste volgorde.",
+        "project_location_incomplete": "Projectbuurt/district zijn aanwezig zonder dat district/gemeente aanwezig is",
+        "houseblock_delivery_date_after_project_end_date": "Minstens één opleverdatum van het huisblok is na de einddatum van het project.",
+        "houseblock_housing_number_not_positive": "Het mutatienummer van het huisblok is niet groter dan 0.",
+        "houseblock_delivery_total_incorrect": "Het totaal aantal huizen in de leveringssectie komt niet overeen met het mutatiebedrag.",
+        "houseblock_delivery_date_before_project_devlivery_phase": "De opleverdata van het huisblok zijn voor de opleverfase van het project",
+        "houseblock_ownership_type_total_incorrect": "Het totaal aantal huizen in de sectie Eigendomstype komt niet overeen met het mutatiebedrag.",
+        "houseblock_ownership_owner_total_incorrect": "Het totaal aantal huizen in de sectie Woningwaarde komt niet overeen met het aantal eigen woningen.",
+        "houseblock_ownership_landlord_total_incorrect": "Het totaal aantal huizen in de sectie Huurprijs-private-verhuurder komt niet overeen met het aantal private verhuurders.",
+        "houseblock_ownership_housing_assoc_total_incorrect": "Het totaal aantal huizen in de sectie Huurprijs-woningcorporatie komt niet overeen met het aantal huurwoningen van de woningcorporatie.",
+        "houseblock_house_type_total_incorrect": "Het totaal aantal huizen in de sectie Woningtype komt niet overeen met het mutatiebedrag.",
+        "houseblock_physical_appearance_total_incorrect": "Het totaal aantal huizen in de sectie Fysieke verschijning komt niet overeen met het mutatiebedrag.",
+        "houseblock_target_group_total_incorrect": "Het totaal aantal huizen in de sectie Doelgroep komt niet overeen met het mutatiebedrag.",
+        "houseblock_ground_position_total_incorrect": "Het totaal aantal huizen in de sectie Grondpositie komt niet overeen met het mutatiebedrag.",
+        "no_project_name": "Projectnaam ontbreekt.",
+        "no_project_identificationNo": "Projectidentificatienummer ontbreekt.",
+        "no_project_status": "Projectstatus ontbreekt of is ongeldig",
+        "no_project_start_date": "Startdatum van het project ontbreekt of is ongeldig.",
+        "no_project_end_date": "Einddatum van het project ontbreekt of is ongeldig.",
+        "no_houseblock_mutation": "Mutatietype of -hoeveelheid van het huisblok ontbreekt.",
+        "no_houseblock_name": "Naam van het huisblok ontbreekt.",
+        "invalid_plan_type": "Projectplantype heeft een onbekende waarde",
+        "invalid_numeric_range": "De waarde komt niet overeen met een numeriek bereik."
+      }
+    },
     "createProject": {
       "information": "Projectinformatie",
       "houseBlocks": "Woningblokken",
@@ -247,7 +310,81 @@
       "squit": "Squit",
       "province": "Provincie",
       "newData": "Nieuwe data koppeling instellen",
-      "importForbidden": "Importeren is niet toegestaan. Neem contact op met uw beheerder"
+      "importForbidden": "Importeren is niet toegestaan. Neem contact op met uw beheerder",
+      "importName": {
+        "excel": "Importeren vanuit Excel",
+        "squit": "Importeren vanuit Squit",
+        "geojson": "Importeren vanuit GeoJSON"
+      },
+      "download": {
+        "excel": "Download Excel template hier",
+        "squit": "Download Excel template hier",
+        "geojson": "Download GeoJSON template hier"
+      },
+      "upload": {
+        "excel": "Upload ingevulde Excel template.",
+        "squit": "Upload ingevulde Squit template.",
+        "geojson": "Upload ingevulde GeoJSON template.",
+        "hint": "Klik hier om te uploaden"
+      },
+      "notifications": {
+        "importSuccess": "Bestand succesvol geüpload",
+        "importFailed": "Kon bestand niet importeren",
+        "importFailedGoBack": "Het bestand kon niet worden geimporteerd. Klik hier om terug te gaan om een nieuw bestand te uploaden"
+      },
+      "errorTable": {
+        "row": "Rij",
+        "column": "Kolom",
+        "value": "Waarde",
+        "description": "Beschrijving",
+        "errors": "Fouten"
+      },
+
+      "io_error": "Het Excel-bestand kon niet worden gelezen. Er was een probleem met de upload of met het bestandstype.",
+      "no_data_sheet": "Het Excel-bestand mist het gegevensblad.",
+      "missing_headers": "Het Excel-bestand bevat niet alle verwachte koppen.",
+      "not_string": "Er werd een tekenreeks verwacht, maar er werd een ander type gevonden.",
+      "not_numeric": "Er werd een numerieke waarde verwacht, maar er werd een ander type gevonden.",
+      "not_date": "Er werd een datumwaarde verwacht, maar er werd een ander type gevonden.",
+      "not_boolean": "Er werd een waar/niet-waar of 0/1 waarde verwacht, maar er werd een ander type gevonden.",
+      "unknown_type": "Er werd een onbekend waardetype gevonden. Er werd een ander type verwacht.",
+      "unknown_project_category_property": "Een projectcategorie-eigenschap met deze naam is niet gevonden.",
+      "unknown_project_property": "Een projecteigenschap met deze naam is niet gevonden.",
+      "unknown_houseblock_property": "Een huisblokeigenschap met deze naam is niet gevonden.",
+      "unknown_houseblock_numeric_property": "Een numerieke huisblokeigenschap met deze naam is niet gevonden.",
+      "unknown_property_value": "De waarde is niet gedefinieerd als een actieve optie voor de eigenschap in deze kolom.",
+      "missing_fixed_property": "De vaste eigenschap is niet gevonden",
+      "project_level_data_invalid": "Projectniveau-gegevens komen niet overeen met gegevens van vorig project met dezelfde id.",
+      "project_start_date_after_end_date": "De startdatum van het project is niet voor de einddatum van het project.",
+      "project_dates_wrong_for_project_status": "De start- en einddatum van het project komen niet overeen met de projectstatus.",
+      "project_wrong_phase_dates": "De startdata van de projectfase vallen niet binnen de projectduur of zijn niet in de juiste volgorde.",
+      "project_wrong_plan_status_dates": "De startdata van de projectplanningsplanstatus vallen niet binnen de projectduur of zijn niet in de juiste volgorde.",
+      "project_location_incomplete": "Projectbuurt/district zijn aanwezig zonder dat district/gemeente aanwezig is",
+      "houseblock_delivery_date_after_project_end_date": "Minstens één opleverdatum van het huisblok is na de einddatum van het project.",
+      "houseblock_housing_number_not_positive": "Het mutatienummer van het huisblok is niet groter dan 0.",
+      "houseblock_delivery_total_incorrect": "Het totaal aantal huizen in de leveringssectie komt niet overeen met het mutatiebedrag.",
+      "houseblock_delivery_date_before_project_devlivery_phase": "De opleverdata van het huisblok zijn voor de opleverfase van het project",
+      "houseblock_ownership_type_total_incorrect": "Het totaal aantal huizen in de sectie Eigendomstype komt niet overeen met het mutatiebedrag.",
+      "houseblock_ownership_owner_total_incorrect": "Het totaal aantal huizen in de sectie Woningwaarde komt niet overeen met het aantal eigen woningen.",
+      "houseblock_ownership_landlord_total_incorrect": "Het totaal aantal huizen in de sectie Huurprijs-private-verhuurder komt niet overeen met het aantal private verhuurders.",
+      "houseblock_ownership_housing_assoc_total_incorrect": "Het totaal aantal huizen in de sectie Huurprijs-woningcorporatie komt niet overeen met het aantal huurwoningen van de woningcorporatie.",
+      "houseblock_house_type_total_incorrect": "Het totaal aantal huizen in de sectie Woningtype komt niet overeen met het mutatiebedrag.",
+      "houseblock_physical_appearance_total_incorrect": "Het totaal aantal huizen in de sectie Fysieke verschijning komt niet overeen met het mutatiebedrag.",
+      "houseblock_target_group_total_incorrect": "Het totaal aantal huizen in de sectie Doelgroep komt niet overeen met het mutatiebedrag.",
+      "houseblock_ground_position_total_incorrect": "Het totaal aantal huizen in de sectie Grondpositie komt niet overeen met het mutatiebedrag.",
+      "no_project_name": "Projectnaam ontbreekt.",
+      "no_project_identificationNo": "Projectidentificatienummer ontbreekt.",
+      "no_project_status": "Projectstatus ontbreekt of is ongeldig",
+      "no_project_start_date": "Startdatum van het project ontbreekt of is ongeldig.",
+      "no_project_end_date": "Einddatum van het project ontbreekt of is ongeldig.",
+      "no_houseblock_mutation": "Mutatietype of -hoeveelheid van het huisblok ontbreekt.",
+      "no_houseblock_name": "Naam van het huisblok ontbreekt.",
+      "invalid_plan_type": "Projectplantype heeft een onbekende waarde",
+      "invalid_numeric_range": "De waarde komt niet overeen met een numeriek bereik.",
+      "errorInfo1": "Er zijn drie niveaus van fouten. Het oplossen van één type kan dus leiden tot andere fouten bij het opnieuw uploaden.",
+      "errorInfo2": "Niveau 1 heeft betrekking op het lezen van headers: Ontbrekende aangepaste eigenschappen: stopt elke gegevens-/bedrijfslogica-validatie voor deze kolom.",
+      "errorInfo3": "Niveaus 2 & 3 hebben betrekking op het lezen van rijen: Ontbrekende/ongeldige gegevens: stopt bedrijfslogica-validatie voor deze rij/cel.",
+      "errorInfo4": "Een eenvoudige manier om een rij (tijdelijk) uit te schakelen, is door de id's in kolom B te verwijderen. Deze nummers betekenen niets, maar zijn vereist om deze rij te kunnen opnemen."
     },
     "policy": {
       "name": "Naam:",
@@ -314,7 +451,7 @@
       }
     },
     "admin": {
-      "userManagement":{
+      "userManagement": {
         "titleUser": "User management gebruikers",
         "titleGroup": "User management groupen",
         "tableHeader": {
@@ -331,8 +468,8 @@
           "edit": "Bewerken",
           "delete": "Verwijderen",
           "actions": "Acties",
-          "groupes" : "Groepen",
-        "users" : "Gebruikers"
+          "groupes": "Groepen",
+          "users": "Gebruikers"
         },
         "groupName": "Group naam",
         "addMember": "Leden toevoegen",
@@ -343,15 +480,15 @@
         "editGroup": "Groep aanpassen",
         "add": "Voeg gebruiker toe",
         "edit": "Pas gebruiker aan",
-        "usersAddSuccess" : "Gebruiker is toegevoegd",
-        "groupAddSuccess" : "Groep is toegevoegd",
-        "groupDeleteSuccess" : "Groep is verwijderd",
-        "groupDeleteConfirmation" : "Weet je zeker dat je de groep wilt verwijderen?",
-        "userDeleteConfirmation" : "Weet je zeker dat je de gebruiker wilt verwijderen?",
-        "userDeleteSuccess" : "Gebruik is verwijderd",
-        "groupUpdateSuccess" : "Groep is geüpdatet",
+        "usersAddSuccess": "Gebruiker is toegevoegd",
+        "groupAddSuccess": "Groep is toegevoegd",
+        "groupDeleteSuccess": "Groep is verwijderd",
+        "groupDeleteConfirmation": "Weet je zeker dat je de groep wilt verwijderen?",
+        "userDeleteConfirmation": "Weet je zeker dat je de gebruiker wilt verwijderen?",
+        "userDeleteSuccess": "Gebruik is verwijderd",
+        "groupUpdateSuccess": "Groep is geüpdatet",
         "userUpdateSuccess": "Gebruiker is geüpdatet",
-        "errors" : {
+        "errors": {
           "addMember": "Leden moeten worden toegevoegd",
           "groupName": "Vul de groepnaam in",
           "firstName": "Vul de voornaam in",
@@ -361,7 +498,6 @@
           "phone": "Vul een geldig telefoonnummer in",
           "organization": "Vul de organisatie in",
           "department": "Vul de afdeling in"
-
         },
         "roles": {
           "Admin": "Admin",

@@ -2,14 +2,16 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle } from "
 import { t } from "i18next";
 import TextInput from "../../project/inputs/TextInput";
 import CategoryInput from "../../project/inputs/CategoryInput";
+import { Group, User } from "../../../pages/UserManagement";
+import { ChangeEvent } from "react";
 
 type GroupDialogProps = {
     open: boolean;
     onClose: () => void;
-    newGroup: any;
-    setNewGroup: (group: any) => void;
+    newGroup: Group;
+    setNewGroup: (group: Group) => void;
     handleAddGroup: () => void;
-    users: any[];
+    users: User[];
     title: string;
 };
 
@@ -22,7 +24,7 @@ const GroupDialog = ({ open, onClose, newGroup, setNewGroup, handleAddGroup, use
                     <TextInput
                         readOnly={false}
                         value={newGroup.name}
-                        setValue={(event: any) => {
+                        setValue={(event: ChangeEvent<HTMLInputElement>) => {
                             setNewGroup({ ...newGroup, name: event.target.value });
                         }}
                         mandatory={true}
@@ -36,9 +38,8 @@ const GroupDialog = ({ open, onClose, newGroup, setNewGroup, handleAddGroup, use
                         options={users ?? []}
                         values={newGroup.users}
                         setValue={(_, newValue) => {
-                            const transformedUsers = newValue.map((user: any) => {
-                                const { id, email, role, phoneNumber, organization, department, prefixes, contactPerson, ...otherProps } = user;
-                                return { uuid: id, ...otherProps };
+                            const transformedUsers = newValue.map((user: User) => {
+                                return { uuid: user.id, firstName: user.firstName, lastName: user.lastName };
                             });
                             setNewGroup({ ...newGroup, users: transformedUsers });
                         }}

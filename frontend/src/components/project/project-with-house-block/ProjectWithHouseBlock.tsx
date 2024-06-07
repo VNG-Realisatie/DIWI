@@ -77,6 +77,7 @@ export const ProjectsWithHouseBlock = () => {
                             <Tooltip placement="top" title={t("projectDetail.colorEdit")}>
                                 <FormatColorFillIcon
                                     sx={{ mr: 2, color: "#FFFFFF" }}
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                     onClick={(event: any) => {
                                         setOpenColorDialog(true);
                                         setAnchorEl(event.currentTarget);

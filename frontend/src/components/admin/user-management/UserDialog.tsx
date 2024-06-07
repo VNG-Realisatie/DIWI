@@ -4,13 +4,14 @@ import TextInput from "../../project/inputs/TextInput";
 import { User } from "../../../pages/UserManagement";
 import CategoryInput from "../../project/inputs/CategoryInput";
 import { roleTypeOptions } from "../../../types/enums";
+import { ChangeEvent } from "react";
 
 type UserDialogProps = {
     open: boolean;
     onClose: () => void;
     newUser: User;
-    setNewUser: (user: any) => void;
-    handleAddUser: any;
+    setNewUser: (user: User) => void;
+    handleAddUser: () => void;
     title?: string;
 };
 
@@ -23,7 +24,7 @@ const UserDialog = ({ open, onClose, newUser, setNewUser, handleAddUser, title }
                     <TextInput
                         readOnly={false}
                         value={newUser.firstName ?? ""}
-                        setValue={(event: any) => {
+                        setValue={(event: ChangeEvent<HTMLInputElement>) => {
                             setNewUser({ ...newUser, firstName: event.target.value });
                         }}
                         mandatory={true}
@@ -33,7 +34,7 @@ const UserDialog = ({ open, onClose, newUser, setNewUser, handleAddUser, title }
                     <TextInput
                         readOnly={false}
                         value={newUser.lastName ?? ""}
-                        setValue={(event: any) => {
+                        setValue={(event: ChangeEvent<HTMLInputElement>) => {
                             setNewUser({ ...newUser, lastName: event.target.value });
                         }}
                         mandatory={true}
@@ -45,7 +46,7 @@ const UserDialog = ({ open, onClose, newUser, setNewUser, handleAddUser, title }
                             <TextInput
                                 readOnly={false}
                                 value={newUser.phoneNumber ?? ""}
-                                setValue={(event: any) => {
+                                setValue={(event: ChangeEvent<HTMLInputElement>) => {
                                     setNewUser({ ...newUser, phoneNumber: event.target.value });
                                 }}
                                 mandatory={false}
@@ -58,7 +59,7 @@ const UserDialog = ({ open, onClose, newUser, setNewUser, handleAddUser, title }
                             <TextInput
                                 readOnly={false}
                                 value={newUser.email ?? ""}
-                                setValue={(event: any) => {
+                                setValue={(event: ChangeEvent<HTMLInputElement>) => {
                                     setNewUser({ ...newUser, email: event.target.value });
                                 }}
                                 mandatory={true}
@@ -71,7 +72,7 @@ const UserDialog = ({ open, onClose, newUser, setNewUser, handleAddUser, title }
                     <TextInput
                         readOnly={false}
                         value={newUser.organization ?? ""}
-                        setValue={(event: any) => {
+                        setValue={(event: ChangeEvent<HTMLInputElement>) => {
                             setNewUser({ ...newUser, organization: event.target.value });
                         }}
                         mandatory={false}
@@ -81,7 +82,7 @@ const UserDialog = ({ open, onClose, newUser, setNewUser, handleAddUser, title }
                     <TextInput
                         readOnly={false}
                         value={newUser.department ?? ""}
-                        setValue={(event: any) => {
+                        setValue={(event: ChangeEvent<HTMLInputElement>) => {
                             setNewUser({ ...newUser, department: event.target.value });
                         }}
                         mandatory={false}

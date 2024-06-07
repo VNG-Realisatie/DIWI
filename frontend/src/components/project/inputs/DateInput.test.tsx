@@ -5,6 +5,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import userEvent from "@testing-library/user-event";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const renderWithLocalization = (ui: any) => {
     return render(<LocalizationProvider dateAdapter={AdapterDayjs}>{ui}</LocalizationProvider>);
 };

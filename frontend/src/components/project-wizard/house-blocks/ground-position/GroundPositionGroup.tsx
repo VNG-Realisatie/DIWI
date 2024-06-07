@@ -27,6 +27,7 @@ export const GroundPositionGroup = ({ houseBlock, setHouseBlock, readOnly }: Gro
             </Stack>
             <SingleNumberInput
                 value={houseBlock?.groundPosition?.noPermissionOwner}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onChange={(e: any) =>
                     houseBlock &&
                     setHouseBlock({

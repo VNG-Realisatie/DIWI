@@ -1,19 +1,20 @@
 import { useEffect, useState } from "react";
 import UsersTable from "../components/admin/user-management/UsersTable";
-import { getGroups, getUsers } from "../api/userSerivces";
+import { getGroups, getUsers } from "../api/userServices";
 import GroupUserTable from "../components/admin/user-management/GroupUserTable";
 import { Box, Stack } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { t } from "i18next";
-import { addGroup } from "../api/userSerivces";
+import { addGroup } from "../api/userServices";
 import useAlert from "../hooks/useAlert";
 import GroupDialog from "../components/admin/user-management/GroupDialog";
 import UserDialog from "../components/admin/user-management/UserDialog";
 import useAllowedActions from "../hooks/useAllowedActions";
-import { addUser } from "../api/userSerivces";
+import { addUser } from "../api/userServices";
 import { RoleType } from "../types/enums";
 
 const emptyGroupForm: Group = {
+    uuid: "",
     name: "",
     users: [],
 };
@@ -44,9 +45,9 @@ export type User = {
 };
 
 export type Group = {
-    uuid?: string;
-    name?: string;
-    users?: User[];
+    uuid: string;
+    name: string;
+    users: User[];
 };
 
 const UserManagement = () => {
@@ -72,8 +73,10 @@ const UserManagement = () => {
             setUserGroups([...userGroups, data]);
             setNewGroup(emptyGroupForm);
             setAlert(t("admin.userManagement.groupAddSuccess"), "success");
-        } catch (error: any) {
-            setAlert(error.message, "warning");
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                setAlert(error.message, "error");
+            }
         } finally {
             setIsGroupDialogOpen(false);
         }
@@ -86,8 +89,10 @@ const UserManagement = () => {
             setUsers([...users, data]);
             setNewUser(emptyUserForm);
             setAlert(t("admin.userManagement.userAddSuccess"), "success");
-        } catch (error: any) {
-            setAlert(error.message, "error");
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                setAlert(error.message, "error");
+            }
         } finally {
             setIsUserDialogOpen(false);
         }
@@ -103,7 +108,7 @@ const UserManagement = () => {
                 </Stack>
             )}
 
-            <GroupUserTable rows={userGroups} users={users} setUserGroups={setUserGroups} userGroups={userGroups} />
+            <GroupUserTable rows={userGroups} users={users} setUserGroups={setUserGroups} />
 
             {allowedActions.includes("EDIT_USERS") && (
                 <Stack direction="row" alignItems="center" mt={1} sx={{ cursor: "pointer" }} onClick={() => setIsGroupDialogOpen(true)}>

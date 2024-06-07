@@ -10,6 +10,7 @@ export type ValueType = {
 
 type Props = {
     value: ValueType;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     updateCallBack: (value: any) => void;
     labelText?: string;
     isMonetary?: boolean;
@@ -47,6 +48,7 @@ function parseMonetary(value: string) {
     return result;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function fromMonetaryToString(value: any): string {
     let inputValue = "";
     if (value.value !== null) {

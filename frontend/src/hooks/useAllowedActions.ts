@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getCurrentUser } from "../api/userSerivces";
+import { getCurrentUser } from "../api/userServices";
 
 export type AllowedActions =
     | "EDIT_CUSTOM_PROPERTIES"

@@ -2,14 +2,20 @@ package nl.vng.diwi.models;
 
 import lombok.Data;
 
+import java.util.UUID;
+
 @Data
 public class ImportError {
 
     private String errorCode;
     private Integer row;
+    private Integer identificationNumber;
+    private String houseblockName;
     private String column;
-    private String cellValue;
+    private String propertyName;
+    private String value;
     private String errorMessage;
+    private UUID customPropertyId;
 
 
     public ImportError(ERROR error) {
@@ -22,25 +28,44 @@ public class ImportError {
         this.errorMessage = errorMessage;
     }
 
-    public ImportError(Integer row, ERROR error) {
+    public ImportError(Integer row, String propertyName, ERROR error) {
         this.row = row;
+        this.propertyName = propertyName;
         this.errorMessage = error.errorMsg;
         this.errorCode = error.errorCode;
     }
 
-    public ImportError(Integer row, String cellValue, ERROR error) {
+    public ImportError(Integer row, Integer identificationNumber, String houseblockName, ERROR error) {
         this.row = row;
-        this.cellValue = cellValue;
+        this.identificationNumber = identificationNumber;
+        this.houseblockName = houseblockName;
         this.errorMessage = error.errorMsg;
         this.errorCode = error.errorCode;
     }
 
-    public ImportError(Integer row, String column, String cellValue, ERROR error) {
+    public ImportError(Integer row, String column, Integer identificationNumber, String houseblockName, String value, UUID customPropertyId, ERROR error) {
         this.row = row;
         this.column = column;
-        this.cellValue = cellValue;
+        this.identificationNumber = identificationNumber;
+        this.houseblockName = houseblockName;
+        this.value = value;
+        this.customPropertyId = customPropertyId;
         this.errorMessage = error.errorMsg;
         this.errorCode = error.errorCode;
+    }
+
+    public ImportError(Integer identificationNumber, String houseblockName, String propertyName, String value, ERROR error) {
+        this(identificationNumber, houseblockName, propertyName, value, null, error);
+    }
+
+    public ImportError(Integer identificationNumber, String houseblockName, String propertyName, String value, UUID customPropertyId, ERROR error) {
+        this.identificationNumber = identificationNumber;
+        this.houseblockName = houseblockName;
+        this.propertyName = propertyName;
+        this.value = value;
+        this.errorMessage = error.errorMsg;
+        this.errorCode = error.errorCode;
+        this.customPropertyId = customPropertyId;
     }
 
     public enum ERROR {
@@ -73,7 +98,7 @@ public class ImportError {
         HOUSEBLOCK_DELIVERY_DATE_AFTER_PROJECT_END_DATE("houseblock_delivery_date", "At least one housing block delivery date is after the project end date."),
         HOUSEBLOCK_HOUSING_NUMBER_NOT_POSITIVE("houseblock_housing_number", "The housing block mutation number is not greater than 0."),
         HOUSEBLOCK_DELIVERY_TOTAL_INCORRECT("houseblock_delivery_total", "The total of houses in Delivery section does not match the mutation amount."),
-        HOUSEBLOCK_DELIVERY_DATE_BEFORE_PROJECT_DEVLIVERY_PHASE("houseblock_delivery_phase", "The housing block delivery dates are before the project delivery phase"),
+        HOUSEBLOCK_DELIVERY_DATE_BEFORE_PROJECT_DELIVERY_PHASE("houseblock_delivery_phase", "The housing block delivery dates are before the project delivery phase"),
         HOUSEBLOCK_OWNERSHIP_TYPE_TOTAL_INCORRECT("houseblock_ownership_total", "The total of houses in Property type section does not match the mutation amount."),
         HOUSEBLOCK_OWNERSHIP_OWNER_TOTAL_INCORRECT("houseblock_ownership_owner_total", "The total of houses in Home-value section does not match the owner-occupied amount."),
         HOUSEBLOCK_OWNERSHIP_LANDLORD_TOTAL_INCORRECT("houseblock_ownership_landlord_total", "The total of houses in Rental-price-private-landlord section does not match the private-landlord amount."),

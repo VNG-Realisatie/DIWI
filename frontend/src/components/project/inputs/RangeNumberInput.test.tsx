@@ -1,9 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import RangeNumberInput from "./RangeNumberInput";
+import { vi } from "vitest";
 
 it("should enter a number in numeric range input and check the value passed to update callback", () => {
-    const updateCallBack = jest.fn();
+    const updateCallBack = vi.fn();
     const value = { value: null, min: null, max: null };
 
     render(<RangeNumberInput value={value} updateCallBack={updateCallBack} mandatory={false} readOnly={false} />);
@@ -16,7 +17,7 @@ it("should enter a number in numeric range input and check the value passed to u
 });
 
 it("should enter a range in numeric range input and check the value passed to update callback", () => {
-    const updateCallBack = jest.fn();
+    const updateCallBack = vi.fn();
     const value = { value: null, min: null, max: null };
 
     render(<RangeNumberInput value={value} updateCallBack={updateCallBack} mandatory={false} readOnly={false} />);
@@ -29,7 +30,7 @@ it("should enter a range in numeric range input and check the value passed to up
 });
 
 it("should handle only min and treat as open ended range", () => {
-    const updateCallBack = jest.fn();
+    const updateCallBack = vi.fn();
     const value = { value: null, min: null, max: null };
 
     render(<RangeNumberInput value={value} updateCallBack={updateCallBack} mandatory={false} readOnly={false} />);
@@ -42,7 +43,7 @@ it("should handle only min and treat as open ended range", () => {
 });
 
 it("should handle only max and treat as value", () => {
-    const updateCallBack = jest.fn();
+    const updateCallBack = vi.fn();
     const value = { value: null, min: null, max: null };
 
     render(<RangeNumberInput value={value} updateCallBack={updateCallBack} mandatory={false} readOnly={false} />);
@@ -57,7 +58,7 @@ it("should handle only max and treat as value", () => {
 // Tests for isMonetary = true
 
 it("should enter a number in monetary range input and check the value passed to update callback", () => {
-    const updateCallBack = jest.fn();
+    const updateCallBack = vi.fn();
     const value = { value: null, min: null, max: null };
 
     render(<RangeNumberInput value={value} updateCallBack={updateCallBack} mandatory={false} readOnly={false} isMonetary={true} />);
@@ -70,7 +71,7 @@ it("should enter a number in monetary range input and check the value passed to 
 });
 
 it("should enter a range in monetary range input and check the value passed to update callback", () => {
-    const updateCallBack = jest.fn();
+    const updateCallBack = vi.fn();
     const value = { value: null, min: null, max: null };
 
     render(<RangeNumberInput value={value} updateCallBack={updateCallBack} mandatory={false} readOnly={false} isMonetary={true} />);
@@ -83,7 +84,7 @@ it("should enter a range in monetary range input and check the value passed to u
 });
 
 it("should handle only min and treat as open ended range in monetary range input", () => {
-    const updateCallBack = jest.fn();
+    const updateCallBack = vi.fn();
     const value = { value: null, min: null, max: null };
 
     render(<RangeNumberInput value={value} updateCallBack={updateCallBack} mandatory={false} readOnly={false} isMonetary={true} />);
@@ -96,7 +97,7 @@ it("should handle only min and treat as open ended range in monetary range input
 });
 
 it("should handle only max and treat as value in monetary range input", () => {
-    const updateCallBack = jest.fn();
+    const updateCallBack = vi.fn();
     const value = { value: null, min: null, max: null };
 
     render(<RangeNumberInput value={value} updateCallBack={updateCallBack} mandatory={false} readOnly={false} isMonetary={true} />);
@@ -116,7 +117,7 @@ it.each([
     [10, "0,10"],
     [10000, "100,00"],
 ])("should display input in cents as euros", (input, expected) => {
-    const updateCallBack = jest.fn();
+    const updateCallBack = vi.fn();
     const value = { value: input, min: null, max: null };
 
     render(<RangeNumberInput value={value} updateCallBack={updateCallBack} labelText="hi" mandatory={false} readOnly={false} isMonetary={true} />);
@@ -139,7 +140,7 @@ it.each([
     ["100,0", 10000],
     ["1", 100],
 ])("should convert euros to cents", (input, expected) => {
-    const updateCallBack = jest.fn();
+    const updateCallBack = vi.fn();
     const value = { value: null, min: null, max: null };
 
     render(<RangeNumberInput value={value} updateCallBack={updateCallBack} labelText="hi" mandatory={false} readOnly={false} isMonetary={true} />);
@@ -152,7 +153,7 @@ it.each([
 });
 
 it("should limit the input to only accept up to two numbers after the comma", () => {
-    const updateCallBack = jest.fn();
+    const updateCallBack = vi.fn();
     const value = { value: null, min: null, max: null };
 
     render(<RangeNumberInput value={value} updateCallBack={updateCallBack} labelText="hi" mandatory={false} readOnly={false} isMonetary={true} />);
@@ -166,7 +167,7 @@ it("should limit the input to only accept up to two numbers after the comma", ()
 });
 
 it("should not limit the input length if there is no comma", () => {
-    const updateCallBack = jest.fn();
+    const updateCallBack = vi.fn();
     const value = { value: null, min: null, max: null };
 
     render(<RangeNumberInput value={value} updateCallBack={updateCallBack} labelText="hi" mandatory={false} readOnly={false} isMonetary={true} />);
@@ -180,7 +181,7 @@ it("should not limit the input length if there is no comma", () => {
 });
 
 it("should clear the input value on focus if it's '0,00'", () => {
-    const updateCallBack = jest.fn();
+    const updateCallBack = vi.fn();
     const value = { value: null, min: null, max: null };
 
     render(<RangeNumberInput value={value} updateCallBack={updateCallBack} labelText="hi" mandatory={false} readOnly={false} isMonetary={true} />);
@@ -193,7 +194,7 @@ it("should clear the input value on focus if it's '0,00'", () => {
 });
 
 it("should set the input value to '0,00' on blur if the input is empty", () => {
-    const updateCallBack = jest.fn();
+    const updateCallBack = vi.fn();
     const value = { value: null, min: null, max: null };
 
     render(<RangeNumberInput value={value} updateCallBack={updateCallBack} labelText="hi" mandatory={false} readOnly={false} isMonetary={true} />);
@@ -206,7 +207,7 @@ it("should set the input value to '0,00' on blur if the input is empty", () => {
 });
 
 it("should handle a range with one comma and one hyphen", () => {
-    const updateCallBack = jest.fn();
+    const updateCallBack = vi.fn();
     const value = { value: null, min: null, max: null };
 
     render(<RangeNumberInput value={value} updateCallBack={updateCallBack} labelText="hi" mandatory={false} readOnly={false} isMonetary={true} />);
@@ -219,7 +220,7 @@ it("should handle a range with one comma and one hyphen", () => {
 });
 
 it("should handle a range with one hyphen and two commas", () => {
-    const updateCallBack = jest.fn();
+    const updateCallBack = vi.fn();
     const value = { value: null, min: null, max: null };
 
     render(<RangeNumberInput value={value} updateCallBack={updateCallBack} labelText="hi" mandatory={false} readOnly={false} isMonetary={true} />);
@@ -232,7 +233,7 @@ it("should handle a range with one hyphen and two commas", () => {
 });
 
 it("should not allow characters except for hyphens and commas", () => {
-    const updateCallBack = jest.fn();
+    const updateCallBack = vi.fn();
     const value = { value: null, min: null, max: null };
 
     render(<RangeNumberInput value={value} updateCallBack={updateCallBack} labelText="hi" mandatory={false} readOnly={false} isMonetary={true} />);

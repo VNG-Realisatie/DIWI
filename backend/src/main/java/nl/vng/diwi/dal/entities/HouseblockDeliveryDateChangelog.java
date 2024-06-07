@@ -14,7 +14,7 @@ import nl.vng.diwi.dal.entities.superclasses.HouseblockMilestoneChangeDataSuperc
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "woningblok_opleverdatum_changelog", schema = GenericRepository.VNG_SCHEMA_NAME)
+@Table(name = "woningblok_deliverydate_changelog", schema = GenericRepository.VNG_SCHEMA_NAME)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,13 +22,17 @@ import java.time.LocalDate;
 @Builder
 public class HouseblockDeliveryDateChangelog extends HouseblockMilestoneChangeDataSuperclass {
 
-    @Column(name = "verwachte_opleverdatum")
-    private LocalDate expectedDeliveryDate;
+    @Column(name = "latest_deliverydate")
+    private LocalDate latestDeliveryDate;
+
+    @Column(name = "earliest_deliverydate")
+    private LocalDate earliestDeliveryDate;
 
     @Override
     public Object getShallowCopy() {
         var newChangelog = HouseblockDeliveryDateChangelog.builder()
-            .expectedDeliveryDate(expectedDeliveryDate).build();
+            .latestDeliveryDate(latestDeliveryDate)
+            .earliestDeliveryDate(earliestDeliveryDate).build();
         newChangelog.setHouseblock(getHouseblock());
         newChangelog.setStartMilestone(getStartMilestone());
         newChangelog.setEndMilestone(getEndMilestone());

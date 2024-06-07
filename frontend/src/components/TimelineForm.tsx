@@ -3,6 +3,7 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { HouseBlockItem, StatusType, houseBlocks, statuses } from "../api/dummyData";
 import { useTranslation } from "react-i18next";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const TimelineForm = (props: any) => {
     const { t } = useTranslation();
     return (
@@ -29,6 +30,7 @@ export const TimelineForm = (props: any) => {
                     options={houseBlocks}
                     getOptionLabel={(option: HouseBlockItem) => option.name}
                     value={props.createProjectForm ? props.createProjectForm.houseBlock : ""}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     onChange={(event: any, newValue: HouseBlockItem | null) => {
                         props.setCreateProjectForm({
                             ...props.createProjectForm,
@@ -43,6 +45,7 @@ export const TimelineForm = (props: any) => {
                     options={statuses}
                     getOptionLabel={(option: StatusType) => option.status}
                     value={props.createProjectForm ? props.createProjectForm.status : ""}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     onChange={(event: any, newValue: StatusType | null) => {
                         props.setCreateProjectForm({
                             ...props.createProjectForm,

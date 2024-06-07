@@ -3,6 +3,7 @@ import InputLabelStack from "./InputLabelStack";
 
 type Props = {
     value: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setValue: any;
     nullable?: boolean; //not implemented
     readOnly: boolean;

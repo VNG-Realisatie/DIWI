@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SingleNumberInput } from "./SingleNumberInput";
+import { vi } from "vitest";
 
 describe("SingleNumberInput component", () => {
     it("renders with error message when mandatory and value is not provided", () => {
@@ -9,7 +10,7 @@ describe("SingleNumberInput component", () => {
     });
 
     it("calls onChange callback with entered value", () => {
-        const handleChange = jest.fn();
+        const handleChange = vi.fn();
         render(<SingleNumberInput value={null} onChange={handleChange} readOnly={false} mandatory={false} />);
         const input = screen.getByRole("spinbutton");
         userEvent.type(input, "42");
