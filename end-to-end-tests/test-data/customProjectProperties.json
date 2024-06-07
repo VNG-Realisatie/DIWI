@@ -1,0 +1,108 @@
+[
+  {
+    "id": "018e7abb-d285-7131-bbfe-07d12658ea4f",
+    "name": "Cats",
+    "type": "CUSTOM",
+    "objectType": "PROJECT",
+    "propertyType": "CATEGORY",
+    "disabled": false,
+    "categories": [
+      { "id": "018e7abb-d296-7d99-9064-e702ccf48b22", "name": "garfield", "disabled": false },
+      { "id": "018e7acd-cccd-7ed8-a9bf-f205eb54f822", "name": "british", "disabled": false },
+      { "id": "018e7abb-d295-7398-88e2-8368dd441b5b", "name": "tom", "disabled": false }
+    ],
+    "ordinals": null
+  },
+  {
+    "id": "166c5f19-ef23-41af-8495-32c2b90e9638",
+    "name": "district",
+    "type": "FIXED",
+    "objectType": "PROJECT",
+    "propertyType": "CATEGORY",
+    "disabled": false,
+    "categories": null,
+    "ordinals": null
+  },
+  {
+    "id": "91ded971-4fdb-4366-ab36-37b1d821c6d6",
+    "name": "geometry",
+    "type": "FIXED",
+    "objectType": "PROJECT",
+    "propertyType": "TEXT",
+    "disabled": false,
+    "categories": null,
+    "ordinals": null
+  },
+
+  {
+    "id": "1b6cf297-bf64-4f3f-b200-a8ffaba83654",
+    "name": "municipality",
+    "type": "FIXED",
+    "objectType": "PROJECT",
+    "propertyType": "CATEGORY",
+    "disabled": false,
+    "categories": null,
+    "ordinals": null
+  },
+  {
+    "id": "872a8db1-9d97-48bb-828f-2a457d514d03",
+    "name": "municipalityRole",
+    "type": "FIXED",
+    "objectType": "PROJECT",
+    "propertyType": "CATEGORY",
+    "disabled": false,
+    "categories": [
+      { "id": "1623ddca-33d6-4702-b825-a4df389ae6a4", "name": "Opdrachtgever", "disabled": false },
+      { "id": "f7030975-74d5-4fa8-b62e-b2d4f65d4f7d", "name": "Vergunningverlener", "disabled": false }
+    ],
+    "ordinals": null
+  },
+  {
+    "id": "26d1b3ef-641f-4224-800c-296a4ecc9528",
+    "name": "neighbourhood",
+    "type": "FIXED",
+    "objectType": "PROJECT",
+    "propertyType": "CATEGORY",
+    "disabled": false,
+    "categories": null,
+    "ordinals": null
+  },
+  {
+    "id": "af2bef00-87ba-4c7c-a927-916d5f03ce94",
+    "name": "priority",
+    "type": "FIXED",
+    "objectType": "PROJECT",
+    "propertyType": "ORDINAL",
+    "disabled": false,
+    "categories": null,
+    "ordinals": [
+      { "id": "2f58d79f-c613-4ed2-9a0a-411a6c739445", "name": "Laag", "disabled": false, "level": 1 },
+      { "id": "49390d77-08de-4993-969f-2264d8f4ca8c", "name": "low", "disabled": false, "level": 1 },
+      { "id": "04d1fc97-bb25-4246-8413-9ec5a1044db7", "name": "medium", "disabled": false, "level": 2 },
+      { "id": "88bf0f69-fa06-4d42-8e13-b076d9d9a2cc", "name": "Hoog", "disabled": false, "level": 3 },
+      { "id": "bc14d26c-8209-4bc9-9c15-a6bd2100a793", "name": "Middel", "disabled": false, "level": 2 },
+      { "id": "6a91fb22-a44a-4da9-b5f3-933596522e10", "name": "high", "disabled": false, "level": 3 }
+    ]
+  },
+  {
+    "id": "018e7f80-c83c-7bb9-b8d3-9975fb539e70",
+    "name": "projectboolean",
+    "type": "CUSTOM",
+    "objectType": "PROJECT",
+    "propertyType": "BOOLEAN",
+    "disabled": false,
+    "categories": null,
+    "ordinals": null
+  },
+
+  {
+    "id": "018e6ab2-66b6-78fb-bd77-c23bd76fc9d0",
+    "name": "test",
+    "type": "CUSTOM",
+    "objectType": "PROJECT",
+    "propertyType": "TEXT",
+    "disabled": false,
+    "categories": null,
+    "ordinals": null
+  }
+]
