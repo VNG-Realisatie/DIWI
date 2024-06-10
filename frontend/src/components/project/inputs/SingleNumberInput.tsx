@@ -1,4 +1,4 @@
-import { Stack, Typography, TextField } from "@mui/material";
+import { Stack, Typography, TextField, InputAdornment } from "@mui/material";
 import InputLabelStack from "./InputLabelStack";
 
 type SingleNumberEdit = {
@@ -12,9 +12,20 @@ type SingleNumberEdit = {
     translationPath?: string;
     nullable?: boolean; //not implemented
     placeholder?: string;
+    isDemolition?: boolean;
 };
 
-export const SingleNumberInput = ({ name, value, onChange, readOnly, mandatory, error, isInputLabel = false, placeholder }: SingleNumberEdit) => {
+export const SingleNumberInput = ({
+    name,
+    value,
+    onChange,
+    readOnly,
+    mandatory,
+    error,
+    isInputLabel = false,
+    placeholder,
+    isDemolition = false,
+}: SingleNumberEdit) => {
     const hasError = mandatory && (!value || value <= 0);
 
     const inputField = (
@@ -32,6 +43,12 @@ export const SingleNumberInput = ({ name, value, onChange, readOnly, mandatory, 
                 inputProps: {
                     min: 0,
                 },
+                startAdornment:
+                    isDemolition && value != 0 && value != null ? (
+                        <InputAdornment position="start" style={{ marginRight: "0px" }}>
+                            -
+                        </InputAdornment>
+                    ) : null,
             }}
             type="number"
             id={name ? name : ""}
