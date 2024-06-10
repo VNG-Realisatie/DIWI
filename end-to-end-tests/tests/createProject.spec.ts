@@ -312,8 +312,9 @@ test.describe("Create project page", () => {
         expect(await textCustomProperty.inputValue()).toContain("test");
     });
     test("Delete Created Project", async ({ page }) => {
+        await page.goto(`http://localhost:3000/projects/${projectId}/characteristics`);
         await page.getByTestId("DeleteForeverOutlinedIcon").click();
-        await page.getByText("Ja").click();
+        await page.getByText("Ja").nth(1).click();
         await page.waitForTimeout(1000);
         const urlText = await page.url();
         expect(urlText).toContain("projects/table");
