@@ -15,6 +15,7 @@ import { HouseBlocksForm } from "../../HouseBlocksForm";
 import { validateHouseBlock } from "../../HouseBlocksFormWithControls";
 import useAlert from "../../../hooks/useAlert";
 import { useCustomPropertyDefinitions } from "../../../hooks/useCustomPropertyDefinitions";
+import useAllowedActions from "../../../hooks/useAllowedActions";
 
 type Props = {
     setOpenHouseBlockDialog: (open: boolean) => void;
@@ -44,6 +45,7 @@ export const HouseBlockAccordionWithControls = ({ houseBlock, refresh }: HouseBl
     const { t } = useTranslation();
     const { setAlert } = useAlert();
     const { targetGroupDisabledCategories, physicalAppearanceDisabledCategories } = useCustomPropertyDefinitions();
+    const allowedActions = useAllowedActions();
 
     const handleSave = async () => {
         if (validateHouseBlock(houseBlock, setAlert)) {
@@ -88,50 +90,54 @@ export const HouseBlockAccordionWithControls = ({ houseBlock, refresh }: HouseBl
             >
                 {houseBlock.houseblockName}: {houseBlock.mutation.amount} {t("createProject.houseBlocksForm.housesOn")} {houseBlock.endDate}
                 <Stack>
-                    <Box sx={{ cursor: "pointer" }} position="absolute" right={60} top={13}>
-                        {readOnly ? (
-                            <Tooltip placement="top" title={t("generic.edit")}>
-                                <EditIcon
-                                    sx={{ cursor: "pointer" }}
-                                    data-testid="edit-houseblock"
-                                    onClick={(event) => {
-                                        event.stopPropagation();
-                                        if (!expanded) setExpanded(true);
-                                        setReadOnly(false);
-                                    }}
-                                />
-                            </Tooltip>
-                        ) : (
-                            <>
-                                <Tooltip placement="top" title={t("generic.cancelChanges")}>
-                                    <ClearIcon
-                                        sx={{ mr: 2, cursor: "pointer" }}
-                                        onClick={(event) => {
-                                            event.stopPropagation();
-                                            handleCancel();
-                                        }}
+                    {allowedActions.includes("EDIT_OWN_PROJECTS") && (
+                        <>
+                            <Box sx={{ cursor: "pointer" }} position="absolute" right={60} top={13}>
+                                {readOnly ? (
+                                    <Tooltip placement="top" title={t("generic.edit")}>
+                                        <EditIcon
+                                            sx={{ cursor: "pointer" }}
+                                            data-testid="edit-houseblock"
+                                            onClick={(event) => {
+                                                event.stopPropagation();
+                                                if (!expanded) setExpanded(true);
+                                                setReadOnly(false);
+                                            }}
+                                        />
+                                    </Tooltip>
+                                ) : (
+                                    <>
+                                        <Tooltip placement="top" title={t("generic.cancelChanges")}>
+                                            <ClearIcon
+                                                sx={{ mr: 2, cursor: "pointer" }}
+                                                onClick={(event) => {
+                                                    event.stopPropagation();
+                                                    handleCancel();
+                                                }}
+                                            />
+                                        </Tooltip>
+                                        <Tooltip placement="top" title={t("generic.saveChanges")}>
+                                            <SaveIcon
+                                                sx={{ cursor: "pointer" }}
+                                                data-testid="save-houseblock"
+                                                onClick={(event) => {
+                                                    event.stopPropagation();
+                                                    handleSave();
+                                                }}
+                                            />
+                                        </Tooltip>
+                                    </>
+                                )}
+                                {houseBlock.houseblockId && (
+                                    <DeleteButtonWithConfirm
+                                        typeAndName={`${t("generic.houseblock")} ${houseBlock.houseblockName}`}
+                                        iconColor={"white"}
+                                        deleteFunction={handleDelete}
                                     />
-                                </Tooltip>
-                                <Tooltip placement="top" title={t("generic.saveChanges")}>
-                                    <SaveIcon
-                                        sx={{ cursor: "pointer" }}
-                                        data-testid="save-houseblock"
-                                        onClick={(event) => {
-                                            event.stopPropagation();
-                                            handleSave();
-                                        }}
-                                    />
-                                </Tooltip>
-                            </>
-                        )}
-                        {houseBlock.houseblockId && (
-                            <DeleteButtonWithConfirm
-                                typeAndName={`${t("generic.houseblock")} ${houseBlock.houseblockName}`}
-                                iconColor={"white"}
-                                deleteFunction={handleDelete}
-                            />
-                        )}
-                    </Box>
+                                )}
+                            </Box>
+                        </>
+                    )}
                 </Stack>
             </AccordionSummary>
             <AccordionDetails>

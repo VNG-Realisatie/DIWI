@@ -99,7 +99,7 @@ const UserManagement = () => {
     };
     return (
         <Box sx={{ marginBottom: "90px" }}>
-            <UsersTable rows={users} setUsers={setUsers} />
+            {allowedActions.includes("EDIT_USERS") && <UsersTable rows={users} setUsers={setUsers} />}
 
             {allowedActions.includes("EDIT_USERS") && (
                 <Stack direction="row" alignItems="center" mt={1} sx={{ cursor: "pointer" }} onClick={() => setIsUserDialogOpen(true)}>

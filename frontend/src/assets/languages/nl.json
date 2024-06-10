@@ -30,7 +30,8 @@
       "false": "Nee",
       "andMore": "en meer",
       "andLess": "en minder",
-      "logout": "Uitloggen"
+      "logout": "Uitloggen",
+      "cantAccessPage": "U heeft geen toegang tot deze pagina. Neem contact op met uw beheerder"
     },
     "import": {
       "errorsTitle": "Import fouten",
@@ -559,7 +560,8 @@
       }
     },
     "customProperties": {
-      "title": "Maatwerk eigenschappen"
+      "title": "Maatwerk eigenschappen",
+      "forbidden": "Maatwerk eigenschappen zijn niet toegestaan. Neem contact op met uw beheerder."
     },
     "projectPhase": "Projectfase",
     "planType": "Plan Type",

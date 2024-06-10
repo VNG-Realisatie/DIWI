@@ -60,7 +60,7 @@ export const HouseBlocksFormWithControls = ({ houseBlock }: Props) => {
     return (
         <Box mt={4}>
             <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={2} mb={2}>
-                {allowedActions.includes("CREATE_NEW_PROJECT") && (
+                {allowedActions.includes("EDIT_OWN_PROJECTS") && (
                     <>
                         {readOnly && (
                             <Tooltip placement="top" title={t("generic.edit")}>
