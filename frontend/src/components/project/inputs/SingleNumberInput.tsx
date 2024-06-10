@@ -43,12 +43,11 @@ export const SingleNumberInput = ({
                 inputProps: {
                     min: 0,
                 },
-                startAdornment:
-                    isDemolition && value != 0 && value != null ? (
-                        <InputAdornment position="start" style={{ marginRight: "0px" }}>
-                            -
-                        </InputAdornment>
-                    ) : null,
+                startAdornment: isDemolition && value != 0 && value != null && (
+                    <InputAdornment position="start" style={{ marginRight: "0px" }}>
+                        -
+                    </InputAdornment>
+                ),
             }}
             type="number"
             id={name ? name : ""}
