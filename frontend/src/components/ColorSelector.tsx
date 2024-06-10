@@ -39,7 +39,7 @@ const ColorSelector: FC<ColorSelectorProps> = ({ defaultColor, onColorChange, se
 
     return (
         <Box ref={boxRef} width={width ?? defaultSize}>
-            <Button onClick={handleButtonClick} fullWidth disabled={disabled} sx={{ padding: 0 }}>
+            <Button onClick={handleButtonClick} fullWidth disabled={disabled} sx={{ padding: 0 }} className="project-color-selector">
                 <Box
                     width={"100%"}
                     height={defaultSize}
@@ -58,7 +58,7 @@ const ColorSelector: FC<ColorSelectorProps> = ({ defaultColor, onColorChange, se
                     horizontal: "left",
                 }}
             >
-                <Box width={boxRef.current?.offsetWidth ?? "auto"}>
+                <Box width={boxRef.current?.offsetWidth ?? "auto"} className="project-colors-pallet">
                     <BlockPicker width={width} colors={defaultColors} color={selectedColor ? selectedColor : color} onChange={handleColorChange} />
                 </Box>
             </Popover>

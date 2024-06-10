@@ -34,7 +34,7 @@ export const SingleNumberInput = ({ name, value, onChange, readOnly, mandatory, 
                 },
             }}
             type="number"
-            id={name ? name : ""}
+            id={name ? name.replace(/\s/g, "") : ""}
             size="small"
             variant="outlined"
             value={value ? value : 0}
