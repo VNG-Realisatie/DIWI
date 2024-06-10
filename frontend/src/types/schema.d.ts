@@ -306,7 +306,7 @@ export interface components {
             district?: components["schemas"]["SelectModel"][];
             neighbourhood?: components["schemas"]["SelectModel"][];
             location?: components["schemas"]["LocationModel"];
-            geometry?: string | null;
+            geometry?: string;
         };
         SelectModel: {
             /** Format: uuid */
@@ -356,7 +356,7 @@ export interface components {
             district?: components["schemas"]["SelectModel"][];
             neighbourhood?: components["schemas"]["SelectModel"][];
             location?: components["schemas"]["LocationModel"];
-            geometry?: string | null;
+            geometry?: string;
             customProperties?: components["schemas"]["ProjectHouseblockCustomPropertyModel"][];
         };
         DatedDataModelListPlanStatus: {
@@ -452,6 +452,24 @@ export interface components {
             brkPerceelNummer?: number;
             subselectionGeometry?: components["schemas"]["ObjectNode"];
             plotFeature?: components["schemas"]["ObjectNode"];
+        };
+        ImportError: {
+            errorCode?: string;
+            /** Format: int32 */
+            row?: number;
+            /** Format: int32 */
+            identificationNumber?: number;
+            houseblockName?: string;
+            column?: string;
+            propertyName?: string;
+            value?: string;
+            errorMessage?: string;
+            /** Format: uuid */
+            customPropertyId?: string;
+        };
+        ImportResponse: {
+            result?: components["schemas"]["SelectModel"][];
+            error?: components["schemas"]["ImportError"][];
         };
         FormDataContentDisposition: {
             type?: string;
@@ -893,7 +911,7 @@ export interface operations {
             /** @description default response */
             default: {
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["ImportResponse"];
                 };
             };
         };
