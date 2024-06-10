@@ -11,8 +11,7 @@ export type ValueType = {
 
 type Props = {
     value: ValueType;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    updateCallBack: (value: any) => void;
+    updateCallBack: (value: ValueType) => void;
     labelText?: string;
     isMonetary?: boolean;
     readOnly: boolean;
@@ -75,18 +74,18 @@ function fromRangeToString(value: ValueType, isMonetary: boolean): string {
 
 function fromStringToRange(stringValue: string | null, isMonetary: boolean): ValueType {
     const inputValue = stringValue;
-    if (inputValue === null) {
+    if (inputValue === null || inputValue === "") {
         return { value: null, min: null, max: null };
     } else if (inputValue.includes("-")) {
         const [minStr, maxStr] = inputValue.split("-");
-        const min = isMonetary ? parseMonetary(minStr) : parseFloat(minStr);
-        const max = isMonetary ? parseMonetary(maxStr) : parseFloat(maxStr);
+        const min = minStr ? (isMonetary ? parseMonetary(minStr) : parseFloat(minStr)) : null;
+        const max = maxStr ? (isMonetary ? parseMonetary(maxStr) : parseFloat(maxStr)) : null;
 
-        if (!isNaN(min) && !isNaN(max)) {
+        if (min !== null && max !== null) {
             return { value: null, min, max };
-        } else if (!isNaN(min)) {
+        } else if (min !== null) {
             return { value: null, min, max: null };
-        } else if (!isNaN(max)) {
+        } else if (max !== null) {
             // We only support open-ended ranges with min value. Treat open-ended range with max as value
             return { value: max, min: null, max: null };
         } else {
@@ -106,22 +105,24 @@ const RangeNumberInput = ({ labelText, value, updateCallBack, isMonetary = false
     }, [value, isMonetary]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newValue = e.target.value;
+        let newValue = e.target.value;
+        newValue = newValue.replace(".", ",");
         const isValidInput = /^-?\d*(,\d{0,2})?(-\d*(,?\d{0,2})?)?$/.test(newValue);
 
         if (isValidInput) setStringValue(newValue);
     };
 
     const handleFocus = () => {
-        if (stringValue === "0,00") setStringValue(null);
+        if (stringValue === "0,00") setStringValue("");
     };
 
     const handleBlur = () => {
-        if (isMonetary) {
-            if (stringValue === null) return;
+        if (stringValue === "") {
+            setStringValue("0,00");
+        } else if (stringValue !== null) {
+            const range = fromStringToRange(stringValue, isMonetary);
+            updateCallBack(range);
         }
-        const range = fromStringToRange(stringValue, isMonetary);
-        stringValue ?? updateCallBack(range);
     };
 
     function handleKey(event: React.KeyboardEvent<HTMLDivElement>): void {
@@ -161,7 +162,7 @@ const RangeNumberInput = ({ labelText, value, updateCallBack, isMonetary = false
                             <EuroIcon fontSize="inherit" />
                         </InputAdornment>
                     ),
-                    endAdornment: (
+                    endAdornment: !readOnly && (
                         <InputAdornment onClick={() => setStringValue(null)} position="end" sx={{ ":hover": { cursor: "pointer" } }}>
                             <Typography fontStyle="italic" fontSize={12} sx={{ textDecoration: "underline" }}>
                                 Leeg maken
@@ -170,10 +171,9 @@ const RangeNumberInput = ({ labelText, value, updateCallBack, isMonetary = false
                     ),
                 }}
                 sx={{
-                    "& .MuiInputBase-input.Mui-disabled": {
-                        backgroundColor: "#0000",
+                    "& .MuiInputBase-input.Mui-disabled, & .MuiInputBase-adornedEnd": {
+                        backgroundColor: readOnly ? "transparent" : "white",
                     },
-                    "& .MuiInputBase-adornedEnd": { backgroundColor: "white" },
                     "& .MuiInputAdornment-positionStart": { marginRight: "2px" },
                 }}
             />

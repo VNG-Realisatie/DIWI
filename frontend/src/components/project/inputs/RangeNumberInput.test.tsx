@@ -193,7 +193,7 @@ it("should clear the input value on focus if it's '0,00'", () => {
     expect(updateCallBack).not.toHaveBeenCalled();
 });
 
-it("should set the input value to '0,00' on blur if the input is empty", () => {
+it("should set the input value to null on blur if the input is empty", () => {
     const updateCallBack = vi.fn();
     const value = { value: null, min: null, max: null };
 
@@ -202,8 +202,8 @@ it("should set the input value to '0,00' on blur if the input is empty", () => {
     const input = screen.getByRole("textbox");
     userEvent.type(input, "{enter}");
 
-    expect(screen.getByRole("textbox")).toHaveValue("0,00");
-    expect(updateCallBack).not.toHaveBeenCalled();
+    expect(screen.getByRole("textbox")).toHaveValue("");
+    expect(updateCallBack).toHaveBeenLastCalledWith({ value: null, min: null, max: null });
 });
 
 it("should handle a range with one comma and one hyphen", () => {

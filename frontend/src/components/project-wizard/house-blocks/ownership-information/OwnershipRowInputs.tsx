@@ -72,7 +72,7 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                     value={!isHuurwoning ? ownership.value : { ...ownership.value, value: null }}
                     labelText={t("createProject.houseBlocksForm.value")}
                     updateCallBack={(e) => handleInputChange(index, { ...ownership, value: e })}
-                    readOnly={readOnly}
+                    readOnly={readOnly ? true : isHuurwoning}
                     mandatory={false}
                     isMonetary={true}
                 />
@@ -82,7 +82,7 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                     value={!isKoopwoning ? ownership.rentalValue : { ...ownership.value, value: null }}
                     labelText={t("createProject.houseBlocksForm.rentalAmount")}
                     updateCallBack={(e) => handleInputChange(index, { ...ownership, rentalValue: e })}
-                    readOnly={readOnly}
+                    readOnly={readOnly ? true : isKoopwoning}
                     mandatory={false}
                     isMonetary={true}
                 />
