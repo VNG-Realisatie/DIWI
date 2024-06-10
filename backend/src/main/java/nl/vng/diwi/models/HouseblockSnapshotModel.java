@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -121,6 +122,13 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
         if (mutation != null && (mutation.getAmount() == null || mutation.getKind() == null)) {
             //mutation info is not present
             this.mutation = null;
+        }
+
+        if (mutation != null && ownershipValue != null) {
+            int totalOwnershipAmount = ownershipValue.stream().mapToInt(OwnershipValue::getAmount).sum();
+            if (mutation.getAmount() < totalOwnershipAmount) {
+                return "Mutation amount is less than the total amount of houses in the ownership section.";
+            }
         }
 
         if (groundPosition != null && groundPosition.getNoPermissionOwner() == null &&
