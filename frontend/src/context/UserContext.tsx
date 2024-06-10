@@ -1,5 +1,5 @@
 import { PropsWithChildren, createContext, useCallback, useEffect, useState } from "react";
-import { User, getCurrentUser } from "../api/userSerivces";
+import { User, getCurrentUser } from "../api/userServices";
 
 type UserContextType = {
     user: User | null;
