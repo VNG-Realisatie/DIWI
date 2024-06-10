@@ -35,8 +35,8 @@ public class VngBadRequestException extends Exception implements ExceptionMapper
         var response =  Response.status(Response.Status.BAD_REQUEST)
             .type(MediaType.APPLICATION_JSON_TYPE);
 
-        if (entity != null) {
-            response.entity(entity);
+        if (exception.entity != null) {
+            response.entity(exception.entity);
         } else {
             response.entity(new ErrorResponse(exception.getMessage()));
         }

@@ -128,6 +128,7 @@ FROM (
                     JOIN diwi_testset.milestone_state sms ON sms.milestone_id = wmc.start_milestone_id AND sms.change_end_date IS NULL
                     JOIN diwi_testset.milestone_state ems ON ems.milestone_id = wmc.end_milestone_id AND ems.change_end_date IS NULL
                     JOIN diwi_testset.woningblok w ON wmc.woningblok_id = w.id
+                    JOIN diwi_testset.woningblok_state ws ON w.id = ws.woningblok_id AND ws.change_end_date IS NULL
             WHERE
                 sms.date <= _now_ AND _now_ < ems.date AND wmc.change_end_date IS NULL
             GROUP BY w.project_id
@@ -235,6 +236,7 @@ FROM (
             FROM
                 future_projects fp
                     JOIN diwi_testset.woningblok w ON fp.id = w.project_id
+                    JOIN diwi_testset.woningblok_state ws ON w.id = ws.woningblok_id AND ws.change_end_date IS NULL
                     JOIN diwi_testset.woningblok_mutatie_changelog wmc ON w.id = wmc.woningblok_id
                         AND wmc.start_milestone_id = fp.start_milestone_id AND wmc.change_end_date IS NULL
             GROUP BY w.project_id
@@ -338,6 +340,7 @@ FROM (
             FROM
                 past_projects pp
                     JOIN diwi_testset.woningblok w ON pp.id = w.project_id
+                    JOIN diwi_testset.woningblok_state ws ON w.id = ws.woningblok_id AND ws.change_end_date IS NULL
                     JOIN diwi_testset.woningblok_mutatie_changelog wmc ON w.id = wmc.woningblok_id
                         AND wmc.end_milestone_id = pp.end_milestone_id AND wmc.change_end_date IS NULL
             GROUP BY w.project_id
