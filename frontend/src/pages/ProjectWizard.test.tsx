@@ -11,7 +11,12 @@ vi.mock("../api/adminSettingServices", () => ({
 }));
 
 vi.mock("../api/projectsTableServices", () => ({
-    getOrganizationList: vi.fn().mockResolvedValue([]),
+    filterTable: vi.fn().mockResolvedValue([]),
+    getUserGroupList: vi.fn().mockResolvedValue([]),
+}));
+
+vi.mock("../utils/requests", () => ({
+    getJson: vi.fn().mockResolvedValue({}),
 }));
 
 test("renders project wizard page 1", () => {

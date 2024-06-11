@@ -14,10 +14,23 @@ import nl.vng.diwi.rest.InvalidConfigException;
 
 class ProjectConfigTest {
 
-    private static final Map<String, String> validConfiguration = Map.of("BASE_URL", "http://localhost",
-            "KC_AUTH_SERVER_URL", "http://localhost", "KC_REALM_NAME", "value", "KC_RESOURCE_NAME", "value",
-            "KC_SECRET", "value", "DIWI_DB_HOST", "value", "DIWI_DB_PORT", "value", "DIWI_DB_NAME", "value",
-            "DIWI_DB_USERNAME", "value", "DIWI_DB_PASSWORD", "value");
+    private static final Map<String, String> validConfiguration = new HashMap<>();
+    static {
+        validConfiguration.put("BASE_URL", "http://localhost");
+        validConfiguration.put("KC_AUTH_SERVER_URL", "http://localhost");
+        validConfiguration.put("KC_REALM_NAME", "value");
+        validConfiguration.put("KC_RESOURCE_NAME", "value");
+        validConfiguration.put("KC_SECRET", "value");
+        validConfiguration.put("DIWI_DB_HOST", "value");
+        validConfiguration.put("DIWI_DB_PORT", "value");
+        validConfiguration.put("DIWI_DB_NAME", "value");
+        validConfiguration.put("DIWI_DB_USERNAME", "value");
+        validConfiguration.put("DIWI_DB_PASSWORD", "value");
+        validConfiguration.put("MAIL_SMTP_PORT", "465");
+        validConfiguration.put("MAIL_SMTP_AUTH", "true");
+        validConfiguration.put("MAIL_SMTP_STARTTLS", "true");
+        validConfiguration.put("MAIL_SMTP_SSL", "true");
+    }
 
     @Test
     void testValid() throws Exception {

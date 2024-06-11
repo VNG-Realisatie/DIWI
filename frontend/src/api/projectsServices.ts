@@ -4,12 +4,7 @@ import { API_URI } from "../utils/urls";
 import { GeoJSONGeometry, GeoJSONMultiPolygon, GeoJSONPolygon } from "ol/format/GeoJSON";
 import { putCustomPropertyValue } from "./customPropServices";
 
-export type Organization = components["schemas"]["OrganizationModel"];
-export type OrganizationUser = components["schemas"]["OrganizationUserModel"];
-export type ProjectListModel = components["schemas"]["ProjectListModel"];
-export type Project = components["schemas"]["ProjectSnapshotModel"];
-export type ProjectSnapshotModel = components["schemas"]["ProjectSnapshotModel"];
-export type ProjectCreate = components["schemas"]["ProjectCreateSnapshotModel"];
+export type UserGroup = components["schemas"]["UserGroupModel"];
 export type SelectModel = components["schemas"]["SelectModel"];
 export type PriorityModel = components["schemas"]["PriorityModel"];
 
@@ -63,6 +58,27 @@ type OgPlot = components["schemas"]["PlotModel"];
 export type Plot = Omit<OgPlot, "subselectionGeometry" | "plotFeature"> & {
     plotFeature: PlotGeoJSON;
     subSelectionGeometry?: GeoJSONMultiPolygon | GeoJSONPolygon;
+};
+
+type OgProjectListModel = components["schemas"]["ProjectListModel"];
+type OgProject = components["schemas"]["ProjectSnapshotModel"];
+type OgProjectSnapshotModel = components["schemas"]["ProjectSnapshotModel"];
+type OgProjectCreate = components["schemas"]["ProjectCreateSnapshotModel"];
+
+export type Project = Omit<OgProject, "confidentialityLevel"> & {
+    confidentialityLevel?: "PRIVATE" | "INTERNAL_CIVIL" | "INTERNAL_MANAGEMENT" | "INTERNAL_COUNCIL" | "EXTERNAL_REGIONAL" | "EXTERNAL_GOVERNMENTAL" | "PUBLIC";
+};
+
+export type ProjectListModel = Omit<OgProjectListModel, "confidentialityLevel"> & {
+    confidentialityLevel?: "PRIVATE" | "INTERNAL_CIVIL" | "INTERNAL_MANAGEMENT" | "INTERNAL_COUNCIL" | "EXTERNAL_REGIONAL" | "EXTERNAL_GOVERNMENTAL" | "PUBLIC";
+};
+
+export type ProjectSnapshotModel = Omit<OgProjectSnapshotModel, "confidentialityLevel"> & {
+    confidentialityLevel?: "PRIVATE" | "INTERNAL_CIVIL" | "INTERNAL_MANAGEMENT" | "INTERNAL_COUNCIL" | "EXTERNAL_REGIONAL" | "EXTERNAL_GOVERNMENTAL" | "PUBLIC";
+};
+
+export type ProjectCreate = Omit<OgProjectCreate, "confidentialityLevel"> & {
+    confidentialityLevel?: "PRIVATE" | "INTERNAL_CIVIL" | "INTERNAL_MANAGEMENT" | "INTERNAL_COUNCIL" | "EXTERNAL_REGIONAL" | "EXTERNAL_GOVERNMENTAL" | "PUBLIC";
 };
 
 export async function updateProjectWithCustomProperties(project: Project): Promise<Project> {
