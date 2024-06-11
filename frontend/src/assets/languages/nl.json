@@ -92,7 +92,7 @@
         "invalid_plan_type": "Projectplantype heeft een onbekende waarde",
         "invalid_numeric_range": "De waarde komt niet overeen met een numeriek bereik.",
 
-        "feature_error":"De ingevoerde waarde valt buiten het gestelde domein."
+        "feature_error" : "Unable to import due to an error."
       }
     },
     "createProject": {
