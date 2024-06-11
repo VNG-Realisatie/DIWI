@@ -14,7 +14,7 @@ import nl.vng.diwi.security.UserAction;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class UserInfoModel extends UserModel{
+public class UserInfoModel extends UserModel {
 
     @JsonProperty(required = true)
     private String initials;
@@ -34,6 +34,12 @@ public class UserInfoModel extends UserModel{
     }
 
     private String createInitials() {
-        return this.getFirstName().substring(0, 1) + this.getLastName().substring(0, 1);
+        String firstName = this.getFirstName();
+        String firstInitial = firstName.length() > 0 ? firstName.substring(0, 1) : "";
+
+        String lastName = this.getLastName();
+        String lastInitial = lastName.length() > 0 ? lastName.substring(0, 1) : "";
+
+        return firstInitial + lastInitial;
     }
 }
