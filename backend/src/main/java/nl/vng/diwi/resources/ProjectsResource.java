@@ -35,7 +35,6 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import nl.vng.diwi.config.ProjectConfig;
 import nl.vng.diwi.dal.AutoCloseTransaction;
 import nl.vng.diwi.dal.FilterPaginationSorting;
@@ -50,6 +49,7 @@ import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.dal.entities.enums.PropertyKind;
 import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.models.ImportFileType;
+import nl.vng.diwi.models.ImportResponse;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.models.LocationModel;
@@ -624,7 +624,7 @@ public class ProjectsResource {
     @RolesAllowed({UserActionConstants.IMPORT_PROJECTS})
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response importFile(@FormDataParam("uploadFile") InputStream inputStream,
+    public ImportResponse importFile(@FormDataParam("uploadFile") InputStream inputStream,
                                     @FormDataParam("uploadFile") FormDataContentDisposition formDataContentDisposition,
                                     @QueryParam("fileType") ImportFileType fileType,
                                     ContainerRequestContext requestContext) {
@@ -645,17 +645,17 @@ public class ProjectsResource {
 
         //process import from file written on disk
         try {
-            Map<String, Object> result;
+            ImportResponse result;
             if (fileType == ImportFileType.GEOJSON) {
                 result = geoJsonImportService.importGeoJson(filePath, repo, loggedUser.getUuid());
             } else {
                 result = excelImportService.importExcel(filePath, repo, loggedUser.getUuid());
             }
-            if (result.containsKey(ExcelImportService.errors)) {
+            if (result.getError() != null) {
                 deleteFile(path);
-                return Response.status(Response.Status.BAD_REQUEST).entity(result.get(ExcelImportService.errors)).build();
+                throw new VngBadRequestException(result);
             }
-            return Response.ok(result.get(ExcelImportService.result)).build();
+            return result;
         } catch (Exception ex) {
             logger.error("Error while uploading excel", ex);
             deleteFile(path);

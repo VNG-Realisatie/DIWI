@@ -728,7 +728,11 @@
           "default": {
             "description": "default response",
             "content": {
-              "application/json": {}
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportResponse"
+                }
+              }
             }
           }
         }
@@ -2040,6 +2044,58 @@
           },
           "plotFeature": {
             "$ref": "#/components/schemas/ObjectNode"
+          }
+        }
+      },
+      "ImportError": {
+        "type": "object",
+        "properties": {
+          "errorCode": {
+            "type": "string"
+          },
+          "row": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "identificationNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "houseblockName": {
+            "type": "string"
+          },
+          "column": {
+            "type": "string"
+          },
+          "propertyName": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          },
+          "errorMessage": {
+            "type": "string"
+          },
+          "customPropertyId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "ImportResponse": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SelectModel"
+            }
+          },
+          "error": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImportError"
+            }
           }
         }
       },

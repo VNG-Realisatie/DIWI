@@ -90,7 +90,12 @@ export async function putJson(url: string, data: any) {
     });
 
     if (!res.ok) {
-        throw Error(res.statusText);
+        if (res.status === 400) {
+            const response = await res.json();
+            throw Error(response.error);
+        } else {
+            throw Error(res.statusText);
+        }
     }
 
     return res.json();

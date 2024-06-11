@@ -44,23 +44,29 @@ export const HouseBlockAccordionWithControls = ({ houseBlock, refresh }: HouseBl
     const [expanded, setExpanded] = useState(false);
     const { t } = useTranslation();
     const { setAlert } = useAlert();
-    const { targetGroupDisabledCategories, physicalAppearanceDisabledCategories } = useCustomPropertyDefinitions();
+    const { targetGroupCategories, physicalAppearanceCategories } = useCustomPropertyDefinitions();
     const allowedActions = useAllowedActions();
 
     const handleSave = async () => {
-        if (validateHouseBlock(houseBlock, setAlert)) {
-            const filteredHouseBlock = {
-                ...houseBlock,
-                targetGroup: houseBlock.targetGroup.filter((tg) => !targetGroupDisabledCategories.map((cat) => cat.id).includes(tg.id)),
-                physicalAppearance: houseBlock.physicalAppearance.filter((pa) => !physicalAppearanceDisabledCategories.map((cat) => cat.id).includes(pa.id)),
-            };
+        if (validateHouseBlock(newHouseBlock, setAlert)) {
+            try {
+                const targetGroupCategoryIds = targetGroupCategories?.map((cat) => cat.id);
+                const physicalAppearanceCategoryIds = physicalAppearanceCategories?.map((cat) => cat.id);
 
-            await saveHouseBlockWithCustomProperties(filteredHouseBlock);
-            refresh();
-            setReadOnly(true);
+                const filteredHouseBlock = {
+                    ...newHouseBlock,
+                    targetGroup: newHouseBlock.targetGroup.filter((tg) => targetGroupCategoryIds?.includes(tg.id)),
+                    physicalAppearance: newHouseBlock.physicalAppearance.filter((pa) => physicalAppearanceCategoryIds?.includes(pa.id)),
+                };
+
+                await saveHouseBlockWithCustomProperties(filteredHouseBlock);
+                refresh();
+                setReadOnly(true);
+            } catch (error: unknown) {
+                if (error instanceof Error) setAlert(error.message, "warning");
+            }
         }
     };
-
     const handleCancel = () => {
         setNewHouseBlock(houseBlock);
         setReadOnly(true);

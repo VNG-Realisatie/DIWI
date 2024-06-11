@@ -17,6 +17,7 @@ import nl.vng.diwi.dal.entities.enums.PropertyKind;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
 import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.models.ImportError;
+import nl.vng.diwi.models.ImportResponse;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.models.SelectModel;
@@ -62,7 +63,7 @@ public class ExcelImportService {
     public ExcelImportService() {
     }
 
-    public Map<String, Object> importExcel(String excelFilePath, VngRepository repo, UUID loggedInUserUuid) {
+    public ImportResponse importExcel(String excelFilePath, VngRepository repo, UUID loggedInUserUuid) {
 
         List<ImportError> excelErrors = new ArrayList<>();
         Map<Integer, ProjectImportModel> excelProjectMap = new HashMap<>();
@@ -71,7 +72,7 @@ public class ExcelImportService {
 
             Sheet dataSheet = workbook.getSheetAt(0);
             if (dataSheet == null) {
-                return Map.of(errors, List.of(new ImportError(ImportError.ERROR.MISSING_DATA_SHEET)));
+                return ImportResponse.builder().error(List.of(new ImportError(ImportError.ERROR.MISSING_DATA_SHEET))).build();
             }
 
             DataFormatter dateFormatter = new DataFormatter();
@@ -160,7 +161,7 @@ public class ExcelImportService {
                         missingHeaders.removeAll(foundHeaders);
                         if (!missingHeaders.isEmpty()) {
                             excelErrors.add(new ImportError(rowCount, null, null, null, String.join(", ", missingHeaders), null, ImportError.ERROR.MISSING_TABLE_HEADERS));
-                            return Map.of(errors, excelErrors);
+                            return ImportResponse.builder().error(excelErrors).build();
                         }
                     }
 
@@ -223,7 +224,7 @@ public class ExcelImportService {
                         }
                         if (!excelErrors.isEmpty()) { //there are problems with the headers, cannot attempt to read projects
                             transaction.rollback();
-                            return Map.of(errors, excelErrors);
+                            return ImportResponse.builder().error(excelErrors).build();
                         }
                     }
 
@@ -250,15 +251,15 @@ public class ExcelImportService {
                         excelProjects.add(selectModel);
                     }
                     transaction.commit();
-                    return Map.of(result, excelProjects);
+                    return ImportResponse.builder().result(excelProjects).build();
                 } else {
                     transaction.rollback();
-                    return Map.of(errors, excelErrors);
+                    return ImportResponse.builder().error(excelErrors).build();
                 }
             }
         } catch (IOException | NotOfficeXmlFileException e) { //excelFile could not be read. Return error.
             logger.error("Error creating workbook", e);
-            return Map.of(errors, List.of(new ImportError(ImportError.ERROR.IO_ERROR)));
+            return  ImportResponse.builder().error(List.of(new ImportError(ImportError.ERROR.IO_ERROR))).build();
         }
     }
 
