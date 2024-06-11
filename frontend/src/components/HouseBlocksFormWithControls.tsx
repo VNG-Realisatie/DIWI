@@ -17,6 +17,7 @@ type Props = {
     houseBlock: HouseBlockWithCustomProperties;
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const validateHouseBlock = (houseBlock: HouseBlockWithCustomProperties, setAlert: (message: string, type: AlertColor) => void): boolean => {
     let isValid = true;
     const invalidOwnershipAmount = houseBlock.ownershipValue.some((owner) => !isOwnershipAmountValid(owner.amount));
@@ -59,7 +60,7 @@ export const HouseBlocksFormWithControls = ({ houseBlock }: Props) => {
     return (
         <Box mt={4}>
             <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={2} mb={2}>
-                {allowedActions.includes("CREATE_NEW_PROJECT") && (
+                {allowedActions.includes("EDIT_OWN_PROJECTS") && (
                     <>
                         {readOnly && (
                             <Tooltip placement="top" title={t("generic.edit")}>

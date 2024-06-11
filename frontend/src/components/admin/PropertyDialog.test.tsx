@@ -1,11 +1,11 @@
-import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import PropertyDialog from "./PropertyDialog";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import TestComponentWrapper from "../../test/TestComponentWrapper";
+import PropertyDialog from "./PropertyDialog";
 
+import { vi } from "vitest";
 import { Property, addCustomProperty, getCustomProperties } from "../../api/adminSettingServices";
 
-jest.mock("../../api/adminSettingServices");
+vi.mock("../../api/adminSettingServices");
 
 const addCustomPropertyMock = addCustomProperty as jest.Mock;
 const getCustomPropertiesMock = getCustomProperties as jest.Mock;
@@ -15,14 +15,14 @@ describe("PropertyDialog", () => {
 
     beforeEach(() => {
         addCustomPropertyMock.mockImplementation((p) => Promise.resolve({ id: "new-id", ...p }));
-        getCustomPropertiesMock.mockImplementation((p) => Promise.resolve(customProperties));
+        getCustomPropertiesMock.mockImplementation(() => Promise.resolve(customProperties));
     });
 
     it("renders without errors for new property", async () => {
-        const setOpenDialog = jest.fn();
+        const setOpenDialog = vi.fn();
         render(
             <TestComponentWrapper>
-                <PropertyDialog openDialog={true} setOpenDialog={setOpenDialog} setCustomProperties={jest.fn()} />
+                <PropertyDialog openDialog={true} setOpenDialog={setOpenDialog} setCustomProperties={vi.fn()} />
             </TestComponentWrapper>,
         );
 

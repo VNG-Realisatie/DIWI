@@ -7,6 +7,7 @@ import { CustomPropertiesTable } from "./CustomPropertiesTable";
 import PropertyDialog from "./PropertyDialog";
 import useAllowedActions from "../../hooks/useAllowedActions";
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const rowStyle = {
     p: 1,
     border: "solid 1px #BDBDBD",

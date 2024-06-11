@@ -86,6 +86,7 @@ public class VngApplication extends ResourceConfig {
         register(VngNotFoundException.class);
         register(VngBadRequestException.class);
         register(VngServerErrorException.class);
+        register(VngNotAllowedException.class);
 
         // Then the end points
         register(VngOpenApiResource.class);

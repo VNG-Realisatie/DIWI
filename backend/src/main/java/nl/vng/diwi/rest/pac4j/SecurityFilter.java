@@ -2,6 +2,7 @@ package nl.vng.diwi.rest.pac4j;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
+import java.util.UUID;
 
 import org.hibernate.Session;
 import org.pac4j.core.authorization.authorizer.DefaultAuthorizers;
@@ -68,21 +69,29 @@ public class SecurityFilter implements ContainerRequestFilter {
             return;
         }
 
-        SecurityGrantedAccessAdapter securityGrantedAccessAdapter = (ctx, sessionStore, profiles) -> {
-            for (var profile : profiles) {
-                var userEntity = getUserForProfile(profile);
-
-                LoggedUser loggedUser = new LoggedUser(userEntity);
-                requestContext.setProperty("loggedUser", loggedUser);
-                final LoginContext context = new LoginContext(loggedUser);
-                requestContext.setSecurityContext(context);
-
-                break;
-            }
-            return null;
-        };
-
         try {
+            SecurityGrantedAccessAdapter securityGrantedAccessAdapter = (ctx, sessionStore, profiles) -> {
+                for (var profile : profiles) {
+                    var userEntity = getUserForProfile(profile);
+                    LoggedUser loggedUser;
+
+                    if (userEntity == null) {
+                        loggedUser = new LoggedUser();
+                        loggedUser.setFirstName("X");
+                        loggedUser.setLastName("X");
+                        loggedUser.setUuid(null);
+                        loggedUser.setIdentityProviderId(UUID.fromString(profile.getId()));
+                    } else {
+                        loggedUser = new LoggedUser(userEntity);
+                    }
+                    requestContext.setProperty("loggedUser", loggedUser);
+                    final LoginContext context = new LoginContext(loggedUser);
+                    requestContext.setSecurityContext(context);
+
+                    break;
+                }
+                return null;
+            };
             DefaultSecurityLogic securityLogic = new DefaultSecurityLogic();
             securityLogic.perform(pac4jConfig, securityGrantedAccessAdapter, null, DefaultAuthorizers.IS_AUTHENTICATED,
                     null, new JEEFrameworkParameters(httpRequest, httpResponse));
@@ -92,7 +101,7 @@ public class SecurityFilter implements ContainerRequestFilter {
         }
     }
 
-    private UserState getUserForProfile(UserProfile profile) {
+    private UserState getUserForProfile(UserProfile profile) throws Exception {
         Session session = dalFactory.constructDal().getSession();
         var userDao = new UserDAO(session);
         var userGroupDAO = new UserGroupDAO(session);
@@ -106,42 +115,50 @@ public class SecurityFilter implements ContainerRequestFilter {
 
             var userEntity = userDao.getUserByIdentityProviderId(profileUuid);
             if (userEntity == null) {
-                ZonedDateTime now = ZonedDateTime.now();
-                User systemUser = userDao.getSystemUser();
+                // user does not exist in diwi database
+                // must match role name defined in keycloak!
+                var hasDiwiAdminRole = profile.getRoles().contains("diwi-admin");
+                if (hasDiwiAdminRole) {
+                    ZonedDateTime now = ZonedDateTime.now();
+                    User systemUser = userDao.getSystemUser();
 
-                var newUser = new User();
-                newUser.setSystemUser(false);
-                userDao.persist(newUser);
+                    var newUser = new User();
+                    newUser.setSystemUser(false);
+                    userDao.persist(newUser);
 
-                userEntity = new UserState();
-                userEntity.setChangeStartDate(now);
-                userEntity.setCreateUser(systemUser);
-                userEntity.setFirstName((String) authFirstName);
-                userEntity.setLastName((String) authLastName);
+                    userEntity = new UserState();
+                    userEntity.setChangeStartDate(now);
+                    userEntity.setCreateUser(systemUser);
+                    userEntity.setFirstName((String) firsttName);
+                    userEntity.setLastName((String) lastName);
                 userEntity.setEmail((String) authEmail);
-                userEntity.setUser(newUser);
-                userEntity.setIdentityProviderId(profileUuid);
+                    userEntity.setUser(newUser);
+                    userEntity.setIdentityProviderId(profileUuid);
                 // Any user that is 'coming' from keycloak should not be able to view projects
                 userEntity.setUserRole(UserRole.Admin);
-                userDao.persist(userEntity);
+                    userDao.persist(userEntity);
 
-                var group = new UserGroup();
-                group.setSingleUser(true);
-                userGroupDAO.persist(group);
+                    var group = new UserGroup();
+                    group.setSingleUser(true);
+                    userGroupDAO.persist(group);
 
-                var groupState = new UserGroupState();
-                groupState.setChangeStartDate(now);
-                groupState.setCreateUser(systemUser);
-                groupState.setName(userEntity.getFirstName() + " " + userEntity.getLastName());
-                groupState.setUserGroup(group);
-                userGroupDAO.persist(groupState);
+                    var groupState = new UserGroupState();
+                    groupState.setChangeStartDate(now);
+                    groupState.setCreateUser(systemUser);
+                    groupState.setName(userEntity.getFirstName() + " " + userEntity.getLastName());
+                    groupState.setUserGroup(group);
+                    userGroupDAO.persist(groupState);
 
-                var groupToUser = new UserToUserGroup();
-                groupToUser.setChangeStartDate(now);
-                groupToUser.setCreateUser(systemUser);
-                groupToUser.setUserGroup(group);
-                groupToUser.setUser(newUser);
-                userGroupDAO.persist(groupToUser);
+                    var groupToUser = new UserToUserGroup();
+                    groupToUser.setChangeStartDate(now);
+                    groupToUser.setCreateUser(systemUser);
+                    groupToUser.setUserGroup(group);
+                    groupToUser.setUser(newUser);
+                    userGroupDAO.persist(groupToUser);
+                } else {
+                    // create empty userstate as we want to block any further actions by this user.
+                    userEntity = null;
+                }
             }
             // check if email, first/last name are set in diwi, if not set from auth data
             if (nullOrEmpty(userEntity.getFirstName()) && !nullOrEmpty((String) authFirstName)) {

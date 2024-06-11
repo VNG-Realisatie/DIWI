@@ -1,8 +1,8 @@
 import { Box, Typography } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridCellParams } from "@mui/x-data-grid";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
-import { deleteGroup, updateGroup } from "../../../api/userSerivces";
+import { deleteGroup, updateGroup } from "../../../api/userServices";
 import { useState } from "react";
 import useAlert from "../../../hooks/useAlert";
 import GroupDialog from "./GroupDialog";
@@ -12,13 +12,12 @@ import DeleteDialogWithConfirmation from "./DeleteDialogWithConfirmation";
 import useAllowedActions from "../../../hooks/useAllowedActions";
 
 type Props = {
-    rows: any[];
+    rows: Group[];
     users: User[];
-    userGroups: Group[];
-    setUserGroups: any;
+    setUserGroups: (groups: Group[]) => void;
 };
 
-const GroupUserTable = ({ rows, users, userGroups, setUserGroups }: Props) => {
+const GroupUserTable = ({ rows, users, setUserGroups }: Props) => {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [groupToDelete, setGroupToDelete] = useState<string | null>(null);
     const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -38,9 +37,9 @@ const GroupUserTable = ({ rows, users, userGroups, setUserGroups }: Props) => {
             headerName: t("admin.userManagement.tableHeader.users"),
             sortable: true,
             flex: 4,
-            renderCell: (cellValues: any) => {
-                const users = cellValues?.row?.users.map((user: User) => user.firstName + " " + user.lastName).join(", ");
-                return users; //how do we want to display them??
+            renderCell: (params: GridCellParams) => {
+                const users = params.row.users.map((user: User) => user.firstName + " " + user.lastName).join(", ");
+                return users;
             },
         },
         {
@@ -48,7 +47,7 @@ const GroupUserTable = ({ rows, users, userGroups, setUserGroups }: Props) => {
             headerName: t("admin.userManagement.tableHeader.actions"),
             sortable: false,
             flex: 1,
-            renderCell: (params: any) => (
+            renderCell: (params: GridCellParams) => (
                 <Box display="flex" alignItems="center" justifyContent="center" style={{ height: "100%" }} gap="10px">
                     {allowedActions.includes("EDIT_USERS") && (
                         <>
@@ -70,10 +69,12 @@ const GroupUserTable = ({ rows, users, userGroups, setUserGroups }: Props) => {
         if (groupToEdit && groupToEdit.uuid) {
             try {
                 const updatedGroup = await updateGroup(groupToEdit.uuid, groupToEdit);
-                setUserGroups(userGroups.map((group) => (group.uuid === updatedGroup.uuid ? updatedGroup : group)));
+                setUserGroups(rows.map((group) => (group.uuid === updatedGroup.uuid ? updatedGroup : group)));
                 setAlert(t("admin.userManagement.groupUpdateSuccess"), "success");
-            } catch (error: any) {
-                setAlert(error.message, "warning");
+            } catch (error: unknown) {
+                if (error instanceof Error) {
+                    setAlert(error.message, "error");
+                }
             } finally {
                 setEditDialogOpen(false);
             }
@@ -88,10 +89,12 @@ const GroupUserTable = ({ rows, users, userGroups, setUserGroups }: Props) => {
         if (groupToDelete) {
             try {
                 await deleteGroup(groupToDelete);
-                setUserGroups(userGroups.filter((group) => group.uuid !== groupToDelete));
+                setUserGroups(rows.filter((group) => group.uuid !== groupToDelete));
                 setAlert(t("admin.userManagement.groupDeleteSuccess"), "success");
-            } catch (error: any) {
-                setAlert(error.message, "warning");
+            } catch (error: unknown) {
+                if (error instanceof Error) {
+                    setAlert(error.message, "error");
+                }
             } finally {
                 setDeleteDialogOpen(false);
             }

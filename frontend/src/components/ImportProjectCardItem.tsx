@@ -3,12 +3,14 @@ import { useState } from "react";
 import { ImportHouseBlockCardItem } from "./ImportHouseBlockCardItem";
 import { SearchItem, projects } from "../api/dummyData";
 import { HouseBlock } from "../types/houseBlockTypes";
+// eslint-disable-next-line react-refresh/only-export-components
 export const columnTitleStyle = {
     border: "solid 1px #ddd",
     p: 0.6,
     color: "#FFFFFF",
     backgroundColor: "#738092",
 };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const ImportProjectCardItem = (props: any) => {
     const dummyProjects = projects;
     //ToDo Update props type after data defined
@@ -16,6 +18,7 @@ export const ImportProjectCardItem = (props: any) => {
     const [selectedOverwriteProject, setSelectedOverwriteProject] = useState<SearchItem>();
     const { project, selectedProject, setSelectedProject, overwriteProjectId, setOverwriteProjectId, projectsType, setProjectsType } = props;
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const clearedData = projectsType.filter((o: any) => o.id !== project.id);
         clearedData.push({
             id: project.id,
@@ -31,11 +34,13 @@ export const ImportProjectCardItem = (props: any) => {
         if (event.target.checked) {
             setSelectedProject([...selectedProject, project.id]);
         } else {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const deselectedProjectList = selectedProject.filter((s: any) => s !== project.id);
             setSelectedProject(deselectedProjectList);
         }
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const selectedType = projectsType.find((o: any) => o.id === project.id).status;
 
     return (
@@ -59,16 +64,19 @@ export const ImportProjectCardItem = (props: any) => {
                 </FormControl>
 
                 <Autocomplete
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     disabled={projectsType.find((o: any) => o.id === project.id).status === "new" || !selectedProject.includes(project.id)}
                     sx={{ width: "200px" }}
                     size="small"
                     options={dummyProjects}
                     getOptionLabel={(option: SearchItem) => (option ? option.name : "")}
                     value={selectedOverwriteProject !== undefined ? selectedOverwriteProject : null}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     onChange={(event: any, newValue: SearchItem) => {
                         setSelectedOverwriteProject(newValue);
 
                         if (newValue) {
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             const clearedData = overwriteProjectId.filter((o: any) => o.projectId !== project.id);
                             clearedData.push({
                                 projectId: project.id,
@@ -76,6 +84,7 @@ export const ImportProjectCardItem = (props: any) => {
                             });
                             setOverwriteProjectId(clearedData);
                         } else {
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             const clearedData = overwriteProjectId.filter((o: any) => o.projectId !== project.id);
                             setOverwriteProjectId(clearedData);
                         }

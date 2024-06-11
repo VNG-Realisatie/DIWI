@@ -152,7 +152,8 @@ public class HouseblockService {
         var deliveryDateChangelog = new HouseblockDeliveryDateChangelog();
         setChangelogValues.accept(deliveryDateChangelog);
         deliveryDateChangelog.setHouseblock(houseblock);
-        deliveryDateChangelog.setExpectedDeliveryDate(new MilestoneModel(endMilestone).getDate());
+        deliveryDateChangelog.setLatestDeliveryDate(new MilestoneModel(endMilestone).getDate());
+        deliveryDateChangelog.setEarliestDeliveryDate(new MilestoneModel(endMilestone).getDate());
         repo.persist(deliveryDateChangelog);
 
         var nameChangelog = new HouseblockNameChangelog();
@@ -450,7 +451,8 @@ public class HouseblockService {
         LocalDate newDeliveryDate = new MilestoneModel(newEndMilestone).getDate();
 
         var newChangelog = (HouseblockDeliveryDateChangelog) changelog.getShallowCopy();
-        newChangelog.setExpectedDeliveryDate(newDeliveryDate);
+        newChangelog.setLatestDeliveryDate(newDeliveryDate);
+        newChangelog.setEarliestDeliveryDate(newDeliveryDate);
         newChangelog.setChangeStartDate(ZonedDateTime.now());
         newChangelog.setCreateUser(repo.getReferenceById(User.class, loggedInUserUuid));
         newChangelog.setEndMilestone(newEndMilestone);

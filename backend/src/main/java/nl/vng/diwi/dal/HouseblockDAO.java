@@ -50,7 +50,7 @@ public class HouseblockDAO extends AbstractRepository {
         houseblockChangelogs.put(HouseblockTextCustomPropertyChangelog.class, "woningblok_maatwerk_text_changelog");
         houseblockChangelogs.put(HouseblockMutatieChangelog.class, "woningblok_mutatie_changelog");
         houseblockChangelogs.put(HouseblockNameChangelog.class, "woningblok_naam_changelog");
-        houseblockChangelogs.put(HouseblockDeliveryDateChangelog.class, "woningblok_opleverdatum_changelog");
+        houseblockChangelogs.put(HouseblockDeliveryDateChangelog.class, "woningblok_deliverydate_changelog");
         houseblockChangelogs.put(HouseblockProgrammingChangelog.class, "woningblok_programmering_changelog");
         houseblockChangelogs.put(HouseblockAppearanceAndTypeChangelog.class, "woningblok_type_en_fysiek_changelog");
     }

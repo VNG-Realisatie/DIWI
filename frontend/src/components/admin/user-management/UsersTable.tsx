@@ -1,5 +1,5 @@
 import { Box, Typography } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridCellParams } from "@mui/x-data-grid";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
 import { useTranslation } from "react-i18next";
@@ -9,7 +9,7 @@ import useAlert from "../../../hooks/useAlert";
 import UserDialog from "./UserDialog";
 import DeleteDialogWithConfirmation from "./DeleteDialogWithConfirmation";
 import useAllowedActions from "../../../hooks/useAllowedActions";
-import { deleteUser, updateUser } from "../../../api/userSerivces";
+import { deleteUser, updateUser } from "../../../api/userServices";
 
 type Props = {
     rows: User[];
@@ -35,9 +35,11 @@ const UsersTable = ({ rows, setUsers }: Props) => {
             try {
                 const updatedUser = await updateUser(userToEdit.id, userToEdit);
                 setAlert(t("admin.userManagement.userUpdateSuccess"), "success");
-                setUsers(rows.map((user) => (user.id === updatedUser.id ? updatedUser : user)));
-            } catch (error: any) {
-                setAlert(error.message, "error");
+                setUsers(rows.map((user) => (user.id === updatedUser.uuid ? updatedUser : user)));
+            } catch (error: unknown) {
+                if (error instanceof Error) {
+                    setAlert(error.message, "error");
+                }
             } finally {
                 setUserDialogOpen(false);
             }
@@ -53,8 +55,10 @@ const UsersTable = ({ rows, setUsers }: Props) => {
                 await deleteUser(userToDelete);
                 setAlert(t("admin.userManagement.userDeleteSuccess"), "success");
                 setUsers(rows.filter((user) => user.id !== userToDelete));
-            } catch (error: any) {
-                setAlert(error.message, "error");
+            } catch (error: unknown) {
+                if (error instanceof Error) {
+                    setAlert(error.message, "error");
+                }
             } finally {
                 setDeleteDialogOpen(false);
             }
@@ -68,25 +72,28 @@ const UsersTable = ({ rows, setUsers }: Props) => {
         { field: "email", headerName: t("admin.userManagement.tableHeader.email"), flex: 1.5, sortable: true },
         { field: "organization", headerName: t("admin.userManagement.tableHeader.organization"), flex: 1.5, sortable: true },
         { field: "department", headerName: t("admin.userManagement.tableHeader.department"), flex: 1.5, sortable: true },
-        { field: "role", headerName: t("admin.userManagement.tableHeader.role"), flex: 1, sortable: true },
         {
             field: "role",
             headerName: t("admin.userManagement.tableHeader.role"),
             flex: 1,
             sortable: true,
-            renderCell: (params: any) => t(`admin.userManagement.roles.${params.value}`),
+            renderCell: (params: GridCellParams) => t(`admin.userManagement.roles.${params.value}`),
         },
         {
             field: "acties",
             headerName: t("admin.userManagement.tableHeader.actions"),
             flex: 0.5,
             sortable: true,
-            renderCell: (params: any) => (
+            renderCell: (params: GridCellParams) => (
                 <Box display="flex" alignItems="center" justifyContent="center" style={{ height: "100%" }} gap="10px">
                     {allowedActions.includes("EDIT_USERS") && (
                         <>
-                            <EditOutlinedIcon style={{ cursor: "pointer" }} color="primary" onClick={() => handleEdit(params.row)} />
-                            <DeleteForeverOutlinedIcon style={{ cursor: "pointer" }} color="error" onClick={() => handleDeleteDialogOpen(params.row.id)} />
+                            <EditOutlinedIcon style={{ cursor: "pointer" }} color="primary" onClick={() => handleEdit(params.row as User)} />
+                            <DeleteForeverOutlinedIcon
+                                style={{ cursor: "pointer" }}
+                                color="error"
+                                onClick={() => handleDeleteDialogOpen(params.row.id as string)}
+                            />
                         </>
                     )}
                 </Box>

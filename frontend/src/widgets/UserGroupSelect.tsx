@@ -5,7 +5,6 @@ import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import { UserGroup } from "../api/projectsServices";
 import { getUserGroupList } from "../api/projectsTableServices";
-import useAllowedActions from "../hooks/useAllowedActions";
 
 const icon = <CheckBoxOutlineBlankIcon />;
 const checkedIcon = <CheckBoxIcon />;
@@ -14,13 +13,19 @@ type Props = {
     readOnly: boolean;
     userGroup: UserGroup[];
     setUserGroup: (owner: UserGroup[]) => void;
+    mandatory: boolean;
+    errorText: string;
 };
 
 const isSingleUserIncluded = true;
 
-export const UserGroupSelect = ({ readOnly, userGroup, setUserGroup }: Props) => {
+const shouldDisplayError = (mandatory: boolean, userGroup: UserGroup[]) => {
+    return mandatory && userGroup.length === 0;
+};
+
+export const UserGroupSelect = ({ readOnly, userGroup, setUserGroup, mandatory, errorText }: Props) => {
     const [ownerOptions, setOwnerOptions] = useState<UserGroup[]>();
-    const allowedActions = useAllowedActions();
+    const hasError = shouldDisplayError(mandatory, userGroup);
 
     useEffect(() => {
         getUserGroupList(isSingleUserIncluded).then((groups) => setOwnerOptions(groups));
@@ -30,7 +35,7 @@ export const UserGroupSelect = ({ readOnly, userGroup, setUserGroup }: Props) =>
         <Autocomplete
             multiple
             size="small"
-            disabled={readOnly || !allowedActions.includes("CHANGE_PROJECT_OWNER")}
+            disabled={readOnly}
             sx={{
                 "& .MuiInputBase-input.Mui-disabled": {
                     backgroundColor: "#0000", // set 0 opacity when disabled
@@ -65,7 +70,7 @@ export const UserGroupSelect = ({ readOnly, userGroup, setUserGroup }: Props) =>
                     <UserGroupAvatars groups={[option]} />
                 </li>
             )}
-            renderInput={(params) => <TextField {...params} />}
+            renderInput={(params) => <TextField {...params} error={hasError} helperText={hasError ? errorText : ""} />}
         />
     );
 };

@@ -1,9 +1,7 @@
 import {
     DataGrid,
-    GridCallbackDetails,
     GridColDef,
     GridFilterModel,
-    GridPaginationModel,
     GridPreProcessEditCellProps,
     GridRenderCellParams,
     GridRowParams,
@@ -55,6 +53,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const { setAlert } = useAlert();
     const { t } = useTranslation();
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [selectedRows, setSelectedRows] = useState<any[]>([]);
     const [showDialog, setShowDialog] = useState(false);
     const [filterModel, setFilterModel] = useState<GridFilterModel | undefined>();
@@ -121,7 +120,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 return (
                     cellValues.row.projectOwners &&
                     cellValues.row.projectOwners.length > 0 && (
-                        <UserGroupSelect readOnly={true} userGroup={cellValues.row.projectOwners} setUserGroup={() => {}} />
+                        <UserGroupSelect mandatory={false} errorText="" readOnly={true} userGroup={cellValues.row.projectOwners} setUserGroup={() => {}} />
                     )
                 );
             },
@@ -290,7 +289,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                     },
                 }}
                 pageSizeOptions={[5, 10, 25, 50, 100]}
-                onPaginationModelChange={(model: GridPaginationModel, _: GridCallbackDetails) => {
+                onPaginationModelChange={(model) => {
                     setPaginationInfo({ page: model.page + 1, pageSize: model.pageSize });
                 }}
                 rowCount={filterModel?.items.some((item) => item.value) ? rows.length : totalProjectCount}
@@ -303,7 +302,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                           }
                 }
                 processRowUpdate={
-                    (updatedRow, originalRow) => console.log(updatedRow)
+                    (updatedRow) => console.log(updatedRow)
                     //todo add update endpoint later
                 }
                 filterModel={filterModel}

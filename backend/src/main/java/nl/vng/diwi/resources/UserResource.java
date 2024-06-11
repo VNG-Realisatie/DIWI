@@ -18,6 +18,7 @@ import nl.vng.diwi.dal.entities.UserState;
 import nl.vng.diwi.models.UserInfoModel;
 import nl.vng.diwi.models.UserModel;
 import nl.vng.diwi.rest.VngBadRequestException;
+import nl.vng.diwi.rest.VngNotAllowedException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
@@ -156,11 +157,14 @@ public class UserResource {
     @GET
     @Path("/userinfo")
     @Produces(MediaType.APPLICATION_JSON)
-    public UserInfoModel userInfo(ContainerRequestContext requestContext) {
+    public UserInfoModel userInfo(ContainerRequestContext requestContext) throws VngNotAllowedException {
         var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
-
         UserState state = userService.getUserDAO().getUserById(loggedUser.getUuid());
+        
+        // Here we will assume that if we cannot find the user they should not be allowed in
+        if (state == null) {
+            throw new VngNotAllowedException("User with kc id " + loggedUser.getIdentityProviderId() + " not found in diwi");
+        }
         return new UserInfoModel(state);
     }
-
 }

@@ -18,7 +18,7 @@ const ProjectWizard = () => {
         endDate: undefined,
         projectName: "",
         projectId: "temp_id",
-        confidentialityLevel: "PRIVATE",
+        confidentialityLevel: undefined,
         customProperties: [],
     });
     const { projectId } = useParams();
@@ -33,7 +33,8 @@ const ProjectWizard = () => {
             !projectForm.endDate ||
             !projectForm.projectColor ||
             !projectForm.projectPhase ||
-            !projectForm.confidentialityLevel
+            !projectForm.confidentialityLevel ||
+            projectForm.projectOwners.length === 0
         ) {
             setAlert(t("createProject.hasMissingRequiredAreas.hasmissingProperty"), "warning");
             return false;
@@ -53,7 +54,7 @@ const ProjectWizard = () => {
                     confidentialityLevel: projectForm.confidentialityLevel,
                     startDate: projectForm.startDate,
                     endDate: projectForm.endDate,
-                    projectOwners: [],
+                    projectOwners: projectForm.projectOwners,
                 };
                 const project = await createProject(temporaryCreateForm);
                 // after save immediately update Id and send attibutes that have not been saved yet
@@ -64,6 +65,7 @@ const ProjectWizard = () => {
                 navigate(projectWizardWithId.toPath({ projectId: project.projectId }));
             }
             updateProjects();
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             setAlert(error.message, "error");
             return false;

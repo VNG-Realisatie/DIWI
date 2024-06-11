@@ -93,6 +93,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 setValue={(_, newValue) => {
                                     setProject({
                                         ...project,
+                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                         planType: newValue.map((option: any) => option.id),
                                     });
                                 }}
@@ -136,7 +137,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                             <CategoryInput
                                 readOnly={readOnly}
                                 values={project?.priority?.value ?? null}
-                                setValue={(_: any, newValue: any) =>
+                                setValue={(_, newValue) =>
                                     setProject({
                                         ...project,
                                         priority: {
@@ -179,6 +180,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                             <CategoryInput
                                 readOnly={readOnly}
                                 values={project?.municipalityRole ?? []}
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 setValue={(_: any, newValue: any) => setProject({ ...project, municipalityRole: newValue })}
                                 mandatory={false}
                                 title={t("createProject.informationForm.roleMunicipality")}
@@ -189,7 +191,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
 
                         {/* Owner */}
                         <Grid item xs={12} md={4}>
-                            <LabelComponent required={false} readOnly={readOnly} text={t("createProject.informationForm.owner")} />
+                            <LabelComponent required={true} readOnly={readOnly} text={t("createProject.informationForm.owner")} />
                             <UserGroupSelect
                                 readOnly={readOnly}
                                 userGroup={project?.projectOwners ? project.projectOwners : []}
@@ -199,6 +201,8 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                         projectOwners: e,
                                     })
                                 }
+                                mandatory={true}
+                                errorText={t("createProject.hasMissingRequiredAreas.owner")}
                             />
                         </Grid>
 
@@ -213,12 +217,10 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                     (project?.confidentialityLevel && confidentialityLevelOptions.find((cl) => cl.id === project.confidentialityLevel)) || null
                                 }
                                 setValue={(_, newValue) => {
-                                    if (newValue && newValue.id) {
-                                        setProject({
-                                            ...project,
-                                            confidentialityLevel: newValue.id,
-                                        });
-                                    }
+                                    setProject({
+                                        ...project,
+                                        confidentialityLevel: newValue ? newValue.id : undefined,
+                                    });
                                 }}
                                 multiple={false}
                                 error={t("createProject.hasMissingRequiredAreas.confidentialityLevel")}
@@ -236,6 +238,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 setValue={(_, newValue) => {
                                     setProject({
                                         ...project,
+                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                         planningPlanStatus: newValue.map((option: any) => option.id),
                                     });
                                 }}
@@ -249,6 +252,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                             <CategoryInput
                                 readOnly={readOnly}
                                 values={project?.municipality ?? []}
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 setValue={(_: any, newValue: any) => setProject({ ...project, municipality: newValue })}
                                 mandatory={false}
                                 title={t("createProject.informationForm.municipality")}
@@ -262,6 +266,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                             <CategoryInput
                                 readOnly={readOnly}
                                 values={project?.district ?? []}
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 setValue={(_: any, newValue: any) => setProject({ ...project, district: newValue })}
                                 mandatory={false}
                                 title={t("createProject.informationForm.district")}
@@ -275,6 +280,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                             <CategoryInput
                                 readOnly={readOnly}
                                 values={project?.neighbourhood ?? []}
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 setValue={(_: any, newValue: any) => setProject({ ...project, neighbourhood: newValue })}
                                 mandatory={false}
                                 title={t("createProject.informationForm.neighbourhood")}
