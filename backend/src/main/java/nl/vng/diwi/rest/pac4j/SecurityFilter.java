@@ -118,6 +118,7 @@ public class SecurityFilter implements ContainerRequestFilter {
                 userEntity.setCreateUser(systemUser);
                 userEntity.setFirstName((String) authFirstName);
                 userEntity.setLastName((String) authLastName);
+                userEntity.setEmail((String) authEmail);
                 userEntity.setUser(newUser);
                 userEntity.setIdentityProviderId(profileUuid);
                 // Any user that is 'coming' from keycloak should not be able to view projects
