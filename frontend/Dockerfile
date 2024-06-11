@@ -10,6 +10,7 @@ COPY ./src ./src
 COPY ./public ./public
 COPY ./tsconfig.json ./tsconfig.json
 COPY ./.editorconfig ./.editorconfig
+COPY ./index.html ./index.html
 
 ARG REACT_APP_GIT_SHA
 ENV REACT_APP_GIT_SHA=${REACT_APP_GIT_SHA}
@@ -26,11 +27,11 @@ ENV REACT_APP_DEPLOY_DATE=${REACT_APP_DEPLOY_DATE}
 RUN echo "{ \
     \"git hash\": \"$REACT_APP_GIT_SHA\",\
     \"build date\": \"$REACT_APP_DEPLOY_DATE\"\
-    }" > ./build/version.json
+    }" > ./dist/version.json
 
 # production stage
 FROM nginx:1.24-alpine as production-stage
 
-COPY --from=build-stage ./build /usr/share/nginx/html
+COPY --from=build-stage ./dist /usr/share/nginx/html
 
 EXPOSE 80
