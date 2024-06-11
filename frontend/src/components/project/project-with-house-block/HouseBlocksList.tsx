@@ -60,8 +60,8 @@ export const HouseBlockAccordionWithControls = ({ houseBlock, refresh }: HouseBl
                 await saveHouseBlockWithCustomProperties(filteredHouseBlock);
                 refresh();
                 setReadOnly(true);
-            } catch (error: any) {
-                setAlert(error.message, "warning");
+            } catch (error: unknown) {
+                if (error instanceof Error) setAlert(error.message, "warning");
             }
         }
     };
