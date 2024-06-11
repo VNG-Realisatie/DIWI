@@ -190,7 +190,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                         </Grid>
 
                         {/* Owner */}
-                        <Grid item xs={12} md={4}>
+                        <Grid item xs={12} md={4} className="project-owner">
                             <LabelComponent required={true} readOnly={readOnly} text={t("createProject.informationForm.owner")} />
                             <UserGroupSelect
                                 readOnly={readOnly}
