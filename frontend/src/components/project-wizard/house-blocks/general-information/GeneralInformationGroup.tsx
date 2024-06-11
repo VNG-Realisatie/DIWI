@@ -31,7 +31,7 @@ export const GeneralInformationGroup = ({ readOnly, houseBlock, setHouseBlock, e
                 mandatory={true}
                 title={t("createProject.houseBlocksForm.nameLabel")}
                 errorText={t("createProject.nameIsRequried")}
-                tooltipInfoText="tooltipInfo.deelplan."
+                tooltipInfoText={t("tooltipInfo.deelplan.title")}
             />
             <RangeNumberInput
                 readOnly={readOnly}

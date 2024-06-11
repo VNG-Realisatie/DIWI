@@ -60,7 +60,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                     mandatory={true}
                                     title={t("createProject.informationForm.nameLabel")}
                                     errorText={t("createProject.hasMissingRequiredAreas.name")}
-                                    tooltipInfoText={"tooltipInfo.projectNaam."}
+                                    tooltipInfoText={t("tooltipInfo.projectNaam.title")}
                                 />
                             </Stack>
                         </Grid>
@@ -71,7 +71,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                     required
                                     readOnly={readOnly}
                                     text="createProject.informationForm.color"
-                                    tooltipInfoText={"tooltipInfo.projectKleur."}
+                                    tooltipInfoText={t("tooltipInfo.projectKleur.title")}
                                 />
                                 <ColorSelector
                                     selectedColor={project?.projectColor}
@@ -121,7 +121,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 mandatory={true}
                                 title={t("createProject.informationForm.startDate")}
                                 errorText={t("createProject.hasMissingRequiredAreas.startDate")}
-                                tooltipInfoText={"tooltipInfo.startDatum."}
+                                tooltipInfoText={t("tooltipInfo.startDatum.title")}
                             />
                         </Grid>
 
@@ -137,7 +137,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 mandatory={true}
                                 title={t("createProject.informationForm.endDate")}
                                 errorText={t("createProject.hasMissingRequiredAreas.endDate")}
-                                tooltipInfoText={"tooltipInfo.eindDatum."}
+                                tooltipInfoText={t("tooltipInfo.eindDatum.title")}
                             />
                         </Grid>
 
@@ -208,7 +208,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 required={false}
                                 readOnly={readOnly}
                                 text={t("createProject.informationForm.owner")}
-                                tooltipInfoText={"tooltipInfo.schrijfrechten."}
+                                tooltipInfoText={t("tooltipInfo.schrijfrechten.title")}
                             />
                             <OrganizationSelect
                                 readOnly={readOnly}
@@ -320,7 +320,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                     required={false}
                                     readOnly={readOnly}
                                     text={t("createProject.houseBlocksForm.demolition")}
-                                    tooltipInfoText={t("tooltipInfo.sloop.")}
+                                    tooltipInfoText={t("tooltipInfo.sloop.title")}
                                 />
                                 <CellContainer>
                                     <LabelComponent required={false} readOnly={true} text={demolitionAmount.toString()} />
@@ -332,7 +332,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                     required={false}
                                     readOnly={readOnly}
                                     text={t("createProject.houseBlocksForm.grossPlanCapacity")}
-                                    tooltipInfoText={t("tooltipInfo.brutoPlancapaciteit.")}
+                                    tooltipInfoText={t("tooltipInfo.brutoPlancapaciteit.title")}
                                 />
                                 <CellContainer>
                                     <LabelComponent required={false} readOnly={true} text={constructionAmount.toString()} />
@@ -344,7 +344,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                     required={false}
                                     readOnly={readOnly}
                                     text={t("createProject.houseBlocksForm.netPlanCapacity")}
-                                    tooltipInfoText={t("tooltipInfo.nettoPlancapaciteit.")}
+                                    tooltipInfoText={t("tooltipInfo.nettoPlancapaciteit.title")}
                                 />
                                 <CellContainer>
                                     <LabelComponent required={false} readOnly={true} text={(constructionAmount - demolitionAmount).toString()} />
