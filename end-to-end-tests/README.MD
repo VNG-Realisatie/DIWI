@@ -19,5 +19,5 @@
 
     ```bash
     cd ../end-to-end-tests
-    yarn run test
+    yarn && yarn run test
     ```
