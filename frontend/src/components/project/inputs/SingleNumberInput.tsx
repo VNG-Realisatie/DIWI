@@ -1,7 +1,6 @@
 import { Stack, Typography, TextField, InputAdornment } from "@mui/material";
 import InputLabelStack from "./InputLabelStack";
 import { TooltipInfo } from "../../../widgets/TooltipInfo";
-import { t } from "i18next";
 
 type SingleNumberEdit = {
     name?: string;
