@@ -123,6 +123,13 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
             this.mutation = null;
         }
 
+        if (mutation != null && ownershipValue != null) {
+            int totalOwnershipAmount = ownershipValue.stream().mapToInt(OwnershipValue::getAmount).sum();
+            if (mutation.getAmount() < totalOwnershipAmount) {
+                return "Mutation amount is less than the total amount of houses in the ownership section.";
+            }
+        }
+
         if (groundPosition != null && groundPosition.getNoPermissionOwner() == null &&
             groundPosition.getIntentionPermissionOwner() == null && groundPosition.getFormalPermissionOwner() == null) {
             //ground position info is not present
