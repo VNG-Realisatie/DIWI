@@ -90,7 +90,9 @@
         "no_houseblock_mutation": "Mutatietype of -hoeveelheid van het huisblok ontbreekt.",
         "no_houseblock_name": "Naam van het huisblok ontbreekt.",
         "invalid_plan_type": "Projectplantype heeft een onbekende waarde",
-        "invalid_numeric_range": "De waarde komt niet overeen met een numeriek bereik."
+        "invalid_numeric_range": "De waarde komt niet overeen met een numeriek bereik.",
+
+        "feature_error":"De ingevoerde waarde valt buiten het gestelde domein."
       }
     },
     "createProject": {

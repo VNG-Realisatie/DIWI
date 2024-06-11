@@ -46,23 +46,6 @@ export const ImportGeoJson = () => {
                     Het bestand kon niet worden geimporteerd. Klik hier om terug te gaan om een nieuw bestand te uploaden
                 </Stack>
             )}
-            {uploaded && (
-                <Stack
-                    height={180}
-                    width="100%"
-                    border="dashed 2px #ddd"
-                    alignItems="center"
-                    justifyContent="space-evenly"
-                    style={{ cursor: "pointer" }}
-                    onClick={() => {
-                        setUploaded(false);
-                        setErrors([]);
-                        handleUploadStackClick();
-                    }}
-                >
-                    Het bestand kon niet worden geimporteerd. Klik hier om terug te gaan om een nieuw bestand te uploaden
-                </Stack>
-            )}
             {!uploaded && (
                 <Stack
                     mt={2}
@@ -88,18 +71,18 @@ export const ImportGeoJson = () => {
                                     .then(async (res) => {
                                         setUploaded(true);
                                         if (res.ok) {
-                                            setAlert("Excel-bestand succesvol geüpload.", "success");
+                                            setAlert("GeoJson-bestand succesvol geüpload.", "success");
                                             navigate(Paths.projectsTable.path);
                                         } else {
                                             // 400 errors contain relevant info in body, deal with here
                                             const newErrors = (await res.json()) as Array<ImportErrorType>;
                                             setErrors(newErrors);
-                                            setAlert("Kon Excel-bestand niet importeren", "error");
+                                            setAlert("Kon GeoJson-bestand niet importeren", "error");
                                         }
                                     })
                                     .catch((error) => {
                                         console.error("Failed to import due to error", error);
-                                        setAlert("Kon Excel-bestand niet importeren", "error");
+                                        setAlert("Kon GeoJson-bestand niet importeren", "error");
                                     });
                             }
                         }}
@@ -107,7 +90,7 @@ export const ImportGeoJson = () => {
                     Klik hier om te uploaden
                 </Stack>
             )}
-            {errors.length > 0 && <ImportErrors errors={errors} />}
+            {errors.length > 0 && <ImportErrors errors={errors} isGeoJson={true} />}
         </Stack>
     );
 };
