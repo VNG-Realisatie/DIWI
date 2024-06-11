@@ -11,18 +11,16 @@ import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.entities.superclasses.ChangeDataSuperclass;
 
 @Entity
-@Table(name = "organization_to_project", schema = GenericRepository.VNG_SCHEMA_NAME)
+@Table(name = "user_to_usergroup", schema = GenericRepository.VNG_SCHEMA_NAME)
 @Getter
 @Setter
 @NoArgsConstructor
-public class OrganizationToProject extends ChangeDataSuperclass {
+public class UserToUserGroup extends ChangeDataSuperclass {
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @ManyToOne
-    @JoinColumn(name = "organization_id")
-    private Organization organization;
-
-    @ManyToOne
-    @JoinColumn(name = "project_id")
-    private Project project;
-
+    @JoinColumn(name = "usergroup_id")
+    private UserGroup userGroup;
 }

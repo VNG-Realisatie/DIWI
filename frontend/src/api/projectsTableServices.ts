@@ -1,11 +1,11 @@
 import { getJson } from "../utils/requests";
 import { API_URI } from "../utils/urls";
-import { Organization } from "./projectsServices";
+import { UserGroup } from "./projectsServices";
 
 export async function filterTable(query: string) {
     return getJson(`${API_URI}/projects/table${query}`);
 }
 
-export async function getOrganizationList(): Promise<Array<Organization>> {
-    return getJson(`${API_URI}/organizations/list`);
+export async function getUserGroupList(includeSingleUser: boolean): Promise<Array<UserGroup>> {
+    return getJson(`${API_URI}/groups?includeSingleUser=${includeSingleUser}`);
 }
