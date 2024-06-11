@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { drawerWidth } from "../theme";
 
 import * as Paths from "../Paths";
-import { User, getCurrentUser } from "../api/userSerivces";
+import { User, getCurrentUser } from "../api/userServices";
 
 type Props = {
     open: boolean;

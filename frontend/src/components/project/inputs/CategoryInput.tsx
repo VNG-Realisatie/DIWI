@@ -8,6 +8,7 @@ type Option = {
     name: string;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type SetValueFunction = (event: any, value: any, reason: AutocompleteChangeReason, details?: AutocompleteChangeDetails<Option>) => void;
 
 type CategoryInputProps = {
@@ -28,6 +29,7 @@ const isOptionEqualToValue = (option: Option, value: Option): boolean => {
     return option.id === value.id;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getErrorHelperText = (mandatory: boolean, readOnly: boolean, values: any, error?: string) => {
     const hasError = mandatory && !values && !readOnly;
     const helperText = hasError ? error : "";

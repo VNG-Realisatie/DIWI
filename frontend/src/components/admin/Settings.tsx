@@ -6,6 +6,7 @@ import { Property, getCustomProperties } from "../../api/adminSettingServices";
 import { CustomPropertiesTable } from "./CustomPropertiesTable";
 import PropertyDialog from "./PropertyDialog";
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const rowStyle = {
     p: 1,
     border: "solid 1px #BDBDBD",

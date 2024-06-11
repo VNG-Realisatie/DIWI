@@ -10,6 +10,7 @@ interface ColorSelectorProps {
     width?: string;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const defaultColors = ["#FFE3DC", "#AEBD93", "#FFE066", "#49DCB1", "#94D1BE", "#DE2130", "#8B2635", "#976880", "#F18F01", "#768948"];
 
 const ColorSelector: FC<ColorSelectorProps> = ({ defaultColor, onColorChange, selectedColor, disabled = false, width }) => {

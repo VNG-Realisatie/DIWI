@@ -3,6 +3,8 @@ import { columnTitleStyle } from "../ImportProjectCardItem";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import { useState } from "react";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const ProjectHouseBlockCardItem = (props: any) => {
     const { hb } = props;
     const [editable, setEditable] = useState(false);

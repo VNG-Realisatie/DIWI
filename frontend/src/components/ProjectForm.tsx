@@ -99,6 +99,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 setValue={(_, newValue) => {
                                     setProject({
                                         ...project,
+                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                         planType: newValue.map((option: any) => option.id),
                                     });
                                 }}
@@ -146,7 +147,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                             <CategoryInput
                                 readOnly={readOnly}
                                 values={project?.priority?.value ?? null}
-                                setValue={(_: any, newValue: any) =>
+                                setValue={(_, newValue) =>
                                     setProject({
                                         ...project,
                                         priority: {
@@ -192,6 +193,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                             <CategoryInput
                                 readOnly={readOnly}
                                 values={project?.municipalityRole ?? []}
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 setValue={(_: any, newValue: any) => setProject({ ...project, municipalityRole: newValue })}
                                 mandatory={false}
                                 title={t("createProject.informationForm.roleMunicipality")}
@@ -258,6 +260,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 setValue={(_, newValue) => {
                                     setProject({
                                         ...project,
+                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                         planningPlanStatus: newValue.map((option: any) => option.id),
                                     });
                                 }}
@@ -273,6 +276,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                             <CategoryInput
                                 readOnly={readOnly}
                                 values={project?.municipality ?? []}
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 setValue={(_: any, newValue: any) => setProject({ ...project, municipality: newValue })}
                                 mandatory={false}
                                 title={t("createProject.informationForm.municipality")}
@@ -286,6 +290,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                             <CategoryInput
                                 readOnly={readOnly}
                                 values={project?.district ?? []}
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 setValue={(_: any, newValue: any) => setProject({ ...project, district: newValue })}
                                 mandatory={false}
                                 title={t("createProject.informationForm.district")}
@@ -299,6 +304,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                             <CategoryInput
                                 readOnly={readOnly}
                                 values={project?.neighbourhood ?? []}
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 setValue={(_: any, newValue: any) => setProject({ ...project, neighbourhood: newValue })}
                                 mandatory={false}
                                 title={t("createProject.informationForm.neighbourhood")}

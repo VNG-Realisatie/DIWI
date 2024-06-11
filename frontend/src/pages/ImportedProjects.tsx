@@ -9,6 +9,7 @@ type Props = {
     type: string;
 };
 export const ImportedProjects = (props: Props) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [createProjectForm, setCreateProjectForm] = useState<any>(null);
     const [selectedProject, setSelectedProject] = useState<Array<number> | []>([]);
     const [overwriteProjectId, setOverwriteProjectId] = useState<Array<{ projectId: number; willBeOverWrittenId: number }> | []>([]);

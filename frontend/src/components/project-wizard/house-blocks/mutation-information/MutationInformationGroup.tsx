@@ -40,6 +40,7 @@ export const MutationInformationGroup = ({ houseBlock, setHouseBlock, readOnly }
                 mandatory={true}
                 error={t("wizard.houseBlocks.mutationAmountWarning")}
                 isInputLabel={true}
+                isDemolition={houseBlock.mutation.kind === "DEMOLITION"}
             />
             <CategoryInput
                 readOnly={readOnly}

@@ -1,4 +1,4 @@
-import { Stack, Typography, TextField } from "@mui/material";
+import { Stack, Typography, TextField, InputAdornment } from "@mui/material";
 import InputLabelStack from "./InputLabelStack";
 import { TooltipInfo } from "../../../widgets/TooltipInfo";
 import { t } from "i18next";
@@ -14,6 +14,7 @@ type SingleNumberEdit = {
     translationPath?: string;
     nullable?: boolean; //not implemented
     placeholder?: string;
+    isDemolition?: boolean;
     tooltipInfoText?: string;
 };
 
@@ -26,6 +27,7 @@ export const SingleNumberInput = ({
     error,
     isInputLabel = false,
     placeholder,
+    isDemolition = false,
     tooltipInfoText,
 }: SingleNumberEdit) => {
     const hasError = mandatory && (!value || value <= 0);
@@ -45,6 +47,11 @@ export const SingleNumberInput = ({
                 inputProps: {
                     min: 0,
                 },
+                startAdornment: isDemolition && value != 0 && value != null && (
+                    <InputAdornment position="start" style={{ marginRight: "0px" }}>
+                        -
+                    </InputAdornment>
+                ),
             }}
             type="number"
             id={name ? name : ""}

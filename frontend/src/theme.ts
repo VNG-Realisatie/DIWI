@@ -29,6 +29,13 @@ export const theme = createTheme(
             },
         },
         components: {
+            MuiOutlinedInput: {
+                styleOverrides: {
+                    root: {
+                        background: "white",
+                    },
+                },
+            },
             MuiDrawer: {
                 styleOverrides: {
                     paper: {

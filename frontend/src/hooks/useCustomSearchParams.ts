@@ -78,8 +78,7 @@ const useCustomSearchParams = (sort: GridSortModel | undefined, filter: GridFilt
         let query = "";
 
         if (sortModel && sortModel.length > 0) {
-            let sortQuery;
-            sortQuery = sortModel.map((sortItem) => `sortColumn=${sortItem.field}&sortDirection=${sortItem.sort?.toUpperCase()}`);
+            const sortQuery = sortModel.map((sortItem) => `sortColumn=${sortItem.field}&sortDirection=${sortItem.sort?.toUpperCase()}`);
             query += sortQuery;
         }
 

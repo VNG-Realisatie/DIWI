@@ -20,6 +20,7 @@ type OwnershipProps = {
     handleInputChange: (index: number, value: OwnershipSingleValue) => void;
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const isOwnershipAmountValid = (amount: number): boolean => {
     return Number.isInteger(amount) && amount >= 0;
 };

@@ -1,5 +1,5 @@
 import { Stack } from "@mui/material";
-import { ReactComponent as DashboardResult } from "../assets/temp/dashboardprojecten.svg";
+import DashboardResult from "../assets/temp/dashboardprojecten.svg";
 
 export const DashboardProjects = () => {
     return (
