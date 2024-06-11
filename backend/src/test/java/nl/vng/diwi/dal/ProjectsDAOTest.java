@@ -5,30 +5,38 @@ import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.models.ProjectListModel;
 import nl.vng.diwi.dal.entities.ProjectListSqlModel;
+import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.security.UserAction;
+import nl.vng.diwi.security.UserRole;
 import nl.vng.diwi.testutil.TestDb;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ProjectsDAOTest {
 
+    private static final String PROJECT_TABLE_SCRIPT_PATH = "nl/vng/diwi/ProjectsDAOTest/getProjectsTable.sql";
+    private static final String PROJECT_TABLE_CONFIDENTIALITY_SCRIPT_PATH = "nl/vng/diwi/ProjectsDAOTest/getProjectsTable_confidentiality.sql";
     private static DalFactory dalFactory;
     private static TestDb testDb;
     private Dal dal;
     private VngRepository repo;
 
-    private static final String PROJECT_TABLE_SCRIPT_PATH = "nl/vng/diwi/ProjectsDAOTest/getProjectsTable.sql";
-
     @BeforeAll
     static void beforeAll() throws Exception {
         testDb = new TestDb();
-        dalFactory = testDb.getDalFactory();
     }
 
     @AfterAll
@@ -36,8 +44,33 @@ public class ProjectsDAOTest {
         testDb.close();
     }
 
+    private static Stream<Arguments> roleConfidentialityCombos() {
+
+        List<Arguments> combos = new ArrayList<>();
+
+        for (Confidentiality confidentiality : Confidentiality.values()) {
+            for (UserRole role : UserRole.values()) {
+                boolean canViewOthersProject = false;
+                if (confidentiality == Confidentiality.PRIVATE) {
+                    canViewOthersProject = false;
+                } else if (confidentiality == Confidentiality.INTERNAL_CIVIL) {
+                    canViewOthersProject = (role == UserRole.UserPlus || role == UserRole.User);
+                } else if (confidentiality == Confidentiality.INTERNAL_MANAGEMENT) {
+                    canViewOthersProject = (role == UserRole.UserPlus || role == UserRole.User || role == UserRole.Management);
+                } else {
+                    canViewOthersProject = (role != UserRole.Admin && role != UserRole.External);
+                }
+                combos.add(Arguments.of(role, confidentiality, canViewOthersProject));
+            }
+        }
+
+        return combos.stream();
+    }
+
     @BeforeEach
-    void beforeEach() {
+    void beforeEach() throws Exception {
+        testDb.reset();
+        dalFactory = testDb.getDalFactory();
         dal = dalFactory.constructDal();
         repo = new VngRepository(dal.getSession());
     }
@@ -67,7 +100,9 @@ public class ProjectsDAOTest {
             transaction.commit();
         }
 
-        List<ProjectListSqlModel> projects = repo.getProjectsDAO().getProjectsTable(filtering);
+        LoggedUser loggedUser = new LoggedUser();
+        loggedUser.setRole(UserRole.UserPlus);
+        List<ProjectListSqlModel> projects = repo.getProjectsDAO().getProjectsTable(filtering, loggedUser);
 
         //There are 3 projects. One in the past, one ongoing, one in the future. All are returned.
         assertThat(projects.size()).isEqualTo(3);
@@ -103,4 +138,39 @@ public class ProjectsDAOTest {
         assertThat(futureProject.getMunicipality().size()).isEqualTo(1);
         assertThat(futureProject.getMunicipality().get(0).getName()).isEqualTo("Gemeente 1");
     }
+
+    @ParameterizedTest
+    @MethodSource("roleConfidentialityCombos")
+    public void getProjects_roleAndConfidentialityRestrictionsTest(UserRole loggedUserRole, Confidentiality confidentiality, boolean projectVisibility)
+        throws IOException {
+
+        try (var transaction = dal.beginTransaction()) {
+            Path scriptPath = Path.of(ProjectsDAOTest.class.getClassLoader().getResource(PROJECT_TABLE_CONFIDENTIALITY_SCRIPT_PATH).getPath());
+            String scriptSql = Files.readString(scriptPath);
+            scriptSql = scriptSql.replace("__confidentiality__", "'" + confidentiality.name() + "'");
+
+            dal.getSession().createNativeMutationQuery(scriptSql).executeUpdate();
+            transaction.commit();
+        }
+
+        FilterPaginationSorting filtering = new FilterPaginationSorting();
+        filtering.setPageNumber(1);
+        filtering.setPageSize(10);
+        filtering.setSortColumn(ProjectListModel.DEFAULT_SORT_COLUMN);
+
+        LoggedUser loggedUser = new LoggedUser();
+        loggedUser.setRole(loggedUserRole);
+        List<ProjectListSqlModel> projects = repo.getProjectsDAO().getProjectsTable(filtering, loggedUser);
+        ProjectListSqlModel project = repo.getProjectsDAO().getProjectByUuid(UUID.fromString("466da5e2-c96f-4856-aa17-6b37a1c21edc"), loggedUser);
+
+
+        if (projectVisibility) {
+            assertThat(projects).isNotEmpty();
+            assertThat(project).isNotNull();
+        } else {
+            assertThat(projects).isEmpty();
+            assertThat(project).isNull();
+        }
+    }
+
 }

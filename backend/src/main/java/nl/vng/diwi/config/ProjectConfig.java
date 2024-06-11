@@ -9,6 +9,7 @@ import java.util.Map;
 
 import nl.vng.diwi.models.ConfigModel;
 import nl.vng.diwi.models.LocationModel;
+import nl.vng.diwi.security.MailConfig;
 import org.pac4j.core.authorization.authorizer.DefaultAuthorizers;
 import org.pac4j.core.authorization.authorizer.IsAuthenticatedAuthorizer;
 import org.pac4j.core.client.Clients;
@@ -56,6 +57,7 @@ public class ProjectConfig {
     private final boolean allowFlywayErrors;
 
     private final ConfigModel configModel = new ConfigModel();
+    private final MailConfig mailConfig;
 
     public ProjectConfig(Map<String, String> env) throws InvalidConfigException {
         this.baseUrl = getURL(env, "BASE_URL");
@@ -110,6 +112,8 @@ public class ProjectConfig {
 
         getDefaultMapBounds(env.getOrDefault("DEFAULT_MAP_BOUNDS", ""));
         this.configModel.setMunicipalityName(env.getOrDefault("MUNICIPALITY_NAME", ""));
+
+        this.mailConfig = new MailConfig(env);
     }
 
     private void getDefaultMapBounds(String defaultMapBoundsStr) {

@@ -30,7 +30,7 @@ import nl.vng.diwi.resources.MilestoneResource;
 import nl.vng.diwi.resources.ProjectsResource;
 import nl.vng.diwi.resources.UserResource;
 import nl.vng.diwi.resources.VngOpenApiResource;
-import nl.vng.diwi.resources.OrganizationResource;
+import nl.vng.diwi.resources.UserGroupResource;
 import nl.vng.diwi.rest.pac4j.SecurityFilter;
 
 @ApplicationPath("rest")
@@ -86,10 +86,11 @@ public class VngApplication extends ResourceConfig {
         register(VngNotFoundException.class);
         register(VngBadRequestException.class);
         register(VngServerErrorException.class);
+        register(VngNotAllowedException.class);
 
         // Then the end points
         register(VngOpenApiResource.class);
-        register(OrganizationResource.class);
+        register(UserGroupResource.class);
         register(AuthResource.class);
         register(ProjectsResource.class);
         register(MilestoneResource.class);

@@ -1,10 +1,10 @@
 import Avatar from "@mui/material/Avatar";
-import { Organization } from "../api/projectsServices";
+import { UserGroup } from "../api/projectsServices";
 import { stringAvatar } from "../utils/stringAvatar";
 import { AvatarGroup } from "@mui/material";
 
-export const OrganizationUserAvatars = (props: { organizations?: Organization[] | null }) => {
-    if (!props.organizations) {
+export const UserGroupAvatars = (props: { groups?: UserGroup[] | null }) => {
+    if (!props.groups) {
         return null;
     }
 
@@ -17,7 +17,7 @@ export const OrganizationUserAvatars = (props: { organizations?: Organization[] 
                 "& .MuiAvatar-root": { width: 30, height: 30, fontSize: 14 },
             }}
         >
-            {props.organizations.map((owner) => {
+            {props.groups.map((owner) => {
                 return owner.users?.map((user) => {
                     const isUserDuplicated = users.has(user.uuid);
                     users.add(user.uuid);

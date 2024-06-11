@@ -14,6 +14,10 @@ export async function diwiFetch(input: RequestInfo | URL, init?: RequestInit | u
             // We can't use navigate here, because navigate will use the internal router and just show a 404
             window.location.href = `${Paths.login.path}?returnUrl=${encodeURIComponent(returnUrl)}`;
         }
+        if (response.status === 403) {
+            // not sure what we want to do here, probably nothing?
+            console.error("Blocked by server while trying to diwiFetch:", input);
+        }
         return response;
     });
 }
@@ -86,7 +90,12 @@ export async function putJson(url: string, data: any) {
     });
 
     if (!res.ok) {
-        throw Error(res.statusText);
+        if (res.status === 400) {
+            const response = await res.json();
+            throw Error(response.error);
+        } else {
+            throw Error(res.statusText);
+        }
     }
 
     return res.json();

@@ -60,16 +60,16 @@ public class HouseblockDAO extends AbstractRepository {
     }
 
     public HouseblockSnapshotSqlModel getHouseblockByUuid(UUID houseblockUuid) {
-        return session.createNativeQuery(
-                "SELECT * FROM get_houseblock_snapshots(null, :houseblockUuid, :now) ", HouseblockSnapshotSqlModel.class)
+        return session.createNativeQuery(String.format(
+                "SELECT * FROM %s.get_houseblock_snapshots(null, :houseblockUuid, :now) ", GenericRepository.VNG_SCHEMA_NAME), HouseblockSnapshotSqlModel.class)
             .setParameter("now", LocalDate.now())
             .setParameter("houseblockUuid", houseblockUuid)
             .getSingleResultOrNull();
     }
 
     public List<HouseblockSnapshotSqlModel> getHouseblocksByProjectUuid(UUID projectUuid) {
-        return session.createNativeQuery(
-                "SELECT * FROM get_houseblock_snapshots(:projectUuid, null, :now) ", HouseblockSnapshotSqlModel.class)
+        return session.createNativeQuery(String.format(
+                "SELECT * FROM %s.get_houseblock_snapshots(:projectUuid, null, :now) ", GenericRepository.VNG_SCHEMA_NAME), HouseblockSnapshotSqlModel.class)
             .setParameter("now", LocalDate.now())
             .setParameter("projectUuid", projectUuid)
             .list();
@@ -85,8 +85,8 @@ public class HouseblockDAO extends AbstractRepository {
     }
 
     public List<ProjectHouseblockCustomPropertySqlModel> getHouseblockCustomProperties(UUID houseblockUuid) {
-        List<ProjectHouseblockCustomPropertySqlModel> result = session.createNativeQuery(
-                "SELECT * FROM get_houseblock_custom_properties(:houseblockUuid, :now) ", ProjectHouseblockCustomPropertySqlModel.class)
+        List<ProjectHouseblockCustomPropertySqlModel> result = session.createNativeQuery(String.format(
+                "SELECT * FROM %s.get_houseblock_custom_properties(:houseblockUuid, :now) ", GenericRepository.VNG_SCHEMA_NAME), ProjectHouseblockCustomPropertySqlModel.class)
             .setParameter("now", LocalDate.now())
             .setParameter("houseblockUuid", houseblockUuid)
             .list();
