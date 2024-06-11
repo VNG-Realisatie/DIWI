@@ -34,9 +34,27 @@ public class UserState extends ChangeDataSuperclass {
 
     @Column(name = "identity_provider_id")
     private String identityProviderId;
-    
+
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     @JdbcType(PostgreSQLEnumJdbcType.class)
     private UserRole userRole;
+
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "organization")
+    private String organization;
+
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
+    @Column(name = "contact_person")
+    private String contactPerson;
+
+    @Column(name = "department")
+    private String department;
+
+    @Column(name = "prefixes")
+    private String prefixes;
 }

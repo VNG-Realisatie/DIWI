@@ -1,21 +1,21 @@
-import Grid from "@mui/material/Grid";
-import { Project } from "../api/projectsServices";
 import { Stack, Typography } from "@mui/material";
+import Grid from "@mui/material/Grid";
+import { Dayjs } from "dayjs";
 import { t } from "i18next";
+import { useContext } from "react";
+import { Project } from "../api/projectsServices";
+import HouseBlockContext from "../context/HouseBlockContext";
+import useProperties from "../hooks/useProperties";
+import { UserGroupSelect } from "../widgets/UserGroupSelect";
+import ColorSelector from "./ColorSelector";
 import { WizardCard } from "./project-wizard/WizardCard";
 import { LabelComponent } from "./project/LabelComponent";
-import ColorSelector from "./ColorSelector";
-import { confidentialityLevelOptions, planTypeOptions, planningPlanStatus, projectPhaseOptions } from "./table/constants";
-import { Dayjs } from "dayjs";
-import { OrganizationSelect } from "../widgets/OrganizationSelect";
-import useProperties from "../hooks/useProperties";
-import { CustomPropertiesProject } from "./project/project-with-house-block/CustomPropertiesProject";
-import { CellContainer } from "./project/project-with-house-block/CellContainer";
-import { useContext } from "react";
-import HouseBlockContext from "../context/HouseBlockContext";
-import TextInput from "./project/inputs/TextInput";
 import CategoryInput from "./project/inputs/CategoryInput";
 import DateInput from "./project/inputs/DateInput";
+import TextInput from "./project/inputs/TextInput";
+import { CellContainer } from "./project/project-with-house-block/CellContainer";
+import { CustomPropertiesProject } from "./project/project-with-house-block/CustomPropertiesProject";
+import { confidentialityLevelOptions, planTypeOptions, planningPlanStatus, projectPhaseOptions } from "./table/constants";
 
 type Props = {
     readOnly: boolean;
@@ -212,7 +212,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 text={t("createProject.informationForm.owner")}
                                 tooltipInfoText={t("tooltipInfo.schrijfrechten.title")}
                             />
-                            <OrganizationSelect
+                            <UserGroupSelect
                                 readOnly={readOnly}
                                 userGroup={project?.projectOwners ? project.projectOwners : []}
                                 setUserGroup={(e) =>
@@ -221,6 +221,8 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                         projectOwners: e,
                                     })
                                 }
+                                mandatory={true}
+                                errorText={t("createProject.hasMissingRequiredAreas.owner")}
                             />
                         </Grid>
 
@@ -235,12 +237,10 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                     (project?.confidentialityLevel && confidentialityLevelOptions.find((cl) => cl.id === project.confidentialityLevel)) || null
                                 }
                                 setValue={(_, newValue) => {
-                                    if (newValue && newValue.id) {
-                                        setProject({
-                                            ...project,
-                                            confidentialityLevel: newValue.id,
-                                        });
-                                    }
+                                    setProject({
+                                        ...project,
+                                        confidentialityLevel: newValue ? newValue.id : undefined,
+                                    });
                                 }}
                                 multiple={false}
                                 error={t("createProject.hasMissingRequiredAreas.confidentialityLevel")}

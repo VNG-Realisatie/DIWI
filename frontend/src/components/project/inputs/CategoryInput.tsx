@@ -4,8 +4,10 @@ import { t } from "i18next";
 import { TooltipInfo } from "../../../widgets/TooltipInfo";
 
 type Option = {
-    id: string | number;
-    name: string;
+    id?: string | number;
+    name?: string;
+    firstName?: string;
+    lastName?: string;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -31,7 +33,7 @@ const isOptionEqualToValue = (option: Option, value: Option): boolean => {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getErrorHelperText = (mandatory: boolean, readOnly: boolean, values: any, error?: string) => {
-    const hasError = mandatory && !values && !readOnly;
+    const hasError = mandatory && (!values || values.length === 0) && !readOnly;
     const helperText = hasError ? error : "";
     return { hasError, helperText };
 };
@@ -67,6 +69,9 @@ const CategoryInput = ({
                 getOptionLabel={(option) => {
                     if (option && option.name) {
                         return t(`${translationPath}${option.name}`);
+                    }
+                    if (option && option.firstName && option.lastName) {
+                        return `${option.firstName}${option.lastName}`;
                     }
                     if (option) {
                         return t(`${translationPath}${option}`);

@@ -18,7 +18,8 @@ public class PropertyDAO extends AbstractRepository {
 
     public List<PropertyModel> getPropertiesList(ObjectType objectType, Boolean disabled, PropertyKind type) {
 
-        return session.createNativeQuery("SELECT * FROM get_property_definitions(null, :objectType, :disabled, :type) ", PropertyModel.class)
+        return session.createNativeQuery(String.format("SELECT * FROM %s.get_property_definitions(null, :objectType, :disabled, :type) ", GenericRepository.VNG_SCHEMA_NAME),
+                PropertyModel.class)
             .setParameter("objectType", objectType == null ? null : objectType.name())
             .setParameter("disabled", disabled)
             .setParameter("type", type == null ? null : type.name())
@@ -27,7 +28,8 @@ public class PropertyDAO extends AbstractRepository {
 
     public PropertyModel getPropertyById(UUID propertyUuid) {
 
-        return session.createNativeQuery("SELECT * FROM get_property_definitions(:propertyUuid, null, null, null) ", PropertyModel.class)
+        return session.createNativeQuery(String.format("SELECT * FROM %s.get_property_definitions(:propertyUuid, null, null, null) ", GenericRepository.VNG_SCHEMA_NAME),
+                PropertyModel.class)
             .setParameter("propertyUuid", propertyUuid)
             .getSingleResultOrNull();
 

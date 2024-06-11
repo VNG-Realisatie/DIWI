@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDate;
 import java.util.stream.Stream;
 
+import nl.vng.diwi.models.UserGroupModel;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -16,13 +17,14 @@ import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 
 class ProjectMinimalSnapshotModelTest {
 
-    private static Stream<Arguments> validation () {
+    private static Stream<Arguments> validation() {
         return Stream.of(
-             Arguments.of("projectName", null),
-             Arguments.of("projectColor", null),
-             Arguments.of("projectColor", "not a color"),
-             Arguments.of("confidentialityLevel", null),
-             Arguments.of("projectPhase", null)
+            Arguments.of("projectName", null),
+            Arguments.of("projectColor", null),
+            Arguments.of("projectColor", "not a color"),
+            Arguments.of("confidentialityLevel", null),
+            Arguments.of("projectPhase", null),
+            Arguments.of("projectOwners", null)
         );
     }
 
@@ -61,6 +63,7 @@ class ProjectMinimalSnapshotModelTest {
         model.setProjectPhase(ProjectPhase._1_CONCEPT);
         model.setStartDate(LocalDate.now().minusDays(3));
         model.setEndDate(LocalDate.now().plusDays(3));
+        model.getProjectOwners().add(new UserGroupModel());
         return model;
     }
 

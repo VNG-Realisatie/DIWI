@@ -8,6 +8,12 @@ import TestComponentWrapper from "../../../test/TestComponentWrapper";
 import { HouseBlockWithCustomProperties } from "../../../types/houseBlockTypes";
 import { HouseBlockAccordionWithControls } from "./HouseBlocksList";
 
+// Mock useAllowedActions
+vi.mock("../../../hooks/useAllowedActions", () => ({
+    __esModule: true,
+    default: () => ["EDIT_OWN_PROJECTS"],
+}));
+
 vi.mock("../../../api/houseBlockServices", async (importOriginal) => {
     const actual = await importOriginal<typeof import("../../../api/houseBlockServices")>();
     return {

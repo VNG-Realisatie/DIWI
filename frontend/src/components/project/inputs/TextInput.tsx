@@ -10,15 +10,26 @@ type Props = {
     mandatory: boolean;
     errorText?: string;
     title?: string;
+    type?: string;
     tooltipInfoText?: string;
 };
 
-const shouldDisplayError = (mandatory: boolean, value: string) => {
-    return mandatory && (!value || value.trim() === "");
+const shouldDisplayError = (mandatory: boolean, value: string, type: string) => {
+    if (mandatory && (!value || value.trim() === "")) {
+        return true;
+    }
+
+    if (type === "email") {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) {
+            return true;
+        }
+    }
+    return false;
 };
 
-const TextInput = ({ value, setValue, readOnly, mandatory, errorText, title, tooltipInfoText }: Props) => {
-    const hasError = shouldDisplayError(mandatory, value);
+const TextInput = ({ value, setValue, readOnly, mandatory, errorText, title, tooltipInfoText, type = "text" }: Props) => {
+    const hasError = shouldDisplayError(mandatory, value, type);
     return (
         <InputLabelStack mandatory={mandatory} title={title || ""} tooltipInfoText={tooltipInfoText}>
             <TextField
@@ -36,6 +47,7 @@ const TextInput = ({ value, setValue, readOnly, mandatory, errorText, title, too
                 error={hasError}
                 helperText={hasError ? errorText : ""}
                 disabled={readOnly}
+                type={type}
             />
         </InputLabelStack>
     );

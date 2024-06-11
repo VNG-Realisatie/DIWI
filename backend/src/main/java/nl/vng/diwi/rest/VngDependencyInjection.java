@@ -1,10 +1,14 @@
 package nl.vng.diwi.rest;
 
+import nl.vng.diwi.dal.UserGroupDAO;
+import nl.vng.diwi.security.MailService;
 import nl.vng.diwi.services.ExcelImportService;
 import nl.vng.diwi.services.GeoJsonImportService;
+import nl.vng.diwi.services.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.hk2.api.Factory;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.process.internal.RequestScoped;
 import org.hibernate.Session;
@@ -21,7 +25,7 @@ import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.services.PropertiesService;
 import nl.vng.diwi.services.HouseblockService;
 import nl.vng.diwi.services.MilestoneService;
-import nl.vng.diwi.services.OrganizationsService;
+import nl.vng.diwi.services.UserGroupService;
 import nl.vng.diwi.services.ProjectService;
 
 public class VngDependencyInjection extends AbstractBinder {
@@ -85,17 +89,20 @@ public class VngDependencyInjection extends AbstractBinder {
     protected void configure() {
         bind(projectConfig).to(ProjectConfig.class);
         bind(dalFactory).to(DalFactory.class);
+        bind(new MailService(projectConfig.getMailConfig())).to(MailService.class);
 
         bindFactory(SessionFactory.class).to(Session.class).in(RequestScoped.class);
         bind(Dal.class).to(Dal.class).in(RequestScoped.class);
         bind(GenericRepository.class).to(GenericRepository.class).in(RequestScoped.class);
         bind(UserDAO.class).to(UserDAO.class).in(RequestScoped.class);
+        bind(UserGroupDAO.class).to(UserGroupDAO.class).in(RequestScoped.class);
 
-        bindFactory(LoggedUserFactory.class).to(LoggedUser.class).in(RequestScoped.class);
+        bindFactory(LoggedUserFactory.class).to(LoggedUser.class).in(PerLookup.class);
 
         bind(new MilestoneService()).to(MilestoneService.class);
         bind(new ProjectService()).to(ProjectService.class);
-        bind(new OrganizationsService()).to(OrganizationsService.class);
+        bind(UserGroupService.class).to(UserGroupService.class).in(RequestScoped.class);;
+        bind(UserService.class).to(UserService.class).in(RequestScoped.class);
         bind(new HouseblockService()).to(HouseblockService.class);
         bind(new PropertiesService()).to(PropertiesService.class);
         bind(new ExcelImportService()).to(ExcelImportService.class);
