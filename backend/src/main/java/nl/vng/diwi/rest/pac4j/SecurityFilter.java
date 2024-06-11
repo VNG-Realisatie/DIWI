@@ -106,18 +106,24 @@ public class SecurityFilter implements ContainerRequestFilter {
         var userDao = new UserDAO(session);
         var userGroupDAO = new UserGroupDAO(session);
 
-        try (var transaction = userDao.beginTransaction()) {
-            var profileUuid = profile.getId();
+        var profileUuid = profile.getId();
 
-            var firsttName = profile.getAttribute("given_name");
-            var lastName = profile.getAttribute("family_name");
+        var rawAuthFirstName = profile.getAttribute("given_name");
+        var rawAuthLastName = profile.getAttribute("family_name");
+        var rawAuthEmail = profile.getAttribute("email");
+        
+        String authFirstName = rawAuthFirstName != null ? (String) rawAuthFirstName : "";
+        String authLastName = rawAuthLastName != null ? (String) rawAuthLastName : "";
+        String authEmail = rawAuthEmail != null ? (String) rawAuthEmail : "";
+        
 
-            var userEntity = userDao.getUserByIdentityProviderId(profileUuid);
-            if (userEntity == null) {
-                // user does not exist in diwi database
-                // must match role name defined in keycloak!
-                var hasDiwiAdminRole = profile.getRoles().contains("diwi-admin");
-                if (hasDiwiAdminRole) {
+        var userEntity = userDao.getUserByIdentityProviderId(profileUuid);
+        if (userEntity == null) {
+            // user does not exist in diwi database
+            // must match role name defined in keycloak!
+            var hasDiwiAdminRole = profile.getRoles().contains("diwi-admin");
+            if (hasDiwiAdminRole) {
+                try (var transaction = userDao.beginTransaction()) {
                     ZonedDateTime now = ZonedDateTime.now();
                     User systemUser = userDao.getSystemUser();
 
@@ -128,11 +134,13 @@ public class SecurityFilter implements ContainerRequestFilter {
                     userEntity = new UserState();
                     userEntity.setChangeStartDate(now);
                     userEntity.setCreateUser(systemUser);
-                    userEntity.setFirstName((String) firsttName);
-                    userEntity.setLastName((String) lastName);
+                    userEntity.setFirstName(authFirstName);
+                    userEntity.setLastName(authLastName);
+                    userEntity.setEmail(authEmail);
                     userEntity.setUser(newUser);
                     userEntity.setIdentityProviderId(profileUuid);
-                    userEntity.setUserRole(UserRole.Admin); // Keycloak users should by default not see projects
+                    // Any user that is 'coming' from keycloak should not be able to view projects
+                    userEntity.setUserRole(UserRole.Admin);
                     userDao.persist(userEntity);
 
                     var group = new UserGroup();
@@ -152,15 +160,33 @@ public class SecurityFilter implements ContainerRequestFilter {
                     groupToUser.setUserGroup(group);
                     groupToUser.setUser(newUser);
                     userGroupDAO.persist(groupToUser);
-
                     transaction.commit();
-                } else {
-                    // create empty userstate as we want to block any further actions by this user.
-                    userEntity = null;
                 }
+            } else {
+                // user from keycloak does not have correct role, so block them
+                return null;
             }
-            return userEntity;
-
+        } else {
+            // existing diwi user, check if we need to update empty fields for them
+            try (var transaction = userDao.beginTransaction()) {
+                // check if email, first/last name are set in diwi, if not set from auth data
+                if (nullOrEmpty(userEntity.getFirstName()) && !nullOrEmpty(authFirstName)) {
+                    userEntity.setFirstName(authFirstName);
+                }
+                if (nullOrEmpty(userEntity.getLastName()) && !nullOrEmpty(authLastName)) {
+                    userEntity.setLastName(authLastName);
+                }
+                if (nullOrEmpty(userEntity.getEmail()) && !nullOrEmpty(authEmail)) {
+                    userEntity.setEmail(authEmail);
+                }
+                transaction.commit();
+            }
         }
+        return userEntity;
+
+    }
+
+    private boolean nullOrEmpty(String s) {
+        return s == null || s.isBlank();
     }
 }
