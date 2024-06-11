@@ -43,7 +43,7 @@ export const HouseTypeGroup = ({ houseBlock, setHouseBlock, readOnly }: HouseTyp
                 name={t(`${translationPath}.meergezinswoning`)}
                 translationPath={translationPath}
                 mandatory={false}
-                tooltipInfoText="tooltipInfo.woningtype.meergezinswoningen"
+                tooltipInfoText={t("tooltipInfo.woningtype.meergezinswoningen")}
             />
             <SingleNumberInput
                 value={houseBlock?.houseType?.eengezinswoning}
@@ -61,7 +61,7 @@ export const HouseTypeGroup = ({ houseBlock, setHouseBlock, readOnly }: HouseTyp
                 name={t(`${translationPath}.eengezinswoning`)}
                 translationPath={translationPath}
                 mandatory={false}
-                tooltipInfoText="tooltipInfo.woningtype.eengezinswoningen"
+                tooltipInfoText={t("tooltipInfo.woningtype.eengezinswoningen")}
             />
         </WizardCard>
     );

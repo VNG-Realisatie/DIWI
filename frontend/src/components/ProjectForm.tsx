@@ -70,7 +70,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 <LabelComponent
                                     required
                                     readOnly={readOnly}
-                                    text="createProject.informationForm.color"
+                                    text={t("createProject.informationForm.color")}
                                     tooltipInfoText={t("tooltipInfo.projectKleur.title")}
                                 />
                                 <ColorSelector
@@ -105,7 +105,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 }}
                                 multiple={true}
                                 translationPath="projectTable.planTypeOptions."
-                                tooltipInfoText={"tooltipInfo.plantype."}
+                                tooltipInfoText={"tooltipInfo.plantype.title"}
                                 hasTooltipOption={true}
                             />
                         </Grid>
@@ -160,7 +160,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 title={t("createProject.informationForm.priority")}
                                 options={priorityOptionList ?? []}
                                 multiple={false}
-                                tooltipInfoText={"tooltipInfo.prioritering."}
+                                tooltipInfoText={"tooltipInfo.prioritering.title"}
                             />
                         </Grid>
 
@@ -183,7 +183,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 multiple={false}
                                 error={t("createProject.hasMissingRequiredAreas.projectPhase")}
                                 translationPath="projectTable.projectPhaseOptions."
-                                tooltipInfoText={"tooltipInfo.projectFase."}
+                                tooltipInfoText={"tooltipInfo.projectFase.title"}
                                 hasTooltipOption={true}
                             />
                         </Grid>
@@ -199,7 +199,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 title={t("createProject.informationForm.roleMunicipality")}
                                 options={municipalityRolesOptions ?? []}
                                 multiple={true}
-                                tooltipInfoText={"tooltipInfo.rolGemeente."}
+                                tooltipInfoText={"tooltipInfo.rolGemeente.title"}
                                 hasTooltipOption={true}
                             />
                         </Grid>
@@ -245,7 +245,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 multiple={false}
                                 error={t("createProject.hasMissingRequiredAreas.confidentialityLevel")}
                                 translationPath="projectTable.confidentialityLevelOptions."
-                                tooltipInfoText={"tooltipInfo.vertrouwelijkheidsniveau."}
+                                tooltipInfoText={"tooltipInfo.vertrouwelijkheidsniveau.title"}
                                 hasTooltipOption={true}
                             />
                         </Grid>
@@ -266,7 +266,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 }}
                                 multiple={true}
                                 translationPath="projectTable.planningPlanStatus."
-                                tooltipInfoText={"tooltipInfo.planologischePlanstatus."}
+                                tooltipInfoText={"tooltipInfo.planologischePlanstatus.title"}
                                 hasTooltipOption={true}
                             />
                         </Grid>

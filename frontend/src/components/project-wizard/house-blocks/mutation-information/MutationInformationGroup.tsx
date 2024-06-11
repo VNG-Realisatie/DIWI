@@ -61,7 +61,7 @@ export const MutationInformationGroup = ({ houseBlock, setHouseBlock, readOnly }
                 multiple={false}
                 error={t("wizard.houseBlocks.mutationKindWarning")}
                 translationPath="createProject.houseBlocksForm."
-                tooltipInfoText="tooltipInfo.mutatieSoort."
+                tooltipInfoText="tooltipInfo.mutatieSoort.title"
             />
         </WizardCard>
     );

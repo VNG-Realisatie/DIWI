@@ -47,7 +47,7 @@ const CategoryInput = ({
     error,
     translationPath = "",
     tooltipInfoText,
-    hasTooltipOption = false,
+    hasTooltipOption,
 }: CategoryInputProps) => {
     const { hasError, helperText } = getErrorHelperText(mandatory, readOnly, values, error);
     return (
@@ -73,28 +73,30 @@ const CategoryInput = ({
                     }
                     return "";
                 }}
-                renderOption={(props, option) =>
-                    hasTooltipOption ? (
+                renderOption={(props, option) => {
+                    const tooltipText = hasTooltipOption ? `${tooltipInfoText}${option.name}`.replace("title", "") : "";
+                    return hasTooltipOption ? (
                         <li {...props}>
                             {t(`${translationPath}${option.name}`)}
-                            {<TooltipInfo text={t(`${tooltipInfoText}${option.name}`)} />}
+                            {<TooltipInfo text={t(tooltipText)} />}
                         </li>
                     ) : (
                         <li {...props}>{t(`${translationPath}${option.name}`)}</li>
-                    )
-                }
+                    );
+                }}
                 renderTags={(tagValue, getTagProps) =>
-                    tagValue.map((option, index) =>
-                        hasTooltipOption ? (
+                    tagValue.map((option, index) => {
+                        const tooltipText = hasTooltipOption ? `${tooltipInfoText}${option.name}`.replace("title", "") : "";
+                        return hasTooltipOption ? (
                             <Chip
                                 {...getTagProps({ index })}
                                 key={option.id}
-                                label={<TooltipInfo text={t(`${tooltipInfoText}${option.name}`)}>{t(`${translationPath}${option.name}`)}</TooltipInfo>}
+                                label={<TooltipInfo text={t(tooltipText)}>{t(`${translationPath}${option.name}`)}</TooltipInfo>}
                             />
                         ) : (
                             <Chip {...getTagProps({ index })} key={option.id} label={t(`${translationPath}${option.name}`)} />
-                        ),
-                    )
+                        );
+                    })
                 }
                 value={values}
                 filterSelectedOptions
