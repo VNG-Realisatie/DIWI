@@ -76,7 +76,7 @@ test.describe("Create project page", () => {
         await confidentialityLevel.getByRole("combobox").fill("Intern raad");
         await page.getByText("Intern raad").click();
         await owner.fill("A");
-        await page.getByText("Ad Min").click();
+        await page.getByText("Ad Min").nth(1).click();
         await planStatus.getByRole("combobox").fill("2A Vastgesteld");
         await page.getByText("2A Vastgesteld").click();
         await municipality.getByRole("combobox").fill("Groningen");
