@@ -20,7 +20,14 @@
     "objectType": "PROJECT",
     "propertyType": "CATEGORY",
     "disabled": false,
-    "categories": null,
+
+    "categories": [
+      {
+        "id": "019007a1-102c-72c3-88cf-5df3c411dfce",
+        "name": "Oud-Zuid",
+        "disabled": false
+      }
+    ],
     "ordinals": null
   },
   {
@@ -41,7 +48,13 @@
     "objectType": "PROJECT",
     "propertyType": "CATEGORY",
     "disabled": false,
-    "categories": null,
+    "categories": [
+      {
+        "id": "019007a0-b9c7-7ea5-9cb1-d1ceaaa1e753",
+        "name": "Groningen",
+        "disabled": false
+      }
+    ],
     "ordinals": null
   },
   {
@@ -64,7 +77,23 @@
     "objectType": "PROJECT",
     "propertyType": "CATEGORY",
     "disabled": false,
-    "categories": null,
+    "categories": [
+      {
+        "id": "019007a0-2b26-71ba-aebf-e6426b8e51ef",
+        "name": "Rivierenbuurt",
+        "disabled": false
+      },
+      {
+        "id": "019007a0-2b25-7d8e-b30d-6e41371bde85",
+        "name": "Oosterpoort",
+        "disabled": false
+      },
+      {
+        "id": "019007a0-2b26-74a8-b3e3-2e84e044146a",
+        "name": "Herewegbuurt",
+        "disabled": false
+      }
+    ],
     "ordinals": null
   },
   {

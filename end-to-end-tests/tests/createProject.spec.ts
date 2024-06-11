@@ -79,6 +79,12 @@ test.describe("Create project page", () => {
         await page.getByText("Ad Min").click();
         await planStatus.getByRole("combobox").fill("2A Vastgesteld");
         await page.getByText("2A Vastgesteld").click();
+        await municipality.getByRole("combobox").fill("Groningen");
+        await page.getByText("Groningen").click();
+        await wijk.getByRole("combobox").fill("Oud-Zuid");
+        await page.getByText("Oud-Zuid").click();
+        await buurt.getByRole("combobox").fill("Oosterpoort");
+        await page.getByText("Oosterpoort").click();
         await customCatProperty.fill("tom");
         await page.getByText("tom").click();
         await customBooleanProperty.fill("Ja");
@@ -238,6 +244,12 @@ test.describe("Create project page", () => {
         expect(await projectPriority.inputValue()).toContain("Hoog");
         const projectPhase = page.locator(".project-phase input");
         expect(await projectPhase.inputValue()).toContain("3 Definitie");
+        const projectMunicipality = page.locator(".project-municipality span").first();
+        expect(await projectMunicipality.textContent()).toContain("Groningen");
+        const projectDistrict = page.locator(".project-district span").first();
+        expect(await projectDistrict.textContent()).toContain("Oud-Zuid");
+        const projectNeighbourhood = page.locator(".project-neighbourhood span").first();
+        expect(await projectNeighbourhood.textContent()).toContain("Oosterpoort");
         const projectMunicipalityRole = page.locator(".project-municipality-role span").first();
         expect(await projectMunicipalityRole.textContent()).toContain("Vergunningverlener");
         const projectConfidentialityLevel = page.locator(".project-confidentiality input");

@@ -2,6 +2,14 @@
 
 ## Steps to Run Tests
 
+0. **Setup Database:** Import the `base.sql` database located in the `test-data` folder. Run the following commands from the project root directory.
+
+    ```bash
+    dropdb diwi
+    createdb diwi
+    psql diwi < end-to-end-tests/test-data/base.sql
+    ```
+
 1. **Deploy Backend:** Run the `deploy.backend.dev.sh` script from the project root directory.
 
     ```bash
