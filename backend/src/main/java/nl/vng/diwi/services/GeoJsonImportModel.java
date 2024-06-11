@@ -2,6 +2,7 @@ package nl.vng.diwi.services;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.GroundPosition;
 import nl.vng.diwi.dal.entities.enums.HouseType;
 import nl.vng.diwi.dal.entities.enums.MutationType;
@@ -121,6 +122,8 @@ public class GeoJsonImportModel {
             ProjectData projectData = project.getProjectData();
             if (projectData == null || projectData.getStatus() == null) {
                 importErrors.add(new ImportError(id, null, "projectgegevens -> status", null, ImportError.ERROR.MISSING_PROJECT_STATUS));
+            } else if (projectData.getConfidentialityLevel() == null) {
+                importErrors.add(new ImportError(id, null, "projectgegevens -> vertrouwelijkheid", null, ImportError.ERROR.MISSING_PROJECT_CONFIDENTIALITY));
             }
 
             if (!importErrors.isEmpty()) {
@@ -134,6 +137,8 @@ public class GeoJsonImportModel {
             projectImportModel.setProjectEndDate(projectDuration.endDate);
             projectImportModel.setProjectStatus(projectData.status);
             projectImportModel.setProgramming(projectData.programming);
+            projectImportModel.setConfidentialityLevel(projectData.confidentialityLevel);
+            projectImportModel.setOwnerEmail(projectData.owner);
             addFixedCategoryValue(id, "projectgegevens -> projectgegevens -> rol_gemeente" , projectData.municipalityRole, projectImportModel.getProjectCategoryPropsMap(), Constants.FIXED_PROPERTY_MUNICIPALITY_ROLE,
                 activePropertiesMap, importErrors);
             addFixedOrdinalValue(id, "projectgegevens -> projectgegevens -> prioritering" , projectData.priority, projectImportModel.getProjectOrdinalPropsMap(), Constants.FIXED_PROPERTY_PRIORITY,
@@ -265,6 +270,10 @@ public class GeoJsonImportModel {
         private String municipalityRole;
         @JsonProperty("status")
         private ProjectStatus status;
+        @JsonProperty("eigenaar")
+        private String owner;
+        @JsonProperty("vertrouwelijkheid")
+        private Confidentiality confidentialityLevel;
     }
 
     @Data

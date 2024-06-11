@@ -1,5 +1,9 @@
 {
   "translation": {
+    "pageTitle": {
+      "default": "VNG DIWI",
+      "prefix": "DIWI"
+    },
     "generic": {
       "yes": "Ja",
       "no": "Nee",
@@ -18,12 +22,16 @@
       "updated": "Succesvol geüpdatet",
       "failedToUpdate": "Update is mislukt",
       "failedToSave": "Opslaan is mislukt",
+      "forbidden": "Inloggen is mislukt",
+      "nodiwiaccount": "Dit account heeft geen gekoppelde diwi gebruiker",
       "project": "Project",
       "houseblock": "Woningblok",
       "true": "Ja",
       "false": "Nee",
       "andMore": "en meer",
-      "andLess": "en minder"
+      "andLess": "en minder",
+      "logout": "Uitloggen",
+      "cantAccessPage": "U heeft geen toegang tot deze pagina. Neem contact op met uw beheerder"
     },
     "import": {
       "errorsTitle": "Import fouten",
@@ -210,7 +218,8 @@
         "notifications": {
           "successfullySaved": "Woningblokken succesvol opgeslagen.",
           "successfullyUpdated": "Woningblokken succesvol geüpdatet.",
-          "error": "Nieuwe of gewijzigde woningblokken met een uitroepteken konden niet worden opgeslagen, pas de informatie aan en sla nogmaals op"
+          "error": "Nieuwe of gewijzigde woningblokken met een uitroepteken konden niet worden opgeslagen, pas de informatie aan en sla nogmaals op",
+          "genericError": "Er is een fout opgetreden bij het opslaan van de woningblokken"
         }
       },
       "selectMapForm": {
@@ -236,7 +245,8 @@
         "projectPhase": "Vul het veld projectfase in",
         "confidentialityLevel": "Vul het veld vertrouwelijkheidsniveau in",
         "amount": "Aantal ontbreekt",
-        "hasmissingProperty": "Formulier heeft ontbrekende eigenschappen"
+        "hasmissingProperty": "Formulier heeft ontbrekende eigenschappen",
+        "owner": "Vul het veld shrijfrechten in"
       }
     },
     "sidebar": {
@@ -244,7 +254,9 @@
       "dashboards": "Dashboards",
       "users": "Gebruikers",
       "dataExchange": "Data uitwisselen",
-      "settings": "Instellingen"
+      "settings": "Instellingen",
+      "addProject": "Project toevoegen",
+      "projectOverview": "Overzicht projecten"
     },
     "about": {
       "heading": "Over deze website",
@@ -307,6 +319,7 @@
       "squit": "Squit",
       "province": "Provincie",
       "newData": "Nieuwe data koppeling instellen",
+      "importForbidden": "Importeren is niet toegestaan. Neem contact op met uw beheerder",
       "importName": {
         "excel": "Importeren vanuit Excel",
         "squit": "Importeren vanuit Squit",
@@ -335,7 +348,6 @@
         "description": "Beschrijving",
         "errors": "Fouten"
       },
-
       "io_error": "Het Excel-bestand kon niet worden gelezen. Er was een probleem met de upload of met het bestandstype.",
       "no_data_sheet": "Het Excel-bestand mist het gegevensblad.",
       "missing_headers": "Het Excel-bestand bevat niet alle verwachte koppen.",
@@ -447,6 +459,63 @@
       }
     },
     "admin": {
+      "userManagement": {
+        "titleUser": "User management gebruikers",
+        "titleGroup": "User management groepen",
+        "tableHeader": {
+          "name": {
+            "firstName": "Voornaam",
+            "lastName": "Achternaam"
+          },
+          "email": "E-mail",
+          "phone": "Telefoonnummer",
+          "organization": "Organisatie",
+          "role": "Type gebruiker",
+          "department": "Afdeling",
+          "active": "Actief",
+          "edit": "Bewerken",
+          "delete": "Verwijderen",
+          "actions": "Acties",
+          "groupes": "Groepen",
+          "users": "Gebruikers"
+        },
+        "groupName": "Group naam",
+        "addMember": "Leden toevoegen",
+
+        "addUser": "Gebruiker toevoegen",
+        "addGroup": "Groep toevoegen",
+        "editUser": "Gebruiker aanpassen",
+        "editGroup": "Groep aanpassen",
+        "add": "Voeg gebruiker toe",
+        "edit": "Pas gebruiker aan",
+        "userAddSuccess": "Gebruiker is toegevoegd",
+        "groupAddSuccess": "Groep is toegevoegd",
+        "groupDeleteSuccess": "Groep is verwijderd",
+        "groupDeleteConfirmation": "Weet je zeker dat je de groep wilt verwijderen?",
+        "userDeleteConfirmation": "Weet je zeker dat je de gebruiker wilt verwijderen?",
+        "userDeleteSuccess": "Gebruiker is verwijderd",
+        "groupUpdateSuccess": "Groep is geüpdatet",
+        "userUpdateSuccess": "Gebruiker is geüpdatet",
+        "errors": {
+          "addMember": "Leden moeten worden toegevoegd",
+          "groupName": "Vul de groepnaam in",
+          "firstName": "Vul de voornaam in",
+          "lastName": "Vul de achternaam in",
+          "email": "Vul een geldig e-mailadres in",
+          "role": "Selecteer een rol",
+          "phone": "Vul een geldig telefoonnummer in",
+          "organization": "Vul de organisatie in",
+          "department": "Vul de afdeling in"
+        },
+        "roles": {
+          "Admin": "Admin",
+          "User": "Gebruiker",
+          "UserPlus": "Hoofdgebruiker",
+          "ManagementUser": "Collegelid en management",
+          "Councilor": "Raadslid",
+          "External": "Externe gebruiker"
+        }
+      },
       "settings": {
         "title": "Lijst met maatwerk velden",
         "tableHeader": {
@@ -492,7 +561,8 @@
       }
     },
     "customProperties": {
-      "title": "Maatwerk eigenschappen"
+      "title": "Maatwerk eigenschappen",
+      "forbidden": "Maatwerk eigenschappen zijn niet toegestaan. Neem contact op met uw beheerder."
     },
     "projectPhase": "Projectfase",
     "planType": "Plan Type",

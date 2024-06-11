@@ -5,6 +5,8 @@ htpasswd
 /data/*
 !/data/.gitkeep
 
+/logs
+
 /backup/*
 !/backup/.gitkeep
 

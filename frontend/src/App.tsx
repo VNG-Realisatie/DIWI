@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import { ScopedCssBaseline, ThemeProvider } from "@mui/material";
 import "./App.css";
@@ -28,6 +28,7 @@ import { dateFormats } from "./localization";
 import { ProjectTimeline } from "./pages/ProjectTimeline";
 import ProjectPlotSelector from "./components/map/ProjectPlotSelector";
 import { ConfigProvider } from "./context/ConfigContext";
+import { UserProvider } from "./context/UserContext";
 import { ProjectWizardMap } from "./pages/ProjectWizardMap";
 import "dayjs/locale/nl";
 import { HouseBlockProvider } from "./context/HouseBlockContext";
@@ -35,42 +36,87 @@ import ProjectWizard from "./pages/ProjectWizard";
 import ProjectWizardBlocks from "./pages/ProjectWizardBlocks";
 import { LoadingProvider } from "./context/LoadingContext";
 import { ImportPage } from "./pages/ImportPage";
+import UserManagement from "./pages/UserManagement";
+import { Forbidden } from "./pages/Forbidden";
 
 function RequiresLogin() {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [kcAuthenticated, setKcAuthenticated] = useState<boolean>(false);
+    const [isDiwiUser, setIsDiwiUser] = useState<boolean>(false);
     const { setAlert } = useContext(AlertContext);
-    const navigate = useNavigate();
 
     useEffect(() => {
         diwiFetch(Paths.loggedIn.path)
             .then((res) => {
                 if (res.ok) {
-                    setIsLoggedIn(true);
+                    setKcAuthenticated(true);
+                } else {
+                    setKcAuthenticated(false);
                 }
             })
             .catch((error) => {
                 setAlert(error.message, "error");
+                setKcAuthenticated(false);
             });
-    }, [setAlert, navigate]);
+    }, [setAlert]);
 
-    return isLoggedIn ? <Layout /> : null;
+    useEffect(() => {
+        if (kcAuthenticated) {
+            fetch(Paths.userInfo.path)
+                .then((response) => {
+                    if (response.ok) {
+                        setIsDiwiUser(true);
+                    }
+                    if (response.status === 401) {
+                        const returnUrl = window.location.origin + window.location.pathname + window.location.search;
+                        // We can't use navigate here, because navigate will use the internal router and just show a 404
+                        window.location.href = `${Paths.login.path}?returnUrl=${encodeURIComponent(returnUrl)}`;
+                        setKcAuthenticated(false);
+                        setIsDiwiUser(false);
+                    }
+                    if (response.status === 403) {
+                        // Forbidden just redirect to that page
+                        setIsDiwiUser(false);
+                    }
+                })
+                .catch(() => {
+                    setIsDiwiUser(false);
+                });
+        } else {
+            setIsDiwiUser(false);
+        }
+    }, [kcAuthenticated]);
+
+    if (kcAuthenticated) {
+        if (isDiwiUser) {
+            return (
+                <UserProvider>
+                    <ConfigProvider>
+                        {/* configprovider does a fetch, so first check login for this specific one */}
+                        <Layout />
+                    </ConfigProvider>
+                </UserProvider>
+            );
+        } else {
+            return <Forbidden />;
+        }
+    }
+    // default just returns null so page stays empty and we can redirect
+    return null;
 }
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
     return (
         <ThemeProvider theme={theme}>
-            <ConfigProvider>
-                <LoadingProvider>
-                    <AlertProvider>
-                        <AlertPopup />
-                        <ScopedCssBaseline>
-                            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="nl" dateFormats={dateFormats}>
-                                {children}
-                            </LocalizationProvider>
-                        </ScopedCssBaseline>
-                    </AlertProvider>
-                </LoadingProvider>
-            </ConfigProvider>
+            <LoadingProvider>
+                <AlertProvider>
+                    <AlertPopup />
+                    <ScopedCssBaseline>
+                        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="nl" dateFormats={dateFormats}>
+                            {children}
+                        </LocalizationProvider>
+                    </ScopedCssBaseline>
+                </AlertProvider>
+            </LoadingProvider>
         </ThemeProvider>
     );
 };
@@ -79,6 +125,7 @@ function App() {
         <Providers>
             <BrowserRouter>
                 <Routes>
+                    <Route path={Paths.forbidden.path} element={<Forbidden />} />
                     <Route path="/" element={<RequiresLogin />}>
                         <Route
                             index
@@ -198,6 +245,7 @@ function App() {
                             }
                         />
                         <Route path={Paths.userSettings.path} element={<Settings />} />
+                        <Route path={Paths.userManagement.path} element={<UserManagement />} />
                         <Route path={Paths.importExcelProjects.path} element={<ImportedProjects type="Excel" />} />
                         <Route path={Paths.importSquitProjects.path} element={<ImportedProjects type="Squit" />} />
                         <Route path={Paths.about.path} element={<About />} />

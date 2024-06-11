@@ -23,7 +23,8 @@ import { AddProjectButton } from "../PlusButton";
 import dayjs from "dayjs";
 import { dateFormats } from "../../localization";
 import { capitalizeFirstLetters } from "../../utils/stringFunctions";
-import { OrganizationSelect } from "../../widgets/OrganizationSelect";
+import useAllowedActions from "../../hooks/useAllowedActions";
+import { UserGroupSelect } from "../../widgets/UserGroupSelect";
 
 interface RowData {
     id: number;
@@ -58,6 +59,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const [filterModel, setFilterModel] = useState<GridFilterModel | undefined>();
     const [sortModel, setSortModel] = useState<GridSortModel | undefined>();
 
+    const allowedActions = useAllowedActions();
     const { filterUrl, rows } = useCustomSearchParams(sortModel, filterModel, paginationInfo);
 
     useEffect(() => {
@@ -118,7 +120,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 return (
                     cellValues.row.projectOwners &&
                     cellValues.row.projectOwners.length > 0 && (
-                        <OrganizationSelect readOnly={true} userGroup={cellValues.row.projectOwners} setUserGroup={() => {}} />
+                        <UserGroupSelect mandatory={false} errorText="" readOnly={true} userGroup={cellValues.row.projectOwners} setUserGroup={() => {}} />
                     )
                 );
             },
@@ -324,7 +326,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                     </Button>
                 </DialogActions>
             </Dialog>
-            {showCheckBox && (
+            {showCheckBox && allowedActions.includes("EXPORT_PROJECTS") && (
                 <Button
                     sx={{ width: "130px", my: 2, ml: "auto" }}
                     variant="contained"

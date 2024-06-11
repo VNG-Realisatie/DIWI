@@ -3,6 +3,7 @@ package nl.vng.diwi.services;
 import nl.vng.diwi.dal.AutoCloseTransaction;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.User;
+import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.GroundPosition;
 import nl.vng.diwi.dal.entities.enums.HouseType;
 import nl.vng.diwi.dal.entities.enums.MutationType;
@@ -16,6 +17,7 @@ import nl.vng.diwi.dal.entities.enums.PropertyKind;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
 import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.models.ImportError;
+import nl.vng.diwi.models.ImportResponse;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.models.SelectModel;
@@ -61,7 +63,7 @@ public class ExcelImportService {
     public ExcelImportService() {
     }
 
-    public Map<String, Object> importExcel(String excelFilePath, VngRepository repo, UUID loggedInUserUuid) {
+    public ImportResponse importExcel(String excelFilePath, VngRepository repo, UUID loggedInUserUuid) {
 
         List<ImportError> excelErrors = new ArrayList<>();
         Map<Integer, ProjectImportModel> excelProjectMap = new HashMap<>();
@@ -70,7 +72,7 @@ public class ExcelImportService {
 
             Sheet dataSheet = workbook.getSheetAt(0);
             if (dataSheet == null) {
-                return Map.of(errors, List.of(new ImportError(ImportError.ERROR.MISSING_DATA_SHEET)));
+                return ImportResponse.builder().error(List.of(new ImportError(ImportError.ERROR.MISSING_DATA_SHEET))).build();
             }
 
             DataFormatter dateFormatter = new DataFormatter();
@@ -159,7 +161,7 @@ public class ExcelImportService {
                         missingHeaders.removeAll(foundHeaders);
                         if (!missingHeaders.isEmpty()) {
                             excelErrors.add(new ImportError(rowCount, null, null, null, String.join(", ", missingHeaders), null, ImportError.ERROR.MISSING_TABLE_HEADERS));
-                            return Map.of(errors, excelErrors);
+                            return ImportResponse.builder().error(excelErrors).build();
                         }
                     }
 
@@ -222,12 +224,12 @@ public class ExcelImportService {
                         }
                         if (!excelErrors.isEmpty()) { //there are problems with the headers, cannot attempt to read projects
                             transaction.rollback();
-                            return Map.of(errors, excelErrors);
+                            return ImportResponse.builder().error(excelErrors).build();
                         }
                     }
 
                     if (rowCount > sectionRow + 3) {
-                        ProjectImportModel rowModel = processExcelRow(nextRow, tableHeaderMap, dateFormatter, formulaEvaluator, excelErrors, importTime);
+                        ProjectImportModel rowModel = processExcelRow(repo, nextRow, tableHeaderMap, dateFormatter, formulaEvaluator, excelErrors, importTime);
                         if (rowModel != null) {
                             if (excelProjectMap.containsKey(rowModel.getId())) {
                                 ProjectImportModel existingProject = excelProjectMap.get(rowModel.getId());
@@ -249,15 +251,15 @@ public class ExcelImportService {
                         excelProjects.add(selectModel);
                     }
                     transaction.commit();
-                    return Map.of(result, excelProjects);
+                    return ImportResponse.builder().result(excelProjects).build();
                 } else {
                     transaction.rollback();
-                    return Map.of(errors, excelErrors);
+                    return ImportResponse.builder().error(excelErrors).build();
                 }
             }
         } catch (IOException | NotOfficeXmlFileException e) { //excelFile could not be read. Return error.
             logger.error("Error creating workbook", e);
-            return Map.of(errors, List.of(new ImportError(ImportError.ERROR.IO_ERROR)));
+            return  ImportResponse.builder().error(List.of(new ImportError(ImportError.ERROR.IO_ERROR))).build();
         }
     }
 
@@ -272,7 +274,7 @@ public class ExcelImportService {
         }
     }
 
-    private ProjectImportModel processExcelRow(Row row, Map<Integer, ExcelTableHeader> tableHeaderMap, DataFormatter formatter,
+    private ProjectImportModel processExcelRow(VngRepository repo, Row row, Map<Integer, ExcelTableHeader> tableHeaderMap, DataFormatter formatter,
                                                FormulaEvaluator evaluator, List<ImportError> excelErrors, ZonedDateTime importTime) {
         ProjectImportModel rowModel = new ProjectImportModel();
 
@@ -349,6 +351,21 @@ public class ExcelImportService {
                             }
                             rowModel.setProjectEndDate(getLocalDateValue(rowModel.getId(), null, nextCell, formatter, rowErrors));
                         }
+                        case PROJECT_CONFIDENTIALITY -> {
+                            String confidentialityStr = getStringValue(rowModel.getId(), null, nextCell, formatter, evaluator, excelErrors);
+                            Confidentiality confidentiality = null;
+                            if (confidentialityStr != null && !confidentialityStr.isBlank()) {
+                                String confidentialityEnumStr = ExcelStrings.map.get(confidentialityStr);
+                                confidentiality = (confidentialityEnumStr != null) ? Confidentiality.valueOf(confidentialityEnumStr) : null;
+                            }
+                            if (confidentiality != null) {
+                                rowModel.setConfidentialityLevel(confidentiality);
+                            } else {
+                                rowErrors.add(getExcelError(rowModel.getId(), null, nextCell, null, ImportError.ERROR.MISSING_PROJECT_CONFIDENTIALITY));
+                            }
+                        }
+                        case PROJECT_OWNER -> rowModel.setOwnerEmail(getStringValue(rowModel.getId(), null, nextCell, formatter, evaluator, excelErrors));
+
 
                         case PROJECT_PHASE_1_CONCEPT -> addProjectPhase(rowModel, ProjectPhase._1_CONCEPT, nextCell, formatter, rowErrors);
                         case PROJECT_PHASE_2_INITIATIVE -> addProjectPhase(rowModel, ProjectPhase._2_INITIATIVE, nextCell, formatter, rowErrors);
@@ -471,7 +488,7 @@ public class ExcelImportService {
         }
 
         if (rowErrors.isEmpty()) { //no errors validating individual fields
-            rowModel.validate(row.getRowNum() + 1, rowErrors, importTime.toLocalDate()); //business logic validation
+            rowModel.validate(repo, row.getRowNum() + 1, rowErrors, importTime.toLocalDate()); //business logic validation
         }
 
         if (rowErrors.isEmpty()) { //still no errors

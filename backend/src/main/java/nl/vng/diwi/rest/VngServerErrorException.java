@@ -24,7 +24,7 @@ public class VngServerErrorException extends RuntimeException implements Excepti
 
     @Override
     public Response toResponse(VngServerErrorException exception) {
-        log.error("server exception", exception);
+        log.error("VngServerErrorException", exception);
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                 .entity(new ErrorResponse(exception.getMessage()))
                 .type(MediaType.APPLICATION_JSON_TYPE).build();
