@@ -108,9 +108,14 @@ public class SecurityFilter implements ContainerRequestFilter {
 
         var profileUuid = profile.getId();
 
-        var authFirstName = profile.getAttribute("given_name");
-        var authLastName = profile.getAttribute("family_name");
-        var authEmail = profile.getAttribute("email");
+        var rawAuthFirstName = profile.getAttribute("given_name");
+        var rawAuthLastName = profile.getAttribute("family_name");
+        var rawAuthEmail = profile.getAttribute("email");
+        
+        String authFirstName = rawAuthFirstName != null ? (String) rawAuthFirstName : "";
+        String authLastName = rawAuthLastName != null ? (String) rawAuthLastName : "";
+        String authEmail = rawAuthEmail != null ? (String) rawAuthEmail : "";
+        
 
         var userEntity = userDao.getUserByIdentityProviderId(profileUuid);
         if (userEntity == null) {
@@ -129,9 +134,9 @@ public class SecurityFilter implements ContainerRequestFilter {
                     userEntity = new UserState();
                     userEntity.setChangeStartDate(now);
                     userEntity.setCreateUser(systemUser);
-                    userEntity.setFirstName((String) authFirstName);
-                    userEntity.setLastName((String) authLastName);
-                    userEntity.setEmail((String) authEmail);
+                    userEntity.setFirstName(authFirstName);
+                    userEntity.setLastName(authLastName);
+                    userEntity.setEmail(authEmail);
                     userEntity.setUser(newUser);
                     userEntity.setIdentityProviderId(profileUuid);
                     // Any user that is 'coming' from keycloak should not be able to view projects
@@ -165,14 +170,14 @@ public class SecurityFilter implements ContainerRequestFilter {
             // existing diwi user, check if we need to update empty fields for them
             try (var transaction = userDao.beginTransaction()) {
                 // check if email, first/last name are set in diwi, if not set from auth data
-                if (nullOrEmpty(userEntity.getFirstName()) && !nullOrEmpty((String) authFirstName)) {
-                    userEntity.setFirstName((String) authFirstName);
+                if (nullOrEmpty(userEntity.getFirstName()) && !nullOrEmpty(authFirstName)) {
+                    userEntity.setFirstName(authFirstName);
                 }
-                if (nullOrEmpty(userEntity.getLastName()) && !nullOrEmpty((String) authLastName)) {
-                    userEntity.setLastName((String) authLastName);
+                if (nullOrEmpty(userEntity.getLastName()) && !nullOrEmpty(authLastName)) {
+                    userEntity.setLastName(authLastName);
                 }
-                if (nullOrEmpty(userEntity.getEmail()) && !nullOrEmpty((String) authEmail)) {
-                    userEntity.setEmail((String) authEmail);
+                if (nullOrEmpty(userEntity.getEmail()) && !nullOrEmpty(authEmail)) {
+                    userEntity.setEmail(authEmail);
                 }
                 transaction.commit();
             }
