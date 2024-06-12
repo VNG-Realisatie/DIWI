@@ -64,7 +64,7 @@ public class PropertyModel {
 
     public OrdinalSelectDisabledModel getActiveOrdinalValue(String ordinalValue) {
         if (ordinals != null) {
-            return ordinals.stream().filter(o -> (o.getLevel() + " " + o.getName()).equals(ordinalValue) && o.getDisabled() == Boolean.FALSE).findFirst()
+            return ordinals.stream().filter(o -> o.getOrdinalValue().equals(ordinalValue) && o.getDisabled() == Boolean.FALSE).findFirst()
                 .orElse(null);
         }
         return null;
