@@ -27,6 +27,7 @@ import nl.vng.diwi.services.HouseblockService;
 import nl.vng.diwi.services.MilestoneService;
 import nl.vng.diwi.services.UserGroupService;
 import nl.vng.diwi.services.ProjectService;
+import nl.vng.diwi.services.KeycloakService;
 
 public class VngDependencyInjection extends AbstractBinder {
 
@@ -90,6 +91,7 @@ public class VngDependencyInjection extends AbstractBinder {
         bind(projectConfig).to(ProjectConfig.class);
         bind(dalFactory).to(DalFactory.class);
         bind(new MailService(projectConfig.getMailConfig())).to(MailService.class);
+        bind(new KeycloakService(projectConfig.getKcAuthServerUrl(), projectConfig.getKcRealmName(), projectConfig.getKcResourceName(), projectConfig.getKcSecret()));
 
         bindFactory(SessionFactory.class).to(Session.class).in(RequestScoped.class);
         bind(Dal.class).to(Dal.class).in(RequestScoped.class);
