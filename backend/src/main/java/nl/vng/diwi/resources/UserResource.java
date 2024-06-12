@@ -25,6 +25,7 @@ import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.security.MailException;
 import nl.vng.diwi.security.MailService;
 import nl.vng.diwi.security.UserActionConstants;
+import nl.vng.diwi.services.KeycloakService;
 import nl.vng.diwi.services.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,11 +41,13 @@ public class UserResource {
 
     private final UserService userService;
     private final MailService mailService;
+    private final KeycloakService keycloakService;
 
     @Inject
-    public UserResource(UserService userService, MailService mailService) {
+    public UserResource(UserService userService, MailService mailService, KeycloakService keycloakService) {
         this.userService = userService;
         this.mailService = mailService;
+        this.keycloakService = keycloakService;
     }
 
     @GET
@@ -85,7 +88,9 @@ public class UserResource {
 
         try (AutoCloseTransaction transaction = userService.getUserDAO().beginTransaction()) {
 
-            //TODO: create user in keycloak
+            //TODO: get id after create user in keycloak
+            keycloakService.createUser();
+            
             String identityProviderId = "identityProviderId"; //TODO - get from keycloak
 
             UserState newUserEntity = userService.createUser(newUser, identityProviderId, loggedUser.getUuid());
