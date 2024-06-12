@@ -62,8 +62,20 @@ public class KeycloakService {
         return keycloakUsers.get(userId);
     }
 
-    public boolean updateUser() {
-        // TODO: implement updating an existing keycloak user with settings from diwi
-        return false;
+    public void updateUser(UserModel updatedUser) throws FindUserException {
+        // store the resource for the existing user
+        var kcUserResource = keycloakUsers.get(updatedUser.getId().toString());
+        if (kcUserResource == null) {
+            throw new FindUserException("Could not find keycloak user with id " + updatedUser.getId());
+        } else {
+            // create a copy of the representation and update relevant fields
+            var kcUserRepresentation = kcUserResource.toRepresentation();
+            kcUserRepresentation.setFirstName(updatedUser.getFirstName());
+            kcUserRepresentation.setLastName(updatedUser.getLastName());
+            kcUserRepresentation.setEmail(updatedUser.getEmail());
+            
+            // save new representation to keycloak, no feedback unfortunately
+            kcUserResource.update(kcUserRepresentation);
+        }
     }
 }

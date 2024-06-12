@@ -26,6 +26,7 @@ import nl.vng.diwi.security.MailException;
 import nl.vng.diwi.security.MailService;
 import nl.vng.diwi.security.UserActionConstants;
 import nl.vng.diwi.services.AddUserException;
+import nl.vng.diwi.services.FindUserException;
 import nl.vng.diwi.services.KeycloakService;
 import nl.vng.diwi.services.UserService;
 import org.apache.logging.log4j.LogManager;
@@ -138,14 +139,16 @@ public class UserResource {
         }
 
         try (AutoCloseTransaction transaction = userService.getUserDAO().beginTransaction()) {
-
-            // TODO: update email / last name / first name in keycloak
-
             updatedUser.setId(userId);
+
+            keycloakService.updateUser(updatedUser);
+
             UserState updatedUserEntity = userService.updateUser(updatedUser, loggedUser.getUuid());
             transaction.commit();
 
             return new UserModel(updatedUserEntity);
+        } catch (FindUserException e) {
+            throw new VngBadRequestException("Could not update user in keycloak.");
         }
     }
 
