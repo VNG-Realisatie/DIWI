@@ -96,7 +96,7 @@ public class UserResource {
             UserState newUserEntity = userService.createUser(newUser, identityProviderId, loggedUser.getUuid());
             transaction.commit(); 
 
-            // Send initial welcom mail
+            // Send initial welcome mail
             try {
                 mailService.sendWelcomeMail(newUserEntity.getEmail());
             } catch (MailException e) {
