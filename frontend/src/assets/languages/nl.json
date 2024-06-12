@@ -511,8 +511,8 @@
           "Admin": "Admin",
           "User": "Gebruiker",
           "UserPlus": "Hoofdgebruiker",
-          "ManagementUser": "Collegelid en management",
-          "Councilor": "Raadslid",
+          "Management": "Collegelid en management",
+          "Council": "Raadslid",
           "External": "Externe gebruiker"
         }
       },

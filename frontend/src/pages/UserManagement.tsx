@@ -99,7 +99,7 @@ const UserManagement = () => {
     };
     return (
         <Box sx={{ marginBottom: "90px" }}>
-            {allowedActions.includes("EDIT_USERS") && <UsersTable rows={users} setUsers={setUsers} />}
+            {allowedActions.includes("VIEW_USERS") && <UsersTable rows={users} setUsers={setUsers} />}
 
             {allowedActions.includes("EDIT_USERS") && (
                 <Stack direction="row" alignItems="center" mt={1} sx={{ cursor: "pointer" }} onClick={() => setIsUserDialogOpen(true)}>
@@ -107,10 +107,9 @@ const UserManagement = () => {
                     {t("admin.userManagement.addUser")}
                 </Stack>
             )}
+            {allowedActions.includes("VIEW_GROUPS") && <GroupUserTable rows={userGroups} users={users} setUserGroups={setUserGroups} />}
 
-            <GroupUserTable rows={userGroups} users={users} setUserGroups={setUserGroups} />
-
-            {allowedActions.includes("EDIT_USERS") && (
+            {allowedActions.includes("EDIT_GROUPS") && (
                 <Stack direction="row" alignItems="center" mt={1} sx={{ cursor: "pointer" }} onClick={() => setIsGroupDialogOpen(true)}>
                     <AddCircleIcon color="primary" sx={{ fontSize: "40px" }} />
                     {t("admin.userManagement.addGroup")}
