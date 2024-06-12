@@ -627,7 +627,7 @@ public class ProjectsResource {
     public ImportResponse importFile(@FormDataParam("uploadFile") InputStream inputStream,
                                     @FormDataParam("uploadFile") FormDataContentDisposition formDataContentDisposition,
                                     @QueryParam("fileType") ImportFileType fileType,
-                                    ContainerRequestContext requestContext) {
+                                    ContainerRequestContext requestContext) throws VngBadRequestException {
 
         var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
 
@@ -657,11 +657,14 @@ public class ProjectsResource {
             }
             return result;
         } catch (Exception ex) {
-            logger.error("Error while uploading excel", ex);
-            deleteFile(path);
-            throw new VngServerErrorException("Error while uploading excel");
+            if (ex instanceof VngBadRequestException) {
+                throw (VngBadRequestException) ex;
+            } else {
+                logger.error("Error while uploading excel", ex);
+                deleteFile(path);
+                throw new VngServerErrorException("Error while uploading excel");
+            }
         }
-
     }
 
     private void deleteFile(java.nio.file.Path path) {
