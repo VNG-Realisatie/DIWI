@@ -36,5 +36,5 @@ export const objectType = ["PROJECT", "WONINGBLOK"];
 export type PropertyType = "BOOLEAN" | "CATEGORY" | "ORDINAL" | "NUMERIC" | "TEXT";
 export const propertyType = ["BOOLEAN", "CATEGORY", "ORDINAL", "NUMERIC", "TEXT"];
 
-export type RoleType = "Admin" | "User" | "UserPlus" | "ManagementUser" | "Councilor" | "External";
-export const roleTypeOptions = ["Admin", "User", "UserPlus", "ManagementUser", "Councilor", "External"];
+export type RoleType = "Admin" | "User" | "UserPlus" | "Management" | "Council" | "External";
+export const roleTypeOptions = ["Admin", "User", "UserPlus", "Management", "Council", "External"];
