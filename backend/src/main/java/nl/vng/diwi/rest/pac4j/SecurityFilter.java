@@ -179,6 +179,7 @@ public class SecurityFilter implements ContainerRequestFilter {
                 if (nullOrEmpty(userEntity.getEmail()) && !nullOrEmpty(authEmail)) {
                     userEntity.setEmail(authEmail);
                 }
+                userDao.persist(userEntity);
                 transaction.commit();
             }
         }
