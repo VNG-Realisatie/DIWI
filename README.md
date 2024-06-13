@@ -87,6 +87,24 @@ Then add the user(s) again using the addUsers.sh script. You only have to do thi
 ./addUsers.sh
 ```
 
+### Mailhog settings (with keycloak)
+
+We use mailhog for testing on local, by default you can access it on http://localhost:8025
+1. Start keycloak locally (use the ./deploy.backend.dev.sh or ./deploy.keycloak.dev.sh)
+2. Navigate and login on localhost:keycloakport (default: http://localhost:1780)
+3. Select the correct realm (default: diwi-test-realm)
+4. In nav bar on the left select 'Realm settings'
+5. Select the tab 'Email' at the top.
+6. Validate that the following settings are present:
+```
+Template
+> from: mailhog@phinion.com
+Connection & Authentication
+> host: localhost
+> port: 1025
+```
+Optionally you can 'Test connection' if the current logged in user has an email set.
+
 ### Front end development
 
 You can start the back end and keycloak using docker.
