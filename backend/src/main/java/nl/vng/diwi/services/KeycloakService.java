@@ -14,10 +14,11 @@ import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.UserRepresentation;
 
+import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response.Status.Family;
 import nl.vng.diwi.models.UserModel;
 
-public class KeycloakService implements AutoCloseable{
+public class KeycloakService implements AutoCloseable {
     // Class scope
     private static Logger logger = LogManager.getLogger();
 
@@ -25,11 +26,15 @@ public class KeycloakService implements AutoCloseable{
     private RealmResource diwiRealm;
     private UsersResource keycloakUsers;
 
+    @Inject
     public KeycloakService(String url, String realmName, String clientName, String secret) {
-        this.keycloak = KeycloakBuilder.builder().serverUrl(url).realm(realmName).clientId(clientName)
-                .clientSecret(secret).grantType(OAuth2Constants.CLIENT_CREDENTIALS).build();
-        this.diwiRealm = this.keycloak.realm(realmName);
-        this.keycloakUsers = this.diwiRealm.users();
+        try {
+            this.keycloak = KeycloakBuilder.builder().serverUrl(url).realm(realmName).clientId(clientName)
+                    .clientSecret(secret).grantType(OAuth2Constants.CLIENT_CREDENTIALS).build();
+            this.diwiRealm = this.keycloak.realm(realmName);
+            this.keycloakUsers = this.diwiRealm.users();
+        } catch (Exception e) {
+        }
     }
 
     public UserResource getUserById(String id) {
@@ -73,7 +78,7 @@ public class KeycloakService implements AutoCloseable{
             kcUserRepresentation.setFirstName(updatedUser.getFirstName());
             kcUserRepresentation.setLastName(updatedUser.getLastName());
             kcUserRepresentation.setEmail(updatedUser.getEmail());
-            
+
             // save new representation to keycloak, no feedback unfortunately
             kcUserResource.update(kcUserRepresentation);
         }
