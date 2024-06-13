@@ -17,7 +17,7 @@ import org.keycloak.representations.idm.UserRepresentation;
 import jakarta.ws.rs.core.Response.Status.Family;
 import nl.vng.diwi.models.UserModel;
 
-public class KeycloakService {
+public class KeycloakService implements AutoCloseable{
     // Class scope
     private static Logger logger = LogManager.getLogger();
 
@@ -77,5 +77,11 @@ public class KeycloakService {
             // save new representation to keycloak, no feedback unfortunately
             kcUserResource.update(kcUserRepresentation);
         }
+    }
+
+    @Override
+    public void close() throws Exception {
+        logger.info("cleaning up keycloak service");
+        keycloak.close();
     }
 }
