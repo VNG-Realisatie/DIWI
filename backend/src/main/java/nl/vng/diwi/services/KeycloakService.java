@@ -67,11 +67,11 @@ public class KeycloakService implements AutoCloseable {
         return keycloakUsers.get(userId);
     }
 
-    public void updateUser(UserModel updatedUser) throws FindUserException {
+    public void updateUser(String identityProviderId, UserModel updatedUser) throws FindUserException {
         // store the resource for the existing user
-        var kcUserResource = keycloakUsers.get(updatedUser.getId().toString());
+        var kcUserResource = keycloakUsers.get(identityProviderId);
         if (kcUserResource == null) {
-            throw new FindUserException("Could not find keycloak user with id " + updatedUser.getId());
+            throw new FindUserException("Could not find keycloak user with id " + identityProviderId);
         } else {
             // create a copy of the representation and update relevant fields
             var kcUserRepresentation = kcUserResource.toRepresentation();

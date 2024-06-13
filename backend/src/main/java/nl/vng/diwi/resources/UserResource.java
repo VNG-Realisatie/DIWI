@@ -140,8 +140,9 @@ public class UserResource {
 
         try (AutoCloseTransaction transaction = userService.getUserDAO().beginTransaction()) {
             updatedUser.setId(userId);
-
-            keycloakService.updateUser(updatedUser);
+            
+            String identityProviderId = userService.getUserDAO().getIdentityProviderIdForUser(userId);
+            keycloakService.updateUser(identityProviderId, updatedUser);
 
             UserState updatedUserEntity = userService.updateUser(updatedUser, loggedUser.getUuid());
             transaction.commit();
