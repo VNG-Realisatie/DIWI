@@ -3,7 +3,7 @@ import { policyGoals } from "../api/dummyData";
 import { PolicyCard } from "../components/PolicyCard";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { useState } from "react";
-import { ReactComponent as Dashboard } from "../assets/temp/dashboardvisual.svg";
+import Dashboard from "../assets/temp/dashboardvisual.svg";
 import BreadcrumbBar from "../components/header/BreadcrumbBar";
 import { useLocation } from "react-router-dom";
 import * as Paths from "../Paths";

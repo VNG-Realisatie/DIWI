@@ -1,18 +1,14 @@
 package nl.vng.diwi.dal;
 
 import java.time.LocalDate;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import nl.vng.diwi.dal.entities.Organization;
-import nl.vng.diwi.dal.entities.OrganizationToProject;
 import nl.vng.diwi.dal.entities.Project;
 import nl.vng.diwi.dal.entities.ProjectHouseblockCustomPropertySqlModel;
 import nl.vng.diwi.dal.entities.ProjectState;
-import nl.vng.diwi.dal.entities.User;
-import nl.vng.diwi.dal.entities.enums.ProjectRole;
 import nl.vng.diwi.dal.entities.ProjectListSqlModel;
+import nl.vng.diwi.security.LoggedUser;
 import org.hibernate.Session;
 import org.hibernate.query.SelectionQuery;
 
@@ -36,11 +32,14 @@ public class ProjectsDAO extends AbstractRepository {
         return query.getSingleResultOrNull();
     }
 
-    public ProjectListSqlModel getProjectByUuid(UUID projectUuid) {
-        SelectionQuery<ProjectListSqlModel> q = session.createNativeQuery(
-                "SELECT * FROM get_active_or_future_project_snapshot(:projectUuid, :now) " , ProjectListSqlModel.class)
+    public ProjectListSqlModel getProjectByUuid(UUID projectUuid, LoggedUser loggedUser) {
+        SelectionQuery<ProjectListSqlModel> q = session.createNativeQuery(String.format(
+                "SELECT * FROM %s.get_active_or_future_project_snapshot(:projectUuid, :now, :userRole, :userUuid) ", GenericRepository.VNG_SCHEMA_NAME),
+                ProjectListSqlModel.class)
             .setParameter("now", LocalDate.now())
-            .setParameter("projectUuid", projectUuid);
+            .setParameter("projectUuid", projectUuid)
+            .setParameter("userRole", loggedUser.getRole().name())
+            .setParameter("userUuid", loggedUser.getUuid());
         ProjectListSqlModel result = q.getSingleResultOrNull();
         if (result != null) {
             session.evict(result);
@@ -50,8 +49,9 @@ public class ProjectsDAO extends AbstractRepository {
 
 
     public List<ProjectHouseblockCustomPropertySqlModel> getProjectCustomProperties(UUID projectUuid) {
-        List<ProjectHouseblockCustomPropertySqlModel> result = session.createNativeQuery(
-                "SELECT * FROM get_active_or_future_project_custom_properties(:projectUuid, :now) " , ProjectHouseblockCustomPropertySqlModel.class)
+        List<ProjectHouseblockCustomPropertySqlModel> result = session.createNativeQuery(String.format(
+                "SELECT * FROM %s.get_active_or_future_project_custom_properties(:projectUuid, :now) ", GenericRepository.VNG_SCHEMA_NAME),
+                ProjectHouseblockCustomPropertySqlModel.class)
             .setParameter("now", LocalDate.now())
             .setParameter("projectUuid", projectUuid)
             .list();
@@ -59,10 +59,10 @@ public class ProjectsDAO extends AbstractRepository {
         return result;
     }
 
-    public List<ProjectListSqlModel> getProjectsTable(FilterPaginationSorting filtering) {
-        SelectionQuery<ProjectListSqlModel> q = session.createNativeQuery("""
-                SELECT * FROM get_active_and_future_projects_list(:now, :offset, :limit, :sortColumn, :sortDirection,
-                    :filterColumn, CAST(:filterValue AS text[]), :filterCondition) """ , ProjectListSqlModel.class)
+    public List<ProjectListSqlModel> getProjectsTable(FilterPaginationSorting filtering, LoggedUser loggedUser) {
+        SelectionQuery<ProjectListSqlModel> q = session.createNativeQuery(String.format("""
+                SELECT * FROM %s.get_active_and_future_projects_list(:now, :offset, :limit, :sortColumn, :sortDirection,
+                    :filterColumn, CAST(:filterValue AS text[]), :filterCondition, :userRole, :userUuid) """, GenericRepository.VNG_SCHEMA_NAME) , ProjectListSqlModel.class)
             .setParameter("now", LocalDate.now())
             .setParameter("offset", filtering.getFirstResultIndex())
             .setParameter("limit", filtering.getPageSize())
@@ -70,15 +70,17 @@ public class ProjectsDAO extends AbstractRepository {
             .setParameter("sortDirection", filtering.getSortDirection().name())
             .setParameter("filterColumn", filtering.getFilterColumn())
             .setParameter("filterValue", filtering.getFilterColumn() == null ? null :fromJavaListToSqlArrayLiteral(filtering.getFilterValue()))
-            .setParameter("filterCondition", filtering.getFilterColumn() == null ? null : filtering.getFilterCondition().name());
+            .setParameter("filterCondition", filtering.getFilterColumn() == null ? null : filtering.getFilterCondition().name())
+            .setParameter("userRole", loggedUser.getRole().name())
+            .setParameter("userUuid", loggedUser.getUuid());
 
         return q.getResultList();
     }
 
-    public Integer getProjectsTableCount(FilterPaginationSorting filtering) {
-        return session.createNativeQuery("""
-                SELECT COUNT(*) FROM get_active_and_future_projects_list(:now, :offset, :limit, :sortColumn, :sortDirection,
-                :filterColumn, CAST(:filterValue AS text[]), :filterCondition) """, Integer.class)
+    public Integer getProjectsTableCount(FilterPaginationSorting filtering, LoggedUser loggedUser) {
+        return session.createNativeQuery(String.format("""
+                SELECT COUNT(*) FROM %s.get_active_and_future_projects_list(:now, :offset, :limit, :sortColumn, :sortDirection,
+                :filterColumn, CAST(:filterValue AS text[]), :filterCondition, :userRole, :userUuid) """, GenericRepository.VNG_SCHEMA_NAME), Integer.class)
             .setParameter("now", LocalDate.now())
             .setParameter("offset", 0)
             .setParameter("limit", Integer.MAX_VALUE)
@@ -87,6 +89,8 @@ public class ProjectsDAO extends AbstractRepository {
             .setParameter("filterColumn", filtering.getFilterColumn())
             .setParameter("filterValue", filtering.getFilterColumn() == null ? null : fromJavaListToSqlArrayLiteral(filtering.getFilterValue()))
             .setParameter("filterCondition", filtering.getFilterColumn() == null ? null :filtering.getFilterCondition().name())
+            .setParameter("userRole", loggedUser.getRole().name())
+            .setParameter("userUuid", loggedUser.getUuid())
             .uniqueResult();
     }
 
@@ -99,14 +103,4 @@ public class ProjectsDAO extends AbstractRepository {
         return query.getSingleResultOrNull();
     }
 
-    public void linkToOrganization(User user, ZonedDateTime changeStartDate, Project project, ProjectRole projectRole, UUID organizationUuid) {
-        var orgToProject = new OrganizationToProject();
-        orgToProject.setProject(project);
-        orgToProject.setCreateUser(user);
-        orgToProject.setChangeStartDate(changeStartDate);
-        orgToProject.setProjectRole(projectRole);
-
-        orgToProject.setOrganization(session.get(Organization.class, organizationUuid));
-        session.persist(orgToProject);
-    }
 }

@@ -9,9 +9,11 @@ import { useTranslation } from "react-i18next";
 import { DeleteButtonWithConfirm } from "../components/DeleteButtonWithConfirm";
 import { deleteProject } from "../api/projectsServices";
 import { useNavigate } from "react-router-dom";
+import useAllowedActions from "../hooks/useAllowedActions";
 
 const ProjectColorContext = createContext({
     selectedProjectColor: "",
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     setSelectedProjectColor: (color: string) => {},
 });
 
@@ -20,6 +22,7 @@ export const ProjectDetail = ({ children }: PropsWithChildren) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const [selectedProjectColor, setSelectedProjectColor] = useState<string>("");
+    const allowedActions = useAllowedActions();
 
     return (
         <Stack direction="column" justifyContent="space-between" position="relative" border="solid 1px #ddd" mb={10}>
@@ -40,7 +43,7 @@ export const ProjectDetail = ({ children }: PropsWithChildren) => {
                 >
                     <Typography variant="h5">{selectedProject?.projectName}</Typography>
                     <Box sx={{ marginLeft: "auto", marginTop: "5px", marginRight: "20px" }}>
-                        {selectedProject && (
+                        {selectedProject && allowedActions.includes("CREATE_NEW_PROJECT") && (
                             <DeleteButtonWithConfirm
                                 typeAndName={`${t("generic.project")} ${selectedProject.projectName}`}
                                 iconColor={"#FFFFFF"}

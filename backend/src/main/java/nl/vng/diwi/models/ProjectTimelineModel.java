@@ -26,8 +26,7 @@ public class ProjectTimelineModel extends DatedDataModelSuperClass {
     private List<DatedDataModel<ProjectPhase>> projectPhase = new ArrayList<>();
     private List<DatedDataModel<String>> municipalityRole = new ArrayList<>();
     private List<DatedDataModel<List<PlanStatus>>> planningPlanStatus = new ArrayList<>();
-    private List<OrganizationModel> projectOwners = new ArrayList<>();
-    private List<OrganizationModel> projectLeaders = new ArrayList<>();
+    private List<UserGroupModel> projectOwners = new ArrayList<>();
     private Long totalValue;
     private String[] municipality;
     private String[] wijk;
@@ -44,12 +43,8 @@ public class ProjectTimelineModel extends DatedDataModelSuperClass {
         MilestoneModel projectEndMilestone = new MilestoneModel(projectDuration.getEndMilestone());
         this.setStartDate(projectStartMilestone.getDate());
         this.setEndDate(projectEndMilestone.getDate());
-        for (var item : project.getOrganizationProjectRoles()) {
-            if (item.getProjectRole() == ProjectRole.OWNER) {
-                projectOwners.add(new OrganizationModel(item.getOrganization()));
-            } else if (item.getProjectRole() == ProjectRole.PROJECT_LEIDER) {
-                projectLeaders.add(new OrganizationModel(item.getOrganization()));
-            }
+        for (var item : project.getUserGroupToProject()) {
+            projectOwners.add(new UserGroupModel(item.getUserGroup()));
         }
         for (ProjectNameChangelog item : project.getName()) {
             DatedDataModel<String> data = new DatedDataModel<>();

@@ -35,6 +35,11 @@ public class TestDb implements AutoCloseable {
         env.putIfAbsent("KC_RESOURCE_NAME", "");
         env.putIfAbsent("KC_SECRET", "");
 
+        env.putIfAbsent("MAIL_SMTP_PORT", "465");
+        env.putIfAbsent("MAIL_SMTP_AUTH", "true");
+        env.putIfAbsent("MAIL_SMTP_STARTTLS", "true");
+        env.putIfAbsent("MAIL_SMTP_SSL", "true");
+
         this.projectConfig = new ProjectConfig(env);
         dalFactory = new DalFactory(projectConfig, GenericRepository.getEntities());
 
@@ -56,10 +61,7 @@ public class TestDb implements AutoCloseable {
             try (var transaction = dal.beginTransaction()) {
                 session.createNativeMutationQuery("DROP SCHEMA IF EXISTS \"public\" CASCADE").executeUpdate();
                 session.createNativeMutationQuery("DROP SCHEMA IF EXISTS \"diwi_testset\" CASCADE").executeUpdate();
-                transaction.commit();
-            }
-            try (var transaction = dal.beginTransaction()) {
-                session.createNativeMutationQuery("CREATE SCHEMA \"public\"").executeUpdate();
+                session.createNativeMutationQuery("DROP SCHEMA IF EXISTS \"diwi\" CASCADE").executeUpdate();
                 transaction.commit();
             }
         }

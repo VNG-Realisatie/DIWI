@@ -2,7 +2,7 @@ import { Stack, Typography } from "@mui/material";
 import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
 import { AmountModel, HouseBlock } from "../../../../types/houseBlockTypes";
-import { SingleNumberInput } from "../physical-appearence/SingleNumberInput";
+import { SingleNumberInput } from "../../../project/inputs/SingleNumberInput";
 import { useCustomPropertyDefinitions } from "../../../../hooks/useCustomPropertyDefinitions";
 import { useEffect } from "react";
 import { sortCategoriesByNameAndId } from "../../../../utils/sortFunctions";
@@ -64,6 +64,7 @@ export const TargetGroup = ({ houseBlock, setHouseBlock, readOnly }: TargetGroup
                             onChange={handleChange}
                             readOnly={readOnly}
                             translationPath={translationPath}
+                            mandatory={false}
                         />
                     );
                 })}

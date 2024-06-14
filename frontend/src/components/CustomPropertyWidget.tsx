@@ -22,6 +22,7 @@ export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, cu
     if (customDefinition.propertyType === "BOOLEAN") {
         return (
             <Autocomplete
+                id="boolean-custom-property"
                 size="small"
                 disabled={readOnly}
                 sx={{
@@ -42,6 +43,7 @@ export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, cu
         const values = customValue?.categories?.map((val) => customDefinition.categories?.find((d) => val === d.id));
         return (
             <Autocomplete
+                id="category-custom-property"
                 size="small"
                 disabled={readOnly}
                 sx={{
@@ -61,6 +63,7 @@ export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, cu
         const value = customDefinition.ordinals?.find((d) => customValue?.ordinals?.value?.includes(d.id as string));
         return (
             <Autocomplete
+                id="ordinal-custom-property"
                 size="small"
                 disabled={readOnly}
                 sx={{
@@ -78,6 +81,7 @@ export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, cu
     } else if (customDefinition.propertyType === "NUMERIC") {
         return (
             <TextField
+                id="numeric-custom-property"
                 fullWidth
                 variant="outlined"
                 size="small"
@@ -95,6 +99,7 @@ export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, cu
     } else if (customDefinition.propertyType === "TEXT") {
         return (
             <TextField
+                id="text-custom-property"
                 fullWidth
                 variant="outlined"
                 size="small"

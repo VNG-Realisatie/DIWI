@@ -10,6 +10,7 @@ type HouseBlockContextType = {
     getEmptyHouseBlock: () => HouseBlockWithCustomProperties;
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const getEmptyHouseBlock: () => HouseBlockWithCustomProperties = () => ({
     projectId: "",
     startDate: null,

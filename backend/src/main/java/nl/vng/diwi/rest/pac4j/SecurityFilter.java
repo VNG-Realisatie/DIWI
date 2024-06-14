@@ -2,6 +2,7 @@ package nl.vng.diwi.rest.pac4j;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
+import java.util.UUID;
 
 import org.hibernate.Session;
 import org.pac4j.core.authorization.authorizer.DefaultAuthorizers;
@@ -23,16 +24,17 @@ import jakarta.ws.rs.core.Context;
 import lombok.extern.log4j.Log4j2;
 import nl.vng.diwi.config.ProjectConfig;
 import nl.vng.diwi.dal.DalFactory;
-import nl.vng.diwi.dal.OrganizationsDAO;
+import nl.vng.diwi.dal.UserGroupDAO;
 import nl.vng.diwi.dal.UserDAO;
-import nl.vng.diwi.dal.entities.Organization;
-import nl.vng.diwi.dal.entities.OrganizationState;
+import nl.vng.diwi.dal.entities.UserGroup;
+import nl.vng.diwi.dal.entities.UserGroupState;
 import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.dal.entities.UserState;
-import nl.vng.diwi.dal.entities.UserToOrganization;
+import nl.vng.diwi.dal.entities.UserToUserGroup;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.security.LoginContext;
+import nl.vng.diwi.security.UserRole;
 
 @Log4j2
 @Priority(Priorities.AUTHENTICATION)
@@ -67,22 +69,29 @@ public class SecurityFilter implements ContainerRequestFilter {
             return;
         }
 
-        SecurityGrantedAccessAdapter securityGrantedAccessAdapter = (ctx, sessionStore, profiles) -> {
-            for (var profile : profiles) {
-                var userEntity = getUserForProfile(profile);
+        try {
+            SecurityGrantedAccessAdapter securityGrantedAccessAdapter = (ctx, sessionStore, profiles) -> {
+                for (var profile : profiles) {
+                    var userEntity = getUserForProfile(profile);
+                    LoggedUser loggedUser;
 
-                LoggedUser loggedUser = new LoggedUser(userEntity);
-                requestContext.setProperty("loggedUser", loggedUser);
-                final LoginContext context = new LoginContext(loggedUser);
-                requestContext.setSecurityContext(context);
+                    if (userEntity == null) {
+                        loggedUser = new LoggedUser();
+                        loggedUser.setFirstName("X");
+                        loggedUser.setLastName("X");
+                        loggedUser.setUuid(null);
+                        loggedUser.setIdentityProviderId(UUID.fromString(profile.getId()));
+                    } else {
+                        loggedUser = new LoggedUser(userEntity);
+                    }
+                    requestContext.setProperty("loggedUser", loggedUser);
+                    final LoginContext context = new LoginContext(loggedUser);
+                    requestContext.setSecurityContext(context);
 
-                break;
-            }
-            return null;
-        };
-
-        try
-        {
+                    break;
+                }
+                return null;
+            };
             DefaultSecurityLogic securityLogic = new DefaultSecurityLogic();
             securityLogic.perform(pac4jConfig, securityGrantedAccessAdapter, null, DefaultAuthorizers.IS_AUTHENTICATED,
                     null, new JEEFrameworkParameters(httpRequest, httpResponse));
@@ -92,56 +101,92 @@ public class SecurityFilter implements ContainerRequestFilter {
         }
     }
 
-    private UserState getUserForProfile(UserProfile profile) {
+    private UserState getUserForProfile(UserProfile profile) throws Exception {
         Session session = dalFactory.constructDal().getSession();
         var userDao = new UserDAO(session);
-        var organizationsDAO = new OrganizationsDAO(session);
+        var userGroupDAO = new UserGroupDAO(session);
 
-        try (var transaction = userDao.beginTransaction()) {
-            var profileUuid = profile.getId();
+        var profileUuid = profile.getId();
 
-            var firsttName = profile.getAttribute("given_name");
-            var lastName = profile.getAttribute("family_name");
+        var rawAuthFirstName = profile.getAttribute("given_name");
+        var rawAuthLastName = profile.getAttribute("family_name");
+        var rawAuthEmail = profile.getAttribute("email");
+        
+        String authFirstName = rawAuthFirstName != null ? (String) rawAuthFirstName : "";
+        String authLastName = rawAuthLastName != null ? (String) rawAuthLastName : "";
+        String authEmail = rawAuthEmail != null ? (String) rawAuthEmail : "";
+        
 
-            var userEntity = userDao.getUserByIdentityProviderId(profileUuid);
-            if (userEntity == null) {
-                ZonedDateTime now = ZonedDateTime.now();
-                User systemUser = userDao.getSystemUser();
+        var userEntity = userDao.getUserByIdentityProviderId(profileUuid);
+        if (userEntity == null) {
+            // user does not exist in diwi database
+            // must match role name defined in keycloak!
+            var hasDiwiAdminRole = profile.getRoles().contains("diwi-admin");
+            if (hasDiwiAdminRole) {
+                try (var transaction = userDao.beginTransaction()) {
+                    ZonedDateTime now = ZonedDateTime.now();
+                    User systemUser = userDao.getSystemUser();
 
-                var newUser = new User();
-                newUser.setSystemUser(false);
-                userDao.persist(newUser);
+                    var newUser = new User();
+                    newUser.setSystemUser(false);
+                    userDao.persist(newUser);
 
-                userEntity = new UserState();
-                userEntity.setChangeStartDate(now);
-                userEntity.setCreateUser(systemUser);
-                userEntity.setFirstName((String) firsttName);
-                userEntity.setLastName((String) lastName);
-                userEntity.setUser(newUser);
-                userEntity.setIdentityProviderId(profileUuid);
-                userDao.persist(userEntity);
+                    userEntity = new UserState();
+                    userEntity.setChangeStartDate(now);
+                    userEntity.setCreateUser(systemUser);
+                    userEntity.setFirstName(authFirstName);
+                    userEntity.setLastName(authLastName);
+                    userEntity.setEmail(authEmail);
+                    userEntity.setUser(newUser);
+                    userEntity.setIdentityProviderId(profileUuid);
+                    // Any user that is 'coming' from keycloak should not be able to view projects
+                    userEntity.setUserRole(UserRole.Admin);
+                    userDao.persist(userEntity);
 
-                var org =  new Organization();
-                organizationsDAO.persist(org);
+                    var group = new UserGroup();
+                    group.setSingleUser(true);
+                    userGroupDAO.persist(group);
 
-                var orgState = new OrganizationState();
-                orgState.setChangeStartDate(now);
-                orgState.setCreateUser(systemUser);
-                orgState.setName(userEntity.getFirstName() + " " + userEntity.getLastName());
-                orgState.setOrganization(org);
-                organizationsDAO.persist(orgState);
+                    var groupState = new UserGroupState();
+                    groupState.setChangeStartDate(now);
+                    groupState.setCreateUser(systemUser);
+                    groupState.setName(userEntity.getFirstName() + " " + userEntity.getLastName());
+                    groupState.setUserGroup(group);
+                    userGroupDAO.persist(groupState);
 
-                var orgToUser = new UserToOrganization();
-                orgToUser.setChangeStartDate(now);
-                orgToUser.setCreateUser(systemUser);
-                orgToUser.setOrganization(org);
-                orgToUser.setUser(newUser);
-                organizationsDAO.persist(orgToUser);
-
+                    var groupToUser = new UserToUserGroup();
+                    groupToUser.setChangeStartDate(now);
+                    groupToUser.setCreateUser(systemUser);
+                    groupToUser.setUserGroup(group);
+                    groupToUser.setUser(newUser);
+                    userGroupDAO.persist(groupToUser);
+                    transaction.commit();
+                }
+            } else {
+                // user from keycloak does not have correct role, so block them
+                return null;
+            }
+        } else {
+            // existing diwi user, check if we need to update empty fields for them
+            try (var transaction = userDao.beginTransaction()) {
+                // check if email, first/last name are set in diwi, if not set from auth data
+                if (nullOrEmpty(userEntity.getFirstName()) && !nullOrEmpty(authFirstName)) {
+                    userEntity.setFirstName(authFirstName);
+                }
+                if (nullOrEmpty(userEntity.getLastName()) && !nullOrEmpty(authLastName)) {
+                    userEntity.setLastName(authLastName);
+                }
+                if (nullOrEmpty(userEntity.getEmail()) && !nullOrEmpty(authEmail)) {
+                    userEntity.setEmail(authEmail);
+                }
                 transaction.commit();
             }
-            return userEntity;
-
         }
+        return userEntity;
+
+    }
+
+    private boolean nullOrEmpty(String s) {
+        return s == null || s.isBlank();
     }
 }

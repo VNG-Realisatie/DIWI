@@ -61,7 +61,7 @@ export const CustomPropertiesProject = ({ readOnly, customValues, setCustomValue
                                     </CellContainer>
                                 </Grid>
 
-                                <Grid item xs={6}>
+                                <Grid item xs={6} className={property.propertyType}>
                                     {/* Display value based on what type it is */}
                                     <CustomPropertyWidget
                                         readOnly={readOnly}

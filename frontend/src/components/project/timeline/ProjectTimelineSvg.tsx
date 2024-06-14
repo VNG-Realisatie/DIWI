@@ -13,7 +13,14 @@ import { Phases } from "./Phases";
 import { HouseBlocks } from "./HouseBlocks";
 import { TodayLine } from "./TodayLine";
 
-export const ProjectTimelineSvg = ({ timeScaleIndex, showToday, width, height }: any) => {
+type ProjectTimelineSvgProps = {
+    timeScaleIndex: number;
+    showToday: boolean;
+    width: string;
+    height: number;
+};
+
+export const ProjectTimelineSvg = ({ timeScaleIndex, showToday, width, height }: ProjectTimelineSvgProps) => {
     /* explanation for sizing of/in this element:
     width and height are outer boundaries of this component in the webpage.
     svgWidth and svgHeight are the dimensions for the svg, including margins so elements are not placed directly on a border.

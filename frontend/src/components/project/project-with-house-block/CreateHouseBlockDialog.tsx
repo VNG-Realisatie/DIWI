@@ -43,9 +43,13 @@ export const CreateHouseBlockDialog = ({ openHouseBlockDialog, setOpenHouseBlock
                     color="success"
                     onClick={async () => {
                         if (validateHouseBlock(houseBlock, setAlert)) {
-                            await saveHouseBlockWithCustomProperties(houseBlock);
-                            refresh();
-                            setOpenHouseBlockDialog(false);
+                            try {
+                                await saveHouseBlockWithCustomProperties(houseBlock);
+                                refresh();
+                                setOpenHouseBlockDialog(false);
+                            } catch (error: unknown) {
+                                if (error instanceof Error) setAlert(error.message, "warning");
+                            }
                         }
                     }}
                     autoFocus

@@ -33,9 +33,11 @@ export const projectPhaseOptions: GenericOptionType<ProjectPhaseOptions>[] = [
 ];
 
 export const confidentialityLevelOptions: OptionType[] = [
-    { id: "PRIVE", name: "PRIVE" },
-    { id: "INTERN_UITVOERING", name: "INTERN_UITVOERING" },
-    { id: "INTERN_RAPPORTAGE", name: "INTERN_RAPPORTAGE" },
-    { id: "EXTERN_RAPPORTAGE", name: "EXTERN_RAPPORTAGE" },
-    { id: "OPENBAAR", name: "OPENBAAR" },
+    { id: "PRIVATE", name: "PRIVATE" },
+    { id: "INTERNAL_CIVIL", name: "INTERNAL_CIVIL" },
+    { id: "INTERNAL_MANAGEMENT", name: "INTERNAL_MANAGEMENT" },
+    { id: "INTERNAL_COUNCIL", name: "INTERNAL_COUNCIL" },
+    { id: "EXTERNAL_REGIONAL", name: "EXTERNAL_REGIONAL" },
+    { id: "EXTERNAL_GOVERNMENTAL", name: "EXTERNAL_GOVERNMENTAL" },
+    { id: "PUBLIC", name: "PUBLIC" },
 ];

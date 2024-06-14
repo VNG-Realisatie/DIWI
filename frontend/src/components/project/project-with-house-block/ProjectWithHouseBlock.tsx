@@ -16,6 +16,7 @@ import { CreateHouseBlockDialog } from "./CreateHouseBlockDialog";
 import { HouseBlocksList } from "./HouseBlocksList";
 import { ProjectForm } from "../../ProjectForm";
 import useLoading from "../../../hooks/useLoading";
+import useAllowedActions from "../../../hooks/useAllowedActions";
 
 export const ProjectsWithHouseBlock = () => {
     const { selectedProject, updateProject } = useContext(ProjectContext);
@@ -29,6 +30,7 @@ export const ProjectsWithHouseBlock = () => {
     const { setAlert } = useContext(AlertContext);
     const { setLoading } = useLoading();
     const { t } = useTranslation();
+    const allowedActions = useAllowedActions();
 
     const resetProjectForm = useCallback(() => {
         setProjectForm(selectedProject);
@@ -69,30 +71,35 @@ export const ProjectsWithHouseBlock = () => {
     return (
         <Stack mb={10}>
             <Box sx={{ cursor: "pointer" }} position="absolute" right={100} top={17}>
-                {!readOnly && (
-                    <Tooltip placement="top" title={t("projectDetail.colorEdit")}>
-                        <FormatColorFillIcon
-                            sx={{ mr: 2, color: "#FFFFFF" }}
-                            onClick={(event: any) => {
-                                setOpenColorDialog(true);
-                                setAnchorEl(event.currentTarget);
-                            }}
-                        />
-                    </Tooltip>
-                )}
-                {readOnly && (
-                    <Tooltip placement="top" title={t("generic.edit")}>
-                        <EditIcon sx={{ color: "#FFFFFF" }} onClick={handleProjectEdit} />
-                    </Tooltip>
-                )}
-                {!readOnly && (
+                {allowedActions.includes("EDIT_OWN_PROJECTS") && (
                     <>
-                        <Tooltip placement="top" title={t("generic.cancelChanges")}>
-                            <ClearIcon sx={{ mr: 2, color: "#FFFFFF" }} onClick={handleCancelChange} />
-                        </Tooltip>
-                        <Tooltip placement="top" title={t("generic.saveChanges")}>
-                            <SaveIcon sx={{ color: "#FFFFFF" }} onClick={handleProjectSave} />
-                        </Tooltip>
+                        {!readOnly && (
+                            <Tooltip placement="top" title={t("projectDetail.colorEdit")}>
+                                <FormatColorFillIcon
+                                    sx={{ mr: 2, color: "#FFFFFF" }}
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                    onClick={(event: any) => {
+                                        setOpenColorDialog(true);
+                                        setAnchorEl(event.currentTarget);
+                                    }}
+                                />
+                            </Tooltip>
+                        )}
+                        {readOnly && (
+                            <Tooltip placement="top" title={t("generic.edit")}>
+                                <EditIcon sx={{ color: "#FFFFFF" }} onClick={handleProjectEdit} />
+                            </Tooltip>
+                        )}
+                        {!readOnly && (
+                            <>
+                                <Tooltip placement="top" title={t("generic.cancelChanges")}>
+                                    <ClearIcon sx={{ mr: 2, color: "#FFFFFF" }} onClick={handleCancelChange} />
+                                </Tooltip>
+                                <Tooltip placement="top" title={t("generic.saveChanges")}>
+                                    <SaveIcon sx={{ color: "#FFFFFF" }} onClick={handleProjectSave} />
+                                </Tooltip>
+                            </>
+                        )}
                     </>
                 )}
             </Box>
