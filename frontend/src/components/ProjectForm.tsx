@@ -49,7 +49,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                     <Grid container spacing={2} alignItems="stretch">
                         {/* Name */}
                         <Grid item xs={12} md={showColorPicker ? 8 : 12}>
-                            <Stack width="100%">
+                            <Stack width="100%" className="project-name">
                                 <TextInput
                                     readOnly={readOnly}
                                     value={project?.projectName}
@@ -89,7 +89,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                         )}
 
                         {/* Plan type */}
-                        <Grid item xs={12} md={4}>
+                        <Grid item xs={12} md={4} className="project-plantype">
                             <CategoryInput
                                 readOnly={readOnly}
                                 mandatory={false}
@@ -111,7 +111,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                         </Grid>
 
                         {/* Start date */}
-                        <Grid item xs={12} md={4}>
+                        <Grid item xs={12} md={4} className="project-startdate">
                             <DateInput
                                 readOnly={readOnly}
                                 value={project?.startDate ? project?.startDate : null}
@@ -127,7 +127,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                         </Grid>
 
                         {/* End date */}
-                        <Grid item xs={12} md={4}>
+                        <Grid item xs={12} md={4} className="project-enddate">
                             <DateInput
                                 readOnly={readOnly}
                                 value={project?.endDate ? project?.endDate : null}
@@ -143,7 +143,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                         </Grid>
 
                         {/* Priority */}
-                        <Grid item xs={12} md={4}>
+                        <Grid item xs={12} md={4} className="project-priority">
                             <CategoryInput
                                 readOnly={readOnly}
                                 values={project?.priority?.value ?? null}
@@ -165,7 +165,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                         </Grid>
 
                         {/* Phase */}
-                        <Grid item xs={12} md={4}>
+                        <Grid item xs={12} md={4} className="project-phase">
                             <CategoryInput
                                 readOnly={readOnly}
                                 mandatory={true}
@@ -189,7 +189,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                         </Grid>
 
                         {/* Role municipality */}
-                        <Grid item xs={12} md={4}>
+                        <Grid item xs={12} md={4} className="project-municipality-role">
                             <CategoryInput
                                 readOnly={readOnly}
                                 values={project?.municipalityRole ?? []}
@@ -205,9 +205,9 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                         </Grid>
 
                         {/* Owner */}
-                        <Grid item xs={12} md={4}>
+                        <Grid item xs={12} md={4} className="project-owner">
                             <LabelComponent
-                                required={false}
+                                required={true}
                                 readOnly={readOnly}
                                 text={t("createProject.informationForm.owner")}
                                 tooltipInfoText={t("tooltipInfo.schrijfrechten.title")}
@@ -227,7 +227,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                         </Grid>
 
                         {/* Confidentiality */}
-                        <Grid item xs={12} md={4}>
+                        <Grid item xs={12} md={4} className="project-confidentiality">
                             <CategoryInput
                                 readOnly={readOnly}
                                 mandatory={true}
@@ -250,7 +250,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                             />
                         </Grid>
                         {/* Planning plan status */}
-                        <Grid item xs={12} md={4}>
+                        <Grid item xs={12} md={4} className="project-planning-status">
                             <CategoryInput
                                 readOnly={readOnly}
                                 mandatory={false}
@@ -272,7 +272,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                         </Grid>
 
                         {/* Municipality */}
-                        <Grid item xs={12} md={4}>
+                        <Grid item xs={12} md={4} className="project-municipality">
                             <CategoryInput
                                 readOnly={readOnly}
                                 values={project?.municipality ?? []}
@@ -286,7 +286,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                         </Grid>
 
                         {/* District */}
-                        <Grid item xs={12} md={4}>
+                        <Grid item xs={12} md={4} className="project-district">
                             <CategoryInput
                                 readOnly={readOnly}
                                 values={project?.district ?? []}
@@ -300,7 +300,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                         </Grid>
 
                         {/* Neighbourhood */}
-                        <Grid item xs={12} md={4}>
+                        <Grid item xs={12} md={4} className="project-neighbourhood">
                             <CategoryInput
                                 readOnly={readOnly}
                                 values={project?.neighbourhood ?? []}

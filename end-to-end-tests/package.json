@@ -7,8 +7,14 @@
   "license": "MIT",
   "devDependencies": {
     "@playwright/test": "^1.44.0",
-    "@types/node": "^20.11.16"
+    "@types/node": "^20.14.2",
+    "process": "^0.11.10"
   },
-  "scripts": {},
-  "dependencies": {}
+  "scripts": {
+    "test-ui": "yarn playwright test --ui",
+    "test": "yarn playwright test"
+  },
+  "dependencies": {
+    "path": "^0.12.7"
+  }
 }
