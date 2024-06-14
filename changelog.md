@@ -8,7 +8,7 @@
 
 ### FIXED
 
-- Show currect number of houses in projects table and project map
+- Show correct number of houses in projects table and project map
 
 ### CHANGED
 
