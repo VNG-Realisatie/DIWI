@@ -4,7 +4,11 @@
 
 ### ADDED
 
-- Log first and last delivery date of hous blocks during import
+- Log first and last delivery date of house blocks during import
+
+### FIXED
+
+- Show currect number of houses in projects table and project map
 
 ### CHANGED
 
