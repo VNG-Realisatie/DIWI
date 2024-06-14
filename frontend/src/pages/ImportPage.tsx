@@ -2,7 +2,7 @@ import { Button, Stack, Typography } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 import { useRef, useState } from "react";
 import { importExcelProjects, importGeoJsonProjects } from "../api/importServices";
-import UploadCloud from "../assets/uploadCloud.svg";
+import UploadCloud from "../assets/upload-cloud.svg";
 import useAlert from "../hooks/useAlert";
 import { useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
@@ -40,7 +40,11 @@ export const ImportPage = ({ functionality }: Props) => {
                 variant="outlined"
                 endIcon={<DownloadIcon />}
                 sx={{ my: 3, width: "310px" }}
-                href={require(functionality === "geojson" ? "../assets/geojson_template.geojson" : "../assets/Excel_Import.xlsx")}
+                href={
+                    functionality === "geojson"
+                        ? new URL("../assets/geojson_template.geojson", import.meta.url).toString()
+                        : new URL("../assets/Excel_Import.xlsx", import.meta.url).toString()
+                }
                 download={functionality === "geojson" ? "geojson_template.geojson" : "Excel Import.xlsx"}
             >
                 {t(`exchangeData.download.${functionality}`)}
