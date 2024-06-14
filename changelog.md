@@ -1,5 +1,19 @@
 # Change log
 
+## DIWI RELEASE 1.3.2
+
+### ADDED
+
+- Log first and last delivery date of house blocks during import
+
+### FIXED
+
+- Show currect number of houses in projects table and project map
+
+### CHANGED
+
+- Improved error messages when importing. e.g. show property and option names for missing custom properties.
+
 ## DIWI RELEASE 1.3.1
 
 ### ADDED

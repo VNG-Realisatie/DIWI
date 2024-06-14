@@ -37,53 +37,53 @@ public class GeoJsonImportModel {
     @JsonProperty("woning_blokken")
     private List<GeoJsonHouseblock> houseblocks;
 
-    private static Boolean getBooleanValue(String booleanValueStr, Integer errorRow, List<ImportError> errors) {
+    private static Boolean getBooleanValue(Integer projectId, String houseblockName, String propertyName, String booleanValueStr, List<ImportError> errors) {
         if (booleanValueStr.equalsIgnoreCase("true") || booleanValueStr.equals("1")) {
             return Boolean.TRUE;
         } else if (booleanValueStr.equalsIgnoreCase("false") || booleanValueStr.equals("0")) {
             return Boolean.FALSE;
         } else {
-            errors.add(new ImportError(errorRow, booleanValueStr, ImportError.ERROR.WRONG_TYPE_NOT_BOOLEAN));
+            errors.add(new ImportError(projectId, houseblockName, propertyName, booleanValueStr, ImportError.ERROR.WRONG_TYPE_NOT_BOOLEAN));
             return null;
         }
     }
 
-    private static Double getNumericValue(String numericValueStr, Integer errorRow, List<ImportError> errors) {
+    private static Double getNumericValue(Integer projectId, String houseblockName, String propertyName, String numericValueStr, List<ImportError> errors) {
         try {
             return Double.parseDouble(numericValueStr);
         } catch (NumberFormatException ex) {
-            errors.add(new ImportError(errorRow, numericValueStr, ImportError.ERROR.WRONG_TYPE_NOT_NUMERIC));
+            errors.add(new ImportError(projectId, houseblockName, propertyName, numericValueStr, ImportError.ERROR.WRONG_TYPE_NOT_NUMERIC));
             return null;
         }
     }
 
-    private static UUID getCategoryValue(String categoryValueStr, PropertyModel propertyModel, Integer errorRow, List<ImportError> errors) {
+    private static UUID getCategoryValue(Integer projectId, String houseblockName, String propertyName, String categoryValueStr, PropertyModel propertyModel, List<ImportError> errors) {
         SelectModel categoryValue = propertyModel.getActiveCategoryValue(categoryValueStr);
         if (categoryValue == null) {
-            errors.add(new ImportError(errorRow, categoryValueStr, ImportError.ERROR.UNKNOWN_PROPERTY_VALUE));
+            errors.add(new ImportError(projectId, houseblockName, propertyName, categoryValueStr, propertyModel.getId(), ImportError.ERROR.UNKNOWN_PROPERTY_VALUE));
             return null;
         }
         return categoryValue.getId();
     }
 
-    private static UUID getOrdinalValue(String ordinalValueStr, PropertyModel propertyModel, Integer errorRow, List<ImportError> errors) {
+    private static UUID getOrdinalValue(Integer projectId, String houseblockName, String propertyName, String ordinalValueStr, PropertyModel propertyModel, List<ImportError> errors) {
         SelectModel ordinalValue = propertyModel.getActiveOrdinalValue(ordinalValueStr);
         if (ordinalValue == null) {
-            errors.add(new ImportError(errorRow, ordinalValueStr, ImportError.ERROR.UNKNOWN_PROPERTY_VALUE));
+            errors.add(new ImportError(projectId, houseblockName, propertyName, ordinalValueStr, propertyModel.getId(), ImportError.ERROR.UNKNOWN_PROPERTY_VALUE));
             return null;
         }
         return ordinalValue.getId();
     }
 
-    private static boolean addFixedCategoryValue(String stringValue, Map<UUID, UUID> categoryPropertiesMap, String fixedPropertyName, Map<String, PropertyModel> propertyModelMap,
-                                                 Integer errorRow, List<ImportError> errors) {
+    private static boolean addFixedCategoryValue(Integer projectId, String propertyName, String stringValue, Map<UUID, UUID> categoryPropertiesMap, String fixedPropertyName, Map<String, PropertyModel> propertyModelMap,
+                                                 List<ImportError> errors) {
         PropertyModel propertyModel = propertyModelMap.get(fixedPropertyName);
         if (propertyModel == null || propertyModel.getType() != PropertyKind.FIXED || propertyModel.getPropertyType() != PropertyType.CATEGORY) {
-            errors.add(new ImportError(errorRow, fixedPropertyName, ImportError.ERROR.MISSING_FIXED_PROPERTY));
+            errors.add(new ImportError(projectId, null, propertyName, fixedPropertyName, ImportError.ERROR.MISSING_FIXED_PROPERTY));
         } else if (stringValue != null && !stringValue.isBlank()) {
             SelectModel categoryValue = propertyModel.getActiveCategoryValue(stringValue);
             if (categoryValue == null) {
-                errors.add(new ImportError(errorRow, stringValue, ImportError.ERROR.UNKNOWN_PROPERTY_VALUE));
+                errors.add(new ImportError(projectId, null, propertyName, stringValue, propertyModel.getId(), ImportError.ERROR.UNKNOWN_PROPERTY_VALUE));
                 return false;
             } else {
                 categoryPropertiesMap.put(propertyModel.getId(), categoryValue.getId());
@@ -99,28 +99,28 @@ public class GeoJsonImportModel {
 
             BasicProjectData basicProjectData = project.getBasicProjectData();
             if (basicProjectData == null || basicProjectData.identificationNo == null) {
-                importErrors.add(new ImportError(null, ImportError.ERROR.MISSING_PROJECT_ID));
+                importErrors.add(new ImportError(null, null, "basisgegevens -> identificatie_nr", null, ImportError.ERROR.MISSING_PROJECT_ID));
                 return null;
             }
             Integer id = basicProjectData.identificationNo;
 
             if (basicProjectData.name == null || basicProjectData.name.isBlank()) {
-                importErrors.add(new ImportError(id, ImportError.ERROR.MISSING_PROJECT_NAME));
+                importErrors.add(new ImportError(id, null, "basisgegevens -> naam", null, ImportError.ERROR.MISSING_PROJECT_NAME));
             }
 
             ProjectDuration projectDuration = project.getProjectDuration();
             if (projectDuration == null) {
-                importErrors.add(new ImportError(id, ImportError.ERROR.MISSING_PROJECT_START_DATE));
-                importErrors.add(new ImportError(id, ImportError.ERROR.MISSING_PROJECT_END_DATE));
+                importErrors.add(new ImportError(id, null, "projectduur -> start_project", null, ImportError.ERROR.MISSING_PROJECT_START_DATE));
+                importErrors.add(new ImportError(id, null, "projectduur -> eind_project", null, ImportError.ERROR.MISSING_PROJECT_END_DATE));
             } else if (projectDuration.getStartDate() == null) {
-                importErrors.add(new ImportError(id, ImportError.ERROR.MISSING_PROJECT_START_DATE));
+                importErrors.add(new ImportError(id, null,"projectduur -> start_project", null, ImportError.ERROR.MISSING_PROJECT_START_DATE));
             } else if (projectDuration.getEndDate() == null) {
-                importErrors.add(new ImportError(id, ImportError.ERROR.MISSING_PROJECT_END_DATE));
+                importErrors.add(new ImportError(id, null, "projectduur -> eind_project", null, ImportError.ERROR.MISSING_PROJECT_END_DATE));
             }
 
             ProjectData projectData = project.getProjectData();
             if (projectData == null || projectData.getStatus() == null) {
-                importErrors.add(new ImportError(id, ImportError.ERROR.MISSING_PROJECT_STATUS));
+                importErrors.add(new ImportError(id, null, "projectgegevens -> status", null, ImportError.ERROR.MISSING_PROJECT_STATUS));
             }
 
             if (!importErrors.isEmpty()) {
@@ -134,10 +134,10 @@ public class GeoJsonImportModel {
             projectImportModel.setProjectEndDate(projectDuration.endDate);
             projectImportModel.setProjectStatus(projectData.status);
             projectImportModel.setProgramming(projectData.programming);
-            addFixedCategoryValue(projectData.municipalityRole, projectImportModel.getProjectCategoryPropsMap(), Constants.FIXED_PROPERTY_MUNICIPALITY_ROLE,
-                activePropertiesMap, id, importErrors);
-            addFixedOrdinalValue(projectData.priority, projectImportModel.getProjectOrdinalPropsMap(), Constants.FIXED_PROPERTY_PRIORITY,
-                activePropertiesMap, id, importErrors);
+            addFixedCategoryValue(id, "projectgegevens -> projectgegevens -> rol_gemeente" , projectData.municipalityRole, projectImportModel.getProjectCategoryPropsMap(), Constants.FIXED_PROPERTY_MUNICIPALITY_ROLE,
+                activePropertiesMap, importErrors);
+            addFixedOrdinalValue(id, "projectgegevens -> projectgegevens -> prioritering" , projectData.priority, projectImportModel.getProjectOrdinalPropsMap(), Constants.FIXED_PROPERTY_PRIORITY,
+                activePropertiesMap, importErrors);
 
             projectImportModel.setPlanType(projectData.planType);
             projectImportModel.setProjectPhasesMap(project.getProjectPhasesMap().entrySet().stream().filter(e -> e.getValue() != null).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
@@ -149,21 +149,22 @@ public class GeoJsonImportModel {
                     PropertyModel propertyModel = activePropertiesMap.get(rolesEntry.getKey());
                     if (propertyModel == null || propertyModel.getObjectType() != ObjectType.PROJECT || propertyModel.getType() != PropertyKind.CUSTOM ||
                         propertyModel.getPropertyType() != PropertyType.CATEGORY) {
-                        importErrors.add(new ImportError(id, roleValue, ImportError.ERROR.UNKNOWN_PROJECT_CATEGORY_PROPERTY));
+                        importErrors.add(new ImportError(id, null, "projectgegevens -> rollen", rolesEntry.getKey(), ImportError.ERROR.UNKNOWN_PROJECT_CATEGORY_PROPERTY));
                     } else {
-                        projectImportModel.getProjectCategoryPropsMap().put(propertyModel.getId(), getCategoryValue(roleValue, propertyModel, id, importErrors));
+                        projectImportModel.getProjectCategoryPropsMap().put(propertyModel.getId(),
+                            getCategoryValue(id, null, "projectgegevens -> rollen -> " + rolesEntry.getKey(), roleValue, propertyModel, importErrors));
                     }
                 }
             }
 
             ProjectLocation projectLocation = project.projectLocation;
             if (projectLocation != null) {
-                projectImportModel.setHasMunicipality(addFixedCategoryValue(projectLocation.municipality, projectImportModel.getProjectCategoryPropsMap(),
-                    Constants.FIXED_PROPERTY_MUNICIPALITY, activePropertiesMap, id, importErrors));
-                projectImportModel.setHasDistrict(addFixedCategoryValue(projectLocation.district, projectImportModel.getProjectCategoryPropsMap(),
-                    Constants.FIXED_PROPERTY_DISTRICT, activePropertiesMap, id, importErrors));
-                projectImportModel.setHasNeighbourhood(addFixedCategoryValue(projectLocation.neighbourhood, projectImportModel.getProjectCategoryPropsMap(),
-                    Constants.FIXED_PROPERTY_NEIGHBOURHOOD, activePropertiesMap, id, importErrors));
+                projectImportModel.setHasMunicipality(addFixedCategoryValue(id, "projectgegevens -> locatie -> gemeente", projectLocation.municipality, projectImportModel.getProjectCategoryPropsMap(),
+                    Constants.FIXED_PROPERTY_MUNICIPALITY, activePropertiesMap, importErrors));
+                projectImportModel.setHasDistrict(addFixedCategoryValue(id, "projectgegevens -> locatie -> wijk", projectLocation.district, projectImportModel.getProjectCategoryPropsMap(),
+                    Constants.FIXED_PROPERTY_DISTRICT, activePropertiesMap, importErrors));
+                projectImportModel.setHasNeighbourhood(addFixedCategoryValue(id, "projectgegevens -> locatie -> buurt" ,projectLocation.neighbourhood, projectImportModel.getProjectCategoryPropsMap(),
+                    Constants.FIXED_PROPERTY_NEIGHBOURHOOD, activePropertiesMap, importErrors));
             }
 
             for (Map.Entry<String, String> customPropEntry : project.customPropertiesMap.entrySet()) {
@@ -171,18 +172,22 @@ public class GeoJsonImportModel {
                 if (customPropValue != null && !customPropValue.isBlank()) {
                     PropertyModel propertyModel = activePropertiesMap.get(customPropEntry.getKey());
                     if (propertyModel == null || propertyModel.getObjectType() != ObjectType.PROJECT || propertyModel.getType() != PropertyKind.CUSTOM) {
-                        importErrors.add(new ImportError(id, customPropEntry.getKey(), ImportError.ERROR.UNKNOWN_PROJECT_PROPERTY));
+                        importErrors.add(new ImportError(id, null, "projectgegevens -> maatwerk_projecteigenschappen", customPropEntry.getKey(), ImportError.ERROR.UNKNOWN_PROJECT_PROPERTY));
                     } else {
                         switch (propertyModel.getPropertyType()) {
                             case TEXT -> projectImportModel.getProjectStringPropsMap().put(propertyModel.getId(), customPropEntry.getValue());
                             case BOOLEAN ->
-                                projectImportModel.getProjectBooleanPropsMap().put(propertyModel.getId(), getBooleanValue(customPropValue, id, importErrors));
+                                projectImportModel.getProjectBooleanPropsMap().put(propertyModel.getId(),
+                                    getBooleanValue(id, null, "projectgegevens -> maatwerk_projecteigenschappen -> " + propertyModel.getName(), customPropValue, importErrors));
                             case NUMERIC ->
-                                projectImportModel.getProjectNumericPropsMap().put(propertyModel.getId(), getNumericValue(customPropValue, id, importErrors));
+                                projectImportModel.getProjectNumericPropsMap().put(propertyModel.getId(),
+                                    getNumericValue(id, null, "projectgegevens -> maatwerk_projecteigenschappen -> " + propertyModel.getName(),customPropValue, importErrors));
                             case CATEGORY ->
-                                projectImportModel.getProjectCategoryPropsMap().put(propertyModel.getId(), getCategoryValue(customPropValue, propertyModel, id, importErrors));
+                                projectImportModel.getProjectCategoryPropsMap().put(propertyModel.getId(),
+                                    getCategoryValue(id, null, "projectgegevens -> maatwerk_projecteigenschappen -> " + propertyModel.getName(), customPropValue, propertyModel, importErrors));
                             case ORDINAL ->
-                                projectImportModel.getProjectOrdinalPropsMap().put(propertyModel.getId(), getOrdinalValue(customPropValue, propertyModel, id, importErrors));
+                                projectImportModel.getProjectOrdinalPropsMap().put(propertyModel.getId(),
+                                    getOrdinalValue(id, null, "projectgegevens -> maatwerk_projecteigenschappen -> " + propertyModel.getName(), customPropValue, propertyModel, importErrors));
                         }
                     }
                 }
@@ -205,15 +210,15 @@ public class GeoJsonImportModel {
         return null;
     }
 
-    private void addFixedOrdinalValue(String stringValue, Map<UUID, UUID> ordinalPropertiesMap, String fixedPropertyName, Map<String, PropertyModel> propertyModelMap,
-                                      Integer errorRow, List<ImportError> errors) {
+    private void addFixedOrdinalValue(Integer projectId, String propertyName, String stringValue, Map<UUID, UUID> ordinalPropertiesMap, String fixedPropertyName, Map<String, PropertyModel> propertyModelMap,
+                                      List<ImportError> errors) {
         PropertyModel propertyModel = propertyModelMap.get(fixedPropertyName);
         if (propertyModel == null || propertyModel.getType() != PropertyKind.FIXED || propertyModel.getPropertyType() != PropertyType.ORDINAL) {
-            errors.add(new ImportError(errorRow, fixedPropertyName, ImportError.ERROR.MISSING_FIXED_PROPERTY));
+            errors.add(new ImportError(projectId, null, propertyName, fixedPropertyName, ImportError.ERROR.MISSING_FIXED_PROPERTY));
         } else if (stringValue != null && !stringValue.isBlank()) {
             SelectModel ordinalValue = propertyModel.getActiveOrdinalValue(stringValue);
             if (ordinalValue == null) {
-                errors.add(new ImportError(errorRow, stringValue, ImportError.ERROR.UNKNOWN_PROPERTY_VALUE));
+                errors.add(new ImportError(projectId, null, propertyName, stringValue, propertyModel.getId(), ImportError.ERROR.UNKNOWN_PROPERTY_VALUE));
             } else {
                 ordinalPropertiesMap.put(propertyModel.getId(), ordinalValue.getId());
             }
@@ -304,12 +309,13 @@ public class GeoJsonImportModel {
 
         public ProjectImportModel.HouseblockImportModel toHouseblockImportModel(Integer projectNo, Map<String, PropertyModel> activePropertiesMap, List<ImportError> errors) {
 
-            if (mutationData == null || mutationData.mutationType == null || mutationData.amount == null) {
-                errors.add(new ImportError(projectNo, ImportError.ERROR.MISSING_HOUSEBLOCK_MUTATION));
+            if (name == null) {
+                errors.add(new ImportError(projectNo, null, "woning_blokken -> name", null, ImportError.ERROR.MISSING_HOUSEBLOCK_NAME));
                 return null;
             }
-            if (name == null) {
-                errors.add(new ImportError(projectNo, ImportError.ERROR.MISSING_HOUSEBLOCK_NAME));
+
+            if (mutationData == null || mutationData.mutationType == null || mutationData.amount == null) {
+                errors.add(new ImportError(projectNo, name, "woning_blokken -> mutatiegegevens -> mutatie_type, woning_blokken -> mutatiegegevens -> aantal", null, ImportError.ERROR.MISSING_HOUSEBLOCK_MUTATION));
                 return null;
             }
 
@@ -338,7 +344,7 @@ public class GeoJsonImportModel {
                         valueRange.setMax((int) (ownershipValue.max * 100));
                     }
                     if (!valueRange.isValid(true)) {
-                        errors.add(new ImportError(projectNo, ownershipValue.toString(), ImportError.ERROR.INVALID_RANGE));
+                        errors.add(new ImportError(projectNo, name, "woning_blokken -> mutatiegegevens -> eigendom_type", ownershipValue.toString(), ImportError.ERROR.INVALID_RANGE));
                     } else {
                         if (mutationData.ownershipType == OwnershipType.KOOPWONING) {
                             ov.setValue(valueRange);
@@ -351,9 +357,10 @@ public class GeoJsonImportModel {
 
             physicalAppearanceList.forEach(pa -> {
                 if (pa.getAmount() != null) {
-                    SelectModel categoryValue = activePropertiesMap.get(Constants.FIXED_PROPERTY_PHYSICAL_APPEARANCE).getActiveCategoryValue(pa.categoryName);
+                    PropertyModel propertyModel = activePropertiesMap.get(Constants.FIXED_PROPERTY_PHYSICAL_APPEARANCE);
+                    SelectModel categoryValue = propertyModel.getActiveCategoryValue(pa.categoryName);
                     if (categoryValue == null) {
-                        errors.add(new ImportError(projectNo, pa.categoryName, ImportError.ERROR.UNKNOWN_PROPERTY_VALUE));
+                        errors.add(new ImportError(projectNo, name, "woning_blokken -> fysiek_voorkomen", pa.categoryName, propertyModel.getId(), ImportError.ERROR.UNKNOWN_PROPERTY_VALUE));
                     } else {
                         houseblockImportModel.getPhysicalAppearanceMap().put(categoryValue.getId(), pa.amount);
                     }
@@ -362,9 +369,10 @@ public class GeoJsonImportModel {
 
             targetGroupList.forEach(tg -> {
                 if (tg.getAmount() != null) {
+                    PropertyModel propertyModel = activePropertiesMap.get(Constants.FIXED_PROPERTY_TARGET_GROUP);
                     SelectModel categoryValue = activePropertiesMap.get(Constants.FIXED_PROPERTY_TARGET_GROUP).getActiveCategoryValue(tg.categoryName);
                     if (categoryValue == null) {
-                        errors.add(new ImportError(projectNo, tg.categoryName, ImportError.ERROR.UNKNOWN_PROPERTY_VALUE));
+                        errors.add(new ImportError(projectNo, name, "woning_blokken -> doelgroep", tg.categoryName, propertyModel.getId(), ImportError.ERROR.UNKNOWN_PROPERTY_VALUE));
                     } else {
                         houseblockImportModel.getTargetGroupMap().put(categoryValue.getId(), tg.amount);
                     }
@@ -378,18 +386,22 @@ public class GeoJsonImportModel {
                 if (customPropValue != null && !customPropValue.isBlank()) {
                     PropertyModel propertyModel = activePropertiesMap.get(customPropEntry.getKey());
                     if (propertyModel == null || propertyModel.getObjectType() != ObjectType.WONINGBLOK || propertyModel.getType() != PropertyKind.CUSTOM) {
-                        errors.add(new ImportError(projectNo, customPropEntry.getKey(), ImportError.ERROR.UNKNOWN_HOUSEBLOCK_PROPERTY));
+                        errors.add(new ImportError(projectNo, name, "woning_blokken -> maatwerk_woningeigenschappen ", customPropEntry.getKey(), ImportError.ERROR.UNKNOWN_HOUSEBLOCK_PROPERTY));
                     } else {
                         switch (propertyModel.getPropertyType()) {
                             case TEXT -> houseblockImportModel.getHouseblockStringPropsMap().put(propertyModel.getId(), customPropEntry.getValue());
                             case BOOLEAN ->
-                                houseblockImportModel.getHouseblockBooleanPropsMap().put(propertyModel.getId(), getBooleanValue(customPropValue, projectNo, errors));
+                                houseblockImportModel.getHouseblockBooleanPropsMap().put(propertyModel.getId(),
+                                    getBooleanValue(projectNo, name, "woning_blokken -> maatwerk_woningeigenschappen -> " + propertyModel.getName(), customPropValue, errors));
                             case NUMERIC ->
-                                houseblockImportModel.getHouseblockNumericPropsMap().put(propertyModel.getId(), getNumericValue(customPropValue, projectNo, errors));
+                                houseblockImportModel.getHouseblockNumericPropsMap().put(propertyModel.getId(),
+                                    getNumericValue(projectNo, name, "woning_blokken -> maatwerk_woningeigenschappen -> " + propertyModel.getName(), customPropValue, errors));
                             case CATEGORY ->
-                                houseblockImportModel.getHouseblockCategoryPropsMap().put(propertyModel.getId(), getCategoryValue(customPropValue, propertyModel, projectNo, errors));
+                                houseblockImportModel.getHouseblockCategoryPropsMap().put(propertyModel.getId(),
+                                    getCategoryValue(projectNo, name, "woning_blokken -> maatwerk_woningeigenschappen -> " + propertyModel.getName(), customPropValue, propertyModel, errors));
                             case ORDINAL ->
-                                houseblockImportModel.getHouseblockOrdinalPropsMap().put(propertyModel.getId(), getOrdinalValue(customPropValue, propertyModel, projectNo, errors));
+                                houseblockImportModel.getHouseblockOrdinalPropsMap().put(propertyModel.getId(),
+                                    getOrdinalValue(projectNo, name, "woning_blokken -> maatwerk_woningeigenschappen -> " + propertyModel.getName(), customPropValue, propertyModel, errors));
                         }
                     }
                 }
