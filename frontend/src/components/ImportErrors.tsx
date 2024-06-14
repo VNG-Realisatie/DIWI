@@ -17,9 +17,9 @@ export type ImportErrorType = {
     customPropertyId: string | undefined; // UUID
 };
 
-type ImportErrorProps = { errors: Array<ImportErrorType> };
+type ImportErrorProps = { errors: Array<ImportErrorType>; isGeoJson?: boolean };
 
-export const ImportErrors = ({ errors }: ImportErrorProps) => {
+export const ImportErrors = ({ errors, isGeoJson = false }: ImportErrorProps) => {
     return (
         <>
             {/* This INFO text can be removed later or kept if valuable */}
@@ -27,7 +27,7 @@ export const ImportErrors = ({ errors }: ImportErrorProps) => {
                 <Typography>{t("import.description.intro")}</Typography>
                 <Typography>{t("import.description.level1")}</Typography>
                 <Typography>{t("import.description.level2&3")}</Typography>
-                <Typography>{t("import.description.disabling")}</Typography>
+                {!isGeoJson && <Typography>{t("import.description.disabling")}</Typography>}
             </Alert>
             <Alert severity="error" sx={{ "& .MuiAlert-message": { width: "100%" } }}>
                 <Typography fontSize="16px" mb={2}>
@@ -50,9 +50,10 @@ export const ImportErrors = ({ errors }: ImportErrorProps) => {
                                         dense
                                         sx={{
                                             listStyleType: "disc",
-                                            pl: 2,
+                                            pl: 1,
                                             "& .MuiListItem-root": {
                                                 display: "list-item",
+                                                padding: 0,
                                             },
                                         }}
                                     >
