@@ -1,5 +1,6 @@
 import { Stack, Typography, TextField, InputAdornment } from "@mui/material";
 import InputLabelStack from "./InputLabelStack";
+import { TooltipInfo } from "../../../widgets/TooltipInfo";
 
 type SingleNumberEdit = {
     name?: string;
@@ -13,6 +14,7 @@ type SingleNumberEdit = {
     nullable?: boolean; //not implemented
     placeholder?: string;
     isDemolition?: boolean;
+    tooltipInfoText?: string;
 };
 
 export const SingleNumberInput = ({
@@ -25,6 +27,7 @@ export const SingleNumberInput = ({
     isInputLabel = false,
     placeholder,
     isDemolition = false,
+    tooltipInfoText,
 }: SingleNumberEdit) => {
     const hasError = mandatory && (!value || value <= 0);
 
@@ -67,7 +70,7 @@ export const SingleNumberInput = ({
     ) : (
         <Stack direction="row" alignItems="center" spacing={2} my={2}>
             <Typography variant="subtitle1" fontWeight="500" border="solid 1px #ddd" borderRadius="5px" p={0.6} flex={3}>
-                {name}
+                {name} {tooltipInfoText && <TooltipInfo text={tooltipInfoText} />}
             </Typography>
             {inputField}
         </Stack>

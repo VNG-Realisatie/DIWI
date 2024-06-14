@@ -1,6 +1,7 @@
 import InputLabelStack from "./InputLabelStack";
-import { Autocomplete, AutocompleteChangeDetails, AutocompleteChangeReason, TextField } from "@mui/material";
+import { Autocomplete, AutocompleteChangeDetails, AutocompleteChangeReason, Chip, TextField } from "@mui/material";
 import { t } from "i18next";
+import { TooltipInfo } from "../../../widgets/TooltipInfo";
 
 type Option = {
     id?: string | number;
@@ -23,6 +24,8 @@ type CategoryInputProps = {
     multiple: boolean;
     error?: string;
     translationPath?: string;
+    tooltipInfoText?: string;
+    hasTooltipOption?: boolean;
 };
 const isOptionEqualToValue = (option: Option, value: Option): boolean => {
     return option.id === value.id;
@@ -35,10 +38,22 @@ const getErrorHelperText = (mandatory: boolean, readOnly: boolean, values: any, 
     return { hasError, helperText };
 };
 
-const CategoryInput = ({ values, setValue, readOnly, mandatory, title, options, multiple, error, translationPath = "" }: CategoryInputProps) => {
+const CategoryInput = ({
+    values,
+    setValue,
+    readOnly,
+    mandatory,
+    title,
+    options,
+    multiple,
+    error,
+    translationPath = "",
+    tooltipInfoText,
+    hasTooltipOption,
+}: CategoryInputProps) => {
     const { hasError, helperText } = getErrorHelperText(mandatory, readOnly, values, error);
     return (
-        <InputLabelStack mandatory={mandatory} title={title || ""}>
+        <InputLabelStack mandatory={mandatory} title={title || ""} tooltipInfoText={tooltipInfoText}>
             <Autocomplete
                 multiple={multiple}
                 size="small"
@@ -63,6 +78,31 @@ const CategoryInput = ({ values, setValue, readOnly, mandatory, title, options, 
                     }
                     return "";
                 }}
+                renderOption={(props, option) => {
+                    const tooltipText = hasTooltipOption ? `${tooltipInfoText}${option.name}`.replace("title", "") : "";
+                    return hasTooltipOption ? (
+                        <li {...props}>
+                            {t(`${translationPath}${option.name}`)}
+                            {<TooltipInfo text={t(tooltipText)} />}
+                        </li>
+                    ) : (
+                        <li {...props}>{t(`${translationPath}${option.name}`)}</li>
+                    );
+                }}
+                renderTags={(tagValue, getTagProps) =>
+                    tagValue.map((option, index) => {
+                        const tooltipText = hasTooltipOption ? `${tooltipInfoText}${option.name}`.replace("title", "") : "";
+                        return hasTooltipOption ? (
+                            <Chip
+                                {...getTagProps({ index })}
+                                key={option.id}
+                                label={<TooltipInfo text={t(tooltipText)}>{t(`${translationPath}${option.name}`)}</TooltipInfo>}
+                            />
+                        ) : (
+                            <Chip {...getTagProps({ index })} key={option.id} label={t(`${translationPath}${option.name}`)} />
+                        );
+                    })
+                }
                 value={values}
                 filterSelectedOptions
                 onChange={setValue}

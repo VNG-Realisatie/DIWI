@@ -60,13 +60,19 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                     mandatory={true}
                                     title={t("createProject.informationForm.nameLabel")}
                                     errorText={t("createProject.hasMissingRequiredAreas.name")}
+                                    tooltipInfoText={t("tooltipInfo.projectNaam.title")}
                                 />
                             </Stack>
                         </Grid>
                         {/* Color: on the wizard page include this, on the project details this is excluded */}
                         {showColorPicker && (
                             <Grid item xs={12} md={4}>
-                                <LabelComponent required readOnly={readOnly} text="createProject.informationForm.color" />
+                                <LabelComponent
+                                    required
+                                    readOnly={readOnly}
+                                    text={t("createProject.informationForm.color")}
+                                    tooltipInfoText={t("tooltipInfo.projectKleur.title")}
+                                />
                                 <ColorSelector
                                     selectedColor={project?.projectColor}
                                     defaultColor="#FF5733"
@@ -99,6 +105,8 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 }}
                                 multiple={true}
                                 translationPath="projectTable.planTypeOptions."
+                                tooltipInfoText={"tooltipInfo.plantype.title"}
+                                hasTooltipOption={true}
                             />
                         </Grid>
 
@@ -114,6 +122,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 mandatory={true}
                                 title={t("createProject.informationForm.startDate")}
                                 errorText={t("createProject.hasMissingRequiredAreas.startDate")}
+                                tooltipInfoText={t("tooltipInfo.startDatum.title")}
                             />
                         </Grid>
 
@@ -129,6 +138,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 mandatory={true}
                                 title={t("createProject.informationForm.endDate")}
                                 errorText={t("createProject.hasMissingRequiredAreas.endDate")}
+                                tooltipInfoText={t("tooltipInfo.eindDatum.title")}
                             />
                         </Grid>
 
@@ -150,6 +160,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 title={t("createProject.informationForm.priority")}
                                 options={priorityOptionList ?? []}
                                 multiple={false}
+                                tooltipInfoText={"tooltipInfo.prioritering.title"}
                             />
                         </Grid>
 
@@ -172,6 +183,8 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 multiple={false}
                                 error={t("createProject.hasMissingRequiredAreas.projectPhase")}
                                 translationPath="projectTable.projectPhaseOptions."
+                                tooltipInfoText={"tooltipInfo.projectFase.title"}
+                                hasTooltipOption={true}
                             />
                         </Grid>
 
@@ -186,12 +199,19 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 title={t("createProject.informationForm.roleMunicipality")}
                                 options={municipalityRolesOptions ?? []}
                                 multiple={true}
+                                tooltipInfoText={"tooltipInfo.rolGemeente.title"}
+                                hasTooltipOption={true}
                             />
                         </Grid>
 
                         {/* Owner */}
                         <Grid item xs={12} md={4} className="project-owner">
-                            <LabelComponent required={true} readOnly={readOnly} text={t("createProject.informationForm.owner")} />
+                            <LabelComponent
+                                required={true}
+                                readOnly={readOnly}
+                                text={t("createProject.informationForm.owner")}
+                                tooltipInfoText={t("tooltipInfo.schrijfrechten.title")}
+                            />
                             <UserGroupSelect
                                 readOnly={readOnly}
                                 userGroup={project?.projectOwners ? project.projectOwners : []}
@@ -225,6 +245,8 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 multiple={false}
                                 error={t("createProject.hasMissingRequiredAreas.confidentialityLevel")}
                                 translationPath="projectTable.confidentialityLevelOptions."
+                                tooltipInfoText={"tooltipInfo.vertrouwelijkheidsniveau.title"}
+                                hasTooltipOption={true}
                             />
                         </Grid>
                         {/* Planning plan status */}
@@ -244,6 +266,8 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 }}
                                 multiple={true}
                                 translationPath="projectTable.planningPlanStatus."
+                                tooltipInfoText={"tooltipInfo.planologischePlanstatus.title"}
+                                hasTooltipOption={true}
                             />
                         </Grid>
 
@@ -298,21 +322,36 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                         <Grid container spacing={2} alignItems="stretch">
                             {/* Demolition */}
                             <Grid item xs={12} md={4}>
-                                <LabelComponent required={false} readOnly={readOnly} text={t("createProject.houseBlocksForm.demolition")} />
+                                <LabelComponent
+                                    required={false}
+                                    readOnly={readOnly}
+                                    text={t("createProject.houseBlocksForm.demolition")}
+                                    tooltipInfoText={t("tooltipInfo.sloop.title")}
+                                />
                                 <CellContainer>
                                     <LabelComponent required={false} readOnly={true} text={demolitionAmount.toString()} />
                                 </CellContainer>
                             </Grid>
                             {/* Construction */}
                             <Grid item xs={12} md={4}>
-                                <LabelComponent required={false} readOnly={readOnly} text={t("createProject.houseBlocksForm.grossPlanCapacity")} />
+                                <LabelComponent
+                                    required={false}
+                                    readOnly={readOnly}
+                                    text={t("createProject.houseBlocksForm.grossPlanCapacity")}
+                                    tooltipInfoText={t("tooltipInfo.brutoPlancapaciteit.title")}
+                                />
                                 <CellContainer>
                                     <LabelComponent required={false} readOnly={true} text={constructionAmount.toString()} />
                                 </CellContainer>
                             </Grid>
                             {/* Total */}
                             <Grid item xs={12} md={4}>
-                                <LabelComponent required={false} readOnly={readOnly} text={t("createProject.houseBlocksForm.netPlanCapacity")} />
+                                <LabelComponent
+                                    required={false}
+                                    readOnly={readOnly}
+                                    text={t("createProject.houseBlocksForm.netPlanCapacity")}
+                                    tooltipInfoText={t("tooltipInfo.nettoPlancapaciteit.title")}
+                                />
                                 <CellContainer>
                                     <LabelComponent required={false} readOnly={true} text={(constructionAmount - demolitionAmount).toString()} />
                                 </CellContainer>
