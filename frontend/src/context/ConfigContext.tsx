@@ -1,5 +1,6 @@
 import { PropsWithChildren, createContext, useCallback, useEffect, useState } from "react";
 import { MapBounds, getConfig } from "../api/configServices";
+import { t } from "i18next";
 
 type ConfigContextType = {
     municipalityName: string;
@@ -28,6 +29,11 @@ export const ConfigProvider = ({ children }: PropsWithChildren) => {
             .then((config) => {
                 setMapBounds(config.defaultMapBounds);
                 setMunicipalityName(config.municipalityName);
+                if (config.municipalityName && config.municipalityName.trim() !== "") {
+                    document.title = `${t("pageTitle.prefix")} ${config.municipalityName}`;
+                } else {
+                    document.title = t("pageTitle.default");
+                }
             })
             .catch((e) => {
                 console.log(e);

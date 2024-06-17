@@ -5,12 +5,13 @@ type InputLabelStackProps = {
     title: string;
     children: React.ReactNode;
     mandatory: boolean;
+    tooltipInfoText?: string;
 };
 
-const InputLabelStack = ({ title, children, mandatory }: InputLabelStackProps) => {
+const InputLabelStack = ({ title, children, mandatory, tooltipInfoText }: InputLabelStackProps) => {
     return (
         <Stack width="100%" data-testid="input-label-stack">
-            <LabelComponent required={mandatory} text={title} />
+            <LabelComponent required={mandatory} text={title} tooltipInfoText={tooltipInfoText} />
             {children}
         </Stack>
     );

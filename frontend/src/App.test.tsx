@@ -3,6 +3,7 @@ import { MemoryRouter } from "react-router-dom";
 import { expect, test, vi } from "vitest";
 import { Layout } from "./components/Layout";
 import ConfigContext from "./context/ConfigContext";
+import { t } from "i18next";
 
 vi.mock("query-string", () => ({
     //mock whatever you use from query-string
@@ -26,6 +27,6 @@ test("renders projecten", () => {
             </ConfigContext.Provider>
         </MemoryRouter>,
     );
-    const vngElement = screen.getByText(/Overzicht projecten/i);
+    const vngElement = screen.getByText(t("sidebar.projectOverview"));
     expect(vngElement).toBeInTheDocument();
 });

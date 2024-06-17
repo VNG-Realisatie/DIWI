@@ -15,7 +15,13 @@ export type MutationInformationProps = {
 export const MutationInformationGroup = ({ houseBlock, setHouseBlock, readOnly }: MutationInformationProps) => {
     return (
         <WizardCard>
-            <Typography fontWeight={600} mb={2}>
+            <Typography
+                fontWeight={600}
+                mb={2}
+                sx={{
+                    display: "flex",
+                }}
+            >
                 {t("createProject.houseBlocksForm.mutationData")}
             </Typography>
             <SingleNumberInput
@@ -34,6 +40,7 @@ export const MutationInformationGroup = ({ houseBlock, setHouseBlock, readOnly }
                 mandatory={true}
                 error={t("wizard.houseBlocks.mutationAmountWarning")}
                 isInputLabel={true}
+                isDemolition={houseBlock.mutation.kind === "DEMOLITION"}
             />
             <CategoryInput
                 readOnly={readOnly}
@@ -54,6 +61,7 @@ export const MutationInformationGroup = ({ houseBlock, setHouseBlock, readOnly }
                 multiple={false}
                 error={t("wizard.houseBlocks.mutationKindWarning")}
                 translationPath="createProject.houseBlocksForm."
+                tooltipInfoText="tooltipInfo.mutatieSoort.title"
             />
         </WizardCard>
     );

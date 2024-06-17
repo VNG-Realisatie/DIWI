@@ -3,7 +3,7 @@ import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
 import { HouseBlock } from "../../../../types/houseBlockTypes";
 import { DateValidationErrors } from "../../../../pages/ProjectWizardBlocks";
-import TetxInput from "../../../project/inputs/TextInput";
+import TextInput from "../../../project/inputs/TextInput";
 import { Dayjs } from "dayjs";
 import DateInput from "../../../project/inputs/DateInput";
 import RangeNumberInput from "../../../project/inputs/RangeNumberInput";
@@ -24,13 +24,14 @@ export const GeneralInformationGroup = ({ readOnly, houseBlock, setHouseBlock, e
             <Typography fontWeight={600} mb={2}>
                 {t("wizard.houseBlocks.generalInformation.title")}
             </Typography>
-            <TetxInput
+            <TextInput
                 readOnly={readOnly}
                 value={houseBlock.houseblockName}
                 setValue={handleNameChange}
                 mandatory={true}
                 title={t("createProject.houseBlocksForm.nameLabel")}
                 errorText={t("createProject.nameIsRequried")}
+                tooltipInfoText={t("tooltipInfo.deelplan.title")}
             />
             <RangeNumberInput
                 readOnly={readOnly}

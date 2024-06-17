@@ -48,7 +48,7 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
 
     return (
         <Grid container spacing={2} mt={1}>
-            <Grid item xs={4}>
+            <Grid item xs={4} className="ownership-category">
                 <CategoryInput
                     readOnly={readOnly}
                     values={ownership.type ? { id: ownership.type, name: ownership.type } : null}
@@ -59,7 +59,7 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                     translationPath="createProject.houseBlocksForm.ownershipAndValue.type."
                 />
             </Grid>
-            <Grid item xs={1.25}>
+            <Grid item xs={1.25} className="ownership-house-amount">
                 {!readOnly && <OwnershipAmountInput index={index} handleInputChange={handleInputChange} ownership={ownership} />}
                 {readOnly && (
                     <InputContainer>
@@ -67,7 +67,7 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                     </InputContainer>
                 )}
             </Grid>
-            <Grid item xs={2.8}>
+            <Grid item xs={2.8} className="ownership-house-value">
                 <RangeNumberInput
                     value={!isHuurwoning ? ownership.value : { ...ownership.value, value: null }}
                     labelText={t("createProject.houseBlocksForm.value")}
@@ -77,7 +77,7 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                     isMonetary={true}
                 />
             </Grid>
-            <Grid item xs={2.8}>
+            <Grid item xs={2.8} className="ownership-house-rent">
                 <RangeNumberInput
                     value={!isKoopwoning ? ownership.rentalValue : { ...ownership.value, value: null }}
                     labelText={t("createProject.houseBlocksForm.rentalAmount")}
@@ -87,7 +87,7 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                     isMonetary={true}
                 />
             </Grid>
-            <Grid item xs={0.5}>
+            <Grid item xs={0.5} className="ownership-delete-icon">
                 {!readOnly && (
                     <IconButton onClick={() => handleRemoveRow(index)}>
                         <DeleteIcon sx={{ color: "red" }} />

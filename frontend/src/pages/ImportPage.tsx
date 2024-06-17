@@ -109,7 +109,7 @@ export const ImportPage = ({ functionality }: Props) => {
                     {t("exchangeData.upload.hint")}
                 </Stack>
             )}
-            {errors.length > 0 && <ImportErrors errors={errors} />}
+            {errors.length > 0 && <ImportErrors errors={errors} isGeoJson={true} />}
         </Stack>
     );
 };

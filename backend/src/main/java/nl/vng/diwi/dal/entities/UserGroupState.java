@@ -11,20 +11,20 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "organization_state", schema = GenericRepository.VNG_SCHEMA_NAME)
+@Table(name = "usergroup_state", schema = GenericRepository.VNG_SCHEMA_NAME)
 @Getter
 @Setter
 @NoArgsConstructor
-public class OrganizationState extends ChangeDataSuperclass {
+public class UserGroupState extends ChangeDataSuperclass {
 
     @JsonIgnoreProperties("state")
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "organization_id")
-    private Organization organization;
+    @JoinColumn(name = "usergroup_id")
+    private UserGroup userGroup;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "parent_organization_id")
-    private Organization parentOrganization;
+    @JoinColumn(name = "parent_usergroup_id")
+    private UserGroup parentUserGroup;
 
     @Column(name = "naam")
     private String name;

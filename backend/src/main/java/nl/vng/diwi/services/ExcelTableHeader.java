@@ -55,6 +55,8 @@ public class ExcelTableHeader {
         PROJECT_STATUS("Project status", false),
         PROJECT_START_DATE("Start project", false),
         PROJECT_END_DATE("Eind project", false),
+        PROJECT_CONFIDENTIALITY("Vertrouwelijkheid", false),
+        PROJECT_OWNER("Eigenaar", false),
         PROJECT_PHASE_1_CONCEPT("1 Concept", false),
         PROJECT_PHASE_2_INITIATIVE("2 Initiatief", false),
         PROJECT_PHASE_3_DEFINITION("3 Definitie", false),

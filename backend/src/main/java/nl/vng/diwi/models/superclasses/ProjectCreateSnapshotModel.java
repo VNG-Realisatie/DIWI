@@ -7,7 +7,11 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
+import nl.vng.diwi.models.UserGroupModel;
 import nl.vng.diwi.models.validation.Validation;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -26,6 +30,9 @@ public class ProjectCreateSnapshotModel extends DatedDataModelSuperClass {
     @JsonProperty(required = true)
     private ProjectPhase projectPhase;
 
+    @JsonProperty(required = true)
+    private List<UserGroupModel> projectOwners = new ArrayList<>();
+
     public String validate() {
         if (getStartDate() == null) {
             return "startDate can not be null";
@@ -43,6 +50,8 @@ public class ProjectCreateSnapshotModel extends DatedDataModelSuperClass {
             return "confidentialityLevel can not be null";
         } else if (projectPhase == null) {
             return "projectPhase can not be null";
+        } else if (projectOwners == null || projectOwners.isEmpty()) {
+            return "projectOwners can not be empty";
         }
 
         return null;
