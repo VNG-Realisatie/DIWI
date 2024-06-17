@@ -193,14 +193,15 @@ it("should clear the input value on focus if it's '0,00'", () => {
     expect(updateCallBack).not.toHaveBeenCalled();
 });
 
-it("should set the input value to null on blur if the input is empty", () => {
+it("should set the input value to empty string on click of the clear end adornment", () => {
     const updateCallBack = vi.fn();
     const value = { value: null, min: null, max: null };
 
     render(<RangeNumberInput value={value} updateCallBack={updateCallBack} labelText="hi" mandatory={false} readOnly={false} isMonetary={true} />);
 
     const input = screen.getByRole("textbox");
-    userEvent.type(input, "{enter}");
+    userEvent.type(input, "12345");
+    userEvent.click(screen.getByTestId("clear-input"));
 
     expect(screen.getByRole("textbox")).toHaveValue("");
     expect(updateCallBack).toHaveBeenLastCalledWith({ value: null, min: null, max: null });

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { InputAdornment, TextField, Typography } from "@mui/material";
+import { InputAdornment, TextField } from "@mui/material";
 import InputLabelStack from "./InputLabelStack";
 import EuroIcon from "@mui/icons-material/Euro";
+import ClearInputAdornment from "./ClearInputAdornment";
 
 export type ValueType = {
     value: null | number;
@@ -131,6 +132,11 @@ const RangeNumberInput = ({ labelText, value, updateCallBack, isMonetary = false
         }
     }
 
+    const handleClearInput = () => {
+        setStringValue("");
+        updateCallBack({ value: null, min: null, max: null });
+    };
+
     return (
         <InputLabelStack title={title || ""} mandatory={mandatory}>
             <TextField
@@ -162,13 +168,7 @@ const RangeNumberInput = ({ labelText, value, updateCallBack, isMonetary = false
                             <EuroIcon fontSize="inherit" />
                         </InputAdornment>
                     ),
-                    endAdornment: !readOnly && (
-                        <InputAdornment onClick={() => setStringValue(null)} position="end" sx={{ ":hover": { cursor: "pointer" } }}>
-                            <Typography fontStyle="italic" fontSize={12} sx={{ textDecoration: "underline" }}>
-                                Leeg maken
-                            </Typography>
-                        </InputAdornment>
-                    ),
+                    endAdornment: !readOnly && !mandatory && <ClearInputAdornment onClick={handleClearInput} />,
                 }}
                 sx={{
                     "& .MuiInputBase-input.Mui-disabled, & .MuiInputBase-adornedEnd": {
