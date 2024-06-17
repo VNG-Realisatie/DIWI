@@ -1,4 +1,4 @@
-import { Box, Divider, Drawer, List, ListItemButton, ListItemText, Typography } from "@mui/material";
+import { Divider, Drawer, List, ListItemButton, ListItemText, Typography } from "@mui/material";
 import { styled, useTheme } from "@mui/material/styles";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
