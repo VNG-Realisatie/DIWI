@@ -37,6 +37,11 @@ const getErrorHelperText = (mandatory: boolean, readOnly: boolean, values: any, 
     const helperText = hasError ? error : "";
     return { hasError, helperText };
 };
+const getDisplayName = (option: Option, translationPath: string) =>
+    option.firstName && option.lastName ? `${option.firstName} ${option.lastName}` : `${translationPath}${option.name}`;
+
+const getTooltipText = (hasTooltipOption: boolean, tooltipInfoText: string, optionName: string) =>
+    hasTooltipOption ? `${tooltipInfoText}${optionName}`.replace("title", "") : "";
 
 const CategoryInput = ({
     values,
@@ -49,7 +54,7 @@ const CategoryInput = ({
     error,
     translationPath = "",
     tooltipInfoText,
-    hasTooltipOption,
+    hasTooltipOption = false,
 }: CategoryInputProps) => {
     const { hasError, helperText } = getErrorHelperText(mandatory, readOnly, values, error);
     return (
@@ -67,11 +72,11 @@ const CategoryInput = ({
                 fullWidth
                 options={options ?? []}
                 getOptionLabel={(option) => {
+                    if (option && option.firstName && option.lastName) {
+                        return `${option.firstName} ${option.lastName}`;
+                    }
                     if (option && option.name) {
                         return t(`${translationPath}${option.name}`);
-                    }
-                    if (option && option.firstName && option.lastName) {
-                        return `${option.firstName}${option.lastName}`;
                     }
                     if (option) {
                         return t(`${translationPath}${option}`);
@@ -79,27 +84,27 @@ const CategoryInput = ({
                     return "";
                 }}
                 renderOption={(props, option) => {
-                    const tooltipText = hasTooltipOption ? `${tooltipInfoText}${option.name}`.replace("title", "") : "";
-                    return hasTooltipOption ? (
+                    const displayName = getDisplayName(option, translationPath);
+                    const tooltipText = getTooltipText(hasTooltipOption, tooltipInfoText || "", option.name || "");
+
+                    return (
                         <li {...props}>
-                            {t(`${translationPath}${option.name}`)}
-                            {<TooltipInfo text={t(tooltipText)} />}
+                            {t(displayName)}
+                            {hasTooltipOption && <TooltipInfo text={t(tooltipText)} />}
                         </li>
-                    ) : (
-                        <li {...props}>{t(`${translationPath}${option.name}`)}</li>
                     );
                 }}
                 renderTags={(tagValue, getTagProps) =>
                     tagValue.map((option, index) => {
-                        const tooltipText = hasTooltipOption ? `${tooltipInfoText}${option.name}`.replace("title", "") : "";
-                        return hasTooltipOption ? (
+                        const displayName = getDisplayName(option, translationPath);
+                        const tooltipText = getTooltipText(hasTooltipOption, tooltipInfoText || "", option.name || "");
+
+                        return (
                             <Chip
                                 {...getTagProps({ index })}
                                 key={option.id}
-                                label={<TooltipInfo text={t(tooltipText)}>{t(`${translationPath}${option.name}`)}</TooltipInfo>}
+                                label={hasTooltipOption ? <TooltipInfo text={t(tooltipText)}>{t(displayName)}</TooltipInfo> : t(displayName)}
                             />
-                        ) : (
-                            <Chip {...getTagProps({ index })} key={option.id} label={t(`${translationPath}${option.name}`)} />
                         );
                     })
                 }
