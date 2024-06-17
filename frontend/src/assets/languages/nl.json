@@ -94,6 +94,7 @@
         "no_project_status": "Projectstatus ontbreekt of is ongeldig",
         "no_project_start_date": "Startdatum van het project ontbreekt of is ongeldig.",
         "no_project_end_date": "Einddatum van het project ontbreekt of is ongeldig.",
+        "no_project_confidentiality": "Vertrouwelijkheidsniveau van het project ontbreekt of is ongeldig.",
         "no_houseblock_mutation": "Mutatietype of -hoeveelheid van het huisblok ontbreekt.",
         "no_houseblock_name": "Naam van het huisblok ontbreekt.",
         "invalid_plan_type": "Projectplantype heeft een onbekende waarde",
