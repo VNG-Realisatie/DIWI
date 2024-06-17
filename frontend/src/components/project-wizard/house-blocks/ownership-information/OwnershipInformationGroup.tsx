@@ -1,4 +1,4 @@
-import { Grid, IconButton, Stack, Typography } from "@mui/material";
+import { Grid, IconButton, Typography } from "@mui/material";
 import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
 import { HouseBlock, OwnershipSingleValue } from "../../../../types/houseBlockTypes";
@@ -54,7 +54,8 @@ export const OwnershipInformationGroup = ({ houseBlock, setHouseBlock, readOnly 
             </Typography>
             <Grid container spacing={2}>
                 <Grid item xs={4}>
-                    <Typography fontWeight={600}>{t(`${translationPath}.type`)}
+                    <Typography fontWeight={600}>
+                        {t(`${translationPath}.type`)}
                         <TooltipInfo text={t(`tooltipInfo.soort.title`)} />
                     </Typography>
                 </Grid>
