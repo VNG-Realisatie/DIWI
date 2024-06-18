@@ -74,6 +74,7 @@
         "wrong_project_phase_dates": "De startdata van de projectfase vallen niet binnen de projectduur of zijn niet in de juiste volgorde.",
         "wrong_project_plan_status_dates": "De startdata van de projectplanningsplanstatus vallen niet binnen de projectduur of zijn niet in de juiste volgorde.",
         "incomplete_project_location": "Projectbuurt/district zijn aanwezig zonder dat district/gemeente aanwezig is",
+        "project_owner_unknown": "Het e-mailadres van de eigenaar ontbreekt of behoort niet toe aan een actieve gebruiker die het recht heeft om projecten te bezitten.",
 
         "houseblock_delivery_date": "Minstens één opleverdatum van het huisblok is na de einddatum van het project.",
         "houseblock_housing_number": "Het mutatienummer van het huisblok is niet groter dan 0.",
