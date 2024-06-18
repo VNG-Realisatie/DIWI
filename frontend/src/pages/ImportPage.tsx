@@ -8,8 +8,6 @@ import * as Paths from "../Paths";
 import { ImportErrorObject, ImportErrors } from "../components/ImportErrors";
 import { t } from "i18next";
 
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { useTranslation } from "react-i18next";
 type FunctionalityType = "excel" | "squit" | "geojson";
 
 type Props = {
