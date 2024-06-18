@@ -99,9 +99,7 @@
         "invalid_plan_type": "Projectplantype heeft een onbekende waarde",
         "invalid_numeric_range": "De waarde komt niet overeen met een numeriek bereik.",
 
-        "feature_error": "Unable to import due to an error.",
-        "project_owner_unknown": "Het e-mailadres van de eigenaar ontbreekt of behoort niet toe aan een actieve gebruiker die het recht heeft om projecten te bezitten.",
-        "missing_project_confidentiality": "Het vertrouwelijkheidsniveau van het project ontbreekt of is ongeldig."
+        "feature_error": "Unable to import due to an error."
       }
     },
     "createProject": {
