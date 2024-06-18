@@ -5,10 +5,9 @@ import { importExcelProjects, importGeoJsonProjects } from "../api/importService
 import useAlert from "../hooks/useAlert";
 import { useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
-import { ImportErrorType, ImportErrors } from "../components/ImportErrors";
+import { ImportErrorObject, ImportErrors } from "../components/ImportErrors";
+import { t } from "i18next";
 
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { useTranslation } from "react-i18next";
 type FunctionalityType = "excel" | "squit" | "geojson";
 
 type Props = {
@@ -19,8 +18,8 @@ export const ImportPage = ({ functionality }: Props) => {
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
     const [uploaded, setUploaded] = useState(false);
-    const [errors, setErrors] = useState<Array<ImportErrorType>>([]);
-    const { t } = useTranslation();
+    const [errors, setErrors] = useState<ImportErrorObject>({ error: [] });
+
     const { setAlert } = useAlert();
 
     function handleUploadStackClick(): void {
@@ -40,7 +39,11 @@ export const ImportPage = ({ functionality }: Props) => {
                 variant="outlined"
                 endIcon={<DownloadIcon />}
                 sx={{ my: 3, width: "310px" }}
-                href={functionality === "geojson" ? "../assets/geojson_template.geojson" : "../assets/Excel_Import.xlsx"}
+                href={
+                    functionality === "geojson"
+                        ? new URL("../assets/geojson_template.geojson", import.meta.url).toString()
+                        : new URL("../assets/Excel_Import.xlsx", import.meta.url).toString()
+                }
                 download={functionality === "geojson" ? "geojson_template.geojson" : "Excel Import.xlsx"}
             >
                 {t(`exchangeData.download.${functionality}`)}
@@ -58,7 +61,7 @@ export const ImportPage = ({ functionality }: Props) => {
                     style={{ cursor: "pointer" }}
                     onClick={() => {
                         setUploaded(false);
-                        setErrors([]);
+                        setErrors({ error: [] });
                         handleUploadStackClick();
                     }}
                 >
@@ -77,7 +80,7 @@ export const ImportPage = ({ functionality }: Props) => {
                     style={{ cursor: "pointer" }}
                     onClick={handleUploadStackClick}
                 >
-                    <CloudUploadIcon sx={{ fontSize: "36px" }} />
+                    <img src={"/upload-cloud.svg"} alt="Upload Cloud" />
                     <input
                         hidden
                         ref={fileInputRef}
@@ -85,7 +88,7 @@ export const ImportPage = ({ functionality }: Props) => {
                         onChange={(e) => {
                             const file = e.target.files;
                             if (file) {
-                                setErrors([]);
+                                setErrors({ error: [] });
                                 importFunction(file as FileList)
                                     .then(async (res) => {
                                         setUploaded(true);
@@ -94,8 +97,8 @@ export const ImportPage = ({ functionality }: Props) => {
                                             navigate(Paths.projectsTable.path);
                                         } else {
                                             // 400 errors contain relevant info in body, deal with here
-                                            const newErrors = await res.json();
-                                            setErrors(newErrors.error);
+                                            const newErrors = (await res.json()) as ImportErrorObject;
+                                            setErrors(newErrors);
                                             setAlert(t("exchangeData.notifications.importFailed"), "error");
                                         }
                                     })
@@ -109,7 +112,7 @@ export const ImportPage = ({ functionality }: Props) => {
                     {t("exchangeData.upload.hint")}
                 </Stack>
             )}
-            {errors.length > 0 && <ImportErrors errors={errors} isGeoJson={true} />}
+            {errors.error.length > 0 && <ImportErrors errors={errors.error} isGeoJson={true} />}
         </Stack>
     );
 };
