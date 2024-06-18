@@ -1,9 +1,11 @@
 package nl.vng.diwi.dal.entities.enums;
 
 public enum Confidentiality {
-    PRIVE,
-    INTERN_UITVOERING,
-    INTERN_RAPPORTAGE,
-    EXTERN_RAPPORTAGE,
-    OPENBAAR;
+    PRIVATE,
+    INTERNAL_CIVIL,
+    INTERNAL_MANAGEMENT,
+    INTERNAL_COUNCIL,
+    EXTERNAL_REGIONAL,
+    EXTERNAL_GOVERNMENTAL,
+    PUBLIC;
 }

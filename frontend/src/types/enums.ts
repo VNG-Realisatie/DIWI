@@ -21,10 +21,20 @@ export const mutationKindOptions = ["CONSTRUCTION", "DEMOLITION"];
 export type OwnershipValueType = components["schemas"]["OwnershipValue"]["type"];
 export const ownershipValueOptions = ["KOOPWONING", "HUURWONING_PARTICULIERE_VERHUURDER", "HUURWONING_WONINGCORPORATIE"];
 
-export type ConfidentialityLevelOptions = "PRIVE" | "INTERN_UITVOERING" | "INTERN_RAPPORTAGE" | "EXTERN_RAPPORTAGE" | "OPENBAAR";
+export type ConfidentialityLevel =
+    | "PRIVATE"
+    | "INTERNAL_CIVIL"
+    | "INTERNAL_MANAGEMENT"
+    | "INTERNAL_COUNCIL"
+    | "EXTERNAL_REGIONAL"
+    | "EXTERNAL_GOVERNMENTAL"
+    | "PUBLIC";
 
 export type ObjectType = "PROJECT" | "WONINGBLOK";
 export const objectType = ["PROJECT", "WONINGBLOK"];
 
 export type PropertyType = "BOOLEAN" | "CATEGORY" | "ORDINAL" | "NUMERIC" | "TEXT";
 export const propertyType = ["BOOLEAN", "CATEGORY", "ORDINAL", "NUMERIC", "TEXT"];
+
+export type RoleType = "Admin" | "User" | "UserPlus" | "ManagementUser" | "Councilor" | "External";
+export const roleTypeOptions = ["Admin", "User", "UserPlus", "ManagementUser", "Councilor", "External"];

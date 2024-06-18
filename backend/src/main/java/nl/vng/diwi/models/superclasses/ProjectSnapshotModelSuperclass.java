@@ -14,8 +14,8 @@ import nl.vng.diwi.dal.entities.ProjectListSqlModel;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.models.LocationModel;
-import nl.vng.diwi.models.OrganizationModel;
-import nl.vng.diwi.models.OrganizationUserModel;
+import nl.vng.diwi.models.UserGroupModel;
+import nl.vng.diwi.models.UserGroupUserModel;
 import nl.vng.diwi.models.PriorityModel;
 import nl.vng.diwi.models.SelectModel;
 
@@ -30,8 +30,7 @@ abstract public class ProjectSnapshotModelSuperclass extends ProjectMinimalSnaps
     private List<PlanType> planType = new ArrayList<>();
     private PriorityModel priority = new PriorityModel();
     private List<SelectModel> municipalityRole = new ArrayList<>();
-    private List<OrganizationModel> projectOwners = new ArrayList<>();
-    private List<OrganizationModel> projectLeaders = new ArrayList<>();
+    private List<UserGroupModel> projectOwners = new ArrayList<>();
 
     private Long totalValue;
     private List<SelectModel> municipality = new ArrayList<>();
@@ -46,8 +45,7 @@ abstract public class ProjectSnapshotModelSuperclass extends ProjectMinimalSnaps
         this.setProjectId(sqlModel.getProjectId());
         this.setProjectStateId(sqlModel.getProjectStateId());
         this.setProjectName(sqlModel.getProjectName());
-        this.setProjectOwners(getOrganizationModelListFromSqlArray(sqlModel.getProjectOwnersArray()));
-        this.setProjectLeaders(getOrganizationModelListFromSqlArray(sqlModel.getProjectLeadersArray()));
+        this.setProjectOwners(getUserGroupModelListFromSqlArray(sqlModel.getProjectOwnersArray()));
         this.setProjectColor(sqlModel.getProjectColor());
         this.setConfidentialityLevel(sqlModel.getConfidentialityLevel());
         this.setPlanType(sqlModel.getPlanType());
@@ -72,27 +70,29 @@ abstract public class ProjectSnapshotModelSuperclass extends ProjectMinimalSnaps
     }
 
 
-    public List<OrganizationModel> getOrganizationModelListFromSqlArray(String[][] organizationUserArray) {
-        List<OrganizationModel> result = new ArrayList<>();
-        if (organizationUserArray != null) {
-            List<OrganizationUserModel> orgOwners = new ArrayList<>();
-            for (String[] owner : organizationUserArray) {
-                OrganizationUserModel organizationUserModel = getOrganizationUserModelFromSqlArrayData(owner);
-                orgOwners.add(organizationUserModel);
+    public List<UserGroupModel> getUserGroupModelListFromSqlArray(String[][] userGroupUserArray) {
+        List<UserGroupModel> result = new ArrayList<>();
+        if (userGroupUserArray != null) {
+            List<UserGroupUserModel> orgOwners = new ArrayList<>();
+            for (String[] owner : userGroupUserArray) {
+                UserGroupUserModel userGroupUserModel = getUserGroupUserModelFromSqlArrayData(owner);
+                orgOwners.add(userGroupUserModel);
             }
-            result.addAll(OrganizationModel.fromOrgUserModelListToOrgModelList(orgOwners));
+            result.addAll(UserGroupModel.fromUserGroupUserModelListToUserGroupModelList(orgOwners));
         }
         return result;
     }
 
-    private OrganizationUserModel getOrganizationUserModelFromSqlArrayData(String[] sqlUserData) {
-        OrganizationUserModel orgUser = new OrganizationUserModel();
-        orgUser.setOrganizationUuid(UUIDUtil.uuid(sqlUserData[0]));
-        orgUser.setOrganizationName(sqlUserData[1]);
-        orgUser.setUuid(UUIDUtil.uuid(sqlUserData[2]));
-        orgUser.setInitials(sqlUserData[3]);
-        orgUser.setLastName(sqlUserData[4]);
-        orgUser.setFirstName(sqlUserData[5]);
-        return orgUser;
+    private UserGroupUserModel getUserGroupUserModelFromSqlArrayData(String[] sqlUserData) {
+        UserGroupUserModel groupUser = new UserGroupUserModel();
+        groupUser.setUserGroupUuid(UUIDUtil.uuid(sqlUserData[0]));
+        groupUser.setUserGroupName(sqlUserData[1]);
+        if (sqlUserData[2] != null) {
+            groupUser.setUuid(UUIDUtil.uuid(sqlUserData[2]));
+        }
+        groupUser.setInitials(sqlUserData[3]);
+        groupUser.setLastName(sqlUserData[4]);
+        groupUser.setFirstName(sqlUserData[5]);
+        return groupUser;
     }
 }

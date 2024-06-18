@@ -42,6 +42,7 @@ def fix_delft_data(path, source_path):
         feature['properties']['parent_globalid'] = parent_globalid
         feature['properties']['status_planologisch_groep'] = feature['properties']['status']
         feature['properties']['created'] = feature['properties']['CreationDate']
+        feature['properties']['edited'] = feature['properties']['EditDate']
         new_feature_list.append(feature)
 
     gjson['features'] = new_feature_list
@@ -61,6 +62,7 @@ def fix_gouda_data(path, source_path):
         feature['properties']['parent_globalid'] = parent_globalid
         feature['properties']['status_planologisch_groep'] = feature['properties']['status']
         feature['properties']['created'] = feature['properties']['CreationDate']
+        feature['properties']['edited'] = feature['properties']['EditDate']
         new_feature_list.append(feature)
 
     gjson['features'] = new_feature_list

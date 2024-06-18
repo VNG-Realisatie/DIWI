@@ -9,6 +9,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.security.UserRole;
 import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -280,7 +282,7 @@ public class ProjectServiceTest {
         projectData.setStartDate(today.plusDays(10));
         projectData.setEndDate(today.plusDays(20));
         projectData.setProjectColor("abcdef");
-        projectData.setConfidentialityLevel(Confidentiality.OPENBAAR);
+        projectData.setConfidentialityLevel(Confidentiality.PUBLIC);
         projectData.setProjectPhase(ProjectPhase._3_DEFINITION);
 
         Project project;
@@ -292,7 +294,9 @@ public class ProjectServiceTest {
         }
 
         try (var transaction = repo.beginTransaction()) {
-            var actual = projectService.getProjectSnapshot(repo, project.getId());
+            LoggedUser loggedUser = new LoggedUser();
+            loggedUser.setRole(UserRole.UserPlus);
+            var actual = projectService.getProjectSnapshot(repo, project.getId(), loggedUser);
 
             assertThat(actual.getProjectId()).isNotNull();
             assertThat(actual.getProjectStateId()).isNotNull();
@@ -318,7 +322,7 @@ public class ProjectServiceTest {
 
         List<Tuple> changelogs = repo
             .getSession()
-            .createNativeQuery("SELECT change_end_date, change_user_id FROM diwi_testset.project_duration_changelog WHERE project_id = :projectUuid",
+            .createNativeQuery("SELECT change_end_date, change_user_id FROM diwi.project_duration_changelog WHERE project_id = :projectUuid",
                 Tuple.class)
             .setParameter("projectUuid", projectUuid)
             .list();
@@ -664,7 +668,7 @@ public class ProjectServiceTest {
         ProjectState projectState = new ProjectState();
         projectState.setProject(project);
         projectState.setCreateUser(user);
-        projectState.setConfidentiality(Confidentiality.OPENBAAR);
+        projectState.setConfidentiality(Confidentiality.PUBLIC);
         projectState.setChangeStartDate(ZonedDateTime.now());
         projectState.setColor("#123456");
         repo.persist(projectState);

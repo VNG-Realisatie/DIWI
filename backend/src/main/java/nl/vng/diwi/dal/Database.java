@@ -20,6 +20,7 @@ public class Database {
         FluentConfiguration configuration = Flyway
             .configure()
             .dataSource(url, username, password)
+            .defaultSchema("public")
             .baselineOnMigrate(true)
             .outOfOrder(true);
         if (version != null) {

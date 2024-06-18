@@ -9,7 +9,7 @@ import nl.vng.diwi.models.PropertyModel;
 
 public class GenericRepository implements AutoCloseable {
 
-    public static final String VNG_SCHEMA_NAME = "diwi_testset";
+    public static final String VNG_SCHEMA_NAME = "diwi";
     public static final String CURRENT_DATA_FILTER = "current";
     private Dal dal;
 
@@ -51,10 +51,9 @@ public class GenericRepository implements AutoCloseable {
                 HouseblockOrdinalCustomPropertyChangelog.class,
                 Milestone.class,
                 MilestoneState.class,
-                Organization.class,
-                OrganizationProjectRole.class,
-                OrganizationState.class,
-                OrganizationToProject.class,
+                UserGroup.class,
+                UserGroupState.class,
+                UserGroupToProject.class,
                 Project.class,
                 ProjectDurationChangelog.class,
                 ProjectFaseChangelog.class,
@@ -74,7 +73,7 @@ public class GenericRepository implements AutoCloseable {
                 ProjectOrdinalPropertyChangelog.class,
                 User.class,
                 UserState.class,
-                UserToOrganization.class,
+                UserToUserGroup.class,
                 ProjectListSqlModel.class,
                 HouseblockSnapshotSqlModel.class,
                 PropertyModel.class,

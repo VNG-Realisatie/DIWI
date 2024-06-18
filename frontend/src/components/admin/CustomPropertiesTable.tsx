@@ -1,150 +1,169 @@
-import {
-    TableContainer,
-    Table,
-    TableHead,
-    TableRow,
-    TableCell,
-    TableBody,
-    IconButton,
-    Tooltip,
-    Stack,
-    Dialog,
-    DialogTitle,
-    DialogActions,
-    Box,
-    Button,
-    Chip,
-} from "@mui/material";
-import { t } from "i18next";
-import { Property, deleteCustomProperty, getCustomProperties } from "../../api/adminSettingServices";
+import { Box, Chip, Dialog, DialogActions, DialogTitle, Button, Tooltip, Stack } from "@mui/material";
+import { DataGrid, GridColDef, GridActionsCellItem, getGridStringOperators } from "@mui/x-data-grid";
+import { useTranslation } from "react-i18next";
+import { Property, deleteCustomProperty, getCustomProperties, CategoryType, OrdinalCategoryType } from "../../api/adminSettingServices";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useContext, useState } from "react";
 import AlertContext from "../../context/AlertContext";
 import PropertyDialog from "./PropertyDialog";
+import useAllowedActions from "../../hooks/useAllowedActions";
+import ActionNotAllowed from "../../pages/ActionNotAllowed";
 
-const headerStyle = {
-    color: "#ffffff",
-    fontWeight: "600",
-    border: "solid 1px #BDBDBD",
-};
-const cellStyle = {
-    border: "solid 1px #BDBDBD",
-};
 type Props = {
     customProperties: Property[];
     setCustomProperties: (customProperties: Property[]) => void;
 };
+
 export const CustomPropertiesTable = ({ customProperties, setCustomProperties }: Props) => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editDialogOpen, setEditDialogOpen] = useState(false);
     const { setAlert } = useContext(AlertContext);
     const [deletePropertyInfo, setDeletePropertyInfo] = useState({ name: "", id: "" });
     const [editPropertyId, setEditPropertyId] = useState("");
+    const { t } = useTranslation();
+    const allowedActions = useAllowedActions();
+
+    if (!allowedActions.includes("VIEW_CUSTOM_PROPERTIES")) {
+        return <ActionNotAllowed errorMessage={t("customProperties.forbidden")} />;
+    }
+
     const handleDelete = async (id: string, name: string) => {
         setDialogOpen(true);
         setDeletePropertyInfo({ id, name });
     };
+
     const handleDialogDelete = () =>
-        deleteCustomProperty(deletePropertyInfo.id).then((res) => {
+        deleteCustomProperty(deletePropertyInfo.id).then(() => {
             setAlert(t("admin.settings.notifications.successfullyDeleted"), "success");
             setDialogOpen(false);
             getCustomProperties().then((customProperties) => setCustomProperties(customProperties));
         });
+
+    const columns: GridColDef[] = [
+        {
+            field: "name",
+            headerName: t("admin.settings.tableHeader.name"),
+            flex: 0.5,
+            renderCell: (params) => (params.row.type === "FIXED" ? t(`admin.settings.fixedPropertyType.${params.row.name}`) : params.row.name),
+            filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
+            filterable: true,
+            sortable: true,
+        },
+        {
+            field: "propertyType",
+            headerName: t("admin.settings.tableHeader.propertyType"),
+            flex: 0.25,
+            renderCell: (params) => t(`admin.settings.propertyType.${params.row.propertyType}`),
+            filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
+            filterable: true,
+            sortable: true,
+        },
+        {
+            field: "objectType",
+            headerName: t("admin.settings.tableHeader.objectType"),
+            flex: 0.25,
+            renderCell: (params) => t(`admin.settings.objectType.${params.row.objectType}`),
+            filterable: false,
+            sortable: false,
+        },
+        {
+            field: "categories",
+            headerName: t("admin.settings.tableHeader.categories"),
+            flex: 1,
+            renderCell: (params) => (
+                <Box>
+                    {params.row.categories?.map(
+                        (category: CategoryType, index: number) =>
+                            !category.disabled && <Chip key={category.id ?? "" + index} variant="outlined" label={category.name} />,
+                    )}
+                    {params.row.ordinals
+                        ?.sort((a: OrdinalCategoryType, b: OrdinalCategoryType) => a.level - b.level)
+                        .map(
+                            (ordinalCategory: OrdinalCategoryType, index: number) =>
+                                !ordinalCategory.disabled && <Chip key={ordinalCategory.id ?? "" + index} variant="outlined" label={ordinalCategory.name} />,
+                        )}
+                </Box>
+            ),
+            filterable: false,
+            sortable: false,
+        },
+        {
+            field: "actions",
+            type: "actions",
+            headerName: t("admin.settings.tableHeader.actions"),
+            getActions: (params) => {
+                const actions = allowedActions.includes("EDIT_CUSTOM_PROPERTIES")
+                    ? [
+                          <Tooltip title={t("admin.settings.tableHeader.edit")} key="edit">
+                              <GridActionsCellItem
+                                  size="large"
+                                  icon={<EditIcon />}
+                                  label={t("admin.settings.tableHeader.edit")}
+                                  disabled={params.row.disabled}
+                                  onClick={() => {
+                                      setEditPropertyId(params.row.id);
+                                      setEditDialogOpen(true);
+                                  }}
+                                  sx={{
+                                      bgcolor: "#31456F",
+                                      color: "white",
+                                      "&:hover": {
+                                          bgcolor: "navy",
+                                      },
+                                  }}
+                              />
+                          </Tooltip>,
+                      ]
+                    : [];
+                if (params.row.type === "CUSTOM" && allowedActions.includes("EDIT_CUSTOM_PROPERTIES")) {
+                    actions.unshift(
+                        <Tooltip title={t("admin.settings.tableHeader.delete")} key="delete">
+                            <GridActionsCellItem
+                                size="large"
+                                icon={<DeleteIcon />}
+                                label={t("admin.settings.tableHeader.delete")}
+                                disabled={params.row.disabled}
+                                onClick={() => handleDelete(params.row.id, params.row.name)}
+                                sx={{
+                                    bgcolor: "tomato",
+                                    color: "white",
+                                    "&:hover": {
+                                        bgcolor: "red",
+                                    },
+                                }}
+                            />
+                        </Tooltip>,
+                    );
+                }
+                return actions;
+            },
+            flex: 0.25,
+            headerAlign: "right",
+            align: "right",
+            filterable: false,
+            sortable: false,
+        },
+    ];
+
     return (
         <>
-            <TableContainer sx={{ mt: 2 }}>
-                <Table sx={{ minWidth: 650 }}>
-                    <TableHead sx={{ backgroundColor: "#738092" }}>
-                        <TableRow>
-                            <TableCell sx={headerStyle}>{t("admin.settings.tableHeader.name")}</TableCell>
-                            <TableCell sx={headerStyle} align="right">
-                                {t("admin.settings.tableHeader.propertyType")}
-                            </TableCell>
-                            <TableCell sx={headerStyle} align="right">
-                                {t("admin.settings.tableHeader.objectType")}
-                            </TableCell>
-                            <TableCell sx={headerStyle} align="right">
-                                {t("admin.settings.tableHeader.categories")}
-                            </TableCell>
-                            <TableCell sx={headerStyle} align="right">
-                                {t("admin.settings.tableHeader.actions")}
-                            </TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {customProperties?.map(
-                            (row: Property, index: number) =>
-                                !row.disabled && (
-                                    <TableRow key={row.name + row.propertyType + row.objectType + index}>
-                                        <TableCell component="th" scope="row" sx={cellStyle}>
-                                            {row.type === "FIXED" ? t(`admin.settings.fixedPropertyType.${row.name}`) : row.name}
-                                        </TableCell>
-                                        <TableCell sx={cellStyle} align="right">
-                                            {t(`admin.settings.propertyType.${row.propertyType}`)}
-                                        </TableCell>
-                                        <TableCell sx={cellStyle} align="right">
-                                            {t(`admin.settings.objectType.${row.objectType}`)}
-                                        </TableCell>
-                                        <TableCell sx={cellStyle} align="right">
-                                            {row.categories?.map(
-                                                (category, index) =>
-                                                    !category.disabled && <Chip key={category.id ?? "" + index} variant="outlined" label={category.name} />,
-                                            )}
-                                            {row.ordinals
-                                                ?.sort((a, b) => a.level - b.level)
-                                                .map(
-                                                    (ordinalCategory, index) =>
-                                                        !ordinalCategory.disabled && (
-                                                            <Chip key={ordinalCategory.id ?? "" + index} variant="outlined" label={ordinalCategory.name} />
-                                                        ),
-                                                )}
-                                        </TableCell>
-                                        <TableCell sx={cellStyle}>
-                                            <Stack direction="row" spacing={1} justifyContent="flex-end">
-                                                {row.type === "CUSTOM" && (
-                                                    <Tooltip title={t("admin.settings.tableHeader.delete")}>
-                                                        <IconButton
-                                                            disabled={row.disabled}
-                                                            sx={{
-                                                                bgcolor: "tomato",
-                                                                color: "white",
-                                                                "&:hover": {
-                                                                    bgcolor: "red",
-                                                                },
-                                                            }}
-                                                            onClick={() => row.id && handleDelete(row.id, row.name)}
-                                                        >
-                                                            <DeleteIcon color="inherit" />
-                                                        </IconButton>
-                                                    </Tooltip>
-                                                )}
-                                                <Tooltip title={t("admin.settings.tableHeader.edit")}>
-                                                    <IconButton
-                                                        disabled={row.disabled}
-                                                        sx={{
-                                                            bgcolor: "#31456F",
-                                                            color: "white",
-                                                            "&:hover": {
-                                                                bgcolor: "navy",
-                                                            },
-                                                        }}
-                                                        onClick={() => {
-                                                            row.id && setEditPropertyId(row.id);
-                                                            setEditDialogOpen(true);
-                                                        }}
-                                                    >
-                                                        <EditIcon color="inherit" />
-                                                    </IconButton>
-                                                </Tooltip>
-                                            </Stack>
-                                        </TableCell>
-                                    </TableRow>
-                                ),
-                        )}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+            <Stack>
+                <DataGrid
+                    rows={customProperties.filter((row) => !row.disabled)}
+                    rowHeight={70}
+                    rowSelection={false}
+                    columns={columns}
+                    initialState={{
+                        pagination: {
+                            paginationModel: { page: 0, pageSize: 10 },
+                        },
+                    }}
+                    pageSizeOptions={[5, 10, 25, 50, 100]}
+                    getRowId={(row) => row.id}
+                    autoHeight
+                />
+            </Stack>
             <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
                 <DialogTitle>{t("generic.confirmDeletion", { name: deletePropertyInfo.name })}</DialogTitle>
                 <DialogActions>

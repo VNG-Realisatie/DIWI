@@ -1,5 +1,9 @@
 {
   "translation": {
+    "pageTitle": {
+      "default": "VNG DIWI",
+      "prefix": "DIWI"
+    },
     "generic": {
       "yes": "Ja",
       "no": "Nee",
@@ -18,12 +22,16 @@
       "updated": "Succesvol geüpdatet",
       "failedToUpdate": "Update is mislukt",
       "failedToSave": "Opslaan is mislukt",
+      "forbidden": "Inloggen is mislukt",
+      "nodiwiaccount": "Dit account heeft geen gekoppelde diwi gebruiker",
       "project": "Project",
       "houseblock": "Woningblok",
       "true": "Ja",
       "false": "Nee",
       "andMore": "en meer",
-      "andLess": "en minder"
+      "andLess": "en minder",
+      "logout": "Uitloggen",
+      "cantAccessPage": "U heeft geen toegang tot deze pagina. Neem contact op met uw beheerder"
     },
     "import": {
       "errorsTitle": "Import fouten",
@@ -61,12 +69,12 @@
         "missing_fixed_property": "De vaste eigenschap is niet gevonden",
         "project_level_data_invalid": "Projectniveau-gegevens komen niet overeen met gegevens van vorig project met dezelfde id.",
 
-
         "project_dates_error": "De startdatum van het project is niet voor de einddatum van het project.",
         "project_dates_status_mismatch": "De start- en einddatum van het project komen niet overeen met de projectstatus.",
         "wrong_project_phase_dates": "De startdata van de projectfase vallen niet binnen de projectduur of zijn niet in de juiste volgorde.",
         "wrong_project_plan_status_dates": "De startdata van de projectplanningsplanstatus vallen niet binnen de projectduur of zijn niet in de juiste volgorde.",
         "incomplete_project_location": "Projectbuurt/district zijn aanwezig zonder dat district/gemeente aanwezig is",
+        "project_owner_unknown": "Het e-mailadres van de eigenaar ontbreekt of behoort niet toe aan een actieve gebruiker die het recht heeft om projecten te bezitten.",
 
         "houseblock_delivery_date": "Minstens één opleverdatum van het huisblok is na de einddatum van het project.",
         "houseblock_housing_number": "Het mutatienummer van het huisblok is niet groter dan 0.",
@@ -87,12 +95,13 @@
         "no_project_status": "Projectstatus ontbreekt of is ongeldig",
         "no_project_start_date": "Startdatum van het project ontbreekt of is ongeldig.",
         "no_project_end_date": "Einddatum van het project ontbreekt of is ongeldig.",
+        "no_project_confidentiality": "Vertrouwelijkheidsniveau van het project ontbreekt of is ongeldig.",
         "no_houseblock_mutation": "Mutatietype of -hoeveelheid van het huisblok ontbreekt.",
         "no_houseblock_name": "Naam van het huisblok ontbreekt.",
         "invalid_plan_type": "Projectplantype heeft een onbekende waarde",
         "invalid_numeric_range": "De waarde komt niet overeen met een numeriek bereik.",
 
-        "feature_error" : "Unable to import due to an error."
+        "feature_error": "Unable to import due to an error."
       }
     },
     "createProject": {
@@ -217,7 +226,8 @@
         "notifications": {
           "successfullySaved": "Woningblokken succesvol opgeslagen.",
           "successfullyUpdated": "Woningblokken succesvol geüpdatet.",
-          "error": "Nieuwe of gewijzigde woningblokken met een uitroepteken konden niet worden opgeslagen, pas de informatie aan en sla nogmaals op"
+          "error": "Nieuwe of gewijzigde woningblokken met een uitroepteken konden niet worden opgeslagen, pas de informatie aan en sla nogmaals op",
+          "genericError": "Er is een fout opgetreden bij het opslaan van de woningblokken"
         }
       },
       "selectMapForm": {
@@ -237,13 +247,14 @@
         "is": "is"
       },
       "hasMissingRequiredAreas": {
-        "name": "Naam ontbreekt",
-        "startDate": "Startdatum ontbreekt",
-        "endDate": "Einddatum ontbreekt",
-        "projectPhase": "Projectfase ontbreekt",
-        "confidentialityLevel": "Vertrouwelijkheidsniveau  ontbreekt",
+        "name": "Vul het veld projectnaam in",
+        "startDate": "Vul het veld startdatum in",
+        "endDate": "Vul het veld einddatum in",
+        "projectPhase": "Vul het veld projectfase in",
+        "confidentialityLevel": "Vul het veld vertrouwelijkheidsniveau in",
         "amount": "Aantal ontbreekt",
-        "hasmissingProperty": "Formulier heeft ontbrekende eigenschappen"
+        "hasmissingProperty": "Formulier heeft ontbrekende eigenschappen",
+        "owner": "Vul het veld shrijfrechten in"
       }
     },
     "sidebar": {
@@ -251,7 +262,11 @@
       "dashboards": "Dashboards",
       "users": "Gebruikers",
       "dataExchange": "Data uitwisselen",
-      "settings": "Instellingen"
+      "settings": "Instellingen",
+      "addProject": "Project toevoegen",
+      "projectOverview": "Overzicht projecten",
+      "knowledgeBase": "Kennisbank"
+
     },
     "about": {
       "heading": "Over deze website",
@@ -313,7 +328,36 @@
       "system": "Systeem x",
       "squit": "Squit",
       "province": "Provincie",
-      "newData": "Nieuwe data koppeling instellen"
+      "newData": "Nieuwe data koppeling instellen",
+      "importForbidden": "Importeren is niet toegestaan. Neem contact op met uw beheerder",
+      "importName": {
+        "excel": "Importeren vanuit Excel",
+        "squit": "Importeren vanuit Squit",
+        "geojson": "Importeren vanuit GeoJSON"
+      },
+      "download": {
+        "excel": "Download Excel template hier",
+        "squit": "Download Excel template hier",
+        "geojson": "Download GeoJSON template hier"
+      },
+      "upload": {
+        "excel": "Upload ingevulde Excel template.",
+        "squit": "Upload ingevulde Squit template.",
+        "geojson": "Upload ingevulde GeoJSON template.",
+        "hint": "Klik hier om te uploaden"
+      },
+      "notifications": {
+        "importSuccess": "Bestand succesvol geüpload",
+        "importFailed": "Kon bestand niet importeren",
+        "importFailedGoBack": "Het bestand kon niet worden geimporteerd. Klik hier om terug te gaan om een nieuw bestand te uploaden"
+      },
+      "errorTable": {
+        "row": "Rij",
+        "column": "Kolom",
+        "value": "Waarde",
+        "description": "Beschrijving",
+        "errors": "Fouten"
+      }
     },
     "policy": {
       "name": "Naam:",
@@ -346,11 +390,13 @@
         "UITBREIDING_OVERIG": "Uitbreiding overig"
       },
       "confidentialityLevelOptions": {
-        "PRIVE": "Prive",
-        "INTERN_UITVOERING": "Intern uitvoering",
-        "INTERN_RAPPORTAGE": "Intern rapportage",
-        "EXTERN_RAPPORTAGE": "Extern rapportage",
-        "OPENBAAR": "Openbaar"
+        "PRIVATE": "Prive",
+        "INTERNAL_CIVIL": "Intern ambtelijk",
+        "INTERNAL_MANAGEMENT": "Intern bestuurlijk",
+        "INTERNAL_COUNCIL": "Intern raad",
+        "EXTERNAL_REGIONAL": "Extern woonregio",
+        "EXTERNAL_GOVERNMENTAL": "Extern mede-overheden",
+        "PUBLIC": "Openbaar"
       },
       "projectPhaseOptions": {
         "_1_CONCEPT": "1 Concept",
@@ -378,6 +424,63 @@
       }
     },
     "admin": {
+      "userManagement": {
+        "titleUser": "User management gebruikers",
+        "titleGroup": "User management groepen",
+        "tableHeader": {
+          "name": {
+            "firstName": "Voornaam",
+            "lastName": "Achternaam"
+          },
+          "email": "E-mail",
+          "phone": "Telefoonnummer",
+          "organization": "Organisatie",
+          "role": "Type gebruiker",
+          "department": "Afdeling",
+          "active": "Actief",
+          "edit": "Bewerken",
+          "delete": "Verwijderen",
+          "actions": "Acties",
+          "groupes": "Groepen",
+          "users": "Gebruikers"
+        },
+        "groupName": "Group naam",
+        "addMember": "Leden toevoegen",
+
+        "addUser": "Gebruiker toevoegen",
+        "addGroup": "Groep toevoegen",
+        "editUser": "Gebruiker aanpassen",
+        "editGroup": "Groep aanpassen",
+        "add": "Voeg gebruiker toe",
+        "edit": "Pas gebruiker aan",
+        "userAddSuccess": "Gebruiker is toegevoegd",
+        "groupAddSuccess": "Groep is toegevoegd",
+        "groupDeleteSuccess": "Groep is verwijderd",
+        "groupDeleteConfirmation": "Weet je zeker dat je de groep wilt verwijderen?",
+        "userDeleteConfirmation": "Weet je zeker dat je de gebruiker wilt verwijderen?",
+        "userDeleteSuccess": "Gebruiker is verwijderd",
+        "groupUpdateSuccess": "Groep is geüpdatet",
+        "userUpdateSuccess": "Gebruiker is geüpdatet",
+        "errors": {
+          "addMember": "Leden moeten worden toegevoegd",
+          "groupName": "Vul de groepnaam in",
+          "firstName": "Vul de voornaam in",
+          "lastName": "Vul de achternaam in",
+          "email": "Vul een geldig e-mailadres in",
+          "role": "Selecteer een rol",
+          "phone": "Vul een geldig telefoonnummer in",
+          "organization": "Vul de organisatie in",
+          "department": "Vul de afdeling in"
+        },
+        "roles": {
+          "Admin": "Admin",
+          "User": "Gebruiker",
+          "UserPlus": "Hoofdgebruiker",
+          "ManagementUser": "Collegelid en management",
+          "Councilor": "Raadslid",
+          "External": "Externe gebruiker"
+        }
+      },
       "settings": {
         "title": "Lijst met maatwerk velden",
         "tableHeader": {
@@ -423,11 +526,112 @@
       }
     },
     "customProperties": {
-      "title": "Maatwerk eigenschappen"
+      "title": "Maatwerk eigenschappen",
+      "forbidden": "Maatwerk eigenschappen zijn niet toegestaan. Neem contact op met uw beheerder."
     },
     "projectPhase": "Projectfase",
     "planType": "Plan Type",
     "totalValue": "Aantal",
-    "projectOwners": "Schrijfrechten"
+    "projectOwners": "Schrijfrechten",
+    "tooltipInfo": {
+      "projectNaam": {
+        "title": "Vul hier de naam van je totaalproject in. Op de volgende pagina kan je de namen van deelprojecten of faseringen ingeven; dat hoeft hier nog niet."
+      },
+      "projectKleur": {
+        "title": "Kies hier de kleurcategorie waar jouw project invalt, als jouw gemeente daarmee werkt. Die categoriën kan je zelf bedenken."
+      },
+      "plantype": {
+        "title": "Geef aan welk plantype het meest dominant is binnen het plan; die het meest voorkomt. Je kan kiezen uit één van de volgende typen:",
+        "PAND_TRANSFORMATIE": "Locatie waarbij door woningtoevoeging in bestaande niet-woonpanden (ver- en nieuwbouw) binnen bestaand stedelijk gebied de gebruiksfunctie van een of meerdere verblijfsobjecten in het pand verandert. Bestaande niet- woonpanden wordt hierbij niet gesloopt.",
+        "TRANSFORMATIEGEBIED": "Locatie waarbij door woningtoevoeging op al dan niet bebouwde gronden (verbouw, nieuwbouw en functiewijziging) binnen bestaand stedelijk gebied de planologische functie verandert. Met uitzondering van agrarische gronden (zie uitbreiding) en verdichtingsplannen (zie verdichting). Bestaande (niet-)woongebouwen worden hierbij overwegend gesloopt en vervangen door nieuwe woongebouwen.",
+        "HERSTRUCTURERING": "Locatie waarbij door woningtoevoeging (nieuwbouw en splitsing) en/of woningonttrekking (sloop en samenvoeging) de samenstelling van de bestaande woningvoorraad binnen bestaand stedelijk gebied verandert zonder ingrijpende wijziging van de planologische functie.",
+        "VERDICHTING": "Locatie waarbij woningen worden toegevoegd door nieuwbouw aan of op bestaande panden en op al dan niet bebouwde gronden binnen bestaand stedelijk gebied, zoals niet-woonpanden, sportvelden of groenstroken.",
+        "UITBREIDING_UITLEG": "Locatie waarbij door woningtoevoeging (nieuwbouw) 12 of meer woningen worden gerealiseerd die er volgt buiten bestaand stedelijk gebied zijn gepland op grond die voorheen een agrarische bestemming had; ook wel uitleglocatie genoemd.",
+        "UITBREIDING_OVERIG": "Locatie waarbij door woningtoevoeging (nieuwbouw) 11 of minder woningen worden gerealiseerd waardoor buiten het bestaand stedelijk gebied de woningvoorraad toeneemt."
+      },
+      "startDatum": {
+        "title": "Vul hier de datum in waarop het woningbouwinitiatief bij de gemeente is ingediend. Dit is niet de start van de bouw, maar de start van het woningbouwinitiatief."
+      },
+      "eindDatum": {
+        "title": "Maak een schatting van wanneer je hele project is afgerond, dus wanneer ook de nazorgperiode voorbij is. De periode tussen startdatum en einddatum is de totale doorlooptijd van dit woningbouwproject."
+      },
+      "prioritering": {
+        "title": "Hoe belangrijk is dit project voor jouw gemeente? Cijfer 1 is hoge prioritering, cijfer 3 is laag\nJe kan er ook voor kiezen om de cijfers 1, 2 en 3 aan een eigen bedachte categorie toe te kennen. Bijvoorbeeld 1 = gemeenteraad, 2 = college, 3 = overig"
+      },
+      "projectFase": {
+        "title": "Selecteer hier de projectfase waarin het woningbouwplan zich bevindt.",
+        "_1_CONCEPT": "5a en 5b",
+        "_2_INITIATIVE": "In deze fase vindt een vooronderzoek plaats over de aard en omvang van de bouwopgave en een oriëntatie naar behoefte en mogelijkheden. Partijen zoeken in deze fase naar overeenstemming over het te behalen resultaat (initiatief), formuleren de uitgangspunten en stellen een plan van aanpak op. Deze fase wordt afgesloten met besluit over het initiatief en bij doorgang over de uitgangspunten en het plan van aanpak.\n\nMijlpalen die bij deze fase horen:\n- Initiatief ingediend\n- Locatie gevonden\n- Principeakkoord college van b&w afgegeven [document toevoegen optie]",
+        "_3_DEFINITION": "Dit is de fase waarin op basis van het vooronderzoek en dergelijke de eisen waaraan het project moet voldoen gedetailleerd worden geformuleerd in een programma van eisen. Ook kan het werkplan hierop worden aangescherpt. Deze fase wordt afgesloten met een besluit over het programma van eisen.\n\nMijlpalen die bij deze fase horen:\n- Intentieovereenkomst met initiatiefnemer gesloten [document toevoegen optie]\n- Grond verworven (ingegeven door opdrachtgever)",
+        "_4_DESIGN": "In deze fase wordt op basis van het PvE een ontwerp uitgewerkt. In eerste instantie is dat een voorlopig ontwerp, later wordt dat een definitief ontwerp. Deze fase wordt afgesloten met een besluit over het definitieve ontwerp.\n\nMijlpalen die bij deze fase horen:\n- Anterieure overeenkomst gesloten [document toevoegen optie]\n- Architect bekend (ingegeven door opdrachtgever)\n- Onderzoeken afgerond (ingegeven door gemeente en opdrachtgever) [meerdere documenten toevoegen optie]",
+        "_5_PREPARATION": "In deze fase wordt het definitieve ontwerp bouw- of aanbestedingsgereed gemaakt. Het bestek en de bestek-, constructie- en installatietekeningen worden uitgewerkt. De omgevingsvergunning tot bouwen (en/ of slopen) wordt aangevraagd en verleend en bij koopwoningen wordt de verkoop gestart. In deze fase wordt het plangebied ook bouwrijp gemaakt.\n\nMijlpalen die bij deze fase horen\n- Bestemmingsplan-/ omgevingsplanwijziging:\n* Aanpassing aangekondigd\n* Ter inzage gelegd\n* Vastgesteld\n* Onherroepelijk [als deze mijlpaal wordt aangeklikt, moet de IMRO code worden toegevoegd]\n\n- Omgevingsvergunning:\n* Aangevraagd\n* Verleend\n\n- Start sanering grond en/ of voorbelasting (ingegeven door opdrachtgever)\n- Aannemingsovereenkomst gesloten (ingegeven door opdrachtgever)\n- Start verkoop woningen (ingegeven door opdrachtgever)\n- Behalen voorverkooppercentage (koopwoningen) (ingegeven door opdrachtgever)\n- Verkoop aan belegger en/ of woningcorporatie (huurwoningen) (ingegeven door opdrachtgever)\n- Aannemer gegund (ingegeven door opdrachtgever)\n- Grond gesaneerd/ schoon en voorbelast (ingegeven door opdrachtgever)\n- Locatie bouwrijp gemaakt (ingegeven door opdrachtgever)",
+        "_6_REALIZATION": "Deze fase begint met de start van de bouw van de (eerste) woningen van het plan en eindigt met de oplevering van de laatste woning van het plan. Deze fase eindigt met de oplevering van het werk.\n\nMijlpalen die bij deze fase horen\n- Registratie start bouw in de BAG\n- Start bouw woningen (ingegeven door opdrachtgever)",
+        "_7_AFTERCARE": "Dit is de fase waarin de omgeving van de opgeleverde woningen wordt ingericht (woonrijp gemaakt), de woningen in gebruik worden genomen en eventuele financiele afwikkeling en nodige registraties plaatsvinden.",
+        "afgerond": "Het plan is gerealiseerd. Daar is sprake van wanneer alle woningen binnen het woningbouwplan de volgende BAG-status hebben: Verblijfsobject met woonfunctie BAG status ‘in gebruik’, ‘in gebruik (niet ingemeten)’ of ‘Verbouwing verblijfsobject’. Daarnaast is de financiële afwikkeling afgerond.\n",
+        "vervallen": "Een vervallen plan is een woningbouwplan waarbij de gemeente of de initiatiefnemer heeft besloten de ontwikkeling niet door te zetten. Dit zijn geen plannen die op pauze staan, maar plannen waar niet meer aan gewerkt kan worden."
+      },
+      "rolGemeente": {
+        "title": "Welke rol(len) heeft de gemeente bij dit woningbouwplan? Je kan hier kiezen voor meerdere rollen, als daar sprake van is.",
+        "Grondeigenaar": "Het woningbouwplan wordt (deels) ontwikkeld op gemeentegrond.",
+        "Opdrachtgever": "De gemeente is (mede-) opdrachtgever van het woningbouwplan.",
+        "UitvoerenOpROproces": "Er moet een RO procedure doorlopen worden waar de gemeente mede uitvoering aan geeft.",
+        "Vergunningverlener": "Er moet een vergunning aangevraagd worden die door de gemeente zal worden behandeld."
+      },
+      "vertrouwelijkheidsniveau": {
+        "title": "Wie mag de gegevens van het woningbouwplan inzien? Je kan hier kiezen tussen verschillende niveaus binnen de gemeentelijke organisatie (intern) en daarbuiten (extern). Je kan in de dashboard- en rapportagefunctie vervolgens kiezen wélke informatie deze gebruikersgroepen kunnen inzien en op welk aggregatieniveau ze de informatie zien. Dat hoef je hier nog niet te regelen.\n\nExtra achtergrondinformatie:\nUitgangspunt vanuit de 'open overheid' is dat woningbouwplannen in principe niet vertrouwelijk zijn. Maar soms speelt er iets op lokaal niveau wat het wenselijk maakt de informatie over een bepaald plan binnen de gemeentelijke organisatie te houden. Bijvoorbeeld om grondspeculatie te voorkomen, of als omwonenden nog niet geïnformeerd zijn. Met de medeoverheden is daarom afgesproken dat je er als gemeente voor mag kiezen om een woningbouwplan een vertrouwelijke status te geven. Dat mag enkel bij plannen met een zachte planstatus (zie planologische planstatus). Zodra alle onderdelen van 'de Basisset' met omwonenden gecommuniceerd zijn, mag een woningbouwplan niet meer het label vertrouwelijk krijgen.\n\nVNG heeft met het IPO (de provincies) en het Rijk een 'dataprotocol' vastgesteld. Daarin staan afspraken over hoe provincies, Rijk en derden deze data mogen gebruiken. Je kan de Basisset en het dataprotocol bij VNG opvragen via nanke.hofstra@vng.nl.",
+        "PRIVATE": "Dit plan is enkel voor jezelf zichtbaar.",
+        "INTERNAL_CIVIL": "Dit plan is voor jezelf en voor je collega's die werken aan woningbouw zichtbaar.",
+        "INTERNAL_MANAGEMENT": "Dit plan is voor jezelf, je collega's zichtbaar en het college van b&w zichtbaar.",
+        "INTERNAL_COUNCIL": "Dit plan is voor jezelf, je collega's, het college van b&w en de gemeenteraad zichtbaar.",
+        "EXTERNAL_GOVERNMENTAL": "Dit plan is zichtbaar alle interne gebruikersgroepen én voor provincies en Rijk. Woningbouwplannen met een harde planstatus (zie planologische planstatus) moeten altijd op dit niveau worden gezet. Ook zachte woningbouwplannen waarvan alle onderdelen van 'de Basisset' met omwonenden gecommuniceerd zijn moet op dit niveau worden gezet.",
+        "PUBLIC": "Dit plan is zichtbaar voor iedereen."
+      },
+      "planologischePlanstatus": {
+        "title": "Geef hier aan wat de planologisch-juridische status is van het woningbouwplan. Categoriën 1 t/m 4 ken je uit de provinciale planmonitor. Soms wordt er bij gemeenten, corporaties en marktpartijen aan woningbouwplannen gewerkt zonder dat het college van B&W zich daarover al positief heeft uitgesproken, of dat er een concrete locatie op het oog is. Bijvoorbeeld als een wethouder opdracht geeft als \"zoek een locatie voor een Knarrenhofje\". Of als je ambtelijk al weet dat je ergens iets wil, maar dat het nog heel vaag is.\n\nHet is fijn dat ook deze plannen in DIWI terug te vinden zijn. Daarom staan er in DIWI twee extra categoriën: 5A en 5B. Deze categorieën zijn bedoeld voor de eigen gemeentelijke administratie en worden niet bij de provincie aangeleverd. Woningbouwplannen uit categorie 5A en 5B tellen voor onze mede overheden dan ook niet mee als plancapaciteit.\n\nHarde woningbouwplannen: categorieën 1A, 1B, 2A en 2B.\nZachte woningbouwplannen: categorieën 1C, 2C, 3, 4A, 4B, 5A en 5B.",
+        "_1A_ONHERROEPELIJK": "Het bestemmingsplan voor het woningbouwplan is onherroepelijk. Er is sprake van een rechtstreekse bouwtitel OF het omgevingsplan of projectbesluit is onherroepelijk.",
+        "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG": "Het bestemmingsplan voor het woningbouwplan is onherroepelijk maar uitwerking is nog nodig voordat een omgevingsvergunning voor bouwen verleend kan worden.",
+        "_1C_ONHERROEPELIJK_MET_BW_NODIG": "Het bestemmingsplan voor het woningbouwplan is onherroepelijk maar het woningbouwplan kan alleen via een wijziging door BenW tot stand komen op basis waarvan een bouwvergunning kan worden verleend.",
+        "_2A_VASTGESTELD": "Het bestemmingsplan voor het woningbouwplan is vastgesteld door de gemeenteraad maar is nog niet onherroepelijk OF het omgevingsplan of projectbesluit is vastgesteld.",
+        "_2B_VASTGESTELD_MET_UITWERKING_NODIG": "Het bestemmingsplan voor het woningbouwplan is vastgesteld door de gemeenteraad maar nog niet onherroepelijk en er is een uitwerking nodig voordat een omgevingsvergunning voor bouwen verleend kan worden.",
+        "_2C_VASTGESTELD_MET_BW_NODIG": "Het bestemmingsplan voor het woningbouwplan is vastgesteld maar nog niet onherroepelijk en het woningbouwplan kan alleen via een wijziging door BenW tot stand komen op basis waarvan een bouwvergunning kan worden verleend.",
+        "_3_IN_VOORBEREIDING": "Het bestemmingsplan voor het woningbouwplan is in voorbereiding maar nog niet vastgesteld door de gemeenteraad OF het omgevingsplan of projectbesluit is in voorbereiding (ambtelijke start).",
+        "_4A_OPGENOMEN_IN_VISIE": "Potentieel, visie: Het woningbouwplan heeft wel een locatie op het oog, er is wel een principeakkoord vanuit het college van B&W. Het bestemmingsplan voor het woningbouwplan is nog niet in voorbereiding, maar het woningbouwplan is wel opgenomen in een ruimtelijke structuur-, omgevings- en/of woonvisie.",
+        "_4B_NIET_OPGENOMEN_IN_VISIE": "Potentieel, idee: Het woningbouwplan heeft wel een locatie op het oog, er is wel een principeakkoord vanuit het college van B&W. Het bestemmingsplan voor het woningbouwplan is nog niet in voorbereiding en het woningbouwplan is niet opgenomen in een ruimtelijke structuur-, omgevings- en/of woonvisie.",
+        "5A": "Gemeentelijke voorbereiding met locatie: Het woningbouwplan heeft wel een locatie op het oog, er is geen principeakkoord vanuit het college van B&W. Dit woningbouwplan wordt niet aangeleverd bij de provincie (wordt ingevoerd voor de eigen adminitratie).",
+        "5B": "Gemeentelijke voorbereiding zonder locatie: Het woningbouwplan heeft nog geen locatie op het oog, er is geen principeakkoord vanuit het college van B&W. Dit woningbouwplan wordt niet aangeleverd bij de provincie (wordt ingevoerd voor de eigen adminitratie)."
+      },
+      "woningtype": {
+        "title": "Vul hier de verdeling in absolute aantallen van het totaal aantal (bruto) te bouwen woningen in.",
+        "meergezinswoningen": "Dit is een woning die samen met andere woningen of (bedrijfs)ruimten een geheel pand vormen.",
+        "eengezinswoningen": "Dit is een woning die tevens een geheel pand vormt."
+      },
+      "schrijfrechten": {
+        "title": "Vul hier de naam in van de huidige behandelaar van dit woningbouwplan. Dit kunnen meerdere mensen zijn. Deze mensen krijgen schrijfrechten."
+      },
+      "brutoPlancapaciteit": {
+        "title": "Het totaal aantal woningen dat binnen het woningbouwplan volgens de planning gerealiseerd gaat worden. Realisatie kan door middel van nieuwbouw, transformatie, splitsing of een combinatie van deze. Enkel zelfstandige woningen tellen mee."
+      },
+      "sloop": {
+        "title": "Het totaal aantal woningen dat binnen het woningbouwplan volgens de planning gesloopt gaat worden."
+      },
+      "nettoPlancapaciteit": {
+        "title": "Het totaal aantal geplande toe te voegen nieuwe woningen minus het aantal geplande te onttrekken bestaande woningen."
+      },
+      "selecteerPercelen": {
+        "title": "Klik de percelen van het totale plangebied aan. Sleep vervolgens de lijnen binnen de percelen, totdat je een juiste schatting van het plangebied hebt gemaakt. Je kan, naarmate je project vordert, het plangebied nog aanpassen. Op de volgende pagina kan je binnen dit totale plangebied eventuele deelgebieden ingeven; dat hoeft hier nog niet."
+      },
+      "woningblok": {
+        "title": "Op deze pagina voer je in wat er precies gebouwd wordt. Je kan daarbij verschillende 'subgroepen' binnen je woningbouwproject aanmaken. Zoals bouwfases, deelgebieden of categoriën. Dat wordt bedoeld met 'deelplannen'. Alle deelplannen samen vormen je totaalplan. Als je woningbouwproject uit één onderdeel bestaat, dan vul je slechts één deelplan in.\n\nLet op! Maak voor sloop altijd een apart deelplan aan, zodat je nauwkeurig kan volgen wat er precies gesloopt gaat worden. Dat is nodig om de mutaties op je totale woningvoorraad goed te kunnen bijhouden.\n\nHoe bepaal je de indeling van je project in deelplannen?\nJe bepaalt zelf (met je collega's) hoe je hier in DIWI mee om wil gaan. Je kan één plangebied bijvoorbeeld indelen in fases. Elke fase krijgt dan een ander deelplan. Je kan ook een plangebied opdelen in stukjes op basis grondposities of deelgebieden. Of op basis van de programmering. Je bepaalt hier zelf wat je een fijne opsplitsing vindt."
+      },
+      "mutatieSoort": {
+        "title": "Maak een keuze: gaat dit deelplan over de sloop of de bouw van woningen?"
+      },
+      "soort": {
+        "title": "Hier kan je per deelplan aangeven wat je bouwprogramma is.\n\nVerschillende prijsgrenzen\nDIWI vertaalt de input over prijzen in de rapportage-, dashboard- en exportfunctie automatisch naar prijscategoriën. Dat doet DIWI op basis van vooraf ingestelde prijsgrenzen. De prijsgrenzen van het Rijk zijn interbestuurlijk vastgesteld en worden jaarlijks geïndexeerd. VNG zorgt dat deze categoriën automatisch aangepast worden bij nieuwe ontwikkelingen. Je kan ook lokale prijsgrenzen aanmaken, als de gemeenteraad die heeft vastgesteld. Dat kan bij de optie [naam]. Je moet deze categorie dan zelf bijhouden.\n\nAangegeven dient te worden in absolute aantallen hoeveel woningen vallen in de categorieën betaalbare koopwoningen (Rijksgrens), sociale huurwoningen door marktpartijen, sociale huurwoningen door woningcorporaties, middenhuurwoningen door marktpartijen, middenhuurwoningen door woningcorporaties, het aantal overige woningen en het aantal woningen waarvan prijssegment of eigendom (nog) onbekend zijn."
+      },
+      "deelplan": {
+        "title": "Vul hier de naam van je deelplan in. Bijvoorbeeld 'Fase 1', of 'Ontwikkelgebied tender CPO'."
+      }
+    }
   }
 }

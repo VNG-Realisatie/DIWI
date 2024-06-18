@@ -14,7 +14,9 @@ public class VngRepository extends AbstractRepository {
 
     private MilestoneDAO milestoneDAO;
 
-    private OrganizationsDAO organizationDAO;
+    private UserGroupDAO usergroupDAO;
+
+    private UserDAO userDAO;
 
     private PropertyDAO propertyDAO;
 
@@ -39,11 +41,18 @@ public class VngRepository extends AbstractRepository {
         return milestoneDAO;
     }
 
-    public OrganizationsDAO getOrganizationDAO() {
-        if (organizationDAO == null) {
-            organizationDAO = new OrganizationsDAO(session);
+    public UserGroupDAO getUsergroupDAO() {
+        if (usergroupDAO == null) {
+            usergroupDAO = new UserGroupDAO(session);
         }
-        return organizationDAO;
+        return usergroupDAO;
+    }
+
+    public UserDAO getUserDAO() {
+        if (userDAO == null) {
+            userDAO = new UserDAO(session);
+        }
+        return userDAO;
     }
 
     public PropertyDAO getPropertyDAO() {

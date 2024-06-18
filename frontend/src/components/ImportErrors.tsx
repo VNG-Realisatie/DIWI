@@ -3,6 +3,10 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { t } from "i18next";
 import { capitalizeFirstLetters } from "../utils/stringFunctions";
 
+export type ImportErrorObject = {
+    error: Array<ImportErrorType>;
+};
+
 export type ImportErrorType = {
     // only two guaranteed props
     errorCode: string; // short string indicating what error occured, see errorCodes in translation file(s)
@@ -17,7 +21,7 @@ export type ImportErrorType = {
     customPropertyId: string | undefined; // UUID
 };
 
-type ImportErrorProps = { errors: Array<ImportErrorType>; isGeoJson?: boolean };
+type ImportErrorProps = { errors: ImportErrorType[]; isGeoJson?: boolean };
 
 export const ImportErrors = ({ errors, isGeoJson = false }: ImportErrorProps) => {
     return (
@@ -43,7 +47,7 @@ export const ImportErrors = ({ errors, isGeoJson = false }: ImportErrorProps) =>
                                         backgroundColor: "lightgray",
                                     }}
                                 >
-                                    <Typography>{t(`import.errorCodes.${error.errorCode}`)}</Typography>
+                                    <Typography className="import-error">{t(`import.errorCodes.${error.errorCode}`)}</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails>
                                     <List
@@ -86,7 +90,7 @@ const PropertyListItem = ({ label, value }: PropertyListItemProps) => {
         displayValue = displayValue.trim();
         if (displayValue !== "") {
             return (
-                <ListItem>
+                <ListItem className={label}>
                     <Typography>
                         {capitalizeFirstLetters(label)}: {displayValue}
                     </Typography>

@@ -1,6 +1,7 @@
 import { Grid, Typography } from "@mui/material";
 import { columnTitleStyle } from "./ImportProjectCardItem";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const ImportHouseBlockCardItem = (props: any) => {
     const { hb } = props;
 

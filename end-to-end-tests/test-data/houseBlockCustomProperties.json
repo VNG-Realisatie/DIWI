@@ -1,0 +1,70 @@
+[
+  {
+    "id": "018e7b14-cdc9-7909-b6d6-61bd061ac7cd",
+    "name": "ExtraFloor",
+    "type": "CUSTOM",
+    "objectType": "WONINGBLOK",
+    "propertyType": "BOOLEAN",
+    "disabled": false,
+    "categories": null,
+    "ordinals": null
+  },
+  {
+    "id": "018e7b14-639a-7e3b-9302-ab733d887bc4",
+    "name": "HouseBlocks",
+    "type": "CUSTOM",
+    "objectType": "WONINGBLOK",
+    "propertyType": "CATEGORY",
+    "disabled": false,
+    "categories": [
+      { "id": "018e7b14-639b-733d-abdf-b327f9184c73", "name": "Revenue", "disabled": false },
+      { "id": "018e7b14-639a-7fff-99ba-0068c76feaf4", "name": "Demolish", "disabled": false },
+      { "id": "018e7b14-639a-7de4-b149-18c3f01a4f42", "name": "Build", "disabled": false }
+    ],
+    "ordinals": null
+  },
+  {
+    "id": "3960379a-526d-4296-a10c-b92db7c8f3c9",
+    "name": "physicalAppearance",
+    "type": "FIXED",
+    "objectType": "WONINGBLOK",
+    "propertyType": "CATEGORY",
+    "disabled": false,
+    "categories": [
+      { "id": "ac692524-2b9f-4c96-a56c-2e194d93a04e", "name": "Twee onder een kap", "disabled": false },
+      { "id": "bd6ac64f-ce22-4bcb-955b-b1eca93c7e71", "name": "Hoekwoning", "disabled": false },
+      { "id": "c7e5157f-daf3-41a1-837c-e8ca849a69f0", "name": "Tussenwoning", "disabled": false },
+      { "id": "4bf53033-d05f-481c-97d2-33c11b133125", "name": "Gallerijflat", "disabled": false },
+      { "id": "b1aecd99-b8ef-4344-ad22-9b083b9680db", "name": "Portiekflat", "disabled": false },
+      { "id": "85e33e39-2582-4d39-8a0b-9cb06c428a9e", "name": "Vrijstaand", "disabled": false }
+    ],
+    "ordinals": null
+  },
+  {
+    "id": "018e7b15-11b2-7eed-8867-c874b554c54f",
+    "name": "SmallChanges",
+    "type": "CUSTOM",
+    "objectType": "WONINGBLOK",
+    "propertyType": "TEXT",
+    "disabled": false,
+    "categories": null,
+    "ordinals": null
+  },
+  {
+    "id": "568ff9b5-8491-41a2-8e37-af40212b070a",
+    "name": "targetGroup",
+    "type": "FIXED",
+    "objectType": "WONINGBLOK",
+    "propertyType": "CATEGORY",
+    "disabled": false,
+    "categories": [
+      { "id": "49f9846a-616a-4fc9-8f65-fb638d425601", "name": "Grote gezinnen", "disabled": false },
+      { "id": "419163a7-10f2-4925-96a8-ced828b99949", "name": "GHZ", "disabled": false },
+      { "id": "7caa59b1-1799-4bcf-bbc8-05121fce975c", "name": "Ouderen", "disabled": false },
+      { "id": "f9f2466f-c712-48ca-9bda-5586e5beb914", "name": "Student", "disabled": false },
+      { "id": "dc0aec70-343f-4b0a-85cd-f1f44c78fcc3", "name": "Jongeren", "disabled": false },
+      { "id": "3d12586e-7d07-446b-8f06-968282e85a2f", "name": "Regulier", "disabled": false }
+    ],
+    "ordinals": null
+  }
+]

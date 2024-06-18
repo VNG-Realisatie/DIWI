@@ -31,5 +31,5 @@ fi
 # Backup git hash so we can rollback to the specific version
 git rev-parse HEAD > "backup/predeploy-$timestamp.githash"
 
-# prune old backups
-find backup -type f -mtime +7 -delete
+# prune old backups, but ignore .gitkeep
+find backup -type f ! -name '.gitkeep' -mtime +7 -delete
