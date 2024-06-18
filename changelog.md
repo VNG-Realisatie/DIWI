@@ -1,5 +1,11 @@
 # Change log
 
+## DIWI RELEASE 1.3.3
+
+### FIXED
+
+- Fixed an issue with updating an existing house block in a project.
+
 ## DIWI RELEASE 1.3.2
 
 ### ADDED
