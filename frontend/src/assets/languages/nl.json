@@ -446,7 +446,6 @@
         },
         "groupName": "Group naam",
         "addMember": "Leden toevoegen",
-
         "addUser": "Gebruiker toevoegen",
         "addGroup": "Groep toevoegen",
         "editUser": "Gebruiker aanpassen",
@@ -476,8 +475,8 @@
           "Admin": "Admin",
           "User": "Gebruiker",
           "UserPlus": "Hoofdgebruiker",
-          "ManagementUser": "Collegelid en management",
-          "Councilor": "Raadslid",
+          "Management": "Collegelid en management",
+          "Council": "Raadslid",
           "External": "Externe gebruiker"
         }
       },

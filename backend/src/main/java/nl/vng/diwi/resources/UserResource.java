@@ -25,9 +25,13 @@ import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.security.MailException;
 import nl.vng.diwi.security.MailService;
 import nl.vng.diwi.security.UserActionConstants;
+import nl.vng.diwi.services.AddUserException;
+import nl.vng.diwi.services.FindUserException;
+import nl.vng.diwi.services.KeycloakService;
 import nl.vng.diwi.services.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.keycloak.representations.idm.UserRepresentation;
 
 import java.util.List;
 import java.util.UUID;
@@ -40,11 +44,13 @@ public class UserResource {
 
     private final UserService userService;
     private final MailService mailService;
+    private final KeycloakService keycloakService;
 
     @Inject
-    public UserResource(UserService userService, MailService mailService) {
+    public UserResource(UserService userService, MailService mailService, KeycloakService keycloakService) {
         this.userService = userService;
         this.mailService = mailService;
+        this.keycloakService = keycloakService;
     }
 
     @GET
@@ -79,27 +85,33 @@ public class UserResource {
         }
 
         UserState sameEmailUser = userService.getUserDAO().getUserByEmail(newUser.getEmail());
-        if (sameEmailUser != null) {
+        UserRepresentation keycloakSameEmailUser = keycloakService.getUserByEmail(newUser.getEmail());
+        if (sameEmailUser != null || keycloakSameEmailUser != null) {
             throw new VngBadRequestException("User with this email already exists.");
         }
 
         try (AutoCloseTransaction transaction = userService.getUserDAO().beginTransaction()) {
-
-            //TODO: create user in keycloak
-            String identityProviderId = "identityProviderId"; //TODO - get from keycloak
-
+            logger.info("creating new user: " + newUser.toString());
+            var kcUserResource = keycloakService.createUser(newUser);
+            String identityProviderId = kcUserResource.toRepresentation().getId();
             UserState newUserEntity = userService.createUser(newUser, identityProviderId, loggedUser.getUuid());
-            transaction.commit();
+            transaction.commit(); 
 
+            // Send initial welcome mail
             try {
                 mailService.sendWelcomeMail(newUserEntity.getEmail());
-                //TODO: trigger password reset email in keycloak
             } catch (MailException e) {
                 logger.error("Failed to send welcome mail", e);
                 throw new VngServerErrorException("Failed to send welcome mail");
             }
+            
+            // Send second email for user to reset their login credentials
+            kcUserResource.executeActionsEmail(List.of("UPDATE_PROFILE"));
 
             return new UserModel(newUserEntity);
+        } catch (AddUserException e1) {
+            logger.error("Failed to create user in keycloak", e1);
+            throw new VngServerErrorException("Failed to create user in keycloak");
         }
     }
 
@@ -108,7 +120,8 @@ public class UserResource {
     @RolesAllowed(UserActionConstants.EDIT_USERS)
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public UserModel updateUser(@PathParam("id") UUID userId, UserModel updatedUser, @Context LoggedUser loggedUser) throws VngBadRequestException, VngNotFoundException {
+    public UserModel updateUser(@PathParam("id") UUID userId, UserModel updatedUser, @Context LoggedUser loggedUser)
+            throws VngBadRequestException, VngNotFoundException {
 
         UserState state = userService.getUserDAO().getUserById(userId);
         if (state == null) {
@@ -126,14 +139,17 @@ public class UserResource {
         }
 
         try (AutoCloseTransaction transaction = userService.getUserDAO().beginTransaction()) {
-
-            //TODO: update email / last name / first name in keycloak
-
             updatedUser.setId(userId);
+            
+            String identityProviderId = userService.getUserDAO().getIdentityProviderIdForUser(userId);
+            keycloakService.updateUser(identityProviderId, updatedUser);
+
             UserState updatedUserEntity = userService.updateUser(updatedUser, loggedUser.getUuid());
             transaction.commit();
 
             return new UserModel(updatedUserEntity);
+        } catch (FindUserException e) {
+            throw new VngBadRequestException("Could not update user in keycloak.");
         }
     }
 
@@ -141,13 +157,14 @@ public class UserResource {
     @Path("/{userId}")
     @RolesAllowed(UserActionConstants.EDIT_USERS)
     @Produces(MediaType.APPLICATION_JSON)
-    public void deleteUser(@PathParam("userId") UUID userId, ContainerRequestContext requestContext) throws VngNotFoundException {
+    public void deleteUser(@PathParam("userId") UUID userId, ContainerRequestContext requestContext)
+            throws VngNotFoundException {
 
         var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
 
         try (AutoCloseTransaction transaction = userService.getUserDAO().beginTransaction()) {
 
-            //TODO: delete/disable user in keycloak
+            // TODO: delete/disable user in keycloak
             userService.deleteUser(userId, loggedUser.getUuid());
             transaction.commit();
         }
@@ -160,10 +177,12 @@ public class UserResource {
     public UserInfoModel userInfo(ContainerRequestContext requestContext) throws VngNotAllowedException {
         var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
         UserState state = userService.getUserDAO().getUserById(loggedUser.getUuid());
-        
-        // Here we will assume that if we cannot find the user they should not be allowed in
+
+        // Here we will assume that if we cannot find the user they should not be
+        // allowed in
         if (state == null) {
-            throw new VngNotAllowedException("User with kc id " + loggedUser.getIdentityProviderId() + " not found in diwi");
+            throw new VngNotAllowedException(
+                    "User with kc id " + loggedUser.getIdentityProviderId() + " not found in diwi");
         }
         return new UserInfoModel(state);
     }
