@@ -19,13 +19,12 @@ test("Import file failed", async ({ page }) => {
 
     await page.locator('input[type="file"]').setInputFiles(filePath);
 
-    const rowError = await page.locator("tr").last().locator("td").nth(0).innerText();
-    const columnError = await page.locator("tr").last().locator("td").nth(1).innerText();
-    const valueError = await page.locator("tr").last().locator("td").nth(2).innerText();
-    const DescriptionError = await page.locator("tr").last().locator("td").nth(3).innerText();
+    const rowError = await page.locator(".rij p").innerText();
+    const valueError = await page.locator(".waarde p").last().innerText();
+    const DescriptionError = await page.locator(".import-error").innerText();
 
-    expect(rowError).toContain("4");
-    expect(columnError).toContain("");
+    expect(rowError).toContain("3");
+
     expect(valueError).toContain("Plan soort");
-    expect(DescriptionError).toContain("The excel file does not contain all expected headers.");
+    expect(DescriptionError).toContain("Het Excel-bestand bevat niet alle verwachte koppen.");
 });

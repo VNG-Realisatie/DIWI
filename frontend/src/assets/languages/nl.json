@@ -264,7 +264,9 @@
       "dataExchange": "Data uitwisselen",
       "settings": "Instellingen",
       "addProject": "Project toevoegen",
-      "projectOverview": "Overzicht projecten"
+      "projectOverview": "Overzicht projecten",
+      "knowledgeBase": "Kennisbank"
+
     },
     "about": {
       "heading": "Over deze website",

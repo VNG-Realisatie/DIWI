@@ -234,7 +234,7 @@ test.describe("Create project page", () => {
         await page.goto(`http://localhost:3000/projects/${projectId}/characteristics`);
         const projectName = page.locator(".project-name input");
         expect(await projectName.inputValue()).toContain("Test project");
-        const projectPlanType = page.locator(".project-plantype span").first();
+        const projectPlanType = page.locator(".project-plantype span").nth(1);
         expect(await projectPlanType.textContent()).toContain("Verdichting");
         const startDate = page.locator(".project-startdate input");
         expect(await startDate.inputValue()).toContain("01-01-2021");
@@ -250,13 +250,13 @@ test.describe("Create project page", () => {
         expect(await projectDistrict.textContent()).toContain("Oud-Zuid");
         const projectNeighbourhood = page.locator(".project-neighbourhood span").first();
         expect(await projectNeighbourhood.textContent()).toContain("Oosterpoort");
-        const projectMunicipalityRole = page.locator(".project-municipality-role span").first();
+        const projectMunicipalityRole = page.locator(".project-municipality-role span").nth(1);
         expect(await projectMunicipalityRole.textContent()).toContain("Vergunningverlener");
         const projectConfidentialityLevel = page.locator(".project-confidentiality input");
         expect(await projectConfidentialityLevel.inputValue()).toContain("Intern raad");
         const projectOwner = page.locator(".project-owner .MuiAvatar-circular");
         expect(await projectOwner.textContent()).toContain("AM");
-        const projectPlanStatus = page.locator(".project-planning-status span").first();
+        const projectPlanStatus = page.locator(".project-planning-status span").nth(1);
         expect(await projectPlanStatus.textContent()).toContain("2A Vastgesteld");
         const projectCustomCatProperty = page.locator(".CATEGORY span").first();
         expect(await projectCustomCatProperty.textContent()).toContain("tom");
