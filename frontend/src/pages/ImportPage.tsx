@@ -2,13 +2,13 @@ import { Button, Stack, Typography } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 import { useRef, useState } from "react";
 import { importExcelProjects, importGeoJsonProjects } from "../api/importServices";
-import UploadCloud from "../assets/uploadCloud.svg";
 import useAlert from "../hooks/useAlert";
 import { useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
 import { ImportErrorType, ImportErrors } from "../components/ImportErrors";
-import { t } from "i18next";
 
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { useTranslation } from "react-i18next";
 type FunctionalityType = "excel" | "squit" | "geojson";
 
 type Props = {
@@ -20,7 +20,7 @@ export const ImportPage = ({ functionality }: Props) => {
     const navigate = useNavigate();
     const [uploaded, setUploaded] = useState(false);
     const [errors, setErrors] = useState<Array<ImportErrorType>>([]);
-
+    const { t } = useTranslation();
     const { setAlert } = useAlert();
 
     function handleUploadStackClick(): void {
@@ -30,7 +30,7 @@ export const ImportPage = ({ functionality }: Props) => {
     }
 
     const importFunction = functionality === "geojson" ? importGeoJsonProjects : importExcelProjects;
-
+    console.log(errors);
     return (
         <Stack border="solid 1px #ddd" py={3} px={15} marginBottom={"2em"}>
             <Typography fontSize="20px" fontWeight="600" sx={{ mt: 2 }}>
@@ -40,7 +40,7 @@ export const ImportPage = ({ functionality }: Props) => {
                 variant="outlined"
                 endIcon={<DownloadIcon />}
                 sx={{ my: 3, width: "310px" }}
-                href={require(functionality === "geojson" ? "../assets/geojson_template.geojson" : "../assets/Excel_Import.xlsx")}
+                href={functionality === "geojson" ? "../assets/geojson_template.geojson" : "../assets/Excel_Import.xlsx"}
                 download={functionality === "geojson" ? "geojson_template.geojson" : "Excel Import.xlsx"}
             >
                 {t(`exchangeData.download.${functionality}`)}
@@ -77,7 +77,7 @@ export const ImportPage = ({ functionality }: Props) => {
                     style={{ cursor: "pointer" }}
                     onClick={handleUploadStackClick}
                 >
-                    <UploadCloud />
+                    <CloudUploadIcon sx={{ fontSize: "36px" }} />
                     <input
                         hidden
                         ref={fileInputRef}
@@ -94,8 +94,8 @@ export const ImportPage = ({ functionality }: Props) => {
                                             navigate(Paths.projectsTable.path);
                                         } else {
                                             // 400 errors contain relevant info in body, deal with here
-                                            const newErrors = (await res.json()) as Array<ImportErrorType>;
-                                            setErrors(newErrors);
+                                            const newErrors = await res.json();
+                                            setErrors(newErrors.error);
                                             setAlert(t("exchangeData.notifications.importFailed"), "error");
                                         }
                                     })

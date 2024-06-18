@@ -43,7 +43,7 @@ export const ImportErrors = ({ errors, isGeoJson = false }: ImportErrorProps) =>
                                         backgroundColor: "lightgray",
                                     }}
                                 >
-                                    <Typography>{t(`import.errorCodes.${error.errorCode}`)}</Typography>
+                                    <Typography className="import-error">{t(`import.errorCodes.${error.errorCode}`)}</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails>
                                     <List
@@ -86,7 +86,7 @@ const PropertyListItem = ({ label, value }: PropertyListItemProps) => {
         displayValue = displayValue.trim();
         if (displayValue !== "") {
             return (
-                <ListItem>
+                <ListItem className={label}>
                     <Typography>
                         {capitalizeFirstLetters(label)}: {displayValue}
                     </Typography>
