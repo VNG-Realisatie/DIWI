@@ -46,11 +46,11 @@ export const HouseBlockAccordionWithControls = ({ houseBlock, refresh }: HouseBl
     const { targetGroupDisabledCategories, physicalAppearanceDisabledCategories } = useCustomPropertyDefinitions();
 
     const handleSave = async () => {
-        if (validateHouseBlock(houseBlock, setAlert)) {
+        if (validateHouseBlock(newHouseBlock, setAlert)) {
             const filteredHouseBlock = {
-                ...houseBlock,
-                targetGroup: houseBlock.targetGroup.filter((tg) => !targetGroupDisabledCategories.map((cat) => cat.id).includes(tg.id)),
-                physicalAppearance: houseBlock.physicalAppearance.filter((pa) => !physicalAppearanceDisabledCategories.map((cat) => cat.id).includes(pa.id)),
+                ...newHouseBlock,
+                targetGroup: newHouseBlock.targetGroup.filter((tg) => !targetGroupDisabledCategories.map((cat) => cat.id).includes(tg.id)),
+                physicalAppearance: newHouseBlock.physicalAppearance.filter((pa) => !physicalAppearanceDisabledCategories.map((cat) => cat.id).includes(pa.id)),
             };
 
             await saveHouseBlockWithCustomProperties(filteredHouseBlock);
