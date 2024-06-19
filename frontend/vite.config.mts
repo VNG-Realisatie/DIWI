@@ -13,4 +13,11 @@ export default defineConfig({
     },
     assetsInclude: "**/*.xlsx",
     plugins: [react()],
+    optimizeDeps: {
+        include: [
+            '@emotion/react',
+            '@emotion/styled',
+            '@mui/material/Tooltip'
+          ],
+    }
 });
