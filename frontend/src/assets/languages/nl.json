@@ -114,6 +114,7 @@
       "nameIsRequried": "Vul het veld projectnaam in",
       "addAnotherHouseBlock": "Voeg nog een woningblok toe",
       "noCustomProps": "Er zijn geen maatwerk eigenschappen",
+      "clearInput": "Leeg maken",
       "informationForm": {
         "title": "Vul de projectgegevens in",
         "info": "Vul de projectgegevens in",

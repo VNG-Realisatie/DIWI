@@ -59,7 +59,7 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                     translationPath="createProject.houseBlocksForm.ownershipAndValue.type."
                 />
             </Grid>
-            <Grid item xs={2} className="ownership-house-amount">
+            <Grid item xs={1.25} className="ownership-house-amount">
                 {!readOnly && <OwnershipAmountInput index={index} handleInputChange={handleInputChange} ownership={ownership} />}
                 {readOnly && (
                     <InputContainer>
@@ -67,27 +67,27 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                     </InputContainer>
                 )}
             </Grid>
-            <Grid item xs={2} className="ownership-house-value">
+            <Grid item xs={2.8} className="ownership-house-value">
                 <RangeNumberInput
                     value={!isHuurwoning ? ownership.value : { ...ownership.value, value: null }}
                     labelText={t("createProject.houseBlocksForm.value")}
                     updateCallBack={(e) => handleInputChange(index, { ...ownership, value: e })}
-                    readOnly={readOnly}
+                    readOnly={readOnly ? true : isHuurwoning}
                     mandatory={false}
                     isMonetary={true}
                 />
             </Grid>
-            <Grid item xs={2} className="ownership-house-rent">
+            <Grid item xs={2.8} className="ownership-house-rent">
                 <RangeNumberInput
                     value={!isKoopwoning ? ownership.rentalValue : { ...ownership.value, value: null }}
                     labelText={t("createProject.houseBlocksForm.rentalAmount")}
                     updateCallBack={(e) => handleInputChange(index, { ...ownership, rentalValue: e })}
-                    readOnly={readOnly}
+                    readOnly={readOnly ? true : isKoopwoning}
                     mandatory={false}
                     isMonetary={true}
                 />
             </Grid>
-            <Grid item xs={1} className="ownership-delete-icon">
+            <Grid item xs={0.5} className="ownership-delete-icon">
                 {!readOnly && (
                     <IconButton onClick={() => handleRemoveRow(index)}>
                         <DeleteIcon sx={{ color: "red" }} />
