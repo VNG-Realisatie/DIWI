@@ -20,6 +20,7 @@ export const Programming = ({ houseBlock, setHouseBlock, readOnly }: Programming
             <Stack direction="row" alignItems="center" my={1}>
                 <FormControl disabled={readOnly}>
                     <RadioGroup
+                        id="programming"
                         name="programming"
                         value={houseBlock?.programming !== null ? (houseBlock?.programming === true ? "yes" : "no") : null}
                         onChange={(e: ChangeEvent<HTMLInputElement>) => setHouseBlock({ ...houseBlock, programming: e.target.value === "yes" })}

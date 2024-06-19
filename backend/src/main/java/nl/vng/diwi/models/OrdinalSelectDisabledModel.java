@@ -15,4 +15,7 @@ public class OrdinalSelectDisabledModel extends SelectDisabledModel {
     @JsonProperty(required = true)
     private Integer level;
 
+    public String getOrdinalValue() {
+        return this.getLevel() + " " + this.getName();
+    }
 }

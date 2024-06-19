@@ -10,6 +10,7 @@ interface ColorSelectorProps {
     width?: string;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const defaultColors = ["#FFE3DC", "#AEBD93", "#FFE066", "#49DCB1", "#94D1BE", "#DE2130", "#8B2635", "#976880", "#F18F01", "#768948"];
 
 const ColorSelector: FC<ColorSelectorProps> = ({ defaultColor, onColorChange, selectedColor, disabled = false, width }) => {
@@ -38,7 +39,7 @@ const ColorSelector: FC<ColorSelectorProps> = ({ defaultColor, onColorChange, se
 
     return (
         <Box ref={boxRef} width={width ?? defaultSize}>
-            <Button onClick={handleButtonClick} fullWidth disabled={disabled} sx={{ padding: 0 }}>
+            <Button onClick={handleButtonClick} fullWidth disabled={disabled} sx={{ padding: 0 }} className="project-color-selector">
                 <Box
                     width={"100%"}
                     height={defaultSize}
@@ -57,7 +58,7 @@ const ColorSelector: FC<ColorSelectorProps> = ({ defaultColor, onColorChange, se
                     horizontal: "left",
                 }}
             >
-                <Box width={boxRef.current?.offsetWidth ?? "auto"}>
+                <Box width={boxRef.current?.offsetWidth ?? "auto"} className="project-colors-pallet">
                     <BlockPicker width={width} colors={defaultColors} color={selectedColor ? selectedColor : color} onChange={handleColorChange} />
                 </Box>
             </Popover>

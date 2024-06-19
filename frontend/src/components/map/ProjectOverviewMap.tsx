@@ -95,7 +95,7 @@ const ProjectOverviewMap = () => {
             setProjectsLayerSource(source);
 
             const extent = mapBoundsToExtent(mapBounds);
-            let view = new View({ extent: extent });
+            const view = new View({ extent: extent });
             view.fit(extent);
 
             const tooltipOverlay = new Overlay({

@@ -8,7 +8,7 @@ import { Color } from "react-color";
 type DeleteButtonWithConfirmProps = {
     typeAndName: string;
     iconColor: Color;
-    deleteFunction: () => Promise<any>;
+    deleteFunction: () => Promise<void>;
     afterDelete?: () => void;
 };
 
@@ -21,6 +21,7 @@ export const DeleteButtonWithConfirm = ({ typeAndName: name, iconColor, deleteFu
             await deleteFunction();
             setAlert(t("generic.deletionSuccess", { name }), "success");
             if (afterDelete) afterDelete();
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             setAlert(error.message, "error");
         } finally {

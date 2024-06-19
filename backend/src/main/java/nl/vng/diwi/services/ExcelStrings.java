@@ -1,5 +1,6 @@
 package nl.vng.diwi.services;
 
+import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectStatus;
 
@@ -24,6 +25,14 @@ public class ExcelStrings {
         map.put("Actief", ProjectStatus.ACTIVE.name());
         map.put("Afgerond", ProjectStatus.REALIZED.name());
         map.put("Afgebroken", ProjectStatus.TERMINATED.name());
+
+        map.put("Prive", Confidentiality.PRIVATE.name());
+        map.put("Intern ambtelijk", Confidentiality.INTERNAL_CIVIL.name());
+        map.put("Intern bestuurlijk", Confidentiality.INTERNAL_MANAGEMENT.name());
+        map.put("Intern raad", Confidentiality.INTERNAL_COUNCIL.name());
+        map.put("Extern woonregio", Confidentiality.EXTERNAL_REGIONAL.name());
+        map.put("Extern mede-overheden", Confidentiality.EXTERNAL_GOVERNMENTAL.name());
+        map.put("Openbaar", Confidentiality.PUBLIC.name());
     }
 
 

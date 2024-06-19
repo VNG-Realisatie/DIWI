@@ -108,7 +108,6 @@ required_input_columns = [
     "properties.bouw_gerealiseerd",
 
     "properties.plantype",
-    "properties.verhuurder_type",
     "properties.opdrachtgever_type",
     "properties.opdrachtgever_naam",
     "properties.projectfase",

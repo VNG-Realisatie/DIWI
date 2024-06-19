@@ -4,11 +4,15 @@ import { ImportProjectCardItem } from "../components/ImportProjectCardItem";
 import { useState } from "react";
 import { SelectFromMapForm } from "../components/SelectFromMapForm";
 import { TimelineForm } from "../components/TimelineForm";
+import useAllowedActions from "../hooks/useAllowedActions";
+import ActionNotAllowed from "./ActionNotAllowed";
+import { t } from "i18next";
 
 type Props = {
     type: string;
 };
 export const ImportedProjects = (props: Props) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [createProjectForm, setCreateProjectForm] = useState<any>(null);
     const [selectedProject, setSelectedProject] = useState<Array<number> | []>([]);
     const [overwriteProjectId, setOverwriteProjectId] = useState<Array<{ projectId: number; willBeOverWrittenId: number }> | []>([]);
@@ -19,7 +23,12 @@ export const ImportedProjects = (props: Props) => {
     const projectTypeInitialState = importedDummyProjects.map((p) => {
         return { id: p.id, status: "new" };
     });
+    const allowedActions = useAllowedActions();
     const [projectsType, setProjectsType] = useState<Array<{ id: number; status: string }>>(projectTypeInitialState);
+
+    if (!allowedActions.includes("IMPORT_PROJECTS")) {
+        return <ActionNotAllowed errorMessage={t("exchangeData.importForbidden")} />;
+    }
     return (
         <Stack pb={10} direction="column">
             <Typography fontSize="20px" fontWeight="600" sx={{ mt: 2 }}>

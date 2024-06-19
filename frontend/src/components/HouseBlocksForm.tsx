@@ -60,7 +60,7 @@ export const HouseBlocksForm = ({ readOnly, houseBlock, setHouseBlock, errors }:
                 </Grid>
             </Grid>
             <Grid container spacing={2} alignItems="stretch" mt={0.5}>
-                <Grid item xs={12}>
+                <Grid item xs={12} className="house-block-custom-properties">
                     <CustomPropertiesHouseblock
                         {...{
                             readOnly,

@@ -12,6 +12,7 @@ const ALERT_TIME = 5000;
 const AlertContext: React.Context<AlertContextType> = createContext<AlertContextType>({
     text: "",
     type: "success",
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     setAlert: (text: string, type: AlertColor) => {},
 });
 
