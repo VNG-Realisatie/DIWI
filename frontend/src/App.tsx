@@ -42,6 +42,7 @@ import { Forbidden } from "./pages/Forbidden";
 function RequiresLogin() {
     const [kcAuthenticated, setKcAuthenticated] = useState<boolean>(false);
     const [isDiwiUser, setIsDiwiUser] = useState<boolean>(false);
+    const [isLoadingUser, setIsLoadingUser] = useState<boolean>(true);
     const { setAlert } = useContext(AlertContext);
 
     useEffect(() => {
@@ -61,6 +62,7 @@ function RequiresLogin() {
 
     useEffect(() => {
         if (kcAuthenticated) {
+            setIsLoadingUser(true);
             fetch(Paths.userInfo.path)
                 .then((response) => {
                     if (response.ok) {
@@ -80,6 +82,9 @@ function RequiresLogin() {
                 })
                 .catch(() => {
                     setIsDiwiUser(false);
+                })
+                .finally(() => {
+                    setIsLoadingUser(false);
                 });
         } else {
             setIsDiwiUser(false);
@@ -89,15 +94,17 @@ function RequiresLogin() {
     if (kcAuthenticated) {
         if (isDiwiUser) {
             return (
-                <UserProvider>
-                    <ConfigProvider>
-                        {/* configprovider does a fetch, so first check login for this specific one */}
-                        <Layout />
-                    </ConfigProvider>
-                </UserProvider>
+                !isLoadingUser && (
+                    <UserProvider>
+                        <ConfigProvider>
+                            {/* configprovider does a fetch, so first check login for this specific one */}
+                            <Layout />
+                        </ConfigProvider>
+                    </UserProvider>
+                )
             );
         } else {
-            return <Forbidden />;
+            return !isLoadingUser && <Forbidden />;
         }
     }
     // default just returns null so page stays empty and we can redirect
