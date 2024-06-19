@@ -4,14 +4,19 @@ import { t } from "i18next";
 import { TooltipInfo } from "../../../widgets/TooltipInfo";
 
 type Option = {
+    uuid?: string | number;
     id?: string | number;
     name?: string;
     firstName?: string;
     lastName?: string;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type SetValueFunction = (event: any, value: any, reason: AutocompleteChangeReason, details?: AutocompleteChangeDetails<Option>) => void;
+type SetValueFunction = (
+    event: React.SyntheticEvent,
+    value: Option | Option[] | null,
+    reason: AutocompleteChangeReason,
+    details?: AutocompleteChangeDetails<Option>
+) => void;
 
 type CategoryInputProps = {
     values: Option | Option[] | null;
@@ -31,9 +36,8 @@ const isOptionEqualToValue = (option: Option, value: Option): boolean => {
     return option.id === value.id;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const getErrorHelperText = (mandatory: boolean, readOnly: boolean, values: any, error?: string) => {
-    const hasError = mandatory && (!values || values.length === 0) && !readOnly;
+const getErrorHelperText = (mandatory: boolean, readOnly: boolean, values: Option | Option[] | null, error?: string) => {
+    const hasError = mandatory && (!values || (Array.isArray(values) && values.length === 0)) && !readOnly;
     const helperText = hasError ? error : "";
     return { hasError, helperText };
 };
@@ -82,6 +86,13 @@ const CategoryInput = ({
                         return t(`${translationPath}${option}`);
                     }
                     return "";
+                }}
+                filterOptions={(options) => {
+                    if (multiple && values) {
+                        const selectedIds = Array.isArray(values) ? values.map((value) => value.uuid) : [values.uuid];
+                        return options.filter((option) => !selectedIds.includes(option.id));
+                    }
+                    return options;
                 }}
                 renderOption={(props, option) => {
                     const displayName = getDisplayName(option, translationPath);
