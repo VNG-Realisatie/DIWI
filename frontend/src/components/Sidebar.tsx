@@ -88,20 +88,23 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
                 </Link>
             </List> */}
             <List sx={{ ml: 3 }}>
+                <Typography sx={typographyStyles}>{t("sidebar.settings")}</Typography>
                 {allowedActions.includes("VIEW_CUSTOM_PROPERTIES") && (
-                    <>
-                        <Typography sx={typographyStyles}>{t("sidebar.settings")}</Typography>
-                        <Link to={Paths.userSettings.path} style={linkStyles} onClick={handleDrawerClose}>
-                            <ListItemButton>
-                                <ListItemText primary={t("customProperties.title")} />
-                            </ListItemButton>
-                        </Link>
-                    </>
+                    <Link to={Paths.userSettings.path} style={linkStyles} onClick={handleDrawerClose}>
+                        <ListItemButton>
+                            <ListItemText primary={t("customProperties.title")} />
+                        </ListItemButton>
+                    </Link>
                 )}
-            </List>
-            <List sx={{ ml: 3 }}>
                 <Link to={Paths.userManagement.path} style={linkStyles} onClick={handleDrawerClose}>
-                    <Typography sx={typographyStyles}>{t("sidebar.users")}</Typography>
+                    <ListItemButton>
+                        <ListItemText primary={t("sidebar.users")} />
+                    </ListItemButton>
+                </Link>
+            </List>
+            <List sx={{ ml: 3, marginTop: "auto", marginBottom: "20px" }}>
+                <Link to="https://support.diwi.vng.client.phinion.com/" target="_blank" style={linkStyles} onClick={handleDrawerClose}>
+                    <Typography style={typographyStyles}>{t("sidebar.knowledgeBase")}</Typography>
                 </Link>
             </List>
         </Drawer>

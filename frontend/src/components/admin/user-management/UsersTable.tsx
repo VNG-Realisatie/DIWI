@@ -35,7 +35,7 @@ const UsersTable = ({ rows, setUsers }: Props) => {
             try {
                 const updatedUser = await updateUser(userToEdit.id, userToEdit);
                 setAlert(t("admin.userManagement.userUpdateSuccess"), "success");
-                setUsers(rows.map((user) => (user.id === updatedUser.uuid ? updatedUser : user)));
+                setUsers(rows.map((user) => (user.id === userToEdit.id ? updatedUser : user)));
             } catch (error: unknown) {
                 if (error instanceof Error) {
                     setAlert(error.message, "error");

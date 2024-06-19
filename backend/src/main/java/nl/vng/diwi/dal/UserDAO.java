@@ -37,6 +37,14 @@ public class UserDAO extends AbstractRepository {
                 .setParameter("identityProviderId", identityProviderId)
                 .uniqueResult();
     }
+    
+    public String getIdentityProviderIdForUser(UUID uuid) {
+        return session
+                .createQuery("FROM UserState " +
+                        "WHERE user.id = :userId", UserState.class)
+                .setParameter("userId", uuid)
+                .uniqueResult().getIdentityProviderId();
+    }
 
     public UserState getUserByEmail(String email) {
         return session

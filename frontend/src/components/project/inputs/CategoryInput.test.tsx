@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { vi } from "vitest";
 import CategoryInput from "./CategoryInput";
 
 describe("CategoryInput Component", () => {

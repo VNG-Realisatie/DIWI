@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { TextField } from "@mui/material";
+import { InputAdornment, TextField } from "@mui/material";
 import InputLabelStack from "./InputLabelStack";
+import EuroIcon from "@mui/icons-material/Euro";
+import ClearInputAdornment from "./ClearInputAdornment";
 
 export type ValueType = {
     value: null | number;
@@ -10,8 +12,7 @@ export type ValueType = {
 
 type Props = {
     value: ValueType;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    updateCallBack: (value: any) => void;
+    updateCallBack: (value: ValueType) => void;
     labelText?: string;
     isMonetary?: boolean;
     readOnly: boolean;
@@ -72,20 +73,20 @@ function fromRangeToString(value: ValueType, isMonetary: boolean): string {
     }
 }
 
-function fromStringToRange(stringValue: string, isMonetary: boolean): ValueType {
+function fromStringToRange(stringValue: string | null, isMonetary: boolean): ValueType {
     const inputValue = stringValue;
-    if (inputValue === "") {
+    if (inputValue === null || inputValue === "") {
         return { value: null, min: null, max: null };
     } else if (inputValue.includes("-")) {
         const [minStr, maxStr] = inputValue.split("-");
-        const min = isMonetary ? parseMonetary(minStr) : parseFloat(minStr);
-        const max = isMonetary ? parseMonetary(maxStr) : parseFloat(maxStr);
+        const min = minStr ? (isMonetary ? parseMonetary(minStr) : parseFloat(minStr)) : null;
+        const max = maxStr ? (isMonetary ? parseMonetary(maxStr) : parseFloat(maxStr)) : null;
 
-        if (!isNaN(min) && !isNaN(max)) {
+        if (min !== null && max !== null) {
             return { value: null, min, max };
-        } else if (!isNaN(min)) {
+        } else if (min !== null) {
             return { value: null, min, max: null };
-        } else if (!isNaN(max)) {
+        } else if (max !== null) {
             // We only support open-ended ranges with min value. Treat open-ended range with max as value
             return { value: max, min: null, max: null };
         } else {
@@ -98,14 +99,15 @@ function fromStringToRange(stringValue: string, isMonetary: boolean): ValueType 
 }
 
 const RangeNumberInput = ({ labelText, value, updateCallBack, isMonetary = false, readOnly, mandatory, title }: Props) => {
-    const [stringValue, setStringValue] = useState<string>("");
+    const [stringValue, setStringValue] = useState<string | null>(null);
 
     useEffect(() => {
         setStringValue(fromRangeToString(value, isMonetary));
     }, [value, isMonetary]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newValue = e.target.value;
+        let newValue = e.target.value;
+        newValue = newValue.replace(".", ",");
         const isValidInput = /^-?\d*(,\d{0,2})?(-\d*(,?\d{0,2})?)?$/.test(newValue);
 
         if (isValidInput) setStringValue(newValue);
@@ -116,11 +118,12 @@ const RangeNumberInput = ({ labelText, value, updateCallBack, isMonetary = false
     };
 
     const handleBlur = () => {
-        if (isMonetary) {
-            if (stringValue === "") return setStringValue("0,00");
+        if (stringValue === "") {
+            setStringValue("0,00");
+        } else if (stringValue !== null) {
+            const range = fromStringToRange(stringValue, isMonetary);
+            updateCallBack(range);
         }
-        const range = fromStringToRange(stringValue, isMonetary);
-        updateCallBack(range);
     };
 
     function handleKey(event: React.KeyboardEvent<HTMLDivElement>): void {
@@ -128,6 +131,11 @@ const RangeNumberInput = ({ labelText, value, updateCallBack, isMonetary = false
             handleBlur();
         }
     }
+
+    const handleClearInput = () => {
+        setStringValue("");
+        updateCallBack({ value: null, min: null, max: null });
+    };
 
     return (
         <InputLabelStack title={title || ""} mandatory={mandatory}>
@@ -137,19 +145,36 @@ const RangeNumberInput = ({ labelText, value, updateCallBack, isMonetary = false
                 id="size"
                 size="small"
                 variant="outlined"
-                label={labelText}
-                value={stringValue}
+                label={!stringValue ? (mandatory ? labelText : "Leeg") : ""}
+                InputLabelProps={{
+                    shrink: false,
+                    sx: {
+                        "&.Mui-focused": {
+                            display: "none",
+                        },
+                        fontStyle: "italic",
+                        color: "rgba(0, 0, 0, 0.3)",
+                        transform: isMonetary ? "translate(34px, 9px)" : null,
+                    },
+                }}
+                value={stringValue ?? ""}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 onFocus={handleFocus}
                 onKeyUp={handleKey}
                 InputProps={{
-                    startAdornment: isMonetary ? "€" : "",
+                    startAdornment: isMonetary && (
+                        <InputAdornment position="start" sx={{ pointerEvents: "none" }}>
+                            <EuroIcon fontSize="inherit" />
+                        </InputAdornment>
+                    ),
+                    endAdornment: !readOnly && !mandatory && <ClearInputAdornment onClick={handleClearInput} />,
                 }}
                 sx={{
-                    "& .MuiInputBase-input.Mui-disabled": {
-                        backgroundColor: "#0000",
+                    "& .MuiInputBase-input.Mui-disabled, & .MuiInputBase-adornedEnd": {
+                        backgroundColor: readOnly ? "transparent" : "white",
                     },
+                    "& .MuiInputAdornment-positionStart": { marginRight: "2px" },
                 }}
             />
         </InputLabelStack>

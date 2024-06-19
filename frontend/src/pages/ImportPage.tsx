@@ -2,11 +2,10 @@ import { Button, Stack, Typography } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 import { useRef, useState } from "react";
 import { importExcelProjects, importGeoJsonProjects } from "../api/importServices";
-import UploadCloud from "../assets/uploadCloud.svg";
 import useAlert from "../hooks/useAlert";
 import { useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
-import { ImportErrorType, ImportErrors } from "../components/ImportErrors";
+import { ImportErrorObject, ImportErrors } from "../components/ImportErrors";
 import { t } from "i18next";
 
 type FunctionalityType = "excel" | "squit" | "geojson";
@@ -19,7 +18,7 @@ export const ImportPage = ({ functionality }: Props) => {
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
     const [uploaded, setUploaded] = useState(false);
-    const [errors, setErrors] = useState<Array<ImportErrorType>>([]);
+    const [errors, setErrors] = useState<ImportErrorObject>({ error: [] });
 
     const { setAlert } = useAlert();
 
@@ -30,7 +29,7 @@ export const ImportPage = ({ functionality }: Props) => {
     }
 
     const importFunction = functionality === "geojson" ? importGeoJsonProjects : importExcelProjects;
-
+    console.log(errors);
     return (
         <Stack border="solid 1px #ddd" py={3} px={15} marginBottom={"2em"}>
             <Typography fontSize="20px" fontWeight="600" sx={{ mt: 2 }}>
@@ -40,7 +39,11 @@ export const ImportPage = ({ functionality }: Props) => {
                 variant="outlined"
                 endIcon={<DownloadIcon />}
                 sx={{ my: 3, width: "310px" }}
-                href={require(functionality === "geojson" ? "../assets/geojson_template.geojson" : "../assets/Excel_Import.xlsx")}
+                href={
+                    functionality === "geojson"
+                        ? new URL("../assets/geojson_template.geojson", import.meta.url).toString()
+                        : new URL("../assets/Excel_Import.xlsx", import.meta.url).toString()
+                }
                 download={functionality === "geojson" ? "geojson_template.geojson" : "Excel Import.xlsx"}
             >
                 {t(`exchangeData.download.${functionality}`)}
@@ -58,7 +61,7 @@ export const ImportPage = ({ functionality }: Props) => {
                     style={{ cursor: "pointer" }}
                     onClick={() => {
                         setUploaded(false);
-                        setErrors([]);
+                        setErrors({ error: [] });
                         handleUploadStackClick();
                     }}
                 >
@@ -77,7 +80,7 @@ export const ImportPage = ({ functionality }: Props) => {
                     style={{ cursor: "pointer" }}
                     onClick={handleUploadStackClick}
                 >
-                    <UploadCloud />
+                    <img src={"/upload-cloud.svg"} alt="Upload Cloud" />
                     <input
                         hidden
                         ref={fileInputRef}
@@ -85,7 +88,7 @@ export const ImportPage = ({ functionality }: Props) => {
                         onChange={(e) => {
                             const file = e.target.files;
                             if (file) {
-                                setErrors([]);
+                                setErrors({ error: [] });
                                 importFunction(file as FileList)
                                     .then(async (res) => {
                                         setUploaded(true);
@@ -94,7 +97,7 @@ export const ImportPage = ({ functionality }: Props) => {
                                             navigate(Paths.projectsTable.path);
                                         } else {
                                             // 400 errors contain relevant info in body, deal with here
-                                            const newErrors = (await res.json()) as Array<ImportErrorType>;
+                                            const newErrors = (await res.json()) as ImportErrorObject;
                                             setErrors(newErrors);
                                             setAlert(t("exchangeData.notifications.importFailed"), "error");
                                         }
@@ -109,7 +112,7 @@ export const ImportPage = ({ functionality }: Props) => {
                     {t("exchangeData.upload.hint")}
                 </Stack>
             )}
-            {errors.length > 0 && <ImportErrors errors={errors} isGeoJson={true} />}
+            {errors.error.length > 0 && <ImportErrors errors={errors.error} isGeoJson={true} />}
         </Stack>
     );
 };
