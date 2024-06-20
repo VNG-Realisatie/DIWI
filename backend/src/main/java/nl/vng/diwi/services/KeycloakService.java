@@ -55,7 +55,7 @@ public class KeycloakService implements AutoCloseable {
         newKcUser.setFirstName(newUser.getFirstName());
         newKcUser.setLastName(newUser.getLastName());
         newKcUser.setEmail(newUser.getEmail());
-        newKcUser.setUsername("diwi-" + newUser.getEmail());
+        newKcUser.setUsername(newUser.getEmail());
         newKcUser.setEnabled(true);
         // send to backend
         var response = keycloakUsers.create(newKcUser);
