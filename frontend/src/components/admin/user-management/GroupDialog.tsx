@@ -16,6 +16,7 @@ type GroupDialogProps = {
 };
 
 const GroupDialog = ({ open, onClose, newGroup, setNewGroup, handleAddGroup, users, title }: GroupDialogProps) => {
+    console.log(users);
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
             <DialogTitle>{title}</DialogTitle>
@@ -38,8 +39,18 @@ const GroupDialog = ({ open, onClose, newGroup, setNewGroup, handleAddGroup, use
                         options={users ?? []}
                         values={newGroup.users}
                         setValue={(_, newValue) => {
-                            const transformedUsers = newValue.map((user: User) => {
-                                return { uuid: user.id, firstName: user.firstName, lastName: user.lastName };
+                            if (!newValue) {
+                                setNewGroup({ ...newGroup, users: [] });
+                            }
+                            if (!Array.isArray(newValue)) {
+                                return;
+                            }
+                            const transformedUsers = newValue.map((user) => {
+                                return {
+                                    uuid: user.uuid || user.id,
+                                    firstName: user.firstName,
+                                    lastName: user.lastName,
+                                };
                             });
                             setNewGroup({ ...newGroup, users: transformedUsers });
                         }}
