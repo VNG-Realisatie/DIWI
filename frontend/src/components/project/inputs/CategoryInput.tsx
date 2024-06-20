@@ -13,13 +13,14 @@ type Option = {
 
 type SetValueFunction = (
     event: React.SyntheticEvent,
-    value: Option | Option[] | null,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    value: any,
     reason: AutocompleteChangeReason,
-    details?: AutocompleteChangeDetails<Option>
+    details?: AutocompleteChangeDetails<Option>,
 ) => void;
-
 type CategoryInputProps = {
-    values: Option | Option[] | null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    values: any;
     setValue: SetValueFunction;
     nullable?: boolean; // Not implemented
     readOnly: boolean;
