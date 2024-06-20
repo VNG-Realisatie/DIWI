@@ -156,7 +156,7 @@ test.describe("Create project page", () => {
         const permissionFromLandOwner = page.locator("#Intentiemedewerkinggrondeigenaar");
         const formalPermissionFromLandOwner = page.locator("#Formeletoestemmingvangrondeigenaar");
         //Programming
-        await page.getByRole("radio", { name: "Ja" }).check({ force: true });
+        await page.getByText("Ja").click();
 
         //Custom Properties
         const booleanCustomProperty = page.locator("#boolean-custom-property");
@@ -173,7 +173,6 @@ test.describe("Create project page", () => {
         await page.getByText("Sloop").click();
         await houseBlockAmount.fill("1");
         await houseBlockValue.fill("100000");
-        await houseBlockRent.fill("500");
 
         await gallerijflat.fill("1");
         await hoekwoning.fill("1");
