@@ -6,6 +6,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +17,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
-import nl.vng.diwi.dal.entities.enums.ValueType;
 import nl.vng.diwi.dal.entities.superclasses.HouseblockMilestoneChangeDataSuperclass;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.Type;
@@ -29,11 +31,6 @@ import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 @Builder
 public class HouseblockOwnershipValueChangelog extends HouseblockMilestoneChangeDataSuperclass {
 
-    @Column(name = "waarde_value_type")
-    @Enumerated(EnumType.STRING)
-    @JdbcType(PostgreSQLEnumJdbcType.class)
-    private ValueType valueType;
-
     @Column(name = "waarde_value")
     private Integer value;
 
@@ -41,10 +38,9 @@ public class HouseblockOwnershipValueChangelog extends HouseblockMilestoneChange
     @Column(name = "waarde_value_range", columnDefinition = "int4range")
     private Range<Integer> valueRange;
 
-    @Column(name = "huurbedrag_value_type")
-    @Enumerated(EnumType.STRING)
-    @JdbcType(PostgreSQLEnumJdbcType.class)
-    private ValueType rentalValueType;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "ownership_property_value_id")
+    private PropertyRangeCategoryValue ownershipRangeCategoryValue;
 
     @Column(name = "huurbedrag_value")
     private Integer rentalValue;
@@ -52,6 +48,10 @@ public class HouseblockOwnershipValueChangelog extends HouseblockMilestoneChange
     @Type(PostgreSQLRangeType.class)
     @Column(name = "huurbedrag_value_range", columnDefinition = "int4range")
     private Range<Integer> rentalValueRange;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "rental_property_value_id")
+    private PropertyRangeCategoryValue rentalRangeCategoryValue;
 
     private Integer amount;
 
@@ -63,8 +63,8 @@ public class HouseblockOwnershipValueChangelog extends HouseblockMilestoneChange
     @Override
     public Object getShallowCopy() {
         var newChangelog = HouseblockOwnershipValueChangelog.builder()
-            .valueType(valueType).value(value).valueRange(valueRange)
-            .rentalValueType(rentalValueType).rentalValue(rentalValue).rentalValueRange(rentalValueRange)
+            .value(value).valueRange(valueRange).ownershipRangeCategoryValue(ownershipRangeCategoryValue)
+            .rentalValue(rentalValue).rentalValueRange(rentalValueRange).rentalRangeCategoryValue(rentalRangeCategoryValue)
             .amount(amount).ownershipType(ownershipType).build();
         newChangelog.setHouseblock(getHouseblock());
         newChangelog.setStartMilestone(getStartMilestone());

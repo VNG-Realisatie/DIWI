@@ -17,7 +17,8 @@ OR REPLACE FUNCTION diwi.get_property_definitions (
         propertyType diwi.maatwerk_eigenschap_type,
         disabled BOOL,
         categories JSONB,
-        ordinals JSONB
+        ordinals JSONB,
+        ranges JSONB
 	)
 	LANGUAGE plpgsql
 AS $$
@@ -35,7 +36,10 @@ SELECT cp.id                                                                    
                               catState.change_end_date IS NOT NULL)) FILTER (WHERE catState.category_value_id IS NOT NULL))            AS categories,
        to_jsonb(array_agg(
            jsonb_build_object('id', ordState.ordinal_value_id, 'name', ordState.value_label, 'level', ordState.ordinal_level,
-                              'disabled', ordState.change_end_date IS NOT NULL)) FILTER (WHERE ordState.ordinal_value_id IS NOT NULL)) AS ordinals
+                              'disabled', ordState.change_end_date IS NOT NULL)) FILTER (WHERE ordState.ordinal_value_id IS NOT NULL)) AS ordinals,
+       to_jsonb(array_agg(
+           jsonb_build_object('id', rangeState.range_category_value_id, 'name', rangeState.name, 'min', rangeState.min, 'max', rangeState.max,
+                              'disabled', rangeState.change_end_date IS NOT NULL)) FILTER (WHERE rangeState.range_category_value_id IS NOT NULL)) AS ranges
 
 FROM diwi.property cp
     LEFT JOIN LATERAL (
@@ -60,6 +64,14 @@ FROM diwi.property cp
             WHERE os.ordinal_value_id = ord.id
             ORDER BY os.change_start_date DESC
         LIMIT 1) ordState ON TRUE
+
+    LEFT JOIN diwi.property_range_category_value rng ON rng.property_id = cp.id
+    LEFT JOIN LATERAL (
+        SELECT rs.range_category_value_id, rs.name, rs.min, rs.max, rs.change_end_date
+            FROM diwi.property_range_category_value_state rs
+            WHERE rs.range_category_value_id = rng.id
+            ORDER BY rs.change_start_date DESC
+        LIMIT 1) rangeState ON TRUE
 
 
 WHERE

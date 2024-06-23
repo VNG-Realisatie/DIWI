@@ -58,8 +58,8 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
 
         if (sqlModel.getOwnershipValueList() != null) {
             sqlModel.getOwnershipValueList().forEach(oSql -> this.ownershipValue.add(new OwnershipValue(oSql.getOwnershipId(), oSql.getOwnershipType(), oSql.getOwnershipAmount(),
-                new SingleValueOrRangeModel<>(oSql.getOwnershipValue(), oSql.getOwnershipValueRangeMin(), oSql.getOwnershipValueRangeMax()),
-                new SingleValueOrRangeModel<>(oSql.getOwnershipRentalValue(), oSql.getOwnershipRentalValueRangeMin(), oSql.getOwnershipRentalValueRangeMax()))));
+                new SingleValueOrRangeModel<>(oSql.getOwnershipValue(), oSql.getOwnershipValueRangeMin(), oSql.getOwnershipValueRangeMax()), oSql.getOwnershipRangeCategoryId(),
+                new SingleValueOrRangeModel<>(oSql.getOwnershipRentalValue(), oSql.getOwnershipRentalValueRangeMin(), oSql.getOwnershipRentalValueRangeMax()), oSql.getOwnershipRentalRangeCategoryId())));
         }
 
         this.groundPosition.setFormalPermissionOwner(sqlModel.getFormalPermissionOwner());
@@ -172,7 +172,9 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
         private OwnershipType type;
         private Integer amount;
         private SingleValueOrRangeModel<Integer> value = new SingleValueOrRangeModel<>();
+        private UUID valueCategoryId;
         private SingleValueOrRangeModel<Integer> rentalValue = new SingleValueOrRangeModel<>();
+        private UUID rentalValueCategoryId;
     }
 
     @Getter

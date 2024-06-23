@@ -6,6 +6,8 @@ import nl.vng.diwi.dal.entities.PropertyCategoryValueState;
 import nl.vng.diwi.dal.entities.PropertyOrdinalValue;
 import nl.vng.diwi.dal.entities.PropertyOrdinalValueState;
 import nl.vng.diwi.dal.entities.Property;
+import nl.vng.diwi.dal.entities.PropertyRangeCategoryValue;
+import nl.vng.diwi.dal.entities.PropertyRangeCategoryValueState;
 import nl.vng.diwi.dal.entities.PropertyState;
 import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.dal.entities.enums.ObjectType;
@@ -14,9 +16,11 @@ import nl.vng.diwi.dal.entities.enums.PropertyType;
 import nl.vng.diwi.dal.entities.superclasses.ChangeDataSuperclass;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.models.OrdinalSelectDisabledModel;
+import nl.vng.diwi.models.RangeSelectDisabledModel;
 import nl.vng.diwi.models.SelectDisabledModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
+import nl.vng.diwi.rest.VngServerErrorException;
 
 import java.time.ZonedDateTime;
 import java.util.Collections;
@@ -249,6 +253,58 @@ public class PropertiesService {
             }
         }
 
+        if (PropertyType.RANGE_CATEGORY.equals(state.getPropertyType()) && propertyModel.getRanges() != null) {
+            List<PropertyRangeCategoryValue> rangeValues = property.getRangeValues();
+
+            for (RangeSelectDisabledModel rangeValueModel : propertyModel.getRanges()) {
+                if (rangeValueModel.getId() == null) { //new category value TODO: check label does not already exist in that category?
+                    PropertyRangeCategoryValue newCat = new PropertyRangeCategoryValue();
+                    newCat.setProperty(property);
+                    repo.persist(newCat);
+                    PropertyRangeCategoryValueState newCatState = new PropertyRangeCategoryValueState();
+                    newCatState.setRangeCategoryValue(newCat);
+                    newCatState.setName(rangeValueModel.getName());
+                    newCatState.setMin(rangeValueModel.getMin());
+                    newCatState.setMax(rangeValueModel.getMax());
+                    newCatState.setCreateUser(userReference);
+                    newCatState.setChangeStartDate(now);
+                    if (rangeValueModel.getDisabled() == Boolean.TRUE) {
+                        newCatState.setChangeEndDate(now);
+                        newCatState.setChangeUser(userReference);
+                    }
+                    repo.persist(newCatState);
+                } else { //update existing category value: disable/re-enable and/or update label / min / max
+                    PropertyRangeCategoryValue rangeValue = rangeValues.stream().filter(cv -> cv.getId().equals(rangeValueModel.getId())).findFirst()
+                        .orElseThrow(() -> new VngBadRequestException("Provided id of category does not match any known categories."));
+                    PropertyRangeCategoryValueState rangeValueState = Collections.max(rangeValue.getStates(), Comparator.comparing(ChangeDataSuperclass::getChangeStartDate));
+
+                    boolean updateNameMinMax = !Objects.equals(rangeValueModel.getName(), rangeValueState.getName()) ||
+                        !Objects.equals(rangeValueModel.getMax(), rangeValueState.getMax()) || !Objects.equals(rangeValueModel.getMin(), rangeValueState.getMin());
+                    boolean disableCatValue = (rangeValueModel.getDisabled()) && (rangeValueState.getChangeEndDate() == null);
+                    boolean enableCatValue = (!rangeValueModel.getDisabled()) && (rangeValueState.getChangeEndDate() != null);
+
+                    if (disableCatValue || updateNameMinMax || enableCatValue) {
+                        rangeValueState.setChangeUser(userReference);
+                        rangeValueState.setChangeEndDate(now);
+                        repo.persist(rangeValueState);
+                        if (updateNameMinMax || enableCatValue) {
+                            PropertyRangeCategoryValueState newRangeValueState = new PropertyRangeCategoryValueState();
+                            newRangeValueState.setRangeCategoryValue(rangeValue);
+                            newRangeValueState.setName(rangeValueModel.getName());
+                            newRangeValueState.setMax(rangeValueModel.getMax());
+                            newRangeValueState.setMin(rangeValueModel.getMin());
+                            newRangeValueState.setCreateUser(userReference);
+                            newRangeValueState.setChangeStartDate(now);
+                            if (rangeValueModel.getDisabled()) {
+                                newRangeValueState.setChangeUser(userReference);
+                                newRangeValueState.setChangeEndDate(now);
+                            }
+                            repo.persist(newRangeValueState);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public void disableCustomProperty(VngRepository repo, UUID customPropertyUuid, ZonedDateTime now, UUID loggedUserUuid)
