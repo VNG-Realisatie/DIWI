@@ -20,7 +20,6 @@ import nl.vng.diwi.models.RangeSelectDisabledModel;
 import nl.vng.diwi.models.SelectDisabledModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
-import nl.vng.diwi.rest.VngServerErrorException;
 
 import java.time.ZonedDateTime;
 import java.util.Collections;

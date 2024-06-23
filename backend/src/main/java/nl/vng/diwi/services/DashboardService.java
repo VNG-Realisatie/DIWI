@@ -1,7 +1,6 @@
 package nl.vng.diwi.services;
 
 import nl.vng.diwi.dal.VngRepository;
-import nl.vng.diwi.dal.entities.Project;
 import nl.vng.diwi.dal.entities.ProjectDashboardSqlModel;
 import nl.vng.diwi.models.ProjectDashboardModel;
 import nl.vng.diwi.rest.VngNotFoundException;
