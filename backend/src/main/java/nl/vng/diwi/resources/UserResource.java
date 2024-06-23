@@ -116,16 +116,22 @@ public class UserResource {
         }
 
         // Send initial welcome mail
+        boolean welcomeMailSent = false;
         try {
             mailService.sendWelcomeMail(newUserEntity.getEmail());
+            welcomeMailSent = true;
         } catch (MailException e) {
             logger.error("Failed to send welcome mail", e);
-            throw new VngServerErrorException("Failed to send welcome mail");
+            // If welcome mail fails we should still send the other emails
         }
 
         if (!userExists) {
             // Send second email for user to reset their login credentials if user didn't already exist
             kcUserResource.executeActionsEmail(List.of("UPDATE_PASSWORD", "CONFIGURE_TOTP"));
+        }
+
+        if (!welcomeMailSent) {
+            throw new VngServerErrorException("Failed to send welcome mail");
         }
 
         return new UserModel(newUserEntity);
