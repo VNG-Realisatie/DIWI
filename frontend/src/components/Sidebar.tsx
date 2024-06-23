@@ -89,7 +89,7 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
             </List> */}
             <List sx={{ ml: 3 }}>
                 <Typography sx={typographyStyles}>{t("sidebar.settings")}</Typography>
-                {allowedActions.includes("VIEW_CUSTOM_PROPERTIES") && (
+                {allowedActions.includes("EDIT_CUSTOM_PROPERTIES") && (
                     <Link to={Paths.userSettings.path} style={linkStyles} onClick={handleDrawerClose}>
                         <ListItemButton>
                             <ListItemText primary={t("customProperties.title")} />
