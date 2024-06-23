@@ -106,7 +106,7 @@ public class UserResource {
             }
             
             // Send second email for user to reset their login credentials
-            kcUserResource.executeActionsEmail(List.of("UPDATE_PROFILE"));
+        kcUserResource.executeActionsEmail(List.of("UPDATE_PASSWORD", "CONFIGURE_TOTP"));
 
             return new UserModel(newUserEntity);
         } catch (AddUserException e1) {
