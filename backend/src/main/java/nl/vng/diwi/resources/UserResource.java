@@ -85,34 +85,50 @@ public class UserResource {
         }
 
         UserState sameEmailUser = userService.getUserDAO().getUserByEmail(newUser.getEmail());
-        UserRepresentation keycloakSameEmailUser = keycloakService.getUserByEmail(newUser.getEmail());
-        if (sameEmailUser != null || keycloakSameEmailUser != null) {
+        if (sameEmailUser != null ) {
             throw new VngBadRequestException("User with this email already exists.");
         }
 
-        try (AutoCloseTransaction transaction = userService.getUserDAO().beginTransaction()) {
-            logger.info("creating new user: " + newUser.toString());
-            var kcUserResource = keycloakService.createUser(newUser);
-            String identityProviderId = kcUserResource.toRepresentation().getId();
-            UserState newUserEntity = userService.createUser(newUser, identityProviderId, loggedUser.getUuid());
-            transaction.commit(); 
+        // Get matching or create new user in keycloak
+        UserRepresentation keycloakUser = keycloakService.getUserByEmail(newUser.getEmail());
+        org.keycloak.admin.client.resource.UserResource kcUserResource;
+        boolean userExists = keycloakUser != null;
 
-            // Send initial welcome mail
-            try {
-                mailService.sendWelcomeMail(newUserEntity.getEmail());
-            } catch (MailException e) {
-                logger.error("Failed to send welcome mail", e);
-                throw new VngServerErrorException("Failed to send welcome mail");
+        try {
+            if (keycloakUser == null) {
+                kcUserResource = keycloakService.createUser(newUser);
+                keycloakUser = kcUserResource.toRepresentation();
             }
-            
-            // Send second email for user to reset their login credentials
-        kcUserResource.executeActionsEmail(List.of("UPDATE_PASSWORD", "CONFIGURE_TOTP"));
-
-            return new UserModel(newUserEntity);
-        } catch (AddUserException e1) {
+            else {
+                kcUserResource = keycloakService.getUserById(keycloakUser.getId());
+            }
+            } catch (AddUserException e1) {
             logger.error("Failed to create user in keycloak", e1);
             throw new VngServerErrorException("Failed to create user in keycloak");
         }
+
+        UserState newUserEntity;
+        try (AutoCloseTransaction transaction = userService.getUserDAO().beginTransaction()) {
+
+            logger.info("creating new user: " + newUser.toString());
+            newUserEntity = userService.createUser(newUser,  keycloakUser.getId(), loggedUser.getUuid());
+            transaction.commit();
+        }
+
+        // Send initial welcome mail
+        try {
+            mailService.sendWelcomeMail(newUserEntity.getEmail());
+        } catch (MailException e) {
+            logger.error("Failed to send welcome mail", e);
+            throw new VngServerErrorException("Failed to send welcome mail");
+        }
+
+        if (!userExists) {
+            // Send second email for user to reset their login credentials if user didn't already exist
+            kcUserResource.executeActionsEmail(List.of("UPDATE_PASSWORD", "CONFIGURE_TOTP"));
+        }
+
+        return new UserModel(newUserEntity);
     }
 
     @PUT
@@ -140,7 +156,7 @@ public class UserResource {
 
         try (AutoCloseTransaction transaction = userService.getUserDAO().beginTransaction()) {
             updatedUser.setId(userId);
-            
+
             String identityProviderId = userService.getUserDAO().getIdentityProviderIdForUser(userId);
             keycloakService.updateUser(identityProviderId, updatedUser);
 
