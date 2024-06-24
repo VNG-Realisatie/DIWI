@@ -31,6 +31,6 @@ public class LoggedUser {
         this.identityProviderId = UUID.fromString(user.getIdentityProviderId());
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
-        this.role = UserRole.Admin;
+        this.role = user.getUserRole();
     }
 }

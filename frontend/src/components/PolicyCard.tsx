@@ -105,6 +105,7 @@ export const PolicyCard = ({ policy }: Policy) => {
                                 size="small"
                                 value={editedPercentage}
                                 variant="standard"
+                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                                 //@ts-ignore
                                 onChange={handleInputChange}
                             >

@@ -1,9 +1,23 @@
 import { render, screen } from "@testing-library/react";
-
+import { vi } from "vitest";
+import { HouseBlockProvider } from "../context/HouseBlockContext";
 import { ProjectProvider } from "../context/ProjectContext";
 import TestComponentWrapper from "../test/TestComponentWrapper";
 import ProjectWizard from "./ProjectWizard";
-import { HouseBlockProvider } from "../context/HouseBlockContext";
+
+vi.mock("../api/adminSettingServices", () => ({
+    getCustomProperties: vi.fn().mockResolvedValue([]),
+    getCustomPropertiesWithQuery: vi.fn().mockResolvedValue([]),
+}));
+
+vi.mock("../api/projectsTableServices", () => ({
+    filterTable: vi.fn().mockResolvedValue([]),
+    getUserGroupList: vi.fn().mockResolvedValue([]),
+}));
+
+vi.mock("../utils/requests", () => ({
+    getJson: vi.fn().mockResolvedValue({}),
+}));
 
 test("renders project wizard page 1", () => {
     render(

@@ -21,20 +21,6 @@ import org.apache.logging.log4j.Logger;
 
 import nl.vng.diwi.generic.ResourceUtil;
 
-/**
- * Example config for /etc/phinion/mail.json
- *
- * The options starttls and ssl.enable are really important! They should be
- * true.
- *
- * { "username": "noreply@phinion.com", "password": "blabla", "mail.smtp.auth":
- * true, "mail.smtp.starttls.enable": "true", "mail.smtp.ssl.enable": "true",
- * "mail.smtp.host": "smtp.strato.com", "mail.smtp.port": "465",
- * "mail.smtp.ssl.trust": "smtp.strato.com" }
- *
- * There also is a mail.debug option.
- *
- */
 public class MailService {
     // Class scope
     private static Logger logger = LogManager.getLogger();
@@ -71,10 +57,10 @@ public class MailService {
         props.setProperty("mail.smtp.ssl.trust", config.host);
     }
 
-    void sendWelcomeMail(String email) throws MailException {
+    public void sendWelcomeMail(String email) throws MailException {
         try {
             String template = ResourceUtil.getResourceAsString("welcomeMail.html");
-            sendMail(template, "Welcome to __BASE_URL__", email);
+            sendMail(template, "Welkom bij __BASE_URL__", email);
         } catch (IOException | MessagingException ex) {
             logger.error(ex);
             throw new MailException(ex);

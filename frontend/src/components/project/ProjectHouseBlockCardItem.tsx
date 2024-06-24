@@ -3,9 +3,13 @@ import { columnTitleStyle } from "../ImportProjectCardItem";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import { useState } from "react";
+import useAllowedActions from "../../hooks/useAllowedActions";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const ProjectHouseBlockCardItem = (props: any) => {
     const { hb } = props;
     const [editable, setEditable] = useState(false);
+    const allowedActions = useAllowedActions();
 
     return (
         <>
@@ -23,7 +27,11 @@ export const ProjectHouseBlockCardItem = (props: any) => {
                 {hb.naam ? hb.naam : "Geen Naam"}
                 {
                     <Box sx={{ cursor: "pointer" }}>
-                        {editable ? <SaveIcon onClick={() => setEditable(false)} /> : <EditIcon onClick={() => setEditable(true)} />}
+                        {editable && allowedActions.includes("EDIT_OWN_PROJECTS") ? (
+                            <SaveIcon onClick={() => setEditable(false)} />
+                        ) : (
+                            <EditIcon onClick={() => setEditable(true)} />
+                        )}
                     </Box>
                 }
             </Grid>

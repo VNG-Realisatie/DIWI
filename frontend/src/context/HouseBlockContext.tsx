@@ -10,13 +10,14 @@ type HouseBlockContextType = {
     getEmptyHouseBlock: () => HouseBlockWithCustomProperties;
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const getEmptyHouseBlock: () => HouseBlockWithCustomProperties = () => ({
     projectId: "",
     startDate: null,
     endDate: null,
     houseblockName: "",
     size: {
-        value: 0,
+        value: null,
         min: null,
         max: null,
     },
@@ -29,8 +30,8 @@ export const getEmptyHouseBlock: () => HouseBlockWithCustomProperties = () => ({
         {
             type: "KOOPWONING",
             amount: 0,
-            value: { value: 0, min: null, max: null },
-            rentalValue: { value: 0, min: null, max: null },
+            value: { value: null, min: null, max: null },
+            rentalValue: { value: null, min: null, max: null },
         },
     ],
     groundPosition: {
@@ -91,7 +92,7 @@ export const HouseBlockProvider = ({ children }: PropsWithChildren) => {
             endDate: selectedProject?.endDate ?? null,
             houseblockName: "",
             size: {
-                value: 0,
+                value: null,
                 min: null,
                 max: null,
             },
@@ -104,8 +105,8 @@ export const HouseBlockProvider = ({ children }: PropsWithChildren) => {
                 {
                     type: "KOOPWONING",
                     amount: 0,
-                    value: { value: 0, min: null, max: null },
-                    rentalValue: { value: 0, min: null, max: null },
+                    value: { value: null, min: null, max: null },
+                    rentalValue: { value: null, min: null, max: null },
                 },
             ],
             groundPosition: {

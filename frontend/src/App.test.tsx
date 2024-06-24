@@ -1,12 +1,22 @@
 import { render, screen } from "@testing-library/react";
-import { Layout } from "./components/Layout";
 import { MemoryRouter } from "react-router-dom";
+import { expect, test, vi } from "vitest";
+import { Layout } from "./components/Layout";
 import ConfigContext from "./context/ConfigContext";
+import { t } from "i18next";
 
-jest.mock("query-string", () => ({
+vi.mock("query-string", () => ({
     //mock whatever you use from query-string
-    parse: jest.fn(),
-    stringify: jest.fn(),
+    parse: vi.fn(),
+    stringify: vi.fn(),
+}));
+
+vi.mock("./api/userServices", () => ({
+    getCurrentUser: vi.fn().mockResolvedValue({}),
+}));
+
+vi.mock("utils/requests", () => ({
+    getJson: vi.fn().mockResolvedValue({}),
 }));
 
 test("renders projecten", () => {
@@ -17,6 +27,6 @@ test("renders projecten", () => {
             </ConfigContext.Provider>
         </MemoryRouter>,
     );
-    const vngElement = screen.getByText(/Overzicht projecten/i);
+    const vngElement = screen.getByText(t("sidebar.projectOverview"));
     expect(vngElement).toBeInTheDocument();
 });

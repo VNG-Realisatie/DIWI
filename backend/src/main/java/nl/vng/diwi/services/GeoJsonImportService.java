@@ -7,8 +7,10 @@ import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.models.ImportError;
+import nl.vng.diwi.models.ImportResponse;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.models.SelectModel;
+
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.geojson.GeoJsonObject;
@@ -30,13 +32,13 @@ public class GeoJsonImportService {
     public GeoJsonImportService() {
     }
 
-    public Map<String, Object> importGeoJson(String geoJsonFilePath, VngRepository repo, UUID loggedInUserUuid) {
+    public ImportResponse importGeoJson(String geoJsonFilePath, VngRepository repo, UUID loggedInUserUuid) {
 
         FeatureCollection geoJsonObject;
         try {
             geoJsonObject = MAPPER.readValue(new File(geoJsonFilePath), FeatureCollection.class);
         } catch (IOException e) {
-            return Map.of(ExcelImportService.errors, new ImportError("io_error", e.getMessage()));
+            return ImportResponse.builder().error(List.of(new ImportError("io_error", e.getMessage()))).build();
         }
 
         ZonedDateTime importTime = ZonedDateTime.now();
@@ -51,7 +53,7 @@ public class GeoJsonImportService {
             UUID geometryPropertyId = activeProperties.stream().filter(p -> p.getName().equals(Constants.FIXED_PROPERTY_GEOMETRY))
                 .map(PropertyModel::getId).findFirst().orElse(null);
             if (geometryPropertyId == null) {
-                return Map.of(ExcelImportService.errors, new ImportError(0, Constants.FIXED_PROPERTY_GEOMETRY, ImportError.ERROR.MISSING_FIXED_PROPERTY));
+                return ImportResponse.builder().error(List.of(new ImportError(0, Constants.FIXED_PROPERTY_GEOMETRY, ImportError.ERROR.MISSING_FIXED_PROPERTY))).build();
             }
 
             User user = repo.getReferenceById(User.class, loggedInUserUuid);
@@ -70,7 +72,7 @@ public class GeoJsonImportService {
                             String geometryStr = MAPPER.writeValueAsString(featureGeometry);
                             projectImportModel.getProjectStringPropsMap().put(geometryPropertyId, geometryStr);
                         }
-                        projectImportModel.validate(projectImportModel.getId(), featureErrors, importTime.toLocalDate()); //business logic validation
+                        projectImportModel.validate(repo, projectImportModel.getId(), featureErrors, importTime.toLocalDate()); //business logic validation
                     }
                     if (featureErrors.isEmpty()) { //still no errors
                         geoJsonProjects.add(projectImportModel.persistProjectAndHouseblocks(repo, user, importTime));
@@ -84,10 +86,10 @@ public class GeoJsonImportService {
 
             if (geoJsonErrors.isEmpty()) {
                 transaction.commit();
-                return Map.of(ExcelImportService.result, geoJsonProjects);
+                return ImportResponse.builder().result(geoJsonProjects).build();
             } else {
                 transaction.rollback();
-                return Map.of(ExcelImportService.errors, geoJsonErrors);
+                return ImportResponse.builder().error(geoJsonErrors).build();
             }
         }
     }

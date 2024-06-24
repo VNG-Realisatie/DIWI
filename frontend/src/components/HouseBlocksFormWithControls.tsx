@@ -11,11 +11,13 @@ import { deleteHouseBlockWithCustomProperties, saveHouseBlockWithCustomPropertie
 import HouseBlockContext from "../context/HouseBlockContext";
 import useAlert from "../hooks/useAlert";
 import { isOwnershipAmountValid } from "./project-wizard/house-blocks/ownership-information/OwnershipRowInputs";
+import useAllowedActions from "../hooks/useAllowedActions";
 
 type Props = {
     houseBlock: HouseBlockWithCustomProperties;
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const validateHouseBlock = (houseBlock: HouseBlockWithCustomProperties, setAlert: (message: string, type: AlertColor) => void): boolean => {
     let isValid = true;
     const invalidOwnershipAmount = houseBlock.ownershipValue.some((owner) => !isOwnershipAmountValid(owner.amount));
@@ -41,6 +43,7 @@ export const HouseBlocksFormWithControls = ({ houseBlock }: Props) => {
     const [newHouseBlock, setNewHouseBlock] = useState<HouseBlockWithCustomProperties>(houseBlock);
     const { refresh } = useContext(HouseBlockContext);
     const { setAlert } = useAlert();
+    const allowedActions = useAllowedActions();
 
     const handleSave = () => {
         if (validateHouseBlock(newHouseBlock, setAlert)) {
@@ -57,32 +60,37 @@ export const HouseBlocksFormWithControls = ({ houseBlock }: Props) => {
     return (
         <Box mt={4}>
             <Stack direction="row" alignItems="center" justifyContent="flex-end" spacing={2} mb={2}>
-                {readOnly && (
-                    <Tooltip placement="top" title={t("generic.edit")}>
-                        <EditIcon sx={{ cursor: "pointer" }} onClick={() => setReadOnly(false)} />
-                    </Tooltip>
-                )}
-                {!readOnly && (
+                {allowedActions.includes("EDIT_OWN_PROJECTS") && (
                     <>
-                        <Tooltip placement="top" title={t("generic.cancelChanges")}>
-                            <ClearIcon sx={{ cursor: "pointer" }} onClick={handleCancel} />
-                        </Tooltip>
-                        <Tooltip placement="top" title={t("generic.saveChanges")}>
-                            <SaveIcon sx={{ cursor: "pointer" }} onClick={handleSave} />
-                        </Tooltip>
+                        {readOnly && (
+                            <Tooltip placement="top" title={t("generic.edit")}>
+                                <EditIcon sx={{ cursor: "pointer" }} onClick={() => setReadOnly(false)} />
+                            </Tooltip>
+                        )}
+                        {!readOnly && (
+                            <>
+                                <Tooltip placement="top" title={t("generic.cancelChanges")}>
+                                    <ClearIcon sx={{ cursor: "pointer" }} onClick={handleCancel} />
+                                </Tooltip>
+                                <Tooltip placement="top" title={t("generic.saveChanges")}>
+                                    <SaveIcon sx={{ cursor: "pointer" }} onClick={handleSave} />
+                                </Tooltip>
+                            </>
+                        )}
+
+                        {houseBlock.houseblockId && (
+                            <DeleteButtonWithConfirm
+                                typeAndName={`${t("generic.houseblock")} ${houseBlock.houseblockName}`}
+                                iconColor={"red"}
+                                deleteFunction={async () => {
+                                    if (houseBlock?.houseblockId) {
+                                        await deleteHouseBlockWithCustomProperties(houseBlock.houseblockId);
+                                        refresh();
+                                    }
+                                }}
+                            />
+                        )}
                     </>
-                )}
-                {houseBlock.houseblockId && (
-                    <DeleteButtonWithConfirm
-                        typeAndName={`${t("generic.houseblock")} ${houseBlock.houseblockName}`}
-                        iconColor={"red"}
-                        deleteFunction={async () => {
-                            if (houseBlock?.houseblockId) {
-                                await deleteHouseBlockWithCustomProperties(houseBlock.houseblockId);
-                                refresh();
-                            }
-                        }}
-                    />
                 )}
             </Stack>
             <HouseBlocksForm houseBlock={newHouseBlock} setHouseBlock={setNewHouseBlock} readOnly={readOnly} />

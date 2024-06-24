@@ -11,7 +11,13 @@ import lombok.extern.log4j.Log4j2;
 @Provider
 public class VngBadRequestException extends Exception implements ExceptionMapper<VngBadRequestException> {
 
+    private Object entity;
+
     public VngBadRequestException() {
+    }
+
+    public VngBadRequestException(Object entity) {
+        this.entity = entity;
     }
 
     public VngBadRequestException(String message) {
@@ -26,8 +32,15 @@ public class VngBadRequestException extends Exception implements ExceptionMapper
     public Response toResponse(VngBadRequestException exception) {
         log.debug("VngBadRequestException", exception);
 
-        return Response.status(Response.Status.BAD_REQUEST)
-                .entity(new ErrorResponse(exception.getMessage()))
-                .type(MediaType.APPLICATION_JSON_TYPE).build();
+        var response =  Response.status(Response.Status.BAD_REQUEST)
+            .type(MediaType.APPLICATION_JSON_TYPE);
+
+        if (exception.entity != null) {
+            response.entity(exception.entity);
+        } else {
+            response.entity(new ErrorResponse(exception.getMessage()));
+        }
+
+         return response.build();
     }
 }

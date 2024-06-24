@@ -271,26 +271,6 @@
         }
       }
     },
-    "/rest/organizations/list": {
-      "get": {
-        "operationId": "getAllOrganization",
-        "responses": {
-          "default": {
-            "description": "default response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/OrganizationModel"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/rest/projects": {
       "post": {
         "operationId": "createProject",
@@ -748,7 +728,11 @@
           "default": {
             "description": "default response",
             "content": {
-              "application/json": {}
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportResponse"
+                }
+              }
             }
           }
         }
@@ -938,9 +922,148 @@
         }
       }
     },
-    "/rest/users/userinfo": {
+    "/rest/groups": {
       "get": {
-        "operationId": "login_1",
+        "operationId": "getAllUserGroups",
+        "parameters": [
+          {
+            "name": "includeSingleUser",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserGroupModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createUserGroup",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserGroupModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserGroupModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rest/groups/{id}": {
+      "put": {
+        "operationId": "updateUserGroup",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserGroupModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserGroupModel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteUserGroup",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "*/*": {}
+            }
+          }
+        }
+      }
+    },
+    "/rest/users": {
+      "get": {
+        "operationId": "getAllUsers",
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserModel"
+              }
+            }
+          }
+        },
         "responses": {
           "default": {
             "description": "default response",
@@ -948,6 +1071,110 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/UserModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rest/users/{userId}": {
+      "get": {
+        "operationId": "getUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserModel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/rest/users/{id}": {
+      "put": {
+        "operationId": "updateUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rest/users/userinfo": {
+      "get": {
+        "operationId": "userInfo",
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserInfoModel"
                 }
               }
             }
@@ -1242,7 +1469,45 @@
           }
         }
       },
-      "OrganizationModel": {
+      "ProjectMinimalSnapshotModel": {
+        "required": ["confidentialityLevel", "projectColor", "projectId", "projectName", "projectOwners", "projectPhase"],
+        "type": "object",
+        "properties": {
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "projectName": {
+            "type": "string"
+          },
+          "projectColor": {
+            "type": "string"
+          },
+          "confidentialityLevel": {
+            "type": "string",
+            "enum": ["PRIVATE", "INTERNAL_CIVIL", "INTERNAL_MANAGEMENT", "INTERNAL_COUNCIL", "EXTERNAL_REGIONAL", "EXTERNAL_GOVERNMENTAL", "PUBLIC"]
+          },
+          "projectPhase": {
+            "type": "string",
+            "enum": ["_1_CONCEPT", "_2_INITIATIVE", "_3_DEFINITION", "_4_DESIGN", "_5_PREPARATION", "_6_REALIZATION", "_7_AFTERCARE"]
+          },
+          "projectOwners": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserGroupModel"
+            }
+          },
+          "projectId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "UserGroupModel": {
         "required": ["name", "uuid"],
         "type": "object",
         "properties": {
@@ -1256,12 +1521,12 @@
           "users": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/OrganizationUserModel"
+              "$ref": "#/components/schemas/UserGroupUserModel"
             }
           }
         }
       },
-      "OrganizationUserModel": {
+      "UserGroupUserModel": {
         "type": "object",
         "properties": {
           "uuid": {
@@ -1279,40 +1544,8 @@
           }
         }
       },
-      "ProjectMinimalSnapshotModel": {
-        "required": ["confidentialityLevel", "projectColor", "projectId", "projectName", "projectPhase"],
-        "type": "object",
-        "properties": {
-          "startDate": {
-            "type": "string",
-            "format": "date"
-          },
-          "endDate": {
-            "type": "string",
-            "format": "date"
-          },
-          "projectName": {
-            "type": "string"
-          },
-          "projectColor": {
-            "type": "string"
-          },
-          "confidentialityLevel": {
-            "type": "string",
-            "enum": ["PRIVE", "INTERN_UITVOERING", "INTERN_RAPPORTAGE", "EXTERN_RAPPORTAGE", "OPENBAAR"]
-          },
-          "projectPhase": {
-            "type": "string",
-            "enum": ["_1_CONCEPT", "_2_INITIATIVE", "_3_DEFINITION", "_4_DESIGN", "_5_PREPARATION", "_6_REALIZATION", "_7_AFTERCARE"]
-          },
-          "projectId": {
-            "type": "string",
-            "format": "uuid"
-          }
-        }
-      },
       "ProjectCreateSnapshotModel": {
-        "required": ["confidentialityLevel", "projectColor", "projectName", "projectPhase"],
+        "required": ["confidentialityLevel", "projectColor", "projectName", "projectOwners", "projectPhase"],
         "type": "object",
         "properties": {
           "startDate": {
@@ -1331,11 +1564,17 @@
           },
           "confidentialityLevel": {
             "type": "string",
-            "enum": ["PRIVE", "INTERN_UITVOERING", "INTERN_RAPPORTAGE", "EXTERN_RAPPORTAGE", "OPENBAAR"]
+            "enum": ["PRIVATE", "INTERNAL_CIVIL", "INTERNAL_MANAGEMENT", "INTERNAL_COUNCIL", "EXTERNAL_REGIONAL", "EXTERNAL_GOVERNMENTAL", "PUBLIC"]
           },
           "projectPhase": {
             "type": "string",
             "enum": ["_1_CONCEPT", "_2_INITIATIVE", "_3_DEFINITION", "_4_DESIGN", "_5_PREPARATION", "_6_REALIZATION", "_7_AFTERCARE"]
+          },
+          "projectOwners": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserGroupModel"
+            }
           }
         }
       },
@@ -1354,7 +1593,7 @@
         }
       },
       "ProjectListModel": {
-        "required": ["confidentialityLevel", "projectColor", "projectId", "projectName", "projectPhase"],
+        "required": ["confidentialityLevel", "projectColor", "projectId", "projectName", "projectOwners", "projectPhase"],
         "type": "object",
         "properties": {
           "startDate": {
@@ -1373,11 +1612,17 @@
           },
           "confidentialityLevel": {
             "type": "string",
-            "enum": ["PRIVE", "INTERN_UITVOERING", "INTERN_RAPPORTAGE", "EXTERN_RAPPORTAGE", "OPENBAAR"]
+            "enum": ["PRIVATE", "INTERNAL_CIVIL", "INTERNAL_MANAGEMENT", "INTERNAL_COUNCIL", "EXTERNAL_REGIONAL", "EXTERNAL_GOVERNMENTAL", "PUBLIC"]
           },
           "projectPhase": {
             "type": "string",
             "enum": ["_1_CONCEPT", "_2_INITIATIVE", "_3_DEFINITION", "_4_DESIGN", "_5_PREPARATION", "_6_REALIZATION", "_7_AFTERCARE"]
+          },
+          "projectOwners": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserGroupModel"
+            }
           },
           "projectId": {
             "type": "string",
@@ -1418,18 +1663,6 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/SelectModel"
-            }
-          },
-          "projectOwners": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/OrganizationModel"
-            }
-          },
-          "projectLeaders": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/OrganizationModel"
             }
           },
           "totalValue": {
@@ -1476,7 +1709,7 @@
         }
       },
       "ProjectSnapshotModel": {
-        "required": ["confidentialityLevel", "projectColor", "projectId", "projectName", "projectPhase"],
+        "required": ["confidentialityLevel", "projectColor", "projectId", "projectName", "projectOwners", "projectPhase"],
         "type": "object",
         "properties": {
           "startDate": {
@@ -1495,11 +1728,17 @@
           },
           "confidentialityLevel": {
             "type": "string",
-            "enum": ["PRIVE", "INTERN_UITVOERING", "INTERN_RAPPORTAGE", "EXTERN_RAPPORTAGE", "OPENBAAR"]
+            "enum": ["PRIVATE", "INTERNAL_CIVIL", "INTERNAL_MANAGEMENT", "INTERNAL_COUNCIL", "EXTERNAL_REGIONAL", "EXTERNAL_GOVERNMENTAL", "PUBLIC"]
           },
           "projectPhase": {
             "type": "string",
             "enum": ["_1_CONCEPT", "_2_INITIATIVE", "_3_DEFINITION", "_4_DESIGN", "_5_PREPARATION", "_6_REALIZATION", "_7_AFTERCARE"]
+          },
+          "projectOwners": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserGroupModel"
+            }
           },
           "projectId": {
             "type": "string",
@@ -1540,18 +1779,6 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/SelectModel"
-            }
-          },
-          "projectOwners": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/OrganizationModel"
-            }
-          },
-          "projectLeaders": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/OrganizationModel"
             }
           },
           "totalValue": {
@@ -1731,7 +1958,7 @@
           },
           "confidentialityLevel": {
             "type": "string",
-            "enum": ["PRIVE", "INTERN_UITVOERING", "INTERN_RAPPORTAGE", "EXTERN_RAPPORTAGE", "OPENBAAR"]
+            "enum": ["PRIVATE", "INTERNAL_CIVIL", "INTERNAL_MANAGEMENT", "INTERNAL_COUNCIL", "EXTERNAL_REGIONAL", "EXTERNAL_GOVERNMENTAL", "PUBLIC"]
           },
           "location": {
             "$ref": "#/components/schemas/LocationModel"
@@ -1769,13 +1996,7 @@
           "projectOwners": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/OrganizationModel"
-            }
-          },
-          "projectLeaders": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/OrganizationModel"
+              "$ref": "#/components/schemas/UserGroupModel"
             }
           },
           "totalValue": {
@@ -1823,6 +2044,58 @@
           },
           "plotFeature": {
             "$ref": "#/components/schemas/ObjectNode"
+          }
+        }
+      },
+      "ImportError": {
+        "type": "object",
+        "properties": {
+          "errorCode": {
+            "type": "string"
+          },
+          "row": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "identificationNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "houseblockName": {
+            "type": "string"
+          },
+          "column": {
+            "type": "string"
+          },
+          "propertyName": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          },
+          "errorMessage": {
+            "type": "string"
+          },
+          "customPropertyId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "ImportResponse": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SelectModel"
+            }
+          },
+          "error": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImportError"
+            }
           }
         }
       },
@@ -1939,10 +2212,10 @@
         }
       },
       "UserModel": {
-        "required": ["firstName", "initials", "lastName", "uuid"],
+        "required": ["contactPerson", "department", "email", "firstName", "id", "lastName", "organization", "phoneNumber", "prefixes", "role"],
         "type": "object",
         "properties": {
-          "uuid": {
+          "id": {
             "type": "string",
             "format": "uuid"
           },
@@ -1952,8 +2225,84 @@
           "lastName": {
             "type": "string"
           },
+          "email": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["Admin", "UserPlus", "User", "Management", "Council", "External"]
+          },
+          "organization": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "department": {
+            "type": "string"
+          },
+          "contactPerson": {
+            "type": "string"
+          },
+          "prefixes": {
+            "type": "string"
+          }
+        }
+      },
+      "UserInfoModel": {
+        "required": ["contactPerson", "department", "email", "firstName", "id", "initials", "lastName", "organization", "phoneNumber", "prefixes", "role"],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["Admin", "UserPlus", "User", "Management", "Council", "External"]
+          },
+          "organization": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "department": {
+            "type": "string"
+          },
+          "contactPerson": {
+            "type": "string"
+          },
+          "prefixes": {
+            "type": "string"
+          },
           "initials": {
             "type": "string"
+          },
+          "allowedActions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "EDIT_USERS",
+                "EDIT_CUSTOM_PROPERTIES",
+                "CAN_OWN_PROJECTS",
+                "CHANGE_PROJECT_OWNER",
+                "VIEW_OTHERS_PROJECTS",
+                "CREATE_NEW_PROJECT",
+                "IMPORT_PROJECTS",
+                "EXPORT_PROJECTS"
+              ]
+            }
           }
         }
       }

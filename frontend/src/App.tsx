@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import { ScopedCssBaseline, ThemeProvider } from "@mui/material";
 import "./App.css";
@@ -15,7 +15,6 @@ import { PolicyLists } from "./pages/PolicyLists";
 import { DashboardProjects } from "./pages/DashboardProjects";
 import { ExchangeData } from "./pages/ExchangeData";
 import { ExportProject } from "./pages/ExportProject";
-import { ImportExcel } from "./pages/ImportExcel";
 import { ImportedProjects } from "./pages/ImportedProjects";
 import { About } from "./pages/About";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -29,49 +28,132 @@ import { dateFormats } from "./localization";
 import { ProjectTimeline } from "./pages/ProjectTimeline";
 import ProjectPlotSelector from "./components/map/ProjectPlotSelector";
 import { ConfigProvider } from "./context/ConfigContext";
+import { UserProvider } from "./context/UserContext";
 import { ProjectWizardMap } from "./pages/ProjectWizardMap";
 import "dayjs/locale/nl";
 import { HouseBlockProvider } from "./context/HouseBlockContext";
 import ProjectWizard from "./pages/ProjectWizard";
 import ProjectWizardBlocks from "./pages/ProjectWizardBlocks";
 import { LoadingProvider } from "./context/LoadingContext";
-import { ImportGeoJson } from "./pages/ImportGeoJson";
+import { ImportPage } from "./pages/ImportPage";
+import UserManagement from "./pages/UserManagement";
+import { Forbidden } from "./pages/Forbidden";
+
+enum UserStatus {
+    Authenticated,
+    Unauthenticated,
+}
+
+enum LoadingStatus {
+    Loading,
+    NotLoading,
+}
+
+type UserLoadingStatus = {
+    user: UserStatus;
+    loading: LoadingStatus;
+};
 
 function RequiresLogin() {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [kcAuthenticated, setKcAuthenticated] = useState<boolean>(false);
+    const [status, setStatus] = useState<UserLoadingStatus>({
+        user: UserStatus.Unauthenticated,
+        loading: LoadingStatus.Loading,
+    });
     const { setAlert } = useContext(AlertContext);
-    const navigate = useNavigate();
 
     useEffect(() => {
         diwiFetch(Paths.loggedIn.path)
             .then((res) => {
                 if (res.ok) {
-                    setIsLoggedIn(true);
+                    setKcAuthenticated(true);
+                } else {
+                    setKcAuthenticated(false);
                 }
             })
             .catch((error) => {
                 setAlert(error.message, "error");
+                setKcAuthenticated(false);
             });
-    }, [setAlert, navigate]);
+    }, [setAlert]);
 
-    return isLoggedIn ? <Layout /> : null;
+    useEffect(() => {
+        if (kcAuthenticated) {
+            fetch(Paths.userInfo.path)
+                .then((response) => {
+                    if (response.ok) {
+                        setStatus((prevStatus) => ({
+                            ...prevStatus,
+                            user: UserStatus.Authenticated,
+                        }));
+                    }
+                    if (response.status === 401) {
+                        const returnUrl = window.location.origin + window.location.pathname + window.location.search;
+                        window.location.href = `${Paths.login.path}?returnUrl=${encodeURIComponent(returnUrl)}`;
+                        setKcAuthenticated(false);
+                        setStatus((prevStatus) => ({
+                            ...prevStatus,
+                            user: UserStatus.Unauthenticated,
+                        }));
+                    }
+                    if (response.status === 403) {
+                        setStatus((prevStatus) => ({
+                            ...prevStatus,
+                            user: UserStatus.Unauthenticated,
+                        }));
+                    }
+                })
+                .catch(() => {
+                    setStatus((prevStatus) => ({
+                        ...prevStatus,
+                        user: UserStatus.Unauthenticated,
+                    }));
+                })
+                .finally(() => {
+                    setStatus((prevStatus) => ({
+                        ...prevStatus,
+                        loading: LoadingStatus.NotLoading,
+                    }));
+                });
+        } else {
+            setStatus((prevStatus) => ({
+                ...prevStatus,
+                user: UserStatus.Unauthenticated,
+            }));
+        }
+    }, [kcAuthenticated]);
+
+    if (kcAuthenticated) {
+        if (status.user === UserStatus.Authenticated) {
+            return (
+                <UserProvider>
+                    <ConfigProvider>
+                        {/* configprovider does a fetch, so first check login for this specific one */}
+                        <Layout />
+                    </ConfigProvider>
+                </UserProvider>
+            );
+        } else if (status.loading === LoadingStatus.NotLoading) {
+            return <Forbidden />;
+        }
+    }
+    // default just returns null so page stays empty and we can redirect
+    return null;
 }
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
     return (
         <ThemeProvider theme={theme}>
-            <ConfigProvider>
-                <LoadingProvider>
-                    <AlertProvider>
-                        <AlertPopup />
-                        <ScopedCssBaseline>
-                            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="nl" dateFormats={dateFormats}>
-                                {children}
-                            </LocalizationProvider>
-                        </ScopedCssBaseline>
-                    </AlertProvider>
-                </LoadingProvider>
-            </ConfigProvider>
+            <LoadingProvider>
+                <AlertProvider>
+                    <AlertPopup />
+                    <ScopedCssBaseline>
+                        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="nl" dateFormats={dateFormats}>
+                            {children}
+                        </LocalizationProvider>
+                    </ScopedCssBaseline>
+                </AlertProvider>
+            </LoadingProvider>
         </ThemeProvider>
     );
 };
@@ -80,6 +162,7 @@ function App() {
         <Providers>
             <BrowserRouter>
                 <Routes>
+                    <Route path={Paths.forbidden.path} element={<Forbidden />} />
                     <Route path="/" element={<RequiresLogin />}>
                         <Route
                             index
@@ -179,9 +262,9 @@ function App() {
                         <Route path={Paths.policygoalDashboard.path} element={<PolicyLists />} />
                         <Route path={Paths.dashboard.path} element={<DashboardProjects />} />
                         <Route path={Paths.exchangedata.path} element={<ExchangeData />} />
-                        <Route path={Paths.importExcel.path} element={<ImportExcel excelImport />} />
-                        <Route path={Paths.importGeoJson.path} element={<ImportGeoJson />} />
-                        <Route path={Paths.importSquit.path} element={<ImportExcel excelImport={false} />} />
+                        <Route path={Paths.importExcel.path} element={<ImportPage functionality="excel" />} />
+                        <Route path={Paths.importGeoJson.path} element={<ImportPage functionality="geojson" />} />
+                        <Route path={Paths.importSquit.path} element={<ImportPage functionality="squit" />} />
                         <Route
                             path={Paths.exportExcel.path}
                             element={
@@ -199,6 +282,7 @@ function App() {
                             }
                         />
                         <Route path={Paths.userSettings.path} element={<Settings />} />
+                        <Route path={Paths.userManagement.path} element={<UserManagement />} />
                         <Route path={Paths.importExcelProjects.path} element={<ImportedProjects type="Excel" />} />
                         <Route path={Paths.importSquitProjects.path} element={<ImportedProjects type="Squit" />} />
                         <Route path={Paths.about.path} element={<About />} />

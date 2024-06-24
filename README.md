@@ -6,7 +6,7 @@ A description of the scripts in the project
 
 ### addUsers.sh
 
-Add an admin user to the local development keycloak instance
+Add an admin user to the local development keycloak instance, it will also create a diwi admin role and assign it to the admin user.
 
 ### compose.dev.sh
 
@@ -73,8 +73,37 @@ First drop the database. For this you need to stop the backend and close any exi
 ```shell
 dropdb diwi
 ```
-
 Then you can execute the steps in [the setup chapter](#setup-the-db).
+
+### Resetting the keycloak database
+
+First remove the data/keycloak directory.
+
+```shell
+sudo rm -r data/keycloak
+```
+Then add the user(s) again using the addUsers.sh script. You only have to do this once.
+```shell
+./addUsers.sh
+```
+
+### Mailhog settings (with keycloak)
+
+We use mailhog for testing on local, by default you can access it on http://localhost:8025
+1. Start keycloak locally (use the ./deploy.backend.dev.sh or ./deploy.keycloak.dev.sh)
+2. Navigate and login on localhost:keycloakport (default: http://localhost:1780)
+3. Select the correct realm (default: diwi-test-realm)
+4. In nav bar on the left select 'Realm settings'
+5. Select the tab 'Email' at the top.
+6. Validate that the following settings are present:
+```
+Template
+> from: mailhog@phinion.com
+Connection & Authentication
+> host: localhost
+> port: 1025
+```
+Optionally you can 'Test connection' if the current logged in user has an email set.
 
 ### Front end development
 
@@ -146,7 +175,7 @@ dropdb diwi_test # Optional when database already exists
 createuser diwi
 psql -c "ALTER USER \"diwi\" WITH PASSWORD 'diwi'"
 createdb diwi_test -O diwi
-
+psql -d diwi_test -c 'ALTER SCHEMA "public" OWNER TO "diwi"'
 ```
 
 #### Install Eclipse for java EE
@@ -199,7 +228,7 @@ java -jar ~/Downloads/lombok.jar
 - In the next window, move the backend to the configured side.
 - Double click the server in the servers view. This opens the run configuration. (You can also go here from the dropdown next to the play button in the toolbar.)
 - Click the modules tab at the bottom of the run configuration.
-- Set the path of the application to / by clicking the edit button and changing `/vng` to `/`.
+- Set the path of the application to / by clicking the edit button and changing `/diwi` to `/`.
 - Click the play button in the servers view to start the server.
 
 ### HTTP API guidelines
@@ -255,6 +284,7 @@ To make sure we don't get redirect responses when we do `fetch` requests we need
 - Copy `.env.production.example` to `.env`
 - Set a secure password for the database in the .env file
 - Configure keycloak with a new client and enter the parameters in the .env file
+- Enter the parameters for the email server in the .env file
 - Call `./deploy.sh`
 
 ## Glossary
