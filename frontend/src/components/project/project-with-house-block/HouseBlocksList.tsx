@@ -47,6 +47,8 @@ export const HouseBlockAccordionWithControls = ({ houseBlock, refresh }: HouseBl
     const { targetGroupCategories, physicalAppearanceCategories } = useCustomPropertyDefinitions();
     const allowedActions = useAllowedActions();
 
+    const isDemolition = houseBlock.mutation.kind === "DEMOLITION";
+
     const handleSave = async () => {
         if (validateHouseBlock(newHouseBlock, setAlert)) {
             try {
@@ -94,7 +96,8 @@ export const HouseBlockAccordionWithControls = ({ houseBlock, refresh }: HouseBl
                 aria-controls="panel1-content"
                 id="panel1-header"
             >
-                {houseBlock.houseblockName}: {houseBlock.mutation.amount} {t("createProject.houseBlocksForm.housesOn")} {houseBlock.endDate}
+                {houseBlock.houseblockName}: {isDemolition ? `-${houseBlock.mutation.amount}` : houseBlock.mutation.amount}{" "}
+                {t("createProject.houseBlocksForm.housesOn")} {houseBlock.endDate}
                 <Stack>
                     {allowedActions.includes("EDIT_OWN_PROJECTS") && (
                         <>
