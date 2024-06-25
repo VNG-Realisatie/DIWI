@@ -28,6 +28,7 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
     const [selectedObjectType, setSelectedObjectType] = useState<ObjectType>("PROJECT");
     const [selectedPropertyType, setSelectedPropertyType] = useState<PropertyType>("TEXT");
     const [active, setActive] = useState(false);
+    const [untranslatedName, setUntranslatedName] = useState<string>("");
     const [name, setName] = useState<string>("");
     const [categories, setCategories] = useState<CategoryType[]>([]);
     const [ordinals, setOrdinalCategories] = useState<OrdinalCategoryType[]>([]);
@@ -35,6 +36,7 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
     const { t } = useTranslation();
 
     const updateDialog = (property: Property): void => {
+        setUntranslatedName(property.name);
         if (property.type === "FIXED") {
             setName(t(`admin.settings.fixedPropertyType.${property.name}`));
         } else {
@@ -82,7 +84,7 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
     const handleSave = () => {
         const newProperty: Property = {
             id,
-            name,
+            name: untranslatedName,
             type: "CUSTOM",
             objectType: selectedObjectType,
             propertyType: selectedPropertyType,
