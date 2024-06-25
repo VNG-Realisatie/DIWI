@@ -49,6 +49,32 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
         }
     }, [id]);
 
+    const resetForm = () => {
+        setName("");
+        setSelectedObjectType("PROJECT");
+        setSelectedPropertyType("TEXT");
+        setActive(false);
+        setCategories([]);
+        setOrdinalCategories([]);
+    };
+
+    const saveAction = async (newProperty: Property) => {
+        try {
+            if (!id) resetForm();
+            const savedProperty = await (id ? updateCustomProperty(id, newProperty) : addCustomProperty(newProperty));
+            setAlert(t("admin.settings.notifications.successfullySaved"), "success");
+            updateDialog(savedProperty);
+            const customProperties = await getCustomProperties();
+            setCustomProperties(customProperties);
+            setOpenDialog(false);
+        } catch (error: unknown) {
+            if (error instanceof Error) setAlert(error.message, "warning");
+        } finally {
+            setCategories([]);
+            setOrdinalCategories([]);
+        }
+    };
+
     const handleSave = () => {
         const newProperty: Property = {
             id,
@@ -64,30 +90,17 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
                     : undefined,
         };
 
-        const resetForm = () => {
-            setName("");
-            setSelectedObjectType("PROJECT");
-            setSelectedPropertyType("TEXT");
-            setActive(false);
-            setCategories([]);
-            setOrdinalCategories([]);
-        };
+        saveAction(newProperty);
+    };
 
-        const saveAction = id ? updateCustomProperty(id, newProperty) : addCustomProperty(newProperty);
-        saveAction
-            .then((savedProperty) => {
-                setAlert(t("admin.settings.notifications.successfullySaved"), "success");
-                updateDialog(savedProperty);
-                getCustomProperties().then((customProperties) => setCustomProperties(customProperties));
-                setOpenDialog(false);
-
-                if (!id) resetForm();
-            })
-            .catch((error) => setAlert(error.message, "warning"));
+    const handleClose = () => {
+        setCategories([]);
+        setOrdinalCategories([]);
+        setOpenDialog(false);
     };
 
     return (
-        <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth>
+        <Dialog open={openDialog} onClose={handleClose} fullWidth>
             <DialogTitle id="alert-dialog-title">{id ? t("admin.settings.edit") : t("admin.settings.add")}</DialogTitle>
             <DialogContent>
                 <Stack spacing={1.5}>
@@ -151,7 +164,7 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
                 </Stack>
             </DialogContent>
             <DialogActions>
-                <Button variant="contained" color="error" onClick={() => setOpenDialog(false)}>
+                <Button variant="contained" color="error" onClick={handleClose}>
                     {t("generic.cancel")}
                 </Button>
                 <Button variant="contained" color="success" onClick={handleSave} autoFocus>
