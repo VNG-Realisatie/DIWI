@@ -53,7 +53,7 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
         if (id) {
             getCustomProperty(id).then(updateDialog);
         }
-    }, [id, updateDialog]);
+    }, [id]);
 
     const resetForm = () => {
         setName("");
