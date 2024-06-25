@@ -16,6 +16,7 @@ type UserDialogProps = {
 };
 
 const UserDialog = ({ open, onClose, newUser, setNewUser, handleAddUser, title }: UserDialogProps) => {
+    const isFormInvalid = !newUser.firstName || !newUser.lastName || !newUser.role || !newUser.email || !/^\S+@\S+\.\S+$/.test(newUser.email);
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
             <DialogTitle>{title}</DialogTitle>
@@ -136,7 +137,7 @@ const UserDialog = ({ open, onClose, newUser, setNewUser, handleAddUser, title }
                     >
                         {t("generic.cancel")}
                     </Button>
-                    <Button onClick={handleAddUser} variant="contained">
+                    <Button onClick={handleAddUser} variant="contained" disabled={isFormInvalid}>
                         {t("generic.save")}
                     </Button>
                 </Box>
