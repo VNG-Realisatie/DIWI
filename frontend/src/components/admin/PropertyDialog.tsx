@@ -84,7 +84,10 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
             propertyType: selectedPropertyType,
             disabled: active,
             categories: selectedPropertyType === "CATEGORY" && categories !== null ? categories : undefined,
-            ordinals: selectedPropertyType === "ORDINAL" && ordinals !== null ? ordinals : undefined,
+            ordinals:
+                selectedPropertyType === "ORDINAL" && ordinals.length > 0
+                    ? ordinals.map(({ id, level, name, disabled }) => ({ id, level, name, disabled }))
+                    : undefined,
         };
 
         saveAction(newProperty);
