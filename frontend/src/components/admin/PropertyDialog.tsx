@@ -35,7 +35,11 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
     const { t } = useTranslation();
 
     const updateDialog = (property: Property): void => {
-        setName(property.name);
+        if (property.type === "FIXED") {
+            setName(t(`admin.settings.fixedPropertyType.${property.name}`));
+        } else {
+            setName(property.name);
+        }
         property.categories && setCategories(property.categories);
         property.ordinals && setOrdinalCategories(property.ordinals);
         setActive(property.disabled);
