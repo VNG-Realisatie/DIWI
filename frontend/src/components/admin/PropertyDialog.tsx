@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useCallback, useContext, useEffect, useState } from "react";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, InputLabel, MenuItem, Select, Stack, TextField, Tooltip } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
 import { useTranslation } from "react-i18next";
@@ -35,7 +35,7 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
     const { setAlert } = useContext(AlertContext);
     const { t } = useTranslation();
 
-    const updateDialog = (property: Property): void => {
+    const updateDialog = useCallback((property: Property): void => {
         setUntranslatedName(property.name);
         if (property.type === "FIXED") {
             setName(t(`admin.settings.fixedPropertyType.${property.name}`));
@@ -47,13 +47,13 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
         setActive(property.disabled);
         setSelectedObjectType(property.objectType);
         setSelectedPropertyType(property.propertyType);
-    };
+    }, []);
 
     useEffect(() => {
         if (id) {
             getCustomProperty(id).then(updateDialog);
         }
-    }, [id]);
+    }, [id, updateDialog]);
 
     const resetForm = () => {
         setName("");
