@@ -35,9 +35,9 @@ import nl.vng.diwi.security.UserRole;
 import nl.vng.diwi.testutil.TestDb;
 
 public class DashboardServiceTest {
-    private static DalFactory dalFactory;
     private static TestDb testDb;
 
+    private DalFactory dalFactory;
     private Dal dal;
     private VngRepository repo;
 
@@ -55,7 +55,6 @@ public class DashboardServiceTest {
     @BeforeAll
     static void beforeAll() throws Exception {
         testDb = new TestDb();
-        dalFactory = testDb.getDalFactory();
         dashboardService = new DashboardService();
         propertiesService = new PropertiesService();
         houseblockService = new HouseblockService();
@@ -70,7 +69,9 @@ public class DashboardServiceTest {
     }
 
     @BeforeEach
-    void beforeEach() {
+    void beforeEach() throws Exception {
+        testDb.reset();
+        dalFactory = testDb.getDalFactory();
         now = ZonedDateTime.now();
         dal = dalFactory.constructDal();
         Session session = dal.getSession();
