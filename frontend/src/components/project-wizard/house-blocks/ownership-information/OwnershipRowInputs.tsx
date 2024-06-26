@@ -1,5 +1,5 @@
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Grid, IconButton, TextField, Typography } from "@mui/material";
+import { Grid, IconButton, TextField } from "@mui/material";
 import { t } from "i18next";
 import { OwnershipValueType, ownershipValueOptions } from "../../../../types/enums";
 import { OwnershipSingleValue } from "../../../../types/houseBlockTypes";
@@ -92,7 +92,7 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                 <RangeNumberInput
                     value={!isKoopwoning ? ownership.rentalValue : { ...ownership.value, value: null }}
                     updateCallBack={(e) => handleInputChange(index, { ...ownership, rentalValue: e })}
-                                        readOnly={readOnly ? true : isKoopwoning}
+                    readOnly={readOnly ? true : isKoopwoning}
                     mandatory={false}
                     isMonetary={true}
                     title={t(`${translationPath}.rent`)}

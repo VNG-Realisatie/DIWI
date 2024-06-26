@@ -3,7 +3,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import Tooltip from "@mui/material/Tooltip";
 
 import { Box, Stack } from "@mui/material";
-import { useContext, useId, useState } from "react";
+import { useContext, useId } from "react";
 import { useTranslation } from "react-i18next";
 import ProjectContext from "../../context/ProjectContext";
 import usePlotSelector from "../../hooks/usePlotSelector";
