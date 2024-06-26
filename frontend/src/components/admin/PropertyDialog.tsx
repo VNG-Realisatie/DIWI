@@ -30,19 +30,21 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
     const [selectedPropertyType, setSelectedPropertyType] = useState<PropertyType>("TEXT");
     const [active, setActive] = useState(false);
     const [untranslatedName, setUntranslatedName] = useState<string>("");
-    const [name, setName] = useState<string>("");
+    const [displayedName, setDisplayedName] = useState<string>("");
     const [categories, setCategories] = useState<CategoryType[]>([]);
     const [ordinals, setOrdinalCategories] = useState<OrdinalCategoryType[]>([]);
+    const [activeProperty, setActiveProperty] = useState<Property>();
     const { setAlert } = useContext(AlertContext);
     const { t } = useTranslation();
 
     const updateDialog = useCallback(
         (property: Property): void => {
+            setActiveProperty(property);
             setUntranslatedName(property.name);
             if (property.type === "FIXED") {
-                setName(t(`admin.settings.fixedPropertyType.${property.name}`));
+                setDisplayedName(t(`admin.settings.fixedPropertyType.${property.name}`));
             } else {
-                setName(property.name);
+                setDisplayedName(property.name);
             }
             property.categories && setCategories(property.categories);
             property.ordinals && setOrdinalCategories(property.ordinals);
@@ -50,7 +52,17 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
             setSelectedObjectType(property.objectType);
             setSelectedPropertyType(property.propertyType);
         },
-        [setUntranslatedName, setName, setCategories, setOrdinalCategories, setActive, setSelectedObjectType, setSelectedPropertyType, t],
+        [
+            setActiveProperty,
+            setUntranslatedName,
+            setDisplayedName,
+            setCategories,
+            setOrdinalCategories,
+            setActive,
+            setSelectedObjectType,
+            setSelectedPropertyType,
+            t,
+        ],
     );
 
     useEffect(() => {
@@ -60,7 +72,8 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
     }, [id, updateDialog]);
 
     const resetForm = () => {
-        setName("");
+        setDisplayedName("");
+        setUntranslatedName("");
         setSelectedObjectType("PROJECT");
         setSelectedPropertyType("TEXT");
         setActive(false);
@@ -82,6 +95,8 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
         } finally {
             setCategories([]);
             setOrdinalCategories([]);
+            setDisplayedName("");
+            setUntranslatedName("");
         }
     };
 
@@ -104,6 +119,8 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
         setCategories([]);
         setOrdinalCategories([]);
         setId && setId("");
+        setDisplayedName("");
+        setUntranslatedName("");
         setOpenDialog(false);
     };
 
@@ -118,8 +135,12 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
                     <TextField
                         size="small"
                         label={t("admin.settings.tableHeader.name")}
-                        value={name}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+                        value={displayedName}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                            setDisplayedName(e.target.value);
+                            setUntranslatedName(e.target.value);
+                        }}
+                        disabled={activeProperty?.type === "FIXED"}
                     />
                     <InputLabel variant="standard" id="objectType">
                         {t("admin.settings.tableHeader.objectType")}
