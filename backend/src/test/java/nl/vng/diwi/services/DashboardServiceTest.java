@@ -19,6 +19,7 @@ import nl.vng.diwi.dal.DalFactory;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.Houseblock;
 import nl.vng.diwi.dal.entities.Milestone;
+import nl.vng.diwi.dal.entities.Project;
 import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.security.LoggedUser;
@@ -36,13 +37,10 @@ public class DashboardServiceTest {
     private VngRepository repo;
 
     private ZonedDateTime now;
-    // private UUID userUuid;
-    // private User user;
-    // private Project project;
-    // private UUID projectUuid;
-    // private Milestone startMilestone;
-    // private Milestone endMilestone;
-    // private Milestone middleMilestone;
+    private LoggedUser loggedUser;
+    private Houseblock houseblock;
+
+    private Project project;
 
     private static DashboardService dashboardService;
 
@@ -65,19 +63,6 @@ public class DashboardServiceTest {
         now = ZonedDateTime.now();
         dal = dalFactory.constructDal();
         repo = new VngRepository(dal.getSession());
-    }
-
-    @AfterEach
-    void afterEach() {
-        dal.close();
-    }
-
-    @Test
-    void testGetProjectDashboardSnapshot() throws VngNotFoundException {
-        // given
-        UUID projectUuid;
-        LoggedUser loggedUser;
-        LocalDate snapshotDate = LocalDate.now();
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             // User
@@ -88,29 +73,46 @@ public class DashboardServiceTest {
             loggedUser.setRole(UserRole.UserPlus);
 
             // Project
-            var project = ProjectServiceTest.createProject(repo, user);
+            project = ProjectServiceTest.createProject(repo, user);
             final LocalDate startDate = LocalDate.now().minusDays(10);
             final LocalDate endDate = LocalDate.now().plusDays(10);
             Milestone startMilestone = ProjectServiceTest.createMilestone(repo, project, startDate, user);
             Milestone endMilestone = ProjectServiceTest.createMilestone(repo, project, endDate, user);
             ProjectServiceTest.createProjectDurationChangelog(repo, project, startMilestone, endMilestone, user);
-            projectUuid = project.getId();
 
             // Houseblock
-            var             houseblock = new Houseblock();
+            houseblock = new Houseblock();
             houseblock.setProject(project);
             repo.persist(houseblock);
 
-            HouseblockServiceTest.createHouseblockDurationAndStateChangelog(repo, houseblock, startMilestone, endMilestone, user);
-            HouseblockServiceTest.createHouseblockNameChangelog(repo, houseblock, "Name 1", startMilestone, endMilestone, user);
-
+            HouseblockServiceTest.createHouseblockDurationAndStateChangelog(repo, houseblock, startMilestone,
+                    endMilestone, user);
+            HouseblockServiceTest.createHouseblockNameChangelog(repo, houseblock, "Name 1", startMilestone,
+                    endMilestone, user);
 
             transaction.commit();
             repo.getSession().clear();
         }
+    }
 
+    @AfterEach
+    void afterEach() {
+        dal.close();
+    }
+
+    @Test
+    void getProjectDashboardSnapshot() throws VngNotFoundException {
         // when
-        var result = dashboardService.getProjectDashboardSnapshot(repo, projectUuid, snapshotDate, loggedUser);
+        var result = dashboardService.getProjectDashboardSnapshot(repo, project.getId(), now.toLocalDate(), loggedUser);
+
+        // then
+        assertThat(result).isNotNull();
+    }
+
+    @Test
+    void getMultiProjectDashboardSnapshot() throws VngNotFoundException {
+        // when
+        var result = dashboardService.getMultiProjectDashboardSnapshot(repo, now.toLocalDate(), loggedUser);
 
         // then
         assertThat(result).isNotNull();
