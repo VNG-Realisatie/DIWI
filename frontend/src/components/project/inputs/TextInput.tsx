@@ -36,9 +36,6 @@ const TextInput = ({ value, setValue, readOnly, mandatory, errorText, title, too
                 required={mandatory}
                 sx={{
                     width: "100%",
-                    "& .MuiInputBase-input.Mui-disabled": {
-                        backgroundColor: "transparent",
-                    },
                 }}
                 size="small"
                 variant="outlined"

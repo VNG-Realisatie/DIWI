@@ -68,11 +68,6 @@ const CategoryInput = ({
                 multiple={multiple}
                 size="small"
                 disabled={readOnly}
-                sx={{
-                    "& .MuiInputBase-input.Mui-disabled": {
-                        backgroundColor: "#0000",
-                    },
-                }}
                 isOptionEqualToValue={isOptionEqualToValue}
                 fullWidth
                 options={options ?? []}

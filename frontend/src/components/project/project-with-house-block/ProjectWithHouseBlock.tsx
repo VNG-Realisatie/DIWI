@@ -12,8 +12,6 @@ import { BlockPicker } from "react-color";
 
 import { Project, updateProjectWithCustomProperties } from "../../../api/projectsServices";
 import AlertContext from "../../../context/AlertContext";
-import { CreateHouseBlockDialog } from "./CreateHouseBlockDialog";
-import { HouseBlocksList } from "./HouseBlocksList";
 import { ProjectForm } from "../../ProjectForm";
 import useLoading from "../../../hooks/useLoading";
 import useAllowedActions from "../../../hooks/useAllowedActions";
@@ -22,7 +20,6 @@ export const ProjectsWithHouseBlock = () => {
     const { selectedProject, updateProject } = useContext(ProjectContext);
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const [openColorDialog, setOpenColorDialog] = useState(false);
-    const [openHouseBlockDialog, setOpenHouseBlockDialog] = useState(false);
     const [readOnly, setReadOnly] = useState(true);
 
     const [projectForm, setProjectForm] = useState<Project | null>(selectedProject);
@@ -111,8 +108,6 @@ export const ProjectsWithHouseBlock = () => {
                     </Box>
                 )}
 
-                <HouseBlocksList setOpenHouseBlockDialog={setOpenHouseBlockDialog} />
-
                 {/* Dialog to select color */}
                 {openColorDialog && (
                     <Popover
@@ -131,9 +126,6 @@ export const ProjectsWithHouseBlock = () => {
                         />
                     </Popover>
                 )}
-
-                {/* Dialog to create new houseblock */}
-                <CreateHouseBlockDialog openHouseBlockDialog={openHouseBlockDialog} setOpenHouseBlockDialog={setOpenHouseBlockDialog} />
             </Stack>
         </Stack>
     );

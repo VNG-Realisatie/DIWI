@@ -69,7 +69,6 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                             <Grid item xs={12} md={4}>
                                 <LabelComponent
                                     required
-                                    readOnly={readOnly}
                                     text={t("createProject.informationForm.color")}
                                     tooltipInfoText={t("tooltipInfo.projectKleur.title")}
                                 />
@@ -206,12 +205,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
 
                         {/* Owner */}
                         <Grid item xs={12} md={4} className="project-owner">
-                            <LabelComponent
-                                required={true}
-                                readOnly={readOnly}
-                                text={t("createProject.informationForm.owner")}
-                                tooltipInfoText={t("tooltipInfo.schrijfrechten.title")}
-                            />
+                            <LabelComponent tooltipInfoText={"tooltipInfo.schrijfrechten.title"} required={true} text={t("createProject.informationForm.owner")} />
                             <UserGroupSelect
                                 readOnly={readOnly}
                                 userGroup={project?.projectOwners ? project.projectOwners : []}
@@ -322,38 +316,23 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                         <Grid container spacing={2} alignItems="stretch">
                             {/* Demolition */}
                             <Grid item xs={12} md={4}>
-                                <LabelComponent
-                                    required={false}
-                                    readOnly={readOnly}
-                                    text={t("createProject.houseBlocksForm.demolition")}
-                                    tooltipInfoText={t("tooltipInfo.sloop.title")}
-                                />
+                                <LabelComponent tooltipInfoText={"tooltipInfo.sloop.title"} required={false} text={t("createProject.houseBlocksForm.demolition")} />
                                 <CellContainer>
-                                    <LabelComponent required={false} readOnly={true} text={demolitionAmount.toString()} />
+                                    <LabelComponent required={false} text={demolitionAmount.toString()} />
                                 </CellContainer>
                             </Grid>
                             {/* Construction */}
                             <Grid item xs={12} md={4}>
-                                <LabelComponent
-                                    required={false}
-                                    readOnly={readOnly}
-                                    text={t("createProject.houseBlocksForm.grossPlanCapacity")}
-                                    tooltipInfoText={t("tooltipInfo.brutoPlancapaciteit.title")}
-                                />
+                                <LabelComponent tooltipInfoText={"tooltipInfo.brutoPlancapaciteit.title"} required={false} text={t("createProject.houseBlocksForm.grossPlanCapacity")} />
                                 <CellContainer>
-                                    <LabelComponent required={false} readOnly={true} text={constructionAmount.toString()} />
+                                    <LabelComponent required={false} text={constructionAmount.toString()} />
                                 </CellContainer>
                             </Grid>
                             {/* Total */}
                             <Grid item xs={12} md={4}>
-                                <LabelComponent
-                                    required={false}
-                                    readOnly={readOnly}
-                                    text={t("createProject.houseBlocksForm.netPlanCapacity")}
-                                    tooltipInfoText={t("tooltipInfo.nettoPlancapaciteit.title")}
-                                />
+                                <LabelComponent tooltipInfoText={"tooltipInfo.nettoPlancapaciteit.title"} required={false} text={t("createProject.houseBlocksForm.netPlanCapacity")} />
                                 <CellContainer>
-                                    <LabelComponent required={false} readOnly={true} text={(constructionAmount - demolitionAmount).toString()} />
+                                    <LabelComponent required={false} text={(constructionAmount - demolitionAmount).toString()} />
                                 </CellContainer>
                             </Grid>
                         </Grid>
