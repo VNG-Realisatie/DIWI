@@ -35,9 +35,6 @@ import nl.vng.diwi.security.UserRole;
 import nl.vng.diwi.testutil.TestDb;
 
 public class DashboardServiceTest {
-    private static RecursiveComparisonConfiguration ignoreId = RecursiveComparisonConfiguration.builder()
-            .withIgnoredFields("id").build();
-
     private static DalFactory dalFactory;
     private static TestDb testDb;
 
