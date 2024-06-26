@@ -20,11 +20,22 @@ public class MultiProjectDashboardSqlModel {
     @Getter(AccessLevel.NONE)
     private List<PieChartModel> physicalAppearance;
 
+    @Type(value = JsonListType.class)
+    @Getter(AccessLevel.NONE)
+    private List<PieChartModel> targetGroup;
+
     public List<PieChartModel> getPhysicalAppearance() {
         if (physicalAppearance == null) {
             return new ArrayList<>();
         }
         return physicalAppearance;
+    }
+
+    public List<PieChartModel> getTargetGroup() {
+        if (targetGroup == null) {
+            return new ArrayList<>();
+        }
+        return targetGroup;
     }
 
 }
