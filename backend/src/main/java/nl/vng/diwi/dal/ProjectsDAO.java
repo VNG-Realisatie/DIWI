@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import nl.vng.diwi.dal.entities.MultiProjectDashboardSqlModel;
 import nl.vng.diwi.dal.entities.Project;
 import nl.vng.diwi.dal.entities.ProjectDashboardSqlModel;
 import nl.vng.diwi.dal.entities.ProjectHouseblockCustomPropertySqlModel;
@@ -109,6 +110,16 @@ public class ProjectsDAO extends AbstractRepository {
                     "SELECT * FROM %s.get_project_dashboard_snapshot(:projectUuid, :snapshotDate, :userRole, :userUuid) ", GenericRepository.VNG_SCHEMA_NAME),
                 ProjectDashboardSqlModel.class)
             .setParameter("projectUuid", projectUuid)
+            .setParameter("snapshotDate", snapshotDate)
+            .setParameter("userRole", loggedUser.getRole().name())
+            .setParameter("userUuid", loggedUser.getUuid())
+            .getSingleResultOrNull();
+    }
+
+    public MultiProjectDashboardSqlModel getMultiProjectDashboardSnapshot(LocalDate snapshotDate, LoggedUser loggedUser) {
+        return session.createNativeQuery(String.format(
+                    "SELECT * FROM %s.get_multi_project_dashboard_snapshot(:snapshotDate, :userRole, :userUuid) ", GenericRepository.VNG_SCHEMA_NAME),
+                MultiProjectDashboardSqlModel.class)
             .setParameter("snapshotDate", snapshotDate)
             .setParameter("userRole", loggedUser.getRole().name())
             .setParameter("userUuid", loggedUser.getUuid())
