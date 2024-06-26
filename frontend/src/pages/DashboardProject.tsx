@@ -32,8 +32,6 @@ export const DashboardProject = () => {
                     </Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
-            </Grid>
-            <Grid container border="solid 1px #DDD">
                 <Grid item xs={12} md={6}>
                     <Typography variant="h6" fontSize={16}>
                         Prijssegmenten huur %
@@ -46,8 +44,6 @@ export const DashboardProject = () => {
                     </Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
-            </Grid>
-            <Grid container border="solid 1px #DDD">
                 <Grid item xs={12} md={6}>
                     <Typography variant="h6" fontSize={16}>
                         Planning
