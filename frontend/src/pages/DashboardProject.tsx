@@ -22,36 +22,36 @@ export const DashboardProject = () => {
             <Grid container border="solid 1px #DDD">
                 <Grid item xs={12} md={6}>
                     <Typography variant="h6" fontSize={16}>
-                        Kenmerken
+                        {t("dashboard.characteristics")}
                     </Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
                 <Grid item xs={12} md={6}>
                     <Typography variant="h6" fontSize={16}>
-                        Prijssegmenten koop %
+                        {t("dashboard.priceSegmentsPurchase")}
                     </Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
                 <Grid item xs={12} md={6}>
                     <Typography variant="h6" fontSize={16}>
-                        Prijssegmenten huur %
+                        {t("dashboard.priceSegmentsRent")}
                     </Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
                 <Grid item xs={12} md={6}>
                     <Typography variant="h6" fontSize={16}>
-                        Woonproducten %
+                        {t("dashboard.residentialProjects")}%
                     </Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
                 <Grid item xs={12} md={6}>
                     <Typography variant="h6" fontSize={16}>
-                        Planning
+                        {t("dashboard.schedule")}
                     </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
                     <Typography variant="h6" fontSize={16}>
-                        Aankomende mijlpalen
+                        {t("dashboard.upcomingMileStones")}
                     </Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
