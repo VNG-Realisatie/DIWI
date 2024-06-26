@@ -4,9 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
+import org.hibernate.Session;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -18,9 +21,19 @@ import nl.vng.diwi.dal.Dal;
 import nl.vng.diwi.dal.DalFactory;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.Houseblock;
+import nl.vng.diwi.dal.entities.HouseblockAppearanceAndTypeChangelog;
+import nl.vng.diwi.dal.entities.HouseblockPhysicalAppearanceChangelogValue;
 import nl.vng.diwi.dal.entities.Milestone;
 import nl.vng.diwi.dal.entities.Project;
+import nl.vng.diwi.dal.entities.Property;
+import nl.vng.diwi.dal.entities.PropertyCategoryValue;
+import nl.vng.diwi.dal.entities.PropertyCategoryValueState;
 import nl.vng.diwi.dal.entities.User;
+import nl.vng.diwi.models.AmountModel;
+import nl.vng.diwi.models.MultiProjectDashboardModel;
+import nl.vng.diwi.models.PieChartModel;
+import nl.vng.diwi.models.PropertyModel;
+import nl.vng.diwi.models.SelectDisabledModel;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.security.UserRole;
@@ -43,12 +56,18 @@ public class DashboardServiceTest {
     private Project project;
 
     private static DashboardService dashboardService;
+    private static PropertiesService propertiesService;
+
+    private static HouseblockService houseblockService;
 
     @BeforeAll
     static void beforeAll() throws Exception {
         testDb = new TestDb();
         dalFactory = testDb.getDalFactory();
         dashboardService = new DashboardService();
+        propertiesService = new PropertiesService();
+        houseblockService = new HouseblockService();
+        houseblockService.setProjectService(new ProjectService());
     }
 
     @AfterAll
@@ -62,11 +81,15 @@ public class DashboardServiceTest {
     void beforeEach() {
         now = ZonedDateTime.now();
         dal = dalFactory.constructDal();
-        repo = new VngRepository(dal.getSession());
+        Session session = dal.getSession();
+        repo = new VngRepository(session);
 
+        Milestone startMilestone;
+        Milestone endMilestone;
+        User user;
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             // User
-            var user = repo.persist(new User());
+            user = repo.persist(new User());
             var userUuid = user.getId();
             loggedUser = new LoggedUser();
             loggedUser.setUuid(userUuid);
@@ -76,8 +99,8 @@ public class DashboardServiceTest {
             project = ProjectServiceTest.createProject(repo, user);
             final LocalDate startDate = LocalDate.now().minusDays(10);
             final LocalDate endDate = LocalDate.now().plusDays(10);
-            Milestone startMilestone = ProjectServiceTest.createMilestone(repo, project, startDate, user);
-            Milestone endMilestone = ProjectServiceTest.createMilestone(repo, project, endDate, user);
+            startMilestone = ProjectServiceTest.createMilestone(repo, project, startDate, user);
+            endMilestone = ProjectServiceTest.createMilestone(repo, project, endDate, user);
             ProjectServiceTest.createProjectDurationChangelog(repo, project, startMilestone, endMilestone, user);
 
             // Houseblock
@@ -89,6 +112,58 @@ public class DashboardServiceTest {
                     endMilestone, user);
             HouseblockServiceTest.createHouseblockNameChangelog(repo, houseblock, "Name 1", startMilestone,
                     endMilestone, user);
+            // HouseblockServiceTest.createHouseblockDurationAndStateChangelog(repo,
+            // houseblock,)
+
+            transaction.commit();
+            repo.getSession().clear();
+        }
+
+        PropertyCategoryValueState appearanceOption;
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+            project = repo.getProjectsDAO().getCurrentProject(project.getId());
+            houseblock = repo.getHouseblockDAO().getCurrentHouseblock(houseblock.getId());
+
+            var propId = propertiesService.getPropertyUuid(repo, "physicalAppearance");
+            var prop = session.get(Property.class, propId);
+
+            var value = new PropertyCategoryValue();
+            // value.
+            value.setProperty(prop);
+            repo.persist(value);
+
+            appearanceOption = new PropertyCategoryValueState();
+            appearanceOption.setCategoryValue(value);
+            appearanceOption.setLabel("AppearanceOption");
+            appearanceOption.setCreateUser(user);
+            appearanceOption.setChangeStartDate(now);
+            session.persist(appearanceOption);
+
+            var blockAppearance = new HouseblockAppearanceAndTypeChangelog();
+            blockAppearance.setHouseblock(houseblock);
+
+            blockAppearance.setStartMilestone(startMilestone);
+            blockAppearance.setEndMilestone(endMilestone);
+            blockAppearance.setChangeStartDate(now);
+            blockAppearance.setCreateUser(user);
+            repo.persist(blockAppearance);
+
+            var appearanceChangelogValue = new HouseblockPhysicalAppearanceChangelogValue();
+            appearanceChangelogValue.setAppearanceAndTypeChangelog(blockAppearance);
+            appearanceChangelogValue.setCategoryValue(value);
+            appearanceChangelogValue.setAmount(1);
+            repo.persist(appearanceChangelogValue);
+
+            // var propertyModel = new PropertyModel()
+            // .builder()
+            // .id(propId)
+            // .name("physicalAppearance")
+            // .categories(List.of(SelectDisabledModel.builder().value("value1").build()
+
+            // ))
+            // .build();
+            // propertiesService.updatePropertyNameOrValues(repo, propertyModel, now,
+            // loggedUser);
 
             transaction.commit();
             repo.getSession().clear();
@@ -103,10 +178,15 @@ public class DashboardServiceTest {
     @Test
     void getProjectDashboardSnapshot() throws VngNotFoundException {
         // when
-        var result = dashboardService.getProjectDashboardSnapshot(repo, project.getId(), now.toLocalDate(), loggedUser);
+        var result = dashboardService.getProjectDashboardSnapshot(repo, project.getId(), now.toLocalDate(),
+                loggedUser);
+
+        var expected = new MultiProjectDashboardModel();
+        expected.setPhysicalAppearance(List.of(new PieChartModel("AppearanceOption", 1)));
 
         // then
-        assertThat(result).isNotNull();
+        assertThat(result).usingRecursiveComparison()
+                .isEqualTo(expected);
     }
 
     @Test
@@ -114,7 +194,11 @@ public class DashboardServiceTest {
         // when
         var result = dashboardService.getMultiProjectDashboardSnapshot(repo, now.toLocalDate(), loggedUser);
 
+        var expected = new MultiProjectDashboardModel();
+        expected.setPhysicalAppearance(List.of(new PieChartModel("AppearanceOption", 1)));
+
         // then
-        assertThat(result).isNotNull();
+        assertThat(result).usingRecursiveComparison()
+                .isEqualTo(expected);
     }
 }
