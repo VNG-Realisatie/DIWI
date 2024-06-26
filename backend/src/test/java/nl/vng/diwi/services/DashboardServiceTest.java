@@ -5,8 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
 import org.hibernate.Session;
@@ -29,11 +27,8 @@ import nl.vng.diwi.dal.entities.Property;
 import nl.vng.diwi.dal.entities.PropertyCategoryValue;
 import nl.vng.diwi.dal.entities.PropertyCategoryValueState;
 import nl.vng.diwi.dal.entities.User;
-import nl.vng.diwi.models.AmountModel;
 import nl.vng.diwi.models.MultiProjectDashboardModel;
 import nl.vng.diwi.models.PieChartModel;
-import nl.vng.diwi.models.PropertyModel;
-import nl.vng.diwi.models.SelectDisabledModel;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.security.UserRole;
@@ -112,8 +107,6 @@ public class DashboardServiceTest {
                     endMilestone, user);
             HouseblockServiceTest.createHouseblockNameChangelog(repo, houseblock, "Name 1", startMilestone,
                     endMilestone, user);
-            // HouseblockServiceTest.createHouseblockDurationAndStateChangelog(repo,
-            // houseblock,)
 
             transaction.commit();
             repo.getSession().clear();
@@ -153,17 +146,6 @@ public class DashboardServiceTest {
             appearanceChangelogValue.setCategoryValue(value);
             appearanceChangelogValue.setAmount(1);
             repo.persist(appearanceChangelogValue);
-
-            // var propertyModel = new PropertyModel()
-            // .builder()
-            // .id(propId)
-            // .name("physicalAppearance")
-            // .categories(List.of(SelectDisabledModel.builder().value("value1").build()
-
-            // ))
-            // .build();
-            // propertiesService.updatePropertyNameOrValues(repo, propertyModel, now,
-            // loggedUser);
 
             transaction.commit();
             repo.getSession().clear();
