@@ -267,7 +267,6 @@
       "addProject": "Project toevoegen",
       "projectOverview": "Overzicht projecten",
       "knowledgeBase": "Kennisbank"
-
     },
     "about": {
       "heading": "Over deze website",
@@ -336,6 +335,7 @@
         "squit": "Importeren vanuit Squit",
         "geojson": "Importeren vanuit GeoJSON"
       },
+
       "download": {
         "excel": "Download Excel template hier",
         "squit": "Download Excel template hier",
