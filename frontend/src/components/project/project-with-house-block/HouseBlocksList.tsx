@@ -30,7 +30,7 @@ export const HouseBlocksList = ({ setOpenHouseBlockDialog }: Props) => {
                     <HouseBlockAccordionWithControls key={hb.houseblockId} houseBlock={hb} refresh={refresh} />
                 ))}
             </Grid>
-            <Box style={{ position: "fixed", bottom: 35, right: 40 }}>
+            <Box style={{ position: "fixed", bottom: 100, right: 180 }}>
                 <AddHouseBlockButton onClick={() => setOpenHouseBlockDialog(true)} />
             </Box>
         </>
