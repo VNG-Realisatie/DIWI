@@ -6,7 +6,8 @@ CREATE OR REPLACE FUNCTION diwi.get_multi_project_dashboard_snapshot (
   _user_uuid_ uuid
 )
 	RETURNS TABLE (
-        physicalAppearance JSONB
+        physicalAppearance JSONB,
+        targetGroup JSONB
 	)
 	LANGUAGE plpgsql
 AS $$
@@ -14,8 +15,8 @@ BEGIN
 RETURN QUERY
 
 SELECT
-    q.physicalAppearance AS physicalAppearance
-
+    q.physicalAppearance AS physicalAppearance,
+    q.targetGroup AS targetGroup
 FROM (
 
          WITH
@@ -55,6 +56,20 @@ FROM (
                      sms.date <= _snapshot_date_ AND _snapshot_date_ < ems.date
                  GROUP BY pcvs.value_label
              ),
+             woningbloks_target_group AS (
+                 SELECT
+                     pcvs.value_label AS label, SUM(wcfv.amount) AS amount
+                 FROM
+                     woningbloks w
+                         JOIN diwi.woningblok_doelgroep_changelog wtfc ON w.id = wtfc.woningblok_id AND wtfc.change_end_date IS NULL
+                         JOIN diwi.milestone_state sms ON sms.milestone_id = wtfc.start_milestone_id AND sms.change_end_date IS NULL
+                         JOIN diwi.milestone_state ems ON ems.milestone_id = wtfc.end_milestone_id AND ems.change_end_date IS NULL
+                         JOIN diwi.woningblok_doelgroep_changelog_value wcfv ON wcfv.woningblok_doelgroep_changelog_id = wtfc.id
+                         JOIN diwi.property_category_value_state pcvs ON pcvs.category_value_id = wcfv.property_value_id AND pcvs.change_end_date IS NULL
+                 WHERE
+                     sms.date <= _snapshot_date_ AND _snapshot_date_ < ems.date
+                 GROUP BY pcvs.value_label
+             ),
              project_users AS (
                  SELECT
                      q.project_id    AS project_id,
@@ -83,12 +98,15 @@ FROM (
                 p.id                               AS projectId,
                 ps.confidentiality_level           AS confidentialityLevel,
                 owners.users                       AS projectOwners,
-                wpa.physicalAppearance             AS physicalAppearance
+                wpa.physicalAppearance             AS physicalAppearance,
+                wtp.targetGroup                    AS targetGroup
          FROM
              projects p
                  LEFT JOIN diwi.project_state ps ON ps.project_id = p.id AND ps.change_end_date IS NULL
                  LEFT JOIN LATERAL (SELECT to_jsonb(array_agg(jsonb_build_object('name', label, 'amount', amount))) AS physicalAppearance
                                     FROM woningbloks_physical_appearance) AS wpa ON true
+                 LEFT JOIN LATERAL (SELECT to_jsonb(array_agg(jsonb_build_object('name', label, 'amount', amount))) AS targetGroup
+                                    FROM woningbloks_target_group) AS wtp ON true
                  LEFT JOIN project_users owners ON ps.project_id = owners.project_id
 
      ) AS q

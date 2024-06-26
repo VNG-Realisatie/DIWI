@@ -21,6 +21,8 @@ import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.Houseblock;
 import nl.vng.diwi.dal.entities.HouseblockAppearanceAndTypeChangelog;
 import nl.vng.diwi.dal.entities.HouseblockPhysicalAppearanceChangelogValue;
+import nl.vng.diwi.dal.entities.HouseblockTargetGroupChangelog;
+import nl.vng.diwi.dal.entities.HouseblockTargetGroupChangelogValue;
 import nl.vng.diwi.dal.entities.Milestone;
 import nl.vng.diwi.dal.entities.Project;
 import nl.vng.diwi.dal.entities.Property;
@@ -29,6 +31,7 @@ import nl.vng.diwi.dal.entities.PropertyCategoryValueState;
 import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.models.MultiProjectDashboardModel;
 import nl.vng.diwi.models.PieChartModel;
+import nl.vng.diwi.models.ProjectDashboardModel;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.security.UserRole;
@@ -110,44 +113,77 @@ public class DashboardServiceTest {
             repo.getSession().clear();
         }
 
-        PropertyCategoryValueState appearanceOption;
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             project = repo.getProjectsDAO().getCurrentProject(project.getId());
             houseblock = repo.getHouseblockDAO().getCurrentHouseblock(houseblock.getId());
 
-            var propId = propertiesService.getPropertyUuid(repo, "physicalAppearance");
-            var prop = session.get(Property.class, propId);
-
-            var value = new PropertyCategoryValue();
-            // value.
-            value.setProperty(prop);
-            repo.persist(value);
-
-            appearanceOption = new PropertyCategoryValueState();
-            appearanceOption.setCategoryValue(value);
-            appearanceOption.setLabel("AppearanceOption");
-            appearanceOption.setCreateUser(user);
-            appearanceOption.setChangeStartDate(now);
-            session.persist(appearanceOption);
-
-            var blockAppearance = new HouseblockAppearanceAndTypeChangelog();
-            blockAppearance.setHouseblock(houseblock);
-
-            blockAppearance.setStartMilestone(startMilestone);
-            blockAppearance.setEndMilestone(endMilestone);
-            blockAppearance.setChangeStartDate(now);
-            blockAppearance.setCreateUser(user);
-            repo.persist(blockAppearance);
-
-            var appearanceChangelogValue = new HouseblockPhysicalAppearanceChangelogValue();
-            appearanceChangelogValue.setAppearanceAndTypeChangelog(blockAppearance);
-            appearanceChangelogValue.setCategoryValue(value);
-            appearanceChangelogValue.setAmount(1);
-            repo.persist(appearanceChangelogValue);
+            addAppearanceChangelogValue(session, startMilestone, endMilestone, user);
+            addTargetGroupValue(session, startMilestone, endMilestone, user);
 
             transaction.commit();
             repo.getSession().clear();
         }
+    }
+
+    private void addAppearanceChangelogValue(Session session, Milestone startMilestone, Milestone endMilestone,
+            User user) {
+        var physAppValue = addPropOption(session, startMilestone, endMilestone, user, "physicalAppearance",
+                "AppearanceOption");
+
+        var blockAppearance = new HouseblockAppearanceAndTypeChangelog();
+        blockAppearance.setHouseblock(houseblock);
+
+        blockAppearance.setStartMilestone(startMilestone);
+        blockAppearance.setEndMilestone(endMilestone);
+        blockAppearance.setChangeStartDate(now);
+        blockAppearance.setCreateUser(user);
+        repo.persist(blockAppearance);
+
+        var appearanceChangelogValue = new HouseblockPhysicalAppearanceChangelogValue();
+        appearanceChangelogValue.setAppearanceAndTypeChangelog(blockAppearance);
+        appearanceChangelogValue.setCategoryValue(physAppValue);
+        appearanceChangelogValue.setAmount(1);
+        repo.persist(appearanceChangelogValue);
+    }
+
+    private void addTargetGroupValue(Session session, Milestone startMilestone, Milestone endMilestone, User user) {
+        var tarGroupValue = addPropOption(session, startMilestone, endMilestone, user, "targetGroup",
+                "GroupOption");
+
+        var targetGroup = new HouseblockTargetGroupChangelog();
+        targetGroup.setHouseblock(houseblock);
+        targetGroup.setStartMilestone(startMilestone);
+        targetGroup.setEndMilestone(endMilestone);
+        targetGroup.setChangeStartDate(now);
+        targetGroup.setCreateUser(user);
+        repo.persist(targetGroup);
+
+        var targetGroupValue = new HouseblockTargetGroupChangelogValue();
+        targetGroupValue.setTargetGroupChangelog(targetGroup);
+        targetGroupValue.setCategoryValue(tarGroupValue);
+        targetGroupValue.setAmount(2);
+        repo.persist(targetGroupValue);
+    }
+
+    private PropertyCategoryValue addPropOption(Session session, Milestone startMilestone, Milestone endMilestone,
+            User user, String propertyName, String label) {
+        PropertyCategoryValueState valueState;
+
+        var propId = propertiesService.getPropertyUuid(repo, propertyName);
+        var prop = session.get(Property.class, propId);
+
+        var value = new PropertyCategoryValue();
+        value.setProperty(prop);
+        repo.persist(value);
+
+        valueState = new PropertyCategoryValueState();
+        valueState.setCategoryValue(value);
+        valueState.setLabel(label);
+        valueState.setCreateUser(user);
+        valueState.setChangeStartDate(now);
+        session.persist(valueState);
+
+        return value;
     }
 
     @AfterEach
@@ -161,7 +197,7 @@ public class DashboardServiceTest {
         var result = dashboardService.getProjectDashboardSnapshot(repo, project.getId(), now.toLocalDate(),
                 loggedUser);
 
-        var expected = new MultiProjectDashboardModel();
+        var expected = new ProjectDashboardModel();
         expected.setPhysicalAppearance(List.of(new PieChartModel("AppearanceOption", 1)));
 
         // then
@@ -176,6 +212,7 @@ public class DashboardServiceTest {
 
         var expected = new MultiProjectDashboardModel();
         expected.setPhysicalAppearance(List.of(new PieChartModel("AppearanceOption", 1)));
+        expected.setTargetGroup(List.of(new PieChartModel("GroupOption", 2)));
 
         // then
         assertThat(result).usingRecursiveComparison()

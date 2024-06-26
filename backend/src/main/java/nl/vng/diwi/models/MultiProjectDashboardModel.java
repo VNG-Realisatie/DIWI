@@ -14,8 +14,10 @@ import java.util.List;
 public class MultiProjectDashboardModel {
 
     List<PieChartModel> physicalAppearance = new ArrayList<>();
+    List<PieChartModel> targetGroup = new ArrayList<>();
 
     public MultiProjectDashboardModel(MultiProjectDashboardSqlModel sqlModel) {
         this.physicalAppearance = sqlModel.getPhysicalAppearance();
+        this.targetGroup = sqlModel.getTargetGroup();
     }
 }
