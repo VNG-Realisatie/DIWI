@@ -38,6 +38,7 @@ import { LoadingProvider } from "./context/LoadingContext";
 import { ImportPage } from "./pages/ImportPage";
 import UserManagement from "./pages/UserManagement";
 import { Forbidden } from "./pages/Forbidden";
+import { DashboardProject } from "./pages/DashboardProject";
 
 enum UserStatus {
     Authenticated,
@@ -261,6 +262,14 @@ function App() {
                         <Route path={Paths.policygoal.path} element={<PolicyLists />} />
                         <Route path={Paths.policygoalDashboard.path} element={<PolicyLists />} />
                         <Route path={Paths.dashboard.path} element={<DashboardProjects />} />
+                        <Route
+                            path={Paths.dashboardProject.path}
+                            element={
+                                <ProjectProvider>
+                                    <DashboardProject />
+                                </ProjectProvider>
+                            }
+                        />
                         <Route path={Paths.exchangedata.path} element={<ExchangeData />} />
                         <Route path={Paths.importExcel.path} element={<ImportPage functionality="excel" />} />
                         <Route path={Paths.importGeoJson.path} element={<ImportPage functionality="geojson" />} />

@@ -372,8 +372,23 @@
     },
     "dashboard": {
       "title": "Dashboard",
+      "projectTitle": "Dashboard | Project",
       "projects": "Dashboard projecten",
-      "municipalityProgram": "Woningbouwprogramma gemeente"
+      "municipalityProgram": "Woningbouwprogramma gemeente",
+      "selectProject": "Selecteer project",
+      "buy": "Koop",
+      "rent": "Huur",
+      "residentialProjects": "Woon Producten",
+      "deliverables": "Opleveringen",
+      "delayedProjects": "Vertraagde projecten",
+      "residentialFeautures": "Woon kenmerken",
+      "permitsGranted": "Verleende vergunningen",
+      "targetAudiences": "Doelgroepen",
+      "characteristics": "Kenmerken",
+      "priceSegmentsPurchase": "Prijssegmenten koop %",
+      "priceSegmentsRent": "Prijssegmenten huur %",
+      "schedule": "Planning",
+      "upcomingMileStones": "Aankomende mijlpalen"
     },
     "projectTable": {
       "planningPlanStatus": {
