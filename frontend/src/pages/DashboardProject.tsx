@@ -4,23 +4,31 @@ import * as Paths from "../Paths";
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import ProjectContext from "../context/ProjectContext";
+import { useParams } from "react-router-dom";
 
 export const DashboardProject = () => {
     const { t } = useTranslation();
     const { selectedProject } = useContext(ProjectContext);
+    const { projectId } = useParams();
     return (
         <Stack>
-            <BreadcrumbBar pageTitle={t("dashboard.projectTitle")} links={[{ title: `${selectedProject?.projectName}`, link: Paths.dashboard.path }]} />
+            <BreadcrumbBar
+                pageTitle={t("dashboard.projectTitle")}
+                links={[
+                    { title: `${t("dashboard.title")}`, link: Paths.dashboard.path },
+                    { title: `${selectedProject?.projectName}`, link: Paths.dashboardProject.toPath({ projectId: projectId || "" }) },
+                ]}
+            />
             <Grid container border="solid 1px #DDD">
                 <Grid item xs={12} md={6}>
                     <Typography variant="h6" fontSize={16}>
-                        Koop
+                        Kenmerken
                     </Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
                 <Grid item xs={12} md={6}>
                     <Typography variant="h6" fontSize={16}>
-                        Huur
+                        Prijssegmenten koop %
                     </Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
@@ -28,26 +36,13 @@ export const DashboardProject = () => {
             <Grid container border="solid 1px #DDD">
                 <Grid item xs={12} md={6}>
                     <Typography variant="h6" fontSize={16}>
-                        Woon Producten
+                        Prijssegmenten huur %
                     </Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
                 <Grid item xs={12} md={6}>
                     <Typography variant="h6" fontSize={16}>
-                        Opleveringen
-                    </Typography>
-                    {/* ToDo:Add chart here later */}
-                </Grid>
-            </Grid>
-            <Grid container border="solid 1px #DDD">
-                <Grid item xs={12} md={6}>
-                    <Typography variant="h6" fontSize={16}>
-                        Vertraagde projecten
-                    </Typography>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                    <Typography variant="h6" fontSize={16}>
-                        Woonkenmerken
+                        Woonproducten %
                     </Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
@@ -55,13 +50,12 @@ export const DashboardProject = () => {
             <Grid container border="solid 1px #DDD">
                 <Grid item xs={12} md={6}>
                     <Typography variant="h6" fontSize={16}>
-                        Verleende vergunningen
+                        Planning
                     </Typography>
-                    {/* ToDo:Add chart here later */}
                 </Grid>
                 <Grid item xs={12} md={6}>
                     <Typography variant="h6" fontSize={16}>
-                        Doelgroepen
+                        Aankomende mijlpalen
                     </Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
