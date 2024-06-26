@@ -1,31 +1,25 @@
 package nl.vng.diwi.dal;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-
-import nl.vng.diwi.dal.entities.MultiProjectDashboardSqlModel;
-import nl.vng.diwi.dal.entities.Project;
-import nl.vng.diwi.dal.entities.ProjectDashboardSqlModel;
-import nl.vng.diwi.dal.entities.ProjectHouseblockCustomPropertySqlModel;
-import nl.vng.diwi.dal.entities.ProjectState;
-import nl.vng.diwi.dal.entities.ProjectListSqlModel;
-import nl.vng.diwi.security.LoggedUser;
-import nl.vng.diwi.generic.Json;
-import nl.vng.diwi.models.PieChartModel;
 
 import org.hibernate.Session;
 import org.hibernate.query.SelectionQuery;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import jakarta.annotation.Nullable;
-
 import lombok.NonNull;
+import nl.vng.diwi.dal.entities.MultiProjectDashboardSqlModel;
+import nl.vng.diwi.dal.entities.Project;
+import nl.vng.diwi.dal.entities.ProjectDashboardSqlModel;
+import nl.vng.diwi.dal.entities.ProjectHouseblockCustomPropertySqlModel;
+import nl.vng.diwi.dal.entities.ProjectListSqlModel;
+import nl.vng.diwi.dal.entities.ProjectState;
+import nl.vng.diwi.generic.Json;
+import nl.vng.diwi.models.PieChartModel;
+import nl.vng.diwi.security.LoggedUser;
 
 public class ProjectsDAO extends AbstractRepository {
 
