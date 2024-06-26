@@ -5,6 +5,7 @@ import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import ProjectContext from "../context/ProjectContext";
 import { useParams } from "react-router-dom";
+import { CharacteristicTable } from "../components/dashboard/CharacteristicTable";
 
 export const DashboardProject = () => {
     const { t } = useTranslation();
@@ -24,7 +25,7 @@ export const DashboardProject = () => {
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.characteristics")}
                     </Typography>
-                    {/* ToDo:Add chart here later */}
+                    <CharacteristicTable />
                 </Grid>
                 <Grid item xs={12} md={6}>
                     <Typography variant="h6" fontSize={16}>
