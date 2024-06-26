@@ -71,14 +71,18 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
         }
     }, [id, updateDialog]);
 
-    const resetForm = () => {
+    const clearFields = () => {
         setDisplayedName("");
         setUntranslatedName("");
+        setCategories([]);
+        setOrdinalCategories([]);
+    };
+
+    const resetForm = () => {
+        clearFields();
         setSelectedObjectType("PROJECT");
         setSelectedPropertyType("TEXT");
         setActive(false);
-        setCategories([]);
-        setOrdinalCategories([]);
     };
 
     const saveAction = async (newProperty: Property) => {
@@ -93,10 +97,7 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
         } catch (error: unknown) {
             if (error instanceof Error) setAlert(error.message, "warning");
         } finally {
-            setCategories([]);
-            setOrdinalCategories([]);
-            setDisplayedName("");
-            setUntranslatedName("");
+            clearFields();
         }
     };
 
@@ -116,11 +117,8 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
     };
 
     const handleClose = () => {
-        setCategories([]);
-        setOrdinalCategories([]);
         setId && setId("");
-        setDisplayedName("");
-        setUntranslatedName("");
+        clearFields();
         setOpenDialog(false);
     };
 
