@@ -47,7 +47,7 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
         setActive(property.disabled);
         setSelectedObjectType(property.objectType);
         setSelectedPropertyType(property.propertyType);
-    }, []);
+    }, [setUntranslatedName, setName, setCategories, setOrdinalCategories, setActive, setSelectedObjectType, setSelectedPropertyType]);
 
     useEffect(() => {
         if (id) {
