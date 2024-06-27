@@ -1,7 +1,9 @@
 package nl.vng.diwi.services;
 
 import nl.vng.diwi.dal.VngRepository;
+import nl.vng.diwi.dal.entities.MultiProjectDashboardSqlModel;
 import nl.vng.diwi.dal.entities.ProjectDashboardSqlModel;
+import nl.vng.diwi.models.MultiProjectDashboardModel;
 import nl.vng.diwi.models.ProjectDashboardModel;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.security.LoggedUser;
@@ -29,4 +31,11 @@ public class DashboardService {
         return new ProjectDashboardModel(projectModel);
     }
 
+    public MultiProjectDashboardModel getMultiProjectDashboardSnapshot(VngRepository repo, LocalDate snapshotDate, LoggedUser loggedUser) throws VngNotFoundException {
+
+        MultiProjectDashboardSqlModel projectModel = repo.getProjectsDAO().getMultiProjectDashboardSnapshot(snapshotDate, loggedUser);
+
+        return new MultiProjectDashboardModel(projectModel);
+    }
+    
 }
