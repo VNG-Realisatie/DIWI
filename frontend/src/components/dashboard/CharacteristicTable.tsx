@@ -41,7 +41,7 @@ export const CharacteristicTable = () => {
         },
         {
             property: "projectTotalTime",
-            value: totalYear + " " + t("dashboard.properties.year"),
+            value: totalYear ? totalYear + " " + t("dashboard.properties.year") : "N/A",
         },
         {
             property: "projectPhase",
@@ -59,7 +59,7 @@ export const CharacteristicTable = () => {
                     <Stack key={i + data.property} flexDirection="row" alignItems="center" justifyContent="flex-start">
                         <Typography sx={propertyStyle}>{t(`dashboard.properties.${data.property}`)}</Typography>
                         <Typography sx={valueStyle}>
-                            {data.property === "projectPhase" ? t(`projectTable.projectPhaseOptions.${data.value}`) : data.value}
+                            {data.property === "projectPhase" ? (data.value ? t(`projectTable.projectPhaseOptions.${data.value}`) : "N/A") : data.value}
                         </Typography>
                     </Stack>
                 );
