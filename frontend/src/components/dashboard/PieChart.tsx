@@ -15,10 +15,9 @@ export const DashboardPieChart = ({ chartData, colors }: Props) => {
     const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
     const isLargeScreen = useMediaQuery(theme.breakpoints.up("lg"));
     const size = {
-        width: isSmallScreen ? 385 : 500,
         height: 300,
     };
-    const chartMargin = isSmallScreen ? { top: 10, bottom: 70 } : { top: 10, bottom: 50, left: -100 };
+    const chartMargin = isSmallScreen ? { top: 10, bottom: 100, left: 50 } : { top: 10, bottom: 50, left: -100 };
     const getLegendPosition = (): Partial<LegendRendererProps> | undefined => {
         if (isSmallScreen) {
             return {

@@ -71,7 +71,7 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
                     </ListItemButton>
                 </Link> */}
                 <Link to={Paths.dashboard.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
-                    <ListItemButton>
+                    <ListItemButton onClick={handleDrawerClose}>
                         <ListItemText primary="Dashboard projecten" />
                     </ListItemButton>
                 </Link>

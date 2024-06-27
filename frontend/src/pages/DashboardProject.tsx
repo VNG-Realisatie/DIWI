@@ -1,13 +1,16 @@
-import { Grid, Stack, Typography } from "@mui/material";
+import { Autocomplete, Grid, Stack, TextField, Typography } from "@mui/material";
 import BreadcrumbBar from "../components/header/BreadcrumbBar";
 import * as Paths from "../Paths";
 import { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ProjectContext from "../context/ProjectContext";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { CharacteristicTable } from "../components/dashboard/CharacteristicTable";
 import { DashboardPieChart } from "../components/dashboard/PieChart";
 import { getDashboardProject } from "../api/dashboardServices";
+import { chartColors } from "../utils/dashboardChartColors";
+import { Project } from "../api/projectsServices";
+import useCustomSearchParams from "../hooks/useCustomSearchParams";
 
 export type ChartType = {
     label: string;
@@ -17,14 +20,21 @@ export type ChartType = {
 export const DashboardProject = () => {
     const { t } = useTranslation();
     const { selectedProject } = useContext(ProjectContext);
+    const { rows } = useCustomSearchParams(undefined, undefined, { page: 1, pageSize: 10000 });
     const { projectId } = useParams();
+    const navigate = useNavigate();
+
+    const [selectedDashboardProject, setSelectedDashboardProject] = useState<Project | null>(null);
 
     const titleStyling = { fontWeight: "bold", fontSize: 16, my: 1 };
+    const chartCardStyling = { backgroundColor: "#F0F0F0", my: 1, p: 2, xs: 12, md: 5.9 };
 
     const [physicalAppearance, setPhysicalAppearance] = useState<ChartType[]>([]);
 
-    const physicalAppearanceColor = ["#0D3B66", "#145DA0", "#1E7AC9", "#2A9DF4", "#63B2F5", "#8CC6F5", "#B5DAF7", "#D6EAF8", "#E9F5FB", "#F7FBFD"];
-
+    const handleSelectProject = (project: Project | null) => {
+        setSelectedDashboardProject(project);
+        navigate(Paths.dashboardProject.toPath({ projectId: project?.projectId || "" }));
+    };
     useEffect(() => {
         if (projectId) {
             getDashboardProject(projectId).then((data) => {
@@ -36,7 +46,7 @@ export const DashboardProject = () => {
         }
     }, [projectId]);
     return (
-        <Stack flexDirection="column" width="100%" spacing={2}>
+        <Stack flexDirection="column" width="100%" spacing={2} mb={10}>
             <BreadcrumbBar
                 pageTitle={t("dashboard.projectTitle")}
                 links={[
@@ -44,28 +54,38 @@ export const DashboardProject = () => {
                     { title: `${selectedProject?.projectName}`, link: Paths.dashboardProject.toPath({ projectId: projectId || "" }) },
                 ]}
             />
-            <Grid container border="solid 1px #DDD" rowSpacing={2} columnSpacing={4} width="100%">
-                <Grid item xs={12} md={6}>
+            <Autocomplete
+                sx={{ my: 1 }}
+                id="dashboard-projects"
+                size="small"
+                options={rows || []}
+                getOptionLabel={(option) => option?.projectName || ""}
+                value={selectedDashboardProject || null}
+                onChange={(_, newValue) => handleSelectProject(newValue)}
+                renderInput={(params) => <TextField {...params} size="small" sx={{ minWidth: "200px" }} placeholder={t("dashboard.selectProject")} />}
+            />
+            <Grid width="100%" container border="solid 1px #DDD" justifyContent="space-around" p={1}>
+                <Grid item {...chartCardStyling}>
                     <Typography sx={titleStyling}>{t("dashboard.characteristics")}</Typography>
                     <CharacteristicTable />
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item {...chartCardStyling}>
                     <Typography sx={titleStyling}>{t("dashboard.priceSegmentsPurchase")}</Typography>
-                    <DashboardPieChart chartData={physicalAppearance} colors={physicalAppearanceColor} />
+
                     {/* ToDo:Add chart here later */}
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item {...chartCardStyling}>
                     <Typography sx={titleStyling}>{t("dashboard.priceSegmentsRent")}</Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item {...chartCardStyling}>
                     <Typography sx={titleStyling}>{t("dashboard.residentialProjects")}%</Typography>
-                    {/* ToDo:Add chart here later */}
+                    <DashboardPieChart chartData={physicalAppearance} colors={chartColors} />
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item {...chartCardStyling}>
                     <Typography sx={titleStyling}>{t("dashboard.schedule")}</Typography>
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item {...chartCardStyling}>
                     <Typography sx={titleStyling}>{t("dashboard.upcomingMileStones")}</Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
