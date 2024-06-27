@@ -40,9 +40,9 @@ export const DashboardProjects = () => {
             setDashboardProjects({ physicalAppearance: convertedPhysicalAppearance, targetGroup: convertedTargetGroup });
         });
     }, []);
-
+    const chartCardStyling = { backgroundColor: "#F0F0F0", m: 1, p: 2, xs: 12, md: 5.8 };
     return (
-        <Stack>
+        <Stack mb={8}>
             <BreadcrumbBar
                 pageTitle={t("dashboard.title")}
                 links={[{ title: `${t("dashboard.municipalityProgram")} ${municipalityName}`, link: Paths.dashboard.path }]}
@@ -58,48 +58,48 @@ export const DashboardProjects = () => {
                 renderInput={(params) => <TextField {...params} size="small" sx={{ minWidth: "200px" }} placeholder={t("dashboard.selectProject")} />}
             />
             <Grid container border="solid 1px #DDD">
-                <Grid item xs={12} md={6}>
+                <Grid item {...chartCardStyling}>
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.buy")}
                     </Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item {...chartCardStyling}>
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.rent")}
                     </Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item {...chartCardStyling}>
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.residentialProjects")}
                     </Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item {...chartCardStyling}>
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.deliverables")}
                     </Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item {...chartCardStyling}>
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.delayedProjects")}
                     </Typography>
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item {...chartCardStyling}>
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.residentialFeautures")}
                     </Typography>
                     <DashboardPieChart chartData={dashboardProjects?.physicalAppearance || []} colors={chartColors} />
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item {...chartCardStyling}>
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.permitsGranted")}
                     </Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item {...chartCardStyling}>
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.targetAudiences")}
                     </Typography>

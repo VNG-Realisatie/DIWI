@@ -24,7 +24,7 @@ export const CharacteristicTable = () => {
     const totalYear = calculateTotalYear(selectedProject?.startDate, selectedProject?.endDate);
 
     const propertyStyle = { border: "solid 1px #ddd", padding: 1, backgroundColor: "#738092", color: "#FFFFFF", fontWeight: "bold", flex: 1 };
-    const valueStyle = { border: "solid 1px #ddd", padding: 1, flex: 1 };
+    const valueStyle = { border: "solid 1px #ddd", padding: 1, backgroundColor: "#FFFFFF", flex: 1 };
 
     const characteristicData = [
         {
