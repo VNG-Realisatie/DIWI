@@ -38,7 +38,7 @@ function PlusButton({ color, link, text }: PlusButtonProps) {
             onClick={handleButtonClick}
             sx={{
                 position: "absolute",
-                bottom: 20,
+                bottom: 0,
                 right: 20,
                 zIndex: 999,
                 borderRadius: "40px",
