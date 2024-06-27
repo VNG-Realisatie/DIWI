@@ -40,7 +40,9 @@ export const DashboardProjects = () => {
             setDashboardProjects({ physicalAppearance: convertedPhysicalAppearance, targetGroup: convertedTargetGroup });
         });
     }, []);
+
     const chartCardStyling = { backgroundColor: "#F0F0F0", m: 1, p: 2, xs: 12, md: 5.8 };
+
     return (
         <Stack mb={8}>
             <BreadcrumbBar
