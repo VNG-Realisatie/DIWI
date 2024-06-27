@@ -1,15 +1,23 @@
 import { Autocomplete, Grid, Stack, TextField, Typography } from "@mui/material";
 import BreadcrumbBar from "../components/header/BreadcrumbBar";
 import * as Paths from "../Paths";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import ConfigContext from "../context/ConfigContext";
 import { useTranslation } from "react-i18next";
 import useCustomSearchParams from "../hooks/useCustomSearchParams";
 import { Project } from "../api/projectsServices";
 import { useNavigate } from "react-router-dom";
-
+import { getDashboardProjects } from "../api/dashboardServices";
+import { ChartType } from "./DashboardProject";
+import { DashboardPieChart } from "../components/dashboard/PieChart";
+import { chartColors } from "../utils/dashboardChartColors";
+type DashboardProjects = {
+    physicalAppearance: ChartType[];
+    targetGroup: ChartType[];
+};
 export const DashboardProjects = () => {
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+    const [dashboardProjects, setDashboardProjects] = useState<DashboardProjects>();
 
     const { municipalityName } = useContext(ConfigContext);
     const { rows } = useCustomSearchParams(undefined, undefined, { page: 1, pageSize: 10000 });
@@ -20,6 +28,19 @@ export const DashboardProjects = () => {
         setSelectedProject(project);
         navigate(Paths.dashboardProject.toPath({ projectId: project?.projectId || "" }));
     };
+
+    useEffect(() => {
+        getDashboardProjects().then((data) => {
+            const convertedPhysicalAppearance = data.physicalAppearance.map((d) => {
+                return { label: d.name, value: d.amount };
+            });
+            const convertedTargetGroup = data.targetGroup.map((d) => {
+                return { label: d.name, value: d.amount };
+            });
+            setDashboardProjects({ physicalAppearance: convertedPhysicalAppearance, targetGroup: convertedTargetGroup });
+        });
+    }, []);
+
     return (
         <Stack>
             <BreadcrumbBar
@@ -70,7 +91,7 @@ export const DashboardProjects = () => {
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.residentialFeautures")}
                     </Typography>
-                    {/* ToDo:Add chart here later */}
+                    <DashboardPieChart chartData={dashboardProjects?.physicalAppearance || []} colors={chartColors} />
                 </Grid>
                 <Grid item xs={12} md={6}>
                     <Typography variant="h6" fontSize={16}>
@@ -82,7 +103,7 @@ export const DashboardProjects = () => {
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.targetAudiences")}
                     </Typography>
-                    {/* ToDo:Add chart here later */}
+                    <DashboardPieChart chartData={dashboardProjects?.targetGroup || []} colors={chartColors} />
                 </Grid>
             </Grid>
         </Stack>

@@ -8,6 +8,7 @@ import { useParams } from "react-router-dom";
 import { CharacteristicTable } from "../components/dashboard/CharacteristicTable";
 import { DashboardPieChart } from "../components/dashboard/PieChart";
 import { getDashboardProject } from "../api/dashboardServices";
+import { chartColors } from "../utils/dashboardChartColors";
 
 export type ChartType = {
     label: string;
@@ -22,8 +23,6 @@ export const DashboardProject = () => {
     const titleStyling = { fontWeight: "bold", fontSize: 16, my: 1 };
 
     const [physicalAppearance, setPhysicalAppearance] = useState<ChartType[]>([]);
-
-    const physicalAppearanceColor = ["#0D3B66", "#145DA0", "#1E7AC9", "#2A9DF4", "#63B2F5", "#8CC6F5", "#B5DAF7", "#D6EAF8", "#E9F5FB", "#F7FBFD"];
 
     useEffect(() => {
         if (projectId) {
@@ -51,7 +50,7 @@ export const DashboardProject = () => {
                 </Grid>
                 <Grid item xs={12} md={6}>
                     <Typography sx={titleStyling}>{t("dashboard.priceSegmentsPurchase")}</Typography>
-                    <DashboardPieChart chartData={physicalAppearance} colors={physicalAppearanceColor} />
+                    <DashboardPieChart chartData={physicalAppearance} colors={chartColors} />
                     {/* ToDo:Add chart here later */}
                 </Grid>
                 <Grid item xs={12} md={6}>
