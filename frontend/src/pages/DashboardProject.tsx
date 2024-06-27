@@ -11,8 +11,11 @@ export const DashboardProject = () => {
     const { t } = useTranslation();
     const { selectedProject } = useContext(ProjectContext);
     const { projectId } = useParams();
+
+    const titleStyling = { fontWeight: "bold", fontSize: 16, my: 1 };
+
     return (
-        <Stack>
+        <Stack flexDirection="column" width="100%" spacing={2}>
             <BreadcrumbBar
                 pageTitle={t("dashboard.projectTitle")}
                 links={[
@@ -20,40 +23,28 @@ export const DashboardProject = () => {
                     { title: `${selectedProject?.projectName}`, link: Paths.dashboardProject.toPath({ projectId: projectId || "" }) },
                 ]}
             />
-            <Grid container border="solid 1px #DDD">
+            <Grid container border="solid 1px #DDD" rowSpacing={2} columnSpacing={4} width="100%">
                 <Grid item xs={12} md={6}>
-                    <Typography variant="h6" fontSize={16}>
-                        {t("dashboard.characteristics")}
-                    </Typography>
+                    <Typography sx={titleStyling}>{t("dashboard.characteristics")}</Typography>
                     <CharacteristicTable />
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <Typography variant="h6" fontSize={16}>
-                        {t("dashboard.priceSegmentsPurchase")}
-                    </Typography>
+                    <Typography sx={titleStyling}>{t("dashboard.priceSegmentsPurchase")}</Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <Typography variant="h6" fontSize={16}>
-                        {t("dashboard.priceSegmentsRent")}
-                    </Typography>
+                    <Typography sx={titleStyling}>{t("dashboard.priceSegmentsRent")}</Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <Typography variant="h6" fontSize={16}>
-                        {t("dashboard.residentialProjects")}%
-                    </Typography>
+                    <Typography sx={titleStyling}>{t("dashboard.residentialProjects")}%</Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <Typography variant="h6" fontSize={16}>
-                        {t("dashboard.schedule")}
-                    </Typography>
+                    <Typography sx={titleStyling}>{t("dashboard.schedule")}</Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <Typography variant="h6" fontSize={16}>
-                        {t("dashboard.upcomingMileStones")}
-                    </Typography>
+                    <Typography sx={titleStyling}>{t("dashboard.upcomingMileStones")}</Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
             </Grid>
