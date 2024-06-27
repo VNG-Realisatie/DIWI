@@ -388,7 +388,16 @@
       "priceSegmentsPurchase": "Prijssegmenten koop %",
       "priceSegmentsRent": "Prijssegmenten huur %",
       "schedule": "Planning",
-      "upcomingMileStones": "Aankomende mijlpalen"
+      "upcomingMileStones": "Aankomende mijlpalen",
+      "properties": {
+        "constructionAmount": "Aantal woningen",
+        "demolitionAmount": "Aantal sloop",
+        "netAmount": "Netto toevoegingen",
+        "projectTotalTime": "Looptijd project",
+        "projectPhase": "Projectfase",
+        "projectOwners": "Schrijfrechten",
+        "year": "jaar"
+      }
     },
     "projectTable": {
       "planningPlanStatus": {
