@@ -41,7 +41,7 @@ export const CharacteristicTable = () => {
         },
         {
             property: "projectTotalTime",
-            value: totalYear ? totalYear + " " + t("dashboard.properties.year") : "N/A",
+            value: !isNaN(+totalYear) ? totalYear + " " + t("dashboard.properties.year") : 0,
         },
         {
             property: "projectPhase",
