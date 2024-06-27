@@ -27,7 +27,7 @@ export const DashboardProject = () => {
     const [selectedDashboardProject, setSelectedDashboardProject] = useState<Project | null>(null);
 
     const titleStyling = { fontWeight: "bold", fontSize: 16, my: 1 };
-    const chartCardStyling = { backgroundColor: "#F0F0F0", m: 1, p: 2, xs: 12, md: 5.8 };
+    const chartCardStyling = { backgroundColor: "#F0F0F0", my: 1, p: 2, xs: 12, md: 5.9 };
 
     const [physicalAppearance, setPhysicalAppearance] = useState<ChartType[]>([]);
 
@@ -64,7 +64,7 @@ export const DashboardProject = () => {
                 onChange={(_, newValue) => handleSelectProject(newValue)}
                 renderInput={(params) => <TextField {...params} size="small" sx={{ minWidth: "200px" }} placeholder={t("dashboard.selectProject")} />}
             />
-            <Grid width="100%" container border="solid 1px #DDD" justifyContent="space-around">
+            <Grid width="100%" container border="solid 1px #DDD" justifyContent="space-around" p={1}>
                 <Grid item {...chartCardStyling}>
                     <Typography sx={titleStyling}>{t("dashboard.characteristics")}</Typography>
                     <CharacteristicTable />

@@ -41,7 +41,7 @@ export const DashboardProjects = () => {
         });
     }, []);
 
-    const chartCardStyling = { backgroundColor: "#F0F0F0", m: 1, p: 2, xs: 12, md: 5.8 };
+    const chartCardStyling = { backgroundColor: "#F0F0F0", my: 1, p: 2, xs: 12, md: 5.9 };
 
     return (
         <Stack mb={8}>
@@ -59,7 +59,7 @@ export const DashboardProjects = () => {
                 onChange={(_, newValue) => handleSelectProject(newValue)}
                 renderInput={(params) => <TextField {...params} size="small" sx={{ minWidth: "200px" }} placeholder={t("dashboard.selectProject")} />}
             />
-            <Grid container border="solid 1px #DDD" justifyContent="space-around">
+            <Grid container border="solid 1px #DDD" justifyContent="space-around" p={1}>
                 <Grid item {...chartCardStyling}>
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.buy")}
