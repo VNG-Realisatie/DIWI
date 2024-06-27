@@ -266,7 +266,9 @@ function App() {
                             path={Paths.dashboardProject.path}
                             element={
                                 <ProjectProvider>
-                                    <DashboardProject />
+                                    <HouseBlockProvider>
+                                        <DashboardProject />
+                                    </HouseBlockProvider>
                                 </ProjectProvider>
                             }
                         />
