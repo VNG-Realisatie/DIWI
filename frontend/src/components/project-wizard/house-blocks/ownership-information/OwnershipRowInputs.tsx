@@ -98,7 +98,7 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                     title={t(`${translationPath}.rent`)}
                 />
             </Grid>
-            <Grid item xs={1} className="ownership-delete-icon" style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
+            <Grid item xs={0.2} className="ownership-delete-icon" style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
                 {!readOnly && (
                     <IconButton onClick={() => handleRemoveRow(index)}>
                         <DeleteIcon sx={{ color: "red" }} />
