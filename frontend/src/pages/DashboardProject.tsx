@@ -44,7 +44,7 @@ export const DashboardProject = () => {
                     { title: `${selectedProject?.projectName}`, link: Paths.dashboardProject.toPath({ projectId: projectId || "" }) },
                 ]}
             />
-            <Grid width="100%" container border="solid 1px #DDD">
+            <Grid width="100%" container border="solid 1px #DDD" justifyContent="space-around">
                 <Grid item {...chartCardStyling}>
                     <Typography sx={titleStyling}>{t("dashboard.characteristics")}</Typography>
                     <CharacteristicTable />

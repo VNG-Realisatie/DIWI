@@ -57,7 +57,7 @@ export const DashboardProjects = () => {
                 onChange={(_, newValue) => handleSelectProject(newValue)}
                 renderInput={(params) => <TextField {...params} size="small" sx={{ minWidth: "200px" }} placeholder={t("dashboard.selectProject")} />}
             />
-            <Grid container border="solid 1px #DDD">
+            <Grid container border="solid 1px #DDD" justifyContent="space-around">
                 <Grid item {...chartCardStyling}>
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.buy")}
