@@ -45,7 +45,7 @@ export const CharacteristicTable = () => {
         },
         {
             property: "projectPhase",
-            value: selectedProject?.projectPhase ?? "N/A",
+            value: selectedProject?.projectPhase,
         },
         {
             property: "projectOwners",
