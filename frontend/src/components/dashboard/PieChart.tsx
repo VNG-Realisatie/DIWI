@@ -62,7 +62,7 @@ export const DashboardPieChart = ({ chartData, colors }: Props) => {
                     series={[
                         {
                             arcLabel: (item) => `${getArcLabel(item)}`,
-                            arcLabelMinAngle: 10,
+                            arcLabelMinAngle: 24,
                             data: chartData,
                         },
                     ]}

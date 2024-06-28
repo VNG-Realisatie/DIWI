@@ -11,14 +11,20 @@ import { getDashboardProjects } from "../api/dashboardServices";
 import { ChartType } from "./DashboardProject";
 import { DashboardPieChart } from "../components/dashboard/PieChart";
 import { chartColors } from "../utils/dashboardChartColors";
+import { getProjectHouseBlocksWithCustomProperties } from "../api/houseBlockServices";
+import { MutationCard } from "../components/dashboard/MutationCard";
 type DashboardProjects = {
     physicalAppearance: ChartType[];
     targetGroup: ChartType[];
+};
+type MutationValues = {
+    [key: string]: number;
 };
 export const DashboardProjects = () => {
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
     const [dashboardProjects, setDashboardProjects] = useState<DashboardProjects>();
     const [projectPhaseSums, setProjectPhaseSums] = useState([]);
+    const [dashboardMutationValues, setDashboardMutationValues] = useState<MutationValues>();
 
     const { municipalityName } = useContext(ConfigContext);
     const { rows } = useCustomSearchParams(undefined, undefined, { page: 1, pageSize: 10000 });
@@ -66,6 +72,35 @@ export const DashboardProjects = () => {
         });
     }, [t]);
 
+    //This is for calculate the number of mutations in each kind in ui update it later with endpoint
+    useEffect(() => {
+        getProjects(1, 1000).then(async (projects) => {
+            const allHouseBlocks = await Promise.all(
+                projects.map(async (project) => {
+                    const houseBlocks = await getProjectHouseBlocksWithCustomProperties(project.projectId);
+                    return houseBlocks;
+                }),
+            );
+
+            const flattenedHouseBlocks = allHouseBlocks.flat();
+
+            const list = flattenedHouseBlocks.reduce((acc, houseBlock) => {
+                const kind = houseBlock.mutation.kind;
+                const amount = houseBlock.mutation.amount;
+                //@ts-expect-error type error
+                if (acc[kind]) {
+                    //@ts-expect-error type error
+                    acc[kind] += amount;
+                } else {
+                    //@ts-expect-error type error
+                    acc[kind] = amount;
+                }
+                return acc;
+            }, {});
+            setDashboardMutationValues(list);
+        });
+    }, [t]);
+
     const chartCardStyling = { backgroundColor: "#F0F0F0", my: 1, p: 2, xs: 12, md: 5.9 };
 
     return (
@@ -85,6 +120,9 @@ export const DashboardProjects = () => {
                 renderInput={(params) => <TextField {...params} size="small" sx={{ minWidth: "200px" }} placeholder={t("dashboard.selectProject")} />}
             />
             <Grid container border="solid 1px #DDD" justifyContent="space-around" p={1}>
+                <Grid item xs={12}>
+                    <MutationCard demolitionAmount={dashboardMutationValues?.DEMOLITION ?? 0} constructionAmount={dashboardMutationValues?.CONSTRUCTION ?? 0} />
+                </Grid>
                 <Grid item {...chartCardStyling}>
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.projectPhases")}
@@ -131,13 +169,6 @@ export const DashboardProjects = () => {
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.delayedProjects")}
                     </Typography>
-                </Grid>
-
-                <Grid item {...chartCardStyling}>
-                    <Typography variant="h6" fontSize={16}>
-                        {t("dashboard.permitsGranted")}
-                    </Typography>
-                    {/* ToDo:Add chart here later */}
                 </Grid>
             </Grid>
         </Stack>
