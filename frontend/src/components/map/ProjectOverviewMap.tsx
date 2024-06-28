@@ -121,6 +121,8 @@ const ProjectOverviewMap = ({ isDashboardMap }: ProjectOverviewMapProps) => {
                 const feature = newMap.forEachFeatureAtPixel(evt.pixel, (f) => f);
                 if (feature && tooltipElement.current) {
                     tooltipElement.current.style.display = "";
+                    tooltipElement.current.style.padding = "5px 10px";
+                    tooltipElement.current.style.borderRadius = "5px";
                     tooltipElement.current.innerHTML = feature.get("name");
                     const featureCoord = feature.get("geometry") as Point;
                     tooltipOverlay.setPosition(featureCoord.getFlatCoordinates());
