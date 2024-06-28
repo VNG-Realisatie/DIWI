@@ -103,7 +103,7 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
                 </Link>
             </List>
             <List sx={{ ml: 3, marginTop: "auto", marginBottom: "20px" }}>
-                <Link to="https://support.diwi.vng.client.phinion.com/" target="_blank" style={linkStyles} onClick={handleDrawerClose}>
+                <Link to="https://support.diwi.vng.client.phinion.com/help/nl-nl" target="_blank" style={linkStyles} onClick={handleDrawerClose}>
                     <Typography style={typographyStyles}>{t("sidebar.knowledgeBase")}</Typography>
                 </Link>
             </List>
