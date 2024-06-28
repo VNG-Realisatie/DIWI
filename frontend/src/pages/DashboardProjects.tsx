@@ -11,6 +11,7 @@ import { getDashboardProjects } from "../api/dashboardServices";
 import { ChartType } from "./DashboardProject";
 import { DashboardPieChart } from "../components/dashboard/PieChart";
 import { chartColors } from "../utils/dashboardChartColors";
+import ProjectOverviewMap from "../components/map/ProjectOverviewMap";
 type DashboardProjects = {
     physicalAppearance: ChartType[];
     targetGroup: ChartType[];
@@ -133,11 +134,11 @@ export const DashboardProjects = () => {
                     </Typography>
                 </Grid>
 
-                <Grid item {...chartCardStyling}>
+                <Grid item xs={12} sx={{ backgroundColor: "#F0F0F0", m: 1, p: 2 }}>
                     <Typography variant="h6" fontSize={16}>
-                        {t("dashboard.permitsGranted")}
+                        {t("dashboard.projects")}
                     </Typography>
-                    {/* ToDo:Add chart here later */}
+                    <ProjectOverviewMap isDashboardMap={true} />
                 </Grid>
             </Grid>
         </Stack>
