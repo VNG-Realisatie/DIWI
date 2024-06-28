@@ -2,7 +2,7 @@ import { PieChart, pieArcLabelClasses } from "@mui/x-charts/PieChart";
 import { ChartType } from "../../pages/DashboardProject";
 import { useTheme } from "@mui/material/styles";
 import { useMediaQuery } from "@mui/material";
-import { LegendRendererProps } from "@mui/x-charts";
+import { DefaultizedPieValueType, LegendRendererProps } from "@mui/x-charts";
 
 type Props = {
     chartData: ChartType[];
@@ -18,6 +18,14 @@ export const DashboardPieChart = ({ chartData, colors }: Props) => {
         height: 300,
     };
     const chartMargin = isSmallScreen ? { top: 10, bottom: 100, left: 50 } : { top: 10, bottom: 50, left: -100 };
+
+    const TOTAL = chartData.map((item) => item.value).reduce((a, b) => a + b, 0);
+
+    const getArcLabel = (params: DefaultizedPieValueType) => {
+        const percent = params.value / TOTAL;
+        return `${(percent * 100).toFixed(0)}%`;
+    };
+
     const getLegendPosition = (): Partial<LegendRendererProps> | undefined => {
         if (isSmallScreen) {
             return {
@@ -45,7 +53,7 @@ export const DashboardPieChart = ({ chartData, colors }: Props) => {
             margin={chartMargin}
             series={[
                 {
-                    arcLabel: (item) => `${item.value}`,
+                    arcLabel: (item) => `${getArcLabel(item)}`,
                     arcLabelMinAngle: 10,
                     data: chartData,
                 },
