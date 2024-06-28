@@ -70,6 +70,10 @@ export const DashboardProject = () => {
                     <CharacteristicTable />
                 </Grid>
                 <Grid item {...chartCardStyling}>
+                    <Typography sx={titleStyling}>{t("dashboard.residentialProjects")}%</Typography>
+                    <DashboardPieChart chartData={physicalAppearance} colors={chartColors} />
+                </Grid>
+                <Grid item {...chartCardStyling}>
                     <Typography sx={titleStyling}>{t("dashboard.priceSegmentsPurchase")}</Typography>
 
                     {/* ToDo:Add chart here later */}
@@ -77,10 +81,6 @@ export const DashboardProject = () => {
                 <Grid item {...chartCardStyling}>
                     <Typography sx={titleStyling}>{t("dashboard.priceSegmentsRent")}</Typography>
                     {/* ToDo:Add chart here later */}
-                </Grid>
-                <Grid item {...chartCardStyling}>
-                    <Typography sx={titleStyling}>{t("dashboard.residentialProjects")}%</Typography>
-                    <DashboardPieChart chartData={physicalAppearance} colors={chartColors} />
                 </Grid>
                 <Grid item {...chartCardStyling}>
                     <Typography sx={titleStyling}>{t("dashboard.schedule")}</Typography>
