@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import { t } from "i18next";
 import { WizardCard } from "../project-wizard/WizardCard";
 import { LabelComponent } from "../project/LabelComponent";
@@ -13,6 +13,9 @@ export const MutationCard = ({ demolitionAmount, constructionAmount }: Props) =>
     return (
         <Grid item xs={12} m={{ xs: 0, md: 1 }}>
             <WizardCard>
+                <Typography variant="h6" fontSize={16}>
+                    {t("dashboard.totalValues")}
+                </Typography>
                 <Grid container spacing={2} alignItems="stretch">
                     {/* Demolition */}
                     <Grid item xs={12} md={4}>

@@ -390,6 +390,7 @@
       "priceSegmentsRent": "Prijssegmenten huur %",
       "schedule": "Planning",
       "upcomingMileStones": "Aankomende mijlpalen",
+      "totalValues": "Totaal aantallen",
       "properties": {
         "constructionAmount": "Aantal woningen",
         "demolitionAmount": "Aantal sloop",
