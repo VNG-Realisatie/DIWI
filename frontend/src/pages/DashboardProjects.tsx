@@ -64,7 +64,7 @@ export const DashboardProjects = () => {
             //@ts-expect-error type error
             setProjectPhaseSums(phaseCountsArray);
         });
-    }, []);
+    }, [t]);
 
     const chartCardStyling = { backgroundColor: "#F0F0F0", my: 1, p: 2, xs: 12, md: 5.9 };
 
