@@ -76,9 +76,9 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
                     </ListItemButton>
                 </Link>
             </List>
-            <List sx={{ ml: 3 }}>
+            {/* <List sx={{ ml: 3 }}>
                 <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>{t("sidebar.users")}</Typography>
-            </List>
+            </List> */}
             {/* <List sx={{ ml: 3 }}>
                 <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>{t("sidebar.dataExchange")}</Typography>
                 <Link to={Paths.exchangedata.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
