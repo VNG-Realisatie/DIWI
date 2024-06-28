@@ -17,7 +17,7 @@ import { HouseBlocksList } from "./HouseBlocksList";
 import { ProjectForm } from "../../ProjectForm";
 import useLoading from "../../../hooks/useLoading";
 import useAllowedActions from "../../../hooks/useAllowedActions";
-import { validateForm } from "../../../pages/ProjectWizard";
+import { validateForm } from "../../../utils/formValidation";
 
 export const ProjectsWithHouseBlock = () => {
     const { selectedProject, updateProject } = useContext(ProjectContext);

@@ -7,21 +7,7 @@ import WizardLayout from "../components/project-wizard/WizardLayout";
 import useAlert from "../hooks/useAlert";
 import ProjectContext from "../context/ProjectContext";
 import { ProjectForm } from "../components/ProjectForm";
-
-export function validateForm(project: Project) {
-    if (
-        !project.projectName ||
-        !project.startDate ||
-        !project.endDate ||
-        !project.projectColor ||
-        !project.projectPhase ||
-        !project.confidentialityLevel ||
-        project.projectOwners.length === 0
-    ) {
-        return false;
-    }
-    return true;
-}
+import { validateForm } from "../utils/formValidation";
 
 const ProjectWizard = () => {
     const [projectForm, setProjectForm] = useState<Project>({
