@@ -13,6 +13,7 @@ import { DashboardPieChart } from "../components/dashboard/PieChart";
 import { chartColors } from "../utils/dashboardChartColors";
 import { getProjectHouseBlocksWithCustomProperties } from "../api/houseBlockServices";
 import { MutationCard } from "../components/dashboard/MutationCard";
+import ProjectOverviewMap from "../components/map/ProjectOverviewMap";
 type DashboardProjects = {
     physicalAppearance: ChartType[];
     targetGroup: ChartType[];
@@ -169,6 +170,13 @@ export const DashboardProjects = () => {
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.delayedProjects")}
                     </Typography>
+                </Grid>
+
+                <Grid item xs={12} sx={{ backgroundColor: "#F0F0F0", m: 1, p: 2 }}>
+                    <Typography variant="h6" fontSize={16}>
+                        {t("dashboard.projects")}
+                    </Typography>
+                    <ProjectOverviewMap isDashboardMap={true} />
                 </Grid>
             </Grid>
         </Stack>
