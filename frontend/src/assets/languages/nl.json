@@ -381,9 +381,10 @@
       "residentialProjects": "Woon Producten",
       "deliverables": "Opleveringen",
       "delayedProjects": "Vertraagde projecten",
-      "residentialFeautures": "Woon kenmerken",
+      "residentialFeautures": "Woonkenmerken (aantal woningen)",
       "permitsGranted": "Verleende vergunningen",
-      "targetAudiences": "Doelgroepen",
+      "projectPhases": "Projectfases (aantal projecten)",
+      "targetAudiences": "Doelgroepen (aantal woningen)",
       "characteristics": "Kenmerken",
       "priceSegmentsPurchase": "Prijssegmenten koop %",
       "priceSegmentsRent": "Prijssegmenten huur %",
@@ -397,6 +398,18 @@
         "projectPhase": "Projectfase",
         "projectOwners": "Schrijfrechten",
         "year": "jaar"
+      },
+      "projectPhaseOptions": {
+        "_1_CONCEPT": "Concept",
+        "_2_INITIATIVE": "Initiatief",
+        "_3_DEFINITION": "Definitie",
+        "_4_DESIGN": "Ontwerp",
+        "_5_PREPARATION": "Voorbereiding",
+        "_6_REALIZATION": "Realisatie",
+        "_7_AFTERCARE": "Nazorg"
+      },
+      "pieChart": {
+        "noData": "Geen data beschikbaar"
       }
     },
     "projectTable": {

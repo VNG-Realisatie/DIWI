@@ -1,8 +1,9 @@
 import { PieChart, pieArcLabelClasses } from "@mui/x-charts/PieChart";
 import { ChartType } from "../../pages/DashboardProject";
 import { useTheme } from "@mui/material/styles";
-import { useMediaQuery } from "@mui/material";
+import { Typography, useMediaQuery } from "@mui/material";
 import { DefaultizedPieValueType, LegendRendererProps } from "@mui/x-charts";
+import { useTranslation } from "react-i18next";
 
 type Props = {
     chartData: ChartType[];
@@ -11,6 +12,7 @@ type Props = {
 
 export const DashboardPieChart = ({ chartData, colors }: Props) => {
     const theme = useTheme();
+    const { t } = useTranslation();
 
     const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
     const isLargeScreen = useMediaQuery(theme.breakpoints.up("lg"));
@@ -48,26 +50,34 @@ export const DashboardPieChart = ({ chartData, colors }: Props) => {
     };
 
     return (
-        <PieChart
-            colors={colors}
-            margin={chartMargin}
-            series={[
-                {
-                    arcLabel: (item) => `${getArcLabel(item)}`,
-                    arcLabelMinAngle: 10,
-                    data: chartData,
-                },
-            ]}
-            slotProps={{
-                legend: getLegendPosition(),
-            }}
-            sx={{
-                [`& .${pieArcLabelClasses.root}`]: {
-                    fill: "white",
-                    fontWeight: "bold",
-                },
-            }}
-            {...size}
-        />
+        <>
+            {chartData.every((data) => data.value === 0) ? (
+                <Typography variant="h6" color="error" sx={{ textAlign: "center", mt: `${size.height / 2}px` }} {...size}>
+                    {t("dashboard.pieChart.noData")}
+                </Typography>
+            ) : (
+                <PieChart
+                    colors={colors}
+                    margin={chartMargin}
+                    series={[
+                        {
+                            arcLabel: (item) => `${getArcLabel(item)}`,
+                            arcLabelMinAngle: 10,
+                            data: chartData,
+                        },
+                    ]}
+                    slotProps={{
+                        legend: getLegendPosition(),
+                    }}
+                    sx={{
+                        [`& .${pieArcLabelClasses.root}`]: {
+                            fill: "white",
+                            fontWeight: "bold",
+                        },
+                    }}
+                    {...size}
+                />
+            )}
+        </>
     );
 };
