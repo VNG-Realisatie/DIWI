@@ -38,9 +38,6 @@ export const SingleNumberInput = ({
             disabled={readOnly}
             sx={{
                 flex: 1,
-                "& .MuiInputBase-input.Mui-disabled": {
-                    backgroundColor: "#0000",
-                },
             }}
             InputProps={{
                 inputProps: {
