@@ -5,7 +5,7 @@ import { useContext, useEffect, useState } from "react";
 import ConfigContext from "../context/ConfigContext";
 import { useTranslation } from "react-i18next";
 import useCustomSearchParams from "../hooks/useCustomSearchParams";
-import { Project } from "../api/projectsServices";
+import { Project, getProjects } from "../api/projectsServices";
 import { useNavigate } from "react-router-dom";
 import { getDashboardProjects } from "../api/dashboardServices";
 import { ChartType } from "./DashboardProject";
@@ -18,6 +18,7 @@ type DashboardProjects = {
 export const DashboardProjects = () => {
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
     const [dashboardProjects, setDashboardProjects] = useState<DashboardProjects>();
+    const [projectPhaseSums, setProjectPhaseSums] = useState([]);
 
     const { municipalityName } = useContext(ConfigContext);
     const { rows } = useCustomSearchParams(undefined, undefined, { page: 1, pageSize: 10000 });
@@ -41,6 +42,30 @@ export const DashboardProjects = () => {
         });
     }, []);
 
+    //This is for calculate the number of projects in each phase in ui update it later with endpoint
+    useEffect(() => {
+        getProjects(1, 1000).then((projects) => {
+            const phaseCounts = projects.reduce((acc, project) => {
+                const { projectPhase } = project;
+                //@ts-expect-error type error
+                if (!acc[projectPhase]) {
+                    //@ts-expect-error type error
+                    acc[projectPhase] = 0;
+                }
+                //@ts-expect-error type error
+                acc[projectPhase] += 1;
+                return acc;
+            }, {});
+
+            const phaseCountsArray = Object.entries(phaseCounts).map(([label, value]) => ({
+                label: t(`projectTable.projectPhaseOptions.${label}`),
+                value,
+            }));
+            //@ts-expect-error type error
+            setProjectPhaseSums(phaseCountsArray);
+        });
+    }, []);
+
     const chartCardStyling = { backgroundColor: "#F0F0F0", my: 1, p: 2, xs: 12, md: 5.9 };
 
     return (
@@ -60,6 +85,24 @@ export const DashboardProjects = () => {
                 renderInput={(params) => <TextField {...params} size="small" sx={{ minWidth: "200px" }} placeholder={t("dashboard.selectProject")} />}
             />
             <Grid container border="solid 1px #DDD" justifyContent="space-around" p={1}>
+                <Grid item {...chartCardStyling}>
+                    <Typography variant="h6" fontSize={16}>
+                        {t("dashboard.projectPhases")}
+                    </Typography>
+                    <DashboardPieChart chartData={projectPhaseSums || []} colors={chartColors} />
+                </Grid>
+                <Grid item {...chartCardStyling}>
+                    <Typography variant="h6" fontSize={16}>
+                        {t("dashboard.targetAudiences")}
+                    </Typography>
+                    <DashboardPieChart chartData={dashboardProjects?.targetGroup || []} colors={chartColors} />
+                </Grid>
+                <Grid item {...chartCardStyling}>
+                    <Typography variant="h6" fontSize={16}>
+                        {t("dashboard.residentialFeautures")}
+                    </Typography>
+                    <DashboardPieChart chartData={dashboardProjects?.physicalAppearance || []} colors={chartColors} />
+                </Grid>
                 <Grid item {...chartCardStyling}>
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.buy")}
@@ -89,23 +132,12 @@ export const DashboardProjects = () => {
                         {t("dashboard.delayedProjects")}
                     </Typography>
                 </Grid>
-                <Grid item {...chartCardStyling}>
-                    <Typography variant="h6" fontSize={16}>
-                        {t("dashboard.residentialFeautures")}
-                    </Typography>
-                    <DashboardPieChart chartData={dashboardProjects?.physicalAppearance || []} colors={chartColors} />
-                </Grid>
+
                 <Grid item {...chartCardStyling}>
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.permitsGranted")}
                     </Typography>
                     {/* ToDo:Add chart here later */}
-                </Grid>
-                <Grid item {...chartCardStyling}>
-                    <Typography variant="h6" fontSize={16}>
-                        {t("dashboard.targetAudiences")}
-                    </Typography>
-                    <DashboardPieChart chartData={dashboardProjects?.targetGroup || []} colors={chartColors} />
                 </Grid>
             </Grid>
         </Stack>
