@@ -58,7 +58,7 @@ export const DashboardProjects = () => {
             }, {});
 
             const phaseCountsArray = Object.entries(phaseCounts).map(([label, value]) => ({
-                label: t(`projectTable.projectPhaseOptions.${label}`),
+                label: t(`dashboard.projectPhaseOptions.${label}`),
                 value,
             }));
             //@ts-expect-error type error
