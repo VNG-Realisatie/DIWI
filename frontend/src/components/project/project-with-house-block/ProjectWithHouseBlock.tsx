@@ -17,6 +17,7 @@ import { HouseBlocksList } from "./HouseBlocksList";
 import { ProjectForm } from "../../ProjectForm";
 import useLoading from "../../../hooks/useLoading";
 import useAllowedActions from "../../../hooks/useAllowedActions";
+import { validateForm } from "../../../pages/ProjectWizard";
 
 export const ProjectsWithHouseBlock = () => {
     const { selectedProject, updateProject } = useContext(ProjectContext);
@@ -51,6 +52,10 @@ export const ProjectsWithHouseBlock = () => {
 
     const handleProjectSave = async () => {
         if (projectForm) {
+            if (!validateForm(projectForm)) {
+                setAlert(t("createProject.hasMissingRequiredAreas.hasmissingProperty"), "warning");
+                return;
+            }
             try {
                 setLoading(true);
                 const newProjectForm = await updateProjectWithCustomProperties(projectForm);

@@ -8,6 +8,21 @@ import useAlert from "../hooks/useAlert";
 import ProjectContext from "../context/ProjectContext";
 import { ProjectForm } from "../components/ProjectForm";
 
+export function validateForm(project: Project) {
+    if (
+        !project.projectName ||
+        !project.startDate ||
+        !project.endDate ||
+        !project.projectColor ||
+        !project.projectPhase ||
+        !project.confidentialityLevel ||
+        project.projectOwners.length === 0
+    ) {
+        return false;
+    }
+    return true;
+}
+
 const ProjectWizard = () => {
     const [projectForm, setProjectForm] = useState<Project>({
         projectColor: "#FF5733",
@@ -27,15 +42,7 @@ const ProjectWizard = () => {
     const { updateProjects } = useContext(ProjectContext);
 
     async function validateAndSave() {
-        if (
-            !projectForm.projectName ||
-            !projectForm.startDate ||
-            !projectForm.endDate ||
-            !projectForm.projectColor ||
-            !projectForm.projectPhase ||
-            !projectForm.confidentialityLevel ||
-            projectForm.projectOwners.length === 0
-        ) {
+        if (!validateForm(projectForm)) {
             setAlert(t("createProject.hasMissingRequiredAreas.hasmissingProperty"), "warning");
             return false;
         }
