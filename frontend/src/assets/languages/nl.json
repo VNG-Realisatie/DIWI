@@ -255,7 +255,7 @@
         "confidentialityLevel": "Vul het veld vertrouwelijkheidsniveau in",
         "amount": "Aantal ontbreekt",
         "hasmissingProperty": "Formulier heeft ontbrekende eigenschappen",
-        "owner": "Vul het veld shrijfrechten in"
+        "owner": "Vul het veld schrijfrechten in"
       }
     },
     "sidebar": {
