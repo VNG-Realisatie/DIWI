@@ -76,28 +76,31 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
         setUntranslatedName("");
         setCategories([]);
         setOrdinalCategories([]);
-    };
-
-    const resetForm = () => {
-        clearFields();
         setSelectedObjectType("PROJECT");
         setSelectedPropertyType("TEXT");
-        setActive(false);
+    };
+
+    const handleClose = () => {
+        setId && setId("");
+        clearFields();
+        setOpenDialog(false);
     };
 
     const saveAction = async (newProperty: Property) => {
         try {
-            if (!id) resetForm();
+            if (!id) {
+                clearFields();
+                setActive(false);
+            }
             const savedProperty = await (id ? updateCustomProperty(id, newProperty) : addCustomProperty(newProperty));
             setAlert(t("admin.settings.notifications.successfullySaved"), "success");
             updateDialog(savedProperty);
             const customProperties = await getCustomProperties();
             setCustomProperties(customProperties);
-            setOpenDialog(false);
         } catch (error: unknown) {
             if (error instanceof Error) setAlert(error.message, "warning");
         } finally {
-            clearFields();
+            handleClose();
         }
     };
 
@@ -114,12 +117,6 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
         };
 
         saveAction(newProperty);
-    };
-
-    const handleClose = () => {
-        setId && setId("");
-        clearFields();
-        setOpenDialog(false);
     };
 
     return (
