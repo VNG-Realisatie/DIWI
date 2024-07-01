@@ -11,6 +11,7 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.MediaType;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.VngRepository;
+import nl.vng.diwi.models.MultiProjectDashboardModel;
 import nl.vng.diwi.models.ProjectDashboardModel;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.security.LoggedUser;
@@ -53,5 +54,15 @@ public class DashboardResource {
         return dashboardService.getProjectDashboardSnapshot(repo, projectUuid, snapshotDate, loggedUser);
     }
 
+    @GET
+    @Path("/projects")
+    @RolesAllowed({UserActionConstants.VIEW_OWN_PROJECTS, UserActionConstants.VIEW_OTHERS_PROJECTS})
+    @Produces(MediaType.APPLICATION_JSON)
+    public MultiProjectDashboardModel getProjectDashboardSnapshot(ContainerRequestContext requestContext, @QueryParam("snapshotDate") String snapshotDateStr) throws VngNotFoundException {
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
+        LocalDate snapshotDate = LocalDate.parse(snapshotDateStr, localDateFormatter);
+
+        return dashboardService.getMultiProjectDashboardSnapshot(repo, snapshotDate, loggedUser);
+    }
 
 }
