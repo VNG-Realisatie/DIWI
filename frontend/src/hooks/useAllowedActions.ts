@@ -15,6 +15,7 @@ export type AllowedActions =
     | "VIEW_OTHERS_PROJECTS"
     | "VIEW_OWN_PROJECTS"
     | "EDIT_OWN_PROJECTS"
+    | "EDIT_ALL_PROJECTS"
     | "CREATE_NEW_PROJECT"
     | "IMPORT_PROJECTS"
     | "EXPORT_PROJECTS";

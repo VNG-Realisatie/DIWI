@@ -16,10 +16,11 @@ import { CreateHouseBlockDialog } from "./CreateHouseBlockDialog";
 import { HouseBlocksList } from "./HouseBlocksList";
 import { ProjectForm } from "../../ProjectForm";
 import useLoading from "../../../hooks/useLoading";
-import useAllowedActions from "../../../hooks/useAllowedActions";
+import { useHasEditPermission } from "../../../hooks/useHasEditPermission";
 
 export const ProjectsWithHouseBlock = () => {
     const { selectedProject, updateProject } = useContext(ProjectContext);
+
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const [openColorDialog, setOpenColorDialog] = useState(false);
     const [openHouseBlockDialog, setOpenHouseBlockDialog] = useState(false);
@@ -30,7 +31,7 @@ export const ProjectsWithHouseBlock = () => {
     const { setAlert } = useContext(AlertContext);
     const { setLoading } = useLoading();
     const { t } = useTranslation();
-    const allowedActions = useAllowedActions();
+    const { getEditPermission } = useHasEditPermission();
 
     const resetProjectForm = useCallback(() => {
         setProjectForm(selectedProject);
@@ -71,7 +72,8 @@ export const ProjectsWithHouseBlock = () => {
     return (
         <Stack mb={10}>
             <Box sx={{ cursor: "pointer" }} position="absolute" right={100} top={17}>
-                {allowedActions.includes("EDIT_OWN_PROJECTS") && (
+                {/* Check if user has permission to edit project */}
+                {getEditPermission() && (
                     <>
                         {!readOnly && (
                             <Tooltip placement="top" title={t("projectDetail.colorEdit")}>

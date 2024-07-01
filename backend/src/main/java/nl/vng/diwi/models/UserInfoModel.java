@@ -22,7 +22,7 @@ public class UserInfoModel extends UserModel {
     private List<UserAction> allowedActions = new ArrayList<>();
 
     public UserInfoModel(UserState user) {
-        this.id = user.getId();
+        this.id = user.getUser().getId();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.email = user.getEmail();

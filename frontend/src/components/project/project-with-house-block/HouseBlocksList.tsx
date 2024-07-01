@@ -15,7 +15,7 @@ import { HouseBlocksForm } from "../../HouseBlocksForm";
 import { validateHouseBlock } from "../../HouseBlocksFormWithControls";
 import useAlert from "../../../hooks/useAlert";
 import { useCustomPropertyDefinitions } from "../../../hooks/useCustomPropertyDefinitions";
-import useAllowedActions from "../../../hooks/useAllowedActions";
+import { useHasEditPermission } from "../../../hooks/useHasEditPermission";
 
 type Props = {
     setOpenHouseBlockDialog: (open: boolean) => void;
@@ -45,8 +45,7 @@ export const HouseBlockAccordionWithControls = ({ houseBlock, refresh }: HouseBl
     const { t } = useTranslation();
     const { setAlert } = useAlert();
     const { targetGroupCategories, physicalAppearanceCategories } = useCustomPropertyDefinitions();
-    const allowedActions = useAllowedActions();
-
+    const { getEditPermission } = useHasEditPermission();
     const isDemolition = houseBlock.mutation.kind === "DEMOLITION";
 
     const handleSave = async () => {
@@ -99,7 +98,7 @@ export const HouseBlockAccordionWithControls = ({ houseBlock, refresh }: HouseBl
                 {houseBlock.houseblockName}: {isDemolition ? `-${houseBlock.mutation.amount}` : houseBlock.mutation.amount}{" "}
                 {t("createProject.houseBlocksForm.housesOn")} {houseBlock.endDate}
                 <Stack>
-                    {allowedActions.includes("EDIT_OWN_PROJECTS") && (
+                    {getEditPermission() && (
                         <>
                             <Box sx={{ cursor: "pointer" }} position="absolute" right={60} top={13}>
                                 {readOnly ? (
