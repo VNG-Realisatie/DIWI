@@ -138,7 +138,7 @@ export const DashboardProjects = () => {
                 </Grid>
                 <Grid item {...chartCardStyling}>
                     <Typography variant="h6" fontSize={16}>
-                        {t("dashboard.residentialFeautures")}
+                        {t("dashboard.residentialFeatures")}
                     </Typography>
                     <DashboardPieChart chartData={dashboardProjects?.physicalAppearance || []} colors={chartColors} />
                 </Grid>
