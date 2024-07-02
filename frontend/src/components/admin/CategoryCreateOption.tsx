@@ -11,10 +11,9 @@ type Props = {
     categoryValue: (CategoryType | OrdinalCategoryType)[];
     setCategoryValue: (value: (CategoryType | OrdinalCategoryType)[]) => void;
     ordered?: boolean;
-    hasDuplicatedPropertyOption: boolean;
 };
 
-export const CategoryCreateOption: React.FC<Props> = ({ categoryValue, setCategoryValue, ordered, hasDuplicatedPropertyOption }) => {
+export const CategoryCreateOption: React.FC<Props> = ({ categoryValue, setCategoryValue, ordered }) => {
     const sortCategories = (a: OrdinalCategoryType | CategoryType, b: OrdinalCategoryType | CategoryType) => {
         if (a.disabled !== b.disabled) {
             return a.disabled ? -1 : 1;
@@ -98,8 +97,8 @@ export const CategoryCreateOption: React.FC<Props> = ({ categoryValue, setCatego
                             size="small"
                             fullWidth
                             value={category.name}
-                            error={hasDuplicatedPropertyOption}
-                            helperText={hasDuplicatedPropertyOption ? t("admin.settings.duplicatedOption") : ""}
+                            // error={hasDuplicatedPropertyOption}
+                            // helperText={hasDuplicatedPropertyOption ? t("admin.settings.duplicatedOption") : ""}
                             onChange={(e) => handleCategoryChange(index, e.target.value)}
                             placeholder={t("admin.settings.add")}
                             variant="outlined"

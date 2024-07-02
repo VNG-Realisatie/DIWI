@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useCallback, useContext, useEffect, useState } from "react";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, InputLabel, MenuItem, Select, Stack, TextField, Tooltip } from "@mui/material";
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, InputLabel, MenuItem, Select, Stack, TextField, Tooltip } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
 import { useTranslation } from "react-i18next";
 import AlertContext from "../../context/AlertContext";
@@ -31,7 +31,7 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
     const [name, setName] = useState<string>("");
     const [categories, setCategories] = useState<CategoryType[]>([]);
     const [ordinals, setOrdinalCategories] = useState<OrdinalCategoryType[]>([]);
-    const [saveIconDisabled, setSaveIconDisabled] = useState<boolean>(false);
+    const [propertyDuplicationInfo, setPropertyDuplicationInfo] = useState<{ duplicatedStatus: boolean; duplicatedNames: string[] }>();
     const { setAlert } = useContext(AlertContext);
     const { t } = useTranslation();
 
@@ -100,15 +100,25 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
         setOpenDialog(false);
     };
 
-    const hasDuplicatedPropertyOption = useCallback((list: CategoryType[]) => {
-        const names = new Set(list.map((item) => item.name));
-        return names.size !== list.length;
+    const getDuplicatedPropertyInfo = useCallback((list: CategoryType[]) => {
+        const nameCounts = list.reduce((acc, { name }) => {
+            //@ts-expect-error reduce function
+            acc[name] = (acc[name] || 0) + 1;
+            return acc;
+        }, {});
+        //@ts-expect-error reduce function
+        const duplicatedNames = Object.keys(nameCounts).filter((name) => nameCounts[name] > 1);
+
+        return {
+            duplicatedStatus: duplicatedNames.length > 0,
+            duplicatedNames: duplicatedNames, // This will be an array of duplicated names
+        };
     }, []);
 
     useEffect(() => {
-        const duplicated = hasDuplicatedPropertyOption(categories) || hasDuplicatedPropertyOption(ordinals);
-        setSaveIconDisabled(duplicated);
-    }, [categories, hasDuplicatedPropertyOption, ordinals]);
+        const duplicated = getDuplicatedPropertyInfo(categories) || getDuplicatedPropertyInfo(ordinals);
+        setPropertyDuplicationInfo(duplicated);
+    }, [categories, ordinals, getDuplicatedPropertyInfo]);
 
     return (
         <Dialog open={openDialog} onClose={handleClose} fullWidth>
@@ -161,12 +171,10 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
                             </MenuItem>
                         ))}
                     </Select>
-                    {selectedPropertyType === "CATEGORY" && (
-                        <CategoryCreateOption hasDuplicatedPropertyOption={saveIconDisabled} categoryValue={categories} setCategoryValue={setCategories} />
-                    )}
+
+                    {selectedPropertyType === "CATEGORY" && <CategoryCreateOption categoryValue={categories} setCategoryValue={setCategories} />}
                     {selectedPropertyType === "ORDINAL" && (
                         <CategoryCreateOption
-                            hasDuplicatedPropertyOption={saveIconDisabled}
                             categoryValue={ordinals ? ordinals : []}
                             setCategoryValue={(value) => {
                                 const refinedCategoryValue = value.map((item) => ("level" in item ? item : { ...item, level: 1 }));
@@ -175,13 +183,16 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
                             ordered={true}
                         />
                     )}
+                    {propertyDuplicationInfo?.duplicatedStatus && (
+                        <Alert severity="error">{propertyDuplicationInfo?.duplicatedNames.join("") + " " + t("admin.settings.duplicatedOption")}</Alert>
+                    )}
                 </Stack>
             </DialogContent>
             <DialogActions>
                 <Button variant="contained" color="error" onClick={handleClose}>
                     {t("generic.cancel")}
                 </Button>
-                <Button variant="contained" color="success" onClick={handleSave} autoFocus disabled={saveIconDisabled}>
+                <Button variant="contained" color="success" onClick={handleSave} autoFocus disabled={propertyDuplicationInfo?.duplicatedStatus}>
                     {t("generic.save")}
                 </Button>
             </DialogActions>

@@ -526,7 +526,7 @@
       },
       "settings": {
         "title": "Lijst met maatwerk velden",
-        "duplicatedOption": "Deze optie is eerder toegevoegd. Verwijder het door op het verwijderpictogram te klikken.",
+        "duplicatedOption": "is een dubbele optie",
         "tableHeader": {
           "name": "Naam",
           "objectType": "Project of woningblok",
