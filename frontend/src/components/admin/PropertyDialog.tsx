@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useCallback, useContext, useEffect, useState } from "react";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, InputLabel, MenuItem, Select, Stack, TextField, Tooltip } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
 import { useTranslation } from "react-i18next";
@@ -31,6 +31,7 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
     const [name, setName] = useState<string>("");
     const [categories, setCategories] = useState<CategoryType[]>([]);
     const [ordinals, setOrdinalCategories] = useState<OrdinalCategoryType[]>([]);
+    const [saveIconDisabled, setSaveIconDisabled] = useState<boolean>(false);
     const { setAlert } = useContext(AlertContext);
     const { t } = useTranslation();
 
@@ -99,6 +100,16 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
         setOpenDialog(false);
     };
 
+    const hasDuplicatedPropertyOption = useCallback((list: CategoryType[]) => {
+        const names = new Set(list.map((item) => item.name));
+        return names.size !== list.length;
+    }, []);
+
+    useEffect(() => {
+        const duplicated = hasDuplicatedPropertyOption(categories) || hasDuplicatedPropertyOption(ordinals);
+        setSaveIconDisabled(duplicated);
+    }, [categories, hasDuplicatedPropertyOption, ordinals]);
+
     return (
         <Dialog open={openDialog} onClose={handleClose} fullWidth>
             <DialogTitle id="alert-dialog-title">{id ? t("admin.settings.edit") : t("admin.settings.add")}</DialogTitle>
@@ -150,9 +161,12 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
                             </MenuItem>
                         ))}
                     </Select>
-                    {selectedPropertyType === "CATEGORY" && <CategoryCreateOption categoryValue={categories} setCategoryValue={setCategories} />}
+                    {selectedPropertyType === "CATEGORY" && (
+                        <CategoryCreateOption hasDuplicatedPropertyOption={saveIconDisabled} categoryValue={categories} setCategoryValue={setCategories} />
+                    )}
                     {selectedPropertyType === "ORDINAL" && (
                         <CategoryCreateOption
+                            hasDuplicatedPropertyOption={saveIconDisabled}
                             categoryValue={ordinals ? ordinals : []}
                             setCategoryValue={(value) => {
                                 const refinedCategoryValue = value.map((item) => ("level" in item ? item : { ...item, level: 1 }));
@@ -167,7 +181,7 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
                 <Button variant="contained" color="error" onClick={handleClose}>
                     {t("generic.cancel")}
                 </Button>
-                <Button variant="contained" color="success" onClick={handleSave} autoFocus>
+                <Button variant="contained" color="success" onClick={handleSave} autoFocus disabled={saveIconDisabled}>
                     {t("generic.save")}
                 </Button>
             </DialogActions>

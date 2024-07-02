@@ -11,9 +11,10 @@ type Props = {
     categoryValue: (CategoryType | OrdinalCategoryType)[];
     setCategoryValue: (value: (CategoryType | OrdinalCategoryType)[]) => void;
     ordered?: boolean;
+    hasDuplicatedPropertyOption: boolean;
 };
 
-export const CategoryCreateOption: React.FC<Props> = ({ categoryValue, setCategoryValue, ordered }) => {
+export const CategoryCreateOption: React.FC<Props> = ({ categoryValue, setCategoryValue, ordered, hasDuplicatedPropertyOption }) => {
     const sortCategories = (a: OrdinalCategoryType | CategoryType, b: OrdinalCategoryType | CategoryType) => {
         if (a.disabled !== b.disabled) {
             return a.disabled ? -1 : 1;
@@ -81,6 +82,7 @@ export const CategoryCreateOption: React.FC<Props> = ({ categoryValue, setCatego
         updatedCategories[index + 1 + categoriesDisabled.length].level--;
         setCategoryValue(updatedCategories.sort(sortCategories));
     };
+
     return (
         <>
             <InputLabel variant="standard" id="categories">
@@ -96,6 +98,8 @@ export const CategoryCreateOption: React.FC<Props> = ({ categoryValue, setCatego
                             size="small"
                             fullWidth
                             value={category.name}
+                            error={hasDuplicatedPropertyOption}
+                            helperText={hasDuplicatedPropertyOption ? t("admin.settings.duplicatedOption") : ""}
                             onChange={(e) => handleCategoryChange(index, e.target.value)}
                             placeholder={t("admin.settings.add")}
                             variant="outlined"
