@@ -78,6 +78,7 @@ export const theme = createTheme(
                 styleOverrides: {
                     input: {
                         backgroundColor: "#ffffff",
+                        height: "30px",
                     },
                 },
             },
