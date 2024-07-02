@@ -49,6 +49,13 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
             filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
             filterable: true,
             sortable: true,
+            sortComparator: (v1, v2, cellParams1, cellParams2) => {
+                const row1 = cellParams1.api.getRow(cellParams1.id);
+                const row2 = cellParams2.api.getRow(cellParams2.id);
+                const name1 = row1.type === "FIXED" ? t(`admin.settings.fixedPropertyType.${row1.name}`) : row1.name;
+                const name2 = row2.type === "FIXED" ? t(`admin.settings.fixedPropertyType.${row2.name}`) : row2.name;
+                return name1.localeCompare(name2);
+            },
         },
         {
             field: "propertyType",
