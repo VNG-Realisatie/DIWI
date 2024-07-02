@@ -66,7 +66,7 @@ export const SingleNumberInput = ({
         </InputLabelStack>
     ) : (
         <Stack direction="row" alignItems="center" spacing={2} my={2}>
-            <Typography variant="subtitle1" fontWeight="500" border="solid 1px #ddd" borderRadius="5px" p={0.6} flex={3}>
+            <Typography variant="subtitle1" fontWeight="500" border="solid 1px #ddd" borderRadius="5px" p={0.6} flex={3} minHeight="47px">
                 {name} {tooltipInfoText && <TooltipInfo text={tooltipInfoText} />}
             </Typography>
             {inputField}
