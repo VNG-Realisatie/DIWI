@@ -97,8 +97,6 @@ export const CategoryCreateOption: React.FC<Props> = ({ categoryValue, setCatego
                             size="small"
                             fullWidth
                             value={category.name}
-                            // error={hasDuplicatedPropertyOption}
-                            // helperText={hasDuplicatedPropertyOption ? t("admin.settings.duplicatedOption") : ""}
                             onChange={(e) => handleCategoryChange(index, e.target.value)}
                             placeholder={t("admin.settings.add")}
                             variant="outlined"
