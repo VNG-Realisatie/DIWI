@@ -4,7 +4,6 @@ import { t } from "i18next";
 import { HouseBlock, OwnershipSingleValue } from "../../../../types/houseBlockTypes";
 import AddIcon from "@mui/icons-material/Add";
 import { OwnershipRowInputs } from "./OwnershipRowInputs";
-import { TooltipInfo } from "../../../../widgets/TooltipInfo";
 
 export type OwnershipInformationProps = {
     houseBlock: HouseBlock;
@@ -52,23 +51,6 @@ export const OwnershipInformationGroup = ({ houseBlock, setHouseBlock, readOnly 
             <Typography fontWeight={600} mb={2}>
                 {t(`${translationPath}.ownershipAndValue.title`)}
             </Typography>
-            <Grid container spacing={2}>
-                <Grid item xs={4}>
-                    <Typography fontWeight={600}>
-                        {t(`${translationPath}.type`)}
-                        <TooltipInfo text={t(`tooltipInfo.soort.title`)} />
-                    </Typography>
-                </Grid>
-                <Grid item xs={1.25}>
-                    <Typography fontWeight={600}>{t(`${translationPath}.amount`)}</Typography>
-                </Grid>
-                <Grid item xs={2.8}>
-                    <Typography fontWeight={600}>{t(`${translationPath}.value`)}</Typography>
-                </Grid>
-                <Grid item xs={2.8}>
-                    <Typography fontWeight={600}>{t(`${translationPath}.rent`)}</Typography>
-                </Grid>
-            </Grid>
             <Grid container>
                 {houseBlock.ownershipValue.map((ownership, index) => (
                     <OwnershipRowInputs

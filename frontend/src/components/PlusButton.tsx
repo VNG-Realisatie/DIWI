@@ -38,7 +38,7 @@ function PlusButton({ color, link, text }: PlusButtonProps) {
             onClick={handleButtonClick}
             sx={{
                 position: "absolute",
-                bottom: 20,
+                bottom: 0,
                 right: 20,
                 zIndex: 999,
                 borderRadius: "40px",
@@ -94,7 +94,7 @@ export const AddHouseBlockButton: React.FC<{ onClick: () => void }> = ({ onClick
         text: t("projectDetail.createNewHouseBlock"),
     };
 
-    return allowedActions.includes("CREATE_NEW_PROJECT") ? <PlusButton {...buttonProps} /> : null;
+    return allowedActions.includes("EDIT_OWN_PROJECTS") ? <PlusButton {...buttonProps} /> : null;
 };
 
 export const AddProjectButton: React.FC = () => {
