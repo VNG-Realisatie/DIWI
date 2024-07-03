@@ -22,9 +22,12 @@ read -p "Enter timestamp: " timestamp
 # Create backup first
 ./backup.sh
 
-git checkout "backup/predeploy-$timestamp.githash"
+# Checkout git hash from timestamp
+git checkout "$(cat "backup/predeploy-$timestamp.githash")"
 
 function restoreDB() {
+    # Unsure if this next line is safe to run so I commented it instead:
+    # docker compose exec -T database pg_restore -U $DIWI_DB_USERNAME -d $DIWI_DB_NAME "backup/predeploy-$timestamp.dump"
     pg_restore -U $DIWI_DB_USERNAME -d $DIWI_DB_NAME "backup/predeploy-$timestamp.dump"
 }
 
