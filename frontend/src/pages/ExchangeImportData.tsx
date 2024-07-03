@@ -1,6 +1,7 @@
 import { Stack, Typography } from "@mui/material";
 import { DataCardItem } from "../components/DataCardItem";
 import excelIcon from "../assets/excel.svg";
+import geojsonIcon from "../assets/geojson.svg";
 
 import * as Paths from "../Paths";
 import { useTranslation } from "react-i18next";
@@ -24,7 +25,9 @@ export const ExchangeImportData = () => {
                         <DataCardItem text={t("exchangeData.excel")} link={Paths.importExcel.path} isImport>
                             <img src={excelIcon} alt="excel" />
                         </DataCardItem>
-                        <DataCardItem text={t("exchangeData.geojson")} link={Paths.importGeoJson.path} isImport></DataCardItem>
+                        <DataCardItem text={t("exchangeData.geojson")} link={Paths.importGeoJson.path} isImport>
+                            <img src={geojsonIcon} alt="geojson" />
+                        </DataCardItem>
                     </Stack>
                 </>
             )}
