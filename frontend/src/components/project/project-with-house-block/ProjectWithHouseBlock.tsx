@@ -6,26 +6,23 @@ import SaveIcon from "@mui/icons-material/Save";
 import ClearIcon from "@mui/icons-material/Clear";
 import FormatColorFillIcon from "@mui/icons-material/FormatColorFill";
 import { useTranslation } from "react-i18next";
-
 import { defaultColors } from "../../ColorSelector";
 import { BlockPicker } from "react-color";
-
 import { Project, updateProjectWithCustomProperties } from "../../../api/projectsServices";
 import AlertContext from "../../../context/AlertContext";
-import { CreateHouseBlockDialog } from "./CreateHouseBlockDialog";
-import { HouseBlocksList } from "./HouseBlocksList";
 import { ProjectForm } from "../../ProjectForm";
 import useLoading from "../../../hooks/useLoading";
 import { useHasEditPermission } from "../../../hooks/useHasEditPermission";
+import { HouseBlocksList } from "./HouseBlocksList";
+import { CreateHouseBlockDialog } from "./CreateHouseBlockDialog";
+import { validateForm } from "../../../utils/formValidation";
 
 export const ProjectsWithHouseBlock = () => {
     const { selectedProject, updateProject } = useContext(ProjectContext);
-
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const [openColorDialog, setOpenColorDialog] = useState(false);
-    const [openHouseBlockDialog, setOpenHouseBlockDialog] = useState(false);
     const [readOnly, setReadOnly] = useState(true);
-
+    const [openHouseBlockDialog, setOpenHouseBlockDialog] = useState(false);
     const [projectForm, setProjectForm] = useState<Project | null>(selectedProject);
 
     const { setAlert } = useContext(AlertContext);
@@ -52,6 +49,10 @@ export const ProjectsWithHouseBlock = () => {
 
     const handleProjectSave = async () => {
         if (projectForm) {
+            if (!validateForm(projectForm)) {
+                setAlert(t("createProject.hasMissingRequiredAreas.hasmissingProperty"), "warning");
+                return;
+            }
             try {
                 setLoading(true);
                 const newProjectForm = await updateProjectWithCustomProperties(projectForm);
@@ -72,7 +73,6 @@ export const ProjectsWithHouseBlock = () => {
     return (
         <Stack mb={10}>
             <Box sx={{ cursor: "pointer" }} position="absolute" right={100} top={17}>
-                {/* Check if user has permission to edit project */}
                 {getEditPermission() && (
                     <>
                         {!readOnly && (
