@@ -225,7 +225,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             preProcessEditCellProps: createErrorReport,
         },
         {
-            field: "wijk",
+            field: "district",
             headerName: capitalizeFirstLetters(t("projects.tableColumns.district")),
             display: "flex",
             width: 320,
@@ -236,7 +236,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             preProcessEditCellProps: createErrorReport,
         },
         {
-            field: "buurt",
+            field: "neighbourhood",
             headerName: capitalizeFirstLetters(t("projects.tableColumns.neighbourhood")),
             display: "flex",
             width: 320,

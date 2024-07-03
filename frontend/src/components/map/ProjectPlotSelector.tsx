@@ -38,7 +38,7 @@ const ProjectPlotSelector = () => {
                 )}
             </Box>
             <Stack direction="row" alignItems="center" justifyContent="space-between">
-                <Stack overflow="auto" height="70vh">
+                <Stack overflow="auto" height="70vh" width="20%">
                     <Details project={selectedProject} />
                 </Stack>
                 <div id={id} style={{ height: "70vh", width: "100%", paddingLeft: 8 }}></div>

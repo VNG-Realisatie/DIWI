@@ -38,10 +38,29 @@ import { LoadingProvider } from "./context/LoadingContext";
 import { ImportPage } from "./pages/ImportPage";
 import UserManagement from "./pages/UserManagement";
 import { Forbidden } from "./pages/Forbidden";
+import { DashboardProject } from "./pages/DashboardProject";
+
+enum UserStatus {
+    Authenticated,
+    Unauthenticated,
+}
+
+enum LoadingStatus {
+    Loading,
+    NotLoading,
+}
+
+type UserLoadingStatus = {
+    user: UserStatus;
+    loading: LoadingStatus;
+};
 
 function RequiresLogin() {
     const [kcAuthenticated, setKcAuthenticated] = useState<boolean>(false);
-    const [isDiwiUser, setIsDiwiUser] = useState<boolean>(false);
+    const [status, setStatus] = useState<UserLoadingStatus>({
+        user: UserStatus.Unauthenticated,
+        loading: LoadingStatus.Loading,
+    });
     const { setAlert } = useContext(AlertContext);
 
     useEffect(() => {
@@ -64,30 +83,49 @@ function RequiresLogin() {
             fetch(Paths.userInfo.path)
                 .then((response) => {
                     if (response.ok) {
-                        setIsDiwiUser(true);
+                        setStatus((prevStatus) => ({
+                            ...prevStatus,
+                            user: UserStatus.Authenticated,
+                        }));
                     }
                     if (response.status === 401) {
                         const returnUrl = window.location.origin + window.location.pathname + window.location.search;
-                        // We can't use navigate here, because navigate will use the internal router and just show a 404
                         window.location.href = `${Paths.login.path}?returnUrl=${encodeURIComponent(returnUrl)}`;
                         setKcAuthenticated(false);
-                        setIsDiwiUser(false);
+                        setStatus((prevStatus) => ({
+                            ...prevStatus,
+                            user: UserStatus.Unauthenticated,
+                        }));
                     }
                     if (response.status === 403) {
-                        // Forbidden just redirect to that page
-                        setIsDiwiUser(false);
+                        setStatus((prevStatus) => ({
+                            ...prevStatus,
+                            user: UserStatus.Unauthenticated,
+                        }));
                     }
                 })
                 .catch(() => {
-                    setIsDiwiUser(false);
+                    setStatus((prevStatus) => ({
+                        ...prevStatus,
+                        user: UserStatus.Unauthenticated,
+                    }));
+                })
+                .finally(() => {
+                    setStatus((prevStatus) => ({
+                        ...prevStatus,
+                        loading: LoadingStatus.NotLoading,
+                    }));
                 });
         } else {
-            setIsDiwiUser(false);
+            setStatus((prevStatus) => ({
+                ...prevStatus,
+                user: UserStatus.Unauthenticated,
+            }));
         }
     }, [kcAuthenticated]);
 
     if (kcAuthenticated) {
-        if (isDiwiUser) {
+        if (status.user === UserStatus.Authenticated) {
             return (
                 <UserProvider>
                     <ConfigProvider>
@@ -96,7 +134,7 @@ function RequiresLogin() {
                     </ConfigProvider>
                 </UserProvider>
             );
-        } else {
+        } else if (status.loading === LoadingStatus.NotLoading) {
             return <Forbidden />;
         }
     }
@@ -224,6 +262,16 @@ function App() {
                         <Route path={Paths.policygoal.path} element={<PolicyLists />} />
                         <Route path={Paths.policygoalDashboard.path} element={<PolicyLists />} />
                         <Route path={Paths.dashboard.path} element={<DashboardProjects />} />
+                        <Route
+                            path={Paths.dashboardProject.path}
+                            element={
+                                <ProjectProvider>
+                                    <HouseBlockProvider>
+                                        <DashboardProject />
+                                    </HouseBlockProvider>
+                                </ProjectProvider>
+                            }
+                        />
                         <Route path={Paths.exchangedata.path} element={<ExchangeData />} />
                         <Route path={Paths.importExcel.path} element={<ImportPage functionality="excel" />} />
                         <Route path={Paths.importGeoJson.path} element={<ImportPage functionality="geojson" />} />

@@ -62,21 +62,21 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
                     </Link>
                 )}
             </List>
-            {/* <List sx={{ ml: 3 }}>
+            <List sx={{ ml: 3 }}>
                 <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>{t("sidebar.dashboards")}</Typography>
-
+                {/*
                 <Link to={Paths.policygoal.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
                     <ListItemButton>
                         <ListItemText primary="Beleidsdoelen" />
                     </ListItemButton>
-                </Link>
+                </Link> */}
                 <Link to={Paths.dashboard.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
-                    <ListItemButton>
+                    <ListItemButton onClick={handleDrawerClose}>
                         <ListItemText primary="Dashboard projecten" />
                     </ListItemButton>
                 </Link>
             </List>
-            <List sx={{ ml: 3 }}>
+            {/* <List sx={{ ml: 3 }}>
                 <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>{t("sidebar.users")}</Typography>
             </List> */}
             {/* <List sx={{ ml: 3 }}>
@@ -89,7 +89,7 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
             </List> */}
             <List sx={{ ml: 3 }}>
                 <Typography sx={typographyStyles}>{t("sidebar.settings")}</Typography>
-                {allowedActions.includes("VIEW_CUSTOM_PROPERTIES") && (
+                {allowedActions.includes("EDIT_CUSTOM_PROPERTIES") && (
                     <Link to={Paths.userSettings.path} style={linkStyles} onClick={handleDrawerClose}>
                         <ListItemButton>
                             <ListItemText primary={t("customProperties.title")} />
@@ -103,7 +103,7 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
                 </Link>
             </List>
             <List sx={{ ml: 3, marginTop: "auto", marginBottom: "20px" }}>
-                <Link to="https://support.diwi.vng.client.phinion.com/" target="_blank" style={linkStyles} onClick={handleDrawerClose}>
+                <Link to="https://support.diwi.vng.client.phinion.com/help/nl-nl" target="_blank" style={linkStyles} onClick={handleDrawerClose}>
                     <Typography style={typographyStyles}>{t("sidebar.knowledgeBase")}</Typography>
                 </Link>
             </List>

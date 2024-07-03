@@ -1,10 +1,43 @@
 # Change log
 
+## DIWI RELEASE 1.4.0
+
+This release is focused on user management and project confidentiality. The user type and the project ownership and confidentialty now decide what projects are visible to a user and who can change a project.
+
+### ADDED
+
+- User management
+- User group mangement
+- User types
+- Project confidentiality and ownership now influences who can see a project
+- Automated end to end tests
+
+### CHANGED
+
+- Use vite js as front end builder for increased build speed
+- Make optional input widgets clearable
+
+### REMOVED
+
+### FIXED
+
+- Sorting on project page now works for district, neighborhood and municpality
+
+## DIWI RELEASE 1.3.3
+
+### FIXED
+
+- Fixed an issue with updating an existing house block in a project.
+
 ## DIWI RELEASE 1.3.2
 
 ### ADDED
 
-- Log first and last delivery date of hous blocks during import
+- Log first and last delivery date of house blocks during import
+
+### FIXED
+
+- Show correct number of houses in projects table and project map
 
 ### CHANGED
 

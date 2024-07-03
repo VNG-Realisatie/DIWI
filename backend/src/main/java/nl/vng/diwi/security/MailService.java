@@ -60,7 +60,7 @@ public class MailService {
     public void sendWelcomeMail(String email) throws MailException {
         try {
             String template = ResourceUtil.getResourceAsString("welcomeMail.html");
-            sendMail(template, "Welcome to __BASE_URL__", email);
+            sendMail(template, "Welkom bij __BASE_URL__", email);
         } catch (IOException | MessagingException ex) {
             logger.error(ex);
             throw new MailException(ex);

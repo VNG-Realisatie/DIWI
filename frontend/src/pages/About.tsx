@@ -49,11 +49,11 @@ export const About = () => {
                         </TableRow>
                         <TableRow>
                             <TableCell>{t("about.gitHash")}</TableCell>
-                            <TableCell>{process.env.REACT_APP_GIT_SHA ?? unavailableText}</TableCell>
+                            <TableCell>{import.meta.env.VITE_REACT_APP_GIT_SHA ?? unavailableText}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell>{t("about.version")}</TableCell>
-                            <TableCell>{process.env.REACT_APP_VERSION_NUMBER ?? unavailableText}</TableCell>
+                            <TableCell>{import.meta.env.VITE_REACT_APP_VERSION_NUMBER ?? unavailableText}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell></TableCell>

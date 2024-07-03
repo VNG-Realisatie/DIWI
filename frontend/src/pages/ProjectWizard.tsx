@@ -7,6 +7,7 @@ import WizardLayout from "../components/project-wizard/WizardLayout";
 import useAlert from "../hooks/useAlert";
 import ProjectContext from "../context/ProjectContext";
 import { ProjectForm } from "../components/ProjectForm";
+import { validateForm } from "../utils/formValidation";
 
 const ProjectWizard = () => {
     const [projectForm, setProjectForm] = useState<Project>({
@@ -27,15 +28,7 @@ const ProjectWizard = () => {
     const { updateProjects } = useContext(ProjectContext);
 
     async function validateAndSave() {
-        if (
-            !projectForm.projectName ||
-            !projectForm.startDate ||
-            !projectForm.endDate ||
-            !projectForm.projectColor ||
-            !projectForm.projectPhase ||
-            !projectForm.confidentialityLevel ||
-            projectForm.projectOwners.length === 0
-        ) {
+        if (!validateForm(projectForm)) {
             setAlert(t("createProject.hasMissingRequiredAreas.hasmissingProperty"), "warning");
             return false;
         }

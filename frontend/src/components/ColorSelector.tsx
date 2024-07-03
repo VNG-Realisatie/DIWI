@@ -46,6 +46,7 @@ const ColorSelector: FC<ColorSelectorProps> = ({ defaultColor, onColorChange, se
                     borderRadius={"5px"}
                     sx={{
                         backgroundColor: selectedColor ? selectedColor : color,
+                        minHeight: "47px"
                     }}
                 />
             </Button>

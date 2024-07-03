@@ -24,7 +24,9 @@
                         "in_programmering": null,
                         "prioritering": null,
                         "rol_gemeente": null,
-                        "status": null
+                        "status": null,
+                        "eigenaar": null,
+                        "vertrouwelijkheid": null
                     },
                     "rollen": {
                         "projectleider": null,

@@ -35,7 +35,11 @@ const geoMarker = (f: Feature): Style => {
     });
 };
 
-const ProjectOverviewMap = () => {
+type ProjectOverviewMapProps = {
+    isDashboardMap?: boolean;
+};
+
+const ProjectOverviewMap = ({ isDashboardMap }: ProjectOverviewMapProps) => {
     const navigate = useNavigate();
 
     const { mapBounds } = useContext(ConfigContext);
@@ -117,6 +121,8 @@ const ProjectOverviewMap = () => {
                 const feature = newMap.forEachFeatureAtPixel(evt.pixel, (f) => f);
                 if (feature && tooltipElement.current) {
                     tooltipElement.current.style.display = "";
+                    tooltipElement.current.style.padding = "5px 10px";
+                    tooltipElement.current.style.borderRadius = "5px";
                     tooltipElement.current.innerHTML = feature.get("name");
                     const featureCoord = feature.get("geometry") as Point;
                     tooltipOverlay.setPosition(featureCoord.getFlatCoordinates());
@@ -131,18 +137,18 @@ const ProjectOverviewMap = () => {
                 if (feature) {
                     const projectId = feature.get("id");
                     if (projectId) {
-                        navigate(Paths.projectDetail.toPath({ projectId }));
+                        isDashboardMap ? navigate(Paths.dashboardProject.toPath({ projectId })) : navigate(Paths.projectDetail.toPath({ projectId }));
                     }
                 }
             });
 
             return () => newMap.setTarget(undefined);
         },
-        [mapBounds, navigate],
+        [isDashboardMap, mapBounds, navigate],
     );
 
     return (
-        <Stack my={1} p={1} mb={10}>
+        <Stack my={1} p={1} mb={isDashboardMap ? 0 : 10}>
             <div ref={mapElement} className="map-container" style={{ height: "70vh", width: "100%" }}>
                 <div
                     ref={tooltipElement}
@@ -157,9 +163,11 @@ const ProjectOverviewMap = () => {
                         font: "10pt sans-serif",
                     }}
                 />
-                <div style={{ position: "absolute", bottom: 100, right: 20 }}>
-                    <AddProjectButton />
-                </div>
+                {!isDashboardMap && (
+                    <div style={{ position: "absolute", bottom: 100, right: 20 }}>
+                        <AddProjectButton />
+                    </div>
+                )}
             </div>
         </Stack>
     );
