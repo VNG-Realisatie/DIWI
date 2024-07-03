@@ -117,6 +117,8 @@ public class HouseblockSnapshotSqlModel {
         private Integer ownershipAmount;
         private Integer ownershipValue;
         private Integer ownershipRentalValue;
+        private UUID ownershipRangeCategoryId;
+        private UUID ownershipRentalRangeCategoryId;
         private Integer ownershipValueRangeMin;
         private Integer ownershipValueRangeMax;
         private Integer ownershipRentalValueRangeMin;

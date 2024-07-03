@@ -87,12 +87,12 @@ INSERT INTO diwi.woningblok_grootte_changelog (id, woningblok_id, start_mileston
 VALUES ('f03e3d29-c8bf-44d4-816a-cb9de50af790', '16dbf29e-bd3e-419e-9b2c-0bfd834c0d19', 'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '342887ab-2106-45c4-9565-a4b83f4d3362', '2122426c-6e70-419c-a054-f51dd24d798b', NOW(), null, '[11.1, 22.2]', 'RANGE');
 
 INSERT INTO diwi.woningblok_eigendom_en_waarde_changelog (id, woningblok_id, start_milestone_id, end_milestone_id, create_user_id, change_start_date,
-                                                                  waarde_value_type, waarde_value, huurbedrag_value_type, huurbedrag_value, amount, eigendom_soort, waarde_value_range, huurbedrag_value_range)
+                                                                  waarde_value, huurbedrag_value, amount, eigendom_soort, waarde_value_range, huurbedrag_value_range)
 VALUES ('aecc55e0-a560-41fe-b829-f3b2e099a0a7', '16dbf29e-bd3e-419e-9b2c-0bfd834c0d19', 'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '342887ab-2106-45c4-9565-a4b83f4d3362', '2122426c-6e70-419c-a054-f51dd24d798b', NOW(),
-        'SINGLE_VALUE', 10, 'SINGLE_VALUE', 20, 5, 'KOOPWONING', null, null);
+        10, 20, 5, 'KOOPWONING', null, null);
 
 INSERT INTO diwi.woningblok_eigendom_en_waarde_changelog (id, woningblok_id, start_milestone_id, end_milestone_id, create_user_id, change_start_date,
-                                                                  waarde_value_type, waarde_value, huurbedrag_value_type, huurbedrag_value, amount, eigendom_soort, waarde_value_range, huurbedrag_value_range)
+                                                                  waarde_value, huurbedrag_value, amount, eigendom_soort, waarde_value_range, huurbedrag_value_range)
 VALUES ('90530dc3-e1de-47fb-8308-3ae3bdced0a9', '16dbf29e-bd3e-419e-9b2c-0bfd834c0d19', 'ee3cbe15-7a5d-42c6-a807-0a7593a24d4f', '342887ab-2106-45c4-9565-a4b83f4d3362', '2122426c-6e70-419c-a054-f51dd24d798b', NOW(),
-        'RANGE', null, 'RANGE', null, 5, 'HUURWONING_WONINGCORPORATIE', '[10, 12]', '[8, 9]');
+        null, null, 5, 'HUURWONING_WONINGCORPORATIE', '[10, 12]', '[8, 9]');
 
