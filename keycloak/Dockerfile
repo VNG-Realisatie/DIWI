@@ -1,4 +1,4 @@
-FROM quay.io/keycloak/keycloak:23.0.7 as builder
+FROM quay.io/keycloak/keycloak:23.0.7 AS builder
 
 # Configure a database vendor
 ENV KC_DB=postgres
