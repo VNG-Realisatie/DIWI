@@ -20,10 +20,12 @@ DIWI_DB_USERNAME=${DIWI_DB_USERNAME:-diwi}
 read -p "Enter timestamp: " timestamp
 
 # Create backup first
-#./backup.sh
+./backup.sh
+
+git checkout "backup/predeploy-$timestamp.githash"
 
 function restoreDB() {
-    pg_restore -U $DIWI_DB_USERNAME -d $DIWI_DB_NAME "backup/predeploy-$timestamp.dump" -c
+    pg_restore -U $DIWI_DB_USERNAME -d $DIWI_DB_NAME "backup/predeploy-$timestamp.dump"
 }
 
 restoreDB $timestamp
