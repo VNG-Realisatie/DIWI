@@ -22,64 +22,94 @@ interface Props {
     setOpenDialog: (openDialog: boolean) => void;
     id?: string;
     setCustomProperties: (cp: Property[]) => void;
+    setId?: (id: string) => void;
 }
 
-const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCustomProperties }) => {
+const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCustomProperties, setId }) => {
     const [selectedObjectType, setSelectedObjectType] = useState<ObjectType>("PROJECT");
     const [selectedPropertyType, setSelectedPropertyType] = useState<PropertyType>("TEXT");
     const [active, setActive] = useState(false);
-    const [name, setName] = useState<string>("");
+    const [untranslatedName, setUntranslatedName] = useState<string>("");
+    const [displayedName, setDisplayedName] = useState<string>("");
     const [categories, setCategories] = useState<CategoryType[]>([]);
     const [ordinals, setOrdinalCategories] = useState<OrdinalCategoryType[]>([]);
     const [propertyDuplicationInfo, setPropertyDuplicationInfo] = useState<{ duplicatedStatus: boolean; duplicatedNames: string[] }>();
     const { setAlert } = useContext(AlertContext);
     const { t } = useTranslation();
+    const [activeProperty, setActiveProperty] = useState<Property>();
 
-    const updateDialog = (property: Property): void => {
-        setName(property.name);
-        property.categories && setCategories(property.categories);
-        property.ordinals && setOrdinalCategories(property.ordinals);
-        setActive(property.disabled);
-        setSelectedObjectType(property.objectType);
-        setSelectedPropertyType(property.propertyType);
-    };
+    const updateDialog = useCallback(
+        (property: Property): void => {
+            setActiveProperty(property);
+            setUntranslatedName(property.name);
+            if (property.type === "FIXED") {
+                setDisplayedName(t(`admin.settings.fixedPropertyType.${property.name}`));
+            } else {
+                setDisplayedName(property.name);
+            }
+            property.categories && setCategories(property.categories);
+            property.ordinals && setOrdinalCategories(property.ordinals);
+            setActive(property.disabled);
+            setSelectedObjectType(property.objectType);
+            setSelectedPropertyType(property.propertyType);
+        },
+        [
+            setActiveProperty,
+            setUntranslatedName,
+            setDisplayedName,
+            setCategories,
+            setOrdinalCategories,
+            setActive,
+            setSelectedObjectType,
+            setSelectedPropertyType,
+            t,
+        ],
+    );
 
     useEffect(() => {
         if (id) {
             getCustomProperty(id).then(updateDialog);
         }
-    }, [id]);
+    }, [id, updateDialog]);
 
-    const resetForm = () => {
-        setName("");
+    const clearFields = () => {
+        setDisplayedName("");
+        setUntranslatedName("");
+        setCategories([]);
+        setOrdinalCategories([]);
         setSelectedObjectType("PROJECT");
         setSelectedPropertyType("TEXT");
         setActive(false);
-        setCategories([]);
-        setOrdinalCategories([]);
+    };
+
+    const handleClose = () => {
+        setId && setId("");
+        clearFields();
+        setOpenDialog(false);
     };
 
     const saveAction = async (newProperty: Property) => {
         try {
-            if (!id) resetForm();
+            if (!id) {
+                clearFields();
+                setActive(false);
+            }
             const savedProperty = await (id ? updateCustomProperty(id, newProperty) : addCustomProperty(newProperty));
             setAlert(t("admin.settings.notifications.successfullySaved"), "success");
             updateDialog(savedProperty);
             const customProperties = await getCustomProperties();
             setCustomProperties(customProperties);
-            setOpenDialog(false);
         } catch (error: unknown) {
             if (error instanceof Error) setAlert(error.message, "warning");
         } finally {
-            setCategories([]);
-            setOrdinalCategories([]);
+            handleClose();
         }
     };
 
     const handleSave = () => {
         const newProperty: Property = {
             id,
-            name,
+            name: untranslatedName,
             type: "CUSTOM",
             objectType: selectedObjectType,
             propertyType: selectedPropertyType,
@@ -92,12 +122,6 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
         };
 
         saveAction(newProperty);
-    };
-
-    const handleClose = () => {
-        setCategories([]);
-        setOrdinalCategories([]);
-        setOpenDialog(false);
     };
 
     const getDuplicatedPropertyInfo = useCallback((list: CategoryType[]) => {
@@ -131,8 +155,12 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
                     <TextField
                         size="small"
                         label={t("admin.settings.tableHeader.name")}
-                        value={name}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+                        value={displayedName}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                            setDisplayedName(e.target.value);
+                            setUntranslatedName(e.target.value);
+                        }}
+                        disabled={activeProperty?.type === "FIXED"}
                     />
                     <InputLabel variant="standard" id="objectType">
                         {t("admin.settings.tableHeader.objectType")}
