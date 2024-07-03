@@ -177,7 +177,7 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
                     </Box>
                 </DialogActions>
             </Dialog>
-            <PropertyDialog setCustomProperties={setCustomProperties} openDialog={editDialogOpen} setOpenDialog={setEditDialogOpen} id={editPropertyId} />
+            <PropertyDialog setCustomProperties={setCustomProperties} openDialog={editDialogOpen} setOpenDialog={setEditDialogOpen} id={editPropertyId} setId={setEditPropertyId} />
         </>
     );
 };

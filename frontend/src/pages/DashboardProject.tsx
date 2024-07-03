@@ -70,7 +70,7 @@ export const DashboardProject = () => {
                     <CharacteristicTable />
                 </Grid>
                 <Grid item {...chartCardStyling}>
-                    <Typography sx={titleStyling}>{t("dashboard.residentialProjects")}%</Typography>
+                    <Typography sx={titleStyling}>{t("dashboard.residentialProjects")}</Typography>
                     <DashboardPieChart chartData={physicalAppearance} colors={chartColors} />
                 </Grid>
                 <Grid item {...chartCardStyling}>
