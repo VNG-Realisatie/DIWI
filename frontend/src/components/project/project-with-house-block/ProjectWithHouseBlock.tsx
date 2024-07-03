@@ -113,8 +113,6 @@ export const ProjectsWithHouseBlock = () => {
                     </Box>
                 )}
 
-                <HouseBlocksList setOpenHouseBlockDialog={setOpenHouseBlockDialog} />
-
                 {/* Dialog to select color */}
                 {openColorDialog && (
                     <Popover
@@ -133,9 +131,6 @@ export const ProjectsWithHouseBlock = () => {
                         />
                     </Popover>
                 )}
-
-                {/* Dialog to create new houseblock */}
-                <CreateHouseBlockDialog openHouseBlockDialog={openHouseBlockDialog} setOpenHouseBlockDialog={setOpenHouseBlockDialog} />
             </Stack>
         </Stack>
     );

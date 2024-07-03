@@ -32,7 +32,10 @@ export const theme = createTheme(
             MuiOutlinedInput: {
                 styleOverrides: {
                     root: {
-                        background: "white",
+                        "& .MuiInputBase-input.Mui-disabled": {
+                            WebkitTextFillColor: "#000000",
+                            backgroundColor: "#F0F0F0",
+                        },
                     },
                 },
             },
@@ -54,6 +57,15 @@ export const theme = createTheme(
                     },
                 },
             },
+            MuiChip: {
+                styleOverrides: {
+                    root: {
+                        "&.Mui-disabled": {
+                            opacity: 1,
+                        },
+                    },
+                },
+            },
             MuiListItemIcon: {
                 styleOverrides: {
                     root: {
@@ -65,7 +77,8 @@ export const theme = createTheme(
             MuiInputBase: {
                 styleOverrides: {
                     input: {
-                        backgroundColor: "white",
+                        backgroundColor: "#ffffff",
+                        height: "30px",
                     },
                 },
             },
@@ -79,6 +92,12 @@ export const theme = createTheme(
                         borderLeft: "2px solid #ccc",
                         borderTop: "2px solid #ccc",
                         backgroundColor: "#738092",
+                        color: "#ffffff",
+                        "& svg": {
+                            color: "#ffffff",
+                        },
+                    },
+                    sortIcon: {
                         color: "#ffffff",
                     },
                 },
