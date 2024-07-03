@@ -13,8 +13,6 @@ import AlertContext from "../../../context/AlertContext";
 import { ProjectForm } from "../../ProjectForm";
 import useLoading from "../../../hooks/useLoading";
 import { useHasEditPermission } from "../../../hooks/useHasEditPermission";
-import { HouseBlocksList } from "./HouseBlocksList";
-import { CreateHouseBlockDialog } from "./CreateHouseBlockDialog";
 import { validateForm } from "../../../utils/formValidation";
 
 export const ProjectsWithHouseBlock = () => {
@@ -22,7 +20,6 @@ export const ProjectsWithHouseBlock = () => {
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const [openColorDialog, setOpenColorDialog] = useState(false);
     const [readOnly, setReadOnly] = useState(true);
-    const [openHouseBlockDialog, setOpenHouseBlockDialog] = useState(false);
     const [projectForm, setProjectForm] = useState<Project | null>(selectedProject);
 
     const { setAlert } = useContext(AlertContext);
