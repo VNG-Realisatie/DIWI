@@ -29,6 +29,7 @@ import nl.vng.diwi.models.HouseblockUpdateModel;
 import nl.vng.diwi.models.MilestoneModel;
 import nl.vng.diwi.models.ProjectHouseblockCustomPropertyModel;
 import nl.vng.diwi.rest.VngBadRequestException;
+import nl.vng.diwi.rest.VngNotAllowedException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.generic.Constants;
@@ -95,11 +96,13 @@ public class HouseblockResource {
 
     @POST
     @Path("/add")
-    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
+    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS, UserActionConstants.EDIT_ALL_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public HouseblockSnapshotModel createHouseblock(@Context LoggedUser loggedUser, HouseblockSnapshotModel houseblockSnapshotModel)
-        throws VngNotFoundException, VngBadRequestException {
+        throws VngNotFoundException, VngBadRequestException, VngNotAllowedException {
+
+        projectService.checkProjectEditPermission(repo, houseblockSnapshotModel.getProjectId(), loggedUser);
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             Project project = projectService.getCurrentProject(repo, houseblockSnapshotModel.getProjectId());
@@ -123,10 +126,16 @@ public class HouseblockResource {
 
     @DELETE
     @Path("/{id}")
-    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
-    public void deleteHouseblock(ContainerRequestContext requestContext, @PathParam("id") UUID houseblockUuid) throws VngNotFoundException {
+    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS, UserActionConstants.EDIT_ALL_PROJECTS})
+    public void deleteHouseblock(ContainerRequestContext requestContext, @PathParam("id") UUID houseblockUuid) throws VngNotFoundException, VngNotAllowedException {
 
         var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
+        var houseblockSnapshot = houseblockService.getHouseblockSnapshot(repo, houseblockUuid);
+        if (houseblockSnapshot == null) {
+            throw new VngNotFoundException();
+        }
+        projectService.checkProjectEditPermission(repo, houseblockSnapshot.getProjectId(), loggedUser);
+
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             houseblockService.deleteHouseblock(repo, houseblockUuid, loggedUser.getUuid());
             transaction.commit();
@@ -135,14 +144,15 @@ public class HouseblockResource {
 
     @PUT
     @Path("/update")
-    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
+    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS, UserActionConstants.EDIT_ALL_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public HouseblockSnapshotModel updateHouseblock(@Context LoggedUser loggedUser, HouseblockSnapshotModel houseblockModelToUpdate)
-        throws VngNotFoundException, VngBadRequestException {
+        throws VngNotFoundException, VngBadRequestException, VngNotAllowedException {
 
         UUID houseblockUuid = houseblockModelToUpdate.getHouseblockId();
         HouseblockSnapshotModel houseblockCurrentValues = houseblockService.getHouseblockSnapshot(repo, houseblockUuid);
+        projectService.checkProjectEditPermission(repo, houseblockCurrentValues.getProjectId(), loggedUser);
 
         List<HouseblockUpdateModel> houseblockUpdateModelList = new ArrayList<>();
         for (HouseblockUpdateModel.HouseblockProperty blockProperty : HouseblockUpdateModel.HouseblockProperty.values()) {
@@ -334,12 +344,12 @@ public class HouseblockResource {
 
     @PUT
     @Path("/{id}/customproperties")
-    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
+    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS, UserActionConstants.EDIT_ALL_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<ProjectHouseblockCustomPropertyModel> updateProjectCustomProperty(@Context LoggedUser loggedUser, @PathParam("id") UUID houseblockUuid,
+    public List<ProjectHouseblockCustomPropertyModel> updateHouseblockCustomProperty(@Context LoggedUser loggedUser, @PathParam("id") UUID houseblockUuid,
                                                                                   ProjectHouseblockCustomPropertyModel houseblockCPUpdateModel)
-        throws VngNotFoundException, VngBadRequestException, VngServerErrorException {
+        throws VngNotFoundException, VngBadRequestException, VngServerErrorException, VngNotAllowedException {
 
         PropertyModel dbCP = propertiesService.getProperty(repo, houseblockCPUpdateModel.getCustomPropertyId());
         if (dbCP == null || !dbCP.getObjectType().equals(ObjectType.WONINGBLOK)) {
@@ -348,6 +358,8 @@ public class HouseblockResource {
         if (dbCP.getDisabled() == Boolean.TRUE) {
             throw new VngBadRequestException("Custom property is disabled.");
         }
+        HouseblockSnapshotModel houseblockSnaphot = houseblockService.getHouseblockSnapshot(repo, houseblockUuid);
+        projectService.checkProjectEditPermission(repo, houseblockSnaphot.getProjectId(), loggedUser);
 
         LocalDate updateDate = LocalDate.now();
 

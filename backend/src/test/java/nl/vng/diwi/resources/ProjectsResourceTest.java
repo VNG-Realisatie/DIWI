@@ -18,6 +18,7 @@ import nl.vng.diwi.dal.entities.UserToUserGroup;
 import nl.vng.diwi.models.MilestoneModel;
 import nl.vng.diwi.models.ProjectSnapshotModel;
 import nl.vng.diwi.rest.VngBadRequestException;
+import nl.vng.diwi.rest.VngNotAllowedException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
@@ -76,7 +77,7 @@ public class ProjectsResourceTest {
     }
 
     @Test
-    void updateProjectSnapshotTest_currentProject() throws VngNotFoundException, VngServerErrorException, VngBadRequestException {
+    void updateProjectSnapshotTest_currentProject() throws VngNotFoundException, VngServerErrorException, VngBadRequestException, VngNotAllowedException {
 
         UUID userUuid;
         UUID projectUuid;
@@ -153,7 +154,7 @@ public class ProjectsResourceTest {
 
 
     @Test
-    void updateProjectSnapshotTest_futureProject() throws VngNotFoundException, VngServerErrorException, VngBadRequestException {
+    void updateProjectSnapshotTest_futureProject() throws VngNotFoundException, VngServerErrorException, VngBadRequestException, VngNotAllowedException {
 
         UUID userUuid;
         UUID projectUuid;

@@ -15,7 +15,7 @@ public enum UserRole {
         UserAction.EDIT_CONFIG,
         UserAction.CHANGE_PROJECT_OWNER)),
 
-    // Currently has everything! 
+    // Currently has everything!
     UserPlus(List.of(
             UserAction.VIEW_API,
             UserAction.VIEW_USERS,
@@ -30,6 +30,7 @@ public enum UserRole {
             UserAction.VIEW_OTHERS_PROJECTS,
             UserAction.VIEW_OWN_PROJECTS,
             UserAction.EDIT_OWN_PROJECTS,
+            UserAction.EDIT_ALL_PROJECTS,
             UserAction.CREATE_NEW_PROJECT,
             UserAction.IMPORT_PROJECTS,
             UserAction.EXPORT_PROJECTS)),

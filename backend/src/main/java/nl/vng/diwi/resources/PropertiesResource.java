@@ -71,7 +71,7 @@ public class PropertiesResource {
     }
 
     @POST
-    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
+    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS, UserActionConstants.EDIT_ALL_PROJECTS})
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public PropertyModel createCustomProperty(PropertyModel propertyModel, @Context LoggedUser loggedUser) throws VngBadRequestException {
@@ -96,7 +96,7 @@ public class PropertiesResource {
 
     @PUT
     @Path("/{id}")
-    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
+    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS, UserActionConstants.EDIT_ALL_PROJECTS})
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public PropertyModel updateProperty(@PathParam("id") UUID customPropertyUuid, @Context LoggedUser loggedUser,
@@ -120,7 +120,7 @@ public class PropertiesResource {
 
     @DELETE
     @Path("/{id}")
-    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
+    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS, UserActionConstants.EDIT_ALL_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
     public PropertyModel disableCustomProperty(@PathParam("id") UUID customPropertyUuid, ContainerRequestContext requestContext)
         throws VngNotFoundException {
