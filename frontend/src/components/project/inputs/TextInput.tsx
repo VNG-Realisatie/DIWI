@@ -1,5 +1,6 @@
 import { TextField } from "@mui/material";
 import InputLabelStack from "./InputLabelStack";
+import { validateEmail } from "../../../utils/emailValidation";
 
 type Props = {
     value: string;
@@ -20,8 +21,7 @@ const shouldDisplayError = (mandatory: boolean, value: string, type: string) => 
     }
 
     if (type === "email") {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(value)) {
+        if (!validateEmail(value)) {
             return true;
         }
     }
