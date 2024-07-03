@@ -14,6 +14,12 @@ This release is focused on dashboards.
 
 - updated the sidebar with the new page
 
+### FIXED
+
+- fixed an issue where after saving certain categorical properties and moving on to anpother categorical property, the categories for the previous property would show
+- there was an error with editing ordinal properties
+- some fixed properties were not yet translated into Dutch in the edit dialog
+
 ## DIWI RELEASE 1.4.0
 
 This release is focused on user management and project confidentiality. The user type and the project ownership and confidentialty now decide what projects are visible to a user and who can change a project.
