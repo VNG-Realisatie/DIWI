@@ -10,6 +10,8 @@ import { DeleteButtonWithConfirm } from "../components/DeleteButtonWithConfirm";
 import { deleteProject } from "../api/projectsServices";
 import { useNavigate } from "react-router-dom";
 import useAllowedActions from "../hooks/useAllowedActions";
+import { CreateHouseBlockDialog } from "../components/project/project-with-house-block/CreateHouseBlockDialog";
+import { HouseBlocksList } from "../components/project/project-with-house-block/HouseBlocksList";
 
 const ProjectColorContext = createContext({
     selectedProjectColor: "",
@@ -23,7 +25,7 @@ export const ProjectDetail = ({ children }: PropsWithChildren) => {
     const navigate = useNavigate();
     const [selectedProjectColor, setSelectedProjectColor] = useState<string>("");
     const allowedActions = useAllowedActions();
-
+    const [openHouseBlockDialog, setOpenHouseBlockDialog] = useState(false);
     return (
         <Stack direction="column" justifyContent="space-between" position="relative" border="solid 1px #ddd" mb={10}>
             <BreadcrumbBar
@@ -67,6 +69,8 @@ export const ProjectDetail = ({ children }: PropsWithChildren) => {
                     </ProjectColorContext.Provider>
                 </AccordionDetails>
             </Accordion>
+            <CreateHouseBlockDialog openHouseBlockDialog={openHouseBlockDialog} setOpenHouseBlockDialog={setOpenHouseBlockDialog} />
+            <HouseBlocksList setOpenHouseBlockDialog={setOpenHouseBlockDialog} />
         </Stack>
     );
 };
