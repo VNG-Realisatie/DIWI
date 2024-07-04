@@ -34,7 +34,7 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
     const [displayedName, setDisplayedName] = useState<string>("");
     const [categories, setCategories] = useState<CategoryType[]>([]);
     const [ordinals, setOrdinalCategories] = useState<OrdinalCategoryType[]>([]);
-    const [propertyDuplicationInfo, setPropertyDuplicationInfo] = useState<{ duplicatedStatus: boolean; duplicatedNames: string }>();
+    const [propertyDuplicationInfo, setPropertyDuplicationInfo] = useState<{ duplicatedStatus: boolean; duplicatedName: string }>();
     const { setAlert } = useContext(AlertContext);
     const { t } = useTranslation();
     const [activeProperty, setActiveProperty] = useState<Property>();
@@ -125,9 +125,14 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
     };
 
     useEffect(() => {
-        const duplicated = getDuplicatedPropertyInfo(categories) || getDuplicatedPropertyInfo(ordinals);
+        const duplicated = getDuplicatedPropertyInfo(categories);
         setPropertyDuplicationInfo(duplicated);
-    }, [categories, ordinals]);
+    }, [categories]);
+
+    useEffect(() => {
+        const duplicated = getDuplicatedPropertyInfo(ordinals);
+        setPropertyDuplicationInfo(duplicated);
+    }, [ordinals]);
 
     return (
         <Dialog open={openDialog} onClose={handleClose} fullWidth>
@@ -197,7 +202,7 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
                         />
                     )}
                     {propertyDuplicationInfo?.duplicatedStatus && (
-                        <Alert severity="error">{propertyDuplicationInfo?.duplicatedNames + " " + t("admin.settings.duplicatedOption")}</Alert>
+                        <Alert severity="error">{propertyDuplicationInfo?.duplicatedName + " " + t("admin.settings.duplicatedOption")}</Alert>
                     )}
                 </Stack>
             </DialogContent>

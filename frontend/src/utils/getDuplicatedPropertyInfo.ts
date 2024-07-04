@@ -9,10 +9,11 @@ export const getDuplicatedPropertyInfo = (list: CategoryType[]) => {
     }, {});
     //@ts-expect-error reduce function
     const duplicatedNames = Object.keys(nameCounts).filter((name) => nameCounts[name] > 1);
+    // Duplicated name for now returns multiname to avoid multi options type error it will be updated later with single.
     const duplicatedNameString = duplicatedNames.join("");
 
     return {
         duplicatedStatus: duplicatedNames.length > 0,
-        duplicatedNames: duplicatedNameString,
+        duplicatedName: duplicatedNameString,
     };
 };
