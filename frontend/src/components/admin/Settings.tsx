@@ -23,8 +23,6 @@ export const Settings = () => {
         getCustomProperties().then((customProperties) => setCustomProperties(customProperties));
     }, []);
 
-    console.log(customProperties);
-
     return (
         <Stack mt={2} mb={5} mx={2} pb={3}>
             <Typography fontWeight={600}>{t("admin.settings.title")}</Typography>
