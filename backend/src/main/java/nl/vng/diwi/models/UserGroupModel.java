@@ -29,7 +29,9 @@ public class UserGroupModel {
         Map<UUID, UserGroupModel> userGroupUsersMap = new HashMap<>();
         for (UserGroupUserModel userGroupUserModel : userGroupUserList) {
             if (userGroupUsersMap.containsKey(userGroupUserModel.getUserGroupUuid())) {
-                userGroupUsersMap.get(userGroupUserModel.getUserGroupUuid()).getUsers().add(userGroupUserModel);
+                if (userGroupUserModel.getUuid() != null) {
+                    userGroupUsersMap.get(userGroupUserModel.getUserGroupUuid()).getUsers().add(userGroupUserModel);
+                }
             } else {
                 UserGroupModel userGroupModel = new UserGroupModel();
                 userGroupModel.setUuid(userGroupUserModel.getUserGroupUuid());
