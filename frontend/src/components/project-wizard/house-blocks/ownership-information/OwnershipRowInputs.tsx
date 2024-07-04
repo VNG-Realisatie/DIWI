@@ -91,12 +91,6 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                     ownership={ownership}
                     isOwnerShipValueAndMutationConsistent={isOwnerShipValueAndMutationConsistent}
                 />
-
-                {/* {readOnly && (
-                    <InputContainer>
-                        <Typography>{ownership?.amount}</Typography>
-                    </InputContainer>
-                )} */}
             </Grid>
             <Grid item xs={3} className="ownership-house-value">
                 <RangeNumberInput
