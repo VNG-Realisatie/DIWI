@@ -58,8 +58,8 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
 
         if (sqlModel.getOwnershipValueList() != null) {
             sqlModel.getOwnershipValueList().forEach(oSql -> this.ownershipValue.add(new OwnershipValue(oSql.getOwnershipId(), oSql.getOwnershipType(), oSql.getOwnershipAmount(),
-                new SingleValueOrRangeModel<>(oSql.getOwnershipValue(), oSql.getOwnershipValueRangeMin(), oSql.getOwnershipValueRangeMax()),
-                new SingleValueOrRangeModel<>(oSql.getOwnershipRentalValue(), oSql.getOwnershipRentalValueRangeMin(), oSql.getOwnershipRentalValueRangeMax()))));
+                new SingleValueOrRangeModel<>(oSql.getOwnershipValue(), oSql.getOwnershipValueRangeMin(), oSql.getOwnershipValueRangeMax()), oSql.getOwnershipRangeCategoryId(),
+                new SingleValueOrRangeModel<>(oSql.getOwnershipRentalValue(), oSql.getOwnershipRentalValueRangeMin(), oSql.getOwnershipRentalValueRangeMax()), oSql.getOwnershipRentalRangeCategoryId())));
         }
 
         this.groundPosition.setFormalPermissionOwner(sqlModel.getFormalPermissionOwner());
@@ -130,6 +130,36 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
             }
         }
 
+        if (ownershipValue != null) {
+            for (OwnershipValue ov : ownershipValue) {
+                int nonNullValues = 0;
+                if (ov.getValueCategoryId() != null) {
+                    nonNullValues++;
+                }
+                if (ov.getRentalValueCategoryId() != null) {
+                    nonNullValues++;
+                }
+                if (ov.getValue() != null) {
+                    if (ov.getValue().getValue() != null) {
+                        nonNullValues++;
+                    }
+                    if (ov.getValue().getMin() != null) {
+                        nonNullValues++;
+                    }
+                }
+                if (ov.getRentalValue() != null) {
+                    if (ov.getRentalValue().getValue() != null) {
+                        nonNullValues++;
+                    }
+                    if (ov.getRentalValue().getMin() != null) {
+                        nonNullValues++;
+                    }
+                }
+                if (nonNullValues != 1) {
+                    return "Ownership value can have only one value set out of single value, range, range category for either ownership or rental.";
+                }
+            }
+        }
         if (groundPosition != null && groundPosition.getNoPermissionOwner() == null &&
             groundPosition.getIntentionPermissionOwner() == null && groundPosition.getFormalPermissionOwner() == null) {
             //ground position info is not present
@@ -172,7 +202,9 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
         private OwnershipType type;
         private Integer amount;
         private SingleValueOrRangeModel<Integer> value = new SingleValueOrRangeModel<>();
+        private UUID valueCategoryId;
         private SingleValueOrRangeModel<Integer> rentalValue = new SingleValueOrRangeModel<>();
+        private UUID rentalValueCategoryId;
     }
 
     @Getter

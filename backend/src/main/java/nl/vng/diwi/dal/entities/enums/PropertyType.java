@@ -6,5 +6,6 @@ public enum PropertyType {
     CATEGORY,
     ORDINAL,
     NUMERIC,
-    TEXT;
+    TEXT,
+    RANGE_CATEGORY;
 }
