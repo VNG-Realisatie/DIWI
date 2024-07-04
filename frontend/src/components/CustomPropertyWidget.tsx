@@ -53,7 +53,7 @@ export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, cu
                 }}
                 options={customDefinition.categories || []}
                 getOptionLabel={(option) => option?.name || ""}
-                value={values}
+                value={values ? values : []}
                 multiple
                 onChange={(_, newValue) => setCustomValue({ ...customValue, categories: newValue.map((c) => c?.id as string) })}
                 renderInput={(params) => <TextField {...params} size="small" />}

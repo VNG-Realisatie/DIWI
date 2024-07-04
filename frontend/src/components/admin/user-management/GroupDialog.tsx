@@ -16,7 +16,7 @@ type GroupDialogProps = {
 };
 
 const GroupDialog = ({ open, onClose, newGroup, setNewGroup, handleAddGroup, users, title }: GroupDialogProps) => {
-    console.log(users);
+    const isFormInvalid = !newGroup.name || newGroup.users.length === 0;
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
             <DialogTitle>{title}</DialogTitle>
@@ -69,7 +69,7 @@ const GroupDialog = ({ open, onClose, newGroup, setNewGroup, handleAddGroup, use
                     >
                         {t("generic.cancel")}
                     </Button>
-                    <Button onClick={handleAddGroup} variant="contained">
+                    <Button onClick={handleAddGroup} variant="contained" disabled={isFormInvalid}>
                         {t("generic.save")}
                     </Button>
                 </Box>

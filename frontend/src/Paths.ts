@@ -26,6 +26,7 @@ export const projectDetailTimeline = createPathObject<ProjectId>(config.baseurl 
 export const policygoal = createPathObject(config.baseurl + "policygoal");
 export const policygoalDashboard = createPathObject(config.baseurl + "policygoal/dashboard");
 export const dashboard = createPathObject(config.baseurl + "dashboard");
+export const dashboardProject = createPathObject(config.baseurl + "dashboard/project/:projectId");
 export const wizard = createPathObject(config.baseurl + "admin/wizard");
 export const exchangedata = createPathObject(config.baseurl + "exchangedata");
 export const exportExcel = createPathObject(config.baseurl + "exchangedata/exportexcel");
