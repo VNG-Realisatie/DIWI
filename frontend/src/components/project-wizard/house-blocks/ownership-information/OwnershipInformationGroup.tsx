@@ -4,7 +4,6 @@ import { t } from "i18next";
 import { HouseBlock, OwnershipSingleValue } from "../../../../types/houseBlockTypes";
 import AddIcon from "@mui/icons-material/Add";
 import { OwnershipRowInputs } from "./OwnershipRowInputs";
-import { TooltipInfo } from "../../../../widgets/TooltipInfo";
 import { useCallback } from "react";
 
 export type OwnershipInformationProps = {
