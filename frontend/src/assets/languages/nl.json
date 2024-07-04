@@ -529,6 +529,7 @@
       },
       "settings": {
         "title": "Lijst met maatwerk velden",
+        "duplicatedOption": "is een dubbele optie",
         "tableHeader": {
           "name": "Naam",
           "objectType": "Project of woningblok",
