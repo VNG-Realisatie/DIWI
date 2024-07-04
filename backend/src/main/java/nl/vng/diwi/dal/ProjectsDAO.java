@@ -4,21 +4,26 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-import nl.vng.diwi.dal.entities.Project;
-import nl.vng.diwi.dal.entities.ProjectHouseblockCustomPropertySqlModel;
-import nl.vng.diwi.dal.entities.ProjectState;
-import nl.vng.diwi.dal.entities.ProjectListSqlModel;
-import nl.vng.diwi.security.LoggedUser;
 import org.hibernate.Session;
 import org.hibernate.query.SelectionQuery;
 
-import jakarta.annotation.Nullable;
+import com.fasterxml.jackson.core.type.TypeReference;
 
+import jakarta.annotation.Nullable;
 import lombok.NonNull;
+import nl.vng.diwi.dal.entities.MultiProjectDashboardSqlModel;
+import nl.vng.diwi.dal.entities.Project;
+import nl.vng.diwi.dal.entities.ProjectDashboardSqlModel;
+import nl.vng.diwi.dal.entities.ProjectHouseblockCustomPropertySqlModel;
+import nl.vng.diwi.dal.entities.ProjectListSqlModel;
+import nl.vng.diwi.dal.entities.ProjectState;
+import nl.vng.diwi.generic.Json;
+import nl.vng.diwi.models.PieChartModel;
+import nl.vng.diwi.security.LoggedUser;
 
 public class ProjectsDAO extends AbstractRepository {
 
-    public ProjectsDAO (Session session) {
+    public ProjectsDAO(Session session) {
         super(session);
     }
 
@@ -34,12 +39,13 @@ public class ProjectsDAO extends AbstractRepository {
 
     public ProjectListSqlModel getProjectByUuid(UUID projectUuid, LoggedUser loggedUser) {
         SelectionQuery<ProjectListSqlModel> q = session.createNativeQuery(String.format(
-                "SELECT * FROM %s.get_active_or_future_project_snapshot(:projectUuid, :now, :userRole, :userUuid) ", GenericRepository.VNG_SCHEMA_NAME),
+                "SELECT * FROM %s.get_active_or_future_project_snapshot(:projectUuid, :now, :userRole, :userUuid) ",
+                GenericRepository.VNG_SCHEMA_NAME),
                 ProjectListSqlModel.class)
-            .setParameter("now", LocalDate.now())
-            .setParameter("projectUuid", projectUuid)
-            .setParameter("userRole", loggedUser.getRole().name())
-            .setParameter("userUuid", loggedUser.getUuid());
+                .setParameter("now", LocalDate.now())
+                .setParameter("projectUuid", projectUuid)
+                .setParameter("userRole", loggedUser.getRole().name())
+                .setParameter("userUuid", loggedUser.getUuid());
         ProjectListSqlModel result = q.getSingleResultOrNull();
         if (result != null) {
             session.evict(result);
@@ -47,14 +53,14 @@ public class ProjectsDAO extends AbstractRepository {
         return result;
     }
 
-
     public List<ProjectHouseblockCustomPropertySqlModel> getProjectCustomProperties(UUID projectUuid) {
         List<ProjectHouseblockCustomPropertySqlModel> result = session.createNativeQuery(String.format(
-                "SELECT * FROM %s.get_active_or_future_project_custom_properties(:projectUuid, :now) ", GenericRepository.VNG_SCHEMA_NAME),
+                "SELECT * FROM %s.get_active_or_future_project_custom_properties(:projectUuid, :now) ",
+                GenericRepository.VNG_SCHEMA_NAME),
                 ProjectHouseblockCustomPropertySqlModel.class)
-            .setParameter("now", LocalDate.now())
-            .setParameter("projectUuid", projectUuid)
-            .list();
+                .setParameter("now", LocalDate.now())
+                .setParameter("projectUuid", projectUuid)
+                .list();
 
         return result;
     }
@@ -62,45 +68,88 @@ public class ProjectsDAO extends AbstractRepository {
     public List<ProjectListSqlModel> getProjectsTable(FilterPaginationSorting filtering, LoggedUser loggedUser) {
         SelectionQuery<ProjectListSqlModel> q = session.createNativeQuery(String.format("""
                 SELECT * FROM %s.get_active_and_future_projects_list(:now, :offset, :limit, :sortColumn, :sortDirection,
-                    :filterColumn, CAST(:filterValue AS text[]), :filterCondition, :userRole, :userUuid) """, GenericRepository.VNG_SCHEMA_NAME) , ProjectListSqlModel.class)
-            .setParameter("now", LocalDate.now())
-            .setParameter("offset", filtering.getFirstResultIndex())
-            .setParameter("limit", filtering.getPageSize())
-            .setParameter("sortColumn", filtering.getSortColumn())
-            .setParameter("sortDirection", filtering.getSortDirection().name())
-            .setParameter("filterColumn", filtering.getFilterColumn())
-            .setParameter("filterValue", filtering.getFilterColumn() == null ? null :fromJavaListToSqlArrayLiteral(filtering.getFilterValue()))
-            .setParameter("filterCondition", filtering.getFilterColumn() == null ? null : filtering.getFilterCondition().name())
-            .setParameter("userRole", loggedUser.getRole().name())
-            .setParameter("userUuid", loggedUser.getUuid());
+                    :filterColumn, CAST(:filterValue AS text[]), :filterCondition, :userRole, :userUuid) """,
+                GenericRepository.VNG_SCHEMA_NAME), ProjectListSqlModel.class)
+                .setParameter("now", LocalDate.now())
+                .setParameter("offset", filtering.getFirstResultIndex())
+                .setParameter("limit", filtering.getPageSize())
+                .setParameter("sortColumn", filtering.getSortColumn())
+                .setParameter("sortDirection", filtering.getSortDirection().name())
+                .setParameter("filterColumn", filtering.getFilterColumn())
+                .setParameter("filterValue",
+                        filtering.getFilterColumn() == null ? null
+                                : fromJavaListToSqlArrayLiteral(filtering.getFilterValue()))
+                .setParameter("filterCondition",
+                        filtering.getFilterColumn() == null ? null : filtering.getFilterCondition().name())
+                .setParameter("userRole", loggedUser.getRole().name())
+                .setParameter("userUuid", loggedUser.getUuid());
 
         return q.getResultList();
     }
 
     public Integer getProjectsTableCount(FilterPaginationSorting filtering, LoggedUser loggedUser) {
-        return session.createNativeQuery(String.format("""
-                SELECT COUNT(*) FROM %s.get_active_and_future_projects_list(:now, :offset, :limit, :sortColumn, :sortDirection,
-                :filterColumn, CAST(:filterValue AS text[]), :filterCondition, :userRole, :userUuid) """, GenericRepository.VNG_SCHEMA_NAME), Integer.class)
-            .setParameter("now", LocalDate.now())
-            .setParameter("offset", 0)
-            .setParameter("limit", Integer.MAX_VALUE)
-            .setParameter("sortColumn", null)
-            .setParameter("sortDirection", null)
-            .setParameter("filterColumn", filtering.getFilterColumn())
-            .setParameter("filterValue", filtering.getFilterColumn() == null ? null : fromJavaListToSqlArrayLiteral(filtering.getFilterValue()))
-            .setParameter("filterCondition", filtering.getFilterColumn() == null ? null :filtering.getFilterCondition().name())
-            .setParameter("userRole", loggedUser.getRole().name())
-            .setParameter("userUuid", loggedUser.getUuid())
-            .uniqueResult();
+        return session.createNativeQuery(String.format(
+                """
+                        SELECT COUNT(*) FROM %s.get_active_and_future_projects_list(:now, :offset, :limit, :sortColumn, :sortDirection,
+                        :filterColumn, CAST(:filterValue AS text[]), :filterCondition, :userRole, :userUuid) """,
+                GenericRepository.VNG_SCHEMA_NAME), Integer.class)
+                .setParameter("now", LocalDate.now())
+                .setParameter("offset", 0)
+                .setParameter("limit", Integer.MAX_VALUE)
+                .setParameter("sortColumn", null)
+                .setParameter("sortDirection", null)
+                .setParameter("filterColumn", filtering.getFilterColumn())
+                .setParameter("filterValue",
+                        filtering.getFilterColumn() == null ? null
+                                : fromJavaListToSqlArrayLiteral(filtering.getFilterValue()))
+                .setParameter("filterCondition",
+                        filtering.getFilterColumn() == null ? null : filtering.getFilterCondition().name())
+                .setParameter("userRole", loggedUser.getRole().name())
+                .setParameter("userUuid", loggedUser.getUuid())
+                .uniqueResult();
     }
 
     public ProjectState getCurrentProjectState(UUID projectUuid) {
         session.enableFilter(GenericRepository.CURRENT_DATA_FILTER);
         String statement = "FROM ProjectState ps WHERE ps.project.id = :projectUuid";
         SelectionQuery<ProjectState> query = session
-            .createSelectionQuery(statement, ProjectState.class)
-            .setParameter("projectUuid", projectUuid);
+                .createSelectionQuery(statement, ProjectState.class)
+                .setParameter("projectUuid", projectUuid);
         return query.getSingleResultOrNull();
     }
 
+    public ProjectDashboardSqlModel getProjectDashboardSnapshot(UUID projectUuid, LocalDate snapshotDate,
+            LoggedUser loggedUser) {
+        return session.createNativeQuery(String.format(
+                "SELECT * FROM %s.get_project_dashboard_snapshot(:projectUuid, :snapshotDate, :userRole, :userUuid) ",
+                GenericRepository.VNG_SCHEMA_NAME),
+                ProjectDashboardSqlModel.class)
+                .setParameter("projectUuid", projectUuid)
+                .setParameter("snapshotDate", snapshotDate)
+                .setParameter("userRole", loggedUser.getRole().name())
+                .setParameter("userUuid", loggedUser.getUuid())
+                .getSingleResultOrNull();
+    }
+
+    public MultiProjectDashboardSqlModel getMultiProjectDashboardSnapshot(LocalDate snapshotDate,
+            LoggedUser loggedUser) {
+        return session.createNativeQuery(String.format(
+                "SELECT * FROM %s.get_multi_project_dashboard_snapshot(:snapshotDate, :userRole, :userUuid) ",
+                GenericRepository.VNG_SCHEMA_NAME),
+                MultiProjectDashboardSqlModel.class)
+                .setParameter("snapshotDate", snapshotDate)
+                .setParameter("userRole", loggedUser.getRole().name())
+                .setParameter("userUuid", loggedUser.getUuid())
+                .setTupleTransformer((tuple, aliases) -> {
+                    try {
+                        MultiProjectDashboardSqlModel model = new MultiProjectDashboardSqlModel();
+                        model.setPhysicalAppearance(Json.mapper.readValue((String)tuple[0], new TypeReference<List<PieChartModel>>() { }));
+                        model.setTargetGroup(Json.mapper.readValue((String)tuple[1], new TypeReference<List<PieChartModel>>() { }));
+                        return model;
+                    } catch (Exception e) {
+                        throw new RuntimeException();
+                    }
+                })
+                .getSingleResultOrNull();
+    }
 }

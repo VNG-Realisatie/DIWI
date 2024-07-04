@@ -36,15 +36,6 @@ export const UserGroupSelect = ({ readOnly, userGroup, setUserGroup, mandatory, 
             multiple
             size="small"
             disabled={readOnly}
-            sx={{
-                "& .MuiInputBase-input.Mui-disabled": {
-                    backgroundColor: "#0000", // set 0 opacity when disabled
-                },
-                "& .MuiOutlinedInput-root.MuiInputBase-sizeSmall": {
-                    paddingBottom: "3px",
-                    paddingTop: "3px",
-                },
-            }}
             options={ownerOptions ? ownerOptions : []}
             getOptionLabel={(option) => {
                 return (

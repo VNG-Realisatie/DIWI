@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useCallback, useContext, useEffect, useState } from "react";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, InputLabel, MenuItem, Select, Stack, TextField, Tooltip } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
 import { useTranslation } from "react-i18next";
@@ -22,69 +22,108 @@ interface Props {
     setOpenDialog: (openDialog: boolean) => void;
     id?: string;
     setCustomProperties: (cp: Property[]) => void;
+    setId?: (id: string) => void;
 }
 
-const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCustomProperties }) => {
+const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCustomProperties, setId }) => {
     const [selectedObjectType, setSelectedObjectType] = useState<ObjectType>("PROJECT");
     const [selectedPropertyType, setSelectedPropertyType] = useState<PropertyType>("TEXT");
     const [active, setActive] = useState(false);
-    const [name, setName] = useState<string>("");
+    const [untranslatedName, setUntranslatedName] = useState<string>("");
+    const [displayedName, setDisplayedName] = useState<string>("");
     const [categories, setCategories] = useState<CategoryType[]>([]);
     const [ordinals, setOrdinalCategories] = useState<OrdinalCategoryType[]>([]);
+    const [activeProperty, setActiveProperty] = useState<Property>();
     const { setAlert } = useContext(AlertContext);
     const { t } = useTranslation();
 
-    const updateDialog = (property: Property): void => {
-        setName(property.name);
-        property.categories && setCategories(property.categories);
-        property.ordinals && setOrdinalCategories(property.ordinals);
-        setActive(property.disabled);
-        setSelectedObjectType(property.objectType);
-        setSelectedPropertyType(property.propertyType);
-    };
+    const updateDialog = useCallback(
+        (property: Property): void => {
+            setActiveProperty(property);
+            setUntranslatedName(property.name);
+            if (property.type === "FIXED") {
+                setDisplayedName(t(`admin.settings.fixedPropertyType.${property.name}`));
+            } else {
+                setDisplayedName(property.name);
+            }
+            property.categories && setCategories(property.categories);
+            property.ordinals && setOrdinalCategories(property.ordinals);
+            setActive(property.disabled);
+            setSelectedObjectType(property.objectType);
+            setSelectedPropertyType(property.propertyType);
+        },
+        [
+            setActiveProperty,
+            setUntranslatedName,
+            setDisplayedName,
+            setCategories,
+            setOrdinalCategories,
+            setActive,
+            setSelectedObjectType,
+            setSelectedPropertyType,
+            t,
+        ],
+    );
 
     useEffect(() => {
         if (id) {
             getCustomProperty(id).then(updateDialog);
         }
-    }, [id]);
+    }, [id, updateDialog]);
+
+    const clearFields = () => {
+        setDisplayedName("");
+        setUntranslatedName("");
+        setCategories([]);
+        setOrdinalCategories([]);
+        setSelectedObjectType("PROJECT");
+        setSelectedPropertyType("TEXT");
+    };
+
+    const handleClose = () => {
+        setId && setId("");
+        clearFields();
+        setOpenDialog(false);
+    };
+
+    const saveAction = async (newProperty: Property) => {
+        try {
+            if (!id) {
+                clearFields();
+                setActive(false);
+            }
+            const savedProperty = await (id ? updateCustomProperty(id, newProperty) : addCustomProperty(newProperty));
+            setAlert(t("admin.settings.notifications.successfullySaved"), "success");
+            updateDialog(savedProperty);
+            const customProperties = await getCustomProperties();
+            setCustomProperties(customProperties);
+        } catch (error: unknown) {
+            if (error instanceof Error) setAlert(error.message, "warning");
+        } finally {
+            handleClose();
+        }
+    };
 
     const handleSave = () => {
         const newProperty: Property = {
             id,
-            name,
+            name: untranslatedName,
             type: "CUSTOM",
             objectType: selectedObjectType,
             propertyType: selectedPropertyType,
             disabled: active,
             categories: selectedPropertyType === "CATEGORY" && categories !== null ? categories : undefined,
-            ordinals: selectedPropertyType === "ORDINAL" && ordinals !== null ? ordinals : undefined,
+            ordinals:
+                selectedPropertyType === "ORDINAL" && ordinals.length > 0
+                    ? ordinals.map(({ id, level, name, disabled }) => ({ id, level, name, disabled }))
+                    : undefined,
         };
 
-        const resetForm = () => {
-            setName("");
-            setSelectedObjectType("PROJECT");
-            setSelectedPropertyType("TEXT");
-            setActive(false);
-            setCategories([]);
-            setOrdinalCategories([]);
-        };
-
-        const saveAction = id ? updateCustomProperty(id, newProperty) : addCustomProperty(newProperty);
-        saveAction
-            .then((savedProperty) => {
-                setAlert(t("admin.settings.notifications.successfullySaved"), "success");
-                updateDialog(savedProperty);
-                getCustomProperties().then((customProperties) => setCustomProperties(customProperties));
-                setOpenDialog(false);
-
-                if (!id) resetForm();
-            })
-            .catch((error) => setAlert(error.message, "warning"));
+        saveAction(newProperty);
     };
 
     return (
-        <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth>
+        <Dialog open={openDialog} onClose={handleClose} fullWidth>
             <DialogTitle id="alert-dialog-title">{id ? t("admin.settings.edit") : t("admin.settings.add")}</DialogTitle>
             <DialogContent>
                 <Stack spacing={1.5}>
@@ -94,8 +133,12 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
                     <TextField
                         size="small"
                         label={t("admin.settings.tableHeader.name")}
-                        value={name}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+                        value={displayedName}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                            setDisplayedName(e.target.value);
+                            setUntranslatedName(e.target.value);
+                        }}
+                        disabled={activeProperty?.type === "FIXED"}
                     />
                     <InputLabel variant="standard" id="objectType">
                         {t("admin.settings.tableHeader.objectType")}
@@ -148,7 +191,7 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
                 </Stack>
             </DialogContent>
             <DialogActions>
-                <Button variant="contained" color="error" onClick={() => setOpenDialog(false)}>
+                <Button variant="contained" color="error" onClick={handleClose}>
                     {t("generic.cancel")}
                 </Button>
                 <Button variant="contained" color="success" onClick={handleSave} autoFocus>

@@ -256,7 +256,7 @@
         "amount": "Aantal ontbreekt",
         "amountNotConsistent": "Het totaal aantal huizen in de sectie komt niet overeen met het mutatiebedrag",
         "hasmissingProperty": "Formulier heeft ontbrekende eigenschappen",
-        "owner": "Vul het veld shrijfrechten in"
+        "owner": "Vul het veld schrijfrechten in"
       }
     },
     "sidebar": {
@@ -336,6 +336,7 @@
         "squit": "Importeren vanuit Squit",
         "geojson": "Importeren vanuit GeoJSON"
       },
+
       "download": {
         "excel": "Download Excel template hier",
         "squit": "Download Excel template hier",
@@ -369,6 +370,49 @@
       "time": "Tijd",
       "geography": "Geografie",
       "category": "Categorie"
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "projectTitle": "Dashboard | Project",
+      "projects": "Dashboard projecten",
+      "municipalityProgram": "Woningbouwprogramma gemeente",
+      "selectProject": "Selecteer project",
+      "buy": "Koop",
+      "rent": "Huur",
+      "residentialProjects": "Woonproducten",
+      "deliverables": "Opleveringen",
+      "delayedProjects": "Vertraagde projecten",
+      "residentialFeatures": "Woonkenmerken (aantal woningen)",
+      "permitsGranted": "Verleende vergunningen",
+      "projectPhases": "Projectfases (aantal projecten)",
+      "targetAudiences": "Doelgroepen (aantal woningen)",
+      "characteristics": "Kenmerken",
+      "priceSegmentsPurchase": "Prijssegmenten koop %",
+      "priceSegmentsRent": "Prijssegmenten huur %",
+      "schedule": "Planning",
+      "upcomingMileStones": "Aankomende mijlpalen",
+      "totalValues": "Totaal aantallen",
+      "properties": {
+        "constructionAmount": "Aantal woningen",
+        "demolitionAmount": "Aantal sloop",
+        "netAmount": "Netto toevoegingen",
+        "projectTotalTime": "Looptijd project",
+        "projectPhase": "Projectfase",
+        "projectOwners": "Schrijfrechten",
+        "year": "jaar"
+      },
+      "projectPhaseOptions": {
+        "_1_CONCEPT": "Concept",
+        "_2_INITIATIVE": "Initiatief",
+        "_3_DEFINITION": "Definitie",
+        "_4_DESIGN": "Ontwerp",
+        "_5_PREPARATION": "Voorbereiding",
+        "_6_REALIZATION": "Realisatie",
+        "_7_AFTERCARE": "Nazorg"
+      },
+      "pieChart": {
+        "noData": "Geen data beschikbaar"
+      }
     },
     "projectTable": {
       "planningPlanStatus": {

@@ -42,11 +42,6 @@ const DateInput = ({ value, setValue, readOnly, mandatory, error, title, errorTe
                         helperText: errorMessage,
                     },
                 }}
-                sx={{
-                    "& .MuiInputBase-input.Mui-disabled": {
-                        backgroundColor: "#0000",
-                    },
-                }}
             />
         </InputLabelStack>
     );

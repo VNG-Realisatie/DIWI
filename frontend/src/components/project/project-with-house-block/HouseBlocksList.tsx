@@ -3,7 +3,7 @@ import { HouseBlockWithCustomProperties } from "../../../types/houseBlockTypes";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { AddHouseBlockButton } from "../../PlusButton";
 import { useTranslation } from "react-i18next";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import HouseBlockContext from "../../../context/HouseBlockContext";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
@@ -16,19 +16,31 @@ import { validateHouseBlock } from "../../HouseBlocksFormWithControls";
 import useAlert from "../../../hooks/useAlert";
 import { useCustomPropertyDefinitions } from "../../../hooks/useCustomPropertyDefinitions";
 import useAllowedActions from "../../../hooks/useAllowedActions";
+import { useLocation } from "react-router-dom";
 
 type Props = {
     setOpenHouseBlockDialog: (open: boolean) => void;
 };
 export const HouseBlocksList = ({ setOpenHouseBlockDialog }: Props) => {
     const { houseBlocks, refresh } = useContext(HouseBlockContext);
+    const [displayAddButton, setDisplayAddButton] = useState<boolean>(false);
+
+    const location = useLocation();
+    useEffect(() => {
+        if (location.pathname.includes("characteristics")) {
+            setDisplayAddButton(true);
+        } else {
+            setDisplayAddButton(false);
+        }
+    }, [location.pathname]);
 
     return (
-        <Grid container my={2}>
-            <AddHouseBlockButton onClick={() => setOpenHouseBlockDialog(true)} />
+        <Grid container mb={9}>
             {houseBlocks.sort(sortHouseBlocksByNameAndId).map((hb: HouseBlockWithCustomProperties) => (
                 <HouseBlockAccordionWithControls key={hb.houseblockId} houseBlock={hb} refresh={refresh} />
             ))}
+            {/* Ensure the button is not displayed when viewing the map */}
+            {displayAddButton && <AddHouseBlockButton onClick={() => setOpenHouseBlockDialog(true)} />}
         </Grid>
     );
 };
@@ -46,6 +58,8 @@ export const HouseBlockAccordionWithControls = ({ houseBlock, refresh }: HouseBl
     const { setAlert } = useAlert();
     const { targetGroupCategories, physicalAppearanceCategories } = useCustomPropertyDefinitions();
     const allowedActions = useAllowedActions();
+
+    const isDemolition = houseBlock.mutation.kind === "DEMOLITION";
 
     const handleSave = async () => {
         if (validateHouseBlock(newHouseBlock, setAlert)) {
@@ -94,7 +108,8 @@ export const HouseBlockAccordionWithControls = ({ houseBlock, refresh }: HouseBl
                 aria-controls="panel1-content"
                 id="panel1-header"
             >
-                {houseBlock.houseblockName}: {houseBlock.mutation.amount} {t("createProject.houseBlocksForm.housesOn")} {houseBlock.endDate}
+                {houseBlock.houseblockName}: {isDemolition ? `-${houseBlock.mutation.amount}` : houseBlock.mutation.amount}{" "}
+                {t("createProject.houseBlocksForm.housesOn")} {houseBlock.endDate}
                 <Stack>
                     {allowedActions.includes("EDIT_OWN_PROJECTS") && (
                         <>

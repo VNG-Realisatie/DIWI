@@ -19,6 +19,7 @@ import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.enums.ObjectType;
 import nl.vng.diwi.dal.entities.enums.PropertyKind;
+import nl.vng.diwi.dal.entities.enums.PropertyType;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
@@ -80,6 +81,10 @@ public class PropertiesResource {
             String validationError = propertyModel.validate();
             if (validationError != null) {
                 throw new VngBadRequestException(validationError);
+            }
+
+            if (propertyModel.getPropertyType().equals(PropertyType.RANGE_CATEGORY)) {
+                throw new VngBadRequestException("Range-category properties cannot be created. This type is reserved for fixed properties.");
             }
 
             UUID customPropertyUuid = propertiesService.createCustomProperty(repo, propertyModel, ZonedDateTime.now(), loggedUser.getUuid());
