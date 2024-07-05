@@ -25,6 +25,8 @@ export const HouseBlocksList = ({ setOpenHouseBlockDialog }: Props) => {
     const { houseBlocks, refresh } = useContext(HouseBlockContext);
     const [displayAddButton, setDisplayAddButton] = useState<boolean>(false);
 
+    console.log(houseBlocks);
+
     const location = useLocation();
     useEffect(() => {
         if (location.pathname.includes("characteristics")) {

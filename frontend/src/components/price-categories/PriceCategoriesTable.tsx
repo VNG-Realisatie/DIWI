@@ -5,33 +5,87 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import PriceCategoriesDialog from "./PriceCategoriesDialog";
-import { useState } from "react";
-import { Property } from "../../api/adminSettingServices";
-import { set } from "lodash";
+import { useContext, useEffect, useState } from "react";
+import { CategoryType, Property, updateCustomProperty } from "../../api/adminSettingServices";
 import DeleteDialog from "./DeleteDialog";
+import AlertContext from "../../context/AlertContext";
+import { getDuplicatedPropertyInfo } from "../../utils/getDuplicatedPropertyInfo";
 
-type Row = {
-    id?: string;
+type Category = {
+    id: string;
     name: string;
-    min: number;
-    max?: number;
+    min: number | null;
+    max: number | null;
     disabled: boolean;
 };
 
 type Props = {
-    row: Row[];
     property: Property;
     setRangeCategories: (rangeCategories: Property[]) => void;
 };
 
 const PriceCategoriesTable = ({ property, setRangeCategories }: Props) => {
-    const [categoryIdToDelete, setCategoryIdToDelete] = useState<string | null>(null);
-    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-
     if (!property) {
         return;
     }
+    const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [categoryToEdit, setCategoryToEdit] = useState<Category | null>(null);
+    const [rows, setRows] = useState<Category[]>([]);
+    const { setAlert } = useContext(AlertContext);
+    const [propertyDuplicationInfo, setPropertyDuplicationInfo] = useState<{ duplicatedStatus: boolean; duplicatedName: string }>();
+    const [categories, setCategories] = useState<CategoryType[]>([]);
+
+    useEffect(() => {
+        if (property.ranges) {
+            const rows = property.ranges.filter((range) => !range.disabled);
+            setRows(rows as Category[]);
+        }
+    }, [property.ranges]);
+
+    useEffect(() => {
+        if (!property.ranges) return;
+        const categories = property.ranges.map((range) => {
+            return {
+                id: range.id,
+                name: range.name,
+                disabled: range.disabled,
+            };
+        });
+        setCategories(categories);
+    });
+
+    useEffect(() => {
+        const duplicated = getDuplicatedPropertyInfo(categories);
+        setPropertyDuplicationInfo(duplicated);
+    }, [categories]);
+
+    const handleDelete = async () => {
+        if (!categoryToDelete || !property.id || !property.ranges) return;
+        const updatedRanges = property.ranges.map((range) => (range.id === categoryToDelete.id ? { ...range, disabled: true } : range));
+
+        const updatedProperty = {
+            ...property,
+            ranges: updatedRanges,
+        };
+
+        try {
+            const savedProperty = await updateCustomProperty(property.id, updatedProperty);
+            console.log(savedProperty);
+            setRangeCategories([savedProperty]);
+            setAlert(t("admin.priceCategories.successfullyDeleted"), "success");
+        } catch (error) {
+            if (error instanceof Error) setAlert(error.message, "error");
+        } finally {
+            closeDeleteDialog();
+        }
+    };
+
+    const closeDeleteDialog = () => {
+        setOpenDeleteDialog(false);
+        setCategoryToDelete(null);
+    };
     const columns = [
         {
             field: "name",
@@ -45,24 +99,31 @@ const PriceCategoriesTable = ({ property, setRangeCategories }: Props) => {
             flex: 4,
             renderCell: (params: GridCellParams) => (
                 <Box display="flex" alignItems="center" justifyContent="center" style={{ height: "100%" }} gap="10px">
-                    <Typography>{params.row.min}</Typography>
-                    {params.row.max && <Typography>- {params.row.max}</Typography>}
+                    <Typography>€{params.row.min}</Typography>
+                    {params.row.max && <Typography>- €{params.row.max}</Typography>}
                 </Box>
             ),
         },
         {
             field: "acties",
-            headerName: t("admin.userManagement.tableHeader.actions"),
+            headerName: t("admin.priceCategories.actions"),
             flex: 0.5,
             sortable: true,
             renderCell: (params: GridCellParams) => (
                 <Box display="flex" alignItems="center" justifyContent="center" style={{ height: "100%" }} gap="10px">
-                    <EditOutlinedIcon style={{ cursor: "pointer" }} color="primary" onClick={() => {}} />
+                    <EditOutlinedIcon
+                        style={{ cursor: "pointer" }}
+                        color="primary"
+                        onClick={() => {
+                            setCategoryToEdit(params.row);
+                            setDialogOpen(true);
+                        }}
+                    />
                     <DeleteForeverOutlinedIcon
                         style={{ cursor: "pointer" }}
                         color="error"
                         onClick={() => {
-                            setCategoryIdToDelete(params.row.id);
+                            setCategoryToDelete(params.row);
                             setOpenDeleteDialog(true);
                         }}
                     />
@@ -72,12 +133,9 @@ const PriceCategoriesTable = ({ property, setRangeCategories }: Props) => {
     ];
     return (
         <>
-            <Typography variant="h6" gutterBottom component="div">
-                {t("admin.userManagement.titleUser")}
-            </Typography>
             <DataGrid
                 autoHeight
-                rows={property.ranges || []}
+                rows={rows || []}
                 columns={columns}
                 initialState={{
                     pagination: {
@@ -90,14 +148,15 @@ const PriceCategoriesTable = ({ property, setRangeCategories }: Props) => {
             <Stack
                 direction="row"
                 alignItems="center"
-                mt={1}
+                mt={3}
+                mb={7}
                 sx={{ cursor: "pointer" }}
                 onClick={() => {
                     setDialogOpen(true);
                 }}
             >
                 <AddCircleIcon color="primary" sx={{ fontSize: "40px" }} />
-                {t("admin.userManagement.addUser")}
+                {t("admin.priceCategories.add")}
             </Stack>
 
             <PriceCategoriesDialog
@@ -106,9 +165,12 @@ const PriceCategoriesTable = ({ property, setRangeCategories }: Props) => {
                 setRangeCategories={setRangeCategories}
                 id={property.id}
                 propertyName={property.name}
+                categoryToEdit={categoryToEdit}
+                setCategoryToEdit={setCategoryToEdit}
+                title={property.name === "priceRangeBuy" ? t("admin.priceCategories.priceCategoryBuy") : t("admin.priceCategories.priceCategoryRent")}
             />
 
-            <DeleteDialog open={openDeleteDialog}/>
+            <DeleteDialog open={openDeleteDialog} handleDelete={handleDelete} closeDeleteDialog={closeDeleteDialog} />
         </>
     );
 };
