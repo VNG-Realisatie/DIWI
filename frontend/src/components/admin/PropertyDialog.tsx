@@ -49,7 +49,7 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
                 setDisplayedName(property.name);
             }
             property.categories && setCategories(property.categories);
-            property.ordinals && setOrdinalCategories(property.ordinals);
+            property.ordinals && setOrdinalCategories(property.ordinals.sort((a, b) => a.level - b.level));
             setActive(property.disabled);
             setSelectedObjectType(property.objectType);
             setSelectedPropertyType(property.propertyType);
@@ -195,7 +195,7 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
                         <CategoryCreateOption
                             categoryValue={ordinals ? ordinals : []}
                             setCategoryValue={(value) => {
-                                const refinedCategoryValue = value.map((item) => ("level" in item ? item : { ...item, level: 1 }));
+                                const refinedCategoryValue = value.map((item, index) => ({ ...item, level: index }));
                                 setOrdinalCategories(refinedCategoryValue);
                             }}
                             ordered={true}
