@@ -123,7 +123,6 @@ export const HouseBlockProvider = ({ children }: PropsWithChildren) => {
             customProperties: [],
         };
     };
-
     return (
         <HouseBlockContext.Provider
             value={{

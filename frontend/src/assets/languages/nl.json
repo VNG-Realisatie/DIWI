@@ -254,6 +254,7 @@
         "projectPhase": "Vul het veld projectfase in",
         "confidentialityLevel": "Vul het veld vertrouwelijkheidsniveau in",
         "amount": "Aantal ontbreekt",
+        "amountNotConsistent": "Het totaal aantal huizen in de sectie komt niet overeen met het mutatiebedrag",
         "hasmissingProperty": "Formulier heeft ontbrekende eigenschappen",
         "owner": "Vul het veld schrijfrechten in"
       }
