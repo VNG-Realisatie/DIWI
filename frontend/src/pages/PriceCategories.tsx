@@ -17,16 +17,8 @@ const PriceCategories = () => {
 
     return (
         <>
-            <PriceCategoriesTable
-                row={priceRangeBuyCategories[0]?.ranges || []}
-                property={priceRangeBuyCategories[0]}
-                setRangeCategories={setPriceRangeBuyCategories}
-            />
-            <PriceCategoriesTable
-                row={priceRangeRentCategories[0]?.ranges || []}
-                property={priceRangeRentCategories[0]}
-                setRangeCategories={setPriceRangeRentCategories}
-            />
+            <PriceCategoriesTable property={priceRangeBuyCategories[0]} setRangeCategories={setPriceRangeBuyCategories} />
+            <PriceCategoriesTable property={priceRangeRentCategories[0]} setRangeCategories={setPriceRangeRentCategories} />
         </>
     );
 };

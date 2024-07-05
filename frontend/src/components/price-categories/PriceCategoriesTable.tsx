@@ -7,6 +7,8 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import PriceCategoriesDialog from "./PriceCategoriesDialog";
 import { useState } from "react";
 import { Property } from "../../api/adminSettingServices";
+import { set } from "lodash";
+import DeleteDialog from "./DeleteDialog";
 
 type Row = {
     id?: string;
@@ -23,6 +25,9 @@ type Props = {
 };
 
 const PriceCategoriesTable = ({ property, setRangeCategories }: Props) => {
+    const [categoryIdToDelete, setCategoryIdToDelete] = useState<string | null>(null);
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
     if (!property) {
         return;
     }
@@ -53,7 +58,14 @@ const PriceCategoriesTable = ({ property, setRangeCategories }: Props) => {
             renderCell: (params: GridCellParams) => (
                 <Box display="flex" alignItems="center" justifyContent="center" style={{ height: "100%" }} gap="10px">
                     <EditOutlinedIcon style={{ cursor: "pointer" }} color="primary" onClick={() => {}} />
-                    <DeleteForeverOutlinedIcon style={{ cursor: "pointer" }} color="error" onClick={() => {}} />
+                    <DeleteForeverOutlinedIcon
+                        style={{ cursor: "pointer" }}
+                        color="error"
+                        onClick={() => {
+                            setCategoryIdToDelete(params.row.id);
+                            setOpenDeleteDialog(true);
+                        }}
+                    />
                 </Box>
             ),
         },
@@ -95,6 +107,8 @@ const PriceCategoriesTable = ({ property, setRangeCategories }: Props) => {
                 id={property.id}
                 propertyName={property.name}
             />
+
+            <DeleteDialog open={openDeleteDialog}/>
         </>
     );
 };

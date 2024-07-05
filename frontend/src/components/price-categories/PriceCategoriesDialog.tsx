@@ -41,7 +41,6 @@ const PriceCategoriesDialog = ({ open, setOpen, id, propertyName, setRangeCatego
         }
         try {
             const savedProperty = await updateCustomProperty(id, newProperty);
-            console.log(savedProperty);
             setRangeCategories([savedProperty]);
             setAlert(t("admin.settings.notifications.successfullySaved"), "success");
         } catch (error: unknown) {
@@ -92,7 +91,6 @@ const PriceCategoriesDialog = ({ open, setOpen, id, propertyName, setRangeCatego
                 <RangeNumberInput
                     value={rangeValue}
                     updateCallBack={handleRangeValueUpdate}
-                    labelText="Price Range"
                     isMonetary={true}
                     readOnly={false}
                     mandatory={true}
