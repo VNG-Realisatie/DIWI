@@ -13,9 +13,11 @@ import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.models.MilestoneModel;
 import nl.vng.diwi.rest.VngBadRequestException;
+import nl.vng.diwi.rest.VngNotAllowedException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.security.UserRole;
 import nl.vng.diwi.services.PropertiesService;
 import nl.vng.diwi.services.HouseblockService;
 import nl.vng.diwi.services.HouseblockServiceTest;
@@ -72,7 +74,7 @@ public class HouseblockResourceTest {
      *  This test is for the most complex scenario: updating name, start date and end date for an ongoing houseblock.
      */
     @Test
-    void updateHouseblockTest_currentHouseblock() throws VngNotFoundException, VngServerErrorException, VngBadRequestException {
+    void updateHouseblockTest_currentHouseblock() throws VngNotFoundException, VngServerErrorException, VngBadRequestException, VngNotAllowedException {
 
         UUID userUuid;
         UUID houseblockUuid;
@@ -107,6 +109,7 @@ public class HouseblockResourceTest {
         //call update endpoint
         LoggedUser loggedUser = new LoggedUser();
         loggedUser.setUuid(userUuid);
+        loggedUser.setRole(UserRole.UserPlus);
         houseblockResource.updateHouseblock(loggedUser, houseblockSnapshot);
         repo.getSession().clear();
 

@@ -16,7 +16,7 @@ import { DeleteButtonWithConfirm } from "../components/DeleteButtonWithConfirm";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { saveHouseBlockWithCustomProperties } from "../api/houseBlockServices";
 import useLoading from "../hooks/useLoading";
-import { isOwnershipAmountValid } from "../components/project-wizard/house-blocks/ownership-information/OwnershipRowInputs";
+import { checkConsistencyOwnerShipValueAndMutation, isOwnershipAmountValid } from "../utils/houseblocks/houseBlocksFunctions";
 
 const generateTemporaryId = () => Date.now();
 
@@ -83,7 +83,9 @@ const ProjectWizardBlocks = () => {
             houseBlock.mutation.amount <= 0 ||
             invalidOwnershipAmount ||
             !houseBlock.startDate ||
-            !houseBlock.endDate
+            !houseBlock.endDate ||
+            !checkConsistencyOwnerShipValueAndMutation(houseBlock)
+
         ) {
             hasErrors = true;
         }

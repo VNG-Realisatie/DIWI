@@ -254,6 +254,7 @@
         "projectPhase": "Vul het veld projectfase in",
         "confidentialityLevel": "Vul het veld vertrouwelijkheidsniveau in",
         "amount": "Aantal ontbreekt",
+        "amountNotConsistent": "Het totaal aantal huizen in de sectie komt niet overeen met het mutatiebedrag",
         "hasmissingProperty": "Formulier heeft ontbrekende eigenschappen",
         "owner": "Vul het veld schrijfrechten in"
       }
@@ -263,6 +264,8 @@
       "dashboards": "Dashboards",
       "users": "Gebruikers",
       "dataExchange": "Data uitwisselen",
+      "import": "Importeren",
+      "export": "Exporteren",
       "settings": "Instellingen",
       "addProject": "Project toevoegen",
       "projectOverview": "Overzicht projecten",
@@ -325,6 +328,7 @@
       "import": "Importeren:",
       "export": "Exporteren:",
       "excel": "Excel",
+      "geojson": "geojson",
       "system": "Systeem x",
       "squit": "Squit",
       "province": "Provincie",
@@ -526,6 +530,7 @@
       },
       "settings": {
         "title": "Lijst met maatwerk velden",
+        "duplicatedOption": "is een dubbele optie",
         "tableHeader": {
           "name": "Naam",
           "objectType": "Project of woningblok",

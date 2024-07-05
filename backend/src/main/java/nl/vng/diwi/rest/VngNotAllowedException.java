@@ -9,7 +9,7 @@ import nl.vng.diwi.models.ErrorResponse;
 
 @Log4j2
 @Provider
-public class VngNotAllowedException extends RuntimeException implements ExceptionMapper<VngNotAllowedException> {
+public class VngNotAllowedException extends Exception implements ExceptionMapper<VngNotAllowedException> {
 
     public VngNotAllowedException() {
     }

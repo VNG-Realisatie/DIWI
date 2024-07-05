@@ -12,11 +12,11 @@ import { sortHouseBlockByNameAndId as sortHouseBlocksByNameAndId } from "../../.
 import { deleteHouseBlockWithCustomProperties, saveHouseBlockWithCustomProperties } from "../../../api/houseBlockServices";
 import { DeleteButtonWithConfirm } from "../../DeleteButtonWithConfirm";
 import { HouseBlocksForm } from "../../HouseBlocksForm";
-import { validateHouseBlock } from "../../HouseBlocksFormWithControls";
 import useAlert from "../../../hooks/useAlert";
 import { useCustomPropertyDefinitions } from "../../../hooks/useCustomPropertyDefinitions";
 import useAllowedActions from "../../../hooks/useAllowedActions";
 import { useLocation } from "react-router-dom";
+import { validateHouseBlock } from "../../../utils/houseblocks/houseBlocksFunctions";
 
 type Props = {
     setOpenHouseBlockDialog: (open: boolean) => void;

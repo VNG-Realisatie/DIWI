@@ -22,17 +22,11 @@ SET row_security = off;
 
 CREATE SCHEMA diwi_testset;
 
-
-ALTER SCHEMA diwi_testset OWNER TO ali;
-
 --
 -- Name: diwi_numeric; Type: COLLATION; Schema: public; Owner: ali
 --
 
 CREATE COLLATION public.diwi_numeric (provider = icu, locale = 'en-u-kn-true');
-
-
-ALTER COLLATION public.diwi_numeric OWNER TO ali;
 
 --
 -- Name: pgcrypto; Type: EXTENSION; Schema: -; Owner: -
@@ -42,7 +36,7 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
 
 
 --
--- Name: EXTENSION pgcrypto; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION pgcrypto; Type: COMMENT; Schema: -; Owner:
 --
 
 COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
@@ -56,9 +50,6 @@ CREATE TYPE diwi_testset.conditie_type AS ENUM (
     'PLAN_CONDITIE',
     'DOEL_CONDITIE'
 );
-
-
-ALTER TYPE diwi_testset.conditie_type OWNER TO ali;
 
 --
 -- Name: confidentiality; Type: TYPE; Schema: diwi_testset; Owner: ali
@@ -74,9 +65,6 @@ CREATE TYPE diwi_testset.confidentiality AS ENUM (
     'PUBLIC'
 );
 
-
-ALTER TYPE diwi_testset.confidentiality OWNER TO ali;
-
 --
 -- Name: doel_richting; Type: TYPE; Schema: diwi_testset; Owner: ali
 --
@@ -86,9 +74,6 @@ CREATE TYPE diwi_testset.doel_richting AS ENUM (
     'MAXIMAAL'
 );
 
-
-ALTER TYPE diwi_testset.doel_richting OWNER TO ali;
-
 --
 -- Name: doel_soort; Type: TYPE; Schema: diwi_testset; Owner: ali
 --
@@ -97,9 +82,6 @@ CREATE TYPE diwi_testset.doel_soort AS ENUM (
     'AANTAL',
     'PERCENTAGE'
 );
-
-
-ALTER TYPE diwi_testset.doel_soort OWNER TO ali;
 
 --
 -- Name: doelgroep; Type: TYPE; Schema: diwi_testset; Owner: ali
@@ -114,9 +96,6 @@ CREATE TYPE diwi_testset.doelgroep AS ENUM (
     'GROTE_GEZINNEN'
 );
 
-
-ALTER TYPE diwi_testset.doelgroep OWNER TO ali;
-
 --
 -- Name: eigendom_soort; Type: TYPE; Schema: diwi_testset; Owner: ali
 --
@@ -126,9 +105,6 @@ CREATE TYPE diwi_testset.eigendom_soort AS ENUM (
     'HUURWONING_PARTICULIERE_VERHUURDER',
     'HUURWONING_WONINGCORPORATIE'
 );
-
-
-ALTER TYPE diwi_testset.eigendom_soort OWNER TO ali;
 
 --
 -- Name: fysiek_voorkomen; Type: TYPE; Schema: diwi_testset; Owner: ali
@@ -143,9 +119,6 @@ CREATE TYPE diwi_testset.fysiek_voorkomen AS ENUM (
     'GALLERIJFLAT'
 );
 
-
-ALTER TYPE diwi_testset.fysiek_voorkomen OWNER TO ali;
-
 --
 -- Name: grondpositie; Type: TYPE; Schema: diwi_testset; Owner: ali
 --
@@ -155,9 +128,6 @@ CREATE TYPE diwi_testset.grondpositie AS ENUM (
     'INTENTIE_MEDEWERKING_GRONDEIGENAAR',
     'GEEN_TOESTEMMING_GRONDEIGENAAR'
 );
-
-
-ALTER TYPE diwi_testset.grondpositie OWNER TO ali;
 
 --
 -- Name: maatwerk_eigenschap_type; Type: TYPE; Schema: diwi_testset; Owner: ali
@@ -171,9 +141,6 @@ CREATE TYPE diwi_testset.maatwerk_eigenschap_type AS ENUM (
     'TEXT'
 );
 
-
-ALTER TYPE diwi_testset.maatwerk_eigenschap_type OWNER TO ali;
-
 --
 -- Name: maatwerk_object_soort; Type: TYPE; Schema: diwi_testset; Owner: ali
 --
@@ -182,9 +149,6 @@ CREATE TYPE diwi_testset.maatwerk_object_soort AS ENUM (
     'PROJECT',
     'WONINGBLOK'
 );
-
-
-ALTER TYPE diwi_testset.maatwerk_object_soort OWNER TO ali;
 
 --
 -- Name: milestone_status; Type: TYPE; Schema: diwi_testset; Owner: ali
@@ -197,9 +161,6 @@ CREATE TYPE diwi_testset.milestone_status AS ENUM (
     'AFGEBROKEN'
 );
 
-
-ALTER TYPE diwi_testset.milestone_status OWNER TO ali;
-
 --
 -- Name: mutation_kind; Type: TYPE; Schema: diwi_testset; Owner: ali
 --
@@ -208,9 +169,6 @@ CREATE TYPE diwi_testset.mutation_kind AS ENUM (
     'CONSTRUCTION',
     'DEMOLITION'
 );
-
-
-ALTER TYPE diwi_testset.mutation_kind OWNER TO ali;
 
 --
 -- Name: plan_type; Type: TYPE; Schema: diwi_testset; Owner: ali
@@ -224,9 +182,6 @@ CREATE TYPE diwi_testset.plan_type AS ENUM (
     'UITBREIDING_UITLEG',
     'UITBREIDING_OVERIG'
 );
-
-
-ALTER TYPE diwi_testset.plan_type OWNER TO ali;
 
 --
 -- Name: planologische_planstatus; Type: TYPE; Schema: diwi_testset; Owner: ali
@@ -244,9 +199,6 @@ CREATE TYPE diwi_testset.planologische_planstatus AS ENUM (
     '_4B_NIET_OPGENOMEN_IN_VISIE'
 );
 
-
-ALTER TYPE diwi_testset.planologische_planstatus OWNER TO ali;
-
 --
 -- Name: project_phase; Type: TYPE; Schema: diwi_testset; Owner: ali
 --
@@ -261,9 +213,6 @@ CREATE TYPE diwi_testset.project_phase AS ENUM (
     '_7_AFTERCARE'
 );
 
-
-ALTER TYPE diwi_testset.project_phase OWNER TO ali;
-
 --
 -- Name: property_type; Type: TYPE; Schema: diwi_testset; Owner: ali
 --
@@ -272,9 +221,6 @@ CREATE TYPE diwi_testset.property_type AS ENUM (
     'FIXED',
     'CUSTOM'
 );
-
-
-ALTER TYPE diwi_testset.property_type OWNER TO ali;
 
 --
 -- Name: software_module; Type: TYPE; Schema: diwi_testset; Owner: ali
@@ -289,9 +235,6 @@ CREATE TYPE diwi_testset.software_module AS ENUM (
     'DASHBOARD_INTERNE_UITVOERING'
 );
 
-
-ALTER TYPE diwi_testset.software_module OWNER TO ali;
-
 --
 -- Name: software_rights; Type: TYPE; Schema: diwi_testset; Owner: ali
 --
@@ -302,9 +245,6 @@ CREATE TYPE diwi_testset.software_rights AS ENUM (
     'CRUD_TO_ALL',
     'VIEW_ONLY'
 );
-
-
-ALTER TYPE diwi_testset.software_rights OWNER TO ali;
 
 --
 -- Name: user_role; Type: TYPE; Schema: diwi_testset; Owner: ali
@@ -319,9 +259,6 @@ CREATE TYPE diwi_testset.user_role AS ENUM (
     'External'
 );
 
-
-ALTER TYPE diwi_testset.user_role OWNER TO ali;
-
 --
 -- Name: value_type; Type: TYPE; Schema: diwi_testset; Owner: ali
 --
@@ -331,9 +268,6 @@ CREATE TYPE diwi_testset.value_type AS ENUM (
     'RANGE'
 );
 
-
-ALTER TYPE diwi_testset.value_type OWNER TO ali;
-
 --
 -- Name: woning_type; Type: TYPE; Schema: diwi_testset; Owner: ali
 --
@@ -342,9 +276,6 @@ CREATE TYPE diwi_testset.woning_type AS ENUM (
     'EENGEZINSWONING',
     'MEERGEZINSWONING'
 );
-
-
-ALTER TYPE diwi_testset.woning_type OWNER TO ali;
 
 --
 -- Name: set_end_date_now(); Type: FUNCTION; Schema: diwi_testset; Owner: ali
@@ -363,9 +294,6 @@ CREATE FUNCTION diwi_testset.set_end_date_now() RETURNS trigger
 	END;
 	$$;
 
-
-ALTER FUNCTION diwi_testset.set_end_date_now() OWNER TO ali;
-
 --
 -- Name: set_start_date_now(); Type: FUNCTION; Schema: diwi_testset; Owner: ali
 --
@@ -378,9 +306,6 @@ CREATE FUNCTION diwi_testset.set_start_date_now() RETURNS trigger
 	 RETURN NEW;
 	END;
 	$$;
-
-
-ALTER FUNCTION diwi_testset.set_start_date_now() OWNER TO ali;
 
 --
 -- Name: create_demo_user_org(uuid, uuid, text, text); Type: FUNCTION; Schema: public; Owner: ali
@@ -402,9 +327,6 @@ BEGIN
         VALUES(id, id, id, system_user_id, now());
 END;
 $$;
-
-
-ALTER FUNCTION public.create_demo_user_org(id uuid, system_user_id uuid, first_name text, last_name text) OWNER TO ali;
 
 --
 -- Name: get_active_and_future_projects_list(date, integer, integer, text, text, text, text[], text); Type: FUNCTION; Schema: public; Owner: ali
@@ -971,9 +893,6 @@ FROM (
 
 END;$$;
 
-
-ALTER FUNCTION public.get_active_and_future_projects_list(_now_ date, _offset_ integer, _limit_ integer, _sortcolumn_ text, _sortdirection_ text, _filtercolumn_ text, _filtervalues_ text[], _filtercondition_ text) OWNER TO ali;
-
 --
 -- Name: get_active_or_future_project_custom_properties(uuid, date); Type: FUNCTION; Schema: public; Owner: ali
 --
@@ -1451,9 +1370,6 @@ WHERE q.projectId = _project_uuid_;
 
 
 END;$$;
-
-
-ALTER FUNCTION public.get_active_or_future_project_custom_properties(_project_uuid_ uuid, _now_ date) OWNER TO ali;
 
 --
 -- Name: get_active_or_future_project_snapshot(uuid, date); Type: FUNCTION; Schema: public; Owner: ali
@@ -1972,9 +1888,6 @@ WHERE q.projectId = _project_uuid_ LIMIT 1;
 
 END;$$;
 
-
-ALTER FUNCTION public.get_active_or_future_project_snapshot(_project_uuid_ uuid, _now_ date) OWNER TO ali;
-
 --
 -- Name: get_houseblock_custom_properties(uuid, date); Type: FUNCTION; Schema: public; Owner: ali
 --
@@ -2453,9 +2366,6 @@ WHERE q.woningblokId = _woningblok_uuid_;
 
 
 END;$$;
-
-
-ALTER FUNCTION public.get_houseblock_custom_properties(_woningblok_uuid_ uuid, _now_ date) OWNER TO ali;
 
 --
 -- Name: get_houseblock_snapshots(uuid, uuid, date); Type: FUNCTION; Schema: public; Owner: ali
@@ -2941,9 +2851,6 @@ FROM (
 
 END;$$;
 
-
-ALTER FUNCTION public.get_houseblock_snapshots(_project_uuid_ uuid, _houseblock_uuid_ uuid, _now_ date) OWNER TO ali;
-
 --
 -- Name: get_property_definitions(uuid, character varying, boolean, character varying); Type: FUNCTION; Schema: public; Owner: ali
 --
@@ -3020,9 +2927,6 @@ ORDER BY cpState.property_name;
 
 END;$$;
 
-
-ALTER FUNCTION public.get_property_definitions(_cp_uuid_ uuid, _cp_object_type_ character varying, _cp_disabled_ boolean, _cp_type_ character varying) OWNER TO ali;
-
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
@@ -3036,9 +2940,6 @@ CREATE TABLE diwi_testset.document (
     project_id uuid NOT NULL
 );
 
-
-ALTER TABLE diwi_testset.document OWNER TO ali;
-
 --
 -- Name: document_soort; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3046,9 +2947,6 @@ ALTER TABLE diwi_testset.document OWNER TO ali;
 CREATE TABLE diwi_testset.document_soort (
     id uuid NOT NULL
 );
-
-
-ALTER TABLE diwi_testset.document_soort OWNER TO ali;
 
 --
 -- Name: document_soort_state; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -3063,9 +2961,6 @@ CREATE TABLE diwi_testset.document_soort_state (
     change_end_date timestamp with time zone,
     change_user_id uuid
 );
-
-
-ALTER TABLE diwi_testset.document_soort_state OWNER TO ali;
 
 --
 -- Name: document_state; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -3084,9 +2979,6 @@ CREATE TABLE diwi_testset.document_state (
     confidentiality_level diwi_testset.confidentiality NOT NULL
 );
 
-
-ALTER TABLE diwi_testset.document_state OWNER TO ali;
-
 --
 -- Name: document_state_soort_value; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3097,9 +2989,6 @@ CREATE TABLE diwi_testset.document_state_soort_value (
     document_soort_id uuid NOT NULL
 );
 
-
-ALTER TABLE diwi_testset.document_state_soort_value OWNER TO ali;
-
 --
 -- Name: milestone; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3108,9 +2997,6 @@ CREATE TABLE diwi_testset.milestone (
     id uuid NOT NULL,
     project_id uuid NOT NULL
 );
-
-
-ALTER TABLE diwi_testset.milestone OWNER TO ali;
 
 --
 -- Name: milestone_state; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -3128,9 +3014,6 @@ CREATE TABLE diwi_testset.milestone_state (
     change_user_id uuid
 );
 
-
-ALTER TABLE diwi_testset.milestone_state OWNER TO ali;
-
 --
 -- Name: organization; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3138,9 +3021,6 @@ ALTER TABLE diwi_testset.milestone_state OWNER TO ali;
 CREATE TABLE diwi_testset.organization (
     id uuid NOT NULL
 );
-
-
-ALTER TABLE diwi_testset.organization OWNER TO ali;
 
 --
 -- Name: organization_state; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -3157,9 +3037,6 @@ CREATE TABLE diwi_testset.organization_state (
     change_user_id uuid
 );
 
-
-ALTER TABLE diwi_testset.organization_state OWNER TO ali;
-
 --
 -- Name: organization_to_document; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3173,9 +3050,6 @@ CREATE TABLE diwi_testset.organization_to_document (
     create_user_id uuid NOT NULL,
     change_user_id uuid
 );
-
-
-ALTER TABLE diwi_testset.organization_to_document OWNER TO ali;
 
 --
 -- Name: organization_to_plan; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -3191,9 +3065,6 @@ CREATE TABLE diwi_testset.organization_to_plan (
     change_user_id uuid
 );
 
-
-ALTER TABLE diwi_testset.organization_to_plan OWNER TO ali;
-
 --
 -- Name: organization_to_project; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3208,9 +3079,6 @@ CREATE TABLE diwi_testset.organization_to_project (
     change_user_id uuid
 );
 
-
-ALTER TABLE diwi_testset.organization_to_project OWNER TO ali;
-
 --
 -- Name: plan; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3219,9 +3087,6 @@ CREATE TABLE diwi_testset.plan (
     id uuid NOT NULL
 );
 
-
-ALTER TABLE diwi_testset.plan OWNER TO ali;
-
 --
 -- Name: plan_conditie; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3229,9 +3094,6 @@ ALTER TABLE diwi_testset.plan OWNER TO ali;
 CREATE TABLE diwi_testset.plan_conditie (
     id uuid NOT NULL
 );
-
-
-ALTER TABLE diwi_testset.plan_conditie OWNER TO ali;
 
 --
 -- Name: plan_conditie_doelgroep; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -3246,9 +3108,6 @@ CREATE TABLE diwi_testset.plan_conditie_doelgroep (
     change_user_id uuid
 );
 
-
-ALTER TABLE diwi_testset.plan_conditie_doelgroep OWNER TO ali;
-
 --
 -- Name: plan_conditie_doelgroep_value; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3258,9 +3117,6 @@ CREATE TABLE diwi_testset.plan_conditie_doelgroep_value (
     plan_conditie_doelgroep_id uuid NOT NULL,
     doelgroep diwi_testset.doelgroep NOT NULL
 );
-
-
-ALTER TABLE diwi_testset.plan_conditie_doelgroep_value OWNER TO ali;
 
 --
 -- Name: plan_conditie_eigendom_en_waarde; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -3281,9 +3137,6 @@ CREATE TABLE diwi_testset.plan_conditie_eigendom_en_waarde (
     change_user_id uuid
 );
 
-
-ALTER TABLE diwi_testset.plan_conditie_eigendom_en_waarde OWNER TO ali;
-
 --
 -- Name: plan_conditie_eigendom_en_waarde_soort_value; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3293,9 +3146,6 @@ CREATE TABLE diwi_testset.plan_conditie_eigendom_en_waarde_soort_value (
     plan_conditie_eigendom_en_waarde_id uuid NOT NULL,
     eigendom_soort diwi_testset.eigendom_soort NOT NULL
 );
-
-
-ALTER TABLE diwi_testset.plan_conditie_eigendom_en_waarde_soort_value OWNER TO ali;
 
 --
 -- Name: plan_conditie_grondpositie; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -3310,9 +3160,6 @@ CREATE TABLE diwi_testset.plan_conditie_grondpositie (
     change_user_id uuid
 );
 
-
-ALTER TABLE diwi_testset.plan_conditie_grondpositie OWNER TO ali;
-
 --
 -- Name: plan_conditie_grondpositie_value; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3322,9 +3169,6 @@ CREATE TABLE diwi_testset.plan_conditie_grondpositie_value (
     plan_conditie_grondpositie_id uuid NOT NULL,
     grondpositie diwi_testset.grondpositie NOT NULL
 );
-
-
-ALTER TABLE diwi_testset.plan_conditie_grondpositie_value OWNER TO ali;
 
 --
 -- Name: plan_conditie_grootte; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -3342,9 +3186,6 @@ CREATE TABLE diwi_testset.plan_conditie_grootte (
     change_user_id uuid
 );
 
-
-ALTER TABLE diwi_testset.plan_conditie_grootte OWNER TO ali;
-
 --
 -- Name: plan_conditie_kadastraal; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3358,9 +3199,6 @@ CREATE TABLE diwi_testset.plan_conditie_kadastraal (
     change_user_id uuid
 );
 
-
-ALTER TABLE diwi_testset.plan_conditie_kadastraal OWNER TO ali;
-
 --
 -- Name: plan_conditie_kadastraal_value; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3373,9 +3211,6 @@ CREATE TABLE diwi_testset.plan_conditie_kadastraal_value (
     brk_perceelnummer integer,
     brk_selectie text
 );
-
-
-ALTER TABLE diwi_testset.plan_conditie_kadastraal_value OWNER TO ali;
 
 --
 -- Name: plan_conditie_maatwerk_boolean; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -3391,9 +3226,6 @@ CREATE TABLE diwi_testset.plan_conditie_maatwerk_boolean (
     change_user_id uuid
 );
 
-
-ALTER TABLE diwi_testset.plan_conditie_maatwerk_boolean OWNER TO ali;
-
 --
 -- Name: plan_conditie_maatwerk_categorie; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3407,9 +3239,6 @@ CREATE TABLE diwi_testset.plan_conditie_maatwerk_categorie (
     change_user_id uuid
 );
 
-
-ALTER TABLE diwi_testset.plan_conditie_maatwerk_categorie OWNER TO ali;
-
 --
 -- Name: plan_conditie_maatwerk_categorie_value; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3419,9 +3248,6 @@ CREATE TABLE diwi_testset.plan_conditie_maatwerk_categorie_value (
     plan_conditie_maatwerk_categorie_id uuid NOT NULL,
     eigenschap_waarde_id uuid NOT NULL
 );
-
-
-ALTER TABLE diwi_testset.plan_conditie_maatwerk_categorie_value OWNER TO ali;
 
 --
 -- Name: plan_conditie_maatwerk_numeriek; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -3438,9 +3264,6 @@ CREATE TABLE diwi_testset.plan_conditie_maatwerk_numeriek (
     value_range numrange,
     change_user_id uuid
 );
-
-
-ALTER TABLE diwi_testset.plan_conditie_maatwerk_numeriek OWNER TO ali;
 
 --
 -- Name: plan_conditie_maatwerk_ordinaal; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -3459,9 +3282,6 @@ CREATE TABLE diwi_testset.plan_conditie_maatwerk_ordinaal (
     change_user_id uuid
 );
 
-
-ALTER TABLE diwi_testset.plan_conditie_maatwerk_ordinaal OWNER TO ali;
-
 --
 -- Name: plan_conditie_programmering; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3475,9 +3295,6 @@ CREATE TABLE diwi_testset.plan_conditie_programmering (
     change_end_date timestamp with time zone,
     change_user_id uuid
 );
-
-
-ALTER TABLE diwi_testset.plan_conditie_programmering OWNER TO ali;
 
 --
 -- Name: plan_conditie_state; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -3494,9 +3311,6 @@ CREATE TABLE diwi_testset.plan_conditie_state (
     change_user_id uuid
 );
 
-
-ALTER TABLE diwi_testset.plan_conditie_state OWNER TO ali;
-
 --
 -- Name: plan_conditie_type_en_fysiek; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3510,9 +3324,6 @@ CREATE TABLE diwi_testset.plan_conditie_type_en_fysiek (
     change_user_id uuid
 );
 
-
-ALTER TABLE diwi_testset.plan_conditie_type_en_fysiek OWNER TO ali;
-
 --
 -- Name: plan_conditie_type_en_fysiek_fysiek_value; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3522,9 +3333,6 @@ CREATE TABLE diwi_testset.plan_conditie_type_en_fysiek_fysiek_value (
     plan_conditie_type_en_fysiek_id uuid NOT NULL,
     fysiek_voorkomen diwi_testset.fysiek_voorkomen NOT NULL
 );
-
-
-ALTER TABLE diwi_testset.plan_conditie_type_en_fysiek_fysiek_value OWNER TO ali;
 
 --
 -- Name: plan_conditie_type_en_fysiek_type_value; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -3536,9 +3344,6 @@ CREATE TABLE diwi_testset.plan_conditie_type_en_fysiek_type_value (
     woning_type diwi_testset.woning_type NOT NULL
 );
 
-
-ALTER TABLE diwi_testset.plan_conditie_type_en_fysiek_type_value OWNER TO ali;
-
 --
 -- Name: plan_soort; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3546,9 +3351,6 @@ ALTER TABLE diwi_testset.plan_conditie_type_en_fysiek_type_value OWNER TO ali;
 CREATE TABLE diwi_testset.plan_soort (
     id uuid NOT NULL
 );
-
-
-ALTER TABLE diwi_testset.plan_soort OWNER TO ali;
 
 --
 -- Name: plan_soort_state; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -3563,9 +3365,6 @@ CREATE TABLE diwi_testset.plan_soort_state (
     change_end_date timestamp with time zone,
     change_user_id uuid
 );
-
-
-ALTER TABLE diwi_testset.plan_soort_state OWNER TO ali;
 
 --
 -- Name: plan_state; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -3587,9 +3386,6 @@ CREATE TABLE diwi_testset.plan_state (
     change_user_id uuid
 );
 
-
-ALTER TABLE diwi_testset.plan_state OWNER TO ali;
-
 --
 -- Name: plan_state_soort_value; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3600,9 +3396,6 @@ CREATE TABLE diwi_testset.plan_state_soort_value (
     plan_soort_id uuid NOT NULL
 );
 
-
-ALTER TABLE diwi_testset.plan_state_soort_value OWNER TO ali;
-
 --
 -- Name: project; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3610,9 +3403,6 @@ ALTER TABLE diwi_testset.plan_state_soort_value OWNER TO ali;
 CREATE TABLE diwi_testset.project (
     id uuid NOT NULL
 );
-
-
-ALTER TABLE diwi_testset.project OWNER TO ali;
 
 --
 -- Name: project_category_changelog; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -3630,9 +3420,6 @@ CREATE TABLE diwi_testset.project_category_changelog (
     property_id uuid NOT NULL
 );
 
-
-ALTER TABLE diwi_testset.project_category_changelog OWNER TO ali;
-
 --
 -- Name: project_category_changelog_value; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3642,9 +3429,6 @@ CREATE TABLE diwi_testset.project_category_changelog_value (
     project_category_changelog_id uuid NOT NULL,
     property_value_id uuid NOT NULL
 );
-
-
-ALTER TABLE diwi_testset.project_category_changelog_value OWNER TO ali;
 
 --
 -- Name: project_duration_changelog; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -3660,9 +3444,6 @@ CREATE TABLE diwi_testset.project_duration_changelog (
     change_end_date timestamp with time zone,
     change_user_id uuid
 );
-
-
-ALTER TABLE diwi_testset.project_duration_changelog OWNER TO ali;
 
 --
 -- Name: project_fase_changelog; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -3680,9 +3461,6 @@ CREATE TABLE diwi_testset.project_fase_changelog (
     change_user_id uuid
 );
 
-
-ALTER TABLE diwi_testset.project_fase_changelog OWNER TO ali;
-
 --
 -- Name: project_filiatie; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3696,9 +3474,6 @@ CREATE TABLE diwi_testset.project_filiatie (
     change_end_date timestamp with time zone,
     change_user_id uuid
 );
-
-
-ALTER TABLE diwi_testset.project_filiatie OWNER TO ali;
 
 --
 -- Name: project_maatwerk_boolean_changelog; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -3716,9 +3491,6 @@ CREATE TABLE diwi_testset.project_maatwerk_boolean_changelog (
     eigenschap_id uuid NOT NULL,
     change_user_id uuid
 );
-
-
-ALTER TABLE diwi_testset.project_maatwerk_boolean_changelog OWNER TO ali;
 
 --
 -- Name: project_maatwerk_numeriek_changelog; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -3739,9 +3511,6 @@ CREATE TABLE diwi_testset.project_maatwerk_numeriek_changelog (
     change_user_id uuid
 );
 
-
-ALTER TABLE diwi_testset.project_maatwerk_numeriek_changelog OWNER TO ali;
-
 --
 -- Name: project_name_changelog; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3757,9 +3526,6 @@ CREATE TABLE diwi_testset.project_name_changelog (
     name text NOT NULL,
     change_user_id uuid
 );
-
-
-ALTER TABLE diwi_testset.project_name_changelog OWNER TO ali;
 
 --
 -- Name: project_ordinal_changelog; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -3781,9 +3547,6 @@ CREATE TABLE diwi_testset.project_ordinal_changelog (
     property_id uuid NOT NULL
 );
 
-
-ALTER TABLE diwi_testset.project_ordinal_changelog OWNER TO ali;
-
 --
 -- Name: project_plan_type_changelog; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3799,9 +3562,6 @@ CREATE TABLE diwi_testset.project_plan_type_changelog (
     change_user_id uuid
 );
 
-
-ALTER TABLE diwi_testset.project_plan_type_changelog OWNER TO ali;
-
 --
 -- Name: project_plan_type_changelog_value; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3811,9 +3571,6 @@ CREATE TABLE diwi_testset.project_plan_type_changelog_value (
     changelog_id uuid NOT NULL,
     plan_type diwi_testset.plan_type NOT NULL
 );
-
-
-ALTER TABLE diwi_testset.project_plan_type_changelog_value OWNER TO ali;
 
 --
 -- Name: project_planologische_planstatus_changelog; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -3830,9 +3587,6 @@ CREATE TABLE diwi_testset.project_planologische_planstatus_changelog (
     change_user_id uuid
 );
 
-
-ALTER TABLE diwi_testset.project_planologische_planstatus_changelog OWNER TO ali;
-
 --
 -- Name: project_planologische_planstatus_changelog_value; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3842,9 +3596,6 @@ CREATE TABLE diwi_testset.project_planologische_planstatus_changelog_value (
     planologische_planstatus_changelog_id uuid NOT NULL,
     planologische_planstatus diwi_testset.planologische_planstatus NOT NULL
 );
-
-
-ALTER TABLE diwi_testset.project_planologische_planstatus_changelog_value OWNER TO ali;
 
 --
 -- Name: project_registry_link_changelog; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -3861,9 +3612,6 @@ CREATE TABLE diwi_testset.project_registry_link_changelog (
     change_end_date timestamp with time zone
 );
 
-
-ALTER TABLE diwi_testset.project_registry_link_changelog OWNER TO ali;
-
 --
 -- Name: project_registry_link_changelog_value; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3877,9 +3625,6 @@ CREATE TABLE diwi_testset.project_registry_link_changelog_value (
     plot_feature json NOT NULL,
     subselection_geometry json
 );
-
-
-ALTER TABLE diwi_testset.project_registry_link_changelog_value OWNER TO ali;
 
 --
 -- Name: project_state; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -3898,9 +3643,6 @@ CREATE TABLE diwi_testset.project_state (
     longitude double precision
 );
 
-
-ALTER TABLE diwi_testset.project_state OWNER TO ali;
-
 --
 -- Name: project_text_changelog; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3918,9 +3660,6 @@ CREATE TABLE diwi_testset.project_text_changelog (
     property_id uuid NOT NULL
 );
 
-
-ALTER TABLE diwi_testset.project_text_changelog OWNER TO ali;
-
 --
 -- Name: property; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3930,9 +3669,6 @@ CREATE TABLE diwi_testset.property (
     type diwi_testset.property_type DEFAULT 'CUSTOM'::diwi_testset.property_type NOT NULL
 );
 
-
-ALTER TABLE diwi_testset.property OWNER TO ali;
-
 --
 -- Name: property_category_value; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3941,9 +3677,6 @@ CREATE TABLE diwi_testset.property_category_value (
     id uuid NOT NULL,
     property_id uuid NOT NULL
 );
-
-
-ALTER TABLE diwi_testset.property_category_value OWNER TO ali;
 
 --
 -- Name: property_category_value_state; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -3959,9 +3692,6 @@ CREATE TABLE diwi_testset.property_category_value_state (
     change_user_id uuid
 );
 
-
-ALTER TABLE diwi_testset.property_category_value_state OWNER TO ali;
-
 --
 -- Name: property_ordinal_value; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -3970,9 +3700,6 @@ CREATE TABLE diwi_testset.property_ordinal_value (
     id uuid NOT NULL,
     property_id uuid NOT NULL
 );
-
-
-ALTER TABLE diwi_testset.property_ordinal_value OWNER TO ali;
 
 --
 -- Name: property_ordinal_value_state; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -3988,9 +3715,6 @@ CREATE TABLE diwi_testset.property_ordinal_value_state (
     change_end_date timestamp with time zone,
     change_user_id uuid
 );
-
-
-ALTER TABLE diwi_testset.property_ordinal_value_state OWNER TO ali;
 
 --
 -- Name: property_state; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -4008,9 +3732,6 @@ CREATE TABLE diwi_testset.property_state (
     change_user_id uuid
 );
 
-
-ALTER TABLE diwi_testset.property_state OWNER TO ali;
-
 --
 -- Name: software_module_rights; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -4027,9 +3748,6 @@ CREATE TABLE diwi_testset.software_module_rights (
     change_user_id uuid
 );
 
-
-ALTER TABLE diwi_testset.software_module_rights OWNER TO ali;
-
 --
 -- Name: user; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -4038,9 +3756,6 @@ CREATE TABLE diwi_testset."user" (
     id uuid NOT NULL,
     system_user boolean DEFAULT false NOT NULL
 );
-
-
-ALTER TABLE diwi_testset."user" OWNER TO ali;
 
 --
 -- Name: user_state; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -4059,9 +3774,6 @@ CREATE TABLE diwi_testset.user_state (
     role diwi_testset.user_role NOT NULL
 );
 
-
-ALTER TABLE diwi_testset.user_state OWNER TO ali;
-
 --
 -- Name: user_to_organization; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -4076,9 +3788,6 @@ CREATE TABLE diwi_testset.user_to_organization (
     change_user_id uuid
 );
 
-
-ALTER TABLE diwi_testset.user_to_organization OWNER TO ali;
-
 --
 -- Name: woningblok; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -4087,9 +3796,6 @@ CREATE TABLE diwi_testset.woningblok (
     id uuid NOT NULL,
     project_id uuid NOT NULL
 );
-
-
-ALTER TABLE diwi_testset.woningblok OWNER TO ali;
 
 --
 -- Name: woningblok_deliverydate_changelog; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -4108,9 +3814,6 @@ CREATE TABLE diwi_testset.woningblok_deliverydate_changelog (
     earliest_deliverydate date NOT NULL
 );
 
-
-ALTER TABLE diwi_testset.woningblok_deliverydate_changelog OWNER TO ali;
-
 --
 -- Name: woningblok_doelgroep_changelog; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -4126,9 +3829,6 @@ CREATE TABLE diwi_testset.woningblok_doelgroep_changelog (
     change_user_id uuid
 );
 
-
-ALTER TABLE diwi_testset.woningblok_doelgroep_changelog OWNER TO ali;
-
 --
 -- Name: woningblok_doelgroep_changelog_value; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -4139,9 +3839,6 @@ CREATE TABLE diwi_testset.woningblok_doelgroep_changelog_value (
     amount integer NOT NULL,
     property_value_id uuid NOT NULL
 );
-
-
-ALTER TABLE diwi_testset.woningblok_doelgroep_changelog_value OWNER TO ali;
 
 --
 -- Name: woningblok_duration_changelog; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -4157,9 +3854,6 @@ CREATE TABLE diwi_testset.woningblok_duration_changelog (
     change_end_date timestamp with time zone,
     change_user_id uuid
 );
-
-
-ALTER TABLE diwi_testset.woningblok_duration_changelog OWNER TO ali;
 
 --
 -- Name: woningblok_eigendom_en_waarde_changelog; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -4184,9 +3878,6 @@ CREATE TABLE diwi_testset.woningblok_eigendom_en_waarde_changelog (
     huurbedrag_value_range int4range
 );
 
-
-ALTER TABLE diwi_testset.woningblok_eigendom_en_waarde_changelog OWNER TO ali;
-
 --
 -- Name: woningblok_grondpositie_changelog; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -4202,9 +3893,6 @@ CREATE TABLE diwi_testset.woningblok_grondpositie_changelog (
     change_user_id uuid
 );
 
-
-ALTER TABLE diwi_testset.woningblok_grondpositie_changelog OWNER TO ali;
-
 --
 -- Name: woningblok_grondpositie_changelog_value; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -4215,9 +3903,6 @@ CREATE TABLE diwi_testset.woningblok_grondpositie_changelog_value (
     grondpositie diwi_testset.grondpositie NOT NULL,
     amount integer NOT NULL
 );
-
-
-ALTER TABLE diwi_testset.woningblok_grondpositie_changelog_value OWNER TO ali;
 
 --
 -- Name: woningblok_grootte_changelog; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -4237,9 +3922,6 @@ CREATE TABLE diwi_testset.woningblok_grootte_changelog (
     change_user_id uuid
 );
 
-
-ALTER TABLE diwi_testset.woningblok_grootte_changelog OWNER TO ali;
-
 --
 -- Name: woningblok_maatwerk_boolean_changelog; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -4257,9 +3939,6 @@ CREATE TABLE diwi_testset.woningblok_maatwerk_boolean_changelog (
     change_user_id uuid
 );
 
-
-ALTER TABLE diwi_testset.woningblok_maatwerk_boolean_changelog OWNER TO ali;
-
 --
 -- Name: woningblok_maatwerk_categorie_changelog; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -4276,9 +3955,6 @@ CREATE TABLE diwi_testset.woningblok_maatwerk_categorie_changelog (
     eigenschap_id uuid NOT NULL
 );
 
-
-ALTER TABLE diwi_testset.woningblok_maatwerk_categorie_changelog OWNER TO ali;
-
 --
 -- Name: woningblok_maatwerk_categorie_changelog_value; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -4288,9 +3964,6 @@ CREATE TABLE diwi_testset.woningblok_maatwerk_categorie_changelog_value (
     woningblok_maatwerk_categorie_changelog_id uuid NOT NULL,
     eigenschap_waarde_id uuid NOT NULL
 );
-
-
-ALTER TABLE diwi_testset.woningblok_maatwerk_categorie_changelog_value OWNER TO ali;
 
 --
 -- Name: woningblok_maatwerk_numeriek_changelog; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -4310,9 +3983,6 @@ CREATE TABLE diwi_testset.woningblok_maatwerk_numeriek_changelog (
     value_range numrange,
     change_user_id uuid
 );
-
-
-ALTER TABLE diwi_testset.woningblok_maatwerk_numeriek_changelog OWNER TO ali;
 
 --
 -- Name: woningblok_maatwerk_ordinaal_changelog; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -4334,9 +4004,6 @@ CREATE TABLE diwi_testset.woningblok_maatwerk_ordinaal_changelog (
     eigenschap_id uuid NOT NULL
 );
 
-
-ALTER TABLE diwi_testset.woningblok_maatwerk_ordinaal_changelog OWNER TO ali;
-
 --
 -- Name: woningblok_maatwerk_text_changelog; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -4353,9 +4020,6 @@ CREATE TABLE diwi_testset.woningblok_maatwerk_text_changelog (
     change_end_date timestamp with time zone,
     eigenschap_id uuid NOT NULL
 );
-
-
-ALTER TABLE diwi_testset.woningblok_maatwerk_text_changelog OWNER TO ali;
 
 --
 -- Name: woningblok_mutatie_changelog; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -4374,9 +4038,6 @@ CREATE TABLE diwi_testset.woningblok_mutatie_changelog (
     mutation_kind diwi_testset.mutation_kind NOT NULL
 );
 
-
-ALTER TABLE diwi_testset.woningblok_mutatie_changelog OWNER TO ali;
-
 --
 -- Name: woningblok_naam_changelog; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -4392,9 +4053,6 @@ CREATE TABLE diwi_testset.woningblok_naam_changelog (
     change_end_date timestamp with time zone,
     change_user_id uuid
 );
-
-
-ALTER TABLE diwi_testset.woningblok_naam_changelog OWNER TO ali;
 
 --
 -- Name: woningblok_programmering_changelog; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -4412,9 +4070,6 @@ CREATE TABLE diwi_testset.woningblok_programmering_changelog (
     change_user_id uuid
 );
 
-
-ALTER TABLE diwi_testset.woningblok_programmering_changelog OWNER TO ali;
-
 --
 -- Name: woningblok_state; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -4427,9 +4082,6 @@ CREATE TABLE diwi_testset.woningblok_state (
     change_start_date timestamp with time zone NOT NULL,
     change_end_date timestamp with time zone
 );
-
-
-ALTER TABLE diwi_testset.woningblok_state OWNER TO ali;
 
 --
 -- Name: woningblok_type_en_fysiek_changelog; Type: TABLE; Schema: diwi_testset; Owner: ali
@@ -4446,9 +4098,6 @@ CREATE TABLE diwi_testset.woningblok_type_en_fysiek_changelog (
     change_user_id uuid
 );
 
-
-ALTER TABLE diwi_testset.woningblok_type_en_fysiek_changelog OWNER TO ali;
-
 --
 -- Name: woningblok_type_en_fysiek_changelog_fysiek_value; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -4460,9 +4109,6 @@ CREATE TABLE diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value (
     property_value_id uuid NOT NULL
 );
 
-
-ALTER TABLE diwi_testset.woningblok_type_en_fysiek_changelog_fysiek_value OWNER TO ali;
-
 --
 -- Name: woningblok_type_en_fysiek_changelog_type_value; Type: TABLE; Schema: diwi_testset; Owner: ali
 --
@@ -4473,9 +4119,6 @@ CREATE TABLE diwi_testset.woningblok_type_en_fysiek_changelog_type_value (
     woning_type diwi_testset.woning_type NOT NULL,
     amount integer NOT NULL
 );
-
-
-ALTER TABLE diwi_testset.woningblok_type_en_fysiek_changelog_type_value OWNER TO ali;
 
 --
 -- Name: flyway_schema_history; Type: TABLE; Schema: public; Owner: ali
@@ -4493,9 +4136,6 @@ CREATE TABLE public.flyway_schema_history (
     execution_time integer NOT NULL,
     success boolean NOT NULL
 );
-
-
-ALTER TABLE public.flyway_schema_history OWNER TO ali;
 
 --
 -- Data for Name: document; Type: TABLE DATA; Schema: diwi_testset; Owner: ali
@@ -7399,9 +7039,9 @@ COPY diwi_testset.user_state (id, user_id, create_user_id, change_start_date, ch
 31c34ed2-8750-4fdd-9d17-f7a8a0109535	f0ee8f85-78a5-47a1-8eba-8a06a93f1eee	2122426c-6e70-419c-a054-f51dd24d798b	2024-01-01 19:06:32+01	\N	ID2	White	Laura	\N	UserPlus
 b0d57e9a-54b3-4b47-8b66-79c760483083	9caa1a9f-dd1f-4937-8d49-880894282cc2	2122426c-6e70-419c-a054-f51dd24d798b	2024-01-01 19:06:32+01	\N	ID3	Red	Mary	\N	UserPlus
 4ec6731b-1dbd-479c-954c-bf10d20871e2	72efb41f-e4ac-439d-8c95-c498cef4af40	2122426c-6e70-419c-a054-f51dd24d798b	2024-01-01 19:06:32+01	\N	ID1	Storm	Charlie	\N	UserPlus
-018e61da-9775-77eb-9751-1632ca91fd66	018e61da-976d-7fca-9165-3e872014d47f	7ad8f82b-3e04-4c4e-aa59-bf9098c99377	2024-03-21 17:31:39.34646+01	\N	2bcb91d4-20b2-4d26-9af1-9eac4e0cf81f	Min	Ad	\N	UserPlus
-42af0060-057d-4e8d-a9e6-e345380cd099	42af0060-057d-4e8d-a9e6-e345380cd099	7ad8f82b-3e04-4c4e-aa59-bf9098c99377	2024-03-22 23:47:39.856519+01	\N		1	Demo user	\N	UserPlus
-232e05e5-e08e-4350-8cf2-7226a74cc5ea	232e05e5-e08e-4350-8cf2-7226a74cc5ea	7ad8f82b-3e04-4c4e-aa59-bf9098c99377	2024-03-22 23:47:39.856519+01	\N		2	Demo user	\N	UserPlus
+018e61da-9775-77eb-9751-1632ca91fd66	018e61da-976d-7fca-9165-3e872014d47f	7ad8f82b-3e04-4c4e-aa59-bf9098c99377	2024-03-21 17:31:39.34646+01	\N	ID4	Min	Ad	\N	UserPlus
+42af0060-057d-4e8d-a9e6-e345380cd099	42af0060-057d-4e8d-a9e6-e345380cd099	7ad8f82b-3e04-4c4e-aa59-bf9098c99377	2024-03-22 23:47:39.856519+01	\N		ID5	Demo user	\N	UserPlus
+232e05e5-e08e-4350-8cf2-7226a74cc5ea	232e05e5-e08e-4350-8cf2-7226a74cc5ea	7ad8f82b-3e04-4c4e-aa59-bf9098c99377	2024-03-22 23:47:39.856519+01	\N		ID6	Demo user	\N	UserPlus
 \.
 
 
@@ -11690,4 +11330,3 @@ ALTER TABLE ONLY diwi_testset.woningblok_type_en_fysiek_changelog_type_value
 --
 -- PostgreSQL database dump complete
 --
-

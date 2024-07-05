@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 import io.hypersistence.utils.hibernate.type.range.Range;
+import jakarta.annotation.Nullable;
 import nl.vng.diwi.dal.entities.PropertyCategoryValue;
 import nl.vng.diwi.dal.entities.PropertyOrdinalValue;
 import nl.vng.diwi.dal.entities.Property;
@@ -28,7 +30,9 @@ import nl.vng.diwi.dal.entities.UserGroup;
 import nl.vng.diwi.dal.entities.UserGroupToProject;
 import nl.vng.diwi.models.ProjectHouseblockCustomPropertyModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
+import nl.vng.diwi.rest.VngNotAllowedException;
 import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.security.UserAction;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -69,6 +73,31 @@ public class ProjectService {
     private static final Logger logger = LogManager.getLogger();
 
     public ProjectService() {
+    }
+
+    public void checkProjectEditPermission(VngRepository repo, UUID projectUuid, LoggedUser loggedUser) throws VngNotFoundException, VngNotAllowedException {
+        checkProjectEditPermission(repo, projectUuid, null, loggedUser);
+    }
+
+    public void checkProjectEditPermission(VngRepository repo, UUID projectUuid, @Nullable ProjectSnapshotModel projectSnapshot, LoggedUser loggedUser) throws VngNotFoundException, VngNotAllowedException {
+        if (loggedUser.getRole().allowedActions.contains(UserAction.EDIT_ALL_PROJECTS)) {
+            return; //permission is ok;
+        } else if (loggedUser.getRole().allowedActions.contains(UserAction.EDIT_OWN_PROJECTS)) {
+            if (projectSnapshot == null) {
+                projectSnapshot = getProjectSnapshot(repo, projectUuid, loggedUser);
+            }
+            if (projectSnapshot == null) {
+                throw new VngNotFoundException();
+            }
+
+            Set<UUID> projectOwners = new HashSet<>();
+            projectSnapshot.getProjectOwners().forEach(o -> o.getUsers().forEach(u -> projectOwners.add(u.getUuid())));
+            if (!projectOwners.contains(loggedUser.getUuid())) {
+                throw new VngNotAllowedException("User is not allowed to edit projects for which he is not an owner.");
+            }
+        } else {
+            throw new VngNotAllowedException("User is not allowed to edit projects.");
+        }
     }
 
     public Project getCurrentProject(VngRepository repo, UUID uuid) {

@@ -4,6 +4,7 @@ import { t } from "i18next";
 import { HouseBlock, OwnershipSingleValue } from "../../../../types/houseBlockTypes";
 import AddIcon from "@mui/icons-material/Add";
 import { OwnershipRowInputs } from "./OwnershipRowInputs";
+import { checkConsistencyOwnerShipValueAndMutation } from "../../../../utils/houseblocks/houseBlocksFunctions";
 
 export type OwnershipInformationProps = {
     houseBlock: HouseBlock;
@@ -60,6 +61,7 @@ export const OwnershipInformationGroup = ({ houseBlock, setHouseBlock, readOnly 
                         handleInputChange={handleInputChange}
                         ownership={ownership}
                         readOnly={readOnly}
+                        isOwnerShipValueAndMutationConsistent={checkConsistencyOwnerShipValueAndMutation(houseBlock)}
                     />
                 ))}
                 {!readOnly && (

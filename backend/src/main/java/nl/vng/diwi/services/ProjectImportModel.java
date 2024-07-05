@@ -585,11 +585,9 @@ public class ProjectImportModel {
                 ownershipValue.setHouseblock(houseblock);
                 if (ov.getValue() != null) {
                     ownershipValue.setValueRange(ov.getValue().toRange());
-                    ownershipValue.setValueType(ValueType.RANGE);
                 }
                 if (ov.getRentalValue() != null) {
                     ownershipValue.setRentalValueRange(ov.getRentalValue().toRange());
-                    ownershipValue.setRentalValueType(ValueType.RANGE);
                 }
                 ownershipValue.setAmount(ov.getAmount());
                 ownershipValue.setOwnershipType(ov.getType());

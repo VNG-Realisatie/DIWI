@@ -15,6 +15,7 @@ type Props = {
     handleInputChange: (index: number, value: OwnershipSingleValue) => void;
     handleRemoveRow: (index: number) => void;
     readOnly: boolean;
+    isOwnerShipValueAndMutationConsistent: boolean;
 };
 type OwnershipProps = {
     ownership: OwnershipSingleValue;
@@ -23,6 +24,7 @@ type OwnershipProps = {
     readOnly: boolean;
     title: string;
     mandatory: boolean;
+    isOwnerShipValueAndMutationConsistent: boolean;
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -30,8 +32,19 @@ export const isOwnershipAmountValid = (amount: number): boolean => {
     return Number.isInteger(amount) && amount >= 0;
 };
 
-const OwnershipAmountInput = ({ handleInputChange, ownership, index, readOnly, title, mandatory }: OwnershipProps) => {
+const OwnershipAmountInput = ({ handleInputChange, ownership, index, readOnly, title, mandatory, isOwnerShipValueAndMutationConsistent }: OwnershipProps) => {
     const isAmountValid = isOwnershipAmountValid(ownership.amount);
+    const isConsistent = isOwnerShipValueAndMutationConsistent;
+    const checkIfOwnerShipValueAndMutationConsistent = () => {
+        if (!isAmountValid) {
+            return t("createProject.hasMissingRequiredAreas.amount");
+        } else {
+            if (!isConsistent) {
+                return t("createProject.hasMissingRequiredAreas.amountNotConsistent");
+            }
+            return "";
+        }
+    };
     return (
         <InputLabelStack title={title || ""} mandatory={mandatory}>
             <TextField
@@ -41,15 +54,15 @@ const OwnershipAmountInput = ({ handleInputChange, ownership, index, readOnly, t
                 fullWidth
                 value={ownership.amount !== 0 && !Number.isNaN(ownership.amount) ? ownership.amount : ""}
                 onChange={(e) => handleInputChange(index, { ...ownership, amount: parseInt(e.target.value) })}
-                error={!isAmountValid}
-                helperText={!isAmountValid ? t("createProject.hasMissingRequiredAreas.amount") : ""}
+                error={!isAmountValid || !isConsistent}
+                helperText={checkIfOwnerShipValueAndMutationConsistent()}
                 disabled={readOnly}
             />
         </InputLabelStack>
     );
 };
 
-export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handleRemoveRow, readOnly }: Props) => {
+export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handleRemoveRow, readOnly, isOwnerShipValueAndMutationConsistent }: Props) => {
     const isKoopwoning = ownership.type === "KOOPWONING";
     const isHuurwoning = ownership.type === "HUURWONING_PARTICULIERE_VERHUURDER" || ownership.type === "HUURWONING_WONINGCORPORATIE";
 
@@ -76,6 +89,7 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                     index={index}
                     handleInputChange={handleInputChange}
                     ownership={ownership}
+                    isOwnerShipValueAndMutationConsistent={isOwnerShipValueAndMutationConsistent}
                 />
             </Grid>
             <Grid item xs={3} className="ownership-house-value">

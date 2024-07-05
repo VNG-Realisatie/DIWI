@@ -70,6 +70,67 @@
         }
       }
     },
+    "/rest/dashboard/projects": {
+      "get": {
+        "operationId": "getProjectDashboardSnapshot",
+        "parameters": [
+          {
+            "name": "snapshotDate",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MultiProjectDashboardModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rest/dashboard/project/{id}": {
+      "get": {
+        "operationId": "getProjectDashboardSnapshot_1",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "snapshotDate",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectDashboardModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/rest/houseblock/add": {
       "post": {
         "operationId": "createHouseblock",
@@ -1221,6 +1282,46 @@
           }
         }
       },
+      "MultiProjectDashboardModel": {
+        "type": "object",
+        "properties": {
+          "physicalAppearance": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PieChartModel"
+            }
+          },
+          "targetGroup": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PieChartModel"
+            }
+          }
+        }
+      },
+      "PieChartModel": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "ProjectDashboardModel": {
+        "type": "object",
+        "properties": {
+          "physicalAppearance": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PieChartModel"
+            }
+          }
+        }
+      },
       "AmountModel": {
         "required": ["amount", "id"],
         "type": "object",
@@ -1359,8 +1460,16 @@
           "value": {
             "$ref": "#/components/schemas/SingleValueOrRangeModelInteger"
           },
+          "valueCategoryId": {
+            "type": "string",
+            "format": "uuid"
+          },
           "rentalValue": {
             "$ref": "#/components/schemas/SingleValueOrRangeModelInteger"
+          },
+          "rentalValueCategoryId": {
+            "type": "string",
+            "format": "uuid"
           }
         }
       },
@@ -1373,7 +1482,7 @@
           },
           "propertyType": {
             "type": "string",
-            "enum": ["BOOLEAN", "CATEGORY", "ORDINAL", "NUMERIC", "TEXT"]
+            "enum": ["BOOLEAN", "CATEGORY", "ORDINAL", "NUMERIC", "TEXT", "RANGE_CATEGORY"]
           },
           "textValue": {
             "type": "string"
@@ -2152,6 +2261,9 @@
           "level": {
             "type": "integer",
             "format": "int32"
+          },
+          "ordinalValue": {
+            "type": "string"
           }
         }
       },
@@ -2176,7 +2288,7 @@
           },
           "propertyType": {
             "type": "string",
-            "enum": ["BOOLEAN", "CATEGORY", "ORDINAL", "NUMERIC", "TEXT"]
+            "enum": ["BOOLEAN", "CATEGORY", "ORDINAL", "NUMERIC", "TEXT", "RANGE_CATEGORY"]
           },
           "disabled": {
             "type": "boolean"
@@ -2192,6 +2304,34 @@
             "items": {
               "$ref": "#/components/schemas/OrdinalSelectDisabledModel"
             }
+          },
+          "ranges": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RangeSelectDisabledModel"
+            }
+          }
+        }
+      },
+      "RangeSelectDisabledModel": {
+        "required": ["disabled", "id", "min", "name"],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "min": {
+            "type": "number"
+          },
+          "max": {
+            "type": "number"
+          },
+          "disabled": {
+            "type": "boolean"
           }
         }
       },
@@ -2293,11 +2433,20 @@
             "items": {
               "type": "string",
               "enum": [
+                "VIEW_API",
+                "VIEW_USERS",
                 "EDIT_USERS",
+                "VIEW_GROUPS",
+                "EDIT_GROUPS",
+                "VIEW_CONFIG",
+                "EDIT_CONFIG",
+                "VIEW_CUSTOM_PROPERTIES",
                 "EDIT_CUSTOM_PROPERTIES",
                 "CAN_OWN_PROJECTS",
                 "CHANGE_PROJECT_OWNER",
                 "VIEW_OTHERS_PROJECTS",
+                "VIEW_OWN_PROJECTS",
+                "EDIT_OWN_PROJECTS",
                 "CREATE_NEW_PROJECT",
                 "IMPORT_PROJECTS",
                 "EXPORT_PROJECTS"
