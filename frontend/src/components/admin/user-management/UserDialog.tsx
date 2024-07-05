@@ -5,6 +5,7 @@ import { User } from "../../../pages/UserManagement";
 import CategoryInput from "../../project/inputs/CategoryInput";
 import { roleTypeOptions } from "../../../types/enums";
 import { ChangeEvent } from "react";
+import { validateEmail } from "../../../utils/emailValidation";
 
 type UserDialogProps = {
     open: boolean;
@@ -16,7 +17,7 @@ type UserDialogProps = {
 };
 
 const UserDialog = ({ open, onClose, newUser, setNewUser, handleAddUser, title }: UserDialogProps) => {
-    const isFormInvalid = !newUser.firstName || !newUser.lastName || !newUser.role || !newUser.email || !/^\S+@\S+\.\S+$/.test(newUser.email);
+    const isFormInvalid = !newUser.firstName || !newUser.lastName || !newUser.role || !newUser.email || !validateEmail(newUser.email);
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
             <DialogTitle>{title}</DialogTitle>
