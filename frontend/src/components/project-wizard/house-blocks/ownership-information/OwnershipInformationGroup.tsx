@@ -4,7 +4,7 @@ import { t } from "i18next";
 import { HouseBlock, OwnershipSingleValue } from "../../../../types/houseBlockTypes";
 import AddIcon from "@mui/icons-material/Add";
 import { OwnershipRowInputs } from "./OwnershipRowInputs";
-import { useCallback } from "react";
+import { checkConsistencyOwnerShipValueAndMutation } from "../../../../utils/houseblocks/houseBlocksFunctions";
 
 export type OwnershipInformationProps = {
     houseBlock: HouseBlock;
@@ -13,15 +13,6 @@ export type OwnershipInformationProps = {
 };
 
 export const OwnershipInformationGroup = ({ houseBlock, setHouseBlock, readOnly }: OwnershipInformationProps) => {
-    const checkConsistencyOwnerShipValueAndMutation = useCallback(() => {
-        const ownershipValue = houseBlock.ownershipValue.reduce((acc, curr) => acc + curr.amount, 0);
-        const mutation = houseBlock.mutation.amount ?? 0;
-        if (ownershipValue <= mutation) {
-            return true;
-        }
-        return false;
-    }, [houseBlock.mutation.amount, houseBlock.ownershipValue]);
-
     const handleAddRow = () => {
         setHouseBlock({
             ...houseBlock,
@@ -70,7 +61,7 @@ export const OwnershipInformationGroup = ({ houseBlock, setHouseBlock, readOnly 
                         handleInputChange={handleInputChange}
                         ownership={ownership}
                         readOnly={readOnly}
-                        isOwnerShipValueAndMutationConsistent={checkConsistencyOwnerShipValueAndMutation()}
+                        isOwnerShipValueAndMutationConsistent={checkConsistencyOwnerShipValueAndMutation(houseBlock)}
                     />
                 ))}
                 {!readOnly && (
