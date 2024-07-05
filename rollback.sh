@@ -19,6 +19,10 @@ DIWI_DB_USERNAME=${DIWI_DB_USERNAME:-diwi}
 
 read -p "Enter timestamp: " timestamp
 
+#Check if files exist
+test -f "backup/predeploy-$timestamp.githash" || { echo "Error: Git hash file 'backup/predeploy-$timestamp.githash' not found."; exit 1; }
+test -f "backup/predeploy-$timestamp.dump" || { echo "Error: Database dump file 'backup/predeploy-$timestamp.dump' not found."; exit 1; }
+
 # Create backup first
 ./backup.sh
 
@@ -26,9 +30,7 @@ read -p "Enter timestamp: " timestamp
 git checkout "$(cat "backup/predeploy-$timestamp.githash")"
 
 function restoreDB() {
-    # Unsure if this next line is safe to run so I commented it instead:
-    # docker compose exec -T database pg_restore -U $DIWI_DB_USERNAME -d $DIWI_DB_NAME "backup/predeploy-$timestamp.dump"
-    pg_restore -U $DIWI_DB_USERNAME -d $DIWI_DB_NAME "backup/predeploy-$timestamp.dump"
+    docker compose exec -T database pg_restore -U $DIWI_DB_USERNAME -d $DIWI_DB_NAME "backup/predeploy-$timestamp.dump"
 }
 
 restoreDB $timestamp
