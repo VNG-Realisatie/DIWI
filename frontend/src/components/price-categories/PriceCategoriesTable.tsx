@@ -24,9 +24,6 @@ type Props = {
 };
 
 const PriceCategoriesTable = ({ property, setRangeCategories }: Props) => {
-    if (!property) {
-        return;
-    }
     const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -48,6 +45,10 @@ const PriceCategoriesTable = ({ property, setRangeCategories }: Props) => {
         });
         setCategories(categories);
     }, [property.ranges]);
+
+    if (!property) {
+        return null;
+    }
 
     const handleDelete = async () => {
         if (!categoryToDelete || !property.id || !property.ranges) return;
