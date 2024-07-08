@@ -6,6 +6,8 @@ import { OwnershipSingleValue } from "../../../../types/houseBlockTypes";
 import CategoryInput from "../../../project/inputs/CategoryInput";
 import RangeNumberInput from "../../../project/inputs/RangeNumberInput";
 import InputLabelStack from "../../../project/inputs/InputLabelStack";
+import { getCustomPropertiesWithQuery, Property } from "../../../../api/adminSettingServices";
+import { useEffect, useState } from "react";
 
 const translationPath = "createProject.houseBlocksForm";
 
@@ -66,6 +68,26 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
     const isKoopwoning = ownership.type === "KOOPWONING";
     const isHuurwoning = ownership.type === "HUURWONING_PARTICULIERE_VERHUURDER" || ownership.type === "HUURWONING_WONINGCORPORATIE";
 
+    const [rangeCategories, setRangeCategories] = useState<Property[]>([]);
+
+    useEffect(() => {
+        getCustomPropertiesWithQuery("WONINGBLOK").then((properties) => {
+            setRangeCategories(properties.filter((property) => !property.disabled && property.propertyType === "RANGE_CATEGORY"));
+        });
+    }, []);
+
+    const categoryOptions = rangeCategories
+        .filter((property) => {
+            if (isKoopwoning && property.name === "priceRangeBuy") {
+                return true;
+            }
+            if (isHuurwoning && property.name === "priceRangeRent") {
+                return true;
+            }
+            return false;
+        })
+        .flatMap((property) => (property.categories ? property.categories.map((category) => ({ id: category.id, name: category.name })) : []));
+
     return (
         <Grid container spacing={2} mt={1} direction="row">
             <Grid item xs={3} className="ownership-category">
@@ -90,6 +112,17 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                     handleInputChange={handleInputChange}
                     ownership={ownership}
                     isOwnerShipValueAndMutationConsistent={isOwnerShipValueAndMutationConsistent}
+                />
+            </Grid>
+            <Grid item xs={2} className="price-category">
+                <CategoryInput
+                    title={t(`${translationPath}.priceCategory`)}
+                    readOnly={readOnly}
+                    values={null} //TODO
+                    setValue={(_, newValue) => {}} //TODO
+                    mandatory={false}
+                    options={categoryOptions}
+                    multiple={false}
                 />
             </Grid>
             <Grid item xs={3} className="ownership-house-value">
