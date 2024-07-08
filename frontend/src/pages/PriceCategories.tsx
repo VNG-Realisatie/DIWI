@@ -17,6 +17,8 @@ const PriceCategories = () => {
         });
     }, [setPriceRangeRentCategories, setPriceRangeBuyCategories]);
 
+    if (priceRangeRentCategories.length === 0 || priceRangeBuyCategories.length === 0) return null;
+
     return (
         <>
             <Typography variant="h6" gutterBottom component="div">

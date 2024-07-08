@@ -46,10 +46,6 @@ const PriceCategoriesTable = ({ property, setRangeCategories }: Props) => {
         setCategories(categories);
     }, [property.ranges]);
 
-    if (!property) {
-        return null;
-    }
-
     const handleDelete = async () => {
         if (!categoryToDelete || !property.id || !property.ranges) return;
         const updatedRanges = property.ranges.map((range) => (range.id === categoryToDelete.id ? { ...range, disabled: true } : range));
