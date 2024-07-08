@@ -36,19 +36,17 @@ const PriceCategoriesTable = ({ property, setRangeCategories }: Props) => {
     const [categories, setCategories] = useState<CategoryType[]>([]);
 
     useEffect(() => {
-        if (property.ranges) {
-            const rows = property.ranges.filter((range) => !range.disabled);
-            setRows(rows as Category[]);
+        const rows = (property.ranges ?? []).filter((range) => !range.disabled);
+        setRows(rows as Category[]);
 
-            const categories = property.ranges.map((range) => {
-                return {
-                    id: range.id,
-                    name: range.name,
-                    disabled: range.disabled,
-                };
-            });
-            setCategories(categories);
-        }
+        const categories = rows.map((range) => {
+            return {
+                id: range.id,
+                name: range.name,
+                disabled: range.disabled,
+            };
+        });
+        setCategories(categories);
     }, [property.ranges]);
 
     const handleDelete = async () => {
