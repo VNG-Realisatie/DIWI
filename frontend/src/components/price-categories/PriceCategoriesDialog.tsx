@@ -117,7 +117,6 @@ const PriceCategoriesDialog = ({ open, setOpen, id, propertyName, setRangeCatego
         <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
-                {/* <TextInput/> */}
                 <TextInput
                     value={name}
                     setValue={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
