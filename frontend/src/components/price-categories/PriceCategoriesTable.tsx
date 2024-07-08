@@ -39,10 +39,7 @@ const PriceCategoriesTable = ({ property, setRangeCategories }: Props) => {
         if (!property.ranges) return;
         const rows = property.ranges.filter((range) => !range.disabled);
         setRows(rows as Category[]);
-    }, [property.ranges]);
 
-    useEffect(() => {
-        if (!property.ranges) return;
         const categories = property.ranges.map((range) => {
             return {
                 id: range.id,

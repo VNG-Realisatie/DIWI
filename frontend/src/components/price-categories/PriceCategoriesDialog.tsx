@@ -17,7 +17,7 @@ type Category = {
     id: string;
     name: string;
     min: number | null;
-    max: number | null;
+    max?: number;
     disabled: boolean;
 };
 
@@ -42,7 +42,7 @@ const PriceCategoriesDialog = ({ open, setOpen, id, propertyName, setRangeCatego
     useEffect(() => {
         if (categoryToEdit) {
             setName(categoryToEdit.name);
-            setRangeValue({ value: null, min: categoryToEdit.min, max: categoryToEdit.max });
+            setRangeValue({ value: null, min: categoryToEdit.min ?? null, max: categoryToEdit.max ?? null });
         }
     }, [categoryToEdit]);
 
@@ -86,7 +86,7 @@ const PriceCategoriesDialog = ({ open, setOpen, id, propertyName, setRangeCatego
     };
 
     const handleSave = () => {
-        const newProperty: any = {
+        const newProperty: Property = {
             id,
             name: propertyName,
             type: "FIXED",
@@ -94,13 +94,14 @@ const PriceCategoriesDialog = ({ open, setOpen, id, propertyName, setRangeCatego
             propertyType: "RANGE_CATEGORY",
             ranges: [
                 {
-                    id: categoryToEdit ? categoryToEdit.id : undefined,
+                    id: categoryToEdit ? categoryToEdit.id : "",
                     name,
-                    min: rangeValue.min,
-                    max: rangeValue.max,
+                    min: rangeValue.min ?? 0,
+                    max: rangeValue.max ?? undefined,
                     disabled: false,
                 },
             ],
+            disabled: false,
         };
 
         saveAction(newProperty);
