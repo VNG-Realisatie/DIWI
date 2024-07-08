@@ -9,7 +9,6 @@ import { useContext, useEffect, useState } from "react";
 import { CategoryType, Property, updateCustomProperty } from "../../api/adminSettingServices";
 import DeleteDialog from "./DeleteDialog";
 import AlertContext from "../../context/AlertContext";
-import { getDuplicatedPropertyInfo } from "../../utils/getDuplicatedPropertyInfo";
 
 type Category = {
     id: string;
@@ -34,14 +33,12 @@ const PriceCategoriesTable = ({ property, setRangeCategories }: Props) => {
     const [categoryToEdit, setCategoryToEdit] = useState<Category | null>(null);
     const [rows, setRows] = useState<Category[]>([]);
     const { setAlert } = useContext(AlertContext);
-    const [propertyDuplicationInfo, setPropertyDuplicationInfo] = useState<{ duplicatedStatus: boolean; duplicatedName: string }>();
     const [categories, setCategories] = useState<CategoryType[]>([]);
 
     useEffect(() => {
-        if (property.ranges) {
-            const rows = property.ranges.filter((range) => !range.disabled);
-            setRows(rows as Category[]);
-        }
+        if (!property.ranges) return;
+        const rows = property.ranges.filter((range) => !range.disabled);
+        setRows(rows as Category[]);
     }, [property.ranges]);
 
     useEffect(() => {
@@ -54,12 +51,7 @@ const PriceCategoriesTable = ({ property, setRangeCategories }: Props) => {
             };
         });
         setCategories(categories);
-    });
-
-    useEffect(() => {
-        const duplicated = getDuplicatedPropertyInfo(categories);
-        setPropertyDuplicationInfo(duplicated);
-    }, [categories]);
+    }, [property.ranges]);
 
     const handleDelete = async () => {
         if (!categoryToDelete || !property.id || !property.ranges) return;
@@ -168,6 +160,7 @@ const PriceCategoriesTable = ({ property, setRangeCategories }: Props) => {
                 categoryToEdit={categoryToEdit}
                 setCategoryToEdit={setCategoryToEdit}
                 title={property.name === "priceRangeBuy" ? t("admin.priceCategories.priceCategoryBuy") : t("admin.priceCategories.priceCategoryRent")}
+                categories={categories}
             />
 
             <DeleteDialog open={openDeleteDialog} handleDelete={handleDelete} closeDeleteDialog={closeDeleteDialog} />

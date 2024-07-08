@@ -1,10 +1,11 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import TextInput from "../project/inputs/TextInput";
-import { Property, updateCustomProperty } from "../../api/adminSettingServices";
+import { CategoryType, Property, updateCustomProperty } from "../../api/adminSettingServices";
 import useAlert from "../../hooks/useAlert";
 import { t } from "i18next";
 import { useEffect, useState } from "react";
 import RangeNumberInput from "../project/inputs/RangeNumberInput";
+import { getDuplicatedPropertyInfo } from "../../utils/getDuplicatedPropertyInfo";
 
 type RangeNumber = {
     value: number | null;
@@ -29,12 +30,14 @@ type Props = {
     categoryToEdit?: Category | null;
     setCategoryToEdit: (category: Category | null) => void;
     title: string;
+    categories: CategoryType[];
 };
 
-const PriceCategoriesDialog = ({ open, setOpen, id, propertyName, setRangeCategories, categoryToEdit, setCategoryToEdit, title }: Props) => {
+const PriceCategoriesDialog = ({ open, setOpen, id, propertyName, setRangeCategories, categoryToEdit, setCategoryToEdit, title, categories }: Props) => {
     const [name, setName] = useState<string>("");
     const [rangeValue, setRangeValue] = useState<RangeNumber>({ value: null, min: null, max: null });
     const { setAlert } = useAlert();
+    const [propertyDuplicationInfo, setPropertyDuplicationInfo] = useState<{ duplicatedStatus: boolean; duplicatedName: string }>();
 
     useEffect(() => {
         if (categoryToEdit) {
@@ -42,6 +45,20 @@ const PriceCategoriesDialog = ({ open, setOpen, id, propertyName, setRangeCatego
             setRangeValue({ value: null, min: categoryToEdit.min, max: categoryToEdit.max });
         }
     }, [categoryToEdit]);
+
+    useEffect(() => {
+        const duplicated = getDuplicatedPropertyInfo(categories);
+        setPropertyDuplicationInfo(duplicated);
+    }, [categories]);
+
+    useEffect(() => {
+        // If categoryToEdit is not null, we should exclude the current category from the list to check for duplication
+        const listExcludingCurrent = categoryToEdit ? categories.filter((category) => category.id !== categoryToEdit.id) : categories;
+
+        const listWithCurrentInput = [...listExcludingCurrent, { name: name, id: undefined, disabled: false }];
+        const { duplicatedStatus, duplicatedName } = getDuplicatedPropertyInfo(listWithCurrentInput);
+        setPropertyDuplicationInfo({ duplicatedStatus, duplicatedName });
+    }, [name, categories, categoryToEdit]);
 
     const handleRangeValueUpdate = (newValue: RangeNumber) => {
         setRangeValue(newValue);
@@ -122,10 +139,17 @@ const PriceCategoriesDialog = ({ open, setOpen, id, propertyName, setRangeCatego
                 <Button onClick={handleClose} variant="outlined">
                     {t("generic.cancel")}
                 </Button>
-                <Button onClick={handleSave} disabled={!name || !(rangeValue.value || rangeValue.min)} variant="contained">
+                <Button
+                    onClick={handleSave}
+                    disabled={!name || !(rangeValue.value || rangeValue.min) || propertyDuplicationInfo?.duplicatedStatus}
+                    variant="contained"
+                >
                     {t("generic.save")}
                 </Button>
             </DialogActions>
+            {propertyDuplicationInfo?.duplicatedStatus && (
+                <Alert severity="error">{propertyDuplicationInfo?.duplicatedName + " " + t("admin.settings.duplicatedOption")}</Alert>
+            )}
         </Dialog>
     );
 };
