@@ -144,7 +144,7 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                     multiple={false}
                 />
             </Grid>
-            <Grid item xs={3} className="ownership-house-value">
+            <Grid item xs={2.8} className="ownership-house-value">
                 <RangeNumberInput
                     value={!isHuurwoning ? ownership.value : { ...ownership.value, value: null }}
                     updateCallBack={(e) => handleInputChange(index, { ...ownership, value: e })}
@@ -154,7 +154,7 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                     title={t(`${translationPath}.value`)}
                 />
             </Grid>
-            <Grid item xs={3} className="ownership-house-rent">
+            <Grid item xs={2.8} className="ownership-house-rent">
                 <RangeNumberInput
                     value={!isKoopwoning ? ownership.rentalValue : { ...ownership.value, value: null }}
                     updateCallBack={(e) => handleInputChange(index, { ...ownership, rentalValue: e })}
@@ -164,7 +164,7 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                     title={t(`${translationPath}.rent`)}
                 />
             </Grid>
-            <Grid item xs={0.2} className="ownership-delete-icon" style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
+            <Grid item xs={0.3} className="ownership-delete-icon" style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
                 {!readOnly && (
                     <IconButton onClick={() => handleRemoveRow(index)}>
                         <DeleteIcon sx={{ color: "red" }} />

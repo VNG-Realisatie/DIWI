@@ -163,7 +163,7 @@ const RangeNumberInput = ({ labelText, value, updateCallBack, isMonetary = false
                         },
                         fontStyle: "italic",
                         color: "rgba(0, 0, 0, 0.3)",
-                        transform: isMonetary ? "translate(34px, 9px)" : null,
+                        transform: isMonetary ? "translate(34px, 12px)" : null,
                     },
                 }}
                 value={stringValue ?? ""}
