@@ -263,6 +263,7 @@
       "projects": "Projecten",
       "dashboards": "Dashboards",
       "users": "Gebruikers",
+      "priceCategories": "Prijs categorieën",
       "dataExchange": "Data uitwisselen",
       "import": "Importeren",
       "export": "Exporteren",
@@ -472,6 +473,20 @@
       }
     },
     "admin": {
+      "priceCategories": {
+        "name": "Naam",
+        "amount": "Waarde",
+        "actions": "Acties",
+        "priceCategoryBuy": "Prijscategorien koop",
+        "priceCategoryRent": "Prijscategorien huur",
+        "add": "Nieuwe prijscategorie toevoegen",
+        "deleteConfirmation": "Weet je zeker dat je deze prijscategorie wilt verwijderen?",
+        "nameError": "Vul de naam in",
+        "amountError": "Vul de waarde in",
+        "successfullySaved": "Prijscategorieën succesvol opgeslagen",
+        "successfullyDeleted": "Prijscategorieën succesvol verwijderd"
+
+      },
       "userManagement": {
         "titleUser": "User management gebruikers",
         "titleGroup": "User management groepen",

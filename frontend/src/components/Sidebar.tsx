@@ -96,6 +96,11 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
                         </ListItemButton>
                     </Link>
                 )}
+                <Link to={Paths.priceCategories.path} style={linkStyles} onClick={handleDrawerClose}>
+                    <ListItemButton>
+                        <ListItemText primary={t("sidebar.priceCategories")} />
+                    </ListItemButton>
+                </Link>
                 <Link to={Paths.userManagement.path} style={linkStyles} onClick={handleDrawerClose}>
                     <ListItemButton>
                         <ListItemText primary={t("sidebar.users")} />
