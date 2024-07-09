@@ -76,17 +76,24 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
         });
     }, []);
 
-    const categoryOptions = rangeCategories
-        .filter((property) => {
-            if (isKoopwoning && property.name === "priceRangeBuy") {
-                return true;
-            }
-            if (isHuurwoning && property.name === "priceRangeRent") {
-                return true;
-            }
-            return false;
-        })
-        .flatMap((property) => (property.categories ? property.categories.map((category) => ({ id: category.id, name: category.name })) : []));
+    const filteredCategories = rangeCategories.filter((property) => {
+        if (isKoopwoning && property.name === "priceRangeBuy") {
+            return true;
+        }
+        if (isHuurwoning && property.name === "priceRangeRent") {
+            return true;
+        }
+        return false;
+    });
+
+    const customProperty = filteredCategories[0];
+
+    const priceCategoryOptions = customProperty ? customProperty.ranges : [];
+    const selectedValueCategory = priceCategoryOptions?.find((option) => option.id === ownership.valueCategoryId);
+    const valueCategoryName = selectedValueCategory ? selectedValueCategory.name : "";
+
+    const selectedRentalValueCategory = priceCategoryOptions?.find((option) => option.id === ownership.rentalValueCategoryId);
+    const rentalValueCategoryName = selectedRentalValueCategory ? selectedRentalValueCategory.name : "";
 
     return (
         <Grid container spacing={2} mt={1} direction="row">
@@ -103,7 +110,7 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                     tooltipInfoText={t("tooltipInfo.soort.title")}
                 />
             </Grid>
-            <Grid item xs={1.5} className="ownership-house-amount">
+            <Grid item xs={1} className="ownership-house-amount">
                 <OwnershipAmountInput
                     mandatory={false}
                     readOnly={readOnly}
@@ -118,10 +125,22 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                 <CategoryInput
                     title={t(`${translationPath}.priceCategory`)}
                     readOnly={readOnly}
-                    values={null} //TODO
-                    setValue={(_, newValue) => {}} //TODO
+                    values={
+                        ownership.valueCategoryId
+                            ? { id: ownership.valueCategoryId, name: valueCategoryName }
+                            : ownership.rentalValueCategoryId
+                              ? { id: ownership.rentalValueCategoryId, name: rentalValueCategoryName }
+                              : null
+                    }
+                    setValue={(_, newValue) => {
+                        if (isKoopwoning) {
+                            handleInputChange(index, { ...ownership, valueCategoryId: newValue ? newValue.id : undefined });
+                        } else {
+                            handleInputChange(index, { ...ownership, rentalValueCategoryId: newValue ? newValue.id : undefined });
+                        }
+                    }}
                     mandatory={false}
-                    options={categoryOptions}
+                    options={priceCategoryOptions ?? []}
                     multiple={false}
                 />
             </Grid>

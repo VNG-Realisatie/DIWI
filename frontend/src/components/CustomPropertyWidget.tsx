@@ -113,7 +113,6 @@ export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, cu
                 onChange={(e) => setCustomValue({ ...customValue, textValue: e.target.value })}
             />
         );
-        // TODO add ORDINAL!
     } else {
         return null;
     }

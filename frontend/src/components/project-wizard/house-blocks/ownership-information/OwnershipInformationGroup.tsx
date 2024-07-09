@@ -1,7 +1,7 @@
 import { Grid, IconButton, Typography } from "@mui/material";
 import { WizardCard } from "../../WizardCard";
 import { t } from "i18next";
-import { HouseBlock, OwnershipSingleValue } from "../../../../types/houseBlockTypes";
+import { HouseBlock, HouseBlockWithCustomProperties, OwnershipSingleValue } from "../../../../types/houseBlockTypes";
 import AddIcon from "@mui/icons-material/Add";
 import { OwnershipRowInputs } from "./OwnershipRowInputs";
 import { checkConsistencyOwnerShipValueAndMutation } from "../../../../utils/houseblocks/houseBlocksFunctions";
@@ -9,6 +9,8 @@ import { checkConsistencyOwnerShipValueAndMutation } from "../../../../utils/hou
 export type OwnershipInformationProps = {
     houseBlock: HouseBlock;
     setHouseBlock(houseBlock: HouseBlock): void;
+    houseBlockWithProperties?: HouseBlockWithCustomProperties;
+    setHouseBlockWithProperties?: (hb: HouseBlockWithCustomProperties) => void;
     readOnly: boolean;
 };
 
