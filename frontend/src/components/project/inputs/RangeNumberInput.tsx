@@ -18,6 +18,7 @@ type Props = {
     readOnly: boolean;
     mandatory: boolean;
     title?: string;
+    errorText?: string;
 };
 
 const decimalSeparator = ",";
@@ -98,9 +99,17 @@ function fromStringToRange(stringValue: string | null, isMonetary: boolean): Val
     }
 }
 
-const RangeNumberInput = ({ labelText, value, updateCallBack, isMonetary = false, readOnly, mandatory, title }: Props) => {
+const shouldDisplayError = (mandatory: boolean, value: string | null) => {
+    if (mandatory && (!value || value === "0,00")) {
+        return true;
+    }
+    return false;
+};
+
+const RangeNumberInput = ({ labelText, value, updateCallBack, isMonetary = false, readOnly, mandatory, title, errorText }: Props) => {
     const [stringValue, setStringValue] = useState<string | null>(null);
 
+    const hasError = shouldDisplayError(mandatory, stringValue);
     useEffect(() => {
         setStringValue(fromRangeToString(value, isMonetary));
     }, [value, isMonetary]);
@@ -176,6 +185,8 @@ const RangeNumberInput = ({ labelText, value, updateCallBack, isMonetary = false
                     },
                     "& .MuiInputAdornment-positionStart": { marginRight: "2px" },
                 }}
+                error={hasError}
+                helperText={hasError ? errorText : ""}
             />
         </InputLabelStack>
     );

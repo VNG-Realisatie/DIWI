@@ -277,6 +277,7 @@ export interface components {
             firstName?: string;
             lastName?: string;
             initials?: string;
+            role?: string;
         };
         ProjectCreateSnapshotModel: {
             /** Format: date */
