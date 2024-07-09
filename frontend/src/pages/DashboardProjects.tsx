@@ -35,15 +35,6 @@ export const DashboardProjects = () => {
     const navigate = useNavigate();
     const allowedActions = useAllowedActions();
 
-    if (!allowedActions.includes("VIEW_DASHBOARDS")) {
-        return <ActionNotAllowed errorMessage={t("dashboard.forbidden")} />;
-    }
-
-    const handleSelectProject = (project: Project | null) => {
-        setSelectedProject(project);
-        navigate(Paths.dashboardProject.toPath({ projectId: project?.projectId || "" }));
-    };
-
     useEffect(() => {
         getDashboardProjects().then((data) => {
             const convertedPhysicalAppearance = data.physicalAppearance.map((d) => {
@@ -108,6 +99,15 @@ export const DashboardProjects = () => {
             setDashboardMutationValues(list);
         });
     }, [t]);
+
+    if (!allowedActions.includes("VIEW_DASHBOARDS")) {
+        return <ActionNotAllowed errorMessage={t("dashboard.forbidden")} />;
+    }
+
+    const handleSelectProject = (project: Project | null) => {
+        setSelectedProject(project);
+        navigate(Paths.dashboardProject.toPath({ projectId: project?.projectId || "" }));
+    };
 
     const chartCardStyling = { backgroundColor: "#F0F0F0", my: 1, p: 2, xs: 12, md: 5.9 };
 
