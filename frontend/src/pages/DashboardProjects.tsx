@@ -14,6 +14,8 @@ import { chartColors } from "../utils/dashboardChartColors";
 import { getProjectHouseBlocksWithCustomProperties } from "../api/houseBlockServices";
 import { MutationCard } from "../components/dashboard/MutationCard";
 import ProjectOverviewMap from "../components/map/ProjectOverviewMap";
+import useAllowedActions from "../hooks/useAllowedActions";
+import ActionNotAllowed from "./ActionNotAllowed";
 type DashboardProjects = {
     physicalAppearance: ChartType[];
     targetGroup: ChartType[];
@@ -31,6 +33,11 @@ export const DashboardProjects = () => {
     const { rows } = useCustomSearchParams(undefined, undefined, { page: 1, pageSize: 10000 });
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const allowedActions = useAllowedActions();
+
+    if (!allowedActions.includes("VIEW_DASHBOARDS")) {
+        return <ActionNotAllowed errorMessage={t("dashboard.forbidden")} />;
+    }
 
     const handleSelectProject = (project: Project | null) => {
         setSelectedProject(project);
