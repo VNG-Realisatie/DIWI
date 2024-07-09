@@ -57,7 +57,6 @@ const PriceCategoriesTable = ({ property, setRangeCategories }: Props) => {
 
         try {
             const savedProperty = await updateCustomProperty(property.id, updatedProperty);
-            console.log(savedProperty);
             setRangeCategories([savedProperty]);
             setAlert(t("admin.priceCategories.successfullyDeleted"), "success");
         } catch (error) {
