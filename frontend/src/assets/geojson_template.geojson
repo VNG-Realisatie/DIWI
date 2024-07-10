@@ -26,7 +26,7 @@
                         "rol_gemeente": null,
                         "status": null,
                         "eigenaar": null,
-                        "vertrouwelijkheid": null
+                        "vertrouwelijkheid": null,
                     },
                     "rollen": {
                         "projectleider": null,
@@ -77,9 +77,10 @@
                         },
                         "einddatum": null,
                         "grootte": [],
-                        "waarde": {
+                        "waarde": { // Gebruik óf een categorie, óf specifieke waardes
                             "hoog": null,
-                            "laag": null
+                            "laag": null,
+                            "categorie": "name"
                         },
                         "fysiek_voorkomen":[],
                         "doelgroep": [],
