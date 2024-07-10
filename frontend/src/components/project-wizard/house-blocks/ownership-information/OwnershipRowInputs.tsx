@@ -104,6 +104,7 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
             valueCategoryId: isKoopwoning ? ownership.valueCategoryId : undefined,
             rentalValueCategoryId: isHuurwoning ? ownership.rentalValueCategoryId : undefined,
         });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isPriceCategorySelected, isKoopwoning, isHuurwoning]);
 
     return (
