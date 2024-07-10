@@ -44,7 +44,7 @@ public class DashboardResource {
 
     @GET
     @Path("/project/{id}")
-    @RolesAllowed({UserActionConstants.VIEW_OWN_PROJECTS, UserActionConstants.VIEW_OTHERS_PROJECTS})
+    @RolesAllowed({UserActionConstants.VIEW_DASHBOARDS})
     @Produces(MediaType.APPLICATION_JSON)
     public ProjectDashboardModel getProjectDashboardSnapshot(ContainerRequestContext requestContext, @PathParam("id") UUID projectUuid,
                                                              @QueryParam("snapshotDate") String snapshotDateStr) throws VngNotFoundException {
@@ -56,7 +56,7 @@ public class DashboardResource {
 
     @GET
     @Path("/projects")
-    @RolesAllowed({UserActionConstants.VIEW_OWN_PROJECTS, UserActionConstants.VIEW_OTHERS_PROJECTS})
+    @RolesAllowed({UserActionConstants.VIEW_DASHBOARDS})
     @Produces(MediaType.APPLICATION_JSON)
     public MultiProjectDashboardModel getProjectDashboardSnapshot(ContainerRequestContext requestContext, @QueryParam("snapshotDate") String snapshotDateStr) throws VngNotFoundException {
         var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
