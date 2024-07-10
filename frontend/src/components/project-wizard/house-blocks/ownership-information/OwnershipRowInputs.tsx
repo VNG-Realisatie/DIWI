@@ -91,9 +91,20 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
     const priceCategoryOptions = customProperty ? customProperty.ranges : [];
     const selectedValueCategory = priceCategoryOptions?.find((option) => option.id === ownership.valueCategoryId);
     const valueCategoryName = selectedValueCategory ? selectedValueCategory.name : "";
-
     const selectedRentalValueCategory = priceCategoryOptions?.find((option) => option.id === ownership.rentalValueCategoryId);
     const rentalValueCategoryName = selectedRentalValueCategory ? selectedRentalValueCategory.name : "";
+
+    const isPriceCategorySelected = Boolean(ownership.valueCategoryId || ownership.rentalValueCategoryId);
+
+    useEffect(() => {
+        handleInputChange(index, {
+            ...ownership,
+            value: isPriceCategorySelected || isHuurwoning ? { value: null, min: null, max: null } : ownership.value,
+            rentalValue: isPriceCategorySelected || isKoopwoning ? { value: null, min: null, max: null } : ownership.rentalValue,
+            valueCategoryId: isKoopwoning ? ownership.valueCategoryId : undefined,
+            rentalValueCategoryId: isHuurwoning ? ownership.rentalValueCategoryId : undefined,
+        });
+    }, [isPriceCategorySelected, isKoopwoning, isHuurwoning]);
 
     return (
         <Grid container spacing={2} mt={1} direction="row">
@@ -126,17 +137,17 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                     title={t(`${translationPath}.priceCategory`)}
                     readOnly={readOnly}
                     values={
-                        ownership.valueCategoryId
+                        ownership.valueCategoryId && valueCategoryName
                             ? { id: ownership.valueCategoryId, name: valueCategoryName }
-                            : ownership.rentalValueCategoryId
+                            : ownership.rentalValueCategoryId && rentalValueCategoryName
                               ? { id: ownership.rentalValueCategoryId, name: rentalValueCategoryName }
                               : null
                     }
                     setValue={(_, newValue) => {
                         if (isKoopwoning) {
-                            handleInputChange(index, { ...ownership, valueCategoryId: newValue ? newValue.id : undefined });
-                        } else {
-                            handleInputChange(index, { ...ownership, rentalValueCategoryId: newValue ? newValue.id : undefined });
+                            handleInputChange(index, { ...ownership, valueCategoryId: newValue ? newValue.id : undefined, rentalValueCategoryId: undefined });
+                        } else if (isHuurwoning) {
+                            handleInputChange(index, { ...ownership, rentalValueCategoryId: newValue ? newValue.id : undefined, valueCategoryId: undefined });
                         }
                     }}
                     mandatory={false}
@@ -146,9 +157,9 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
             </Grid>
             <Grid item xs={2.8} className="ownership-house-value">
                 <RangeNumberInput
-                    value={!isHuurwoning ? ownership.value : { ...ownership.value, value: null }}
+                    value={!isHuurwoning ? ownership.value : { value: null, min: null, max: null }}
                     updateCallBack={(e) => handleInputChange(index, { ...ownership, value: e })}
-                    readOnly={readOnly ? true : isHuurwoning}
+                    readOnly={readOnly || isPriceCategorySelected || isHuurwoning}
                     mandatory={false}
                     isMonetary={true}
                     title={t(`${translationPath}.value`)}
@@ -156,9 +167,9 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
             </Grid>
             <Grid item xs={2.8} className="ownership-house-rent">
                 <RangeNumberInput
-                    value={!isKoopwoning ? ownership.rentalValue : { ...ownership.value, value: null }}
+                    value={!isKoopwoning ? ownership.rentalValue : { value: null, min: null, max: null }}
                     updateCallBack={(e) => handleInputChange(index, { ...ownership, rentalValue: e })}
-                    readOnly={readOnly ? true : isKoopwoning}
+                    readOnly={readOnly || isPriceCategorySelected || isKoopwoning}
                     mandatory={false}
                     isMonetary={true}
                     title={t(`${translationPath}.rent`)}
