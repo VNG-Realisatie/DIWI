@@ -22,6 +22,13 @@ vi.mock("../../../api/houseBlockServices", async (importOriginal) => {
     };
 });
 
+vi.mock("../../../hooks/useHasEditPermission", () => ({
+    __esModule: true,
+    useHasEditPermission: () => ({
+        getEditPermission: () => true,
+    }),
+}));
+
 const saveHouseBlockWithCustomPropertiesMock = saveHouseBlockWithCustomProperties as jest.Mock;
 
 vi.mock("../../../api/adminSettingServices", async (importOriginal) => {

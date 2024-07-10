@@ -6,15 +6,13 @@ import SaveIcon from "@mui/icons-material/Save";
 import ClearIcon from "@mui/icons-material/Clear";
 import FormatColorFillIcon from "@mui/icons-material/FormatColorFill";
 import { useTranslation } from "react-i18next";
-
 import { defaultColors } from "../../ColorSelector";
 import { BlockPicker } from "react-color";
-
 import { Project, updateProjectWithCustomProperties } from "../../../api/projectsServices";
 import AlertContext from "../../../context/AlertContext";
 import { ProjectForm } from "../../ProjectForm";
 import useLoading from "../../../hooks/useLoading";
-import useAllowedActions from "../../../hooks/useAllowedActions";
+import { useHasEditPermission } from "../../../hooks/useHasEditPermission";
 import { validateForm } from "../../../utils/formValidation";
 
 export const ProjectsWithHouseBlock = () => {
@@ -22,13 +20,12 @@ export const ProjectsWithHouseBlock = () => {
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const [openColorDialog, setOpenColorDialog] = useState(false);
     const [readOnly, setReadOnly] = useState(true);
-
     const [projectForm, setProjectForm] = useState<Project | null>(selectedProject);
 
     const { setAlert } = useContext(AlertContext);
     const { setLoading } = useLoading();
     const { t } = useTranslation();
-    const allowedActions = useAllowedActions();
+    const { getEditPermission } = useHasEditPermission();
 
     const resetProjectForm = useCallback(() => {
         setProjectForm(selectedProject);
@@ -73,7 +70,7 @@ export const ProjectsWithHouseBlock = () => {
     return (
         <Stack mb={10}>
             <Box sx={{ cursor: "pointer" }} position="absolute" right={100} top={17}>
-                {allowedActions.includes("EDIT_OWN_PROJECTS") && (
+                {getEditPermission() && (
                     <>
                         {!readOnly && (
                             <Tooltip placement="top" title={t("projectDetail.colorEdit")}>
