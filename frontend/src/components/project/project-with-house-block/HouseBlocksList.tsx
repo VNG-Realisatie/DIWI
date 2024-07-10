@@ -12,11 +12,11 @@ import { sortHouseBlockByNameAndId as sortHouseBlocksByNameAndId } from "../../.
 import { deleteHouseBlockWithCustomProperties, saveHouseBlockWithCustomProperties } from "../../../api/houseBlockServices";
 import { DeleteButtonWithConfirm } from "../../DeleteButtonWithConfirm";
 import { HouseBlocksForm } from "../../HouseBlocksForm";
-import { validateHouseBlock } from "../../HouseBlocksFormWithControls";
 import useAlert from "../../../hooks/useAlert";
 import { useCustomPropertyDefinitions } from "../../../hooks/useCustomPropertyDefinitions";
 import { useHasEditPermission } from "../../../hooks/useHasEditPermission";
 import { useLocation } from "react-router-dom";
+import { validateHouseBlock } from "../../../utils/houseblocks/houseBlocksFunctions";
 
 type Props = {
     setOpenHouseBlockDialog: (open: boolean) => void;
@@ -24,7 +24,6 @@ type Props = {
 export const HouseBlocksList = ({ setOpenHouseBlockDialog }: Props) => {
     const { houseBlocks, refresh } = useContext(HouseBlockContext);
     const [displayAddButton, setDisplayAddButton] = useState<boolean>(false);
-
     const location = useLocation();
     useEffect(() => {
         if (location.pathname.includes("characteristics")) {

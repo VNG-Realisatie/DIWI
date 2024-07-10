@@ -96,11 +96,26 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
                         </ListItemButton>
                     </Link>
                 )}
+                <Link to={Paths.priceCategories.path} style={linkStyles} onClick={handleDrawerClose}>
+                    <ListItemButton>
+                        <ListItemText primary={t("sidebar.priceCategories")} />
+                    </ListItemButton>
+                </Link>
                 <Link to={Paths.userManagement.path} style={linkStyles} onClick={handleDrawerClose}>
                     <ListItemButton>
                         <ListItemText primary={t("sidebar.users")} />
                     </ListItemButton>
                 </Link>
+            </List>
+            <List sx={{ ml: 3 }}>
+                <Typography sx={typographyStyles}>{t("sidebar.dataExchange")}</Typography>
+                {allowedActions.includes("IMPORT_PROJECTS") && (
+                    <Link to={Paths.exchangeimportdata.path} style={linkStyles} onClick={handleDrawerClose}>
+                        <ListItemButton>
+                            <ListItemText primary={t("sidebar.import")} />
+                        </ListItemButton>
+                    </Link>
+                )}
             </List>
             <List sx={{ ml: 3, marginTop: "auto", marginBottom: "20px" }}>
                 <Link to="https://support.diwi.vng.client.phinion.com/help/nl-nl" target="_blank" style={linkStyles} onClick={handleDrawerClose}>

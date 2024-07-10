@@ -10,7 +10,7 @@ export class NavigationPage extends HelperBase {
     }
 
     async loginPage() {
-        await this.page.goto("http://localhost:3000/rest/auth/login");
+        await this.page.goto("/rest/auth/login");
 
         await this.page.getByLabel("Username or email").click();
         await this.page.getByLabel("Username or email").fill("admin");

@@ -23,6 +23,8 @@ public class GenericRepository implements AutoCloseable {
             Arrays.asList(
                 PropertyCategoryValue.class,
                 PropertyCategoryValueState.class,
+                PropertyRangeCategoryValue.class,
+                PropertyRangeCategoryValueState.class,
                 PropertyOrdinalValue.class,
                 PropertyOrdinalValueState.class,
                 Property.class,

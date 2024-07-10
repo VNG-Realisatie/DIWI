@@ -81,6 +81,7 @@ export const CategoryCreateOption: React.FC<Props> = ({ categoryValue, setCatego
         updatedCategories[index + 1 + categoriesDisabled.length].level--;
         setCategoryValue(updatedCategories.sort(sortCategories));
     };
+
     return (
         <>
             <InputLabel variant="standard" id="categories">

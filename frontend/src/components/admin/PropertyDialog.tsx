@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useCallback, useContext, useEffect, useState } from "react";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, InputLabel, MenuItem, Select, Stack, TextField, Tooltip } from "@mui/material";
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, InputLabel, MenuItem, Select, Stack, TextField, Tooltip } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
 import { useTranslation } from "react-i18next";
 import AlertContext from "../../context/AlertContext";
@@ -16,6 +16,7 @@ import { ObjectType, PropertyType } from "../../types/enums";
 import { objectType } from "../../types/enums";
 import { propertyType } from "../../types/enums";
 import { CategoryCreateOption } from "./CategoryCreateOption";
+import { getDuplicatedPropertyInfo } from "../../utils/getDuplicatedPropertyInfo";
 
 interface Props {
     openDialog: boolean;
@@ -33,9 +34,10 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
     const [displayedName, setDisplayedName] = useState<string>("");
     const [categories, setCategories] = useState<CategoryType[]>([]);
     const [ordinals, setOrdinalCategories] = useState<OrdinalCategoryType[]>([]);
-    const [activeProperty, setActiveProperty] = useState<Property>();
+    const [propertyDuplicationInfo, setPropertyDuplicationInfo] = useState<{ duplicatedStatus: boolean; duplicatedName: string }>();
     const { setAlert } = useContext(AlertContext);
     const { t } = useTranslation();
+    const [activeProperty, setActiveProperty] = useState<Property>();
 
     const updateDialog = useCallback(
         (property: Property): void => {
@@ -47,7 +49,7 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
                 setDisplayedName(property.name);
             }
             property.categories && setCategories(property.categories);
-            property.ordinals && setOrdinalCategories(property.ordinals);
+            property.ordinals && setOrdinalCategories(property.ordinals.sort((a, b) => a.level - b.level));
             setActive(property.disabled);
             setSelectedObjectType(property.objectType);
             setSelectedPropertyType(property.propertyType);
@@ -78,6 +80,7 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
         setOrdinalCategories([]);
         setSelectedObjectType("PROJECT");
         setSelectedPropertyType("TEXT");
+        setActive(false);
     };
 
     const handleClose = () => {
@@ -90,7 +93,6 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
         try {
             if (!id) {
                 clearFields();
-                setActive(false);
             }
             const savedProperty = await (id ? updateCustomProperty(id, newProperty) : addCustomProperty(newProperty));
             setAlert(t("admin.settings.notifications.successfullySaved"), "success");
@@ -121,6 +123,16 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
 
         saveAction(newProperty);
     };
+
+    useEffect(() => {
+        const duplicated = getDuplicatedPropertyInfo(categories);
+        setPropertyDuplicationInfo(duplicated);
+    }, [categories]);
+
+    useEffect(() => {
+        const duplicated = getDuplicatedPropertyInfo(ordinals);
+        setPropertyDuplicationInfo(duplicated);
+    }, [ordinals]);
 
     return (
         <Dialog open={openDialog} onClose={handleClose} fullWidth>
@@ -171,22 +183,28 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
                         labelId="propertyType"
                         onChange={(e) => setSelectedPropertyType(e.target.value as PropertyType)}
                     >
-                        {propertyType.map((property) => (
-                            <MenuItem key={property} value={property}>
-                                {t(`admin.settings.propertyType.${property}`)}
-                            </MenuItem>
-                        ))}
+                        {propertyType
+                            .filter((p) => p !== "RANGE_CATEGORY")
+                            .map((property) => (
+                                <MenuItem key={property} value={property}>
+                                    {t(`admin.settings.propertyType.${property}`)}
+                                </MenuItem>
+                            ))}
                     </Select>
+
                     {selectedPropertyType === "CATEGORY" && <CategoryCreateOption categoryValue={categories} setCategoryValue={setCategories} />}
                     {selectedPropertyType === "ORDINAL" && (
                         <CategoryCreateOption
                             categoryValue={ordinals ? ordinals : []}
                             setCategoryValue={(value) => {
-                                const refinedCategoryValue = value.map((item) => ("level" in item ? item : { ...item, level: 1 }));
+                                const refinedCategoryValue = value.map((item, index) => ({ ...item, level: index }));
                                 setOrdinalCategories(refinedCategoryValue);
                             }}
                             ordered={true}
                         />
+                    )}
+                    {propertyDuplicationInfo?.duplicatedStatus && (
+                        <Alert severity="error">{propertyDuplicationInfo?.duplicatedName + " " + t("admin.settings.duplicatedOption")}</Alert>
                     )}
                 </Stack>
             </DialogContent>
@@ -194,7 +212,7 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
                 <Button variant="contained" color="error" onClick={handleClose}>
                     {t("generic.cancel")}
                 </Button>
-                <Button variant="contained" color="success" onClick={handleSave} autoFocus>
+                <Button variant="contained" color="success" onClick={handleSave} autoFocus disabled={propertyDuplicationInfo?.duplicatedStatus}>
                     {t("generic.save")}
                 </Button>
             </DialogActions>

@@ -67,6 +67,7 @@ import nl.vng.diwi.models.SingleValueOrRangeModel;
 import nl.vng.diwi.models.superclasses.ProjectCreateSnapshotModel;
 import nl.vng.diwi.models.superclasses.ProjectMinimalSnapshotModel;
 import nl.vng.diwi.rest.VngBadRequestException;
+import nl.vng.diwi.rest.VngNotAllowedException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
@@ -151,9 +152,12 @@ public class ProjectsResource {
 
     @DELETE
     @Path("/{id}")
-    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
-    public void deleteProject(ContainerRequestContext requestContext, @PathParam("id") UUID projectUuid) throws VngNotFoundException {
+    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS, UserActionConstants.EDIT_ALL_PROJECTS})
+    public void deleteProject(ContainerRequestContext requestContext, @PathParam("id") UUID projectUuid) throws VngNotFoundException, VngNotAllowedException {
         var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
+
+        projectService.checkProjectEditPermission(repo, projectUuid, loggedUser);
+
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             projectService.deleteProject(repo, projectUuid, loggedUser.getUuid());
             transaction.commit();
@@ -233,11 +237,11 @@ public class ProjectsResource {
 
     @PUT
     @Path("/{id}/customproperties")
-    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
+    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS, UserActionConstants.EDIT_ALL_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public List<ProjectHouseblockCustomPropertyModel> updateProjectCustomProperty(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid, ProjectHouseblockCustomPropertyModel projectCPUpdateModel)
-        throws VngNotFoundException, VngBadRequestException, VngServerErrorException {
+        throws VngNotFoundException, VngBadRequestException, VngServerErrorException, VngNotAllowedException {
 
         if (projectCPUpdateModel.getCustomPropertyId() == null){
             throw new VngBadRequestException("Custom property id must be set.");
@@ -252,6 +256,8 @@ public class ProjectsResource {
         if (dbCP.getType() != PropertyKind.CUSTOM) {
             throw new VngBadRequestException("Not a custom property.");
         }
+
+        projectService.checkProjectEditPermission(repo, projectUuid, loggedUser);
 
         LocalDate updateDate = LocalDate.now();
 
@@ -354,15 +360,17 @@ public class ProjectsResource {
 
     @POST
     @Path("/{id}/plots")
-    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
+    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS, UserActionConstants.EDIT_ALL_PROJECTS})
     @Consumes(MediaType.APPLICATION_JSON)
-    public void setProjectPlots(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid, List<PlotModel> plots) throws VngNotFoundException, VngBadRequestException {
+    public void setProjectPlots(@Context LoggedUser loggedUser, @PathParam("id") UUID projectUuid, List<PlotModel> plots) throws VngNotFoundException, VngBadRequestException, VngNotAllowedException {
 
         Project project = projectService.getCurrentProject(repo, projectUuid);
 
         if (project == null) {
             throw new VngNotFoundException("project not found");
         }
+
+        projectService.checkProjectEditPermission(repo, projectUuid, loggedUser);
 
         for (var plot : plots) {
             String validationError = plot.validate();
@@ -388,11 +396,11 @@ public class ProjectsResource {
 
     @POST
     @Path("/update")
-    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
+    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS, UserActionConstants.EDIT_ALL_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public ProjectSnapshotModel updateProjectSnapshot(@Context LoggedUser loggedUser, ProjectSnapshotModel projectSnapshotModelToUpdate)
-            throws VngNotFoundException, VngBadRequestException, VngServerErrorException {
+        throws VngNotFoundException, VngBadRequestException, VngServerErrorException, VngNotAllowedException {
 
         UUID projectUuid = projectSnapshotModelToUpdate.getProjectId();
         Project project = projectService.getCurrentProject(repo, projectUuid);
@@ -401,6 +409,7 @@ public class ProjectsResource {
         }
 
         ProjectSnapshotModel projectSnapshotModelCurrent = projectService.getProjectSnapshot(repo, projectUuid, loggedUser);
+        projectService.checkProjectEditPermission(repo, projectUuid, projectSnapshotModelCurrent, loggedUser);
 
         List<ProjectUpdateModel> projectUpdateModelList = new ArrayList<>();
         for (ProjectUpdateModel.ProjectProperty projectProperty : ProjectUpdateModel.ProjectProperty.values()) {

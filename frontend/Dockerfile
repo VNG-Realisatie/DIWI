@@ -1,4 +1,4 @@
-FROM git.phinion.com/phinion/dependency_proxy/containers/node:18-alpine as build-stage
+FROM git.phinion.com/phinion/dependency_proxy/containers/node:18-alpine AS build-stage
 
 # Dependencies
 COPY ./yarn.lock ./yarn.lock
@@ -30,7 +30,7 @@ RUN echo "{ \
     }" > ./dist/version.json
 
 # production stage
-FROM nginx:1.24-alpine as production-stage
+FROM nginx:1.24-alpine AS production-stage
 
 COPY --from=build-stage ./dist /usr/share/nginx/html
 
