@@ -88,7 +88,7 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
 
     const customProperty = filteredCategories[0];
 
-    const priceCategoryOptions = customProperty ? customProperty.ranges : [];
+    const priceCategoryOptions = customProperty ? customProperty?.ranges?.filter((option) => !option.disabled) : [];
     const selectedValueCategory = priceCategoryOptions?.find((option) => option.id === ownership.valueCategoryId);
     const valueCategoryName = selectedValueCategory ? selectedValueCategory.name : "";
     const selectedRentalValueCategory = priceCategoryOptions?.find((option) => option.id === ownership.rentalValueCategoryId);
