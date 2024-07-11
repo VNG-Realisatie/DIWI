@@ -139,11 +139,7 @@ const PriceCategoriesDialog = ({ open, setOpen, id, propertyName, setRangeCatego
                 <Button onClick={handleClose} variant="outlined">
                     {t("generic.cancel")}
                 </Button>
-                <Button
-                    onClick={handleSave}
-                    disabled={!name || !(rangeValue.value || rangeValue.min) || propertyDuplicationInfo?.duplicatedStatus}
-                    variant="contained"
-                >
+                <Button onClick={handleSave} disabled={!name || propertyDuplicationInfo?.duplicatedStatus} variant="contained">
                     {t("generic.save")}
                 </Button>
             </DialogActions>

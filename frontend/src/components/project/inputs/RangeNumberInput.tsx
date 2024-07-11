@@ -118,7 +118,6 @@ const RangeNumberInput = ({ labelText, value, updateCallBack, isMonetary = false
         let newValue = e.target.value;
         newValue = newValue.replace(".", ",");
         const isValidInput = /^-?\d*(,\d{0,2})?(-\d*(,?\d{0,2})?)?$/.test(newValue);
-
         if (isValidInput) setStringValue(newValue);
     };
 
