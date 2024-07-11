@@ -52,17 +52,19 @@ export const CustomPropertiesHouseblock = ({ readOnly, customPropertyValues, set
                 customDefinitions.map((property) => {
                     const customValue = customPropertyValues?.find((cv) => cv.customPropertyId === property.id);
                     return (
-                        <Stack key={property.id} width="100%">
-                            <LabelComponent required text={property.name} />{" "}
-                            <CustomPropertyWidget
-                                readOnly={readOnly}
-                                customValue={customValue}
-                                setCustomValue={(newValue) => {
-                                    setCustomValue({ ...newValue, customPropertyId: property.id });
-                                }}
-                                customDefinition={property}
-                            />
-                        </Stack>
+                        property.propertyType !== "RANGE_CATEGORY" && (
+                            <Stack key={property.id} width="100%">
+                                <LabelComponent required text={property.name} />{" "}
+                                <CustomPropertyWidget
+                                    readOnly={readOnly}
+                                    customValue={customValue}
+                                    setCustomValue={(newValue) => {
+                                        setCustomValue({ ...newValue, customPropertyId: property.id });
+                                    }}
+                                    customDefinition={property}
+                                />
+                            </Stack>
+                        )
                     );
                 })}
             {/* No custom props */}

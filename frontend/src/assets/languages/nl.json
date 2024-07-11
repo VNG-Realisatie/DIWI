@@ -151,6 +151,7 @@
         "size": "Woonoppervlak in m2",
         "type": "Soort",
         "amount": "Aantal",
+        "priceCategory": "Prijscategorie",
         "rent": "Huur",
         "ownershipAndValue": {
           "title": "Eigendom en waarde",
