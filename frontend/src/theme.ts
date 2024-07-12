@@ -62,7 +62,16 @@ export const theme = createTheme(
                         "&.Mui-disabled": {
                             opacity: 1,
                             fontStyle: "italic",
-                            color: "#9F9F9F",
+                            color: "#000000",
+                        },
+                    },
+                },
+            },
+            MuiRadio: {
+                styleOverrides: {
+                    root: {
+                        "&.Mui-disabled": {
+                            color: "#000000", // Example: Change the color when the radio is checked
                         },
                     },
                 },
@@ -82,13 +91,22 @@ export const theme = createTheme(
                         height: "30px",
 
                         "&.MuiInputBase-input.Mui-disabled": {
-                            WebkitTextFillColor: "#9F9F9F !important",
+                            WebkitTextFillColor: "#000000 !important",
                             fontStyle: "italic",
                         },
                     },
                 },
             },
-
+            MuiFormControlLabel: {
+                styleOverrides: {
+                    label: {
+                        "&.MuiFormControlLabel-label.Mui-disabled": {
+                            color: "#000000",
+                            fontStyle: "italic",
+                        },
+                    },
+                },
+            },
             MuiDataGrid: {
                 styleOverrides: {
                     cell: {
