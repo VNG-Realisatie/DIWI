@@ -1,7 +1,6 @@
 import { createTheme } from "@mui/material/styles";
 import { nlNL } from "@mui/material/locale";
 import type {} from "@mui/x-data-grid/themeAugmentation";
-
 declare module "@mui/material/styles" {
     interface PaletteColor {
         customDarkBlue?: string;
@@ -62,6 +61,8 @@ export const theme = createTheme(
                     root: {
                         "&.Mui-disabled": {
                             opacity: 1,
+                            fontStyle: "italic",
+                            color: "#9F9F9F",
                         },
                     },
                 },
@@ -79,9 +80,18 @@ export const theme = createTheme(
                     input: {
                         backgroundColor: "#ffffff",
                         height: "30px",
+                        "&.MuiInputBase-input.Mui-disabled": {
+                            WebkitTextFillColor: "#9F9F9F",
+                            fontStyle: "italic",
+                        },
+                        "&.Mui-disabled": {
+                            WebkitTextFillColor: "#9F9F9F",
+                            fontStyle: "italic",
+                        },
                     },
                 },
             },
+
             MuiDataGrid: {
                 styleOverrides: {
                     cell: {
