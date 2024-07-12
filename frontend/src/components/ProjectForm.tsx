@@ -328,7 +328,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                     text={t("createProject.houseBlocksForm.demolition")}
                                 />
                                 <CellContainer>
-                                    <LabelComponent required={false} text={demolitionAmount.toString()} />
+                                    <LabelComponent required={false} text={demolitionAmount.toString()} disabled />
                                 </CellContainer>
                             </Grid>
                             {/* Construction */}
@@ -339,7 +339,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                     text={t("createProject.houseBlocksForm.grossPlanCapacity")}
                                 />
                                 <CellContainer>
-                                    <LabelComponent required={false} text={constructionAmount.toString()} />
+                                    <LabelComponent required={false} text={constructionAmount.toString()} disabled />
                                 </CellContainer>
                             </Grid>
                             {/* Total */}
@@ -350,7 +350,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                     text={t("createProject.houseBlocksForm.netPlanCapacity")}
                                 />
                                 <CellContainer>
-                                    <LabelComponent required={false} text={(constructionAmount - demolitionAmount).toString()} />
+                                    <LabelComponent required={false} text={(constructionAmount - demolitionAmount).toString()} disabled />
                                 </CellContainer>
                             </Grid>
                         </Grid>
