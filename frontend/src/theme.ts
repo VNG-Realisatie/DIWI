@@ -80,12 +80,9 @@ export const theme = createTheme(
                     input: {
                         backgroundColor: "#ffffff",
                         height: "30px",
+
                         "&.MuiInputBase-input.Mui-disabled": {
-                            WebkitTextFillColor: "#9F9F9F",
-                            fontStyle: "italic",
-                        },
-                        "&.Mui-disabled": {
-                            WebkitTextFillColor: "#9F9F9F",
+                            WebkitTextFillColor: "#9F9F9F !important",
                             fontStyle: "italic",
                         },
                     },
