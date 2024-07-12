@@ -11,7 +11,7 @@ type Props = {
 export const LabelComponent = ({ text, required, tooltipInfoText, disabled }: Props) => {
     const { t } = useTranslation();
     const labelStyling = {
-        color: disabled ? "#9F9F9F" : "#000000",
+        color: "#000000",
         fontStyle: disabled ? "italic" : "normal",
     };
     return (

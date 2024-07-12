@@ -73,7 +73,7 @@ export const SingleNumberInput = ({
                     padding: "0.6em",
                     minHeight: "47px",
                     flex: 3,
-                    color: readOnly ? "text.disabled" : "inherit",
+                    color: readOnly ? "#000000" : "inherit",
                     fontStyle: readOnly ? "italic" : "normal",
                 }}
             >
