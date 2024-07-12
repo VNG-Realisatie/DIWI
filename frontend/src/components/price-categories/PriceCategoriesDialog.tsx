@@ -38,6 +38,7 @@ const PriceCategoriesDialog = ({ open, setOpen, id, propertyName, setRangeCatego
     const [rangeValue, setRangeValue] = useState<RangeNumber>({ value: null, min: null, max: null });
     const { setAlert } = useAlert();
     const [propertyDuplicationInfo, setPropertyDuplicationInfo] = useState<{ duplicatedStatus: boolean; duplicatedName: string }>();
+    const [isRangeValid, setIsRangeValid] = useState<boolean>(true);
 
     useEffect(() => {
         if (categoryToEdit) {
@@ -127,6 +128,7 @@ const PriceCategoriesDialog = ({ open, setOpen, id, propertyName, setRangeCatego
                     title={t("admin.priceCategories.name")}
                 />
                 <RangeNumberInput
+                    setIsRangeValid={setIsRangeValid}
                     value={rangeValue}
                     updateCallBack={handleRangeValueUpdate}
                     readOnly={false}
@@ -139,7 +141,7 @@ const PriceCategoriesDialog = ({ open, setOpen, id, propertyName, setRangeCatego
                 <Button onClick={handleClose} variant="outlined">
                     {t("generic.cancel")}
                 </Button>
-                <Button onClick={handleSave} disabled={!name || propertyDuplicationInfo?.duplicatedStatus} variant="contained">
+                <Button onClick={handleSave} disabled={!name || propertyDuplicationInfo?.duplicatedStatus || !isRangeValid} variant="contained">
                     {t("generic.save")}
                 </Button>
             </DialogActions>
