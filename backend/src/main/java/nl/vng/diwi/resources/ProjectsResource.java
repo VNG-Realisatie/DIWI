@@ -64,6 +64,7 @@ import nl.vng.diwi.models.ProjectUpdateModel;
 import nl.vng.diwi.models.ProjectUpdateModel.ProjectProperty;
 import nl.vng.diwi.models.SelectModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
+import nl.vng.diwi.models.UserGroupUserModel;
 import nl.vng.diwi.models.superclasses.ProjectCreateSnapshotModel;
 import nl.vng.diwi.models.superclasses.ProjectMinimalSnapshotModel;
 import nl.vng.diwi.rest.VngBadRequestException;
@@ -71,6 +72,7 @@ import nl.vng.diwi.rest.VngNotAllowedException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.security.UserAction;
 import nl.vng.diwi.security.UserActionConstants;
 import nl.vng.diwi.services.ExcelImportService;
 import nl.vng.diwi.services.GeoJsonImportService;
@@ -125,6 +127,23 @@ public class ProjectsResource {
         String validationError = projectSnapshotModel.validate();
         if (validationError != null) {
             throw new VngBadRequestException(validationError);
+        }
+
+        boolean userIsOwner = false;
+        for (UserGroupModel group : projectSnapshotModel.getProjectOwners()) {
+            List<UUID> userIds = repo.getUsergroupDAO().getUserGroupUsers(group.getUuid()).stream().map(UserGroupUserModel::getUuid).toList();
+            if (userIds.contains(loggedUser.getUuid())) {
+                userIsOwner = true;
+                break;
+            }
+        }
+        if (!userIsOwner) {
+            if (!loggedUser.getRole().allowedActions.contains(UserAction.EDIT_ALL_PROJECTS)) {
+                throw new VngBadRequestException("Cannot create projects that you are not the owner of.");
+            }
+            if (projectSnapshotModel.getConfidentialityLevel() == Confidentiality.PRIVATE) {
+                throw new VngBadRequestException("Cannot create private projects that you are not the owner of.");
+            }
         }
 
         ZonedDateTime now = ZonedDateTime.now();
