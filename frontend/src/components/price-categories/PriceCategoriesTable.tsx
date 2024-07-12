@@ -84,7 +84,7 @@ const PriceCategoriesTable = ({ property, setRangeCategories }: Props) => {
             renderCell: (params: GridCellParams) => (
                 <Box display="flex" alignItems="center" justifyContent="center" style={{ height: "100%" }} gap="10px">
                     <Typography>€{params.row.min}</Typography>
-                    {params.row.max && <Typography>- €{params.row.max}</Typography>}
+                    <Typography>{params.row.max ? `- €${params.row.max}` : t("generic.andMore")}</Typography>
                 </Box>
             ),
         },
