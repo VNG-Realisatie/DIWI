@@ -576,7 +576,12 @@ public class ProjectsResource {
             }
         }
 
-        return projectService.getProjectSnapshot(repo, projectUuid, loggedUser);
+        try {
+            return projectService.getProjectSnapshot(repo, projectUuid, loggedUser);
+        } catch (VngNotFoundException ex) {
+            //it can happen that the user does not have access to the project anymore after the update
+            return null;
+        }
     }
 
     private void updateProjectProperty(Project project, ProjectUpdateModel projectUpdateModel, LoggedUser loggedUser, LocalDate updateDate, ZonedDateTime changeDate)
