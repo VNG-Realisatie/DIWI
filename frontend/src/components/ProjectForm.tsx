@@ -2,7 +2,7 @@ import { Stack, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { Dayjs } from "dayjs";
 import { t } from "i18next";
-import { useContext } from "react";
+import { useCallback, useContext } from "react";
 import { Project } from "../api/projectsServices";
 import HouseBlockContext from "../context/HouseBlockContext";
 import useProperties from "../hooks/useProperties";
@@ -40,6 +40,19 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
         .filter((hb) => hb.mutation.kind === "DEMOLITION")
         .map((hb) => hb.mutation.amount ?? 0)
         .reduce((a, b) => a + b, 0);
+
+    const checkIsOwnerValidWithConfidentialityLevel = useCallback(() => {
+        if (project?.projectOwners.length > 0) {
+            if (project?.confidentialityLevel) {
+                const cL = confidentialityLevelOptions.find((cl) => cl.id === project.confidentialityLevel);
+                if (cL?.name === "PRIVATE") {
+                    const isUserOwner = project?.projectOwners.some((owner) => owner?.users?.some((u) => u.uuid === user?.id));
+                    return isUserOwner;
+                }
+            }
+        }
+        return true;
+    }, [project.confidentialityLevel, project?.projectOwners, user?.id]);
 
     return (
         <Grid container spacing={2} alignItems="stretch">
@@ -223,6 +236,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 }
                                 mandatory={true}
                                 errorText={t("createProject.hasMissingRequiredAreas.owner")}
+                                checkIsOwnerValidWithConfidentialityLevel={checkIsOwnerValidWithConfidentialityLevel}
                             />
                         </Grid>
 
