@@ -14,13 +14,19 @@ import { chartColors } from "../utils/dashboardChartColors";
 import { getProjectHouseBlocksWithCustomProperties } from "../api/houseBlockServices";
 import { MutationCard } from "../components/dashboard/MutationCard";
 import ProjectOverviewMap from "../components/map/ProjectOverviewMap";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import { FileDownload } from "@mui/icons-material";
+
 type DashboardProjects = {
     physicalAppearance: ChartType[];
     targetGroup: ChartType[];
 };
+
 type MutationValues = {
     [key: string]: number;
 };
+
 export const DashboardProjects = () => {
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
     const [dashboardProjects, setDashboardProjects] = useState<DashboardProjects>();
@@ -35,6 +41,47 @@ export const DashboardProjects = () => {
     const handleSelectProject = (project: Project | null) => {
         setSelectedProject(project);
         navigate(Paths.dashboardProject.toPath({ projectId: project?.projectId || "" }));
+    };
+    const exportPDF = async () => {
+        const totalValues = document.getElementById("totalValues");
+        const projectPhase = document.getElementById("projectPhaseChart");
+        const targetGroup = document.getElementById("targetGroupChart");
+        const physicalAppearance = document.getElementById("physicalAppearanceChart");
+
+        if (!totalValues) {
+            console.error("no exportEmployment");
+            return;
+        }
+
+        if (!projectPhase) {
+            console.error("no valueAdded");
+            return;
+        }
+
+        if (!targetGroup) {
+            console.error("no communityGiving");
+            return;
+        }
+
+        if (!physicalAppearance) {
+            console.error("no employment");
+            return;
+        }
+
+        const h2c = async (element: HTMLElement) => {
+            const canvas = await html2canvas(element, { scale: 1 });
+            return canvas.toDataURL("image/png");
+        };
+        const totalValueChart = await h2c(totalValues);
+        const projectPhaseChart = await h2c(projectPhase);
+        const targetGroupChart = await h2c(targetGroup);
+        const physicalAppearanceChart = await h2c(physicalAppearance);
+        const pdf = new jsPDF("p", "px", "a4");
+        pdf.addImage(totalValueChart, "PNG", 5, 10, 436, 40);
+        pdf.addImage(projectPhaseChart, "PNG", 5, 60, 215, 90);
+        pdf.addImage(targetGroupChart, "PNG", 225, 60, 215, 90);
+        pdf.addImage(physicalAppearanceChart, "PNG", 5, 160, 215, 90);
+        pdf.save("dashboardProjects.pdf");
     };
 
     useEffect(() => {
@@ -110,33 +157,36 @@ export const DashboardProjects = () => {
                 pageTitle={t("dashboard.title")}
                 links={[{ title: `${t("dashboard.municipalityProgram")} ${municipalityName}`, link: Paths.dashboard.path }]}
             />
-            <Autocomplete
-                sx={{ my: 1 }}
-                id="dashboard-projects"
-                size="small"
-                options={rows || []}
-                getOptionLabel={(option) => option?.projectName || ""}
-                value={selectedProject || null}
-                onChange={(_, newValue) => handleSelectProject(newValue)}
-                renderInput={(params) => <TextField {...params} size="small" sx={{ minWidth: "200px" }} placeholder={t("dashboard.selectProject")} />}
-            />
-            <Grid container border="solid 1px #DDD" justifyContent="space-around" p={1}>
-                <Grid item xs={12}>
+            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ cursor: "pointer" }}>
+                <Autocomplete
+                    sx={{ my: 1 }}
+                    id="dashboard-projects"
+                    size="small"
+                    options={rows || []}
+                    getOptionLabel={(option) => option?.projectName || ""}
+                    value={selectedProject || null}
+                    onChange={(_, newValue) => handleSelectProject(newValue)}
+                    renderInput={(params) => <TextField {...params} size="small" sx={{ minWidth: "200px" }} placeholder={t("dashboard.selectProject")} />}
+                />
+                <FileDownload onClick={exportPDF} />
+            </Stack>
+            <Grid container border="solid 1px #DDD" justifyContent="space-around" p={1} id="export">
+                <Grid item xs={12} id="totalValues">
                     <MutationCard demolitionAmount={dashboardMutationValues?.DEMOLITION ?? 0} constructionAmount={dashboardMutationValues?.CONSTRUCTION ?? 0} />
                 </Grid>
-                <Grid item {...chartCardStyling}>
+                <Grid item {...chartCardStyling} id="projectPhaseChart">
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.projectPhases")}
                     </Typography>
                     <DashboardPieChart chartData={projectPhaseSums || []} colors={chartColors} />
                 </Grid>
-                <Grid item {...chartCardStyling}>
+                <Grid item {...chartCardStyling} id="targetGroupChart">
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.targetAudiences")}
                     </Typography>
                     <DashboardPieChart chartData={dashboardProjects?.targetGroup || []} colors={chartColors} />
                 </Grid>
-                <Grid item {...chartCardStyling}>
+                <Grid item {...chartCardStyling} id="physicalAppearanceChart">
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.residentialFeatures")}
                     </Typography>
@@ -172,7 +222,7 @@ export const DashboardProjects = () => {
                     </Typography>
                 </Grid>
 
-                <Grid item xs={12} sx={{ backgroundColor: "#F0F0F0", m: 1, p: 2 }}>
+                <Grid item xs={12} sx={{ backgroundColor: "#F0F0F0", m: 1, p: 2 }} id="map">
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.projects")}
                     </Typography>
