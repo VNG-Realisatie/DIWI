@@ -378,6 +378,7 @@
     },
     "dashboard": {
       "title": "Dashboard",
+      "exportTitle": "Overzicht van alle projecten",
       "projectTitle": "Dashboard | Project",
       "projects": "Dashboard projecten",
       "municipalityProgram": "Woningbouwprogramma gemeente",

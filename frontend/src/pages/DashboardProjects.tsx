@@ -104,10 +104,12 @@ export const DashboardProjects = () => {
         const physicalAppearanceChart = await h2c(physicalAppearance);
         //Add the rest of the charts here
         const pdf = new jsPDF("p", "px", "a4");
-        pdf.addImage(totalValueChart, "PNG", 5, 10, 436, 40);
-        pdf.addImage(projectPhaseChart, "PNG", 5, 60, 215, 90);
-        pdf.addImage(targetGroupChart, "PNG", 225, 60, 215, 90);
-        pdf.addImage(physicalAppearanceChart, "PNG", 5, 160, 215, 90);
+        pdf.setFontSize(14);
+        pdf.text(t(`dashboard.exportTitle`), 5, 20);
+        pdf.addImage(totalValueChart, "PNG", 5, 30, 436, 40);
+        pdf.addImage(projectPhaseChart, "PNG", 5, 80, 215, 90);
+        pdf.addImage(targetGroupChart, "PNG", 225, 80, 215, 90);
+        pdf.addImage(physicalAppearanceChart, "PNG", 5, 180, 215, 90);
         // Add the rest of the charts here
         pdf.save("dashboardProjects.pdf");
     };
