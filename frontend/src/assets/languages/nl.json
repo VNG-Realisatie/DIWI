@@ -384,6 +384,7 @@
       "selectProject": "Selecteer project",
       "buy": "Koop",
       "rent": "Huur",
+      "exportpdf": "Exporteren als PDF",
       "residentialProjects": "Woonproducten",
       "deliverables": "Opleveringen",
       "delayedProjects": "Vertraagde projecten",
@@ -486,7 +487,6 @@
         "amountError": "Vul de waarde in",
         "successfullySaved": "Prijscategorieën succesvol opgeslagen",
         "successfullyDeleted": "Prijscategorieën succesvol verwijderd"
-
       },
       "userManagement": {
         "titleUser": "User management gebruikers",

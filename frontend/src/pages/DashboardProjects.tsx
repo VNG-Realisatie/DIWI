@@ -17,6 +17,7 @@ import ProjectOverviewMap from "../components/map/ProjectOverviewMap";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { FileDownload } from "@mui/icons-material";
+import { TooltipInfo } from "../widgets/TooltipInfo";
 
 type DashboardProjects = {
     physicalAppearance: ChartType[];
@@ -69,7 +70,7 @@ export const DashboardProjects = () => {
         }
 
         const h2c = async (element: HTMLElement) => {
-            const canvas = await html2canvas(element, { scale: 1 });
+            const canvas = await html2canvas(element, { scale: 2.5 });
             return canvas.toDataURL("image/png");
         };
         const totalValueChart = await h2c(totalValues);
@@ -168,7 +169,9 @@ export const DashboardProjects = () => {
                     onChange={(_, newValue) => handleSelectProject(newValue)}
                     renderInput={(params) => <TextField {...params} size="small" sx={{ minWidth: "200px" }} placeholder={t("dashboard.selectProject")} />}
                 />
-                <FileDownload onClick={exportPDF} />
+                <TooltipInfo text={t("dashboard.exportpdf")}>
+                    <FileDownload onClick={exportPDF} sx={{ fill: "#002C64" }} />
+                </TooltipInfo>
             </Stack>
             <Grid container border="solid 1px #DDD" justifyContent="space-around" p={1} id="export">
                 <Grid item xs={12} id="totalValues">
