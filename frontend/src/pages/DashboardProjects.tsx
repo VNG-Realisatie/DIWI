@@ -48,6 +48,11 @@ export const DashboardProjects = () => {
         const projectPhase = document.getElementById("projectPhaseChart");
         const targetGroup = document.getElementById("targetGroupChart");
         const physicalAppearance = document.getElementById("physicalAppearanceChart");
+        const buy = document.getElementById("buy");
+        const rent = document.getElementById("rent");
+        const residentialProjects = document.getElementById("residentialProjects");
+        const deliverables = document.getElementById("deliverables");
+        const delayedProjects = document.getElementById("delayedProjects");
 
         if (!totalValues) {
             console.error("no exportEmployment");
@@ -68,6 +73,26 @@ export const DashboardProjects = () => {
             console.error("no employment");
             return;
         }
+        if (!buy) {
+            console.error("no buy");
+            return;
+        }
+        if (!rent) {
+            console.error("no rent");
+            return;
+        }
+        if (!residentialProjects) {
+            console.error("no residentialProjects");
+            return;
+        }
+        if (!deliverables) {
+            console.error("no deliverables");
+            return;
+        }
+        if (!delayedProjects) {
+            console.error("no delayedProjects");
+            return;
+        }
 
         const h2c = async (element: HTMLElement) => {
             const canvas = await html2canvas(element, { scale: 2.5 });
@@ -77,11 +102,13 @@ export const DashboardProjects = () => {
         const projectPhaseChart = await h2c(projectPhase);
         const targetGroupChart = await h2c(targetGroup);
         const physicalAppearanceChart = await h2c(physicalAppearance);
+        //Add the rest of the charts here
         const pdf = new jsPDF("p", "px", "a4");
         pdf.addImage(totalValueChart, "PNG", 5, 10, 436, 40);
         pdf.addImage(projectPhaseChart, "PNG", 5, 60, 215, 90);
         pdf.addImage(targetGroupChart, "PNG", 225, 60, 215, 90);
         pdf.addImage(physicalAppearanceChart, "PNG", 5, 160, 215, 90);
+        // Add the rest of the charts here
         pdf.save("dashboardProjects.pdf");
     };
 
@@ -195,31 +222,31 @@ export const DashboardProjects = () => {
                     </Typography>
                     <DashboardPieChart chartData={dashboardProjects?.physicalAppearance || []} colors={chartColors} />
                 </Grid>
-                <Grid item {...chartCardStyling}>
+                <Grid item {...chartCardStyling} id="buy">
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.buy")}
                     </Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
-                <Grid item {...chartCardStyling}>
+                <Grid item {...chartCardStyling} id="rent">
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.rent")}
                     </Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
-                <Grid item {...chartCardStyling}>
+                <Grid item {...chartCardStyling} id="residentialProjects">
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.residentialProjects")}
                     </Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
-                <Grid item {...chartCardStyling}>
+                <Grid item {...chartCardStyling} id="deliverables">
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.deliverables")}
                     </Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
-                <Grid item {...chartCardStyling}>
+                <Grid item {...chartCardStyling} id="delayedProjects">
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.delayedProjects")}
                     </Typography>
