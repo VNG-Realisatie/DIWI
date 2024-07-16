@@ -1,6 +1,8 @@
 import ClearIcon from "@mui/icons-material/Clear";
 import SaveIcon from "@mui/icons-material/Save";
+import MouseIcon from "@mui/icons-material/Mouse";
 import Tooltip from "@mui/material/Tooltip";
+import Button from "@mui/material/Button";
 
 import { Box, Stack } from "@mui/material";
 import { useContext, useId, useState } from "react";
@@ -17,7 +19,7 @@ const ProjectPlotSelector = () => {
     const { selectedProject } = useContext(ProjectContext);
     const [openHouseBlockDialog, setOpenHouseBlockDialog] = useState(false);
     const id = useId();
-    const { plotsChanged, handleCancelChange, handleSaveChange } = usePlotSelector(id);
+    const { plotsChanged, handleCancelChange, handleSaveChange, selectionMode, toggleSelectionMode } = usePlotSelector(id);
 
     const handleAddHouseBlockClick = () => {
         setOpenHouseBlockDialog(true);
@@ -47,6 +49,26 @@ const ProjectPlotSelector = () => {
                     <CreateHouseBlockDialog openHouseBlockDialog={openHouseBlockDialog} setOpenHouseBlockDialog={setOpenHouseBlockDialog} />
                 </div>
             </Stack>
+            <Box position="absolute" top={100} right={20}>
+                <Tooltip title={selectionMode ? t("generic.cancelSelection") : t("generic.selectPlot")}>
+                    <Button
+                        variant="contained"
+                        onClick={toggleSelectionMode}
+                        sx={{
+                            backgroundColor: "#FFFFFF",
+                            color: "#000000",
+                            minWidth: "50px",
+                            minHeight: "50px",
+                            borderRadius: "10%",
+                            "&:hover": {
+                                backgroundColor: "#f0f0f0",
+                            },
+                        }}
+                    >
+                        <MouseIcon />
+                    </Button>
+                </Tooltip>
+            </Box>
         </Stack>
     );
 };

@@ -11,10 +11,12 @@ import { Fill, Stroke, Style } from "ol/style";
 import { StyleFunction } from "ol/style/Style";
 import queryString from "query-string";
 import { useCallback, useContext, useEffect, useState } from "react";
+import { Draw } from "ol/interaction";
 import { Plot, PlotGeoJSON, getProjectPlots, updateProject, updateProjectPlots } from "../api/projectsServices";
 import ConfigContext from "../context/ConfigContext";
 import ProjectContext from "../context/ProjectContext";
 import { extentToCenter, mapBoundsToExtent } from "../utils/map";
+import { DrawEvent } from "ol/interaction/Draw";
 
 const baseUrlKadasterWms = "https://service.pdok.nl/kadaster/kadastralekaart/wms/v5_0";
 
@@ -30,9 +32,10 @@ const usePlotSelector = (id: string) => {
 
     const [originalSelectedPlots, setOriginalSelectedPlots] = useState<Plot[] | null>(null);
     const [selectedPlots, setSelectedPlots] = useState<Plot[]>([]);
-
     const [plotsChanged, setPlotsChanged] = useState(false);
     const [extent, setExtent] = useState<Extent | null>(null);
+
+    const [selectionMode, setSelectionMode] = useState(false);
 
     const selectedFeatureStyle = useCallback((): Style => {
         const fillOpacityHex = "99";
@@ -82,6 +85,8 @@ const usePlotSelector = (id: string) => {
 
     const handleClick = useCallback(
         (e: MapBrowserEvent<UIEvent>) => {
+            if (!selectionMode) return;
+
             const map: Map = e.map;
             if (!map) return;
 
@@ -140,7 +145,55 @@ const usePlotSelector = (id: string) => {
                     });
             }
         },
-        [selectedPlotLayerSource, selectedPlots],
+        [selectionMode, selectedPlotLayerSource, selectedPlots],
+    );
+
+    const handleLineDrawEnd = useCallback(
+        async (e: DrawEvent) => {
+            if (!selectionMode || !map || !selectedPlotLayerSource) return;
+
+            const lineGeometry = e.feature.getGeometry();
+            console.log("feature", e.feature);
+            if (!lineGeometry) return;
+
+            const lineExtent = lineGeometry.getExtent();
+
+            const url = queryString.stringifyUrl({
+                url: baseUrlKadasterWms,
+                query: {
+                    QUERY_LAYERS: "Perceel",
+                    INFO_FORMAT: "application/json",
+                    REQUEST: "GetFeatureInfo",
+                    SERVICE: "WMS",
+                    VERSION: "1.3.0",
+                    HEIGHT: 101,
+                    WIDTH: 101,
+                    I: 50,
+                    J: 50,
+                    layers: "Perceel",
+                    CRS: "EPSG:3857",
+                    BBOX: lineExtent.join(","),
+                },
+            });
+
+            const response = await fetch(url);
+            const plotFeature = (await response.json()) as PlotGeoJSON;
+
+            const plotsToAdd: Plot[] = [];
+
+            plotFeature.features.forEach((feature) => {
+                const newPlot: Plot = {
+                    brkGemeenteCode: feature.properties.kadastraleGemeenteCode,
+                    brkPerceelNummer: parseInt(feature.properties.perceelnummer),
+                    brkSectie: feature.properties.sectie,
+                    plotFeature,
+                };
+                plotsToAdd.push(newPlot);
+            });
+
+            setSelectedPlots([...selectedPlots, ...plotsToAdd]);
+        },
+        [selectionMode, map, selectedPlots, selectedPlotLayerSource],
     );
 
     useEffect(
@@ -194,6 +247,7 @@ const usePlotSelector = (id: string) => {
         },
         [projectLayerSource, selectedProject?.geometry, map],
     );
+
     useEffect(
         function zoomToExtent() {
             if (extent) {
@@ -202,6 +256,24 @@ const usePlotSelector = (id: string) => {
         },
         [extent, map],
     );
+
+    useEffect(() => {
+        if (!selectionMode || !map) return;
+
+        const draw = new Draw({
+            source: new VectorSource(),
+            type: "LineString",
+            freehand: true
+        });
+
+        console.log(draw);
+        draw.on("drawend", handleLineDrawEnd);
+        map.addInteraction(draw);
+
+        return () => {
+            map.removeInteraction(draw);
+        };
+    }, [map, selectionMode, handleLineDrawEnd]);
 
     useEffect(() => {
         if (!map) return;
@@ -266,7 +338,19 @@ const usePlotSelector = (id: string) => {
         },
         [id, mapBounds, selectedFeatureStyle],
     );
-    return { plotsChanged, selectedPlotCount: selectedPlots.length, handleCancelChange, handleSaveChange };
+
+    const toggleSelectionMode = () => {
+        setSelectionMode((prevMode) => !prevMode);
+    };
+
+    return {
+        plotsChanged,
+        selectedPlotCount: selectedPlots.length,
+        handleCancelChange,
+        handleSaveChange,
+        selectionMode,
+        toggleSelectionMode,
+    };
 };
 
 export default usePlotSelector;
