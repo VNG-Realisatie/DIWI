@@ -30,23 +30,30 @@ const shouldDisplayError = (mandatory: boolean, value: string, type: string) => 
 
 const TextInput = ({ value, setValue, readOnly, mandatory, errorText, title, tooltipInfoText, type = "text" }: Props) => {
     const hasError = shouldDisplayError(mandatory, value, type);
-    return (
-        <InputLabelStack mandatory={mandatory} title={title || ""} tooltipInfoText={tooltipInfoText}>
-            <TextField
-                required={mandatory}
-                sx={{
-                    width: "100%",
-                }}
-                size="small"
-                variant="outlined"
-                value={value ?? ""}
-                onChange={setValue}
-                error={hasError}
-                helperText={hasError ? errorText : ""}
-                disabled={readOnly}
-                type={type}
-            />
+
+    const textFieldComponent = (
+        <TextField
+            required={mandatory}
+            sx={{
+                width: "100%",
+            }}
+            size="small"
+            variant="outlined"
+            value={value ?? ""}
+            onChange={setValue}
+            error={hasError}
+            helperText={hasError ? errorText : ""}
+            disabled={readOnly}
+            type={type}
+        />
+    );
+
+    return title ? (
+        <InputLabelStack mandatory={mandatory} title={title} tooltipInfoText={tooltipInfoText}>
+            {textFieldComponent}
         </InputLabelStack>
+    ) : (
+        textFieldComponent
     );
 };
 

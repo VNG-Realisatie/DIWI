@@ -263,6 +263,8 @@
     "sidebar": {
       "projects": "Projecten",
       "dashboards": "Dashboards",
+      "dashboardProject" : "Dashboard projecten",
+      "makeCustomDashboard": "Blauwdruk maken",
       "users": "Gebruikers",
       "priceCategories": "Prijs categorieën",
       "dataExchange": "Data uitwisselen",
