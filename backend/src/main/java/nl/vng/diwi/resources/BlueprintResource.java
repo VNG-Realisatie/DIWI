@@ -6,6 +6,7 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -88,6 +89,37 @@ public class BlueprintResource {
         }
     }
 
+    @PUT
+    @Path("/{id}")
+    @RolesAllowed(UserActionConstants.EDIT_ALL_BLUEPRINTS)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public BlueprintModel updateBlueprint(@PathParam("id") UUID blueprintUuid, BlueprintModel blueprintModel, @Context LoggedUser loggedUser)
+        throws VngNotFoundException, VngBadRequestException {
+
+        String validationError = blueprintModel.validate();
+        if (validationError != null) {
+            throw new VngBadRequestException(validationError);
+        }
+
+        BlueprintSqlModel oldSqlModel = repo.getBlueprintDAO().getBlueprintById(blueprintUuid);
+        if (oldSqlModel == null) {
+            throw new VngNotFoundException();
+        }
+        BlueprintModel oldModel = new BlueprintModel(oldSqlModel);
+
+        if (!oldModel.isSameAs(blueprintModel)) {
+            blueprintModel.setUuid(blueprintUuid);
+
+            try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+                dashboardService.updateBlueprint(repo, blueprintModel, ZonedDateTime.now(), loggedUser.getUuid());
+                transaction.commit();
+                repo.getSession().clear();
+            }
+        }
+
+        return new BlueprintModel(repo.getBlueprintDAO().getBlueprintById(blueprintUuid));
+    }
 
     @DELETE
     @Path("/{id}")
