@@ -27,7 +27,7 @@ public class BlueprintToElement extends IdSuperclass {
     @JoinColumn(name = "blueprint_state_id")
     private BlueprintState blueprintState;
 
-    @Column(name = "blueprint_element")
+    @Column(name = "element")
     @Enumerated(EnumType.STRING)
     @JdbcType(PostgreSQLEnumJdbcType.class)
     private BlueprintElement element;
