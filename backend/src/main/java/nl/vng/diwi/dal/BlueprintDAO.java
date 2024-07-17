@@ -35,4 +35,10 @@ public class BlueprintDAO extends AbstractRepository {
             .getSingleResultOrNull();
     }
 
+    public BlueprintState getActiveBlueprintStateByBlueprintUuid(UUID blueprintUuid) {
+        return session.createQuery("FROM BlueprintState bs WHERE bs.blueprint.id = :blueprintUuid AND bs.changeEndDate IS NULL", BlueprintState.class)
+            .setParameter("blueprintUuid", blueprintUuid)
+            .getSingleResultOrNull();
+    }
+
 }

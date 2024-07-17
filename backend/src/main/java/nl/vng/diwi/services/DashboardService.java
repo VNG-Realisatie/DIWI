@@ -94,4 +94,19 @@ public class DashboardService {
         }
         return false;
     }
+
+    public void deleteBlueprint(VngRepository repo, UUID blueprintUuid, UUID loggedUserUuid) throws VngNotFoundException {
+
+        BlueprintState state = repo.getBlueprintDAO().getActiveBlueprintStateByBlueprintUuid(blueprintUuid);
+
+        if (state == null) {
+            throw new VngNotFoundException();
+        }
+
+        state.setChangeEndDate(ZonedDateTime.now());
+        state.setChangeUser(repo.getReferenceById(User.class, loggedUserUuid));
+        repo.persist(state);
+
+    }
+
 }
