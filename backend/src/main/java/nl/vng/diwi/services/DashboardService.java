@@ -20,7 +20,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.UUID;
 
 public class DashboardService {
