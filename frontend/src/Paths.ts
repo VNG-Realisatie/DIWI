@@ -27,6 +27,7 @@ export const policygoal = createPathObject(config.baseurl + "policygoal");
 export const policygoalDashboard = createPathObject(config.baseurl + "policygoal/dashboard");
 export const dashboard = createPathObject(config.baseurl + "dashboard");
 export const customDashbord = createPathObject(config.baseurl + "dashboard/create-custom-dashboard");
+export const customDashbordList = createPathObject(config.baseurl + "dashboard/custom-dashboards");
 export const dashboardProject = createPathObject(config.baseurl + "dashboard/project/:projectId");
 export const wizard = createPathObject(config.baseurl + "admin/wizard");
 export const exchangedata = createPathObject(config.baseurl + "exchangedata");

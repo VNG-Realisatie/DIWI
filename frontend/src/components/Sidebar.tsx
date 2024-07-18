@@ -81,6 +81,12 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
                         <ListItemText primary={t("sidebar.makeCustomDashboard")} />
                     </ListItemButton>
                 </Link>
+                <Link to={Paths.customDashbordList.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
+                {/*Will there be a new allowed action?? */}
+                    <ListItemButton onClick={handleDrawerClose}>
+                        <ListItemText primary={t("sidebar.customDashboardList")} />
+                    </ListItemButton>
+                </Link>
             </List>
             {/* <List sx={{ ml: 3 }}>
                 <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>{t("sidebar.users")}</Typography>

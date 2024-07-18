@@ -1,22 +1,29 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { CustomDashboardForm } from "../components/dashboard/CustomDashboardForm";
 import { DashboardCharts } from "../components/dashboard/DashboardCharts";
-import { User } from "./UserManagement";
-import { getUsers } from "../api/userServices";
 
 export const CreateCustomDashboard = () => {
-    const [users, setUsers] = useState<User[]>([]);
-    const [newBlueprint, setNewBlueprint] = useState({
-        name: "",
-        users: [],
+    const [visibility, setVisibility] = useState({
+        MUTATION: true,
+        PROJECT_PHASE: true,
+        TARGET_GROUP: true,
+        PHYSICAL_APPEARANCE: true,
+        OWNERSHIP_BUY: true,
+        OWNERSHIP_RENT: true,
+        PROJECT_MAP: true,
+        RESIDENTIAL_PROJECTS: true,
+        DELIVERABLES: true,
+        DELAYED_PROJECTS: true,
     });
-    useEffect(() => {
-        getUsers().then((data) => setUsers(data));
-    }, []);
+
+    if (!visibility) {
+        return null;
+    }
+
     return (
         <>
-            <CustomDashboardForm newBlueprint={newBlueprint} setNewBlueprint={setNewBlueprint} users={users} />
-            <DashboardCharts customizable={true} />
+            <CustomDashboardForm visibility={visibility} />
+            <DashboardCharts visibility={visibility} setVisibility={setVisibility} customizable={true} />
         </>
     );
 };

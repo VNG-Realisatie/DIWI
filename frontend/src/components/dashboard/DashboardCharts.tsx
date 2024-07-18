@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { ChartType } from "../../pages/DashboardProject";
 import { MutationCard } from "./MutationCard";
 import ProjectOverviewMap from "../map/ProjectOverviewMap";
-import { getDashboardProjects } from "../../api/dashboardServices";
+import { getDashboardProjects, VisibilityElement } from "../../api/dashboardServices";
 import { getProjects } from "../../api/projectsServices";
 import { getProjectHouseBlocksWithCustomProperties } from "../../api/houseBlockServices";
 import { useTranslation } from "react-i18next";
@@ -22,40 +22,29 @@ type MutationValues = {
     [key: string]: number;
 };
 
+export type Visibility = {
+    MUTATION: boolean;
+    PROJECT_PHASE: boolean;
+    TARGET_GROUP: boolean;
+    PHYSICAL_APPEARANCE: boolean;
+    OWNERSHIP_BUY: boolean;
+    OWNERSHIP_RENT: boolean;
+    PROJECT_MAP: boolean;
+    RESIDENTIAL_PROJECTS: boolean;
+    DELIVERABLES: boolean;
+    DELAYED_PROJECTS: boolean;
+};
 type Props = {
     customizable?: boolean;
+    visibility: Visibility;
+    setVisibility: React.Dispatch<React.SetStateAction<Visibility>>;
 };
-
-type visibilityElement =
-    | "MUTATION"
-    | "PROJECT_PHASE"
-    | "TARGET_GROUP"
-    | "PHYSICAL_APPEARANCE"
-    | "OWNERSHIP_BUY"
-    | "OWNERSHIP_RENT"
-    | "PROJECT_MAP"
-    | "RESIDENTIAL_PROJECTS"
-    | "DELIVERABLES"
-    | "DELAYED_PROJECTS";
-
-export const DashboardCharts = ({ customizable = false }: Props) => {
+export const DashboardCharts = ({ customizable = false, visibility, setVisibility }: Props) => {
     const [dashboardProjects, setDashboardProjects] = useState<DashboardProjects>();
     const [projectPhaseSums, setProjectPhaseSums] = useState([]);
     const [dashboardMutationValues, setDashboardMutationValues] = useState<MutationValues>();
-    const [visibility, setVisibility] = useState({
-        MUTATION: true,
-        PROJECT_PHASE: true,
-        TARGET_GROUP: true,
-        PHYSICAL_APPEARANCE: true,
-        OWNERSHIP_BUY: true,
-        OWNERSHIP_RENT: true,
-        PROJECT_MAP: true,
-        RESIDENTIAL_PROJECTS: true,
-        DELIVERABLES: true,
-        DELAYED_PROJECTS: true,
-    });
 
-    const handleHide = (item: visibilityElement) => {
+    const handleHide = (item: VisibilityElement) => {
         setVisibility((prev) => ({ ...prev, [item]: false }));
     };
 

@@ -42,6 +42,7 @@ import { Forbidden } from "./pages/Forbidden";
 import { DashboardProject } from "./pages/DashboardProject";
 import PriceCategories from "./pages/PriceCategories";
 import { CreateCustomDashboard } from "./pages/CreateCustomDashboard";
+import { CustomDashboardList } from "./pages/CustomDashboardList";
 
 enum UserStatus {
     Authenticated,
@@ -266,6 +267,7 @@ function App() {
                         <Route path={Paths.policygoalDashboard.path} element={<PolicyLists />} />
                         <Route path={Paths.dashboard.path} element={<DashboardProjects />} />
                         <Route path={Paths.customDashbord.path} element={<CreateCustomDashboard />} />
+                        <Route path={Paths.customDashbordList.path} element={<CustomDashboardList />} />
                         <Route
                             path={Paths.dashboardProject.path}
                             element={
