@@ -378,12 +378,14 @@
     },
     "dashboard": {
       "title": "Dashboard",
+      "exportTitle": "Overzicht van alle projecten",
       "projectTitle": "Dashboard | Project",
       "projects": "Dashboard projecten",
       "municipalityProgram": "Woningbouwprogramma gemeente",
       "selectProject": "Selecteer project",
       "buy": "Koop",
       "rent": "Huur",
+      "exportpdf": "Exporteren als PDF",
       "residentialProjects": "Woonproducten",
       "deliverables": "Opleveringen",
       "delayedProjects": "Vertraagde projecten",
@@ -486,7 +488,6 @@
         "amountError": "Vul de waarde in",
         "successfullySaved": "Prijscategorieën succesvol opgeslagen",
         "successfullyDeleted": "Prijscategorieën succesvol verwijderd"
-
       },
       "userManagement": {
         "titleUser": "User management gebruikers",
