@@ -37,7 +37,8 @@ WITH active_blueprints AS (
         SELECT
             q.blueprint_id    AS blueprint_id,
             to_jsonb(array_agg(jsonb_build_object('userGroupUuid', q.usergroup_id::TEXT, 'userGroupName', q.usergroup_name, 'uuid', q.user_id::TEXT,
-                'initials', q.user_initials, 'lastName', q.user_last_name, 'firstName', q.user_first_name))) AS users
+                'initials', q.user_initials, 'lastName', q.user_last_name, 'firstName', q.user_first_name))) AS users,
+            array_agg(q.user_id) AS userIds
         FROM (
             SELECT DISTINCT
                 ab.blueprint_id as blueprint_id,
@@ -76,7 +77,11 @@ FROM
     active_blueprints ab
         LEFT JOIN blueprint_users bu ON bu.blueprint_id = ab.blueprint_id
         LEFT JOIN blueprint_elements be ON be.blueprint_id = ab.blueprint_id
-
+WHERE
+    CASE
+        WHEN _bp_user_uuid_ IS NOT NULL THEN bu.userIds @> ARRAY[_bp_user_uuid_]
+        WHEN _bp_user_uuid_ IS NULL THEN 1 = 1
+    END
 ORDER BY ab.name;
 
 END;$$

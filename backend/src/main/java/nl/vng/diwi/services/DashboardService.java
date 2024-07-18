@@ -20,7 +20,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.UUID;
 
 public class DashboardService {
@@ -48,7 +47,7 @@ public class DashboardService {
         return new MultiProjectDashboardModel(projectModel);
     }
 
-    public UUID createBlueprint(VngRepository repo, BlueprintModel blueprintModel, ZonedDateTime createTime, UUID loggedUserUuid) throws VngBadRequestException {
+    public UUID createBlueprint(VngRepository repo, BlueprintModel blueprintModel, ZonedDateTime zdtNow, UUID loggedUserUuid) throws VngBadRequestException {
 
         if (checkBlueprintNameExists(repo, blueprintModel.getName(), null)) {
             throw new VngBadRequestException("Blueprint name already exists");
@@ -57,10 +56,25 @@ public class DashboardService {
         Blueprint blueprint = new Blueprint();
         repo.persist(blueprint);
 
+        createBlueprintStateWithElementsAndUserGroups(repo, blueprint, blueprintModel, zdtNow, loggedUserUuid);
+
+        return blueprint.getId();
+
+    }
+
+    private boolean checkBlueprintNameExists(VngRepository repo, String name, UUID currentBlueprintUuid) {
+        BlueprintState state = repo.getBlueprintDAO().getActiveBlueprintStateByName(name);
+        if (state != null && !state.getBlueprint().getId().equals(currentBlueprintUuid)) {
+            return true;
+        }
+        return false;
+    }
+
+    private void createBlueprintStateWithElementsAndUserGroups(VngRepository repo, Blueprint blueprint, BlueprintModel blueprintModel, ZonedDateTime zdtNow, UUID loggedUserUuid) {
         BlueprintState blueprintState = new BlueprintState();
         blueprintState.setBlueprint(blueprint);
         blueprintState.setName(blueprintModel.getName());
-        blueprintState.setChangeStartDate(createTime);
+        blueprintState.setChangeStartDate(zdtNow);
         blueprintState.setCreateUser(repo.getReferenceById(User.class, loggedUserUuid));
         repo.persist(blueprintState);
 
@@ -82,16 +96,33 @@ public class DashboardService {
                 repo.persist(btug);
             });
         }
+    }
 
-        return blueprint.getId();
+    public void deleteBlueprint(VngRepository repo, UUID blueprintUuid, UUID loggedUserUuid) throws VngNotFoundException {
+
+        BlueprintState state = repo.getBlueprintDAO().getActiveBlueprintStateByBlueprintUuid(blueprintUuid);
+
+        if (state == null) {
+            throw new VngNotFoundException();
+        }
+
+        state.setChangeEndDate(ZonedDateTime.now());
+        state.setChangeUser(repo.getReferenceById(User.class, loggedUserUuid));
+        repo.persist(state);
 
     }
 
-    public boolean checkBlueprintNameExists(VngRepository repo, String name, UUID currentBlueprintUuid) {
-        BlueprintState state = repo.getBlueprintDAO().getActiveBlueprintStateByName(name);
-        if (state != null && !state.getBlueprint().getId().equals(currentBlueprintUuid)) {
-            return true;
+    public void updateBlueprint(VngRepository repo, BlueprintModel blueprintModel, ZonedDateTime zdtNow, UUID loggedUserUuid)
+        throws VngNotFoundException, VngBadRequestException {
+
+        if (checkBlueprintNameExists(repo, blueprintModel.getName(), blueprintModel.getUuid())) {
+            throw new VngBadRequestException("Blueprint name already exists");
         }
-        return false;
+
+        deleteBlueprint(repo, blueprintModel.getUuid(), loggedUserUuid);
+
+        Blueprint blueprint = repo.getReferenceById(Blueprint.class, blueprintModel.getUuid());
+        createBlueprintStateWithElementsAndUserGroups(repo, blueprint, blueprintModel, zdtNow, loggedUserUuid);
+
     }
 }

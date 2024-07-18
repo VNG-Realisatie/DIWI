@@ -8,7 +8,9 @@ import nl.vng.diwi.dal.entities.enums.BlueprintElement;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -45,4 +47,21 @@ public class BlueprintModel {
         return null;
     }
 
+    public boolean isSameAs(BlueprintModel that) {
+        if (!this.name.equals(that.name) || this.elements.size() != that.elements.size() || this.userGroups.size() != that.userGroups.size()) {
+            return false;
+        }
+
+        if (!this.elements.containsAll(that.elements)) {
+            return false;
+        }
+
+        Set<UUID> thisGroups = userGroups.stream().map(UserGroupModel::getUuid).collect(Collectors.toSet());
+        Set<UUID> thatGroups = userGroups.stream().map(UserGroupModel::getUuid).collect(Collectors.toSet());
+        if (!thisGroups.containsAll(thatGroups)) {
+            return false;
+        }
+
+        return true;
+    }
 }
