@@ -8,7 +8,10 @@ CREATE OR REPLACE FUNCTION diwi.get_project_dashboard_snapshot (
 )
 	RETURNS TABLE (
         projectId          UUID,
-        physicalAppearance JSONB
+        physicalAppearance JSONB,
+        priceCategoryOwn   JSONB,
+        priceCategoryRent  JSONB,
+        planning           JSONB
 	)
 	LANGUAGE plpgsql
 AS $$
@@ -17,12 +20,14 @@ RETURN QUERY
 
 SELECT
     q.projectId          AS projectId,
-    q.physicalAppearance AS physicalAppearance
-
+    q.physicalAppearance AS physicalAppearance,
+    q.priceCategoryOwn   AS priceCategoryOwn,
+    q.priceCategoryRent  AS priceCategoryRent,
+    q.planning           AS planning
 FROM (
 
          WITH
-             projects AS (
+             current_project AS (
                  SELECT
                      p.id, sms.date AS startDate, ems.date AS endDate
                  FROM
@@ -58,7 +63,33 @@ FROM (
                      sms.date <= _snapshot_date_ AND _snapshot_date_ < ems.date
                  GROUP BY pcvs.value_label
              ),
-             project_users AS (
+             woningbloks_pricecategory_own AS (
+                 SELECT
+                     prcvs.id AS id, prcvs.name AS label, prcvs.min AS min, prcvs.max AS max, SUM(wewc.amount) AS amount
+                 FROM
+                     woningbloks w
+                         JOIN diwi.woningblok_eigendom_en_waarde_changelog wewc ON w.id = wewc.woningblok_id AND wewc.change_end_date IS NULL
+                         JOIN diwi.milestone_state sms ON sms.milestone_id = wewc.start_milestone_id AND sms.change_end_date IS NULL
+                         JOIN diwi.milestone_state ems ON ems.milestone_id = wewc.end_milestone_id AND ems.change_end_date IS NULL
+                         JOIN diwi.property_range_category_value_state prcvs ON prcvs.range_category_value_id = wewc.ownership_property_value_id AND prcvs.change_end_date IS NULL
+                 WHERE
+                     sms.date <= _snapshot_date_ AND _snapshot_date_ < ems.date AND wewc.eigendom_soort = 'KOOPWONING'
+                 GROUP BY prcvs.id, prcvs.name
+             ),
+             woningbloks_pricecategory_rent AS (
+                 SELECT
+                     prcvs.id AS id, prcvs.name AS label,  prcvs.min AS min, prcvs.max AS max, SUM(wewc.amount) AS amount
+                 FROM
+                     woningbloks w
+                         JOIN diwi.woningblok_eigendom_en_waarde_changelog wewc ON w.id = wewc.woningblok_id AND wewc.change_end_date IS NULL
+                         JOIN diwi.milestone_state sms ON sms.milestone_id = wewc.start_milestone_id AND sms.change_end_date IS NULL
+                         JOIN diwi.milestone_state ems ON ems.milestone_id = wewc.end_milestone_id AND ems.change_end_date IS NULL
+                         JOIN diwi.property_range_category_value_state prcvs ON prcvs.range_category_value_id = wewc.rental_property_value_id AND prcvs.change_end_date IS NULL
+                 WHERE
+                     sms.date <= _snapshot_date_ AND _snapshot_date_ < ems.date AND wewc.eigendom_soort != 'KOOPWONING'
+                 GROUP BY prcvs.id, prcvs.name
+             ),
+             current_project_users AS (
                  SELECT
                      q.project_id    AS project_id,
                      array_agg(array[q.usergroup_id::TEXT, q.usergroup_name, q.user_id::TEXT, q.user_initials, q.user_last_name, q.user_first_name]) AS users
@@ -80,19 +111,183 @@ FROM (
                               ps.change_end_date IS NULL AND ps.project_id = _project_uuid_
                       ) AS q
                  GROUP BY q.project_id
+             ),
+             planning AS (
+
+                SELECT  planningQuery.projectId             AS projectId,
+                        planningQuery.deliveryYear          AS deliveryYear,
+                        COALESCE(planningQuery.totalValue, 0) AS amount
+                FROM (
+
+                         WITH
+                             active_projects AS (
+                                 SELECT
+                                     p.id, sms.date AS startDate, ems.date AS endDate
+                                 FROM
+                                     diwi.project p
+                                         JOIN diwi.project_duration_changelog pdc ON pdc.project_id = p.id AND pdc.change_end_date IS NULL
+                                         JOIN diwi.milestone_state sms ON sms.milestone_id = pdc.start_milestone_id AND sms.change_end_date IS NULL
+                                         JOIN diwi.milestone_state ems ON ems.milestone_id = pdc.end_milestone_id AND ems.change_end_date IS NULL
+                                 WHERE
+                                     sms.date <= _snapshot_date_ AND _snapshot_date_ < ems.date
+                             ),
+                             active_project_woningblok_totalvalue AS (
+                                 SELECT
+                                     w.project_id,
+                                     SUM(wmc.amount *
+                                         CASE wmc.mutation_kind
+                                             WHEN 'CONSTRUCTION' THEN 1
+                                             WHEN 'DEMOLITION' THEN -1
+                                             END) AS total_value
+                                 FROM
+                                     diwi.woningblok_mutatie_changelog wmc
+                                         JOIN diwi.milestone_state sms ON sms.milestone_id = wmc.start_milestone_id AND sms.change_end_date IS NULL
+                                         JOIN diwi.milestone_state ems ON ems.milestone_id = wmc.end_milestone_id AND ems.change_end_date IS NULL
+                                         JOIN diwi.woningblok w ON wmc.woningblok_id = w.id
+                                         JOIN diwi.woningblok_state ws ON w.id = ws.woningblok_id AND ws.change_end_date IS NULL
+                                 WHERE
+                                     sms.date <= _snapshot_date_ AND _snapshot_date_ < ems.date AND wmc.change_end_date IS NULL
+                                 GROUP BY w.project_id
+                             ),
+
+                             future_projects AS (
+                                 SELECT
+                                     p.id, sms.date AS startDate, ems.date AS endDate, sms.milestone_id AS start_milestone_id
+                                 FROM
+                                     diwi.project p
+                                         JOIN diwi.project_duration_changelog pdc ON pdc.project_id = p.id AND pdc.change_end_date IS NULL
+                                         JOIN diwi.milestone_state sms ON sms.milestone_id = pdc.start_milestone_id AND sms.change_end_date IS NULL
+                                         JOIN diwi.milestone_state ems ON ems.milestone_id = pdc.end_milestone_id AND ems.change_end_date IS NULL
+                                 WHERE
+                                     sms.date > _snapshot_date_
+                             ),
+                             future_project_woningblok_totalvalue AS (
+                                 SELECT
+                                     w.project_id,
+                                     SUM(wmc.amount *
+                                         CASE wmc.mutation_kind
+                                             WHEN 'CONSTRUCTION' THEN 1
+                                             WHEN 'DEMOLITION' THEN -1
+                                             END) AS total_value
+                                 FROM
+                                     future_projects fp
+                                         JOIN diwi.woningblok w ON fp.id = w.project_id
+                                         JOIN diwi.woningblok_state ws ON w.id = ws.woningblok_id AND ws.change_end_date IS NULL
+                                         JOIN diwi.woningblok_mutatie_changelog wmc ON w.id = wmc.woningblok_id
+                                         AND wmc.start_milestone_id = fp.start_milestone_id AND wmc.change_end_date IS NULL
+                                 GROUP BY w.project_id
+                             ),
+
+                             past_projects AS (
+                                 SELECT
+                                     p.id, sms.date AS startDate, ems.date AS endDate, ems.milestone_id AS end_milestone_id
+                                 FROM
+                                     diwi.project p
+                                         JOIN diwi.project_duration_changelog pdc ON pdc.project_id = p.id AND pdc.change_end_date IS NULL
+                                         JOIN diwi.milestone_state sms ON sms.milestone_id = pdc.start_milestone_id AND sms.change_end_date IS NULL
+                                         JOIN diwi.milestone_state ems ON ems.milestone_id = pdc.end_milestone_id AND ems.change_end_date IS NULL
+                                 WHERE
+                                     ems.date <= _snapshot_date_
+                             ),
+                             past_project_woningblok_totalvalue AS (
+                                 SELECT
+                                     w.project_id,
+                                     SUM(wmc.amount *
+                                         CASE wmc.mutation_kind
+                                             WHEN 'CONSTRUCTION' THEN 1
+                                             WHEN 'DEMOLITION' THEN -1
+                                             END) AS total_value
+                                 FROM
+                                     past_projects pp
+                                         JOIN diwi.woningblok w ON pp.id = w.project_id
+                                         JOIN diwi.woningblok_state ws ON w.id = ws.woningblok_id AND ws.change_end_date IS NULL
+                                         JOIN diwi.woningblok_mutatie_changelog wmc ON w.id = wmc.woningblok_id
+                                         AND wmc.end_milestone_id = pp.end_milestone_id AND wmc.change_end_date IS NULL
+                                 GROUP BY w.project_id
+                             ),
+                             project_users AS (
+                                SELECT
+                                    ps.project_id as project_id,
+                                    array_agg(us.user_id) AS userIds
+                                        FROM diwi.project_state ps
+                                            JOIN diwi.usergroup_to_project ugtp ON ps.project_id = ugtp.project_id AND ugtp.change_end_date IS NULL
+                                            JOIN diwi.usergroup_state ugs ON ugtp.usergroup_id = ugs.usergroup_id AND ugs.change_end_date IS NULL
+                                            LEFT JOIN diwi.user_to_usergroup utug ON ugtp.usergroup_id = utug.usergroup_id
+                                            LEFT JOIN diwi.user_state us ON utug.user_id = us.user_id AND us.change_end_date IS NULL
+                                        WHERE
+                                            ps.change_end_date IS NULL
+                                 GROUP BY ps.project_id
+                             )
+
+                         SELECT ap.id                    AS projectId,
+                                ps.confidentiality_level AS confidentialityLevel,
+                                owners.userIds                  AS projectOwners,
+                                to_char( ap.endDate, 'YYYY') AS deliveryYear,
+                                apwv.total_value         AS totalValue
+                         FROM
+                             active_projects ap
+                                 LEFT JOIN diwi.project_state ps ON ps.project_id = ap.id AND ps.change_end_date IS NULL
+                                 LEFT JOIN active_project_woningblok_totalvalue apwv ON apwv.project_id = ap.id
+                                 LEFT JOIN project_users owners ON ps.project_id = owners.project_id
+
+                         UNION
+
+                         SELECT fp.id                    AS projectId,
+                                ps.confidentiality_level AS confidentialityLevel,
+                                owners.userIds                  AS projectOwners,
+                                to_char( fp.endDate, 'YYYY') AS deliveryYear,
+                                fpwv.total_value         AS totalValue
+                         FROM
+                             future_projects fp
+                                 LEFT JOIN diwi.project_state ps ON ps.project_id = fp.id AND ps.change_end_date IS NULL
+                                 LEFT JOIN future_project_woningblok_totalvalue fpwv ON fpwv.project_id = fp.id
+                                 LEFT JOIN project_users owners ON ps.project_id = owners.project_id
+
+                         UNION
+
+                         SELECT pp.id                    AS projectId,
+                                ps.confidentiality_level AS confidentialityLevel,
+                                owners.userIds                  AS projectOwners,
+                                to_char( pp.endDate, 'YYYY') AS deliveryYear,
+                                ppwv.total_value         AS totalValue
+                         FROM
+                             past_projects pp
+                                 LEFT JOIN diwi.project_state ps ON ps.project_id = pp.id AND ps.change_end_date IS NULL
+                                 LEFT JOIN past_project_woningblok_totalvalue ppwv ON ppwv.project_id = pp.id
+                                 LEFT JOIN project_users owners ON ps.project_id = owners.project_id
+
+                     ) AS planningQuery
+
+                WHERE
+                    (
+                        ( _user_uuid_ = ANY(planningQuery.projectOwners)) OR
+                        ( _user_role_ IN ('User', 'UserPlus') AND planningQuery.confidentialityLevel != 'PRIVATE') OR
+                        ( _user_role_ = 'Management' AND planningQuery.confidentialityLevel NOT IN ('PRIVATE', 'INTERNAL_CIVIL') ) OR
+                        ( _user_role_ = 'Council' AND planningQuery.confidentialityLevel NOT IN ('PRIVATE', 'INTERNAL_CIVIL', 'INTERNAL_MANAGEMENT') )
+                    )
+
              )
 
          SELECT
                 p.id                               AS projectId,
                 ps.confidentiality_level           AS confidentialityLevel,
                 owners.users                       AS projectOwners,
-                wpa.physicalAppearance             AS physicalAppearance
+                wpa.physicalAppearance             AS physicalAppearance,
+                wpco.priceCategoryOwn              AS priceCategoryOwn,
+                wpcr.priceCategoryRent             AS priceCategoryRent,
+                pl.planning                         AS planning
          FROM
-             projects p
+             current_project p
                  LEFT JOIN diwi.project_state ps ON ps.project_id = p.id AND ps.change_end_date IS NULL
                  LEFT JOIN LATERAL (SELECT to_jsonb(array_agg(jsonb_build_object('name', label, 'amount', amount))) AS physicalAppearance
                                     FROM woningbloks_physical_appearance) AS wpa ON true
-                 LEFT JOIN project_users owners ON ps.project_id = owners.project_id
+                 LEFT JOIN LATERAL (SELECT to_jsonb(array_agg(jsonb_build_object('id', id, 'name', label, 'min', min, 'max', max, 'amount', amount))) AS priceCategoryOwn
+                                    FROM woningbloks_pricecategory_own) AS wpco ON true
+                 LEFT JOIN LATERAL (SELECT to_jsonb(array_agg(jsonb_build_object('id', id, 'name', label, 'min', min, 'max', max, 'amount', amount))) AS priceCategoryRent
+                                    FROM woningbloks_pricecategory_rent) AS wpcr ON true
+                 LEFT JOIN LATERAL (SELECT to_jsonb(array_agg(jsonb_build_object('projectId', planning.projectId, 'year', deliveryYear, 'amount', amount))) AS planning
+                                    FROM planning) AS pl ON true
+                 LEFT JOIN current_project_users owners ON ps.project_id = owners.project_id
 
      ) AS q
 WHERE q.projectId = _project_uuid_ AND
