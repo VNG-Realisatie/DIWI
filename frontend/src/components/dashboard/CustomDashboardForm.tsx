@@ -39,7 +39,8 @@ export const CustomDashboardForm = ({ visibility, newBlueprint, setNewBlueprint,
 
     const handleSave = async () => {
         const elementsToAdd = Object.entries(visibility)
-            .filter(([_key, value]) => value === true)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            .filter(([_, value]) => value === true)
             .map(([key]) => key);
         const updatedBlueprint = {
             ...newBlueprint,
