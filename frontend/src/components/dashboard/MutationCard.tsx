@@ -12,24 +12,19 @@ type Props = {
 };
 
 export const MutationCard = ({ demolitionAmount, constructionAmount, visibility = undefined, handleToggle }: Props) => {
-    const readOnly = true;
     return (
         <Grid item xs={12} m={{ xs: 0, md: 1 }}>
             <WizardCard>
-            <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Typography variant="h6" fontSize={16}>
-                    {t("dashboard.totalValues")}
-                </Typography>
-                {visibility && handleToggle && <Switch checked={visibility.MUTATION} onChange={handleToggle} inputProps={{ "aria-label": "controlled" }} />}
-        </Box>
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Typography variant="h6" fontSize={16}>
+                        {t("dashboard.totalValues")}
+                    </Typography>
+                    {visibility && handleToggle && <Switch checked={visibility.MUTATION} onChange={handleToggle} inputProps={{ "aria-label": "controlled" }} />}
+                </Box>
                 <Grid container spacing={2} alignItems="stretch">
                     {/* Demolition */}
                     <Grid item xs={12} md={4}>
-                        <LabelComponent
-                            required={false}
-                            text={t("createProject.houseBlocksForm.demolition")}
-                            tooltipInfoText={t("tooltipInfo.sloop.title")}
-                        />
+                        <LabelComponent required={false} text={t("createProject.houseBlocksForm.demolition")} tooltipInfoText={t("tooltipInfo.sloop.title")} />
                         <CellContainer>
                             <LabelComponent required={false} text={demolitionAmount.toString()} />
                         </CellContainer>

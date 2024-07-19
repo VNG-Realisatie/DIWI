@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { CustomDashboardForm } from "../components/dashboard/CustomDashboardForm";
 import { DashboardCharts } from "../components/dashboard/DashboardCharts";
 import { Blueprint, getBlueprint, VisibilityElement } from "../api/dashboardServices";
 import useAlert from "../hooks/useAlert";
 import { UserGroup } from "../api/projectsServices";
 import { Typography } from "@mui/material";
 import { t } from "i18next";
+import { CustomDashboardForm } from "../components/dashboard/CustomDashboardForm";
 
 const emptyBlueprint: Blueprint = {
     name: "",
@@ -58,6 +58,7 @@ export const CreateCustomDashboard = () => {
             setNewBlueprint(emptyBlueprint);
             setUserGroups([]);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
     if (!visibility) {
         return null;

@@ -33,13 +33,13 @@ export const CustomDashboardForm = ({ visibility, newBlueprint, setNewBlueprint,
         if (id) {
             setUserGroups(newBlueprint.userGroups.map((group) => ({ ...group, name: "" })));
         }
-    }, [id, newBlueprint.userGroups]);
+    }, [id, newBlueprint.userGroups, setUserGroups]);
 
     const buttonDisabled = !newBlueprint.name || userGroups.length === 0 || !Object.values(visibility).some((value) => value === true);
 
     const handleSave = async () => {
         const elementsToAdd = Object.entries(visibility)
-            .filter(([_, value]) => value === true)
+            .filter(([_key, value]) => value === true)
             .map(([key]) => key);
         const updatedBlueprint = {
             ...newBlueprint,
@@ -71,10 +71,18 @@ export const CustomDashboardForm = ({ visibility, newBlueprint, setNewBlueprint,
                         setNewBlueprint({ ...newBlueprint, name: event.target.value });
                     }}
                     mandatory={true}
+                    placeholder={t("dashboard.blueprints.namePlaceholder")}
                 />
             </Grid>
             <Grid item xs={4}>
-                <UserGroupSelect readOnly={false} userGroup={userGroups} setUserGroup={setUserGroups} mandatory={true} errorText="" />
+                <UserGroupSelect
+                    placeholder={t("dashboard.blueprints.selectUsers")}
+                    readOnly={false}
+                    userGroup={userGroups}
+                    setUserGroup={setUserGroups}
+                    mandatory={true}
+                    errorText=""
+                />
             </Grid>
             <Grid item xs={4}>
                 <Button variant="contained" onClick={handleSave} disabled={buttonDisabled}>

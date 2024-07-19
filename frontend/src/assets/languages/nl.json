@@ -420,7 +420,9 @@
         "table" : {
           "name": "Naam",
           "users": "Gebruikers"
-        }
+        },
+        "selectUsers": "Selecteer gebruikers",
+        "namePlaceholder": "Naam van blauwdruk"
       },
       "projectPhaseOptions": {
         "_1_CONCEPT": "Concept",
