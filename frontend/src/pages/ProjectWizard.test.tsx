@@ -4,6 +4,16 @@ import { HouseBlockProvider } from "../context/HouseBlockContext";
 import { ProjectProvider } from "../context/ProjectContext";
 import TestComponentWrapper from "../test/TestComponentWrapper";
 import ProjectWizard from "./ProjectWizard";
+import UserContext from "../context/UserContext";
+
+const mockUser = {
+    name: "Test User",
+    uuid: "test",
+    firstName: "Test",
+    lastName: "User",
+    initials: "TU",
+    role: "UserPlus",
+};
 
 vi.mock("../api/adminSettingServices", () => ({
     getCustomProperties: vi.fn().mockResolvedValue([]),
@@ -22,11 +32,13 @@ vi.mock("../utils/requests", () => ({
 test("renders project wizard page 1", () => {
     render(
         <TestComponentWrapper>
-            <ProjectProvider>
-                <HouseBlockProvider>
-                    <ProjectWizard />
-                </HouseBlockProvider>
-            </ProjectProvider>
+            <UserContext.Provider value={{ user: mockUser }}>
+                <ProjectProvider>
+                    <HouseBlockProvider>
+                        <ProjectWizard />
+                    </HouseBlockProvider>
+                </ProjectProvider>
+            </UserContext.Provider>
         </TestComponentWrapper>,
     );
 

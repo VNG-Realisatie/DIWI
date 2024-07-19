@@ -19,6 +19,7 @@ type Props = {
     mandatory: boolean;
     title?: string;
     errorText?: string;
+    setIsRangeValid?: (isValid: boolean) => void;
 };
 
 const decimalSeparator = ",";
@@ -100,16 +101,17 @@ function fromStringToRange(stringValue: string | null, isMonetary: boolean): Val
 }
 
 const shouldDisplayError = (mandatory: boolean, value: string | null) => {
-    if (mandatory && (!value || value === "0,00")) {
+    if (mandatory && !value) {
         return true;
     }
     return false;
 };
 
-const RangeNumberInput = ({ labelText, value, updateCallBack, isMonetary = false, readOnly, mandatory, title, errorText }: Props) => {
+const RangeNumberInput = ({ labelText, value, updateCallBack, isMonetary = false, readOnly, mandatory, title, errorText, setIsRangeValid }: Props) => {
     const [stringValue, setStringValue] = useState<string | null>(null);
 
     const hasError = shouldDisplayError(mandatory, stringValue);
+
     useEffect(() => {
         setStringValue(fromRangeToString(value, isMonetary));
     }, [value, isMonetary]);
@@ -118,18 +120,13 @@ const RangeNumberInput = ({ labelText, value, updateCallBack, isMonetary = false
         let newValue = e.target.value;
         newValue = newValue.replace(".", ",");
         const isValidInput = /^-?\d*(,\d{0,2})?(-\d*(,?\d{0,2})?)?$/.test(newValue);
-
+        const checkRangeValidation = newValue.trim() !== "-" ? newValue.trim() !== "" : false;
+        setIsRangeValid && setIsRangeValid(checkRangeValidation);
         if (isValidInput) setStringValue(newValue);
     };
 
-    const handleFocus = () => {
-        if (stringValue === "0,00") setStringValue("");
-    };
-
     const handleBlur = () => {
-        if (stringValue === "") {
-            setStringValue("0,00");
-        } else if (stringValue !== null) {
+        if (stringValue !== null) {
             const range = fromStringToRange(stringValue, isMonetary);
             updateCallBack(range);
         }
@@ -163,13 +160,12 @@ const RangeNumberInput = ({ labelText, value, updateCallBack, isMonetary = false
                         },
                         fontStyle: "italic",
                         color: "rgba(0, 0, 0, 0.3)",
-                        transform: isMonetary ? "translate(34px, 9px)" : null,
+                        transform: isMonetary ? "translate(34px, 12px)" : null,
                     },
                 }}
                 value={stringValue ?? ""}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                onFocus={handleFocus}
                 onKeyUp={handleKey}
                 InputProps={{
                     startAdornment: isMonetary && (

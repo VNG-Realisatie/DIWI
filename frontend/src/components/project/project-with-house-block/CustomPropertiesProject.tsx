@@ -55,8 +55,8 @@ export const CustomPropertiesProject = ({ readOnly, customValues, setCustomValue
                                     <CellContainer>
                                         <LabelComponent
                                             required={false /* TODO make depend on type of customprop? */}
-                                            readOnly={readOnly}
                                             text={property.name}
+                                            disabled={readOnly}
                                         />
                                     </CellContainer>
                                 </Grid>

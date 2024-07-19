@@ -109,6 +109,7 @@ const CategoryInput = ({
                         return (
                             <Chip
                                 {...getTagProps({ index })}
+                                disabled={readOnly}
                                 key={option.id}
                                 label={hasTooltipOption ? <TooltipInfo text={t(tooltipText)}>{t(displayName)}</TooltipInfo> : t(displayName)}
                             />

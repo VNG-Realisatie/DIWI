@@ -183,11 +183,13 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
                         labelId="propertyType"
                         onChange={(e) => setSelectedPropertyType(e.target.value as PropertyType)}
                     >
-                        {propertyType.map((property) => (
-                            <MenuItem key={property} value={property}>
-                                {t(`admin.settings.propertyType.${property}`)}
-                            </MenuItem>
-                        ))}
+                        {propertyType
+                            .filter((p) => p !== "RANGE_CATEGORY")
+                            .map((property) => (
+                                <MenuItem key={property} value={property}>
+                                    {t(`admin.settings.propertyType.${property}`)}
+                                </MenuItem>
+                            ))}
                     </Select>
 
                     {selectedPropertyType === "CATEGORY" && <CategoryCreateOption categoryValue={categories} setCategoryValue={setCategories} />}
