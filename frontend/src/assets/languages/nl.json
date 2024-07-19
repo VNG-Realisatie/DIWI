@@ -410,8 +410,10 @@
         "year": "jaar"
       },
       "blueprints": {
+        "title": "Maak een Blauwdruk",
         "successfullyCreated": "Blauwdruk succesvol aangemaakt",
         "successfullyDeleted": "Blauwdruk succesvol verwijderd",
+        "successfullyUpdated": "Blauwdruk succesvol geüpdatet",
         "deleteConfirmation": "Weet je zeker dat je deze blauwdruk wilt verwijderen?",
         "dialogTitle": "Verwijderbevestiging",
         "saveBlueprint": "Opslaan blauwdruk",

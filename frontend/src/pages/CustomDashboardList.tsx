@@ -8,12 +8,14 @@ import { Blueprint, deleteBlueprint, getBlueprints } from "../api/dashboardServi
 import UserGroupSelect from "../widgets/UserGroupSelect";
 import { t } from "i18next";
 import useAlert from "../hooks/useAlert";
+import { useNavigate } from "react-router-dom";
 
 export const CustomDashboardList = () => {
     const [blueprints, setBlueprints] = useState<Blueprint[]>([]);
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedBlueprint, setSelectedBlueprint] = useState<Blueprint | null>(null);
     const { setAlert } = useAlert();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchBlueprints = async () => {
@@ -73,7 +75,7 @@ export const CustomDashboardList = () => {
             flex: 1,
             renderCell: (params: GridCellParams) => (
                 <Box display="flex" alignItems="center" justifyContent="center" style={{ height: "100%" }} gap="10px">
-                    <EditOutlinedIcon style={{ cursor: "pointer" }} color="primary" onClick={() => {}} />
+                    <EditOutlinedIcon style={{ cursor: "pointer" }} color="primary" onClick={() => navigate(params.row.uuid)} />
                     <DeleteForeverOutlinedIcon style={{ cursor: "pointer" }} color="error" onClick={() => handleDeleteClick(params.row)} />
                 </Box>
             ),

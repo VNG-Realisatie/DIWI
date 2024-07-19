@@ -1,9 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { CustomDashboardForm } from "../components/dashboard/CustomDashboardForm";
 import { DashboardCharts } from "../components/dashboard/DashboardCharts";
+import { Blueprint, getBlueprint, VisibilityElement } from "../api/dashboardServices";
+import useAlert from "../hooks/useAlert";
+import { UserGroup } from "../api/projectsServices";
+import { Typography } from "@mui/material";
+import { t } from "i18next";
+
+const emptyBlueprint: Blueprint = {
+    name: "",
+    userGroups: [],
+    elements: [],
+};
 
 export const CreateCustomDashboard = () => {
-    const [visibility, setVisibility] = useState({
+    const initialVisibility = {
         MUTATION: true,
         PROJECT_PHASE: true,
         TARGET_GROUP: true,
@@ -14,16 +26,53 @@ export const CreateCustomDashboard = () => {
         RESIDENTIAL_PROJECTS: true,
         DELIVERABLES: true,
         DELAYED_PROJECTS: true,
-    });
+    };
+    const [visibility, setVisibility] = useState(initialVisibility);
+    const [newBlueprint, setNewBlueprint] = useState<Blueprint>(emptyBlueprint);
+    const [userGroups, setUserGroups] = useState<UserGroup[]>([]);
 
+    const { id } = useParams();
+    const { setAlert } = useAlert();
+
+    useEffect(() => {
+        if (id) {
+            const fetchBlueprint = async () => {
+                try {
+                    const blueprint = await getBlueprint(id);
+
+                    Object.keys(initialVisibility).forEach((key) => {
+                        if (!blueprint.elements.includes(key as VisibilityElement)) {
+                            initialVisibility[key as keyof typeof initialVisibility] = false;
+                        }
+                    });
+                    setVisibility({ ...initialVisibility });
+                    setNewBlueprint(blueprint);
+                } catch (error) {
+                    if (error instanceof Error) setAlert(error.message, "error");
+                }
+            };
+
+            fetchBlueprint();
+        } else {
+            setVisibility({ ...initialVisibility });
+            setNewBlueprint(emptyBlueprint);
+            setUserGroups([]);
+        }
+    }, [id]);
     if (!visibility) {
         return null;
     }
-
     return (
         <>
-            <CustomDashboardForm visibility={visibility} />
-            <DashboardCharts visibility={visibility} setVisibility={setVisibility} customizable={true} />
+            <Typography variant="h5">{t("dashboard.blueprints.title")}</Typography>
+            <CustomDashboardForm
+                visibility={visibility}
+                newBlueprint={newBlueprint}
+                setNewBlueprint={setNewBlueprint}
+                userGroups={userGroups}
+                setUserGroups={setUserGroups}
+            />
+            <DashboardCharts visibility={visibility} setVisibility={setVisibility} />
         </>
     );
 };
