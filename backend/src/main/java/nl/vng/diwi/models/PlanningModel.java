@@ -15,6 +15,8 @@ public class PlanningModel {
 
     private UUID projectId;
 
+    private String name;
+
     private Integer amount;
 
     private Integer year;
