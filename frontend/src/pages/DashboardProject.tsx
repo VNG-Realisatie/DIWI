@@ -15,6 +15,7 @@ import { TooltipInfo } from "../widgets/TooltipInfo";
 import { FileDownload } from "@mui/icons-material";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import { MyResponsiveBar } from "../components/dashboard/BarChart";
 
 export type ChartType = {
     label: string;
@@ -102,10 +103,49 @@ export const DashboardProject = () => {
                 const convertedData = data.physicalAppearance.map((d) => {
                     return { label: d.name, value: d.amount };
                 });
+                //Set here later planning chart data
                 setPhysicalAppearance(convertedData);
             });
         }
     }, [projectId]);
+
+    const data = [
+        {
+            year: 2022,
+            projectId: "Leiden Obrechtstraat",
+            amount: 150,
+        },
+        {
+            year: 2023,
+            projectId: "Amsterdam",
+            amount: 100,
+        },
+        {
+            year: 2022,
+            projectId: "Copenhagen",
+            amount: 50,
+        },
+        {
+            year: 2023,
+            projectId: "Clumberg",
+            amount: 80,
+        },
+        {
+            year: 2022,
+            projectId: "Rotterdam",
+            amount: 120,
+        },
+        {
+            year: 2024,
+            projectId: "Den Haag",
+            amount: 120,
+        },
+        {
+            year: 2024,
+            projectId: "Leiderdorp",
+            amount: 100,
+        },
+    ];
     return (
         <Stack flexDirection="column" width="100%" spacing={2} mb={10}>
             <BreadcrumbBar
@@ -150,6 +190,7 @@ export const DashboardProject = () => {
                 </Grid>
                 <Grid item {...chartCardStyling} id="schedule">
                     <Typography sx={titleStyling}>{t("dashboard.schedule")}</Typography>
+                    <MyResponsiveBar chartData={data} selectedProjectId={selectedProject?.projectName ?? ""} />
                 </Grid>
                 <Grid item {...chartCardStyling} id="upcomingMileStones">
                     <Typography sx={titleStyling}>{t("dashboard.upcomingMileStones")}</Typography>
