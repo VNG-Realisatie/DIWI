@@ -14,6 +14,8 @@ import { chartColors } from "../utils/dashboardChartColors";
 import { getProjectHouseBlocksWithCustomProperties } from "../api/houseBlockServices";
 import { MutationCard } from "../components/dashboard/MutationCard";
 import ProjectOverviewMap from "../components/map/ProjectOverviewMap";
+import useAllowedActions from "../hooks/useAllowedActions";
+import ActionNotAllowed from "./ActionNotAllowed";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { FileDownload } from "@mui/icons-material";
@@ -38,6 +40,8 @@ export const DashboardProjects = () => {
     const { rows } = useCustomSearchParams(undefined, undefined, { page: 1, pageSize: 10000 });
     const { t } = useTranslation();
     const navigate = useNavigate();
+
+    const allowedActions = useAllowedActions();
 
     const handleSelectProject = (project: Project | null) => {
         setSelectedProject(project);
@@ -178,6 +182,10 @@ export const DashboardProjects = () => {
             setDashboardMutationValues(list);
         });
     }, [t]);
+
+    if (!allowedActions.includes("VIEW_DASHBOARDS")) {
+        return <ActionNotAllowed errorMessage={t("dashboard.forbidden")} />;
+    }
 
     const chartCardStyling = { backgroundColor: "#F0F0F0", my: 1, p: 2, xs: 12, md: 5.9 };
 

@@ -18,7 +18,8 @@ export type AllowedActions =
     | "EDIT_ALL_PROJECTS"
     | "CREATE_NEW_PROJECT"
     | "IMPORT_PROJECTS"
-    | "EXPORT_PROJECTS";
+    | "EXPORT_PROJECTS"
+    | "VIEW_DASHBOARDS";
 
 function useAllowedActions() {
     const [allowedActions, setAllowedActions] = useState<AllowedActions[]>([]);

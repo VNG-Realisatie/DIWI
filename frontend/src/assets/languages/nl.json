@@ -399,6 +399,7 @@
       "schedule": "Planning",
       "upcomingMileStones": "Aankomende mijlpalen",
       "totalValues": "Totaal aantallen",
+      "forbidden": "U heeft geen toegang tot deze pagina. Neem contact op met uw beheerder",
       "properties": {
         "constructionAmount": "Aantal woningen",
         "demolitionAmount": "Aantal sloop",
