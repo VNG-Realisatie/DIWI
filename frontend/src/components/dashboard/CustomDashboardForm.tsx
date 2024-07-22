@@ -39,7 +39,7 @@ export const CustomDashboardForm = ({ visibility, newBlueprint, setNewBlueprint,
 
     const handleSave = async () => {
         const elementsToAdd = Object.entries(visibility)
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             .filter(([_, value]) => value === true)
             .map(([key]) => key);
         const updatedBlueprint = {
@@ -63,7 +63,7 @@ export const CustomDashboardForm = ({ visibility, newBlueprint, setNewBlueprint,
         }
     };
     return (
-        <Grid container spacing={2} alignItems="center">
+        <Grid container spacing={2} alignItems="center" mb={2}>
             <Grid item xs={4}>
                 <TextInput
                     readOnly={false}

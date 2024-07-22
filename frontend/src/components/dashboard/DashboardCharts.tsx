@@ -114,150 +114,148 @@ export const DashboardCharts = ({ visibility, setVisibility }: Props) => {
         });
     }, [t]);
     return (
-        <>
-            <Grid container border="solid 1px #DDD" justifyContent="space-around" p={1}>
-                <Grid item xs={12}>
-                    <MutationCard
-                        handleToggle={() => handleToggleVisibility("MUTATION")}
-                        visibility={visibility}
-                        demolitionAmount={dashboardMutationValues?.DEMOLITION ?? 0}
-                        constructionAmount={dashboardMutationValues?.CONSTRUCTION ?? 0}
-                    />
-                </Grid>
-
-                <Grid item {...chartCardStyling}>
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
-                        <Typography variant="h6" fontSize={16}>
-                            {t("dashboard.projectPhases")}
-                        </Typography>
-                        {visibility && (
-                            <Switch
-                                checked={visibility.PROJECT_PHASE}
-                                onChange={() => handleToggleVisibility("PROJECT_PHASE")}
-                                inputProps={{ "aria-label": "controlled" }}
-                            />
-                        )}
-                    </Box>
-                    <DashboardPieChart chartData={projectPhaseSums || []} colors={chartColors} />
-                </Grid>
-
-                <Grid item {...chartCardStyling}>
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
-                        <Typography variant="h6" fontSize={16}>
-                            {t("dashboard.targetAudiences")}
-                        </Typography>
-                        {visibility && (
-                            <Switch
-                                checked={visibility.TARGET_GROUP}
-                                onChange={() => handleToggleVisibility("TARGET_GROUP")}
-                                inputProps={{ "aria-label": "controlled" }}
-                            />
-                        )}
-                    </Box>
-                    <DashboardPieChart chartData={dashboardProjects?.targetGroup || []} colors={chartColors} />
-                </Grid>
-
-                <Grid item {...chartCardStyling}>
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
-                        <Typography variant="h6" fontSize={16}>
-                            {t("dashboard.residentialFeatures")}
-                        </Typography>
-                        {visibility && (
-                            <Switch
-                                checked={visibility.PHYSICAL_APPEARANCE}
-                                onChange={() => handleToggleVisibility("PHYSICAL_APPEARANCE")}
-                                inputProps={{ "aria-label": "controlled" }}
-                            />
-                        )}
-                    </Box>
-                    <DashboardPieChart chartData={dashboardProjects?.physicalAppearance || []} colors={chartColors} />
-                </Grid>
-                <Grid item {...chartCardStyling}>
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
-                        <Typography variant="h6" fontSize={16}>
-                            {t("dashboard.buy")}
-                        </Typography>
-                        {visibility && (
-                            <Switch
-                                checked={visibility.OWNERSHIP_BUY}
-                                onChange={() => handleToggleVisibility("OWNERSHIP_BUY")}
-                                inputProps={{ "aria-label": "controlled" }}
-                            />
-                        )}
-                    </Box>
-                </Grid>
-                <Grid item {...chartCardStyling}>
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
-                        <Typography variant="h6" fontSize={16}>
-                            {t("dashboard.rent")}
-                        </Typography>
-                        {visibility && (
-                            <Switch
-                                checked={visibility.OWNERSHIP_RENT}
-                                onChange={() => handleToggleVisibility("OWNERSHIP_RENT")}
-                                inputProps={{ "aria-label": "controlled" }}
-                            />
-                        )}
-                    </Box>
-                </Grid>
-                <Grid item {...chartCardStyling}>
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
-                        <Typography variant="h6" fontSize={16}>
-                            {t("dashboard.residentialProjects")}
-                        </Typography>
-                        {visibility && (
-                            <Switch
-                                checked={visibility.RESIDENTIAL_PROJECTS}
-                                onChange={() => handleToggleVisibility("RESIDENTIAL_PROJECTS")}
-                                inputProps={{ "aria-label": "controlled" }}
-                            />
-                        )}
-                    </Box>
-                </Grid>
-                <Grid item {...chartCardStyling}>
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
-                        <Typography variant="h6" fontSize={16}>
-                            {t("dashboard.deliverables")}
-                        </Typography>
-                        {visibility && (
-                            <Switch
-                                checked={visibility.DELIVERABLES}
-                                onChange={() => handleToggleVisibility("DELIVERABLES")}
-                                inputProps={{ "aria-label": "controlled" }}
-                            />
-                        )}
-                    </Box>
-                </Grid>
-                <Grid item {...chartCardStyling}>
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
-                        <Typography variant="h6" fontSize={16}>
-                            {t("dashboard.delayedProjects")}
-                        </Typography>
-                        {visibility && (
-                            <Switch
-                                checked={visibility.DELAYED_PROJECTS}
-                                onChange={() => handleToggleVisibility("DELAYED_PROJECTS")}
-                                inputProps={{ "aria-label": "controlled" }}
-                            />
-                        )}
-                    </Box>
-                </Grid>
-                <Grid item {...chartCardStyling}>
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
-                        <Typography variant="h6" fontSize={16}>
-                            {t("dashboard.projects")}
-                        </Typography>
-                        {visibility && (
-                            <Switch
-                                checked={visibility.PROJECT_MAP}
-                                onChange={() => handleToggleVisibility("PROJECT_MAP")}
-                                inputProps={{ "aria-label": "controlled" }}
-                            />
-                        )}
-                    </Box>
-                    <ProjectOverviewMap isDashboardMap={true} />
-                </Grid>
+        <Grid container border="solid 1px #DDD" justifyContent="space-around" p={1}>
+            <Grid item xs={12}>
+                <MutationCard
+                    handleToggle={() => handleToggleVisibility("MUTATION")}
+                    visibility={visibility}
+                    demolitionAmount={dashboardMutationValues?.DEMOLITION ?? 0}
+                    constructionAmount={dashboardMutationValues?.CONSTRUCTION ?? 0}
+                />
             </Grid>
-        </>
+
+            <Grid item {...chartCardStyling}>
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Typography variant="h6" fontSize={16}>
+                        {t("dashboard.projectPhases")}
+                    </Typography>
+                    {visibility && (
+                        <Switch
+                            checked={visibility.PROJECT_PHASE}
+                            onChange={() => handleToggleVisibility("PROJECT_PHASE")}
+                            inputProps={{ "aria-label": "controlled" }}
+                        />
+                    )}
+                </Box>
+                <DashboardPieChart chartData={projectPhaseSums || []} colors={chartColors} />
+            </Grid>
+
+            <Grid item {...chartCardStyling}>
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Typography variant="h6" fontSize={16}>
+                        {t("dashboard.targetAudiences")}
+                    </Typography>
+                    {visibility && (
+                        <Switch
+                            checked={visibility.TARGET_GROUP}
+                            onChange={() => handleToggleVisibility("TARGET_GROUP")}
+                            inputProps={{ "aria-label": "controlled" }}
+                        />
+                    )}
+                </Box>
+                <DashboardPieChart chartData={dashboardProjects?.targetGroup || []} colors={chartColors} />
+            </Grid>
+
+            <Grid item {...chartCardStyling}>
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Typography variant="h6" fontSize={16}>
+                        {t("dashboard.residentialFeatures")}
+                    </Typography>
+                    {visibility && (
+                        <Switch
+                            checked={visibility.PHYSICAL_APPEARANCE}
+                            onChange={() => handleToggleVisibility("PHYSICAL_APPEARANCE")}
+                            inputProps={{ "aria-label": "controlled" }}
+                        />
+                    )}
+                </Box>
+                <DashboardPieChart chartData={dashboardProjects?.physicalAppearance || []} colors={chartColors} />
+            </Grid>
+            <Grid item {...chartCardStyling}>
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Typography variant="h6" fontSize={16}>
+                        {t("dashboard.buy")}
+                    </Typography>
+                    {visibility && (
+                        <Switch
+                            checked={visibility.OWNERSHIP_BUY}
+                            onChange={() => handleToggleVisibility("OWNERSHIP_BUY")}
+                            inputProps={{ "aria-label": "controlled" }}
+                        />
+                    )}
+                </Box>
+            </Grid>
+            <Grid item {...chartCardStyling}>
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Typography variant="h6" fontSize={16}>
+                        {t("dashboard.rent")}
+                    </Typography>
+                    {visibility && (
+                        <Switch
+                            checked={visibility.OWNERSHIP_RENT}
+                            onChange={() => handleToggleVisibility("OWNERSHIP_RENT")}
+                            inputProps={{ "aria-label": "controlled" }}
+                        />
+                    )}
+                </Box>
+            </Grid>
+            <Grid item {...chartCardStyling}>
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Typography variant="h6" fontSize={16}>
+                        {t("dashboard.residentialProjects")}
+                    </Typography>
+                    {visibility && (
+                        <Switch
+                            checked={visibility.RESIDENTIAL_PROJECTS}
+                            onChange={() => handleToggleVisibility("RESIDENTIAL_PROJECTS")}
+                            inputProps={{ "aria-label": "controlled" }}
+                        />
+                    )}
+                </Box>
+            </Grid>
+            <Grid item {...chartCardStyling}>
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Typography variant="h6" fontSize={16}>
+                        {t("dashboard.deliverables")}
+                    </Typography>
+                    {visibility && (
+                        <Switch
+                            checked={visibility.DELIVERABLES}
+                            onChange={() => handleToggleVisibility("DELIVERABLES")}
+                            inputProps={{ "aria-label": "controlled" }}
+                        />
+                    )}
+                </Box>
+            </Grid>
+            <Grid item {...chartCardStyling}>
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Typography variant="h6" fontSize={16}>
+                        {t("dashboard.delayedProjects")}
+                    </Typography>
+                    {visibility && (
+                        <Switch
+                            checked={visibility.DELAYED_PROJECTS}
+                            onChange={() => handleToggleVisibility("DELAYED_PROJECTS")}
+                            inputProps={{ "aria-label": "controlled" }}
+                        />
+                    )}
+                </Box>
+            </Grid>
+            <Grid item {...chartCardStyling}>
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Typography variant="h6" fontSize={16}>
+                        {t("dashboard.projects")}
+                    </Typography>
+                    {visibility && (
+                        <Switch
+                            checked={visibility.PROJECT_MAP}
+                            onChange={() => handleToggleVisibility("PROJECT_MAP")}
+                            inputProps={{ "aria-label": "controlled" }}
+                        />
+                    )}
+                </Box>
+                <ProjectOverviewMap isDashboardMap={true} />
+            </Grid>
+        </Grid>
     );
 };
