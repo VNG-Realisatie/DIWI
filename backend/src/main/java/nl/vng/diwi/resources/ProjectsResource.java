@@ -430,6 +430,16 @@ public class ProjectsResource {
         ProjectSnapshotModel projectSnapshotModelCurrent = projectService.getProjectSnapshot(repo, projectUuid, loggedUser);
         projectService.checkProjectEditPermission(repo, projectUuid, projectSnapshotModelCurrent, loggedUser);
 
+        if (projectSnapshotModelToUpdate.getConfidentialityLevel() == Confidentiality.PRIVATE) {
+            List<UUID> newGroupIds = projectSnapshotModelToUpdate.getProjectOwners().stream().map(UserGroupModel::getUuid).toList();
+            List<UUID> newOwnerIds = repo.getUsergroupDAO().getUserGroupsUsers(newGroupIds).stream().map(UserGroupUserModel::getUuid).toList();
+            List<UUID> currentOwnerIds = new ArrayList<>();
+            projectSnapshotModelCurrent.getProjectOwners().forEach(ug -> currentOwnerIds.addAll(ug.getUsers().stream().map(UserGroupUserModel::getUuid).toList()));
+            if (!newOwnerIds.contains(loggedUser.getUuid()) && currentOwnerIds.contains(loggedUser.getUuid())) {
+                throw new VngBadRequestException("Cannot remove yourself as owner of a private project.");
+            }
+        }
+
         List<ProjectUpdateModel> projectUpdateModelList = new ArrayList<>();
         for (ProjectUpdateModel.ProjectProperty projectProperty : ProjectUpdateModel.ProjectProperty.values()) {
             switch (projectProperty) {
