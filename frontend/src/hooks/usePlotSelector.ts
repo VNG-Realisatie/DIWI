@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { Map, MapBrowserEvent, View } from "ol";
+import { Feature, Map, MapBrowserEvent, View } from "ol";
 import { defaults as defaultControls } from "ol/control.js";
 import { Listener } from "ol/events";
 import { Extent } from "ol/extent";
@@ -17,7 +17,7 @@ import ConfigContext from "../context/ConfigContext";
 import ProjectContext from "../context/ProjectContext";
 import { extentToCenter, mapBoundsToExtent } from "../utils/map";
 import { DrawEvent } from "ol/interaction/Draw";
-import { LineString } from "ol/geom";
+import { LineString, Polygon } from "ol/geom";
 
 const baseUrlKadasterWms = "https://service.pdok.nl/kadaster/kadastralekaart/wms/v5_0";
 
@@ -30,6 +30,7 @@ const usePlotSelector = (id: string) => {
     const [map, setMap] = useState<Map>();
     const [selectedPlotLayerSource, setSelectedPlotLayerSource] = useState<VectorSource>();
     const [projectLayerSource, setProjectLayerSource] = useState<VectorSource>();
+    const [bboxLayerSource, setBboxLayerSource] = useState<VectorSource>();
 
     const [originalSelectedPlots, setOriginalSelectedPlots] = useState<Plot[] | null>(null);
     const [selectedPlots, setSelectedPlots] = useState<Plot[]>([]);
@@ -93,8 +94,6 @@ const usePlotSelector = (id: string) => {
 
             const features = map.getFeaturesAtPixel(e.pixel, { layerFilter: (layer) => layer.getSource() === selectedPlotLayerSource });
 
-            console.log("features", features);
-
             if (features.length > 0) {
                 const newSelectedPlots = selectedPlots.filter((plot) => {
                     const id = plot.plotFeature.features[0].id;
@@ -106,7 +105,6 @@ const usePlotSelector = (id: string) => {
                 const bboxSize = 1;
                 const loc = e.coordinate;
                 const bbox = `${loc[0] - bboxSize},${loc[1] - bboxSize},${loc[0] + bboxSize},${loc[1] + bboxSize}`;
-                console.log("bbox", bbox)
 
                 const url = queryString.stringifyUrl({
                     url: baseUrlKadasterWms,
@@ -132,8 +130,6 @@ const usePlotSelector = (id: string) => {
                         const plotFeature = result as PlotGeoJSON;
 
                         if (plotFeature.features.length === 0) {
-                            // There is no plot at this location
-                            console.log("clickNOPLOT")
                             return;
                         }
 
@@ -155,29 +151,13 @@ const usePlotSelector = (id: string) => {
 
     const handleLineDrawEnd = useCallback(
          (e: DrawEvent) => {
-            if (!selectionMode || !map || !selectedPlotLayerSource) return;
+            if (!selectionMode || !map || !selectedPlotLayerSource || !bboxLayerSource) return;
 
             const lineGeometry = e.feature.getGeometry();
             if (!lineGeometry || !(lineGeometry instanceof LineString)) return;
 
-            console.log("flatcoords", lineGeometry.getFlatCoordinates());
-            const flatCoordinates = lineGeometry.getFlatCoordinates();
-
-            const fetchPromises = [];
-
-            for (let i = 2, j = 4; j < flatCoordinates.length; i = j, j = j + 2) {
-                //TODO: Skip if coords too close and create if too far
-                const coords = [
-                    flatCoordinates[i]-1,
-                    flatCoordinates[i + 1]-1,
-                    flatCoordinates[j]+1,
-                    flatCoordinates[j + 1]+1
-                ];
-
-                console.log(i, j);
-                const bbox = coords.join(",");
-
-                console.log(bbox);
+            const extent = lineGeometry.getExtent();
+            const bbox = extent.join(",");
 
                 const url = queryString.stringifyUrl({
                     url: baseUrlKadasterWms,
@@ -193,54 +173,63 @@ const usePlotSelector = (id: string) => {
                         J: 50,
                         layers: "Perceel",
                         CRS: "EPSG:3857",
-                        BBOX: bbox,
+                        BBOX: bbox
                     },
                 });
-        fetchPromises.push(fetch(url)
-        .then((res) => {
-            console.log(res);
-            return res.json();
-        })
-        .then((result) => {
-            const plotFeature = result as PlotGeoJSON;
 
+                fetch(url)
+                    .then((res) => res.json())
+                    .then((result) => {
+                        const plotFeature = result as PlotGeoJSON;
 
-            if (plotFeature.features.length === 0) {
-                console.log("noPlot");
-                return;
-            }
+                        if (plotFeature.features.length === 0) {
+                            return;
+                        }
 
-            const properties = plotFeature.features[0].properties;
+                        const properties = plotFeature.features[0].properties;
 
-            const newPlot: Plot = {
-                brkGemeenteCode: properties.kadastraleGemeenteCode,
-                brkPerceelNummer: parseInt(properties.perceelnummer),
-                brkSectie: properties.sectie,
-                plotFeature,
-            };
+                        const newPlot: Plot = {
+                            brkGemeenteCode: properties.kadastraleGemeenteCode,
+                            brkPerceelNummer: parseInt(properties.perceelnummer),
+                            brkSectie: properties.sectie,
+                            plotFeature,
+                        };
 
-            const isPlotAlreadySelected = selectedPlots.some(
-                (plot) =>
-                    plot.brkGemeenteCode === newPlot.brkGemeenteCode &&
-                    plot.brkPerceelNummer === newPlot.brkPerceelNummer &&
-                    plot.brkSectie === newPlot.brkSectie
-            );
+                        const isPlotAlreadySelected = selectedPlots.some(
+                            (plot) =>
+                                plot.brkGemeenteCode === newPlot.brkGemeenteCode &&
+                                plot.brkPerceelNummer === newPlot.brkPerceelNummer &&
+                                plot.brkSectie === newPlot.brkSectie
+                        );
 
-            if (!isPlotAlreadySelected) {
-                setSelectedPlots((prevPlots) => [...prevPlots, newPlot]);
-            } else{
-                return;
-            }
-        }));
-}
+                        if (!isPlotAlreadySelected) {
+                            setSelectedPlots((prevPlots) => [...prevPlots, newPlot]);
+                        }
+                    }).then(() => {
+                        try {
+                            const [minX, minY, maxX, maxY] = extent;
 
-try {
-    console.log("TRY");
-    Promise.all(fetchPromises);
-} catch (error) {
-    console.error("Error fetching plot data:", error);
-}
-}, [selectionMode, map, selectedPlotLayerSource, selectedPlots]);
+                            const boundingBoxCoords = [
+                                [minX, minY],
+                                [maxX, minY],
+                                [maxX, maxY],
+                                [minX, maxY],
+                                [minX, minY],
+                            ];
+
+                            const boundingBoxPolygon = new Polygon([boundingBoxCoords]);
+
+                            bboxLayerSource.clear();
+                            bboxLayerSource.addFeature(new Feature({
+                                geometry: boundingBoxPolygon,
+                            }));
+                        } catch (error) {
+                            console.error("Error fetching plot data:", error);
+                        }
+                    });
+            },
+        [selectionMode, map, selectedPlotLayerSource, selectedPlots, bboxLayerSource]
+    );
 
     useEffect(
         function updatePlotsLayer() {
@@ -309,12 +298,9 @@ try {
         const draw = new Draw({
             source: new VectorSource(),
             type: "LineString",
-            maxPoints: 100,
-            minPoints: 100,
-            freehand: true,
+            maxPoints: 1
         });
 
-        console.log(draw);
         draw.on("drawend", handleLineDrawEnd);
         map.addInteraction(draw);
 
@@ -347,11 +333,9 @@ try {
 
             const selectedPlotSource = new VectorSource();
             const selectedPlotLayer = new VectorLayer({ source: selectedPlotSource, style: selectedFeatureStyle as StyleFunction });
-
             setSelectedPlotLayerSource(selectedPlotSource);
 
             const projectGeometrySource = new VectorSource();
-
             const projectGeometryLayer = new VectorLayer({
                 source: projectGeometrySource,
                 style: new Style({
@@ -361,9 +345,19 @@ try {
             });
             setProjectLayerSource(projectGeometrySource);
 
+            const bboxSource = new VectorSource();
+            const bboxLayer = new VectorLayer({
+                source: bboxSource,
+                style: new Style({
+                    fill: new Fill({ color: "rgba(155, 193, 228, 0.5)" }),
+                    stroke: new Stroke({ color: "rgba(7, 62, 168, 0.5)", width: 1 }),
+                }),
+            });
+            setBboxLayerSource(bboxSource);
+
             const newMap = new Map({
                 target: id,
-                layers: [osmLayer, projectGeometryLayer, kadasterLayers, selectedPlotLayer],
+                layers: [osmLayer, projectGeometryLayer, kadasterLayers, selectedPlotLayer, bboxLayer],
                 view: new View({
                     center: extentToCenter(mapBoundsToExtent(mapBounds)),
                     zoom: 12,
