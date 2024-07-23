@@ -7,7 +7,7 @@ import ProjectContext from "../context/ProjectContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { CharacteristicTable } from "../components/dashboard/CharacteristicTable";
 import { DashboardPieChart } from "../components/dashboard/PieChart";
-import { getDashboardProject } from "../api/dashboardServices";
+import { getDashboardProject, Planning } from "../api/dashboardServices";
 import { chartColors } from "../utils/dashboardChartColors";
 import { Project } from "../api/projectsServices";
 import useCustomSearchParams from "../hooks/useCustomSearchParams";
@@ -35,7 +35,7 @@ export const DashboardProject = () => {
     const chartCardStyling = { backgroundColor: "#F0F0F0", my: 1, p: 2, xs: 12, md: 5.9 };
 
     const [physicalAppearance, setPhysicalAppearance] = useState<ChartType[]>([]);
-
+    const [planning, setPlanning] = useState<Planning[]>([]);
     const handleSelectProject = (project: Project | null) => {
         setSelectedDashboardProject(project);
         navigate(Paths.dashboardProject.toPath({ projectId: project?.projectId || "" }));
@@ -85,6 +85,7 @@ export const DashboardProject = () => {
         };
         const projectSumChart = await h2c(projectSum);
         const appearanceChart = await h2c(appearance);
+        const planningChart = await h2c(schedule);
         //Add the rest of the charts here
 
         const pdf = new jsPDF("p", "px", "a4");
@@ -92,6 +93,7 @@ export const DashboardProject = () => {
         pdf.text(selectedProject?.projectName ?? "", 5, 20);
         pdf.addImage(projectSumChart, "PNG", 5, 35, 215, 90);
         pdf.addImage(appearanceChart, "PNG", 225, 35, 215, 90);
+        pdf.addImage(planningChart, "PNG", 5, 130, 215, 90);
         // Add the rest of the charts here
 
         pdf.save(`${selectedProject?.projectName}.pdf`);
@@ -105,47 +107,11 @@ export const DashboardProject = () => {
                 });
                 //Set here later planning chart data
                 setPhysicalAppearance(convertedData);
+                setPlanning(data.planning);
             });
         }
     }, [projectId]);
 
-    const data = [
-        {
-            year: 2022,
-            projectId: "Leiden Obrechtstraat",
-            amount: 150,
-        },
-        {
-            year: 2023,
-            projectId: "Amsterdam",
-            amount: 100,
-        },
-        {
-            year: 2022,
-            projectId: "Copenhagen",
-            amount: 50,
-        },
-        {
-            year: 2023,
-            projectId: "Clumberg",
-            amount: 80,
-        },
-        {
-            year: 2022,
-            projectId: "Rotterdam",
-            amount: 120,
-        },
-        {
-            year: 2024,
-            projectId: "Den Haag",
-            amount: 120,
-        },
-        {
-            year: 2024,
-            projectId: "Leiderdorp",
-            amount: 100,
-        },
-    ];
     return (
         <Stack flexDirection="column" width="100%" spacing={2} mb={10}>
             <BreadcrumbBar
@@ -190,7 +156,7 @@ export const DashboardProject = () => {
                 </Grid>
                 <Grid item {...chartCardStyling} id="schedule">
                     <Typography sx={titleStyling}>{t("dashboard.schedule")}</Typography>
-                    <MyResponsiveBar chartData={data} selectedProjectId={selectedProject?.projectName ?? ""} />
+                    <MyResponsiveBar chartData={planning} selectedProjectName={selectedProject?.projectName} />
                 </Grid>
                 <Grid item {...chartCardStyling} id="upcomingMileStones">
                     <Typography sx={titleStyling}>{t("dashboard.upcomingMileStones")}</Typography>
