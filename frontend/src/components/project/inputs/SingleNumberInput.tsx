@@ -67,12 +67,14 @@ export const SingleNumberInput = ({
     ) : (
         <Stack direction="row" alignItems="center" spacing={2} my={2}>
             <Box
-                style={{
+                sx={{
                     border: "solid 1px #ddd",
                     borderRadius: "5px",
                     padding: "0.6em",
                     minHeight: "47px",
                     flex: 3,
+                    color: readOnly ? "#000000" : "inherit",
+                    fontStyle: readOnly ? "italic" : "normal",
                 }}
             >
                 {name} {tooltipInfoText && <TooltipInfo text={tooltipInfoText} />}
