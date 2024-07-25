@@ -130,7 +130,7 @@ export const DashboardProject = () => {
                 setPriceSegmentsRent(convertedRentData);
             });
         }
-    }, [projectId]);
+    }, [projectId, t]);
 
     return (
         <Stack flexDirection="column" width="100%" spacing={2} mb={10}>
