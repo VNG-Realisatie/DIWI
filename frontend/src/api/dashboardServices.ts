@@ -13,7 +13,15 @@ export type Planning = {
     year: number;
 };
 
-export async function getDashboardProject(id: string): Promise<{ physicalAppearance: PhysicalAppearence[], planning: Planning[] }> {
+type PriceCategory = {
+    id: string;
+    name: string;
+    amount: number;
+    min: number;
+    max?: number;
+};
+
+export async function getDashboardProject(id: string): Promise<{ physicalAppearance: PhysicalAppearence[], planning: Planning[], priceCategoryOwn: PriceCategory[], priceCategoryRent: PriceCategory[] }> {
     const todaysDate = new Date().toISOString().split("T")[0]; // change this logic later
     return getJson(`${API_URI}/dashboard/project/${id}?snapshotDate=${todaysDate}`);
 }

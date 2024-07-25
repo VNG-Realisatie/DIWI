@@ -36,6 +36,9 @@ export const DashboardProject = () => {
 
     const [physicalAppearance, setPhysicalAppearance] = useState<ChartType[]>([]);
     const [planning, setPlanning] = useState<Planning[]>([]);
+    const [priceSegmentsPurchase, setPriceSegmentsPurchase] = useState<ChartType[]>([]);
+    const [priceSegmentsRent, setPriceSegmentsRent] = useState<ChartType[]>([]);
+
     const handleSelectProject = (project: Project | null) => {
         setSelectedDashboardProject(project);
         navigate(Paths.dashboardProject.toPath({ projectId: project?.projectId || "" }));
@@ -86,6 +89,8 @@ export const DashboardProject = () => {
         const projectSumChart = await h2c(projectSum);
         const appearanceChart = await h2c(appearance);
         const planningChart = await h2c(schedule);
+        const purchaseChart = await h2c(priceSegmentsPurchase);
+        const rentChart = await h2c(priceSegmentsRent);
         //Add the rest of the charts here
 
         const pdf = new jsPDF("p", "px", "a4");
@@ -93,8 +98,9 @@ export const DashboardProject = () => {
         pdf.text(selectedProject?.projectName ?? "", 5, 20);
         pdf.addImage(projectSumChart, "PNG", 5, 35, 215, 90);
         pdf.addImage(appearanceChart, "PNG", 225, 35, 215, 90);
-        pdf.addImage(planningChart, "PNG", 5, 130, 215, 90);
-        // Add the rest of the charts here
+        pdf.addImage(purchaseChart, "PNG", 5, 130, 215, 90);
+        pdf.addImage(rentChart, "PNG", 225, 130, 215, 90);
+        pdf.addImage(planningChart, "PNG", 5, 225, 215, 90);
 
         pdf.save(`${selectedProject?.projectName}.pdf`);
     };
@@ -102,12 +108,27 @@ export const DashboardProject = () => {
     useEffect(() => {
         if (projectId) {
             getDashboardProject(projectId).then((data) => {
-                const convertedData = data.physicalAppearance.map((d) => {
+                console.log(data);
+                const convertedPAData = data.physicalAppearance.map((d) => {
                     return { label: d.name, value: d.amount };
                 });
-                //Set here later planning chart data
-                setPhysicalAppearance(convertedData);
+                const convertedPurchaseData = data.priceCategoryOwn.map((d) => {
+                    return {
+                        label: `${d.name}\n(€${d.min} ${d.max ? `- €${d.max}` : t("generic.andMore")})`,
+                        value: d.amount,
+                    };
+                });
+                const convertedRentData = data.priceCategoryRent.map((d) => {
+                    return {
+                        label: `${d.name}\n(€${d.min} ${d.max ? `- €${d.max}` : t("generic.andMore")})`,
+                        value: d.amount,
+                    };
+                })
+
+                setPhysicalAppearance(convertedPAData);
                 setPlanning(data.planning);
+                setPriceSegmentsPurchase(convertedPurchaseData);
+                setPriceSegmentsRent(convertedRentData);
             });
         }
     }, [projectId]);
@@ -147,12 +168,11 @@ export const DashboardProject = () => {
                 </Grid>
                 <Grid item {...chartCardStyling} id="priceSegmentsPurchase">
                     <Typography sx={titleStyling}>{t("dashboard.priceSegmentsPurchase")}</Typography>
-
-                    {/* ToDo:Add chart here later */}
+                    <DashboardPieChart chartData={priceSegmentsPurchase} colors={chartColors} />
                 </Grid>
                 <Grid item {...chartCardStyling} id="priceSegmentsRent">
                     <Typography sx={titleStyling}>{t("dashboard.priceSegmentsRent")}</Typography>
-                    {/* ToDo:Add chart here later */}
+                    <DashboardPieChart chartData={priceSegmentsRent} colors={chartColors} />
                 </Grid>
                 <Grid item {...chartCardStyling} id="schedule">
                     <Typography sx={titleStyling}>{t("dashboard.schedule")}</Typography>
