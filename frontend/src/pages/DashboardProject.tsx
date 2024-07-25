@@ -108,7 +108,6 @@ export const DashboardProject = () => {
     useEffect(() => {
         if (projectId) {
             getDashboardProject(projectId).then((data) => {
-                console.log(data);
                 const convertedPAData = data.physicalAppearance.map((d) => {
                     return { label: d.name, value: d.amount };
                 });
