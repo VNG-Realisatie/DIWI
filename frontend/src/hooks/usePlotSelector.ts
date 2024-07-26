@@ -159,77 +159,98 @@ const usePlotSelector = (id: string) => {
             const extent = lineGeometry.getExtent();
             const bbox = extent.join(",");
 
-                const url = queryString.stringifyUrl({
-                    url: baseUrlKadasterWms,
-                    query: {
-                        QUERY_LAYERS: "Perceel",
-                        INFO_FORMAT: "application/json",
-                        REQUEST: "GetFeatureInfo",
-                        SERVICE: "WMS",
-                        VERSION: "1.3.0",
-                        HEIGHT: 101,
-                        WIDTH: 101,
-                        I: 50,
-                        J: 50,
-                        layers: "Perceel",
-                        CRS: "EPSG:3857",
-                        BBOX: bbox
-                    },
-                });
+            const gridSize = 10;
+            const maxRequests = 100;
+            let requestCount = 0;
 
-                fetch(url)
-                    .then((res) => res.json())
-                    .then((result) => {
-                        const plotFeature = result as PlotGeoJSON;
+            const fetchPromises = [];
 
-                        if (plotFeature.features.length === 0) {
-                            return;
-                        }
+            for (let i = 0; i <= 100; i += gridSize) {
+                for (let j = 0; j <= 100; j += gridSize) {
+                    if (requestCount >= maxRequests) break;
 
-                        const properties = plotFeature.features[0].properties;
-
-                        const newPlot: Plot = {
-                            brkGemeenteCode: properties.kadastraleGemeenteCode,
-                            brkPerceelNummer: parseInt(properties.perceelnummer),
-                            brkSectie: properties.sectie,
-                            plotFeature,
-                        };
-
-                        const isPlotAlreadySelected = selectedPlots.some(
-                            (plot) =>
-                                plot.brkGemeenteCode === newPlot.brkGemeenteCode &&
-                                plot.brkPerceelNummer === newPlot.brkPerceelNummer &&
-                                plot.brkSectie === newPlot.brkSectie
-                        );
-
-                        if (!isPlotAlreadySelected) {
-                            setSelectedPlots((prevPlots) => [...prevPlots, newPlot]);
-                        }
-                    }).then(() => {
-                        try {
-                            const [minX, minY, maxX, maxY] = extent;
-
-                            const boundingBoxCoords = [
-                                [minX, minY],
-                                [maxX, minY],
-                                [maxX, maxY],
-                                [minX, maxY],
-                                [minX, minY],
-                            ];
-
-                            const boundingBoxPolygon = new Polygon([boundingBoxCoords]);
-
-                            bboxLayerSource.clear();
-                            bboxLayerSource.addFeature(new Feature({
-                                geometry: boundingBoxPolygon,
-                            }));
-                        } catch (error) {
-                            console.error("Error fetching plot data:", error);
-                        }
+                    const url = queryString.stringifyUrl({
+                        url: baseUrlKadasterWms,
+                        query: {
+                            QUERY_LAYERS: "Perceel",
+                            INFO_FORMAT: "application/json",
+                            REQUEST: "GetFeatureInfo",
+                            SERVICE: "WMS",
+                            VERSION: "1.3.0",
+                            HEIGHT: 101,
+                            WIDTH: 101,
+                            I: i,
+                            J: j,
+                            layers: "Perceel",
+                            CRS: "EPSG:3857",
+                            BBOX: bbox,
+                        },
                     });
-            },
-        [selectionMode, map, selectedPlotLayerSource, selectedPlots, bboxLayerSource]
-    );
+
+                    fetchPromises.push(
+                        fetch(url)
+                            .then((res) => res.json())
+                            .then((result) => {
+                                const plotFeature = result as PlotGeoJSON;
+
+                                if (plotFeature.features.length === 0) {
+                                    return;
+                                }
+
+                                const properties = plotFeature.features[0].properties;
+
+                                const newPlot: Plot = {
+                                    brkGemeenteCode: properties.kadastraleGemeenteCode,
+                                    brkPerceelNummer: parseInt(properties.perceelnummer),
+                                    brkSectie: properties.sectie,
+                                    plotFeature,
+                                };
+
+                                setSelectedPlots((prevPlots) => {
+                                    const isPlotAlreadySelected = prevPlots.some(
+                                        (plot) =>
+                                            plot.brkGemeenteCode === newPlot.brkGemeenteCode &&
+                                            plot.brkPerceelNummer === newPlot.brkPerceelNummer &&
+                                            plot.brkSectie === newPlot.brkSectie
+                                    );
+                                    return isPlotAlreadySelected ? prevPlots : [...prevPlots, newPlot];
+                                });
+                            })
+                            .catch((error) => {
+                                console.error("Error fetching plot data:", error);
+                            })
+                    );
+
+                    requestCount++;
+                }
+                if (requestCount >= maxRequests) break;
+            }
+
+            Promise.all(fetchPromises);
+
+            try {
+                const [minX, minY, maxX, maxY] = extent;
+
+                const boundingBoxCoords = [
+                    [minX, minY],
+                    [maxX, minY],
+                    [maxX, maxY],
+                    [minX, maxY],
+                    [minX, minY],
+                ];
+
+                const boundingBoxPolygon = new Polygon([boundingBoxCoords]);
+
+                bboxLayerSource.clear();
+                bboxLayerSource.addFeature(new Feature({
+                    geometry: boundingBoxPolygon,
+                }));
+            } catch (error) {
+                console.error("Error updating bounding box layer:", error);
+            }
+        },
+        [selectionMode, map, selectedPlotLayerSource, bboxLayerSource]
+);
 
     useEffect(
         function updatePlotsLayer() {
@@ -298,7 +319,11 @@ const usePlotSelector = (id: string) => {
         const draw = new Draw({
             source: new VectorSource(),
             type: "LineString",
-            maxPoints: 1
+            maxPoints: 1,
+            condition: (event) => {
+                const click = event.originalEvent as MouseEvent;
+                return click.button === 2; //Right click
+            },
         });
 
         draw.on("drawend", handleLineDrawEnd);
