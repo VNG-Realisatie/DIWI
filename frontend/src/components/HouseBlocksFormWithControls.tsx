@@ -22,7 +22,7 @@ export const HouseBlocksFormWithControls = ({ houseBlock }: Props) => {
     const [newHouseBlock, setNewHouseBlock] = useState<HouseBlockWithCustomProperties>(houseBlock);
     const { refresh } = useContext(HouseBlockContext);
     const { setAlert } = useAlert();
-    const allowedActions = useAllowedActions();
+    const { allowedActions } = useAllowedActions();
 
     const handleSave = () => {
         if (validateHouseBlock(newHouseBlock, setAlert)) {

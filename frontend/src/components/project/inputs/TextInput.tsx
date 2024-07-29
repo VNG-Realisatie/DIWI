@@ -29,7 +29,7 @@ const shouldDisplayError = (mandatory: boolean, value: string, type: string) => 
     return false;
 };
 
-const TextInput = ({ value, setValue, readOnly, mandatory, errorText, title, tooltipInfoText, type = "text", placeholder = "" }: Props) => {
+const TextInput = ({ value, setValue, readOnly, mandatory, errorText, title, tooltipInfoText, type = "text", placeholder = ""}: Props) => {
     const hasError = shouldDisplayError(mandatory, value, type);
 
     const textFieldComponent = (

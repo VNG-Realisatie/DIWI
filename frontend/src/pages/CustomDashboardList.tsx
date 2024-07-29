@@ -4,11 +4,12 @@ import { DataGrid, GridCellParams, GridColDef } from "@mui/x-data-grid";
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button, Box } from "@mui/material";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
-import { Blueprint, deleteBlueprint, getBlueprints } from "../api/dashboardServices";
+import { Blueprint, deleteBlueprint, getAllBlueprints, getAssignedBlueprints } from "../api/dashboardServices";
 import UserGroupSelect from "../widgets/UserGroupSelect";
 import { t } from "i18next";
 import useAlert from "../hooks/useAlert";
 import { useNavigate } from "react-router-dom";
+import useAllowedActions from "../hooks/useAllowedActions";
 
 export const CustomDashboardList = () => {
     const [blueprints, setBlueprints] = useState<Blueprint[]>([]);
@@ -16,15 +17,22 @@ export const CustomDashboardList = () => {
     const [selectedBlueprint, setSelectedBlueprint] = useState<Blueprint | null>(null);
     const { setAlert } = useAlert();
     const navigate = useNavigate();
+    const { allowedActions } = useAllowedActions();
+
+    const handleCellClick = (params: GridCellParams) => {
+        if (params.field !== "actions") {
+            navigate(params.row.uuid);
+        }
+    };
 
     useEffect(() => {
         const fetchBlueprints = async () => {
-            const fetchedBlueprints = await getBlueprints();
+            const fetchedBlueprints = allowedActions.includes("EDIT_ALL_BLUEPRINTS") ? await getAllBlueprints() : await getAssignedBlueprints();
             setBlueprints(fetchedBlueprints);
         };
 
         fetchBlueprints();
-    }, []);
+    }, [allowedActions]);
 
     const handleDeleteClick = (blueprint: Blueprint) => {
         setSelectedBlueprint(blueprint);
@@ -73,15 +81,15 @@ export const CustomDashboardList = () => {
             headerName: t("admin.userManagement.tableHeader.actions"),
             sortable: false,
             flex: 1,
-            renderCell: (params: GridCellParams) => (
-                <Box display="flex" alignItems="center" justifyContent="center" style={{ height: "100%" }} gap="10px">
-                    <EditOutlinedIcon style={{ cursor: "pointer" }} color="primary" onClick={() => navigate(params.row.uuid)} />
-                    <DeleteForeverOutlinedIcon style={{ cursor: "pointer" }} color="error" onClick={() => handleDeleteClick(params.row)} />
-                </Box>
-            ),
+            renderCell: (params: GridCellParams) =>
+                allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
+                    <Box display="flex" alignItems="center" justifyContent="center" style={{ height: "100%" }} gap="10px">
+                        <EditOutlinedIcon style={{ cursor: "pointer" }} color="primary" onClick={() => navigate(params.row.uuid)} />
+                        <DeleteForeverOutlinedIcon style={{ cursor: "pointer" }} color="error" onClick={() => handleDeleteClick(params.row)} />
+                    </Box>
+                ),
         },
     ];
-
     return (
         <>
             <DataGrid
@@ -96,6 +104,7 @@ export const CustomDashboardList = () => {
                 }}
                 pageSizeOptions={[5, 10, 25]}
                 disableRowSelectionOnClick
+                onCellClick={handleCellClick}
             />
             <Dialog open={openDialog} onClose={handleCloseDialog}>
                 <DialogTitle>{t("dashboard.blueprints.dialogTitle")}</DialogTitle>
