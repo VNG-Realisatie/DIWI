@@ -79,7 +79,7 @@ export const MyResponsiveBar = ({ chartData, selectedProjectName }: Props) => {
                     legendPosition: "middle",
                     legendOffset: -40,
                 }}
-                labelTextColor={{ from: "color", modifiers: [["darker", 1.6]] }}
+                labelTextColor="#ffffff"
                 labelSkipWidth={12}
                 labelSkipHeight={12}
                 role="application"
