@@ -32,7 +32,7 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
     const theme = useTheme();
     const { t } = useTranslation();
     const { municipalityName } = useContext(ConfigContext);
-    const allowedActions = useAllowedActions();
+    const { allowedActions } = useAllowedActions();
 
     return (
         <Drawer variant="persistent" anchor="left" open={open}>
@@ -72,7 +72,19 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
                 </Link> */}
                 <Link to={Paths.dashboard.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
                     <ListItemButton onClick={handleDrawerClose}>
-                        <ListItemText primary="Dashboard projecten" />
+                        <ListItemText primary={t("sidebar.dashboardProject")} />
+                    </ListItemButton>
+                </Link>
+                {allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
+                    <Link to={Paths.createCustomDashbord.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
+                        <ListItemButton onClick={handleDrawerClose}>
+                            <ListItemText primary={t("sidebar.makeCustomDashboard")} />
+                        </ListItemButton>
+                    </Link>
+                )}
+                <Link to={Paths.customDashbordList.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
+                    <ListItemButton onClick={handleDrawerClose}>
+                        <ListItemText primary={t("sidebar.customDashboardList")} />
                     </ListItemButton>
                 </Link>
             </List>

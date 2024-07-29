@@ -263,6 +263,9 @@
     "sidebar": {
       "projects": "Projecten",
       "dashboards": "Dashboards",
+      "dashboardProject" : "Dashboard projecten",
+      "customDashboardList": "Lijst van blauwdrukken",
+      "makeCustomDashboard": "Blauwdruk maken",
       "users": "Gebruikers",
       "priceCategories": "Prijs categorieën",
       "dataExchange": "Data uitwisselen",
@@ -405,6 +408,21 @@
         "projectPhase": "Projectfase",
         "projectOwners": "Schrijfrechten",
         "year": "jaar"
+      },
+      "blueprints": {
+        "title": "Aangepast dashboard",
+        "successfullyCreated": "Blauwdruk succesvol aangemaakt",
+        "successfullyDeleted": "Blauwdruk succesvol verwijderd",
+        "successfullyUpdated": "Blauwdruk succesvol geüpdatet",
+        "deleteConfirmation": "Weet je zeker dat je deze blauwdruk wilt verwijderen?",
+        "dialogTitle": "Verwijderbevestiging",
+        "saveBlueprint": "Opslaan blauwdruk",
+        "table" : {
+          "name": "Naam",
+          "users": "Gebruikers"
+        },
+        "selectUsers": "Selecteer gebruikers",
+        "namePlaceholder": "Naam van blauwdruk"
       },
       "projectPhaseOptions": {
         "_1_CONCEPT": "Concept",

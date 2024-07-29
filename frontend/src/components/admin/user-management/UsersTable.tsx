@@ -22,7 +22,7 @@ const UsersTable = ({ rows, setUsers }: Props) => {
     const [editUserOpen, setUserDialogOpen] = useState(false);
     const [userToEdit, setUserToEdit] = useState<User | null>(null);
     const { setAlert } = useAlert();
-    const allowedActions = useAllowedActions();
+    const { allowedActions } = useAllowedActions();
 
     const { t } = useTranslation();
     const handleEdit = (user: User) => {

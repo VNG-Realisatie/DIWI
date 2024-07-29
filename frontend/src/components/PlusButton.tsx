@@ -82,7 +82,7 @@ function PlusButton({ color, link, text }: PlusButtonProps) {
 }
 
 export const AddHouseBlockButton: React.FC<{ onClick: () => void }> = ({ onClick }) => {
-    const allowedActions = useAllowedActions();
+    const { allowedActions } = useAllowedActions();
     const { t } = useTranslation();
     const handleClick = () => {
         onClick();
@@ -98,7 +98,7 @@ export const AddHouseBlockButton: React.FC<{ onClick: () => void }> = ({ onClick
 };
 
 export const AddProjectButton: React.FC = () => {
-    const allowedActions = useAllowedActions();
+    const { allowedActions } = useAllowedActions();
     const { t } = useTranslation();
     const buttonProps: PlusButtonProps = {
         color: theme.palette.primary.customDarkBlue,
