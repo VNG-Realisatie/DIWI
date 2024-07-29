@@ -62,10 +62,9 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
                     </Link>
                 )}
             </List>
-            {allowedActions.includes("VIEW_DASHBOARDS") && (
-                <List sx={{ ml: 3 }}>
-                    <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>{t("sidebar.dashboards")}</Typography>
-                    {/*
+            <List sx={{ ml: 3 }}>
+                <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>{t("sidebar.dashboards")}</Typography>
+                {/*
                 <Link to={Paths.policygoal.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
                     <ListItemButton>
                         <ListItemText primary="Beleidsdoelen" />
