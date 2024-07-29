@@ -79,7 +79,7 @@ const UserManagement = () => {
     const [newGroup, setNewGroup] = useState<Group>(emptyGroupForm);
     const [newUser, setNewUser] = useState<User>(emptyUserForm);
     const { setAlert } = useAlert();
-    const allowedActions = useAllowedActions();
+    const { allowedActions } = useAllowedActions();
     useEffect(() => {
         getUsers().then((data) => setUsers(data));
     }, []);

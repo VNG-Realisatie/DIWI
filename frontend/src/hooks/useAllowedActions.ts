@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getCurrentUser } from "../api/userServices";
+import { set } from "lodash";
 
 export type AllowedActions =
     | "VIEW_API"
@@ -18,18 +19,22 @@ export type AllowedActions =
     | "EDIT_ALL_PROJECTS"
     | "CREATE_NEW_PROJECT"
     | "IMPORT_PROJECTS"
-    | "EXPORT_PROJECTS";
+    | "EXPORT_PROJECTS"
+    | "VIEW_ALL_BLUEPRINTS"
+    | "EDIT_ALL_BLUEPRINTS";
 
 function useAllowedActions() {
     const [allowedActions, setAllowedActions] = useState<AllowedActions[]>([]);
 
     useEffect(() => {
         getCurrentUser().then((user) => {
-            if (user && user.allowedActions) setAllowedActions(user.allowedActions);
+            if (user && user.allowedActions) {
+                setAllowedActions(user.allowedActions);
+            }
         });
     }, []);
 
-    return allowedActions;
+    return { allowedActions };
 }
 
 export default useAllowedActions;

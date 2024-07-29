@@ -33,8 +33,11 @@ export async function getDashboardProjects(): Promise<{ physicalAppearance: Dash
     const todaysDate = new Date().toISOString().split("T")[0]; // change this logic later
     return getJson(`${API_URI}/dashboard/projects?snapshotDate=${todaysDate}`);
 }
-export async function getBlueprints(): Promise<Blueprint[]> {
+export async function getAllBlueprints(): Promise<Blueprint[]> {
     return getJson(`${API_URI}/blueprints`);
+}
+export async function getAssignedBlueprints(): Promise<Blueprint[]> {
+    return getJson(`${API_URI}/dashboard/blueprints`);
 }
 export async function createBlueprint(blueprint: Blueprint): Promise<Blueprint> {
     return postJson(`${API_URI}/blueprints`, blueprint);

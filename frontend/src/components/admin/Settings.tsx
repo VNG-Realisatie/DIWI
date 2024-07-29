@@ -17,7 +17,7 @@ export const Settings = () => {
     const [customProperties, setCustomProperties] = useState<Property[]>([]);
     const { t } = useTranslation();
 
-    const allowedActions = useAllowedActions();
+    const { allowedActions } = useAllowedActions();
 
     useEffect(() => {
         getCustomProperties().then((customProperties) => setCustomProperties(customProperties));
