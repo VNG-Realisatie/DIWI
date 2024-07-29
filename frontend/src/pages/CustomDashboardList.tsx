@@ -90,7 +90,6 @@ export const CustomDashboardList = () => {
                 ),
         },
     ];
-    console.log(blueprints);
     return (
         <>
             <DataGrid

@@ -4,6 +4,7 @@ import { WizardCard } from "../project-wizard/WizardCard";
 import { LabelComponent } from "../project/LabelComponent";
 import { CellContainer } from "../project/project-with-house-block/CellContainer";
 import { Visibility } from "./DashboardCharts";
+import useAllowedActions from "../../hooks/useAllowedActions";
 type Props = {
     demolitionAmount: number;
     constructionAmount: number;
@@ -12,6 +13,7 @@ type Props = {
 };
 
 export const MutationCard = ({ demolitionAmount, constructionAmount, visibility = undefined, handleToggle }: Props) => {
+    const { allowedActions } = useAllowedActions();
     return (
         <Grid item xs={12} m={{ xs: 0, md: 1 }}>
             <WizardCard>
@@ -19,7 +21,7 @@ export const MutationCard = ({ demolitionAmount, constructionAmount, visibility 
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.totalValues")}
                     </Typography>
-                    {visibility && handleToggle && <Switch checked={visibility.MUTATION} onChange={handleToggle} inputProps={{ "aria-label": "controlled" }} />}
+                    {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && handleToggle && <Switch checked={visibility.MUTATION} onChange={handleToggle} inputProps={{ "aria-label": "controlled" }} />}
                 </Box>
                 <Grid container spacing={2} alignItems="stretch">
                     {/* Demolition */}

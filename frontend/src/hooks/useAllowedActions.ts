@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { getCurrentUser } from "../api/userServices";
-import { set } from "lodash";
 
 export type AllowedActions =
     | "VIEW_API"

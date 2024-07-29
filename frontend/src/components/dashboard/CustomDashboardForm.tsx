@@ -9,6 +9,7 @@ import useAlert from "../../hooks/useAlert";
 import { t } from "i18next";
 import { Visibility } from "./DashboardCharts";
 import { useNavigate, useParams } from "react-router-dom";
+import useAllowedActions from "../../hooks/useAllowedActions";
 
 const emptyBlueprint: Blueprint = {
     name: "",
@@ -28,6 +29,9 @@ export const CustomDashboardForm = ({ visibility, newBlueprint, setNewBlueprint,
     const { setAlert } = useAlert();
     const { id } = useParams();
     const navigate = useNavigate();
+    const { allowedActions } = useAllowedActions();
+
+    const disabledForm = !allowedActions.includes("EDIT_ALL_BLUEPRINTS");
 
     useEffect(() => {
         if (id) {
@@ -66,7 +70,7 @@ export const CustomDashboardForm = ({ visibility, newBlueprint, setNewBlueprint,
         <Grid container spacing={2} alignItems="center" mb={2}>
             <Grid item xs={4}>
                 <TextInput
-                    readOnly={false}
+                    readOnly={disabledForm}
                     value={newBlueprint.name}
                     setValue={(event: ChangeEvent<HTMLInputElement>) => {
                         setNewBlueprint({ ...newBlueprint, name: event.target.value });
@@ -78,7 +82,7 @@ export const CustomDashboardForm = ({ visibility, newBlueprint, setNewBlueprint,
             <Grid item xs={4}>
                 <UserGroupSelect
                     placeholder={t("dashboard.blueprints.selectUsers")}
-                    readOnly={false}
+                    readOnly={disabledForm}
                     userGroup={userGroups}
                     setUserGroup={setUserGroups}
                     mandatory={true}
@@ -86,9 +90,11 @@ export const CustomDashboardForm = ({ visibility, newBlueprint, setNewBlueprint,
                 />
             </Grid>
             <Grid item xs={4}>
-                <Button variant="contained" onClick={handleSave} disabled={buttonDisabled}>
-                    {t("dashboard.blueprints.saveBlueprint")}
-                </Button>
+                {!disabledForm && (
+                    <Button variant="contained" onClick={handleSave} disabled={buttonDisabled}>
+                        {t("dashboard.blueprints.saveBlueprint")}
+                    </Button>
+                )}
             </Grid>
         </Grid>
     );

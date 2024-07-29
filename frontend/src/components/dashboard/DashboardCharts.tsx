@@ -133,7 +133,7 @@ export const DashboardCharts = ({ visibility, setVisibility }: Props) => {
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.projectPhases")}
                         </Typography>
-                        {visibility && (
+                        {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
                             <Switch
                                 checked={visibility.PROJECT_PHASE}
                                 onChange={() => handleToggleVisibility("PROJECT_PHASE")}
@@ -150,7 +150,7 @@ export const DashboardCharts = ({ visibility, setVisibility }: Props) => {
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.targetAudiences")}
                         </Typography>
-                        {visibility && (
+                        {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
                             <Switch
                                 checked={visibility.TARGET_GROUP}
                                 onChange={() => handleToggleVisibility("TARGET_GROUP")}
@@ -167,7 +167,7 @@ export const DashboardCharts = ({ visibility, setVisibility }: Props) => {
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.residentialFeatures")}
                         </Typography>
-                        {visibility && (
+                        {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
                             <Switch
                                 checked={visibility.PHYSICAL_APPEARANCE}
                                 onChange={() => handleToggleVisibility("PHYSICAL_APPEARANCE")}
@@ -184,7 +184,7 @@ export const DashboardCharts = ({ visibility, setVisibility }: Props) => {
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.buy")}
                         </Typography>
-                        {visibility && (
+                        {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
                             <Switch
                                 checked={visibility.OWNERSHIP_BUY}
                                 onChange={() => handleToggleVisibility("OWNERSHIP_BUY")}
@@ -200,7 +200,7 @@ export const DashboardCharts = ({ visibility, setVisibility }: Props) => {
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.rent")}
                         </Typography>
-                        {visibility && (
+                        {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
                             <Switch
                                 checked={visibility.OWNERSHIP_RENT}
                                 onChange={() => handleToggleVisibility("OWNERSHIP_RENT")}
@@ -216,7 +216,7 @@ export const DashboardCharts = ({ visibility, setVisibility }: Props) => {
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.residentialProjects")}
                         </Typography>
-                        {visibility && (
+                        {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
                             <Switch
                                 checked={visibility.RESIDENTIAL_PROJECTS}
                                 onChange={() => handleToggleVisibility("RESIDENTIAL_PROJECTS")}
@@ -232,7 +232,7 @@ export const DashboardCharts = ({ visibility, setVisibility }: Props) => {
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.deliverables")}
                         </Typography>
-                        {visibility && (
+                        {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
                             <Switch
                                 checked={visibility.DELIVERABLES}
                                 onChange={() => handleToggleVisibility("DELIVERABLES")}
@@ -248,7 +248,7 @@ export const DashboardCharts = ({ visibility, setVisibility }: Props) => {
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.delayedProjects")}
                         </Typography>
-                        {visibility && (
+                        {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
                             <Switch
                                 checked={visibility.DELAYED_PROJECTS}
                                 onChange={() => handleToggleVisibility("DELAYED_PROJECTS")}
@@ -264,7 +264,7 @@ export const DashboardCharts = ({ visibility, setVisibility }: Props) => {
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.projects")}
                         </Typography>
-                        {visibility && (
+                        {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
                             <Switch
                                 checked={visibility.PROJECT_MAP}
                                 onChange={() => handleToggleVisibility("PROJECT_MAP")}
