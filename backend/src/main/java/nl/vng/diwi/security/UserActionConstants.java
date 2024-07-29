@@ -60,7 +60,7 @@ public final class UserActionConstants {
 
 
     /*
-     * Is the user allowed to use the wizard for new projects
+     * If the user allowed to use the wizard for new projects
      */
     public static final String CREATE_NEW_PROJECT = "CREATE_NEW_PROJECT";
 

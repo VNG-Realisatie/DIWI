@@ -11,6 +11,10 @@ import { getDashboardProject } from "../api/dashboardServices";
 import { chartColors } from "../utils/dashboardChartColors";
 import { Project } from "../api/projectsServices";
 import useCustomSearchParams from "../hooks/useCustomSearchParams";
+import { TooltipInfo } from "../widgets/TooltipInfo";
+import { FileDownload } from "@mui/icons-material";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 export type ChartType = {
     label: string;
@@ -35,6 +39,63 @@ export const DashboardProject = () => {
         setSelectedDashboardProject(project);
         navigate(Paths.dashboardProject.toPath({ projectId: project?.projectId || "" }));
     };
+
+    const exportPDF = async () => {
+        const projectSum = document.getElementById("projectSum");
+        const appearance = document.getElementById("physicalAppearanceChart");
+        const upcomingMileStones = document.getElementById("upcomingMileStones");
+        const priceSegmentsPurchase = document.getElementById("priceSegmentsPurchase");
+        const priceSegmentsRent = document.getElementById("priceSegmentsRent");
+        const schedule = document.getElementById("schedule");
+
+        if (!projectSum) {
+            console.error("no projectSum");
+            return;
+        }
+
+        if (!appearance) {
+            console.error("no appearance");
+            return;
+        }
+
+        if (!upcomingMileStones) {
+            console.error("no upcomingMileStones");
+            return;
+        }
+
+        if (!priceSegmentsPurchase) {
+            console.error("no priceSegmentsPurchase");
+            return;
+        }
+
+        if (!priceSegmentsRent) {
+            console.error("no priceSegmentsRent");
+            return;
+        }
+
+        if (!schedule) {
+            console.error("no schedule");
+            return;
+        }
+
+        const h2c = async (element: HTMLElement) => {
+            const canvas = await html2canvas(element, { scale: 2.5 });
+            return canvas.toDataURL("image/png");
+        };
+        const projectSumChart = await h2c(projectSum);
+        const appearanceChart = await h2c(appearance);
+        //Add the rest of the charts here
+
+        const pdf = new jsPDF("p", "px", "a4");
+        pdf.setFontSize(14);
+        pdf.text(selectedProject?.projectName ?? "", 5, 20);
+        pdf.addImage(projectSumChart, "PNG", 5, 35, 215, 90);
+        pdf.addImage(appearanceChart, "PNG", 225, 35, 215, 90);
+        // Add the rest of the charts here
+
+        pdf.save(`${selectedProject?.projectName}.pdf`);
+    };
+
     useEffect(() => {
         if (projectId) {
             getDashboardProject(projectId).then((data) => {
@@ -54,38 +115,43 @@ export const DashboardProject = () => {
                     { title: `${selectedProject?.projectName}`, link: Paths.dashboardProject.toPath({ projectId: projectId || "" }) },
                 ]}
             />
-            <Autocomplete
-                sx={{ my: 1 }}
-                id="dashboard-projects"
-                size="small"
-                options={rows || []}
-                getOptionLabel={(option) => option?.projectName || ""}
-                value={selectedDashboardProject || null}
-                onChange={(_, newValue) => handleSelectProject(newValue)}
-                renderInput={(params) => <TextField {...params} size="small" sx={{ minWidth: "200px" }} placeholder={t("dashboard.selectProject")} />}
-            />
+            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ cursor: "pointer" }}>
+                <Autocomplete
+                    sx={{ my: 1 }}
+                    id="dashboard-projects"
+                    size="small"
+                    options={rows || []}
+                    getOptionLabel={(option) => option?.projectName || ""}
+                    value={selectedDashboardProject || null}
+                    onChange={(_, newValue) => handleSelectProject(newValue)}
+                    renderInput={(params) => <TextField {...params} size="small" sx={{ minWidth: "200px" }} placeholder={t("dashboard.selectProject")} />}
+                />
+                <TooltipInfo text={t("dashboard.exportpdf")}>
+                    <FileDownload onClick={exportPDF} sx={{ fill: "#002C64" }} />
+                </TooltipInfo>
+            </Stack>
             <Grid width="100%" container border="solid 1px #DDD" justifyContent="space-around" p={1}>
-                <Grid item {...chartCardStyling}>
+                <Grid item {...chartCardStyling} id="projectSum">
                     <Typography sx={titleStyling}>{t("dashboard.characteristics")}</Typography>
                     <CharacteristicTable />
                 </Grid>
-                <Grid item {...chartCardStyling}>
+                <Grid item {...chartCardStyling} id="physicalAppearanceChart">
                     <Typography sx={titleStyling}>{t("dashboard.residentialProjects")}</Typography>
                     <DashboardPieChart chartData={physicalAppearance} colors={chartColors} />
                 </Grid>
-                <Grid item {...chartCardStyling}>
+                <Grid item {...chartCardStyling} id="priceSegmentsPurchase">
                     <Typography sx={titleStyling}>{t("dashboard.priceSegmentsPurchase")}</Typography>
 
                     {/* ToDo:Add chart here later */}
                 </Grid>
-                <Grid item {...chartCardStyling}>
+                <Grid item {...chartCardStyling} id="priceSegmentsRent">
                     <Typography sx={titleStyling}>{t("dashboard.priceSegmentsRent")}</Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
-                <Grid item {...chartCardStyling}>
+                <Grid item {...chartCardStyling} id="schedule">
                     <Typography sx={titleStyling}>{t("dashboard.schedule")}</Typography>
                 </Grid>
-                <Grid item {...chartCardStyling}>
+                <Grid item {...chartCardStyling} id="upcomingMileStones">
                     <Typography sx={titleStyling}>{t("dashboard.upcomingMileStones")}</Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>

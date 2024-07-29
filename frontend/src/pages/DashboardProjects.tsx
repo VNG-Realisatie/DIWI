@@ -21,9 +21,81 @@ export const DashboardProjects = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
 
+    const allowedActions = useAllowedActions();
+
     const handleSelectProject = (project: Project | null) => {
         setSelectedProject(project);
         navigate(Paths.dashboardProject.toPath({ projectId: project?.projectId || "" }));
+    };
+    const exportPDF = async () => {
+        const totalValues = document.getElementById("totalValues");
+        const projectPhase = document.getElementById("projectPhaseChart");
+        const targetGroup = document.getElementById("targetGroupChart");
+        const physicalAppearance = document.getElementById("physicalAppearanceChart");
+        const buy = document.getElementById("buy");
+        const rent = document.getElementById("rent");
+        const residentialProjects = document.getElementById("residentialProjects");
+        const deliverables = document.getElementById("deliverables");
+        const delayedProjects = document.getElementById("delayedProjects");
+
+        if (!totalValues) {
+            console.error("no exportEmployment");
+            return;
+        }
+
+        if (!projectPhase) {
+            console.error("no valueAdded");
+            return;
+        }
+
+        if (!targetGroup) {
+            console.error("no communityGiving");
+            return;
+        }
+
+        if (!physicalAppearance) {
+            console.error("no employment");
+            return;
+        }
+        if (!buy) {
+            console.error("no buy");
+            return;
+        }
+        if (!rent) {
+            console.error("no rent");
+            return;
+        }
+        if (!residentialProjects) {
+            console.error("no residentialProjects");
+            return;
+        }
+        if (!deliverables) {
+            console.error("no deliverables");
+            return;
+        }
+        if (!delayedProjects) {
+            console.error("no delayedProjects");
+            return;
+        }
+
+        const h2c = async (element: HTMLElement) => {
+            const canvas = await html2canvas(element, { scale: 2.5 });
+            return canvas.toDataURL("image/png");
+        };
+        const totalValueChart = await h2c(totalValues);
+        const projectPhaseChart = await h2c(projectPhase);
+        const targetGroupChart = await h2c(targetGroup);
+        const physicalAppearanceChart = await h2c(physicalAppearance);
+        //Add the rest of the charts here
+        const pdf = new jsPDF("p", "px", "a4");
+        pdf.setFontSize(14);
+        pdf.text(t(`dashboard.exportTitle`), 5, 20);
+        pdf.addImage(totalValueChart, "PNG", 5, 30, 436, 40);
+        pdf.addImage(projectPhaseChart, "PNG", 5, 80, 215, 90);
+        pdf.addImage(targetGroupChart, "PNG", 225, 80, 215, 90);
+        pdf.addImage(physicalAppearanceChart, "PNG", 5, 180, 215, 90);
+        // Add the rest of the charts here
+        pdf.save("dashboardProjects.pdf");
     };
 
     return (
