@@ -18,17 +18,23 @@ import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.BlueprintSqlModel;
 import nl.vng.diwi.models.BlueprintModel;
+import nl.vng.diwi.models.UserGroupUserModel;
 import nl.vng.diwi.rest.VngBadRequestException;
+import nl.vng.diwi.rest.VngNotAllowedException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.security.UserAction;
 import nl.vng.diwi.security.UserActionConstants;
 import nl.vng.diwi.services.DashboardService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.ZonedDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Path("/blueprints")
 @RolesAllowed("BLOCKED_BY_DEFAULT") // This forces us to make sure each end-point has action(s) assigned, so we never have things open by default.
@@ -57,16 +63,28 @@ public class BlueprintResource {
 
     @GET
     @Path("/{id}")
-    @RolesAllowed(UserActionConstants.VIEW_ALL_BLUEPRINTS)
+    @RolesAllowed({UserActionConstants.VIEW_ALL_BLUEPRINTS, UserActionConstants.VIEW_OWN_BLUEPRINTS})
     @Produces(MediaType.APPLICATION_JSON)
-    public BlueprintModel getBlueprint(@PathParam("id") UUID blueprintUuid) throws VngNotFoundException {
+    public BlueprintModel getBlueprint(@PathParam("id") UUID blueprintUuid, ContainerRequestContext requestContext)
+        throws VngNotFoundException, VngNotAllowedException {
 
         BlueprintSqlModel sqlModel = repo.getBlueprintDAO().getBlueprintById(blueprintUuid);
         if (sqlModel == null) {
             throw new VngNotFoundException();
         }
 
-        return new BlueprintModel(sqlModel);
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
+        BlueprintModel blueprintModel = new BlueprintModel(sqlModel);
+
+        if (!loggedUser.getRole().allowedActions.contains(UserAction.VIEW_ALL_BLUEPRINTS)) {
+            Set<UUID> blueprintOwners = new HashSet<>();
+            blueprintModel.getUserGroups().forEach(ug -> blueprintOwners.addAll(ug.getUsers().stream().map(UserGroupUserModel::getUuid).collect(Collectors.toSet())));
+            if (!blueprintOwners.contains(loggedUser.getUuid())) {
+                throw new VngNotAllowedException();
+            }
+        }
+
+        return blueprintModel;
     }
 
     @POST
