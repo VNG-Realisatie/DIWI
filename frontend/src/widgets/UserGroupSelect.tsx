@@ -5,6 +5,7 @@ import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import { UserGroup } from "../api/projectsServices";
 import { getUserGroupList } from "../api/projectsTableServices";
+import { useTranslation } from "react-i18next";
 
 const icon = <CheckBoxOutlineBlankIcon />;
 const checkedIcon = <CheckBoxIcon />;
@@ -16,6 +17,7 @@ type Props = {
     mandatory: boolean;
     errorText: string;
     placeholder?: string;
+    checkIsOwnerValidWithConfidentialityLevel: () => boolean;
 };
 
 const isSingleUserIncluded = true;
@@ -24,14 +26,24 @@ const shouldDisplayError = (mandatory: boolean, userGroup: UserGroup[]) => {
     return mandatory && userGroup.length === 0;
 };
 
-export const UserGroupSelect = ({ readOnly, userGroup, setUserGroup, mandatory, errorText, placeholder = "" }: Props) => {
+
+export const UserGroupSelect = ({ readOnly, userGroup, setUserGroup, mandatory, errorText, placeholder = "", checkIsOwnerValidWithConfidentialityLevel }: Props) => {
     const [ownerOptions, setOwnerOptions] = useState<UserGroup[]>();
     const hasError = shouldDisplayError(mandatory, userGroup);
+    const { t } = useTranslation();
 
     useEffect(() => {
         getUserGroupList(isSingleUserIncluded).then((groups) => setOwnerOptions(groups));
     }, []);
 
+    const getErrorText = () => {
+        if (hasError) {
+            return errorText;
+        } else if (!checkIsOwnerValidWithConfidentialityLevel()) {
+            return t("createProject.hasMissingRequiredAreas.ownerConfidentialityLevelError");
+        }
+        return "";
+    };
     return (
         <Autocomplete
             multiple
@@ -62,9 +74,7 @@ export const UserGroupSelect = ({ readOnly, userGroup, setUserGroup, mandatory, 
                     <UserGroupAvatars groups={[option]} />
                 </li>
             )}
-            renderInput={(params) => (
-                <TextField {...params} error={hasError} helperText={hasError ? errorText : ""} placeholder={hasError ? placeholder : ""} />
-            )}
+            renderInput={(params) => <TextField {...params} error={hasError || !checkIsOwnerValidWithConfidentialityLevel()} helperText={getErrorText()} placeholder={hasError ? placeholder : ""} />}
         />
     );
 };

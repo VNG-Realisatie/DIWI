@@ -257,7 +257,8 @@
         "amount": "Aantal ontbreekt",
         "amountNotConsistent": "Het totaal aantal huizen in de sectie komt niet overeen met het mutatiebedrag",
         "hasmissingProperty": "Formulier heeft ontbrekende eigenschappen",
-        "owner": "Vul het veld schrijfrechten in"
+        "owner": "Vul het veld schrijfrechten in",
+        "ownerConfidentialityLevelError": "Als het vertrouwelijkheidsniveau privé is, moet u de eigenaar zijn"
       }
     },
     "sidebar": {

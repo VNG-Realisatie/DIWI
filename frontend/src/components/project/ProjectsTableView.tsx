@@ -120,7 +120,14 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 return (
                     cellValues.row.projectOwners &&
                     cellValues.row.projectOwners.length > 0 && (
-                        <UserGroupSelect mandatory={false} errorText="" readOnly={true} userGroup={cellValues.row.projectOwners} setUserGroup={() => {}} />
+                        <UserGroupSelect
+                            checkIsOwnerValidWithConfidentialityLevel={() => true}
+                            mandatory={false}
+                            errorText=""
+                            readOnly={true}
+                            userGroup={cellValues.row.projectOwners}
+                            setUserGroup={() => {}}
+                        />
                     )
                 );
             },
