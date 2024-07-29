@@ -81,6 +81,7 @@ export const CustomDashboardForm = ({ visibility, newBlueprint, setNewBlueprint,
             </Grid>
             <Grid item xs={4}>
                 <UserGroupSelect
+                    checkIsOwnerValidWithConfidentialityLevel={() => true}
                     placeholder={t("dashboard.blueprints.selectUsers")}
                     readOnly={disabledForm}
                     userGroup={userGroups}

@@ -20,11 +20,11 @@ export type AllowedActions =
     | "IMPORT_PROJECTS"
     | "EXPORT_PROJECTS"
     | "VIEW_ALL_BLUEPRINTS"
-    | "EDIT_ALL_BLUEPRINTS";
+    | "EDIT_ALL_BLUEPRINTS"
+    | "VIEW_OWN_BLUEPRINTS";
 
 function useAllowedActions() {
     const [allowedActions, setAllowedActions] = useState<AllowedActions[]>([]);
-
     useEffect(() => {
         getCurrentUser().then((user) => {
             if (user && user.allowedActions) {

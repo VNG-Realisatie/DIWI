@@ -71,7 +71,14 @@ export const CustomDashboardList = () => {
                 return (
                     cellValues.row.userGroups &&
                     cellValues.row.userGroups.length > 0 && (
-                        <UserGroupSelect mandatory={false} errorText="" readOnly={true} userGroup={cellValues.row.userGroups} setUserGroup={() => {}} />
+                        <UserGroupSelect
+                            checkIsOwnerValidWithConfidentialityLevel={() => true}
+                            mandatory={false}
+                            errorText=""
+                            readOnly={true}
+                            userGroup={cellValues.row.userGroups}
+                            setUserGroup={() => {}}
+                        />
                     )
                 );
             },
