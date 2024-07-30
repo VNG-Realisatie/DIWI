@@ -55,8 +55,6 @@ public class PlanConditionOwnershipValue extends ChangeDataSuperclass {
     @JoinColumn(name = "rental_property_value_id")
     private PropertyRangeCategoryValue rentalRangeCategoryValue;
 
-    private Integer amount;
-
     @Column(name = "eigendom_soort")
     @Enumerated(EnumType.STRING)
     @JdbcType(PostgreSQLEnumJdbcType.class)

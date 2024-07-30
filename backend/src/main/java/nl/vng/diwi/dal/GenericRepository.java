@@ -5,6 +5,7 @@ import java.util.List;
 
 import jakarta.inject.Inject;
 import nl.vng.diwi.dal.entities.*;
+import nl.vng.diwi.models.PlanSqlModel;
 import nl.vng.diwi.models.PropertyModel;
 
 public class GenericRepository implements AutoCloseable {
@@ -99,7 +100,8 @@ public class GenericRepository implements AutoCloseable {
                 ProjectDashboardSqlModel.class,
                 HouseblockSnapshotSqlModel.class,
                 PropertyModel.class,
-                ProjectHouseblockCustomPropertySqlModel.class);
+                ProjectHouseblockCustomPropertySqlModel.class,
+                PlanSqlModel.class);
         return entities;
     }
 

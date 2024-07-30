@@ -41,6 +41,58 @@ public class GoalResource {
         this.goalService = goalService;
     }
 
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<PlanModel> getAllGoals() {
+
+        return goalService.getAllGoals(repo);
+    }
+
+    @GET
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public PlanModel getGoalById(@PathParam("id") UUID planId) throws VngNotFoundException {
+
+        PlanModel planModel = goalService.getGoal(repo, planId);
+        if (planModel == null) {
+            throw new VngNotFoundException();
+        }
+        return planModel;
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public PlanModel createGoal(PlanModel planModel, @Context LoggedUser loggedUser) throws VngBadRequestException {
+
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+
+            String validationError = planModel.validate();
+            if (validationError != null) {
+                throw new VngBadRequestException(validationError);
+            }
+
+            UUID newPlanUuid = goalService.createGoal(repo, planModel, ZonedDateTime.now(), loggedUser.getUuid());
+            transaction.commit();
+
+            return goalService.getGoal(repo, newPlanUuid);
+        }
+    }
+
+
+    @DELETE
+    @Path("/{id}")
+    public void deleteGoal(@PathParam("id") UUID planId, ContainerRequestContext requestContext) throws VngNotFoundException {
+
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
+
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+            goalService.deleteGoal(repo, planId, loggedUser);
+            transaction.commit();
+        }
+    }
+
     @GET
     @Path("/categories")
     @Produces(MediaType.APPLICATION_JSON)
@@ -105,28 +157,4 @@ public class GoalResource {
             transaction.commit();
         }
     }
-
-
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public PlanModel createGoal(PlanModel planModel, @Context LoggedUser loggedUser) throws VngBadRequestException {
-
-        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-
-            String validationError = planModel.validate();
-            if (validationError != null) {
-                throw new VngBadRequestException(validationError);
-            }
-
-            UUID newPlanUuid = goalService.createGoal(repo, planModel, ZonedDateTime.now(), loggedUser.getUuid());
-            transaction.commit();
-
-            PlanModel newPlan = new PlanModel();
-            newPlan.setId(newPlanUuid);
-            return newPlan; //TODO
-        }
-    }
-
-
 }

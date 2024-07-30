@@ -1,6 +1,7 @@
 package nl.vng.diwi.dal;
 
 import nl.vng.diwi.dal.entities.PlanState;
+import nl.vng.diwi.models.PlanSqlModel;
 import nl.vng.diwi.models.SelectModel;
 import org.hibernate.Session;
 
@@ -29,4 +30,20 @@ public class GoalDAO extends AbstractRepository {
             .list();
     }
 
+    public List<PlanSqlModel> getGoals() {
+        return session.createNativeQuery(String.format(
+                    "SELECT * FROM %s.get_active_plans(null) ",
+                    GenericRepository.VNG_SCHEMA_NAME),
+                PlanSqlModel.class)
+            .list();
+    }
+
+    public PlanSqlModel getGoalById(UUID planUuid) {
+        return session.createNativeQuery(String.format(
+                    "SELECT * FROM %s.get_active_plans(:planUuid) ",
+                    GenericRepository.VNG_SCHEMA_NAME),
+                PlanSqlModel.class)
+            .setParameter("planUuid", planUuid)
+            .getSingleResultOrNull();
+    }
 }
