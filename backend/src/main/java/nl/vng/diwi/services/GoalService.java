@@ -6,15 +6,25 @@ import nl.vng.diwi.dal.entities.PlanCategory;
 import nl.vng.diwi.dal.entities.PlanCategoryState;
 import nl.vng.diwi.dal.entities.PlanCondition;
 import nl.vng.diwi.dal.entities.PlanConditionAppearanceAndType;
+import nl.vng.diwi.dal.entities.PlanConditionBooleanCustomProperty;
+import nl.vng.diwi.dal.entities.PlanConditionCategoryCustomProperty;
+import nl.vng.diwi.dal.entities.PlanConditionCategoryCustomPropertyValue;
 import nl.vng.diwi.dal.entities.PlanConditionGroundPosition;
 import nl.vng.diwi.dal.entities.PlanConditionGroundPositionValue;
 import nl.vng.diwi.dal.entities.PlanConditionHouseTypeValue;
+import nl.vng.diwi.dal.entities.PlanConditionOrdinalCustomProperty;
 import nl.vng.diwi.dal.entities.PlanConditionOwnershipValue;
+import nl.vng.diwi.dal.entities.PlanConditionPhysicalAppearanceValue;
 import nl.vng.diwi.dal.entities.PlanConditionProgramming;
 import nl.vng.diwi.dal.entities.PlanConditionRegistryLink;
 import nl.vng.diwi.dal.entities.PlanConditionRegistryLinkValue;
 import nl.vng.diwi.dal.entities.PlanConditionState;
+import nl.vng.diwi.dal.entities.PlanConditionTargetGroup;
+import nl.vng.diwi.dal.entities.PlanConditionTargetGroupValue;
 import nl.vng.diwi.dal.entities.PlanState;
+import nl.vng.diwi.dal.entities.Property;
+import nl.vng.diwi.dal.entities.PropertyCategoryValue;
+import nl.vng.diwi.dal.entities.PropertyOrdinalValue;
 import nl.vng.diwi.dal.entities.PropertyRangeCategoryValue;
 import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.dal.entities.enums.ConditionType;
@@ -22,6 +32,9 @@ import nl.vng.diwi.dal.entities.enums.GoalType;
 import nl.vng.diwi.dal.entities.enums.GroundPosition;
 import nl.vng.diwi.dal.entities.enums.HouseType;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
+import nl.vng.diwi.dal.entities.enums.PropertyType;
+import nl.vng.diwi.dal.entities.enums.ValueType;
+import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.models.PlanModel;
 import nl.vng.diwi.models.PlanSqlModel;
 import nl.vng.diwi.models.PropertyModel;
@@ -202,7 +215,7 @@ public class GoalService {
 
         if (planModel.getConditions() != null && !planModel.getConditions().isEmpty()) {
             ConditionType conditionType = (planModel.getGoalType() == GoalType.NUMBER) ? ConditionType.PLAN_CONDITION : ConditionType.GOAL_CONDITION;
-            planModel.getConditions().forEach(c -> {
+            for (PlanModel.PlanConditionModel c : planModel.getConditions()) {
                 PlanCondition condition = createPlanCondition(repo, goal, conditionType, now, currentUser);
 
                 if (c.getConditionFieldType() == PlanModel.ConditionFieldType.GROUND_POSITION) {
@@ -263,12 +276,78 @@ public class GoalService {
                     repo.persist(o);
 
                 } else if (c.getConditionFieldType() == PlanModel.ConditionFieldType.PROPERTY) {
-                    //TODO
-                    //if doelgroep fixed prop
-                    //else if fysiek fixed prop
-                    //else ... normal prop category or boolean or ordinal
+                    if (c.getPropertyName().equals(Constants.FIXED_PROPERTY_PHYSICAL_APPEARANCE)) {
+                        var at = new PlanConditionAppearanceAndType();
+                        at.setPlanCondition(condition);
+                        at.setCreateUser(currentUser);
+                        at.setChangeStartDate(now);
+                        repo.persist(at);
+
+                        c.getCategoryOptions().forEach(s -> {
+                            var paValue = new PlanConditionPhysicalAppearanceValue();
+                            paValue.setAppearanceAndTypeCondition(at);
+                            paValue.setCategoryValue(repo.getReferenceById(PropertyCategoryValue.class, s.getId()));
+                            repo.persist(paValue);
+                        });
+
+                    } else if (c.getPropertyName().equals(Constants.FIXED_PROPERTY_TARGET_GROUP)) {
+                        var tg = new PlanConditionTargetGroup();
+                        tg.setPlanCondition(condition);
+                        tg.setCreateUser(currentUser);
+                        tg.setChangeStartDate(now);
+                        repo.persist(tg);
+
+                        c.getCategoryOptions().forEach(s -> {
+                            var tgValue = new PlanConditionTargetGroupValue();
+                            tgValue.setTargetGroupCondition(tg);
+                            tgValue.setCategoryValue(repo.getReferenceById(PropertyCategoryValue.class, s.getId()));
+                            repo.persist(tgValue);
+                        });
+
+                    } else {
+                        if (c.getPropertyType() == PropertyType.BOOLEAN) {
+                            var bcp = new PlanConditionBooleanCustomProperty();
+                            bcp.setPlanCondition(condition);
+                            bcp.setCreateUser(currentUser);
+                            bcp.setChangeStartDate(now);
+                            bcp.setValue(c.getBooleanValue());
+                            repo.persist(bcp);
+
+                        } else if (c.getPropertyType() == PropertyType.CATEGORY) {
+                            var ccp = new PlanConditionCategoryCustomProperty();
+                            ccp.setPlanCondition(condition);
+                            ccp.setCreateUser(currentUser);
+                            ccp.setChangeStartDate(now);
+                            ccp.setProperty(repo.getReferenceById(Property.class, c.getPropertyId()));
+                            repo.persist(ccp);
+
+                            c.getCategoryOptions().forEach(co -> {
+                                var ccpv = new PlanConditionCategoryCustomPropertyValue();
+                                ccpv.setCategoryCondition(ccp);
+                                ccpv.setCategoryValue(repo.getReferenceById(PropertyCategoryValue.class, co.getId()));
+                                repo.persist(ccpv);
+                            });
+
+                        } else if (c.getPropertyType() == PropertyType.ORDINAL) {
+                            var cop = new PlanConditionOrdinalCustomProperty();
+                            cop.setPlanCondition(condition);
+                            cop.setCreateUser(currentUser);
+                            cop.setChangeStartDate(now);
+                            cop.setProperty(repo.getReferenceById(Property.class, c.getPropertyId()));
+                            if (c.getOrdinalOptions().getValue() != null) {
+                                cop.setValue(repo.getReferenceById(PropertyOrdinalValue.class, c.getOrdinalOptions().getValue().getId()));
+                                cop.setValueType(ValueType.SINGLE_VALUE);
+                            } else {
+                                cop.setValueType(ValueType.RANGE);
+                                cop.setMinValue(repo.getReferenceById(PropertyOrdinalValue.class, c.getOrdinalOptions().getMin().getId()));
+                                cop.setMaxValue(repo.getReferenceById(PropertyOrdinalValue.class, c.getOrdinalOptions().getMax().getId()));
+                            }
+                            repo.persist(cop);
+
+                        }
+                    }
                 }
-            });
+            }
         }
 
         return goal.getId();

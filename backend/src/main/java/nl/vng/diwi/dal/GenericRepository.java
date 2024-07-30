@@ -93,6 +93,8 @@ public class GenericRepository implements AutoCloseable {
                 PlanConditionOrdinalCustomProperty.class,
                 PlanConditionCategoryCustomProperty.class,
                 PlanConditionCategoryCustomPropertyValue.class,
+                PlanConditionTargetGroup.class,
+                PlanConditionTargetGroupValue.class,
                 User.class,
                 UserState.class,
                 UserToUserGroup.class,
