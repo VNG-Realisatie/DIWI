@@ -1,7 +1,7 @@
-import { Autocomplete, Grid, Stack, TextField, Typography } from "@mui/material";
+import { Autocomplete, Box, CircularProgress, Grid, Stack, TextField, Typography } from "@mui/material";
 import BreadcrumbBar from "../components/header/BreadcrumbBar";
 import * as Paths from "../Paths";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import ConfigContext from "../context/ConfigContext";
 import { useTranslation } from "react-i18next";
 import useCustomSearchParams from "../hooks/useCustomSearchParams";
@@ -20,6 +20,8 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { FileDownload } from "@mui/icons-material";
 import { TooltipInfo } from "../widgets/TooltipInfo";
+import { LabelComponent } from "../components/project/LabelComponent";
+import { CellContainer } from "../components/project/project-with-house-block/CellContainer";
 
 type DashboardProjects = {
     physicalAppearance: ChartType[];
@@ -35,6 +37,7 @@ export const DashboardProjects = () => {
     const [dashboardProjects, setDashboardProjects] = useState<DashboardProjects>();
     const [projectPhaseSums, setProjectPhaseSums] = useState([]);
     const [dashboardMutationValues, setDashboardMutationValues] = useState<MutationValues>();
+    const [pdfExport, setPdfExport] = useState(false);
 
     const { municipalityName } = useContext(ConfigContext);
     const { rows } = useCustomSearchParams(undefined, undefined, { page: 1, pageSize: 10000 });
@@ -47,7 +50,8 @@ export const DashboardProjects = () => {
         setSelectedProject(project);
         navigate(Paths.dashboardProject.toPath({ projectId: project?.projectId || "" }));
     };
-    const exportPDF = async () => {
+    const exportPDF = useCallback(async () => {
+
         const totalValues = document.getElementById("totalValues");
         const projectPhase = document.getElementById("projectPhaseChart");
         const targetGroup = document.getElementById("targetGroupChart");
@@ -110,13 +114,14 @@ export const DashboardProjects = () => {
         const pdf = new jsPDF("p", "px", "a4");
         pdf.setFontSize(14);
         pdf.text(t(`dashboard.exportTitle`), 5, 20);
-        pdf.addImage(totalValueChart, "PNG", 5, 30, 436, 40);
-        pdf.addImage(projectPhaseChart, "PNG", 5, 80, 215, 90);
-        pdf.addImage(targetGroupChart, "PNG", 225, 80, 215, 90);
-        pdf.addImage(physicalAppearanceChart, "PNG", 5, 180, 215, 90);
+        pdf.addImage(totalValueChart, "PNG", 5, 30, 436, 25);
+        pdf.addImage(projectPhaseChart, "PNG", 5, 65, 215, 75);
+        pdf.addImage(targetGroupChart, "PNG", 225, 65, 215, 75);
+        pdf.addImage(physicalAppearanceChart, "PNG", 5, 145, 215, 75);
         // Add the rest of the charts here
         pdf.save("dashboardProjects.pdf");
-    };
+        setPdfExport(false);
+    },[t]);
 
     useEffect(() => {
         getDashboardProjects().then((data) => {
@@ -183,6 +188,13 @@ export const DashboardProjects = () => {
         });
     }, [t]);
 
+    useEffect(() => {
+       pdfExport&&setTimeout(() => {
+        exportPDF()
+       }, 500);
+
+    }, [exportPDF, pdfExport]);
+
     if (!allowedActions.includes("VIEW_DASHBOARDS")) {
         return <ActionNotAllowed errorMessage={t("dashboard.forbidden")} />;
     }
@@ -190,7 +202,7 @@ export const DashboardProjects = () => {
     const chartCardStyling = { backgroundColor: "#F0F0F0", my: 1, p: 2, xs: 12, md: 5.9 };
 
     return (
-        <Stack mb={8}>
+        <Stack mb={8} >
             <BreadcrumbBar
                 pageTitle={t("dashboard.title")}
                 links={[{ title: `${t("dashboard.municipalityProgram")} ${municipalityName}`, link: Paths.dashboard.path }]}
@@ -207,68 +219,163 @@ export const DashboardProjects = () => {
                     renderInput={(params) => <TextField {...params} size="small" sx={{ minWidth: "200px" }} placeholder={t("dashboard.selectProject")} />}
                 />
                 <TooltipInfo text={t("dashboard.exportpdf")}>
-                    <FileDownload onClick={exportPDF} sx={{ fill: "#002C64" }} />
+                    <FileDownload onClick={()=>{
+                        setPdfExport(true)
+                        }} sx={{ fill: "#002C64" }} />
                 </TooltipInfo>
             </Stack>
-            <Grid container border="solid 1px #DDD" justifyContent="space-around" p={1} id="export">
-                <Grid item xs={12} id="totalValues">
+         { !pdfExport&&  <Grid container border="solid 1px #DDD" p={1} justifyContent="space-around"  id="export">
+                <Grid item xs={12} >
                     <MutationCard demolitionAmount={dashboardMutationValues?.DEMOLITION ?? 0} constructionAmount={dashboardMutationValues?.CONSTRUCTION ?? 0} />
                 </Grid>
-                <Grid item {...chartCardStyling} id="projectPhaseChart">
+                <Grid item {...chartCardStyling} >
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.projectPhases")}
                     </Typography>
                     <DashboardPieChart chartData={projectPhaseSums || []} colors={chartColors} />
                 </Grid>
-                <Grid item {...chartCardStyling} id="targetGroupChart">
+                <Grid item {...chartCardStyling} >
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.targetAudiences")}
                     </Typography>
                     <DashboardPieChart chartData={dashboardProjects?.targetGroup || []} colors={chartColors} />
                 </Grid>
-                <Grid item {...chartCardStyling} id="physicalAppearanceChart">
+                <Grid item {...chartCardStyling} >
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.residentialFeatures")}
                     </Typography>
                     <DashboardPieChart chartData={dashboardProjects?.physicalAppearance || []} colors={chartColors} />
                 </Grid>
-                <Grid item {...chartCardStyling} id="buy">
+                <Grid item {...chartCardStyling} >
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.buy")}
                     </Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
-                <Grid item {...chartCardStyling} id="rent">
+                <Grid item {...chartCardStyling} >
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.rent")}
                     </Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
-                <Grid item {...chartCardStyling} id="residentialProjects">
+                <Grid item {...chartCardStyling} >
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.residentialProjects")}
                     </Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
-                <Grid item {...chartCardStyling} id="deliverables">
+                <Grid item {...chartCardStyling} >
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.deliverables")}
                     </Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
-                <Grid item {...chartCardStyling} id="delayedProjects">
+                <Grid item {...chartCardStyling} >
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.delayedProjects")}
                     </Typography>
                 </Grid>
 
-                <Grid item xs={12} sx={{ backgroundColor: "#F0F0F0", m: 1, p: 2 }} id="map">
+                <Grid item xs={12} sx={{ backgroundColor: "#F0F0F0", m: 1, p: 2 }} >
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.projects")}
                     </Typography>
                     <ProjectOverviewMap isDashboardMap={true} />
                 </Grid>
-            </Grid>
+            </Grid>}
+
+            {pdfExport&&<Stack width="100%" height="80vh" alignItems="center" justifyContent="center"> <CircularProgress color="inherit" /></Stack>}
+            { pdfExport&&  <Stack width="1920px"  id="export">
+                <Box width="100%"  id="totalValues">
+                <Typography variant="h6" fontSize={16}>
+                    {t("dashboard.totalValues")}
+                </Typography>
+                {/* Mutation Card Total values */}
+                <Stack flexDirection="row"  width="1920px" alignItems="center" justifyContent="space-between">
+                    {/* Demolition */}
+                    <Box width="600px">
+                        <LabelComponent
+                            required={false}
+                            text={t("createProject.houseBlocksForm.demolition")}
+                            tooltipInfoText={t("tooltipInfo.sloop.title")}
+                        />
+                        <CellContainer>
+                            <LabelComponent required={false}  text={dashboardMutationValues?.DEMOLITION?.toString()??""} />
+                        </CellContainer>
+                    </Box>
+                    {/* Construction */}
+                    <Box width="600px">
+                        <LabelComponent
+                            required={false}
+                            text={t("createProject.houseBlocksForm.grossPlanCapacity")}
+                            tooltipInfoText={t("tooltipInfo.brutoPlancapaciteit.title")}
+                        />
+                        <CellContainer>
+                            <LabelComponent required={false}  text={dashboardMutationValues?.CONSTRUCTION?.toString()??""} />
+                        </CellContainer>
+                    </Box>
+                    {/* Total */}
+                    <Box width="600px">
+                        <LabelComponent
+                            required={false}
+                            text={t("createProject.houseBlocksForm.netPlanCapacity")}
+                            tooltipInfoText={t("tooltipInfo.nettoPlancapaciteit.title")}
+                        />
+                        <CellContainer>
+                            <LabelComponent required={false}  text={((dashboardMutationValues?.CONSTRUCTION??0) - (dashboardMutationValues?.DEMOLITION??0)).toString()} />
+                        </CellContainer>
+                    </Box>
+                </Stack>
+                </Box>
+                <Box width="50%" border="solid 1px #DDD" p={1} id="projectPhaseChart">
+                    <Typography variant="h6" fontSize={16}>
+                        {t("dashboard.projectPhases")}
+                    </Typography>
+                    <DashboardPieChart isPdfChart={true} chartData={projectPhaseSums || []} colors={chartColors} />
+                </Box>
+                <Box width="50%" border="solid 1px #DDD" p={1}  id="targetGroupChart">
+                    <Typography variant="h6" fontSize={16}>
+                        {t("dashboard.targetAudiences")}
+                    </Typography>
+                    <DashboardPieChart isPdfChart={true} chartData={dashboardProjects?.targetGroup || []} colors={chartColors} />
+                </Box>
+                <Box width="50%" border="solid 1px #DDD" p={1} id="physicalAppearanceChart">
+                    <Typography variant="h6" fontSize={16}>
+                        {t("dashboard.residentialFeatures")}
+                    </Typography>
+                    <DashboardPieChart isPdfChart={true} chartData={dashboardProjects?.physicalAppearance || []} colors={chartColors} />
+                </Box>
+                <Box width="50%" border="solid 1px #DDD" p={1} id="buy">
+                    <Typography variant="h6" fontSize={16}>
+                        {t("dashboard.buy")}
+                    </Typography>
+                    {/* ToDo:Add chart here later */}
+                </Box>
+                <Box width="50%" border="solid 1px #DDD" p={1} id="rent">
+                    <Typography variant="h6" fontSize={16}>
+                        {t("dashboard.rent")}
+                    </Typography>
+                    {/* ToDo:Add chart here later */}
+                </Box>
+                <Box width="50%" border="solid 1px #DDD" p={1} id="residentialProjects">
+                    <Typography variant="h6" fontSize={16}>
+                        {t("dashboard.residentialProjects")}
+                    </Typography>
+                    {/* ToDo:Add chart here later */}
+                </Box>
+                <Box width="50%" border="solid 1px #DDD" p={1} id="deliverables">
+                    <Typography variant="h6" fontSize={16}>
+                        {t("dashboard.deliverables")}
+                    </Typography>
+                    {/* ToDo:Add chart here later */}
+                </Box>
+                <Box width="50%" border="solid 1px #DDD" p={1} id="delayedProjects">
+                    <Typography variant="h6" fontSize={16}>
+                        {t("dashboard.delayedProjects")}
+                    </Typography>
+                </Box>
+
+            </Stack>}
         </Stack>
     );
 };
