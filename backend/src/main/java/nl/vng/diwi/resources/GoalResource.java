@@ -68,7 +68,7 @@ public class GoalResource {
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
 
-            String validationError = planModel.validate();
+            String validationError = planModel.validate(repo);
             if (validationError != null) {
                 throw new VngBadRequestException(validationError);
             }

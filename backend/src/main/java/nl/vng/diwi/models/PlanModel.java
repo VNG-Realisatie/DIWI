@@ -15,6 +15,7 @@ import nl.vng.diwi.dal.entities.enums.HouseType;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.dal.entities.enums.PropertyKind;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
+import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.models.superclasses.DatedDataModelSuperClass;
 
 import java.math.BigDecimal;
@@ -92,22 +93,27 @@ public class PlanModel extends DatedDataModelSuperClass {
             this.conditions.add(condition);
         }
 
-        if (sqlModel.getOwnershipCondition() != null) {
+        if (sqlModel.getOwnershipConditionId() != null) {
             PlanConditionModel condition = new PlanConditionModel();
             condition.setConditionFieldType(ConditionFieldType.OWNERSHIP);
-
-            var oc = sqlModel.getOwnershipCondition();
-            condition.setConditionId(oc.getOwnershipConditionId());
-            PlanOwnershipModel ownership = new PlanOwnershipModel();
-            ownership.setType(oc.getOwnershipType());
-            if (oc.getOwnershipValue() != null || oc.getOwnershipValueRangeMin() != null) {
-                ownership.setValue(new SingleValueOrRangeModel<>(oc.getOwnershipValue(), oc.getOwnershipValueRangeMin(), oc.getOwnershipValueRangeMax()));
-            }
-            if (oc.getOwnershipRangeCategoryId() != null) {
-                ownership.setRangeCategoryOption(new SelectModel(oc.getOwnershipConditionId(), oc.getOwnershipRangeCategoryName()));
-            }
-            condition.setOwnershipOption(ownership);
+            condition.setConditionId(sqlModel.getOwnershipConditionId());
+            condition.setOwnershipOptions(sqlModel.getOwnershipOptions().stream().map(PlanOwnershipModel::new).toList());
             this.conditions.add(condition);
+        }
+
+        if (sqlModel.getPropertyConditions() != null) {
+            sqlModel.getPropertyConditions().forEach(pc -> {
+                PlanConditionModel condition = new PlanConditionModel();
+                condition.setConditionFieldType(ConditionFieldType.PROPERTY);
+                condition.setPropertyId(pc.getPropertyId());
+                condition.setPropertyName(pc.getPropertyName());
+                condition.setPropertyType(pc.getPropertyType());
+                condition.setPropertyKind(pc.getPropertyKind());
+                condition.setConditionId(pc.getConditionId());
+                condition.setBooleanValue(pc.getBooleanValue());
+                condition.setCategoryOptions(pc.getCategoryOptions());
+                this.conditions.add(condition);
+            });
         }
     }
 
@@ -126,7 +132,7 @@ public class PlanModel extends DatedDataModelSuperClass {
             return "Goal direction can not be null.";
         }
 
-        if (this.goalType == GoalType.NUMBER && ( this.goalDirection != GoalDirection.MAXIMAL || !isIntegerValue(this.goalValue))) {
+        if (this.goalType == GoalType.NUMBER && (this.goalDirection != GoalDirection.MAXIMAL || !isIntegerValue(this.goalValue))) {
             return "Only Maximal goal direction and Integer goal values are allowed when selecting Number goal type.";
         }
         if (this.goalType == GoalType.PERCENTAGE && this.goalValue.compareTo(BigDecimal.valueOf(100)) > 0) {
@@ -201,7 +207,7 @@ public class PlanModel extends DatedDataModelSuperClass {
         private List<SelectModel> categoryOptions;
         private SingleValueOrRangeModel<SelectModel> ordinalOptions;
         private List<String> listOptions;
-        private PlanOwnershipModel ownershipOption;
+        private List<PlanOwnershipModel> ownershipOptions;
 
         @JsonIgnore
         private PropertyModel propertyModel;
@@ -228,17 +234,22 @@ public class PlanModel extends DatedDataModelSuperClass {
                     return "List options contain values that are not recognized ground positions.";
                 }
             } else if (conditionFieldType == ConditionFieldType.OWNERSHIP) {
-//TODO
+                if (ownershipOptions == null || ownershipOptions.isEmpty()) {
+                    return "Ownership options can not be null for an ownership condition.";
+                }
+                PropertyModel priceRangeBuyProperty = repo.getPropertyDAO().getActivePropertyByName(Constants.FIXED_PROPERTY_PRICE_RANGE_BUY);
+                PropertyModel priceRangeRentProperty = repo.getPropertyDAO().getActivePropertyByName(Constants.FIXED_PROPERTY_PRICE_RANGE_RENT);
 
-//                propertyModel = repo.getPropertyDAO().getPropertyById(propertyId);
-//                if (propertyModel == null || propertyModel.getDisabled() == Boolean.TRUE ||
-//                    propertyModel.getPropertyType() != PropertyType.RANGE_CATEGORY && propertyModel.getType() != PropertyKind.FIXED) {
-//                    return "Property id does not match a known range-category property used for ownership.";
-//                }
-//                String ownershipError = ownershipOption.validate(propertyModel);
-//                if (ownershipError != null) {
-//                    return ownershipError;
-//                }
+                List<UUID> priceRangeBuyOptions = priceRangeBuyProperty.getRanges().stream().filter(r -> r.getDisabled() == Boolean.FALSE).map(SelectModel::getId).toList();
+                List<UUID> priceRangeRentOptions = priceRangeRentProperty.getRanges().stream().filter(r -> r.getDisabled() == Boolean.FALSE).map(SelectModel::getId).toList();
+
+                for (PlanOwnershipModel ownershipModel : ownershipOptions) {
+                    String validationError = ownershipModel.validate(priceRangeBuyOptions, priceRangeRentOptions);
+                    if (validationError != null) {
+                        return validationError;
+                    }
+                }
+
             } else if (conditionFieldType == ConditionFieldType.PROPERTY) {
                 if (propertyId == null) {
                     return "Property id can not be null for a property-type condition.";
@@ -250,14 +261,14 @@ public class PlanModel extends DatedDataModelSuperClass {
                 propertyName = propertyModel.getName();
                 propertyKind = propertyModel.getType();
                 propertyType = propertyModel.getPropertyType();
-                if (propertyType != PropertyType.BOOLEAN && propertyType != PropertyType.CATEGORY && propertyType != PropertyType.ORDINAL) {
+                if (propertyType != PropertyType.BOOLEAN && propertyType != PropertyType.CATEGORY) {
                     return "Unsupported property type.";
                 }
                 if (propertyType == PropertyType.BOOLEAN && booleanValue == null) {
                     return "Boolean value can not be null for a boolean property condition.";
                 }
                 if (propertyType == PropertyType.CATEGORY) {
-                    if (categoryOptions == null || categoryOptions.isEmpty()){
+                    if (categoryOptions == null || categoryOptions.isEmpty()) {
                         return "Category options can not be null for a category property condition.";
                     }
                     List<UUID> knownOptions = propertyModel.getCategories().stream()
@@ -268,7 +279,7 @@ public class PlanModel extends DatedDataModelSuperClass {
                     }
                 }
                 if (propertyType == PropertyType.ORDINAL) {
-                    if (ordinalOptions == null || !ordinalOptions.isValid(false)){
+                    if (ordinalOptions == null || !ordinalOptions.isValid(false)) {
                         return "Ordinal options can not be null or invalid for an ordinal property condition.";
                     }
                     List<UUID> knownOptions = propertyModel.getOrdinals().stream()
@@ -299,29 +310,52 @@ public class PlanModel extends DatedDataModelSuperClass {
     public static class PlanOwnershipModel {
 
         private OwnershipType type;
-        private SingleValueOrRangeModel<Integer> value = new SingleValueOrRangeModel<>();
+        private SingleValueOrRangeModel<Integer> value;
         private SelectModel rangeCategoryOption;
 
-        public String validate(PropertyModel propertyModel) {
-            //TODO
-//            if (rangeCategoryOption != null && rangeCategoryOption.getId() == null) {
-//                rangeCategoryOption = null;
-//            }
-//            if (type == null) {
-//                return "Ownership type cannot be null.";
-//            } else if (type == OwnershipType.KOOPWONING && ) {
-//
-//            } else if (rangeCategoryOption != null && value != null) {
-//                return "Only one type of value can be entered.";
-//            } else if (value != null && !value.isValid(true)) {
-//                return "Invalid numeric value or numeric range.";
-//            } else if (rangeCategoryOption != null) {
-//                SelectModel knownRangeOption = propertyModel.getRanges().stream()
-//                    .filter(r -> r.getDisabled() == Boolean.FALSE && r.getId().equals(rangeCategoryOption.getId())).findFirst().orElse(null);
-//                if (knownRangeOption == null) {
-//                    return "Unknown ownership range category option.";
-//                }
-//            }
+        public PlanOwnershipModel(PlanSqlModel.PlanSqlOwnershipOptionModel sqlOption) {
+            this.type = sqlOption.getOwnershipType();
+            if (this.type == OwnershipType.KOOPWONING) {
+                if (sqlOption.getValue() != null || sqlOption.getValueRangeMin() != null) {
+                    this.value = new SingleValueOrRangeModel<>(sqlOption.getValue(), sqlOption.getValueRangeMin(), sqlOption.getValueRangeMax());
+                }
+                if (sqlOption.getRangeCategoryId() != null) {
+                    rangeCategoryOption = new SelectModel(sqlOption.getRangeCategoryId(), sqlOption.getRangeCategoryName());
+                }
+            } else {
+                if (sqlOption.getRentValue() != null || sqlOption.getRentValueRangeMin() != null) {
+                    this.value = new SingleValueOrRangeModel<>(sqlOption.getRentValue(), sqlOption.getRentValueRangeMin(), sqlOption.getRentValueRangeMax());
+                }
+                if (sqlOption.getRentRangeCategoryId() != null) {
+                    rangeCategoryOption = new SelectModel(sqlOption.getRentRangeCategoryId(), sqlOption.getRentRangeCategoryName());
+                }
+            }
+        }
+
+        public String validate(List<UUID> priceOwnRangeOptions, List<UUID> priceRentRangeOptions) {
+
+            if (rangeCategoryOption == null || rangeCategoryOption.getId() == null) {
+                return "Range category option cannot be null"; //we only support range category option for now!!
+            }
+
+            if (value != null && value.getValue() == null && value.getMin() == null && value.getMax() == null) {
+                this.value = null;
+            }
+
+            if (type == null) {
+                return "Ownership type cannot be null.";
+            } else if (rangeCategoryOption != null && value != null) {
+                return "Only one type of value can be entered.";
+            } else if (value != null && !value.isValid(true)) {
+                return "Invalid numeric value or numeric range.";
+            } else if (rangeCategoryOption != null) {
+                if (type == OwnershipType.KOOPWONING && !priceOwnRangeOptions.contains(rangeCategoryOption.getId())) {
+                    return "Unknown range category option.";
+                }
+                if (type != OwnershipType.KOOPWONING && !priceRentRangeOptions.contains(rangeCategoryOption.getId())) {
+                    return "Unknown range category option.";
+                }
+            }
 
             return null;
         }

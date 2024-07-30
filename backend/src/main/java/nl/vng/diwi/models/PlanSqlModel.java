@@ -15,6 +15,8 @@ import nl.vng.diwi.dal.entities.enums.GoalType;
 import nl.vng.diwi.dal.entities.enums.GroundPosition;
 import nl.vng.diwi.dal.entities.enums.HouseType;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
+import nl.vng.diwi.dal.entities.enums.PropertyKind;
+import nl.vng.diwi.dal.entities.enums.PropertyType;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.Type;
@@ -75,8 +77,13 @@ public class PlanSqlModel {
     @Getter(AccessLevel.NONE)
     private List<HouseType> houseTypeOptions;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    private PlanSqlOwnershipConditionModel ownershipCondition;
+    private UUID ownershipConditionId;
+    @Type(value = JsonListType.class)
+    @Getter(AccessLevel.NONE)
+    private List<PlanSqlOwnershipOptionModel> ownershipOptions;
+
+    @Type(value = JsonListType.class)
+    private List<PlanCategoryCondition> propertyConditions;
 
     public List<PlanModel.GeographyOptionModel> getGeographyOptions() {
         if (geographyOptions == null) {
@@ -99,15 +106,38 @@ public class PlanSqlModel {
         return houseTypeOptions;
     }
 
+    public List<PlanSqlOwnershipOptionModel> getOwnershipOptions() {
+        if (ownershipOptions == null) {
+            return new ArrayList<>();
+        }
+        return ownershipOptions;
+    }
+
     @Getter
     @Setter
-    public static class PlanSqlOwnershipConditionModel {
-        private UUID ownershipConditionId;
+    public static class PlanSqlOwnershipOptionModel {
         private OwnershipType ownershipType;
-        private Integer ownershipValue;
-        private UUID ownershipRangeCategoryId;
-        private String ownershipRangeCategoryName;
-        private Integer ownershipValueRangeMin;
-        private Integer ownershipValueRangeMax;
+        private Integer value;
+        private Integer rentValue;
+        private UUID rangeCategoryId;
+        private UUID rentRangeCategoryId;
+        private String rangeCategoryName;
+        private String rentRangeCategoryName;
+        private Integer valueRangeMin;
+        private Integer valueRangeMax;
+        private Integer rentValueRangeMin;
+        private Integer rentValueRangeMax;
+    }
+
+    @Getter
+    @Setter
+    public static class PlanCategoryCondition {
+        private UUID conditionId;
+        private UUID propertyId;
+        private String propertyName;
+        private PropertyKind propertyKind;
+        private PropertyType propertyType;
+        private Boolean booleanValue;
+        private List<SelectModel> categoryOptions;
     }
 }

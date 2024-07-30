@@ -255,25 +255,31 @@ public class GoalService {
                     repo.persist(p);
 
                 } else if (c.getConditionFieldType() == PlanModel.ConditionFieldType.OWNERSHIP) {
-                    PlanConditionOwnershipValue o = new PlanConditionOwnershipValue();
-                    o.setPlanCondition(condition);
-                    o.setCreateUser(currentUser);
-                    o.setChangeStartDate(now);
-                    o.setOwnershipType(c.getOwnershipOption().getType());
-                    if (o.getOwnershipType() == OwnershipType.KOOPWONING) {
-                        o.setValue(c.getOwnershipOption().getValue().getValue());
-                        o.setValueRange(c.getOwnershipOption().getValue().toRange());
-                        if (c.getOwnershipOption().getRangeCategoryOption() != null) {
-                            o.setOwnershipRangeCategoryValue(repo.getReferenceById(PropertyRangeCategoryValue.class, c.getOwnershipOption().getRangeCategoryOption().getId()));
+                    c.getOwnershipOptions().forEach(ownershipOption -> {
+                        PlanConditionOwnershipValue o = new PlanConditionOwnershipValue();
+                        o.setPlanCondition(condition);
+                        o.setCreateUser(currentUser);
+                        o.setChangeStartDate(now);
+                        o.setOwnershipType(ownershipOption.getType());
+                        if (o.getOwnershipType() == OwnershipType.KOOPWONING) {
+                            if (ownershipOption.getValue() != null) {
+                                o.setValue(ownershipOption.getValue().getValue());
+                                o.setValueRange(ownershipOption.getValue().toRange());
+                            }
+                            if (ownershipOption.getRangeCategoryOption() != null) {
+                                o.setOwnershipRangeCategoryValue(repo.getReferenceById(PropertyRangeCategoryValue.class, ownershipOption.getRangeCategoryOption().getId()));
+                            }
+                        } else {
+                            if (ownershipOption.getValue() != null) {
+                                o.setRentalValue(ownershipOption.getValue().getValue());
+                                o.setRentalValueRange(ownershipOption.getValue().toRange());
+                            }
+                            if (ownershipOption.getRangeCategoryOption() != null) {
+                                o.setRentalRangeCategoryValue(repo.getReferenceById(PropertyRangeCategoryValue.class, ownershipOption.getRangeCategoryOption().getId()));
+                            }
                         }
-                    } else {
-                        o.setRentalValue(c.getOwnershipOption().getValue().getValue());
-                        o.setRentalValueRange(c.getOwnershipOption().getValue().toRange());
-                        if (c.getOwnershipOption().getRangeCategoryOption() != null) {
-                            o.setRentalRangeCategoryValue(repo.getReferenceById(PropertyRangeCategoryValue.class, c.getOwnershipOption().getRangeCategoryOption().getId()));
-                        }
-                    }
-                    repo.persist(o);
+                        repo.persist(o);
+                    });
 
                 } else if (c.getConditionFieldType() == PlanModel.ConditionFieldType.PROPERTY) {
                     if (c.getPropertyName().equals(Constants.FIXED_PROPERTY_PHYSICAL_APPEARANCE)) {
@@ -311,6 +317,7 @@ public class GoalService {
                             bcp.setCreateUser(currentUser);
                             bcp.setChangeStartDate(now);
                             bcp.setValue(c.getBooleanValue());
+                            bcp.setProperty(repo.getReferenceById(Property.class, c.getPropertyId()));
                             repo.persist(bcp);
 
                         } else if (c.getPropertyType() == PropertyType.CATEGORY) {
