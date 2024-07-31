@@ -1,7 +1,7 @@
-import { Autocomplete, Grid, Stack, TextField, Typography } from "@mui/material";
+import { Autocomplete, Box, CircularProgress, Grid, Stack, TextField, Typography } from "@mui/material";
 import BreadcrumbBar from "../components/header/BreadcrumbBar";
 import * as Paths from "../Paths";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ProjectContext from "../context/ProjectContext";
 import { useNavigate, useParams } from "react-router-dom";
@@ -30,8 +30,8 @@ export const DashboardProject = () => {
     const navigate = useNavigate();
 
     const [selectedDashboardProject, setSelectedDashboardProject] = useState<Project | null>(null);
+    const [pdfExport, setPdfExport] = useState(false);
 
-    const titleStyling = { fontWeight: "bold", fontSize: 16, my: 1 };
     const chartCardStyling = { backgroundColor: "#F0F0F0", my: 1, p: 2, xs: 12, md: 5.9 };
 
     const [physicalAppearance, setPhysicalAppearance] = useState<ChartType[]>([]);
@@ -44,7 +44,7 @@ export const DashboardProject = () => {
         navigate(Paths.dashboardProject.toPath({ projectId: project?.projectId || "" }));
     };
 
-    const exportPDF = async () => {
+    const exportPDF =useCallback( async () => {
         const projectSum = document.getElementById("projectSum");
         const appearance = document.getElementById("physicalAppearanceChart");
         const upcomingMileStones = document.getElementById("upcomingMileStones");
@@ -96,14 +96,16 @@ export const DashboardProject = () => {
         const pdf = new jsPDF("p", "px", "a4");
         pdf.setFontSize(14);
         pdf.text(selectedProject?.projectName ?? "", 5, 20);
-        pdf.addImage(projectSumChart, "PNG", 5, 35, 215, 90);
-        pdf.addImage(appearanceChart, "PNG", 225, 35, 215, 90);
-        pdf.addImage(purchaseChart, "PNG", 5, 130, 215, 90);
-        pdf.addImage(rentChart, "PNG", 225, 130, 215, 90);
-        pdf.addImage(planningChart, "PNG", 5, 225, 215, 90);
+        pdf.addImage(projectSumChart, "PNG", 5, 35, 215, 78);
+        pdf.addImage(appearanceChart, "PNG", 225, 35, 215, 78);
+        pdf.addImage(purchaseChart, "PNG", 5, 130, 215, 78);
+        pdf.addImage(rentChart, "PNG", 225, 130, 215, 78);
+        pdf.addImage(planningChart, "PNG", 5, 225, 215, 78);
+
 
         pdf.save(`${selectedProject?.projectName}.pdf`);
-    };
+        setPdfExport(false);
+    }, [selectedProject]);
 
     useEffect(() => {
         if (projectId) {
@@ -131,6 +133,12 @@ export const DashboardProject = () => {
             });
         }
     }, [projectId, t]);
+    useEffect(() => {
+        pdfExport&&setTimeout(() => {
+         exportPDF()
+        }, 500);
+
+     }, [exportPDF, pdfExport]);
 
     return (
         <Stack flexDirection="column" width="100%" spacing={2} mb={10}>
@@ -153,16 +161,16 @@ export const DashboardProject = () => {
                     renderInput={(params) => <TextField {...params} size="small" sx={{ minWidth: "200px" }} placeholder={t("dashboard.selectProject")} />}
                 />
                 <TooltipInfo text={t("dashboard.exportpdf")}>
-                    <FileDownload onClick={exportPDF} sx={{ fill: "#002C64" }} />
+                    <FileDownload onClick={()=> setPdfExport(true)} sx={{ fill: "#002C64" }} />
                 </TooltipInfo>
             </Stack>
-            <Grid width="100%" container border="solid 1px #DDD" justifyContent="space-around" p={1}>
-                <Grid item {...chartCardStyling} id="projectSum">
-                    <Typography sx={titleStyling}>{t("dashboard.characteristics")}</Typography>
+       {!pdfExport&&     <Grid width="100%" container border="solid 1px #DDD" justifyContent="space-around" p={1}>
+                <Grid item {...chartCardStyling} >
+                    <Typography variant="h6" fontSize={16}>{t("dashboard.characteristics")}</Typography>
                     <CharacteristicTable />
                 </Grid>
-                <Grid item {...chartCardStyling} id="physicalAppearanceChart">
-                    <Typography sx={titleStyling}>{t("dashboard.residentialProjects")}</Typography>
+                <Grid item {...chartCardStyling} >
+                    <Typography variant="h6" fontSize={16}>{t("dashboard.residentialProjects")}</Typography>
                     <DashboardPieChart chartData={physicalAppearance} colors={chartColors} />
                 </Grid>
                 <Grid item {...chartCardStyling} id="priceSegmentsPurchase">
@@ -177,11 +185,38 @@ export const DashboardProject = () => {
                     <Typography sx={titleStyling}>{t("dashboard.schedule")}</Typography>
                     <MyResponsiveBar chartData={planning} selectedProjectName={selectedProject?.projectName} />
                 </Grid>
-                <Grid item {...chartCardStyling} id="upcomingMileStones">
-                    <Typography sx={titleStyling}>{t("dashboard.upcomingMileStones")}</Typography>
+                <Grid item {...chartCardStyling} >
+                    <Typography variant="h6" fontSize={16}>{t("dashboard.upcomingMileStones")}</Typography>
                     {/* ToDo:Add chart here later */}
                 </Grid>
-            </Grid>
+            </Grid>}
+            {pdfExport&&<Stack width="100%" height="80vh" alignItems="center" justifyContent="center"> <CircularProgress color="inherit" /></Stack>}
+         {pdfExport&&   <Stack width="1920px">
+            <Box width="50%" border="solid 1px #DDD" p={1} id="projectSum">
+                    <Typography variant="h6" fontSize={16}>{t("dashboard.characteristics")}</Typography>
+                    <CharacteristicTable />
+                </Box>
+                <Box width="50%" border="solid 1px #DDD" p={1} id="physicalAppearanceChart">
+                    <Typography variant="h6" fontSize={16}>{t("dashboard.residentialProjects")}</Typography>
+                    <DashboardPieChart isPdfChart={true} chartData={physicalAppearance} colors={chartColors} />
+                </Box>
+                <Box width="50%" border="solid 1px #DDD" p={1} id="priceSegmentsPurchase">
+                    <Typography variant="h6" fontSize={16}>{t("dashboard.priceSegmentsPurchase")}</Typography>
+
+                    {/* ToDo:Add chart here later */}
+                </Box>
+                <Box width="50%" border="solid 1px #DDD" p={1} id="priceSegmentsRent">
+                    <Typography variant="h6" fontSize={16}>{t("dashboard.priceSegmentsRent")}</Typography>
+                    {/* ToDo:Add chart here later */}
+                </Box>
+                <Box width="50%" border="solid 1px #DDD" p={1} id="schedule">
+                    <Typography variant="h6" fontSize={16}>{t("dashboard.schedule")}</Typography>
+                </Box>
+                <Box width="50%" border="solid 1px #DDD" p={1} id="upcomingMileStones">
+                    <Typography variant="h6" fontSize={16}>{t("dashboard.upcomingMileStones")}</Typography>
+                    {/* ToDo:Add chart here later */}
+                </Box>
+            </Stack>}
         </Stack>
     );
 };

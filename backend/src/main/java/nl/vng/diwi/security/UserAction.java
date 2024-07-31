@@ -22,4 +22,5 @@ public enum UserAction {
     CREATE_NEW_PROJECT,
     IMPORT_PROJECTS,
     EXPORT_PROJECTS,
+    VIEW_DASHBOARDS
 }

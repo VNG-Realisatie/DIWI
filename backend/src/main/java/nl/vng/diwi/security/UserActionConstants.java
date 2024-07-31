@@ -60,11 +60,13 @@ public final class UserActionConstants {
 
 
     /*
-     * Is the user allowed to use the wizard for new projects
+     * If the user allowed to use the wizard for new projects
      */
     public static final String CREATE_NEW_PROJECT = "CREATE_NEW_PROJECT";
 
 
     public static final String IMPORT_PROJECTS = "IMPORT_PROJECTS";
     public static final String EXPORT_PROJECTS = "EXPORT_PROJECTS";
+
+    public static final String VIEW_DASHBOARDS = "VIEW_DASHBOARDS";
 }
