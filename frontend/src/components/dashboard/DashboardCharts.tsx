@@ -1,4 +1,4 @@
-import { Box, Grid, Switch, Typography } from "@mui/material";
+import { Box, CircularProgress, Grid, Stack, Switch, Typography } from "@mui/material";
 import { DashboardPieChart } from "./PieChart";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { ChartType } from "../../pages/DashboardProject";
@@ -10,6 +10,8 @@ import { getProjectHouseBlocksWithCustomProperties } from "../../api/houseBlockS
 import { useTranslation } from "react-i18next";
 import { chartColors } from "../../utils/dashboardChartColors";
 import useAllowedActions from "../../hooks/useAllowedActions";
+import { LabelComponent } from "../project/LabelComponent";
+import { CellContainer } from "../project/project-with-house-block/CellContainer";
 
 const chartCardStyling = { backgroundColor: "#F0F0F0", my: 1, p: 2, xs: 12, md: 5.9 };
 
@@ -117,165 +119,272 @@ export const DashboardCharts = ({ visibility, setVisibility, isPdf = false }: Pr
         });
     }, [t]);
     return (
-        <Grid container border="solid 1px #DDD" justifyContent="space-around" p={1}>
-            {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.MUTATION) && (
-                <Grid item xs={12} id="totalValues">
-                    <MutationCard
-                        handleToggle={() => handleToggleVisibility("MUTATION")}
-                        visibility={visibility}
-                        demolitionAmount={dashboardMutationValues?.DEMOLITION ?? 0}
-                        constructionAmount={dashboardMutationValues?.CONSTRUCTION ?? 0}
-                    />
+        <>
+            {!isPdf && (
+                <Grid container border="solid 1px #DDD" justifyContent="space-around" p={1}>
+                    {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.MUTATION) && (
+                        <Grid item xs={12}>
+                            <MutationCard
+                                handleToggle={() => handleToggleVisibility("MUTATION")}
+                                visibility={visibility}
+                                demolitionAmount={dashboardMutationValues?.DEMOLITION ?? 0}
+                                constructionAmount={dashboardMutationValues?.CONSTRUCTION ?? 0}
+                            />
+                        </Grid>
+                    )}
+                    {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.PROJECT_PHASE) && (
+                        <Grid item {...chartCardStyling}>
+                            <Box display="flex" justifyContent="space-between" alignItems="center">
+                                <Typography variant="h6" fontSize={16}>
+                                    {t("dashboard.projectPhases")}
+                                </Typography>
+                                {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
+                                    <Switch
+                                        checked={visibility.PROJECT_PHASE}
+                                        onChange={() => handleToggleVisibility("PROJECT_PHASE")}
+                                        inputProps={{ "aria-label": "controlled" }}
+                                    />
+                                )}
+                            </Box>
+                            <DashboardPieChart chartData={projectPhaseSums || []} colors={chartColors} />
+                        </Grid>
+                    )}
+                    {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.TARGET_GROUP) && (
+                        <Grid item {...chartCardStyling}>
+                            <Box display="flex" justifyContent="space-between" alignItems="center">
+                                <Typography variant="h6" fontSize={16}>
+                                    {t("dashboard.targetAudiences")}
+                                </Typography>
+                                {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
+                                    <Switch
+                                        checked={visibility.TARGET_GROUP}
+                                        onChange={() => handleToggleVisibility("TARGET_GROUP")}
+                                        inputProps={{ "aria-label": "controlled" }}
+                                    />
+                                )}
+                            </Box>
+                            <DashboardPieChart chartData={dashboardProjects?.targetGroup || []} colors={chartColors} />
+                        </Grid>
+                    )}
+                    {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.PHYSICAL_APPEARANCE) && (
+                        <Grid item {...chartCardStyling}>
+                            <Box display="flex" justifyContent="space-between" alignItems="center">
+                                <Typography variant="h6" fontSize={16}>
+                                    {t("dashboard.residentialFeatures")}
+                                </Typography>
+                                {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
+                                    <Switch
+                                        checked={visibility.PHYSICAL_APPEARANCE}
+                                        onChange={() => handleToggleVisibility("PHYSICAL_APPEARANCE")}
+                                        inputProps={{ "aria-label": "controlled" }}
+                                    />
+                                )}
+                            </Box>
+                            <DashboardPieChart chartData={dashboardProjects?.physicalAppearance || []} colors={chartColors} />
+                        </Grid>
+                    )}
+                    {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.OWNERSHIP_BUY) && (
+                        <Grid item {...chartCardStyling}>
+                            <Box display="flex" justifyContent="space-between" alignItems="center">
+                                <Typography variant="h6" fontSize={16}>
+                                    {t("dashboard.buy")}
+                                </Typography>
+                                {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
+                                    <Switch
+                                        checked={visibility.OWNERSHIP_BUY}
+                                        onChange={() => handleToggleVisibility("OWNERSHIP_BUY")}
+                                        inputProps={{ "aria-label": "controlled" }}
+                                    />
+                                )}
+                            </Box>
+                        </Grid>
+                    )}
+                    {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.OWNERSHIP_RENT) && (
+                        <Grid item {...chartCardStyling}>
+                            <Box display="flex" justifyContent="space-between" alignItems="center">
+                                <Typography variant="h6" fontSize={16}>
+                                    {t("dashboard.rent")}
+                                </Typography>
+                                {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
+                                    <Switch
+                                        checked={visibility.OWNERSHIP_RENT}
+                                        onChange={() => handleToggleVisibility("OWNERSHIP_RENT")}
+                                        inputProps={{ "aria-label": "controlled" }}
+                                    />
+                                )}
+                            </Box>
+                        </Grid>
+                    )}
+                    {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.RESIDENTIAL_PROJECTS) && (
+                        <Grid item {...chartCardStyling}>
+                            <Box display="flex" justifyContent="space-between" alignItems="center">
+                                <Typography variant="h6" fontSize={16}>
+                                    {t("dashboard.residentialProjects")}
+                                </Typography>
+                                {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
+                                    <Switch
+                                        checked={visibility.RESIDENTIAL_PROJECTS}
+                                        onChange={() => handleToggleVisibility("RESIDENTIAL_PROJECTS")}
+                                        inputProps={{ "aria-label": "controlled" }}
+                                    />
+                                )}
+                            </Box>
+                        </Grid>
+                    )}
+                    {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.DELIVERABLES) && (
+                        <Grid item {...chartCardStyling}>
+                            <Box display="flex" justifyContent="space-between" alignItems="center">
+                                <Typography variant="h6" fontSize={16}>
+                                    {t("dashboard.deliverables")}
+                                </Typography>
+                                {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
+                                    <Switch
+                                        checked={visibility.DELIVERABLES}
+                                        onChange={() => handleToggleVisibility("DELIVERABLES")}
+                                        inputProps={{ "aria-label": "controlled" }}
+                                    />
+                                )}
+                            </Box>
+                        </Grid>
+                    )}
+                    {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.DELAYED_PROJECTS) && (
+                        <Grid item {...chartCardStyling}>
+                            <Box display="flex" justifyContent="space-between" alignItems="center">
+                                <Typography variant="h6" fontSize={16}>
+                                    {t("dashboard.delayedProjects")}
+                                </Typography>
+                                {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
+                                    <Switch
+                                        checked={visibility.DELAYED_PROJECTS}
+                                        onChange={() => handleToggleVisibility("DELAYED_PROJECTS")}
+                                        inputProps={{ "aria-label": "controlled" }}
+                                    />
+                                )}
+                            </Box>
+                        </Grid>
+                    )}
+                    {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.PROJECT_MAP) && (
+                        <Grid item {...chartCardStyling}>
+                            <Box display="flex" justifyContent="space-between" alignItems="center">
+                                <Typography variant="h6" fontSize={16}>
+                                    {t("dashboard.projects")}
+                                </Typography>
+                                {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
+                                    <Switch
+                                        checked={visibility.PROJECT_MAP}
+                                        onChange={() => handleToggleVisibility("PROJECT_MAP")}
+                                        inputProps={{ "aria-label": "controlled" }}
+                                    />
+                                )}
+                            </Box>
+                            <ProjectOverviewMap isDashboardMap={true} />
+                        </Grid>
+                    )}
                 </Grid>
             )}
-            {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.PROJECT_PHASE) && (
-                <Grid item {...chartCardStyling} id="projectPhaseChart">
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
+
+            {isPdf && (
+                <Stack width="100%" height="80vh" alignItems="center" justifyContent="center">
+                    {" "}
+                    <CircularProgress color="inherit" />
+                </Stack>
+            )}
+
+            {isPdf && (
+                <Stack width="1920px" id="export">
+                    <Box width="100%" id="totalValues">
+                        <Typography variant="h6" fontSize={16}>
+                            {t("dashboard.totalValues")}
+                        </Typography>
+                        {/* Mutation Card Total values */}
+                        <Stack flexDirection="row" width="1920px" alignItems="center" justifyContent="space-between">
+                            {/* Demolition */}
+                            <Box width="600px">
+                                <LabelComponent
+                                    required={false}
+                                    text={t("createProject.houseBlocksForm.demolition")}
+                                    tooltipInfoText={t("tooltipInfo.sloop.title")}
+                                />
+                                <CellContainer>
+                                    <LabelComponent required={false} text={dashboardMutationValues?.DEMOLITION?.toString() ?? ""} />
+                                </CellContainer>
+                            </Box>
+                            {/* Construction */}
+                            <Box width="600px">
+                                <LabelComponent
+                                    required={false}
+                                    text={t("createProject.houseBlocksForm.grossPlanCapacity")}
+                                    tooltipInfoText={t("tooltipInfo.brutoPlancapaciteit.title")}
+                                />
+                                <CellContainer>
+                                    <LabelComponent required={false} text={dashboardMutationValues?.CONSTRUCTION?.toString() ?? ""} />
+                                </CellContainer>
+                            </Box>
+                            {/* Total */}
+                            <Box width="600px">
+                                <LabelComponent
+                                    required={false}
+                                    text={t("createProject.houseBlocksForm.netPlanCapacity")}
+                                    tooltipInfoText={t("tooltipInfo.nettoPlancapaciteit.title")}
+                                />
+                                <CellContainer>
+                                    <LabelComponent
+                                        required={false}
+                                        text={((dashboardMutationValues?.CONSTRUCTION ?? 0) - (dashboardMutationValues?.DEMOLITION ?? 0)).toString()}
+                                    />
+                                </CellContainer>
+                            </Box>
+                        </Stack>
+                    </Box>
+                    <Box width="50%" border="solid 1px #DDD" p={1} id="projectPhaseChart">
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.projectPhases")}
                         </Typography>
-                        {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
-                            <Switch
-                                checked={visibility.PROJECT_PHASE}
-                                onChange={() => handleToggleVisibility("PROJECT_PHASE")}
-                                inputProps={{ "aria-label": "controlled" }}
-                            />
-                        )}
+                        <DashboardPieChart isPdfChart={true} chartData={projectPhaseSums || []} colors={chartColors} />
                     </Box>
-                    <DashboardPieChart isPdfChart={isPdf} chartData={projectPhaseSums || []} colors={chartColors} />
-                </Grid>
-            )}
-            {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.TARGET_GROUP) && (
-                <Grid item {...chartCardStyling} id="targetGroupChart">
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Box width="50%" border="solid 1px #DDD" p={1} id="targetGroupChart">
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.targetAudiences")}
                         </Typography>
-                        {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
-                            <Switch
-                                checked={visibility.TARGET_GROUP}
-                                onChange={() => handleToggleVisibility("TARGET_GROUP")}
-                                inputProps={{ "aria-label": "controlled" }}
-                            />
-                        )}
+                        <DashboardPieChart isPdfChart={true} chartData={dashboardProjects?.targetGroup || []} colors={chartColors} />
                     </Box>
-                    <DashboardPieChart isPdfChart={isPdf} chartData={dashboardProjects?.targetGroup || []} colors={chartColors} />
-                </Grid>
-            )}
-            {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.PHYSICAL_APPEARANCE) && (
-                <Grid item {...chartCardStyling} id="physicalAppearanceChart">
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Box width="50%" border="solid 1px #DDD" p={1} id="physicalAppearanceChart">
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.residentialFeatures")}
                         </Typography>
-                        {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
-                            <Switch
-                                checked={visibility.PHYSICAL_APPEARANCE}
-                                onChange={() => handleToggleVisibility("PHYSICAL_APPEARANCE")}
-                                inputProps={{ "aria-label": "controlled" }}
-                            />
-                        )}
+                        <DashboardPieChart isPdfChart={true} chartData={dashboardProjects?.physicalAppearance || []} colors={chartColors} />
                     </Box>
-                    <DashboardPieChart isPdfChart={isPdf} chartData={dashboardProjects?.physicalAppearance || []} colors={chartColors} />
-                </Grid>
-            )}
-            {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.OWNERSHIP_BUY) && (
-                <Grid item {...chartCardStyling} id="buy">
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Box width="50%" border="solid 1px #DDD" p={1} id="buy">
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.buy")}
                         </Typography>
-                        {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
-                            <Switch
-                                checked={visibility.OWNERSHIP_BUY}
-                                onChange={() => handleToggleVisibility("OWNERSHIP_BUY")}
-                                inputProps={{ "aria-label": "controlled" }}
-                            />
-                        )}
+                        {/* ToDo:Add chart here later */}
                     </Box>
-                </Grid>
-            )}
-            {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.OWNERSHIP_RENT) && (
-                <Grid item {...chartCardStyling} id="rent">
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Box width="50%" border="solid 1px #DDD" p={1} id="rent">
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.rent")}
                         </Typography>
-                        {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
-                            <Switch
-                                checked={visibility.OWNERSHIP_RENT}
-                                onChange={() => handleToggleVisibility("OWNERSHIP_RENT")}
-                                inputProps={{ "aria-label": "controlled" }}
-                            />
-                        )}
+                        {/* ToDo:Add chart here later */}
                     </Box>
-                </Grid>
-            )}
-            {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.RESIDENTIAL_PROJECTS) && (
-                <Grid item {...chartCardStyling} id="residentialProjects">
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Box width="50%" border="solid 1px #DDD" p={1} id="residentialProjects">
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.residentialProjects")}
                         </Typography>
-                        {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
-                            <Switch
-                                checked={visibility.RESIDENTIAL_PROJECTS}
-                                onChange={() => handleToggleVisibility("RESIDENTIAL_PROJECTS")}
-                                inputProps={{ "aria-label": "controlled" }}
-                            />
-                        )}
+                        {/* ToDo:Add chart here later */}
                     </Box>
-                </Grid>
-            )}
-            {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.DELIVERABLES) && (
-                <Grid item {...chartCardStyling} id="deliverables">
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Box width="50%" border="solid 1px #DDD" p={1} id="deliverables">
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.deliverables")}
                         </Typography>
-                        {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
-                            <Switch
-                                checked={visibility.DELIVERABLES}
-                                onChange={() => handleToggleVisibility("DELIVERABLES")}
-                                inputProps={{ "aria-label": "controlled" }}
-                            />
-                        )}
+                        {/* ToDo:Add chart here later */}
                     </Box>
-                </Grid>
-            )}
-            {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.DELAYED_PROJECTS) && (
-                <Grid item {...chartCardStyling} id="delayedProjects">
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Box width="50%" border="solid 1px #DDD" p={1} id="delayedProjects">
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.delayedProjects")}
                         </Typography>
-                        {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
-                            <Switch
-                                checked={visibility.DELAYED_PROJECTS}
-                                onChange={() => handleToggleVisibility("DELAYED_PROJECTS")}
-                                inputProps={{ "aria-label": "controlled" }}
-                            />
-                        )}
                     </Box>
-                </Grid>
+                </Stack>
             )}
-            {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.PROJECT_MAP) && (
-                <Grid item {...chartCardStyling} id="map">
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
-                        <Typography variant="h6" fontSize={16}>
-                            {t("dashboard.projects")}
-                        </Typography>
-                        {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
-                            <Switch
-                                checked={visibility.PROJECT_MAP}
-                                onChange={() => handleToggleVisibility("PROJECT_MAP")}
-                                inputProps={{ "aria-label": "controlled" }}
-                            />
-                        )}
-                    </Box>
-                    <ProjectOverviewMap isDashboardMap={true} />
-                </Grid>
-            )}
-        </Grid>
+        </>
     );
 };

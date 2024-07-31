@@ -146,8 +146,7 @@ export const DashboardProjects = () => {
                 </TooltipInfo>
             </Stack>
 
-            {!pdfExport && <DashboardCharts />}
-            {pdfExport && <DashboardCharts isPdf={true} />}
+            <DashboardCharts isPdf={pdfExport} />
         </Stack>
     );
 };
