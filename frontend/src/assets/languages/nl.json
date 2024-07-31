@@ -381,6 +381,9 @@
       "category": "Categorie"
     },
     "dashboard": {
+      "exportTitle": "Overzicht van alle projecten",
+      "exportpdf": "Exporteren als PDF",
+      "forbidden": "U heeft geen toegang tot deze pagina. Neem contact op met uw beheerder",
       "title": "Dashboard",
       "projectTitle": "Dashboard | Project",
       "projects": "Dashboard projecten",

@@ -37,8 +37,9 @@ export type Visibility = {
 type Props = {
     visibility?: Visibility;
     setVisibility?: Dispatch<SetStateAction<Visibility>>;
+    isPdf?: boolean;
 };
-export const DashboardCharts = ({ visibility, setVisibility }: Props) => {
+export const DashboardCharts = ({ visibility, setVisibility, isPdf = false }: Props) => {
     const [dashboardProjects, setDashboardProjects] = useState<DashboardProjects>();
     const [projectPhaseSums, setProjectPhaseSums] = useState([]);
     const [dashboardMutationValues, setDashboardMutationValues] = useState<MutationValues>();
@@ -118,7 +119,7 @@ export const DashboardCharts = ({ visibility, setVisibility }: Props) => {
     return (
         <Grid container border="solid 1px #DDD" justifyContent="space-around" p={1}>
             {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.MUTATION) && (
-                <Grid item xs={12}>
+                <Grid item xs={12} id="totalValues">
                     <MutationCard
                         handleToggle={() => handleToggleVisibility("MUTATION")}
                         visibility={visibility}
@@ -128,7 +129,7 @@ export const DashboardCharts = ({ visibility, setVisibility }: Props) => {
                 </Grid>
             )}
             {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.PROJECT_PHASE) && (
-                <Grid item {...chartCardStyling}>
+                <Grid item {...chartCardStyling} id="projectPhaseChart">
                     <Box display="flex" justifyContent="space-between" alignItems="center">
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.projectPhases")}
@@ -141,11 +142,11 @@ export const DashboardCharts = ({ visibility, setVisibility }: Props) => {
                             />
                         )}
                     </Box>
-                    <DashboardPieChart chartData={projectPhaseSums || []} colors={chartColors} />
+                    <DashboardPieChart isPdfChart={isPdf} chartData={projectPhaseSums || []} colors={chartColors} />
                 </Grid>
             )}
             {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.TARGET_GROUP) && (
-                <Grid item {...chartCardStyling}>
+                <Grid item {...chartCardStyling} id="targetGroupChart">
                     <Box display="flex" justifyContent="space-between" alignItems="center">
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.targetAudiences")}
@@ -158,11 +159,11 @@ export const DashboardCharts = ({ visibility, setVisibility }: Props) => {
                             />
                         )}
                     </Box>
-                    <DashboardPieChart chartData={dashboardProjects?.targetGroup || []} colors={chartColors} />
+                    <DashboardPieChart isPdfChart={isPdf} chartData={dashboardProjects?.targetGroup || []} colors={chartColors} />
                 </Grid>
             )}
             {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.PHYSICAL_APPEARANCE) && (
-                <Grid item {...chartCardStyling}>
+                <Grid item {...chartCardStyling} id="physicalAppearanceChart">
                     <Box display="flex" justifyContent="space-between" alignItems="center">
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.residentialFeatures")}
@@ -175,11 +176,11 @@ export const DashboardCharts = ({ visibility, setVisibility }: Props) => {
                             />
                         )}
                     </Box>
-                    <DashboardPieChart chartData={dashboardProjects?.physicalAppearance || []} colors={chartColors} />
+                    <DashboardPieChart isPdfChart={isPdf} chartData={dashboardProjects?.physicalAppearance || []} colors={chartColors} />
                 </Grid>
             )}
             {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.OWNERSHIP_BUY) && (
-                <Grid item {...chartCardStyling}>
+                <Grid item {...chartCardStyling} id="buy">
                     <Box display="flex" justifyContent="space-between" alignItems="center">
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.buy")}
@@ -195,7 +196,7 @@ export const DashboardCharts = ({ visibility, setVisibility }: Props) => {
                 </Grid>
             )}
             {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.OWNERSHIP_RENT) && (
-                <Grid item {...chartCardStyling}>
+                <Grid item {...chartCardStyling} id="rent">
                     <Box display="flex" justifyContent="space-between" alignItems="center">
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.rent")}
@@ -211,7 +212,7 @@ export const DashboardCharts = ({ visibility, setVisibility }: Props) => {
                 </Grid>
             )}
             {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.RESIDENTIAL_PROJECTS) && (
-                <Grid item {...chartCardStyling}>
+                <Grid item {...chartCardStyling} id="residentialProjects">
                     <Box display="flex" justifyContent="space-between" alignItems="center">
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.residentialProjects")}
@@ -227,7 +228,7 @@ export const DashboardCharts = ({ visibility, setVisibility }: Props) => {
                 </Grid>
             )}
             {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.DELIVERABLES) && (
-                <Grid item {...chartCardStyling}>
+                <Grid item {...chartCardStyling} id="deliverables">
                     <Box display="flex" justifyContent="space-between" alignItems="center">
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.deliverables")}
@@ -243,7 +244,7 @@ export const DashboardCharts = ({ visibility, setVisibility }: Props) => {
                 </Grid>
             )}
             {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.DELAYED_PROJECTS) && (
-                <Grid item {...chartCardStyling}>
+                <Grid item {...chartCardStyling} id="delayedProjects">
                     <Box display="flex" justifyContent="space-between" alignItems="center">
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.delayedProjects")}
@@ -259,7 +260,7 @@ export const DashboardCharts = ({ visibility, setVisibility }: Props) => {
                 </Grid>
             )}
             {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.PROJECT_MAP) && (
-                <Grid item {...chartCardStyling}>
+                <Grid item {...chartCardStyling} id="map">
                     <Box display="flex" justifyContent="space-between" alignItems="center">
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.projects")}
