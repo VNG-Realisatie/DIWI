@@ -8,6 +8,8 @@ import useAlert from "../hooks/useAlert";
 import ProjectContext from "../context/ProjectContext";
 import { ProjectForm } from "../components/ProjectForm";
 import { validateForm } from "../utils/formValidation";
+import UserContext from "../context/UserContext";
+import { checkIsOwnerValidWithConfidentialityLevel } from "../utils/checkIsOwnerValidWithConfidentialityLevel";
 
 const ProjectWizard = () => {
     const [projectForm, setProjectForm] = useState<Project>({
@@ -26,6 +28,7 @@ const ProjectWizard = () => {
     const navigate = useNavigate();
     const { setAlert } = useAlert();
     const { updateProjects } = useContext(ProjectContext);
+    const { user } = useContext(UserContext);
 
     async function validateAndSave() {
         if (!validateForm(projectForm)) {
@@ -86,7 +89,14 @@ const ProjectWizard = () => {
 
     return (
         <WizardLayout {...{ infoText, handleNext, handleSave, projectId, activeStep: 0 }}>
-            <ProjectForm project={projectForm} setProject={setProjectForm} readOnly={false} showColorPicker={true} showAmounts={false} />
+            <ProjectForm
+                checkIsOwnerValidWithConfidentialityLevel={() => checkIsOwnerValidWithConfidentialityLevel(projectForm, user)}
+                project={projectForm}
+                setProject={setProjectForm}
+                readOnly={false}
+                showColorPicker={true}
+                showAmounts={false}
+            />
         </WizardLayout>
     );
 };
