@@ -18,6 +18,7 @@ import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.models.ImportError;
 import nl.vng.diwi.models.PropertyModel;
+import nl.vng.diwi.models.RangeSelectDisabledModel;
 import nl.vng.diwi.models.SelectModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
 
@@ -346,11 +347,31 @@ public class GeoJsonImportModel {
                 ov.setAmount(mutationData.getAmount());
                 if (ownershipValue != null) {
                     SingleValueOrRangeModel<Integer> valueRange = new SingleValueOrRangeModel<>();
+                    boolean valueRangeUsed = false;
                     if (ownershipValue.min != null) {
                         valueRange.setMin((int) (ownershipValue.min * 100));
+                        valueRangeUsed = true;
                     }
                     if (ownershipValue.max != null) {
                         valueRange.setMax((int) (ownershipValue.max * 100));
+                        valueRangeUsed = true;
+                    }
+                    if (ownershipValue.categoryName != null) {
+                        if (valueRangeUsed) {
+                            errors.add(new ImportError(projectNo, name, "woning_blokken -> waarde", null, ImportError.ERROR.HOUSEBLOCK_OWNERSHIP_INCONSISTENT));
+                        }
+                        PropertyModel propertyModel = (mutationData.ownershipType == OwnershipType.KOOPWONING) ?
+                            activePropertiesMap.get(Constants.FIXED_PROPERTY_PRICE_RANGE_BUY) : activePropertiesMap.get(Constants.FIXED_PROPERTY_PRICE_RANGE_RENT);
+                        RangeSelectDisabledModel rangeCategoryValue = propertyModel.getActiveRangeCategoryValue(ownershipValue.categoryName);
+                        if (rangeCategoryValue == null) {
+                            errors.add(new ImportError(projectNo, name, "woning_blokken -> waarde -> categorie", ownershipValue.categoryName, propertyModel.getId(), ImportError.ERROR.UNKNOWN_PROPERTY_VALUE));
+                        } else {
+                            if (mutationData.ownershipType == OwnershipType.KOOPWONING) {
+                                ov.setValueCategoryId(rangeCategoryValue.getId());
+                            } else {
+                                ov.setRentalValueCategoryId(rangeCategoryValue.getId());
+                            }
+                        }
                     }
                     if (!valueRange.isValid(true)) {
                         errors.add(new ImportError(projectNo, name, "woning_blokken -> mutatiegegevens -> eigendom_type", ownershipValue.toString(), ImportError.ERROR.INVALID_RANGE));
@@ -461,6 +482,8 @@ public class GeoJsonImportModel {
         private Double min;
         @JsonProperty("hoog")
         private Double max;
+        @JsonProperty("categorie")
+        private String categoryName;
     }
 
 }
