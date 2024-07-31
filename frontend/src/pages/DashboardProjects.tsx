@@ -27,7 +27,7 @@ export const DashboardProjects = () => {
     };
 
     return (
-        <Stack mb={8}>
+        <Stack mb={8} >
             <BreadcrumbBar
                 pageTitle={t("dashboard.title")}
                 links={[{ title: `${t("dashboard.municipalityProgram")} ${municipalityName}`, link: Paths.dashboard.path }]}

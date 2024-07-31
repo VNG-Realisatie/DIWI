@@ -68,7 +68,6 @@ public enum UserRole {
 
     // User that needs to access and edit existing projects, but cannot create them.
     External(List.of(
-        UserAction.VIEW_GROUPS,
         UserAction.VIEW_CONFIG,
         UserAction.VIEW_CUSTOM_PROPERTIES,
         UserAction.CAN_OWN_PROJECTS,
