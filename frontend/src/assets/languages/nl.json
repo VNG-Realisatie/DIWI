@@ -33,7 +33,9 @@
       "logout": "Uitloggen",
       "cantAccessPage": "U heeft geen toegang tot deze pagina. Neem contact op met uw beheerder",
       "selectPlot": "Selecteer perceel",
-      "cancelSelection": "Annuleer selectie"
+      "cancelSelection": "Annuleer selectie",
+      "cutSelection": "Knip perceel",
+      "cancelCutSelection": "Annuleer knip"
     },
     "import": {
       "errorsTitle": "Import fouten",

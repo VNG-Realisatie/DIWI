@@ -23,7 +23,13 @@ const baseUrlKadasterWms = "https://service.pdok.nl/kadaster/kadastralekaart/wms
 
 const projection = "EPSG:3857";
 
+export enum Buttons {
+    SELECT = "select",
+    CUT = "cut",
+}
+
 const usePlotSelector = (id: string) => {
+
     const { selectedProject, setSelectedProject } = useContext(ProjectContext);
     const { mapBounds } = useContext(ConfigContext);
 
@@ -37,7 +43,7 @@ const usePlotSelector = (id: string) => {
     const [plotsChanged, setPlotsChanged] = useState(false);
     const [extent, setExtent] = useState<Extent | null>(null);
 
-    const [selectionMode, setSelectionMode] = useState(false);
+    const [selectionMode, setSelectionMode] = useState<Buttons | null>(null);
 
     const selectedFeatureStyle = useCallback((): Style => {
         const fillOpacityHex = "99";
@@ -87,7 +93,7 @@ const usePlotSelector = (id: string) => {
 
     const handleClick = useCallback(
         (e: MapBrowserEvent<UIEvent>) => {
-            if (!selectionMode) return;
+            if (selectionMode !== Buttons.SELECT) return;
 
             const map: Map = e.map;
             if (!map) return;
@@ -151,7 +157,7 @@ const usePlotSelector = (id: string) => {
 
     const handleLineDrawEnd = useCallback(
          (e: DrawEvent) => {
-            if (!selectionMode || !map || !selectedPlotLayerSource || !bboxLayerSource) return;
+            if (selectionMode !== Buttons.SELECT || !map || !selectedPlotLayerSource || !bboxLayerSource) return;
 
             const lineGeometry = e.feature.getGeometry();
             if (!lineGeometry || !(lineGeometry instanceof LineString)) return;
@@ -252,6 +258,17 @@ const usePlotSelector = (id: string) => {
         [selectionMode, map, selectedPlotLayerSource, bboxLayerSource]
 );
 
+    const handleCut = useCallback((e: DrawEvent) => {
+        if (selectionMode !== Buttons.CUT || !map || !selectedPlotLayerSource) return;
+
+        const lineGeometry = e.feature.getGeometry();
+        if (!lineGeometry || !(lineGeometry instanceof Polygon)) return;
+
+        const extent = lineGeometry.getExtent();
+        console.log(extent);
+
+    }, [selectionMode, map, selectedPlotLayerSource])
+
     useEffect(
         function updatePlotsLayer() {
             if (!selectedPlotLayerSource) return;
@@ -314,7 +331,7 @@ const usePlotSelector = (id: string) => {
     );
 
     useEffect(() => {
-        if (!selectionMode || !map) return;
+        if (selectionMode !== Buttons.SELECT || !map) return;
 
         const draw = new Draw({
             source: new VectorSource(),
@@ -333,6 +350,26 @@ const usePlotSelector = (id: string) => {
             map.removeInteraction(draw);
         };
     }, [map, selectionMode, handleLineDrawEnd]);
+
+    useEffect(() => {
+        if (selectionMode !== Buttons.CUT || !map) return;
+
+        const draw = new Draw({
+            source: new VectorSource(),
+            type: "Polygon",
+            // condition: (event) => {
+            //     const click = event.originalEvent as MouseEvent;
+            //     return click.button === 2; //Right click
+            // },
+        });
+
+        draw.on("drawend", handleCut);
+        map.addInteraction(draw);
+
+        return () => {
+            map.removeInteraction(draw);
+        };
+    }, [map, selectionMode, handleCut]);
 
     useEffect(() => {
         if (!map) return;
@@ -406,8 +443,8 @@ const usePlotSelector = (id: string) => {
         [id, mapBounds, selectedFeatureStyle],
     );
 
-    const toggleSelectionMode = () => {
-        setSelectionMode((prevMode) => !prevMode);
+    const toggleSelectionMode = (mode: Buttons) => {
+        setSelectionMode((prevMode) => (prevMode === mode ? null : mode));
     };
 
     return {

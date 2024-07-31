@@ -1,6 +1,6 @@
 import ClearIcon from "@mui/icons-material/Clear";
 import SaveIcon from "@mui/icons-material/Save";
-import MouseIcon from "@mui/icons-material/Mouse";
+import "mingcute_icon/font/Mingcute.css";
 import Tooltip from "@mui/material/Tooltip";
 import Button from "@mui/material/Button";
 
@@ -8,7 +8,7 @@ import { Box, Stack } from "@mui/material";
 import { useContext, useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ProjectContext from "../../context/ProjectContext";
-import usePlotSelector from "../../hooks/usePlotSelector";
+import usePlotSelector, { Buttons } from "../../hooks/usePlotSelector";
 import { Details } from "../Details";
 import { AddHouseBlockButton } from "../PlusButton";
 import { CreateHouseBlockDialog } from "../project/project-with-house-block/CreateHouseBlockDialog";
@@ -49,12 +49,13 @@ const ProjectPlotSelector = () => {
                     <CreateHouseBlockDialog openHouseBlockDialog={openHouseBlockDialog} setOpenHouseBlockDialog={setOpenHouseBlockDialog} />
                 </div>
             </Stack>
-            <Box position="absolute" top={100} right={20}>
+            <Box position="absolute" top={90} right={20}>
                 <Tooltip title={selectionMode ? t("generic.cancelSelection") : t("generic.selectPlot")}>
                     <Button
                         variant="contained"
-                        onClick={toggleSelectionMode}
+                        onClick={() => toggleSelectionMode(Buttons.SELECT)}
                         sx={{
+                            padding: 0,
                             backgroundColor: "#FFFFFF",
                             color: "#000000",
                             minWidth: "50px",
@@ -65,7 +66,36 @@ const ProjectPlotSelector = () => {
                             },
                         }}
                     >
-                        <MouseIcon />
+                        <span
+                            className={selectionMode === Buttons.SELECT ? "mgc_cursor_2_fill" : "mgc_cursor_2_line"}
+                            style={{
+                                fontSize: 24,
+                            }}
+                        ></span>
+                    </Button>
+                </Tooltip>
+                <Tooltip title={selectionMode ? t("generic.cancelCutSelection") : t("generic.cutSelection")}>
+                    <Button
+                        variant="contained"
+                        onClick={() => toggleSelectionMode(Buttons.CUT)}
+                        sx={{
+                            padding: 0,
+                            backgroundColor: "#FFFFFF",
+                            color: "#000000",
+                            minWidth: "50px",
+                            minHeight: "50px",
+                            borderRadius: "10%",
+                            "&:hover": {
+                                backgroundColor: "#f0f0f0",
+                            },
+                        }}
+                    >
+                        <span
+                            className={selectionMode === Buttons.CUT ? "mgc_scissors_2_fill" : "mgc_scissors_2_line"}
+                            style={{
+                                fontSize: 24,
+                            }}
+                        ></span>
                     </Button>
                 </Tooltip>
             </Box>
