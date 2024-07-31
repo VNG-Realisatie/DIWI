@@ -11,13 +11,14 @@ import { Fill, Stroke, Style } from "ol/style";
 import { StyleFunction } from "ol/style/Style";
 import queryString from "query-string";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { Draw } from "ol/interaction";
+import { Draw, Snap } from "ol/interaction";
 import { Plot, PlotGeoJSON, getProjectPlots, updateProject, updateProjectPlots } from "../api/projectsServices";
 import ConfigContext from "../context/ConfigContext";
 import ProjectContext from "../context/ProjectContext";
 import { extentToCenter, mapBoundsToExtent } from "../utils/map";
 import { DrawEvent } from "ol/interaction/Draw";
 import { LineString, Polygon } from "ol/geom";
+import { Coordinate } from "ol/coordinate";
 
 const baseUrlKadasterWms = "https://service.pdok.nl/kadaster/kadastralekaart/wms/v5_0";
 
@@ -352,24 +353,46 @@ const usePlotSelector = (id: string) => {
     }, [map, selectionMode, handleLineDrawEnd]);
 
     useEffect(() => {
-        if (selectionMode !== Buttons.CUT || !map) return;
+        if (selectionMode !== Buttons.CUT || !map || !selectedPlotLayerSource) return;
 
         const draw = new Draw({
             source: new VectorSource(),
             type: "Polygon",
-            // condition: (event) => {
-            //     const click = event.originalEvent as MouseEvent;
-            //     return click.button === 2; //Right click
-            // },
+            trace: true,
+            traceSource: selectedPlotLayerSource,
+            condition: (event) => {
+                const point = event.coordinate;
+                return isPointInsideSelectedPlot(point);
+            },
         });
+
+        const snapInteraction = new Snap({
+            source: selectedPlotLayerSource
+          });
+
+          const isPointInsideSelectedPlot = (point: Coordinate) => {
+            const selectedPlotFeature = selectedPlotLayerSource.getFeatures()[0];
+            if (!selectedPlotFeature) return false;
+
+            const selectedPlotGeometry = selectedPlotFeature.getGeometry() as Polygon;
+            return selectedPlotGeometry.intersectsCoordinate(point);
+        };
+
+        document.addEventListener("keypress", function(event) {
+            if (event.key == "Enter") {
+              draw.finishDrawing();
+            }
+          });
 
         draw.on("drawend", handleCut);
         map.addInteraction(draw);
+        map.addInteraction(snapInteraction);
 
         return () => {
             map.removeInteraction(draw);
+            map.removeInteraction(snapInteraction);
         };
-    }, [map, selectionMode, handleCut]);
+    }, [map, selectionMode, handleCut, selectedPlotLayerSource]);
 
     useEffect(() => {
         if (!map) return;

@@ -50,7 +50,7 @@ const ProjectPlotSelector = () => {
                 </div>
             </Stack>
             <Box position="absolute" top={90} right={20}>
-                <Tooltip title={selectionMode ? t("generic.cancelSelection") : t("generic.selectPlot")}>
+                <Tooltip title={selectionMode === Buttons.SELECT ? t("generic.cancelSelection") : t("generic.selectPlot")}>
                     <Button
                         variant="contained"
                         onClick={() => toggleSelectionMode(Buttons.SELECT)}
@@ -74,7 +74,7 @@ const ProjectPlotSelector = () => {
                         ></span>
                     </Button>
                 </Tooltip>
-                <Tooltip title={selectionMode ? t("generic.cancelCutSelection") : t("generic.cutSelection")}>
+                <Tooltip title={selectionMode === Buttons.CUT ? t("generic.cancelCutSelection") : t("generic.cutSelection")}>
                     <Button
                         variant="contained"
                         onClick={() => toggleSelectionMode(Buttons.CUT)}
