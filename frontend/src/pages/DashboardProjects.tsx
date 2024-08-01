@@ -54,7 +54,7 @@ export const DashboardProjects = () => {
             setTimeout(() => {
                 exportPdf(t, setPdfExport);
             }, 500);
-    }, [pdfExport, setPdfExport]);
+    }, [pdfExport, setPdfExport, t]);
 
     if (!allowedActions.includes("VIEW_ALL_BLUEPRINTS")) {
         return <ActionNotAllowed errorMessage={t("dashboard.forbidden")} />;
