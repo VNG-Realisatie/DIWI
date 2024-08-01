@@ -4,7 +4,16 @@ import { t } from "i18next";
 
 export const validateHouseBlock = (houseBlock: HouseBlockWithCustomProperties, setAlert: (message: string, type: AlertColor) => void): boolean => {
     let isValid = true;
-    const invalidOwnershipAmount = houseBlock.ownershipValue.some((owner) => !isOwnershipAmountValid(owner.amount));
+    const invalidOwnershipAmount =
+        houseBlock.ownershipValue.some((owner) => !isOwnershipAmountValid(owner.amount)) ||
+        houseBlock.ownershipValue.some(
+            (owner) =>
+                owner.amount > 0 &&
+                !owner.rentalValueCategoryId &&
+                !owner.valueCategoryId &&
+                JSON.stringify(owner.rentalValue) === JSON.stringify({ value: null, min: null, max: null }) &&
+                JSON.stringify(owner.value) === JSON.stringify({ value: null, min: null, max: null }),
+        );
     if (
         !houseBlock.endDate ||
         !houseBlock.startDate ||

@@ -67,7 +67,6 @@ const OwnershipAmountInput = ({ handleInputChange, ownership, index, readOnly, t
 export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handleRemoveRow, readOnly, isOwnerShipValueAndMutationConsistent }: Props) => {
     const isKoopwoning = ownership.type === "KOOPWONING";
     const isHuurwoning = ownership.type === "HUURWONING_PARTICULIERE_VERHUURDER" || ownership.type === "HUURWONING_WONINGCORPORATIE";
-
     const [rangeCategories, setRangeCategories] = useState<Property[]>([]);
 
     useEffect(() => {
@@ -95,6 +94,19 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
     const rentalValueCategoryName = selectedRentalValueCategory ? selectedRentalValueCategory.name : "";
 
     const isPriceCategorySelected = Boolean(ownership.valueCategoryId || ownership.rentalValueCategoryId);
+
+    const showErrors = () => {
+        if (
+            ownership.amount > 0 &&
+            !isPriceCategorySelected &&
+            JSON.stringify(ownership.rentalValue) === JSON.stringify({ value: null, min: null, max: null }) &&
+            JSON.stringify(ownership.value) === JSON.stringify({ value: null, min: null, max: null })
+        ) {
+            return true;
+        }
+        return false;
+    };
+    const errorText = t("createProject.houseBlocksForm.ownershipAndValue.error");
 
     useEffect(() => {
         handleInputChange(index, {
@@ -154,6 +166,8 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                     mandatory={false}
                     options={priceCategoryOptions ?? []}
                     multiple={false}
+                    displayError={showErrors()}
+                    error={errorText}
                 />
             </Grid>
             <Grid item xs={2.8} className="ownership-house-value">
@@ -164,6 +178,8 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                     mandatory={false}
                     isMonetary={true}
                     title={t(`${translationPath}.value`)}
+                    displayError={showErrors() && !isHuurwoning}
+                    errorText={errorText}
                 />
             </Grid>
             <Grid item xs={2.8} className="ownership-house-rent">
@@ -174,6 +190,8 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                     mandatory={false}
                     isMonetary={true}
                     title={t(`${translationPath}.rent`)}
+                    displayError={showErrors() && !isKoopwoning}
+                    errorText={errorText}
                 />
             </Grid>
             <Grid item xs={0.3} className="ownership-delete-icon" style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>

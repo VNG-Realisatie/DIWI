@@ -74,7 +74,16 @@ const ProjectWizardBlocks = () => {
         let hasErrors = false;
         const newDateValidationErrors: DateValidationErrors = { startDateError: null, endDateError: null };
 
-        const invalidOwnershipAmount = houseBlock.ownershipValue.some((owner) => !isOwnershipAmountValid(owner.amount));
+        const invalidOwnershipAmount =
+            houseBlock.ownershipValue.some((owner) => !isOwnershipAmountValid(owner.amount)) ||
+            houseBlock.ownershipValue.some(
+                (owner) =>
+                    owner.amount > 0 &&
+                    !owner.rentalValueCategoryId &&
+                    !owner.valueCategoryId &&
+                    JSON.stringify(owner.rentalValue) === JSON.stringify({ value: null, min: null, max: null }) &&
+                    JSON.stringify(owner.value) === JSON.stringify({ value: null, min: null, max: null }),
+            );
 
         if (
             !houseBlock.houseblockName ||
@@ -85,7 +94,6 @@ const ProjectWizardBlocks = () => {
             !houseBlock.startDate ||
             !houseBlock.endDate ||
             !checkConsistencyOwnerShipValueAndMutation(houseBlock)
-
         ) {
             hasErrors = true;
         }

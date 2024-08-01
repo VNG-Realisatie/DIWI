@@ -20,6 +20,7 @@ type Props = {
     title?: string;
     errorText?: string;
     setIsRangeValid?: (isValid: boolean) => void;
+    displayError?: boolean;
 };
 
 const decimalSeparator = ",";
@@ -100,17 +101,28 @@ function fromStringToRange(stringValue: string | null, isMonetary: boolean): Val
     }
 }
 
-const shouldDisplayError = (mandatory: boolean, value: string | null) => {
-    if (mandatory && !value) {
+const shouldDisplayError = (mandatory: boolean, value: string | null, displayError: boolean) => {
+    if ((mandatory && !value) || displayError) {
         return true;
     }
     return false;
 };
 
-const RangeNumberInput = ({ labelText, value, updateCallBack, isMonetary = false, readOnly, mandatory, title, errorText, setIsRangeValid }: Props) => {
+const RangeNumberInput = ({
+    labelText,
+    value,
+    updateCallBack,
+    isMonetary = false,
+    readOnly,
+    mandatory,
+    title,
+    errorText,
+    setIsRangeValid,
+    displayError = false,
+}: Props) => {
     const [stringValue, setStringValue] = useState<string | null>(null);
 
-    const hasError = shouldDisplayError(mandatory, stringValue);
+    const hasError = shouldDisplayError(mandatory, stringValue, displayError);
 
     useEffect(() => {
         setStringValue(fromRangeToString(value, isMonetary));
