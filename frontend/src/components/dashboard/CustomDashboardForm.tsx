@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { ChangeEvent, useEffect } from "react";
 import { Button, Grid } from "@mui/material";
 import TextInput from "../project/inputs/TextInput";
 
@@ -49,7 +49,7 @@ export const CustomDashboardForm = ({ visibility, newBlueprint, setNewBlueprint,
             setTimeout(() => {
                 exportPdf(t, setPdfExport);
             }, 500);
-    }, [exportPdf, pdfExport]);
+    }, [exportPdf, pdfExport, setPdfExport, t]);
 
     const buttonDisabled = !newBlueprint.name || userGroups.length === 0 || !Object.values(visibility).some((value) => value === true);
 
