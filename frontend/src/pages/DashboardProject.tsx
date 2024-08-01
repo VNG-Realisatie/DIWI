@@ -194,7 +194,7 @@ export const DashboardProject = () => {
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.schedule")}
                         </Typography>
-                        <MyResponsiveBar chartData={planning} selectedProjectName={selectedProject?.projectName} />
+                        <MyResponsiveBar chartData={planning} selectedProject={selectedProject} />
                     </Grid>
                     <Grid item {...chartCardStyling}>
                         <Typography variant="h6" fontSize={16}>

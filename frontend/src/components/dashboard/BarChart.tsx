@@ -1,44 +1,67 @@
 import { Box, Stack, Typography } from "@mui/material";
-import { ResponsiveBar } from "@nivo/bar";
 import { t } from "i18next";
+import { BarChart } from "@mui/x-charts";
+import { Project } from "../../api/projectsServices";
 
 type Props = {
     chartData: ChartData;
-    selectedProjectName: string | undefined;
+    selectedProject: Project | null;
 };
 
-type ChartData = {
+type ChartDataPoint = {
     year: number;
     projectId: string;
     amount: number;
     name: string;
-}[];
+};
+type ChartData = ChartDataPoint[];
 
-type OutputData = {
-    year: number;
-    [key: string]: number;
-}[];
+type OutputDataItem = {
+    data: (number | null)[];
+    label: string;
+    stack: string;
+    color?: string;
+};
+export type OutputData = OutputDataItem[];
 
-function convertData(input: ChartData): OutputData {
-    const groupedByYear: { [year: number]: { [name: string]: number } } = {};
+export function convertData(input: ChartData, selectedProjectId: string): OutputData {
+    // Get list of deduplicated years in order
+    const years = input
+        .map((dataPoint) => dataPoint.year)
+        .sort()
+        .filter((value, index, self) => self.indexOf(value) === index);
 
-    input.forEach(({ year, name, amount }) => {
-        if (!groupedByYear[year]) {
-            groupedByYear[year] = {};
+    const groupedByProject: { [projectId: string]: OutputDataItem } = {};
+    input.forEach((dataPoint) => {
+        if (!groupedByProject[dataPoint.projectId]) {
+            groupedByProject[dataPoint.projectId] = { label: dataPoint.name, data: years.map(() => null), stack: "total" };
         }
-        groupedByYear[year][name] = amount;
+        groupedByProject[dataPoint.projectId].data[years.indexOf(dataPoint.year)] = dataPoint.amount;
+        if (dataPoint.projectId === selectedProjectId) {
+            groupedByProject[dataPoint.projectId].color = selectedProjectColor;
+        }
     });
 
-    const result: OutputData = Object.keys(groupedByYear).map((year) => ({
-        year: parseInt(year),
-        ...groupedByYear[year as unknown as number],
-    }));
+    // const result: OutputData = Object.keys(groupedByProject).map((year) => ({
+    //     year: parseInt(year),
+    //     ...groupedByProject[year as unknown as number],
+    // }));
 
-    return result;
+    return Object.values(groupedByProject);
+    // map((data) => {
+    //     return {
+    //         data: data.data,
+    //         label: data.label,
+    //         stack: data.stack,
+    //         color: data.label === selectedProjectId ? selectedProjectColor : undefined,
+    //     };
+    // });
 }
 
-export const MyResponsiveBar = ({ chartData, selectedProjectName }: Props) => {
-    if (!selectedProjectName) return null;
+export const selectedProjectColor = "#00A9F3";
+
+export const MyResponsiveBar = ({ chartData, selectedProject }: Props) => {
+    if (!selectedProject) return null;
     const grayScaleColors = ["#2f2f2f", "#3f3f3f", "#4f4f4f", "#5f5f5f", "#6f6f6f", "#7f7f7f", "#8f8f8f", "#9f9f9f", "#afafaf", "#bfbfbf"];
     let currentIndex = 0;
     function getUniqueRandomColor() {
@@ -49,12 +72,18 @@ export const MyResponsiveBar = ({ chartData, selectedProjectName }: Props) => {
         return color;
     }
 
-    const convertedData = convertData(chartData);
+    const convertedData = convertData(chartData, selectedProject.projectId);
     const keys = [...new Set(chartData.map((d) => d.name))];
+
+    const series = [
+        { data: [null, 200], label: selectedProject.projectName, stack: "total", color: selectedProjectColor },
+        { data: [100, 200], label: selectedProject.projectName, stack: "total" },
+    ];
 
     return (
         <Stack height={500} pb={3}>
-            <ResponsiveBar
+            <BarChart height={500} series={convertedData} colors={grayScaleColors} />
+            {/* <ResponsiveBar
                 data={convertedData}
                 keys={keys}
                 indexBy="year"
@@ -85,11 +114,11 @@ export const MyResponsiveBar = ({ chartData, selectedProjectName }: Props) => {
                 role="application"
                 ariaLabel="Bar Chart"
                 barAriaLabel={(e) => `${e.id}: ${e.formattedValue} in year: ${e.indexValue}`}
-            />
+            /> */}
             <Stack flexDirection="row" m="auto">
                 <Box height={18} width={18} sx={{ backgroundColor: "#00A9F3" }}></Box>
                 <Typography variant="caption" ml={1}>
-                    {selectedProjectName}
+                    {selectedProject.projectName}
                 </Typography>
                 <Stack flexDirection="row" alignItems="center" ml={2}>
                     <Box height={18} width={6} sx={{ backgroundColor: grayScaleColors[0] }}></Box>
