@@ -2,7 +2,6 @@ import InputLabelStack from "./InputLabelStack";
 import { Autocomplete, AutocompleteChangeDetails, AutocompleteChangeReason, Chip, TextField } from "@mui/material";
 import { t } from "i18next";
 import { TooltipInfo } from "../../../widgets/TooltipInfo";
-import { display } from "html2canvas/dist/types/css/property-descriptors/display";
 
 type Option = {
     uuid?: string | number;
