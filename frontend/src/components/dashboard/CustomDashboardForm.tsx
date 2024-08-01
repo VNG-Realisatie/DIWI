@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect } from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { Button, Grid } from "@mui/material";
 import TextInput from "../project/inputs/TextInput";
 
@@ -10,6 +10,9 @@ import { t } from "i18next";
 import { Visibility } from "./DashboardCharts";
 import { useNavigate, useParams } from "react-router-dom";
 import useAllowedActions from "../../hooks/useAllowedActions";
+import { TooltipInfo } from "../../widgets/TooltipInfo";
+import { FileDownload } from "@mui/icons-material";
+import { exportPdf } from "../../utils/exportPDF";
 
 const emptyBlueprint: Blueprint = {
     name: "",
@@ -23,9 +26,11 @@ type Props = {
     setNewBlueprint: (blueprint: Blueprint) => void;
     userGroups: UserGroup[];
     setUserGroups: (userGroups: UserGroup[]) => void;
+    setPdfExport: (pdfExport: boolean) => void;
+    pdfExport: boolean;
 };
 
-export const CustomDashboardForm = ({ visibility, newBlueprint, setNewBlueprint, userGroups, setUserGroups }: Props) => {
+export const CustomDashboardForm = ({ visibility, newBlueprint, setNewBlueprint, userGroups, setUserGroups, setPdfExport, pdfExport }: Props) => {
     const { setAlert } = useAlert();
     const { id } = useParams();
     const navigate = useNavigate();
@@ -38,6 +43,13 @@ export const CustomDashboardForm = ({ visibility, newBlueprint, setNewBlueprint,
             setUserGroups(newBlueprint.userGroups.map((group) => ({ ...group, name: "" })));
         }
     }, [id, newBlueprint.userGroups, setUserGroups]);
+
+    useEffect(() => {
+        pdfExport &&
+            setTimeout(() => {
+                exportPdf(t, setPdfExport);
+            }, 500);
+    }, [exportPdf, pdfExport]);
 
     const buttonDisabled = !newBlueprint.name || userGroups.length === 0 || !Object.values(visibility).some((value) => value === true);
 
@@ -95,6 +107,16 @@ export const CustomDashboardForm = ({ visibility, newBlueprint, setNewBlueprint,
                     <Button variant="contained" onClick={handleSave} disabled={buttonDisabled}>
                         {t("dashboard.blueprints.saveBlueprint")}
                     </Button>
+                )}
+                {disabledForm && (
+                    <TooltipInfo text={t("dashboard.exportpdf")}>
+                        <FileDownload
+                            onClick={() => {
+                                setPdfExport(true);
+                            }}
+                            sx={{ fill: "#002C64" }}
+                        />
+                    </TooltipInfo>
                 )}
             </Grid>
         </Grid>

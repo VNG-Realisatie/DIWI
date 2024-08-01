@@ -292,97 +292,115 @@ export const DashboardCharts = ({ visibility, setVisibility, isPdf = false }: Pr
 
             {isPdf && (
                 <Stack width="1920px" id="export">
-                    <Box width="100%" id="totalValues">
-                        <Typography variant="h6" fontSize={16}>
-                            {t("dashboard.totalValues")}
-                        </Typography>
-                        {/* Mutation Card Total values */}
-                        <Stack flexDirection="row" width="1920px" alignItems="center" justifyContent="space-between">
-                            {/* Demolition */}
-                            <Box width="600px">
-                                <LabelComponent
-                                    required={false}
-                                    text={t("createProject.houseBlocksForm.demolition")}
-                                    tooltipInfoText={t("tooltipInfo.sloop.title")}
-                                />
-                                <CellContainer>
-                                    <LabelComponent required={false} text={dashboardMutationValues?.DEMOLITION?.toString() ?? ""} />
-                                </CellContainer>
-                            </Box>
-                            {/* Construction */}
-                            <Box width="600px">
-                                <LabelComponent
-                                    required={false}
-                                    text={t("createProject.houseBlocksForm.grossPlanCapacity")}
-                                    tooltipInfoText={t("tooltipInfo.brutoPlancapaciteit.title")}
-                                />
-                                <CellContainer>
-                                    <LabelComponent required={false} text={dashboardMutationValues?.CONSTRUCTION?.toString() ?? ""} />
-                                </CellContainer>
-                            </Box>
-                            {/* Total */}
-                            <Box width="600px">
-                                <LabelComponent
-                                    required={false}
-                                    text={t("createProject.houseBlocksForm.netPlanCapacity")}
-                                    tooltipInfoText={t("tooltipInfo.nettoPlancapaciteit.title")}
-                                />
-                                <CellContainer>
+                    {visibility?.MUTATION && (
+                        <Box width="100%" id="totalValues">
+                            <Typography variant="h6" fontSize={16}>
+                                {t("dashboard.totalValues")}
+                            </Typography>
+                            {/* Mutation Card Total values */}
+                            <Stack flexDirection="row" width="1920px" alignItems="center" justifyContent="space-between">
+                                {/* Demolition */}
+                                <Box width="600px">
                                     <LabelComponent
                                         required={false}
-                                        text={((dashboardMutationValues?.CONSTRUCTION ?? 0) - (dashboardMutationValues?.DEMOLITION ?? 0)).toString()}
+                                        text={t("createProject.houseBlocksForm.demolition")}
+                                        tooltipInfoText={t("tooltipInfo.sloop.title")}
                                     />
-                                </CellContainer>
-                            </Box>
-                        </Stack>
-                    </Box>
-                    <Box width="50%" border="solid 1px #DDD" p={1} id="projectPhaseChart">
-                        <Typography variant="h6" fontSize={16}>
-                            {t("dashboard.projectPhases")}
-                        </Typography>
-                        <DashboardPieChart isPdfChart={true} chartData={projectPhaseSums || []} colors={chartColors} />
-                    </Box>
-                    <Box width="50%" border="solid 1px #DDD" p={1} id="targetGroupChart">
-                        <Typography variant="h6" fontSize={16}>
-                            {t("dashboard.targetAudiences")}
-                        </Typography>
-                        <DashboardPieChart isPdfChart={true} chartData={dashboardProjects?.targetGroup || []} colors={chartColors} />
-                    </Box>
-                    <Box width="50%" border="solid 1px #DDD" p={1} id="physicalAppearanceChart">
-                        <Typography variant="h6" fontSize={16}>
-                            {t("dashboard.residentialFeatures")}
-                        </Typography>
-                        <DashboardPieChart isPdfChart={true} chartData={dashboardProjects?.physicalAppearance || []} colors={chartColors} />
-                    </Box>
-                    <Box width="50%" border="solid 1px #DDD" p={1} id="buy">
-                        <Typography variant="h6" fontSize={16}>
-                            {t("dashboard.buy")}
-                        </Typography>
-                        {/* ToDo:Add chart here later */}
-                    </Box>
-                    <Box width="50%" border="solid 1px #DDD" p={1} id="rent">
-                        <Typography variant="h6" fontSize={16}>
-                            {t("dashboard.rent")}
-                        </Typography>
-                        {/* ToDo:Add chart here later */}
-                    </Box>
-                    <Box width="50%" border="solid 1px #DDD" p={1} id="residentialProjects">
-                        <Typography variant="h6" fontSize={16}>
-                            {t("dashboard.residentialProjects")}
-                        </Typography>
-                        {/* ToDo:Add chart here later */}
-                    </Box>
-                    <Box width="50%" border="solid 1px #DDD" p={1} id="deliverables">
-                        <Typography variant="h6" fontSize={16}>
-                            {t("dashboard.deliverables")}
-                        </Typography>
-                        {/* ToDo:Add chart here later */}
-                    </Box>
-                    <Box width="50%" border="solid 1px #DDD" p={1} id="delayedProjects">
-                        <Typography variant="h6" fontSize={16}>
-                            {t("dashboard.delayedProjects")}
-                        </Typography>
-                    </Box>
+                                    <CellContainer>
+                                        <LabelComponent required={false} text={dashboardMutationValues?.DEMOLITION?.toString() ?? ""} />
+                                    </CellContainer>
+                                </Box>
+                                {/* Construction */}
+                                <Box width="600px">
+                                    <LabelComponent
+                                        required={false}
+                                        text={t("createProject.houseBlocksForm.grossPlanCapacity")}
+                                        tooltipInfoText={t("tooltipInfo.brutoPlancapaciteit.title")}
+                                    />
+                                    <CellContainer>
+                                        <LabelComponent required={false} text={dashboardMutationValues?.CONSTRUCTION?.toString() ?? ""} />
+                                    </CellContainer>
+                                </Box>
+                                {/* Total */}
+                                <Box width="600px">
+                                    <LabelComponent
+                                        required={false}
+                                        text={t("createProject.houseBlocksForm.netPlanCapacity")}
+                                        tooltipInfoText={t("tooltipInfo.nettoPlancapaciteit.title")}
+                                    />
+                                    <CellContainer>
+                                        <LabelComponent
+                                            required={false}
+                                            text={((dashboardMutationValues?.CONSTRUCTION ?? 0) - (dashboardMutationValues?.DEMOLITION ?? 0)).toString()}
+                                        />
+                                    </CellContainer>
+                                </Box>
+                            </Stack>
+                        </Box>
+                    )}
+                    {visibility?.PROJECT_PHASE && (
+                        <Box width="50%" border="solid 1px #DDD" p={1} id="projectPhaseChart">
+                            <Typography variant="h6" fontSize={16}>
+                                {t("dashboard.projectPhases")}
+                            </Typography>
+                            <DashboardPieChart isPdfChart={true} chartData={projectPhaseSums || []} colors={chartColors} />
+                        </Box>
+                    )}
+                    {visibility?.TARGET_GROUP && (
+                        <Box width="50%" border="solid 1px #DDD" p={1} id="targetGroupChart">
+                            <Typography variant="h6" fontSize={16}>
+                                {t("dashboard.targetAudiences")}
+                            </Typography>
+                            <DashboardPieChart isPdfChart={true} chartData={dashboardProjects?.targetGroup || []} colors={chartColors} />
+                        </Box>
+                    )}
+                    {visibility?.PHYSICAL_APPEARANCE && (
+                        <Box width="50%" border="solid 1px #DDD" p={1} id="physicalAppearanceChart">
+                            <Typography variant="h6" fontSize={16}>
+                                {t("dashboard.residentialFeatures")}
+                            </Typography>
+                            <DashboardPieChart isPdfChart={true} chartData={dashboardProjects?.physicalAppearance || []} colors={chartColors} />
+                        </Box>
+                    )}
+                    {visibility?.OWNERSHIP_BUY && (
+                        <Box width="50%" border="solid 1px #DDD" p={1} id="buy">
+                            <Typography variant="h6" fontSize={16}>
+                                {t("dashboard.buy")}
+                            </Typography>
+                            {/* ToDo:Add chart here later */}
+                        </Box>
+                    )}
+                    {visibility?.OWNERSHIP_RENT && (
+                        <Box width="50%" border="solid 1px #DDD" p={1} id="rent">
+                            <Typography variant="h6" fontSize={16}>
+                                {t("dashboard.rent")}
+                            </Typography>
+                            {/* ToDo:Add chart here later */}
+                        </Box>
+                    )}
+                    {visibility?.RESIDENTIAL_PROJECTS && (
+                        <Box width="50%" border="solid 1px #DDD" p={1} id="residentialProjects">
+                            <Typography variant="h6" fontSize={16}>
+                                {t("dashboard.residentialProjects")}
+                            </Typography>
+                            {/* ToDo:Add chart here later */}
+                        </Box>
+                    )}
+                    {visibility?.DELAYED_PROJECTS && (
+                        <Box width="50%" border="solid 1px #DDD" p={1} id="deliverables">
+                            <Typography variant="h6" fontSize={16}>
+                                {t("dashboard.deliverables")}
+                            </Typography>
+                            {/* ToDo:Add chart here later */}
+                        </Box>
+                    )}
+                    {visibility?.DELAYED_PROJECTS && (
+                        <Box width="50%" border="solid 1px #DDD" p={1} id="delayedProjects">
+                            <Typography variant="h6" fontSize={16}>
+                                {t("dashboard.delayedProjects")}
+                            </Typography>
+                        </Box>
+                    )}
                 </Stack>
             )}
         </>

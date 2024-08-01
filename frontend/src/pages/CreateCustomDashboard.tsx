@@ -30,6 +30,7 @@ export const CreateCustomDashboard = () => {
     const [visibility, setVisibility] = useState(initialVisibility);
     const [newBlueprint, setNewBlueprint] = useState<Blueprint>(emptyBlueprint);
     const [userGroups, setUserGroups] = useState<UserGroup[]>([]);
+    const [pdfExport, setPdfExport] = useState(false);
 
     const { id } = useParams();
     const { setAlert } = useAlert();
@@ -72,8 +73,10 @@ export const CreateCustomDashboard = () => {
                 setNewBlueprint={setNewBlueprint}
                 userGroups={userGroups}
                 setUserGroups={setUserGroups}
+                setPdfExport={setPdfExport}
+                pdfExport={pdfExport}
             />
-            <DashboardCharts visibility={visibility} setVisibility={setVisibility} />
+            <DashboardCharts isPdf={pdfExport} visibility={visibility} setVisibility={setVisibility} />
         </>
     );
 };
