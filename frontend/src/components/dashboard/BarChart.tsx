@@ -3,48 +3,29 @@ import { t } from "i18next";
 import { BarChart } from "@mui/x-charts";
 import { Project } from "../../api/projectsServices";
 import { grayScaleColors } from "../../utils/dashboardChartColors";
+import { convertData } from "../../utils/convertChartData";
 
 type Props = {
     chartData: ChartData;
     selectedProject: Project | null;
 };
 
-type ChartDataPoint = {
+export type ChartDataPoint = {
     year: number;
     projectId: string;
     amount: number;
     name: string;
 };
-type ChartData = ChartDataPoint[];
+export type ChartData = ChartDataPoint[];
 
-type OutputDataItem = {
+export type OutputDataItem = {
     data: (number | null)[];
     label: string;
     stack: string;
     color?: string;
 };
+
 export type OutputData = { convertedData: OutputDataItem[]; years: number[] };
-
-const convertData = (input: ChartData, selectedProjectId: string): OutputData => {
-    // Get list of deduplicated years in order
-    const years = input
-        .map((dataPoint) => dataPoint.year)
-        .sort()
-        .filter((value, index, self) => self.indexOf(value) === index);
-
-    const groupedByProject: { [projectId: string]: OutputDataItem } = {};
-    input.forEach((dataPoint) => {
-        if (!groupedByProject[dataPoint.projectId]) {
-            groupedByProject[dataPoint.projectId] = { label: dataPoint.name, data: years.map(() => null), stack: "total" };
-        }
-        groupedByProject[dataPoint.projectId].data[years.indexOf(dataPoint.year)] = dataPoint.amount;
-
-        if (dataPoint.projectId === selectedProjectId) {
-            groupedByProject[dataPoint.projectId].color = selectedProjectColor;
-        }
-    });
-    return { convertedData: Object.values(groupedByProject), years };
-};
 
 export const selectedProjectColor = "#00A9F3";
 
