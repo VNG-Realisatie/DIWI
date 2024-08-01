@@ -49,7 +49,7 @@ export const CustomDashboardForm = ({ visibility, newBlueprint, setNewBlueprint,
             setTimeout(() => {
                 exportPdf(t, setPdfExport);
             }, 500);
-    }, [exportPdf, pdfExport, setPdfExport, t]);
+    }, [pdfExport, setPdfExport]);
 
     const buttonDisabled = !newBlueprint.name || userGroups.length === 0 || !Object.values(visibility).some((value) => value === true);
 
