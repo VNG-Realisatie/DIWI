@@ -20,7 +20,7 @@ import { DrawEvent } from "ol/interaction/Draw";
 import { LineString, Polygon } from "ol/geom";
 import { Coordinate } from "ol/coordinate";
 
-const baseUrlKadasterWms = "https://service.pdok.nl/kadaster/kadastralekaart/wms/v5_0";
+const baseUrlKadasterWfs = "https://service.pdok.nl/kadaster/kadastralekaart/wfs/v5_0";
 
 const projection = "EPSG:3857";
 
@@ -100,7 +100,6 @@ const usePlotSelector = (id: string) => {
             if (!map) return;
 
             const features = map.getFeaturesAtPixel(e.pixel, { layerFilter: (layer) => layer.getSource() === selectedPlotLayerSource });
-
             if (features.length > 0) {
                 const newSelectedPlots = selectedPlots.filter((plot) => {
                     const id = plot.plotFeature.features[0].id;
@@ -109,26 +108,20 @@ const usePlotSelector = (id: string) => {
                 });
                 setSelectedPlots(newSelectedPlots);
             } else {
-                const bboxSize = 1;
                 const loc = e.coordinate;
-                const bbox = `${loc[0] - bboxSize},${loc[1] - bboxSize},${loc[0] + bboxSize},${loc[1] + bboxSize}`;
-
+                const bbox = `${loc[0]},${loc[1]},${loc[0]},${loc[1]}`;
                 const url = queryString.stringifyUrl({
-                    url: baseUrlKadasterWms,
+                    url: baseUrlKadasterWfs,
                     query: {
-                        QUERY_LAYERS: "Perceel",
-                        INFO_FORMAT: "application/json",
-                        REQUEST: "GetFeatureInfo",
-                        SERVICE: "WMS",
-                        VERSION: "1.3.0",
-                        HEIGHT: 101,
-                        WIDTH: 101,
-                        I: 50,
-                        J: 50,
-                        layers: "Perceel",
-                        CRS: "EPSG:3857",
-                        BBOX: bbox,
+                        request: "GetFeature",
+                            service: "WFS",
+                            version: "2.0.0",
+                            outputFormat: "application/json",
+                            typeName: "kadastralekaart:Perceel",
+                            srsName: projection,
+                            bbox: bbox + "," + projection
                     },
+
                 });
 
                 fetch(url)
@@ -166,74 +159,43 @@ const usePlotSelector = (id: string) => {
             const extent = lineGeometry.getExtent();
             const bbox = extent.join(",");
 
-            const gridSize = 10;
-            const maxRequests = 100;
-            let requestCount = 0;
+            const url = queryString.stringifyUrl({
+                url: baseUrlKadasterWfs,
+                query: {
+                    request: "GetFeature",
+                    service: "WFS",
+                    version: "2.0.0",
+                    outputFormat: "application/json",
+                    typeName: "kadastralekaart:Perceel",
+                    srsName: "EPSG:3857",
+                    bbox: bbox + "," + projection
+                },
+            });
 
-            const fetchPromises = [];
+            fetch(url)
+                .then((res) => res.json())
+                .then((result) => {
+                    const plotFeature = result as PlotGeoJSON;
+                    for (let i = 0; i < plotFeature.features.length; i++) {
 
-            for (let i = 0; i <= 100; i += gridSize) {
-                for (let j = 0; j <= 100; j += gridSize) {
-                    if (requestCount >= maxRequests) break;
-
-                    const url = queryString.stringifyUrl({
-                        url: baseUrlKadasterWms,
-                        query: {
-                            QUERY_LAYERS: "Perceel",
-                            INFO_FORMAT: "application/json",
-                            REQUEST: "GetFeatureInfo",
-                            SERVICE: "WMS",
-                            VERSION: "1.3.0",
-                            HEIGHT: 101,
-                            WIDTH: 101,
-                            I: i,
-                            J: j,
-                            layers: "Perceel",
-                            CRS: "EPSG:3857",
-                            BBOX: bbox,
-                        },
-                    });
-
-                    fetchPromises.push(
-                        fetch(url)
-                            .then((res) => res.json())
-                            .then((result) => {
-                                const plotFeature = result as PlotGeoJSON;
-
-                                if (plotFeature.features.length === 0) {
-                                    return;
-                                }
-
-                                const properties = plotFeature.features[0].properties;
-
-                                const newPlot: Plot = {
-                                    brkGemeenteCode: properties.kadastraleGemeenteCode,
-                                    brkPerceelNummer: parseInt(properties.perceelnummer),
-                                    brkSectie: properties.sectie,
-                                    plotFeature,
-                                };
-
-                                setSelectedPlots((prevPlots) => {
-                                    const isPlotAlreadySelected = prevPlots.some(
-                                        (plot) =>
-                                            plot.brkGemeenteCode === newPlot.brkGemeenteCode &&
-                                            plot.brkPerceelNummer === newPlot.brkPerceelNummer &&
-                                            plot.brkSectie === newPlot.brkSectie
-                                    );
-                                    return isPlotAlreadySelected ? prevPlots : [...prevPlots, newPlot];
-                                });
-                            })
-                            .catch((error) => {
-                                console.error("Error fetching plot data:", error);
-                            })
-                    );
-
-                    requestCount++;
-                }
-                if (requestCount >= maxRequests) break;
-            }
-
-            Promise.all(fetchPromises);
+                        const properties = plotFeature.features[i].properties;
+                        const newPlot: Plot = {
+                            brkGemeenteCode: properties.kadastraleGemeenteCode,
+                            brkPerceelNummer: parseInt(properties.perceelnummer),
+                            brkSectie: properties.sectie,
+                            plotFeature,
+                        };
+                        setSelectedPlots((prevPlots) => {
+                            const isPlotAlreadySelected = prevPlots.some(
+                                (plot) =>
+                                    plot.brkGemeenteCode === newPlot.brkGemeenteCode &&
+                                    plot.brkPerceelNummer === newPlot.brkPerceelNummer &&
+                                    plot.brkSectie === newPlot.brkSectie
+                            );
+                            return isPlotAlreadySelected ? prevPlots : [...prevPlots, newPlot];
+                        });
+                    }
+                })
 
             try {
                 const [minX, minY, maxX, maxY] = extent;

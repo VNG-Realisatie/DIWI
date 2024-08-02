@@ -1,9 +1,9 @@
 import ClearIcon from "@mui/icons-material/Clear";
 import SaveIcon from "@mui/icons-material/Save";
-import "mingcute_icon/font/Mingcute.css";
 import Tooltip from "@mui/material/Tooltip";
 import Button from "@mui/material/Button";
-
+import MouseIcon from "@mui/icons-material/Mouse";
+import ContentCutIcon from "@mui/icons-material/ContentCut";
 import { Box, Stack } from "@mui/material";
 import { useContext, useId, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -66,12 +66,7 @@ const ProjectPlotSelector = () => {
                             },
                         }}
                     >
-                        <span
-                            className={selectionMode === Buttons.SELECT ? "mgc_cursor_2_fill" : "mgc_cursor_2_line"}
-                            style={{
-                                fontSize: 24,
-                            }}
-                        ></span>
+                        {selectionMode === Buttons.SELECT ? <MouseIcon /> : <MouseIcon />}
                     </Button>
                 </Tooltip>
                 <Tooltip title={selectionMode === Buttons.CUT ? t("generic.cancelCutSelection") : t("generic.cutSelection")}>
@@ -90,12 +85,7 @@ const ProjectPlotSelector = () => {
                             },
                         }}
                     >
-                        <span
-                            className={selectionMode === Buttons.CUT ? "mgc_scissors_2_fill" : "mgc_scissors_2_line"}
-                            style={{
-                                fontSize: 24,
-                            }}
-                        ></span>
+                        {selectionMode === Buttons.CUT ? <ContentCutIcon /> : <ContentCutIcon />}
                     </Button>
                 </Tooltip>
             </Box>
