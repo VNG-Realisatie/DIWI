@@ -59,7 +59,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const [filterModel, setFilterModel] = useState<GridFilterModel | undefined>();
     const [sortModel, setSortModel] = useState<GridSortModel | undefined>();
 
-    const allowedActions = useAllowedActions();
+    const { allowedActions } = useAllowedActions();
     const { filterUrl, rows } = useCustomSearchParams(sortModel, filterModel, paginationInfo);
 
     useEffect(() => {

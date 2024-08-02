@@ -24,7 +24,7 @@ export const ProjectDetail = ({ children }: PropsWithChildren) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const [selectedProjectColor, setSelectedProjectColor] = useState<string>("");
-    const allowedActions = useAllowedActions();
+    const { allowedActions } = useAllowedActions();
     const [openHouseBlockDialog, setOpenHouseBlockDialog] = useState(false);
     return (
         <Stack direction="column" justifyContent="space-between" position="relative" border="solid 1px #ddd" mb={10}>

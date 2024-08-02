@@ -64,70 +64,77 @@ const CategoryInput = ({
     displayError = false,
 }: CategoryInputProps) => {
     const { hasError, helperText } = getErrorHelperText(mandatory, readOnly, values, displayError, error);
-    return (
-        <InputLabelStack mandatory={mandatory} title={title || ""} tooltipInfoText={tooltipInfoText}>
-            <Autocomplete
-                multiple={multiple}
-                size="small"
-                disabled={readOnly}
-                isOptionEqualToValue={isOptionEqualToValue}
-                fullWidth
-                options={options ?? []}
-                getOptionLabel={(option) => {
-                    if (option && option.firstName && option.lastName) {
-                        return `${option.firstName} ${option.lastName}`;
-                    }
-                    if (option && option.name) {
-                        return t(`${translationPath}${option.name}`);
-                    }
-                    if (option) {
-                        return t(`${translationPath}${option}`);
-                    }
-                    return "";
-                }}
-                filterOptions={(options) => {
-                    if (multiple && values) {
-                        const selectedIds = Array.isArray(values) ? values.map((value) => value.uuid) : [values.uuid];
-                        return options.filter((option) => !selectedIds.includes(option.id));
-                    }
-                    return options;
-                }}
-                renderOption={(props, option) => {
+
+    const autocompleteComponent = (
+        <Autocomplete
+            multiple={multiple}
+            size="small"
+            disabled={readOnly}
+            isOptionEqualToValue={isOptionEqualToValue}
+            fullWidth
+            options={options ?? []}
+            getOptionLabel={(option) => {
+                if (option && option.firstName && option.lastName) {
+                    return `${option.firstName} ${option.lastName}`;
+                }
+                if (option && option.name) {
+                    return t(`${translationPath}${option.name}`);
+                }
+                if (option) {
+                    return t(`${translationPath}${option}`);
+                }
+                return "";
+            }}
+            filterOptions={(options) => {
+                if (multiple && values) {
+                    const selectedIds = Array.isArray(values) ? values.map((value) => value.uuid) : [values.uuid];
+                    return options.filter((option) => !selectedIds.includes(option.id));
+                }
+                return options;
+            }}
+            renderOption={(props, option) => {
+                const displayName = getDisplayName(option, translationPath);
+                const tooltipText = getTooltipText(hasTooltipOption, tooltipInfoText || "", option.name || "");
+
+                return (
+                    <li {...props}>
+                        {t(displayName)}
+                        {hasTooltipOption && <TooltipInfo text={t(tooltipText)} />}
+                    </li>
+                );
+            }}
+            renderTags={(tagValue, getTagProps) =>
+                tagValue.map((option, index) => {
                     const displayName = getDisplayName(option, translationPath);
                     const tooltipText = getTooltipText(hasTooltipOption, tooltipInfoText || "", option.name || "");
 
                     return (
-                        <li {...props}>
-                            {t(displayName)}
-                            {hasTooltipOption && <TooltipInfo text={t(tooltipText)} />}
-                        </li>
+                        <Chip
+                            {...getTagProps({ index })}
+                            disabled={readOnly}
+                            key={option.id}
+                            label={hasTooltipOption ? <TooltipInfo text={t(tooltipText)}>{t(displayName)}</TooltipInfo> : t(displayName)}
+                        />
                     );
-                }}
-                renderTags={(tagValue, getTagProps) =>
-                    tagValue.map((option, index) => {
-                        const displayName = getDisplayName(option, translationPath);
-                        const tooltipText = getTooltipText(hasTooltipOption, tooltipInfoText || "", option.name || "");
+                })
+            }
+            value={values}
+            filterSelectedOptions
+            onChange={setValue}
+            renderInput={(params) => (
+                <>
+                    <TextField {...params} variant="outlined" error={hasError} helperText={helperText} />
+                </>
+            )}
+        />
+    );
 
-                        return (
-                            <Chip
-                                {...getTagProps({ index })}
-                                disabled={readOnly}
-                                key={option.id}
-                                label={hasTooltipOption ? <TooltipInfo text={t(tooltipText)}>{t(displayName)}</TooltipInfo> : t(displayName)}
-                            />
-                        );
-                    })
-                }
-                value={values}
-                filterSelectedOptions
-                onChange={setValue}
-                renderInput={(params) => (
-                    <>
-                        <TextField {...params} variant="outlined" error={hasError} helperText={helperText} />
-                    </>
-                )}
-            />
+    return title ? (
+        <InputLabelStack mandatory={mandatory} title={title} tooltipInfoText={tooltipInfoText}>
+            {autocompleteComponent}
         </InputLabelStack>
+    ) : (
+        autocompleteComponent
     );
 };
 

@@ -265,6 +265,9 @@
     "sidebar": {
       "projects": "Projecten",
       "dashboards": "Dashboards",
+      "dashboardProject" : "Dashboard projecten",
+      "customDashboardList": "Lijst van blauwdrukken",
+      "makeCustomDashboard": "Blauwdruk maken",
       "users": "Gebruikers",
       "priceCategories": "Prijs categorieën",
       "dataExchange": "Data uitwisselen",
@@ -379,15 +382,16 @@
       "category": "Categorie"
     },
     "dashboard": {
-      "title": "Dashboard",
       "exportTitle": "Overzicht van alle projecten",
+      "exportpdf": "Exporteren als PDF",
+      "forbidden": "U heeft geen toegang tot deze pagina. Neem contact op met uw beheerder",
+      "title": "Dashboard",
       "projectTitle": "Dashboard | Project",
       "projects": "Dashboard projecten",
       "municipalityProgram": "Woningbouwprogramma gemeente",
       "selectProject": "Selecteer project",
       "buy": "Koop",
       "rent": "Huur",
-      "exportpdf": "Exporteren als PDF",
       "residentialProjects": "Woonproducten",
       "deliverables": "Opleveringen",
       "delayedProjects": "Vertraagde projecten",
@@ -401,7 +405,6 @@
       "schedule": "Planning",
       "upcomingMileStones": "Aankomende mijlpalen",
       "totalValues": "Totaal aantallen",
-      "forbidden": "U heeft geen toegang tot deze pagina. Neem contact op met uw beheerder",
       "properties": {
         "constructionAmount": "Aantal woningen",
         "demolitionAmount": "Aantal sloop",
@@ -410,6 +413,21 @@
         "projectPhase": "Projectfase",
         "projectOwners": "Schrijfrechten",
         "year": "jaar"
+      },
+      "blueprints": {
+        "title": "Aangepast dashboard",
+        "successfullyCreated": "Blauwdruk succesvol aangemaakt",
+        "successfullyDeleted": "Blauwdruk succesvol verwijderd",
+        "successfullyUpdated": "Blauwdruk succesvol geüpdatet",
+        "deleteConfirmation": "Weet je zeker dat je deze blauwdruk wilt verwijderen?",
+        "dialogTitle": "Verwijderbevestiging",
+        "saveBlueprint": "Opslaan blauwdruk",
+        "table" : {
+          "name": "Naam",
+          "users": "Gebruikers"
+        },
+        "selectUsers": "Selecteer gebruikers",
+        "namePlaceholder": "Naam van blauwdruk"
       },
       "projectPhaseOptions": {
         "_1_CONCEPT": "Concept",
@@ -491,6 +509,7 @@
         "amountError": "Vul de waarde in",
         "successfullySaved": "Prijscategorieën succesvol opgeslagen",
         "successfullyDeleted": "Prijscategorieën succesvol verwijderd"
+
       },
       "userManagement": {
         "titleUser": "User management gebruikers",
@@ -610,11 +629,11 @@
       },
       "plantype": {
         "title": "Geef aan welk plantype het meest dominant is binnen het plan; die het meest voorkomt. Je kan kiezen uit één van de volgende typen:",
-        "PAND_TRANSFORMATIE": "Locatie waarbij door woningtoevoeging in bestaande niet-woonpanden (ver- en nieuwbouw) binnen bestaand stedelijk gebied de gebruiksfunctie van een of meerdere verblijfsobjecten in het pand verandert. Bestaande niet- woonpanden worden hierbij niet gesloopt.",
+        "PAND_TRANSFORMATIE": "Locatie waarbij door woningtoevoeging in bestaande niet-woonpanden (ver- en nieuwbouw) binnen bestaand stedelijk gebied de gebruiksfunctie van een of meerdere verblijfsobjecten in het pand verandert. Bestaande niet- woonpanden wordt hierbij niet gesloopt.",
         "TRANSFORMATIEGEBIED": "Locatie waarbij door woningtoevoeging op al dan niet bebouwde gronden (verbouw, nieuwbouw en functiewijziging) binnen bestaand stedelijk gebied de planologische functie verandert. Met uitzondering van agrarische gronden (zie uitbreiding) en verdichtingsplannen (zie verdichting). Bestaande (niet-)woongebouwen worden hierbij overwegend gesloopt en vervangen door nieuwe woongebouwen.",
         "HERSTRUCTURERING": "Locatie waarbij door woningtoevoeging (nieuwbouw en splitsing) en/of woningonttrekking (sloop en samenvoeging) de samenstelling van de bestaande woningvoorraad binnen bestaand stedelijk gebied verandert zonder ingrijpende wijziging van de planologische functie.",
         "VERDICHTING": "Locatie waarbij woningen worden toegevoegd door nieuwbouw aan of op bestaande panden en op al dan niet bebouwde gronden binnen bestaand stedelijk gebied, zoals niet-woonpanden, sportvelden of groenstroken.",
-        "UITBREIDING_UITLEG": "Locatie waarbij door woningtoevoeging (nieuwbouw) 12 of meer woningen worden gerealiseerd die buiten bestaand stedelijk gebied zijn gepland op grond die voorheen een agrarische bestemming had; ook wel uitleglocatie genoemd.",
+        "UITBREIDING_UITLEG": "Locatie waarbij door woningtoevoeging (nieuwbouw) 12 of meer woningen worden gerealiseerd die er volgt buiten bestaand stedelijk gebied zijn gepland op grond die voorheen een agrarische bestemming had; ook wel uitleglocatie genoemd.",
         "UITBREIDING_OVERIG": "Locatie waarbij door woningtoevoeging (nieuwbouw) 11 of minder woningen worden gerealiseerd waardoor buiten het bestaand stedelijk gebied de woningvoorraad toeneemt."
       },
       "startDatum": {
@@ -628,7 +647,7 @@
       },
       "projectFase": {
         "title": "Selecteer hier de projectfase waarin het woningbouwplan zich bevindt.",
-        "_1_CONCEPT": "Project nog in de ideeënfase. Planologische planstatus 5a en 5b.",
+        "_1_CONCEPT": "5a en 5b",
         "_2_INITIATIVE": "In deze fase vindt een vooronderzoek plaats over de aard en omvang van de bouwopgave en een oriëntatie naar behoefte en mogelijkheden. Partijen zoeken in deze fase naar overeenstemming over het te behalen resultaat (initiatief), formuleren de uitgangspunten en stellen een plan van aanpak op. Deze fase wordt afgesloten met besluit over het initiatief en bij doorgang over de uitgangspunten en het plan van aanpak.\n\nMijlpalen die bij deze fase horen:\n- Initiatief ingediend\n- Locatie gevonden\n- Principeakkoord college van b&w afgegeven [document toevoegen optie]",
         "_3_DEFINITION": "Dit is de fase waarin op basis van het vooronderzoek en dergelijke de eisen waaraan het project moet voldoen gedetailleerd worden geformuleerd in een programma van eisen. Ook kan het werkplan hierop worden aangescherpt. Deze fase wordt afgesloten met een besluit over het programma van eisen.\n\nMijlpalen die bij deze fase horen:\n- Intentieovereenkomst met initiatiefnemer gesloten [document toevoegen optie]\n- Grond verworven (ingegeven door opdrachtgever)",
         "_4_DESIGN": "In deze fase wordt op basis van het PvE een ontwerp uitgewerkt. In eerste instantie is dat een voorlopig ontwerp, later wordt dat een definitief ontwerp. Deze fase wordt afgesloten met een besluit over het definitieve ontwerp.\n\nMijlpalen die bij deze fase horen:\n- Anterieure overeenkomst gesloten [document toevoegen optie]\n- Architect bekend (ingegeven door opdrachtgever)\n- Onderzoeken afgerond (ingegeven door gemeente en opdrachtgever) [meerdere documenten toevoegen optie]",
@@ -646,13 +665,12 @@
         "Vergunningverlener": "Er moet een vergunning aangevraagd worden die door de gemeente zal worden behandeld."
       },
       "vertrouwelijkheidsniveau": {
-        "title": "Wie mag de gegevens van het woningbouwplan inzien? Je kan hier kiezen tussen verschillende niveaus binnen de gemeentelijke organisatie (intern) en daarbuiten (extern). Je kan in de dashboard- en rapportagefunctie vervolgens kiezen wélke informatie deze gebruikersgroepen kunnen inzien en op welk aggregatieniveau ze de informatie zien. Dat hoef je hier nog niet te regelen.\n\nExtra achtergrondinformatie:\nUitgangspunt vanuit de 'open overheid' is dat woningbouwplannen in principe niet vertrouwelijk zijn. Maar soms speelt er iets op lokaal niveau wat het wenselijk maakt de informatie over een bepaald plan binnen de gemeentelijke organisatie te houden. Bijvoorbeeld om grondspeculatie te voorkomen, of als omwonenden nog niet geïnformeerd zijn. Met de medeoverheden is daarom afgesproken dat je er als gemeente voor mag kiezen om een woningbouwplan een vertrouwelijke status te geven. Dat mag enkel bij plannen met een zachte planstatus (zie planologische planstatus). Zodra alle onderdelen van 'de Basisset' met omwonenden gecommuniceerd zijn, mag een woningbouwplan niet meer het label vertrouwelijk krijgen.\n\nVNG heeft met het IPO (de provincies) en het Rijk een 'dataprotocol' vastgesteld. Daarin staan afspraken over hoe provincies, Rijk en derden deze data mogen gebruiken. Je kan de Basisset en het dataprotocol bij VNG opvragen via Mark.Knops@vng.nl",
-        "PRIVATE": "Projecten met vertrouwelijkheid privé zijn alleen zichtbaar voor gebruikers met schrijfrechten op dat project. Deze projecten komen niet terug in dashboards en statistieken. Deze status is bedoeld voor een concept of idee welke nog niet gedeeld wordt met anderen.",
+        "title": "Wie mag de gegevens van het woningbouwplan inzien? Je kan hier kiezen tussen verschillende niveaus binnen de gemeentelijke organisatie (intern) en daarbuiten (extern). Je kan in de dashboard- en rapportagefunctie vervolgens kiezen wélke informatie deze gebruikersgroepen kunnen inzien en op welk aggregatieniveau ze de informatie zien. Dat hoef je hier nog niet te regelen.\n\nExtra achtergrondinformatie:\nUitgangspunt vanuit de 'open overheid' is dat woningbouwplannen in principe niet vertrouwelijk zijn. Maar soms speelt er iets op lokaal niveau wat het wenselijk maakt de informatie over een bepaald plan binnen de gemeentelijke organisatie te houden. Bijvoorbeeld om grondspeculatie te voorkomen, of als omwonenden nog niet geïnformeerd zijn. Met de medeoverheden is daarom afgesproken dat je er als gemeente voor mag kiezen om een woningbouwplan een vertrouwelijke status te geven. Dat mag enkel bij plannen met een zachte planstatus (zie planologische planstatus). Zodra alle onderdelen van 'de Basisset' met omwonenden gecommuniceerd zijn, mag een woningbouwplan niet meer het label vertrouwelijk krijgen.\n\nVNG heeft met het IPO (de provincies) en het Rijk een 'dataprotocol' vastgesteld. Daarin staan afspraken over hoe provincies, Rijk en derden deze data mogen gebruiken. Je kan de Basisset en het dataprotocol bij VNG opvragen via nanke.hofstra@vng.nl.",
+        "PRIVATE": "Dit plan is enkel voor jezelf zichtbaar.",
         "INTERNAL_CIVIL": "Dit plan is voor jezelf en voor je collega's die werken aan woningbouw zichtbaar.",
-        "INTERNAL_MANAGEMENT": "Dit plan is voor jezelf, je collega's en het college van b&w zichtbaar.",
+        "INTERNAL_MANAGEMENT": "Dit plan is voor jezelf, je collega's zichtbaar en het college van b&w zichtbaar.",
         "INTERNAL_COUNCIL": "Dit plan is voor jezelf, je collega's, het college van b&w en de gemeenteraad zichtbaar.",
-        "EXTERNAL_GOVERNMENTAL": "Dit plan is zichtbaar voor alle interne gebruikersgroepen én voor provincies en Rijk. Woningbouwplannen met een harde planstatus (zie planologische planstatus) moeten altijd op dit niveau worden gezet. Ook zachte woningbouwplannen waarvan alle onderdelen van 'de Basisset' met omwonenden gecommuniceerd zijn moeten op dit niveau worden gezet.",
-        "EXTERNAL_REGIONAL": "Project dat ook met de woonregio gedeeld mogen worden.",
+        "EXTERNAL_GOVERNMENTAL": "Dit plan is zichtbaar alle interne gebruikersgroepen én voor provincies en Rijk. Woningbouwplannen met een harde planstatus (zie planologische planstatus) moeten altijd op dit niveau worden gezet. Ook zachte woningbouwplannen waarvan alle onderdelen van 'de Basisset' met omwonenden gecommuniceerd zijn moet op dit niveau worden gezet.",
         "PUBLIC": "Dit plan is zichtbaar voor iedereen."
       },
       "planologischePlanstatus": {
@@ -696,7 +714,7 @@
         "title": "Maak een keuze: gaat dit deelplan over de sloop of de bouw van woningen?"
       },
       "soort": {
-        "title": "Hier kan je per deelplan aangeven wat je bouwprogramma is.\n\nVerschillende prijsgrenzen\nDIWI vertaalt de input over prijzen in de rapportage-, dashboard- en exportfunctie automatisch naar prijscategoriën. Dat doet DIWI op basis van vooraf ingestelde prijsgrenzen. De prijsgrenzen van het Rijk zijn interbestuurlijk vastgesteld en worden jaarlijks geïndexeerd. VNG zorgt dat deze categoriën automatisch aangepast worden bij nieuwe ontwikkelingen. Je kan ook lokale prijsgrenzen aanmaken, als de gemeenteraad die heeft vastgesteld. Dat kan bij de optie prijs categorieën. Je moet deze categorie dan zelf bijhouden.\n\nAangegeven dient te worden in absolute aantallen hoeveel woningen vallen in de categorieën betaalbare koopwoningen (Rijksgrens), sociale huurwoningen door marktpartijen, sociale huurwoningen door woningcorporaties, middenhuurwoningen door marktpartijen, middenhuurwoningen door woningcorporaties, het aantal overige woningen en het aantal woningen waarvan prijssegment of eigendom (nog) onbekend zijn."
+        "title": "Hier kan je per deelplan aangeven wat je bouwprogramma is.\n\nVerschillende prijsgrenzen\nDIWI vertaalt de input over prijzen in de rapportage-, dashboard- en exportfunctie automatisch naar prijscategoriën. Dat doet DIWI op basis van vooraf ingestelde prijsgrenzen. De prijsgrenzen van het Rijk zijn interbestuurlijk vastgesteld en worden jaarlijks geïndexeerd. VNG zorgt dat deze categoriën automatisch aangepast worden bij nieuwe ontwikkelingen. Je kan ook lokale prijsgrenzen aanmaken, als de gemeenteraad die heeft vastgesteld. Dat kan bij de optie [naam]. Je moet deze categorie dan zelf bijhouden.\n\nAangegeven dient te worden in absolute aantallen hoeveel woningen vallen in de categorieën betaalbare koopwoningen (Rijksgrens), sociale huurwoningen door marktpartijen, sociale huurwoningen door woningcorporaties, middenhuurwoningen door marktpartijen, middenhuurwoningen door woningcorporaties, het aantal overige woningen en het aantal woningen waarvan prijssegment of eigendom (nog) onbekend zijn."
       },
       "deelplan": {
         "title": "Vul hier de naam van je deelplan in. Bijvoorbeeld 'Fase 1', of 'Ontwikkelgebied tender CPO'."
