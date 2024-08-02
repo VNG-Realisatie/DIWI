@@ -670,7 +670,8 @@
         "INTERNAL_MANAGEMENT": "Dit plan is voor jezelf, je collega's zichtbaar en het college van b&w zichtbaar.",
         "INTERNAL_COUNCIL": "Dit plan is voor jezelf, je collega's, het college van b&w en de gemeenteraad zichtbaar.",
         "EXTERNAL_GOVERNMENTAL": "Dit plan is zichtbaar alle interne gebruikersgroepen én voor provincies en Rijk. Woningbouwplannen met een harde planstatus (zie planologische planstatus) moeten altijd op dit niveau worden gezet. Ook zachte woningbouwplannen waarvan alle onderdelen van 'de Basisset' met omwonenden gecommuniceerd zijn moet op dit niveau worden gezet.",
-        "PUBLIC": "Dit plan is zichtbaar voor iedereen."
+        "PUBLIC": "Dit plan is zichtbaar voor iedereen.",
+        "EXTERNAL_REGIONAL": "Project dat ook met de woonregio gedeeld mag worden."
       },
       "planologischePlanstatus": {
         "title": "Geef hier aan wat de planologisch-juridische status is van het woningbouwplan. Categoriën 1 t/m 4 ken je uit de provinciale planmonitor. Soms wordt er bij gemeenten, corporaties en marktpartijen aan woningbouwplannen gewerkt zonder dat het college van B&W zich daarover al positief heeft uitgesproken, of dat er een concrete locatie op het oog is. Bijvoorbeeld als een wethouder opdracht geeft als \"zoek een locatie voor een Knarrenhofje\". Of als je ambtelijk al weet dat je ergens iets wil, maar dat het nog heel vaag is.\n\nHet is fijn dat ook deze plannen in DIWI terug te vinden zijn. Daarom staan er in DIWI twee extra categoriën: 5A en 5B. Deze categorieën zijn bedoeld voor de eigen gemeentelijke administratie en worden niet bij de provincie aangeleverd. Woningbouwplannen uit categorie 5A en 5B tellen voor onze mede overheden dan ook niet mee als plancapaciteit.\n\nHarde woningbouwplannen: categorieën 1A, 1B, 2A en 2B.\nZachte woningbouwplannen: categorieën 1C, 2C, 3, 4A, 4B, 5A en 5B.",
