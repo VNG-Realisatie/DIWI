@@ -57,7 +57,7 @@ public class BlueprintModel {
         }
 
         Set<UUID> thisGroups = userGroups.stream().map(UserGroupModel::getUuid).collect(Collectors.toSet());
-        Set<UUID> thatGroups = userGroups.stream().map(UserGroupModel::getUuid).collect(Collectors.toSet());
+        Set<UUID> thatGroups = that.userGroups.stream().map(UserGroupModel::getUuid).collect(Collectors.toSet());
         if (!thisGroups.containsAll(thatGroups)) {
             return false;
         }
