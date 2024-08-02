@@ -11,7 +11,7 @@ import useAllowedActions from "../hooks/useAllowedActions";
 
 export const ExchangeData = () => {
     const { t } = useTranslation();
-    const allowedActions = useAllowedActions();
+    const { allowedActions } = useAllowedActions();
 
     return (
         <Stack border="solid 1px #ddd" py={5} px={8} mb={10}>

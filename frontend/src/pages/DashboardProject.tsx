@@ -40,7 +40,7 @@ export const DashboardProject = () => {
         navigate(Paths.dashboardProject.toPath({ projectId: project?.projectId || "" }));
     };
 
-    const exportPDF =useCallback( async () => {
+    const exportPDF = useCallback(async () => {
         const projectSum = document.getElementById("projectSum");
         const appearance = document.getElementById("physicalAppearanceChart");
         const upcomingMileStones = document.getElementById("upcomingMileStones");
@@ -109,11 +109,11 @@ export const DashboardProject = () => {
     }, [projectId]);
 
     useEffect(() => {
-        pdfExport&&setTimeout(() => {
-         exportPDF()
-        }, 500);
-
-     }, [exportPDF, pdfExport]);
+        pdfExport &&
+            setTimeout(() => {
+                exportPDF();
+            }, 500);
+    }, [exportPDF, pdfExport]);
 
     return (
         <Stack flexDirection="column" width="100%" spacing={2} mb={10}>
@@ -136,62 +136,95 @@ export const DashboardProject = () => {
                     renderInput={(params) => <TextField {...params} size="small" sx={{ minWidth: "200px" }} placeholder={t("dashboard.selectProject")} />}
                 />
                 <TooltipInfo text={t("dashboard.exportpdf")}>
-                    <FileDownload onClick={()=> setPdfExport(true)} sx={{ fill: "#002C64" }} />
+                    <FileDownload onClick={() => setPdfExport(true)} sx={{ fill: "#002C64" }} />
                 </TooltipInfo>
             </Stack>
-       {!pdfExport&&     <Grid width="100%" container border="solid 1px #DDD" justifyContent="space-around" p={1}>
-                <Grid item {...chartCardStyling} >
-                    <Typography variant="h6" fontSize={16}>{t("dashboard.characteristics")}</Typography>
-                    <CharacteristicTable />
-                </Grid>
-                <Grid item {...chartCardStyling} >
-                    <Typography variant="h6" fontSize={16}>{t("dashboard.residentialProjects")}</Typography>
-                    <DashboardPieChart chartData={physicalAppearance} colors={chartColors} />
-                </Grid>
-                <Grid item {...chartCardStyling} >
-                    <Typography variant="h6" fontSize={16}>{t("dashboard.priceSegmentsPurchase")}</Typography>
+            {!pdfExport && (
+                <Grid width="100%" container border="solid 1px #DDD" justifyContent="space-around" p={1}>
+                    <Grid item {...chartCardStyling}>
+                        <Typography variant="h6" fontSize={16}>
+                            {t("dashboard.characteristics")}
+                        </Typography>
+                        <CharacteristicTable />
+                    </Grid>
+                    <Grid item {...chartCardStyling}>
+                        <Typography variant="h6" fontSize={16}>
+                            {t("dashboard.residentialProjects")}
+                        </Typography>
+                        <DashboardPieChart chartData={physicalAppearance} colors={chartColors} />
+                    </Grid>
+                    <Grid item {...chartCardStyling}>
+                        <Typography variant="h6" fontSize={16}>
+                            {t("dashboard.priceSegmentsPurchase")}
+                        </Typography>
 
-                    {/* ToDo:Add chart here later */}
+                        {/* ToDo:Add chart here later */}
+                    </Grid>
+                    <Grid item {...chartCardStyling}>
+                        <Typography variant="h6" fontSize={16}>
+                            {t("dashboard.priceSegmentsRent")}
+                        </Typography>
+                        {/* ToDo:Add chart here later */}
+                    </Grid>
+                    <Grid item {...chartCardStyling}>
+                        <Typography variant="h6" fontSize={16}>
+                            {t("dashboard.schedule")}
+                        </Typography>
+                    </Grid>
+                    <Grid item {...chartCardStyling}>
+                        <Typography variant="h6" fontSize={16}>
+                            {t("dashboard.upcomingMileStones")}
+                        </Typography>
+                        {/* ToDo:Add chart here later */}
+                    </Grid>
                 </Grid>
-                <Grid item {...chartCardStyling} >
-                    <Typography variant="h6" fontSize={16}>{t("dashboard.priceSegmentsRent")}</Typography>
-                    {/* ToDo:Add chart here later */}
-                </Grid>
-                <Grid item {...chartCardStyling} >
-                    <Typography variant="h6" fontSize={16}>{t("dashboard.schedule")}</Typography>
-                </Grid>
-                <Grid item {...chartCardStyling} >
-                    <Typography variant="h6" fontSize={16}>{t("dashboard.upcomingMileStones")}</Typography>
-                    {/* ToDo:Add chart here later */}
-                </Grid>
-            </Grid>}
-            {pdfExport&&<Stack width="100%" height="80vh" alignItems="center" justifyContent="center"> <CircularProgress color="inherit" /></Stack>}
-         {pdfExport&&   <Stack width="1920px">
-            <Box width="50%" border="solid 1px #DDD" p={1} id="projectSum">
-                    <Typography variant="h6" fontSize={16}>{t("dashboard.characteristics")}</Typography>
-                    <CharacteristicTable />
-                </Box>
-                <Box width="50%" border="solid 1px #DDD" p={1} id="physicalAppearanceChart">
-                    <Typography variant="h6" fontSize={16}>{t("dashboard.residentialProjects")}</Typography>
-                    <DashboardPieChart isPdfChart={true} chartData={physicalAppearance} colors={chartColors} />
-                </Box>
-                <Box width="50%" border="solid 1px #DDD" p={1} id="priceSegmentsPurchase">
-                    <Typography variant="h6" fontSize={16}>{t("dashboard.priceSegmentsPurchase")}</Typography>
+            )}
+            {pdfExport && (
+                <Stack width="100%" height="80vh" alignItems="center" justifyContent="center">
+                    {" "}
+                    <CircularProgress color="inherit" />
+                </Stack>
+            )}
+            {pdfExport && (
+                <Stack width="1920px">
+                    <Box width="50%" border="solid 1px #DDD" p={1} id="projectSum">
+                        <Typography variant="h6" fontSize={16}>
+                            {t("dashboard.characteristics")}
+                        </Typography>
+                        <CharacteristicTable />
+                    </Box>
+                    <Box width="50%" border="solid 1px #DDD" p={1} id="physicalAppearanceChart">
+                        <Typography variant="h6" fontSize={16}>
+                            {t("dashboard.residentialProjects")}
+                        </Typography>
+                        <DashboardPieChart isPdfChart={true} chartData={physicalAppearance} colors={chartColors} />
+                    </Box>
+                    <Box width="50%" border="solid 1px #DDD" p={1} id="priceSegmentsPurchase">
+                        <Typography variant="h6" fontSize={16}>
+                            {t("dashboard.priceSegmentsPurchase")}
+                        </Typography>
 
-                    {/* ToDo:Add chart here later */}
-                </Box>
-                <Box width="50%" border="solid 1px #DDD" p={1} id="priceSegmentsRent">
-                    <Typography variant="h6" fontSize={16}>{t("dashboard.priceSegmentsRent")}</Typography>
-                    {/* ToDo:Add chart here later */}
-                </Box>
-                <Box width="50%" border="solid 1px #DDD" p={1} id="schedule">
-                    <Typography variant="h6" fontSize={16}>{t("dashboard.schedule")}</Typography>
-                </Box>
-                <Box width="50%" border="solid 1px #DDD" p={1} id="upcomingMileStones">
-                    <Typography variant="h6" fontSize={16}>{t("dashboard.upcomingMileStones")}</Typography>
-                    {/* ToDo:Add chart here later */}
-                </Box>
-            </Stack>}
+                        {/* ToDo:Add chart here later */}
+                    </Box>
+                    <Box width="50%" border="solid 1px #DDD" p={1} id="priceSegmentsRent">
+                        <Typography variant="h6" fontSize={16}>
+                            {t("dashboard.priceSegmentsRent")}
+                        </Typography>
+                        {/* ToDo:Add chart here later */}
+                    </Box>
+                    <Box width="50%" border="solid 1px #DDD" p={1} id="schedule">
+                        <Typography variant="h6" fontSize={16}>
+                            {t("dashboard.schedule")}
+                        </Typography>
+                    </Box>
+                    <Box width="50%" border="solid 1px #DDD" p={1} id="upcomingMileStones">
+                        <Typography variant="h6" fontSize={16}>
+                            {t("dashboard.upcomingMileStones")}
+                        </Typography>
+                        {/* ToDo:Add chart here later */}
+                    </Box>
+                </Stack>
+            )}
         </Stack>
     );
 };

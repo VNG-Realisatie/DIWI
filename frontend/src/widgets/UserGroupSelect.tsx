@@ -16,6 +16,7 @@ type Props = {
     setUserGroup: (owner: UserGroup[]) => void;
     mandatory: boolean;
     errorText: string;
+    placeholder?: string;
     checkIsOwnerValidWithConfidentialityLevel: () => boolean;
 };
 
@@ -25,7 +26,8 @@ const shouldDisplayError = (mandatory: boolean, userGroup: UserGroup[]) => {
     return mandatory && userGroup.length === 0;
 };
 
-export const UserGroupSelect = ({ readOnly, userGroup, setUserGroup, mandatory, errorText, checkIsOwnerValidWithConfidentialityLevel }: Props) => {
+
+export const UserGroupSelect = ({ readOnly, userGroup, setUserGroup, mandatory, errorText, placeholder = "", checkIsOwnerValidWithConfidentialityLevel }: Props) => {
     const [ownerOptions, setOwnerOptions] = useState<UserGroup[]>();
     const hasError = shouldDisplayError(mandatory, userGroup);
     const { t } = useTranslation();
@@ -72,7 +74,7 @@ export const UserGroupSelect = ({ readOnly, userGroup, setUserGroup, mandatory, 
                     <UserGroupAvatars groups={[option]} />
                 </li>
             )}
-            renderInput={(params) => <TextField {...params} error={hasError || !checkIsOwnerValidWithConfidentialityLevel()} helperText={getErrorText()} />}
+            renderInput={(params) => <TextField {...params} error={hasError || !checkIsOwnerValidWithConfidentialityLevel()} helperText={getErrorText()} placeholder={hasError ? placeholder : ""} />}
         />
     );
 };
