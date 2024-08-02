@@ -66,7 +66,7 @@ const ProjectPlotSelector = () => {
                             },
                         }}
                     >
-                        {selectionMode === Buttons.SELECT ? <MouseIcon /> : <MouseIcon />}
+                        <MouseIcon />
                     </Button>
                 </Tooltip>
                 <Tooltip title={selectionMode === Buttons.CUT ? t("generic.cancelCutSelection") : t("generic.cutSelection")}>
@@ -85,7 +85,7 @@ const ProjectPlotSelector = () => {
                             },
                         }}
                     >
-                        {selectionMode === Buttons.CUT ? <ContentCutIcon /> : <ContentCutIcon />}
+                        <ContentCutIcon />
                     </Button>
                 </Tooltip>
             </Box>
