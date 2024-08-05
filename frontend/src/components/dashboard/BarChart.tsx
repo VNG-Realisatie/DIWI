@@ -37,9 +37,12 @@ export const MyResponsiveBar = ({ chartData, selectedProject }: Props) => {
     const size = {
         height: 500,
     };
+
+    const inValidData = chartData.every((item) => item.amount === 0);
+
     return (
         <>
-            {convertedData.convertedData.length === 0 ? (
+            {inValidData ? (
                 <Typography variant="h6" color="error" sx={{ textAlign: "center", mt: `${size.height / 2}px` }} {...size}>
                     {t("dashboard.chartData.noData")}
                 </Typography>
