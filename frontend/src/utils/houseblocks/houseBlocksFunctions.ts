@@ -2,9 +2,8 @@ import { AlertColor } from "@mui/material";
 import { HouseBlock, HouseBlockWithCustomProperties } from "../../types/houseBlockTypes";
 import { t } from "i18next";
 
-export const validateHouseBlock = (houseBlock: HouseBlockWithCustomProperties, setAlert: (message: string, type: AlertColor) => void): boolean => {
-    let isValid = true;
-    const invalidOwnershipAmount =
+export const validateOwnership = (houseBlock: HouseBlockWithCustomProperties) => {
+    return (
         houseBlock.ownershipValue.some((owner) => !isOwnershipAmountValid(owner.amount)) ||
         houseBlock.ownershipValue.some(
             (owner) =>
@@ -13,7 +12,13 @@ export const validateHouseBlock = (houseBlock: HouseBlockWithCustomProperties, s
                 !owner.valueCategoryId &&
                 JSON.stringify(owner.rentalValue) === JSON.stringify({ value: null, min: null, max: null }) &&
                 JSON.stringify(owner.value) === JSON.stringify({ value: null, min: null, max: null }),
-        );
+        )
+    );
+};
+
+export const validateHouseBlock = (houseBlock: HouseBlockWithCustomProperties, setAlert: (message: string, type: AlertColor) => void): boolean => {
+    let isValid = true;
+    const invalidOwnershipAmount = validateOwnership(houseBlock);
     if (
         !houseBlock.endDate ||
         !houseBlock.startDate ||
