@@ -6,7 +6,7 @@ import { t } from "i18next";
 import useAllowedActions from "../hooks/useAllowedActions";
 
 export const Swagger = () => {
-    const allowedActions = useAllowedActions();
+    const { allowedActions } = useAllowedActions();
 
     if (!allowedActions.includes("VIEW_API")) {
         return <ActionNotAllowed errorMessage={t("generic.cantAccessPage")} />;

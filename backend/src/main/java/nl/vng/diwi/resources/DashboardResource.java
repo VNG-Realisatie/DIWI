@@ -11,6 +11,8 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.MediaType;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.VngRepository;
+import nl.vng.diwi.dal.entities.BlueprintSqlModel;
+import nl.vng.diwi.models.BlueprintModel;
 import nl.vng.diwi.models.MultiProjectDashboardModel;
 import nl.vng.diwi.models.ProjectDashboardModel;
 import nl.vng.diwi.rest.VngNotFoundException;
@@ -22,6 +24,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.UUID;
 
 @Path("/dashboard")
@@ -44,7 +47,7 @@ public class DashboardResource {
 
     @GET
     @Path("/project/{id}")
-    @RolesAllowed({UserActionConstants.VIEW_DASHBOARDS})
+    @RolesAllowed({UserActionConstants.VIEW_OWN_PROJECTS, UserActionConstants.VIEW_OTHERS_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
     public ProjectDashboardModel getProjectDashboardSnapshot(ContainerRequestContext requestContext, @PathParam("id") UUID projectUuid,
                                                              @QueryParam("snapshotDate") String snapshotDateStr) throws VngNotFoundException {
@@ -56,7 +59,7 @@ public class DashboardResource {
 
     @GET
     @Path("/projects")
-    @RolesAllowed({UserActionConstants.VIEW_DASHBOARDS})
+    @RolesAllowed({UserActionConstants.VIEW_OWN_PROJECTS, UserActionConstants.VIEW_OTHERS_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
     public MultiProjectDashboardModel getProjectDashboardSnapshot(ContainerRequestContext requestContext, @QueryParam("snapshotDate") String snapshotDateStr) throws VngNotFoundException {
         var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
@@ -65,4 +68,15 @@ public class DashboardResource {
         return dashboardService.getMultiProjectDashboardSnapshot(repo, snapshotDate, loggedUser);
     }
 
+    @GET
+    @Path("/blueprints")
+    @RolesAllowed(UserActionConstants.VIEW_OWN_BLUEPRINTS)
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<BlueprintModel> getOwnBlueprints(ContainerRequestContext requestContext) {
+
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
+        List<BlueprintSqlModel> sqlModels = repo.getBlueprintDAO().getBlueprintsList(loggedUser.getUuid());
+        return sqlModels.stream().map(BlueprintModel::new).toList();
+
+    }
 }

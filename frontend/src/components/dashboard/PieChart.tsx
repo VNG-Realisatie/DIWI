@@ -8,9 +8,10 @@ import { useTranslation } from "react-i18next";
 type Props = {
     chartData: ChartType[];
     colors: string[];
+    isPdfChart?: boolean;
 };
 
-export const DashboardPieChart = ({ chartData, colors }: Props) => {
+export const DashboardPieChart = ({ chartData, colors,isPdfChart }: Props) => {
     const theme = useTheme();
     const { t } = useTranslation();
 
@@ -19,7 +20,7 @@ export const DashboardPieChart = ({ chartData, colors }: Props) => {
     const size = {
         height: 300,
     };
-    const chartMargin = isSmallScreen ? { top: 10, bottom: 100, left: 50 } : { top: 10, bottom: 50, left: -100 };
+    const chartMargin = (isSmallScreen&&!isPdfChart) ? { top: 10, bottom: 100, left: 50 } : { top: 10, bottom: 50, left: -100 };
 
     const TOTAL = chartData.map((item) => item.value).reduce((a, b) => a + b, 0);
 
@@ -29,7 +30,7 @@ export const DashboardPieChart = ({ chartData, colors }: Props) => {
     };
 
     const getLegendPosition = (): Partial<LegendRendererProps> | undefined => {
-        if (isSmallScreen) {
+        if (isSmallScreen&&!isPdfChart) {
             return {
                 direction: "row",
                 position: { vertical: "bottom", horizontal: "left" },
