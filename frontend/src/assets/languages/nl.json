@@ -265,7 +265,7 @@
     "sidebar": {
       "projects": "Projecten",
       "dashboards": "Dashboards",
-      "dashboardProject" : "Dashboard projecten",
+      "dashboardProject": "Dashboard projecten",
       "customDashboardList": "Lijst van blauwdrukken",
       "makeCustomDashboard": "Blauwdruk maken",
       "users": "Gebruikers",
@@ -387,7 +387,6 @@
       "exportTitle": "Overzicht van alle projecten",
       "exportpdf": "Exporteren als PDF",
       "forbidden": "U heeft geen toegang tot deze pagina. Neem contact op met uw beheerder",
-      "title": "Dashboard",
       "projectTitle": "Dashboard | Project",
       "projects": "Dashboard projecten",
       "municipalityProgram": "Woningbouwprogramma gemeente",
@@ -424,7 +423,7 @@
         "deleteConfirmation": "Weet je zeker dat je deze blauwdruk wilt verwijderen?",
         "dialogTitle": "Verwijderbevestiging",
         "saveBlueprint": "Opslaan blauwdruk",
-        "table" : {
+        "table": {
           "name": "Naam",
           "users": "Gebruikers"
         },
@@ -440,7 +439,7 @@
         "_6_REALIZATION": "Realisatie",
         "_7_AFTERCARE": "Nazorg"
       },
-      "pieChart": {
+      "chartData": {
         "noData": "Geen data beschikbaar"
       }
     },
@@ -511,7 +510,6 @@
         "amountError": "Vul de waarde in",
         "successfullySaved": "Prijscategorieën succesvol opgeslagen",
         "successfullyDeleted": "Prijscategorieën succesvol verwijderd"
-
       },
       "userManagement": {
         "titleUser": "User management gebruikers",

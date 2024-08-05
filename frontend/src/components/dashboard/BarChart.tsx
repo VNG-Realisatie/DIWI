@@ -34,31 +34,42 @@ export const MyResponsiveBar = ({ chartData, selectedProject }: Props) => {
 
     const convertedData = convertData(chartData, selectedProject.projectId);
 
+    const size = {
+        height: 500,
+    };
     return (
-        <Stack height={500} pb={3}>
-            <BarChart
-                height={500}
-                xAxis={[{ scaleType: "band", data: convertedData.years }]}
-                series={convertedData.convertedData}
-                colors={grayScaleColors}
-                slotProps={{ legend: { hidden: true } }}
-                tooltip={{ trigger: "item" }}
-                grid={{ horizontal: true }}
-            />
-            <Stack flexDirection="row" m="auto">
-                <Box height={18} width={18} sx={{ backgroundColor: "#00A9F3" }}></Box>
-                <Typography variant="caption" ml={1}>
-                    {selectedProject.projectName}
+        <>
+            {convertedData.convertedData.length === 0 ? (
+                <Typography variant="h6" color="error" sx={{ textAlign: "center", mt: `${size.height / 2}px` }} {...size}>
+                    {t("dashboard.chartData.noData")}
                 </Typography>
-                <Stack flexDirection="row" alignItems="center" ml={2}>
-                    <Box height={18} width={6} sx={{ backgroundColor: grayScaleColors[0] }}></Box>
-                    <Box height={18} width={6} sx={{ backgroundColor: grayScaleColors[5] }}></Box>
-                    <Box height={18} width={6} sx={{ backgroundColor: grayScaleColors[9] }}></Box>
-                    <Typography variant="caption" ml={1}>
-                        {t("dashboard.otherProjects")}
-                    </Typography>
+            ) : (
+                <Stack height={size.height} pb={3}>
+                    <BarChart
+                        height={size.height}
+                        xAxis={[{ scaleType: "band", data: convertedData.years }]}
+                        series={convertedData.convertedData}
+                        colors={grayScaleColors}
+                        slotProps={{ legend: { hidden: true } }}
+                        tooltip={{ trigger: "item" }}
+                        grid={{ horizontal: true }}
+                    />
+                    <Stack flexDirection="row" m="auto">
+                        <Box height={18} width={18} sx={{ backgroundColor: "#00A9F3" }}></Box>
+                        <Typography variant="caption" ml={1}>
+                            {selectedProject.projectName}
+                        </Typography>
+                        <Stack flexDirection="row" alignItems="center" ml={2}>
+                            <Box height={18} width={6} sx={{ backgroundColor: grayScaleColors[0] }}></Box>
+                            <Box height={18} width={6} sx={{ backgroundColor: grayScaleColors[5] }}></Box>
+                            <Box height={18} width={6} sx={{ backgroundColor: grayScaleColors[9] }}></Box>
+                            <Typography variant="caption" ml={1}>
+                                {t("dashboard.otherProjects")}
+                            </Typography>
+                        </Stack>
+                    </Stack>
                 </Stack>
-            </Stack>
-        </Stack>
+            )}
+        </>
     );
 };
