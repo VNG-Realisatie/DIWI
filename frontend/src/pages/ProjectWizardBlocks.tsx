@@ -16,7 +16,7 @@ import { DeleteButtonWithConfirm } from "../components/DeleteButtonWithConfirm";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { saveHouseBlockWithCustomProperties } from "../api/houseBlockServices";
 import useLoading from "../hooks/useLoading";
-import { checkConsistencyOwnerShipValueAndMutation, isOwnershipAmountValid, validateOwnership } from "../utils/houseblocks/houseBlocksFunctions";
+import { checkConsistencyOwnerShipValueAndMutation, validateOwnership } from "../utils/houseblocks/houseBlocksFunctions";
 
 const generateTemporaryId = () => Date.now();
 
