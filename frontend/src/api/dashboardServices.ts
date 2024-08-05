@@ -1,9 +1,24 @@
-import { getJson, postJson, putJson, deleteJson } from "../utils/requests";
+import { deleteJson, getJson, postJson, putJson } from "../utils/requests";
 import { API_URI } from "../utils/urls";
 
-type DashboardProject = {
+type PhysicalAppearance = {
     name: string;
     amount: number;
+};
+
+export type Planning = {
+    projectId: string;
+    name: string;
+    amount: number;
+    year: number;
+};
+
+type PriceCategory = {
+    id: string;
+    name: string;
+    amount: number;
+    min: number;
+    max?: number;
 };
 
 export type VisibilityElement =
@@ -25,23 +40,30 @@ export type Blueprint = {
     elements: VisibilityElement[];
 };
 
-export async function getDashboardProject(id: string): Promise<{ physicalAppearance: DashboardProject[] }> {
+export async function getDashboardProject(
+    id: string,
+): Promise<{ physicalAppearance: PhysicalAppearance[]; planning: Planning[]; priceCategoryOwn: PriceCategory[]; priceCategoryRent: PriceCategory[] }> {
     const todaysDate = new Date().toISOString().split("T")[0]; // change this logic later
     return getJson(`${API_URI}/dashboard/project/${id}?snapshotDate=${todaysDate}`);
 }
-export async function getDashboardProjects(): Promise<{ physicalAppearance: DashboardProject[]; targetGroup: DashboardProject[] }> {
+
+export async function getDashboardProjects(): Promise<{ physicalAppearance: PhysicalAppearance[]; targetGroup: PhysicalAppearance[] }> {
     const todaysDate = new Date().toISOString().split("T")[0]; // change this logic later
     return getJson(`${API_URI}/dashboard/projects?snapshotDate=${todaysDate}`);
 }
+
 export async function getAllBlueprints(): Promise<Blueprint[]> {
     return getJson(`${API_URI}/blueprints`);
 }
+
 export async function getAssignedBlueprints(): Promise<Blueprint[]> {
     return getJson(`${API_URI}/dashboard/blueprints`);
 }
+
 export async function createBlueprint(blueprint: Blueprint): Promise<Blueprint> {
     return postJson(`${API_URI}/blueprints`, blueprint);
 }
+
 export async function getBlueprint(id: string): Promise<Blueprint> {
     return getJson(`${API_URI}/blueprints/${id}`);
 }

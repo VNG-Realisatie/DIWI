@@ -11,7 +11,7 @@ type Props = {
     isPdfChart?: boolean;
 };
 
-export const DashboardPieChart = ({ chartData, colors,isPdfChart }: Props) => {
+export const DashboardPieChart = ({ chartData, colors, isPdfChart }: Props) => {
     const theme = useTheme();
     const { t } = useTranslation();
 
@@ -20,7 +20,7 @@ export const DashboardPieChart = ({ chartData, colors,isPdfChart }: Props) => {
     const size = {
         height: 300,
     };
-    const chartMargin = (isSmallScreen&&!isPdfChart) ? { top: 10, bottom: 100, left: 50 } : { top: 10, bottom: 50, left: -100 };
+    const chartMargin = isSmallScreen && !isPdfChart ? { top: 10, bottom: 100, left: 50 } : { top: 10, bottom: 50, left: -100 };
 
     const TOTAL = chartData.map((item) => item.value).reduce((a, b) => a + b, 0);
 
@@ -30,7 +30,7 @@ export const DashboardPieChart = ({ chartData, colors,isPdfChart }: Props) => {
     };
 
     const getLegendPosition = (): Partial<LegendRendererProps> | undefined => {
-        if (isSmallScreen&&!isPdfChart) {
+        if (isSmallScreen && !isPdfChart) {
             return {
                 direction: "row",
                 position: { vertical: "bottom", horizontal: "left" },
@@ -54,7 +54,7 @@ export const DashboardPieChart = ({ chartData, colors,isPdfChart }: Props) => {
         <>
             {chartData.every((data) => data.value === 0) ? (
                 <Typography variant="h6" color="error" sx={{ textAlign: "center", mt: `${size.height / 2}px` }} {...size}>
-                    {t("dashboard.pieChart.noData")}
+                    {t("dashboard.chartData.noData")}
                 </Typography>
             ) : (
                 <PieChart
