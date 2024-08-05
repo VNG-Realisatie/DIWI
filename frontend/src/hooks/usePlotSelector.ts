@@ -176,26 +176,35 @@ const usePlotSelector = (id: string) => {
                 .then((res) => res.json())
                 .then((result) => {
                     const plotFeature = result as PlotGeoJSON;
+                    const newPlots: Plot[] = [];
+
                     for (let i = 0; i < plotFeature.features.length; i++) {
 
                         const properties = plotFeature.features[i].properties;
+                        const singleFeaturePlot = {
+                            ...plotFeature,
+                            features: [plotFeature.features[i]],
+                        };
                         const newPlot: Plot = {
                             brkGemeenteCode: properties.kadastraleGemeenteCode,
                             brkPerceelNummer: parseInt(properties.perceelnummer),
                             brkSectie: properties.sectie,
-                            plotFeature,
+                            plotFeature: singleFeaturePlot,
                         };
-                        setSelectedPlots((prevPlots) => {
-                            const isPlotAlreadySelected = prevPlots.some(
-                                (plot) =>
-                                    plot.brkGemeenteCode === newPlot.brkGemeenteCode &&
-                                    plot.brkPerceelNummer === newPlot.brkPerceelNummer &&
-                                    plot.brkSectie === newPlot.brkSectie
-                            );
-                            return isPlotAlreadySelected ? prevPlots : [...prevPlots, newPlot];
-                        });
+                        const isPlotAlreadySelected = selectedPlots.some(
+                            (plot) =>
+                                plot.brkGemeenteCode === newPlot.brkGemeenteCode &&
+                                plot.brkPerceelNummer === newPlot.brkPerceelNummer &&
+                                plot.brkSectie === newPlot.brkSectie
+                        );
+
+                        if (!isPlotAlreadySelected) {
+                            newPlots.push(newPlot);
+                        }
                     }
-                })
+
+                    setSelectedPlots([...selectedPlots, ...newPlots]);
+                });
 
             try {
                 const [minX, minY, maxX, maxY] = extent;
@@ -218,7 +227,7 @@ const usePlotSelector = (id: string) => {
                 console.error("Error updating bounding box layer:", error);
             }
         },
-        [selectionMode, map, selectedPlotLayerSource, bboxLayerSource]
+        [selectionMode, map, selectedPlotLayerSource, bboxLayerSource, selectedPlots]
 );
 
     const handleCut = useCallback((e: DrawEvent) => {
