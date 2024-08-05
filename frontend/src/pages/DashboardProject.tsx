@@ -8,7 +8,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { CharacteristicTable } from "../components/dashboard/CharacteristicTable";
 import { DashboardPieChart } from "../components/dashboard/PieChart";
 import { getDashboardProject, Planning } from "../api/dashboardServices";
-import { chartColors } from "../utils/dashboardChartColors";
 import { Project } from "../api/projectsServices";
 import useCustomSearchParams from "../hooks/useCustomSearchParams";
 import { TooltipInfo } from "../widgets/TooltipInfo";
@@ -173,19 +172,19 @@ export const DashboardProject = () => {
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.residentialProjects")}
                         </Typography>
-                        <DashboardPieChart chartData={physicalAppearance} colors={chartColors} />
+                        <DashboardPieChart chartData={physicalAppearance} />
                     </Grid>
                     <Grid item {...chartCardStyling}>
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.priceSegmentsPurchase")}
                         </Typography>
-                        <DashboardPieChart chartData={priceSegmentsPurchase} colors={chartColors} />
+                        <DashboardPieChart chartData={priceSegmentsPurchase} />
                     </Grid>
                     <Grid item {...chartCardStyling}>
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.priceSegmentsRent")}
                         </Typography>
-                        <DashboardPieChart chartData={priceSegmentsRent} colors={chartColors} />
+                        <DashboardPieChart chartData={priceSegmentsRent} />
                     </Grid>
                     <Grid item {...chartCardStyling}>
                         <Typography variant="h6" fontSize={16}>
@@ -221,7 +220,7 @@ export const DashboardProject = () => {
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.residentialProjects")}
                         </Typography>
-                        <DashboardPieChart isPdfChart={true} chartData={physicalAppearance} colors={chartColors} />
+                        <DashboardPieChart isPdfChart={true} chartData={physicalAppearance} />
                     </Box>
                     <Box width="50%" border="solid 1px #DDD" p={1} id="priceSegmentsPurchase">
                         <Typography variant="h6" fontSize={16}>

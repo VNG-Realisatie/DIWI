@@ -8,7 +8,6 @@ import { getDashboardProjects, VisibilityElement } from "../../api/dashboardServ
 import { getProjects } from "../../api/projectsServices";
 import { getProjectHouseBlocksWithCustomProperties } from "../../api/houseBlockServices";
 import { useTranslation } from "react-i18next";
-import { chartColors } from "../../utils/dashboardChartColors";
 import useAllowedActions from "../../hooks/useAllowedActions";
 import { LabelComponent } from "../project/LabelComponent";
 import { CellContainer } from "../project/project-with-house-block/CellContainer";
@@ -147,7 +146,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                                     />
                                 )}
                             </Box>
-                            <DashboardPieChart chartData={projectPhaseSums || []} colors={chartColors} />
+                            <DashboardPieChart chartData={projectPhaseSums || []} />
                         </Grid>
                     )}
                     {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.TARGET_GROUP) && (
@@ -164,7 +163,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                                     />
                                 )}
                             </Box>
-                            <DashboardPieChart chartData={dashboardProjects?.targetGroup || []} colors={chartColors} />
+                            <DashboardPieChart chartData={dashboardProjects?.targetGroup || []} />
                         </Grid>
                     )}
                     {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.PHYSICAL_APPEARANCE) && (
@@ -181,7 +180,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                                     />
                                 )}
                             </Box>
-                            <DashboardPieChart chartData={dashboardProjects?.physicalAppearance || []} colors={chartColors} />
+                            <DashboardPieChart chartData={dashboardProjects?.physicalAppearance || []} />
                         </Grid>
                     )}
                     {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.OWNERSHIP_BUY) && (
@@ -344,7 +343,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                             <Typography variant="h6" fontSize={16}>
                                 {t("dashboard.projectPhases")}
                             </Typography>
-                            <DashboardPieChart isPdfChart={true} chartData={projectPhaseSums || []} colors={chartColors} />
+                            <DashboardPieChart isPdfChart={true} chartData={projectPhaseSums || []} />
                         </Box>
                     )}
                     {(isPrintingFullDashboard || visibility?.TARGET_GROUP) && (
@@ -352,7 +351,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                             <Typography variant="h6" fontSize={16}>
                                 {t("dashboard.targetAudiences")}
                             </Typography>
-                            <DashboardPieChart isPdfChart={true} chartData={dashboardProjects?.targetGroup || []} colors={chartColors} />
+                            <DashboardPieChart isPdfChart={true} chartData={dashboardProjects?.targetGroup || []} />
                         </Box>
                     )}
                     {(isPrintingFullDashboard || visibility?.PHYSICAL_APPEARANCE) && (
@@ -360,7 +359,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                             <Typography variant="h6" fontSize={16}>
                                 {t("dashboard.residentialFeatures")}
                             </Typography>
-                            <DashboardPieChart isPdfChart={true} chartData={dashboardProjects?.physicalAppearance || []} colors={chartColors} />
+                            <DashboardPieChart isPdfChart={true} chartData={dashboardProjects?.physicalAppearance || []} />
                         </Box>
                     )}
                     {(isPrintingFullDashboard || visibility?.OWNERSHIP_BUY) && (
