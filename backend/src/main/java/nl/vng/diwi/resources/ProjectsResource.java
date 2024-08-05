@@ -509,16 +509,24 @@ public class ProjectsResource {
                 if (toUpdateOwnersUuids.isEmpty()) {
                     throw new VngBadRequestException("Missing project owners property");
                 }
-                currentOwnersUuids.forEach(uuid -> {
+                for (UUID uuid : currentOwnersUuids) {
                     if (!toUpdateOwnersUuids.contains(uuid)) {
-                        projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectOwners, null, uuid));
+                        if (!loggedUser.getRole().allowedActions.contains(UserAction.VIEW_GROUPS)) {
+                            throw new VngBadRequestException("User does not have permission to change project user-groups.");
+                        } else {
+                            projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectOwners, null, uuid));
+                        }
                     }
-                });
-                toUpdateOwnersUuids.forEach(uuid -> {
+                }
+                for (UUID uuid : toUpdateOwnersUuids) {
                     if (!currentOwnersUuids.contains(uuid)) {
-                        projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectOwners, uuid, null));
+                        if (!loggedUser.getRole().allowedActions.contains(UserAction.VIEW_GROUPS)) {
+                            throw new VngBadRequestException("User does not have permission to change project user-groups.");
+                        } else {
+                            projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectOwners, uuid, null));
+                        }
                     }
-                });
+                }
             }
             case projectPhase -> {
                 if (!Objects.equals(projectSnapshotModelToUpdate.getProjectPhase(), projectSnapshotModelCurrent.getProjectPhase())) {

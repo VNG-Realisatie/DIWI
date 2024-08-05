@@ -13,6 +13,7 @@ type Props = {
     title?: string;
     type?: string;
     tooltipInfoText?: string;
+    placeholder?: string;
 };
 
 const shouldDisplayError = (mandatory: boolean, value: string, type: string) => {
@@ -28,25 +29,33 @@ const shouldDisplayError = (mandatory: boolean, value: string, type: string) => 
     return false;
 };
 
-const TextInput = ({ value, setValue, readOnly, mandatory, errorText, title, tooltipInfoText, type = "text" }: Props) => {
+const TextInput = ({ value, setValue, readOnly, mandatory, errorText, title, tooltipInfoText, type = "text", placeholder = ""}: Props) => {
     const hasError = shouldDisplayError(mandatory, value, type);
-    return (
-        <InputLabelStack mandatory={mandatory} title={title || ""} tooltipInfoText={tooltipInfoText}>
-            <TextField
-                required={mandatory}
-                sx={{
-                    width: "100%",
-                }}
-                size="small"
-                variant="outlined"
-                value={value ?? ""}
-                onChange={setValue}
-                error={hasError}
-                helperText={hasError ? errorText : ""}
-                disabled={readOnly}
-                type={type}
-            />
+
+    const textFieldComponent = (
+        <TextField
+            placeholder={!value ? placeholder : ""}
+            required={mandatory}
+            sx={{
+                width: "100%",
+            }}
+            size="small"
+            variant="outlined"
+            value={value ?? ""}
+            onChange={setValue}
+            error={hasError}
+            helperText={hasError ? errorText : ""}
+            disabled={readOnly}
+            type={type}
+        />
+    );
+
+    return title ? (
+        <InputLabelStack mandatory={mandatory} title={title} tooltipInfoText={tooltipInfoText}>
+            {textFieldComponent}
         </InputLabelStack>
+    ) : (
+        textFieldComponent
     );
 };
 
