@@ -12,6 +12,7 @@ import UserDialog from "../components/admin/user-management/UserDialog";
 import useAllowedActions from "../hooks/useAllowedActions";
 import { addUser } from "../api/userServices";
 import { RoleType } from "../types/enums";
+import ActionNotAllowed from "./ActionNotAllowed";
 
 const emptyGroupForm: Group = {
     uuid: "",
@@ -61,6 +62,9 @@ export type User = {
               | "CREATE_NEW_PROJECT"
               | "IMPORT_PROJECTS"
               | "EXPORT_PROJECTS"
+              | "VIEW_ALL_BLUEPRINTS"
+              | "EDIT_ALL_BLUEPRINTS"
+              | "VIEW_OWN_BLUEPRINTS"
           )[]
         | undefined;
 };
@@ -88,6 +92,8 @@ const UserManagement = () => {
         getGroups().then((data) => setUserGroups(data));
     }, []);
 
+    if (!allowedActions.includes("VIEW_USERS") && !allowedActions.includes("VIEW_GROUPS")) return <ActionNotAllowed errorMessage={t("admin.userManagement.forbidden")}/>;
+
     const handleAddGroup = async () => {
         try {
             const data = await addGroup(newGroup);
@@ -106,7 +112,6 @@ const UserManagement = () => {
     const handleAddUser = async () => {
         try {
             const data = await addUser(newUser);
-            console.log(data);
             setUsers([...users, data]);
             setNewUser(emptyUserForm);
             setAlert(t("admin.userManagement.userAddSuccess"), "success");
