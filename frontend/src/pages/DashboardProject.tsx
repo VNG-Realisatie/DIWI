@@ -89,8 +89,7 @@ export const DashboardProject = () => {
         const projectSumChart = await h2c(projectSum);
         const appearanceChart = await h2c(appearance);
         const planningChart = await h2c(schedule);
-        const purchaseChart = await h2c(priceSegmentsPurchase);
-        const rentChart = await h2c(priceSegmentsRent);
+
         //Add the rest of the charts here
 
         const pdf = new jsPDF("p", "px", "a4");
@@ -98,9 +97,7 @@ export const DashboardProject = () => {
         pdf.text(selectedProject?.projectName ?? "", 5, 20);
         pdf.addImage(projectSumChart, "PNG", 5, 35, 215, 78);
         pdf.addImage(appearanceChart, "PNG", 225, 35, 215, 78);
-        pdf.addImage(purchaseChart, "PNG", 5, 130, 215, 78);
-        pdf.addImage(rentChart, "PNG", 225, 130, 215, 78);
-        pdf.addImage(planningChart, "PNG", 5, 225, 215, 78);
+        pdf.addImage(planningChart, "PNG", 5, 130, 215, 78);
 
         pdf.save(`${selectedProject?.projectName}.pdf`);
         setPdfExport(false);
@@ -243,6 +240,7 @@ export const DashboardProject = () => {
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.schedule")}
                         </Typography>
+                        <MyResponsiveBar chartData={planning} selectedProject={selectedProject} />
                     </Box>
                     <Box width="50%" border="solid 1px #DDD" p={1} id="upcomingMileStones">
                         <Typography variant="h6" fontSize={16}>
