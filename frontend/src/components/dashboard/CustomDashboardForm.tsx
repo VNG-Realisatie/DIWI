@@ -1,5 +1,5 @@
 import { ChangeEvent, useEffect } from "react";
-import { Button, Grid } from "@mui/material";
+import { Box, Button, Grid } from "@mui/material";
 import TextInput from "../project/inputs/TextInput";
 
 import UserGroupSelect from "../../widgets/UserGroupSelect";
@@ -80,7 +80,7 @@ export const CustomDashboardForm = ({ visibility, newBlueprint, setNewBlueprint,
     };
     return (
         <Grid container spacing={2} alignItems="center" mb={2}>
-            <Grid item xs={4}>
+            <Grid item xs={3}>
                 <TextInput
                     readOnly={disabledForm}
                     value={newBlueprint.name}
@@ -91,7 +91,7 @@ export const CustomDashboardForm = ({ visibility, newBlueprint, setNewBlueprint,
                     placeholder={t("dashboard.blueprints.namePlaceholder")}
                 />
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={3}>
                 <UserGroupSelect
                     checkIsOwnerValidWithConfidentialityLevel={() => true}
                     placeholder={t("dashboard.blueprints.selectUsers")}
@@ -102,22 +102,24 @@ export const CustomDashboardForm = ({ visibility, newBlueprint, setNewBlueprint,
                     errorText=""
                 />
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={3}>
                 {!disabledForm && (
                     <Button variant="contained" onClick={handleSave} disabled={buttonDisabled}>
                         {t("dashboard.blueprints.saveBlueprint")}
                     </Button>
                 )}
-                {disabledForm && (
+            </Grid>
+            <Grid item xs={3}>
+                <Box display="flex" justifyContent="flex-end" width="100%">
                     <TooltipInfo text={t("dashboard.exportpdf")}>
                         <FileDownload
                             onClick={() => {
                                 setPdfExport(true);
                             }}
-                            sx={{ fill: "#002C64" }}
+                            sx={{ fill: "#002C64", cursor: "pointer" }}
                         />
                     </TooltipInfo>
-                )}
+                </Box>
             </Grid>
         </Grid>
     );
