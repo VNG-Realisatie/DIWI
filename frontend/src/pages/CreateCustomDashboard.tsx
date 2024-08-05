@@ -76,7 +76,7 @@ export const CreateCustomDashboard = () => {
                 setPdfExport={setPdfExport}
                 pdfExport={pdfExport}
             />
-            <DashboardCharts isPdf={pdfExport} visibility={visibility} setVisibility={setVisibility} />
+            <DashboardCharts isPrintingFullDashboard={false} isPdf={pdfExport} visibility={visibility} setVisibility={setVisibility} />
         </>
     );
 };

@@ -15,19 +15,6 @@ import { TooltipInfo } from "../widgets/TooltipInfo";
 import { DashboardCharts } from "../components/dashboard/DashboardCharts";
 import { exportPdf } from "../utils/exportPDF";
 
-const initialVisibility = {
-    MUTATION: true,
-    PROJECT_PHASE: true,
-    TARGET_GROUP: true,
-    PHYSICAL_APPEARANCE: true,
-    OWNERSHIP_BUY: true,
-    OWNERSHIP_RENT: true,
-    PROJECT_MAP: true,
-    RESIDENTIAL_PROJECTS: true,
-    DELIVERABLES: true,
-    DELAYED_PROJECTS: true,
-};
-
 type DashboardProjects = {
     physicalAppearance: ChartType[];
     targetGroup: ChartType[];
@@ -82,12 +69,12 @@ export const DashboardProjects = () => {
                         onClick={() => {
                             setPdfExport(true);
                         }}
-                        sx={{ fill: "#002C64" }}
+                        sx={{ fill: "#002C64", cursor: "pointer" }}
                     />
                 </TooltipInfo>
             </Stack>
 
-            <DashboardCharts visibility={initialVisibility} isPdf={pdfExport} />
+            <DashboardCharts isPrintingFullDashboard={true} isPdf={pdfExport} />
         </Stack>
     );
 };
