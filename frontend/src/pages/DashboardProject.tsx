@@ -178,19 +178,19 @@ export const DashboardProject = () => {
                         </Typography>
                         <DashboardPieChart chartData={physicalAppearance} colors={chartColors} />
                     </Grid>
-                    <Grid item {...chartCardStyling} id="priceSegmentsPurchase">
+                    <Grid item {...chartCardStyling}>
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.priceSegmentsPurchase")}
                         </Typography>
                         <DashboardPieChart chartData={priceSegmentsPurchase} colors={chartColors} />
                     </Grid>
-                    <Grid item {...chartCardStyling} id="priceSegmentsRent">
+                    <Grid item {...chartCardStyling}>
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.priceSegmentsRent")}
                         </Typography>
                         <DashboardPieChart chartData={priceSegmentsRent} colors={chartColors} />
                     </Grid>
-                    <Grid item {...chartCardStyling} id="schedule">
+                    <Grid item {...chartCardStyling}>
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.schedule")}
                         </Typography>
