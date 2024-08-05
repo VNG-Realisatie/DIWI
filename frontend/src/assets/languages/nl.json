@@ -155,6 +155,7 @@
         "rent": "Huur",
         "ownershipAndValue": {
           "title": "Eigendom en waarde",
+          "error": "Een van deze velden moet worden ingevuld",
           "type": {
             "KOOPWONING": "Koopwoning",
             "HUURWONING_PARTICULIERE_VERHUURDER": "Huurwoning Particuliere Verhuurder",
