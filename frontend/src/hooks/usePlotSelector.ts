@@ -2,7 +2,7 @@ import _ from "lodash";
 import { Feature, Map, MapBrowserEvent, View } from "ol";
 import { defaults as defaultControls } from "ol/control.js";
 import { Listener } from "ol/events";
-import { Extent } from "ol/extent";
+import { Extent, buffer, containsCoordinate } from "ol/extent";
 import { GeoJSON } from "ol/format";
 import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
@@ -326,6 +326,10 @@ const usePlotSelector = (id: string) => {
     useEffect(() => {
         if (selectionMode !== Buttons.CUT || !map || !selectedPlotLayerSource) return;
 
+        const bufferDistance = 0.01;
+        const snapToleranceNear = 10;
+        const snapToleranceFar = 30;
+
         const draw = new Draw({
             source: new VectorSource(),
             type: "Polygon",
@@ -337,31 +341,81 @@ const usePlotSelector = (id: string) => {
             },
         });
 
-        const snapInteraction = new Snap({
-            source: selectedPlotLayerSource
-          });
+        const snapInteractionNear = new Snap({
+            source: selectedPlotLayerSource,
+            pixelTolerance: snapToleranceNear,
+        });
+
+        const snapInteractionFar = new Snap({
+            source: selectedPlotLayerSource,
+            pixelTolerance: snapToleranceFar,
+        });
 
           const isPointInsideSelectedPlot = (point: Coordinate) => {
-            const selectedPlotFeature = selectedPlotLayerSource.getFeatures()[0];
-            if (!selectedPlotFeature) return false;
+            const features = selectedPlotLayerSource.getFeatures();
+            if (!features || features.length === 0) return false;
 
-            const selectedPlotGeometry = selectedPlotFeature.getGeometry() as Polygon;
-            return selectedPlotGeometry.intersectsCoordinate(point);
+            for (const feature of features) {
+                const geometry = feature.getGeometry() as Polygon;
+
+                let extent: Extent = geometry.getExtent();
+
+                extent = buffer(extent, bufferDistance);
+
+                if (containsCoordinate(extent, point)) {
+                        return true;
+                }
+            }
+
+            return false;
         };
+
+        const updateSnapInteraction = (point: Coordinate) => {
+            const features = selectedPlotLayerSource.getFeatures();
+            let isNearSelectedPlot = false;
+
+            for (const feature of features) {
+                const geometry = feature.getGeometry() as Polygon;
+                let extent = geometry.getExtent();
+                extent = buffer(extent, bufferDistance);
+
+                if (containsCoordinate(extent, point)) {
+                    isNearSelectedPlot = true;
+                    break;
+                }
+            }
+
+            map.removeInteraction(snapInteractionNear);
+            map.removeInteraction(snapInteractionFar);
+
+            if (isNearSelectedPlot) {
+                map.addInteraction(snapInteractionNear);
+            } else {
+                map.addInteraction(snapInteractionFar);
+            }
+        };
+
+        const handleMouseMove = (event: MapBrowserEvent<UIEvent>) => {
+            updateSnapInteraction(event.coordinate);
+        };
+
+        map.on("pointermove", handleMouseMove);
 
         document.addEventListener("keypress", function(event) {
             if (event.key == "Enter") {
-              draw.finishDrawing();
+                draw.finishDrawing();
             }
-          });
+        });
 
         draw.on("drawend", handleCut);
         map.addInteraction(draw);
-        map.addInteraction(snapInteraction);
+        map.addInteraction(snapInteractionFar);
 
         return () => {
             map.removeInteraction(draw);
-            map.removeInteraction(snapInteraction);
+            map.removeInteraction(snapInteractionNear);
+            map.removeInteraction(snapInteractionFar);
+            map.un("pointermove", handleMouseMove);
         };
     }, [map, selectionMode, handleCut, selectedPlotLayerSource]);
 
