@@ -2,7 +2,7 @@ import _ from "lodash";
 import { Feature, Map, MapBrowserEvent, View } from "ol";
 import { defaults as defaultControls } from "ol/control.js";
 import { Listener } from "ol/events";
-import { Extent, buffer, containsCoordinate } from "ol/extent";
+import { Extent, buffer, containsCoordinate, getIntersectionArea } from "ol/extent";
 import { GeoJSON } from "ol/format";
 import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
@@ -19,6 +19,7 @@ import { extentToCenter, mapBoundsToExtent } from "../utils/map";
 import { DrawEvent } from "ol/interaction/Draw";
 import { LineString, Polygon } from "ol/geom";
 import { Coordinate } from "ol/coordinate";
+import { fromExtent } from "ol/geom/Polygon";
 
 const baseUrlKadasterWfs = "https://service.pdok.nl/kadaster/kadastralekaart/wfs/v5_0";
 
@@ -38,6 +39,7 @@ const usePlotSelector = (id: string) => {
     const [selectedPlotLayerSource, setSelectedPlotLayerSource] = useState<VectorSource>();
     const [projectLayerSource, setProjectLayerSource] = useState<VectorSource>();
     const [bboxLayerSource, setBboxLayerSource] = useState<VectorSource>();
+    const [bboxLayerSourceCut, setBboxLayerSourceCut] = useState<VectorSource>();
 
     const [originalSelectedPlots, setOriginalSelectedPlots] = useState<Plot[] | null>(null);
     const [selectedPlots, setSelectedPlots] = useState<Plot[]>([]);
@@ -73,9 +75,13 @@ const usePlotSelector = (id: string) => {
 
     const handleCancelChange = () => {
         setSelectedPlots(originalSelectedPlots || []);
+        bboxLayerSource?.clear();
+        bboxLayerSourceCut?.clear();
     };
 
     const handleSaveChange = async () => {
+        bboxLayerSource?.clear();
+        bboxLayerSourceCut?.clear();
         if (selectedProject) {
             await updateProjectPlots(selectedProject.projectId, selectedPlots);
             setOriginalSelectedPlots(selectedPlots);
@@ -157,7 +163,10 @@ const usePlotSelector = (id: string) => {
             if (!lineGeometry || !(lineGeometry instanceof LineString)) return;
 
             const extent = lineGeometry.getExtent();
-            const bbox = extent.join(",");
+            const bufferDistance = 5;
+            const bufferedExtent = buffer(extent, bufferDistance);
+
+            const bbox = bufferedExtent.join(",");
 
             const url = queryString.stringifyUrl({
                 url: baseUrlKadasterWfs,
@@ -205,41 +214,58 @@ const usePlotSelector = (id: string) => {
 
                     setSelectedPlots([...selectedPlots, ...newPlots]);
                 });
-
-            try {
-                const [minX, minY, maxX, maxY] = extent;
-
-                const boundingBoxCoords = [
-                    [minX, minY],
-                    [maxX, minY],
-                    [maxX, maxY],
-                    [minX, maxY],
-                    [minX, minY],
-                ];
-
-                const boundingBoxPolygon = new Polygon([boundingBoxCoords]);
-
-                bboxLayerSource.clear();
+                const newPolygon = fromExtent(bufferedExtent);
                 bboxLayerSource.addFeature(new Feature({
-                    geometry: boundingBoxPolygon,
-                }));
-            } catch (error) {
-                console.error("Error updating bounding box layer:", error);
-            }
+                geometry: newPolygon,
+            }));
         },
         [selectionMode, map, selectedPlotLayerSource, bboxLayerSource, selectedPlots]
 );
 
     const handleCut = useCallback((e: DrawEvent) => {
-        if (selectionMode !== Buttons.CUT || !map || !selectedPlotLayerSource) return;
+        if (selectionMode !== Buttons.CUT || !map || !selectedPlotLayerSource || !bboxLayerSourceCut) return;
 
-        const lineGeometry = e.feature.getGeometry();
-        if (!lineGeometry || !(lineGeometry instanceof Polygon)) return;
+        const polygonGeometry = e.feature.getGeometry();
+        if (!polygonGeometry || !(polygonGeometry instanceof Polygon)) return;
 
-        const extent = lineGeometry.getExtent();
-        console.log(extent);
+        const extent = polygonGeometry.getExtent();
+        const bbox = extent.join(",");
 
-    }, [selectionMode, map, selectedPlotLayerSource])
+            const url = queryString.stringifyUrl({
+                url: baseUrlKadasterWfs,
+                query: {
+                    request: "GetFeature",
+                    service: "WFS",
+                    version: "2.0.0",
+                    outputFormat: "application/json",
+                    typeName: "kadastralekaart:Perceel",
+                    srsName: "EPSG:3857",
+                    bbox: bbox + "," + projection
+                },
+            });
+
+            fetch(url)
+                .then((res) => res.json())
+                .then((result) => {
+                    const plotFeature = result as PlotGeoJSON;
+                    const intersections: number[] = [];
+                    for (let i = 0; i < plotFeature.features.length; i++) {
+                        const properties = plotFeature.features[i].properties;
+                    const isPlotAlreadySelected = selectedPlots.some(
+                        (plot) =>
+                            plot.brkGemeenteCode === properties.kadastraleGemeenteCode &&
+                            plot.brkPerceelNummer === parseInt(properties.perceelnummer) &&
+                            plot.brkSectie === properties.sectie
+                    );
+                    console.log(isPlotAlreadySelected);
+                    const featuresBBOX = plotFeature.features[i].bbox;
+                    const numberArray: number[] = featuresBBOX.map(Number);
+
+                    intersections.push(getIntersectionArea(extent, numberArray))
+                }
+                })
+
+    }, [selectionMode, map, selectedPlotLayerSource, bboxLayerSourceCut, selectedPlots])
 
     useEffect(
         function updatePlotsLayer() {
@@ -314,27 +340,27 @@ const usePlotSelector = (id: string) => {
                 return click.button === 2; //Right click
             },
         });
-
+        draw.on("drawstart", () => {
+            bboxLayerSource?.clear();
+        })
         draw.on("drawend", handleLineDrawEnd);
         map.addInteraction(draw);
 
         return () => {
             map.removeInteraction(draw);
         };
-    }, [map, selectionMode, handleLineDrawEnd]);
+    }, [map, selectionMode, handleLineDrawEnd, bboxLayerSource]);
 
     useEffect(() => {
         if (selectionMode !== Buttons.CUT || !map || !selectedPlotLayerSource) return;
 
-        const bufferDistance = 0.01;
         const snapToleranceNear = 10;
         const snapToleranceFar = 30;
 
         const draw = new Draw({
-            source: new VectorSource(),
+            source: bboxLayerSourceCut,
             type: "Polygon",
-            trace: true,
-            traceSource: selectedPlotLayerSource,
+            minPoints: 2,
             condition: (event) => {
                 const point = event.coordinate;
                 return isPointInsideSelectedPlot(point);
@@ -357,10 +383,7 @@ const usePlotSelector = (id: string) => {
 
             for (const feature of features) {
                 const geometry = feature.getGeometry() as Polygon;
-
-                let extent: Extent = geometry.getExtent();
-
-                extent = buffer(extent, bufferDistance);
+                const extent: Extent = geometry.getExtent();
 
                 if (containsCoordinate(extent, point)) {
                         return true;
@@ -376,8 +399,7 @@ const usePlotSelector = (id: string) => {
 
             for (const feature of features) {
                 const geometry = feature.getGeometry() as Polygon;
-                let extent = geometry.getExtent();
-                extent = buffer(extent, bufferDistance);
+                const extent: Extent = geometry.getExtent();
 
                 if (containsCoordinate(extent, point)) {
                     isNearSelectedPlot = true;
@@ -417,7 +439,7 @@ const usePlotSelector = (id: string) => {
             map.removeInteraction(snapInteractionFar);
             map.un("pointermove", handleMouseMove);
         };
-    }, [map, selectionMode, handleCut, selectedPlotLayerSource]);
+    }, [map, selectionMode, handleCut, selectedPlotLayerSource, bboxLayerSourceCut]);
 
     useEffect(() => {
         if (!map) return;
@@ -465,9 +487,20 @@ const usePlotSelector = (id: string) => {
             });
             setBboxLayerSource(bboxSource);
 
+            const bboxSourceCut = new VectorSource();
+            const bboxLayerCut = new VectorLayer({
+                source: bboxSourceCut,
+                style: new Style({
+                    fill: new Fill({ color: "rgba(155, 193, 228, 0.5)" }),
+                    stroke: new Stroke({ color: "rgba(7, 62, 168, 0.5)", width: 1 }),
+                }),
+
+            });
+            setBboxLayerSourceCut(bboxSourceCut);
+
             const newMap = new Map({
                 target: id,
-                layers: [osmLayer, projectGeometryLayer, kadasterLayers, selectedPlotLayer, bboxLayer],
+                layers: [osmLayer, projectGeometryLayer, kadasterLayers, selectedPlotLayer, bboxLayer, bboxLayerCut],
                 view: new View({
                     center: extentToCenter(mapBoundsToExtent(mapBounds)),
                     zoom: 12,
