@@ -11,7 +11,7 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } {
 }
 export function generateColorsArray(n: number): string[] {
     const startColor = hexToRgb("#0D3B66"); // Dark Blue (Hex: #0D3B66)
-    const endColor = hexToRgb("#D3D3D3"); // Light Gray (Hex: #D3D3D3)
+    const endColor = hexToRgb("#D6EAF8"); // Light Blue (Hex: #D3D3D3)
     const interpolate = (start: number, end: number, factor: number) => {
         return Math.round(start + (end - start) * factor);
     };
