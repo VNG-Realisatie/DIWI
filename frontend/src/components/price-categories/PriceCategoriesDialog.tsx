@@ -6,6 +6,7 @@ import { t } from "i18next";
 import { useEffect, useState } from "react";
 import RangeNumberInput from "../project/inputs/RangeNumberInput";
 import { getDuplicatedPropertyInfo } from "../../utils/getDuplicatedPropertyInfo";
+import useAllowedActions from "../../hooks/useAllowedActions";
 
 type RangeNumber = {
     value: number | null;
@@ -39,6 +40,7 @@ const PriceCategoriesDialog = ({ open, setOpen, id, propertyName, setRangeCatego
     const { setAlert } = useAlert();
     const [propertyDuplicationInfo, setPropertyDuplicationInfo] = useState<{ duplicatedStatus: boolean; duplicatedName: string }>();
     const [isRangeValid, setIsRangeValid] = useState<boolean>(true);
+    const { allowedActions } = useAllowedActions();
 
     useEffect(() => {
         if (categoryToEdit) {
@@ -72,7 +74,7 @@ const PriceCategoriesDialog = ({ open, setOpen, id, propertyName, setRangeCatego
     };
 
     const saveAction = async (newProperty: Property) => {
-        if (!id) {
+        if (!id || !allowedActions.includes("EDIT_CUSTOM_PROPERTIES")) {
             return;
         }
         try {

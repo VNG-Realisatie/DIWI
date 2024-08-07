@@ -512,6 +512,7 @@
         "successfullyDeleted": "Prijscategorieën succesvol verwijderd"
       },
       "userManagement": {
+        "forbidden": "U heeft geen toegang tot deze pagina. Neem contact op met uw beheerder",
         "titleUser": "User management gebruikers",
         "titleGroup": "User management groepen",
         "tableHeader": {
