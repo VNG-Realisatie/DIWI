@@ -9,9 +9,9 @@ type Element = {
 
 const elements: Element[] = [
     { id: "totalValues", width: 436, height: 25 },
-    { id: "projectPhaseChart", width: 215, height: 75 },
-    { id: "targetGroupChart", width: 215, height: 75 },
-    { id: "physicalAppearanceChart", width: 215, height: 75 },
+    { id: "projectPhaseChart", width: 205, height: 75 },
+    { id: "targetGroupChart", width: 205, height: 75 },
+    { id: "physicalAppearanceChart", width: 205, height: 75 },
     // Add the rest of the elements here
 ];
 
