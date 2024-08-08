@@ -32,13 +32,14 @@ type CategoryInputProps = {
     translationPath?: string;
     tooltipInfoText?: string;
     hasTooltipOption?: boolean;
+    displayError?: boolean;
 };
 const isOptionEqualToValue = (option: Option, value: Option): boolean => {
     return option.id === value.id;
 };
 
-const getErrorHelperText = (mandatory: boolean, readOnly: boolean, values: Option | Option[] | null, error?: string) => {
-    const hasError = mandatory && (!values || (Array.isArray(values) && values.length === 0)) && !readOnly;
+const getErrorHelperText = (mandatory: boolean, readOnly: boolean, values: Option | Option[] | null, displayError: boolean, error?: string) => {
+    const hasError = (mandatory && (!values || (Array.isArray(values) && values.length === 0)) && !readOnly) || displayError;
     const helperText = hasError ? error : "";
     return { hasError, helperText };
 };
@@ -60,8 +61,9 @@ const CategoryInput = ({
     translationPath = "",
     tooltipInfoText,
     hasTooltipOption = false,
+    displayError = false,
 }: CategoryInputProps) => {
-    const { hasError, helperText } = getErrorHelperText(mandatory, readOnly, values, error);
+    const { hasError, helperText } = getErrorHelperText(mandatory, readOnly, values, displayError, error);
 
     const autocompleteComponent = (
         <Autocomplete

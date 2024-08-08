@@ -103,23 +103,27 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
             </List> */}
             <List sx={{ ml: 3 }}>
                 <Typography sx={typographyStyles}>{t("sidebar.settings")}</Typography>
-                {allowedActions.includes("EDIT_CUSTOM_PROPERTIES") && (
+                {allowedActions.includes("VIEW_CUSTOM_PROPERTIES") && (
                     <Link to={Paths.userSettings.path} style={linkStyles} onClick={handleDrawerClose}>
                         <ListItemButton>
                             <ListItemText primary={t("customProperties.title")} />
                         </ListItemButton>
                     </Link>
                 )}
-                <Link to={Paths.priceCategories.path} style={linkStyles} onClick={handleDrawerClose}>
-                    <ListItemButton>
-                        <ListItemText primary={t("sidebar.priceCategories")} />
-                    </ListItemButton>
-                </Link>
-                <Link to={Paths.userManagement.path} style={linkStyles} onClick={handleDrawerClose}>
-                    <ListItemButton>
-                        <ListItemText primary={t("sidebar.users")} />
-                    </ListItemButton>
-                </Link>
+                {allowedActions.includes("VIEW_CUSTOM_PROPERTIES") && (
+                    <Link to={Paths.priceCategories.path} style={linkStyles} onClick={handleDrawerClose}>
+                        <ListItemButton>
+                            <ListItemText primary={t("sidebar.priceCategories")} />
+                        </ListItemButton>
+                    </Link>
+                )}
+                {(allowedActions.includes("VIEW_USERS") || allowedActions.includes("VIEW_GROUPS")) && (
+                    <Link to={Paths.userManagement.path} style={linkStyles} onClick={handleDrawerClose}>
+                        <ListItemButton>
+                            <ListItemText primary={t("sidebar.users")} />
+                        </ListItemButton>
+                    </Link>
+                )}
             </List>
             <List sx={{ ml: 3 }}>
                 <Typography sx={typographyStyles}>{t("sidebar.dataExchange")}</Typography>

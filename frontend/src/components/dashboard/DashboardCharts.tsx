@@ -8,7 +8,6 @@ import { getDashboardProjects, VisibilityElement } from "../../api/dashboardServ
 import { getProjects } from "../../api/projectsServices";
 import { getProjectHouseBlocksWithCustomProperties } from "../../api/houseBlockServices";
 import { useTranslation } from "react-i18next";
-import { chartColors } from "../../utils/dashboardChartColors";
 import useAllowedActions from "../../hooks/useAllowedActions";
 import { LabelComponent } from "../project/LabelComponent";
 import { CellContainer } from "../project/project-with-house-block/CellContainer";
@@ -40,8 +39,9 @@ type Props = {
     visibility?: Visibility;
     setVisibility?: Dispatch<SetStateAction<Visibility>>;
     isPdf?: boolean;
+    isPrintingFullDashboard: boolean;
 };
-export const DashboardCharts = ({ visibility, setVisibility, isPdf = false }: Props) => {
+export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashboard, isPdf = false }: Props) => {
     const [dashboardProjects, setDashboardProjects] = useState<DashboardProjects>();
     const [projectPhaseSums, setProjectPhaseSums] = useState([]);
     const [dashboardMutationValues, setDashboardMutationValues] = useState<MutationValues>();
@@ -146,7 +146,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPdf = false }: Pr
                                     />
                                 )}
                             </Box>
-                            <DashboardPieChart chartData={projectPhaseSums || []} colors={chartColors} />
+                            <DashboardPieChart chartData={projectPhaseSums || []} />
                         </Grid>
                     )}
                     {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.TARGET_GROUP) && (
@@ -163,7 +163,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPdf = false }: Pr
                                     />
                                 )}
                             </Box>
-                            <DashboardPieChart chartData={dashboardProjects?.targetGroup || []} colors={chartColors} />
+                            <DashboardPieChart chartData={dashboardProjects?.targetGroup || []} />
                         </Grid>
                     )}
                     {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.PHYSICAL_APPEARANCE) && (
@@ -180,7 +180,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPdf = false }: Pr
                                     />
                                 )}
                             </Box>
-                            <DashboardPieChart chartData={dashboardProjects?.physicalAppearance || []} colors={chartColors} />
+                            <DashboardPieChart chartData={dashboardProjects?.physicalAppearance || []} />
                         </Grid>
                     )}
                     {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.OWNERSHIP_BUY) && (
@@ -292,7 +292,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPdf = false }: Pr
 
             {isPdf && (
                 <Stack width="1920px" id="export">
-                    {visibility?.MUTATION && (
+                    {(isPrintingFullDashboard || visibility?.MUTATION) && (
                         <Box width="100%" id="totalValues">
                             <Typography variant="h6" fontSize={16}>
                                 {t("dashboard.totalValues")}
@@ -338,31 +338,31 @@ export const DashboardCharts = ({ visibility, setVisibility, isPdf = false }: Pr
                             </Stack>
                         </Box>
                     )}
-                    {visibility?.PROJECT_PHASE && (
+                    {(isPrintingFullDashboard || visibility?.PROJECT_PHASE) && (
                         <Box width="50%" border="solid 1px #DDD" p={1} id="projectPhaseChart">
                             <Typography variant="h6" fontSize={16}>
                                 {t("dashboard.projectPhases")}
                             </Typography>
-                            <DashboardPieChart isPdfChart={true} chartData={projectPhaseSums || []} colors={chartColors} />
+                            <DashboardPieChart isPdfChart={true} chartData={projectPhaseSums || []} />
                         </Box>
                     )}
-                    {visibility?.TARGET_GROUP && (
+                    {(isPrintingFullDashboard || visibility?.TARGET_GROUP) && (
                         <Box width="50%" border="solid 1px #DDD" p={1} id="targetGroupChart">
                             <Typography variant="h6" fontSize={16}>
                                 {t("dashboard.targetAudiences")}
                             </Typography>
-                            <DashboardPieChart isPdfChart={true} chartData={dashboardProjects?.targetGroup || []} colors={chartColors} />
+                            <DashboardPieChart isPdfChart={true} chartData={dashboardProjects?.targetGroup || []} />
                         </Box>
                     )}
-                    {visibility?.PHYSICAL_APPEARANCE && (
+                    {(isPrintingFullDashboard || visibility?.PHYSICAL_APPEARANCE) && (
                         <Box width="50%" border="solid 1px #DDD" p={1} id="physicalAppearanceChart">
                             <Typography variant="h6" fontSize={16}>
                                 {t("dashboard.residentialFeatures")}
                             </Typography>
-                            <DashboardPieChart isPdfChart={true} chartData={dashboardProjects?.physicalAppearance || []} colors={chartColors} />
+                            <DashboardPieChart isPdfChart={true} chartData={dashboardProjects?.physicalAppearance || []} />
                         </Box>
                     )}
-                    {visibility?.OWNERSHIP_BUY && (
+                    {(isPrintingFullDashboard || visibility?.OWNERSHIP_BUY) && (
                         <Box width="50%" border="solid 1px #DDD" p={1} id="buy">
                             <Typography variant="h6" fontSize={16}>
                                 {t("dashboard.buy")}
@@ -370,7 +370,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPdf = false }: Pr
                             {/* ToDo:Add chart here later */}
                         </Box>
                     )}
-                    {visibility?.OWNERSHIP_RENT && (
+                    {(isPrintingFullDashboard || visibility?.OWNERSHIP_RENT) && (
                         <Box width="50%" border="solid 1px #DDD" p={1} id="rent">
                             <Typography variant="h6" fontSize={16}>
                                 {t("dashboard.rent")}
@@ -378,7 +378,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPdf = false }: Pr
                             {/* ToDo:Add chart here later */}
                         </Box>
                     )}
-                    {visibility?.RESIDENTIAL_PROJECTS && (
+                    {(isPrintingFullDashboard || visibility?.RESIDENTIAL_PROJECTS) && (
                         <Box width="50%" border="solid 1px #DDD" p={1} id="residentialProjects">
                             <Typography variant="h6" fontSize={16}>
                                 {t("dashboard.residentialProjects")}
@@ -386,7 +386,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPdf = false }: Pr
                             {/* ToDo:Add chart here later */}
                         </Box>
                     )}
-                    {visibility?.DELAYED_PROJECTS && (
+                    {(isPrintingFullDashboard || visibility?.DELAYED_PROJECTS) && (
                         <Box width="50%" border="solid 1px #DDD" p={1} id="deliverables">
                             <Typography variant="h6" fontSize={16}>
                                 {t("dashboard.deliverables")}
@@ -394,7 +394,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPdf = false }: Pr
                             {/* ToDo:Add chart here later */}
                         </Box>
                     )}
-                    {visibility?.DELAYED_PROJECTS && (
+                    {(isPrintingFullDashboard || visibility?.DELAYED_PROJECTS) && (
                         <Box width="50%" border="solid 1px #DDD" p={1} id="delayedProjects">
                             <Typography variant="h6" fontSize={16}>
                                 {t("dashboard.delayedProjects")}

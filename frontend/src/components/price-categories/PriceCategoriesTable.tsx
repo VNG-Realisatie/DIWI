@@ -9,6 +9,7 @@ import { useContext, useEffect, useState } from "react";
 import { CategoryType, Property, updateCustomProperty } from "../../api/adminSettingServices";
 import DeleteDialog from "./DeleteDialog";
 import AlertContext from "../../context/AlertContext";
+import useAllowedActions from "../../hooks/useAllowedActions";
 
 type Category = {
     id: string;
@@ -32,6 +33,8 @@ const PriceCategoriesTable = ({ property, setRangeCategories }: Props) => {
     const { setAlert } = useContext(AlertContext);
     const [categories, setCategories] = useState<CategoryType[]>([]);
 
+    const { allowedActions } = useAllowedActions();
+
     useEffect(() => {
         const rows = (property.ranges ?? []).filter((range) => !range.disabled);
         setRows(rows as Category[]);
@@ -47,7 +50,7 @@ const PriceCategoriesTable = ({ property, setRangeCategories }: Props) => {
     }, [property.ranges]);
 
     const handleDelete = async () => {
-        if (!categoryToDelete || !property.id || !property.ranges) return;
+        if (!categoryToDelete || !property.id || !property.ranges || !allowedActions.includes("EDIT_CUSTOM_PROPERTIES")) return;
         const updatedRanges = property.ranges.map((range) => (range.id === categoryToDelete.id ? { ...range, disabled: true } : range));
 
         const updatedProperty = {
@@ -93,26 +96,27 @@ const PriceCategoriesTable = ({ property, setRangeCategories }: Props) => {
             headerName: t("admin.priceCategories.actions"),
             flex: 0.5,
             sortable: true,
-            renderCell: (params: GridCellParams) => (
-                <Box display="flex" alignItems="center" justifyContent="center" style={{ height: "100%" }} gap="10px">
-                    <EditOutlinedIcon
-                        style={{ cursor: "pointer" }}
-                        color="primary"
-                        onClick={() => {
-                            setCategoryToEdit(params.row);
-                            setDialogOpen(true);
-                        }}
-                    />
-                    <DeleteForeverOutlinedIcon
-                        style={{ cursor: "pointer" }}
-                        color="error"
-                        onClick={() => {
-                            setCategoryToDelete(params.row);
-                            setOpenDeleteDialog(true);
-                        }}
-                    />
-                </Box>
-            ),
+            renderCell: (params: GridCellParams) =>
+                allowedActions.includes("EDIT_CUSTOM_PROPERTIES") ? (
+                    <Box display="flex" alignItems="center" justifyContent="center" style={{ height: "100%" }} gap="10px">
+                        <EditOutlinedIcon
+                            style={{ cursor: "pointer" }}
+                            color="primary"
+                            onClick={() => {
+                                setCategoryToEdit(params.row);
+                                setDialogOpen(true);
+                            }}
+                        />
+                        <DeleteForeverOutlinedIcon
+                            style={{ cursor: "pointer" }}
+                            color="error"
+                            onClick={() => {
+                                setCategoryToDelete(params.row);
+                                setOpenDeleteDialog(true);
+                            }}
+                        />
+                    </Box>
+                ) : null,
         },
     ];
     return (
@@ -139,8 +143,12 @@ const PriceCategoriesTable = ({ property, setRangeCategories }: Props) => {
                     setDialogOpen(true);
                 }}
             >
-                <AddCircleIcon color="primary" sx={{ fontSize: "40px" }} />
-                {t("admin.priceCategories.add")}
+                {allowedActions.includes("EDIT_CUSTOM_PROPERTIES") && (
+                    <>
+                        <AddCircleIcon color="primary" sx={{ fontSize: "40px" }} />
+                        {t("admin.priceCategories.add")}
+                    </>
+                )}
             </Stack>
 
             <PriceCategoriesDialog

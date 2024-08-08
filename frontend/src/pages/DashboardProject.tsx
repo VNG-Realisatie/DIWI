@@ -7,14 +7,14 @@ import ProjectContext from "../context/ProjectContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { CharacteristicTable } from "../components/dashboard/CharacteristicTable";
 import { DashboardPieChart } from "../components/dashboard/PieChart";
-import { getDashboardProject } from "../api/dashboardServices";
-import { chartColors } from "../utils/dashboardChartColors";
+import { getDashboardProject, Planning } from "../api/dashboardServices";
 import { Project } from "../api/projectsServices";
 import useCustomSearchParams from "../hooks/useCustomSearchParams";
 import { TooltipInfo } from "../widgets/TooltipInfo";
 import { FileDownload } from "@mui/icons-material";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import { MyResponsiveBar } from "../components/dashboard/BarChart";
 
 export type ChartType = {
     label: string;
@@ -34,6 +34,9 @@ export const DashboardProject = () => {
     const chartCardStyling = { backgroundColor: "#F0F0F0", my: 1, p: 2, xs: 12, md: 5.9 };
 
     const [physicalAppearance, setPhysicalAppearance] = useState<ChartType[]>([]);
+    const [planning, setPlanning] = useState<Planning[]>([]);
+    const [priceSegmentsPurchase, setPriceSegmentsPurchase] = useState<ChartType[]>([]);
+    const [priceSegmentsRent, setPriceSegmentsRent] = useState<ChartType[]>([]);
 
     const handleSelectProject = (project: Project | null) => {
         setSelectedDashboardProject(project);
@@ -84,6 +87,10 @@ export const DashboardProject = () => {
         };
         const projectSumChart = await h2c(projectSum);
         const appearanceChart = await h2c(appearance);
+        const planningChart = await h2c(schedule);
+        const priceSegmentsPurchaseChart = await h2c(priceSegmentsPurchase);
+        const priceSegmentsRentChart = await h2c(priceSegmentsRent);
+
         //Add the rest of the charts here
 
         const pdf = new jsPDF("p", "px", "a4");
@@ -91,7 +98,9 @@ export const DashboardProject = () => {
         pdf.text(selectedProject?.projectName ?? "", 5, 20);
         pdf.addImage(projectSumChart, "PNG", 5, 35, 215, 78);
         pdf.addImage(appearanceChart, "PNG", 225, 35, 215, 78);
-        // Add the rest of the charts here
+        pdf.addImage(priceSegmentsPurchaseChart, "PNG", 5, 130, 215, 78);
+        pdf.addImage(priceSegmentsRentChart, "PNG", 225, 130, 215, 78);
+        pdf.addImage(planningChart, "PNG", 5, 225, 215, 78);
 
         pdf.save(`${selectedProject?.projectName}.pdf`);
         setPdfExport(false);
@@ -100,13 +109,29 @@ export const DashboardProject = () => {
     useEffect(() => {
         if (projectId) {
             getDashboardProject(projectId).then((data) => {
-                const convertedData = data.physicalAppearance.map((d) => {
+                const convertedPAData = data.physicalAppearance.map((d) => {
                     return { label: d.name, value: d.amount };
                 });
-                setPhysicalAppearance(convertedData);
+                const convertedPurchaseData = data.priceCategoryOwn.map((d) => {
+                    return {
+                        label: `${d.name}\n(€${d.min} ${d.max ? `- €${d.max}` : t("generic.andMore")})`,
+                        value: d.amount,
+                    };
+                });
+                const convertedRentData = data.priceCategoryRent.map((d) => {
+                    return {
+                        label: `${d.name}\n(€${d.min} ${d.max ? `- €${d.max}` : t("generic.andMore")})`,
+                        value: d.amount,
+                    };
+                });
+
+                setPhysicalAppearance(convertedPAData);
+                setPlanning(data.planning);
+                setPriceSegmentsPurchase(convertedPurchaseData);
+                setPriceSegmentsRent(convertedRentData);
             });
         }
-    }, [projectId]);
+    }, [projectId, t]);
 
     useEffect(() => {
         pdfExport &&
@@ -151,25 +176,25 @@ export const DashboardProject = () => {
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.residentialProjects")}
                         </Typography>
-                        <DashboardPieChart chartData={physicalAppearance} colors={chartColors} />
+                        <DashboardPieChart chartData={physicalAppearance} />
                     </Grid>
                     <Grid item {...chartCardStyling}>
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.priceSegmentsPurchase")}
                         </Typography>
-
-                        {/* ToDo:Add chart here later */}
+                        <DashboardPieChart chartData={priceSegmentsPurchase} />
                     </Grid>
                     <Grid item {...chartCardStyling}>
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.priceSegmentsRent")}
                         </Typography>
-                        {/* ToDo:Add chart here later */}
+                        <DashboardPieChart chartData={priceSegmentsRent} />
                     </Grid>
                     <Grid item {...chartCardStyling}>
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.schedule")}
                         </Typography>
+                        <MyResponsiveBar chartData={planning} selectedProject={selectedProject} />
                     </Grid>
                     <Grid item {...chartCardStyling}>
                         <Typography variant="h6" fontSize={16}>
@@ -179,12 +204,14 @@ export const DashboardProject = () => {
                     </Grid>
                 </Grid>
             )}
+
             {pdfExport && (
                 <Stack width="100%" height="80vh" alignItems="center" justifyContent="center">
                     {" "}
                     <CircularProgress color="inherit" />
                 </Stack>
             )}
+
             {pdfExport && (
                 <Stack width="1920px">
                     <Box width="50%" border="solid 1px #DDD" p={1} id="projectSum">
@@ -197,25 +224,25 @@ export const DashboardProject = () => {
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.residentialProjects")}
                         </Typography>
-                        <DashboardPieChart isPdfChart={true} chartData={physicalAppearance} colors={chartColors} />
+                        <DashboardPieChart isPdfChart={true} chartData={physicalAppearance} />
                     </Box>
                     <Box width="50%" border="solid 1px #DDD" p={1} id="priceSegmentsPurchase">
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.priceSegmentsPurchase")}
                         </Typography>
-
-                        {/* ToDo:Add chart here later */}
+                        <DashboardPieChart isPdfChart={true} chartData={priceSegmentsPurchase} />
                     </Box>
                     <Box width="50%" border="solid 1px #DDD" p={1} id="priceSegmentsRent">
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.priceSegmentsRent")}
                         </Typography>
-                        {/* ToDo:Add chart here later */}
+                        <DashboardPieChart isPdfChart={true} chartData={priceSegmentsRent} />
                     </Box>
                     <Box width="50%" border="solid 1px #DDD" p={1} id="schedule">
                         <Typography variant="h6" fontSize={16}>
                             {t("dashboard.schedule")}
                         </Typography>
+                        <MyResponsiveBar chartData={planning} selectedProject={selectedProject} />
                     </Box>
                     <Box width="50%" border="solid 1px #DDD" p={1} id="upcomingMileStones">
                         <Typography variant="h6" fontSize={16}>
