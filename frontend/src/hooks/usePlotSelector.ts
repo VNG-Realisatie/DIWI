@@ -89,7 +89,7 @@ const usePlotSelector = (id: string) => {
 
                 setAlert(t("projectDetail.mapUpdatedSuccessfully"), "success");
             }
-        } catch (error : unknown) {
+        } catch (error: unknown) {
             if (error instanceof Error) setAlert(error.message, "error");
         }
     };
@@ -154,7 +154,7 @@ const usePlotSelector = (id: string) => {
                     });
             }
         },
-        [selectedPlotLayerSource, selectedPlots],
+        [getEditPermission, selectedPlotLayerSource, selectedPlots],
     );
 
     useEffect(
