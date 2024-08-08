@@ -9,9 +9,9 @@ This release focusses on expanding dashboard features and ranged categories.
 - added missing or incomplete tooltips
 - added a PDF export option to the dashboard pages
 - added custom dashboards page: this will allow tailored dashboards for users and usergroups
+- added list page for custom dashboards
 - added price categories to importers
 - added projectplanning bar chart, purchase pie chart and rent pie chart to dashboard
-
 
 ### CHANGED
 
@@ -28,10 +28,6 @@ This release focusses on expanding dashboard features and ranged categories.
 - fixed an issue in the dashboards where there were space issues in case of many categories
 - fixed an issue where saving changes in house blocks would not give feedback
 - fixed an issue where saving plot updates would not give feedback
-
-### REMOVED
-
-
 
 ## DIWI RELEASE 1.5.0
 
