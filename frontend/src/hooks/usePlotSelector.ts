@@ -17,6 +17,7 @@ import ProjectContext from "../context/ProjectContext";
 import { extentToCenter, mapBoundsToExtent } from "../utils/map";
 import useAlert from "./useAlert";
 import { useTranslation } from "react-i18next";
+import { useHasEditPermission } from "./useHasEditPermission";
 
 const baseUrlKadasterWms = "https://service.pdok.nl/kadaster/kadastralekaart/wms/v5_0";
 
@@ -35,6 +36,8 @@ const usePlotSelector = (id: string) => {
 
     const [plotsChanged, setPlotsChanged] = useState(false);
     const [extent, setExtent] = useState<Extent | null>(null);
+
+    const { getEditPermission } = useHasEditPermission();
 
     const { setAlert } = useAlert();
     const { t } = useTranslation();
@@ -86,7 +89,7 @@ const usePlotSelector = (id: string) => {
 
                 setAlert(t("projectDetail.mapUpdatedSuccessfully"), "success");
             }
-        } catch (error : unknown) {
+        } catch (error: unknown) {
             if (error instanceof Error) setAlert(error.message, "error");
         }
     };
@@ -94,7 +97,7 @@ const usePlotSelector = (id: string) => {
     const handleClick = useCallback(
         (e: MapBrowserEvent<UIEvent>) => {
             const map: Map = e.map;
-            if (!map) return;
+            if (!map || !getEditPermission()) return;
 
             const features = map.getFeaturesAtPixel(e.pixel, { layerFilter: (layer) => layer.getSource() === selectedPlotLayerSource });
 
@@ -151,7 +154,7 @@ const usePlotSelector = (id: string) => {
                     });
             }
         },
-        [selectedPlotLayerSource, selectedPlots],
+        [getEditPermission, selectedPlotLayerSource, selectedPlots],
     );
 
     useEffect(
