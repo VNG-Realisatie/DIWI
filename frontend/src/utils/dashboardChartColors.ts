@@ -11,18 +11,22 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } {
 }
 export function generateColorsArray(n: number): string[] {
     const startColor = hexToRgb("#0D3B66"); // Dark Blue (Hex: #0D3B66)
-    const endColor = hexToRgb("#D3D3D3"); // Light Gray (Hex: #D3D3D3)
+    const endColor = hexToRgb("#D6EAF8"); // Light Blue (Hex: #D3D3D3)
     const interpolate = (start: number, end: number, factor: number) => {
         return Math.round(start + (end - start) * factor);
     };
 
     const colors = [];
     for (let i = 0; i < n; i++) {
-        const factor = i / (n - 1);
-        const r = interpolate(startColor.r, endColor.r, factor);
-        const g = interpolate(startColor.g, endColor.g, factor);
-        const b = interpolate(startColor.b, endColor.b, factor);
-        colors.push(`rgb(${r}, ${g}, ${b})`);
+        if (i < 10) {
+            colors.push(chartColors[i]);
+        } else {
+            const factor = i / (n - 1);
+            const r = interpolate(startColor.r, endColor.r, factor);
+            const g = interpolate(startColor.g, endColor.g, factor);
+            const b = interpolate(startColor.b, endColor.b, factor);
+            colors.push(`rgb(${r}, ${g}, ${b})`);
+        }
     }
 
     return colors;
