@@ -18,11 +18,15 @@ export function generateColorsArray(n: number): string[] {
 
     const colors = [];
     for (let i = 0; i < n; i++) {
-        const factor = i / (n - 1);
-        const r = interpolate(startColor.r, endColor.r, factor);
-        const g = interpolate(startColor.g, endColor.g, factor);
-        const b = interpolate(startColor.b, endColor.b, factor);
-        colors.push(`rgb(${r}, ${g}, ${b})`);
+        if (i < 10) {
+            colors.push(chartColors[i]);
+        } else {
+            const factor = i / (n - 1);
+            const r = interpolate(startColor.r, endColor.r, factor);
+            const g = interpolate(startColor.g, endColor.g, factor);
+            const b = interpolate(startColor.b, endColor.b, factor);
+            colors.push(`rgb(${r}, ${g}, ${b})`);
+        }
     }
 
     return colors;
