@@ -38,22 +38,12 @@ export const UserGroupSelect = ({
     const [ownerOptions, setOwnerOptions] = useState<UserGroup[]>();
     const hasError = shouldDisplayError(mandatory, userGroup);
     const { t } = useTranslation();
-    const [syncGroup, setSyncGroup] = useState<UserGroup[]>([]);
 
     useEffect(() => {
         getUserGroupList(isSingleUserIncluded).then((groups) => {
             setOwnerOptions(groups);
         });
     }, []);
-
-    useEffect(() => {
-        if (!ownerOptions) return;
-        const updatedUserGroup = userGroup.map((user) => {
-            const matchingOwner = ownerOptions.find((owner) => owner.uuid === user.uuid);
-            return matchingOwner ? matchingOwner : user;
-        });
-        setSyncGroup(updatedUserGroup);
-    }, [ownerOptions, userGroup]);
 
     const getErrorText = () => {
         if (hasError) {
@@ -83,10 +73,9 @@ export const UserGroupSelect = ({
             }}
             onChange={(_, value) => {
                 setUserGroup(value);
-                setSyncGroup(value);
             }}
             isOptionEqualToValue={(option, value) => option.uuid === value.uuid}
-            value={syncGroup}
+            value={userGroup}
             renderTags={(groups) => <UserGroupAvatars groups={groups} />}
             renderOption={(props, option, { selected }) => (
                 <li {...props}>
