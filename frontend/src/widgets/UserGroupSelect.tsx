@@ -26,15 +26,34 @@ const shouldDisplayError = (mandatory: boolean, userGroup: UserGroup[]) => {
     return mandatory && userGroup.length === 0;
 };
 
-
-export const UserGroupSelect = ({ readOnly, userGroup, setUserGroup, mandatory, errorText, placeholder = "", checkIsOwnerValidWithConfidentialityLevel }: Props) => {
+export const UserGroupSelect = ({
+    readOnly,
+    userGroup,
+    setUserGroup,
+    mandatory,
+    errorText,
+    placeholder = "",
+    checkIsOwnerValidWithConfidentialityLevel,
+}: Props) => {
     const [ownerOptions, setOwnerOptions] = useState<UserGroup[]>();
     const hasError = shouldDisplayError(mandatory, userGroup);
     const { t } = useTranslation();
+    const [syncGroup, setSyncGroup] = useState<UserGroup[]>([]);
 
     useEffect(() => {
-        getUserGroupList(isSingleUserIncluded).then((groups) => setOwnerOptions(groups));
+        getUserGroupList(isSingleUserIncluded).then((groups) => {
+            setOwnerOptions(groups);
+        });
     }, []);
+
+    useEffect(() => {
+        if (!ownerOptions) return;
+        const updatedUserGroup = userGroup.map((user) => {
+            const matchingOwner = ownerOptions.find((owner) => owner.uuid === user.uuid);
+            return matchingOwner ? matchingOwner : user;
+        });
+        setSyncGroup(updatedUserGroup);
+    }, [ownerOptions, userGroup]);
 
     const getErrorText = () => {
         if (hasError) {
@@ -44,6 +63,7 @@ export const UserGroupSelect = ({ readOnly, userGroup, setUserGroup, mandatory, 
         }
         return "";
     };
+
     return (
         <Autocomplete
             multiple
@@ -63,9 +83,10 @@ export const UserGroupSelect = ({ readOnly, userGroup, setUserGroup, mandatory, 
             }}
             onChange={(_, value) => {
                 setUserGroup(value);
+                setSyncGroup(value);
             }}
             isOptionEqualToValue={(option, value) => option.uuid === value.uuid}
-            value={userGroup}
+            value={syncGroup}
             renderTags={(groups) => <UserGroupAvatars groups={groups} />}
             renderOption={(props, option, { selected }) => (
                 <li {...props}>
@@ -74,7 +95,14 @@ export const UserGroupSelect = ({ readOnly, userGroup, setUserGroup, mandatory, 
                     <UserGroupAvatars groups={[option]} />
                 </li>
             )}
-            renderInput={(params) => <TextField {...params} error={hasError || !checkIsOwnerValidWithConfidentialityLevel()} helperText={getErrorText()} placeholder={hasError ? placeholder : ""} />}
+            renderInput={(params) => (
+                <TextField
+                    {...params}
+                    error={hasError || !checkIsOwnerValidWithConfidentialityLevel()}
+                    helperText={getErrorText()}
+                    placeholder={hasError ? placeholder : ""}
+                />
+            )}
         />
     );
 };
