@@ -28,6 +28,7 @@ This release focusses on expanding dashboard features and ranged categories.
 - fixed an issue in the dashboards where there were space issues in case of many categories
 - fixed an issue where saving changes in house blocks would not give feedback
 - fixed an issue where saving plot updates would not give feedback
+- fixed an issue where a user that had been removed from a group would still have access to projects assigned to that group
 
 ## DIWI RELEASE 1.5.0
 
