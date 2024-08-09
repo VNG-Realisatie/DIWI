@@ -31,7 +31,7 @@ public class PlanConditionOrdinalCustomProperty extends ChangeDataSuperclass {
     private PlanCondition planCondition;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "eigenschap_id")
+    @JoinColumn(name = "property_id")
     private Property property;
 
     @ManyToOne(fetch = FetchType.EAGER)

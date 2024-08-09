@@ -22,4 +22,7 @@ public class Plan extends IdSuperclass {
     @OneToMany(mappedBy="plan", fetch = FetchType.LAZY)
     private List<PlanState> states;
 
+    @OneToMany(mappedBy="plan", fetch = FetchType.LAZY)
+    private List<PlanCondition> conditions;
+
 }

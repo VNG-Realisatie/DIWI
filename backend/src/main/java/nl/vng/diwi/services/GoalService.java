@@ -34,6 +34,7 @@ import nl.vng.diwi.dal.entities.enums.HouseType;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
 import nl.vng.diwi.dal.entities.enums.ValueType;
+import nl.vng.diwi.dal.entities.superclasses.ChangeDataSuperclass;
 import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.models.PlanModel;
 import nl.vng.diwi.models.PlanSqlModel;
@@ -43,7 +44,10 @@ import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.security.LoggedUser;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class GoalService {
@@ -161,14 +165,18 @@ public class GoalService {
         planCondition.setPlan(plan);
         repo.persist(planCondition);
 
+        createPlanConditionState(repo, planCondition, type, createTime, createUser);
+
+        return planCondition;
+    }
+
+    private void createPlanConditionState(VngRepository repo, PlanCondition planCondition, ConditionType type, ZonedDateTime createTime, User createUser) {
         PlanConditionState planConditionState = new PlanConditionState();
         planConditionState.setPlanCondition(planCondition);
         planConditionState.setConditionType(type);
         planConditionState.setCreateUser(createUser);
         planConditionState.setChangeStartDate(createTime);
         repo.persist(planConditionState);
-
-        return planCondition;
     }
 
     public UUID createGoal(VngRepository repo, PlanModel planModel, ZonedDateTime createTime, UUID loggedUserUuid) {
@@ -179,6 +187,182 @@ public class GoalService {
         Plan goal = new Plan();
         repo.persist(goal);
 
+        createPlanState(repo, planModel, goal, now, currentUser);
+
+        if (planModel.getGeography() != null && !planModel.getGeography().getOptions().isEmpty()) {
+            PlanCondition condition = createPlanCondition(repo, goal, ConditionType.PLAN_CONDITION, now, currentUser);
+            createPlanConditionRegistryLink(repo, planModel.getGeography(), condition, currentUser, now);
+        }
+
+        if (planModel.getConditions() != null && !planModel.getConditions().isEmpty()) {
+            ConditionType conditionType = (planModel.getGoalType() == GoalType.NUMBER) ? ConditionType.PLAN_CONDITION : ConditionType.GOAL_CONDITION;
+            for (PlanModel.PlanConditionModel c : planModel.getConditions()) {
+                PlanCondition condition = createPlanCondition(repo, goal, conditionType, now, currentUser);
+                createPlanConditionDetails(repo, c, condition, now, currentUser);
+            }
+        }
+
+        return goal.getId();
+    }
+
+    private void createPlanConditionRegistryLink(VngRepository repo, PlanModel.PlanGeographyModel planGeographyModel, PlanCondition condition, User currentUser, ZonedDateTime now) {
+        PlanConditionRegistryLink registryLink = new PlanConditionRegistryLink();
+        registryLink.setPlanCondition(condition);
+        registryLink.setCreateUser(currentUser);
+        registryLink.setChangeStartDate(now);
+        repo.persist(registryLink);
+
+        planGeographyModel.getOptions().forEach(g -> {
+            PlanConditionRegistryLinkValue registryLinkValue = new PlanConditionRegistryLinkValue();
+            registryLinkValue.setRegistryLink(registryLink);
+            registryLinkValue.setBrkGemeenteCode(g.getBrkGemeenteCode());
+            registryLinkValue.setBrkSectie(g.getBrkSectie());
+            registryLinkValue.setBrkPerceelNummer(g.getBrkPerceelNummer());
+            repo.persist(registryLinkValue);
+        });
+    }
+
+    private void createPlanConditionDetails(VngRepository repo, PlanModel.PlanConditionModel c, PlanCondition condition, ZonedDateTime now, User currentUser) {
+
+        if (c.getConditionFieldType() == PlanModel.ConditionFieldType.GROUND_POSITION) {
+            PlanConditionGroundPosition gp = new PlanConditionGroundPosition();
+            gp.setPlanCondition(condition);
+            gp.setCreateUser(currentUser);
+            gp.setChangeStartDate(now);
+            repo.persist(gp);
+
+            c.getListOptions().forEach(s -> {
+                PlanConditionGroundPositionValue gpValue = new PlanConditionGroundPositionValue();
+                gpValue.setConditionGroundPosition(gp);
+                gpValue.setGroundPosition(GroundPosition.valueOf(s));
+                repo.persist(gpValue);
+            });
+
+        } else if (c.getConditionFieldType() == PlanModel.ConditionFieldType.HOUSE_TYPE) {
+            PlanConditionAppearanceAndType ht = new PlanConditionAppearanceAndType();
+            ht.setPlanCondition(condition);
+            ht.setCreateUser(currentUser);
+            ht.setChangeStartDate(now);
+            repo.persist(ht);
+
+            c.getListOptions().forEach(s -> {
+                PlanConditionHouseTypeValue htValue = new PlanConditionHouseTypeValue();
+                htValue.setAppearanceAndTypeCondition(ht);
+                htValue.setHouseType(HouseType.valueOf(s));
+                repo.persist(htValue);
+            });
+
+        } else if (c.getConditionFieldType() == PlanModel.ConditionFieldType.PROGRAMMING) {
+            PlanConditionProgramming p = new PlanConditionProgramming();
+            p.setPlanCondition(condition);
+            p.setProgramming(c.getBooleanValue());
+            p.setCreateUser(currentUser);
+            p.setChangeStartDate(now);
+            repo.persist(p);
+
+        } else if (c.getConditionFieldType() == PlanModel.ConditionFieldType.OWNERSHIP) {
+            c.getOwnershipOptions().forEach(ownershipOption -> {
+                PlanConditionOwnershipValue o = new PlanConditionOwnershipValue();
+                o.setPlanCondition(condition);
+                o.setCreateUser(currentUser);
+                o.setChangeStartDate(now);
+                o.setOwnershipType(ownershipOption.getType());
+                if (o.getOwnershipType() == OwnershipType.KOOPWONING) {
+                    if (ownershipOption.getValue() != null) {
+                        o.setValue(ownershipOption.getValue().getValue());
+                        o.setValueRange(ownershipOption.getValue().toRange());
+                    }
+                    if (ownershipOption.getRangeCategoryOption() != null) {
+                        o.setOwnershipRangeCategoryValue(repo.getReferenceById(PropertyRangeCategoryValue.class, ownershipOption.getRangeCategoryOption().getId()));
+                    }
+                } else {
+                    if (ownershipOption.getValue() != null) {
+                        o.setRentalValue(ownershipOption.getValue().getValue());
+                        o.setRentalValueRange(ownershipOption.getValue().toRange());
+                    }
+                    if (ownershipOption.getRangeCategoryOption() != null) {
+                        o.setRentalRangeCategoryValue(repo.getReferenceById(PropertyRangeCategoryValue.class, ownershipOption.getRangeCategoryOption().getId()));
+                    }
+                }
+                repo.persist(o);
+            });
+
+        } else if (c.getConditionFieldType() == PlanModel.ConditionFieldType.PROPERTY) {
+            if (c.getPropertyName().equals(Constants.FIXED_PROPERTY_PHYSICAL_APPEARANCE)) {
+                var at = new PlanConditionAppearanceAndType();
+                at.setPlanCondition(condition);
+                at.setCreateUser(currentUser);
+                at.setChangeStartDate(now);
+                repo.persist(at);
+
+                c.getCategoryOptions().forEach(s -> {
+                    var paValue = new PlanConditionPhysicalAppearanceValue();
+                    paValue.setAppearanceAndTypeCondition(at);
+                    paValue.setCategoryValue(repo.getReferenceById(PropertyCategoryValue.class, s.getId()));
+                    repo.persist(paValue);
+                });
+
+            } else if (c.getPropertyName().equals(Constants.FIXED_PROPERTY_TARGET_GROUP)) {
+                var tg = new PlanConditionTargetGroup();
+                tg.setPlanCondition(condition);
+                tg.setCreateUser(currentUser);
+                tg.setChangeStartDate(now);
+                repo.persist(tg);
+
+                c.getCategoryOptions().forEach(s -> {
+                    var tgValue = new PlanConditionTargetGroupValue();
+                    tgValue.setTargetGroupCondition(tg);
+                    tgValue.setCategoryValue(repo.getReferenceById(PropertyCategoryValue.class, s.getId()));
+                    repo.persist(tgValue);
+                });
+
+            } else {
+                if (c.getPropertyType() == PropertyType.BOOLEAN) {
+                    var bcp = new PlanConditionBooleanCustomProperty();
+                    bcp.setPlanCondition(condition);
+                    bcp.setCreateUser(currentUser);
+                    bcp.setChangeStartDate(now);
+                    bcp.setValue(c.getBooleanValue());
+                    bcp.setProperty(repo.getReferenceById(Property.class, c.getPropertyId()));
+                    repo.persist(bcp);
+
+                } else if (c.getPropertyType() == PropertyType.CATEGORY) {
+                    var ccp = new PlanConditionCategoryCustomProperty();
+                    ccp.setPlanCondition(condition);
+                    ccp.setCreateUser(currentUser);
+                    ccp.setChangeStartDate(now);
+                    ccp.setProperty(repo.getReferenceById(Property.class, c.getPropertyId()));
+                    repo.persist(ccp);
+
+                    c.getCategoryOptions().forEach(co -> {
+                        var ccpv = new PlanConditionCategoryCustomPropertyValue();
+                        ccpv.setCategoryCondition(ccp);
+                        ccpv.setCategoryValue(repo.getReferenceById(PropertyCategoryValue.class, co.getId()));
+                        repo.persist(ccpv);
+                    });
+
+                } else if (c.getPropertyType() == PropertyType.ORDINAL) {
+                    var cop = new PlanConditionOrdinalCustomProperty();
+                    cop.setPlanCondition(condition);
+                    cop.setCreateUser(currentUser);
+                    cop.setChangeStartDate(now);
+                    cop.setProperty(repo.getReferenceById(Property.class, c.getPropertyId()));
+                    if (c.getOrdinalOptions().getValue() != null) {
+                        cop.setValue(repo.getReferenceById(PropertyOrdinalValue.class, c.getOrdinalOptions().getValue().getId()));
+                        cop.setValueType(ValueType.SINGLE_VALUE);
+                    } else {
+                        cop.setValueType(ValueType.RANGE);
+                        cop.setMinValue(repo.getReferenceById(PropertyOrdinalValue.class, c.getOrdinalOptions().getMin().getId()));
+                        cop.setMaxValue(repo.getReferenceById(PropertyOrdinalValue.class, c.getOrdinalOptions().getMax().getId()));
+                    }
+                    repo.persist(cop);
+
+                }
+            }
+        }
+    }
+
+    private void createPlanState(VngRepository repo, PlanModel planModel, Plan goal, ZonedDateTime now, User currentUser) {
         PlanState goalState = new PlanState();
         goalState.setPlan(goal);
         goalState.setName(planModel.getName());
@@ -193,171 +377,6 @@ public class GoalService {
             goalState.setCategory(repo.getReferenceById(PlanCategory.class, planModel.getCategory().getId()));
         }
         repo.persist(goalState);
-
-        if (planModel.getGeography() != null && !planModel.getGeography().getOptions().isEmpty()) {
-            PlanCondition condition = createPlanCondition(repo, goal, ConditionType.PLAN_CONDITION, now, currentUser);
-
-            PlanConditionRegistryLink registryLink = new PlanConditionRegistryLink();
-            registryLink.setPlanCondition(condition);
-            registryLink.setCreateUser(currentUser);
-            registryLink.setChangeStartDate(now);
-            repo.persist(registryLink);
-
-            planModel.getGeography().getOptions().forEach(g -> {
-                PlanConditionRegistryLinkValue registryLinkValue = new PlanConditionRegistryLinkValue();
-                registryLinkValue.setRegistryLink(registryLink);
-                registryLinkValue.setBrkGemeenteCode(g.getBrkGemeenteCode());
-                registryLinkValue.setBrkSectie(g.getBrkSectie());
-                registryLinkValue.setBrkPerceelNummer(g.getBrkPerceelNummer());
-                repo.persist(registryLinkValue);
-            });
-        }
-
-        if (planModel.getConditions() != null && !planModel.getConditions().isEmpty()) {
-            ConditionType conditionType = (planModel.getGoalType() == GoalType.NUMBER) ? ConditionType.PLAN_CONDITION : ConditionType.GOAL_CONDITION;
-            for (PlanModel.PlanConditionModel c : planModel.getConditions()) {
-                PlanCondition condition = createPlanCondition(repo, goal, conditionType, now, currentUser);
-
-                if (c.getConditionFieldType() == PlanModel.ConditionFieldType.GROUND_POSITION) {
-                    PlanConditionGroundPosition gp = new PlanConditionGroundPosition();
-                    gp.setPlanCondition(condition);
-                    gp.setCreateUser(currentUser);
-                    gp.setChangeStartDate(now);
-                    repo.persist(gp);
-
-                    c.getListOptions().forEach(s -> {
-                        PlanConditionGroundPositionValue gpValue = new PlanConditionGroundPositionValue();
-                        gpValue.setConditionGroundPosition(gp);
-                        gpValue.setGroundPosition(GroundPosition.valueOf(s));
-                        repo.persist(gpValue);
-                    });
-
-                } else if (c.getConditionFieldType() == PlanModel.ConditionFieldType.HOUSE_TYPE) {
-                    PlanConditionAppearanceAndType ht = new PlanConditionAppearanceAndType();
-                    ht.setPlanCondition(condition);
-                    ht.setCreateUser(currentUser);
-                    ht.setChangeStartDate(now);
-                    repo.persist(ht);
-
-                    c.getListOptions().forEach(s -> {
-                        PlanConditionHouseTypeValue htValue = new PlanConditionHouseTypeValue();
-                        htValue.setAppearanceAndTypeCondition(ht);
-                        htValue.setHouseType(HouseType.valueOf(s));
-                        repo.persist(htValue);
-                    });
-
-                } else if (c.getConditionFieldType() == PlanModel.ConditionFieldType.PROGRAMMING) {
-                    PlanConditionProgramming p = new PlanConditionProgramming();
-                    p.setPlanCondition(condition);
-                    p.setProgramming(c.getBooleanValue());
-                    p.setCreateUser(currentUser);
-                    p.setChangeStartDate(now);
-                    repo.persist(p);
-
-                } else if (c.getConditionFieldType() == PlanModel.ConditionFieldType.OWNERSHIP) {
-                    c.getOwnershipOptions().forEach(ownershipOption -> {
-                        PlanConditionOwnershipValue o = new PlanConditionOwnershipValue();
-                        o.setPlanCondition(condition);
-                        o.setCreateUser(currentUser);
-                        o.setChangeStartDate(now);
-                        o.setOwnershipType(ownershipOption.getType());
-                        if (o.getOwnershipType() == OwnershipType.KOOPWONING) {
-                            if (ownershipOption.getValue() != null) {
-                                o.setValue(ownershipOption.getValue().getValue());
-                                o.setValueRange(ownershipOption.getValue().toRange());
-                            }
-                            if (ownershipOption.getRangeCategoryOption() != null) {
-                                o.setOwnershipRangeCategoryValue(repo.getReferenceById(PropertyRangeCategoryValue.class, ownershipOption.getRangeCategoryOption().getId()));
-                            }
-                        } else {
-                            if (ownershipOption.getValue() != null) {
-                                o.setRentalValue(ownershipOption.getValue().getValue());
-                                o.setRentalValueRange(ownershipOption.getValue().toRange());
-                            }
-                            if (ownershipOption.getRangeCategoryOption() != null) {
-                                o.setRentalRangeCategoryValue(repo.getReferenceById(PropertyRangeCategoryValue.class, ownershipOption.getRangeCategoryOption().getId()));
-                            }
-                        }
-                        repo.persist(o);
-                    });
-
-                } else if (c.getConditionFieldType() == PlanModel.ConditionFieldType.PROPERTY) {
-                    if (c.getPropertyName().equals(Constants.FIXED_PROPERTY_PHYSICAL_APPEARANCE)) {
-                        var at = new PlanConditionAppearanceAndType();
-                        at.setPlanCondition(condition);
-                        at.setCreateUser(currentUser);
-                        at.setChangeStartDate(now);
-                        repo.persist(at);
-
-                        c.getCategoryOptions().forEach(s -> {
-                            var paValue = new PlanConditionPhysicalAppearanceValue();
-                            paValue.setAppearanceAndTypeCondition(at);
-                            paValue.setCategoryValue(repo.getReferenceById(PropertyCategoryValue.class, s.getId()));
-                            repo.persist(paValue);
-                        });
-
-                    } else if (c.getPropertyName().equals(Constants.FIXED_PROPERTY_TARGET_GROUP)) {
-                        var tg = new PlanConditionTargetGroup();
-                        tg.setPlanCondition(condition);
-                        tg.setCreateUser(currentUser);
-                        tg.setChangeStartDate(now);
-                        repo.persist(tg);
-
-                        c.getCategoryOptions().forEach(s -> {
-                            var tgValue = new PlanConditionTargetGroupValue();
-                            tgValue.setTargetGroupCondition(tg);
-                            tgValue.setCategoryValue(repo.getReferenceById(PropertyCategoryValue.class, s.getId()));
-                            repo.persist(tgValue);
-                        });
-
-                    } else {
-                        if (c.getPropertyType() == PropertyType.BOOLEAN) {
-                            var bcp = new PlanConditionBooleanCustomProperty();
-                            bcp.setPlanCondition(condition);
-                            bcp.setCreateUser(currentUser);
-                            bcp.setChangeStartDate(now);
-                            bcp.setValue(c.getBooleanValue());
-                            bcp.setProperty(repo.getReferenceById(Property.class, c.getPropertyId()));
-                            repo.persist(bcp);
-
-                        } else if (c.getPropertyType() == PropertyType.CATEGORY) {
-                            var ccp = new PlanConditionCategoryCustomProperty();
-                            ccp.setPlanCondition(condition);
-                            ccp.setCreateUser(currentUser);
-                            ccp.setChangeStartDate(now);
-                            ccp.setProperty(repo.getReferenceById(Property.class, c.getPropertyId()));
-                            repo.persist(ccp);
-
-                            c.getCategoryOptions().forEach(co -> {
-                                var ccpv = new PlanConditionCategoryCustomPropertyValue();
-                                ccpv.setCategoryCondition(ccp);
-                                ccpv.setCategoryValue(repo.getReferenceById(PropertyCategoryValue.class, co.getId()));
-                                repo.persist(ccpv);
-                            });
-
-                        } else if (c.getPropertyType() == PropertyType.ORDINAL) {
-                            var cop = new PlanConditionOrdinalCustomProperty();
-                            cop.setPlanCondition(condition);
-                            cop.setCreateUser(currentUser);
-                            cop.setChangeStartDate(now);
-                            cop.setProperty(repo.getReferenceById(Property.class, c.getPropertyId()));
-                            if (c.getOrdinalOptions().getValue() != null) {
-                                cop.setValue(repo.getReferenceById(PropertyOrdinalValue.class, c.getOrdinalOptions().getValue().getId()));
-                                cop.setValueType(ValueType.SINGLE_VALUE);
-                            } else {
-                                cop.setValueType(ValueType.RANGE);
-                                cop.setMinValue(repo.getReferenceById(PropertyOrdinalValue.class, c.getOrdinalOptions().getMin().getId()));
-                                cop.setMaxValue(repo.getReferenceById(PropertyOrdinalValue.class, c.getOrdinalOptions().getMax().getId()));
-                            }
-                            repo.persist(cop);
-
-                        }
-                    }
-                }
-            }
-        }
-
-        return goal.getId();
     }
 
     public void deleteGoal(VngRepository repo, UUID planId, LoggedUser loggedUser) throws VngNotFoundException {
@@ -378,5 +397,108 @@ public class GoalService {
             }
         });
 
+    }
+
+    public void updateGoal(VngRepository repo, PlanModel updatedPlanModel, ZonedDateTime now, UUID loggedUserUuid) throws VngNotFoundException {
+
+        PlanModel initialPlanModel = getGoal(repo, updatedPlanModel.getId());
+        if (initialPlanModel == null) {
+            throw new VngNotFoundException();
+        }
+
+        Plan goal = repo.findById(Plan.class, updatedPlanModel.getId());
+
+        User currentUser = repo.getReferenceById(User.class, loggedUserUuid);
+
+        if (!initialPlanModel.isPlanStateDataEqual(updatedPlanModel)) {
+            PlanState planState = goal.getStates().stream().filter(s -> s.getChangeEndDate() == null).findFirst().orElseThrow(VngNotFoundException::new);
+            planState.setChangeEndDate(now);
+            planState.setChangeUser(currentUser);
+            repo.persist(planState);
+
+            createPlanState(repo, updatedPlanModel, goal, now, currentUser);
+        }
+
+        ConditionType initialConditionType = (initialPlanModel.getGoalType() == GoalType.NUMBER) ? ConditionType.PLAN_CONDITION : ConditionType.GOAL_CONDITION;
+        ConditionType updatedConditionType = (updatedPlanModel.getGoalType() == GoalType.NUMBER) ? ConditionType.PLAN_CONDITION : ConditionType.GOAL_CONDITION;
+
+        Map<UUID, PlanModel.PlanConditionModel> initialPlanConditionsMap = new HashMap<>();
+        Map<UUID, PlanModel.PlanConditionModel> updatedPlanConditionsMap = new HashMap<>();
+        List<PlanModel.PlanConditionModel> newPlanConditions = new ArrayList<>();
+        if (initialPlanModel.getConditions() != null) {
+            initialPlanModel.getConditions().forEach(c -> initialPlanConditionsMap.put(c.getConditionId(), c));
+        }
+        if (updatedPlanModel.getConditions() != null) {
+            updatedPlanModel.getConditions().forEach(c -> {
+                if (c.getConditionId() != null) {
+                    updatedPlanConditionsMap.put(c.getConditionId(), c);
+                } else {
+                    newPlanConditions.add(c);
+                }
+            });
+        }
+
+        if (!initialPlanConditionsMap.keySet().containsAll(updatedPlanConditionsMap.keySet())) {
+            throw new VngNotFoundException("Unknown condition ids");
+        }
+
+        List<PlanCondition> planConditionList = goal.getConditions();
+
+        for (PlanModel.PlanConditionModel initialCondition : initialPlanConditionsMap.values()) {
+
+            PlanModel.PlanConditionModel updatedCondition = updatedPlanConditionsMap.get(initialCondition.getConditionId());
+            PlanCondition conditionEntity = planConditionList.stream().filter(c -> c.getId().equals(initialCondition.getConditionId())).findFirst().orElseThrow(VngNotFoundException::new);
+
+            if (updatedCondition == null) {
+                deleteConditionProperties(repo, conditionEntity.getStates(), now, currentUser);
+                deletePlanConditionDetails(repo, conditionEntity, now, currentUser);
+            } else {
+                if (!initialCondition.isPlanConditionDataEqual(repo, updatedCondition)) {
+                    deletePlanConditionDetails(repo, conditionEntity, now, currentUser);
+                    createPlanConditionDetails(repo, updatedCondition, conditionEntity, now, currentUser);
+                }
+                if (initialConditionType != updatedConditionType) {
+                    deleteConditionProperties(repo, conditionEntity.getStates(), now, currentUser);
+                    createPlanConditionState(repo, conditionEntity, updatedConditionType, now, currentUser);
+                }
+            }
+        }
+        for (PlanModel.PlanConditionModel c : newPlanConditions) {
+            PlanCondition newCondition = createPlanCondition(repo, goal, updatedConditionType, now, currentUser);
+            createPlanConditionDetails(repo, c, newCondition, now, currentUser);
+        }
+
+        if (initialPlanModel.getGeography() != null) {
+            PlanCondition geographyCondition = planConditionList.stream().filter(c -> c.getId().equals(initialPlanModel.getGeography().getConditionId())).findFirst().orElseThrow(VngNotFoundException::new);
+            if (updatedPlanModel.getGeography() == null) {
+                deleteConditionProperties(repo, geographyCondition.getStates(), now, currentUser);
+                deleteConditionProperties(repo, geographyCondition.getRegistryLinks(), now, currentUser);
+            } else if (!initialPlanModel.getGeography().isGeographyDataEqual(updatedPlanModel.getGeography())) {
+                deleteConditionProperties(repo, geographyCondition.getRegistryLinks(), now, currentUser);
+                createPlanConditionRegistryLink(repo, updatedPlanModel.getGeography(), geographyCondition, currentUser, now);
+            }
+        } else if (updatedPlanModel.getGeography() != null) {
+            PlanCondition newGeographyCondition = createPlanCondition(repo, goal, ConditionType.PLAN_CONDITION, now, currentUser);
+            createPlanConditionRegistryLink(repo, updatedPlanModel.getGeography(), newGeographyCondition, currentUser, now);
+        }
+    }
+
+    private void deletePlanConditionDetails(VngRepository repo, PlanCondition conditionEntity, ZonedDateTime deleteTime, User changeUser) {
+        deleteConditionProperties(repo, conditionEntity.getGroundPositions(), deleteTime, changeUser);
+        deleteConditionProperties(repo, conditionEntity.getTargetGroups(), deleteTime, changeUser);
+        deleteConditionProperties(repo, conditionEntity.getAppearanceAndTypes(), deleteTime, changeUser);
+        deleteConditionProperties(repo, conditionEntity.getOwnershipValues(), deleteTime, changeUser);
+        deleteConditionProperties(repo, conditionEntity.getProgrammings(), deleteTime, changeUser);
+        deleteConditionProperties(repo, conditionEntity.getBooleanCustomProperties(), deleteTime, changeUser);
+        deleteConditionProperties(repo, conditionEntity.getCategoryCustomProperties(), deleteTime, changeUser);
+        deleteConditionProperties(repo, conditionEntity.getOrdinalCustomProperties(), deleteTime, changeUser);
+    }
+
+    private void deleteConditionProperties(VngRepository repo, List<? extends ChangeDataSuperclass> properties, ZonedDateTime deleteTime, User changeUser) {
+        properties.stream().filter(prop -> prop.getChangeEndDate() == null).forEach(prop -> {
+            prop.setChangeEndDate(deleteTime);
+            prop.setChangeUser(changeUser);
+            repo.persist(prop);
+        });
     }
 }

@@ -80,6 +80,28 @@ public class GoalResource {
         }
     }
 
+    @PUT
+    @Path("/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public PlanModel updateGoal(@PathParam("id") UUID planId, PlanModel planModel, @Context LoggedUser loggedUser) throws VngBadRequestException, VngNotFoundException {
+
+        planModel.setId(planId);
+
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+
+            String validationError = planModel.validate(repo);
+            if (validationError != null) {
+                throw new VngBadRequestException(validationError);
+            }
+
+            goalService.updateGoal(repo, planModel, ZonedDateTime.now(), loggedUser.getUuid());
+            transaction.commit();
+            repo.getSession().clear();
+            return goalService.getGoal(repo, planId);
+        }
+    }
+
 
     @DELETE
     @Path("/{id}")

@@ -3,6 +3,7 @@ package nl.vng.diwi.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Id;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,7 +22,12 @@ import nl.vng.diwi.models.superclasses.DatedDataModelSuperClass;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -117,6 +123,12 @@ public class PlanModel extends DatedDataModelSuperClass {
         }
     }
 
+    public boolean isPlanStateDataEqual(PlanModel that) {
+        return Objects.equals(this.id, that.id) && Objects.equals(this.name, that.name) &&
+            Objects.equals(this.goalType, that.goalType) && Objects.equals(this.goalDirection, that.goalDirection) &&
+            Objects.equals(this.goalValue, that.goalValue) && Objects.equals(this.category, that.category);
+    }
+
     public String validate(VngRepository repo) {
         if (this.name == null || this.name.isBlank()) {
             return "Goal name can not be null.";
@@ -163,8 +175,23 @@ public class PlanModel extends DatedDataModelSuperClass {
             if (this.conditions.size() > 1) {
                 return "Only one condition is currently allowed for a goal.";
             }
-            //TODO: overall validations only one of each for programming / house type / ownership / ground position
-            //TODO: for properties, only one use of a property allowed
+            Map<ConditionFieldType, Integer> fieldTypeValidationMap = new HashMap<>();
+            Set<UUID> propertyIds = new HashSet<>();
+            Arrays.stream(ConditionFieldType.values()).forEach(cft -> fieldTypeValidationMap.put(cft, 0));
+            this.conditions.forEach(c -> {
+                fieldTypeValidationMap.put(c.getConditionFieldType(), fieldTypeValidationMap.get(c.getConditionFieldType()) + 1);
+                if (c.getConditionFieldType() == ConditionFieldType.PROPERTY) {
+                    propertyIds.add(c.getPropertyId());
+                }
+            });
+            for (ConditionFieldType cft : ConditionFieldType.values()) {
+                if (cft != ConditionFieldType.PROPERTY && fieldTypeValidationMap.get(cft) > 1) {
+                    return "Only one " + cft.name() + " condition is allowed.";
+                }
+                if (cft == ConditionFieldType.PROPERTY && fieldTypeValidationMap.get(cft) != propertyIds.size()) {
+                    return "Only one condition is allowed for a property.";
+                }
+            }
             for (PlanConditionModel condition : this.conditions) {
                 String validationError = condition.validate(repo);
                 if (validationError != null) {
@@ -211,6 +238,34 @@ public class PlanModel extends DatedDataModelSuperClass {
 
         @JsonIgnore
         private PropertyModel propertyModel;
+
+        public boolean isPlanConditionDataEqual(VngRepository repo, PlanConditionModel that) {
+            if (!Objects.equals(this.conditionId, that.conditionId) || !Objects.equals(this.conditionFieldType, that.conditionFieldType)) {
+                return false;
+            }
+
+            if (this.conditionFieldType == ConditionFieldType.PROGRAMMING) {
+                return Objects.equals(this.booleanValue, that.booleanValue);
+            } else if (this.conditionFieldType == ConditionFieldType.HOUSE_TYPE || this.conditionFieldType == ConditionFieldType.GROUND_POSITION) {
+                return this.listOptions.size() == that.listOptions.size() && this.listOptions.containsAll(that.listOptions);
+            } else if (this.conditionFieldType == ConditionFieldType.OWNERSHIP) {
+                return this.ownershipOptions.size() == that.ownershipOptions.size() && this.ownershipOptions.containsAll(that.ownershipOptions);
+            } else if (this.conditionFieldType == ConditionFieldType.PROPERTY) {
+                if (!Objects.equals(this.propertyId, that.propertyId)) {
+                    return false;
+                }
+                PropertyModel propertyModel = repo.getPropertyDAO().getPropertyById(propertyId);
+                if (propertyModel.getPropertyType() == PropertyType.BOOLEAN) {
+                    return Objects.equals(this.booleanValue, that.booleanValue);
+                } else if (propertyModel.getPropertyType() == PropertyType.CATEGORY) {
+                    return this.categoryOptions.size() == that.categoryOptions.size() && this.categoryOptions.containsAll(that.categoryOptions);
+                } else if (propertyModel.getPropertyType() == PropertyType.ORDINAL) {
+                    return Objects.equals(this.ordinalOptions, that.ordinalOptions);
+                }
+            }
+
+            return false;
+        }
 
         public String validate(VngRepository repo) {
             if (conditionFieldType == null) {
@@ -307,6 +362,7 @@ public class PlanModel extends DatedDataModelSuperClass {
     @Getter
     @Setter
     @NoArgsConstructor
+    @EqualsAndHashCode
     public static class PlanOwnershipModel {
 
         private OwnershipType type;
@@ -345,7 +401,7 @@ public class PlanModel extends DatedDataModelSuperClass {
             if (type == null) {
                 return "Ownership type cannot be null.";
             } else if (rangeCategoryOption != null && value != null) {
-                return "Only one type of value can be entered.";
+                return "Only one type of ownership value can be entered.";
             } else if (value != null && !value.isValid(true)) {
                 return "Invalid numeric value or numeric range.";
             } else if (rangeCategoryOption != null) {
@@ -378,11 +434,18 @@ public class PlanModel extends DatedDataModelSuperClass {
             }
             return null;
         }
+
+        public boolean isGeographyDataEqual(PlanGeographyModel that) {
+            return Objects.equals(this.conditionId, that.conditionId) &&
+                ((this.options == null && that.options == null) ||
+                    (this.options != null && that.options != null && this.options.size() == that.options.size() && this.options.containsAll(that.options)));
+        }
     }
 
     @Getter
     @Setter
     @NoArgsConstructor
+    @EqualsAndHashCode
     public static class GeographyOptionModel {
 
         private String brkGemeenteCode;
