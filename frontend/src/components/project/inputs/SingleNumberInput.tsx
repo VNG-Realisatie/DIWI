@@ -38,7 +38,7 @@ export const SingleNumberInput = ({
             disabled={readOnly}
             sx={{
                 flex: 1,
-                backgroundColor: readOnly ? "inherit" : "#FFFFFF",
+                backgroundColor: readOnly || hasError ? "inherit" : "#FFFFFF",
             }}
             InputProps={{
                 inputProps: {
