@@ -9,7 +9,7 @@ import useAllowedActions from "../../hooks/useAllowedActions";
 export const ProjectHouseBlockCardItem = (props: any) => {
     const { hb } = props;
     const [editable, setEditable] = useState(false);
-    const allowedActions = useAllowedActions();
+    const { allowedActions } = useAllowedActions();
 
     return (
         <>

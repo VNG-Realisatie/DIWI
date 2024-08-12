@@ -6,6 +6,8 @@ import { OwnershipSingleValue } from "../../../../types/houseBlockTypes";
 import CategoryInput from "../../../project/inputs/CategoryInput";
 import RangeNumberInput from "../../../project/inputs/RangeNumberInput";
 import InputLabelStack from "../../../project/inputs/InputLabelStack";
+import { getCustomPropertiesWithQuery, Property } from "../../../../api/adminSettingServices";
+import { useEffect, useState } from "react";
 
 const translationPath = "createProject.houseBlocksForm";
 
@@ -65,6 +67,57 @@ const OwnershipAmountInput = ({ handleInputChange, ownership, index, readOnly, t
 export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handleRemoveRow, readOnly, isOwnerShipValueAndMutationConsistent }: Props) => {
     const isKoopwoning = ownership.type === "KOOPWONING";
     const isHuurwoning = ownership.type === "HUURWONING_PARTICULIERE_VERHUURDER" || ownership.type === "HUURWONING_WONINGCORPORATIE";
+    const [rangeCategories, setRangeCategories] = useState<Property[]>([]);
+
+    useEffect(() => {
+        getCustomPropertiesWithQuery("WONINGBLOK").then((properties) => {
+            setRangeCategories(properties.filter((property) => !property.disabled && property.propertyType === "RANGE_CATEGORY"));
+        });
+    }, []);
+
+    const filteredCategories = rangeCategories.filter((property) => {
+        if (isKoopwoning && property.name === "priceRangeBuy") {
+            return true;
+        }
+        if (isHuurwoning && property.name === "priceRangeRent") {
+            return true;
+        }
+        return false;
+    });
+
+    const customProperty = filteredCategories[0];
+
+    const priceCategoryOptions = customProperty ? customProperty?.ranges?.filter((option) => !option.disabled) : [];
+    const selectedValueCategory = priceCategoryOptions?.find((option) => option.id === ownership.valueCategoryId);
+    const valueCategoryName = selectedValueCategory ? selectedValueCategory.name : "";
+    const selectedRentalValueCategory = priceCategoryOptions?.find((option) => option.id === ownership.rentalValueCategoryId);
+    const rentalValueCategoryName = selectedRentalValueCategory ? selectedRentalValueCategory.name : "";
+
+    const isPriceCategorySelected = Boolean(ownership.valueCategoryId || ownership.rentalValueCategoryId);
+
+    const showErrors = () => {
+        if (
+            ownership.amount > 0 &&
+            !isPriceCategorySelected &&
+            JSON.stringify(ownership.rentalValue) === JSON.stringify({ value: null, min: null, max: null }) &&
+            JSON.stringify(ownership.value) === JSON.stringify({ value: null, min: null, max: null })
+        ) {
+            return true;
+        }
+        return false;
+    };
+    const errorText = t("createProject.houseBlocksForm.ownershipAndValue.error");
+
+    useEffect(() => {
+        handleInputChange(index, {
+            ...ownership,
+            value: isPriceCategorySelected || isHuurwoning ? { value: null, min: null, max: null } : ownership.value,
+            rentalValue: isPriceCategorySelected || isKoopwoning ? { value: null, min: null, max: null } : ownership.rentalValue,
+            valueCategoryId: isKoopwoning ? ownership.valueCategoryId : undefined,
+            rentalValueCategoryId: isHuurwoning ? ownership.rentalValueCategoryId : undefined,
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isPriceCategorySelected, isKoopwoning, isHuurwoning]);
 
     return (
         <Grid container spacing={2} mt={1} direction="row">
@@ -81,7 +134,7 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                     tooltipInfoText={t("tooltipInfo.soort.title")}
                 />
             </Grid>
-            <Grid item xs={1.5} className="ownership-house-amount">
+            <Grid item xs={1} className="ownership-house-amount">
                 <OwnershipAmountInput
                     mandatory={false}
                     readOnly={readOnly}
@@ -92,27 +145,56 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                     isOwnerShipValueAndMutationConsistent={isOwnerShipValueAndMutationConsistent}
                 />
             </Grid>
-            <Grid item xs={3} className="ownership-house-value">
+            <Grid item xs={2} className="price-category">
+                <CategoryInput
+                    title={t(`${translationPath}.priceCategory`)}
+                    readOnly={readOnly}
+                    values={
+                        ownership.valueCategoryId && valueCategoryName
+                            ? { id: ownership.valueCategoryId, name: valueCategoryName }
+                            : ownership.rentalValueCategoryId && rentalValueCategoryName
+                              ? { id: ownership.rentalValueCategoryId, name: rentalValueCategoryName }
+                              : null
+                    }
+                    setValue={(_, newValue) => {
+                        if (isKoopwoning) {
+                            handleInputChange(index, { ...ownership, valueCategoryId: newValue ? newValue.id : undefined, rentalValueCategoryId: undefined });
+                        } else if (isHuurwoning) {
+                            handleInputChange(index, { ...ownership, rentalValueCategoryId: newValue ? newValue.id : undefined, valueCategoryId: undefined });
+                        }
+                    }}
+                    mandatory={false}
+                    options={priceCategoryOptions ?? []}
+                    multiple={false}
+                    displayError={showErrors()}
+                    error={errorText}
+                />
+            </Grid>
+            <Grid item xs={2.8} className="ownership-house-value">
                 <RangeNumberInput
-                    value={!isHuurwoning ? ownership.value : { ...ownership.value, value: null }}
+                    value={!isHuurwoning ? ownership.value : { value: null, min: null, max: null }}
                     updateCallBack={(e) => handleInputChange(index, { ...ownership, value: e })}
-                    readOnly={readOnly ? true : isHuurwoning}
+                    readOnly={readOnly || isPriceCategorySelected || isHuurwoning}
                     mandatory={false}
                     isMonetary={true}
                     title={t(`${translationPath}.value`)}
+                    displayError={showErrors() && !isHuurwoning}
+                    errorText={errorText}
                 />
             </Grid>
-            <Grid item xs={3} className="ownership-house-rent">
+            <Grid item xs={2.8} className="ownership-house-rent">
                 <RangeNumberInput
-                    value={!isKoopwoning ? ownership.rentalValue : { ...ownership.value, value: null }}
+                    value={!isKoopwoning ? ownership.rentalValue : { value: null, min: null, max: null }}
                     updateCallBack={(e) => handleInputChange(index, { ...ownership, rentalValue: e })}
-                    readOnly={readOnly ? true : isKoopwoning}
+                    readOnly={readOnly || isPriceCategorySelected || isKoopwoning}
                     mandatory={false}
                     isMonetary={true}
                     title={t(`${translationPath}.rent`)}
+                    displayError={showErrors() && !isKoopwoning}
+                    errorText={errorText}
                 />
             </Grid>
-            <Grid item xs={0.2} className="ownership-delete-icon" style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
+            <Grid item xs={0.3} className="ownership-delete-icon" style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
                 {!readOnly && (
                     <IconButton onClick={() => handleRemoveRow(index)}>
                         <DeleteIcon sx={{ color: "red" }} />

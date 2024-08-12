@@ -29,7 +29,6 @@ export const ImportPage = ({ functionality }: Props) => {
     }
 
     const importFunction = functionality === "geojson" ? importGeoJsonProjects : importExcelProjects;
-    console.log(errors);
     return (
         <Stack border="solid 1px #ddd" py={3} px={15} marginBottom={"2em"}>
             <Typography fontSize="20px" fontWeight="600" sx={{ mt: 2 }}>

@@ -20,6 +20,8 @@ public class VngRepository extends AbstractRepository {
 
     private PropertyDAO propertyDAO;
 
+    private BlueprintDAO blueprintDAO;
+
     public ProjectsDAO getProjectsDAO() {
         if (projectsDAO == null) {
             projectsDAO = new ProjectsDAO(session);
@@ -60,6 +62,13 @@ public class VngRepository extends AbstractRepository {
             propertyDAO = new PropertyDAO(session);
         }
         return propertyDAO;
+    }
+
+    public BlueprintDAO getBlueprintDAO() {
+        if (blueprintDAO == null) {
+            blueprintDAO = new BlueprintDAO(session);
+        }
+        return blueprintDAO;
     }
 
 }

@@ -26,6 +26,9 @@ export const projectDetailTimeline = createPathObject<ProjectId>(config.baseurl 
 export const policygoal = createPathObject(config.baseurl + "policygoal");
 export const policygoalDashboard = createPathObject(config.baseurl + "policygoal/dashboard");
 export const dashboard = createPathObject(config.baseurl + "dashboard");
+export const createCustomDashbord = createPathObject(config.baseurl + "dashboard/create-custom-dashboard");
+export const updateCustomDashbord = createPathObject(config.baseurl + "dashboard/custom-dashboards/:id");
+export const customDashbordList = createPathObject(config.baseurl + "dashboard/custom-dashboards");
 export const dashboardProject = createPathObject(config.baseurl + "dashboard/project/:projectId");
 export const wizard = createPathObject(config.baseurl + "admin/wizard");
 export const exchangedata = createPathObject(config.baseurl + "exchangedata");
@@ -49,5 +52,6 @@ export const userInfo = createPathObject(config.baseurl + "rest/users/userinfo")
 
 export const userSettings = createPathObject(config.baseurl + "admin/settings");
 export const userManagement = createPathObject(config.baseurl + "admin/user-management");
+export const priceCategories = createPathObject(config.baseurl + "admin/price-categories");
 
 export const swagger = createPathObject(config.baseurl + "swagger");
