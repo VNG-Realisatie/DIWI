@@ -16,19 +16,24 @@ export const validateOwnership = (houseBlock: HouseBlockWithCustomProperties) =>
     );
 };
 
-export const validateHouseBlock = (houseBlock: HouseBlockWithCustomProperties, setAlert: (message: string, type: AlertColor) => void): boolean => {
-    let isValid = true;
-    const invalidOwnershipAmount = validateOwnership(houseBlock);
-    if (
+export const isHouseBlockInvalid = (houseBlock: HouseBlockWithCustomProperties, invalidOwnershipAmount: boolean): boolean => {
+    return (
         !houseBlock.endDate ||
         !houseBlock.startDate ||
+        houseBlock.endDate < houseBlock.startDate ||
         !houseBlock.houseblockName ||
         !houseBlock.mutation.amount ||
         houseBlock.mutation.amount <= 0 ||
         !houseBlock.mutation.kind ||
         invalidOwnershipAmount ||
         !checkConsistencyOwnerShipValueAndMutation(houseBlock)
-    ) {
+    );
+};
+
+export const validateHouseBlock = (houseBlock: HouseBlockWithCustomProperties, setAlert: (message: string, type: AlertColor) => void): boolean => {
+    let isValid = true;
+    const invalidOwnershipAmount = validateOwnership(houseBlock);
+    if (isHouseBlockInvalid(houseBlock, invalidOwnershipAmount)) {
         isValid = false;
     }
     if (!isValid) {
