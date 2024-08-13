@@ -464,13 +464,13 @@
         "UITBREIDING_OVERIG": "Uitbreiding overig"
       },
       "confidentialityLevelOptions": {
-        "PRIVATE": "Prive",
-        "INTERNAL_CIVIL": "Intern ambtelijk",
-        "INTERNAL_MANAGEMENT": "Intern bestuurlijk",
-        "INTERNAL_COUNCIL": "Intern raad",
-        "EXTERNAL_REGIONAL": "Extern woonregio",
-        "EXTERNAL_GOVERNMENTAL": "Extern mede-overheden",
-        "PUBLIC": "Openbaar"
+        "1_PRIVATE": "Prive",
+        "2_INTERNAL_CIVIL": "Intern ambtelijk",
+        "3_INTERNAL_MANAGEMENT": "Intern bestuurlijk",
+        "4_INTERNAL_COUNCIL": "Intern raad",
+        "5_EXTERNAL_REGIONAL": "Extern woonregio",
+        "6_EXTERNAL_GOVERNMENTAL": "Extern mede-overheden",
+        "7_PUBLIC": "Openbaar"
       },
       "projectPhaseOptions": {
         "_1_CONCEPT": "1 Concept",
