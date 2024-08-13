@@ -15,7 +15,16 @@ public class ProjectDashboardModel {
 
     List<PieChartModel> physicalAppearance = new ArrayList<>();
 
+    List<RangeCategoryPieChartModel> priceCategoryRent = new ArrayList<>();
+
+    List<RangeCategoryPieChartModel> priceCategoryOwn = new ArrayList<>();
+
+    List<PlanningModel> planning = new ArrayList<>();
+
     public ProjectDashboardModel(ProjectDashboardSqlModel sqlModel) {
         this.physicalAppearance = sqlModel.getPhysicalAppearance();
+        this.priceCategoryRent = sqlModel.getPriceCategoryRent();
+        this.priceCategoryOwn = sqlModel.getPriceCategoryOwn();
+        this.planning = sqlModel.getPlanning();
     }
 }

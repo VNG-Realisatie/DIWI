@@ -35,6 +35,9 @@ public enum UserRole {
         UserAction.IMPORT_PROJECTS,
         UserAction.EXPORT_PROJECTS,
         UserAction.VIEW_DASHBOARDS,
+        UserAction.VIEW_ALL_BLUEPRINTS,
+        UserAction.EDIT_ALL_BLUEPRINTS,
+        UserAction.VIEW_OWN_BLUEPRINTS,
         UserAction.VIEW_GOALS,
         UserAction.EDIT_GOALS)),
 
@@ -49,6 +52,7 @@ public enum UserRole {
         UserAction.EDIT_OWN_PROJECTS,
         UserAction.CREATE_NEW_PROJECT,
         UserAction.VIEW_DASHBOARDS,
+        UserAction.VIEW_OWN_BLUEPRINTS,
         UserAction.VIEW_GOALS)),
 
     // Identical to Council currently, might be able to own/edit in future?
@@ -58,6 +62,7 @@ public enum UserRole {
         UserAction.VIEW_CUSTOM_PROPERTIES,
         UserAction.VIEW_OTHERS_PROJECTS,
         UserAction.VIEW_DASHBOARDS,
+        UserAction.VIEW_OWN_BLUEPRINTS,
         UserAction.VIEW_GOALS)),
 
     // User that only needs overviews, does not edit projects.
@@ -67,16 +72,17 @@ public enum UserRole {
         UserAction.VIEW_CUSTOM_PROPERTIES,
         UserAction.VIEW_OTHERS_PROJECTS,
         UserAction.VIEW_DASHBOARDS,
+        UserAction.VIEW_OWN_BLUEPRINTS,
         UserAction.VIEW_GOALS)),
 
     // User that needs to access and edit existing projects, but cannot create them.
     External(List.of(
-        UserAction.VIEW_GROUPS,
         UserAction.VIEW_CONFIG,
         UserAction.VIEW_CUSTOM_PROPERTIES,
         UserAction.CAN_OWN_PROJECTS,
         UserAction.VIEW_OWN_PROJECTS,
         UserAction.EDIT_OWN_PROJECTS,
+        UserAction.VIEW_OWN_BLUEPRINTS,
         UserAction.VIEW_GOALS));
 
     public final List<UserAction> allowedActions;

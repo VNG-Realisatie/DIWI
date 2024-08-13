@@ -24,7 +24,7 @@ const GroupUserTable = ({ rows, users, setUserGroups }: Props) => {
     const [groupToEdit, setGroupToEdit] = useState<Group | null>(null);
     const { setAlert } = useAlert();
     const { t } = useTranslation();
-    const allowedActions = useAllowedActions();
+    const { allowedActions } = useAllowedActions();
     const columns = [
         {
             field: "name",

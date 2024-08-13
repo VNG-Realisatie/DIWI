@@ -24,9 +24,17 @@ type Props = {
     setProject: (project: Project) => void;
     showColorPicker?: boolean;
     showAmounts?: boolean;
+    checkIsOwnerValidWithConfidentialityLevel: () => boolean;
 };
 
-export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = false, showAmounts = true }: Props) => {
+export const ProjectForm = ({
+    readOnly,
+    project,
+    setProject,
+    showColorPicker = false,
+    showAmounts = true,
+    checkIsOwnerValidWithConfidentialityLevel,
+}: Props) => {
     const { priorityOptionList, municipalityRolesOptions, districtOptions, neighbourhoodOptions, municipalityOptions } = useProperties();
     const { houseBlocks } = useContext(HouseBlockContext);
     const { user } = useContext(UserContext);
@@ -223,6 +231,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 }
                                 mandatory={true}
                                 errorText={t("createProject.hasMissingRequiredAreas.owner")}
+                                checkIsOwnerValidWithConfidentialityLevel={checkIsOwnerValidWithConfidentialityLevel}
                             />
                         </Grid>
 

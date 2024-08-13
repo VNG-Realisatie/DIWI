@@ -22,7 +22,7 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
     const [deletePropertyInfo, setDeletePropertyInfo] = useState({ name: "", id: "" });
     const [editPropertyId, setEditPropertyId] = useState("");
     const { t } = useTranslation();
-    const allowedActions = useAllowedActions();
+    const { allowedActions } = useAllowedActions();
 
     if (!allowedActions.includes("VIEW_CUSTOM_PROPERTIES")) {
         return <ActionNotAllowed errorMessage={t("customProperties.forbidden")} />;

@@ -59,6 +59,26 @@ public class UserGroupDAO extends AbstractRepository {
 
     }
 
+    public List<UserGroupUserModel> getUserGroupsUsers(List<UUID> groupIds) {
+
+        return session.createNativeQuery(String.format("""
+                SELECT ug.id AS userGroupUuid,
+                    ugs.naam AS userGroupName,
+                    us.user_id AS uuid,
+                    us.last_name AS lastName,
+                    us.first_name AS firstName,
+                    LEFT(us.last_name, 1) || LEFT(us.first_name,1) AS initials
+                FROM %1$s.userGroup ug
+                    JOIN %1$s.usergroup_state ugs ON ug.id = ugs.usergroup_id AND ugs.change_end_date IS NULL
+                    LEFT JOIN %1$s.user_to_usergroup utug ON utug.usergroup_id = ugs.usergroup_id AND utug.change_end_date IS NULL
+                    LEFT JOIN %1$s.user_state us ON us.user_id = utug.user_id AND us.change_end_date IS NULL
+                WHERE ug.id IN :groupIds""", GenericRepository.VNG_SCHEMA_NAME), Object[].class)
+            .setTupleTransformer(new BeanTransformer<>(UserGroupUserModel.class))
+            .setParameter("groupIds", groupIds)
+            .list();
+
+    }
+
     public UUID findUserGroupForProject(UUID projectUuid, UUID groupUuid) {
         return session.createNativeQuery(String.format("""
                 SELECT id

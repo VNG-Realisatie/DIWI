@@ -64,6 +64,7 @@ import nl.vng.diwi.models.ProjectUpdateModel;
 import nl.vng.diwi.models.ProjectUpdateModel.ProjectProperty;
 import nl.vng.diwi.models.SelectModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
+import nl.vng.diwi.models.UserGroupUserModel;
 import nl.vng.diwi.models.superclasses.ProjectCreateSnapshotModel;
 import nl.vng.diwi.models.superclasses.ProjectMinimalSnapshotModel;
 import nl.vng.diwi.rest.VngBadRequestException;
@@ -71,6 +72,7 @@ import nl.vng.diwi.rest.VngNotAllowedException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.security.UserAction;
 import nl.vng.diwi.security.UserActionConstants;
 import nl.vng.diwi.services.ExcelImportService;
 import nl.vng.diwi.services.GeoJsonImportService;
@@ -125,6 +127,23 @@ public class ProjectsResource {
         String validationError = projectSnapshotModel.validate();
         if (validationError != null) {
             throw new VngBadRequestException(validationError);
+        }
+
+        boolean userIsOwner = false;
+        for (UserGroupModel group : projectSnapshotModel.getProjectOwners()) {
+            List<UUID> userIds = repo.getUsergroupDAO().getUserGroupUsers(group.getUuid()).stream().map(UserGroupUserModel::getUuid).toList();
+            if (userIds.contains(loggedUser.getUuid())) {
+                userIsOwner = true;
+                break;
+            }
+        }
+        if (!userIsOwner) {
+            if (!loggedUser.getRole().allowedActions.contains(UserAction.EDIT_ALL_PROJECTS)) {
+                throw new VngBadRequestException("Cannot create projects that you are not the owner of.");
+            }
+            if (projectSnapshotModel.getConfidentialityLevel() == Confidentiality.PRIVATE) {
+                throw new VngBadRequestException("Cannot create private projects that you are not the owner of.");
+            }
         }
 
         ZonedDateTime now = ZonedDateTime.now();
@@ -411,6 +430,16 @@ public class ProjectsResource {
         ProjectSnapshotModel projectSnapshotModelCurrent = projectService.getProjectSnapshot(repo, projectUuid, loggedUser);
         projectService.checkProjectEditPermission(repo, projectUuid, projectSnapshotModelCurrent, loggedUser);
 
+        if (projectSnapshotModelToUpdate.getConfidentialityLevel() == Confidentiality.PRIVATE) {
+            List<UUID> newGroupIds = projectSnapshotModelToUpdate.getProjectOwners().stream().map(UserGroupModel::getUuid).toList();
+            List<UUID> newOwnerIds = repo.getUsergroupDAO().getUserGroupsUsers(newGroupIds).stream().map(UserGroupUserModel::getUuid).toList();
+            List<UUID> currentOwnerIds = new ArrayList<>();
+            projectSnapshotModelCurrent.getProjectOwners().forEach(ug -> currentOwnerIds.addAll(ug.getUsers().stream().map(UserGroupUserModel::getUuid).toList()));
+            if (!newOwnerIds.contains(loggedUser.getUuid()) && currentOwnerIds.contains(loggedUser.getUuid())) {
+                throw new VngBadRequestException("Cannot remove yourself as owner of a private project.");
+            }
+        }
+
         List<ProjectUpdateModel> projectUpdateModelList = new ArrayList<>();
         for (ProjectUpdateModel.ProjectProperty projectProperty : ProjectUpdateModel.ProjectProperty.values()) {
             switch (projectProperty) {
@@ -480,16 +509,24 @@ public class ProjectsResource {
                 if (toUpdateOwnersUuids.isEmpty()) {
                     throw new VngBadRequestException("Missing project owners property");
                 }
-                currentOwnersUuids.forEach(uuid -> {
+                for (UUID uuid : currentOwnersUuids) {
                     if (!toUpdateOwnersUuids.contains(uuid)) {
-                        projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectOwners, null, uuid));
+                        if (!loggedUser.getRole().allowedActions.contains(UserAction.VIEW_GROUPS)) {
+                            throw new VngBadRequestException("User does not have permission to change project user-groups.");
+                        } else {
+                            projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectOwners, null, uuid));
+                        }
                     }
-                });
-                toUpdateOwnersUuids.forEach(uuid -> {
+                }
+                for (UUID uuid : toUpdateOwnersUuids) {
                     if (!currentOwnersUuids.contains(uuid)) {
-                        projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectOwners, uuid, null));
+                        if (!loggedUser.getRole().allowedActions.contains(UserAction.VIEW_GROUPS)) {
+                            throw new VngBadRequestException("User does not have permission to change project user-groups.");
+                        } else {
+                            projectUpdateModelList.add(new ProjectUpdateModel(ProjectProperty.projectOwners, uuid, null));
+                        }
                     }
-                });
+                }
             }
             case projectPhase -> {
                 if (!Objects.equals(projectSnapshotModelToUpdate.getProjectPhase(), projectSnapshotModelCurrent.getProjectPhase())) {
@@ -557,7 +594,12 @@ public class ProjectsResource {
             }
         }
 
-        return projectService.getProjectSnapshot(repo, projectUuid, loggedUser);
+        try {
+            return projectService.getProjectSnapshot(repo, projectUuid, loggedUser);
+        } catch (VngNotFoundException ex) {
+            //it can happen that the user does not have access to the project anymore after the update
+            return null;
+        }
     }
 
     private void updateProjectProperty(Project project, ProjectUpdateModel projectUpdateModel, LoggedUser loggedUser, LocalDate updateDate, ZonedDateTime changeDate)

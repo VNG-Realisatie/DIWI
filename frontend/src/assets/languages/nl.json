@@ -155,6 +155,7 @@
         "rent": "Huur",
         "ownershipAndValue": {
           "title": "Eigendom en waarde",
+          "error": "Een van deze velden moet worden ingevuld",
           "type": {
             "KOOPWONING": "Koopwoning",
             "HUURWONING_PARTICULIERE_VERHUURDER": "Huurwoning Particuliere Verhuurder",
@@ -257,12 +258,16 @@
         "amount": "Aantal ontbreekt",
         "amountNotConsistent": "Het totaal aantal huizen in de sectie komt niet overeen met het mutatiebedrag",
         "hasmissingProperty": "Formulier heeft ontbrekende eigenschappen",
-        "owner": "Vul het veld schrijfrechten in"
+        "owner": "Vul het veld schrijfrechten in",
+        "ownerConfidentialityLevelError": "Als het vertrouwelijkheidsniveau privé is, moet u de eigenaar zijn"
       }
     },
     "sidebar": {
       "projects": "Projecten",
       "dashboards": "Dashboards",
+      "dashboardProject": "Dashboard projecten",
+      "customDashboardList": "Lijst van blauwdrukken",
+      "makeCustomDashboard": "Blauwdruk maken",
       "users": "Gebruikers",
       "priceCategories": "Prijs categorieën",
       "dataExchange": "Data uitwisselen",
@@ -378,14 +383,16 @@
     },
     "dashboard": {
       "title": "Dashboard",
+      "otherProjects": "Overige projecten",
       "exportTitle": "Overzicht van alle projecten",
+      "exportpdf": "Exporteren als PDF",
+      "forbidden": "U heeft geen toegang tot deze pagina. Neem contact op met uw beheerder",
       "projectTitle": "Dashboard | Project",
       "projects": "Dashboard projecten",
       "municipalityProgram": "Woningbouwprogramma gemeente",
       "selectProject": "Selecteer project",
       "buy": "Koop",
       "rent": "Huur",
-      "exportpdf": "Exporteren als PDF",
       "residentialProjects": "Woonproducten",
       "deliverables": "Opleveringen",
       "delayedProjects": "Vertraagde projecten",
@@ -399,7 +406,6 @@
       "schedule": "Planning",
       "upcomingMileStones": "Aankomende mijlpalen",
       "totalValues": "Totaal aantallen",
-      "forbidden": "U heeft geen toegang tot deze pagina. Neem contact op met uw beheerder",
       "properties": {
         "constructionAmount": "Aantal woningen",
         "demolitionAmount": "Aantal sloop",
@@ -408,6 +414,21 @@
         "projectPhase": "Projectfase",
         "projectOwners": "Schrijfrechten",
         "year": "jaar"
+      },
+      "blueprints": {
+        "title": "Aangepast dashboard",
+        "successfullyCreated": "Blauwdruk succesvol aangemaakt",
+        "successfullyDeleted": "Blauwdruk succesvol verwijderd",
+        "successfullyUpdated": "Blauwdruk succesvol geüpdatet",
+        "deleteConfirmation": "Weet je zeker dat je deze blauwdruk wilt verwijderen?",
+        "dialogTitle": "Verwijderbevestiging",
+        "saveBlueprint": "Opslaan blauwdruk",
+        "table": {
+          "name": "Naam",
+          "users": "Gebruikers"
+        },
+        "selectUsers": "Selecteer gebruikers",
+        "namePlaceholder": "Naam van blauwdruk"
       },
       "projectPhaseOptions": {
         "_1_CONCEPT": "Concept",
@@ -418,7 +439,7 @@
         "_6_REALIZATION": "Realisatie",
         "_7_AFTERCARE": "Nazorg"
       },
-      "pieChart": {
+      "chartData": {
         "noData": "Geen data beschikbaar"
       }
     },
@@ -491,6 +512,7 @@
         "successfullyDeleted": "Prijscategorieën succesvol verwijderd"
       },
       "userManagement": {
+        "forbidden": "U heeft geen toegang tot deze pagina. Neem contact op met uw beheerder",
         "titleUser": "User management gebruikers",
         "titleGroup": "User management groepen",
         "tableHeader": {
@@ -644,14 +666,14 @@
         "Vergunningverlener": "Er moet een vergunning aangevraagd worden die door de gemeente zal worden behandeld."
       },
       "vertrouwelijkheidsniveau": {
-        "title": "Wie mag de gegevens van het woningbouwplan inzien? Je kan hier kiezen tussen verschillende niveaus binnen de gemeentelijke organisatie (intern) en daarbuiten (extern). Je kan in de dashboard- en rapportagefunctie vervolgens kiezen wélke informatie deze gebruikersgroepen kunnen inzien en op welk aggregatieniveau ze de informatie zien. Dat hoef je hier nog niet te regelen.\n\nExtra achtergrondinformatie:\nUitgangspunt vanuit de 'open overheid' is dat woningbouwplannen in principe niet vertrouwelijk zijn. Maar soms speelt er iets op lokaal niveau wat het wenselijk maakt de informatie over een bepaald plan binnen de gemeentelijke organisatie te houden. Bijvoorbeeld om grondspeculatie te voorkomen, of als omwonenden nog niet geïnformeerd zijn. Met de medeoverheden is daarom afgesproken dat je er als gemeente voor mag kiezen om een woningbouwplan een vertrouwelijke status te geven. Dat mag enkel bij plannen met een zachte planstatus (zie planologische planstatus). Zodra alle onderdelen van 'de Basisset' met omwonenden gecommuniceerd zijn, mag een woningbouwplan niet meer het label vertrouwelijk krijgen.\n\nVNG heeft met het IPO (de provincies) en het Rijk een 'dataprotocol' vastgesteld. Daarin staan afspraken over hoe provincies, Rijk en derden deze data mogen gebruiken. Je kan de Basisset en het dataprotocol bij VNG opvragen via Mark.Knops@vng.nl",
-        "PRIVATE": "Projecten met vertrouwelijkheid privé zijn alleen zichtbaar voor gebruikers met schrijfrechten op dat project. Deze projecten komen niet terug in dashboards en statistieken. Deze status is bedoeld voor een concept of idee welke nog niet gedeeld wordt met anderen.",
+        "title": "Wie mag de gegevens van het woningbouwplan inzien? Je kan hier kiezen tussen verschillende niveaus binnen de gemeentelijke organisatie (intern) en daarbuiten (extern). Je kan in de dashboard- en rapportagefunctie vervolgens kiezen wélke informatie deze gebruikersgroepen kunnen inzien en op welk aggregatieniveau ze de informatie zien. Dat hoef je hier nog niet te regelen.\n\nExtra achtergrondinformatie:\nUitgangspunt vanuit de 'open overheid' is dat woningbouwplannen in principe niet vertrouwelijk zijn. Maar soms speelt er iets op lokaal niveau wat het wenselijk maakt de informatie over een bepaald plan binnen de gemeentelijke organisatie te houden. Bijvoorbeeld om grondspeculatie te voorkomen, of als omwonenden nog niet geïnformeerd zijn. Met de medeoverheden is daarom afgesproken dat je er als gemeente voor mag kiezen om een woningbouwplan een vertrouwelijke status te geven. Dat mag enkel bij plannen met een zachte planstatus (zie planologische planstatus). Zodra alle onderdelen van 'de Basisset' met omwonenden gecommuniceerd zijn, mag een woningbouwplan niet meer het label vertrouwelijk krijgen.\n\nVNG heeft met het IPO (de provincies) en het Rijk een 'dataprotocol' vastgesteld. Daarin staan afspraken over hoe provincies, Rijk en derden deze data mogen gebruiken. Je kan de Basisset en het dataprotocol bij VNG opvragen via Mark.Knops@vng.nl.",
+        "PRIVATE": "Dit plan is enkel voor jezelf zichtbaar.",
         "INTERNAL_CIVIL": "Dit plan is voor jezelf en voor je collega's die werken aan woningbouw zichtbaar.",
         "INTERNAL_MANAGEMENT": "Dit plan is voor jezelf, je collega's en het college van b&w zichtbaar.",
         "INTERNAL_COUNCIL": "Dit plan is voor jezelf, je collega's, het college van b&w en de gemeenteraad zichtbaar.",
-        "EXTERNAL_GOVERNMENTAL": "Dit plan is zichtbaar voor alle interne gebruikersgroepen én voor provincies en Rijk. Woningbouwplannen met een harde planstatus (zie planologische planstatus) moeten altijd op dit niveau worden gezet. Ook zachte woningbouwplannen waarvan alle onderdelen van 'de Basisset' met omwonenden gecommuniceerd zijn moeten op dit niveau worden gezet.",
-        "EXTERNAL_REGIONAL": "Project dat ook met de woonregio gedeeld mogen worden.",
-        "PUBLIC": "Dit plan is zichtbaar voor iedereen."
+        "EXTERNAL_GOVERNMENTAL": "Dit plan is zichtbaar voor alle interne gebruikersgroepen én voor provincies en Rijk. Woningbouwplannen met een harde planstatus (zie planologische planstatus) moeten altijd op dit niveau worden gezet. Ook zachte woningbouwplannen waarvan alle onderdelen van 'de Basisset' met omwonenden gecommuniceerd zijn moet op dit niveau worden gezet.",
+        "PUBLIC": "Dit plan is zichtbaar voor iedereen.",
+        "EXTERNAL_REGIONAL": "Project dat ook met de woonregio gedeeld mag worden."
       },
       "planologischePlanstatus": {
         "title": "Geef hier aan wat de planologisch-juridische status is van het woningbouwplan. Categoriën 1 t/m 4 ken je uit de provinciale planmonitor. Soms wordt er bij gemeenten, corporaties en marktpartijen aan woningbouwplannen gewerkt zonder dat het college van B&W zich daarover al positief heeft uitgesproken, of dat er een concrete locatie op het oog is. Bijvoorbeeld als een wethouder opdracht geeft als \"zoek een locatie voor een Knarrenhofje\". Of als je ambtelijk al weet dat je ergens iets wil, maar dat het nog heel vaag is.\n\nHet is fijn dat ook deze plannen in DIWI terug te vinden zijn. Daarom staan er in DIWI twee extra categoriën: 5A en 5B. Deze categorieën zijn bedoeld voor de eigen gemeentelijke administratie en worden niet bij de provincie aangeleverd. Woningbouwplannen uit categorie 5A en 5B tellen voor onze mede overheden dan ook niet mee als plancapaciteit.\n\nHarde woningbouwplannen: categorieën 1A, 1B, 2A en 2B.\nZachte woningbouwplannen: categorieën 1C, 2C, 3, 4A, 4B, 5A en 5B.",
