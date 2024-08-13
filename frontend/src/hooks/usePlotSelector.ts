@@ -2,7 +2,7 @@ import _ from "lodash";
 import { Feature, Map, MapBrowserEvent, View } from "ol";
 import { defaults as defaultControls } from "ol/control.js";
 import { Listener } from "ol/events";
-import { Extent, buffer, containsCoordinate, getIntersectionArea } from "ol/extent";
+import { Extent, buffer, containsCoordinate } from "ol/extent";
 import { GeoJSON } from "ol/format";
 import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
@@ -231,6 +231,8 @@ const usePlotSelector = (id: string) => {
         const extent = polygonGeometry.getExtent();
         const bbox = extent.join(",");
 
+        const coords = polygonGeometry.getCoordinates();
+
             const url = queryString.stringifyUrl({
                 url: baseUrlKadasterWfs,
                 query: {
@@ -245,27 +247,40 @@ const usePlotSelector = (id: string) => {
             });
 
             fetch(url)
-                .then((res) => res.json())
-                .then((result) => {
-                    const plotFeature = result as PlotGeoJSON;
-                    const intersections: number[] = [];
-                    for (let i = 0; i < plotFeature.features.length; i++) {
-                        const properties = plotFeature.features[i].properties;
-                    const isPlotAlreadySelected = selectedPlots.some(
-                        (plot) =>
-                            plot.brkGemeenteCode === properties.kadastraleGemeenteCode &&
-                            plot.brkPerceelNummer === parseInt(properties.perceelnummer) &&
-                            plot.brkSectie === properties.sectie
-                    );
-                    console.log(isPlotAlreadySelected);
-                    const featuresBBOX = plotFeature.features[i].bbox;
-                    const numberArray: number[] = featuresBBOX.map(Number);
+    .then((res) => res.json())
+    .then((result) => {
+        const plotFeature = result as PlotGeoJSON;
 
-                    intersections.push(getIntersectionArea(extent, numberArray))
-                }
-                })
+        plotFeature.features.forEach((feature) => {
+            const properties = feature.properties;
+            const existingPlot = selectedPlots.find(
+                (plot) =>
+                    plot.brkGemeenteCode === properties.kadastraleGemeenteCode &&
+                    plot.brkPerceelNummer === parseInt(properties.perceelnummer) &&
+                    plot.brkSectie === properties.sectie
+            );
 
-    }, [selectionMode, map, selectedPlotLayerSource, bboxLayerSourceCut, selectedPlots])
+            if (existingPlot) {
+                const updatedPlots = [...selectedPlots];
+                const existingCoords = existingPlot.subSelectionGeometry?.coordinates as Coordinate[][] || [];
+                const newCoords = coords as Coordinate[][];
+                const mergedCoords: Coordinate[][] = [...existingCoords, ...newCoords];
+
+                const updatedPlotIndex = updatedPlots.indexOf(existingPlot);
+                updatedPlots[updatedPlotIndex] = {
+                    ...existingPlot,
+                    subSelectionGeometry: {
+                        type: "Polygon",
+                        coordinates: mergedCoords
+                    }
+                };
+
+                setSelectedPlots(updatedPlots);
+                console.log("selectedPlots", updatedPlots);
+            }
+        });
+    });
+}, [selectionMode, map, selectedPlotLayerSource, bboxLayerSourceCut, selectedPlots]);
 
     useEffect(
         function updatePlotsLayer() {
