@@ -20,7 +20,8 @@ public class GoalDAO extends AbstractRepository {
             SELECT cs.plan_category_id AS id, value_label AS name
                 FROM %1$s.plan_category_state cs
                     WHERE cs.change_end_date IS NULL
-                    ORDER BY cs.value_label """, GenericRepository.VNG_SCHEMA_NAME), SelectModel.class)
+                    ORDER BY cs.value_label """, GenericRepository.VNG_SCHEMA_NAME), Object[].class)
+            .setTupleTransformer(new BeanTransformer<>(SelectModel.class))
             .list();
     }
 

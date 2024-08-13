@@ -1,5 +1,6 @@
 package nl.vng.diwi.resources;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -22,6 +23,7 @@ import nl.vng.diwi.models.SelectModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.security.UserActionConstants;
 import nl.vng.diwi.services.GoalService;
 
 import java.time.ZonedDateTime;
@@ -29,7 +31,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Path("/goals")
-//@RolesAllowed("BLOCKED_BY_DEFAULT") // This forces us to make sure each end-point has action(s) assigned, so we never have things open by default.
+@RolesAllowed("BLOCKED_BY_DEFAULT") // This forces us to make sure each end-point has action(s) assigned, so we never have things open by default.
 public class GoalResource {
 
     private final VngRepository repo;
@@ -43,6 +45,7 @@ public class GoalResource {
 
 
     @GET
+    @RolesAllowed({UserActionConstants.VIEW_GOALS})
     @Produces(MediaType.APPLICATION_JSON)
     public List<PlanModel> getAllGoals() {
 
@@ -51,6 +54,7 @@ public class GoalResource {
 
     @GET
     @Path("/{id}")
+    @RolesAllowed({UserActionConstants.VIEW_GOALS})
     @Produces(MediaType.APPLICATION_JSON)
     public PlanModel getGoalById(@PathParam("id") UUID planId) throws VngNotFoundException {
 
@@ -62,6 +66,7 @@ public class GoalResource {
     }
 
     @POST
+    @RolesAllowed({UserActionConstants.EDIT_GOALS})
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public PlanModel createGoal(PlanModel planModel, @Context LoggedUser loggedUser) throws VngBadRequestException {
@@ -82,6 +87,7 @@ public class GoalResource {
 
     @PUT
     @Path("/{id}")
+    @RolesAllowed({UserActionConstants.EDIT_GOALS})
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public PlanModel updateGoal(@PathParam("id") UUID planId, PlanModel planModel, @Context LoggedUser loggedUser) throws VngBadRequestException, VngNotFoundException {
@@ -104,6 +110,7 @@ public class GoalResource {
 
 
     @DELETE
+    @RolesAllowed({UserActionConstants.EDIT_GOALS})
     @Path("/{id}")
     public void deleteGoal(@PathParam("id") UUID planId, ContainerRequestContext requestContext) throws VngNotFoundException {
 
@@ -117,6 +124,7 @@ public class GoalResource {
 
     @GET
     @Path("/categories")
+    @RolesAllowed({UserActionConstants.VIEW_GOALS})
     @Produces(MediaType.APPLICATION_JSON)
     public List<SelectModel> getAllGoalCategories() {
 
@@ -125,6 +133,7 @@ public class GoalResource {
 
     @GET
     @Path("/categories/{id}")
+    @RolesAllowed({UserActionConstants.VIEW_GOALS})
     @Produces(MediaType.APPLICATION_JSON)
     public SelectModel getGoalCategory(@PathParam("id") UUID categoryId) throws VngNotFoundException {
 
@@ -140,6 +149,7 @@ public class GoalResource {
 
     @POST
     @Path("/categories")
+    @RolesAllowed({UserActionConstants.EDIT_GOALS})
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public SelectModel createGoalCategory(SelectModel goalCategoryModel, @Context LoggedUser loggedUser) {
@@ -154,6 +164,7 @@ public class GoalResource {
 
     @PUT
     @Path("/categories/{id}")
+    @RolesAllowed({UserActionConstants.EDIT_GOALS})
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public SelectModel updateGoalCategory(@PathParam("id") UUID categoryId, SelectModel goalCategoryModel, @Context LoggedUser loggedUser) throws VngNotFoundException {
@@ -169,6 +180,7 @@ public class GoalResource {
 
 
     @DELETE
+    @RolesAllowed({UserActionConstants.EDIT_GOALS})
     @Path("/categories/{id}")
     public void deleteGoalCategory(@PathParam("id") UUID categoryId, ContainerRequestContext requestContext) throws VngNotFoundException {
 
