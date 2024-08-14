@@ -40,6 +40,7 @@ const usePlotSelector = (id: string) => {
     const [projectLayerSource, setProjectLayerSource] = useState<VectorSource>();
     const [bboxLayerSource, setBboxLayerSource] = useState<VectorSource>();
     const [bboxLayerSourceCut, setBboxLayerSourceCut] = useState<VectorSource>();
+    const [subselectionSource, setSubselectionSource] = useState<VectorSource>();
 
     const [originalSelectedPlots, setOriginalSelectedPlots] = useState<Plot[] | null>(null);
     const [selectedPlots, setSelectedPlots] = useState<Plot[]>([]);
@@ -262,48 +263,62 @@ const usePlotSelector = (id: string) => {
 
             if (existingPlot) {
                 const updatedPlots = [...selectedPlots];
-                const existingCoords = existingPlot.subSelectionGeometry?.coordinates as Coordinate[][] || [];
+                const existingCoords = existingPlot.subselectionGeometry?.coordinates as Coordinate[][] || [];
                 const newCoords = coords as Coordinate[][];
                 const mergedCoords: Coordinate[][] = [...existingCoords, ...newCoords];
 
                 const updatedPlotIndex = updatedPlots.indexOf(existingPlot);
                 updatedPlots[updatedPlotIndex] = {
                     ...existingPlot,
-                    subSelectionGeometry: {
-                        type: "Polygon",
-                        coordinates: mergedCoords
-                    }
-                };
+                        subselectionGeometry: {
+                            type: "Polygon",
+                            coordinates: mergedCoords,
+                        },
+                    };
+
 
                 setSelectedPlots(updatedPlots);
                 console.log("selectedPlots", updatedPlots);
-            }
+                }
+
         });
     });
 }, [selectionMode, map, selectedPlotLayerSource, bboxLayerSourceCut, selectedPlots]);
 
-    useEffect(
-        function updatePlotsLayer() {
-            if (!selectedPlotLayerSource) return;
+useEffect(
+    function updatePlotsLayer() {
+        if (!selectedPlotLayerSource) return;
 
-            const changed = !_.isEqual(selectedPlots, originalSelectedPlots);
-            setPlotsChanged(changed);
-            selectedPlotLayerSource.clear();
-            for (const selectedPlot of selectedPlots) {
-                const geojson = new GeoJSON().readFeatures(selectedPlot.plotFeature);
-                selectedPlotLayerSource.addFeatures(geojson);
+        const changed = !_.isEqual(selectedPlots, originalSelectedPlots);
+        setPlotsChanged(changed);
+        selectedPlotLayerSource.clear();
+        subselectionSource?.clear();
+
+        for (const selectedPlot of selectedPlots) {
+            const geojson = new GeoJSON().readFeatures(selectedPlot.plotFeature);
+
+            if (selectedPlot.subselectionGeometry) {
+                const subselectionFeature = new GeoJSON().readFeature({
+                    type: "Feature",
+                    geometry: selectedPlot.subselectionGeometry,
+                });
+
+                subselectionSource?.addFeature(subselectionFeature);
             }
 
-            if (extent == null && originalSelectedPlots != null) {
-                if (!selectedPlotLayerSource.isEmpty()) {
-                    setExtent(selectedPlotLayerSource.getExtent());
-                } else {
-                    setExtent(mapBoundsToExtent(mapBounds));
-                }
+            selectedPlotLayerSource.addFeatures(geojson);
+        }
+
+        if (extent == null && originalSelectedPlots != null) {
+            if (!selectedPlotLayerSource.isEmpty()) {
+                setExtent(selectedPlotLayerSource.getExtent());
+            } else {
+                setExtent(mapBoundsToExtent(mapBounds));
             }
-        },
-        [extent, originalSelectedPlots, selectedPlotLayerSource, selectedPlots, mapBounds],
-    );
+        }
+    },
+    [extent, originalSelectedPlots, selectedPlotLayerSource, selectedPlots, mapBounds, subselectionSource],
+);
 
     useEffect(
         function updateProjectGeometry() {
@@ -355,6 +370,13 @@ const usePlotSelector = (id: string) => {
                 return click.button === 2; //Right click
             },
         });
+
+        document.addEventListener("keydown", function(event) {
+            if (event.key == "Escape") {
+                draw.abortDrawing();
+            }
+        });
+
         draw.on("drawstart", () => {
             bboxLayerSource?.clear();
         })
@@ -369,27 +391,41 @@ const usePlotSelector = (id: string) => {
     useEffect(() => {
         if (selectionMode !== Buttons.CUT || !map || !selectedPlotLayerSource) return;
 
-        const snapToleranceNear = 10;
-        const snapToleranceFar = 30;
+        let currentFeature: Feature<Polygon> | null = null;
+        const snapTolerance = 10;
 
         const draw = new Draw({
             source: bboxLayerSourceCut,
             type: "Polygon",
-            minPoints: 2,
+            minPoints: 3,
             condition: (event) => {
                 const point = event.coordinate;
                 return isPointInsideSelectedPlot(point);
             },
+            finishCondition: () => {
+                if (!currentFeature) return false;
+                const coordinates = currentFeature.getGeometry()?.getCoordinates()[0];
+                if (!coordinates) return false
+                const firstPoint = coordinates[0];
+                const lastPoint = coordinates[coordinates.length - 1];
+
+                const isClosed = firstPoint[0] === lastPoint[0] && firstPoint[1] === lastPoint[1];
+
+                return isClosed;
+            },
+            freehandCondition: () => {
+                return false;
+            },
         });
 
-        const snapInteractionNear = new Snap({
+        const snapInteraction = new Snap({
             source: selectedPlotLayerSource,
-            pixelTolerance: snapToleranceNear,
+            pixelTolerance: snapTolerance,
         });
 
-        const snapInteractionFar = new Snap({
-            source: selectedPlotLayerSource,
-            pixelTolerance: snapToleranceFar,
+        const snapInteractionSubPlot = new Snap({
+            source: subselectionSource,
+            pixelTolerance: snapTolerance,
         });
 
           const isPointInsideSelectedPlot = (point: Coordinate) => {
@@ -408,53 +444,42 @@ const usePlotSelector = (id: string) => {
             return false;
         };
 
-        const updateSnapInteraction = (point: Coordinate) => {
-            const features = selectedPlotLayerSource.getFeatures();
-            let isNearSelectedPlot = false;
-
-            for (const feature of features) {
-                const geometry = feature.getGeometry() as Polygon;
-                const extent: Extent = geometry.getExtent();
-
-                if (containsCoordinate(extent, point)) {
-                    isNearSelectedPlot = true;
-                    break;
-                }
-            }
-
-            map.removeInteraction(snapInteractionNear);
-            map.removeInteraction(snapInteractionFar);
-
-            if (isNearSelectedPlot) {
-                map.addInteraction(snapInteractionNear);
-            } else {
-                map.addInteraction(snapInteractionFar);
-            }
-        };
-
-        const handleMouseMove = (event: MapBrowserEvent<UIEvent>) => {
-            updateSnapInteraction(event.coordinate);
-        };
-
-        map.on("pointermove", handleMouseMove);
-
         document.addEventListener("keypress", function(event) {
             if (event.key == "Enter") {
-                draw.finishDrawing();
+                if (currentFeature) {
+                    const coordinates = currentFeature.getGeometry()?.getCoordinates()[0];
+
+                    if (coordinates && coordinates.length > 4) {
+                        draw.finishDrawing();
+                    }
+                }
             }
         });
 
-        draw.on("drawend", handleCut);
+        document.addEventListener("keydown", function(event) {
+            if (event.key == "Escape") {
+                draw.abortDrawing();
+            }
+        });
+
+        draw.on('drawstart', (event) => {
+            currentFeature = event.feature as Feature<Polygon>;
+        });
+
+        draw.on('drawend', (event) => {
+            currentFeature = null;
+            handleCut(event);
+        });
         map.addInteraction(draw);
-        map.addInteraction(snapInteractionFar);
+        map.addInteraction(snapInteraction);
+        map.addInteraction(snapInteractionSubPlot);
 
         return () => {
             map.removeInteraction(draw);
-            map.removeInteraction(snapInteractionNear);
-            map.removeInteraction(snapInteractionFar);
-            map.un("pointermove", handleMouseMove);
+            map.removeInteraction(snapInteraction);
+            map.removeInteraction(snapInteractionSubPlot);
         };
-    }, [map, selectionMode, handleCut, selectedPlotLayerSource, bboxLayerSourceCut]);
+    }, [map, selectionMode, handleCut, selectedPlotLayerSource, subselectionSource, bboxLayerSourceCut]);
 
     useEffect(() => {
         if (!map) return;
@@ -512,6 +537,7 @@ const usePlotSelector = (id: string) => {
 
             });
             setBboxLayerSourceCut(bboxSourceCut);
+            setSubselectionSource(bboxSourceCut);
 
             const newMap = new Map({
                 target: id,
