@@ -488,6 +488,7 @@
         "warning": "Een of meer woningblokken zijn verkeerd ingevuld",
         "endDateWarning": "Einddatum moet een eerdere datum zijn",
         "startDateWarning": "Opvoerdatum in project moet een latere datum zijn",
+        "endDateInvalid": "De einddatum van een huisblok kan niet eerder zijn dan de startdatum",
         "endDateWarningMissing": "​Vul het veld Datum laatste oplevering in",
         "startDateWarningMissing": "​Vul het veld Opvoerdatum in project in",
         "mutationAmountWarning": "​Vul het veld aantal in met een positief getal",
