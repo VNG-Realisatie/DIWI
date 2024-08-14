@@ -100,10 +100,12 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
             type: "actions",
             headerName: t("admin.settings.tableHeader.actions"),
             getActions: (params) => {
+                console.log(params.row);
                 const actions = allowedActions.includes("EDIT_CUSTOM_PROPERTIES")
                     ? [
                           <Tooltip title={t("admin.settings.tableHeader.edit")} key="edit">
                               <GridActionsCellItem
+                                  id={params.row.name}
                                   size="large"
                                   icon={<EditIcon />}
                                   label={t("admin.settings.tableHeader.edit")}

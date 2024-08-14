@@ -9,16 +9,16 @@ test.describe("Create project page", () => {
     let projectId: string;
 
     test.beforeEach(async ({ page }) => {
-        await page.route("*/**/rest/properties?objectType=PROJECT", async (route) => {
-            await route.fulfill({
-                body: JSON.stringify(customProjectProperties),
-            });
-        });
-        await page.route("*/**/rest/properties?objectType=WONINGBLOK", async (route) => {
-            await route.fulfill({
-                body: JSON.stringify(houseBlockCustomProperties),
-            });
-        });
+        // await page.route("*/**/rest/properties?objectType=PROJECT", async (route) => {
+        //     await route.fulfill({
+        //         body: JSON.stringify(customProjectProperties),
+        //     });
+        // });
+        // await page.route("*/**/rest/properties?objectType=WONINGBLOK", async (route) => {
+        //     await route.fulfill({
+        //         body: JSON.stringify(houseBlockCustomProperties),
+        //     });
+        // });
         const pm = new PageManager(page);
         await pm.navigateTo().loginPage();
         await pm.navigateTo().projectCreatePage();

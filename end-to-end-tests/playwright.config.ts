@@ -37,9 +37,24 @@ export default defineConfig({
             testMatch: /global\.setup\.ts/,
         },
         {
+            name: "setup district",
+            testMatch: /district\.setup\.ts/,
+            dependencies: ["setup user"], // Ensure this runs after "setup user"
+        },
+        {
+            name: "setup municipality",
+            testMatch: /municipality\.setup\.ts/,
+            dependencies: ["setup user"], // Ensure this runs after "setup user"
+        },
+        {
+            name: "setup neighborhood",
+            testMatch: /neighborhood\.setup\.ts/,
+            dependencies: ["setup user"], // Ensure this runs after "setup user"
+        },
+        {
             name: "chromium",
             use: { ...devices["Desktop Chrome"] },
-            dependencies: ["setup user"],
+            dependencies: ["setup user", "setup district", "setup municipality", "setup neighborhood"],
         },
     ],
 });
