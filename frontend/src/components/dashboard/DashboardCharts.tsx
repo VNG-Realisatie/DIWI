@@ -112,7 +112,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                 planning: dummyData.planning,
             });
         });
-    }, []);
+    }, [t]);
 
     //This is for calculate the number of projects in each phase in ui update it later with endpoint
     useEffect(() => {
@@ -442,7 +442,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                             <Typography variant="h6" fontSize={16}>
                                 {t("dashboard.deliverables")}
                             </Typography>
-                            <MyResponsiveBar chartData={dummyData.planning} selectedProject={null}/>
+                            <MyResponsiveBar chartData={dummyData.planning} selectedProject={null} />
                         </Box>
                     )}
                     {(isPrintingFullDashboard || visibility?.DELAYED_PROJECTS) && (
