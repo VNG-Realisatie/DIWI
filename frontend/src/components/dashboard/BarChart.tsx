@@ -74,7 +74,7 @@ export const MyResponsiveBar = ({ chartData, selectedProject }: Props) => {
                                 <Box sx={{ display: "flex", flexWrap: "wrap" }}>
                                     {chartData.map((data, i) => {
                                         return (
-                                            <Stack direction="row" sx={{ m: 0.5 }}>
+                                            <Stack direction="row" sx={{ m: 0.5 }} key={i}>
                                                 <Box height={15} width={15} sx={{ backgroundColor: generateColorsArray(chartData.length)[i] }}></Box>
                                                 <Typography variant="caption" ml={0.5}>
                                                     {data.name}
