@@ -35,7 +35,6 @@ export type Visibility = {
     OWNERSHIP_BUY: boolean;
     OWNERSHIP_RENT: boolean;
     PROJECT_MAP: boolean;
-    RESIDENTIAL_PROJECTS: boolean;
     DELIVERABLES: boolean;
     DELAYED_PROJECTS: boolean;
 };
@@ -265,22 +264,6 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                             <DashboardPieChart chartData={dashboardProjects?.priceCategoryRent || []} />
                         </Grid>
                     )}
-                    {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.RESIDENTIAL_PROJECTS) && (
-                        <Grid item {...chartCardStyling}>
-                            <Box display="flex" justifyContent="space-between" alignItems="center">
-                                <Typography variant="h6" fontSize={16}>
-                                    {t("dashboard.residentialProjects")}
-                                </Typography>
-                                {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
-                                    <Switch
-                                        checked={visibility.RESIDENTIAL_PROJECTS}
-                                        onChange={() => handleToggleVisibility("RESIDENTIAL_PROJECTS")}
-                                        inputProps={{ "aria-label": "controlled" }}
-                                    />
-                                )}
-                            </Box>
-                        </Grid>
-                    )}
                     {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.DELIVERABLES) && (
                         <Grid item {...chartCardStyling}>
                             <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -427,14 +410,6 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                                 {t("dashboard.rent")}
                             </Typography>
                             <DashboardPieChart isPdfChart={true} chartData={dashboardProjects?.priceCategoryRent || []} />
-                        </Box>
-                    )}
-                    {(isPrintingFullDashboard || visibility?.RESIDENTIAL_PROJECTS) && (
-                        <Box width="50%" border="solid 1px #DDD" p={1} id="residentialProjects">
-                            <Typography variant="h6" fontSize={16}>
-                                {t("dashboard.residentialProjects")}
-                            </Typography>
-                            {/* ToDo:Add chart here later */}
                         </Box>
                     )}
                     {(isPrintingFullDashboard || visibility?.DELIVERABLES) && (

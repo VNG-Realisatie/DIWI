@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import useAllowedActions from "../hooks/useAllowedActions";
 import { CreateHouseBlockDialog } from "../components/project/project-with-house-block/CreateHouseBlockDialog";
 import { HouseBlocksList } from "../components/project/project-with-house-block/HouseBlocksList";
+import { useHasEditPermission } from "../hooks/useHasEditPermission";
 
 const ProjectColorContext = createContext({
     selectedProjectColor: "",
@@ -26,6 +27,7 @@ export const ProjectDetail = ({ children }: PropsWithChildren) => {
     const [selectedProjectColor, setSelectedProjectColor] = useState<string>("");
     const { allowedActions } = useAllowedActions();
     const [openHouseBlockDialog, setOpenHouseBlockDialog] = useState(false);
+    const { getEditPermission } = useHasEditPermission();
     return (
         <Stack direction="column" justifyContent="space-between" position="relative" border="solid 1px #ddd" mb={10}>
             <BreadcrumbBar
@@ -45,7 +47,7 @@ export const ProjectDetail = ({ children }: PropsWithChildren) => {
                 >
                     <Typography variant="h5">{selectedProject?.projectName}</Typography>
                     <Box sx={{ marginLeft: "auto", marginTop: "5px", marginRight: "20px" }}>
-                        {selectedProject && allowedActions.includes("CREATE_NEW_PROJECT") && (
+                        {selectedProject && allowedActions.includes("CREATE_NEW_PROJECT") && getEditPermission() && (
                             <DeleteButtonWithConfirm
                                 typeAndName={`${t("generic.project")} ${selectedProject.projectName}`}
                                 iconColor={"#FFFFFF"}

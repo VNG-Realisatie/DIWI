@@ -17,6 +17,7 @@ import { CellContainer } from "./project/project-with-house-block/CellContainer"
 import { CustomPropertiesProject } from "./project/project-with-house-block/CustomPropertiesProject";
 import { confidentialityLevelOptions, planTypeOptions, planningPlanStatus, projectPhaseOptions } from "./table/constants";
 import UserContext from "../context/UserContext";
+import { calculateAmounts } from "../utils/houseblocks/houseBlocksFunctions";
 
 type Props = {
     readOnly: boolean;
@@ -39,15 +40,7 @@ export const ProjectForm = ({
     const { houseBlocks } = useContext(HouseBlockContext);
     const { user } = useContext(UserContext);
 
-    const constructionAmount = houseBlocks
-        .filter((hb) => hb.mutation.kind === "CONSTRUCTION")
-        .map((hb) => hb.mutation.amount ?? 0)
-        .reduce((a, b) => a + b, 0);
-
-    const demolitionAmount = houseBlocks
-        .filter((hb) => hb.mutation.kind === "DEMOLITION")
-        .map((hb) => hb.mutation.amount ?? 0)
-        .reduce((a, b) => a + b, 0);
+    const {constructionAmount, demolitionAmount} = calculateAmounts(houseBlocks);
 
     return (
         <Grid container spacing={2} alignItems="stretch">
