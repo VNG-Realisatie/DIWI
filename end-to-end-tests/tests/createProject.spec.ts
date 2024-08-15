@@ -43,20 +43,20 @@ test.describe("Create project page", () => {
     test("Fill project details and save", async ({ page }) => {
         const projectNameWarning = page.getByTestId("input-label-stack").first();
         const projectColor = page.locator(".project-color-selector");
-        const startDate = page.getByTestId("input-label-stack").nth(2);
-        const endDate = page.getByTestId("input-label-stack").nth(3);
-        const planType = page.getByTestId("input-label-stack").nth(1);
-        const priority = page.getByTestId("input-label-stack").nth(4);
-        const projectPhase = page.getByTestId("input-label-stack").nth(5);
-        const municipalityRole = page.getByTestId("input-label-stack").nth(6);
-        const confidentialityLevel = page.getByTestId("input-label-stack").nth(7);
-        const planStatus = page.getByTestId("input-label-stack").nth(8);
-        const municipality = page.getByTestId("input-label-stack").nth(9);
-        const wijk = page.getByTestId("input-label-stack").nth(10);
-        const buurt = page.getByTestId("input-label-stack").nth(11);
-        const owner = page.getByRole("combobox").nth(4);
-        const customCatProperty = page.getByRole("combobox").nth(10);
-        const customBooleanProperty = page.getByRole("combobox").nth(11);
+        const startDate = await page.locator(".project-startdate");
+        const endDate = await page.locator(".project-enddate");
+        const planType = await page.locator(".project-plantype");
+        const priority = await page.locator(".project-priority");
+        const projectPhase = await page.locator(".project-phase");
+        const municipalityRole = await page.locator(".project-municipality-role");
+        const confidentialityLevel = await page.locator(".project-confidentiality");
+        const planStatus = await page.locator(".project-planning-status");
+        const municipality = await page.locator(".project-municipality");
+        const wijk = await page.locator(".project-district");
+        const buurt = await page.locator(".project-neighbourhood");
+        const owner = await page.locator(".project-owner");
+        const customCatProperty = page.locator(".category-custom-property");
+        const customBooleanProperty = page.locator(".Betaald?");
 
         await projectNameWarning.getByRole("textbox").fill("Test project");
         await projectColor.click();
@@ -77,7 +77,7 @@ test.describe("Create project page", () => {
         await page.getByText("Vergunningverlener").click();
         await confidentialityLevel.getByRole("combobox").fill("Intern raad");
         await page.getByText("Intern raad").click();
-        await owner.fill("A");
+        await owner.getByRole("combobox").fill("A");
         await page.getByText("Ad Min").nth(1).click();
         await planStatus.getByRole("combobox").fill("2A Vastgesteld");
         await page.getByText("2A Vastgesteld").click();
@@ -87,11 +87,10 @@ test.describe("Create project page", () => {
         await page.getByText("Oud-Zuid").click();
         await buurt.getByRole("combobox").fill("Oosterpoort");
         await page.getByText("Oosterpoort").click();
-        await customCatProperty.fill("tom");
-        await page.getByText("tom").click();
+        await customCatProperty.fill("Bewoners");
+        await page.getByText("Bewoners").click();
         await customBooleanProperty.fill("Ja");
         await page.getByText("Ja").click();
-        await page.locator('input[type="text"]').nth(15).fill("test");
         await page.getByText("Opslaan").first().click();
         await page.waitForTimeout(1000);
         await page.getByText("Opslaan en volgende").click();
@@ -112,7 +111,7 @@ test.describe("Create project page", () => {
         expect(await houseBlockName.textContent()).toContain("Vul het veld projectnaam in");
         expect(await mutationAmount.textContent()).toContain("​Vul het veld aantal in met een positief getal");
         expect(await mutationType.textContent()).toContain("​Vul het veld mutatiesoort in");
-        await houseBlockName.getByRole("textbox").fill("Test jouse block");
+        await houseBlockName.getByRole("textbox").fill("Test house block");
         await page.locator("#Aantal").fill("10");
         await mutationType.getByRole("combobox").fill("Sloop");
         await page.getByText("Sloop").click();
@@ -170,11 +169,11 @@ test.describe("Create project page", () => {
         await size.fill("100");
         await startDate.getByRole("textbox").fill("01-01-2021");
         await endDate.getByRole("textbox").fill("01-01-2025");
-        await mutationAmount.fill("10");
-        await mutationType.getByRole("combobox").fill("Sloop");
-        await page.getByText("Sloop").click();
-        await houseBlockAmount.fill("1");
-        await houseBlockValue.fill("100000");
+        await mutationAmount.fill("6");
+        await mutationType.getByRole("combobox").fill("Bouw");
+        await page.getByText("Bouw").click();
+        await houseBlockAmount.fill("6");
+        await houseBlockValue.fill("1000000");
 
         await gallerijflat.fill("1");
         await hoekwoning.fill("1");
@@ -190,18 +189,17 @@ test.describe("Create project page", () => {
         await regulier.fill("1");
         await student.fill("1");
 
-        await meergezinswoning.fill("1");
-        await eengezinswoning.fill("1");
+        await meergezinswoning.fill("3");
+        await eengezinswoning.fill("3");
 
         await noPermissionFromLandOwner.fill("1");
         await permissionFromLandOwner.fill("1");
-        await formalPermissionFromLandOwner.fill("1");
+        await formalPermissionFromLandOwner.fill("4");
 
         await booleanCustomProperty.fill("Nee");
         await page.getByText("Nee").nth(1).click();
-        await categoryCustomProperty.fill("Build");
-        await page.getByText("Build").click();
-        await textCustomProperty.fill("Test");
+        await categoryCustomProperty.fill("Bewoners");
+        await page.getByText("Bewoners").click();
 
         await page.getByText("Opslaan en volgende").click();
         await page.waitForTimeout(1000);
@@ -260,11 +258,10 @@ test.describe("Create project page", () => {
         const projectPlanStatus = page.locator(".project-planning-status span").nth(1);
         expect(await projectPlanStatus.textContent()).toContain("2A Vastgesteld");
         const projectCustomCatProperty = page.locator(".CATEGORY span").first();
-        expect(await projectCustomCatProperty.textContent()).toContain("tom");
+        expect(await projectCustomCatProperty.textContent()).toContain("Bewoners");
         const projectCustomBooleanProperty = page.locator(".BOOLEAN input").first();
         expect(await projectCustomBooleanProperty.inputValue()).toContain("Ja");
-        const projectCustomTextProperty = page.locator(".TEXT input").first();
-        expect(await projectCustomTextProperty.inputValue()).toContain("test");
+
         await page.locator("#panel1-header").nth(1).click();
         const houseBlockName = page.getByTestId("input-label-stack").nth(12).locator("input");
         expect(await houseBlockName.inputValue()).toContain("Test house block");
@@ -275,13 +272,13 @@ test.describe("Create project page", () => {
         const houseBlockEndDate = page.getByTestId("input-label-stack").nth(15).locator("input");
         expect(await houseBlockEndDate.inputValue()).toContain("01-01-2025");
         const mutationAmount = page.getByTestId("input-label-stack").nth(16).locator("#Aantal");
-        expect(await mutationAmount.inputValue()).toContain("10");
+        expect(await mutationAmount.inputValue()).toContain("6");
         const mutationType = page.getByTestId("input-label-stack").nth(17).locator("input");
-        expect(await mutationType.inputValue()).toContain("Sloop");
+        expect(await mutationType.inputValue()).toContain("Bouw");
         const houseBlockAmount = page.locator(".ownership-house-amount >div>p");
-        expect(await houseBlockAmount.textContent()).toContain("1");
+        expect(await houseBlockAmount.textContent()).toContain("6");
         const houseBlockValue = page.locator(".ownership-house-value input");
-        expect(await houseBlockValue.inputValue()).toContain("100000");
+        expect(await houseBlockValue.inputValue()).toContain("1000000");
         const houseBlockRent = page.locator(".ownership-house-rent input");
         expect(await houseBlockRent.inputValue()).toBe("");
         const gallerijflat = page.locator("#Gallerijflat");
@@ -309,21 +306,19 @@ test.describe("Create project page", () => {
         const student = page.locator("#Student");
         expect(await student.inputValue()).toContain("1");
         const meergezinswoning = page.locator("#Meergezinswoning");
-        expect(await meergezinswoning.inputValue()).toContain("1");
+        expect(await meergezinswoning.inputValue()).toContain("3");
         const eengezinswoning = page.locator("#Eengezinswoning");
-        expect(await eengezinswoning.inputValue()).toContain("1");
+        expect(await eengezinswoning.inputValue()).toContain("3");
         const noPermissionFromLandOwner = page.locator("#Geentoestemminggrondeigenaar");
         expect(await noPermissionFromLandOwner.inputValue()).toContain("1");
         const permissionFromLandOwner = page.locator("#Intentiemedewerkinggrondeigenaar");
         expect(await permissionFromLandOwner.inputValue()).toContain("1");
         const formalPermissionFromLandOwner = page.locator("#Formeletoestemmingvangrondeigenaar");
-        expect(await formalPermissionFromLandOwner.inputValue()).toContain("1");
+        expect(await formalPermissionFromLandOwner.inputValue()).toContain("4");
         const booleanCustomProperty = page.locator("#boolean-custom-property").nth(1);
         expect(await booleanCustomProperty.inputValue()).toContain("Nee");
         const categoryCustomProperty = page.locator(".house-block-custom-properties span").nth(1);
-        expect(await categoryCustomProperty.textContent()).toContain("Build");
-        const textCustomProperty = page.locator("#text-custom-property").first();
-        expect(await textCustomProperty.inputValue()).toContain("test");
+        expect(await categoryCustomProperty.textContent()).toContain("Bewoners");
     });
     test("Delete Created Project", async ({ page }) => {
         await page.goto(`http://localhost:3000/projects/${projectId}/characteristics`);

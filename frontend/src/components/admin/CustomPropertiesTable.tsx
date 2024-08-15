@@ -157,7 +157,7 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
 
     return (
         <>
-            <Stack>
+            <Stack id="custom-properties-table">
                 <DataGrid
                     rows={customProperties.filter((row) => !row.disabled && row.propertyType !== "RANGE_CATEGORY")}
                     rowHeight={70}
