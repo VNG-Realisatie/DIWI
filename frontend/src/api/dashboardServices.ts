@@ -47,7 +47,13 @@ export async function getDashboardProject(
     return getJson(`${API_URI}/dashboard/project/${id}?snapshotDate=${todaysDate}`);
 }
 
-export async function getDashboardProjects(): Promise<{ physicalAppearance: PhysicalAppearance[]; targetGroup: PhysicalAppearance[] }> {
+export async function getDashboardProjects(): Promise<{
+    physicalAppearance: PhysicalAppearance[];
+    targetGroup: PhysicalAppearance[];
+    priceCategoryOwn: PriceCategory[];
+    priceCategoryRent: PriceCategory[];
+    planning: Planning[];
+}> {
     const todaysDate = new Date().toISOString().split("T")[0]; // change this logic later
     return getJson(`${API_URI}/dashboard/projects?snapshotDate=${todaysDate}`);
 }

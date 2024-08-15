@@ -2,7 +2,7 @@ import { Box, Stack, Typography } from "@mui/material";
 import { t } from "i18next";
 import { BarChart } from "@mui/x-charts";
 import { Project } from "../../api/projectsServices";
-import { grayScaleColors } from "../../utils/dashboardChartColors";
+import { generateColorsArray, grayScaleColors } from "../../utils/dashboardChartColors";
 import { convertData } from "../../utils/convertChartData";
 
 type Props = {
@@ -30,9 +30,7 @@ export type OutputData = { convertedData: OutputDataItem[]; years: number[] };
 export const selectedProjectColor = "#00A9F3";
 
 export const MyResponsiveBar = ({ chartData, selectedProject }: Props) => {
-    if (!selectedProject) return null;
-
-    const convertedData = convertData(chartData, selectedProject.projectId);
+    const convertedData = convertData(chartData, selectedProject?.projectId);
 
     const size = {
         height: 500,
@@ -52,23 +50,40 @@ export const MyResponsiveBar = ({ chartData, selectedProject }: Props) => {
                         height={size.height}
                         xAxis={[{ scaleType: "band", data: convertedData.years }]}
                         series={convertedData.convertedData}
-                        colors={grayScaleColors}
+                        colors={selectedProject ? grayScaleColors : generateColorsArray(chartData.length)}
                         slotProps={{ legend: { hidden: true } }}
                         tooltip={{ trigger: "item" }}
                         grid={{ horizontal: true }}
                     />
                     <Stack flexDirection="row" m="auto">
-                        <Box height={18} width={18} sx={{ backgroundColor: "#00A9F3" }}></Box>
+                        {selectedProject && <Box height={18} width={18} sx={{ backgroundColor: "#00A9F3" }}></Box>}
                         <Typography variant="caption" ml={1}>
-                            {selectedProject.projectName}
+                            {selectedProject && selectedProject.projectName ? selectedProject.projectName : ""}
                         </Typography>
                         <Stack flexDirection="row" alignItems="center" ml={2}>
-                            <Box height={18} width={6} sx={{ backgroundColor: grayScaleColors[0] }}></Box>
-                            <Box height={18} width={6} sx={{ backgroundColor: grayScaleColors[5] }}></Box>
-                            <Box height={18} width={6} sx={{ backgroundColor: grayScaleColors[9] }}></Box>
-                            <Typography variant="caption" ml={1}>
-                                {t("dashboard.otherProjects")}
-                            </Typography>
+                            {selectedProject ? (
+                                <>
+                                    <Box height={18} width={6} sx={{ backgroundColor: grayScaleColors[0] }}></Box>
+                                    <Box height={18} width={6} sx={{ backgroundColor: grayScaleColors[5] }}></Box>
+                                    <Box height={18} width={6} sx={{ backgroundColor: grayScaleColors[9] }}></Box>
+                                    <Typography variant="caption" ml={1}>
+                                        {t("dashboard.otherProjects")}
+                                    </Typography>
+                                </>
+                            ) : (
+                                <Box sx={{ display: "flex", flexWrap: "wrap" }}>
+                                    {chartData.map((data, i) => {
+                                        return (
+                                            <Stack direction="row" sx={{ m: 0.5 }}>
+                                                <Box height={15} width={15} sx={{ backgroundColor: generateColorsArray(chartData.length)[i] }}></Box>
+                                                <Typography variant="caption" ml={0.5}>
+                                                    {data.name}
+                                                </Typography>
+                                            </Stack>
+                                        );
+                                    })}
+                                </Box>
+                            )}
                         </Stack>
                     </Stack>
                 </Stack>
