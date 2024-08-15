@@ -54,3 +54,16 @@ export function checkConsistencyOwnerShipValueAndMutation(houseBlock: HouseBlock
     }
     return false;
 }
+export function calculateAmounts(houseBlocks: HouseBlock[]) {
+    const constructionAmount = houseBlocks
+        .filter((hb) => hb.mutation.kind === "CONSTRUCTION")
+        .map((hb) => hb.mutation.amount ?? 0)
+        .reduce((a, b) => a + b, 0);
+
+    const demolitionAmount = houseBlocks
+        .filter((hb) => hb.mutation.kind === "DEMOLITION")
+        .map((hb) => hb.mutation.amount ?? 0)
+        .reduce((a, b) => a + b, 0);
+
+    return { constructionAmount, demolitionAmount };
+}
