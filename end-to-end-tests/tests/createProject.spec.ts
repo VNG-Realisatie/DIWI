@@ -9,16 +9,6 @@ test.describe("Create project page", () => {
     let projectId: string;
 
     test.beforeEach(async ({ page }) => {
-        // await page.route("*/**/rest/properties?objectType=PROJECT", async (route) => {
-        //     await route.fulfill({
-        //         body: JSON.stringify(customProjectProperties),
-        //     });
-        // });
-        // await page.route("*/**/rest/properties?objectType=WONINGBLOK", async (route) => {
-        //     await route.fulfill({
-        //         body: JSON.stringify(houseBlockCustomProperties),
-        //     });
-        // });
         const pm = new PageManager(page);
         await pm.navigateTo().loginPage();
         await pm.navigateTo().projectCreatePage();
@@ -26,18 +16,28 @@ test.describe("Create project page", () => {
 
     test("Check Mandatory fields warning texts", async ({ page }) => {
         const projectNameWarning = await page.getByTestId("input-label-stack").first();
-        const startDate = await page.getByTestId("input-label-stack").nth(2);
-        const endDate = await page.getByTestId("input-label-stack").nth(3);
+        const startDate = await page.locator(".project-startdate");
+        const endDate = await page.locator(".project-enddate");
+        const owner = await page.locator(".project-owner");
+        const confidentialityLevel = await page.locator(".project-confidentiality");
 
         expect(await projectNameWarning.textContent()).toContain("Vul het veld projectnaam in");
         expect(await startDate.textContent()).toContain("Vul het veld startdatum in");
         expect(await endDate.textContent()).toContain("Vul het veld einddatum in");
+        expect(await owner.textContent()).toContain("Vul het veld schrijfrechten in");
+        expect(await confidentialityLevel.textContent()).toContain("Vul het veld vertrouwelijkheidsniveau in");
         await projectNameWarning.getByRole("textbox").fill("Test project");
         await startDate.getByRole("textbox").fill("01-01-2021");
         await endDate.getByRole("textbox").fill("01-01-2025");
+        await owner.getByRole("combobox").fill("A");
+        await page.getByText("Ad Min").nth(1).click();
+        await confidentialityLevel.getByRole("combobox").fill("Intern raad");
+        await page.getByText("Intern raad").click();
         expect(await projectNameWarning.textContent()).not.toContain("Vul het veld projectnaam in");
         expect(await startDate.textContent()).not.toContain("Vul het veld startdatum in");
         expect(await endDate.textContent()).not.toContain("Vul het veld einddatum in");
+        expect(await owner.textContent()).not.toContain("Vul het veld schrijfrechten in");
+        expect(await confidentialityLevel.textContent()).not.toContain("Vertrouwelijkheidsniveau *​Vul het veld vertrouwelijkheidsniveau in");
     });
 
     test("Fill project details and save", async ({ page }) => {
