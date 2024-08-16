@@ -17,6 +17,7 @@ test("Add district in to the custom properties", async ({ page }) => {
         const categoryInput = page.locator('input[placeholder="Voeg maatwerk eigenschap toe"]');
         await categoryInput.fill("Oud-Zuid");
         await page.locator("#save-custom-property").click();
+    } else {
+        await page.locator("#cancel-custom-property").click();
     }
-    await page.locator("#cancel-custom-property").click();
 });

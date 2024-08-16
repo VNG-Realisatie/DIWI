@@ -39,30 +39,37 @@ export default defineConfig({
         {
             name: "setup district",
             testMatch: /district\.setup\.ts/,
+            dependencies: ["setup user"],
         },
         {
             name: "setup municipality",
             testMatch: /municipality\.setup\.ts/,
+            dependencies: ["setup user"],
         },
         {
             name: "setup neighborhood",
             testMatch: /neighborhood\.setup\.ts/,
+            dependencies: ["setup user"],
         },
         {
             name: "setup customcategory",
             testMatch: /customcategory\.setup\.ts/,
-        },
-        {
-            name: "setup blockcustomcategory",
-            testMatch: /blockcustomcategory\.setup\.ts/,
+            dependencies: ["setup user"],
         },
         {
             name: "setup customboolean",
             testMatch: /customboolean\.setup\.ts/,
+            dependencies: ["setup user"],
         },
         {
-            name: "setup blockcustomboolean",
-            testMatch: /blockcustomboolean\.setup\.ts/,
+            name: "setup blockcat",
+            testMatch: /blockcat\.setup\.ts/,
+            dependencies: ["setup user"],
+        },
+        {
+            name: "setup blockbool",
+            testMatch: /blockbool\.setup\.ts/,
+            dependencies: ["setup user"],
         },
         {
             name: "chromium",
@@ -74,8 +81,8 @@ export default defineConfig({
                 "setup neighborhood",
                 "setup customcategory",
                 "setup customboolean",
-                "setup blockcustomcategory",
-                "setup blockcustomboolean",
+                "setup blockcat",
+                "setup blockbool",
             ],
         },
     ],

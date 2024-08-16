@@ -10,7 +10,7 @@ test("Add boolean in to the custom properties", async ({ page }) => {
     await addIcon.click();
     const dialog = await page.locator("role=dialog");
     const name = dialog.locator("input").first();
-    await name.fill("Betaald?");
+    await name.fill("Betaald");
     const projectOrHouseBlock = dialog.locator("input").nth(1);
     await projectOrHouseBlock.click({ force: true });
     await page.locator("li").first().click();

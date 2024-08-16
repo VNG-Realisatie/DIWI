@@ -11,9 +11,8 @@ test("Add boolean in to the block custom properties", async ({ page }) => {
     const dialog = await page.locator("role=dialog");
     const name = dialog.locator("input").first();
     await name.fill("Block-Betaald");
-    const projectOrHouseBlock = dialog.locator("input").nth(0);
-    await projectOrHouseBlock.click({ force: true });
-    await page.locator("li").first().click();
+    await dialog.locator("input").nth(1).click({ force: true });
+    await page.locator("li").nth(1).click();
     await dialog.getByText("Open tekstveld").click();
     await page.locator("li").first().click();
 

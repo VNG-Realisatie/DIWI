@@ -55,8 +55,8 @@ test.describe("Create project page", () => {
         const wijk = await page.locator(".project-district");
         const buurt = await page.locator(".project-neighbourhood");
         const owner = await page.locator(".project-owner");
-        const customCatProperty = page.locator(".category-custom-property");
-        const customBooleanProperty = page.locator(".Betaald?");
+        const customCatProperty = await page.locator("#category-custom-property");
+        const customBooleanProperty = await page.locator("#boolean-custom-property");
 
         await projectNameWarning.getByRole("textbox").fill("Test project");
         await projectColor.click();
@@ -171,7 +171,7 @@ test.describe("Create project page", () => {
         await endDate.getByRole("textbox").fill("01-01-2025");
         await mutationAmount.fill("6");
         await mutationType.getByRole("combobox").fill("Bouw");
-        await page.getByText("Bouw").click();
+        await page.getByText("Bouw").nth(1).click();
         await houseBlockAmount.fill("6");
         await houseBlockValue.fill("1000000");
 
@@ -199,7 +199,7 @@ test.describe("Create project page", () => {
         await booleanCustomProperty.fill("Nee");
         await page.getByText("Nee").nth(1).click();
         await categoryCustomProperty.fill("Bewoners");
-        await page.getByText("Bewoners").click();
+        await page.getByText("Bewoners").nth(1).click();
 
         await page.getByText("Opslaan en volgende").click();
         await page.waitForTimeout(1000);
@@ -275,10 +275,10 @@ test.describe("Create project page", () => {
         expect(await mutationAmount.inputValue()).toContain("6");
         const mutationType = page.getByTestId("input-label-stack").nth(17).locator("input");
         expect(await mutationType.inputValue()).toContain("Bouw");
-        const houseBlockAmount = page.locator(".ownership-house-amount >div>p");
-        expect(await houseBlockAmount.textContent()).toContain("6");
+        const houseBlockAmount = page.locator(".ownership-house-amount input");
+        expect(await houseBlockAmount.inputValue()).toContain("6");
         const houseBlockValue = page.locator(".ownership-house-value input");
-        expect(await houseBlockValue.inputValue()).toContain("1000000");
+        expect(await houseBlockValue.inputValue()).toContain("1000000,00");
         const houseBlockRent = page.locator(".ownership-house-rent input");
         expect(await houseBlockRent.inputValue()).toBe("");
         const gallerijflat = page.locator("#Gallerijflat");
@@ -320,6 +320,7 @@ test.describe("Create project page", () => {
         const categoryCustomProperty = page.locator(".house-block-custom-properties span").nth(1);
         expect(await categoryCustomProperty.textContent()).toContain("Bewoners");
     });
+
     test("Delete Created Project", async ({ page }) => {
         await page.goto(`http://localhost:3000/projects/${projectId}/characteristics`);
         await page.getByTestId("DeleteForeverOutlinedIcon").click();
