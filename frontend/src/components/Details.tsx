@@ -5,6 +5,7 @@ import { Project } from "../api/projectsServices";
 import { UserGroupAvatars } from "./UserGroupAvatars";
 import { HouseBlock } from "../types/houseBlockTypes";
 import HouseBlockContext from "../context/HouseBlockContext";
+import { calculateAmounts } from "../utils/houseblocks/houseBlocksFunctions";
 
 type Props = {
     project: Project | null;
@@ -38,6 +39,8 @@ const DetailListItem = ({ children, property }: { children: ReactNode; property:
 export const Details = ({ project }: Props) => {
     const { t } = useTranslation();
     const { houseBlocks } = useContext(HouseBlockContext);
+
+    const { constructionAmount, demolitionAmount } = calculateAmounts(houseBlocks);
 
     const getTranslatedText = (property: string, content: string) => {
         if (property === "confidentialityLevel") {
@@ -85,7 +88,9 @@ export const Details = ({ project }: Props) => {
                                         border: "solid 1px #ddd",
                                     }}
                                 >
-                                    {value !== null && typeof value === "number" && <ListItemText primary={getTranslatedText(property, value.toString())} />}
+                                    {value !== null && typeof value === "number" && (
+                                        <ListItemText primary={(constructionAmount - demolitionAmount).toString()} />
+                                    )}
                                     {value !== null && typeof value === "string" && <ListItemText primary={getTranslatedText(property, value)} />}
                                     {value !== null && typeof value === "object" && <Typography>{value.toString().split(",").join(", ")}</Typography>}
                                 </ListItem>

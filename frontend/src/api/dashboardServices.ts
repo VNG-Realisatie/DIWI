@@ -29,7 +29,6 @@ export type VisibilityElement =
     | "OWNERSHIP_BUY"
     | "OWNERSHIP_RENT"
     | "PROJECT_MAP"
-    | "RESIDENTIAL_PROJECTS"
     | "DELIVERABLES"
     | "DELAYED_PROJECTS";
 
