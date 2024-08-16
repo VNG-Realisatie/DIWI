@@ -99,6 +99,25 @@ const usePlotSelector = (id: string) => {
         }
     };
 
+    const fetchPlotData = async (bbox: string): Promise<PlotGeoJSON> => {
+        const url = queryString.stringifyUrl({
+            url: baseUrlKadasterWfs,
+            query: {
+                request: "GetFeature",
+                service: "WFS",
+                version: "2.0.0",
+                outputFormat: "application/json",
+                typeName: "kadastralekaart:Perceel",
+                srsName: "EPSG:3857",
+                bbox: bbox + "," + projection,
+            },
+        });
+
+        const response = await fetch(url);
+        const result = await response.json();
+        return result as PlotGeoJSON;
+    };
+
     const handleClick = useCallback(
         (e: MapBrowserEvent<UIEvent>) => {
             if (selectionMode !== Buttons.SELECT) return;
@@ -117,24 +136,7 @@ const usePlotSelector = (id: string) => {
             } else {
                 const loc = e.coordinate;
                 const bbox = `${loc[0]},${loc[1]},${loc[0]},${loc[1]}`;
-                const url = queryString.stringifyUrl({
-                    url: baseUrlKadasterWfs,
-                    query: {
-                        request: "GetFeature",
-                            service: "WFS",
-                            version: "2.0.0",
-                            outputFormat: "application/json",
-                            typeName: "kadastralekaart:Perceel",
-                            srsName: projection,
-                            bbox: bbox + "," + projection
-                    },
-
-                });
-
-                fetch(url)
-                    .then((res) => res.json())
-                    .then((result) => {
-                        const plotFeature = result as PlotGeoJSON;
+                fetchPlotData(bbox).then((plotFeature) => {
 
                         if (plotFeature.features.length === 0) {
                             return;
@@ -169,23 +171,7 @@ const usePlotSelector = (id: string) => {
 
             const bbox = bufferedExtent.join(",");
 
-            const url = queryString.stringifyUrl({
-                url: baseUrlKadasterWfs,
-                query: {
-                    request: "GetFeature",
-                    service: "WFS",
-                    version: "2.0.0",
-                    outputFormat: "application/json",
-                    typeName: "kadastralekaart:Perceel",
-                    srsName: "EPSG:3857",
-                    bbox: bbox + "," + projection
-                },
-            });
-
-            fetch(url)
-                .then((res) => res.json())
-                .then((result) => {
-                    const plotFeature = result as PlotGeoJSON;
+            fetchPlotData(bbox).then((plotFeature) => {
                     const newPlots: Plot[] = [];
 
                     for (let i = 0; i < plotFeature.features.length; i++) {
@@ -234,23 +220,7 @@ const usePlotSelector = (id: string) => {
 
         const coords = polygonGeometry.getCoordinates();
 
-            const url = queryString.stringifyUrl({
-                url: baseUrlKadasterWfs,
-                query: {
-                    request: "GetFeature",
-                    service: "WFS",
-                    version: "2.0.0",
-                    outputFormat: "application/json",
-                    typeName: "kadastralekaart:Perceel",
-                    srsName: "EPSG:3857",
-                    bbox: bbox + "," + projection
-                },
-            });
-
-            fetch(url)
-    .then((res) => res.json())
-    .then((result) => {
-        const plotFeature = result as PlotGeoJSON;
+        fetchPlotData(bbox).then((plotFeature) => {
 
         plotFeature.features.forEach((feature) => {
             const properties = feature.properties;
