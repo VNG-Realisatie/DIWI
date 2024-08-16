@@ -20,6 +20,7 @@ import nl.vng.diwi.models.ImportError;
 import nl.vng.diwi.models.ImportResponse;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.models.PropertyModel;
+import nl.vng.diwi.models.RangeSelectDisabledModel;
 import nl.vng.diwi.models.SelectModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
 import org.apache.logging.log4j.LogManager;
@@ -57,8 +58,8 @@ import static nl.vng.diwi.services.ExcelTableHeader.Column.*;
 public class ExcelImportService {
     private static final Logger logger = LogManager.getLogger();
 
-    public static String errors = "errors";
     public static String result = "result";
+    public static String Onbekend = "Onbekend";
 
     public ExcelImportService() {
     }
@@ -148,6 +149,13 @@ public class ExcelImportService {
                                                 ObjectType.WONINGBLOK, PropertyType.CATEGORY, nextCell, activeProperties, excelErrors);
                                         case HOUSEBLOCK_TARGET_GROUP -> addTableHeaderFixedPropertyModel(tableHeader, Constants.FIXED_PROPERTY_TARGET_GROUP,
                                             ObjectType.WONINGBLOK, PropertyType.CATEGORY, nextCell, activeProperties, excelErrors);
+                                        case HOUSEBLOCK_PROPERTY_PURCHASE_PRICE_RANGE_CATEGORY ->
+                                            addTableHeaderFixedPropertyModel(tableHeader, Constants.FIXED_PROPERTY_PRICE_RANGE_BUY,
+                                                ObjectType.WONINGBLOK, PropertyType.RANGE_CATEGORY, nextCell, activeProperties, excelErrors);
+                                        case HOUSEBLOCK_PROPERTY_HOUSING_ASSOCIATION_RENTAL_PRICE_RANGE_CATEGORY,
+                                             HOUSEBLOCK_PROPERTY_LANDLORD_RENTAL_PRICE_RANGE_CATEGORY ->
+                                            addTableHeaderFixedPropertyModel(tableHeader, Constants.FIXED_PROPERTY_PRICE_RANGE_RENT,
+                                                ObjectType.WONINGBLOK, PropertyType.RANGE_CATEGORY, nextCell, activeProperties, excelErrors);
                                     }
                                 }
                             }
@@ -216,6 +224,22 @@ public class ExcelImportService {
                                                 excelErrors.add(getExcelError(null, null, nextCell, subheader, ImportError.ERROR.UNKNOWN_HOUSEBLOCK_PROPERTY));
                                             } else {
                                                 tableHeader.setPropertyModel(propertyModel);
+                                            }
+                                        }
+                                        case HOUSEBLOCK_PROPERTY_PURCHASE_PRICE_RANGE_CATEGORY -> {
+                                            if (!subheader.equalsIgnoreCase(Onbekend)) {
+                                                RangeSelectDisabledModel rangeCategory = tableHeader.getPropertyModel().getActiveRangeCategoryValue(subheader);
+                                                if (rangeCategory == null) {
+                                                    excelErrors.add(getExcelError(null, null, nextCell, subheader, ImportError.ERROR.UNKNOWN_PRICE_BUY_RANGE_CATEGORY));
+                                                }
+                                            }
+                                        }
+                                        case HOUSEBLOCK_PROPERTY_LANDLORD_RENTAL_PRICE_RANGE_CATEGORY, HOUSEBLOCK_PROPERTY_HOUSING_ASSOCIATION_RENTAL_PRICE_RANGE_CATEGORY -> {
+                                            if (!subheader.equalsIgnoreCase(Onbekend)) {
+                                                RangeSelectDisabledModel rangeCategory = tableHeader.getPropertyModel().getActiveRangeCategoryValue(subheader);
+                                                if (rangeCategory == null) {
+                                                    excelErrors.add(getExcelError(null, null, nextCell, subheader, ImportError.ERROR.UNKNOWN_PRICE_RENT_RANGE_CATEGORY));
+                                                }
                                             }
                                         }
                                     }
@@ -434,6 +458,10 @@ public class ExcelImportService {
                                  HOUSEBLOCK_PROPERTY_HOUSING_ASSOCIATION_RENTAL_PRICE ->
                                 addHouseblockOwnershipValue(rowModel.getId(), houseblockRowModel, tableHeader.getColumn(), tableHeader.getSubheader(), nextCell, formatter, evaluator, rowErrors);
 
+                            case HOUSEBLOCK_PROPERTY_PURCHASE_PRICE_RANGE_CATEGORY , HOUSEBLOCK_PROPERTY_LANDLORD_RENTAL_PRICE_RANGE_CATEGORY ,
+                                 HOUSEBLOCK_PROPERTY_HOUSING_ASSOCIATION_RENTAL_PRICE_RANGE_CATEGORY ->
+                                addHouseblockOwnershipRangeCategoryValue(rowModel.getId(), houseblockRowModel, tableHeader, nextCell, formatter, evaluator, rowErrors);
+
                             case HOUSEBLOCK_GROUND_POSITION_NO_PERMISSION, HOUSEBLOCK_GROUND_POSITION_COOPERATE_INTENTION,
                                  HOUSEBLOCK_GROUND_POSITION_FORMAL_PERMISSION ->
                                 addHouseblockGroundPosition(rowModel.getId(), houseblockRowModel, tableHeader.getColumn(), nextCell, formatter, evaluator, rowErrors);
@@ -584,21 +612,26 @@ public class ExcelImportService {
         Integer ownershipValueAmount = getIntegerValue(projectId, houseblockRowModel.getName(), cell, formatter, evaluator, excelErrors);
         if (ownershipValueAmount != null && ownershipValueAmount > 0) {
             SingleValueOrRangeModel<Integer> subheaderRange;
-            if (subheader.equalsIgnoreCase("Onbekend")) {
+            if (subheader.equalsIgnoreCase(Onbekend)) {
                 subheaderRange = null;
             } else {
                 subheaderRange = new SingleValueOrRangeModel<>();
                 List<String> substringRangeStrList = Arrays.asList(subheader.replaceAll("\\s", "").replaceAll(",", ".").split("-"));
-                if (substringRangeStrList.size() != 2) {
+                if (substringRangeStrList.size() != 2 && substringRangeStrList.size() != 1) {
                     excelErrors.add(getExcelError(projectId, houseblockRowModel.getName(), cell, subheader, ImportError.ERROR.INVALID_RANGE));
                 }
                 try {
-                    Double minValue = Double.parseDouble(substringRangeStrList.get(0)) * 100;
-                    subheaderRange.setMin(minValue.intValue());
-                    String maxValueStr = substringRangeStrList.get(1);
-                    if (!maxValueStr.equalsIgnoreCase("Inf")) {
-                        Double maxValue = Double.parseDouble(substringRangeStrList.get(1)) * 100;
-                        subheaderRange.setMax(maxValue.intValue());
+                    if (substringRangeStrList.size() == 1) {
+                        Double value = Double.parseDouble(substringRangeStrList.get(0)) * 100;
+                        subheaderRange.setValue(value.intValue());
+                    } else {
+                        Double minValue = Double.parseDouble(substringRangeStrList.get(0)) * 100;
+                        subheaderRange.setMin(minValue.intValue());
+                        String maxValueStr = substringRangeStrList.get(1);
+                        if (!maxValueStr.equalsIgnoreCase("Inf")) {
+                            Double maxValue = Double.parseDouble(substringRangeStrList.get(1)) * 100;
+                            subheaderRange.setMax(maxValue.intValue());
+                        }
                     }
                 } catch (NumberFormatException e) {
                     excelErrors.add(getExcelError(projectId, houseblockRowModel.getName(), cell, subheader, ImportError.ERROR.INVALID_RANGE));
@@ -621,6 +654,35 @@ public class ExcelImportService {
                     ownershipValue.setType(OwnershipType.HUURWONING_WONINGCORPORATIE);
                     ownershipValue.setRentalValue(subheaderRange);
                     ownershipValue.setValue(null);
+                }
+            }
+            houseblockRowModel.getOwnershipValues().add(ownershipValue);
+        }
+    }
+
+
+    private void addHouseblockOwnershipRangeCategoryValue(Integer projectId, ProjectImportModel.HouseblockImportModel houseblockRowModel, ExcelTableHeader header, Cell cell,
+                                             DataFormatter formatter, FormulaEvaluator evaluator, List<ImportError> excelErrors) {
+        Integer ownershipValueAmount = getIntegerValue(projectId, houseblockRowModel.getName(), cell, formatter, evaluator, excelErrors);
+        if (ownershipValueAmount != null && ownershipValueAmount > 0) {
+            UUID rangePropertyUuid = null;
+            if (!header.getSubheader().equalsIgnoreCase(Onbekend)) {
+                rangePropertyUuid = header.getPropertyModel().getActiveRangeCategoryValue(header.getSubheader()).getId();
+            }
+            HouseblockSnapshotModel.OwnershipValue ownershipValue = new HouseblockSnapshotModel.OwnershipValue();
+            ownershipValue.setAmount(ownershipValueAmount);
+            switch (header.getColumn()) {
+                case HOUSEBLOCK_PROPERTY_PURCHASE_PRICE_RANGE_CATEGORY -> {
+                    ownershipValue.setType(OwnershipType.KOOPWONING);
+                    ownershipValue.setValueCategoryId(rangePropertyUuid);
+                }
+                case HOUSEBLOCK_PROPERTY_LANDLORD_RENTAL_PRICE_RANGE_CATEGORY -> {
+                    ownershipValue.setType(OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER);
+                    ownershipValue.setRentalValueCategoryId(rangePropertyUuid);
+                }
+                case HOUSEBLOCK_PROPERTY_HOUSING_ASSOCIATION_RENTAL_PRICE_RANGE_CATEGORY -> {
+                    ownershipValue.setType(OwnershipType.HUURWONING_WONINGCORPORATIE);
+                    ownershipValue.setRentalValueCategoryId(rangePropertyUuid);
                 }
             }
             houseblockRowModel.getOwnershipValues().add(ownershipValue);

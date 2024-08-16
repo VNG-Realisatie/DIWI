@@ -73,6 +73,13 @@ public class PropertyModel {
         return null;
     }
 
+    public RangeSelectDisabledModel getActiveRangeCategoryValue(String rangeCategoryName) {
+        if (ranges != null) {
+            return ranges.stream().filter(c -> c.getName().equals(rangeCategoryName) && c.getDisabled() == Boolean.FALSE).findFirst().orElse(null);
+        }
+        return null;
+    }
+
     public String validate() {
 
         if (this.name == null || this.name.isBlank()) {

@@ -14,6 +14,8 @@ import { ProjectForm } from "../../ProjectForm";
 import useLoading from "../../../hooks/useLoading";
 import { useHasEditPermission } from "../../../hooks/useHasEditPermission";
 import { validateForm } from "../../../utils/formValidation";
+import UserContext from "../../../context/UserContext";
+import { checkIsOwnerValidWithConfidentialityLevel } from "../../../utils/checkIsOwnerValidWithConfidentialityLevel";
 
 export const ProjectsWithHouseBlock = () => {
     const { selectedProject, updateProject } = useContext(ProjectContext);
@@ -23,6 +25,7 @@ export const ProjectsWithHouseBlock = () => {
     const [projectForm, setProjectForm] = useState<Project | null>(selectedProject);
 
     const { setAlert } = useContext(AlertContext);
+    const { user } = useContext(UserContext);
     const { setLoading } = useLoading();
     const { t } = useTranslation();
     const { getEditPermission } = useHasEditPermission();
@@ -46,7 +49,7 @@ export const ProjectsWithHouseBlock = () => {
 
     const handleProjectSave = async () => {
         if (projectForm) {
-            if (!validateForm(projectForm)) {
+            if (!validateForm(projectForm, checkIsOwnerValidWithConfidentialityLevel(projectForm, user))) {
                 setAlert(t("createProject.hasMissingRequiredAreas.hasmissingProperty"), "warning");
                 return;
             }
@@ -106,7 +109,13 @@ export const ProjectsWithHouseBlock = () => {
                 {projectForm && (
                     // this box with padding is to make the layout similar to how houseblocks look
                     <Box padding={2} paddingTop={1}>
-                        <ProjectForm project={projectForm} setProject={setProjectForm} readOnly={readOnly} showColorPicker={false} />
+                        <ProjectForm
+                            checkIsOwnerValidWithConfidentialityLevel={() => checkIsOwnerValidWithConfidentialityLevel(projectForm, user)}
+                            project={projectForm}
+                            setProject={setProjectForm}
+                            readOnly={readOnly}
+                            showColorPicker={false}
+                        />
                     </Box>
                 )}
 

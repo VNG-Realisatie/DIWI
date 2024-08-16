@@ -7,7 +7,7 @@ export const useHasEditPermission = () => {
     const { selectedProject } = useContext(ProjectContext);
     const { user } = useContext(UserContext);
 
-    const allowedActions = useAllowedActions();
+    const { allowedActions } = useAllowedActions();
 
     const isOwner = selectedProject?.projectOwners.some((owner) => owner.users?.some((u) => u.uuid === user?.id));
 

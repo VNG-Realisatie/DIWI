@@ -1,6 +1,6 @@
 import { Project } from "../api/projectsServices";
 
-export function validateForm(project: Project) {
+export function validateForm(project: Project, validOwner: boolean = true) {
     if (
         !project.projectName ||
         !project.startDate ||
@@ -8,6 +8,7 @@ export function validateForm(project: Project) {
         !project.projectColor ||
         !project.projectPhase ||
         !project.confidentialityLevel ||
+        !validOwner ||
         project.projectOwners.length === 0
     ) {
         return false;

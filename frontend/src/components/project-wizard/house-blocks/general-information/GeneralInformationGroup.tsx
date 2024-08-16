@@ -19,6 +19,9 @@ export const GeneralInformationGroup = ({ readOnly, houseBlock, setHouseBlock, e
         const newName = event.target.value.trimStart();
         setHouseBlock({ ...houseBlock, houseblockName: newName });
     };
+
+    const invalidEndDate =
+        houseBlock.endDate && houseBlock.startDate && houseBlock.endDate < houseBlock.startDate ? t("wizard.houseBlocks.endDateInvalid") : undefined;
     return (
         <WizardCard>
             <Typography fontWeight={600} mb={2}>
@@ -60,7 +63,7 @@ export const GeneralInformationGroup = ({ readOnly, houseBlock, setHouseBlock, e
                     const newEndDate = e ? e.format("YYYY-MM-DD") : null;
                     setHouseBlock({ ...houseBlock, endDate: newEndDate });
                 }}
-                error={errors.endDateError}
+                error={errors.endDateError || invalidEndDate}
                 mandatory={true}
                 title={t("createProject.houseBlocksForm.endDate")}
                 errorText={t("wizard.houseBlocks.endDateWarningMissing")}

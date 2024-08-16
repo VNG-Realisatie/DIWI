@@ -18,18 +18,22 @@ export type AllowedActions =
     | "EDIT_ALL_PROJECTS"
     | "CREATE_NEW_PROJECT"
     | "IMPORT_PROJECTS"
-    | "EXPORT_PROJECTS";
+    | "EXPORT_PROJECTS"
+    | "VIEW_ALL_BLUEPRINTS"
+    | "EDIT_ALL_BLUEPRINTS"
+    | "VIEW_OWN_BLUEPRINTS";
 
 function useAllowedActions() {
     const [allowedActions, setAllowedActions] = useState<AllowedActions[]>([]);
-
     useEffect(() => {
         getCurrentUser().then((user) => {
-            if (user && user.allowedActions) setAllowedActions(user.allowedActions);
+            if (user && user.allowedActions) {
+                setAllowedActions(user.allowedActions);
+            }
         });
     }, []);
 
-    return allowedActions;
+    return { allowedActions };
 }
 
 export default useAllowedActions;
