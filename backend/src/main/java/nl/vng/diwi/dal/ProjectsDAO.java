@@ -18,7 +18,6 @@ import nl.vng.diwi.dal.entities.ProjectHouseblockCustomPropertySqlModel;
 import nl.vng.diwi.dal.entities.ProjectListSqlModel;
 import nl.vng.diwi.dal.entities.ProjectState;
 import nl.vng.diwi.generic.Json;
-import nl.vng.diwi.models.PieChartModel;
 import nl.vng.diwi.security.LoggedUser;
 
 public class ProjectsDAO extends AbstractRepository {
