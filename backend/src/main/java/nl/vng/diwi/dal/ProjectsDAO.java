@@ -143,8 +143,17 @@ public class ProjectsDAO extends AbstractRepository {
                 .setTupleTransformer((tuple, aliases) -> {
                     try {
                         MultiProjectDashboardSqlModel model = new MultiProjectDashboardSqlModel();
-                        model.setPhysicalAppearance(Json.mapper.readValue((String)tuple[0], new TypeReference<List<PieChartModel>>() { }));
-                        model.setTargetGroup(Json.mapper.readValue((String)tuple[1], new TypeReference<List<PieChartModel>>() { }));
+                        for (int i = 0; i <= 4; i++) {
+                            if (tuple [i] != null) {
+                                switch (i) {
+                                    case 0 -> model.setPhysicalAppearance(Json.mapper.readValue((String)tuple[i], new TypeReference<>() { }));
+                                    case 1 -> model.setTargetGroup(Json.mapper.readValue((String)tuple[i], new TypeReference<>() { }));
+                                    case 2 -> model.setPriceCategoryOwn(Json.mapper.readValue((String)tuple[i], new TypeReference<>() { }));
+                                    case 3 -> model.setPriceCategoryRent(Json.mapper.readValue((String)tuple[i], new TypeReference<>() { }));
+                                    case 4 -> model.setPlanning(Json.mapper.readValue((String)tuple[i], new TypeReference<>() { }));
+                                }
+                            }
+                        }
                         return model;
                     } catch (Exception e) {
                         throw new RuntimeException();
