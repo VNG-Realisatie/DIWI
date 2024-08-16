@@ -3,8 +3,8 @@ services:
     build:
       context: frontend
       args:
-        REACT_APP_GIT_SHA: ${REACT_APP_GIT_SHA:-Whoops you forgot to set the commit hash}
-        REACT_APP_DEPLOY_DATE: ${REACT_APP_DEPLOY_DATE:-Whoops you forgot to set the commit date}
+        VITE_REACT_APP_GIT_SHA: ${VITE_REACT_APP_GIT_SHA:-Whoops you forgot to set the commit hash}
+        VITE_REACT_APP_DEPLOY_DATE: ${VITE_REACT_APP_DEPLOY_DATE:-Whoops you forgot to set the commit date}
     develop:
       watch:
         - action: rebuild
@@ -16,6 +16,8 @@ services:
       - ./dummy-api/v0.0/:/var/www/api/v0.0/:ro
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/conf.d/:/etc/nginx/conf.d/:ro
+    env_file:
+      - ./version.env
 
   backend:
     build:
