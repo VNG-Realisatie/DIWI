@@ -9,16 +9,23 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("Import file success", async ({ page }) => {
-    const filePath = `end-to-end-tests/excel-importer.xlsx`;
-
-    await page.locator('input[type="file"]').setInputFiles(filePath);
-    await expect(page).toHaveURL("http://localhost:3000/projects/table");
+    const filePath = `./excel-importer.xlsx`;
+    const fileChooserPromise = page.waitForEvent("filechooser");
+    const inputFile = await page.locator("#upload-stack");
+    inputFile.click();
+    const fileChooser = await fileChooserPromise;
+    await fileChooser.setFiles(filePath);
+    await expect(page).toHaveURL("http://localhost:3000/projects/table?pageNumber=1&pageSize=10&");
 });
 
 test("Import file failed", async ({ page }) => {
-    const filePath = `end-to-end-tests/excel-false.xlsx`;
+    const filePath = `./excel-false.xlsx`;
 
-    await page.locator('input[type="file"]').setInputFiles(filePath);
+    const fileChooserPromise = page.waitForEvent("filechooser");
+    const inputFile = await page.locator("#upload-stack");
+    inputFile.click();
+    const fileChooser = await fileChooserPromise;
+    await fileChooser.setFiles(filePath);
 
     const rowError = await page.locator(".rij p").innerText();
     const valueError = await page.locator(".waarde p").last().innerText();
