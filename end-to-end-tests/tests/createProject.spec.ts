@@ -1,7 +1,5 @@
 import { test, expect } from "@playwright/test";
 import { PageManager } from "../page-objects/pageManager";
-import customProjectProperties from "../test-data/customProjectProperties.json";
-import houseBlockCustomProperties from "../test-data/houseBlockCustomProperties.json";
 
 test.describe("Create project page", () => {
     test.describe.configure({ mode: "serial" });
