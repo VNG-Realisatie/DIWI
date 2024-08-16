@@ -29,6 +29,8 @@ This release focusses on expanding dashboard features and ranged categories.
 - fixed an issue where saving changes in house blocks would not give feedback
 - fixed an issue where saving plot updates would not give feedback
 - fixed an issue where a user that had been removed from a group would still have access to projects assigned to that group
+- fixed an issue where a user assigned to a user group would not see private projects assigned to that user group
+- about page git hash is showing again
 
 ## DIWI RELEASE 1.5.0
 
