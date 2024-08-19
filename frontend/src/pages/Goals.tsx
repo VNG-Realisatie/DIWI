@@ -1,3 +1,42 @@
+import { Box } from "@mui/material";
+import { getAllGoals, Goal } from "../api/goalsServices";
+import { useEffect, useState } from "react";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { AddGoalButton } from "../components/PlusButton";
 export const Goals = () => {
-    return <h1>Goals</h1>;
+    const [goals, setGoals] = useState<Goal[]>([]);
+    useEffect(() => {
+        getAllGoals().then((goals) => {
+            setGoals(goals);
+        });
+    }, []);
+
+    const columns: GridColDef[] = [
+        { field: "name", headerName: "Property", flex: 1 },
+        { field: "goalDirection", headerName: "Goal", flex: 1 },
+        { field: "startDate", headerName: "Start Date", flex: 1 },
+        { field: "endDate", headerName: "End Date", flex: 1 },
+        { field: "geography", headerName: "Geography", flex: 1 },
+        { field: "category", headerName: "Category", flex: 1 },
+    ];
+    const rows = goals.map((goal, index) => ({
+        id: index,
+        name: goal.name,
+        goalDirection: goal.goalDirection,
+        startDate: goal.startDate,
+        endDate: goal.endDate,
+        geography: goal.geography?.conditionId, //???
+        category: goal.category?.name,
+    }));
+
+    return (
+        <>
+            <Box sx={{ width: "100%" }}>
+                <DataGrid rows={rows} columns={columns} />
+            </Box>
+            <Box position="relative" top={350}>
+                <AddGoalButton />
+            </Box>
+        </>
+    );
 };

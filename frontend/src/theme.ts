@@ -5,10 +5,12 @@ declare module "@mui/material/styles" {
     interface PaletteColor {
         customDarkBlue?: string;
         customLightBlue?: string;
+        customLightGrey?: string;
     }
     interface SimplePaletteColorOptions {
         customDarkBlue?: string;
         customLightBlue?: string;
+        customLightGrey?: string;
     }
 }
 
@@ -140,6 +142,7 @@ export const theme = createTheme(
                 main: "#002C64",
                 customDarkBlue: "#002C64",
                 customLightBlue: "#00A9F3",
+                customLightGrey: "#738092",
             },
             secondary: {
                 main: "#900A0A",

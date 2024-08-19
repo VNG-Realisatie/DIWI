@@ -382,6 +382,29 @@
       "geography": "Geografie",
       "category": "Categorie"
     },
+    "goals": {
+      "name": "Naam beleidsdoel",
+      "property": "Eigenschap",
+      "startDate": "Startdatum",
+      "endDate": "Einddatum",
+      "category": "Categorie",
+      "goalDirection": "Doelstelling",
+      "properties": {
+        "PROPERTY": "Custom property",
+        "GROUND_POSITION": "Grond positie",
+        "PROGRAMMING": "Programmering",
+        "HOUSE_TYPE": "Type woning",
+        "OWNERSHIP": "Eigenaar"
+      },
+      "errors" : {
+        "name": "Vul de naam van het beleidsdoel in",
+        "property": "Kies de eigenschap",
+        "startDate": "Vul de startdatum in",
+        "endDate": "Vul de einddatum in",
+        "category": "Kies de categorie",
+        "goalDirection": "Kies de doelstelling"
+      }
+    },
     "dashboard": {
       "title": "Dashboard",
       "otherProjects": "Overige projecten",
