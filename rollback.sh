@@ -30,7 +30,10 @@ test -f "backup/predeploy-$timestamp.dump" || { echo "Error: Database dump file 
 git checkout "$(cat "backup/predeploy-$timestamp.githash")"
 
 function restoreDB() {
-    docker compose exec -T database pg_restore -U $DIWI_DB_USERNAME -d $DIWI_DB_NAME "backup/predeploy-$timestamp.dump"
+    # Alle docker containers stoppen (docker compose stop)
+    # Database starten (docker compose up database)
+    docker compose exec -T database pg_restore -U $DIWI_DB_USERNAME -d $DIWI_DB_NAME "/backup/predeploy-$timestamp.dump" --clean --create
+    # Deploynopull
 }
 
 restoreDB $timestamp
