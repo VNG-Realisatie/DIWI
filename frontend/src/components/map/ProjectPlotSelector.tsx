@@ -4,6 +4,7 @@ import Tooltip from "@mui/material/Tooltip";
 import Button from "@mui/material/Button";
 import MouseIcon from "@mui/icons-material/Mouse";
 import ContentCutIcon from "@mui/icons-material/ContentCut";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { Box, Stack } from "@mui/material";
 import { useContext, useId, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -57,7 +58,7 @@ const ProjectPlotSelector = () => {
                         sx={{
                             padding: 0,
                             backgroundColor: "#FFFFFF",
-                            color: "#000000",
+                            color: selectionMode === Buttons.SELECT ? "blue" : "black",
                             minWidth: "50px",
                             minHeight: "50px",
                             borderRadius: "10%",
@@ -76,7 +77,7 @@ const ProjectPlotSelector = () => {
                         sx={{
                             padding: 0,
                             backgroundColor: "#FFFFFF",
-                            color: "#000000",
+                            color: selectionMode === Buttons.CUT ? "orangered" : "black",
                             minWidth: "50px",
                             minHeight: "50px",
                             borderRadius: "10%",
@@ -86,6 +87,25 @@ const ProjectPlotSelector = () => {
                         }}
                     >
                         <ContentCutIcon />
+                    </Button>
+                </Tooltip>
+                <Tooltip title={selectionMode === Buttons.DELETE ? t("generic.cancelDeleteSelection") : t("generic.deleteSelection")}>
+                    <Button
+                        variant="contained"
+                        onClick={() => toggleSelectionMode(Buttons.DELETE)}
+                        sx={{
+                            padding: 0,
+                            backgroundColor: "#FFFFFF",
+                            color: selectionMode === Buttons.DELETE ? "red" : "black",
+                            minWidth: "50px",
+                            minHeight: "50px",
+                            borderRadius: "10%",
+                            "&:hover": {
+                                backgroundColor: "#f0f0f0",
+                            },
+                        }}
+                    >
+                        <DeleteIcon />
                     </Button>
                 </Tooltip>
             </Box>

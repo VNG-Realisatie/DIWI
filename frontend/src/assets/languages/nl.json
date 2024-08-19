@@ -35,7 +35,9 @@
       "selectPlot": "Selecteer perceel",
       "cancelSelection": "Annuleer selectie",
       "cutSelection": "Knip perceel",
-      "cancelCutSelection": "Annuleer knip"
+      "cancelCutSelection": "Annuleer knip",
+      "deleteSelection": "Verwijder (sub)perceel",
+      "cancelDeleteSelection": "Annuleer verwijder"
     },
     "import": {
       "errorsTitle": "Import fouten",

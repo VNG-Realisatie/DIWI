@@ -28,6 +28,7 @@ const projection = "EPSG:3857";
 export enum Buttons {
     SELECT = "select",
     CUT = "cut",
+    DELETE = "delete",
 }
 
 const usePlotSelector = (id: string) => {
