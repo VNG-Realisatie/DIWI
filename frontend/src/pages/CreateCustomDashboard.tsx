@@ -23,7 +23,6 @@ export const CreateCustomDashboard = () => {
         OWNERSHIP_BUY: true,
         OWNERSHIP_RENT: true,
         PROJECT_MAP: true,
-        RESIDENTIAL_PROJECTS: true,
         DELIVERABLES: true,
         DELAYED_PROJECTS: true,
     };
