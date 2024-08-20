@@ -328,7 +328,8 @@
       "timeline": "Tijdlijn",
       "colorEdit": "Kleur bewerken",
       "createNewHouseBlock": "Nieuw woningblok toevoegen",
-      "explanation": "Op deze pagina vul je de basisgegevens van je woningbouwproject in"
+      "explanation": "Op deze pagina vul je de basisgegevens van je woningbouwproject in",
+      "mapUpdatedSuccessfully": "Kaart succesvol geüpdatet"
     },
     "exchangeData": {
       "title": "Data uitwisselen",
