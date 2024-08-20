@@ -32,6 +32,11 @@ This release focusses on expanding dashboard features and ranged categories.
 - fixed an issue where a user that had been removed from a group would still have access to projects assigned to that group
 - fixed an issue where a user assigned to a user group would not see private projects assigned to that user group
 - about page git hash is showing again
+- fixed issues with automated tests
+
+### IMPROVED
+
+- updated automated tests
 
 ## DIWI RELEASE 1.5.0
 
