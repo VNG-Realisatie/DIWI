@@ -1,4 +1,4 @@
-import { Stack, Typography, TextField, InputAdornment } from "@mui/material";
+import { Stack, TextField, InputAdornment, Box } from "@mui/material";
 import InputLabelStack from "./InputLabelStack";
 import { TooltipInfo } from "../../../widgets/TooltipInfo";
 
@@ -38,9 +38,7 @@ export const SingleNumberInput = ({
             disabled={readOnly}
             sx={{
                 flex: 1,
-                "& .MuiInputBase-input.Mui-disabled": {
-                    backgroundColor: "#0000",
-                },
+                backgroundColor: readOnly || hasError ? "inherit" : "#FFFFFF",
             }}
             InputProps={{
                 inputProps: {
@@ -69,9 +67,19 @@ export const SingleNumberInput = ({
         </InputLabelStack>
     ) : (
         <Stack direction="row" alignItems="center" spacing={2} my={2}>
-            <Typography variant="subtitle1" fontWeight="500" border="solid 1px #ddd" borderRadius="5px" p={0.6} flex={3}>
+            <Box
+                sx={{
+                    border: "solid 1px #ddd",
+                    borderRadius: "5px",
+                    padding: "0.6em",
+                    minHeight: "47px",
+                    flex: 3,
+                    color: readOnly ? "#000000" : "inherit",
+                    fontStyle: readOnly ? "italic" : "normal",
+                }}
+            >
                 {name} {tooltipInfoText && <TooltipInfo text={tooltipInfoText} />}
-            </Typography>
+            </Box>
             {inputField}
         </Stack>
     );

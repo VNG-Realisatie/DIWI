@@ -29,6 +29,7 @@ import nl.vng.diwi.dal.entities.HouseblockTextCustomPropertyChangelog;
 import nl.vng.diwi.dal.entities.Milestone;
 import nl.vng.diwi.dal.entities.MilestoneState;
 import nl.vng.diwi.dal.entities.Project;
+import nl.vng.diwi.dal.entities.PropertyRangeCategoryValue;
 import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.dal.entities.HouseblockProgrammingChangelog;
 import nl.vng.diwi.dal.entities.HouseblockSizeChangelog;
@@ -233,20 +234,12 @@ public class HouseblockService {
                 var ownershipValue = new HouseblockOwnershipValueChangelog();
                 setChangelogValues.accept(ownershipValue);
                 ownershipValue.setHouseblock(houseblock);
-                if (ov.getValue().getValue() != null) {
-                    ownershipValue.setValue(ov.getValue().getValue());
-                    ownershipValue.setValueType(ValueType.SINGLE_VALUE);
-                } else if (ov.getValue().getMin() != null) {
-                    ownershipValue.setValueRange(ov.getValue().toRange());
-                    ownershipValue.setValueType(ValueType.RANGE);
-                }
-                if (ov.getRentalValue().getValue() != null) {
-                    ownershipValue.setRentalValue(ov.getRentalValue().getValue());
-                    ownershipValue.setRentalValueType(ValueType.SINGLE_VALUE);
-                } else if (ov.getRentalValue().getMin() != null) {
-                    ownershipValue.setRentalValueRange(ov.getRentalValue().toRange());
-                    ownershipValue.setRentalValueType(ValueType.RANGE);
-                }
+                ownershipValue.setValue(ov.getValue().getValue());
+                ownershipValue.setValueRange(ov.getValue().toRange());
+                ownershipValue.setOwnershipRangeCategoryValue(repo.getReferenceById(PropertyRangeCategoryValue.class, ov.getValueCategoryId()));
+                ownershipValue.setRentalValue(ov.getRentalValue().getValue());
+                ownershipValue.setRentalValueRange(ov.getRentalValue().toRange());
+                ownershipValue.setRentalRangeCategoryValue(repo.getReferenceById(PropertyRangeCategoryValue.class, ov.getRentalValueCategoryId()));
                 ownershipValue.setAmount(ov.getAmount());
                 ownershipValue.setOwnershipType(ov.getType());
                 repo.persist(ownershipValue);
@@ -717,7 +710,7 @@ public class HouseblockService {
         LocalDate houseblockEndDate = new MilestoneModel(houseblockEndMilestone).getDate();
 
         if (actionType == HouseblockUpdateModel.ActionType.add) {
-            HouseblockOwnershipValueChangelog newChangelog = createOwnershipChangelog(ownershipValue);
+            HouseblockOwnershipValueChangelog newChangelog = createOwnershipChangelog(repo, ownershipValue);
             newChangelog.setHouseblock(houseblock);
             newChangelog.setCreateUser(repo.getReferenceById(User.class, loggedInUserUuid));
             if (houseblockStartDate.isBefore(updateDate) && !houseblockEndDate.isBefore(updateDate)) {
@@ -735,7 +728,7 @@ public class HouseblockService {
             repo.persist(oldChangelog);
         } else {
             HouseblockOwnershipValueChangelog oldChangelogAfterUpdate = new HouseblockOwnershipValueChangelog();
-            HouseblockOwnershipValueChangelog newChangelog = createOwnershipChangelog(ownershipValue);
+            HouseblockOwnershipValueChangelog newChangelog = createOwnershipChangelog(repo, ownershipValue);
             newChangelog.setHouseblock(houseblock);
             newChangelog.setCreateUser(repo.getReferenceById(User.class, loggedInUserUuid));
 
@@ -754,33 +747,25 @@ public class HouseblockService {
                 oldChangelogAfterUpdate.setAmount(oldChangelog.getAmount());
                 oldChangelogAfterUpdate.setValue(oldChangelog.getValue());
                 oldChangelogAfterUpdate.setValueRange(oldChangelog.getValueRange());
-                oldChangelogAfterUpdate.setValueType(oldChangelog.getValueType());
                 oldChangelogAfterUpdate.setRentalValue(oldChangelog.getRentalValue());
                 oldChangelogAfterUpdate.setRentalValueRange(oldChangelog.getRentalValueRange());
-                oldChangelogAfterUpdate.setRentalValueType(oldChangelog.getRentalValueType());
+                oldChangelogAfterUpdate.setOwnershipRangeCategoryValue(oldChangelog.getOwnershipRangeCategoryValue());
+                oldChangelogAfterUpdate.setRentalRangeCategoryValue(oldChangelog.getRentalRangeCategoryValue());
                 repo.persist(oldChangelogAfterUpdate);
             }
         }
     }
 
-    private HouseblockOwnershipValueChangelog createOwnershipChangelog(HouseblockSnapshotModel.OwnershipValue ownershipValue) {
+    private HouseblockOwnershipValueChangelog createOwnershipChangelog(VngRepository repo, HouseblockSnapshotModel.OwnershipValue ownershipValue) {
         HouseblockOwnershipValueChangelog newChangelog = new HouseblockOwnershipValueChangelog();
         newChangelog.setOwnershipType(ownershipValue.getType());
         newChangelog.setAmount(ownershipValue.getAmount());
         newChangelog.setValue(ownershipValue.getValue().getValue());
-        if (ownershipValue.getValue().getMin() != null) {
-            newChangelog.setValueRange(ownershipValue.getValue().toRange());
-            newChangelog.setValueType(ValueType.RANGE);
-        } else {
-            newChangelog.setValueType(ValueType.SINGLE_VALUE);
-        }
+        newChangelog.setOwnershipRangeCategoryValue(repo.getReferenceById(PropertyRangeCategoryValue.class, ownershipValue.getValueCategoryId()));
+        newChangelog.setValueRange(ownershipValue.getValue().toRange());
         newChangelog.setRentalValue(ownershipValue.getRentalValue().getValue());
-        if (ownershipValue.getRentalValue().getMin() != null) {
-            newChangelog.setRentalValueRange(ownershipValue.getRentalValue().toRange());
-            newChangelog.setRentalValueType(ValueType.RANGE);
-        } else {
-            newChangelog.setRentalValueType(ValueType.SINGLE_VALUE);
-        }
+        newChangelog.setRentalRangeCategoryValue(repo.getReferenceById(PropertyRangeCategoryValue.class, ownershipValue.getRentalValueCategoryId()));
+        newChangelog.setRentalValueRange(ownershipValue.getRentalValue().toRange());
         newChangelog.setChangeStartDate(ZonedDateTime.now());
         return newChangelog;
     }

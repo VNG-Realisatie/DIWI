@@ -55,6 +55,9 @@ public class PropertyModel {
     @Type(value = JsonListType.class)
     private List<OrdinalSelectDisabledModel> ordinals;
 
+    @Type(value = JsonListType.class)
+    private List<RangeSelectDisabledModel> ranges;
+
     public SelectDisabledModel getActiveCategoryValue(String categoryValue) {
         if (categories != null) {
             return categories.stream().filter(c -> c.getName().equals(categoryValue) && c.getDisabled() == Boolean.FALSE).findFirst().orElse(null);
@@ -66,6 +69,13 @@ public class PropertyModel {
         if (ordinals != null) {
             return ordinals.stream().filter(o -> o.getOrdinalValue().equals(ordinalValue) && o.getDisabled() == Boolean.FALSE).findFirst()
                 .orElse(null);
+        }
+        return null;
+    }
+
+    public RangeSelectDisabledModel getActiveRangeCategoryValue(String rangeCategoryName) {
+        if (ranges != null) {
+            return ranges.stream().filter(c -> c.getName().equals(rangeCategoryName) && c.getDisabled() == Boolean.FALSE).findFirst().orElse(null);
         }
         return null;
     }
@@ -91,6 +101,18 @@ public class PropertyModel {
                 }
                 if (ordinal.getLevel() == null) {
                     return "Property ordinal value level can not be null.";
+                }
+            }
+        } else if (this.getRanges() != null) {
+            for (RangeSelectDisabledModel range : this.getRanges()) {
+                if (range.getName() == null || range.getName().isEmpty()) {
+                    return "Property range value name can not be null.";
+                }
+                if (range.getMin() == null) {
+                    return "Property range value min can not be null.";
+                }
+                if (range.getMax() != null && range.getMax().compareTo(range.getMin()) < 0) {
+                    return "Property range value max must be greater than min";
                 }
             }
         }

@@ -5,7 +5,9 @@ import houseBlockCustomProperties from "../test-data/houseBlockCustomProperties.
 
 test.describe("Create project page", () => {
     test.describe.configure({ mode: "serial" });
-    let projectId;
+
+    let projectId: string;
+
     test.beforeEach(async ({ page }) => {
         await page.route("*/**/rest/properties?objectType=PROJECT", async (route) => {
             await route.fulfill({

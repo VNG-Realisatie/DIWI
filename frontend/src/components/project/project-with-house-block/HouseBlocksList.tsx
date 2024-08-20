@@ -3,7 +3,7 @@ import { HouseBlockWithCustomProperties } from "../../../types/houseBlockTypes";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { AddHouseBlockButton } from "../../PlusButton";
 import { useTranslation } from "react-i18next";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import HouseBlockContext from "../../../context/HouseBlockContext";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
@@ -12,23 +12,34 @@ import { sortHouseBlockByNameAndId as sortHouseBlocksByNameAndId } from "../../.
 import { deleteHouseBlockWithCustomProperties, saveHouseBlockWithCustomProperties } from "../../../api/houseBlockServices";
 import { DeleteButtonWithConfirm } from "../../DeleteButtonWithConfirm";
 import { HouseBlocksForm } from "../../HouseBlocksForm";
-import { validateHouseBlock } from "../../HouseBlocksFormWithControls";
 import useAlert from "../../../hooks/useAlert";
 import { useCustomPropertyDefinitions } from "../../../hooks/useCustomPropertyDefinitions";
-import useAllowedActions from "../../../hooks/useAllowedActions";
+import { useHasEditPermission } from "../../../hooks/useHasEditPermission";
+import { useLocation } from "react-router-dom";
+import { validateHouseBlock } from "../../../utils/houseblocks/houseBlocksFunctions";
 
 type Props = {
     setOpenHouseBlockDialog: (open: boolean) => void;
 };
 export const HouseBlocksList = ({ setOpenHouseBlockDialog }: Props) => {
     const { houseBlocks, refresh } = useContext(HouseBlockContext);
+    const [displayAddButton, setDisplayAddButton] = useState<boolean>(false);
+    const location = useLocation();
+    useEffect(() => {
+        if (location.pathname.includes("characteristics")) {
+            setDisplayAddButton(true);
+        } else {
+            setDisplayAddButton(false);
+        }
+    }, [location.pathname]);
 
     return (
-        <Grid container my={2}>
-            <AddHouseBlockButton onClick={() => setOpenHouseBlockDialog(true)} />
+        <Grid container mb={9}>
             {houseBlocks.sort(sortHouseBlocksByNameAndId).map((hb: HouseBlockWithCustomProperties) => (
                 <HouseBlockAccordionWithControls key={hb.houseblockId} houseBlock={hb} refresh={refresh} />
             ))}
+            {/* Ensure the button is not displayed when viewing the map */}
+            {displayAddButton && <AddHouseBlockButton onClick={() => setOpenHouseBlockDialog(true)} />}
         </Grid>
     );
 };
@@ -45,7 +56,7 @@ export const HouseBlockAccordionWithControls = ({ houseBlock, refresh }: HouseBl
     const { t } = useTranslation();
     const { setAlert } = useAlert();
     const { targetGroupCategories, physicalAppearanceCategories } = useCustomPropertyDefinitions();
-    const allowedActions = useAllowedActions();
+    const { getEditPermission } = useHasEditPermission();
 
     const isDemolition = houseBlock.mutation.kind === "DEMOLITION";
 
@@ -64,6 +75,7 @@ export const HouseBlockAccordionWithControls = ({ houseBlock, refresh }: HouseBl
                 await saveHouseBlockWithCustomProperties(filteredHouseBlock);
                 refresh();
                 setReadOnly(true);
+                setAlert(t("generic.saved"), "success");
             } catch (error: unknown) {
                 if (error instanceof Error) setAlert(error.message, "warning");
             }
@@ -99,7 +111,7 @@ export const HouseBlockAccordionWithControls = ({ houseBlock, refresh }: HouseBl
                 {houseBlock.houseblockName}: {isDemolition ? `-${houseBlock.mutation.amount}` : houseBlock.mutation.amount}{" "}
                 {t("createProject.houseBlocksForm.housesOn")} {houseBlock.endDate}
                 <Stack>
-                    {allowedActions.includes("EDIT_OWN_PROJECTS") && (
+                    {getEditPermission() && (
                         <>
                             <Box sx={{ cursor: "pointer" }} position="absolute" right={60} top={13}>
                                 {readOnly ? (

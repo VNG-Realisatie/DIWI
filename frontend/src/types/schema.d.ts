@@ -19,6 +19,12 @@ export interface paths {
     "/rest/config": {
         get: operations["getConfig"];
     };
+    "/rest/dashboard/projects": {
+        get: operations["getProjectDashboardSnapshot"];
+    };
+    "/rest/dashboard/project/{id}": {
+        get: operations["getProjectDashboardSnapshot_1"];
+    };
     "/rest/houseblock/add": {
         post: operations["createHouseblock"];
     };
@@ -122,6 +128,18 @@ export interface components {
             corner1?: components["schemas"]["LocationModel"];
             corner2?: components["schemas"]["LocationModel"];
         };
+        MultiProjectDashboardModel: {
+            physicalAppearance?: components["schemas"]["PieChartModel"][];
+            targetGroup?: components["schemas"]["PieChartModel"][];
+        };
+        PieChartModel: {
+            name?: string;
+            /** Format: int32 */
+            amount?: number;
+        };
+        ProjectDashboardModel: {
+            physicalAppearance?: components["schemas"]["PieChartModel"][];
+        };
         AmountModel: {
             /** Format: uuid */
             id: string;
@@ -176,13 +194,17 @@ export interface components {
             /** Format: int32 */
             amount?: number;
             value?: components["schemas"]["SingleValueOrRangeModelInteger"];
+            /** Format: uuid */
+            valueCategoryId?: string;
             rentalValue?: components["schemas"]["SingleValueOrRangeModelInteger"];
+            /** Format: uuid */
+            rentalValueCategoryId?: string;
         };
         ProjectHouseblockCustomPropertyModel: {
             /** Format: uuid */
             customPropertyId?: string;
             /** @enum {string} */
-            propertyType?: "BOOLEAN" | "CATEGORY" | "ORDINAL" | "NUMERIC" | "TEXT";
+            propertyType?: "BOOLEAN" | "CATEGORY" | "ORDINAL" | "NUMERIC" | "TEXT" | "RANGE_CATEGORY";
             textValue?: string;
             booleanValue?: boolean;
             numericValue?: components["schemas"]["SingleValueOrRangeModelBigDecimal"];
@@ -252,9 +274,11 @@ export interface components {
         UserGroupUserModel: {
             /** Format: uuid */
             uuid?: string;
+            id?: string;
             firstName?: string;
             lastName?: string;
             initials?: string;
+            role?: string;
             allowedActions?: (
                 | "VIEW_API"
                 | "VIEW_USERS"
@@ -269,12 +293,15 @@ export interface components {
                 | "VIEW_OTHERS_PROJECTS"
                 | "VIEW_OWN_PROJECTS"
                 | "EDIT_OWN_PROJECTS"
+                | "EDIT_ALL_PROJECTS"
                 | "CREATE_NEW_PROJECT"
                 | "IMPORT_PROJECTS"
                 | "EXPORT_PROJECTS"
+                | "VIEW_ALL_BLUEPRINTS"
+                | "EDIT_ALL_BLUEPRINTS"
+                | "VIEW_OWN_BLUEPRINTS"
             )[];
         };
-
         ProjectCreateSnapshotModel: {
             /** Format: date */
             startDate?: string;
@@ -531,6 +558,7 @@ export interface components {
             disabled: boolean;
             /** Format: int32 */
             level: number;
+            ordinalValue?: string;
         };
         PropertyModel: {
             /** Format: uuid */
@@ -541,10 +569,19 @@ export interface components {
             /** @enum {string} */
             objectType: "PROJECT" | "WONINGBLOK";
             /** @enum {string} */
-            propertyType: "BOOLEAN" | "CATEGORY" | "ORDINAL" | "NUMERIC" | "TEXT";
+            propertyType: "BOOLEAN" | "CATEGORY" | "ORDINAL" | "NUMERIC" | "TEXT" | "RANGE_CATEGORY";
             disabled: boolean;
             categories?: components["schemas"]["SelectDisabledModel"][];
             ordinals?: components["schemas"]["OrdinalSelectDisabledModel"][];
+            ranges?: components["schemas"]["RangeSelectDisabledModel"][];
+        };
+        RangeSelectDisabledModel: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            min: number;
+            max?: number;
+            disabled: boolean;
         };
         SelectDisabledModel: {
             /** Format: uuid */
@@ -581,11 +618,20 @@ export interface components {
             prefixes: string;
             initials: string;
             allowedActions?: (
+                | "VIEW_API"
+                | "VIEW_USERS"
                 | "EDIT_USERS"
+                | "VIEW_GROUPS"
+                | "EDIT_GROUPS"
+                | "VIEW_CONFIG"
+                | "EDIT_CONFIG"
+                | "VIEW_CUSTOM_PROPERTIES"
                 | "EDIT_CUSTOM_PROPERTIES"
                 | "CAN_OWN_PROJECTS"
                 | "CHANGE_PROJECT_OWNER"
                 | "VIEW_OTHERS_PROJECTS"
+                | "VIEW_OWN_PROJECTS"
+                | "EDIT_OWN_PROJECTS"
                 | "CREATE_NEW_PROJECT"
                 | "IMPORT_PROJECTS"
                 | "EXPORT_PROJECTS"
@@ -650,6 +696,39 @@ export interface operations {
             default: {
                 content: {
                     "application/json": components["schemas"]["ConfigModel"];
+                };
+            };
+        };
+    };
+    getProjectDashboardSnapshot: {
+        parameters: {
+            query?: {
+                snapshotDate?: string;
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["MultiProjectDashboardModel"];
+                };
+            };
+        };
+    };
+    getProjectDashboardSnapshot_1: {
+        parameters: {
+            query?: {
+                snapshotDate?: string;
+            };
+            path: {
+                id: string;
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["ProjectDashboardModel"];
                 };
             };
         };

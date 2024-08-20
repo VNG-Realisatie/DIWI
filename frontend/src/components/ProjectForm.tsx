@@ -16,6 +16,7 @@ import TextInput from "./project/inputs/TextInput";
 import { CellContainer } from "./project/project-with-house-block/CellContainer";
 import { CustomPropertiesProject } from "./project/project-with-house-block/CustomPropertiesProject";
 import { confidentialityLevelOptions, planTypeOptions, planningPlanStatus, projectPhaseOptions } from "./table/constants";
+import UserContext from "../context/UserContext";
 
 type Props = {
     readOnly: boolean;
@@ -23,11 +24,20 @@ type Props = {
     setProject: (project: Project) => void;
     showColorPicker?: boolean;
     showAmounts?: boolean;
+    checkIsOwnerValidWithConfidentialityLevel: () => boolean;
 };
 
-export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = false, showAmounts = true }: Props) => {
+export const ProjectForm = ({
+    readOnly,
+    project,
+    setProject,
+    showColorPicker = false,
+    showAmounts = true,
+    checkIsOwnerValidWithConfidentialityLevel,
+}: Props) => {
     const { priorityOptionList, municipalityRolesOptions, districtOptions, neighbourhoodOptions, municipalityOptions } = useProperties();
     const { houseBlocks } = useContext(HouseBlockContext);
+    const { user } = useContext(UserContext);
 
     const constructionAmount = houseBlocks
         .filter((hb) => hb.mutation.kind === "CONSTRUCTION")
@@ -69,7 +79,6 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                             <Grid item xs={12} md={4}>
                                 <LabelComponent
                                     required
-                                    readOnly={readOnly}
                                     text={t("createProject.informationForm.color")}
                                     tooltipInfoText={t("tooltipInfo.projectKleur.title")}
                                 />
@@ -207,13 +216,12 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                         {/* Owner */}
                         <Grid item xs={12} md={4} className="project-owner">
                             <LabelComponent
+                                tooltipInfoText={"tooltipInfo.schrijfrechten.title"}
                                 required={true}
-                                readOnly={readOnly}
                                 text={t("createProject.informationForm.owner")}
-                                tooltipInfoText={t("tooltipInfo.schrijfrechten.title")}
                             />
                             <UserGroupSelect
-                                readOnly={readOnly}
+                                readOnly={user?.role === "External" ? true : readOnly} // Only allow editing if user is not external
                                 userGroup={project?.projectOwners ? project.projectOwners : []}
                                 setUserGroup={(e) =>
                                     setProject({
@@ -223,6 +231,7 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                                 }
                                 mandatory={true}
                                 errorText={t("createProject.hasMissingRequiredAreas.owner")}
+                                checkIsOwnerValidWithConfidentialityLevel={checkIsOwnerValidWithConfidentialityLevel}
                             />
                         </Grid>
 
@@ -323,37 +332,34 @@ export const ProjectForm = ({ readOnly, project, setProject, showColorPicker = f
                             {/* Demolition */}
                             <Grid item xs={12} md={4}>
                                 <LabelComponent
+                                    tooltipInfoText={"tooltipInfo.sloop.title"}
                                     required={false}
-                                    readOnly={readOnly}
                                     text={t("createProject.houseBlocksForm.demolition")}
-                                    tooltipInfoText={t("tooltipInfo.sloop.title")}
                                 />
                                 <CellContainer>
-                                    <LabelComponent required={false} readOnly={true} text={demolitionAmount.toString()} />
+                                    <LabelComponent required={false} text={demolitionAmount.toString()} disabled />
                                 </CellContainer>
                             </Grid>
                             {/* Construction */}
                             <Grid item xs={12} md={4}>
                                 <LabelComponent
+                                    tooltipInfoText={"tooltipInfo.brutoPlancapaciteit.title"}
                                     required={false}
-                                    readOnly={readOnly}
                                     text={t("createProject.houseBlocksForm.grossPlanCapacity")}
-                                    tooltipInfoText={t("tooltipInfo.brutoPlancapaciteit.title")}
                                 />
                                 <CellContainer>
-                                    <LabelComponent required={false} readOnly={true} text={constructionAmount.toString()} />
+                                    <LabelComponent required={false} text={constructionAmount.toString()} disabled />
                                 </CellContainer>
                             </Grid>
                             {/* Total */}
                             <Grid item xs={12} md={4}>
                                 <LabelComponent
+                                    tooltipInfoText={"tooltipInfo.nettoPlancapaciteit.title"}
                                     required={false}
-                                    readOnly={readOnly}
                                     text={t("createProject.houseBlocksForm.netPlanCapacity")}
-                                    tooltipInfoText={t("tooltipInfo.nettoPlancapaciteit.title")}
                                 />
                                 <CellContainer>
-                                    <LabelComponent required={false} readOnly={true} text={(constructionAmount - demolitionAmount).toString()} />
+                                    <LabelComponent required={false} text={(constructionAmount - demolitionAmount).toString()} disabled />
                                 </CellContainer>
                             </Grid>
                         </Grid>

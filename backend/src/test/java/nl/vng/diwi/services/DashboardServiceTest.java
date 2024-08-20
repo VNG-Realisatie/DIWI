@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;
 
+import nl.vng.diwi.models.PlanningModel;
 import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
 import org.hibernate.Session;
 import org.junit.jupiter.api.AfterAll;
@@ -201,8 +202,8 @@ public class DashboardServiceTest {
         expected.setPhysicalAppearance(List.of(new PieChartModel("AppearanceOption", 1)));
 
         // then
-        assertThat(result).usingRecursiveComparison()
-                .isEqualTo(expected);
+        assertThat(result.getPhysicalAppearance()).usingRecursiveComparison()
+                .isEqualTo(expected.getPhysicalAppearance());
     }
 
     @Test

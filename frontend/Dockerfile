@@ -1,4 +1,4 @@
-FROM git.phinion.com/phinion/dependency_proxy/containers/node:18-alpine as build-stage
+FROM git.phinion.com/phinion/dependency_proxy/containers/node:18-alpine AS build-stage
 
 # Dependencies
 COPY ./yarn.lock ./yarn.lock
@@ -12,25 +12,25 @@ COPY ./tsconfig.json ./tsconfig.json
 COPY ./.editorconfig ./.editorconfig
 COPY ./index.html ./index.html
 
-ARG REACT_APP_GIT_SHA
-ENV REACT_APP_GIT_SHA=${REACT_APP_GIT_SHA}
+ARG VITE_REACT_APP_GIT_SHA
+ENV VITE_REACT_APP_GIT_SHA=${VITE_REACT_APP_GIT_SHA}
 
-ARG REACT_APP_VERSION_NUMBER
-ENV REACT_APP_VERSION_NUMBER=${REACT_APP_VERSION_NUMBER}
+ARG VITE_REACT_APP_VERSION_NUMBER
+ENV VITE_REACT_APP_VERSION_NUMBER=${VITE_REACT_APP_VERSION_NUMBER}
 
 RUN yarn build
 
 # This date is behind the yarn build command on purpose as ti would slow down the build a lot
-ARG REACT_APP_DEPLOY_DATE
-ENV REACT_APP_DEPLOY_DATE=${REACT_APP_DEPLOY_DATE}
+ARG VITE_REACT_APP_DEPLOY_DATE
+ENV VITE_REACT_APP_DEPLOY_DATE=${VITE_REACT_APP_DEPLOY_DATE}
 
 RUN echo "{ \
-    \"git hash\": \"$REACT_APP_GIT_SHA\",\
-    \"build date\": \"$REACT_APP_DEPLOY_DATE\"\
+    \"git hash\": \"$VITE_REACT_APP_GIT_SHA\",\
+    \"build date\": \"$VITE_REACT_APP_DEPLOY_DATE\"\
     }" > ./dist/version.json
 
 # production stage
-FROM nginx:1.24-alpine as production-stage
+FROM nginx:1.24-alpine AS production-stage
 
 COPY --from=build-stage ./dist /usr/share/nginx/html
 

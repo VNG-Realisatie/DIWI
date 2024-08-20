@@ -14,6 +14,7 @@ import { ProjectProvider } from "./context/ProjectContext";
 import { PolicyLists } from "./pages/PolicyLists";
 import { DashboardProjects } from "./pages/DashboardProjects";
 import { ExchangeData } from "./pages/ExchangeData";
+import { ExchangeImportData } from "./pages/ExchangeImportData";
 import { ExportProject } from "./pages/ExportProject";
 import { ImportedProjects } from "./pages/ImportedProjects";
 import { About } from "./pages/About";
@@ -39,6 +40,9 @@ import { ImportPage } from "./pages/ImportPage";
 import UserManagement from "./pages/UserManagement";
 import { Forbidden } from "./pages/Forbidden";
 import { DashboardProject } from "./pages/DashboardProject";
+import PriceCategories from "./pages/PriceCategories";
+import { CreateCustomDashboard } from "./pages/CreateCustomDashboard";
+import { CustomDashboardList } from "./pages/CustomDashboardList";
 
 enum UserStatus {
     Authenticated,
@@ -262,6 +266,9 @@ function App() {
                         <Route path={Paths.policygoal.path} element={<PolicyLists />} />
                         <Route path={Paths.policygoalDashboard.path} element={<PolicyLists />} />
                         <Route path={Paths.dashboard.path} element={<DashboardProjects />} />
+                        <Route path={Paths.createCustomDashbord.path} element={<CreateCustomDashboard />} />
+                        <Route path={Paths.updateCustomDashbord.path} element={<CreateCustomDashboard />} />
+                        <Route path={Paths.customDashbordList.path} element={<CustomDashboardList />} />
                         <Route
                             path={Paths.dashboardProject.path}
                             element={
@@ -273,6 +280,7 @@ function App() {
                             }
                         />
                         <Route path={Paths.exchangedata.path} element={<ExchangeData />} />
+                        <Route path={Paths.exchangeimportdata.path} element={<ExchangeImportData />} />
                         <Route path={Paths.importExcel.path} element={<ImportPage functionality="excel" />} />
                         <Route path={Paths.importGeoJson.path} element={<ImportPage functionality="geojson" />} />
                         <Route path={Paths.importSquit.path} element={<ImportPage functionality="squit" />} />
@@ -294,6 +302,7 @@ function App() {
                         />
                         <Route path={Paths.userSettings.path} element={<Settings />} />
                         <Route path={Paths.userManagement.path} element={<UserManagement />} />
+                        <Route path={Paths.priceCategories.path} element={<PriceCategories />} />
                         <Route path={Paths.importExcelProjects.path} element={<ImportedProjects type="Excel" />} />
                         <Route path={Paths.importSquitProjects.path} element={<ImportedProjects type="Squit" />} />
                         <Route path={Paths.about.path} element={<About />} />

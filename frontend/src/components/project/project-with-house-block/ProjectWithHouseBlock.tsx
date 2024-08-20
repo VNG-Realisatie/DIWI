@@ -6,31 +6,29 @@ import SaveIcon from "@mui/icons-material/Save";
 import ClearIcon from "@mui/icons-material/Clear";
 import FormatColorFillIcon from "@mui/icons-material/FormatColorFill";
 import { useTranslation } from "react-i18next";
-
 import { defaultColors } from "../../ColorSelector";
 import { BlockPicker } from "react-color";
-
 import { Project, updateProjectWithCustomProperties } from "../../../api/projectsServices";
 import AlertContext from "../../../context/AlertContext";
-import { CreateHouseBlockDialog } from "./CreateHouseBlockDialog";
-import { HouseBlocksList } from "./HouseBlocksList";
 import { ProjectForm } from "../../ProjectForm";
 import useLoading from "../../../hooks/useLoading";
-import useAllowedActions from "../../../hooks/useAllowedActions";
+import { useHasEditPermission } from "../../../hooks/useHasEditPermission";
+import { validateForm } from "../../../utils/formValidation";
+import UserContext from "../../../context/UserContext";
+import { checkIsOwnerValidWithConfidentialityLevel } from "../../../utils/checkIsOwnerValidWithConfidentialityLevel";
 
 export const ProjectsWithHouseBlock = () => {
     const { selectedProject, updateProject } = useContext(ProjectContext);
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const [openColorDialog, setOpenColorDialog] = useState(false);
-    const [openHouseBlockDialog, setOpenHouseBlockDialog] = useState(false);
     const [readOnly, setReadOnly] = useState(true);
-
     const [projectForm, setProjectForm] = useState<Project | null>(selectedProject);
 
     const { setAlert } = useContext(AlertContext);
+    const { user } = useContext(UserContext);
     const { setLoading } = useLoading();
     const { t } = useTranslation();
-    const allowedActions = useAllowedActions();
+    const { getEditPermission } = useHasEditPermission();
 
     const resetProjectForm = useCallback(() => {
         setProjectForm(selectedProject);
@@ -51,6 +49,10 @@ export const ProjectsWithHouseBlock = () => {
 
     const handleProjectSave = async () => {
         if (projectForm) {
+            if (!validateForm(projectForm, checkIsOwnerValidWithConfidentialityLevel(projectForm, user))) {
+                setAlert(t("createProject.hasMissingRequiredAreas.hasmissingProperty"), "warning");
+                return;
+            }
             try {
                 setLoading(true);
                 const newProjectForm = await updateProjectWithCustomProperties(projectForm);
@@ -71,7 +73,7 @@ export const ProjectsWithHouseBlock = () => {
     return (
         <Stack mb={10}>
             <Box sx={{ cursor: "pointer" }} position="absolute" right={100} top={17}>
-                {allowedActions.includes("EDIT_OWN_PROJECTS") && (
+                {getEditPermission() && (
                     <>
                         {!readOnly && (
                             <Tooltip placement="top" title={t("projectDetail.colorEdit")}>
@@ -107,11 +109,15 @@ export const ProjectsWithHouseBlock = () => {
                 {projectForm && (
                     // this box with padding is to make the layout similar to how houseblocks look
                     <Box padding={2} paddingTop={1}>
-                        <ProjectForm project={projectForm} setProject={setProjectForm} readOnly={readOnly} showColorPicker={false} />
+                        <ProjectForm
+                            checkIsOwnerValidWithConfidentialityLevel={() => checkIsOwnerValidWithConfidentialityLevel(projectForm, user)}
+                            project={projectForm}
+                            setProject={setProjectForm}
+                            readOnly={readOnly}
+                            showColorPicker={false}
+                        />
                     </Box>
                 )}
-
-                <HouseBlocksList setOpenHouseBlockDialog={setOpenHouseBlockDialog} />
 
                 {/* Dialog to select color */}
                 {openColorDialog && (
@@ -131,9 +137,6 @@ export const ProjectsWithHouseBlock = () => {
                         />
                     </Popover>
                 )}
-
-                {/* Dialog to create new houseblock */}
-                <CreateHouseBlockDialog openHouseBlockDialog={openHouseBlockDialog} setOpenHouseBlockDialog={setOpenHouseBlockDialog} />
             </Stack>
         </Stack>
     );

@@ -1,7 +1,6 @@
 import { createTheme } from "@mui/material/styles";
 import { nlNL } from "@mui/material/locale";
 import type {} from "@mui/x-data-grid/themeAugmentation";
-
 declare module "@mui/material/styles" {
     interface PaletteColor {
         customDarkBlue?: string;
@@ -32,7 +31,10 @@ export const theme = createTheme(
             MuiOutlinedInput: {
                 styleOverrides: {
                     root: {
-                        background: "white",
+                        "& .MuiInputBase-input.Mui-disabled": {
+                            WebkitTextFillColor: "#000000",
+                            backgroundColor: "#F0F0F0",
+                        },
                     },
                 },
             },
@@ -54,6 +56,26 @@ export const theme = createTheme(
                     },
                 },
             },
+            MuiChip: {
+                styleOverrides: {
+                    root: {
+                        "&.Mui-disabled": {
+                            opacity: 1,
+                            fontStyle: "italic",
+                            color: "#000000",
+                        },
+                    },
+                },
+            },
+            MuiRadio: {
+                styleOverrides: {
+                    root: {
+                        "&.Mui-disabled": {
+                            color: "#000000", // Example: Change the color when the radio is checked
+                        },
+                    },
+                },
+            },
             MuiListItemIcon: {
                 styleOverrides: {
                     root: {
@@ -65,7 +87,23 @@ export const theme = createTheme(
             MuiInputBase: {
                 styleOverrides: {
                     input: {
-                        backgroundColor: "white",
+                        backgroundColor: "#ffffff",
+                        height: "30px",
+
+                        "&.MuiInputBase-input.Mui-disabled": {
+                            WebkitTextFillColor: "#000000 !important",
+                            fontStyle: "italic",
+                        },
+                    },
+                },
+            },
+            MuiFormControlLabel: {
+                styleOverrides: {
+                    label: {
+                        "&.MuiFormControlLabel-label.Mui-disabled": {
+                            color: "#000000",
+                            fontStyle: "italic",
+                        },
                     },
                 },
             },
@@ -79,6 +117,12 @@ export const theme = createTheme(
                         borderLeft: "2px solid #ccc",
                         borderTop: "2px solid #ccc",
                         backgroundColor: "#738092",
+                        color: "#ffffff",
+                        "& svg": {
+                            color: "#ffffff",
+                        },
+                    },
+                    sortIcon: {
                         color: "#ffffff",
                     },
                 },

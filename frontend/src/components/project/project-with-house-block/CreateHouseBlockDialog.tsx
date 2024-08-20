@@ -5,8 +5,8 @@ import { HouseBlockWithCustomProperties } from "../../../types/houseBlockTypes";
 import { useContext, useEffect, useState } from "react";
 import HouseBlockContext from "../../../context/HouseBlockContext";
 import { saveHouseBlockWithCustomProperties } from "../../../api/houseBlockServices";
-import { validateHouseBlock } from "../../HouseBlocksFormWithControls";
 import useAlert from "../../../hooks/useAlert";
+import { validateHouseBlock } from "../../../utils/houseblocks/houseBlocksFunctions";
 
 type Props = {
     openHouseBlockDialog: boolean;
@@ -47,6 +47,7 @@ export const CreateHouseBlockDialog = ({ openHouseBlockDialog, setOpenHouseBlock
                                 await saveHouseBlockWithCustomProperties(houseBlock);
                                 refresh();
                                 setOpenHouseBlockDialog(false);
+                                setAlert(t("generic.saved"), "success");
                             } catch (error: unknown) {
                                 if (error instanceof Error) setAlert(error.message, "warning");
                             }

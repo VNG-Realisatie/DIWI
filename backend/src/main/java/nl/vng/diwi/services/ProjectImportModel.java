@@ -43,6 +43,7 @@ import nl.vng.diwi.dal.entities.ProjectTextPropertyChangelog;
 import nl.vng.diwi.dal.entities.Property;
 import nl.vng.diwi.dal.entities.PropertyCategoryValue;
 import nl.vng.diwi.dal.entities.PropertyOrdinalValue;
+import nl.vng.diwi.dal.entities.PropertyRangeCategoryValue;
 import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.dal.entities.UserGroup;
 import nl.vng.diwi.dal.entities.UserGroupToProject;
@@ -73,6 +74,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -208,6 +210,22 @@ public class ProjectImportModel {
                     if (!Objects.equals(ownershipTypeMap.get(OwnershipType.HUURWONING_WONINGCORPORATIE), ownershipValueMap.get(OwnershipType.HUURWONING_WONINGCORPORATIE))) {
                         rowErrors.add(new ImportError(excelRowNo, projectRowModel.getId(), this.name, ImportError.ERROR.HOUSEBLOCK_OWNERSHIP_HOUSING_ASSOCIATION_TOTAL_INCORRECT));
                     }
+                }
+
+                Set<UUID> rangeCategoriesOwner = ownershipValues.stream().filter(ov -> ov.getType() == OwnershipType.KOOPWONING)
+                    .map(HouseblockSnapshotModel.OwnershipValue::getValueCategoryId).collect(Collectors.toSet());
+                if (rangeCategoriesOwner.size() > 1 && rangeCategoriesOwner.contains(null)) {
+                    rowErrors.add(new ImportError(excelRowNo, projectRowModel.getId(), this.name, ImportError.ERROR.HOUSEBLOCK_OWNERSHIP_OWNER_INCONSISTENT));
+                }
+                Set<UUID> rangeCategoriesLandlord = ownershipValues.stream().filter(ov -> ov.getType() == OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER)
+                    .map(HouseblockSnapshotModel.OwnershipValue::getRentalValueCategoryId).collect(Collectors.toSet());
+                if (rangeCategoriesLandlord.size() > 1 && rangeCategoriesLandlord.contains(null)) {
+                    rowErrors.add(new ImportError(excelRowNo, projectRowModel.getId(), this.name, ImportError.ERROR.HOUSEBLOCK_OWNERSHIP_LANDLORD_INCONSISTENT));
+                }
+                Set<UUID> rangeCategoriesAssoc = ownershipValues.stream().filter(ov -> ov.getType() == OwnershipType.HUURWONING_WONINGCORPORATIE)
+                    .map(HouseblockSnapshotModel.OwnershipValue::getRentalValueCategoryId).collect(Collectors.toSet());
+                if (rangeCategoriesAssoc.size() > 1 && rangeCategoriesAssoc.contains(null)) {
+                    rowErrors.add(new ImportError(excelRowNo, projectRowModel.getId(), this.name, ImportError.ERROR.HOUSEBLOCK_OWNERSHIP_HOUSING_ASSOCIATION_INCONSISTENT));
                 }
             }
 
@@ -585,11 +603,15 @@ public class ProjectImportModel {
                 ownershipValue.setHouseblock(houseblock);
                 if (ov.getValue() != null) {
                     ownershipValue.setValueRange(ov.getValue().toRange());
-                    ownershipValue.setValueType(ValueType.RANGE);
                 }
                 if (ov.getRentalValue() != null) {
                     ownershipValue.setRentalValueRange(ov.getRentalValue().toRange());
-                    ownershipValue.setRentalValueType(ValueType.RANGE);
+                }
+                if (ov.getValueCategoryId() != null) {
+                    ownershipValue.setOwnershipRangeCategoryValue(repo.getReferenceById(PropertyRangeCategoryValue.class, ov.getValueCategoryId()));
+                }
+                if (ov.getRentalValueCategoryId() != null) {
+                    ownershipValue.setRentalRangeCategoryValue(repo.getReferenceById(PropertyRangeCategoryValue.class, ov.getRentalValueCategoryId()));
                 }
                 ownershipValue.setAmount(ov.getAmount());
                 ownershipValue.setOwnershipType(ov.getType());

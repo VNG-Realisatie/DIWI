@@ -19,6 +19,7 @@ import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.enums.ObjectType;
 import nl.vng.diwi.dal.entities.enums.PropertyKind;
+import nl.vng.diwi.dal.entities.enums.PropertyType;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
@@ -70,7 +71,7 @@ public class PropertiesResource {
     }
 
     @POST
-    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
+    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS, UserActionConstants.EDIT_ALL_PROJECTS})
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public PropertyModel createCustomProperty(PropertyModel propertyModel, @Context LoggedUser loggedUser) throws VngBadRequestException {
@@ -82,6 +83,10 @@ public class PropertiesResource {
                 throw new VngBadRequestException(validationError);
             }
 
+            if (propertyModel.getPropertyType().equals(PropertyType.RANGE_CATEGORY)) {
+                throw new VngBadRequestException("Range-category properties cannot be created. This type is reserved for fixed properties.");
+            }
+
             UUID customPropertyUuid = propertiesService.createCustomProperty(repo, propertyModel, ZonedDateTime.now(), loggedUser.getUuid());
             transaction.commit();
 
@@ -91,7 +96,7 @@ public class PropertiesResource {
 
     @PUT
     @Path("/{id}")
-    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
+    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS, UserActionConstants.EDIT_ALL_PROJECTS})
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public PropertyModel updateProperty(@PathParam("id") UUID customPropertyUuid, @Context LoggedUser loggedUser,
@@ -115,7 +120,7 @@ public class PropertiesResource {
 
     @DELETE
     @Path("/{id}")
-    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS})
+    @RolesAllowed({UserActionConstants.EDIT_OWN_PROJECTS, UserActionConstants.EDIT_ALL_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
     public PropertyModel disableCustomProperty(@PathParam("id") UUID customPropertyUuid, ContainerRequestContext requestContext)
         throws VngNotFoundException {

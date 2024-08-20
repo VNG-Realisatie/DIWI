@@ -41,4 +41,7 @@ public class Property extends IdSuperclass {
     @OneToMany(mappedBy= "property", fetch = FetchType.LAZY)
     private List<PropertyOrdinalValue> ordinalValues;
 
+    @OneToMany(mappedBy= "property", fetch = FetchType.LAZY)
+    private List<PropertyRangeCategoryValue> rangeValues;
+
 }

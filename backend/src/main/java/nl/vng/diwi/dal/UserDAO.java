@@ -41,7 +41,7 @@ public class UserDAO extends AbstractRepository {
     public String getIdentityProviderIdForUser(UUID uuid) {
         return session
                 .createQuery("FROM UserState " +
-                        "WHERE user.id = :userId", UserState.class)
+                        "WHERE user.id = :userId AND changeEndDate IS NULL", UserState.class)
                 .setParameter("userId", uuid)
                 .uniqueResult().getIdentityProviderId();
     }

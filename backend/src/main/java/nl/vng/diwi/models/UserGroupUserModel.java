@@ -20,4 +20,12 @@ public class UserGroupUserModel {
     @JsonIgnore
     String userGroupName;
 
+    public UserGroupUserModel(UserGroupUserSqlModel sqlModel) {
+        this.uuid = sqlModel.getUuid();
+        this.firstName = sqlModel.getFirstName();
+        this.lastName = sqlModel.getLastName();
+        this.initials = sqlModel.getInitials();
+        this.userGroupUuid = sqlModel.getUserGroupUuid();
+        this.userGroupName = sqlModel.getUserGroupName();
+    }
 }
