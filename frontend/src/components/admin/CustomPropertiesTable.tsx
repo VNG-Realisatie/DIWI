@@ -22,7 +22,7 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
     const [deletePropertyInfo, setDeletePropertyInfo] = useState({ name: "", id: "" });
     const [editPropertyId, setEditPropertyId] = useState("");
     const { t } = useTranslation();
-    const allowedActions = useAllowedActions();
+    const { allowedActions } = useAllowedActions();
 
     if (!allowedActions.includes("VIEW_CUSTOM_PROPERTIES")) {
         return <ActionNotAllowed errorMessage={t("customProperties.forbidden")} />;
@@ -157,7 +157,7 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
         <>
             <Stack>
                 <DataGrid
-                    rows={customProperties.filter((row) => !row.disabled)}
+                    rows={customProperties.filter((row) => !row.disabled && row.propertyType !== "RANGE_CATEGORY")}
                     rowHeight={70}
                     rowSelection={false}
                     columns={columns}
@@ -184,7 +184,13 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
                     </Box>
                 </DialogActions>
             </Dialog>
-            <PropertyDialog setCustomProperties={setCustomProperties} openDialog={editDialogOpen} setOpenDialog={setEditDialogOpen} id={editPropertyId} setId={setEditPropertyId} />
+            <PropertyDialog
+                setCustomProperties={setCustomProperties}
+                openDialog={editDialogOpen}
+                setOpenDialog={setEditDialogOpen}
+                id={editPropertyId}
+                setId={setEditPropertyId}
+            />
         </>
     );
 };

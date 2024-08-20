@@ -21,6 +21,10 @@ public class GenericRepository implements AutoCloseable {
     public static List<Class<? extends Object>> getEntities() {
         List<Class<? extends Object>> entities =
             Arrays.asList(
+                Blueprint.class,
+                BlueprintState.class,
+                BlueprintToElement.class,
+                BlueprintToUserGroup.class,
                 PropertyCategoryValue.class,
                 PropertyCategoryValueState.class,
                 PropertyRangeCategoryValue.class,
@@ -77,6 +81,7 @@ public class GenericRepository implements AutoCloseable {
                 UserState.class,
                 UserToUserGroup.class,
                 ProjectAuditSqlModel.class,
+                BlueprintSqlModel.class,
                 ProjectListSqlModel.class,
                 ProjectDashboardSqlModel.class,
                 HouseblockSnapshotSqlModel.class,

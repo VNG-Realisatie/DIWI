@@ -23,7 +23,7 @@ export const ImportedProjects = (props: Props) => {
     const projectTypeInitialState = importedDummyProjects.map((p) => {
         return { id: p.id, status: "new" };
     });
-    const allowedActions = useAllowedActions();
+    const { allowedActions } = useAllowedActions();
     const [projectsType, setProjectsType] = useState<Array<{ id: number; status: string }>>(projectTypeInitialState);
 
     if (!allowedActions.includes("IMPORT_PROJECTS")) {

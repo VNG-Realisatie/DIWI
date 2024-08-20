@@ -59,7 +59,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const [filterModel, setFilterModel] = useState<GridFilterModel | undefined>();
     const [sortModel, setSortModel] = useState<GridSortModel | undefined>();
 
-    const allowedActions = useAllowedActions();
+    const { allowedActions } = useAllowedActions();
     const { filterUrl, rows } = useCustomSearchParams(sortModel, filterModel, paginationInfo);
 
     useEffect(() => {
@@ -120,7 +120,14 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 return (
                     cellValues.row.projectOwners &&
                     cellValues.row.projectOwners.length > 0 && (
-                        <UserGroupSelect mandatory={false} errorText="" readOnly={true} userGroup={cellValues.row.projectOwners} setUserGroup={() => {}} />
+                        <UserGroupSelect
+                            checkIsOwnerValidWithConfidentialityLevel={() => true}
+                            mandatory={false}
+                            errorText=""
+                            readOnly={true}
+                            userGroup={cellValues.row.projectOwners}
+                            setUserGroup={() => {}}
+                        />
                     )
                 );
             },
