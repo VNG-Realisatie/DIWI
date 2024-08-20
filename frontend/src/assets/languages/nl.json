@@ -389,6 +389,7 @@
       "endDate": "Einddatum",
       "category": "Categorie",
       "goalDirection": "Doelstelling",
+      "createNewGoal": "Nieuw beleidsdoel toevoegen",
       "properties": {
         "PROPERTY": "Custom property",
         "GROUND_POSITION": "Grond positie",
@@ -403,7 +404,11 @@
         "endDate": "Vul de einddatum in",
         "category": "Kies de categorie",
         "goalDirection": "Kies de doelstelling"
-      }
+      },
+    "notifications": {
+      "updated" : "Succesvol geüpdatet",
+      "created" : "Succesvol aangemaakt"
+    }
     },
     "dashboard": {
       "title": "Dashboard",

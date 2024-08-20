@@ -270,6 +270,7 @@ function App() {
                         <Route path={Paths.dashboard.path} element={<DashboardProjects />} />
                         <Route path={Paths.goals.path} element={<Goals />} />
                         <Route path={Paths.goalWizard.path} element={<GoalWizard />} />
+                        <Route path={Paths.goalMenu.path} element={<GoalWizard />} />
                         <Route path={Paths.createCustomDashbord.path} element={<CreateCustomDashboard />} />
                         <Route path={Paths.updateCustomDashbord.path} element={<CreateCustomDashboard />} />
                         <Route path={Paths.customDashbordList.path} element={<CustomDashboardList />} />

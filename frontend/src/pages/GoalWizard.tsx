@@ -1,13 +1,15 @@
 import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { Button, TextField, Grid, Box } from "@mui/material";
 import TextInput from "../components/project/inputs/TextInput";
-import { Category, getAllCategories, Goal, createGoal, GoalDirection, ConditionFieldType } from "../api/goalsServices";
+import { Category, getAllCategories, Goal, createGoal, GoalDirection, ConditionFieldType, PropertyKind, getGoal, updateGoal } from "../api/goalsServices";
 import { t } from "i18next";
 import CategoryInput from "../components/project/inputs/CategoryInput";
 import { PropertyRadioGroup } from "../components/goals/PropertyRadioGroup";
 import DateInput from "../components/project/inputs/DateInput";
 import { Dayjs } from "dayjs";
 import AlertContext from "../context/AlertContext";
+import { PropertyType } from "../types/enums";
+import { useNavigate, useParams } from "react-router-dom";
 
 const emptyGoal = {
     startDate: "",
@@ -24,16 +26,18 @@ const emptyGoal = {
     conditions: [
         {
             conditionId: "",
-            propertyId: "",
+            propertyId: "123",
             propertyName: "",
-            propertyKind: "",
-            operator: "",
-            value: "",
+            propertyKind: "FIXED" as PropertyKind, //how do we change it to custom??
             conditionFieldType: "" as ConditionFieldType,
-            propertyType: "",
+            propertyType: "CATEGORY" as PropertyType, //how do we change it to other property types??
             booleanValue: false,
             categoryOptions: [],
-            ordinalOptions: { value: 0, min: 0, max: 0 },
+            ordinalOptions: {
+                value: { id: "", name: "" },
+                min: { id: "", name: "" },
+                max: { id: "", name: "" },
+            },
             listOptions: [], // Add the missing properties here
             ownershipOptions: [], // Add the missing properties here
         },
@@ -48,12 +52,12 @@ const conditionFieldTypeOptions = ["PROPERTY", "GROUND_POSITION", "PROGRAMMING",
 
 const goalDirectionOptions = ["MINIMAL", "MAXIMAL", ""];
 
-
 export function GoalWizard() {
+    const { goalId } = useParams<{ goalId: string }>();
     const [goal, setGoal] = useState<Goal>(emptyGoal);
-    const [property, setProperty] = useState<ConditionFieldType>(""); // Align with backend later
     const [categories, setCategories] = useState<Category[]>([]);
     const { setAlert } = useContext(AlertContext);
+    const navigate = useNavigate();
 
     useEffect(() => {
         getAllCategories().then((categories) => {
@@ -61,16 +65,27 @@ export function GoalWizard() {
         });
     }, []);
 
+    useEffect(() => {
+        if (goalId) {
+            getGoal(goalId).then((goal) => {
+                setGoal(goal);
+            });
+        }
+    }, [goalId]);
+
     const submitForm = async () => {
         try {
-            await createGoal(goal);
-            setAlert("Goal created", "success");
+            goalId ? await updateGoal(goal) : await createGoal(goal);
+            setAlert(goalId ? t("goals.notifications.updated") : t("goals.notifications.created"), "success");
+            navigate("/goals");
         } catch (error: unknown) {
             if (error instanceof Error) {
                 setAlert(error.message, "error");
             }
         }
     };
+    // update when clarify conditions
+    const disabledButton = !goal.name || !goal.startDate || !goal.endDate || !goal.goalDirection;
 
     return (
         <Grid container spacing={3}>
@@ -103,9 +118,17 @@ export function GoalWizard() {
                                 mandatory={false}
                                 title={t("goals.property")}
                                 options={conditionFieldTypeOptions.map((option) => ({ id: option, name: option }))}
-                                values={conditionFieldTypeOptions.find((option) => option === property) || null}
+                                values={goal.conditions[0] && goal.conditions[0].conditionFieldType ? goal.conditions[0].conditionFieldType : ""}
                                 setValue={(_, newValue) => {
-                                    setProperty(newValue ? newValue.id : "");
+                                    setGoal({
+                                        ...goal,
+                                        conditions: [
+                                            {
+                                                ...goal.conditions[0],
+                                                conditionFieldType: newValue ? newValue.id : "",
+                                            },
+                                        ],
+                                    });
                                 }}
                                 multiple={false}
                                 hasTooltipOption={false}
@@ -115,7 +138,7 @@ export function GoalWizard() {
                         </Grid>
 
                         <Grid item xs={12}>
-                            <PropertyRadioGroup property={property} />
+                            <PropertyRadioGroup property={goal.conditions[0] ? goal.conditions[0].conditionFieldType : ""} setGoal={setGoal} goal={goal} />
                         </Grid>
 
                         <Grid container item xs={12} spacing={2}>
@@ -196,11 +219,11 @@ export function GoalWizard() {
 
                         {/* Buttons */}
                         <Grid item xs={12} style={{ textAlign: "right" }}>
-                            <Button variant="outlined" color="secondary" style={{ marginRight: "8px" }}>
-                                Annuleren
+                            <Button variant="outlined" color="primary" style={{ marginRight: "8px" }} onClick={() => navigate("/goals")}>
+                            {t("generic.cancel")}
                             </Button>
-                            <Button variant="contained" color="primary" type="submit" onClick={submitForm}>
-                                Opslaan
+                            <Button variant="contained" color="primary" type="submit" onClick={submitForm} disabled={disabledButton}>
+                            {t("generic.save")}
                             </Button>
                         </Grid>
                     </Grid>

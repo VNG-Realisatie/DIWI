@@ -32,6 +32,7 @@ export const customDashbordList = createPathObject(config.baseurl + "dashboard/c
 export const dashboardProject = createPathObject(config.baseurl + "dashboard/project/:projectId");
 export const goals = createPathObject(config.baseurl + "goals");
 export const goalWizard = createPathObject(config.baseurl + "goals/create");
+export const goalMenu = createPathObject(config.baseurl + "goals/:goalId");
 export const wizard = createPathObject(config.baseurl + "admin/wizard");
 export const exchangedata = createPathObject(config.baseurl + "exchangedata");
 export const exchangeimportdata = createPathObject(config.baseurl + "exchangeimportdata");
