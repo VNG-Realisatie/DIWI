@@ -16,6 +16,7 @@ This release focusses on expanding dashboard features and ranged categories.
 ### CHANGED
 
 - changed the handling of ownership of private projects. these can no longer be removed from the original creator
+- automated end to end tests have been updated, though not fully to the current version
 
 ### FIXED
 
@@ -29,6 +30,13 @@ This release focusses on expanding dashboard features and ranged categories.
 - fixed an issue where saving changes in house blocks would not give feedback
 - fixed an issue where saving plot updates would not give feedback
 - fixed an issue where a user that had been removed from a group would still have access to projects assigned to that group
+- fixed an issue where a user assigned to a user group would not see private projects assigned to that user group
+- about page git hash is showing again
+- fixed issues with automated tests
+
+### IMPROVED
+
+- updated automated tests
 
 ## DIWI RELEASE 1.5.0
 
