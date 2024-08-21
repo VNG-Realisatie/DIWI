@@ -13,6 +13,7 @@ import usePlotSelector, { Buttons } from "../../hooks/usePlotSelector";
 import { Details } from "../Details";
 import { AddHouseBlockButton } from "../PlusButton";
 import { CreateHouseBlockDialog } from "../project/project-with-house-block/CreateHouseBlockDialog";
+import { useHasEditPermission } from "../../hooks/useHasEditPermission";
 
 const ProjectPlotSelector = () => {
     const { t } = useTranslation();
@@ -21,6 +22,7 @@ const ProjectPlotSelector = () => {
     const [openHouseBlockDialog, setOpenHouseBlockDialog] = useState(false);
     const id = useId();
     const { plotsChanged, handleCancelChange, handleSaveChange, selectionMode, toggleSelectionMode } = usePlotSelector(id);
+    const { getEditPermission } = useHasEditPermission();
 
     const handleAddHouseBlockClick = () => {
         setOpenHouseBlockDialog(true);
@@ -29,7 +31,7 @@ const ProjectPlotSelector = () => {
     return (
         <Stack my={1} p={1} mb={10}>
             <Box sx={{ cursor: "pointer" }} position="absolute" right={105} top={17}>
-                {plotsChanged && (
+                {plotsChanged && getEditPermission() && (
                     <>
                         <Tooltip placement="top" title={t("generic.cancelChanges")}>
                             <ClearIcon sx={{ mr: 2, color: "#FFFFFF" }} onClick={handleCancelChange} />

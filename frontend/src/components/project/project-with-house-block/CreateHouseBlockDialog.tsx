@@ -47,6 +47,7 @@ export const CreateHouseBlockDialog = ({ openHouseBlockDialog, setOpenHouseBlock
                                 await saveHouseBlockWithCustomProperties(houseBlock);
                                 refresh();
                                 setOpenHouseBlockDialog(false);
+                                setAlert(t("generic.saved"), "success");
                             } catch (error: unknown) {
                                 if (error instanceof Error) setAlert(error.message, "warning");
                             }
