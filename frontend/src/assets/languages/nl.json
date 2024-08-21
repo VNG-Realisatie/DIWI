@@ -397,6 +397,10 @@
         "HOUSE_TYPE": "Type woning",
         "OWNERSHIP": "Eigenaar"
       },
+      "goalType" : {
+        "number": "Aantal",
+        "percentage": "Percentage"
+      },
       "errors" : {
         "name": "Vul de naam van het beleidsdoel in",
         "property": "Kies de eigenschap",
@@ -407,7 +411,8 @@
       },
     "notifications": {
       "updated" : "Succesvol geüpdatet",
-      "created" : "Succesvol aangemaakt"
+      "created" : "Succesvol aangemaakt",
+      "deleted" : "Succesvol verwijderd"
     }
     },
     "dashboard": {

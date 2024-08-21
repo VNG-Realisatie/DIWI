@@ -10,7 +10,7 @@ export type GoalDirection = "MINIMAL" | "MAXIMAL" | "";
 export type ConditionFieldType = "PROPERTY" | "GROUND_POSITION" | "PROGRAMMING" | "HOUSE_TYPE" | "OWNERSHIP" | "";
 export type PropertyKind = "FIXED" | "CUSTOM";
 export type PropertyType = "BOOLEAN" | "CATEGORY" | "ORDINAL" | "NUMERIC" | "TEXT" | "RANGE_CATEGORY";
-
+export type GoalType = "NUMBER" | "PERCENTAGE";
 
 type Condition = {
     conditionId: string;
@@ -59,7 +59,7 @@ export type Goal = {
     endDate: string | null | undefined;
     id: string;
     name: string;
-    goalType: string;
+    goalType: GoalType;
     goalDirection: GoalDirection;
     goalValue: number;
     category: Category;
@@ -73,7 +73,7 @@ export const getAllGoals = async (): Promise<Goal[]> => {
 
 export const getGoal = async (goalId: string): Promise<Goal> => {
     return getJson(`${API_URI}/goals/${goalId}`);
-}
+};
 
 export const getAllCategories = async (): Promise<Category[]> => {
     return getJson(`${API_URI}/goals/categories`);
@@ -89,6 +89,4 @@ export const updateGoal = async (goal: Goal): Promise<Goal> => {
 
 export const deleteGoal = async (goalId: string): Promise<void> => {
     return deleteJson(`${API_URI}/goals/${goalId}`);
-}
-
-
+};
