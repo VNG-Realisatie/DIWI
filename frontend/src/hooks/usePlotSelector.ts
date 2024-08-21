@@ -2,7 +2,7 @@ import _ from "lodash";
 import { Feature, Map, MapBrowserEvent, View } from "ol";
 import { defaults as defaultControls } from "ol/control.js";
 import { Listener } from "ol/events";
-import { Extent, buffer, containsCoordinate } from "ol/extent";
+import { Extent, buffer } from "ol/extent";
 import { GeoJSON } from "ol/format";
 import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
@@ -23,6 +23,7 @@ import { fromExtent } from "ol/geom/Polygon";
 import useAlert from "./useAlert";
 import { useTranslation } from "react-i18next";
 import { useHasEditPermission } from "./useHasEditPermission";
+import CircleStyle from "ol/style/Circle";
 
 const baseUrlKadasterWfs = "https://service.pdok.nl/kadaster/kadastralekaart/wfs/v5_0";
 
@@ -52,6 +53,8 @@ const usePlotSelector = (id: string) => {
     const [extent, setExtent] = useState<Extent | null>(null);
 
     const [selectionMode, setSelectionMode] = useState<Buttons | null>(null);
+    const [previousSelectionMode, setPreviousSelectionMode] = useState<Buttons | null>(null);
+
     const { getEditPermission } = useHasEditPermission();
 
     const { setAlert } = useAlert();
@@ -141,12 +144,7 @@ const usePlotSelector = (id: string) => {
 
             const features = map.getFeaturesAtPixel(e.pixel, { layerFilter: (layer) => layer.getSource() === selectedPlotLayerSource });
             if (features.length > 0) {
-                const newSelectedPlots = selectedPlots.filter((plot) => {
-                    const id = plot.plotFeature.features[0].id;
-                    const clickedFeatureId = features[0].getId();
-                    return id !== clickedFeatureId;
-                });
-                setSelectedPlots(newSelectedPlots);
+                return;
             } else {
                 const loc = e.coordinate;
                 const bbox = `${loc[0]},${loc[1]},${loc[0]},${loc[1]}`;
@@ -174,7 +172,7 @@ const usePlotSelector = (id: string) => {
 
     const handleLineDrawEnd = useCallback(
          (e: DrawEvent) => {
-            if (selectionMode !== Buttons.SELECT || !map || !selectedPlotLayerSource || !bboxLayerSource) return;
+            if (selectionMode !== Buttons.SELECT || !map || !selectedPlotLayerSource || !bboxLayerSource || !getEditPermission()) return;
 
             const lineGeometry = e.feature.getGeometry();
             if (!lineGeometry || !(lineGeometry instanceof LineString)) return;
@@ -220,11 +218,11 @@ const usePlotSelector = (id: string) => {
                 geometry: newPolygon,
             }));
         },
-        [selectionMode, map, selectedPlotLayerSource, bboxLayerSource, selectedPlots]
+        [selectionMode, map, selectedPlotLayerSource, bboxLayerSource, selectedPlots, getEditPermission]
 );
 
     const handleCut = useCallback((e: DrawEvent) => {
-        if (selectionMode !== Buttons.CUT || !map || !selectedPlotLayerSource || !bboxLayerSourceCut) return;
+        if (selectionMode !== Buttons.CUT || !map || !selectedPlotLayerSource || !bboxLayerSourceCut || !getEditPermission()) return;
 
         const polygonGeometry = e.feature.getGeometry();
         if (!polygonGeometry || !(polygonGeometry instanceof Polygon)) return;
@@ -235,6 +233,8 @@ const usePlotSelector = (id: string) => {
         const coords = polygonGeometry.getCoordinates();
 
         fetchPlotData(bbox).then((plotFeature) => {
+            let isOutsideOfPlot = false;
+            const updatedPlots = [...selectedPlots];
 
         plotFeature.features.forEach((feature) => {
             const properties = feature.properties;
@@ -246,10 +246,8 @@ const usePlotSelector = (id: string) => {
             );
 
             if (existingPlot) {
-                const updatedPlots = [...selectedPlots];
                 const existingCoords = existingPlot.subselectionGeometry?.coordinates as Coordinate[][] || [];
-                const newCoords = coords as Coordinate[][];
-                const mergedCoords: Coordinate[][] = [...existingCoords, ...newCoords];
+                const mergedCoords: Coordinate[][] = [...existingCoords, ...coords];
 
                 const updatedPlotIndex = updatedPlots.indexOf(existingPlot);
                 updatedPlots[updatedPlotIndex] = {
@@ -259,15 +257,55 @@ const usePlotSelector = (id: string) => {
                             coordinates: mergedCoords,
                         },
                     };
-
-
-                setSelectedPlots(updatedPlots);
-                console.log("selectedPlots", updatedPlots);
+                }
+                else {
+                    isOutsideOfPlot = true;
                 }
 
         });
+        if (!isOutsideOfPlot) {
+            setSelectedPlots(updatedPlots);
+        } else {
+            bboxLayerSourceCut.removeFeature(e.feature);
+        }
     });
-}, [selectionMode, map, selectedPlotLayerSource, bboxLayerSourceCut, selectedPlots]);
+}, [selectionMode, map, selectedPlotLayerSource, bboxLayerSourceCut, selectedPlots, getEditPermission]);
+
+const handleDeleteEnd = useCallback((e: MapBrowserEvent<UIEvent>) => {
+    if (selectionMode !== Buttons.DELETE || !map || !selectedPlotLayerSource || !getEditPermission()) return;
+
+    const features = map.getFeaturesAtPixel(e.pixel, { layerFilter: (layer) => layer.getSource() === selectedPlotLayerSource });
+    const subFeatures = map.getFeaturesAtPixel(e.pixel, { layerFilter: (layer) => layer.getSource() === bboxLayerSourceCut });
+
+    if (subFeatures.length > 0) {
+        const clickedSubplotFeature = subFeatures[0];
+        console.log(clickedSubplotFeature)
+        const clickedSubplotGeometry = clickedSubplotFeature.getGeometry() as Polygon;
+        const clickedSubplotCoords = clickedSubplotGeometry.getCoordinates();
+        console.log("clickedSubplotCoords", clickedSubplotCoords);
+
+        const plotClicked = selectedPlots.find((plot) => {
+            const id = plot.plotFeature.features[0].id;
+            const clickedFeatureId = features[0].getId();
+            return id === clickedFeatureId;
+        });
+        console.log("plotClicked", plotClicked)
+
+            //TODO: FILTERING
+
+        return;
+    }
+
+            else if (features.length > 0) {
+                const newSelectedPlots = selectedPlots.filter((plot) => {
+                    const id = plot.plotFeature.features[0].id;
+                    const clickedFeatureId = features[0].getId();
+                    return id !== clickedFeatureId;
+                });
+                setSelectedPlots(newSelectedPlots);
+            }
+
+}, [getEditPermission, map, selectedPlotLayerSource, selectionMode, selectedPlots, bboxLayerSourceCut]);
 
 useEffect(
     function updatePlotsLayer() {
@@ -343,7 +381,7 @@ useEffect(
     );
 
     useEffect(() => {
-        if (selectionMode !== Buttons.SELECT || !map) return;
+        if (selectionMode !== Buttons.SELECT || !map || !getEditPermission()) return;
 
         const draw = new Draw({
             source: new VectorSource(),
@@ -370,22 +408,39 @@ useEffect(
         return () => {
             map.removeInteraction(draw);
         };
-    }, [map, selectionMode, handleLineDrawEnd, bboxLayerSource]);
+    }, [map, selectionMode, handleLineDrawEnd, bboxLayerSource, getEditPermission]);
 
     useEffect(() => {
-        if (selectionMode !== Buttons.CUT || !map || !selectedPlotLayerSource) return;
+        if (selectionMode !== Buttons.CUT || !map || !selectedPlotLayerSource || !getEditPermission()) return;
 
         let currentFeature: Feature<Polygon> | null = null;
         const snapTolerance = 10;
+
+        const defaultPolygonStyle = new Style({
+            stroke: new Stroke({
+              color: 'rgba(7, 62, 168, 0.5)',
+              width: 5
+            }),
+            image: new CircleStyle({
+              radius: 6,
+              fill: new Fill({
+                color: 'orangered'
+              }),
+              stroke: new Stroke({
+                color: 'white',
+                width: 1.5
+              })
+            }),
+            fill: new Fill({
+              color: 'rgba(255, 255, 255, 0.4)'
+            })
+          });
 
         const draw = new Draw({
             source: bboxLayerSourceCut,
             type: "Polygon",
             minPoints: 3,
-            condition: (event) => {
-                const point = event.coordinate;
-                return isPointInsideSelectedPlot(point);
-            },
+            style: defaultPolygonStyle,
             finishCondition: () => {
                 if (!currentFeature) return false;
                 const coordinates = currentFeature.getGeometry()?.getCoordinates()[0];
@@ -411,22 +466,6 @@ useEffect(
             source: subselectionSource,
             pixelTolerance: snapTolerance,
         });
-
-          const isPointInsideSelectedPlot = (point: Coordinate) => {
-            const features = selectedPlotLayerSource.getFeatures();
-            if (!features || features.length === 0) return false;
-
-            for (const feature of features) {
-                const geometry = feature.getGeometry() as Polygon;
-                const extent: Extent = geometry.getExtent();
-
-                if (containsCoordinate(extent, point)) {
-                        return true;
-                }
-            }
-
-            return false;
-        };
 
         document.addEventListener("keypress", function(event) {
             if (event.key == "Enter") {
@@ -463,16 +502,73 @@ useEffect(
             map.removeInteraction(snapInteraction);
             map.removeInteraction(snapInteractionSubPlot);
         };
-    }, [map, selectionMode, handleCut, selectedPlotLayerSource, subselectionSource, bboxLayerSourceCut]);
+    }, [map, selectionMode, handleCut, selectedPlotLayerSource, subselectionSource, bboxLayerSourceCut, getEditPermission]);
 
     useEffect(() => {
-        if (!map) return;
+        if (selectionMode !== Buttons.DELETE || !map || !getEditPermission()) return;
+
+        const deletePointStyle = new Style({
+            image: new CircleStyle({
+                radius: 6,
+                fill: new Fill({
+                  color: 'red'
+                }),
+                stroke: new Stroke({
+                  color: 'white',
+                  width: 1.5
+                })
+              })
+          })
+
+        const draw = new Draw({
+            source: new VectorSource(),
+            type: "Point",
+            maxPoints: 1,
+            style: deletePointStyle
+        });
+
+        map.addEventListener("click", handleDeleteEnd as Listener);
+        map.addInteraction(draw);
+
+        return () => {
+            map.removeInteraction(draw);
+            map.removeEventListener("click", handleDeleteEnd as Listener);
+        };
+    }, [map, selectionMode, handleDeleteEnd, getEditPermission]);
+
+    useEffect(() => {
+        if (!map || !getEditPermission()) return;
+
+        const keyDownHandler = (e: KeyboardEvent) => {
+            if (e.key === "Shift") {
+                setPreviousSelectionMode(selectionMode);
+                setSelectionMode(Buttons.DELETE);
+            }
+        };
+
+        const keyUpHandler = (e: KeyboardEvent) => {
+            if (e.key === "Shift") {
+                setSelectionMode(previousSelectionMode);
+            }
+        };
+
+        document.addEventListener("keydown", keyDownHandler);
+        document.addEventListener("keyup", keyUpHandler);
+
+        return () => {
+            document.removeEventListener("keydown", keyDownHandler);
+            document.removeEventListener("keyup", keyUpHandler);
+        };
+    }, [map, selectionMode, previousSelectionMode, getEditPermission]);
+
+    useEffect(() => {
+        if (!map || !getEditPermission()) return;
 
         map.addEventListener("click", handleClick as Listener);
         return () => {
             map.removeEventListener("click", handleClick as Listener);
         };
-    }, [handleClick, map]);
+    }, [getEditPermission, handleClick, map]);
 
     useEffect(
         function createMap() {
@@ -515,8 +611,8 @@ useEffect(
             const bboxLayerCut = new VectorLayer({
                 source: bboxSourceCut,
                 style: new Style({
-                    fill: new Fill({ color: "rgba(155, 193, 228, 0.5)" }),
-                    stroke: new Stroke({ color: "rgba(7, 62, 168, 0.5)", width: 1 }),
+                    fill: new Fill({ color: "rgba(155, 193, 228, 0.7)" }),
+                    stroke: new Stroke({ color: "rgba(7, 62, 168, 0.5)", width: 5 }),
                 }),
 
             });

@@ -53,63 +53,69 @@ const ProjectPlotSelector = () => {
                 </div>
             </Stack>
             <Box position="absolute" top={90} right={20}>
-                <Tooltip title={selectionMode === Buttons.SELECT ? t("generic.cancelSelection") : t("generic.selectPlot")}>
-                    <Button
-                        variant="contained"
-                        onClick={() => toggleSelectionMode(Buttons.SELECT)}
-                        sx={{
-                            padding: 0,
-                            backgroundColor: "#FFFFFF",
-                            color: selectionMode === Buttons.SELECT ? "blue" : "black",
-                            minWidth: "50px",
-                            minHeight: "50px",
-                            borderRadius: "10%",
-                            "&:hover": {
-                                backgroundColor: "#f0f0f0",
-                            },
-                        }}
-                    >
-                        <MouseIcon />
-                    </Button>
-                </Tooltip>
-                <Tooltip title={selectionMode === Buttons.CUT ? t("generic.cancelCutSelection") : t("generic.cutSelection")}>
-                    <Button
-                        variant="contained"
-                        onClick={() => toggleSelectionMode(Buttons.CUT)}
-                        sx={{
-                            padding: 0,
-                            backgroundColor: "#FFFFFF",
-                            color: selectionMode === Buttons.CUT ? "orangered" : "black",
-                            minWidth: "50px",
-                            minHeight: "50px",
-                            borderRadius: "10%",
-                            "&:hover": {
-                                backgroundColor: "#f0f0f0",
-                            },
-                        }}
-                    >
-                        <ContentCutIcon />
-                    </Button>
-                </Tooltip>
-                <Tooltip title={selectionMode === Buttons.DELETE ? t("generic.cancelDeleteSelection") : t("generic.deleteSelection")}>
-                    <Button
-                        variant="contained"
-                        onClick={() => toggleSelectionMode(Buttons.DELETE)}
-                        sx={{
-                            padding: 0,
-                            backgroundColor: "#FFFFFF",
-                            color: selectionMode === Buttons.DELETE ? "red" : "black",
-                            minWidth: "50px",
-                            minHeight: "50px",
-                            borderRadius: "10%",
-                            "&:hover": {
-                                backgroundColor: "#f0f0f0",
-                            },
-                        }}
-                    >
-                        <DeleteIcon />
-                    </Button>
-                </Tooltip>
+                {getEditPermission() && (
+                    <>
+                        <Tooltip title={selectionMode === Buttons.SELECT ? t("generic.cancelSelection") : t("generic.selectPlot")}>
+                            <Button
+                                variant="contained"
+                                onClick={() => toggleSelectionMode(Buttons.SELECT)}
+                                sx={{
+                                    padding: 0,
+                                    backgroundColor: "#FFFFFF",
+                                    color: selectionMode === Buttons.SELECT ? "blue" : "black",
+                                    minWidth: "50px",
+                                    minHeight: "50px",
+                                    borderRadius: "10%",
+                                    "&:hover": {
+                                        backgroundColor: "#f0f0f0",
+                                    },
+                                }}
+                            >
+                                <MouseIcon />
+                            </Button>
+                        </Tooltip>
+                        <Tooltip title={selectionMode === Buttons.CUT ? t("generic.cancelCutSelection") : t("generic.cutSelection")}>
+                            <Button
+                                variant="contained"
+                                onClick={() => toggleSelectionMode(Buttons.CUT)}
+                                sx={{
+                                    padding: 0,
+                                    marginLeft: "10px",
+                                    backgroundColor: "#FFFFFF",
+                                    color: selectionMode === Buttons.CUT ? "orangered" : "black",
+                                    minWidth: "50px",
+                                    minHeight: "50px",
+                                    borderRadius: "10%",
+                                    "&:hover": {
+                                        backgroundColor: "#f0f0f0",
+                                    },
+                                }}
+                            >
+                                <ContentCutIcon />
+                            </Button>
+                        </Tooltip>
+                        <Tooltip title={selectionMode === Buttons.DELETE ? t("generic.cancelDeleteSelection") : t("generic.deleteSelection")}>
+                            <Button
+                                variant="contained"
+                                onClick={() => toggleSelectionMode(Buttons.DELETE)}
+                                sx={{
+                                    padding: 0,
+                                    marginLeft: "10px",
+                                    backgroundColor: "#FFFFFF",
+                                    color: selectionMode === Buttons.DELETE ? "red" : "black",
+                                    minWidth: "50px",
+                                    minHeight: "50px",
+                                    borderRadius: "10%",
+                                    "&:hover": {
+                                        backgroundColor: "#f0f0f0",
+                                    },
+                                }}
+                            >
+                                <DeleteIcon />
+                            </Button>
+                        </Tooltip>
+                    </>
+                )}
             </Box>
         </Stack>
     );
