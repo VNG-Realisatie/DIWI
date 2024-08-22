@@ -2,18 +2,18 @@ import { useEffect, useState } from "react";
 import { Autocomplete, TextField, IconButton, InputAdornment } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Category, createCategory, deleteCategory, getAllCategories } from "../../api/goalsServices";
+import { Category, createCategory, CustomCategory, deleteCategory, getAllCategories, Goal } from "../../api/goalsServices";
 import InputLabelStack from "../project/inputs/InputLabelStack";
 import { t } from "i18next";
 
 type Props = {
-    goal: any;
-    setGoal: (goal: any) => void;
+    goal: Goal;
+    setGoal: (goal: Goal) => void;
 };
 
 const CategoryAutocomplete = ({ goal, setGoal }: Props) => {
     const [inputValue, setInputValue] = useState("");
-    const [categories, setCategories] = useState<Category[]>([]);
+    const [categories, setCategories] = useState<CustomCategory[]>([]);
 
     useEffect(() => {
         getAllCategories().then((categories) => {
@@ -23,11 +23,9 @@ const CategoryAutocomplete = ({ goal, setGoal }: Props) => {
 
     const categoryExists = categories.some((category) => category.name.toLowerCase() === inputValue.toLowerCase());
 
-    const handleCategoryChange = (_: React.ChangeEvent<{}>, newValue: string | Category) => {
-        if (typeof newValue === "string" && !categoryExists) {
-            createCategory({ name: newValue }).then((newCategory) => {
-                setGoal({ ...goal, category: newCategory });
-            });
+    const handleCategoryChange = (_: React.ChangeEvent<{}>, newValue: string | CustomCategory | null) => {
+        if (typeof newValue === "string") {
+            setGoal({ ...goal, category: null });
         } else {
             setGoal({ ...goal, category: newValue });
         }
@@ -59,11 +57,11 @@ const CategoryAutocomplete = ({ goal, setGoal }: Props) => {
                 inputValue={inputValue}
                 onInputChange={(_, newInputValue) => setInputValue(newInputValue)}
                 options={categories}
-                getOptionLabel={(option) => option.name}
+                getOptionLabel={(option) => (typeof option === "string" ? option : option.name)}
                 renderOption={(props, option) => (
                     <li {...props} key={option.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                         {option.name}
-                        <IconButton onClick={() => handleDeleteCategory(option.id)} size="small">
+                        <IconButton onClick={() => option.id && handleDeleteCategory(option.id)} size="small">
                             <DeleteIcon fontSize="small" />
                         </IconButton>
                     </li>
@@ -71,6 +69,7 @@ const CategoryAutocomplete = ({ goal, setGoal }: Props) => {
                 renderInput={(params) => (
                     <TextField
                         {...params}
+                        size="small"
                         InputProps={{
                             ...params.InputProps,
                             endAdornment: !categoryExists && inputValue && (

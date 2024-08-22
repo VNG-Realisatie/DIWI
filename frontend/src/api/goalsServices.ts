@@ -1,8 +1,12 @@
-import { create } from "lodash";
 import { deleteJson, getJson, postJson, putJson } from "../utils/requests";
 import { API_URI } from "../utils/urls";
 
 export type Category = {
+    id: string;
+    name: string;
+};
+
+export type CustomCategory = {
     id?: string;
     name: string;
 };
@@ -63,7 +67,7 @@ export type Goal = {
     goalType: GoalType;
     goalDirection: GoalDirection;
     goalValue: number;
-    category: Category | null;
+    category: CustomCategory | null;
     conditions: Condition[];
     geography: Geography;
 };
@@ -88,14 +92,14 @@ export const deleteGoal = async (goalId: string): Promise<void> => {
     return deleteJson(`${API_URI}/goals/${goalId}`);
 };
 
-export const getAllCategories = async (): Promise<Category[]> => {
+export const getAllCategories = async (): Promise<CustomCategory[]> => {
     return getJson(`${API_URI}/goals/categories`);
 };
 
-export const createCategory = async (category: Category): Promise<Category> => {
+export const createCategory = async (category: CustomCategory): Promise<CustomCategory> => {
     return postJson(`${API_URI}/goals/categories`, category);
-}
+};
 
 export const deleteCategory = async (categoryId: string): Promise<void> => {
     return deleteJson(`${API_URI}/goals/categories/${categoryId}`);
-}
+};

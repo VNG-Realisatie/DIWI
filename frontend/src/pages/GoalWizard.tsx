@@ -1,8 +1,8 @@
 import { ChangeEvent, useContext, useEffect, useState } from "react";
-import { Button, TextField, Grid, Box, ToggleButtonGroup, ToggleButton } from "@mui/material";
+import { Button, Grid, Box, ToggleButtonGroup, ToggleButton } from "@mui/material";
 import TextInput from "../components/project/inputs/TextInput";
 import { styled } from "@mui/material/styles";
-import { Goal, createGoal, GoalDirection, ConditionFieldType, PropertyKind, getGoal, updateGoal, GoalType } from "../api/goalsServices";
+import { Goal, createGoal, GoalDirection, ConditionFieldType, PropertyKind, getGoal, updateGoal, GoalType, Category } from "../api/goalsServices";
 import { t } from "i18next";
 import CategoryInput from "../components/project/inputs/CategoryInput";
 import DateInput from "../components/project/inputs/DateInput";
@@ -51,6 +51,13 @@ const emptyGoal = {
     },
 };
 
+type UpdatedProperty = {
+    id: string;
+    name: string;
+    propertyKind: PropertyKind;
+    propertyType: PropertyType;
+};
+
 const conditionFieldTypeOptions = ["PROPERTY", "GROUND_POSITION", "PROGRAMMING", "HOUSE_TYPE", "OWNERSHIP"];
 
 const goalDirectionOptions = ["MINIMAL", "MAXIMAL", ""];
@@ -92,6 +99,12 @@ export function GoalWizard() {
     }, [goalId]);
 
     useEffect(() => {
+        if (!goal.conditions[0] || !goal.conditions[0].conditionFieldType) {
+            setGoal({ ...goal, conditions: [] });
+        }
+    }, [goal.conditions[0]]);
+
+    useEffect(() => {
         getCustomProperties().then((properties) => {
             const filteredProperties = properties.filter(
                 //Supported property types are boolean and categorical at the moment.
@@ -107,7 +120,7 @@ export function GoalWizard() {
         }
     };
 
-    const handlePropertyChange = (newValue) => {
+    const handlePropertyChange = (_: React.ChangeEvent<{}>, newValue: UpdatedProperty) => {
         if (newValue) {
             const updatedConditions = goal.conditions.map((condition, index) => {
                 return {
@@ -133,7 +146,7 @@ export function GoalWizard() {
             }
         }
     };
-    // update when clarify conditions
+    //update when conditions are clear
     const disabledButton = !goal.name || !goal.startDate || !goal.endDate || !goal.goalDirection;
 
     const matchingProperty = goal.conditions[0] ? properties.find((property) => property.id === goal.conditions[0].propertyId) : null;
@@ -208,22 +221,49 @@ export function GoalWizard() {
                                 />
                             </Grid>
                         )}
-                        {goal.conditions[0] && goal.conditions[0].propertyId && (
+                        {goal.conditions[0] && goal.conditions[0].propertyId && goal.conditions[0].conditionFieldType === "PROPERTY" && (
                             <Grid item xs={12}>
                                 <CustomPropertyWidget
                                     readOnly={false}
-                                    customValue={goal.conditions[0]}
+                                    customValue={{
+                                        ...goal.conditions[0],
+                                        categories: goal.conditions[0].categoryOptions?.map((option) => option.id),
+                                    }}
                                     setCustomValue={(newValue) => {
-                                        console.log(newValue);
-                                        setGoal({
-                                            ...goal,
-                                            conditions: [
-                                                {
-                                                    ...goal.conditions[0],
-                                                    booleanValue: newValue.booleanValue,
-                                                },
-                                            ],
-                                        });
+                                        if (goal.conditions[0].propertyType === "BOOLEAN") {
+                                            setGoal({
+                                                ...goal,
+                                                conditions: [
+                                                    {
+                                                        ...goal.conditions[0],
+                                                        booleanValue: newValue.booleanValue || false,
+                                                    },
+                                                ],
+                                            });
+                                        } else if (goal.conditions[0].propertyType === "CATEGORY") {
+                                            const matchedProperty = properties.find((property) => property.id === goal.conditions[0].propertyId);
+                                            if (matchedProperty && matchedProperty.categories) {
+                                                const updatedCategories = (newValue.categories ?? [])
+                                                    .map((id) => {
+                                                        const category = matchedProperty.categories?.find((cat) => cat.id === id);
+                                                        if (category) {
+                                                            const { id, name } = category;
+                                                            return { id, name };
+                                                        }
+                                                        return undefined;
+                                                    })
+                                                    .filter((category) => category !== undefined) as Category[];
+                                                setGoal({
+                                                    ...goal,
+                                                    conditions: [
+                                                        {
+                                                            ...goal.conditions[0],
+                                                            categoryOptions: updatedCategories,
+                                                        },
+                                                    ],
+                                                });
+                                            }
+                                        }
                                     }}
                                     customDefinition={
                                         matchingProperty || {
@@ -303,7 +343,8 @@ export function GoalWizard() {
                                 />
                             </Grid>
 
-                            <Grid item xs={2}>
+                            {/*GEOGRAPHY*/}
+                            {/* <Grid item xs={2}>
                                 <TextField
                                     fullWidth
                                     label="Geographie"
@@ -315,7 +356,7 @@ export function GoalWizard() {
                                         setGoal({ ...goal, name: newName });
                                     }}
                                 />
-                            </Grid>
+                            </Grid> */}
 
                             <Grid item xs={3}>
                                 <CategoryAutocomplete goal={goal} setGoal={setGoal} />
