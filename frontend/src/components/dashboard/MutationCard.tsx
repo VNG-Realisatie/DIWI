@@ -21,7 +21,9 @@ export const MutationCard = ({ demolitionAmount, constructionAmount, visibility 
                     <Typography variant="h6" fontSize={16}>
                         {t("dashboard.totalValues")}
                     </Typography>
-                    {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && handleToggle && <Switch checked={visibility.MUTATION} onChange={handleToggle} inputProps={{ "aria-label": "controlled" }} />}
+                    {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && handleToggle && (
+                        <Switch checked={visibility.MUTATION} onChange={handleToggle} inputProps={{ "aria-label": "controlled" }} />
+                    )}
                 </Box>
                 <Grid container spacing={2} alignItems="stretch">
                     {/* Demolition */}

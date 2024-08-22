@@ -214,6 +214,7 @@ public class DashboardServiceTest {
         var expected = new MultiProjectDashboardModel();
         expected.setPhysicalAppearance(List.of(new PieChartModel("AppearanceOption", 1)));
         expected.setTargetGroup(List.of(new PieChartModel("GroupOption", 2)));
+        expected.setPlanning(List.of(new PlanningModel(project.getId(), null, 0, now.getYear())));
 
         // then
         assertThat(result).usingRecursiveComparison()

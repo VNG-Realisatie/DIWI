@@ -15,6 +15,9 @@ import { Plot, PlotGeoJSON, getProjectPlots, updateProject, updateProjectPlots }
 import ConfigContext from "../context/ConfigContext";
 import ProjectContext from "../context/ProjectContext";
 import { extentToCenter, mapBoundsToExtent } from "../utils/map";
+import useAlert from "./useAlert";
+import { useTranslation } from "react-i18next";
+import { useHasEditPermission } from "./useHasEditPermission";
 
 const baseUrlKadasterWms = "https://service.pdok.nl/kadaster/kadastralekaart/wms/v5_0";
 
@@ -33,6 +36,11 @@ const usePlotSelector = (id: string) => {
 
     const [plotsChanged, setPlotsChanged] = useState(false);
     const [extent, setExtent] = useState<Extent | null>(null);
+
+    const { getEditPermission } = useHasEditPermission();
+
+    const { setAlert } = useAlert();
+    const { t } = useTranslation();
 
     const selectedFeatureStyle = useCallback((): Style => {
         const fillOpacityHex = "99";
@@ -64,26 +72,32 @@ const usePlotSelector = (id: string) => {
     };
 
     const handleSaveChange = async () => {
-        if (selectedProject) {
-            await updateProjectPlots(selectedProject.projectId, selectedPlots);
-            setOriginalSelectedPlots(selectedPlots);
+        try {
+            if (selectedProject) {
+                await updateProjectPlots(selectedProject.projectId, selectedPlots);
+                setOriginalSelectedPlots(selectedPlots);
 
-            const extent = selectedPlotLayerSource?.getExtent();
-            if (extent) {
-                const center = extentToCenter(extent);
-                selectedProject.location = { lat: center[0], lng: center[1] };
+                const extent = selectedPlotLayerSource?.getExtent();
+                if (extent) {
+                    const center = extentToCenter(extent);
+                    selectedProject.location = { lat: center[0], lng: center[1] };
+                }
+                if (selectedPlots.length > 0) {
+                    const newProject = await updateProject({ ...selectedProject, geometry: undefined });
+                    setSelectedProject(newProject);
+                }
+
+                setAlert(t("projectDetail.mapUpdatedSuccessfully"), "success");
             }
-            if (selectedPlots.length > 0) {
-                const newProject = await updateProject({ ...selectedProject, geometry: undefined });
-                setSelectedProject(newProject);
-            }
+        } catch (error: unknown) {
+            if (error instanceof Error) setAlert(error.message, "error");
         }
     };
 
     const handleClick = useCallback(
         (e: MapBrowserEvent<UIEvent>) => {
             const map: Map = e.map;
-            if (!map) return;
+            if (!map || !getEditPermission()) return;
 
             const features = map.getFeaturesAtPixel(e.pixel, { layerFilter: (layer) => layer.getSource() === selectedPlotLayerSource });
 
@@ -140,7 +154,7 @@ const usePlotSelector = (id: string) => {
                     });
             }
         },
-        [selectedPlotLayerSource, selectedPlots],
+        [getEditPermission, selectedPlotLayerSource, selectedPlots],
     );
 
     useEffect(

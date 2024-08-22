@@ -26,14 +26,23 @@ const shouldDisplayError = (mandatory: boolean, userGroup: UserGroup[]) => {
     return mandatory && userGroup.length === 0;
 };
 
-
-export const UserGroupSelect = ({ readOnly, userGroup, setUserGroup, mandatory, errorText, placeholder = "", checkIsOwnerValidWithConfidentialityLevel }: Props) => {
+export const UserGroupSelect = ({
+    readOnly,
+    userGroup,
+    setUserGroup,
+    mandatory,
+    errorText,
+    placeholder = "",
+    checkIsOwnerValidWithConfidentialityLevel,
+}: Props) => {
     const [ownerOptions, setOwnerOptions] = useState<UserGroup[]>();
     const hasError = shouldDisplayError(mandatory, userGroup);
     const { t } = useTranslation();
 
     useEffect(() => {
-        getUserGroupList(isSingleUserIncluded).then((groups) => setOwnerOptions(groups));
+        getUserGroupList(isSingleUserIncluded).then((groups) => {
+            setOwnerOptions(groups);
+        });
     }, []);
 
     const getErrorText = () => {
@@ -44,6 +53,7 @@ export const UserGroupSelect = ({ readOnly, userGroup, setUserGroup, mandatory, 
         }
         return "";
     };
+
     return (
         <Autocomplete
             multiple
@@ -74,7 +84,14 @@ export const UserGroupSelect = ({ readOnly, userGroup, setUserGroup, mandatory, 
                     <UserGroupAvatars groups={[option]} />
                 </li>
             )}
-            renderInput={(params) => <TextField {...params} error={hasError || !checkIsOwnerValidWithConfidentialityLevel()} helperText={getErrorText()} placeholder={hasError ? placeholder : ""} />}
+            renderInput={(params) => (
+                <TextField
+                    {...params}
+                    error={hasError || !checkIsOwnerValidWithConfidentialityLevel()}
+                    helperText={getErrorText()}
+                    placeholder={hasError ? placeholder : ""}
+                />
+            )}
         />
     );
 };
