@@ -1,8 +1,9 @@
+import { create } from "lodash";
 import { deleteJson, getJson, postJson, putJson } from "../utils/requests";
 import { API_URI } from "../utils/urls";
 
 export type Category = {
-    id: string;
+    id?: string;
     name: string;
 };
 
@@ -62,7 +63,7 @@ export type Goal = {
     goalType: GoalType;
     goalDirection: GoalDirection;
     goalValue: number;
-    category: Category;
+    category: Category | null;
     conditions: Condition[];
     geography: Geography;
 };
@@ -73,10 +74,6 @@ export const getAllGoals = async (): Promise<Goal[]> => {
 
 export const getGoal = async (goalId: string): Promise<Goal> => {
     return getJson(`${API_URI}/goals/${goalId}`);
-};
-
-export const getAllCategories = async (): Promise<Category[]> => {
-    return getJson(`${API_URI}/goals/categories`);
 };
 
 export const createGoal = async (goal: Goal): Promise<Goal> => {
@@ -90,3 +87,15 @@ export const updateGoal = async (goal: Goal): Promise<Goal> => {
 export const deleteGoal = async (goalId: string): Promise<void> => {
     return deleteJson(`${API_URI}/goals/${goalId}`);
 };
+
+export const getAllCategories = async (): Promise<Category[]> => {
+    return getJson(`${API_URI}/goals/categories`);
+};
+
+export const createCategory = async (category: Category): Promise<Category> => {
+    return postJson(`${API_URI}/goals/categories`, category);
+}
+
+export const deleteCategory = async (categoryId: string): Promise<void> => {
+    return deleteJson(`${API_URI}/goals/categories/${categoryId}`);
+}

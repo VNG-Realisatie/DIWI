@@ -2,21 +2,9 @@ import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { Button, TextField, Grid, Box, ToggleButtonGroup, ToggleButton } from "@mui/material";
 import TextInput from "../components/project/inputs/TextInput";
 import { styled } from "@mui/material/styles";
-import {
-    Category,
-    getAllCategories,
-    Goal,
-    createGoal,
-    GoalDirection,
-    ConditionFieldType,
-    PropertyKind,
-    getGoal,
-    updateGoal,
-    GoalType,
-} from "../api/goalsServices";
+import { Goal, createGoal, GoalDirection, ConditionFieldType, PropertyKind, getGoal, updateGoal, GoalType } from "../api/goalsServices";
 import { t } from "i18next";
 import CategoryInput from "../components/project/inputs/CategoryInput";
-import { PropertyRadioGroup } from "../components/goals/PropertyRadioGroup";
 import DateInput from "../components/project/inputs/DateInput";
 import { Dayjs } from "dayjs";
 import AlertContext from "../context/AlertContext";
@@ -24,6 +12,7 @@ import { PropertyType } from "../types/enums";
 import { useNavigate, useParams } from "react-router-dom";
 import { getCustomProperties, Property } from "../api/adminSettingServices";
 import { CustomPropertyWidget } from "../components/CustomPropertyWidget";
+import CategoryAutocomplete from "../components/goals/CategoryAutocomplete";
 
 const emptyGoal = {
     startDate: "",
@@ -91,15 +80,8 @@ export function GoalWizard() {
     const { goalId } = useParams<{ goalId: string }>();
     const [goal, setGoal] = useState<Goal>(emptyGoal);
     const [properties, setProperties] = useState<Property[]>([]);
-    const [categories, setCategories] = useState<Category[]>([]);
     const { setAlert } = useContext(AlertContext);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        getAllCategories().then((categories) => {
-            setCategories(categories);
-        });
-    }, []);
 
     useEffect(() => {
         if (goalId) {
@@ -336,19 +318,7 @@ export function GoalWizard() {
                             </Grid>
 
                             <Grid item xs={3}>
-                                <CategoryInput
-                                    readOnly={false}
-                                    mandatory={false}
-                                    title={t("goals.category")}
-                                    options={categories}
-                                    values={goal.category ? goal.category.name : ""}
-                                    setValue={(_, newValue) => {
-                                        setGoal({ ...goal, category: { id: newValue ? newValue.id : "", name: newValue ? newValue.name : "" } });
-                                    }}
-                                    multiple={false}
-                                    hasTooltipOption={false}
-                                    error={t("goals.errors.category")}
-                                />
+                                <CategoryAutocomplete goal={goal} setGoal={setGoal} />
                             </Grid>
                         </Grid>
                         <Grid item xs={12} style={{ textAlign: "right" }}>
