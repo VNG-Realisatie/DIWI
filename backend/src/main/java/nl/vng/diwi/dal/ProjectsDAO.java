@@ -1,9 +1,11 @@
 package nl.vng.diwi.dal;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import nl.vng.diwi.dal.entities.ProjectAuditSqlModel;
 import org.hibernate.Session;
 import org.hibernate.query.SelectionQuery;
 
@@ -151,5 +153,21 @@ public class ProjectsDAO extends AbstractRepository {
                     }
                 })
                 .getSingleResultOrNull();
+    }
+
+    public List<ProjectAuditSqlModel> getProjectAuditLog(UUID projectUuid, LocalDateTime startDateTime, LocalDateTime endDateTime, LoggedUser loggedUser) {
+        List<ProjectAuditSqlModel> result = session.createNativeQuery(String.format(
+                    "SELECT * FROM %s.get_project_auditlog(:now, :projectUuid, :startDateTime, :endDateTime, :userRole, :userUuid) ",
+                    GenericRepository.VNG_SCHEMA_NAME),
+                ProjectAuditSqlModel.class)
+            .setParameter("now", LocalDate.now())
+            .setParameter("projectUuid", projectUuid)
+            .setParameter("startDateTime", startDateTime)
+            .setParameter("endDateTime", endDateTime)
+            .setParameter("userRole", loggedUser.getRole().name())
+            .setParameter("userUuid", loggedUser.getUuid())
+            .list();
+
+        return result;
     }
 }

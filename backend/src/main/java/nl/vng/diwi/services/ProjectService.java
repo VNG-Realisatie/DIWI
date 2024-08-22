@@ -2,6 +2,7 @@ package nl.vng.diwi.services;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -17,6 +18,7 @@ import javax.annotation.Nonnull;
 
 import io.hypersistence.utils.hibernate.type.range.Range;
 import jakarta.annotation.Nullable;
+import nl.vng.diwi.dal.entities.ProjectAuditSqlModel;
 import nl.vng.diwi.dal.entities.PropertyCategoryValue;
 import nl.vng.diwi.dal.entities.PropertyOrdinalValue;
 import nl.vng.diwi.dal.entities.Property;
@@ -28,6 +30,7 @@ import nl.vng.diwi.dal.entities.ProjectOrdinalPropertyChangelog;
 import nl.vng.diwi.dal.entities.ProjectTextPropertyChangelog;
 import nl.vng.diwi.dal.entities.UserGroup;
 import nl.vng.diwi.dal.entities.UserGroupToProject;
+import nl.vng.diwi.models.ProjectAuditModel;
 import nl.vng.diwi.models.ProjectHouseblockCustomPropertyModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
 import nl.vng.diwi.rest.VngNotAllowedException;
@@ -988,4 +991,9 @@ public class ProjectService {
         return milestone;
     }
 
+    public List<ProjectAuditModel> getProjectAuditLog(VngRepository repo, UUID projectId, LocalDateTime startDateTime, LocalDateTime endDateTime, LoggedUser loggedUser) {
+        List<ProjectAuditSqlModel> sqlAuditLog = repo.getProjectsDAO().getProjectAuditLog(projectId, startDateTime, endDateTime, loggedUser);
+        List<ProjectAuditModel> result = sqlAuditLog.stream().map(ProjectAuditModel::new).toList();
+        return result;
+    }
 }
