@@ -45,31 +45,6 @@ type Props = {
     isPrintingFullDashboard: boolean;
 };
 
-const dummyData = {
-    priceCategoryOwn: [
-        { name: "Category 1", min: 100, max: 200, amount: 50 },
-        { name: "Category 2", min: 200, max: null, amount: 30 },
-    ],
-    priceCategoryRent: [
-        { name: "Category A", min: 50, max: 150, amount: 20 },
-        { name: "Category B", min: 150, max: null, amount: 40 },
-    ],
-    planning: [
-        { projectId: "proj1", name: "Project Alpha", amount: 1000, year: 2023 },
-        { projectId: "proj2", name: "Project Beta", amount: 2000, year: 2024 },
-        { projectId: "proj3", name: "Project Gamma", amount: 1500, year: 2025 },
-        { projectId: "proj4", name: "Project Delta", amount: 2500, year: 2023 },
-        { projectId: "proj5", name: "Project Epsilon", amount: 3000, year: 2024 },
-        { projectId: "proj6", name: "Project Zeta", amount: 3500, year: 2025 },
-        { projectId: "proj7", name: "Project Eta", amount: 4000, year: 2023 },
-        { projectId: "proj8", name: "Project Theta", amount: 4500, year: 2024 },
-        { projectId: "proj9", name: "Project Iota", amount: 5000, year: 2025 },
-        { projectId: "proj10", name: "Project Kappa", amount: 5500, year: 2023 },
-        { projectId: "proj11", name: "Project Lambda", amount: 6000, year: 2024 },
-        { projectId: "proj12", name: "Project Mu", amount: 6500, year: 2025 },
-        { projectId: "proj13", name: "Project Nu", amount: 7000, year: 2023 },
-    ],
-};
 export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashboard, isPdf = false }: Props) => {
     const [dashboardProjects, setDashboardProjects] = useState<DashboardProjects>();
     const [projectPhaseSums, setProjectPhaseSums] = useState([]);
@@ -91,13 +66,13 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
             const convertedTargetGroup = data.targetGroup.map((d) => {
                 return { label: d.name, value: d.amount };
             });
-            const convertedPriceCategoryOwn = dummyData.priceCategoryOwn.map((d) => {
+            const convertedPriceCategoryOwn = data.priceCategoryOwn.map((d) => {
                 return {
                     label: `${d.name}\n(€${d.min} ${d.max ? `- €${d.max}` : t("generic.andMore")})`,
                     value: d.amount,
                 };
             });
-            const convertedPriceCategoryRent = dummyData.priceCategoryRent.map((d) => {
+            const convertedPriceCategoryRent = data.priceCategoryRent.map((d) => {
                 return {
                     label: `${d.name}\n(€${d.min} ${d.max ? `- €${d.max}` : t("generic.andMore")})`,
                     value: d.amount,
@@ -108,7 +83,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                 targetGroup: convertedTargetGroup,
                 priceCategoryOwn: convertedPriceCategoryOwn,
                 priceCategoryRent: convertedPriceCategoryRent,
-                planning: dummyData.planning,
+                planning: data.planning,
             });
         });
     }, [t]);
@@ -278,7 +253,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                                     />
                                 )}
                             </Box>
-                            <MyResponsiveBar chartData={dummyData.planning} selectedProject={null} />
+                            <MyResponsiveBar chartData={dashboardProjects?.planning || []} selectedProject={null} />
                         </Grid>
                     )}
                     {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.DELAYED_PROJECTS) && (
@@ -417,7 +392,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                             <Typography variant="h6" fontSize={16}>
                                 {t("dashboard.deliverables")}
                             </Typography>
-                            <MyResponsiveBar chartData={dummyData.planning} selectedProject={null} />
+                            <MyResponsiveBar chartData={dashboardProjects?.planning || []} selectedProject={null} />
                         </Box>
                     )}
                     {(isPrintingFullDashboard || visibility?.DELAYED_PROJECTS) && (
