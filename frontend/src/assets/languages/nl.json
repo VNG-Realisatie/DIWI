@@ -342,6 +342,7 @@
       "province": "Provincie",
       "newData": "Nieuwe data koppeling instellen",
       "importForbidden": "Importeren is niet toegestaan. Neem contact op met uw beheerder",
+      "geojsonHint": "Wij kunnen een export uit de provinciemonitors van Utrecht en Zuid-Holland converteren naar deze template. U kan deze export sturen naar diwi@phinion.com.",
       "importName": {
         "excel": "Importeren vanuit Excel",
         "squit": "Importeren vanuit Squit",
