@@ -87,7 +87,7 @@ export const Goals = () => {
                 open={deleteDialogOpen}
                 onClose={() => setDeleteDialogOpen(false)}
                 onConfirm={() => handleDelete(idToDelete)}
-                dialogContentText="admin.userManagement.groupDeleteConfirmation"
+                dialogContentText="goals.groupDeleteConfirmation"
             />
         </>
     );

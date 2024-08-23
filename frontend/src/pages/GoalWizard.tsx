@@ -13,6 +13,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getCustomProperties, Property } from "../api/adminSettingServices";
 import { CustomPropertyWidget } from "../components/CustomPropertyWidget";
 import CategoryAutocomplete from "../components/goals/CategoryAutocomplete";
+import { SingleNumberInput } from "../components/project/inputs/SingleNumberInput";
+import { PropertyRadioGroup } from "../components/goals/PropertyRadioGroup";
 
 const emptyGoal = {
     startDate: "",
@@ -278,25 +280,27 @@ export function GoalWizard() {
                                 />
                             </Grid>
                         )}
-                        {/* <Grid item xs={12}>
+                        <Grid item xs={12}>
                             <PropertyRadioGroup property={goal.conditions[0] ? goal.conditions[0].conditionFieldType : ""} setGoal={setGoal} goal={goal} />
-                        </Grid> */}
+                        </Grid>
 
                         <Grid container item xs={12} spacing={2}>
-                            <Grid item xs={3}>
+                            <Grid item xs={2}>
                                 <Box sx={{ position: "relative" }}>
-                                    <CategoryInput
-                                        readOnly={false}
-                                        mandatory={true}
-                                        title={t("goals.goalDirection")}
-                                        options={goalDirectionOptions.map((option) => ({ id: option, name: option }))}
-                                        values={goalDirectionOptions.find((option) => option === goal.goalDirection) || null}
-                                        setValue={(_, newValue) => {
-                                            setGoal({ ...goal, goalDirection: newValue ? newValue.id : "" });
+                                    <SingleNumberInput
+                                        isInputLabel={true}
+                                        value={goal.goalValue}
+                                        onChange={(e) => {
+                                            if (e) {
+                                                setGoal({
+                                                    ...goal,
+                                                    goalValue: e,
+                                                });
+                                            }
                                         }}
-                                        multiple={false}
-                                        hasTooltipOption={false}
-                                        error={t("goals.errors.goalDirection")}
+                                        readOnly={false}
+                                        mandatory={false}
+                                        name={t("goals.goalValue")}
                                     />
                                     <ToggleButtonGroup
                                         value={goal.goalType}
@@ -314,7 +318,21 @@ export function GoalWizard() {
                                     </ToggleButtonGroup>
                                 </Box>
                             </Grid>
-
+                            <Grid item xs={2}>
+                                <CategoryInput
+                                    readOnly={false}
+                                    mandatory={true}
+                                    title={t("goals.goalDirection")}
+                                    options={goalDirectionOptions.map((option) => ({ id: option, name: option }))}
+                                    values={goalDirectionOptions.find((option) => option === goal.goalDirection) || null}
+                                    setValue={(_, newValue) => {
+                                        setGoal({ ...goal, goalDirection: newValue ? newValue.id : "" });
+                                    }}
+                                    multiple={false}
+                                    hasTooltipOption={false}
+                                    error={t("goals.errors.goalDirection")}
+                                />
+                            </Grid>
                             <Grid item xs={2}>
                                 <DateInput
                                     value={goal.startDate || ""}

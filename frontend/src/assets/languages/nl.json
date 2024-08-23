@@ -388,8 +388,11 @@
       "startDate": "Startdatum",
       "endDate": "Einddatum",
       "category": "Categorie",
-      "goalDirection": "Doelstelling",
+      "goalDirection": "Doelrichting",
+      "goalValue": "Doelstelling",
       "createNewGoal": "Nieuw beleidsdoel toevoegen",
+      "deleteConfirmation": "Weet u zeker dat u het doel wilt verwijderen",
+      "programming": "Programmering",
       "properties": {
         "PROPERTY": "Custom property",
         "GROUND_POSITION": "Grond positie",

@@ -1,6 +1,7 @@
 import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from "@mui/material";
 import { Goal } from "../../api/goalsServices";
 import { ChangeEvent } from "react";
+import { t } from "i18next";
 
 type PropertyRadioGroupProps = {
     property: string;
@@ -24,11 +25,11 @@ export const PropertyRadioGroup = ({ property, setGoal, goal }: PropertyRadioGro
     };
 
     switch (property) {
-        case "PROPERTY":
+        case "PROGRAMMING":
             return (
                 <FormControl component="fieldset">
-                    <FormLabel component="legend">Custom property</FormLabel>
-                    <RadioGroup row name="customProperty" value={goal.conditions[0].booleanValue === true ? "true" : "false"} onChange={handleRadioChange}>
+                    <FormLabel component="legend">{t("goals.programming")}</FormLabel>
+                    <RadioGroup row name="programming" value={goal.conditions[0].booleanValue === true ? "true" : "false"} onChange={handleRadioChange}>
                         <FormControlLabel value="true" control={<Radio />} label="Ja" />
                         <FormControlLabel value="false" control={<Radio />} label="Nee" />
                     </RadioGroup>
@@ -52,16 +53,6 @@ export const PropertyRadioGroup = ({ property, setGoal, goal }: PropertyRadioGro
                     <RadioGroup name="housingType">
                         <FormControlLabel value="Eengezinswoning" control={<Radio />} label="Eengezinswoning" />
                         <FormControlLabel value="Meergezinswoning" control={<Radio />} label="Meergezinswoning" />
-                    </RadioGroup>
-                </FormControl>
-            );
-        case "PROGRAMMING":
-            return (
-                <FormControl component="fieldset">
-                    <FormLabel component="legend">Programmering</FormLabel>
-                    <RadioGroup row name="programming">
-                        <FormControlLabel value="Ja" control={<Radio />} label="Ja" />
-                        <FormControlLabel value="Nee" control={<Radio />} label="Nee" />
                     </RadioGroup>
                 </FormControl>
             );
