@@ -125,14 +125,18 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
     };
 
     useEffect(() => {
-        const duplicated = getDuplicatedPropertyInfo(categories);
+        const filteredCategories = categories.filter(category => !category.disabled);
+        const duplicated = getDuplicatedPropertyInfo(filteredCategories);
         setPropertyDuplicationInfo(duplicated);
     }, [categories]);
 
     useEffect(() => {
-        const duplicated = getDuplicatedPropertyInfo(ordinals);
+        const filteredOrdinals = ordinals.filter(ordinal => !ordinal.disabled);
+        const duplicated = getDuplicatedPropertyInfo(filteredOrdinals);
         setPropertyDuplicationInfo(duplicated);
     }, [ordinals]);
+
+    console.log(id);
 
     return (
         <Dialog open={openDialog} onClose={handleClose} fullWidth>
