@@ -1,5 +1,43 @@
 # Change log
 
+## DIWI RELEASE 1.6.0
+
+This release focusses on expanding dashboard features and ranged categories.
+
+### ADDED
+
+- added missing or incomplete tooltips
+- added a PDF export option to the dashboard pages
+- added custom dashboards page: this will allow tailored dashboards for users and usergroups
+- added list page for custom dashboards
+- added price categories to importers
+- added projectplanning bar chart, purchase pie chart and rent pie chart to dashboard
+
+### CHANGED
+
+- changed the handling of ownership of private projects. these can no longer be removed from the original creator
+- automated end to end tests have been updated, though not fully to the current version
+
+### FIXED
+
+- fixed an issue where price categories were not displaying their meaning clear enough
+- fixed an issue where a price category needed additional actions to be saveable
+- fixed an issue where usertype could not be changed anymore
+- fixed instances where certain user types could access parts of the UI they were not supposed to access
+- fixed validation issues in the projecct wizard
+- fixed an issue reportes by Apeldoorn where category labels were not saveable
+- fixed an issue in the dashboards where there were space issues in case of many categories
+- fixed an issue where saving changes in house blocks would not give feedback
+- fixed an issue where saving plot updates would not give feedback
+- fixed an issue where a user that had been removed from a group would still have access to projects assigned to that group
+- fixed an issue where a user assigned to a user group would not see private projects assigned to that user group
+- about page git hash is showing again
+- fixed issues with automated tests
+
+### IMPROVED
+
+- updated automated tests
+
 ## DIWI RELEASE 1.5.0
 
 This release is focused on dashboards.

@@ -1,4 +1,5 @@
 .env
+version.env
 .env.*
 !.env.*.example
 htpasswd
