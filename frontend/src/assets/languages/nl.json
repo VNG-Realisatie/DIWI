@@ -229,7 +229,7 @@
         "notifications": {
           "successfullySaved": "Woningblokken succesvol opgeslagen.",
           "successfullyUpdated": "Woningblokken succesvol geüpdatet.",
-          "error": "Nieuwe of gewijzigde woningblokken met een uitroepteken konden niet worden opgeslagen, pas de informatie aan en sla nogmaals op",
+          "error": "Nieuwe of gewijzigde woningblokken konden niet worden opgeslagen, pas de gemarkeerde invoervelden aan en sla nogmaals op",
           "genericError": "Er is een fout opgetreden bij het opslaan van de woningblokken"
         }
       },
