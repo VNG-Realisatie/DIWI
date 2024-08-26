@@ -22,7 +22,6 @@ const useProperties = () => {
                     const options = customProperty.categories
                         ?.filter((category: CategoryType) => !category.disabled)
                         .map((category: CategoryType) => ({ id: category.id as string, name: category.name }));
-                    console.log(customProperty.categories);
                     setMunicipalityRolesOptions(options);
                 } else if (customProperty.name === "district") {
                     const options = customProperty.categories
