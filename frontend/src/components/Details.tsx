@@ -104,11 +104,12 @@ export const Details = ({ project }: Props) => {
             </DetailListItem>
             {houseBlocks &&
                 houseBlocks.map((hb: HouseBlock) => {
+                    const isDemolition = hb.mutation.kind === "DEMOLITION";
                     return (
                         <Stack key={hb.houseblockId}>
                             <Typography sx={{ color: "#FFFFFF", backgroundColor: "#00A9F3", px: 2, py: 1.5 }}>{hb.houseblockName}</Typography>
                             <Box border="solid 1px #DDD" px={2} py={1.5}>
-                                <Typography>{hb.mutation.amount}</Typography>
+                                <Typography>{isDemolition ? `-${hb.mutation.amount}` : `${hb.mutation.amount}`}</Typography>
                             </Box>
                         </Stack>
                     );
