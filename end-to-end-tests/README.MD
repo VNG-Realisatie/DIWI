@@ -43,8 +43,9 @@
 6. **Run End-to-End Tests with Ui:** Navigate to the `end-to-end-tests` directory and run the tests. If you want to see test steps in ui you can run this. Otherwise step 5 will be enough to test whole process.
 
     ```bash
-     cd ../end-to-end-tests
-      yarn && yarn run test-ui
+    cd ../end-to-end-tests
+    yarn playwright install --with-deps
+    yarn && yarn run test-ui
     ```
 
 7. **See Results:** After automation test finished it will open in browser test results.
