@@ -1,5 +1,15 @@
 # Change log
 
+## DIWI RELEASE 1.6.1
+
+### ADDED
+
+- added a text on the geojson import page to inform the user that it is possible to convert certain geojsons to the correct import pattern
+
+### FIXED
+
+- fixed an issue where the ghost of a deleted category of a custom property would prohibit the addition of a category of the same name
+
 ## DIWI RELEASE 1.6.0
 
 This release focusses on expanding dashboard features and ranged categories.
