@@ -17,14 +17,14 @@ set -eux
 DIWI_DB_NAME=${DIWI_DB_NAME:-diwi}
 DIWI_DB_USERNAME=${DIWI_DB_USERNAME:-diwi}
 
-read -p "Enter timestamp: " timestamp
+read -r -p "Enter timestamp: " timestamp
 
 #Check if files exist
 test -f "backup/predeploy-$timestamp.githash" || { echo "Error: Git hash file 'backup/predeploy-$timestamp.githash' not found."; exit 1; }
 test -f "backup/predeploy-$timestamp.dump" || { echo "Error: Database dump file 'backup/predeploy-$timestamp.dump' not found."; exit 1; }
 
 # Create backup first
-./backup.sh
+./backup.sh || true
 
 # Checkout git hash from timestamp
 git checkout "$(cat "backup/predeploy-$timestamp.githash")"
@@ -36,10 +36,16 @@ function restoreDB() {
     # Start only the database container
     docker compose up -d database
 
+    # Drops the database
+    docker compose exec -T database dropdb "$DIWI_DB_NAME" -U "$DIWI_DB_USERNAME" || true
+
+    # Creates the database
+    docker compose exec -T database createdb "$DIWI_DB_NAME" -U "$DIWI_DB_USERNAME"
+
     # Restore database
-    docker compose exec -T database pg_restore -U $DIWI_DB_USERNAME -d $DIWI_DB_NAME --clean "/backup/predeploy-$timestamp.dump"
+    docker compose exec -T database pg_restore -U "$DIWI_DB_USERNAME" -d "$DIWI_DB_NAME" "/backup/predeploy-$timestamp.dump"
 
     ./deployNoPull.sh
 }
 
-restoreDB $timestamp
+restoreDB "$timestamp"
