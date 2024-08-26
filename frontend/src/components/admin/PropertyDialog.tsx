@@ -136,8 +136,6 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
         setPropertyDuplicationInfo(duplicated);
     }, [ordinals]);
 
-    console.log(id);
-
     return (
         <Dialog open={openDialog} onClose={handleClose} fullWidth>
             <DialogTitle id="alert-dialog-title">{id ? t("admin.settings.edit") : t("admin.settings.add")}</DialogTitle>
