@@ -1,9 +1,11 @@
 package nl.vng.diwi.dal;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import nl.vng.diwi.dal.entities.ProjectAuditSqlModel;
 import org.hibernate.Session;
 import org.hibernate.query.SelectionQuery;
 
@@ -18,7 +20,6 @@ import nl.vng.diwi.dal.entities.ProjectHouseblockCustomPropertySqlModel;
 import nl.vng.diwi.dal.entities.ProjectListSqlModel;
 import nl.vng.diwi.dal.entities.ProjectState;
 import nl.vng.diwi.generic.Json;
-import nl.vng.diwi.models.PieChartModel;
 import nl.vng.diwi.security.LoggedUser;
 
 public class ProjectsDAO extends AbstractRepository {
@@ -143,13 +144,38 @@ public class ProjectsDAO extends AbstractRepository {
                 .setTupleTransformer((tuple, aliases) -> {
                     try {
                         MultiProjectDashboardSqlModel model = new MultiProjectDashboardSqlModel();
-                        model.setPhysicalAppearance(Json.mapper.readValue((String)tuple[0], new TypeReference<List<PieChartModel>>() { }));
-                        model.setTargetGroup(Json.mapper.readValue((String)tuple[1], new TypeReference<List<PieChartModel>>() { }));
+                        for (int i = 0; i <= 4; i++) {
+                            if (tuple [i] != null) {
+                                switch (i) {
+                                    case 0 -> model.setPhysicalAppearance(Json.mapper.readValue((String)tuple[i], new TypeReference<>() { }));
+                                    case 1 -> model.setTargetGroup(Json.mapper.readValue((String)tuple[i], new TypeReference<>() { }));
+                                    case 2 -> model.setPriceCategoryOwn(Json.mapper.readValue((String)tuple[i], new TypeReference<>() { }));
+                                    case 3 -> model.setPriceCategoryRent(Json.mapper.readValue((String)tuple[i], new TypeReference<>() { }));
+                                    case 4 -> model.setPlanning(Json.mapper.readValue((String)tuple[i], new TypeReference<>() { }));
+                                }
+                            }
+                        }
                         return model;
                     } catch (Exception e) {
                         throw new RuntimeException();
                     }
                 })
                 .getSingleResultOrNull();
+    }
+
+    public List<ProjectAuditSqlModel> getProjectAuditLog(UUID projectUuid, LocalDateTime startDateTime, LocalDateTime endDateTime, LoggedUser loggedUser) {
+        List<ProjectAuditSqlModel> result = session.createNativeQuery(String.format(
+                    "SELECT * FROM %s.get_project_auditlog(:now, :projectUuid, :startDateTime, :endDateTime, :userRole, :userUuid) ",
+                    GenericRepository.VNG_SCHEMA_NAME),
+                ProjectAuditSqlModel.class)
+            .setParameter("now", LocalDate.now())
+            .setParameter("projectUuid", projectUuid)
+            .setParameter("startDateTime", startDateTime)
+            .setParameter("endDateTime", endDateTime)
+            .setParameter("userRole", loggedUser.getRole().name())
+            .setParameter("userUuid", loggedUser.getUuid())
+            .list();
+
+        return result;
     }
 }
