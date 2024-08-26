@@ -10,7 +10,7 @@ test("Add category in to the block custom properties", async ({ page }) => {
     await addIcon.click();
     const dialog = await page.locator("role=dialog");
     const name = dialog.locator("input").first();
-    await name.fill("ToeStemmingblock");
+    await name.fill("Toestemmingblock");
 
     await dialog.locator("input").nth(1).click({ force: true });
     await page.locator("li").nth(1).click();

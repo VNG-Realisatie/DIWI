@@ -24,7 +24,7 @@
 
 3. **Open Browser:** <http://localhost:3000> and login with admin account.
 
-    ```
+    ```bash
     username: admin
     password: admin
     ```
@@ -49,7 +49,7 @@
 
 7. **See Results:** After automation test finished it will open in browser test results.
 
-    ```
+    ```bash
     http://127.0.0.1:9323/
     ```
 

@@ -74,16 +74,7 @@ export default defineConfig({
         {
             name: "chromium",
             use: { ...devices["Desktop Chrome"] },
-            dependencies: [
-                "setup user",
-                // "setup district",
-                // "setup municipality",
-                // "setup neighborhood",
-                // "setup customcategory",
-                // "setup customboolean",
-                // "setup blockcat",
-                // "setup blockbool",
-            ],
+            dependencies: ["setup user"],
         },
     ],
 });
