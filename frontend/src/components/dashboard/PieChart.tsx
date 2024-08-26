@@ -62,7 +62,7 @@ export const DashboardPieChart = ({ chartData, isPdfChart }: Props) => {
                     <Stack direction={isSmallScreen && !isPdfChart ? "row" : "column"} flexWrap="wrap" maxHeight={"260px"} width="100%">
                         {chartData.map((data, i) => {
                             return (
-                                <Stack direction="row" sx={{ m: 1 }}>
+                                <Stack direction="row" sx={{ m: 1 }} key={i}>
                                     <Box height={20} width={20} sx={{ backgroundColor: generateColorsArray(chartData.length)[i] }}></Box>
                                     <Typography variant="caption" ml={1}>
                                         {data.label}

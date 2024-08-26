@@ -4,19 +4,23 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { ChartType } from "../../pages/DashboardProject";
 import { MutationCard } from "./MutationCard";
 import ProjectOverviewMap from "../map/ProjectOverviewMap";
-import { getDashboardProjects, VisibilityElement } from "../../api/dashboardServices";
+import { getDashboardProjects, Planning, VisibilityElement } from "../../api/dashboardServices";
 import { getProjects } from "../../api/projectsServices";
 import { getProjectHouseBlocksWithCustomProperties } from "../../api/houseBlockServices";
 import { useTranslation } from "react-i18next";
 import useAllowedActions from "../../hooks/useAllowedActions";
 import { LabelComponent } from "../project/LabelComponent";
 import { CellContainer } from "../project/project-with-house-block/CellContainer";
+import { MyResponsiveBar } from "./BarChart";
 
 const chartCardStyling = { backgroundColor: "#F0F0F0", my: 1, p: 2, xs: 12, md: 5.9 };
 
 type DashboardProjects = {
     physicalAppearance: ChartType[];
     targetGroup: ChartType[];
+    priceCategoryOwn: ChartType[];
+    priceCategoryRent: ChartType[];
+    planning: Planning[];
 };
 
 type MutationValues = {
@@ -40,6 +44,7 @@ type Props = {
     isPdf?: boolean;
     isPrintingFullDashboard: boolean;
 };
+
 export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashboard, isPdf = false }: Props) => {
     const [dashboardProjects, setDashboardProjects] = useState<DashboardProjects>();
     const [projectPhaseSums, setProjectPhaseSums] = useState([]);
@@ -61,9 +66,27 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
             const convertedTargetGroup = data.targetGroup.map((d) => {
                 return { label: d.name, value: d.amount };
             });
-            setDashboardProjects({ physicalAppearance: convertedPhysicalAppearance, targetGroup: convertedTargetGroup });
+            const convertedPriceCategoryOwn = data.priceCategoryOwn.map((d) => {
+                return {
+                    label: `${d.name}\n(€${d.min} ${d.max ? `- €${d.max}` : t("generic.andMore")})`,
+                    value: d.amount,
+                };
+            });
+            const convertedPriceCategoryRent = data.priceCategoryRent.map((d) => {
+                return {
+                    label: `${d.name}\n(€${d.min} ${d.max ? `- €${d.max}` : t("generic.andMore")})`,
+                    value: d.amount,
+                };
+            });
+            setDashboardProjects({
+                physicalAppearance: convertedPhysicalAppearance,
+                targetGroup: convertedTargetGroup,
+                priceCategoryOwn: convertedPriceCategoryOwn,
+                priceCategoryRent: convertedPriceCategoryRent,
+                planning: data.planning,
+            });
         });
-    }, []);
+    }, [t]);
 
     //This is for calculate the number of projects in each phase in ui update it later with endpoint
     useEffect(() => {
@@ -196,6 +219,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                                     />
                                 )}
                             </Box>
+                            <DashboardPieChart chartData={dashboardProjects?.priceCategoryOwn || []} />
                         </Grid>
                     )}
                     {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.OWNERSHIP_RENT) && (
@@ -212,6 +236,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                                     />
                                 )}
                             </Box>
+                            <DashboardPieChart chartData={dashboardProjects?.priceCategoryRent || []} />
                         </Grid>
                     )}
                     {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.DELIVERABLES) && (
@@ -228,6 +253,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                                     />
                                 )}
                             </Box>
+                            <MyResponsiveBar chartData={dashboardProjects?.planning || []} selectedProject={null} />
                         </Grid>
                     )}
                     {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.DELAYED_PROJECTS) && (
@@ -350,7 +376,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                             <Typography variant="h6" fontSize={16}>
                                 {t("dashboard.buy")}
                             </Typography>
-                            {/* ToDo:Add chart here later */}
+                            <DashboardPieChart isPdfChart={true} chartData={dashboardProjects?.priceCategoryOwn || []} />
                         </Box>
                     )}
                     {(isPrintingFullDashboard || visibility?.OWNERSHIP_RENT) && (
@@ -358,7 +384,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                             <Typography variant="h6" fontSize={16}>
                                 {t("dashboard.rent")}
                             </Typography>
-                            {/* ToDo:Add chart here later */}
+                            <DashboardPieChart isPdfChart={true} chartData={dashboardProjects?.priceCategoryRent || []} />
                         </Box>
                     )}
                     {(isPrintingFullDashboard || visibility?.DELIVERABLES) && (
@@ -366,7 +392,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                             <Typography variant="h6" fontSize={16}>
                                 {t("dashboard.deliverables")}
                             </Typography>
-                            {/* ToDo:Add chart here later */}
+                            <MyResponsiveBar chartData={dashboardProjects?.planning || []} selectedProject={null} />
                         </Box>
                     )}
                     {(isPrintingFullDashboard || visibility?.DELAYED_PROJECTS) && (
