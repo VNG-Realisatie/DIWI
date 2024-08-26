@@ -37,6 +37,7 @@
 
     ```bash
     cd ../end-to-end-tests
+    yarn playwright install --with-deps
     yarn && yarn run test
     ```
 
