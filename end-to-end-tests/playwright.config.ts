@@ -33,43 +33,12 @@ export default defineConfig({
     /* Configure projects for major browsers */
     projects: [
         {
+            name: "setup",
+            testMatch: /.*\.setup\.ts/,
+        },
+        {
             name: "setup user",
             testMatch: /global\.setup\.ts/,
-        },
-        {
-            name: "setup district",
-            testMatch: /district\.setup\.ts/,
-            dependencies: ["setup user"],
-        },
-        {
-            name: "setup municipality",
-            testMatch: /municipality\.setup\.ts/,
-            dependencies: ["setup user"],
-        },
-        {
-            name: "setup neighborhood",
-            testMatch: /neighborhood\.setup\.ts/,
-            dependencies: ["setup user"],
-        },
-        {
-            name: "setup customcategory",
-            testMatch: /customcategory\.setup\.ts/,
-            dependencies: ["setup user"],
-        },
-        {
-            name: "setup customboolean",
-            testMatch: /customboolean\.setup\.ts/,
-            dependencies: ["setup user"],
-        },
-        {
-            name: "setup blockcat",
-            testMatch: /blockcat\.setup\.ts/,
-            dependencies: ["setup user"],
-        },
-        {
-            name: "setup blockbool",
-            testMatch: /blockbool\.setup\.ts/,
-            dependencies: ["setup user"],
         },
         {
             name: "chromium",
