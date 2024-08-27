@@ -134,13 +134,15 @@ export function GoalWizard() {
 
     const handlePropertyChange = (_: React.ChangeEvent<{}>, newValue: UpdatedProperty) => {
         if (newValue) {
-            const updatedConditions = goal.conditions.map((condition, index) => {
+            const updatedConditions = goal.conditions.map((condition) => {
                 return {
                     ...condition,
                     propertyId: newValue.id,
                     propertyName: newValue.name,
                     propertyKind: newValue.propertyKind,
                     propertyType: newValue.propertyType,
+                    categoryOptions: [],
+                    booleanValue: false,
                 };
             });
             setGoal({ ...goal, conditions: updatedConditions });
