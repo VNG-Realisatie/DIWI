@@ -45,7 +45,6 @@ const usePlotSelector = (id: string) => {
     const [projectLayerSource, setProjectLayerSource] = useState<VectorSource>();
     const [bboxLayerSource, setBboxLayerSource] = useState<VectorSource>();
     const [bboxLayerSourceCut, setBboxLayerSourceCut] = useState<VectorSource>();
-    const [subselectionSource, setSubselectionSource] = useState<VectorSource>();
 
     const [originalSelectedPlots, setOriginalSelectedPlots] = useState<Plot[] | null>(null);
     const [selectedPlots, setSelectedPlots] = useState<Plot[]>([]);
@@ -161,6 +160,7 @@ const usePlotSelector = (id: string) => {
                             brkPerceelNummer: parseInt(properties.perceelnummer),
                             brkSectie: properties.sectie,
                             plotFeature,
+                            subselectionGeometry: null
                         };
 
                         setSelectedPlots([...selectedPlots, newPlot]);
@@ -198,6 +198,7 @@ const usePlotSelector = (id: string) => {
                             brkPerceelNummer: parseInt(properties.perceelnummer),
                             brkSectie: properties.sectie,
                             plotFeature: singleFeaturePlot,
+                            subselectionGeometry: null
                         };
                         const isPlotAlreadySelected = selectedPlots.some(
                             (plot) =>
@@ -265,6 +266,7 @@ const usePlotSelector = (id: string) => {
         });
         if (!isOutsideOfPlot) {
             setSelectedPlots(updatedPlots);
+            console.log("updatedplots", updatedPlots);
         } else {
             bboxLayerSourceCut.removeFeature(e.feature);
         }
@@ -277,23 +279,50 @@ const handleDeleteEnd = useCallback((e: MapBrowserEvent<UIEvent>) => {
     const features = map.getFeaturesAtPixel(e.pixel, { layerFilter: (layer) => layer.getSource() === selectedPlotLayerSource });
     const subFeatures = map.getFeaturesAtPixel(e.pixel, { layerFilter: (layer) => layer.getSource() === bboxLayerSourceCut });
 
+    const clickedCoordinate = e.coordinate
+
     if (subFeatures.length > 0) {
         const clickedSubplotFeature = subFeatures[0];
-        console.log(clickedSubplotFeature)
         const clickedSubplotGeometry = clickedSubplotFeature.getGeometry() as Polygon;
         const clickedSubplotCoords = clickedSubplotGeometry.getCoordinates();
-        console.log("clickedSubplotCoords", clickedSubplotCoords);
 
-        const plotClicked = selectedPlots.find((plot) => {
-            const id = plot.plotFeature.features[0].id;
-            const clickedFeatureId = features[0].getId();
-            return id === clickedFeatureId;
-        });
-        console.log("plotClicked", plotClicked)
+        let intersectingPolygon = null;
+        for (let i = 0; i < clickedSubplotCoords.length; i++) {
+            const polygonCoords = clickedSubplotCoords[i];
+            const polygon = new Polygon([polygonCoords]);
 
-            //TODO: FILTERING
+            if (polygon.intersectsCoordinate(clickedCoordinate)) {
+                intersectingPolygon = polygonCoords;
+                break;
+            }
+        }
 
-        return;
+        if (intersectingPolygon) {
+            const plot = selectedPlots.find(plot => {
+                const id = plot.plotFeature.features[0].id;
+                const clickedFeatureId = features[0]?.getId();
+                return id === clickedFeatureId;
+            });
+
+            if (plot) {
+                const updatedPlots = [...selectedPlots];
+                const indexOfPlot = updatedPlots.indexOf(plot)
+
+                const filteredSubselectionGeometry = (plot.subselectionGeometry?.coordinates as Coordinate[][]).filter((subselection) => {
+                    return !_.isEqual(subselection, intersectingPolygon);
+                });
+
+                updatedPlots[indexOfPlot] = {
+                    ...plot,
+                    subselectionGeometry: filteredSubselectionGeometry.length > 0 ? {
+                        type: "Polygon",
+                        coordinates: filteredSubselectionGeometry,
+                    } : null,
+                };
+
+                setSelectedPlots(updatedPlots);
+            }
+        }
     }
 
             else if (features.length > 0) {
@@ -314,7 +343,7 @@ useEffect(
         const changed = !_.isEqual(selectedPlots, originalSelectedPlots);
         setPlotsChanged(changed);
         selectedPlotLayerSource.clear();
-        subselectionSource?.clear();
+        bboxLayerSourceCut?.clear();
 
         for (const selectedPlot of selectedPlots) {
             const geojson = new GeoJSON().readFeatures(selectedPlot.plotFeature);
@@ -325,7 +354,7 @@ useEffect(
                     geometry: selectedPlot.subselectionGeometry,
                 });
 
-                subselectionSource?.addFeature(subselectionFeature);
+                bboxLayerSourceCut?.addFeature(subselectionFeature);
             }
 
             selectedPlotLayerSource.addFeatures(geojson);
@@ -339,7 +368,7 @@ useEffect(
             }
         }
     },
-    [extent, originalSelectedPlots, selectedPlotLayerSource, selectedPlots, mapBounds, subselectionSource],
+    [extent, originalSelectedPlots, selectedPlotLayerSource, selectedPlots, mapBounds, bboxLayerSourceCut],
 );
 
     useEffect(
@@ -463,7 +492,7 @@ useEffect(
         });
 
         const snapInteractionSubPlot = new Snap({
-            source: subselectionSource,
+            source: bboxLayerSourceCut,
             pixelTolerance: snapTolerance,
         });
 
@@ -502,7 +531,7 @@ useEffect(
             map.removeInteraction(snapInteraction);
             map.removeInteraction(snapInteractionSubPlot);
         };
-    }, [map, selectionMode, handleCut, selectedPlotLayerSource, subselectionSource, bboxLayerSourceCut, getEditPermission]);
+    }, [map, selectionMode, handleCut, selectedPlotLayerSource, bboxLayerSourceCut, getEditPermission]);
 
     useEffect(() => {
         if (selectionMode !== Buttons.DELETE || !map || !getEditPermission()) return;
@@ -617,7 +646,6 @@ useEffect(
 
             });
             setBboxLayerSourceCut(bboxSourceCut);
-            setSubselectionSource(bboxSourceCut);
 
             const newMap = new Map({
                 target: id,

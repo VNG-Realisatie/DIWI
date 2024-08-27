@@ -57,7 +57,7 @@ type OgPlot = components["schemas"]["PlotModel"];
 // export type Plot = Pick<OgPlot, Exclude<keyof OgPlot, "geoJson">> & { plotFeature: PlotGeoJSON };
 export type Plot = Omit<OgPlot, "subselectionGeometry" | "plotFeature"> & {
     plotFeature: PlotGeoJSON;
-    subselectionGeometry?: GeoJSONMultiPolygon | GeoJSONPolygon;
+    subselectionGeometry: GeoJSONMultiPolygon | GeoJSONPolygon | null;
 };
 
 type OgProjectListModel = components["schemas"]["ProjectListModel"];
