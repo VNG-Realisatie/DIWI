@@ -159,7 +159,18 @@ export function GoalWizard() {
         }
     };
     //update when conditions are clear
-    const disabledButton = !goal.name || !goal.startDate || !goal.endDate || !goal.goalDirection;
+    const disabledButton =
+        !goal.name ||
+        !goal.startDate ||
+        !goal.endDate ||
+        !goal.goalDirection ||
+        goal.conditions.some((condition) => {
+            if (!condition.conditionFieldType) return true;
+            if (!condition.propertyId) return true;
+            if (condition.propertyType === "CATEGORY" && (!condition.categoryOptions || condition.categoryOptions.length === 0)) return true;
+            if (condition.propertyType === "BOOLEAN" && condition.booleanValue === null) return true;
+            return false;
+        });
 
     const matchingProperty = goal.conditions[0] ? properties.find((property) => property.id === goal.conditions[0].propertyId) : null;
 
@@ -221,7 +232,7 @@ export function GoalWizard() {
                                     title={t("goals.selectProperty")}
                                     options={properties.map((property) => ({
                                         id: property.id,
-                                        name: property.name,
+                                        name: property.type === "FIXED" ? t(`admin.settings.fixedPropertyType.${property.name}`) : property.name,
                                         propertyType: property.propertyType,
                                         propertyKind: property.type,
                                     }))}
@@ -230,7 +241,7 @@ export function GoalWizard() {
                                     multiple={false}
                                     hasTooltipOption={false}
                                     error={t("goals.errors.selectProperty")}
-                                    translationPath="admin.settings.fixedPropertyType."
+                                    // translationPath="admin.settings.fixedPropertyType."
                                 />
                             </Grid>
                         )}

@@ -66,6 +66,7 @@ const CategoryAutocomplete = ({ goal, setGoal }: Props) => {
                         </IconButton>
                     </li>
                 )}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
                 renderInput={(params) => (
                     <TextField
                         {...params}
