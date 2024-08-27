@@ -15,6 +15,7 @@ type SingleNumberEdit = {
     placeholder?: string;
     isDemolition?: boolean;
     tooltipInfoText?: string;
+    acceptsDecimal?: boolean; // new property
 };
 
 export const SingleNumberInput = ({
@@ -28,8 +29,14 @@ export const SingleNumberInput = ({
     placeholder,
     isDemolition = false,
     tooltipInfoText,
+    acceptsDecimal = false, // default to false
 }: SingleNumberEdit) => {
     const hasError = mandatory && (!value || value <= 0);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newValue = acceptsDecimal ? parseFloat(e.target.value) : parseInt(e.target.value, 10);
+        onChange(isNaN(newValue) ? null : newValue);
+    };
 
     const inputField = (
         <TextField
@@ -42,6 +49,7 @@ export const SingleNumberInput = ({
             InputProps={{
                 inputProps: {
                     min: 0,
+                    step: acceptsDecimal ? "0.01" : "1",
                 },
                 startAdornment: isDemolition && value != 0 && value != null && (
                     <InputAdornment position="start" style={{ marginRight: "0px" }}>
@@ -53,8 +61,8 @@ export const SingleNumberInput = ({
             id={name ? name.replace(/\s/g, "") : ""}
             size="small"
             variant="outlined"
-            value={value ? value : 0}
-            onChange={(e) => onChange(+e.target.value)}
+            value={value !== null ? value : ""}
+            onChange={handleChange}
             error={hasError}
             helperText={hasError ? error : ""}
         />

@@ -23,12 +23,12 @@ export const Goals = () => {
     }, []);
 
     const columns: GridColDef[] = [
-        { field: "name", headerName: "Property", flex: 1 },
-        { field: "goalDirection", headerName: "Goal", flex: 1 },
-        { field: "startDate", headerName: "Start Date", flex: 1 },
-        { field: "endDate", headerName: "End Date", flex: 1 },
-        { field: "geography", headerName: "Geography", flex: 1 },
-        { field: "category", headerName: "Category", flex: 1 },
+        { field: "name", headerName: t("goals.table.property"), flex: 1 },
+        { field: "goalDirection", headerName: t("goals.table.goal"), flex: 1 },
+        { field: "startDate", headerName: t("goals.table.startDate"), flex: 1 },
+        { field: "endDate", headerName: t("goals.table.endDate"), flex: 1 },
+        { field: "geography", headerName: t("goals.table.geography"), flex: 1 },
+        { field: "category", headerName: t("goals.table.category"), flex: 1 },
         {
             field: "actions",
             headerName: "Actions",
@@ -54,7 +54,7 @@ export const Goals = () => {
     const rows = goals.map((goal) => ({
         id: goal.id,
         name: goal.name,
-        goalDirection: goal.goalDirection,
+        goalDirection: goal.goalType === "NUMBER" ? goal.goalValue : `${goal.goalDirection} | ${goal.goalValue}%`,
         startDate: goal.startDate,
         endDate: goal.endDate,
         geography: goal.geography?.conditionId, //???

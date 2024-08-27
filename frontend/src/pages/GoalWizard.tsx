@@ -100,11 +100,21 @@ export function GoalWizard() {
         }
     }, [goalId]);
 
+    const isNumberGoal = goal.goalType === "NUMBER";
+
     useEffect(() => {
+        const updatedGoal = { ...goal };
+
         if (!goal.conditions[0] || !goal.conditions[0].conditionFieldType) {
-            setGoal({ ...goal, conditions: [] });
+            updatedGoal.conditions = [];
         }
-    }, [goal.conditions[0]]);
+
+        if (isNumberGoal) {
+            updatedGoal.goalDirection = "MAXIMAL";
+        }
+
+        setGoal(updatedGoal);
+    }, [goal, isNumberGoal]);
 
     useEffect(() => {
         getCustomProperties().then((properties) => {
@@ -208,7 +218,7 @@ export function GoalWizard() {
                                 <CategoryInput
                                     readOnly={false}
                                     mandatory={true}
-                                    title={t("Select Property")}
+                                    title={t("goals.selectProperty")}
                                     options={properties.map((property) => ({
                                         id: property.id,
                                         name: property.name,
@@ -219,7 +229,8 @@ export function GoalWizard() {
                                     setValue={handlePropertyChange}
                                     multiple={false}
                                     hasTooltipOption={false}
-                                    error={"Select a property"}
+                                    error={t("goals.errors.selectProperty")}
+                                    translationPath="admin.settings.fixedPropertyType."
                                 />
                             </Grid>
                         )}
@@ -288,6 +299,7 @@ export function GoalWizard() {
                             <Grid item xs={2}>
                                 <Box sx={{ position: "relative" }}>
                                     <SingleNumberInput
+                                        acceptsDecimal={goal.goalType === "PERCENTAGE"}
                                         isInputLabel={true}
                                         value={goal.goalValue}
                                         onChange={(e) => {
@@ -320,11 +332,15 @@ export function GoalWizard() {
                             </Grid>
                             <Grid item xs={2}>
                                 <CategoryInput
-                                    readOnly={false}
+                                    readOnly={isNumberGoal ? true : false}
                                     mandatory={true}
                                     title={t("goals.goalDirection")}
                                     options={goalDirectionOptions.map((option) => ({ id: option, name: option }))}
-                                    values={goalDirectionOptions.find((option) => option === goal.goalDirection) || null}
+                                    values={
+                                        isNumberGoal
+                                            ? { id: "MAXIMAL", name: "MAXIMAL" }
+                                            : goalDirectionOptions.find((option) => option === goal.goalDirection) || null
+                                    }
                                     setValue={(_, newValue) => {
                                         setGoal({ ...goal, goalDirection: newValue ? newValue.id : "" });
                                     }}
