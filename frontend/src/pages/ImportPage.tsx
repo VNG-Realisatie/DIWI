@@ -70,6 +70,7 @@ export const ImportPage = ({ functionality }: Props) => {
                 )}
                 {!uploaded && (
                     <Stack
+                        id="upload-stack"
                         mt={2}
                         height={180}
                         width="100%"
@@ -82,7 +83,8 @@ export const ImportPage = ({ functionality }: Props) => {
                     >
                         <img src={"/upload-cloud.svg"} alt="Upload Cloud" />
                         <input
-                            hidden
+                            id="import-file"
+                            hidden={true}
                             ref={fileInputRef}
                             type="file"
                             onChange={(e) => {
