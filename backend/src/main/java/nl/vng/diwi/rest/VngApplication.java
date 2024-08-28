@@ -5,6 +5,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
+import nl.vng.diwi.resources.AuditResource;
 import nl.vng.diwi.resources.BlueprintResource;
 import nl.vng.diwi.resources.ConfigResource;
 import nl.vng.diwi.resources.DashboardResource;
@@ -101,6 +102,7 @@ public class VngApplication extends ResourceConfig {
         register(ConfigResource.class);
         register(UserResource.class);
         register(DashboardResource.class);
+        register(AuditResource.class);
         register(BlueprintResource.class);
 
         // Flyway migrations

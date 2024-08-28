@@ -15,9 +15,15 @@ public class MultiProjectDashboardModel {
 
     List<PieChartModel> physicalAppearance = new ArrayList<>();
     List<PieChartModel> targetGroup = new ArrayList<>();
+    List<RangeCategoryPieChartModel> priceCategoryRent = new ArrayList<>();
+    List<RangeCategoryPieChartModel> priceCategoryOwn = new ArrayList<>();
+    List<PlanningModel> planning = new ArrayList<>();
 
     public MultiProjectDashboardModel(MultiProjectDashboardSqlModel sqlModel) {
         this.physicalAppearance = sqlModel.getPhysicalAppearance();
         this.targetGroup = sqlModel.getTargetGroup();
+        this.priceCategoryRent = sqlModel.getPriceCategoryRent();
+        this.priceCategoryOwn = sqlModel.getPriceCategoryOwn();
+        this.planning = sqlModel.getPlanning();
     }
 }

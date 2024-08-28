@@ -46,6 +46,12 @@ export type SelectedOptionWithId = {
     option: OptionType[];
 };
 
+const confidentialityLevelComparator = (v1: string, v2: string): number => {
+    const label1 = confidentialityLevelOptions.find((option) => option.id === v1)?.name || "";
+    const label2 = confidentialityLevelOptions.find((option) => option.id === v2)?.name || "";
+    return label1.localeCompare(label2);
+};
+
 export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const { paginationInfo, setPaginationInfo, totalProjectCount } = useContext(ProjectContext);
 
@@ -143,6 +149,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
             width: 250,
             filterOperators: getGridSingleSelectOperators().filter((o) => o.value === "isAnyOf"),
             preProcessEditCellProps: createErrorReport,
+            sortComparator: confidentialityLevelComparator,
         },
         {
             field: "startDate",
