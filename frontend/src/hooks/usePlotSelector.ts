@@ -24,16 +24,36 @@ import useAlert from "./useAlert";
 import { useTranslation } from "react-i18next";
 import { useHasEditPermission } from "./useHasEditPermission";
 import CircleStyle from "ol/style/Circle";
+import { colors } from "../theme";
 
 const baseUrlKadasterWfs = "https://service.pdok.nl/kadaster/kadastralekaart/wfs/v5_0";
 
 const projection = "EPSG:3857";
 
 export enum Buttons {
-    SELECT = "select",
-    CUT = "cut",
-    DELETE = "delete",
+    SELECT,
+    CUT,
+    DELETE,
 }
+
+const fetchPlotData = async (bbox: string): Promise<PlotGeoJSON> => {
+    const url = queryString.stringifyUrl({
+        url: baseUrlKadasterWfs,
+        query: {
+            request: "GetFeature",
+            service: "WFS",
+            version: "2.0.0",
+            outputFormat: "application/json",
+            typeName: "kadastralekaart:Perceel",
+            srsName: "EPSG:3857",
+            bbox: bbox + "," + projection,
+        },
+    });
+
+    const response = await fetch(url);
+    const result = await response.json();
+    return result as PlotGeoJSON;
+};
 
 const usePlotSelector = (id: string) => {
 
@@ -42,9 +62,8 @@ const usePlotSelector = (id: string) => {
 
     const [map, setMap] = useState<Map>();
     const [selectedPlotLayerSource, setSelectedPlotLayerSource] = useState<VectorSource>();
-    const [projectLayerSource, setProjectLayerSource] = useState<VectorSource>();
-    const [bboxLayerSource, setBboxLayerSource] = useState<VectorSource>();
-    const [bboxLayerSourceCut, setBboxLayerSourceCut] = useState<VectorSource>();
+    const [multiselectBoxLayerSource, setMultiselectBoxLayerSource] = useState<VectorSource>();
+    const [cutLayerSource, setcutLayerSource] = useState<VectorSource>();
 
     const [originalSelectedPlots, setOriginalSelectedPlots] = useState<Plot[] | null>(null);
     const [selectedPlots, setSelectedPlots] = useState<Plot[]>([]);
@@ -86,13 +105,13 @@ const usePlotSelector = (id: string) => {
 
     const handleCancelChange = () => {
         setSelectedPlots(originalSelectedPlots || []);
-        bboxLayerSource?.clear();
-        bboxLayerSourceCut?.clear();
+        multiselectBoxLayerSource?.clear();
+        cutLayerSource?.clear();
     };
 
     const handleSaveChange = async () => {
-        bboxLayerSource?.clear();
-        bboxLayerSourceCut?.clear();
+        multiselectBoxLayerSource?.clear();
+        cutLayerSource?.clear();
         try {
             if (selectedProject) {
                 await updateProjectPlots(selectedProject.projectId, selectedPlots);
@@ -115,26 +134,7 @@ const usePlotSelector = (id: string) => {
         }
     };
 
-    const fetchPlotData = async (bbox: string): Promise<PlotGeoJSON> => {
-        const url = queryString.stringifyUrl({
-            url: baseUrlKadasterWfs,
-            query: {
-                request: "GetFeature",
-                service: "WFS",
-                version: "2.0.0",
-                outputFormat: "application/json",
-                typeName: "kadastralekaart:Perceel",
-                srsName: "EPSG:3857",
-                bbox: bbox + "," + projection,
-            },
-        });
-
-        const response = await fetch(url);
-        const result = await response.json();
-        return result as PlotGeoJSON;
-    };
-
-    const handleClick = useCallback(
+    const handleSelect = useCallback(
         (e: MapBrowserEvent<UIEvent>) => {
             if (selectionMode !== Buttons.SELECT) return;
 
@@ -170,9 +170,9 @@ const usePlotSelector = (id: string) => {
         [selectionMode, selectedPlotLayerSource, selectedPlots, getEditPermission],
     );
 
-    const handleLineDrawEnd = useCallback(
+    const handleMultiselect = useCallback(
          (e: DrawEvent) => {
-            if (selectionMode !== Buttons.SELECT || !map || !selectedPlotLayerSource || !bboxLayerSource || !getEditPermission()) return;
+            if (selectionMode !== Buttons.SELECT || !map || !selectedPlotLayerSource || !multiselectBoxLayerSource || !getEditPermission()) return;
 
             const lineGeometry = e.feature.getGeometry();
             if (!lineGeometry || !(lineGeometry instanceof LineString)) return;
@@ -215,15 +215,14 @@ const usePlotSelector = (id: string) => {
                     setSelectedPlots([...selectedPlots, ...newPlots]);
                 });
                 const newPolygon = fromExtent(bufferedExtent);
-                bboxLayerSource.addFeature(new Feature({
+                multiselectBoxLayerSource.addFeature(new Feature({
                 geometry: newPolygon,
             }));
-        },
-        [selectionMode, map, selectedPlotLayerSource, bboxLayerSource, selectedPlots, getEditPermission]
-);
+        }, [selectionMode, map, selectedPlotLayerSource, multiselectBoxLayerSource, selectedPlots, getEditPermission]
+    );
 
     const handleCut = useCallback((e: DrawEvent) => {
-        if (selectionMode !== Buttons.CUT || !map || !selectedPlotLayerSource || !bboxLayerSourceCut || !getEditPermission()) return;
+        if (selectionMode !== Buttons.CUT || !map || !selectedPlotLayerSource || !cutLayerSource || !getEditPermission()) return;
 
         const polygonGeometry = e.feature.getGeometry();
         if (!polygonGeometry || !(polygonGeometry instanceof Polygon)) return;
@@ -245,7 +244,6 @@ const usePlotSelector = (id: string) => {
                     plot.brkPerceelNummer === parseInt(properties.perceelnummer) &&
                     plot.brkSectie === properties.sectie
             );
-
             if (existingPlot) {
                 const existingCoords = existingPlot.subselectionGeometry?.coordinates as Coordinate[][] || [];
                 const mergedCoords: Coordinate[][] = [...existingCoords, ...coords];
@@ -266,18 +264,17 @@ const usePlotSelector = (id: string) => {
         });
         if (!isOutsideOfPlot) {
             setSelectedPlots(updatedPlots);
-            console.log("updatedplots", updatedPlots);
         } else {
-            bboxLayerSourceCut.removeFeature(e.feature);
+            cutLayerSource.removeFeature(e.feature);
         }
     });
-}, [selectionMode, map, selectedPlotLayerSource, bboxLayerSourceCut, selectedPlots, getEditPermission]);
+}, [selectionMode, map, selectedPlotLayerSource, cutLayerSource, selectedPlots, getEditPermission]);
 
-const handleDeleteEnd = useCallback((e: MapBrowserEvent<UIEvent>) => {
+const handleDelete = useCallback((e: MapBrowserEvent<UIEvent>) => {
     if (selectionMode !== Buttons.DELETE || !map || !selectedPlotLayerSource || !getEditPermission()) return;
 
     const features = map.getFeaturesAtPixel(e.pixel, { layerFilter: (layer) => layer.getSource() === selectedPlotLayerSource });
-    const subFeatures = map.getFeaturesAtPixel(e.pixel, { layerFilter: (layer) => layer.getSource() === bboxLayerSourceCut });
+    const subFeatures = map.getFeaturesAtPixel(e.pixel, { layerFilter: (layer) => layer.getSource() === cutLayerSource });
 
     const clickedCoordinate = e.coordinate
 
@@ -334,7 +331,7 @@ const handleDeleteEnd = useCallback((e: MapBrowserEvent<UIEvent>) => {
                 setSelectedPlots(newSelectedPlots);
             }
 
-}, [getEditPermission, map, selectedPlotLayerSource, selectionMode, selectedPlots, bboxLayerSourceCut]);
+}, [getEditPermission, map, selectedPlotLayerSource, selectionMode, selectedPlots, cutLayerSource]);
 
 useEffect(
     function updatePlotsLayer() {
@@ -343,7 +340,7 @@ useEffect(
         const changed = !_.isEqual(selectedPlots, originalSelectedPlots);
         setPlotsChanged(changed);
         selectedPlotLayerSource.clear();
-        bboxLayerSourceCut?.clear();
+        cutLayerSource?.clear();
 
         for (const selectedPlot of selectedPlots) {
             const geojson = new GeoJSON().readFeatures(selectedPlot.plotFeature);
@@ -354,7 +351,7 @@ useEffect(
                     geometry: selectedPlot.subselectionGeometry,
                 });
 
-                bboxLayerSourceCut?.addFeature(subselectionFeature);
+                cutLayerSource?.addFeature(subselectionFeature);
             }
 
             selectedPlotLayerSource.addFeatures(geojson);
@@ -367,38 +364,7 @@ useEffect(
                 setExtent(mapBoundsToExtent(mapBounds));
             }
         }
-    },
-    [extent, originalSelectedPlots, selectedPlotLayerSource, selectedPlots, mapBounds, bboxLayerSourceCut],
-);
-
-    useEffect(
-        function updateProjectGeometry() {
-            if (!projectLayerSource) {
-                return;
-            }
-
-            projectLayerSource.clear();
-
-            if (selectedProject?.geometry) {
-                const geometry = JSON.parse(selectedProject.geometry);
-
-                const options = {
-                    featureProjection: map?.getView().getProjection(),
-                };
-                const geojsonFeature = {
-                    type: "Feature",
-                    crs: geometry.crs,
-                    geometry,
-                    properties: {},
-                };
-                // Convert geometry to a feature while converting the projection
-                const feature = new GeoJSON().readFeature(geojsonFeature, options);
-
-                projectLayerSource.addFeature(feature);
-            }
-        },
-        [projectLayerSource, selectedProject?.geometry, map],
-    );
+    }, [extent, originalSelectedPlots, selectedPlotLayerSource, selectedPlots, mapBounds, cutLayerSource]);
 
     useEffect(
         function zoomToExtent() {
@@ -422,22 +388,25 @@ useEffect(
             },
         });
 
-        document.addEventListener("keydown", function(event) {
-            if (event.key == "Escape") {
+        const handleEscape = (event: KeyboardEvent) => {
+            if (event.key === "Escape") {
                 draw.abortDrawing();
             }
-        });
+        };
+
+        document.addEventListener("keydown", handleEscape);
 
         draw.on("drawstart", () => {
-            bboxLayerSource?.clear();
+            multiselectBoxLayerSource?.clear();
         })
-        draw.on("drawend", handleLineDrawEnd);
+        draw.on("drawend", handleMultiselect);
         map.addInteraction(draw);
 
         return () => {
             map.removeInteraction(draw);
+            document.removeEventListener("keydown", handleEscape);
         };
-    }, [map, selectionMode, handleLineDrawEnd, bboxLayerSource, getEditPermission]);
+    }, [map, selectionMode, handleMultiselect, multiselectBoxLayerSource, getEditPermission]);
 
     useEffect(() => {
         if (selectionMode !== Buttons.CUT || !map || !selectedPlotLayerSource || !getEditPermission()) return;
@@ -447,26 +416,26 @@ useEffect(
 
         const defaultPolygonStyle = new Style({
             stroke: new Stroke({
-              color: 'rgba(7, 62, 168, 0.5)',
+              color: colors.mapCutPolygonStrokeColor,
               width: 5
             }),
             image: new CircleStyle({
               radius: 6,
               fill: new Fill({
-                color: 'orangered'
+                color: colors.mapCutCircleFillColor
               }),
               stroke: new Stroke({
-                color: 'white',
+                color: colors.mapCutCircleStrokeColor,
                 width: 1.5
               })
             }),
             fill: new Fill({
-              color: 'rgba(255, 255, 255, 0.4)'
+              color: colors.mapCutPolygonFillColor
             })
           });
 
         const draw = new Draw({
-            source: bboxLayerSourceCut,
+            source: cutLayerSource,
             type: "Polygon",
             minPoints: 3,
             style: defaultPolygonStyle,
@@ -492,27 +461,29 @@ useEffect(
         });
 
         const snapInteractionSubPlot = new Snap({
-            source: bboxLayerSourceCut,
+            source: cutLayerSource,
             pixelTolerance: snapTolerance,
         });
 
-        document.addEventListener("keypress", function(event) {
-            if (event.key == "Enter") {
+        const handleEnter = (event: KeyboardEvent) => {
+            if (event.key === "Enter") {
                 if (currentFeature) {
                     const coordinates = currentFeature.getGeometry()?.getCoordinates()[0];
-
                     if (coordinates && coordinates.length > 4) {
                         draw.finishDrawing();
                     }
                 }
             }
-        });
+        };
 
-        document.addEventListener("keydown", function(event) {
-            if (event.key == "Escape") {
+        const handleEscape = (event: KeyboardEvent) => {
+            if (event.key === "Escape") {
                 draw.abortDrawing();
             }
-        });
+        };
+
+        document.addEventListener("keydown", handleEnter);
+        document.addEventListener("keydown", handleEscape);
 
         draw.on('drawstart', (event) => {
             currentFeature = event.feature as Feature<Polygon>;
@@ -530,8 +501,10 @@ useEffect(
             map.removeInteraction(draw);
             map.removeInteraction(snapInteraction);
             map.removeInteraction(snapInteractionSubPlot);
+            document.removeEventListener("keydown", handleEnter);
+            document.removeEventListener("keydown", handleEscape);
         };
-    }, [map, selectionMode, handleCut, selectedPlotLayerSource, bboxLayerSourceCut, getEditPermission]);
+    }, [map, selectionMode, handleCut, selectedPlotLayerSource, cutLayerSource, getEditPermission]);
 
     useEffect(() => {
         if (selectionMode !== Buttons.DELETE || !map || !getEditPermission()) return;
@@ -540,10 +513,10 @@ useEffect(
             image: new CircleStyle({
                 radius: 6,
                 fill: new Fill({
-                  color: 'red'
+                  color: colors.mapDeleteCircleFillColor
                 }),
                 stroke: new Stroke({
-                  color: 'white',
+                  color: colors.mapDeleteCircleStrokeColor,
                   width: 1.5
                 })
               })
@@ -556,14 +529,14 @@ useEffect(
             style: deletePointStyle
         });
 
-        map.addEventListener("click", handleDeleteEnd as Listener);
+        map.addEventListener("click", handleDelete as Listener);
         map.addInteraction(draw);
 
         return () => {
             map.removeInteraction(draw);
-            map.removeEventListener("click", handleDeleteEnd as Listener);
+            map.removeEventListener("click", handleDelete as Listener);
         };
-    }, [map, selectionMode, handleDeleteEnd, getEditPermission]);
+    }, [map, selectionMode, handleDelete, getEditPermission]);
 
     useEffect(() => {
         if (!map || !getEditPermission()) return;
@@ -593,11 +566,11 @@ useEffect(
     useEffect(() => {
         if (!map || !getEditPermission()) return;
 
-        map.addEventListener("click", handleClick as Listener);
+        map.addEventListener("click", handleSelect as Listener);
         return () => {
-            map.removeEventListener("click", handleClick as Listener);
+            map.removeEventListener("click", handleSelect as Listener);
         };
-    }, [getEditPermission, handleClick, map]);
+    }, [getEditPermission, handleSelect, map]);
 
     useEffect(
         function createMap() {
@@ -616,40 +589,29 @@ useEffect(
             const selectedPlotLayer = new VectorLayer({ source: selectedPlotSource, style: selectedFeatureStyle as StyleFunction });
             setSelectedPlotLayerSource(selectedPlotSource);
 
-            const projectGeometrySource = new VectorSource();
-            const projectGeometryLayer = new VectorLayer({
-                source: projectGeometrySource,
+            const multiselectSource = new VectorSource();
+            const multiselectLayer = new VectorLayer({
+                source: multiselectSource,
                 style: new Style({
-                    fill: new Fill({ color: "rgba(0, 0, 0, 0)" }),
-                    stroke: new Stroke({ color: "#000000", width: 5 }),
+                    fill: new Fill({ color: colors.mapMultiselectFillColor }),
+                    stroke: new Stroke({ color: colors.mapMultiselectStrokeColor, width: 1 }),
                 }),
             });
-            setProjectLayerSource(projectGeometrySource);
+            setMultiselectBoxLayerSource(multiselectSource);
 
-            const bboxSource = new VectorSource();
-            const bboxLayer = new VectorLayer({
-                source: bboxSource,
+            const cutSource = new VectorSource();
+            const cutLayer = new VectorLayer({
+                source: cutSource,
                 style: new Style({
-                    fill: new Fill({ color: "rgba(155, 193, 228, 0.5)" }),
-                    stroke: new Stroke({ color: "rgba(7, 62, 168, 0.5)", width: 1 }),
+                    fill: new Fill({ color: colors.mapCutFillColor }),
+                    stroke: new Stroke({ color: colors.mapCutStrokeColor, width: 5 }),
                 }),
             });
-            setBboxLayerSource(bboxSource);
-
-            const bboxSourceCut = new VectorSource();
-            const bboxLayerCut = new VectorLayer({
-                source: bboxSourceCut,
-                style: new Style({
-                    fill: new Fill({ color: "rgba(155, 193, 228, 0.7)" }),
-                    stroke: new Stroke({ color: "rgba(7, 62, 168, 0.5)", width: 5 }),
-                }),
-
-            });
-            setBboxLayerSourceCut(bboxSourceCut);
+            setcutLayerSource(cutSource);
 
             const newMap = new Map({
                 target: id,
-                layers: [osmLayer, projectGeometryLayer, kadasterLayers, selectedPlotLayer, bboxLayer, bboxLayerCut],
+                layers: [osmLayer, kadasterLayers, selectedPlotLayer, multiselectLayer, cutLayer],
                 view: new View({
                     center: extentToCenter(mapBoundsToExtent(mapBounds)),
                     zoom: 12,
