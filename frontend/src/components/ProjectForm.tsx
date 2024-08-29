@@ -40,7 +40,7 @@ export const ProjectForm = ({
     const { houseBlocks } = useContext(HouseBlockContext);
     const { user } = useContext(UserContext);
 
-    const {constructionAmount, demolitionAmount} = calculateAmounts(houseBlocks);
+    const { constructionAmount, demolitionAmount } = calculateAmounts(houseBlocks);
 
     return (
         <Grid container spacing={2} alignItems="stretch">
