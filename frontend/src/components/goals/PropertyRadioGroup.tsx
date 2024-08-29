@@ -1,7 +1,6 @@
 import { FormControl, FormLabel, FormGroup, FormControlLabel, Checkbox } from "@mui/material";
 import { Goal } from "../../api/goalsServices";
 import { ChangeEvent } from "react";
-import { t } from "i18next";
 import { options } from "./constants";
 
 type PropertyRadioGroupProps = {

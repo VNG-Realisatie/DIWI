@@ -23,7 +23,7 @@ const CategoryAutocomplete = ({ goal, setGoal }: Props) => {
 
     const categoryExists = categories.some((category) => category.name.toLowerCase() === inputValue.toLowerCase());
 
-    const handleCategoryChange = (_: React.ChangeEvent<{}>, newValue: string | CustomCategory | null) => {
+    const handleCategoryChange = (_: React.ChangeEvent<unknown>, newValue: string | CustomCategory | null) => {
         if (typeof newValue === "string") {
             setGoal({ ...goal, category: null });
         } else {

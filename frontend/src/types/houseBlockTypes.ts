@@ -2,6 +2,11 @@ import { CustomPropertyValue } from "../api/customPropServices";
 import { MutationKind, OwnershipValueType } from "./enums";
 import { components } from "./schema";
 
+type Category = {
+    id: string;
+    name: string;
+};
+
 export type GeneralInformation = {
     startDate: null | string;
     endDate: null | string;
@@ -41,7 +46,7 @@ export type OwnershipSingleValue = {
     valueCategoryId?: string;
     rentalValue?: RangeValue;
     rentalValueCategoryId?: string;
-    rangeCategoryOption?: any;
+    rangeCategoryOption?: Category;
 };
 
 export type HouseBlockWithCustomProperties = HouseBlock & { customProperties: CustomPropertyValue[] };

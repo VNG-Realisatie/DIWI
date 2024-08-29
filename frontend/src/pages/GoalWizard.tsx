@@ -140,7 +140,7 @@ export function GoalWizard() {
         }
     };
 
-    const handlePropertyChange = (_: React.ChangeEvent<{}>, newValue: UpdatedProperty) => {
+    const handlePropertyChange = (_: React.ChangeEvent<unknown>, newValue: UpdatedProperty) => {
         if (newValue) {
             const updatedConditions = goal.conditions.map((condition) => {
                 return {
