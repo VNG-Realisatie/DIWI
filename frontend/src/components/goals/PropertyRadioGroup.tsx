@@ -1,4 +1,4 @@
-import { FormControl, FormLabel, FormGroup, FormControlLabel, Checkbox } from "@mui/material";
+import { FormControl, FormGroup, FormControlLabel, Checkbox } from "@mui/material";
 import { Goal } from "../../api/goalsServices";
 import { ChangeEvent } from "react";
 import { options } from "./constants";
