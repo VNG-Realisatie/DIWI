@@ -207,7 +207,11 @@ export function GoalWizard() {
                                 mandatory={false}
                                 title={t("goals.property")}
                                 options={conditionFieldTypeOptions.map((option) => ({ id: option, name: option }))}
-                                values={goal.conditions[0] && goal.conditions[0].conditionFieldType ? goal.conditions[0].conditionFieldType : ""}
+                                values={
+                                    goal.conditions[0] && goal.conditions[0].conditionFieldType
+                                        ? { id: goal.conditions[0].conditionFieldType, name: goal.conditions[0].conditionFieldType }
+                                        : null
+                                }
                                 setValue={(_, newValue) => {
                                     setGoal({
                                         ...goal,
@@ -232,18 +236,23 @@ export function GoalWizard() {
                                     readOnly={false}
                                     mandatory={true}
                                     title={t("goals.selectProperty")}
-                                    options={properties.map((property) => ({
-                                        id: property.id,
-                                        name: property.type === "FIXED" ? t(`admin.settings.fixedPropertyType.${property.name}`) : property.name,
-                                        propertyType: property.propertyType,
-                                        propertyKind: property.type,
-                                    }))}
-                                    values={goal.conditions[0] && goal.conditions[0].propertyName ? goal.conditions[0].propertyName : ""}
+                                    options={properties.map((property) => {
+                                        return {
+                                            id: property.id,
+                                            name: property.type === "FIXED" ? t(`admin.settings.fixedPropertyType.${property.name}`) : property.name,
+                                            propertyType: property.propertyType,
+                                            propertyKind: property.type,
+                                        };
+                                    })}
+                                    values={
+                                        goal.conditions[0] && goal.conditions[0].propertyName
+                                            ? { id: goal.conditions[0].propertyId, name: goal.conditions[0].propertyName }
+                                            : null
+                                    }
                                     setValue={handlePropertyChange}
                                     multiple={false}
                                     hasTooltipOption={false}
                                     error={t("goals.errors.selectProperty")}
-                                    // translationPath="admin.settings.fixedPropertyType."
                                 />
                             </Grid>
                         )}

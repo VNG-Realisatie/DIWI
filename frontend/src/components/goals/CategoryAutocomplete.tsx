@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Autocomplete, TextField, IconButton, InputAdornment } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Category, createCategory, CustomCategory, deleteCategory, getAllCategories, Goal } from "../../api/goalsServices";
+import { createCategory, CustomCategory, deleteCategory, getAllCategories, Goal } from "../../api/goalsServices";
 import InputLabelStack from "../project/inputs/InputLabelStack";
 import { t } from "i18next";
 
