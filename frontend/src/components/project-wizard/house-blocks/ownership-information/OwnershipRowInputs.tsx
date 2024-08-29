@@ -35,7 +35,7 @@ export const isOwnershipAmountValid = (amount: number): boolean => {
 };
 
 const OwnershipAmountInput = ({ handleInputChange, ownership, index, readOnly, title, mandatory, isOwnerShipValueAndMutationConsistent }: OwnershipProps) => {
-    const isAmountValid = isOwnershipAmountValid(ownership.amount);
+    const isAmountValid = isOwnershipAmountValid(ownership.amount ? ownership.amount : 0);
     const isConsistent = isOwnerShipValueAndMutationConsistent;
     const checkIfOwnerShipValueAndMutationConsistent = () => {
         if (!isAmountValid) {
@@ -97,6 +97,7 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
 
     const showErrors = () => {
         if (
+            ownership.amount &&
             ownership.amount > 0 &&
             !isPriceCategorySelected &&
             JSON.stringify(ownership.rentalValue) === JSON.stringify({ value: null, min: null, max: null }) &&
@@ -184,7 +185,7 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
             </Grid>
             <Grid item xs={2.8} className="ownership-house-rent">
                 <RangeNumberInput
-                    value={!isKoopwoning ? ownership.rentalValue : { value: null, min: null, max: null }}
+                    value={!isKoopwoning && ownership.rentalValue ? ownership.rentalValue : { value: null, min: null, max: null }}
                     updateCallBack={(e) => handleInputChange(index, { ...ownership, rentalValue: e })}
                     readOnly={readOnly || isPriceCategorySelected || isKoopwoning}
                     mandatory={false}

@@ -15,6 +15,9 @@ import { CustomPropertyWidget } from "../components/CustomPropertyWidget";
 import CategoryAutocomplete from "../components/goals/CategoryAutocomplete";
 import { SingleNumberInput } from "../components/project/inputs/SingleNumberInput";
 import { PropertyRadioGroup } from "../components/goals/PropertyRadioGroup";
+import { conditionFieldTypeOptions, goalDirectionOptions } from "../components/goals/constants";
+import { OwnershipRowInputs } from "../components/project-wizard/house-blocks/ownership-information/OwnershipRowInputs";
+import { OwnershipSingleValue } from "../types/houseBlockTypes";
 
 const emptyGoal = {
     startDate: "",
@@ -43,8 +46,21 @@ const emptyGoal = {
                 min: { id: "", name: "" },
                 max: { id: "", name: "" },
             },
-            listOptions: [], // Add the missing properties here
-            ownershipOptions: [], // Add the missing properties here
+            listOptions: [],
+            ownershipOptions: [
+                {
+                    type: undefined,
+                    value: {
+                        value: 0,
+                        min: 0,
+                        max: 0,
+                    },
+                    rangeCategoryOption: {
+                        id: "",
+                        name: "",
+                    },
+                },
+            ],
         },
     ],
     geography: {
@@ -59,10 +75,6 @@ type UpdatedProperty = {
     propertyKind: PropertyKind;
     propertyType: PropertyType;
 };
-
-const conditionFieldTypeOptions = ["PROPERTY", "GROUND_POSITION", "PROGRAMMING", "HOUSE_TYPE", "OWNERSHIP"];
-
-const goalDirectionOptions = ["MINIMAL", "MAXIMAL", ""];
 
 const SmallToggleButton = styled(ToggleButton)(({ theme }) => ({
     padding: theme.spacing(0.5),
@@ -105,10 +117,6 @@ export function GoalWizard() {
     useEffect(() => {
         const updatedGoal = { ...goal };
 
-        if (!goal.conditions[0] || !goal.conditions[0].conditionFieldType) {
-            updatedGoal.conditions = [];
-        }
-
         if (isNumberGoal) {
             updatedGoal.goalDirection = "MAXIMAL";
         }
@@ -150,8 +158,13 @@ export function GoalWizard() {
     };
 
     const submitForm = async () => {
+        const updatedGoal = { ...goal };
+
+        if (!goal.conditions[0] || !goal.conditions[0].conditionFieldType) {
+            updatedGoal.conditions = [];
+        }
         try {
-            goalId ? await updateGoal(goal) : await createGoal(goal);
+            goalId ? await updateGoal(updatedGoal) : await createGoal(updatedGoal);
             setAlert(goalId ? t("goals.notifications.updated") : t("goals.notifications.created"), "success");
             navigate("/goals");
         } catch (error: unknown) {
@@ -167,14 +180,48 @@ export function GoalWizard() {
         !goal.endDate ||
         !goal.goalDirection ||
         goal.conditions.some((condition) => {
-            if (!condition.conditionFieldType) return true;
-            if (!condition.propertyId) return true;
+            if (!condition.conditionFieldType) return false;
+            if (condition.conditionFieldType === "PROPERTY" && !condition.propertyId) return true;
+            if ((condition.conditionFieldType === "GROUND_POSITION" || condition.conditionFieldType === "HOUSE_TYPE") && condition.listOptions.length === 0)
+                return true;
             if (condition.propertyType === "CATEGORY" && (!condition.categoryOptions || condition.categoryOptions.length === 0)) return true;
             if (condition.propertyType === "BOOLEAN" && condition.booleanValue === null) return true;
             return false;
         });
 
     const matchingProperty = goal.conditions[0] ? properties.find((property) => property.id === goal.conditions[0].propertyId) : null;
+
+    const handleInputChange = (index: number, value: OwnershipSingleValue | null) => {
+        const updatedValues = [...goal.conditions[0].ownershipOptions];
+        updatedValues[index] = value as {
+            type: "KOOPWONING" | "HUURWONING_PARTICULIERE_VERHUURDER" | "HUURWONING_WONINGCORPORATIE" | undefined;
+            value: { value: number; min: number; max: number };
+            rangeCategoryOption: Category | undefined;
+        };
+        setGoal({
+            ...goal,
+            conditions: [
+                {
+                    ...goal.conditions[0],
+                    ownershipOptions: updatedValues,
+                },
+            ],
+        });
+    };
+
+    const handleRemoveRow = (index: number) => {
+        const updatedValues = [...goal.conditions[0].ownershipOptions];
+        updatedValues.splice(index, 1);
+        setGoal({
+            ...goal,
+            conditions: [
+                {
+                    ...goal.conditions[0],
+                    ownershipOptions: updatedValues,
+                },
+            ],
+        });
+    };
 
     return (
         <Grid container spacing={3}>
@@ -219,6 +266,7 @@ export function GoalWizard() {
                                             {
                                                 ...goal.conditions[0],
                                                 conditionFieldType: newValue ? newValue.id : "",
+                                                listOptions: [],
                                             },
                                         ],
                                     });
@@ -316,6 +364,22 @@ export function GoalWizard() {
                         <Grid item xs={12}>
                             <PropertyRadioGroup property={goal.conditions[0] ? goal.conditions[0].conditionFieldType : ""} setGoal={setGoal} goal={goal} />
                         </Grid>
+
+                        {goal.conditions[0] && goal.conditions[0].conditionFieldType === "OWNERSHIP" && (
+                            <Grid item xs={12}>
+                                {goal.conditions[0]?.ownershipOptions?.map((ownershipOption, index) => (
+                                    <OwnershipRowInputs
+                                        key={index}
+                                        index={index}
+                                        handleRemoveRow={handleRemoveRow}
+                                        handleInputChange={handleInputChange}
+                                        ownership={ownershipOption}
+                                        readOnly={false}
+                                        isOwnerShipValueAndMutationConsistent={true}
+                                    />
+                                ))}
+                            </Grid>
+                        )}
 
                         <Grid container item xs={12} spacing={2}>
                             <Grid item xs={2}>

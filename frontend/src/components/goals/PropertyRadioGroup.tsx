@@ -1,7 +1,8 @@
-import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from "@mui/material";
+import { FormControl, FormLabel, FormGroup, FormControlLabel, Checkbox } from "@mui/material";
 import { Goal } from "../../api/goalsServices";
 import { ChangeEvent } from "react";
 import { t } from "i18next";
+import { options } from "./constants";
 
 type PropertyRadioGroupProps = {
     property: string;
@@ -9,51 +10,82 @@ type PropertyRadioGroupProps = {
     goal: Goal;
 };
 
+const formatLabel = (option: string) => {
+    return option.charAt(0) + option.slice(1).toLowerCase().replace(/_/g, " ");
+};
+
 export const PropertyRadioGroup = ({ property, setGoal, goal }: PropertyRadioGroupProps) => {
-    const handleRadioChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const { value } = event.target;
-        const booleanValue = value === "true";
-        setGoal({
-            ...goal,
-            conditions: [
-                {
-                    ...goal.conditions[0],
-                    booleanValue: booleanValue,
-                },
-            ],
-        });
+    const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const { value, checked } = event.target;
+
+        if (property === "PROGRAMMING") {
+            const booleanValue = value === "true";
+            setGoal({
+                ...goal,
+                conditions: [
+                    {
+                        ...goal.conditions[0],
+                        booleanValue: booleanValue,
+                    },
+                ],
+            });
+        } else {
+            const currentOptions = goal.conditions[0].listOptions || [];
+            let updatedOptions;
+
+            if (checked) {
+                updatedOptions = [...currentOptions, value];
+            } else {
+                updatedOptions = currentOptions.filter((item) => item !== value);
+            }
+
+            setGoal({
+                ...goal,
+                conditions: [
+                    {
+                        ...goal.conditions[0],
+                        listOptions: updatedOptions,
+                    },
+                ],
+            });
+        }
     };
 
     switch (property) {
         case "PROGRAMMING":
             return (
                 <FormControl component="fieldset">
-                    <FormLabel component="legend">{t("goals.programming")}</FormLabel>
-                    <RadioGroup row name="programming" value={goal.conditions[0].booleanValue === true ? "true" : "false"} onChange={handleRadioChange}>
-                        <FormControlLabel value="true" control={<Radio />} label="Ja" />
-                        <FormControlLabel value="false" control={<Radio />} label="Nee" />
-                    </RadioGroup>
+                    <FormGroup row>
+                        <FormControlLabel
+                            control={<Checkbox checked={goal.conditions[0].booleanValue === true} onChange={handleCheckboxChange} value="true" />}
+                            label="Ja"
+                        />
+                        <FormControlLabel
+                            control={<Checkbox checked={goal.conditions[0].booleanValue === false} onChange={handleCheckboxChange} value="false" />}
+                            label="Nee"
+                        />
+                    </FormGroup>
                 </FormControl>
             );
         case "GROUND_POSITION":
-            return (
-                <FormControl component="fieldset">
-                    <FormLabel component="legend">Grond positie</FormLabel>
-                    <RadioGroup name="groundPosition">
-                        <FormControlLabel value="Formele toestemming grondeigenaar" control={<Radio />} label="Formele toestemming grondeigenaar" />
-                        <FormControlLabel value="Intentie medewerking grondeigenaar" control={<Radio />} label="Intentie medewerking grondeigenaar" />
-                        <FormControlLabel value="Geen toestemming grondeigenaar" control={<Radio />} label="Geen toestemming grondeigenaar" />
-                    </RadioGroup>
-                </FormControl>
-            );
         case "HOUSE_TYPE":
             return (
                 <FormControl component="fieldset">
-                    <FormLabel component="legend">Type woning</FormLabel>
-                    <RadioGroup name="housingType">
-                        <FormControlLabel value="Eengezinswoning" control={<Radio />} label="Eengezinswoning" />
-                        <FormControlLabel value="Meergezinswoning" control={<Radio />} label="Meergezinswoning" />
-                    </RadioGroup>
+                    <FormGroup>
+                        {options[property].map((option) => (
+                            <FormControlLabel
+                                key={option}
+                                control={
+                                    <Checkbox
+                                        checked={goal.conditions[0].listOptions?.includes(option) || false}
+                                        onChange={handleCheckboxChange}
+                                        value={option}
+                                    />
+                                }
+                                label={formatLabel(option)}
+                            />
+                        ))}
+                    </FormGroup>
                 </FormControl>
             );
         default:

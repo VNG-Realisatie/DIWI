@@ -36,11 +36,12 @@ export type RangeValue = {
 
 export type OwnershipSingleValue = {
     type: OwnershipValueType;
-    amount: number;
+    amount?: number;
     value: RangeValue;
     valueCategoryId?: string;
-    rentalValue: RangeValue;
+    rentalValue?: RangeValue;
     rentalValueCategoryId?: string;
+    rangeCategoryOption?: any;
 };
 
 export type HouseBlockWithCustomProperties = HouseBlock & { customProperties: CustomPropertyValue[] };

@@ -1,3 +1,4 @@
+import { OwnershipValueType } from "../types/enums";
 import { deleteJson, getJson, postJson, putJson } from "../utils/requests";
 import { API_URI } from "../utils/urls";
 
@@ -29,13 +30,13 @@ type Condition = {
     ordinalOptions: OrdinalOptions;
     listOptions: string[];
     ownershipOptions: {
-        type: string;
+        type: OwnershipValueType;
         value: {
             value: number;
             min: number;
             max: number;
         };
-        rangeCategoryOption: Category;
+        rangeCategoryOption: Category | undefined;
     }[];
 };
 

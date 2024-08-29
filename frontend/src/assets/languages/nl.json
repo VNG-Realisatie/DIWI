@@ -401,7 +401,6 @@
         "endDate": "Einddatum",
         "geography": "Geografie",
         "category": "Categorie"
-
       },
       "properties": {
         "PROPERTY": "Custom property",
