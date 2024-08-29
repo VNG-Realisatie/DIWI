@@ -15,7 +15,7 @@ type SingleNumberEdit = {
     placeholder?: string;
     isDemolition?: boolean;
     tooltipInfoText?: string;
-    acceptsDecimal?: boolean; // new property
+    acceptsDecimal?: boolean;
 };
 
 export const SingleNumberInput = ({
@@ -29,7 +29,7 @@ export const SingleNumberInput = ({
     placeholder,
     isDemolition = false,
     tooltipInfoText,
-    acceptsDecimal = false, // default to false
+    acceptsDecimal = false,
 }: SingleNumberEdit) => {
     const hasError = mandatory && (!value || value <= 0);
 
