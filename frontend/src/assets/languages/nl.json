@@ -31,7 +31,13 @@
       "andMore": "en meer",
       "andLess": "en minder",
       "logout": "Uitloggen",
-      "cantAccessPage": "U heeft geen toegang tot deze pagina. Neem contact op met uw beheerder"
+      "cantAccessPage": "U heeft geen toegang tot deze pagina. Neem contact op met uw beheerder",
+      "selectPlot": "Selecteer perceel",
+      "cancelSelection": "Annuleer selectie",
+      "cutSelection": "Knip perceel",
+      "cancelCutSelection": "Annuleer knip",
+      "deleteSelection": "Verwijder (sub)perceel",
+      "cancelDeleteSelection": "Annuleer verwijder"
     },
     "import": {
       "errorsTitle": "Import fouten",
