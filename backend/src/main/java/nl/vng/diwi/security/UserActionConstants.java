@@ -68,7 +68,12 @@ public final class UserActionConstants {
     public static final String IMPORT_PROJECTS = "IMPORT_PROJECTS";
     public static final String EXPORT_PROJECTS = "EXPORT_PROJECTS";
 
+    public static final String VIEW_DASHBOARDS = "VIEW_DASHBOARDS";
+
     public static final String VIEW_ALL_BLUEPRINTS = "VIEW_ALL_BLUEPRINTS";
     public static final String EDIT_ALL_BLUEPRINTS = "EDIT_ALL_BLUEPRINTS";
     public static final String VIEW_OWN_BLUEPRINTS = "VIEW_OWN_BLUEPRINTS";
+
+    public static final String VIEW_GOALS = "VIEW_GOALS";
+    public static final String EDIT_GOALS = "EDIT_GOALS";
 }
