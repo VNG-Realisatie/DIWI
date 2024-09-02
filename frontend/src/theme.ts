@@ -14,6 +14,19 @@ declare module "@mui/material/styles" {
     }
 }
 
+export const colors = {
+    mapDeleteCircleFillColor: 'red',
+    mapDeleteCircleStrokeColor: 'white',
+    mapCutPolygonStrokeColor: 'rgba(7, 62, 168, 0.5)',
+    mapCutCircleFillColor: 'orangered',
+    mapCutCircleStrokeColor: 'white',
+    mapCutPolygonFillColor: 'rgba(255, 255, 255, 0.4)',
+    mapMultiselectFillColor: 'rgba(155, 193, 228, 0.5)',
+    mapMultiselectStrokeColor: 'rgba(7, 62, 168, 0.5)',
+    mapCutFillColor: 'rgba(155, 193, 228, 0.7)',
+    mapCutStrokeColor: 'rgba(7, 62, 168, 0.5)',
+  }
+
 export const drawerWidth = 290;
 
 export const theme = createTheme(

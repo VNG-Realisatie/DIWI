@@ -12,7 +12,10 @@ const elements: Element[] = [
     { id: "projectPhaseChart", width: 205, height: 75 },
     { id: "targetGroupChart", width: 205, height: 75 },
     { id: "physicalAppearanceChart", width: 205, height: 75 },
-    // Add the rest of the elements here
+    { id: "buy", width: 205, height: 75 },
+    { id: "rent", width: 205, height: 75 },
+    { id: "deliverables", width: 205, height: 75 },
+    //add more elements here
 ];
 
 const h2c = async (element: HTMLElement) => {
