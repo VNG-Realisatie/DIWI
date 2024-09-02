@@ -42,7 +42,7 @@ export type RangeValue = {
 export type OwnershipSingleValue = {
     type: OwnershipValueType;
     amount?: number;
-    value: RangeValue;
+    value?: RangeValue;
     valueCategoryId?: string;
     rentalValue?: RangeValue;
     rentalValueCategoryId?: string;

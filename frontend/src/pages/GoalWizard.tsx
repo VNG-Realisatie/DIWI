@@ -50,6 +50,7 @@ const emptyGoal = {
             ownershipOptions: [
                 {
                     type: undefined,
+                    //value is not required currently
                     value: {
                         value: 0,
                         min: 0,
@@ -163,6 +164,20 @@ export function GoalWizard() {
         if (!goal.conditions[0] || !goal.conditions[0].conditionFieldType) {
             updatedGoal.conditions = [];
         }
+        if (updatedGoal.conditions[0] && updatedGoal.conditions[0].conditionFieldType === "OWNERSHIP") {
+            updatedGoal.conditions[0].ownershipOptions = goal.conditions[0].ownershipOptions.map(({ type, valueCategoryId, rentalValueCategoryId}) => {
+                return {
+                    type,
+                    rangeCategoryOption: {
+                        id: valueCategoryId || rentalValueCategoryId || "",
+                        name: "",
+                    },
+                };
+            });
+        } else {
+            updatedGoal.conditions[0].ownershipOptions = [];
+        }
+
         try {
             goalId ? await updateGoal(updatedGoal) : await createGoal(updatedGoal);
             setAlert(goalId ? t("goals.notifications.updated") : t("goals.notifications.created"), "success");
@@ -186,6 +201,12 @@ export function GoalWizard() {
                 return true;
             if (condition.propertyType === "CATEGORY" && (!condition.categoryOptions || condition.categoryOptions.length === 0)) return true;
             if (condition.propertyType === "BOOLEAN" && condition.booleanValue === null) return true;
+            if (
+                condition.conditionFieldType === "OWNERSHIP" &&
+                condition.ownershipOptions &&
+                condition.ownershipOptions.some((ownershipOption) => ownershipOption.type === undefined)
+            )
+                return true;
             return false;
         });
 
@@ -209,19 +230,22 @@ export function GoalWizard() {
         });
     };
 
-    const handleRemoveRow = (index: number) => {
-        const updatedValues = [...goal.conditions[0].ownershipOptions];
-        updatedValues.splice(index, 1);
-        setGoal({
-            ...goal,
-            conditions: [
-                {
-                    ...goal.conditions[0],
-                    ownershipOptions: updatedValues,
-                },
-            ],
-        });
-    };
+    //we will need it if more than 1 ownership option is allowed
+    // const handleRemoveRow = (index: number) => {
+    //     const updatedValues = [...goal.conditions[0].ownershipOptions];
+    //     updatedValues.splice(index, 1);
+    //     setGoal({
+    //         ...goal,
+    //         conditions: [
+    //             {
+    //                 ...goal.conditions[0],
+    //                 ownershipOptions: updatedValues,
+    //             },
+    //         ],
+    //     });
+    // };
+
+    console.log("goal", goal);
 
     return (
         <Grid container spacing={3}>
@@ -267,6 +291,15 @@ export function GoalWizard() {
                                                 ...goal.conditions[0],
                                                 conditionFieldType: newValue ? newValue.id : "",
                                                 listOptions: [],
+                                                categoryOptions: [],
+                                                propertyType: undefined,
+                                                propertyId: "",
+                                                propertyName: "",
+                                                propertyKind: undefined,
+                                                conditionId: "",
+                                                ownershipOptions: [
+                                                    { type: undefined, value: { value: 0, min: 0, max: 0 }, rangeCategoryOption: { id: "", name: "" } },
+                                                ],
                                             },
                                         ],
                                     });
@@ -367,17 +400,20 @@ export function GoalWizard() {
 
                         {goal.conditions[0] && goal.conditions[0].conditionFieldType === "OWNERSHIP" && (
                             <Grid item xs={12}>
-                                {goal.conditions[0]?.ownershipOptions?.map((ownershipOption, index) => (
-                                    <OwnershipRowInputs
-                                        key={index}
-                                        index={index}
-                                        handleRemoveRow={handleRemoveRow}
-                                        handleInputChange={handleInputChange}
-                                        ownership={ownershipOption}
-                                        readOnly={false}
-                                        isOwnerShipValueAndMutationConsistent={true}
-                                    />
-                                ))}
+                                {goal.conditions[0]?.ownershipOptions.map((ownershipOption, index) => {
+                                    return (
+                                        <OwnershipRowInputs
+                                            key={index}
+                                            isPolicyGoal={true}
+                                            index={index}
+                                            handleRemoveRow={() => {}}
+                                            handleInputChange={handleInputChange}
+                                            ownership={ownershipOption}
+                                            readOnly={false}
+                                            isOwnerShipValueAndMutationConsistent={true}
+                                        />
+                                    );
+                                })}
                             </Grid>
                         )}
 

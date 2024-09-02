@@ -23,19 +23,21 @@ type Condition = {
     conditionFieldType: ConditionFieldType;
     propertyId: string;
     propertyName: string;
-    propertyKind: PropertyKind;
-    propertyType: PropertyType;
+    propertyKind: PropertyKind | undefined;
+    propertyType: PropertyType | undefined;
     booleanValue: boolean;
     categoryOptions: Category[];
     ordinalOptions: OrdinalOptions;
     listOptions: string[];
     ownershipOptions: {
         type: OwnershipValueType;
-        value: {
+        value?: {
             value: number;
             min: number;
             max: number;
         };
+        valueCategoryId?: string;
+        rentalValueCategoryId?: string;
         rangeCategoryOption: Category | undefined;
     }[];
 };

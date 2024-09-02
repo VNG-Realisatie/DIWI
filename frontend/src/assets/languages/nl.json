@@ -407,7 +407,7 @@
         "GROUND_POSITION": "Grond positie",
         "PROGRAMMING": "Programmering",
         "HOUSE_TYPE": "Type woning",
-        "OWNERSHIP": "Eigenaar"
+        "OWNERSHIP": "Prijscategorie"
       },
       "goalType" : {
         "number": "Aantal",
