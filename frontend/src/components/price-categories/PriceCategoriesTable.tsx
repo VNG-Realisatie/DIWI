@@ -10,7 +10,7 @@ import { CategoryType, Property, updateCustomProperty } from "../../api/adminSet
 import DeleteDialog from "./DeleteDialog";
 import AlertContext from "../../context/AlertContext";
 import useAllowedActions from "../../hooks/useAllowedActions";
-import { formatMonetaryValue } from "../project/inputs/RangeNumberInput";
+import { formatMonetaryValue } from "../../utils/inputHelpers";
 
 type Category = {
     id: string;
