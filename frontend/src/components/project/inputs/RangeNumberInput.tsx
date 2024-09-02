@@ -29,7 +29,7 @@ function formatValue(val: number | null): string {
     return val !== null ? String(val) : "";
 }
 
-function formatMonetaryValue(val: number | null) {
+export function formatMonetaryValue(val: number | null) {
     if (val === null) {
         return "";
     } else {

@@ -130,6 +130,7 @@ const PriceCategoriesDialog = ({ open, setOpen, id, propertyName, setRangeCatego
                     title={t("admin.priceCategories.name")}
                 />
                 <RangeNumberInput
+                    isMonetary={true}
                     setIsRangeValid={setIsRangeValid}
                     value={rangeValue}
                     updateCallBack={handleRangeValueUpdate}

@@ -10,6 +10,7 @@ import { CategoryType, Property, updateCustomProperty } from "../../api/adminSet
 import DeleteDialog from "./DeleteDialog";
 import AlertContext from "../../context/AlertContext";
 import useAllowedActions from "../../hooks/useAllowedActions";
+import { formatMonetaryValue } from "../project/inputs/RangeNumberInput";
 
 type Category = {
     id: string;
@@ -86,8 +87,8 @@ const PriceCategoriesTable = ({ property, setRangeCategories }: Props) => {
             flex: 4,
             renderCell: (params: GridCellParams) => (
                 <Box display="flex" alignItems="center" justifyContent="center" style={{ height: "100%" }} gap="10px">
-                    <Typography>€{params.row.min}</Typography>
-                    <Typography>{params.row.max ? `- €${params.row.max}` : t("generic.andMore")}</Typography>
+                    <Typography>€{formatMonetaryValue(params.row.min)}</Typography>
+                    <Typography>{params.row.max ? `- €${formatMonetaryValue(params.row.max)}` : t("generic.andMore")}</Typography>
                 </Box>
             ),
         },
