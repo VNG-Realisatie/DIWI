@@ -123,7 +123,7 @@ export function GoalWizard() {
         }
 
         setGoal(updatedGoal);
-    }, [goal, isNumberGoal]);
+    }, [goal.goalType]);
 
     useEffect(() => {
         getCustomProperties().then((properties) => {
@@ -165,7 +165,7 @@ export function GoalWizard() {
             updatedGoal.conditions = [];
         }
         if (updatedGoal.conditions[0] && updatedGoal.conditions[0].conditionFieldType === "OWNERSHIP") {
-            updatedGoal.conditions[0].ownershipOptions = goal.conditions[0].ownershipOptions.map(({ type, valueCategoryId, rentalValueCategoryId}) => {
+            updatedGoal.conditions[0].ownershipOptions = goal.conditions[0].ownershipOptions.map(({ type, valueCategoryId, rentalValueCategoryId }) => {
                 return {
                     type,
                     rangeCategoryOption: {
@@ -244,8 +244,6 @@ export function GoalWizard() {
     //         ],
     //     });
     // };
-
-    console.log("goal", goal);
 
     return (
         <Grid container spacing={3}>
@@ -461,7 +459,9 @@ export function GoalWizard() {
                                     values={
                                         isNumberGoal
                                             ? { id: "MAXIMAL", name: "MAXIMAL" }
-                                            : goalDirectionOptions.find((option) => option === goal.goalDirection) || null
+                                            : goalDirectionOptions
+                                                  .map((option) => ({ id: option, name: option }))
+                                                  .find((option) => option.id === goal.goalDirection) || null
                                     }
                                     setValue={(_, newValue) => {
                                         setGoal({ ...goal, goalDirection: newValue ? newValue.id : "" });
@@ -469,6 +469,7 @@ export function GoalWizard() {
                                     multiple={false}
                                     hasTooltipOption={false}
                                     error={t("goals.errors.goalDirection")}
+                                    translationPath="goals.goalType.direction."
                                 />
                             </Grid>
                             <Grid item xs={2}>

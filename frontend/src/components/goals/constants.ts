@@ -1,6 +1,6 @@
 export const conditionFieldTypeOptions = ["PROPERTY", "GROUND_POSITION", "PROGRAMMING", "HOUSE_TYPE", "OWNERSHIP"];
 
-export const goalDirectionOptions = ["MINIMAL", "MAXIMAL", ""];
+export const goalDirectionOptions = ["MINIMAL", "MAXIMAL"];
 
 export const options = {
     GROUND_POSITION: [

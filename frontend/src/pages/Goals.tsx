@@ -27,11 +27,11 @@ export const Goals = () => {
         { field: "goalDirection", headerName: t("goals.table.goal"), flex: 1 },
         { field: "startDate", headerName: t("goals.table.startDate"), flex: 1 },
         { field: "endDate", headerName: t("goals.table.endDate"), flex: 1 },
-        { field: "geography", headerName: t("goals.table.geography"), flex: 1 },
+        // { field: "geography", headerName: t("goals.table.geography"), flex: 1 },
         { field: "category", headerName: t("goals.table.category"), flex: 1 },
         {
             field: "actions",
-            headerName: "Actions",
+            headerName: t("goals.table.actions"),
             flex: 1,
             sortable: false,
             renderCell: (params: GridCellParams) => (
@@ -54,10 +54,10 @@ export const Goals = () => {
     const rows = goals.map((goal) => ({
         id: goal.id,
         name: goal.name,
-        goalDirection: goal.goalType === "NUMBER" ? goal.goalValue : `${goal.goalDirection} | ${goal.goalValue}%`,
+        goalDirection: goal.goalType === "NUMBER" ? goal.goalValue : `${t(`goals.goalType.direction.${goal.goalDirection}`)} | ${goal.goalValue}%`,
         startDate: goal.startDate,
         endDate: goal.endDate,
-        geography: goal.geography?.conditionId, //???
+        // geography: goal.geography?.conditionId, //???
         category: goal.category?.name,
     }));
 

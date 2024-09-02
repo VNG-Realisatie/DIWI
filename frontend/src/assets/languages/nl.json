@@ -400,10 +400,11 @@
         "startDate": "Startdatum",
         "endDate": "Einddatum",
         "geography": "Geografie",
-        "category": "Categorie"
+        "category": "Categorie",
+        "actions": "Acties"
       },
       "properties": {
-        "PROPERTY": "Custom property",
+        "PROPERTY": "Maatwerk eigenschap",
         "GROUND_POSITION": "Grond positie",
         "PROGRAMMING": "Programmering",
         "HOUSE_TYPE": "Type woning",
@@ -411,7 +412,11 @@
       },
       "goalType" : {
         "number": "Aantal",
-        "percentage": "Percentage"
+        "percentage": "Percentage",
+        "direction" : {
+          "MAXIMAL": "Maximaal",
+          "MINIMAL": "Minimaal"
+        }
       },
       "errors" : {
         "name": "Vul de naam van het beleidsdoel in",
