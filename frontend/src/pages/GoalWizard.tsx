@@ -174,7 +174,9 @@ export function GoalWizard() {
                     },
                 };
             });
-        } else {
+        }
+
+        if (updatedGoal.conditions[0] && updatedGoal.conditions[0].conditionFieldType != "OWNERSHIP") {
             updatedGoal.conditions[0].ownershipOptions = [];
         }
 
@@ -423,12 +425,10 @@ export function GoalWizard() {
                                         isInputLabel={true}
                                         value={goal.goalValue}
                                         onChange={(e) => {
-                                            if (e) {
-                                                setGoal({
-                                                    ...goal,
-                                                    goalValue: e,
-                                                });
-                                            }
+                                            setGoal({
+                                                ...goal,
+                                                goalValue: e ? e : 0,
+                                            });
                                         }}
                                         readOnly={false}
                                         mandatory={false}

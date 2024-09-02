@@ -27,7 +27,7 @@ export const Goals = () => {
         { field: "goalDirection", headerName: t("goals.table.goal"), flex: 1 },
         { field: "startDate", headerName: t("goals.table.startDate"), flex: 1 },
         { field: "endDate", headerName: t("goals.table.endDate"), flex: 1 },
-        // { field: "geography", headerName: t("goals.table.geography"), flex: 1 },
+        // { field: "geography", headerName: t("goals.table.geography"), flex: 1 }, Will be implemented later
         { field: "category", headerName: t("goals.table.category"), flex: 1 },
         {
             field: "actions",
@@ -77,12 +77,24 @@ export const Goals = () => {
 
     return (
         <>
-            <Box sx={{ width: "100%" }}>
-                <DataGrid rows={rows} columns={columns} />
+            <Box sx={{ width: "100%", overflowY: "auto", paddingBottom: "150px" }}>
+                <DataGrid
+                    rows={rows}
+                    columns={columns}
+                    autoHeight
+                    initialState={{
+                        pagination: {
+                            paginationModel: { page: 0, pageSize: 10 },
+                        },
+                    }}
+                    pageSizeOptions={[5, 10, 25]}
+                    disableRowSelectionOnClick
+                />
+                <Box sx={{ position: "relative", top: "80px" }}>
+                    <AddGoalButton />
+                </Box>
             </Box>
-            <Box position="relative" top={350}>
-                <AddGoalButton />
-            </Box>
+
             <DeleteDialogWithConfirmation
                 open={deleteDialogOpen}
                 onClose={() => setDeleteDialogOpen(false)}

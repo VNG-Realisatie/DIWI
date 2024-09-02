@@ -31,11 +31,22 @@ export const SingleNumberInput = ({
     tooltipInfoText,
     acceptsDecimal = false,
 }: SingleNumberEdit) => {
-    const hasError = mandatory && (!value || value <= 0);
+    const hasError = mandatory && (value === null || value === undefined || value <= 0);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newValue = acceptsDecimal ? parseFloat(e.target.value) : parseInt(e.target.value, 10);
-        onChange(isNaN(newValue) ? null : newValue);
+        const inputValue = e.target.value;
+        let newValue: number | null = null;
+
+        if (inputValue === "") {
+            newValue = 0;
+        } else {
+            newValue = acceptsDecimal ? parseFloat(inputValue) : parseInt(inputValue, 10);
+            if (isNaN(newValue)) {
+                newValue = 0;
+            }
+        }
+
+        onChange(newValue);
     };
 
     const inputField = (
@@ -61,7 +72,7 @@ export const SingleNumberInput = ({
             id={name ? name.replace(/\s/g, "") : ""}
             size="small"
             variant="outlined"
-            value={value !== null ? value : ""}
+            value={value !== null && value !== undefined ? value : 0}
             onChange={handleChange}
             error={hasError}
             helperText={hasError ? error : ""}
