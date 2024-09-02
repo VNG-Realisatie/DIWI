@@ -123,6 +123,7 @@ export function GoalWizard() {
         }
 
         setGoal(updatedGoal);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [goal.goalType]);
 
     useEffect(() => {
