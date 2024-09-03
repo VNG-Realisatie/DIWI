@@ -25,6 +25,8 @@ import { useTranslation } from "react-i18next";
 import { useHasEditPermission } from "./useHasEditPermission";
 import CircleStyle from "ol/style/Circle";
 import { colors } from "../theme";
+import * as turf from '@turf/turf';
+import { GeoJSONPolygon } from "ol/format/GeoJSON";
 
 const baseUrlKadasterWfs = "https://service.pdok.nl/kadaster/kadastralekaart/wfs/v5_0";
 
@@ -229,12 +231,12 @@ const usePlotSelector = (id: string) => {
 
         const extent = polygonGeometry.getExtent();
         const bbox = extent.join(",");
-
         const coords = polygonGeometry.getCoordinates();
+        const turfSubplotPolygon = turf.polygon(coords);
 
         fetchPlotData(bbox).then((plotFeature) => {
-            let isOutsideOfPlot = false;
             const updatedPlots = [...selectedPlots];
+            let plotsChanged = false;
 
         plotFeature.features.forEach((feature) => {
             const properties = feature.properties;
@@ -245,27 +247,31 @@ const usePlotSelector = (id: string) => {
                     plot.brkSectie === properties.sectie
             );
             if (existingPlot) {
-                const existingCoords = existingPlot.subselectionGeometry?.coordinates as Coordinate[][] || [];
-                const mergedCoords: Coordinate[][] = [...existingCoords, ...coords];
+                const plotGeometry = feature.geometry as GeoJSONPolygon
+                const turfPlotPolygon = turf.polygon(plotGeometry.coordinates);
+                const intersect = turf.intersect(turf.featureCollection([turfPlotPolygon, turfSubplotPolygon]))
+                if(intersect){
+                    const existingCoords = existingPlot.subselectionGeometry?.coordinates as Coordinate[][] || [];
+                    const intersectCoords = intersect.geometry.coordinates as Coordinate[][]
+                    const mergedCoords: Coordinate[][] = [...existingCoords, ...intersectCoords];
 
-                const updatedPlotIndex = updatedPlots.indexOf(existingPlot);
-                updatedPlots[updatedPlotIndex] = {
-                    ...existingPlot,
-                        subselectionGeometry: {
-                            type: "Polygon",
-                            coordinates: mergedCoords,
-                        },
+                    const updatedPlotIndex = updatedPlots.indexOf(existingPlot);
+                    updatedPlots[updatedPlotIndex] = {
+                        ...existingPlot,
+                            subselectionGeometry: {
+                                type: "Polygon",
+                                coordinates: mergedCoords,
+                            },
                     };
+                    plotsChanged = true;
                 }
-                else {
-                    isOutsideOfPlot = true;
-                }
+            } else {
+                cutLayerSource.removeFeature(e.feature);
+            }
 
         });
-        if (!isOutsideOfPlot) {
+        if(plotsChanged) {
             setSelectedPlots(updatedPlots);
-        } else {
-            cutLayerSource.removeFeature(e.feature);
         }
     });
 }, [selectionMode, map, selectedPlotLayerSource, cutLayerSource, selectedPlots, getEditPermission]);
