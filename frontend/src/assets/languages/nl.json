@@ -282,7 +282,8 @@
       "settings": "Instellingen",
       "addProject": "Project toevoegen",
       "projectOverview": "Overzicht projecten",
-      "knowledgeBase": "Kennisbank"
+      "knowledgeBase": "Kennisbank",
+      "goals": "Beleidsdoelen"
     },
     "about": {
       "heading": "Over deze website",
@@ -387,6 +388,57 @@
       "time": "Tijd",
       "geography": "Geografie",
       "category": "Categorie"
+    },
+    "goals": {
+      "name": "Naam beleidsdoel",
+      "property": "Eigenschap",
+      "startDate": "Startdatum",
+      "endDate": "Einddatum",
+      "category": "Categorie",
+      "goalDirection": "Doelrichting",
+      "goalValue": "Doelstelling",
+      "createNewGoal": "Nieuw beleidsdoel toevoegen",
+      "deleteConfirmation": "Weet u zeker dat u het doel wilt verwijderen",
+      "programming": "Programmering",
+      "selectProperty": "Selecteer eigenschap",
+      "table": {
+        "property": "Eigenschap",
+        "goal": "Doelstelling",
+        "startDate": "Startdatum",
+        "endDate": "Einddatum",
+        "geography": "Geografie",
+        "category": "Categorie",
+        "actions": "Acties"
+      },
+      "properties": {
+        "PROPERTY": "Maatwerk eigenschap",
+        "GROUND_POSITION": "Grond positie",
+        "PROGRAMMING": "Programmering",
+        "HOUSE_TYPE": "Type woning",
+        "OWNERSHIP": "Prijscategorie"
+      },
+      "goalType" : {
+        "number": "Aantal",
+        "percentage": "Percentage",
+        "direction" : {
+          "MAXIMAL": "Maximaal",
+          "MINIMAL": "Minimaal"
+        }
+      },
+      "errors" : {
+        "name": "Vul de naam van het beleidsdoel in",
+        "property": "Kies de eigenschap",
+        "startDate": "Vul de startdatum in",
+        "endDate": "Vul de einddatum in",
+        "category": "Kies de categorie",
+        "goalDirection": "Kies de doelstelling",
+        "selectProperty": "Selecteer eigenschap"
+      },
+    "notifications": {
+      "updated" : "Succesvol geüpdatet",
+      "created" : "Succesvol aangemaakt",
+      "deleted" : "Succesvol verwijderd"
+    }
     },
     "dashboard": {
       "title": "Dashboard",

@@ -108,3 +108,14 @@ export const AddProjectButton: React.FC = () => {
 
     return allowedActions.includes("CREATE_NEW_PROJECT") ? <PlusButton {...buttonProps} /> : null;
 };
+
+export const AddGoalButton: React.FC = () => {
+    const { t } = useTranslation();
+    const buttonProps: PlusButtonProps = {
+        color: theme.palette.primary.customLightGrey,
+        link: Paths.goalWizard.path,
+        text: t("goals.createNewGoal"),
+    };
+
+    return  <PlusButton {...buttonProps} />
+}

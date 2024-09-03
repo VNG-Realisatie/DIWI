@@ -21,7 +21,8 @@ export type AllowedActions =
     | "EXPORT_PROJECTS"
     | "VIEW_ALL_BLUEPRINTS"
     | "EDIT_ALL_BLUEPRINTS"
-    | "VIEW_OWN_BLUEPRINTS";
+    | "VIEW_OWN_BLUEPRINTS"
+    | "EDIT_GOALS";
 
 function useAllowedActions() {
     const [allowedActions, setAllowedActions] = useState<AllowedActions[]>([]);
