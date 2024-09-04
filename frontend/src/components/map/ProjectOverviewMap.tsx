@@ -19,6 +19,7 @@ import ConfigContext from "../../context/ConfigContext";
 import { components } from "../../types/schema";
 import { mapBoundsToExtent } from "../../utils/map";
 import { AddProjectButton } from "../PlusButton";
+import ProjectContext from "../../context/ProjectContext";
 
 const geoMarker = (f: Feature): Style => {
     // check feature props for style
@@ -41,6 +42,7 @@ type ProjectOverviewMapProps = {
 
 const ProjectOverviewMap = ({ isDashboardMap }: ProjectOverviewMapProps) => {
     const navigate = useNavigate();
+    const { setSelectedProject } = useContext(ProjectContext);
 
     const { mapBounds } = useContext(ConfigContext);
 
@@ -133,6 +135,7 @@ const ProjectOverviewMap = ({ isDashboardMap }: ProjectOverviewMapProps) => {
 
             /* Add a pointerclick handler to navigate to selected project */
             newMap.on("singleclick", function (evt) {
+                setSelectedProject(null);
                 const feature = newMap.forEachFeatureAtPixel(evt.pixel, (f) => f);
                 if (feature) {
                     const projectId = feature.get("id");
@@ -144,7 +147,7 @@ const ProjectOverviewMap = ({ isDashboardMap }: ProjectOverviewMapProps) => {
 
             return () => newMap.setTarget(undefined);
         },
-        [isDashboardMap, mapBounds, navigate],
+        [isDashboardMap, mapBounds, navigate, setSelectedProject],
     );
 
     return (
