@@ -147,7 +147,7 @@ const ProjectOverviewMap = ({ isDashboardMap }: ProjectOverviewMapProps) => {
 
             return () => newMap.setTarget(undefined);
         },
-        [isDashboardMap, mapBounds, navigate],
+        [isDashboardMap, mapBounds, navigate, setSelectedProject],
     );
 
     return (
