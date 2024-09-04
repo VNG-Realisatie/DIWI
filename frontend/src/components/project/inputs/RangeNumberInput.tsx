@@ -3,6 +3,7 @@ import { InputAdornment, TextField } from "@mui/material";
 import InputLabelStack from "./InputLabelStack";
 import EuroIcon from "@mui/icons-material/Euro";
 import ClearInputAdornment from "./ClearInputAdornment";
+import { formatMonetaryValue } from "../../../utils/inputHelpers";
 
 export type ValueType = {
     value: null | number;
@@ -27,16 +28,6 @@ const decimalSeparator = ",";
 
 function formatValue(val: number | null): string {
     return val !== null ? String(val) : "";
-}
-
-function formatMonetaryValue(val: number | null) {
-    if (val === null) {
-        return "";
-    } else {
-        const euros = Math.floor(val / 100);
-        const cents = val % 100;
-        return `${euros}${decimalSeparator}${cents.toString().padStart(2, "0")}`;
-    }
 }
 
 function parseMonetary(value: string) {
