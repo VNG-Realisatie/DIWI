@@ -6,6 +6,14 @@ type PhysicalAppearance = {
     amount: number;
 };
 
+export type PolicyGoal = {
+    name: string;
+    category: string;
+    id: string;
+    goal: number;
+    amount: number;
+};
+
 export type Planning = {
     projectId: string;
     name: string;
@@ -52,6 +60,7 @@ export async function getDashboardProjects(): Promise<{
     priceCategoryOwn: PriceCategory[];
     priceCategoryRent: PriceCategory[];
     planning: Planning[];
+    policyGoals: PolicyGoal[];
 }> {
     const todaysDate = new Date().toISOString().split("T")[0]; // change this logic later
     return getJson(`${API_URI}/dashboard/projects?snapshotDate=${todaysDate}`);

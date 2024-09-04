@@ -4,7 +4,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { ChartType } from "../../pages/DashboardProject";
 import { MutationCard } from "./MutationCard";
 import ProjectOverviewMap from "../map/ProjectOverviewMap";
-import { getDashboardProjects, Planning, VisibilityElement } from "../../api/dashboardServices";
+import { getDashboardProjects, Planning, PolicyGoal, VisibilityElement } from "../../api/dashboardServices";
 import { getProjects } from "../../api/projectsServices";
 import { getProjectHouseBlocksWithCustomProperties } from "../../api/houseBlockServices";
 import { useTranslation } from "react-i18next";
@@ -21,6 +21,7 @@ type DashboardProjects = {
     priceCategoryOwn: ChartType[];
     priceCategoryRent: ChartType[];
     planning: Planning[];
+    policyGoals: PolicyGoal[];
 };
 
 type MutationValues = {
@@ -57,6 +58,12 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
         setVisibility((prev) => ({ ...prev, [item]: !prev[item] }));
     };
 
+    const dummyPolicyGoals = [
+        { name: "Houtbouw", category: "category", id: "1", goal: 100, amount: 80 },
+        { name: "Betonbouw", category: "category", id: "2", goal: 50, amount: 60 },
+        { name: "Staalbouw", category: "category", id: "3", goal: 70, amount: 70 },
+    ];
+
     const { t } = useTranslation();
     useEffect(() => {
         getDashboardProjects().then((data) => {
@@ -84,6 +91,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                 priceCategoryOwn: convertedPriceCategoryOwn,
                 priceCategoryRent: convertedPriceCategoryRent,
                 planning: data.planning,
+                policyGoals: dummyPolicyGoals,
             });
         });
     }, [t]);
