@@ -265,7 +265,14 @@ function App() {
                         />
                         <Route path={Paths.policygoal.path} element={<PolicyLists />} />
                         <Route path={Paths.policygoalDashboard.path} element={<PolicyLists />} />
-                        <Route path={Paths.dashboard.path} element={<DashboardProjects />} />
+                        <Route
+                            path={Paths.dashboard.path}
+                            element={
+                                <ProjectProvider>
+                                    <DashboardProjects />
+                                </ProjectProvider>
+                            }
+                        />
                         <Route path={Paths.createCustomDashbord.path} element={<CreateCustomDashboard />} />
                         <Route path={Paths.updateCustomDashbord.path} element={<CreateCustomDashboard />} />
                         <Route path={Paths.customDashbordList.path} element={<CustomDashboardList />} />
