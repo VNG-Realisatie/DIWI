@@ -438,7 +438,12 @@
       "updated" : "Succesvol geüpdatet",
       "created" : "Succesvol aangemaakt",
       "deleted" : "Succesvol verwijderd"
-    }
+    },
+    "dashboard": {
+          "deficit" : "tekort",
+          "surplus": "overschot",
+          "moreSpace": "ruimte over"
+        }
     },
     "dashboard": {
       "title": "Dashboard",

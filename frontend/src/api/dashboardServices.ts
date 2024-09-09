@@ -1,5 +1,6 @@
 import { deleteJson, getJson, postJson, putJson } from "../utils/requests";
 import { API_URI } from "../utils/urls";
+import { GoalDirection, GoalType } from "./goalsServices";
 
 type PhysicalAppearance = {
     name: string;
@@ -12,6 +13,10 @@ export type PolicyGoal = {
     id: string;
     goal: number;
     amount: number;
+    percentage: number;
+    totalAmount: number;
+    goalDirection: GoalDirection
+    goalType: GoalType
 };
 
 export type Planning = {

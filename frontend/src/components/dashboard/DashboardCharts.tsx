@@ -13,6 +13,7 @@ import { LabelComponent } from "../project/LabelComponent";
 import { CellContainer } from "../project/project-with-house-block/CellContainer";
 import { MyResponsiveBar } from "./BarChart";
 import { PolicyGoalChart } from "./PolicyGoalChart";
+import { Goal, GoalDirection, GoalType } from "../../api/goalsServices";
 
 const chartCardStyling = { backgroundColor: "#F0F0F0", my: 1, p: 2, xs: 12, md: 5.9 };
 
@@ -60,9 +61,83 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
     };
 
     const dummyPolicyGoals = [
-        { name: "Houtbouw", category: "category", id: "1", goal: 100, amount: 80 },
-        { name: "Betonbouw", category: "category", id: "2", goal: 50, amount: 60 },
-        { name: "Staalbouw", category: "category", id: "3", goal: 70, amount: 70 },
+        {
+            name: "Houtbouw",
+            category: "category",
+            id: "1",
+            goal: 100,
+            amount: 101,
+            percentage: 0,
+            totalAmount: 0,
+            goalDirection: "MAXIMAL" as GoalDirection,
+            goalType: "NUMBER" as GoalType,
+        },
+        {
+            name: "Betonbouw",
+            category: "category",
+            id: "2",
+            goal: 50,
+            amount: 49,
+            percentage: 0,
+            totalAmount: 0,
+            goalDirection: "MAXIMAL" as GoalDirection,
+            goalType: "NUMBER" as GoalType,
+        },
+        {
+            name: "Staalbouw",
+            category: "category",
+            id: "3",
+            goal: 70,
+            amount: 70,
+            percentage: 0,
+            totalAmount: 0,
+            goalDirection: "MAXIMAL" as GoalDirection,
+            goalType: "NUMBER" as GoalType,
+        },
+        {
+            name: "Houtbouw Percentage",
+            category: "category",
+            id: "4",
+            goal: 50,
+            amount: 0,
+            percentage: 22,
+            totalAmount: 100,
+            goalDirection: "MAXIMAL" as GoalDirection,
+            goalType: "PERCENTAGE" as GoalType,
+        },
+        {
+            name: "Betonbouw Percentage",
+            category: "category",
+            id: "5",
+            goal: 50,
+            amount: 0,
+            percentage: 78,
+            totalAmount: 100,
+            goalDirection: "MAXIMAL" as GoalDirection,
+            goalType: "PERCENTAGE" as GoalType,
+        },
+        {
+            name: "Staalbouw Percentage",
+            category: "category",
+            id: "6",
+            goal: 50,
+            amount: 0,
+            percentage: 10,
+            totalAmount: 100,
+            goalDirection: "MINIMAL" as GoalDirection,
+            goalType: "PERCENTAGE" as GoalType,
+        },
+        {
+            name: "Staalbouw Percentage333",
+            category: "category",
+            id: "7",
+            goal: 50,
+            amount: 0,
+            percentage: 99,
+            totalAmount: 100,
+            goalDirection: "MINIMAL" as GoalDirection,
+            goalType: "PERCENTAGE" as GoalType,
+        },
     ];
 
     const { t } = useTranslation();
