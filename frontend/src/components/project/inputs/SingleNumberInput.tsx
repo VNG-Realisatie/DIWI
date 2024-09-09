@@ -29,7 +29,7 @@ export const SingleNumberInput = ({
     isDemolition = false,
     tooltipInfoText,
 }: SingleNumberEdit) => {
-    const hasError = mandatory && (!value || value <= 0);
+    const hasError = mandatory && value !== null && value < 0;
 
     const inputField = (
         <TextField
