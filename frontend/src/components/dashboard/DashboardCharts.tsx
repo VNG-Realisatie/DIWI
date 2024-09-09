@@ -12,6 +12,7 @@ import useAllowedActions from "../../hooks/useAllowedActions";
 import { LabelComponent } from "../project/LabelComponent";
 import { CellContainer } from "../project/project-with-house-block/CellContainer";
 import { MyResponsiveBar } from "./BarChart";
+import { PolicyGoalChart } from "./PolicyGoalChart";
 
 const chartCardStyling = { backgroundColor: "#F0F0F0", my: 1, p: 2, xs: 12, md: 5.9 };
 
@@ -150,6 +151,11 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
     }, [t]);
     return (
         <>
+            {dashboardProjects &&
+                dashboardProjects.policyGoals.map((goal: PolicyGoal) => {
+                    return <PolicyGoalChart key={goal.id} goal={goal} />;
+                })}
+
             {!isPdf && (
                 <Grid container border="solid 1px #DDD" justifyContent="space-around" p={1}>
                     {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.MUTATION) && (
