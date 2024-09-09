@@ -11,7 +11,8 @@
 - fixed an issue where the ghost of a deleted category of a custom property would prohibit the addition of a category of the same name
 - fixed an issue where on the single project map page the individual block's numbers would not indicate an addition or subtraction (bouw/sloop) by adding a minus (-) to demolition blocks
 - fixed an issue where ghosts of deleted fixed property categories would still be available in the project wizard
-- addressed an issue where when going from one project's map location to another, the map would 'hang' on the previous location
+- fixed an issue where when going from one project's map location to another, the map would 'hang' on the previous location
+- fixed a bug where adding amounts to houseblocks did not immediately update amounts in project
 
 ## DIWI RELEASE 1.6.0
 
