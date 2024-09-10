@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import nl.vng.diwi.dal.entities.MultiProjectPolicyGoalSqlModel;
 import nl.vng.diwi.dal.entities.ProjectAuditSqlModel;
 import org.hibernate.Session;
 import org.hibernate.query.SelectionQuery;
@@ -161,6 +162,20 @@ public class ProjectsDAO extends AbstractRepository {
                     }
                 })
                 .getSingleResultOrNull();
+    }
+
+
+    public List<MultiProjectPolicyGoalSqlModel> getMultiProjectPolicyGoals(LocalDate snapshotDate, LoggedUser loggedUser) {
+        return session.createNativeQuery(String.format(
+                "SELECT * FROM %s.apply_policy_goals(:snapshotDate, :userRole, :userUuid) ",
+                GenericRepository.VNG_SCHEMA_NAME),
+            MultiProjectPolicyGoalSqlModel.class)
+            .setParameter("snapshotDate", snapshotDate)
+            .setParameter("userRole", loggedUser.getRole().name())
+            .setParameter("userUuid", loggedUser.getUuid())
+            .getResultList();
+
+
     }
 
     public List<ProjectAuditSqlModel> getProjectAuditLog(UUID projectUuid, LocalDateTime startDateTime, LocalDateTime endDateTime, LoggedUser loggedUser) {

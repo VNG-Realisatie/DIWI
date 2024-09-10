@@ -106,6 +106,7 @@ public class GenericRepository implements AutoCloseable {
                 BlueprintSqlModel.class,
                 ProjectListSqlModel.class,
                 ProjectDashboardSqlModel.class,
+                MultiProjectPolicyGoalSqlModel.class,
                 HouseblockSnapshotSqlModel.class,
                 PropertyModel.class,
                 ProjectHouseblockCustomPropertySqlModel.class,

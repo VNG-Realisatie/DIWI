@@ -12,6 +12,7 @@ import jakarta.ws.rs.core.MediaType;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.BlueprintSqlModel;
+import nl.vng.diwi.dal.entities.MultiProjectPolicyGoalSqlModel;
 import nl.vng.diwi.models.BlueprintModel;
 import nl.vng.diwi.models.MultiProjectDashboardModel;
 import nl.vng.diwi.models.ProjectDashboardModel;
@@ -61,11 +62,22 @@ public class DashboardResource {
     @Path("/projects")
     @RolesAllowed({UserActionConstants.VIEW_OWN_PROJECTS, UserActionConstants.VIEW_OTHERS_PROJECTS})
     @Produces(MediaType.APPLICATION_JSON)
-    public MultiProjectDashboardModel getProjectDashboardSnapshot(ContainerRequestContext requestContext, @QueryParam("snapshotDate") String snapshotDateStr) throws VngNotFoundException {
+    public MultiProjectDashboardModel getMultiProjectDashboardSnapshot(ContainerRequestContext requestContext, @QueryParam("snapshotDate") String snapshotDateStr) throws VngNotFoundException {
         var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
         LocalDate snapshotDate = LocalDate.parse(snapshotDateStr, localDateFormatter);
 
         return dashboardService.getMultiProjectDashboardSnapshot(repo, snapshotDate, loggedUser);
+    }
+
+    @GET
+    @Path("/projects/policygoals")
+    @RolesAllowed({UserActionConstants.VIEW_OWN_PROJECTS, UserActionConstants.VIEW_OTHERS_PROJECTS})
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<MultiProjectPolicyGoalSqlModel> getMultiProjectPolicyGoals(ContainerRequestContext requestContext, @QueryParam("snapshotDate") String snapshotDateStr) throws VngNotFoundException {
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
+        LocalDate snapshotDate = LocalDate.parse(snapshotDateStr, localDateFormatter);
+
+        return dashboardService.getMultiProjectPolicyGoals(repo, snapshotDate, loggedUser);
     }
 
     @GET
