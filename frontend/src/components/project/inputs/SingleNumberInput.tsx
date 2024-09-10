@@ -31,7 +31,7 @@ export const SingleNumberInput = ({
     tooltipInfoText,
     acceptsDecimal = false,
 }: SingleNumberEdit) => {
-    const hasError = mandatory && (value === null || value === undefined || value <= 0);
+    const hasError = mandatory && value !== null && value < 0;
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const inputValue = e.target.value;
