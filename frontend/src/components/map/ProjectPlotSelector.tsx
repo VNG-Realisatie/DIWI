@@ -8,7 +8,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { Box, Stack } from "@mui/material";
 import { useId, useState } from "react";
 import { useTranslation } from "react-i18next";
-import ProjectContext from "../../context/ProjectContext";
 import usePlotSelector, { Buttons } from "../../hooks/usePlotSelector";
 import { Details } from "../Details";
 import { AddHouseBlockButton } from "../PlusButton";
