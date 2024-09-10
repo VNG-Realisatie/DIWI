@@ -225,7 +225,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                 policyGoals: dummyPolicyGoals,
             });
         });
-    }, [t, dummyPolicyGoals]);
+    }, [t]);
 
     //This is for calculate the number of projects in each phase in ui update it later with endpoint
     useEffect(() => {
