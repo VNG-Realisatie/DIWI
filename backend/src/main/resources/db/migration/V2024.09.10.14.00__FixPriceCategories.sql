@@ -8,37 +8,12 @@ SET
                     vs.name
                     FROM
                         0 FOR 7
-                ) || TRIM(
-                    to_char (
-                        CAST(
-                            split_part (
-                                substring(
-                                    vs.name
-                                    FROM
-                                        6
-                                ),
-                                '-',
-                                1
-                            ) AS numeric(16, 6)
-                        ) / 100,
-                        '9999999999999999999.00'
-                    )
-                )
+                ) || TRIM(to_char (min, '9999999999999999999,00'))
                 WHEN u.system_user THEN substring(
                     vs.name
                     FROM
                         0 FOR 7
-                ) || TRIM(
-                    to_char (
-                        min / 100,
-                        '9999999999999999999.00'
-                    )
-                ) || ' - ' || TRIM(
-                    to_char (
-                        max / 100,
-                        '9999999999999999999.00'
-                    )
-                )
+                ) || TRIM(to_char (min, '9999999999999999999,00')) || ' - ' || TRIM(to_char (max, '9999999999999999999,00'))
                 ELSE vs.name
             END,
             CASE
