@@ -28,5 +28,4 @@ SET
             diwi.user AS u
         WHERE
             u.id = vs.create_user_id
-            -- and vs.id = vs2.id
     );
