@@ -31,7 +31,13 @@
       "andMore": "en meer",
       "andLess": "en minder",
       "logout": "Uitloggen",
-      "cantAccessPage": "U heeft geen toegang tot deze pagina. Neem contact op met uw beheerder"
+      "cantAccessPage": "U heeft geen toegang tot deze pagina. Neem contact op met uw beheerder",
+      "selectPlot": "Selecteer perceel",
+      "cancelSelection": "Annuleer selectie",
+      "cutSelection": "Knip perceel",
+      "cancelCutSelection": "Annuleer knip",
+      "deleteSelection": "Verwijder (sub)perceel",
+      "cancelDeleteSelection": "Annuleer verwijder"
     },
     "import": {
       "errorsTitle": "Import fouten",
@@ -229,7 +235,7 @@
         "notifications": {
           "successfullySaved": "Woningblokken succesvol opgeslagen.",
           "successfullyUpdated": "Woningblokken succesvol geüpdatet.",
-          "error": "Nieuwe of gewijzigde woningblokken met een uitroepteken konden niet worden opgeslagen, pas de informatie aan en sla nogmaals op",
+          "error": "Nieuwe of gewijzigde woningblokken konden niet worden opgeslagen, pas de gemarkeerde invoervelden aan en sla nogmaals op",
           "genericError": "Er is een fout opgetreden bij het opslaan van de woningblokken"
         }
       },
@@ -276,7 +282,8 @@
       "settings": "Instellingen",
       "addProject": "Project toevoegen",
       "projectOverview": "Overzicht projecten",
-      "knowledgeBase": "Kennisbank"
+      "knowledgeBase": "Kennisbank",
+      "goals": "Beleidsdoelen"
     },
     "about": {
       "heading": "Over deze website",
@@ -383,6 +390,57 @@
       "geography": "Geografie",
       "category": "Categorie"
     },
+    "goals": {
+      "name": "Naam beleidsdoel",
+      "property": "Eigenschap",
+      "startDate": "Startdatum",
+      "endDate": "Einddatum",
+      "category": "Categorie",
+      "goalDirection": "Doelrichting",
+      "goalValue": "Doelstelling",
+      "createNewGoal": "Nieuw beleidsdoel toevoegen",
+      "deleteConfirmation": "Weet u zeker dat u het doel wilt verwijderen",
+      "programming": "Programmering",
+      "selectProperty": "Selecteer eigenschap",
+      "table": {
+        "property": "Eigenschap",
+        "goal": "Doelstelling",
+        "startDate": "Startdatum",
+        "endDate": "Einddatum",
+        "geography": "Geografie",
+        "category": "Categorie",
+        "actions": "Acties"
+      },
+      "properties": {
+        "PROPERTY": "Maatwerk eigenschap",
+        "GROUND_POSITION": "Grond positie",
+        "PROGRAMMING": "Programmering",
+        "HOUSE_TYPE": "Type woning",
+        "OWNERSHIP": "Prijscategorie"
+      },
+      "goalType" : {
+        "number": "Aantal",
+        "percentage": "Percentage",
+        "direction" : {
+          "MAXIMAL": "Maximaal",
+          "MINIMAL": "Minimaal"
+        }
+      },
+      "errors" : {
+        "name": "Vul de naam van het beleidsdoel in",
+        "property": "Kies de eigenschap",
+        "startDate": "Vul de startdatum in",
+        "endDate": "Vul de einddatum in",
+        "category": "Kies de categorie",
+        "goalDirection": "Kies de doelstelling",
+        "selectProperty": "Selecteer eigenschap"
+      },
+    "notifications": {
+      "updated" : "Succesvol geüpdatet",
+      "created" : "Succesvol aangemaakt",
+      "deleted" : "Succesvol verwijderd"
+    }
+    },
     "dashboard": {
       "title": "Dashboard",
       "otherProjects": "Overige projecten",
@@ -395,6 +453,7 @@
       "selectProject": "Selecteer project",
       "buy": "Koop",
       "rent": "Huur",
+      "residentialProjects": "Woonproducten",
       "deliverables": "Opleveringen",
       "delayedProjects": "Vertraagde projecten",
       "residentialFeatures": "Woonkenmerken (aantal woningen)",

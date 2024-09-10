@@ -5,6 +5,7 @@ services:
       args:
         VITE_REACT_APP_GIT_SHA: ${VITE_REACT_APP_GIT_SHA:-Whoops you forgot to set the commit hash}
         VITE_REACT_APP_DEPLOY_DATE: ${VITE_REACT_APP_DEPLOY_DATE:-Whoops you forgot to set the commit date}
+        VITE_REACT_APP_VERSION_NUMBER: ${VITE_REACT_APP_VERSION_NUMBER:-Whoops you forgot to set version}
     develop:
       watch:
         - action: rebuild
@@ -64,3 +65,4 @@ services:
       - ${DATABASE_PORT:-5432}
     volumes:
       - ./data/database:/var/lib/postgresql/data
+      - ./backup:/backup:ro

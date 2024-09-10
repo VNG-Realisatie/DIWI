@@ -1,0 +1,63 @@
+package nl.vng.diwi.dal.entities;
+
+import io.hypersistence.utils.hibernate.type.range.PostgreSQLRangeType;
+import io.hypersistence.utils.hibernate.type.range.Range;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import nl.vng.diwi.dal.GenericRepository;
+import nl.vng.diwi.dal.entities.enums.OwnershipType;
+import nl.vng.diwi.dal.entities.superclasses.ChangeDataSuperclass;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.annotations.Type;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
+
+@Entity
+@Table(name = "plan_conditie_eigendom_en_waarde", schema = GenericRepository.VNG_SCHEMA_NAME)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class PlanConditionOwnershipValue extends ChangeDataSuperclass {
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "plan_conditie_id")
+    private PlanCondition planCondition;
+
+    @Column(name = "waarde_value")
+    private Integer value;
+
+    @Type(PostgreSQLRangeType.class)
+    @Column(name = "waarde_value_range", columnDefinition = "int4range")
+    private Range<Integer> valueRange;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "ownership_property_value_id")
+    private PropertyRangeCategoryValue ownershipRangeCategoryValue;
+
+    @Column(name = "huurbedrag_value")
+    private Integer rentalValue;
+
+    @Type(PostgreSQLRangeType.class)
+    @Column(name = "huurbedrag_value_range", columnDefinition = "int4range")
+    private Range<Integer> rentalValueRange;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "rental_property_value_id")
+    private PropertyRangeCategoryValue rentalRangeCategoryValue;
+
+    @Column(name = "eigendom_soort")
+    @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    private OwnershipType ownershipType;
+
+}

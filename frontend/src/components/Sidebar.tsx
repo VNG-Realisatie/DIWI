@@ -70,6 +70,13 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
                         <ListItemText primary="Beleidsdoelen" />
                     </ListItemButton>
                 </Link> */}
+                {allowedActions.includes("EDIT_GOALS") && (
+                    <Link to={Paths.goals.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
+                        <ListItemButton onClick={handleDrawerClose}>
+                            <ListItemText primary={t("sidebar.goals")} />
+                        </ListItemButton>
+                    </Link>
+                )}
                 {allowedActions.includes("VIEW_ALL_BLUEPRINTS") && (
                     <Link to={Paths.dashboard.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
                         <ListItemButton onClick={handleDrawerClose}>
