@@ -55,6 +55,7 @@ public class ProjectsResourceTest {
     @BeforeAll
     static void beforeAll() throws Exception {
         testDb = new TestDb();
+        testDb.reset();
         dalFactory = testDb.getDalFactory();
         projectResource = new ProjectsResource(new GenericRepository(dalFactory.constructDal()),
             new ProjectService(), new HouseblockService(), new PropertiesService(), testDb.projectConfig, new ExcelImportService(), new GeoJsonImportService());

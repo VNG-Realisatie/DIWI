@@ -29,7 +29,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -48,6 +47,7 @@ public class HouseblockResourceTest {
     @BeforeAll
     static void beforeAll() throws Exception {
         testDb = new TestDb();
+        testDb.reset();
         dalFactory = testDb.getDalFactory();
         houseblockResource = new HouseblockResource(new GenericRepository(dalFactory.constructDal()),
             new HouseblockService(), new ProjectService(), new PropertiesService());
