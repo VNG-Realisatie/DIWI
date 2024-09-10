@@ -15,6 +15,9 @@ import nl.vng.diwi.dal.Database;
 import nl.vng.diwi.dal.GenericRepository;
 
 public class TestDb implements AutoCloseable {
+    public static final String TEST_DB_USER = "diwi";
+    public static final String TEST_DB_NAME = "diwi_test";
+
     private DalFactory dalFactory;
     private Map<String, String> env;
 
@@ -26,9 +29,9 @@ public class TestDb implements AutoCloseable {
         env.putIfAbsent("BASE_URL", "http://localhost");
 
         env.putIfAbsent("DIWI_DB_HOST", "localhost");
-        env.putIfAbsent("DIWI_DB_NAME", "diwi_test");
-        env.putIfAbsent("DIWI_DB_USERNAME", "diwi");
-        env.putIfAbsent("DIWI_DB_PASSWORD", "diwi");
+        env.putIfAbsent("DIWI_DB_NAME", TEST_DB_NAME);
+        env.putIfAbsent("DIWI_DB_USERNAME", TEST_DB_USER);
+        env.putIfAbsent("DIWI_DB_PASSWORD", TEST_DB_USER);
 
         env.putIfAbsent("KC_AUTH_SERVER_URL", "http://localhost");
         env.putIfAbsent("KC_REALM_NAME", "");
@@ -43,7 +46,7 @@ public class TestDb implements AutoCloseable {
         this.projectConfig = new ProjectConfig(env);
         dalFactory = new DalFactory(projectConfig, GenericRepository.getEntities());
 
-        reset();
+        // reset();
     }
 
     @Override
@@ -52,12 +55,26 @@ public class TestDb implements AutoCloseable {
     }
 
     public void reset() throws Exception {
-        reset(null);
+        resetToVersion(null);
     }
 
-    public void reset(String version) throws Exception {
+    public void resetToVersion(String version) throws Exception {
+        clearDB();
+
+        upgrade(version);
+    }
+
+    public void upgradeToLatest() {
+        upgrade(null);
+    }
+
+    public void upgrade(String version) {
+        Database.upgrade(projectConfig.getDbUrl(), projectConfig.getDbUser(), projectConfig.getDbPass(), version);
+    }
+
+    public void clearDB() {
         try (Dal dal = dalFactory.constructDal();
-             Session session = dal.getSession()) {
+        Session session = dal.getSession()) {
             try (var transaction = dal.beginTransaction()) {
                 session.createNativeMutationQuery("DROP SCHEMA IF EXISTS \"public\" CASCADE").executeUpdate();
                 session.createNativeMutationQuery("DROP SCHEMA IF EXISTS \"diwi_testset\" CASCADE").executeUpdate();
@@ -66,9 +83,7 @@ public class TestDb implements AutoCloseable {
             }
         }
         dalFactory.close();
-
         dalFactory = new DalFactory(new ProjectConfig(env), GenericRepository.getEntities());
-        Database.upgrade(projectConfig.getDbUrl(), projectConfig.getDbUser(), projectConfig.getDbPass(), version);
     }
 
     public DalFactory getDalFactory() {
