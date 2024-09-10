@@ -442,7 +442,8 @@
     "dashboard": {
           "deficit" : "tekort",
           "surplus": "overschot",
-          "moreSpace": "ruimte over"
+          "moreSpace": "ruimte over",
+          "noCategory": "Geen categorie"
         }
     },
     "dashboard": {
@@ -455,6 +456,7 @@
       "projects": "Dashboard projecten",
       "municipalityProgram": "Woningbouwprogramma gemeente",
       "selectProject": "Selecteer project",
+      "policyGoals": "Beleidsdoelen",
       "buy": "Koop",
       "rent": "Huur",
       "residentialProjects": "Woonproducten",

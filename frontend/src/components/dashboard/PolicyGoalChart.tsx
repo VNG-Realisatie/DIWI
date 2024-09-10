@@ -4,6 +4,7 @@ import { t } from "i18next";
 
 type Props = {
     goal: PolicyGoal;
+    isPDF?: boolean;
 };
 
 const getStyles = (equalGoalandAmount: boolean, isSurplus: boolean, isMaximalPercentageGoal: boolean) => ({
@@ -24,7 +25,7 @@ const getStyles = (equalGoalandAmount: boolean, isSurplus: boolean, isMaximalPer
         borderRadius: equalGoalandAmount ? "8px" : "8px 0 0 8px",
     },
     remainingBox: {
-        backgroundColor: "#EDEDED",
+        backgroundColor: "#D3D3D3",
         p: 2,
         textAlign: "center",
         color: isMaximalPercentageGoal ? (isSurplus ? "#AB3636" : "#04BD00") : isSurplus ? "#04BD00" : "#AB3636",
@@ -32,32 +33,48 @@ const getStyles = (equalGoalandAmount: boolean, isSurplus: boolean, isMaximalPer
     },
 });
 
-export const PolicyGoalChart = ({ goal }: Props) => {
-    const isNumericGoal = goal.goalType === "NUMBER";
-    const isMaximalPercentageGoal = goal.goalDirection === "MAXIMAL" && goal.goalType === "PERCENTAGE";
-    const amount = isNumericGoal ? goal.amount : goal.percentage;
-    const equalGoalandAmount = amount === goal.goal;
+const calculateWidths = (isNumericGoal: boolean, isSurplus: boolean, amount: number, goal: number, isPDF: boolean) => {
+    let filledWidth, remainingWidth;
+    if (isNumericGoal) {
+        filledWidth = isSurplus ? (goal / amount) * 100 : (amount / goal) * 100;
+        remainingWidth = 100 - filledWidth;
+    } else {
+        filledWidth = amount;
+        remainingWidth = Math.max(goal - amount, isPDF ? 25 : 10);
+    }
+    return { filledWidth, remainingWidth };
+};
 
-    const isSurplus = amount > goal.goal;
-    const filledWidth = Math.min(isSurplus ? (goal.goal / amount) * 100 : (amount / goal.goal) * 100, equalGoalandAmount || isNumericGoal ? 100 : 90);
-    const remainingWidth = 100 - filledWidth;
+const formatDifference = (goalType: string, difference: number) => {
+    return goalType === "NUMBER" ? difference : difference.toFixed(2);
+};
 
-    const difference = Math.abs(goal.goal - amount);
-    const formattedDifference = goal.goalType === "NUMBER" ? difference : difference.toFixed(2);
-
-    const styles = getStyles(equalGoalandAmount, isSurplus, isMaximalPercentageGoal);
-
-    const text = isNumericGoal
+const getText = (isNumericGoal: boolean, isSurplus: boolean, formattedDifference: string, isMaximalPercentageGoal: boolean) => {
+    return isNumericGoal
         ? !isSurplus
             ? `-${formattedDifference}`
             : formattedDifference
         : `${formattedDifference}% ${
               isSurplus ? t("goals.dashboard.surplus") : isMaximalPercentageGoal ? t("goals.dashboard.moreSpace") : t("goals.dashboard.deficit")
           }`;
+};
+
+export const PolicyGoalChart = ({ goal, isPDF = false }: Props) => {
+    const isNumericGoal = goal.goalType === "NUMBER";
+    const isMaximalPercentageGoal = goal.goalDirection === "MAXIMAL" && goal.goalType === "PERCENTAGE";
+    const amount = isNumericGoal ? goal.amount : goal.percentage;
+    const equalGoalandAmount = amount === goal.goal;
+    const isSurplus = amount > goal.goal;
+
+    const { filledWidth, remainingWidth } = calculateWidths(isNumericGoal, isSurplus, amount, goal.goal, isPDF);
+    const difference = Math.abs(goal.goal - amount);
+    const formattedDifference = formatDifference(goal.goalType, difference);
+    const styles = getStyles(equalGoalandAmount, isSurplus, isMaximalPercentageGoal);
+    const text = getText(isNumericGoal, isSurplus, String(formattedDifference), isMaximalPercentageGoal);
 
     return (
         <Stack width="100%">
-            <Box sx={styles.goalBox}>{goal.name}</Box>
+            <Box sx={styles.goalBox}>{`${goal.name} ${t(`goals.goalType.direction.${goal.goalDirection}`)} ${goal.goal}${isNumericGoal ? "" : "%"}`}</Box>
             <Stack direction="row" alignItems="center" width="100%" marginBottom="17px">
                 <Box sx={{ ...styles.filledBox, width: `${filledWidth}%` }}>{isNumericGoal ? amount : `${amount}%`}</Box>
                 {!equalGoalandAmount && <Box sx={{ ...styles.remainingBox, width: `${remainingWidth}%` }}>{text}</Box>}

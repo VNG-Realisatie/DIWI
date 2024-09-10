@@ -4,7 +4,7 @@ import html2canvas from "html2canvas";
 type Element = {
     id: string;
     width: number;
-    height: number;
+    height?: number;
 };
 
 const elements: Element[] = [
@@ -15,6 +15,8 @@ const elements: Element[] = [
     { id: "buy", width: 205, height: 75 },
     { id: "rent", width: 205, height: 75 },
     { id: "deliverables", width: 205, height: 75 },
+    { id: "policyGoals", width: 436 }, // No fixed height for policyGoals
+
     //add more elements here
 ];
 
@@ -23,11 +25,22 @@ const h2c = async (element: HTMLElement) => {
     return canvas.toDataURL("image/png");
 };
 
+const getElementDimensions = (element: HTMLElement) => {
+    const rect = element.getBoundingClientRect();
+    return { width: rect.width, height: rect.height };
+};
+
 const getElementImage = async ({ id, width, height }: Element) => {
     const element = document.getElementById(id);
     if (element) {
+        let elementHeight = id === "policyGoals" ? getElementDimensions(element).height : height;
+        if (typeof elementHeight != "number") {
+            elementHeight = 0;
+        } else if (id === "policyGoals") {
+            elementHeight = elementHeight * 0.3;
+        }
         const chart = await h2c(element);
-        return { chart, width, height };
+        return { chart, width, height: elementHeight };
     }
     return null;
 };
@@ -48,14 +61,33 @@ export const exportPdf = async (t: (key: string) => string, setPdfExport: (value
     let y = 30;
     let lineHeight = 0;
     let chartsInLine = 0;
+    const pageHeight = pdf.internal.pageSize.height;
 
     filteredChartsArray.forEach(({ chart, width, height }) => {
         if (width === 436) {
+            if (y + height > pageHeight) {
+                pdf.addPage();
+                x = 5;
+                y = 30;
+            }
             pdf.addImage(chart, "PNG", x, y, width, height);
             y += height + 10;
             lineHeight = 0;
             chartsInLine = 0;
         } else {
+            if (x + width > pdf.internal.pageSize.width) {
+                x = 5;
+                y += lineHeight + 10;
+                lineHeight = 0;
+                chartsInLine = 0;
+            }
+            if (y + height > pageHeight) {
+                pdf.addPage();
+                x = 5;
+                y = 30;
+                lineHeight = 0;
+                chartsInLine = 0;
+            }
             pdf.addImage(chart, "PNG", x, y, width, height);
             x += width + 10;
             lineHeight = Math.max(lineHeight, height);

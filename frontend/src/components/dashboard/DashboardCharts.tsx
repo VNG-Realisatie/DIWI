@@ -13,7 +13,7 @@ import { LabelComponent } from "../project/LabelComponent";
 import { CellContainer } from "../project/project-with-house-block/CellContainer";
 import { MyResponsiveBar } from "./BarChart";
 import { PolicyGoalChart } from "./PolicyGoalChart";
-import { Goal, GoalDirection, GoalType } from "../../api/goalsServices";
+import { GoalDirection, GoalType } from "../../api/goalsServices";
 
 const chartCardStyling = { backgroundColor: "#F0F0F0", my: 1, p: 2, xs: 12, md: 5.9 };
 
@@ -63,10 +63,10 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
     const dummyPolicyGoals = [
         {
             name: "Houtbouw",
-            category: "category",
+            category: "1 category",
             id: "1",
             goal: 100,
-            amount: 101,
+            amount: 144,
             percentage: 0,
             totalAmount: 0,
             goalDirection: "MAXIMAL" as GoalDirection,
@@ -74,10 +74,10 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
         },
         {
             name: "Betonbouw",
-            category: "category",
+            category: "1 category",
             id: "2",
             goal: 50,
-            amount: 49,
+            amount: 32,
             percentage: 0,
             totalAmount: 0,
             goalDirection: "MAXIMAL" as GoalDirection,
@@ -85,7 +85,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
         },
         {
             name: "Staalbouw",
-            category: "category",
+            category: "1 category",
             id: "3",
             goal: 70,
             amount: 70,
@@ -96,7 +96,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
         },
         {
             name: "Houtbouw Percentage",
-            category: "category",
+            category: "2 category",
             id: "4",
             goal: 50,
             amount: 0,
@@ -107,7 +107,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
         },
         {
             name: "Betonbouw Percentage",
-            category: "category",
+            category: "1 category",
             id: "5",
             goal: 50,
             amount: 0,
@@ -118,7 +118,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
         },
         {
             name: "Staalbouw Percentage",
-            category: "category",
+            category: "3 category",
             id: "6",
             goal: 50,
             amount: 0,
@@ -129,8 +129,63 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
         },
         {
             name: "Staalbouw Percentage333",
-            category: "category",
-            id: "7",
+            category: "3 category",
+            id: "8",
+            goal: 50,
+            amount: 0,
+            percentage: 99,
+            totalAmount: 100,
+            goalDirection: "MINIMAL" as GoalDirection,
+            goalType: "PERCENTAGE" as GoalType,
+        },
+        {
+            name: "Staalbouw Percentage333",
+            category: "3 category",
+            id: "9",
+            goal: 50,
+            amount: 0,
+            percentage: 99,
+            totalAmount: 100,
+            goalDirection: "MINIMAL" as GoalDirection,
+            goalType: "PERCENTAGE" as GoalType,
+        },
+        {
+            name: "Staalbouw Percentage333",
+            category: "3 category",
+            id: "10",
+            goal: 50,
+            amount: 0,
+            percentage: 99,
+            totalAmount: 100,
+            goalDirection: "MINIMAL" as GoalDirection,
+            goalType: "PERCENTAGE" as GoalType,
+        },
+        {
+            name: "Staalbouw Percentage333",
+            category: "3 category",
+            id: "11",
+            goal: 50,
+            amount: 0,
+            percentage: 99,
+            totalAmount: 100,
+            goalDirection: "MINIMAL" as GoalDirection,
+            goalType: "PERCENTAGE" as GoalType,
+        },
+        {
+            name: "Staalbouw Percentage333",
+            category: "3 category",
+            id: "12",
+            goal: 50,
+            amount: 0,
+            percentage: 99,
+            totalAmount: 100,
+            goalDirection: "MINIMAL" as GoalDirection,
+            goalType: "PERCENTAGE" as GoalType,
+        },
+        {
+            name: "Staalbouw Percentage333",
+            category: "3 category",
+            id: "13",
             goal: 50,
             amount: 0,
             percentage: 99,
@@ -226,132 +281,161 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
     }, [t]);
     return (
         <>
-            {dashboardProjects &&
-                dashboardProjects.policyGoals.map((goal: PolicyGoal) => {
-                    return <PolicyGoalChart key={goal.id} goal={goal} />;
-                })}
-
             {!isPdf && (
-                <Grid container border="solid 1px #DDD" justifyContent="space-around" p={1}>
-                    {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.MUTATION) && (
-                        <Grid item xs={12}>
-                            <MutationCard
-                                handleToggle={() => handleToggleVisibility("MUTATION")}
-                                visibility={visibility}
-                                demolitionAmount={dashboardMutationValues?.DEMOLITION ?? 0}
-                                constructionAmount={dashboardMutationValues?.CONSTRUCTION ?? 0}
-                            />
-                        </Grid>
-                    )}
-                    {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.PROJECT_PHASE) && (
-                        <Grid item {...chartCardStyling}>
-                            <Box display="flex" justifyContent="space-between" alignItems="center">
-                                <Typography variant="h6" fontSize={16}>
-                                    {t("dashboard.projectPhases")}
-                                </Typography>
-                                {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
-                                    <Switch
-                                        checked={visibility.PROJECT_PHASE}
-                                        onChange={() => handleToggleVisibility("PROJECT_PHASE")}
-                                        inputProps={{ "aria-label": "controlled" }}
-                                    />
-                                )}
-                            </Box>
-                            <DashboardPieChart chartData={projectPhaseSums || []} />
-                        </Grid>
-                    )}
-                    {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.TARGET_GROUP) && (
-                        <Grid item {...chartCardStyling}>
-                            <Box display="flex" justifyContent="space-between" alignItems="center">
-                                <Typography variant="h6" fontSize={16}>
-                                    {t("dashboard.targetAudiences")}
-                                </Typography>
-                                {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
-                                    <Switch
-                                        checked={visibility.TARGET_GROUP}
-                                        onChange={() => handleToggleVisibility("TARGET_GROUP")}
-                                        inputProps={{ "aria-label": "controlled" }}
-                                    />
-                                )}
-                            </Box>
-                            <DashboardPieChart chartData={dashboardProjects?.targetGroup || []} />
-                        </Grid>
-                    )}
-                    {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.PHYSICAL_APPEARANCE) && (
-                        <Grid item {...chartCardStyling}>
-                            <Box display="flex" justifyContent="space-between" alignItems="center">
-                                <Typography variant="h6" fontSize={16}>
-                                    {t("dashboard.residentialFeatures")}
-                                </Typography>
-                                {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
-                                    <Switch
-                                        checked={visibility.PHYSICAL_APPEARANCE}
-                                        onChange={() => handleToggleVisibility("PHYSICAL_APPEARANCE")}
-                                        inputProps={{ "aria-label": "controlled" }}
-                                    />
-                                )}
-                            </Box>
-                            <DashboardPieChart chartData={dashboardProjects?.physicalAppearance || []} />
-                        </Grid>
-                    )}
-                    {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.OWNERSHIP_BUY) && (
-                        <Grid item {...chartCardStyling}>
-                            <Box display="flex" justifyContent="space-between" alignItems="center">
-                                <Typography variant="h6" fontSize={16}>
-                                    {t("dashboard.buy")}
-                                </Typography>
-                                {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
-                                    <Switch
-                                        checked={visibility.OWNERSHIP_BUY}
-                                        onChange={() => handleToggleVisibility("OWNERSHIP_BUY")}
-                                        inputProps={{ "aria-label": "controlled" }}
-                                    />
-                                )}
-                            </Box>
-                            <DashboardPieChart chartData={dashboardProjects?.priceCategoryOwn || []} />
-                        </Grid>
-                    )}
-                    {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.OWNERSHIP_RENT) && (
-                        <Grid item {...chartCardStyling}>
-                            <Box display="flex" justifyContent="space-between" alignItems="center">
-                                <Typography variant="h6" fontSize={16}>
-                                    {t("dashboard.rent")}
-                                </Typography>
-                                {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
-                                    <Switch
-                                        checked={visibility.OWNERSHIP_RENT}
-                                        onChange={() => handleToggleVisibility("OWNERSHIP_RENT")}
-                                        inputProps={{ "aria-label": "controlled" }}
-                                    />
-                                )}
-                            </Box>
-                            <DashboardPieChart chartData={dashboardProjects?.priceCategoryRent || []} />
-                        </Grid>
-                    )}
-                    {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.DELIVERABLES) && (
-                        <Grid item {...chartCardStyling}>
-                            <Box display="flex" justifyContent="space-between" alignItems="center">
-                                <Typography variant="h6" fontSize={16}>
-                                    {t("dashboard.deliverables")}
-                                </Typography>
-                                {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
-                                    <Switch
-                                        checked={visibility.DELIVERABLES}
-                                        onChange={() => handleToggleVisibility("DELIVERABLES")}
-                                        inputProps={{ "aria-label": "controlled" }}
-                                    />
-                                )}
-                            </Box>
-                            <MyResponsiveBar chartData={dashboardProjects?.planning || []} selectedProject={null} />
-                        </Grid>
-                    )}
+                <>
+                    <Grid container border="solid 1px #DDD" justifyContent="space-around" p={1}>
+                        {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.MUTATION) && (
+                            <Grid item xs={12}>
+                                <MutationCard
+                                    handleToggle={() => handleToggleVisibility("MUTATION")}
+                                    visibility={visibility}
+                                    demolitionAmount={dashboardMutationValues?.DEMOLITION ?? 0}
+                                    constructionAmount={dashboardMutationValues?.CONSTRUCTION ?? 0}
+                                />
+                            </Grid>
+                        )}
+                        {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.PROJECT_PHASE) && (
+                            <Grid item {...chartCardStyling}>
+                                <Box display="flex" justifyContent="space-between" alignItems="center">
+                                    <Typography variant="h6" fontSize={16}>
+                                        {t("dashboard.projectPhases")}
+                                    </Typography>
+                                    {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
+                                        <Switch
+                                            checked={visibility.PROJECT_PHASE}
+                                            onChange={() => handleToggleVisibility("PROJECT_PHASE")}
+                                            inputProps={{ "aria-label": "controlled" }}
+                                        />
+                                    )}
+                                </Box>
+                                <DashboardPieChart chartData={projectPhaseSums || []} />
+                            </Grid>
+                        )}
+                        {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.TARGET_GROUP) && (
+                            <Grid item {...chartCardStyling}>
+                                <Box display="flex" justifyContent="space-between" alignItems="center">
+                                    <Typography variant="h6" fontSize={16}>
+                                        {t("dashboard.targetAudiences")}
+                                    </Typography>
+                                    {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
+                                        <Switch
+                                            checked={visibility.TARGET_GROUP}
+                                            onChange={() => handleToggleVisibility("TARGET_GROUP")}
+                                            inputProps={{ "aria-label": "controlled" }}
+                                        />
+                                    )}
+                                </Box>
+                                <DashboardPieChart chartData={dashboardProjects?.targetGroup || []} />
+                            </Grid>
+                        )}
+                        {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.PHYSICAL_APPEARANCE) && (
+                            <Grid item {...chartCardStyling}>
+                                <Box display="flex" justifyContent="space-between" alignItems="center">
+                                    <Typography variant="h6" fontSize={16}>
+                                        {t("dashboard.residentialFeatures")}
+                                    </Typography>
+                                    {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
+                                        <Switch
+                                            checked={visibility.PHYSICAL_APPEARANCE}
+                                            onChange={() => handleToggleVisibility("PHYSICAL_APPEARANCE")}
+                                            inputProps={{ "aria-label": "controlled" }}
+                                        />
+                                    )}
+                                </Box>
+                                <DashboardPieChart chartData={dashboardProjects?.physicalAppearance || []} />
+                            </Grid>
+                        )}
+                        {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.OWNERSHIP_BUY) && (
+                            <Grid item {...chartCardStyling}>
+                                <Box display="flex" justifyContent="space-between" alignItems="center">
+                                    <Typography variant="h6" fontSize={16}>
+                                        {t("dashboard.buy")}
+                                    </Typography>
+                                    {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
+                                        <Switch
+                                            checked={visibility.OWNERSHIP_BUY}
+                                            onChange={() => handleToggleVisibility("OWNERSHIP_BUY")}
+                                            inputProps={{ "aria-label": "controlled" }}
+                                        />
+                                    )}
+                                </Box>
+                                <DashboardPieChart chartData={dashboardProjects?.priceCategoryOwn || []} />
+                            </Grid>
+                        )}
+                        {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.OWNERSHIP_RENT) && (
+                            <Grid item {...chartCardStyling}>
+                                <Box display="flex" justifyContent="space-between" alignItems="center">
+                                    <Typography variant="h6" fontSize={16}>
+                                        {t("dashboard.rent")}
+                                    </Typography>
+                                    {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
+                                        <Switch
+                                            checked={visibility.OWNERSHIP_RENT}
+                                            onChange={() => handleToggleVisibility("OWNERSHIP_RENT")}
+                                            inputProps={{ "aria-label": "controlled" }}
+                                        />
+                                    )}
+                                </Box>
+                                <DashboardPieChart chartData={dashboardProjects?.priceCategoryRent || []} />
+                            </Grid>
+                        )}
+                        {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.DELIVERABLES) && (
+                            <Grid item {...chartCardStyling}>
+                                <Box display="flex" justifyContent="space-between" alignItems="center">
+                                    <Typography variant="h6" fontSize={16}>
+                                        {t("dashboard.deliverables")}
+                                    </Typography>
+                                    {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
+                                        <Switch
+                                            checked={visibility.DELIVERABLES}
+                                            onChange={() => handleToggleVisibility("DELIVERABLES")}
+                                            inputProps={{ "aria-label": "controlled" }}
+                                        />
+                                    )}
+                                </Box>
+                                <MyResponsiveBar chartData={dashboardProjects?.planning || []} selectedProject={null} />
+                            </Grid>
+                        )}
+                        {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.DELAYED_PROJECTS) && (
+                            <Grid item {...chartCardStyling}>
+                                <Box display="flex" justifyContent="space-between" alignItems="center">
+                                    <Typography variant="h6" fontSize={16}>
+                                        {t("dashboard.delayedProjects")}
+                                    </Typography>
+                                    {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
+                                        <Switch
+                                            checked={visibility.DELAYED_PROJECTS}
+                                            onChange={() => handleToggleVisibility("DELAYED_PROJECTS")}
+                                            inputProps={{ "aria-label": "controlled" }}
+                                        />
+                                    )}
+                                </Box>
+                            </Grid>
+                        )}
+                        {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.PROJECT_MAP) && (
+                            <Grid item {...chartCardStyling}>
+                                <Box display="flex" justifyContent="space-between" alignItems="center">
+                                    <Typography variant="h6" fontSize={16}>
+                                        {t("dashboard.projects")}
+                                    </Typography>
+                                    {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
+                                        <Switch
+                                            checked={visibility.PROJECT_MAP}
+                                            onChange={() => handleToggleVisibility("PROJECT_MAP")}
+                                            inputProps={{ "aria-label": "controlled" }}
+                                        />
+                                    )}
+                                </Box>
+                                <ProjectOverviewMap isDashboardMap={true} />
+                            </Grid>
+                        )}
+                    </Grid>
                     {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.DELAYED_PROJECTS) && (
                         <Grid item {...chartCardStyling}>
                             <Box display="flex" justifyContent="space-between" alignItems="center">
-                                <Typography variant="h6" fontSize={16}>
-                                    {t("dashboard.delayedProjects")}
-                                </Typography>
+                                <Typography variant="h6" fontSize={16}></Typography>
                                 {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
+                                    // visibility needs to be updated
                                     <Switch
                                         checked={visibility.DELAYED_PROJECTS}
                                         onChange={() => handleToggleVisibility("DELAYED_PROJECTS")}
@@ -359,26 +443,27 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                                     />
                                 )}
                             </Box>
+                            {dashboardProjects &&
+                                (() => {
+                                    const categories = Array.from(new Set(dashboardProjects.policyGoals.map((goal) => goal.category))).sort();
+
+                                    return categories.map((category) => (
+                                        <Grid item {...chartCardStyling} key={category}>
+                                            <Typography variant="h6" fontSize={16} paddingBottom={2}>
+                                                {category ? category : t("goals.dashboard.noCategory")}
+                                            </Typography>
+
+                                            {dashboardProjects.policyGoals
+                                                .filter((goal) => goal.category === category)
+                                                .map((goal) => (
+                                                    <PolicyGoalChart key={goal.id} goal={goal} />
+                                                ))}
+                                        </Grid>
+                                    ));
+                                })()}
                         </Grid>
                     )}
-                    {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.PROJECT_MAP) && (
-                        <Grid item {...chartCardStyling}>
-                            <Box display="flex" justifyContent="space-between" alignItems="center">
-                                <Typography variant="h6" fontSize={16}>
-                                    {t("dashboard.projects")}
-                                </Typography>
-                                {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
-                                    <Switch
-                                        checked={visibility.PROJECT_MAP}
-                                        onChange={() => handleToggleVisibility("PROJECT_MAP")}
-                                        inputProps={{ "aria-label": "controlled" }}
-                                    />
-                                )}
-                            </Box>
-                            <ProjectOverviewMap isDashboardMap={true} />
-                        </Grid>
-                    )}
-                </Grid>
+                </>
             )}
 
             {isPdf && (
@@ -489,6 +574,29 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                             <Typography variant="h6" fontSize={16}>
                                 {t("dashboard.delayedProjects")}
                             </Typography>
+                        </Box>
+                    )}
+                    {(isPrintingFullDashboard || visibility?.DELAYED_PROJECTS) && (
+                        <Box width="50%" border="solid 1px #DDD" p={1} id="policyGoals">
+                            <Typography variant="h6" fontSize={16}></Typography>
+                            {dashboardProjects &&
+                                (() => {
+                                    const categories = Array.from(new Set(dashboardProjects.policyGoals.map((goal) => goal.category))).sort();
+
+                                    return categories.map((category) => (
+                                        <Grid item {...chartCardStyling} key={category}>
+                                            <Typography variant="h6" fontSize={16} paddingBottom={2}>
+                                                {category ? category : t("goals.dashboard.noCategory")}
+                                            </Typography>
+
+                                            {dashboardProjects.policyGoals
+                                                .filter((goal) => goal.category === category)
+                                                .map((goal) => (
+                                                    <PolicyGoalChart isPDF={true} key={goal.id} goal={goal} />
+                                                ))}
+                                        </Grid>
+                                    ));
+                                })()}
                         </Box>
                     )}
                 </Stack>
