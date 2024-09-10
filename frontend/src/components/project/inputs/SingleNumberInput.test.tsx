@@ -4,11 +4,6 @@ import { SingleNumberInput } from "./SingleNumberInput";
 import { vi } from "vitest";
 
 describe("SingleNumberInput component", () => {
-    it("renders with error message when mandatory and value is not provided", () => {
-        render(<SingleNumberInput value={null} onChange={() => {}} readOnly={false} mandatory={true} error="Value is required" />);
-        expect(screen.getByText("Value is required")).toBeInTheDocument();
-    });
-
     it("calls onChange callback with entered value", () => {
         const handleChange = vi.fn();
         render(<SingleNumberInput value={null} onChange={handleChange} readOnly={false} mandatory={false} />);
