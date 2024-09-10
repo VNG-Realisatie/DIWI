@@ -37,6 +37,7 @@ export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, cu
                     setCustomValue({ ...customValue, booleanValue });
                 }}
                 renderInput={(params) => <TextField {...params} size="small" />}
+                isOptionEqualToValue={(option, value) => option === value}
             />
         );
     } else if (customDefinition.propertyType === "CATEGORY") {
@@ -57,6 +58,7 @@ export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, cu
                 multiple
                 onChange={(_, newValue) => setCustomValue({ ...customValue, categories: newValue.map((c) => c?.id as string) })}
                 renderInput={(params) => <TextField {...params} size="small" />}
+                isOptionEqualToValue={(option, value) => !!value && !!option && option.id === value.id}
             />
         );
     } else if (customDefinition.propertyType === "ORDINAL") {
@@ -76,6 +78,7 @@ export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, cu
                 value={value}
                 onChange={(_, newValue) => setCustomValue({ ...customValue, ordinals: { value: newValue?.id as string } })}
                 renderInput={(params) => <TextField {...params} size="small" sx={{ minWidth: "200px" }} />}
+                isOptionEqualToValue={(option, value) => !!value && !!option && option.id === value.id}
             />
         );
     } else if (customDefinition.propertyType === "NUMERIC") {

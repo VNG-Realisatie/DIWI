@@ -41,6 +41,14 @@ public class PropertyDAO extends AbstractRepository {
             .getSingleResultOrNull();
     }
 
+    public PropertyModel getActivePropertyByName(String name) {
+        PropertyState propertyState = getActivePropertyStateByName(name);
+        if (propertyState == null) {
+            return null;
+        }
+        return getPropertyById(propertyState.getProperty().getId());
+    }
+
     public List<PropertyCategoryValueState> getCategoryStatesByPropertyName(String propertyName) {
         return session.createNativeQuery(String.format("""
             SELECT cs.* FROM %1$s.property_category_value_state cs

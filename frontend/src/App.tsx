@@ -43,6 +43,8 @@ import { DashboardProject } from "./pages/DashboardProject";
 import PriceCategories from "./pages/PriceCategories";
 import { CreateCustomDashboard } from "./pages/CreateCustomDashboard";
 import { CustomDashboardList } from "./pages/CustomDashboardList";
+import { Goals } from "./pages/Goals";
+import { GoalWizard } from "./pages/GoalWizard";
 
 enum UserStatus {
     Authenticated,

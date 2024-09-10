@@ -18,6 +18,7 @@ type Props = {
     handleRemoveRow: (index: number) => void;
     readOnly: boolean;
     isOwnerShipValueAndMutationConsistent: boolean;
+    isPolicyGoal?: boolean;
 };
 type OwnershipProps = {
     ownership: OwnershipSingleValue;
@@ -35,7 +36,7 @@ export const isOwnershipAmountValid = (amount: number): boolean => {
 };
 
 const OwnershipAmountInput = ({ handleInputChange, ownership, index, readOnly, title, mandatory, isOwnerShipValueAndMutationConsistent }: OwnershipProps) => {
-    const isAmountValid = isOwnershipAmountValid(ownership.amount);
+    const isAmountValid = isOwnershipAmountValid(ownership.amount ? ownership.amount : 0);
     const isConsistent = isOwnerShipValueAndMutationConsistent;
     const checkIfOwnerShipValueAndMutationConsistent = () => {
         if (!isAmountValid) {
@@ -69,7 +70,15 @@ const OwnershipAmountInput = ({ handleInputChange, ownership, index, readOnly, t
     );
 };
 
-export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handleRemoveRow, readOnly, isOwnerShipValueAndMutationConsistent }: Props) => {
+export const OwnershipRowInputs = ({
+    ownership,
+    index,
+    handleInputChange,
+    handleRemoveRow,
+    readOnly,
+    isOwnerShipValueAndMutationConsistent,
+    isPolicyGoal = false,
+}: Props) => {
     const isKoopwoning = ownership.type === "KOOPWONING";
     const isHuurwoning = ownership.type === "HUURWONING_PARTICULIERE_VERHUURDER" || ownership.type === "HUURWONING_WONINGCORPORATIE";
     const [rangeCategories, setRangeCategories] = useState<Property[]>([]);
@@ -102,6 +111,7 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
 
     const showErrors = () => {
         if (
+            ownership.amount &&
             ownership.amount > 0 &&
             !isPriceCategorySelected &&
             JSON.stringify(ownership.rentalValue) === JSON.stringify({ value: null, min: null, max: null }) &&
@@ -139,27 +149,40 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                     tooltipInfoText={t("tooltipInfo.soort.title")}
                 />
             </Grid>
-            <Grid item xs={1} className="ownership-house-amount">
-                <OwnershipAmountInput
-                    mandatory={false}
-                    readOnly={readOnly}
-                    title={t(`${translationPath}.amount`)}
-                    index={index}
-                    handleInputChange={handleInputChange}
-                    ownership={ownership}
-                    isOwnerShipValueAndMutationConsistent={isOwnerShipValueAndMutationConsistent}
-                />
-            </Grid>
+            {!isPolicyGoal && (
+                <Grid item xs={1} className="ownership-house-amount">
+                    <OwnershipAmountInput
+                        mandatory={false}
+                        readOnly={readOnly}
+                        title={t(`${translationPath}.amount`)}
+                        index={index}
+                        handleInputChange={handleInputChange}
+                        ownership={ownership}
+                        isOwnerShipValueAndMutationConsistent={isOwnerShipValueAndMutationConsistent}
+                    />
+                </Grid>
+            )}
             <Grid item xs={2} className="price-category">
                 <CategoryInput
                     title={t(`${translationPath}.priceCategory`)}
                     readOnly={readOnly}
                     values={
-                        ownership.valueCategoryId && valueCategoryName
-                            ? { id: ownership.valueCategoryId, name: valueCategoryName }
-                            : ownership.rentalValueCategoryId && rentalValueCategoryName
-                              ? { id: ownership.rentalValueCategoryId, name: rentalValueCategoryName }
-                              : null
+                        ownership.rangeCategoryOption?.id && ownership.rangeCategoryOption?.name
+                            ? {
+                                  id: ownership.rangeCategoryOption.id,
+                                  name: ownership.rangeCategoryOption.name,
+                              }
+                            : ownership.valueCategoryId && valueCategoryName
+                              ? {
+                                    id: ownership.valueCategoryId,
+                                    name: valueCategoryName,
+                                }
+                              : ownership.rentalValueCategoryId && rentalValueCategoryName
+                                ? {
+                                      id: ownership.rentalValueCategoryId,
+                                      name: rentalValueCategoryName,
+                                  }
+                                : null
                     }
                     setValue={(_, newValue) => {
                         if (isKoopwoning) {
@@ -175,37 +198,43 @@ export const OwnershipRowInputs = ({ ownership, index, handleInputChange, handle
                     error={errorText}
                 />
             </Grid>
-            <Grid item xs={2.8} className="ownership-house-value">
-                <RangeNumberInput
-                    value={!isHuurwoning ? ownership.value : { value: null, min: null, max: null }}
-                    updateCallBack={(e) => handleInputChange(index, { ...ownership, value: e })}
-                    readOnly={readOnly || isPriceCategorySelected || isHuurwoning}
-                    mandatory={false}
-                    isMonetary={true}
-                    title={t(`${translationPath}.value`)}
-                    displayError={showErrors() && !isHuurwoning}
-                    errorText={errorText}
-                />
-            </Grid>
-            <Grid item xs={2.8} className="ownership-house-rent">
-                <RangeNumberInput
-                    value={!isKoopwoning ? ownership.rentalValue : { value: null, min: null, max: null }}
-                    updateCallBack={(e) => handleInputChange(index, { ...ownership, rentalValue: e })}
-                    readOnly={readOnly || isPriceCategorySelected || isKoopwoning}
-                    mandatory={false}
-                    isMonetary={true}
-                    title={t(`${translationPath}.rent`)}
-                    displayError={showErrors() && !isKoopwoning}
-                    errorText={errorText}
-                />
-            </Grid>
-            <Grid item xs={0.3} className="ownership-delete-icon" style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
-                {!readOnly && (
-                    <IconButton onClick={() => handleRemoveRow(index)}>
-                        <DeleteIcon sx={{ color: "red" }} />
-                    </IconButton>
-                )}
-            </Grid>
+            {!isPolicyGoal && (
+                <Grid item xs={2.8} className="ownership-house-value">
+                    <RangeNumberInput
+                        value={!isHuurwoning && ownership.value ? ownership.value : { value: null, min: null, max: null }}
+                        updateCallBack={(e) => handleInputChange(index, { ...ownership, value: e })}
+                        readOnly={readOnly || isPriceCategorySelected || isHuurwoning}
+                        mandatory={false}
+                        isMonetary={true}
+                        title={t(`${translationPath}.value`)}
+                        displayError={showErrors() && !isHuurwoning}
+                        errorText={errorText}
+                    />
+                </Grid>
+            )}
+            {!isPolicyGoal && (
+                <Grid item xs={2.8} className="ownership-house-rent">
+                    <RangeNumberInput
+                        value={!isKoopwoning && ownership.rentalValue ? ownership.rentalValue : { value: null, min: null, max: null }}
+                        updateCallBack={(e) => handleInputChange(index, { ...ownership, rentalValue: e })}
+                        readOnly={readOnly || isPriceCategorySelected || isKoopwoning}
+                        mandatory={false}
+                        isMonetary={true}
+                        title={t(`${translationPath}.rent`)}
+                        displayError={showErrors() && !isKoopwoning}
+                        errorText={errorText}
+                    />
+                </Grid>
+            )}
+            {!isPolicyGoal && (
+                <Grid item xs={0.3} className="ownership-delete-icon" style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
+                    {!readOnly && (
+                        <IconButton onClick={() => handleRemoveRow(index)}>
+                            <DeleteIcon sx={{ color: "red" }} />
+                        </IconButton>
+                    )}
+                </Grid>
+            )}
         </Grid>
     );
 };

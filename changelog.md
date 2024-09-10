@@ -17,6 +17,7 @@ This release focusses on expanding dashboard features and ranged categories.
 
 - changed the handling of ownership of private projects. these can no longer be removed from the original creator
 - automated end to end tests have been updated, though not fully to the current version
+- Dashboard projects now retrieve data from single endpoint
 
 ### FIXED
 

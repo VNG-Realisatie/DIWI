@@ -5,12 +5,27 @@ declare module "@mui/material/styles" {
     interface PaletteColor {
         customDarkBlue?: string;
         customLightBlue?: string;
+        customLightGrey?: string;
     }
     interface SimplePaletteColorOptions {
         customDarkBlue?: string;
         customLightBlue?: string;
+        customLightGrey?: string;
     }
 }
+
+export const colors = {
+    mapDeleteCircleFillColor: 'red',
+    mapDeleteCircleStrokeColor: 'white',
+    mapCutPolygonStrokeColor: 'rgba(7, 62, 168, 0.5)',
+    mapCutCircleFillColor: 'orangered',
+    mapCutCircleStrokeColor: 'white',
+    mapCutPolygonFillColor: 'rgba(255, 255, 255, 0.4)',
+    mapMultiselectFillColor: 'rgba(155, 193, 228, 0.5)',
+    mapMultiselectStrokeColor: 'rgba(7, 62, 168, 0.5)',
+    mapCutFillColor: 'rgba(155, 193, 228, 0.7)',
+    mapCutStrokeColor: 'rgba(7, 62, 168, 0.5)',
+  }
 
 export const drawerWidth = 290;
 
@@ -140,6 +155,7 @@ export const theme = createTheme(
                 main: "#002C64",
                 customDarkBlue: "#002C64",
                 customLightBlue: "#00A9F3",
+                customLightGrey: "#738092",
             },
             secondary: {
                 main: "#900A0A",

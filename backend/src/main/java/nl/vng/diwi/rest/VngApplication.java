@@ -9,6 +9,7 @@ import nl.vng.diwi.resources.AuditResource;
 import nl.vng.diwi.resources.BlueprintResource;
 import nl.vng.diwi.resources.ConfigResource;
 import nl.vng.diwi.resources.DashboardResource;
+import nl.vng.diwi.resources.GoalResource;
 import nl.vng.diwi.resources.PropertiesResource;
 import nl.vng.diwi.resources.HouseblockResource;
 import org.apache.logging.log4j.LogManager;
@@ -104,6 +105,7 @@ public class VngApplication extends ResourceConfig {
         register(DashboardResource.class);
         register(AuditResource.class);
         register(BlueprintResource.class);
+        register(GoalResource.class);
 
         // Flyway migrations
         try{

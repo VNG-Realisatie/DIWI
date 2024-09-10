@@ -1,6 +1,6 @@
 import { ChartData, OutputData, OutputDataItem, selectedProjectColor } from "../components/dashboard/BarChart";
 
-export const convertData = (input: ChartData, selectedProjectId: string): OutputData => {
+export const convertData = (input: ChartData, selectedProjectId: string | undefined): OutputData => {
     // Get list of deduplicated years in order
     const years = input
         .map((dataPoint) => dataPoint.year)
@@ -14,7 +14,7 @@ export const convertData = (input: ChartData, selectedProjectId: string): Output
         }
         groupedByProject[dataPoint.projectId].data[years.indexOf(dataPoint.year)] = dataPoint.amount;
 
-        if (dataPoint.projectId === selectedProjectId) {
+        if (selectedProjectId && dataPoint.projectId === selectedProjectId) {
             groupedByProject[dataPoint.projectId].color = selectedProjectColor;
         }
     });
