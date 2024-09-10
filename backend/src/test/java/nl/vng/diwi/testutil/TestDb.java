@@ -45,8 +45,6 @@ public class TestDb implements AutoCloseable {
 
         this.projectConfig = new ProjectConfig(env);
         dalFactory = new DalFactory(projectConfig, GenericRepository.getEntities());
-
-        // reset();
     }
 
     @Override
