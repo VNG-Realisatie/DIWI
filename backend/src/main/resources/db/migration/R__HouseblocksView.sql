@@ -26,16 +26,96 @@ BEGIN
 RETURN QUERY
 
     WITH
+        visible_projects AS (
+
+            SELECT * FROM (
+
+                WITH
+                    active_projects AS (
+                        SELECT
+                            p.id, sms.date AS startDate, ems.date AS endDate
+                        FROM
+                            diwi.project p
+                                JOIN diwi.project_duration_changelog pdc ON pdc.project_id = p.id AND pdc.change_end_date IS NULL
+                                JOIN diwi.milestone_state sms ON sms.milestone_id = pdc.start_milestone_id AND sms.change_end_date IS NULL
+                                JOIN diwi.milestone_state ems ON ems.milestone_id = pdc.end_milestone_id AND ems.change_end_date IS NULL
+                        WHERE
+                            sms.date <= NOW() AND NOW() < ems.date
+                    ),
+                    past_projects AS (
+                        SELECT
+                            p.id, sms.date AS startDate, ems.date AS endDate, ems.milestone_id AS end_milestone_id
+                        FROM
+                            diwi.project p
+                                JOIN diwi.project_duration_changelog pdc ON pdc.project_id = p.id AND pdc.change_end_date IS NULL
+                                JOIN diwi.milestone_state sms ON sms.milestone_id = pdc.start_milestone_id AND sms.change_end_date IS NULL
+                                JOIN diwi.milestone_state ems ON ems.milestone_id = pdc.end_milestone_id AND ems.change_end_date IS NULL
+                        WHERE
+                            ems.date <= NOW()
+                    ),
+                    project_users AS (
+                        SELECT
+                            q.project_id    AS project_id,
+                            array_agg(q.user_id) AS users
+                        FROM (
+                            SELECT DISTINCT
+                                ps.project_id as project_id,
+                                us.user_id AS user_id
+                            FROM diwi.project_state ps
+                                JOIN diwi.usergroup_to_project ugtp ON ps.project_id = ugtp.project_id AND ugtp.change_end_date IS NULL
+                                JOIN diwi.usergroup_state ugs ON ugtp.usergroup_id = ugs.usergroup_id AND ugs.change_end_date IS NULL
+                                LEFT JOIN diwi.user_to_usergroup utug ON ugtp.usergroup_id = utug.usergroup_id AND utug.change_end_date IS NULL
+                                LEFT JOIN diwi.user_state us ON utug.user_id = us.user_id AND us.change_end_date IS NULL
+                            WHERE
+                                ps.change_end_date IS NULL
+                            ) AS q
+                        GROUP BY q.project_id
+                    )
+
+                    SELECT
+                        ap.id                    AS project_id,
+                        ps.confidentiality_level AS confidentialityLevel,
+                        owners.users             AS projectOwners,
+                        ap.startDate             AS startDate,
+                        ap.endDate               AS endDate
+                    FROM
+                        active_projects ap
+                            LEFT JOIN diwi.project_state ps ON ps.project_id = ap.id AND ps.change_end_date IS NULL
+                            LEFT JOIN project_users owners ON ps.project_id = owners.project_id
+
+                    UNION
+
+                    SELECT
+                        pp.id                    AS project_id,
+                        ps.confidentiality_level AS confidentialityLevel,
+                        owners.users             AS projectOwners,
+                        pp.startDate             AS startDate,
+                        pp.endDate               AS endDate
+                    FROM
+                        past_projects pp
+                            LEFT JOIN diwi.project_state ps ON ps.project_id = pp.id AND ps.change_end_date IS NULL
+                            LEFT JOIN project_users owners ON ps.project_id = owners.project_id
+
+            ) AS q
+
+            WHERE
+                (
+                  ( _user_uuid_ = ANY (q.projectOwners)) OR
+                  ( _user_role_ IN ('User', 'UserPlus') AND q.confidentialityLevel != 'PRIVATE') OR
+                  ( _user_role_ = 'Management' AND q.confidentialityLevel NOT IN ('PRIVATE', 'INTERNAL_CIVIL') ) OR
+                  ( _user_role_ = 'Council' AND q.confidentialityLevel NOT IN ('PRIVATE', 'INTERNAL_CIVIL', 'INTERNAL_MANAGEMENT') )
+                )
+        ),
         active_woningbloks AS (
             SELECT
                 w.project_id AS project_id, w.id as woningblok_id
             FROM
                 diwi.woningblok w
+                    JOIN visible_projects vp ON w.project_id = vp.project_id
                     JOIN diwi.woningblok_state ws ON w.id = ws.woningblok_id AND ws.change_end_date IS NULL
                     JOIN diwi.woningblok_duration_changelog wdc ON wdc.woningblok_id = w.id AND wdc.change_end_date IS NULL
                     JOIN diwi.milestone_state sms ON sms.milestone_id = wdc.start_milestone_id AND sms.change_end_date IS NULL
                     JOIN diwi.milestone_state ems ON ems.milestone_id = wdc.end_milestone_id AND ems.change_end_date IS NULL
-                    JOIN diwi.project_duration_changelog pdc ON pdc.project_id = w.project_id AND pdc.change_end_date IS NULL
             WHERE
                 sms.date <= NOW() AND NOW() < ems.date
         ),
