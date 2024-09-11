@@ -65,10 +65,16 @@ export async function getDashboardProjects(): Promise<{
     priceCategoryOwn: PriceCategory[];
     priceCategoryRent: PriceCategory[];
     planning: Planning[];
-    policyGoals: PolicyGoal[];
 }> {
     const todaysDate = new Date().toISOString().split("T")[0]; // change this logic later
     return getJson(`${API_URI}/dashboard/projects?snapshotDate=${todaysDate}`);
+}
+
+export async function getPolicyDashboardProjects(): Promise<{
+    policyGoals: PolicyGoal[];
+}> {
+    const todaysDate = new Date().toISOString().split("T")[0]; // change this logic later
+    return getJson(`${API_URI}/dashboard/projects/policygoals?snapshotDate=${todaysDate}`);
 }
 
 export async function getAllBlueprints(): Promise<Blueprint[]> {

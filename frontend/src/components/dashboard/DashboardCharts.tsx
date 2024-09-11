@@ -4,7 +4,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { ChartType } from "../../pages/DashboardProject";
 import { MutationCard } from "./MutationCard";
 import ProjectOverviewMap from "../map/ProjectOverviewMap";
-import { getDashboardProjects, Planning, PolicyGoal, VisibilityElement } from "../../api/dashboardServices";
+import { getDashboardProjects, getPolicyDashboardProjects, Planning, PolicyGoal, VisibilityElement } from "../../api/dashboardServices";
 import { getProjects } from "../../api/projectsServices";
 import { getProjectHouseBlocksWithCustomProperties } from "../../api/houseBlockServices";
 import { useTranslation } from "react-i18next";
@@ -53,6 +53,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
     const [projectPhaseSums, setProjectPhaseSums] = useState([]);
     const [dashboardMutationValues, setDashboardMutationValues] = useState<MutationValues>();
     const { allowedActions } = useAllowedActions();
+    const [policyGoals, setPolicyGoals] = useState<PolicyGoal[]>();
 
     const handleToggleVisibility = (item: VisibilityElement) => {
         if (!setVisibility) return;
@@ -94,105 +95,6 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
             goalDirection: "MAXIMAL" as GoalDirection,
             goalType: "NUMBER" as GoalType,
         },
-        {
-            name: "Houtbouw Percentage",
-            category: "2 category",
-            id: "4",
-            goal: 50,
-            amount: 0,
-            percentage: 22,
-            totalAmount: 100,
-            goalDirection: "MAXIMAL" as GoalDirection,
-            goalType: "PERCENTAGE" as GoalType,
-        },
-        {
-            name: "Betonbouw Percentage",
-            category: "1 category",
-            id: "5",
-            goal: 50,
-            amount: 0,
-            percentage: 78,
-            totalAmount: 100,
-            goalDirection: "MAXIMAL" as GoalDirection,
-            goalType: "PERCENTAGE" as GoalType,
-        },
-        {
-            name: "Staalbouw Percentage",
-            category: "3 category",
-            id: "6",
-            goal: 50,
-            amount: 0,
-            percentage: 10,
-            totalAmount: 100,
-            goalDirection: "MINIMAL" as GoalDirection,
-            goalType: "PERCENTAGE" as GoalType,
-        },
-        {
-            name: "Staalbouw Percentage333",
-            category: "3 category",
-            id: "8",
-            goal: 50,
-            amount: 0,
-            percentage: 99,
-            totalAmount: 100,
-            goalDirection: "MINIMAL" as GoalDirection,
-            goalType: "PERCENTAGE" as GoalType,
-        },
-        {
-            name: "Staalbouw Percentage333",
-            category: "3 category",
-            id: "9",
-            goal: 50,
-            amount: 0,
-            percentage: 99,
-            totalAmount: 100,
-            goalDirection: "MINIMAL" as GoalDirection,
-            goalType: "PERCENTAGE" as GoalType,
-        },
-        {
-            name: "Staalbouw Percentage333",
-            category: "3 category",
-            id: "10",
-            goal: 50,
-            amount: 0,
-            percentage: 99,
-            totalAmount: 100,
-            goalDirection: "MINIMAL" as GoalDirection,
-            goalType: "PERCENTAGE" as GoalType,
-        },
-        {
-            name: "Staalbouw Percentage333",
-            category: "3 category",
-            id: "11",
-            goal: 50,
-            amount: 0,
-            percentage: 99,
-            totalAmount: 100,
-            goalDirection: "MINIMAL" as GoalDirection,
-            goalType: "PERCENTAGE" as GoalType,
-        },
-        {
-            name: "Staalbouw Percentage333",
-            category: "3 category",
-            id: "12",
-            goal: 50,
-            amount: 0,
-            percentage: 99,
-            totalAmount: 100,
-            goalDirection: "MINIMAL" as GoalDirection,
-            goalType: "PERCENTAGE" as GoalType,
-        },
-        {
-            name: "Staalbouw Percentage333",
-            category: "3 category",
-            id: "13",
-            goal: 50,
-            amount: 0,
-            percentage: 99,
-            totalAmount: 100,
-            goalDirection: "MINIMAL" as GoalDirection,
-            goalType: "PERCENTAGE" as GoalType,
-        },
     ];
 
     const { t } = useTranslation();
@@ -222,10 +124,15 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                 priceCategoryOwn: convertedPriceCategoryOwn,
                 priceCategoryRent: convertedPriceCategoryRent,
                 planning: data.planning,
-                policyGoals: dummyPolicyGoals,
+                policyGoals: dummyPolicyGoals
             });
         });
     }, [t]);
+    useEffect(() => {
+        getPolicyDashboardProjects().then((data) => {
+            console.log(data);
+        });
+    }, []);
 
     //This is for calculate the number of projects in each phase in ui update it later with endpoint
     useEffect(() => {
