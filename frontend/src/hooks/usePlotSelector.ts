@@ -280,14 +280,14 @@ const usePlotSelector = (id: string) => {
                     if (remainingCutPolygon && !removeDrawing) {
                         const finalPolygon = intersectedPolygon
                             ? turf.intersect(turf.featureCollection([plotPolygon, remainingCutPolygon]))
-                            : remainingCutPolygon;
+                            : null;
 
                         if (finalPolygon) {
                             updatedPlots[plotIndex] = {
                                 ...existingPlot,
                                 subselectionGeometry: {
                                     type: "Polygon",
-                                    coordinates: [...existingCoords, ...finalPolygon.geometry.coordinates as Coordinate[][]],
+                                    coordinates: [...existingCoords, finalPolygon.geometry.coordinates[0] as Coordinate[]],
                                 },
                             };
                             plotsUpdated = true;
