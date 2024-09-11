@@ -23,7 +23,6 @@ type DashboardProjects = {
     priceCategoryOwn: ChartType[];
     priceCategoryRent: ChartType[];
     planning: Planning[];
-    policyGoals: PolicyGoal[];
 };
 
 type MutationValues = {
@@ -124,13 +123,13 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                 priceCategoryOwn: convertedPriceCategoryOwn,
                 priceCategoryRent: convertedPriceCategoryRent,
                 planning: data.planning,
-                policyGoals: dummyPolicyGoals
             });
         });
     }, [t]);
     useEffect(() => {
         getPolicyDashboardProjects().then((data) => {
             console.log(data);
+            setPolicyGoals(data);
         });
     }, []);
 
@@ -350,9 +349,9 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                                     />
                                 )}
                             </Box>
-                            {dashboardProjects &&
+                            {policyGoals &&
                                 (() => {
-                                    const categories = Array.from(new Set(dashboardProjects.policyGoals.map((goal) => goal.category))).sort();
+                                    const categories = Array.from(new Set(policyGoals.map((goal) => goal.category))).sort();
 
                                     return categories.map((category) => (
                                         <Grid item {...chartCardStyling} key={category}>
@@ -360,7 +359,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                                                 {category ? category : t("goals.dashboard.noCategory")}
                                             </Typography>
 
-                                            {dashboardProjects.policyGoals
+                                            {policyGoals
                                                 .filter((goal) => goal.category === category)
                                                 .map((goal) => (
                                                     <PolicyGoalChart key={goal.id} goal={goal} />
@@ -486,9 +485,9 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                     {(isPrintingFullDashboard || visibility?.DELAYED_PROJECTS) && (
                         <Box width="50%" border="solid 1px #DDD" p={1} id="policyGoals">
                             <Typography variant="h6" fontSize={16}></Typography>
-                            {dashboardProjects &&
+                            {policyGoals &&
                                 (() => {
-                                    const categories = Array.from(new Set(dashboardProjects.policyGoals.map((goal) => goal.category))).sort();
+                                    const categories = Array.from(new Set(policyGoals.map((goal) => goal.category))).sort();
 
                                     return categories.map((category) => (
                                         <Grid item {...chartCardStyling} key={category}>
@@ -496,7 +495,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                                                 {category ? category : t("goals.dashboard.noCategory")}
                                             </Typography>
 
-                                            {dashboardProjects.policyGoals
+                                            {policyGoals
                                                 .filter((goal) => goal.category === category)
                                                 .map((goal) => (
                                                     <PolicyGoalChart isPDF={true} key={goal.id} goal={goal} />
