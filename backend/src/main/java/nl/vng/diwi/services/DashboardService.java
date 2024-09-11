@@ -6,6 +6,7 @@ import nl.vng.diwi.dal.entities.BlueprintState;
 import nl.vng.diwi.dal.entities.BlueprintToElement;
 import nl.vng.diwi.dal.entities.BlueprintToUserGroup;
 import nl.vng.diwi.dal.entities.MultiProjectDashboardSqlModel;
+import nl.vng.diwi.dal.entities.MultiProjectPolicyGoalSqlModel;
 import nl.vng.diwi.dal.entities.ProjectDashboardSqlModel;
 import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.dal.entities.UserGroup;
@@ -18,8 +19,11 @@ import nl.vng.diwi.security.LoggedUser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public class DashboardService {
@@ -45,6 +49,17 @@ public class DashboardService {
         MultiProjectDashboardSqlModel projectModel = repo.getProjectsDAO().getMultiProjectDashboardSnapshot(snapshotDate, loggedUser);
 
         return new MultiProjectDashboardModel(projectModel);
+    }
+
+    public List<MultiProjectPolicyGoalSqlModel> getMultiProjectPolicyGoals(VngRepository repo, LocalDate snapshotDate, LoggedUser loggedUser) {
+
+        List<MultiProjectPolicyGoalSqlModel> result = repo.getProjectsDAO().getMultiProjectPolicyGoals(snapshotDate, loggedUser);
+        result.forEach(r -> {
+            if (r.getAmount() != null && r.getTotalAmount() != null) {
+                r.setPercentage(new BigDecimal(r.getAmount()).multiply(new BigDecimal(100)).divide(new BigDecimal(r.getTotalAmount()), 4, RoundingMode.HALF_UP));
+            }
+        });
+        return result;
     }
 
     public UUID createBlueprint(VngRepository repo, BlueprintModel blueprintModel, ZonedDateTime zdtNow, UUID loggedUserUuid) throws VngBadRequestException {

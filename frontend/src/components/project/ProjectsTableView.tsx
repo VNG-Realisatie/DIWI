@@ -106,6 +106,14 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 );
             },
             preProcessEditCellProps: createErrorReport,
+            sortComparator: (v1: string, v2: string): number => {
+                const num1 = parseInt(v1.replace(/\D/g, ""));
+                const num2 = parseInt(v2.replace(/\D/g, ""));
+                if (!isNaN(num1) && !isNaN(num2)) {
+                    return num1 - num2;
+                }
+                return v1.localeCompare(v2);
+            },
         },
         {
             field: "totalValue",
