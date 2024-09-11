@@ -26,7 +26,6 @@ export const HouseBlocks = ({ houseBlockData, xScale, titleHeight, blockHeight, 
             <g className="houseblockBlocks">
                 {houseBlockData &&
                     houseBlockData.map((block, index: number) => {
-                        console.log(block);
                         const x = xScale(dayjs(block.startDate)) + spacing.x;
                         const y = titleHeight + spacing.y + index * blockHeight;
                         const w = xScale(dayjs(block.endDate)) - xScale(dayjs(block.startDate)) - 2 * spacing.x;

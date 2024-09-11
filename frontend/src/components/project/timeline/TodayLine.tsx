@@ -15,7 +15,6 @@ type TodayLineProps = {
 export const TodayLine = ({ startDate, endDate, xScale, showToday, timelineHeight, chartHeight, spacing }: TodayLineProps) => {
     const today = dayjs();
     const todayX = xScale(today);
-
     return (
         <Tooltip title={today.format("DD-MM-YYYY")} placement="top" arrow>
             <g className="nowline">

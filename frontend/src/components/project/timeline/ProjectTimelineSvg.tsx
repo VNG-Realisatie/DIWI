@@ -18,9 +18,10 @@ type ProjectTimelineSvgProps = {
     showToday: boolean;
     width: string;
     height: number;
+    setTimeScaleIndex: (index: number) => void;
 };
 
-export const ProjectTimelineSvg = ({ timeScaleIndex, showToday, width, height }: ProjectTimelineSvgProps) => {
+export const ProjectTimelineSvg = ({ setTimeScaleIndex, timeScaleIndex, showToday, width, height }: ProjectTimelineSvgProps) => {
     /* explanation for sizing of/in this element:
     width and height are outer boundaries of this component in the webpage.
     svgWidth and svgHeight are the dimensions for the svg, including margins so elements are not placed directly on a border.
@@ -83,11 +84,28 @@ export const ProjectTimelineSvg = ({ timeScaleIndex, showToday, width, height }:
     const projectStartDate: Dayjs = dayjs(selectedProject?.startDate).startOf("month");
     const projectEndDate: Dayjs = dayjs(selectedProject?.endDate).endOf("month");
     const diffDays = projectEndDate.diff(projectStartDate, "days");
-    const pixelsPerDay = timeScaleIndex * 2;
+    const timePeriod = () => {
+        if (diffDays <= 30) {
+            return 10;
+        } else if (diffDays < 180) {
+            return 3;
+        }
+        return 2;
+    };
+    const pixelsPerDay = timeScaleIndex * timePeriod();
     const chartWidth = diffDays * pixelsPerDay;
     const svgWidth = chartWidth + margin.left + margin.right;
     const svgHeight = chartHeight + margin.top + margin.bottom;
 
+    useEffect(() => {
+        if (diffDays > 30 && diffDays < 180) {
+            setTimeScaleIndex(5);
+        } else if (diffDays > 180 && diffDays < 365) {
+            setTimeScaleIndex(4);
+        } else if (diffDays <= 30) {
+            setTimeScaleIndex(6);
+        }
+    }, [diffDays, setTimeScaleIndex]);
     // Time line
     const timelineHeight = 30;
 

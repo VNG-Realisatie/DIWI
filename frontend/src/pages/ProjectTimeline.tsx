@@ -30,12 +30,12 @@ export const ProjectTimeline = () => {
                     <Button size="small" variant="contained" onClick={() => handleScaleChange(-1)} disabled={timeScaleIndex <= 1}>
                         <RemoveIcon />
                     </Button>
-                    <Button size="small" variant="contained" onClick={() => handleScaleChange(1)} disabled={timeScaleIndex >= 5}>
+                    <Button size="small" variant="contained" onClick={() => handleScaleChange(1)} disabled={timeScaleIndex >= 6}>
                         <AddIcon />
                     </Button>
                 </Box>
             </Box>
-            <ProjectTimelineSvg timeScaleIndex={timeScaleIndex} showToday={showToday} width={"100%"} height={500} />
+            <ProjectTimelineSvg timeScaleIndex={timeScaleIndex} setTimeScaleIndex={setTimeScaleIndex} showToday={showToday} width={"100%"} height={500} />
         </>
     );
 };
