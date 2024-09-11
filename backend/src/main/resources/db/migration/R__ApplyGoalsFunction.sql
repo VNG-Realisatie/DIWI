@@ -125,7 +125,7 @@ SELECT
                             FROM
                             ( SELECT unnest(hv.ownership_value_options) AS ht_val
                                 FROM
-                                    diwi.houseblocks_view hv
+                                    houseblocks_view hv
                                 WHERE hv.delivery_date >= pgv.start_date AND hv.delivery_date <= pgv.end_date
                             ) AS hv_ownership
                         ),
