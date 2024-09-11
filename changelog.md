@@ -13,6 +13,7 @@
 - fixed an issue where ghosts of deleted fixed property categories would still be available in the project wizard
 - fixed an issue where when going from one project's map location to another, the map would 'hang' on the previous location
 - fixed a bug where adding amounts to houseblocks did not immediately update amounts in project
+- fixed an issue where the 1.6.0 db migration caused some errors in price ranges and amounts
 
 ## DIWI RELEASE 1.6.0
 
