@@ -15,8 +15,8 @@ export type PolicyGoal = {
     amount: number;
     percentage: number;
     totalAmount: number;
-    goalDirection: GoalDirection
-    goalType: GoalType
+    goalDirection: GoalDirection;
+    goalType: GoalType;
 };
 
 export type Planning = {
@@ -70,9 +70,7 @@ export async function getDashboardProjects(): Promise<{
     return getJson(`${API_URI}/dashboard/projects?snapshotDate=${todaysDate}`);
 }
 
-export async function getPolicyDashboardProjects(): Promise<{
-    policyGoals: PolicyGoal[];
-}> {
+export async function getPolicyDashboardProjects(): Promise<PolicyGoal[]> {
     const todaysDate = new Date().toISOString().split("T")[0]; // change this logic later
     return getJson(`${API_URI}/dashboard/projects/policygoals?snapshotDate=${todaysDate}`);
 }

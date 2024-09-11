@@ -54,11 +54,11 @@ public class DashboardService {
     public List<MultiProjectPolicyGoalSqlModel> getMultiProjectPolicyGoals(VngRepository repo, LocalDate snapshotDate, LoggedUser loggedUser) {
 
         List<MultiProjectPolicyGoalSqlModel> result = repo.getProjectsDAO().getMultiProjectPolicyGoals(snapshotDate, loggedUser);
-        result.forEach(r -> {
-            if (r.getAmount() != null && r.getTotalAmount() != null) {
-                r.setPercentage(new BigDecimal(r.getAmount()).multiply(new BigDecimal(100)).divide(new BigDecimal(r.getTotalAmount()), 4, RoundingMode.HALF_UP));
-            }
-        });
+        // result.forEach(r -> {
+        //     if (r.getAmount() != null && r.getTotalAmount() != null) {
+        //         r.setPercentage(new BigDecimal(r.getAmount()).multiply(new BigDecimal(100)).divide(new BigDecimal(r.getTotalAmount()), 4, RoundingMode.HALF_UP));
+        //     }
+        // });
         return result;
     }
 
