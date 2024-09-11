@@ -30,7 +30,6 @@ import { ProjectTimeline } from "./pages/ProjectTimeline";
 import ProjectPlotSelector from "./components/map/ProjectPlotSelector";
 import { ConfigProvider } from "./context/ConfigContext";
 import { UserProvider } from "./context/UserContext";
-import { ProjectWizardMap } from "./pages/ProjectWizardMap";
 import "dayjs/locale/nl";
 import { HouseBlockProvider } from "./context/HouseBlockContext";
 import ProjectWizard from "./pages/ProjectWizard";
@@ -225,7 +224,7 @@ function App() {
                             path={Paths.projectWizardMap.path}
                             element={
                                 <ProjectProvider>
-                                    <ProjectWizardMap />
+                                    <ProjectPlotSelector wizard={true} />
                                 </ProjectProvider>
                             }
                         />
