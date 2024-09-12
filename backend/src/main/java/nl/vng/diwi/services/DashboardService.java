@@ -10,6 +10,7 @@ import nl.vng.diwi.dal.entities.MultiProjectPolicyGoalSqlModel;
 import nl.vng.diwi.dal.entities.ProjectDashboardSqlModel;
 import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.dal.entities.UserGroup;
+import nl.vng.diwi.dal.entities.enums.GoalType;
 import nl.vng.diwi.models.BlueprintModel;
 import nl.vng.diwi.models.MultiProjectDashboardModel;
 import nl.vng.diwi.models.ProjectDashboardModel;
@@ -55,8 +56,15 @@ public class DashboardService {
 
         List<MultiProjectPolicyGoalSqlModel> result = repo.getProjectsDAO().getMultiProjectPolicyGoals(snapshotDate, loggedUser);
         result.forEach(r -> {
-            if (r.getAmount() != null && r.getTotalAmount() != null) {
-                r.setPercentage(new BigDecimal(r.getAmount()).multiply(new BigDecimal(100)).divide(new BigDecimal(r.getTotalAmount()), 4, RoundingMode.HALF_UP));
+            if (r.getGoalType() == GoalType.PERCENTAGE) {
+                if (r.getAmount() != null && r.getTotalAmount() != null) {
+                    if (r.getTotalAmount() > 0) {
+                        r.setPercentage(new BigDecimal(r.getAmount()).multiply(new BigDecimal(100))
+                            .divide(new BigDecimal(r.getTotalAmount()), 4, RoundingMode.HALF_UP));
+                    } else {
+                        r.setPercentage(BigDecimal.valueOf(100));
+                    }
+                }
             }
         });
         return result;
