@@ -20,7 +20,7 @@ type DateRange = {
     end: Dayjs;
 };
 
-const createDateRangeData = (earliestDate: Dayjs, latestDate: Dayjs, increment: "week" | "month" | "year"): Array<DateRange> => {
+const createDateRangeData = (earliestDate: Dayjs, latestDate: Dayjs, increment: "week" | "month" | "year" | "day"): Array<DateRange> => {
     const dateRanges = new Array<DateRange>();
 
     // add earliestdate and check if increment falls beyond latestDate
@@ -44,7 +44,7 @@ const createDateRangeData = (earliestDate: Dayjs, latestDate: Dayjs, increment: 
 
 export const TimelineBar = ({ startDate, endDate, timeScaleIndex, xScale, size, spacing, textSpacing }: TimelineBarProps) => {
     // timescaleindex 1 = smallest scale, timescaleindex 5 = largest scale
-    const increment = (timeScaleIndex === 1 && "year") || (timeScaleIndex === 5 && "week") || "month";
+    const increment = (timeScaleIndex === 1 && "year") || (timeScaleIndex === 5 && "week") || (timeScaleIndex === 6 && "day") || "month";
     const timedata = createDateRangeData(startDate, endDate, increment);
 
     return (
@@ -63,6 +63,7 @@ export const TimelineBar = ({ startDate, endDate, timeScaleIndex, xScale, size, 
                                 {increment === "year" && d.start.format("YYYY")}
                                 {increment === "month" && d.start.format("MMM-YYYY") /* TODO add translation for month names? */}
                                 {increment === "week" && d.start.week()}
+                                {increment === "day" && d.start.format("DD-MM")}
                             </text>
                         </g>
                     );

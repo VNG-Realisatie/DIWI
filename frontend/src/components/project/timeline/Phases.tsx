@@ -1,6 +1,7 @@
 import type { ScaleTime } from "d3";
 import { components } from "../../../types/schema";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 
 type PhasesProps = {
     phaseData: Array<components["schemas"]["DatedDataModelProjectPhase"]> | null;
@@ -15,13 +16,13 @@ type PhasesProps = {
 export const Phases = ({ phaseData, xScale, titleHeight, blockHeight, chartWidth, spacing, textSpacing }: PhasesProps) => {
     const textVerticalSpace = (blockHeight - 4 * textSpacing.y) / 3;
 
+    const { t } = useTranslation();
     return (
         <>
             <g className="phaseTitle">
                 <rect x={spacing.x} y={spacing.y} width={chartWidth - 2 * spacing.x} height={titleHeight - 2 * spacing.y} fill="#e7b85d" />
-                {/* TODO make based on translation? */}
                 <text x={spacing.x + textSpacing.x} y={titleHeight - 2 * spacing.y - textSpacing.y} fill="#FFFFFF">
-                    Phases
+                    {t("timeline.phases")}
                 </text>
             </g>
             <g className="phaseBlocks">
@@ -41,7 +42,7 @@ export const Phases = ({ phaseData, xScale, titleHeight, blockHeight, chartWidth
                                 {/* name on first textrow */}
                                 <svg transform={`translate(${x + textSpacing.x},${y + textSpacing.y})`} width={w} height={textVerticalSpace}>
                                     <text y="60%" dominantBaseline="middle" fill="#FFFFFF">
-                                        {phase.data}
+                                        {t(`dashboard.projectPhaseOptions.${phase.data}`)}
                                     </text>
                                 </svg>
                                 {/* from on second textrow*/}
@@ -51,7 +52,7 @@ export const Phases = ({ phaseData, xScale, titleHeight, blockHeight, chartWidth
                                     height={textVerticalSpace}
                                 >
                                     <text y="60%" dominantBaseline="middle" fill="#FFFFFF">
-                                        From
+                                        {t("timeline.from")}
                                     </text>
                                     <svg transform={`translate(${50},${textSpacing.y})`} width={dateBoxWidth} height={textVerticalSpace - 2 * textSpacing.y}>
                                         <rect
@@ -76,7 +77,7 @@ export const Phases = ({ phaseData, xScale, titleHeight, blockHeight, chartWidth
                                     height={textVerticalSpace}
                                 >
                                     <text y="60%" dominantBaseline="middle" fill="#FFFFFF">
-                                        To
+                                        {t("timeline.to")}
                                     </text>
                                     <svg transform={`translate(${50},${textSpacing.y})`} width={dateBoxWidth} height={textVerticalSpace - 2 * textSpacing.y}>
                                         <rect
