@@ -1,5 +1,20 @@
 # Change log
 
+## DIWI RELEASE 1.6.1
+
+### ADDED
+
+- added a text on the geojson import page to inform the user that it is possible to convert certain geojsons to the correct import pattern
+
+### FIXED
+
+- fixed an issue where the ghost of a deleted category of a custom property would prohibit the addition of a category of the same name
+- fixed an issue where on the single project map page the individual block's numbers would not indicate an addition or subtraction (bouw/sloop) by adding a minus (-) to demolition blocks
+- fixed an issue where ghosts of deleted fixed property categories would still be available in the project wizard
+- fixed an issue where when going from one project's map location to another, the map would 'hang' on the previous location
+- fixed a bug where adding amounts to houseblocks did not immediately update amounts in project
+- fixed an issue where the 1.6.0 db migration caused some errors in price ranges and amounts
+
 ## DIWI RELEASE 1.6.0
 
 This release focusses on expanding dashboard features and ranged categories.
