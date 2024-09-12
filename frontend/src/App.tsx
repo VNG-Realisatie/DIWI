@@ -266,13 +266,9 @@ function App() {
                         />
                         <Route path={Paths.policygoal.path} element={<PolicyLists />} />
                         <Route path={Paths.policygoalDashboard.path} element={<PolicyLists />} />
-                        <Route path={Paths.dashboard.path} element={<DashboardProjects />} />
                         <Route path={Paths.goals.path} element={<Goals />} />
                         <Route path={Paths.goalWizard.path} element={<GoalWizard />} />
                         <Route path={Paths.goalMenu.path} element={<GoalWizard />} />
-                        <Route path={Paths.createCustomDashbord.path} element={<CreateCustomDashboard />} />
-                        <Route path={Paths.updateCustomDashbord.path} element={<CreateCustomDashboard />} />
-                        <Route path={Paths.customDashbordList.path} element={<CustomDashboardList />} />
                         <Route
                             path={Paths.dashboard.path}
                             element={
@@ -282,7 +278,7 @@ function App() {
                             }
                         />
                         <Route
-                            path={Paths.createCustomDashbord.path}
+                            path={Paths.createCustomDashboard.path}
                             element={
                                 <ProjectProvider>
                                     <CreateCustomDashboard />
@@ -290,21 +286,14 @@ function App() {
                             }
                         />
                         <Route
-                            path={Paths.updateCustomDashbord.path}
+                            path={Paths.updateCustomDashboard.path}
                             element={
                                 <ProjectProvider>
                                     <CreateCustomDashboard />
                                 </ProjectProvider>
                             }
                         />
-                        <Route
-                            path={Paths.customDashbordList.path}
-                            element={
-                                <ProjectProvider>
-                                    <CustomDashboardList />
-                                </ProjectProvider>
-                            }
-                        />
+                        <Route path={Paths.customDashboardList.path} element={<CustomDashboardList />} />
                         <Route
                             path={Paths.dashboardProject.path}
                             element={

@@ -13,7 +13,6 @@ import { LabelComponent } from "../project/LabelComponent";
 import { CellContainer } from "../project/project-with-house-block/CellContainer";
 import { MyResponsiveBar } from "./BarChart";
 import { PolicyGoalChart } from "./PolicyGoalChart";
-import { GoalDirection, GoalType } from "../../api/goalsServices";
 
 const chartCardStyling = { backgroundColor: "#F0F0F0", my: 1, p: 2, xs: 12, md: 5.9 };
 
