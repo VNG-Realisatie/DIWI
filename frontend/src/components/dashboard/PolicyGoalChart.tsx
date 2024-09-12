@@ -1,4 +1,4 @@
-import { Box, Stack } from "@mui/material";
+import { Box, Stack, useMediaQuery } from "@mui/material";
 import { PolicyGoal } from "../../api/dashboardServices";
 import { t } from "i18next";
 
@@ -49,7 +49,10 @@ const formatDifference = (goalType: string, difference: number) => {
     return goalType === "NUMBER" ? difference : difference.toFixed(2);
 };
 
-const getText = (isNumericGoal: boolean, isSurplus: boolean, formattedDifference: string, isMaximalPercentageGoal: boolean) => {
+const getText = (isNumericGoal: boolean, isSurplus: boolean, formattedDifference: string, isMaximalPercentageGoal: boolean, isBigScreen: boolean) => {
+    if (!isBigScreen) {
+        return isNumericGoal ? (!isSurplus ? `-${formattedDifference}` : formattedDifference) : `${formattedDifference}%`;
+    }
     return isNumericGoal
         ? !isSurplus
             ? `-${formattedDifference}`
@@ -65,12 +68,13 @@ export const PolicyGoalChart = ({ goal, isPDF = false }: Props) => {
     const amount = isNumericGoal ? goal.amount : goal.percentage;
     const equalGoalandAmount = amount === goal.goal;
     const isSurplus = amount > goal.goal;
+    const isBigScreen = useMediaQuery("(min-width:1800px)");
 
     const { filledWidth, remainingWidth } = calculateWidths(isNumericGoal, isSurplus, amount, goal.goal, isPDF);
     const difference = Math.abs(goal.goal - amount);
     const formattedDifference = formatDifference(goal.goalType, difference);
     const styles = getStyles(equalGoalandAmount, isSurplus, isMaximalPercentageGoal);
-    const text = getText(isNumericGoal, isSurplus, String(formattedDifference), isMaximalPercentageGoal);
+    const text = getText(isNumericGoal, isSurplus, String(formattedDifference), isMaximalPercentageGoal, isBigScreen);
 
     return (
         <Stack width="100%">

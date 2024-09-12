@@ -60,41 +60,42 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
         setVisibility((prev) => ({ ...prev, [item]: !prev[item] }));
     };
 
-    const dummyPolicyGoals = [
-        {
-            name: "Houtbouw",
-            category: "1 category",
-            id: "1",
-            goal: 100,
-            amount: 144,
-            percentage: 0,
-            totalAmount: 0,
-            goalDirection: "MAXIMAL" as GoalDirection,
-            goalType: "NUMBER" as GoalType,
-        },
-        {
-            name: "Betonbouw",
-            category: "1 category",
-            id: "2",
-            goal: 50,
-            amount: 32,
-            percentage: 0,
-            totalAmount: 0,
-            goalDirection: "MAXIMAL" as GoalDirection,
-            goalType: "NUMBER" as GoalType,
-        },
-        {
-            name: "Staalbouw",
-            category: "1 category",
-            id: "3",
-            goal: 70,
-            amount: 70,
-            percentage: 0,
-            totalAmount: 0,
-            goalDirection: "MAXIMAL" as GoalDirection,
-            goalType: "NUMBER" as GoalType,
-        },
-    ];
+    // living it here for testing purposes. to be removed later
+    // const dummyPolicyGoals = [
+    //     {
+    //         name: "Policy 1",
+    //         category: "1 category",
+    //         id: "1",
+    //         goal: 45,
+    //         amount: 67,
+    //         percentage: 0,
+    //         totalAmount: 0,
+    //         goalDirection: "MAXIMAL",
+    //         goalType: "NUMBER",
+    //     },
+    //     {
+    //         name: "Policy 2",
+    //         category: "2 category",
+    //         id: "2",
+    //         goal: 89,
+    //         amount: 23,
+    //         percentage: 0,
+    //         totalAmount: 0,
+    //         goalDirection: "MINIMAL",
+    //         goalType: "PERCENTAGE",
+    //     },
+    //     {
+    //         name: "Policy 3",
+    //         category: "3 category",
+    //         id: "3",
+    //         goal: 12,
+    //         amount: 56,
+    //         percentage: 0,
+    //         totalAmount: 0,
+    //         goalDirection: "MAXIMAL",
+    //         goalType: "NUMBER",
+    //     },
+    // ];
 
     const { t } = useTranslation();
     useEffect(() => {
@@ -128,7 +129,6 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
     }, [t]);
     useEffect(() => {
         getPolicyDashboardProjects().then((data) => {
-            console.log(data);
             setPolicyGoals(data);
         });
     }, []);
