@@ -59,43 +59,6 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
         setVisibility((prev) => ({ ...prev, [item]: !prev[item] }));
     };
 
-    // living it here for testing purposes. to be removed later
-    // const dummyPolicyGoals = [
-    //     {
-    //         name: "Policy 1",
-    //         category: "1 category",
-    //         id: "1",
-    //         goal: 45,
-    //         amount: 67,
-    //         percentage: 0,
-    //         totalAmount: 0,
-    //         goalDirection: "MAXIMAL",
-    //         goalType: "NUMBER",
-    //     },
-    //     {
-    //         name: "Policy 2",
-    //         category: "2 category",
-    //         id: "2",
-    //         goal: 89,
-    //         amount: 23,
-    //         percentage: 0,
-    //         totalAmount: 0,
-    //         goalDirection: "MINIMAL",
-    //         goalType: "PERCENTAGE",
-    //     },
-    //     {
-    //         name: "Policy 3",
-    //         category: "3 category",
-    //         id: "3",
-    //         goal: 12,
-    //         amount: 56,
-    //         percentage: 0,
-    //         totalAmount: 0,
-    //         goalDirection: "MAXIMAL",
-    //         goalType: "NUMBER",
-    //     },
-    // ];
-
     const { t } = useTranslation();
     useEffect(() => {
         getDashboardProjects().then((data) => {
@@ -482,7 +445,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                         </Box>
                     )}
                     {(isPrintingFullDashboard || visibility?.DELAYED_PROJECTS) && (
-                        <Box width="50%" border="solid 1px #DDD" p={1} id="policyGoals">
+                        <Box width="50%" border="solid 1px #DDD" p={1}>
                             <Typography variant="h6" fontSize={16}></Typography>
                             {policyGoals &&
                                 (() => {
@@ -497,7 +460,9 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                                             {policyGoals
                                                 .filter((goal) => goal.category === category)
                                                 .map((goal) => (
-                                                    <PolicyGoalChart isPDF={true} key={goal.id} goal={goal} />
+                                                    <Box key={goal.id} id={goal.id}>
+                                                        <PolicyGoalChart isPDF={true} goal={goal} />
+                                                    </Box>
                                                 ))}
                                         </Grid>
                                     ));

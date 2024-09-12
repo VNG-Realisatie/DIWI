@@ -39,7 +39,8 @@ const calculateWidths = (isNumericGoal: boolean, isSurplus: boolean, amount: num
         filledWidth = isSurplus ? (goal / amount) * 100 : (amount / goal) * 100;
         remainingWidth = 100 - filledWidth;
     } else {
-        filledWidth = amount;
+        filledWidth = Math.max(amount, 4);
+        filledWidth = Math.min(filledWidth, isPDF ? 75 : 90);
         remainingWidth = Math.max(goal - amount, isPDF ? 25 : 10);
     }
     return { filledWidth, remainingWidth };
@@ -65,11 +66,10 @@ const getText = (isNumericGoal: boolean, isSurplus: boolean, formattedDifference
 export const PolicyGoalChart = ({ goal, isPDF = false }: Props) => {
     const isNumericGoal = goal.goalType === "NUMBER";
     const isMaximalPercentageGoal = goal.goalDirection === "MAXIMAL" && goal.goalType === "PERCENTAGE";
-    const amount = isNumericGoal ? goal.amount : goal.percentage;
+    const amount = isNumericGoal ? goal.amount ?? 0 : goal.percentage ?? 0;
     const equalGoalandAmount = amount === goal.goal;
     const isSurplus = amount > goal.goal;
     const isBigScreen = useMediaQuery("(min-width:1800px)");
-
     const { filledWidth, remainingWidth } = calculateWidths(isNumericGoal, isSurplus, amount, goal.goal, isPDF);
     const difference = Math.abs(goal.goal - amount);
     const formattedDifference = formatDifference(goal.goalType, difference);
@@ -80,7 +80,7 @@ export const PolicyGoalChart = ({ goal, isPDF = false }: Props) => {
         <Stack width="100%">
             <Box sx={styles.goalBox}>{`${goal.name} ${t(`goals.goalType.direction.${goal.goalDirection}`)} ${goal.goal}${isNumericGoal ? "" : "%"}`}</Box>
             <Stack direction="row" alignItems="center" width="100%" marginBottom="17px">
-                <Box sx={{ ...styles.filledBox, width: `${filledWidth}%` }}>{isNumericGoal ? amount : `${amount}%`}</Box>
+                <Box sx={{ ...styles.filledBox, width: `${filledWidth}%` }}>{isNumericGoal ? amount : `${amount.toFixed(2)}%`}</Box>
                 {!equalGoalandAmount && <Box sx={{ ...styles.remainingBox, width: `${remainingWidth}%` }}>{text}</Box>}
             </Stack>
         </Stack>

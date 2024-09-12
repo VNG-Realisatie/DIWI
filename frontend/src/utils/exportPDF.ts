@@ -1,5 +1,6 @@
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import { getPolicyDashboardProjects } from "../api/dashboardServices";
 
 type Element = {
     id: string;
@@ -15,38 +16,42 @@ const elements: Element[] = [
     { id: "buy", width: 205, height: 75 },
     { id: "rent", width: 205, height: 75 },
     { id: "deliverables", width: 205, height: 75 },
-    { id: "policyGoals", width: 436 }, // No fixed height for policyGoals
 
     //add more elements here
 ];
+
+const getPolicy = async () => {
+    const response = await getPolicyDashboardProjects();
+    return response;
+};
 
 const h2c = async (element: HTMLElement) => {
     const canvas = await html2canvas(element, { scale: 2.5 });
     return canvas.toDataURL("image/png");
 };
 
-const getElementDimensions = (element: HTMLElement) => {
-    const rect = element.getBoundingClientRect();
-    return { width: rect.width, height: rect.height };
-};
-
-const getElementImage = async ({ id, width, height }: Element) => {
-    const element = document.getElementById(id);
-    if (element) {
-        let elementHeight = id === "policyGoals" ? getElementDimensions(element).height : height;
-        if (typeof elementHeight != "number") {
-            elementHeight = 0;
-        } else if (id === "policyGoals") {
-            elementHeight = elementHeight * 0.3;
-        }
-        const chart = await h2c(element);
-        return { chart, width, height: elementHeight };
-    }
-    return null;
-};
-
 export const exportPdf = async (t: (key: string) => string, setPdfExport: (value: boolean) => void) => {
-    const chartsArray = await Promise.all(elements.map(getElementImage));
+    const policyDashboardProjects = await getPolicy();
+
+    const newElements = policyDashboardProjects.map((project: { id: string }) => ({
+        id: project.id,
+        width: 436,
+        height: 35
+    }));
+
+    const allElements: Element[] = [
+        ...elements,
+        ...newElements
+    ];
+
+    const getElementImage = async (element: Element) => {
+        const el = document.getElementById(element.id);
+        if (!el) return null;
+        const imgData = await h2c(el);
+        return { chart: imgData, width: element.width, height: element.height || 0 };
+    };
+
+    const chartsArray = await Promise.all(allElements.map(getElementImage));
     const filteredChartsArray = chartsArray.filter((chart) => chart !== null);
 
     if (filteredChartsArray.length === 0) {
@@ -59,6 +64,7 @@ export const exportPdf = async (t: (key: string) => string, setPdfExport: (value
 
     let x = 5;
     let y = 30;
+
     let lineHeight = 0;
     let chartsInLine = 0;
     const pageHeight = pdf.internal.pageSize.height;
