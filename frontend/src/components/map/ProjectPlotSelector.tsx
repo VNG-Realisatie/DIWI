@@ -70,7 +70,7 @@ const ProjectPlotSelector = ({ wizard = false }) => {
             <Stack direction="row" alignItems="center" justifyContent="space-between">
                 {!wizard && (
                     <Stack overflow="auto" height="70vh" width="20%">
-                        <Details project={selectedProject} />
+                        <Details />
                     </Stack>
                 )}
                 <div id={id} style={{ height: !wizard ? "70vh" : "60vh", width: "100%", paddingLeft: 8 }}></div>

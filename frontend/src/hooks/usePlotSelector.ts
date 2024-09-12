@@ -25,6 +25,9 @@ import { useTranslation } from "react-i18next";
 import { useHasEditPermission } from "./useHasEditPermission";
 import CircleStyle from "ol/style/Circle";
 import { colors } from "../theme";
+import * as turf from '@turf/turf';
+import { GeoJSONPolygon } from "ol/format/GeoJSON";
+import { Feature as Feat, Polygon as Poly } from "geojson";
 
 const baseUrlKadasterWfs = "https://service.pdok.nl/kadaster/kadastralekaart/wfs/v5_0";
 
@@ -227,48 +230,81 @@ const usePlotSelector = (id: string) => {
         const polygonGeometry = e.feature.getGeometry();
         if (!polygonGeometry || !(polygonGeometry instanceof Polygon)) return;
 
-        const extent = polygonGeometry.getExtent();
-        const bbox = extent.join(",");
-
-        const coords = polygonGeometry.getCoordinates();
+        const bbox = polygonGeometry.getExtent().join(",");
+        const newCutPolygon = turf.polygon(polygonGeometry.getCoordinates());
 
         fetchPlotData(bbox).then((plotFeature) => {
-            let isOutsideOfPlot = false;
             const updatedPlots = [...selectedPlots];
+            let plotsUpdated = false;
 
-        plotFeature.features.forEach((feature) => {
-            const properties = feature.properties;
-            const existingPlot = selectedPlots.find(
-                (plot) =>
-                    plot.brkGemeenteCode === properties.kadastraleGemeenteCode &&
-                    plot.brkPerceelNummer === parseInt(properties.perceelnummer) &&
-                    plot.brkSectie === properties.sectie
-            );
-            if (existingPlot) {
-                const existingCoords = existingPlot.subselectionGeometry?.coordinates as Coordinate[][] || [];
-                const mergedCoords: Coordinate[][] = [...existingCoords, ...coords];
+            plotFeature.features.forEach((feature) => {
+                const { kadastraleGemeenteCode, perceelnummer, sectie } = feature.properties;
+                const existingPlot = selectedPlots.find(
+                    (plot) =>
+                        plot.brkGemeenteCode === kadastraleGemeenteCode &&
+                        plot.brkPerceelNummer === parseInt(perceelnummer) &&
+                        plot.brkSectie === sectie
+                );
 
-                const updatedPlotIndex = updatedPlots.indexOf(existingPlot);
-                updatedPlots[updatedPlotIndex] = {
-                    ...existingPlot,
-                        subselectionGeometry: {
-                            type: "Polygon",
-                            coordinates: mergedCoords,
-                        },
-                    };
+                if (existingPlot) {
+                    const plotIndex = updatedPlots.indexOf(existingPlot);
+                    const plotGeometry = feature.geometry as GeoJSONPolygon
+                    const plotPolygon = turf.polygon(plotGeometry.coordinates as Coordinate[][]);
+                    const intersectedPolygon = turf.intersect(turf.featureCollection([plotPolygon, newCutPolygon]));
+                    const existingCoords = existingPlot.subselectionGeometry?.coordinates as Coordinate[][] || [];
+
+                    const intersectingSubPolygons = existingPlot.subselectionGeometry?.coordinates
+                        ?.map(coord => turf.polygon([coord] as Coordinate[][]))
+                        .filter(subPlotPolygon => turf.booleanIntersects(subPlotPolygon, newCutPolygon)) || [];
+
+                    let remainingCutPolygon = newCutPolygon;
+                    let removeDrawing = false;
+
+                    intersectingSubPolygons.forEach(subPolygon => {
+                        const removeDrawingTest1 = turf.booleanWithin(subPolygon, newCutPolygon)
+                        const removeDrawingTest2 = turf.booleanWithin(newCutPolygon, subPolygon)
+                        if(removeDrawingTest1 || removeDrawingTest2){
+                            removeDrawing = true;
+                        } else {
+                            const difference = turf.difference(turf.featureCollection([remainingCutPolygon, subPolygon]));
+
+                            if (difference && difference.geometry.type === 'MultiPolygon') {
+                                removeDrawing = true;
+                            } else {
+                                remainingCutPolygon = difference as Feat<Poly>;
+                            }
+                        }
+
+                    });
+
+                    if (remainingCutPolygon && !removeDrawing) {
+                        const finalPolygon = intersectedPolygon
+                            ? turf.intersect(turf.featureCollection([plotPolygon, remainingCutPolygon]))
+                            : null;
+
+                        if (finalPolygon) {
+                            updatedPlots[plotIndex] = {
+                                ...existingPlot,
+                                subselectionGeometry: {
+                                    type: "Polygon",
+                                    coordinates: [...existingCoords, finalPolygon.geometry.coordinates[0] as Coordinate[]],
+                                },
+                            };
+                            plotsUpdated = true;
+                        }
+                    } else {
+                    cutLayerSource.removeFeature(e.feature);
+                    }
+                } else {
+                    cutLayerSource.removeFeature(e.feature);
                 }
-                else {
-                    isOutsideOfPlot = true;
-                }
+            });
 
+            if (plotsUpdated) {
+                setSelectedPlots(updatedPlots);
+            }
         });
-        if (!isOutsideOfPlot) {
-            setSelectedPlots(updatedPlots);
-        } else {
-            cutLayerSource.removeFeature(e.feature);
-        }
-    });
-}, [selectionMode, map, selectedPlotLayerSource, cutLayerSource, selectedPlots, getEditPermission]);
+    }, [selectionMode, map, selectedPlotLayerSource, cutLayerSource, selectedPlots, getEditPermission]);
 
 const handleDelete = useCallback((e: MapBrowserEvent<UIEvent>) => {
     if (selectionMode !== Buttons.DELETE || !map || !selectedPlotLayerSource || !getEditPermission()) return;
