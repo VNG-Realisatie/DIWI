@@ -125,12 +125,14 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
     };
 
     useEffect(() => {
-        const duplicated = getDuplicatedPropertyInfo(categories);
+        const filteredCategories = categories.filter(category => !category.disabled);
+        const duplicated = getDuplicatedPropertyInfo(filteredCategories);
         setPropertyDuplicationInfo(duplicated);
     }, [categories]);
 
     useEffect(() => {
-        const duplicated = getDuplicatedPropertyInfo(ordinals);
+        const filteredOrdinals = ordinals.filter(ordinal => !ordinal.disabled);
+        const duplicated = getDuplicatedPropertyInfo(filteredOrdinals);
         setPropertyDuplicationInfo(duplicated);
     }, [ordinals]);
 
@@ -209,10 +211,17 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
                 </Stack>
             </DialogContent>
             <DialogActions>
-                <Button variant="contained" color="error" onClick={handleClose}>
+                <Button id="cancel-custom-property" variant="contained" color="error" onClick={handleClose}>
                     {t("generic.cancel")}
                 </Button>
-                <Button variant="contained" color="success" onClick={handleSave} autoFocus disabled={propertyDuplicationInfo?.duplicatedStatus}>
+                <Button
+                    id="save-custom-property"
+                    variant="contained"
+                    color="success"
+                    onClick={handleSave}
+                    autoFocus
+                    disabled={propertyDuplicationInfo?.duplicatedStatus}
+                >
                     {t("generic.save")}
                 </Button>
             </DialogActions>

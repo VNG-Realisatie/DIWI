@@ -274,6 +274,38 @@ function App() {
                         <Route path={Paths.updateCustomDashbord.path} element={<CreateCustomDashboard />} />
                         <Route path={Paths.customDashbordList.path} element={<CustomDashboardList />} />
                         <Route
+                            path={Paths.dashboard.path}
+                            element={
+                                <ProjectProvider>
+                                    <DashboardProjects />
+                                </ProjectProvider>
+                            }
+                        />
+                        <Route
+                            path={Paths.createCustomDashbord.path}
+                            element={
+                                <ProjectProvider>
+                                    <CreateCustomDashboard />
+                                </ProjectProvider>
+                            }
+                        />
+                        <Route
+                            path={Paths.updateCustomDashbord.path}
+                            element={
+                                <ProjectProvider>
+                                    <CreateCustomDashboard />
+                                </ProjectProvider>
+                            }
+                        />
+                        <Route
+                            path={Paths.customDashbordList.path}
+                            element={
+                                <ProjectProvider>
+                                    <CustomDashboardList />
+                                </ProjectProvider>
+                            }
+                        />
+                        <Route
                             path={Paths.dashboardProject.path}
                             element={
                                 <ProjectProvider>

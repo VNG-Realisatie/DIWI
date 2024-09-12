@@ -349,6 +349,7 @@
       "province": "Provincie",
       "newData": "Nieuwe data koppeling instellen",
       "importForbidden": "Importeren is niet toegestaan. Neem contact op met uw beheerder",
+      "geojsonHint": "Wij kunnen een export uit de provinciemonitors van Utrecht en Zuid-Holland converteren naar deze template. U kan deze export sturen naar diwi@phinion.com.",
       "importName": {
         "excel": "Importeren vanuit Excel",
         "squit": "Importeren vanuit Squit",
@@ -417,15 +418,15 @@
         "HOUSE_TYPE": "Type woning",
         "OWNERSHIP": "Prijscategorie"
       },
-      "goalType" : {
+      "goalType": {
         "number": "Aantal",
         "percentage": "Percentage",
-        "direction" : {
+        "direction": {
           "MAXIMAL": "Maximaal",
           "MINIMAL": "Minimaal"
         }
       },
-      "errors" : {
+      "errors": {
         "name": "Vul de naam van het beleidsdoel in",
         "property": "Kies de eigenschap",
         "startDate": "Vul de startdatum in",
@@ -787,6 +788,18 @@
       },
       "deelplan": {
         "title": "Vul hier de naam van je deelplan in. Bijvoorbeeld 'Fase 1', of 'Ontwikkelgebied tender CPO'."
+      }
+    },
+    "timeline": {
+      "showToday": "Vandaag laten zien",
+      "hideToday": "Vandaag verbergen",
+      "phases": "Projectfase",
+      "from": "Van",
+      "to": "Tot",
+      "houseBlocks": "Huizenblokken",
+      "mutations": {
+        "CONSTRUCTION": "Bouw van {{amount}} ",
+        "DEMOLITION": "Sloop van {{amount}}"
       }
     }
   }

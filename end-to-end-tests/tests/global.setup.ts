@@ -15,11 +15,7 @@ test("give admin user user plus role", async ({ page }) => {
         await page.getByRole("button", { name: "Annuleren" }).click();
     } else {
         await userTypeSelector.click();
-        // await page.getByLabel('Sluiten').click();
-        // await page.getByLabel('Openen').click();
         await page.getByRole("option", { name: "Hoofdgebruiker" }).click();
         await page.getByRole("button", { name: "Opslaan" }).click();
     }
-
-    await page.getByRole("row", { name: "admin@example.com Hoofdgebruiker" });
 });

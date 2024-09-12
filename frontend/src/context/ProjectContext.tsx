@@ -8,7 +8,7 @@ export type ProjectType = null | components["schemas"]["ProjectListModel"];
 
 type ProjectContextType = {
     selectedProject: Project | null;
-    setSelectedProject(project: Project): void;
+    setSelectedProject(project: Project | null): void;
     projects: Array<Project>;
     setProjects(project: Array<Project>): void;
     totalProjectCount: number;
