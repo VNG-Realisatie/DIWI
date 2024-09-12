@@ -20,18 +20,13 @@ const elements: Element[] = [
     //add more elements here
 ];
 
-const getPolicy = async () => {
-    const response = await getPolicyDashboardProjects();
-    return response;
-};
-
 const h2c = async (element: HTMLElement) => {
     const canvas = await html2canvas(element, { scale: 2.5 });
     return canvas.toDataURL("image/png");
 };
 
 export const exportPdf = async (t: (key: string) => string, setPdfExport: (value: boolean) => void) => {
-    const policyDashboardProjects = await getPolicy();
+    const policyDashboardProjects = await getPolicyDashboardProjects();
 
     const newElements = policyDashboardProjects.map((project: { id: string }) => ({
         id: project.id,

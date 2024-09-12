@@ -39,7 +39,7 @@ const calculateWidths = (isNumericGoal: boolean, isSurplus: boolean, amount: num
         filledWidth = isSurplus ? (goal / amount) * 100 : (amount / goal) * 100;
         remainingWidth = 100 - filledWidth;
     } else {
-        filledWidth = Math.max(amount, 4);
+        filledWidth = Math.max(amount, isPDF ? 15 : 4);
         filledWidth = Math.min(filledWidth, isPDF ? 75 : 90);
         remainingWidth = Math.max(goal - amount, isPDF ? 25 : 10);
     }
