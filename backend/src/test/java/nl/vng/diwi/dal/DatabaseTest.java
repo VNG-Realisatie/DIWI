@@ -20,6 +20,7 @@ public class DatabaseTest {
     @BeforeAll
     static void beforeAll() throws Exception {
         testDb = new TestDb();
+        testDb.reset();
     }
 
     @AfterAll

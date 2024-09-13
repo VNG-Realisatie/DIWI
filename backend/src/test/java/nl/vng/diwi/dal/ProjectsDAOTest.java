@@ -37,6 +37,7 @@ public class ProjectsDAOTest {
     @BeforeAll
     static void beforeAll() throws Exception {
         testDb = new TestDb();
+        testDb.reset();
     }
 
     @AfterAll
