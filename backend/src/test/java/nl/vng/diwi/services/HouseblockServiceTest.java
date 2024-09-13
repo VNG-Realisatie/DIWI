@@ -45,6 +45,7 @@ public class HouseblockServiceTest {
     @BeforeAll
     static void beforeAll() throws Exception {
         testDb = new TestDb();
+        testDb.reset();
         dalFactory = testDb.getDalFactory();
         houseblockService = new HouseblockService();
         houseblockService.setProjectService(new ProjectService());

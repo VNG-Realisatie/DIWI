@@ -59,6 +59,7 @@ public class DashboardServiceTest {
     @BeforeAll
     static void beforeAll() throws Exception {
         testDb = new TestDb();
+        testDb.reset();
         dashboardService = new DashboardService();
         propertiesService = new PropertiesService();
         houseblockService = new HouseblockService();
