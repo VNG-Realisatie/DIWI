@@ -32,7 +32,7 @@ SELECT
     pgv.goal_value     AS goalValue,
     pgv.type        AS goalType,
     pgv.direction   AS goalDirection,
-    (SELECT COALESCE(SUM(no_of_houses), 0)
+    (SELECT COALESCE(SUM(hv.no_of_houses), 0)
         FROM houseblocks_view hv
      WHERE hv.delivery_date >= pgv.start_date AND hv.delivery_date <= pgv.end_date
     )               AS totalAmount,
@@ -148,6 +148,11 @@ SELECT
                         policy_goals_options pgo
                             JOIN houseblock_ownership_values hov ON pgo.property_value_id = hov.property_value_id AND pgo.ownership_type = hov.ownership_type
                 )
+            ELSE (
+                SELECT COALESCE(SUM(hv.no_of_houses), 0)
+                FROM houseblocks_view hv
+                WHERE hv.delivery_date >= pgv.start_date AND hv.delivery_date <= pgv.end_date
+            )
         END
     ) AS amount,
     null::NUMERIC            AS percentage

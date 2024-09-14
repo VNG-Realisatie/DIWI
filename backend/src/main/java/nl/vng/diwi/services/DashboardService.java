@@ -62,7 +62,7 @@ public class DashboardService {
                         r.setPercentage(new BigDecimal(r.getAmount()).multiply(new BigDecimal(100))
                             .divide(new BigDecimal(r.getTotalAmount()), 4, RoundingMode.HALF_UP));
                     } else {
-                        r.setPercentage(BigDecimal.valueOf(100));
+                        r.setPercentage(null);
                     }
                 }
             }
