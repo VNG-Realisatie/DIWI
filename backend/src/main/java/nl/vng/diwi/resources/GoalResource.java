@@ -79,6 +79,7 @@ public class GoalResource {
             }
 
             UUID newPlanUuid = goalService.createGoal(repo, planModel, ZonedDateTime.now(), loggedUser.getUuid());
+            repo.getGoalDAO().refreshPolicyGoalsView();
             transaction.commit();
 
             return goalService.getGoal(repo, newPlanUuid);
@@ -102,6 +103,7 @@ public class GoalResource {
             }
 
             goalService.updateGoal(repo, planModel, ZonedDateTime.now(), loggedUser.getUuid());
+            repo.getGoalDAO().refreshPolicyGoalsView();
             transaction.commit();
             repo.getSession().clear();
             return goalService.getGoal(repo, planId);
@@ -118,6 +120,7 @@ public class GoalResource {
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             goalService.deleteGoal(repo, planId, loggedUser);
+            repo.getGoalDAO().refreshPolicyGoalsView();
             transaction.commit();
         }
     }
@@ -172,6 +175,7 @@ public class GoalResource {
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             goalCategoryModel.setId(categoryId);
             goalCategoryModel = goalService.updateGoalCategory(repo, goalCategoryModel, loggedUser);
+            repo.getGoalDAO().refreshPolicyGoalsView();
             transaction.commit();
         }
 
@@ -188,6 +192,7 @@ public class GoalResource {
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             goalService.deleteGoalCategory(repo, categoryId, loggedUser);
+            repo.getGoalDAO().refreshPolicyGoalsView();
             transaction.commit();
         }
     }
