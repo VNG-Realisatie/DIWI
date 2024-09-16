@@ -142,7 +142,7 @@ const ProjectWizardBlocks = () => {
                     try {
                         validateHouseBlock(houseBlock, selectedProject, index);
 
-                        const filteredOwnershipValue = houseBlock.ownershipValue.filter((ownership) => ownership.amount > 0);
+                        const filteredOwnershipValue = houseBlock.ownershipValue.filter((ownership) => ownership.amount && ownership.amount >= 0);
                         const updatedHouseBlock = {
                             ...houseBlock,
                             ownershipValue: filteredOwnershipValue,
