@@ -123,7 +123,7 @@ export function GoalWizard() {
         }
 
         setGoal(updatedGoal);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [goal.goalType]);
 
     useEffect(() => {
@@ -191,12 +191,14 @@ export function GoalWizard() {
             }
         }
     };
+
     //update when conditions are clear
     const disabledButton =
         !goal.name ||
         !goal.startDate ||
         !goal.endDate ||
         !goal.goalDirection ||
+        (goal.goalType === "PERCENTAGE" && !goal.conditions[0].conditionFieldType) ||
         goal.conditions.some((condition) => {
             if (!condition.conditionFieldType) return false;
             if (condition.conditionFieldType === "PROPERTY" && !condition.propertyId) return true;
@@ -276,7 +278,7 @@ export function GoalWizard() {
                         <Grid item xs={12}>
                             <CategoryInput
                                 readOnly={false}
-                                mandatory={false}
+                                mandatory={goal.goalType === "PERCENTAGE" ? true : false}
                                 title={t("goals.property")}
                                 options={conditionFieldTypeOptions.map((option) => ({ id: option, name: option }))}
                                 values={

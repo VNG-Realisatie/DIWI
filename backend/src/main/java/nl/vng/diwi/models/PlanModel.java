@@ -150,6 +150,9 @@ public class PlanModel extends DatedDataModelSuperClass {
         if (this.goalType == GoalType.PERCENTAGE && this.goalValue.compareTo(BigDecimal.valueOf(100)) > 0) {
             return "Goal value must be between 0 and 100 when selecting Percentage goal type.";
         }
+        if (this.goalType == GoalType.PERCENTAGE && (this.conditions == null || this.conditions.isEmpty())) {
+            return "Goal must have a condition when selecting Percentage goal type.";
+        }
 
         if (this.category != null) {
             if (this.category.getId() != null) {

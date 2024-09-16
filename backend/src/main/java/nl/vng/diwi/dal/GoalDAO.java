@@ -47,4 +47,12 @@ public class GoalDAO extends AbstractRepository {
             .setParameter("planUuid", planUuid)
             .getSingleResultOrNull();
     }
+
+    public void refreshPolicyGoalsView() {
+        session.flush();
+        session.createNativeMutationQuery(String.format(
+                    "REFRESH MATERIALIZED VIEW %s.policy_goals_view",
+                GenericRepository.VNG_SCHEMA_NAME))
+            .executeUpdate();
+    }
 }
