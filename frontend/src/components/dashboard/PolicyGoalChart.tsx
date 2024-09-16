@@ -39,9 +39,14 @@ const calculateWidths = (isNumericGoal: boolean, isSurplus: boolean, amount: num
         filledWidth = isSurplus ? (goal / amount) * 100 : (amount / goal) * 100;
         remainingWidth = 100 - filledWidth;
     } else {
-        filledWidth = Math.max(amount, isPDF ? 15 : 4);
-        filledWidth = Math.min(filledWidth, isPDF ? 75 : 90);
-        remainingWidth = Math.max(goal - amount, isPDF ? 25 : 10);
+        if (amount === 0) {
+            filledWidth = 50;
+            remainingWidth = 50;
+        } else {
+            filledWidth = Math.max(amount, isPDF ? 15 : 4);
+            filledWidth = Math.min(filledWidth, isPDF ? 75 : 90);
+            remainingWidth = Math.max(goal - amount, isPDF ? 25 : 10);
+        }
     }
     return { filledWidth, remainingWidth };
 };
@@ -76,11 +81,14 @@ export const PolicyGoalChart = ({ goal, isPDF = false }: Props) => {
     const styles = getStyles(equalGoalandAmount, isSurplus, isMaximalPercentageGoal);
     const text = getText(isNumericGoal, isSurplus, String(formattedDifference), isMaximalPercentageGoal, isBigScreen);
 
+
     return (
         <Stack width="100%">
             <Box sx={styles.goalBox}>{`${goal.name} ${t(`goals.goalType.direction.${goal.goalDirection}`)} ${goal.goal}${isNumericGoal ? "" : "%"}`}</Box>
             <Stack direction="row" alignItems="center" width="100%" marginBottom="17px">
-                <Box sx={{ ...styles.filledBox, width: `${filledWidth}%` }}>{isNumericGoal ? amount : `${amount.toFixed(2)}%`}</Box>
+                <Box sx={{ ...styles.filledBox, width: `${filledWidth}%` }}>
+                    {isNumericGoal ? amount : amount === 0 ? t("goals.dashboard.noHouses") : `${amount.toFixed(2)}%`}
+                </Box>
                 {!equalGoalandAmount && <Box sx={{ ...styles.remainingBox, width: `${remainingWidth}%` }}>{text}</Box>}
             </Stack>
         </Stack>

@@ -444,7 +444,8 @@
           "deficit" : "tekort",
           "surplus": "overschot",
           "moreSpace": "ruimte over",
-          "noCategory": "Geen categorie"
+          "noCategory": "Geen categorie",
+          "noHouses": "Geen huizen voldoen aan de geselecteerde voorwaarden"
         }
     },
     "dashboard": {
