@@ -278,7 +278,7 @@ function App() {
                             }
                         />
                         <Route
-                            path={Paths.createCustomDashbord.path}
+                            path={Paths.createCustomDashboard.path}
                             element={
                                 <ProjectProvider>
                                     <CreateCustomDashboard />
@@ -286,21 +286,14 @@ function App() {
                             }
                         />
                         <Route
-                            path={Paths.updateCustomDashbord.path}
+                            path={Paths.updateCustomDashboard.path}
                             element={
                                 <ProjectProvider>
                                     <CreateCustomDashboard />
                                 </ProjectProvider>
                             }
                         />
-                        <Route
-                            path={Paths.customDashbordList.path}
-                            element={
-                                <ProjectProvider>
-                                    <CustomDashboardList />
-                                </ProjectProvider>
-                            }
-                        />
+                        <Route path={Paths.customDashboardList.path} element={<CustomDashboardList />} />
                         <Route
                             path={Paths.dashboardProject.path}
                             element={

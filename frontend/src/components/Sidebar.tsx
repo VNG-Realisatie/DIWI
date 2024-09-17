@@ -85,13 +85,13 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
                     </Link>
                 )}
                 {allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
-                    <Link to={Paths.createCustomDashbord.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
+                    <Link to={Paths.createCustomDashboard.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
                         <ListItemButton onClick={handleDrawerClose}>
                             <ListItemText primary={t("sidebar.makeCustomDashboard")} />
                         </ListItemButton>
                     </Link>
                 )}
-                <Link to={Paths.customDashbordList.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
+                <Link to={Paths.customDashboardList.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
                     <ListItemButton onClick={handleDrawerClose}>
                         <ListItemText primary={t("sidebar.customDashboardList")} />
                     </ListItemButton>

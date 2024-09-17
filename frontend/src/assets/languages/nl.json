@@ -435,11 +435,18 @@
         "goalDirection": "Kies de doelstelling",
         "selectProperty": "Selecteer eigenschap"
       },
-      "notifications": {
-        "updated": "Succesvol geüpdatet",
-        "created": "Succesvol aangemaakt",
-        "deleted": "Succesvol verwijderd"
-      }
+    "notifications": {
+      "updated" : "Succesvol geüpdatet",
+      "created" : "Succesvol aangemaakt",
+      "deleted" : "Succesvol verwijderd"
+    },
+    "dashboard": {
+          "deficit" : "tekort",
+          "surplus": "overschot",
+          "moreSpace": "ruimte over",
+          "noCategory": "Geen categorie",
+          "noHouses": "Geen huizen voldoen aan de geselecteerde voorwaarden"
+        }
     },
     "dashboard": {
       "title": "Dashboard",
@@ -451,6 +458,7 @@
       "projects": "Dashboard projecten",
       "municipalityProgram": "Woningbouwprogramma gemeente",
       "selectProject": "Selecteer project",
+      "policyGoals": "Beleidsdoelen",
       "buy": "Koop",
       "rent": "Huur",
       "residentialProjects": "Woonproducten",
