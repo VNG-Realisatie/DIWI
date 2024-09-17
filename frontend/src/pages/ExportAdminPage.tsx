@@ -3,6 +3,9 @@ import { Grid, Button, Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import TextInput from "../components/project/inputs/TextInput";
 import CategoryInput from "../components/project/inputs/CategoryInput";
+import { addExportData, ExportData } from "../api/exportServices";
+import useAlert from "../hooks/useAlert";
+import { format } from "path";
 
 type FieldConfig = {
     name: string;
@@ -17,9 +20,12 @@ type TypeConfig = {
     };
 };
 
+interface FormData {
+    [key: string]: string;
+}
+
 function ExportAdminPage() {
     const { t } = useTranslation();
-
     const typeConfig: TypeConfig = {
         ESRI_ZUID_HOLLAND: {
             fields: [
@@ -29,40 +35,39 @@ function ExportAdminPage() {
                 { name: "projectdetailUrl", label: t("Project details URL"), type: "text", mandatory: false },
             ],
         },
-        // TEST_CONFIG: {
-        //     fields: [
-        //         { name: "testName", label: "Test Naam", type: "text", mandatory: true },
-        //         { name: "testApiKey", label: "Test API sleutel", type: "password", mandatory: true },
-        //         { name: "testUrl", label: "Test URL", type: "text", mandatory: false },
-        //         { name: "testDetailUrl", label: "Test details URL", type: "text", mandatory: false },
-        //         { name: "blabla", label: "blabla", type: "text", mandatory: false },
-        //     ],
-        // },
         // Other types can be added here in the future
     };
+    const [formData, setFormData] = useState<FormData>(generateInitialState("ESRI_ZUID_HOLLAND"));
+    const { setAlert } = useAlert();
 
-    interface FormData {
-        [key: string]: string;
-    }
-
-    const generateInitialState = (type: string): FormData => {
+    function generateInitialState(type: string): FormData {
         const fields = typeConfig[type]?.fields || [];
         const initialState: FormData = { type };
         fields.forEach((field) => {
             initialState[field.name] = "";
         });
         return initialState;
-    };
+    }
 
-    const [formData, setFormData] = useState<FormData>(generateInitialState("ESRI_ZUID_HOLLAND"));
     const handleChange = (fieldName: string) => (event: ChangeEvent<HTMLInputElement>) => {
         setFormData({
             ...formData,
             [fieldName]: event.target.value,
         });
     };
-    const handleSubmit = () => {
-        console.log(formData);
+    const handleSubmit = async () => {
+        try {
+            const exportData: ExportData = {
+                id: "",
+                name: formData.name,
+                type: formData.type,
+                ...formData,
+            };
+            await addExportData(exportData);
+            setAlert("success", "success");
+        } catch (error: unknown) {
+            if (error instanceof Error) setAlert(error.message, "error");
+        }
     };
 
     const fields = typeConfig[formData.type]?.fields || [];
