@@ -56,5 +56,6 @@ export const userInfo = createPathObject(config.baseurl + "rest/users/userinfo")
 export const userSettings = createPathObject(config.baseurl + "admin/settings");
 export const userManagement = createPathObject(config.baseurl + "admin/user-management");
 export const priceCategories = createPathObject(config.baseurl + "admin/price-categories");
+export const exportSettings = createPathObject(config.baseurl + "admin/export-settings");
 
 export const swagger = createPathObject(config.baseurl + "swagger");

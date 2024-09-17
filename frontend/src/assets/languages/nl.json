@@ -283,7 +283,8 @@
       "addProject": "Project toevoegen",
       "projectOverview": "Overzicht projecten",
       "knowledgeBase": "Kennisbank",
-      "goals": "Beleidsdoelen"
+      "goals": "Beleidsdoelen",
+      "exportSettings": "Data uitwisseling"
     },
     "about": {
       "heading": "Over deze website",
@@ -567,6 +568,16 @@
       }
     },
     "admin": {
+      "export": {
+        "name": "Naam",
+        "apiKey": "API sleutel",
+        "type": "Type",
+        "projectUrl": "Create layer URL",
+        "projectdetailUrl": "Project details URL",
+        "error": {
+          "required": "{{field}} is required"
+        }
+      },
       "priceCategories": {
         "name": "Naam",
         "amount": "Waarde",
