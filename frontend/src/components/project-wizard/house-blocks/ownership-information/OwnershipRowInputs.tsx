@@ -55,11 +55,16 @@ const OwnershipAmountInput = ({ handleInputChange, ownership, index, readOnly, t
                 type="number"
                 required
                 fullWidth
-                value={ownership.amount !== 0 && !Number.isNaN(ownership.amount) ? ownership.amount : ""}
+                value={!Number.isNaN(ownership.amount) ? ownership.amount : ""}
                 onChange={(e) => handleInputChange(index, { ...ownership, amount: parseInt(e.target.value) })}
                 error={!isAmountValid || !isConsistent}
                 helperText={checkIfOwnerShipValueAndMutationConsistent()}
                 disabled={readOnly}
+                InputProps={{
+                    inputProps: {
+                        min: 0,
+                    },
+                }}
             />
         </InputLabelStack>
     );
