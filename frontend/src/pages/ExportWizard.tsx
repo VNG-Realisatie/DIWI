@@ -4,12 +4,15 @@ import { ExportData, getExportData } from "../api/exportServices";
 import ExportTable from "../components/export/ExportTable";
 import { t } from "i18next";
 import { ProjectsTableView } from "../components/project/ProjectsTableView";
+import useAllowedActions from "../hooks/useAllowedActions";
+import ActionNotAllowed from "./ActionNotAllowed";
 
 const ExportWizard = () => {
     const [step, setStep] = useState(1);
     const [exportData, setExportData] = useState<ExportData[]>([]);
     const [selectedExport, setSelectedExport] = useState<ExportData | null>(null); //update type
     const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
+    const { allowedActions } = useAllowedActions();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -41,6 +44,10 @@ const ExportWizard = () => {
         fetchData();
     }, []);
 
+    if (!allowedActions.includes("EXPORT_PROJECTS")) {
+        return <ActionNotAllowed errorMessage={t("admin.export.actionNotAllowed")}/>
+    }
+
     const handleNext = () => {
         if (step === 1 && selectedExport) {
             setStep(2);
@@ -71,7 +78,7 @@ const ExportWizard = () => {
             {step === 1 && (
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
-                        <Typography variant="h6">{t("admin.export.title")}</Typography>
+                        <Typography variant="h6">{t("admin.export.title.selectExport")}</Typography>
                     </Grid>
                     <Grid item xs={12}>
                         <ExportTable
@@ -97,14 +104,16 @@ const ExportWizard = () => {
             {step === 2 && (
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
-                        <Typography variant="h6">Select Projects to Export</Typography>
+                        <Typography variant="h6">{t("admin.export.title.selectProject")}</Typography>
                     </Grid>
-                    <ProjectsTableView
-                        isExportPage={true}
-                        handleProjectSelection={handleProjectSelection}
-                        selectedProjects={selectedProjects}
-                        handleBack={handleBack}
-                    />
+                    <Grid item xs={12}>
+                        <ProjectsTableView
+                            isExportPage={true}
+                            handleProjectSelection={handleProjectSelection}
+                            selectedProjects={selectedProjects}
+                            handleBack={handleBack}
+                        />
+                    </Grid>
                 </Grid>
             )}
         </Box>

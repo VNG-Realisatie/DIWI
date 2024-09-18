@@ -6,6 +6,8 @@ import CategoryInput from "../components/project/inputs/CategoryInput";
 import { addExportData, ExportData, getExportDataById, updateExportData } from "../api/exportServices";
 import useAlert from "../hooks/useAlert";
 import { useParams } from "react-router-dom";
+import ActionNotAllowed from "./ActionNotAllowed";
+import useAllowedActions from "../hooks/useAllowedActions";
 
 type FieldConfig = {
     name: string;
@@ -27,6 +29,7 @@ interface FormData {
 function ExportAdminPage() {
     const { t } = useTranslation();
     const { id } = useParams<string>();
+    const { allowedActions } = useAllowedActions();
     const typeConfig: TypeConfig = {
         ESRI_ZUID_HOLLAND: {
             fields: [
@@ -50,6 +53,10 @@ function ExportAdminPage() {
             fetchData();
         }
     }, [id]);
+
+    if (!allowedActions.includes("EXPORT_PROJECTS")) {
+        return <ActionNotAllowed errorMessage={t("admin.export.actionNotAllowed")}/>
+    }
 
     function generateInitialState(type: string): FormData {
         const fields = typeConfig[type]?.fields || [];

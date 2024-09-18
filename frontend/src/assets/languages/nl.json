@@ -571,7 +571,10 @@
     },
     "admin": {
       "export": {
-        "title": "Selecteer Gegevens Exporteren",
+        "title": {
+          "selectProject" : "Selecteer Projecten om te Exporteren",
+          "selectExport": "Selecteer Gegevens Exporteren"
+        },
         "name": "Naam",
         "apiKey": "API sleutel",
         "type": "Type",
@@ -585,7 +588,8 @@
           "created": "Export succesvol aangemaakt",
           "updated": "Export succesvol geüpdatet",
           "deleted": "Export succesvol verwijderd"
-        }
+        },
+        "actionNotAllowed": "Exportfunctie is niet toegankelijk. Neem contact op met uw beheerder."
       },
       "priceCategories": {
         "name": "Naam",

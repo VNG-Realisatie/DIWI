@@ -81,10 +81,20 @@ export const ProjectsTableView = ({
     const { filterUrl, rows } = useCustomSearchParams(sortModel, filterModel, paginationInfo);
 
     useEffect(() => {
-        if (filterUrl !== "" && !isExportPage) {
-            navigate(`/projects/table${filterUrl}`);
+        if (filterUrl !== "") {
+            if (!isExportPage) {
+                navigate(`/projects/table${filterUrl}`);
+            } else {
+                navigate(`/exchangedata/export${filterUrl}`);
+            }
         }
     }, [filterUrl, navigate, filterModel, sortModel]);
+
+    useEffect(() => {
+        if (isExportPage) {
+            setFilterModel({ items: [{ field: "confidentialityLevel", operator: "isAnyOf", value: ["PUBLIC", "EXTERNAL_GOVERNMENTAL"] }] });
+        }
+    }, [isExportPage]);
 
     const handleExport = (params: GridRowParams) => {
         const clickedRow: RowData = params.row as RowData;
@@ -302,6 +312,7 @@ export const ProjectsTableView = ({
     ];
 
     const handleFilterModelChange = (newModel: GridFilterModel) => {
+        if (isExportPage) return;
         if (newModel.items.some((item) => item.value)) {
             setFilterModel(newModel);
         } else {
@@ -383,20 +394,15 @@ export const ProjectsTableView = ({
                     </Button>
                 </DialogActions>
             </Dialog>
-            <Box sx={{display: "flex", justifyContent: "right", gap: "3px"}}>
+            <Box sx={{ display: "flex", justifyContent: "right", gap: "3px" }}>
                 {isExportPage && (
-                    <Button
-                        sx={{ width: "130px", my: 2}}
-                        variant="contained"
-                        color="primary"
-                        onClick={handleBack}
-                    >
+                    <Button sx={{ width: "130px", my: 2 }} variant="contained" color="primary" onClick={handleBack}>
                         {t("generic.previousStep")}
                     </Button>
                 )}
                 {(showCheckBox || isExportPage) && allowedActions.includes("EXPORT_PROJECTS") && (
                     <Button
-                        sx={{ width: "130px", my: 2}}
+                        sx={{ width: "130px", my: 2 }}
                         variant="contained"
                         onClick={() => {
                             setShowDialog(true);
