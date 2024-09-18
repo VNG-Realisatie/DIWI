@@ -11,6 +11,8 @@
       "saved": "Opgeslagen",
       "next": "Opslaan en volgende",
       "previous": "Opslaan en vorige",
+      "nextStep": "Volgende",
+      "previousStep": "Vorige",
       "cancelChanges": "Stop veranderingen",
       "saveChanges": "Veranderingen opslaan",
       "edit": "Bewerken",
@@ -569,13 +571,20 @@
     },
     "admin": {
       "export": {
+        "title": "Selecteer Gegevens Exporteren",
         "name": "Naam",
         "apiKey": "API sleutel",
         "type": "Type",
         "projectUrl": "Create layer URL",
         "projectdetailUrl": "Project details URL",
         "error": {
-          "required": "{{field}} is required"
+          "required": "{{field}} is verplicht"
+        },
+        "deleteConfirmation": "Weet je zeker dat je deze export wilt verwijderen?",
+        "notification": {
+          "created": "Export succesvol aangemaakt",
+          "updated": "Export succesvol geüpdatet",
+          "deleted": "Export succesvol verwijderd"
         }
       },
       "priceCategories": {

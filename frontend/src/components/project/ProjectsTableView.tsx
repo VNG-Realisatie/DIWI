@@ -5,6 +5,7 @@ import {
     GridPreProcessEditCellProps,
     GridRenderCellParams,
     GridRowParams,
+    GridRowSelectionModel,
     GridSortModel,
     getGridSingleSelectOperators,
     getGridStringOperators,
@@ -32,6 +33,10 @@ interface RowData {
 
 type Props = {
     showCheckBox?: boolean;
+    isExportPage?: boolean;
+    handleProjectSelection?: (projectId: string | null | string[]) => void;
+    selectedProjects?: string[];
+    handleBack?: () => void;
 };
 
 export interface GenericOptionType<Type> {
@@ -52,7 +57,13 @@ const confidentialityLevelComparator = (v1: string, v2: string): number => {
     return label1.localeCompare(label2);
 };
 
-export const ProjectsTableView = ({ showCheckBox }: Props) => {
+export const ProjectsTableView = ({
+    showCheckBox,
+    isExportPage = false,
+    handleProjectSelection = () => {},
+    selectedProjects = [],
+    handleBack = () => {},
+}: Props) => {
     const { paginationInfo, setPaginationInfo, totalProjectCount } = useContext(ProjectContext);
 
     const navigate = useNavigate();
@@ -64,12 +75,13 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const [showDialog, setShowDialog] = useState(false);
     const [filterModel, setFilterModel] = useState<GridFilterModel | undefined>();
     const [sortModel, setSortModel] = useState<GridSortModel | undefined>();
+    const [previousSelection, setPreviousSelection] = useState<GridRowSelectionModel>([]);
 
     const { allowedActions } = useAllowedActions();
     const { filterUrl, rows } = useCustomSearchParams(sortModel, filterModel, paginationInfo);
 
     useEffect(() => {
-        if (filterUrl !== "") {
+        if (filterUrl !== "" && !isExportPage) {
             navigate(`/projects/table${filterUrl}`);
         }
     }, [filterUrl, navigate, filterModel, sortModel]);
@@ -88,6 +100,25 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const createErrorReport = (params: GridPreProcessEditCellProps) => {
         const hasError = params.props.value.length < 3;
         return { ...params.props, error: hasError };
+    };
+
+    const handleSelectionChange = (newSelection: GridRowSelectionModel) => {
+        const added = newSelection.filter((id) => !previousSelection.includes(id));
+        const removed = previousSelection.filter((id) => !newSelection.includes(id));
+
+        if (newSelection.length === 0) {
+            handleProjectSelection(null);
+        } else if (newSelection.length === rows.length) {
+            handleProjectSelection(rows.map((row) => row.id));
+        } else {
+            if (added.length > 0) {
+                handleProjectSelection(added[0] as string);
+            } else if (removed.length > 0) {
+                handleProjectSelection(removed[0] as string);
+            }
+        }
+
+        setPreviousSelection(newSelection);
     };
 
     const columns: GridColDef[] = [
@@ -301,7 +332,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 sx={{
                     borderRadius: 0,
                 }}
-                checkboxSelection={showCheckBox}
+                checkboxSelection={showCheckBox || isExportPage}
                 rows={rows}
                 columns={columns}
                 rowHeight={70}
@@ -317,11 +348,13 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 rowCount={filterModel?.items.some((item) => item.value) ? rows.length : totalProjectCount}
                 paginationMode="server"
                 onRowClick={
-                    showCheckBox
-                        ? handleExport
-                        : (params: GridRowParams) => {
-                              navigate(`/projects/${params.id}/characteristics`);
-                          }
+                    isExportPage
+                        ? () => {}
+                        : showCheckBox
+                          ? handleExport
+                          : (params: GridRowParams) => {
+                                navigate(`/projects/${params.id}/characteristics`);
+                            }
                 }
                 processRowUpdate={
                     (updatedRow) => console.log(updatedRow)
@@ -331,6 +364,8 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 onFilterModelChange={handleFilterModelChange}
                 sortModel={sortModel}
                 onSortModelChange={handleSortModelChange}
+                rowSelectionModel={selectedProjects}
+                onRowSelectionModelChange={handleSelectionChange}
             />
             <Dialog open={showDialog} onClose={handleClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
                 <DialogTitle id="alert-dialog-title">{t("projects.confirmExport")}</DialogTitle>
@@ -348,19 +383,31 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                     </Button>
                 </DialogActions>
             </Dialog>
-            {showCheckBox && allowedActions.includes("EXPORT_PROJECTS") && (
-                <Button
-                    sx={{ width: "130px", my: 2, ml: "auto" }}
-                    variant="contained"
-                    onClick={() => {
-                        setShowDialog(true);
-                    }}
-                >
-                    {t("projects.export")}
-                </Button>
-            )}
+            <Box sx={{display: "flex", justifyContent: "right", gap: "3px"}}>
+                {isExportPage && (
+                    <Button
+                        sx={{ width: "130px", my: 2}}
+                        variant="contained"
+                        color="primary"
+                        onClick={handleBack}
+                    >
+                        {t("generic.previousStep")}
+                    </Button>
+                )}
+                {(showCheckBox || isExportPage) && allowedActions.includes("EXPORT_PROJECTS") && (
+                    <Button
+                        sx={{ width: "130px", my: 2}}
+                        variant="contained"
+                        onClick={() => {
+                            setShowDialog(true);
+                        }}
+                    >
+                        {t("projects.export")}
+                    </Button>
+                )}
+            </Box>
             <Box sx={{ height: 100 }}></Box>
-            <AddProjectButton />
+            {!isExportPage && <AddProjectButton />}
         </Stack>
     );
 };

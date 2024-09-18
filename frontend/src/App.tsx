@@ -45,6 +45,7 @@ import { CustomDashboardList } from "./pages/CustomDashboardList";
 import { Goals } from "./pages/Goals";
 import { GoalWizard } from "./pages/GoalWizard";
 import ExportAdminPage from "./pages/ExportAdminPage";
+import ExportWizard from "./pages/ExportWizard";
 
 enum UserStatus {
     Authenticated,
@@ -326,12 +327,21 @@ function App() {
                                 </ProjectProvider>
                             }
                         />
+                        <Route
+                            path={Paths.configuredExport.path}
+                            element={
+                                <ProjectProvider>
+                                    <ExportWizard />
+                                </ProjectProvider>
+                            }
+                        />
                         <Route path={Paths.userSettings.path} element={<Settings />} />
                         <Route path={Paths.userManagement.path} element={<UserManagement />} />
                         <Route path={Paths.priceCategories.path} element={<PriceCategories />} />
                         <Route path={Paths.importExcelProjects.path} element={<ImportedProjects type="Excel" />} />
                         <Route path={Paths.importSquitProjects.path} element={<ImportedProjects type="Squit" />} />
                         <Route path={Paths.exportSettings.path} element={<ExportAdminPage />} />
+                        <Route path={Paths.updateExportSettings.path} element={<ExportAdminPage />} />
                         <Route path={Paths.about.path} element={<About />} />
                         <Route path={Paths.swagger.path} element={<Swagger />} />
                         <Route path="*" element={<NoMatch />} />
