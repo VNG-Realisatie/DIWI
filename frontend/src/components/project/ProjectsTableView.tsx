@@ -313,6 +313,7 @@ export const ProjectsTableView = ({
 
     const handleFilterModelChange = (newModel: GridFilterModel) => {
         if (isExportPage) return;
+
         if (newModel.items.some((item) => item.value)) {
             setFilterModel(newModel);
         } else {
@@ -356,7 +357,7 @@ export const ProjectsTableView = ({
                 onPaginationModelChange={(model) => {
                     setPaginationInfo({ page: model.page + 1, pageSize: model.pageSize });
                 }}
-                rowCount={filterModel?.items.some((item) => item.value) ? rows.length : totalProjectCount}
+                rowCount={totalProjectCount}
                 paginationMode="server"
                 onRowClick={
                     isExportPage
