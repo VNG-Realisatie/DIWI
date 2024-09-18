@@ -26,6 +26,8 @@ public class GenericRepository implements AutoCloseable {
                 BlueprintState.class,
                 BlueprintToElement.class,
                 BlueprintToUserGroup.class,
+                DataExchange.class,
+                DataExchangeState.class,
                 PropertyCategoryValue.class,
                 PropertyCategoryValueState.class,
                 PropertyRangeCategoryValue.class,

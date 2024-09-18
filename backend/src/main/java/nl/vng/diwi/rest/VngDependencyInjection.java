@@ -3,6 +3,7 @@ package nl.vng.diwi.rest;
 import nl.vng.diwi.dal.UserGroupDAO;
 import nl.vng.diwi.security.MailService;
 import nl.vng.diwi.services.DashboardService;
+import nl.vng.diwi.services.DataExchangeService;
 import nl.vng.diwi.services.ExcelImportService;
 import nl.vng.diwi.services.GeoJsonImportService;
 import nl.vng.diwi.services.GoalService;
@@ -113,6 +114,7 @@ public class VngDependencyInjection extends AbstractBinder {
         bind(new GeoJsonImportService()).to(GeoJsonImportService.class);
         bind(new DashboardService()).to(DashboardService.class);
         bind(new GoalService()).to(GoalService.class);
+        bind(new DataExchangeService()).to(DataExchangeService.class);
 
     }
 }
