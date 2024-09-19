@@ -90,7 +90,7 @@ export const ProjectsTableView = ({
                 navigate(`/exchangedata/export${filterUrl}`);
             }
         }
-    }, [filterUrl, navigate, filterModel, sortModel]);
+    }, [filterUrl, navigate, filterModel, sortModel, isExportPage]);
 
     useEffect(() => {
         if (isExportPage) {
@@ -334,7 +334,7 @@ export const ProjectsTableView = ({
     const handleProjectsExport = () => {
         exportProjects();
         setShowDialog(false);
-    }
+    };
 
     return (
         <Stack
