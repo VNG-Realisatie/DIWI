@@ -37,6 +37,7 @@ type Props = {
     handleProjectSelection?: (projectId: string | null | string[]) => void;
     selectedProjects?: string[];
     handleBack?: () => void;
+    exportProjects?: () => void;
 };
 
 export interface GenericOptionType<Type> {
@@ -63,6 +64,7 @@ export const ProjectsTableView = ({
     handleProjectSelection = () => {},
     selectedProjects = [],
     handleBack = () => {},
+    exportProjects = () => {},
 }: Props) => {
     const { paginationInfo, setPaginationInfo, totalProjectCount } = useContext(ProjectContext);
 
@@ -104,8 +106,6 @@ export const ProjectsTableView = ({
             setSelectedRows([...selectedRows, clickedRow.id]);
         }
     };
-
-    const handleClose = () => setShowDialog(false);
 
     const createErrorReport = (params: GridPreProcessEditCellProps) => {
         const hasError = params.props.value.length < 3;
@@ -331,6 +331,11 @@ export const ProjectsTableView = ({
         setSortModel(newSortModel);
     };
 
+    const handleProjectsExport = () => {
+        exportProjects();
+        setShowDialog(false);
+    }
+
     return (
         <Stack
             width="100%"
@@ -379,14 +384,14 @@ export const ProjectsTableView = ({
                 rowSelectionModel={selectedProjects}
                 onRowSelectionModelChange={handleSelectionChange}
             />
-            <Dialog open={showDialog} onClose={handleClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
+            <Dialog open={showDialog} onClose={() => setShowDialog(false)} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
                 <DialogTitle id="alert-dialog-title">{t("projects.confirmExport")}</DialogTitle>
                 <DialogActions sx={{ px: 5, py: 3, ml: 15 }}>
-                    <Button onClick={handleClose}>{t("projects.cancelExport")}</Button>
+                    <Button onClick={() => setShowDialog(false)}>{t("projects.cancelExport")}</Button>
                     <Button
                         variant="contained"
                         onClick={() => {
-                            handleClose();
+                            handleProjectsExport();
                             setAlert(t("projects.successExport"), "success");
                         }}
                         autoFocus

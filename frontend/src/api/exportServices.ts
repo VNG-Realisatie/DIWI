@@ -29,3 +29,10 @@ export async function updateExportData(id: string, data: ExportData): Promise<Ex
 export async function deleteExportData(id: string): Promise<void> {
     return deleteJson(`${API_URI}/dataexchange/${id}`);
 }
+
+//this dunction needs to be updated
+export async function exportProjects(exportId: string, projectIds?: string[]): Promise<void> {
+    const url = `${API_URI}/projects/export/${exportId}`;
+    const body = projectIds && projectIds.length > 0 ? { projectIds } : undefined;
+    await postJson(url, body);
+}

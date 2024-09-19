@@ -141,14 +141,14 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
                         </ListItemButton>
                     </Link>
                 )}
-                {allowedActions.includes("EXPORT_PROJECTS") && (
+                {allowedActions.includes("EDIT_DATA_EXCHANGES") && (
                     <Link to={Paths.exportSettings.path} style={linkStyles} onClick={handleDrawerClose}>
                         <ListItemButton>
                             <ListItemText primary={t("sidebar.exportSettings")} />
                         </ListItemButton>
                     </Link>
                 )}
-                {allowedActions.includes("EXPORT_PROJECTS") && (
+                {allowedActions.includes("VIEW_DATA_EXCHANGES") && (
                     <Link to={Paths.configuredExport.path} style={linkStyles} onClick={handleDrawerClose}>
                         <ListItemButton>
                             <ListItemText primary={t("sidebar.export")} />

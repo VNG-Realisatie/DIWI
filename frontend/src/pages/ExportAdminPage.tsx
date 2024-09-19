@@ -5,7 +5,7 @@ import TextInput from "../components/project/inputs/TextInput";
 import CategoryInput from "../components/project/inputs/CategoryInput";
 import { addExportData, ExportData, getExportDataById, updateExportData } from "../api/exportServices";
 import useAlert from "../hooks/useAlert";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ActionNotAllowed from "./ActionNotAllowed";
 import useAllowedActions from "../hooks/useAllowedActions";
 
@@ -30,13 +30,14 @@ function ExportAdminPage() {
     const { t } = useTranslation();
     const { id } = useParams<string>();
     const { allowedActions } = useAllowedActions();
+    const navigate = useNavigate();
     const typeConfig: TypeConfig = {
         ESRI_ZUID_HOLLAND: {
             fields: [
                 { name: "name", label: t("admin.export.name"), type: "text", mandatory: true },
                 { name: "apiKey", label: t("admin.export.apiKey"), type: "password", mandatory: true },
                 { name: "projectUrl", label: t("admin.export.projectUrl"), type: "text", mandatory: false },
-                { name: "projectdetailUrl", label: t("admin.export.projectdetailUrl"), type: "text", mandatory: false },
+                { name: "projectDetailUrl", label: t("admin.export.projectdetailUrl"), type: "text", mandatory: false },
             ],
         },
         // Other types can be added here in the future
@@ -54,7 +55,7 @@ function ExportAdminPage() {
         }
     }, [id]);
 
-    if (!allowedActions.includes("EXPORT_PROJECTS")) {
+    if (!allowedActions.includes("EDIT_DATA_EXCHANGES")) {
         return <ActionNotAllowed errorMessage={t("admin.export.actionNotAllowed")}/>
     }
 
@@ -83,7 +84,7 @@ function ExportAdminPage() {
             };
             id ? await updateExportData(id, exportData) : await addExportData(exportData);
             setAlert(id ? t("admin.export.notification.updated") : t("admin.export.notification.created"), "success");
-            setFormData(generateInitialState("ESRI_ZUID_HOLLAND"));
+            navigate("/exchangedata/export");
         } catch (error: unknown) {
             if (error instanceof Error) setAlert(error.message, "error");
         }

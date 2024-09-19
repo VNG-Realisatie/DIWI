@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Grid, Button, Box, Typography } from "@mui/material";
-import { ExportData, getExportData } from "../api/exportServices";
+import { ExportData, exportProjects, getExportData } from "../api/exportServices";
 import ExportTable from "../components/export/ExportTable";
 import { t } from "i18next";
 import { ProjectsTableView } from "../components/project/ProjectsTableView";
@@ -10,42 +10,20 @@ import ActionNotAllowed from "./ActionNotAllowed";
 const ExportWizard = () => {
     const [step, setStep] = useState(1);
     const [exportData, setExportData] = useState<ExportData[]>([]);
-    const [selectedExport, setSelectedExport] = useState<ExportData | null>(null); //update type
+    const [selectedExport, setSelectedExport] = useState<ExportData | null>(null);
     const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
     const { allowedActions } = useAllowedActions();
 
     useEffect(() => {
         const fetchData = async () => {
-            const dummyData: ExportData[] = [
-                {
-                    id: "1",
-                    name: "ESRI export 1",
-                    type: "ESRI_ZUID_HOLLAND",
-                    projectUrl: "http://example.com/project1",
-                    projectdetailUrl: "http://example.com/project1/details",
-                },
-                {
-                    id: "2",
-                    name: "ESRI export 2",
-                    type: "ESRI_ZUID_HOLLAND",
-                    projectUrl: "http://example.com/project2",
-                    projectdetailUrl: "http://example.com/project2/details",
-                },
-                {
-                    id: "3",
-                    name: "ESRI export 3",
-                    type: "ESRI_ZUID_HOLLAND",
-                    projectUrl: "http://example.com/project3",
-                    projectdetailUrl: "http://example.com/project3/details",
-                },
-            ];
-            setExportData(dummyData);
+            const exportdata = await getExportData();
+            setExportData(exportdata);
         };
         fetchData();
     }, []);
 
-    if (!allowedActions.includes("EXPORT_PROJECTS")) {
-        return <ActionNotAllowed errorMessage={t("admin.export.actionNotAllowed")}/>
+    if (!allowedActions.includes("VIEW_DATA_EXCHANGES")) {
+        return <ActionNotAllowed errorMessage={t("admin.export.actionNotAllowed")} />;
     }
 
     const handleNext = () => {
@@ -57,10 +35,17 @@ const ExportWizard = () => {
     const handleBack = () => {
         setStep(1);
     };
-    const handleExport = () => {
-        console.log("Exporting projects:", selectedProjects);
-    };
 
+    //this function doesnt do anything at the moment
+    const handleExportProjects = async () => {
+        if (!selectedExport) return;
+        try {
+            await exportProjects(selectedExport.id, selectedProjects);
+            console.log("Export successful");
+        } catch (error) {
+            console.error("Export failed", error);
+        }
+    };
     const handleProjectSelection = (projectId: string | null | string[]) => {
         if (projectId === null) {
             setSelectedProjects([]);
@@ -112,6 +97,7 @@ const ExportWizard = () => {
                             handleProjectSelection={handleProjectSelection}
                             selectedProjects={selectedProjects}
                             handleBack={handleBack}
+                            exportProjects={handleExportProjects}
                         />
                     </Grid>
                 </Grid>

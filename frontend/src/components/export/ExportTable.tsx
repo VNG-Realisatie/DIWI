@@ -8,6 +8,7 @@ import { useContext, useState } from "react";
 import DeleteDialogWithConfirmation from "../admin/user-management/DeleteDialogWithConfirmation";
 import AlertContext from "../../context/AlertContext";
 import { t } from "i18next";
+import useAllowedActions from "../../hooks/useAllowedActions";
 
 type Props = {
     exportData: ExportData[];
@@ -21,6 +22,7 @@ const ExportTable = ({ exportData, selectedExport, setSelectedExport, setExportD
     const [idToDelete, setIdToDelete] = useState<string>("");
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const { setAlert } = useContext(AlertContext);
+    const { allowedActions } = useAllowedActions();
 
     const handleDelete = async (id: string) => {
         try {
@@ -44,15 +46,23 @@ const ExportTable = ({ exportData, selectedExport, setSelectedExport, setExportD
             sortable: false,
             renderCell: (params) => (
                 <Box display="flex" alignItems="center" justifyContent="center" style={{ height: "100%" }} gap="10px">
-                    <EditOutlinedIcon style={{ cursor: "pointer" }} color="primary" onClick={() => navigate(`/admin/export-settings/${params.row.id}`)} />
-                    <DeleteForeverOutlinedIcon
-                        style={{ cursor: "pointer" }}
-                        color="error"
-                        onClick={() => {
-                            setIdToDelete(params.row.id);
-                            setDeleteDialogOpen(true);
-                        }}
-                    />
+                    {allowedActions.includes("EDIT_DATA_EXCHANGES") && (
+                        <>
+                            <EditOutlinedIcon
+                                style={{ cursor: "pointer" }}
+                                color="primary"
+                                onClick={() => navigate(`/admin/export-settings/${params.row.id}`)}
+                            />
+                            <DeleteForeverOutlinedIcon
+                                style={{ cursor: "pointer" }}
+                                color="error"
+                                onClick={() => {
+                                    setIdToDelete(params.row.id);
+                                    setDeleteDialogOpen(true);
+                                }}
+                            />
+                        </>
+                    )}
                 </Box>
             ),
         },
