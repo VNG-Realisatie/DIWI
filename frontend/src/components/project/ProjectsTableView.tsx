@@ -78,7 +78,7 @@ export const ProjectsTableView = ({
     const [previousSelection, setPreviousSelection] = useState<GridRowSelectionModel>([]);
 
     const { allowedActions } = useAllowedActions();
-    const { filterUrl, rows } = useCustomSearchParams(sortModel, filterModel, paginationInfo);
+    const { filterUrl, rows, filteredProjectsSize } = useCustomSearchParams(sortModel, filterModel, paginationInfo);
 
     useEffect(() => {
         if (filterUrl !== "") {
@@ -357,7 +357,7 @@ export const ProjectsTableView = ({
                 onPaginationModelChange={(model) => {
                     setPaginationInfo({ page: model.page + 1, pageSize: model.pageSize });
                 }}
-                rowCount={totalProjectCount}
+                rowCount={filterModel?.items.some((item) => item.value) ? filteredProjectsSize : totalProjectCount}
                 paginationMode="server"
                 onRowClick={
                     isExportPage
