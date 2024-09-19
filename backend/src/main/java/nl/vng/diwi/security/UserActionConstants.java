@@ -76,4 +76,7 @@ public final class UserActionConstants {
 
     public static final String VIEW_GOALS = "VIEW_GOALS";
     public static final String EDIT_GOALS = "EDIT_GOALS";
+
+    public static final String VIEW_DATA_EXCHANGES = "VIEW_DATA_EXCHANGES";
+    public static final String EDIT_DATA_EXCHANGES = "EDIT_DATA_EXCHANGES";
 }
