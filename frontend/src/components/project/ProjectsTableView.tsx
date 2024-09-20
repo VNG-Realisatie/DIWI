@@ -9,7 +9,6 @@ import {
     GridRenderCellParams,
     GridRowParams,
     GridSortModel,
-    GridValueOptionsParams,
     getGridSingleSelectOperators,
     getGridStringOperators,
 } from "@mui/x-data-grid";
