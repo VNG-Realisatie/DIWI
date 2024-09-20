@@ -29,7 +29,7 @@ import { dateFormats } from "../../localization";
 import { capitalizeFirstLetters } from "../../utils/stringFunctions";
 import useAllowedActions from "../../hooks/useAllowedActions";
 import { UserGroupSelect } from "../../widgets/UserGroupSelect";
-import { getCustomProperties, Property } from "../../api/adminSettingServices";
+import { getCustomProperties } from "../../api/adminSettingServices";
 
 interface RowData {
     id: number;
