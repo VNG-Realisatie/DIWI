@@ -13,6 +13,7 @@ import { LabelComponent } from "../project/LabelComponent";
 import { CellContainer } from "../project/project-with-house-block/CellContainer";
 import { MyResponsiveBar } from "./BarChart";
 import { PolicyGoalChart } from "./PolicyGoalChart";
+import { formatMonetaryValue } from "../../utils/inputHelpers";
 
 const chartCardStyling = { backgroundColor: "#F0F0F0", my: 1, p: 2, xs: 12, md: 5.9 };
 
@@ -69,14 +70,18 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                 return { label: d.name, value: d.amount };
             });
             const convertedPriceCategoryOwn = data.priceCategoryOwn.map((d) => {
+                const min = formatMonetaryValue(d.min);
+                const max = d.max ? formatMonetaryValue(d.max) : t("generic.andMore");
                 return {
-                    label: `${d.name}\n(€${d.min} ${d.max ? `- €${d.max}` : t("generic.andMore")})`,
+                    label: `${d.name}\n(€${min} - ${max})`,
                     value: d.amount,
                 };
             });
             const convertedPriceCategoryRent = data.priceCategoryRent.map((d) => {
+                const min = formatMonetaryValue(d.min);
+                const max = d.max ? formatMonetaryValue(d.max) : t("generic.andMore");
                 return {
-                    label: `${d.name}\n(€${d.min} ${d.max ? `- €${d.max}` : t("generic.andMore")})`,
+                    label: `${d.name}\n(€${min} - ${max})`,
                     value: d.amount,
                 };
             });
