@@ -1,4 +1,4 @@
-FROM git.phinion.com/phinion/dependency_proxy/containers/node:18-alpine AS build-stage
+FROM git.phinion.com/phinion/dependency_proxy/containers/node:20-alpine AS build-stage
 
 # Dependencies
 COPY ./yarn.lock ./yarn.lock
@@ -20,7 +20,7 @@ ENV VITE_REACT_APP_VERSION_NUMBER=${VITE_REACT_APP_VERSION_NUMBER}
 
 RUN yarn build
 
-# This date is behind the yarn build command on purpose as ti would slow down the build a lot
+# This date is behind the yarn build command on purpose as it would slow down the build a lot
 ARG VITE_REACT_APP_DEPLOY_DATE
 ENV VITE_REACT_APP_DEPLOY_DATE=${VITE_REACT_APP_DEPLOY_DATE}
 

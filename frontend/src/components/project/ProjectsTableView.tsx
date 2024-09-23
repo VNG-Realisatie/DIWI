@@ -1,7 +1,10 @@
 import {
     DataGrid,
     GridColDef,
+    GridFilterInputMultipleSingleSelect,
+    GridFilterItem,
     GridFilterModel,
+    GridFilterOperator,
     GridPreProcessEditCellProps,
     GridRenderCellParams,
     GridRowParams,
@@ -26,6 +29,7 @@ import { dateFormats } from "../../localization";
 import { capitalizeFirstLetters } from "../../utils/stringFunctions";
 import useAllowedActions from "../../hooks/useAllowedActions";
 import { UserGroupSelect } from "../../widgets/UserGroupSelect";
+import { getCustomProperties } from "../../api/adminSettingServices";
 
 interface RowData {
     id: number;
@@ -50,6 +54,17 @@ export type OptionType = GenericOptionType<string>;
 export type SelectedOptionWithId = {
     id: string;
     option: OptionType[];
+};
+
+type Category = {
+    id: string;
+    name: string;
+};
+
+type AreaProperties = {
+    district: Category[];
+    municipality: Category[];
+    neighbourhood: Category[];
 };
 
 const confidentialityLevelComparator = (v1: string, v2: string): number => {
@@ -78,6 +93,7 @@ export const ProjectsTableView = ({
     const [filterModel, setFilterModel] = useState<GridFilterModel | undefined>();
     const [sortModel, setSortModel] = useState<GridSortModel | undefined>();
     const [previousSelection, setPreviousSelection] = useState<GridRowSelectionModel>([]);
+    const [areaProperties, setAreaProperties] = useState<AreaProperties | null>(null);
 
     const { allowedActions } = useAllowedActions();
     const { filterUrl, rows, filteredProjectsSize } = useCustomSearchParams(sortModel, filterModel, paginationInfo);
@@ -97,6 +113,23 @@ export const ProjectsTableView = ({
             setFilterModel({ items: [{ field: "confidentialityLevel", operator: "isAnyOf", value: ["PUBLIC", "EXTERNAL_GOVERNMENTAL"] }] });
         }
     }, [isExportPage]);
+
+    useEffect(() => {
+        getCustomProperties().then((customProperties) => {
+            const filteredProperties = customProperties.filter((property) => ["district", "municipality", "neighbourhood"].includes(property.name));
+
+            const areaProperties: AreaProperties = filteredProperties.reduce((acc, property) => {
+                acc[property.name as keyof AreaProperties] =
+                    property.categories?.map((category) => ({
+                        ...category,
+                        id: category.id || "",
+                    })) || [];
+                return acc;
+            }, {} as AreaProperties);
+
+            setAreaProperties(areaProperties);
+        });
+    }, []);
 
     const handleExport = (params: GridRowParams) => {
         const clickedRow: RowData = params.row as RowData;
@@ -131,6 +164,22 @@ export const ProjectsTableView = ({
         setPreviousSelection(newSelection);
     };
 
+    const customAreaFilterOperator: GridFilterOperator = {
+        label: "isAnyOf",
+        value: "isAnyOf",
+        getApplyFilterFn: (filterItem: GridFilterItem) => {
+            if (!filterItem.value || !Array.isArray(filterItem.value) || filterItem.value.length === 0) {
+                return () => true;
+            }
+            return (row) => {
+                if (!row || row.length === 0) {
+                    return () => true;
+                }
+                return row.some((item: { name: string }) => filterItem.value.includes(item.name));
+            };
+        },
+        InputComponent: GridFilterInputMultipleSingleSelect,
+    };
     const columns: GridColDef[] = [
         {
             field: "projectName",
@@ -281,6 +330,12 @@ export const ProjectsTableView = ({
             headerName: capitalizeFirstLetters(t("projects.tableColumns.municipality")),
             display: "flex",
             width: 320,
+            type: "singleSelect",
+            valueOptions: areaProperties?.municipality.map((c) => {
+                const option = { value: c.name, label: c.name };
+                return option;
+            }),
+            filterOperators: [customAreaFilterOperator],
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
                 const fixedProperties = cellValues?.row?.municipality || [];
                 return <CategoriesCell cellValues={fixedProperties} />;
@@ -292,6 +347,12 @@ export const ProjectsTableView = ({
             headerName: capitalizeFirstLetters(t("projects.tableColumns.district")),
             display: "flex",
             width: 320,
+            type: "singleSelect",
+            valueOptions: areaProperties?.district.map((c) => {
+                const option = { value: c.name, label: c.name };
+                return option;
+            }),
+            filterOperators: [customAreaFilterOperator],
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
                 const fixedProperties = cellValues?.row?.district || [];
                 return <CategoriesCell cellValues={fixedProperties} />;
@@ -303,6 +364,12 @@ export const ProjectsTableView = ({
             headerName: capitalizeFirstLetters(t("projects.tableColumns.neighbourhood")),
             display: "flex",
             width: 320,
+            type: "singleSelect",
+            valueOptions: areaProperties?.neighbourhood.map((c) => {
+                const option = { value: c.name, label: c.name };
+                return option;
+            }),
+            filterOperators: [customAreaFilterOperator],
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
                 const fixedProperties = cellValues?.row?.neighbourhood || [];
                 return <CategoriesCell cellValues={fixedProperties} />;
