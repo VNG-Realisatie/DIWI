@@ -73,8 +73,8 @@ function fromStringToRange(stringValue: string | null, isMonetary: boolean): Val
         return { value: null, min: null, max: null };
     } else if (inputValue.includes("-")) {
         const [minStr, maxStr] = inputValue.split("-");
-        const min = minStr ? (isMonetary ? parseMonetary(minStr) : parseFloat(minStr.replace(/\./g, ""))) : null;
-        const max = maxStr ? (isMonetary ? parseMonetary(maxStr) : parseFloat(maxStr.replace(/\./g, ""))) : null;
+        const min = minStr ? (isMonetary ? parseMonetary(minStr.replace(/\./g, "")) : parseFloat(minStr.replace(/\./g, ""))) : null;
+        const max = maxStr ? (isMonetary ? parseMonetary(maxStr.replace(/\./g, "")) : parseFloat(maxStr.replace(/\./g, ""))) : null;
 
         if (min !== null && max !== null) {
             return { value: null, min, max };
@@ -87,7 +87,7 @@ function fromStringToRange(stringValue: string | null, isMonetary: boolean): Val
             return { value: null, min: null, max: null };
         }
     } else {
-        const newValue = isMonetary ? parseMonetary(inputValue) : parseFloat(inputValue.replace(/\./g, ""));
+        const newValue = isMonetary ? parseMonetary(inputValue.replace(/\./g, "")) : parseFloat(inputValue.replace(/\./g, ""));
         return { value: newValue, min: null, max: null };
     }
 }
