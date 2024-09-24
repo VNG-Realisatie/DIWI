@@ -16,7 +16,8 @@ import { DeleteButtonWithConfirm } from "../components/DeleteButtonWithConfirm";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { saveHouseBlockWithCustomProperties } from "../api/houseBlockServices";
 import useLoading from "../hooks/useLoading";
-import { checkConsistencyOwnerShipValueAndMutation, validateOwnership } from "../utils/houseblocks/houseBlocksFunctions";
+import { isHouseBlockInvalid, validateOwnership } from "../utils/houseblocks/houseBlocksFunctions";
+import { Project } from "../api/projectsServices";
 
 const generateTemporaryId = () => Date.now();
 
@@ -69,23 +70,13 @@ const ProjectWizardBlocks = () => {
 
     const { t } = useTranslation();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const validateHouseBlock = (houseBlock: HouseBlockWithCustomProperties, selectedProject: any, index: number) => {
+    const validateHouseBlock = (houseBlock: HouseBlockWithCustomProperties, selectedProject: Project, index: number) => {
         let hasErrors = false;
         const newDateValidationErrors: DateValidationErrors = { startDateError: null, endDateError: null };
 
         const invalidOwnershipAmount = validateOwnership(houseBlock);
 
-        if (
-            !houseBlock.houseblockName ||
-            !houseBlock.mutation.amount ||
-            !houseBlock.mutation.kind ||
-            houseBlock.mutation.amount <= 0 ||
-            invalidOwnershipAmount ||
-            !houseBlock.startDate ||
-            !houseBlock.endDate ||
-            !checkConsistencyOwnerShipValueAndMutation(houseBlock)
-        ) {
+        if (isHouseBlockInvalid(houseBlock, invalidOwnershipAmount)) {
             hasErrors = true;
         }
         if (houseBlock.startDate && houseBlock.endDate && selectedProject?.startDate && selectedProject?.endDate) {
@@ -139,6 +130,9 @@ const ProjectWizardBlocks = () => {
     };
 
     const handleSave = async () => {
+        if (!selectedProject) {
+            return false;
+        }
         setErrors(Array.from({ length: houseBlocksState.length }, () => false));
         try {
             setErrorOccurred(false);

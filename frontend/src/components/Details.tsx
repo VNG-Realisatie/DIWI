@@ -1,14 +1,11 @@
 import { Box, List, ListItem, ListItemText, Stack, Typography } from "@mui/material";
 import { Fragment, ReactNode, useContext } from "react";
 import { useTranslation } from "react-i18next";
-import { Project } from "../api/projectsServices";
 import { UserGroupAvatars } from "./UserGroupAvatars";
 import { HouseBlock } from "../types/houseBlockTypes";
 import HouseBlockContext from "../context/HouseBlockContext";
-
-type Props = {
-    project: Project | null;
-};
+import { calculateAmounts } from "../utils/houseblocks/houseBlocksFunctions";
+import ProjectContext from "../context/ProjectContext";
 
 const DetailListItem = ({ children, property }: { children: ReactNode; property: string }) => {
     const { t } = useTranslation();
@@ -35,9 +32,12 @@ const DetailListItem = ({ children, property }: { children: ReactNode; property:
     );
 };
 
-export const Details = ({ project }: Props) => {
+export const Details = () => {
     const { t } = useTranslation();
+    const { selectedProject } = useContext(ProjectContext);
     const { houseBlocks } = useContext(HouseBlockContext);
+
+    const { constructionAmount, demolitionAmount } = calculateAmounts(houseBlocks);
 
     const getTranslatedText = (property: string, content: string) => {
         if (property === "confidentialityLevel") {
@@ -55,7 +55,6 @@ export const Details = ({ project }: Props) => {
             return content;
         }
     };
-
     return (
         <List
             sx={{
@@ -64,8 +63,8 @@ export const Details = ({ project }: Props) => {
                 width: "100%",
             }}
         >
-            {project &&
-                Object.entries(project).map(([property, value]) => {
+            {selectedProject &&
+                Object.entries(selectedProject).map(([property, value]) => {
                     if (property === "totalValue" || property === "projectPhase" || property === "planType") {
                         return (
                             <Fragment key={property}>
@@ -85,7 +84,9 @@ export const Details = ({ project }: Props) => {
                                         border: "solid 1px #ddd",
                                     }}
                                 >
-                                    {value !== null && typeof value === "number" && <ListItemText primary={getTranslatedText(property, value.toString())} />}
+                                    {value !== null && typeof value === "number" && (
+                                        <ListItemText primary={(constructionAmount - demolitionAmount).toString()} />
+                                    )}
                                     {value !== null && typeof value === "string" && <ListItemText primary={getTranslatedText(property, value)} />}
                                     {value !== null && typeof value === "object" && <Typography>{value.toString().split(",").join(", ")}</Typography>}
                                 </ListItem>
@@ -95,15 +96,16 @@ export const Details = ({ project }: Props) => {
                     return <Fragment key={property} />;
                 })}
             <DetailListItem property="projectOwners">
-                <UserGroupAvatars groups={project?.projectOwners} />
+                <UserGroupAvatars groups={selectedProject?.projectOwners} />
             </DetailListItem>
             {houseBlocks &&
                 houseBlocks.map((hb: HouseBlock) => {
+                    const isDemolition = hb.mutation.kind === "DEMOLITION";
                     return (
                         <Stack key={hb.houseblockId}>
                             <Typography sx={{ color: "#FFFFFF", backgroundColor: "#00A9F3", px: 2, py: 1.5 }}>{hb.houseblockName}</Typography>
                             <Box border="solid 1px #DDD" px={2} py={1.5}>
-                                <Typography>{hb.mutation.amount}</Typography>
+                                <Typography>{isDemolition ? `-${hb.mutation.amount}` : `${hb.mutation.amount}`}</Typography>
                             </Box>
                         </Stack>
                     );

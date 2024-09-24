@@ -7,6 +7,7 @@ import HouseBlockContext from "../../../context/HouseBlockContext";
 import { saveHouseBlockWithCustomProperties } from "../../../api/houseBlockServices";
 import useAlert from "../../../hooks/useAlert";
 import { validateHouseBlock } from "../../../utils/houseblocks/houseBlocksFunctions";
+import ProjectContext from "../../../context/ProjectContext";
 
 type Props = {
     openHouseBlockDialog: boolean;
@@ -14,6 +15,7 @@ type Props = {
 };
 export const CreateHouseBlockDialog = ({ openHouseBlockDialog, setOpenHouseBlockDialog }: Props) => {
     const { refresh, getEmptyHouseBlock } = useContext(HouseBlockContext);
+    const { updateProject } = useContext(ProjectContext);
     const [houseBlock, setHouseBlock] = useState<HouseBlockWithCustomProperties>(getEmptyHouseBlock());
     const { setAlert } = useAlert();
 
@@ -46,6 +48,7 @@ export const CreateHouseBlockDialog = ({ openHouseBlockDialog, setOpenHouseBlock
                             try {
                                 await saveHouseBlockWithCustomProperties(houseBlock);
                                 refresh();
+                                updateProject();
                                 setOpenHouseBlockDialog(false);
                                 setAlert(t("generic.saved"), "success");
                             } catch (error: unknown) {

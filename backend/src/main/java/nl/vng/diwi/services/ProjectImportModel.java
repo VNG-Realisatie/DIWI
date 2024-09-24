@@ -603,9 +603,11 @@ public class ProjectImportModel {
                 ownershipValue.setHouseblock(houseblock);
                 if (ov.getValue() != null) {
                     ownershipValue.setValueRange(ov.getValue().toRange());
+                    ownershipValue.setValue(ov.getValue().getValue());
                 }
                 if (ov.getRentalValue() != null) {
                     ownershipValue.setRentalValueRange(ov.getRentalValue().toRange());
+                    ownershipValue.setRentalValue(ov.getRentalValue().getValue());
                 }
                 if (ov.getValueCategoryId() != null) {
                     ownershipValue.setOwnershipRangeCategoryValue(repo.getReferenceById(PropertyRangeCategoryValue.class, ov.getValueCategoryId()));

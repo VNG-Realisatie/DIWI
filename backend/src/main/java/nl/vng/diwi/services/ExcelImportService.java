@@ -617,16 +617,21 @@ public class ExcelImportService {
             } else {
                 subheaderRange = new SingleValueOrRangeModel<>();
                 List<String> substringRangeStrList = Arrays.asList(subheader.replaceAll("\\s", "").replaceAll(",", ".").split("-"));
-                if (substringRangeStrList.size() != 2) {
+                if (substringRangeStrList.size() != 2 && substringRangeStrList.size() != 1) {
                     excelErrors.add(getExcelError(projectId, houseblockRowModel.getName(), cell, subheader, ImportError.ERROR.INVALID_RANGE));
                 }
                 try {
-                    Double minValue = Double.parseDouble(substringRangeStrList.get(0)) * 100;
-                    subheaderRange.setMin(minValue.intValue());
-                    String maxValueStr = substringRangeStrList.get(1);
-                    if (!maxValueStr.equalsIgnoreCase("Inf")) {
-                        Double maxValue = Double.parseDouble(substringRangeStrList.get(1)) * 100;
-                        subheaderRange.setMax(maxValue.intValue());
+                    if (substringRangeStrList.size() == 1) {
+                        Double value = Double.parseDouble(substringRangeStrList.get(0)) * 100;
+                        subheaderRange.setValue(value.intValue());
+                    } else {
+                        Double minValue = Double.parseDouble(substringRangeStrList.get(0)) * 100;
+                        subheaderRange.setMin(minValue.intValue());
+                        String maxValueStr = substringRangeStrList.get(1);
+                        if (!maxValueStr.equalsIgnoreCase("Inf")) {
+                            Double maxValue = Double.parseDouble(substringRangeStrList.get(1)) * 100;
+                            subheaderRange.setMax(maxValue.intValue());
+                        }
                     }
                 } catch (NumberFormatException e) {
                     excelErrors.add(getExcelError(projectId, houseblockRowModel.getName(), cell, subheader, ImportError.ERROR.INVALID_RANGE));

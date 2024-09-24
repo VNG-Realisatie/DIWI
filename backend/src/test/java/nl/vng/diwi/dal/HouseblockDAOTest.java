@@ -35,6 +35,7 @@ public class HouseblockDAOTest {
     @BeforeAll
     static void beforeAll() throws Exception {
         testDb = new TestDb();
+        testDb.reset();
         dalFactory = testDb.getDalFactory();
     }
 

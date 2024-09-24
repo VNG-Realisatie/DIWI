@@ -30,4 +30,7 @@ export class NavigationPage extends HelperBase {
     async projectCreatePage() {
         await this.page.goto("http://localhost:3000/project/create");
     }
+    async customPropertiesPage() {
+        await this.page.goto("http://localhost:3000/admin/settings");
+    }
 }

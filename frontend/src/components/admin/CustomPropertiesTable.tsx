@@ -104,6 +104,7 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
                     ? [
                           <Tooltip title={t("admin.settings.tableHeader.edit")} key="edit">
                               <GridActionsCellItem
+                                  id={params.row.name}
                                   size="large"
                                   icon={<EditIcon />}
                                   label={t("admin.settings.tableHeader.edit")}
@@ -155,7 +156,7 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
 
     return (
         <>
-            <Stack>
+            <Stack id="custom-properties-table">
                 <DataGrid
                     rows={customProperties.filter((row) => !row.disabled && row.propertyType !== "RANGE_CATEGORY")}
                     rowHeight={70}

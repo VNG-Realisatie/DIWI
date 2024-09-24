@@ -1,19 +1,21 @@
-import { useId } from "react";
+import { useContext, useId } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { projectDetailCharacteristics, projectWizardBlocks } from "../Paths";
 import WizardLayout from "../components/project-wizard/WizardLayout";
 import usePlotSelector from "../hooks/usePlotSelector";
 import { t } from "i18next";
+import ProjectContext from "../context/ProjectContext";
 
 export const ProjectWizardMap = () => {
     const { projectId } = useParams();
     const navigate = useNavigate();
     const id = useId();
     const { selectedPlotCount, handleSaveChange } = usePlotSelector(id);
-
+    const { updateProject } = useContext(ProjectContext);
     const handleNext = async () => {
         handleSaveChange();
         if (projectId) {
+            updateProject();
             navigate(projectDetailCharacteristics.toPath({ projectId }));
         }
     };
