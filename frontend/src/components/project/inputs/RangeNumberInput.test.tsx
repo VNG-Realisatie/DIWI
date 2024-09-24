@@ -138,7 +138,7 @@ it.each([
     ["1,0", 100],
     ["100,1", 10010],
     ["100,0", 10000],
-    ["1", 100],
+    ["1,", 100],
 ])("should convert euros to cents", (input, expected) => {
     const updateCallBack = vi.fn();
     const value = { value: null, min: null, max: null };
@@ -247,7 +247,6 @@ it("should not allow characters except for hyphens and commas", () => {
     expect(updateCallBack).toHaveBeenLastCalledWith({ value: null, min: 1020, max: 2030 });
 });
 
-
 it("should allow updating the value and display dots as thousand separators and a comma as the decimal separator", () => {
     const updateCallBack = vi.fn();
     const value = { value: 20000000, min: null, max: null };
@@ -288,13 +287,11 @@ it("should correctly parse monetary ranges for large numbers", () => {
     expect(input).toHaveValue("100.000,00-200.000,00");
 });
 
-
-
 it.each([
     [100000, "1.000,00"],
     [1000000, "10.000,00"],
     [10000000, "100.000,00"],
-    [100000000, "1.000.000,00"]
+    [100000000, "1.000.000,00"],
 ])("should format large numbers with dot as thousand separator for monetary values", (input, expected) => {
     const updateCallBack = vi.fn();
     const value = { value: input, min: null, max: null };
@@ -303,4 +300,3 @@ it.each([
 
     expect(screen.getByRole("textbox")).toHaveValue(expected);
 });
-

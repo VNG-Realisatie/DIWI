@@ -34,7 +34,7 @@ function parseMonetary(value: string) {
     const [euros, cents] = value.split(decimalSeparator);
     let result = parseInt(euros) * 100;
     if (cents !== undefined) {
-        let parsedCents = parseInt(cents);
+        let parsedCents = parseInt(cents) || 0;
         if (cents.length === 1) {
             parsedCents *= 10;
         }
