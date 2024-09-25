@@ -2,11 +2,8 @@ package nl.vng.diwi.dal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
-
 import org.assertj.core.groups.Tuple;
 import org.hibernate.Session;
-import org.hibernate.query.NativeQuery;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
