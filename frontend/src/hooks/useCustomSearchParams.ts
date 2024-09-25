@@ -37,7 +37,7 @@ const useCustomSearchParams = (sort: GridSortModel | undefined, filter: GridFilt
 
     useEffect(() => {
         if (isFilteredUrl() || isSortedUrl()) {
-            filterTable(location.search).then((res) => {
+            filterTable(location.search.toString().replace(/%20/g, " ").replace(/%27/g, "'")).then((res) => {
                 setProjects(res);
             });
         } else {
