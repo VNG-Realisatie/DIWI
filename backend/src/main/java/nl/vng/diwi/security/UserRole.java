@@ -39,7 +39,9 @@ public enum UserRole {
         UserAction.EDIT_ALL_BLUEPRINTS,
         UserAction.VIEW_OWN_BLUEPRINTS,
         UserAction.VIEW_GOALS,
-        UserAction.EDIT_GOALS)),
+        UserAction.EDIT_GOALS,
+        UserAction.VIEW_DATA_EXCHANGES,
+        UserAction.EDIT_DATA_EXCHANGES)),
 
     // Basic user that can access only relevant projects and edit only those.
     User(List.of(
