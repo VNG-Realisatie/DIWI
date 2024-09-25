@@ -301,6 +301,8 @@ export interface components {
                 | "EDIT_ALL_BLUEPRINTS"
                 | "VIEW_OWN_BLUEPRINTS"
                 | "EDIT_GOALS"
+                | "VIEW_DATA_EXCHANGES"
+                | "EDIT_DATA_EXCHANGES"
             )[];
         };
         ProjectCreateSnapshotModel: {

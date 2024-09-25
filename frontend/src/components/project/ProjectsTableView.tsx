@@ -8,6 +8,7 @@ import {
     GridPreProcessEditCellProps,
     GridRenderCellParams,
     GridRowParams,
+    GridRowSelectionModel,
     GridSortModel,
     getGridSingleSelectOperators,
     getGridStringOperators,
@@ -36,6 +37,11 @@ interface RowData {
 
 type Props = {
     showCheckBox?: boolean;
+    isExportPage?: boolean;
+    handleProjectSelection?: (projectId: string | null | string[]) => void;
+    selectedProjects?: string[];
+    handleBack?: () => void;
+    exportProjects?: () => void;
 };
 
 export interface GenericOptionType<Type> {
@@ -67,7 +73,14 @@ const confidentialityLevelComparator = (v1: string, v2: string): number => {
     return label1.localeCompare(label2);
 };
 
-export const ProjectsTableView = ({ showCheckBox }: Props) => {
+export const ProjectsTableView = ({
+    showCheckBox,
+    isExportPage = false,
+    handleProjectSelection = () => {},
+    selectedProjects = [],
+    handleBack = () => {},
+    exportProjects = () => {},
+}: Props) => {
     const { paginationInfo, setPaginationInfo, totalProjectCount } = useContext(ProjectContext);
 
     const navigate = useNavigate();
@@ -79,16 +92,27 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     const [showDialog, setShowDialog] = useState(false);
     const [filterModel, setFilterModel] = useState<GridFilterModel | undefined>();
     const [sortModel, setSortModel] = useState<GridSortModel | undefined>();
+    const [previousSelection, setPreviousSelection] = useState<GridRowSelectionModel>([]);
     const [areaProperties, setAreaProperties] = useState<AreaProperties | null>(null);
 
     const { allowedActions } = useAllowedActions();
-    const { filterUrl, rows } = useCustomSearchParams(sortModel, filterModel, paginationInfo);
+    const { filterUrl, rows, filteredProjectsSize } = useCustomSearchParams(sortModel, filterModel, paginationInfo);
 
     useEffect(() => {
         if (filterUrl !== "") {
-            navigate(`/projects/table${filterUrl}`);
+            if (!isExportPage) {
+                navigate(`/projects/table${filterUrl}`);
+            } else {
+                navigate(`/exchangedata/export${filterUrl}`);
+            }
         }
-    }, [filterUrl, navigate, filterModel, sortModel]);
+    }, [filterUrl, navigate, filterModel, sortModel, isExportPage]);
+
+    useEffect(() => {
+        if (isExportPage) {
+            setFilterModel({ items: [{ field: "confidentialityLevel", operator: "isAnyOf", value: ["PUBLIC", "EXTERNAL_GOVERNMENTAL"] }] });
+        }
+    }, [isExportPage]);
 
     useEffect(() => {
         getCustomProperties().then((customProperties) => {
@@ -116,11 +140,28 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         }
     };
 
-    const handleClose = () => setShowDialog(false);
-
     const createErrorReport = (params: GridPreProcessEditCellProps) => {
         const hasError = params.props.value.length < 3;
         return { ...params.props, error: hasError };
+    };
+
+    const handleSelectionChange = (newSelection: GridRowSelectionModel) => {
+        const added = newSelection.filter((id) => !previousSelection.includes(id));
+        const removed = previousSelection.filter((id) => !newSelection.includes(id));
+
+        if (newSelection.length === 0) {
+            handleProjectSelection(null);
+        } else if (newSelection.length === rows.length) {
+            handleProjectSelection(rows.map((row) => row.id));
+        } else {
+            if (added.length > 0) {
+                handleProjectSelection(added[0] as string);
+            } else if (removed.length > 0) {
+                handleProjectSelection(removed[0] as string);
+            }
+        }
+
+        setPreviousSelection(newSelection);
     };
 
     const customAreaFilterOperator: GridFilterOperator = {
@@ -338,6 +379,8 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
     ];
 
     const handleFilterModelChange = (newModel: GridFilterModel) => {
+        if (isExportPage) return;
+
         if (newModel.items.some((item) => item.value)) {
             setFilterModel(newModel);
         } else {
@@ -355,6 +398,11 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
         setSortModel(newSortModel);
     };
 
+    const handleProjectsExport = () => {
+        exportProjects();
+        setShowDialog(false);
+    };
+
     return (
         <Stack
             width="100%"
@@ -368,7 +416,7 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 sx={{
                     borderRadius: 0,
                 }}
-                checkboxSelection={showCheckBox}
+                checkboxSelection={showCheckBox || isExportPage}
                 rows={rows}
                 columns={columns}
                 rowHeight={70}
@@ -381,14 +429,16 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 onPaginationModelChange={(model) => {
                     setPaginationInfo({ page: model.page + 1, pageSize: model.pageSize });
                 }}
-                rowCount={filterModel?.items.some((item) => item.value) ? rows.length : totalProjectCount}
+                rowCount={filterModel?.items.some((item) => item.value) ? filteredProjectsSize : totalProjectCount}
                 paginationMode="server"
                 onRowClick={
-                    showCheckBox
-                        ? handleExport
-                        : (params: GridRowParams) => {
-                              navigate(`/projects/${params.id}/characteristics`);
-                          }
+                    isExportPage
+                        ? () => {}
+                        : showCheckBox
+                          ? handleExport
+                          : (params: GridRowParams) => {
+                                navigate(`/projects/${params.id}/characteristics`);
+                            }
                 }
                 processRowUpdate={
                     (updatedRow) => console.log(updatedRow)
@@ -398,15 +448,17 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                 onFilterModelChange={handleFilterModelChange}
                 sortModel={sortModel}
                 onSortModelChange={handleSortModelChange}
+                rowSelectionModel={selectedProjects}
+                onRowSelectionModelChange={handleSelectionChange}
             />
-            <Dialog open={showDialog} onClose={handleClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
+            <Dialog open={showDialog} onClose={() => setShowDialog(false)} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
                 <DialogTitle id="alert-dialog-title">{t("projects.confirmExport")}</DialogTitle>
                 <DialogActions sx={{ px: 5, py: 3, ml: 15 }}>
-                    <Button onClick={handleClose}>{t("projects.cancelExport")}</Button>
+                    <Button onClick={() => setShowDialog(false)}>{t("projects.cancelExport")}</Button>
                     <Button
                         variant="contained"
                         onClick={() => {
-                            handleClose();
+                            handleProjectsExport();
                             setAlert(t("projects.successExport"), "success");
                         }}
                         autoFocus
@@ -415,19 +467,26 @@ export const ProjectsTableView = ({ showCheckBox }: Props) => {
                     </Button>
                 </DialogActions>
             </Dialog>
-            {showCheckBox && allowedActions.includes("EXPORT_PROJECTS") && (
-                <Button
-                    sx={{ width: "130px", my: 2, ml: "auto" }}
-                    variant="contained"
-                    onClick={() => {
-                        setShowDialog(true);
-                    }}
-                >
-                    {t("projects.export")}
-                </Button>
-            )}
+            <Box sx={{ display: "flex", justifyContent: "right", gap: "3px" }}>
+                {isExportPage && (
+                    <Button sx={{ width: "130px", my: 2 }} variant="contained" color="primary" onClick={handleBack}>
+                        {t("generic.previousStep")}
+                    </Button>
+                )}
+                {(showCheckBox || isExportPage) && allowedActions.includes("EXPORT_PROJECTS") && (
+                    <Button
+                        sx={{ width: "130px", my: 2 }}
+                        variant="contained"
+                        onClick={() => {
+                            setShowDialog(true);
+                        }}
+                    >
+                        {t("projects.export")}
+                    </Button>
+                )}
+            </Box>
             <Box sx={{ height: 100 }}></Box>
-            <AddProjectButton />
+            {!isExportPage && <AddProjectButton />}
         </Stack>
     );
 };

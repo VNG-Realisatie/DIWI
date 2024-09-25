@@ -102,6 +102,13 @@ export async function getProjectsSize(): Promise<SizeData> {
     return getJson(`${API_URI}/projects/table/size`);
 }
 
+export async function getProjectsSizeWithParameters(filterUrl: string): Promise<SizeData> {
+    const params = new URLSearchParams(filterUrl);
+
+    const url = `${API_URI}/projects/table/size?${params.toString()}`;
+    return getJson(url);
+}
+
 export async function getProject(id: string): Promise<Project> {
     return getJson(`${API_URI}/projects/${id}`);
 }

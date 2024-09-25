@@ -11,6 +11,8 @@
       "saved": "Opgeslagen",
       "next": "Opslaan en volgende",
       "previous": "Opslaan en vorige",
+      "nextStep": "Volgende",
+      "previousStep": "Vorige",
       "cancelChanges": "Stop veranderingen",
       "saveChanges": "Veranderingen opslaan",
       "edit": "Bewerken",
@@ -283,7 +285,8 @@
       "addProject": "Project toevoegen",
       "projectOverview": "Overzicht projecten",
       "knowledgeBase": "Kennisbank",
-      "goals": "Beleidsdoelen"
+      "goals": "Beleidsdoelen",
+      "exportSettings": "Data uitwisseling"
     },
     "about": {
       "heading": "Over deze website",
@@ -567,6 +570,27 @@
       }
     },
     "admin": {
+      "export": {
+        "title": {
+          "selectProject" : "Selecteer Projecten om te Exporteren",
+          "selectExport": "Selecteer Gegevens Exporteren"
+        },
+        "name": "Naam",
+        "apiKey": "API sleutel",
+        "type": "Type",
+        "projectUrl": "Create layer URL",
+        "projectdetailUrl": "Project details URL",
+        "error": {
+          "required": "{{field}} is verplicht"
+        },
+        "deleteConfirmation": "Weet je zeker dat je deze export wilt verwijderen?",
+        "notification": {
+          "created": "Export succesvol aangemaakt",
+          "updated": "Export succesvol geüpdatet",
+          "deleted": "Export succesvol verwijderd"
+        },
+        "actionNotAllowed": "Exportfunctie is niet toegankelijk. Neem contact op met uw beheerder."
+      },
       "priceCategories": {
         "name": "Naam",
         "amount": "Waarde",

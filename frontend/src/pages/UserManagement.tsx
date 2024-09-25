@@ -66,6 +66,8 @@ export type User = {
               | "EDIT_ALL_BLUEPRINTS"
               | "VIEW_OWN_BLUEPRINTS"
               | "EDIT_GOALS"
+              | "VIEW_DATA_EXCHANGES"
+              | "EDIT_DATA_EXCHANGES"
           )[]
         | undefined;
 };
@@ -93,7 +95,8 @@ const UserManagement = () => {
         getGroups().then((data) => setUserGroups(data));
     }, []);
 
-    if (!allowedActions.includes("VIEW_USERS") && !allowedActions.includes("VIEW_GROUPS")) return <ActionNotAllowed errorMessage={t("admin.userManagement.forbidden")}/>;
+    if (!allowedActions.includes("VIEW_USERS") && !allowedActions.includes("VIEW_GROUPS"))
+        return <ActionNotAllowed errorMessage={t("admin.userManagement.forbidden")} />;
 
     const handleAddGroup = async () => {
         try {

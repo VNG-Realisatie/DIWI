@@ -141,6 +141,20 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
                         </ListItemButton>
                     </Link>
                 )}
+                {allowedActions.includes("EDIT_DATA_EXCHANGES") && (
+                    <Link to={Paths.exportSettings.path} style={linkStyles} onClick={handleDrawerClose}>
+                        <ListItemButton>
+                            <ListItemText primary={t("sidebar.exportSettings")} />
+                        </ListItemButton>
+                    </Link>
+                )}
+                {allowedActions.includes("VIEW_DATA_EXCHANGES") && (
+                    <Link to={Paths.configuredExport.path} style={linkStyles} onClick={handleDrawerClose}>
+                        <ListItemButton>
+                            <ListItemText primary={t("sidebar.export")} />
+                        </ListItemButton>
+                    </Link>
+                )}
             </List>
             <List sx={{ ml: 3, marginTop: "auto", marginBottom: "20px" }}>
                 <Link to="https://support.diwi.vng.client.phinion.com/help/nl-nl" target="_blank" style={linkStyles} onClick={handleDrawerClose}>
