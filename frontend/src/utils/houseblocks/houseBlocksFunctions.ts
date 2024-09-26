@@ -4,7 +4,7 @@ import { t } from "i18next";
 
 export const validateOwnership = (houseBlock: HouseBlockWithCustomProperties) => {
     return (
-        houseBlock.ownershipValue.some((owner) => !isOwnershipAmountValid(owner.amount)) ||
+        houseBlock.ownershipValue.some((owner) => owner.amount !== undefined && !isOwnershipAmountValid(owner.amount)) ||
         houseBlock.ownershipValue.some(
             (owner) =>
                 !owner.rentalValueCategoryId &&
@@ -46,7 +46,7 @@ export const isOwnershipAmountValid = (amount: number): boolean => {
 };
 
 export function checkConsistencyOwnerShipValueAndMutation(houseBlock: HouseBlock) {
-    const ownershipValue = houseBlock.ownershipValue.reduce((acc, curr) => acc + curr.amount, 0);
+    const ownershipValue = houseBlock.ownershipValue.reduce((acc, curr) => acc + (curr.amount ?? 0), 0);
     const mutation = houseBlock.mutation.amount ?? 0;
     if (ownershipValue <= mutation) {
         return true;

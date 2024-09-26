@@ -8,6 +8,18 @@ module.exports = {
     parser: "@typescript-eslint/parser",
     plugins: ["react-refresh"],
     rules: {
+        "react-hooks/exhaustive-deps": [
+            "warn",
+        ],
+        "@typescript-eslint/ban-ts-comment": "off",
+        "@typescript-eslint/no-unused-vars": [
+            "warn",
+            {
+                "vars": "all",
+                "args": "none",
+                "ignoreRestSiblings": true,
+            }
+        ],
         "no-empty-function": "off",
         "@typescript-eslint/no-empty-function": "off",
         "react-refresh/only-export-components": [
