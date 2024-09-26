@@ -40,7 +40,7 @@ SELECT
         CASE
             WHEN pgv.property_category_options IS NOT NULL THEN
                 (
-                    SELECT COALESCE(SUM(no_of_houses * mutation_sign), 0)
+                    SELECT COALESCE(SUM(hv.no_of_houses * hv.mutation_sign), 0)
                     FROM
                         houseblocks_view hv
                     WHERE hv.delivery_date >= pgv.start_date AND hv.delivery_date <= pgv.end_date
