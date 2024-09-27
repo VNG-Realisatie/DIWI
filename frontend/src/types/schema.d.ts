@@ -577,6 +577,8 @@ export interface components {
             categories?: components["schemas"]["SelectDisabledModel"][];
             ordinals?: components["schemas"]["OrdinalSelectDisabledModel"][];
             ranges?: components["schemas"]["RangeSelectDisabledModel"][];
+            mandatory?: boolean
+            singleSelect?: boolean;
         };
         RangeSelectDisabledModel: {
             /** Format: uuid */
