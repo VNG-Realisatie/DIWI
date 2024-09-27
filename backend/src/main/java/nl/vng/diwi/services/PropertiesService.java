@@ -263,8 +263,8 @@ public class PropertiesService {
                     PropertyRangeCategoryValueState newCatState = new PropertyRangeCategoryValueState();
                     newCatState.setRangeCategoryValue(newCat);
                     newCatState.setName(rangeValueModel.getName());
-                    newCatState.setMin(rangeValueModel.getMin());
-                    newCatState.setMax(rangeValueModel.getMax());
+                    newCatState.setMin(rangeValueModel.getMin().longValueExact());
+                    newCatState.setMax(rangeValueModel.getMax().longValueExact());
                     newCatState.setCreateUser(userReference);
                     newCatState.setChangeStartDate(now);
                     if (rangeValueModel.getDisabled() == Boolean.TRUE) {
@@ -290,8 +290,8 @@ public class PropertiesService {
                             PropertyRangeCategoryValueState newRangeValueState = new PropertyRangeCategoryValueState();
                             newRangeValueState.setRangeCategoryValue(rangeValue);
                             newRangeValueState.setName(rangeValueModel.getName());
-                            newRangeValueState.setMax(rangeValueModel.getMax());
-                            newRangeValueState.setMin(rangeValueModel.getMin());
+                            newRangeValueState.setMax(rangeValueModel.getMax().longValueExact());
+                            newRangeValueState.setMin(rangeValueModel.getMin().longValueExact());
                             newRangeValueState.setCreateUser(userReference);
                             newRangeValueState.setChangeStartDate(now);
                             if (rangeValueModel.getDisabled()) {
