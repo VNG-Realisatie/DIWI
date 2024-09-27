@@ -1,10 +1,12 @@
 import { AlertColor } from "@mui/material";
 import { HouseBlock, HouseBlockWithCustomProperties } from "../../types/houseBlockTypes";
 import { t } from "i18next";
+import { Property } from "../../api/adminSettingServices";
+import { validateCustomProperties } from "../formValidation";
 
 export const validateOwnership = (houseBlock: HouseBlockWithCustomProperties) => {
     return (
-        houseBlock.ownershipValue.some((owner) => !isOwnershipAmountValid(owner.amount)) ||
+        houseBlock.ownershipValue.some((owner) => owner.amount !== undefined && !isOwnershipAmountValid(owner.amount)) ||
         houseBlock.ownershipValue.some(
             (owner) =>
                 !owner.rentalValueCategoryId &&
@@ -15,7 +17,7 @@ export const validateOwnership = (houseBlock: HouseBlockWithCustomProperties) =>
     );
 };
 
-export const isHouseBlockInvalid = (houseBlock: HouseBlockWithCustomProperties, invalidOwnershipAmount: boolean): boolean => {
+export const isHouseBlockInvalid = (houseBlock: HouseBlockWithCustomProperties, invalidOwnershipAmount: boolean, customDefinitions: Property[]): boolean => {
     return (
         !houseBlock.endDate ||
         !houseBlock.startDate ||
@@ -25,14 +27,19 @@ export const isHouseBlockInvalid = (houseBlock: HouseBlockWithCustomProperties, 
         houseBlock.mutation.amount < 0 ||
         !houseBlock.mutation.kind ||
         invalidOwnershipAmount ||
-        !checkConsistencyOwnerShipValueAndMutation(houseBlock)
+        !checkConsistencyOwnerShipValueAndMutation(houseBlock) ||
+        !validateCustomProperties(houseBlock.customProperties, customDefinitions)
     );
 };
 
-export const validateHouseBlock = (houseBlock: HouseBlockWithCustomProperties, setAlert: (message: string, type: AlertColor) => void): boolean => {
+export const validateHouseBlock = (
+    houseBlock: HouseBlockWithCustomProperties,
+    setAlert: (message: string, type: AlertColor) => void,
+    customDefinitions: Property[],
+): boolean => {
     let isValid = true;
     const invalidOwnershipAmount = validateOwnership(houseBlock);
-    if (isHouseBlockInvalid(houseBlock, invalidOwnershipAmount)) {
+    if (isHouseBlockInvalid(houseBlock, invalidOwnershipAmount, customDefinitions)) {
         isValid = false;
     }
     if (!isValid) {
@@ -46,7 +53,7 @@ export const isOwnershipAmountValid = (amount: number): boolean => {
 };
 
 export function checkConsistencyOwnerShipValueAndMutation(houseBlock: HouseBlock) {
-    const ownershipValue = houseBlock.ownershipValue.reduce((acc, curr) => acc + curr.amount, 0);
+    const ownershipValue = houseBlock.ownershipValue.reduce((acc, curr) => acc + (curr.amount ?? 0), 0);
     const mutation = houseBlock.mutation.amount ?? 0;
     if (ownershipValue <= mutation) {
         return true;

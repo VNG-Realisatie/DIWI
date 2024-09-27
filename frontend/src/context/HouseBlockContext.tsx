@@ -3,11 +3,13 @@ import { HouseBlockWithCustomProperties } from "../types/houseBlockTypes";
 import ProjectContext from "./ProjectContext";
 import * as houseBlockService from "../api/houseBlockServices";
 import { useCustomPropertyDefinitions } from "../hooks/useCustomPropertyDefinitions";
+import { getCustomPropertiesWithQuery, Property } from "../api/adminSettingServices";
 
 type HouseBlockContextType = {
     houseBlocks: HouseBlockWithCustomProperties[];
     refresh: () => void;
     getEmptyHouseBlock: () => HouseBlockWithCustomProperties;
+    customDefinitions: Property[];
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -52,6 +54,7 @@ const defaultHouseBlockContext: HouseBlockContextType = {
     houseBlocks: [],
     refresh: () => {},
     getEmptyHouseBlock: getEmptyHouseBlock,
+    customDefinitions: [],
 };
 
 const HouseBlockContext = createContext<HouseBlockContextType>(defaultHouseBlockContext);
@@ -61,6 +64,13 @@ export const HouseBlockProvider = ({ children }: PropsWithChildren) => {
 
     const { projectId, selectedProject } = useContext(ProjectContext);
     const { physicalAppearanceCategories, targetGroupCategories } = useCustomPropertyDefinitions();
+    const [customDefinitions, setCustomDefinitions] = useState<Property[]>([]);
+
+    useEffect(() => {
+        getCustomPropertiesWithQuery("WONINGBLOK").then((properties) => {
+            setCustomDefinitions(properties.filter((property) => !property.disabled));
+        });
+    }, []);
 
     const refresh = useCallback(() => {
         if (!projectId) {
@@ -129,6 +139,7 @@ export const HouseBlockProvider = ({ children }: PropsWithChildren) => {
                 houseBlocks,
                 refresh,
                 getEmptyHouseBlock,
+                customDefinitions,
             }}
         >
             {children}
