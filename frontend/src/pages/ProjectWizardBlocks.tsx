@@ -27,7 +27,7 @@ export type DateValidationErrors = {
 };
 
 const ProjectWizardBlocks = () => {
-    const { getEmptyHouseBlock, refresh } = useContext(HouseBlockContext);
+    const { getEmptyHouseBlock, refresh, customDefinitions } = useContext(HouseBlockContext);
     const { selectedProject } = useContext(ProjectContext);
     const [houseBlocksState, setHouseBlocksState] = useState<HouseBlockWithCustomProperties[]>([]);
     const { projectId } = useParams();
@@ -76,7 +76,7 @@ const ProjectWizardBlocks = () => {
 
         const invalidOwnershipAmount = validateOwnership(houseBlock);
 
-        if (isHouseBlockInvalid(houseBlock, invalidOwnershipAmount)) {
+        if (isHouseBlockInvalid(houseBlock, invalidOwnershipAmount, customDefinitions)) {
             hasErrors = true;
         }
         if (houseBlock.startDate && houseBlock.endDate && selectedProject?.startDate && selectedProject?.endDate) {
