@@ -9,11 +9,11 @@ module.exports = {
     plugins: ["react-refresh"],
     rules: {
         "react-hooks/exhaustive-deps": [
-            "warn",
+            "error",
         ],
         "@typescript-eslint/ban-ts-comment": "off",
         "@typescript-eslint/no-unused-vars": [
-            "warn",
+            "error",
             {
                 "vars": "all",
                 "args": "none",
