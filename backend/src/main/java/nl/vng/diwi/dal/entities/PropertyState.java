@@ -42,4 +42,10 @@ public class PropertyState extends ChangeDataSuperclass {
     @JdbcType(PostgreSQLEnumJdbcType.class)
     private ObjectType objectType;
 
+    @Column(name = "mandatory")
+    private Boolean mandatory;
+
+    @Column(name = "single_select")
+    private Boolean singleSelect;
+
 }
