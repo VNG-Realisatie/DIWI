@@ -263,8 +263,8 @@ public class PropertiesService {
                     PropertyRangeCategoryValueState newCatState = new PropertyRangeCategoryValueState();
                     newCatState.setRangeCategoryValue(newCat);
                     newCatState.setName(rangeValueModel.getName());
-                    newCatState.setMin(rangeValueModel.getMin().longValueExact());
-                    newCatState.setMax(rangeValueModel.getMax().longValueExact());
+                    newCatState.setMin(rangeValueModel.getMin() != null ? rangeValueModel.getMin().longValueExact() : null);
+                    newCatState.setMax(rangeValueModel.getMax() != null ? rangeValueModel.getMax().longValueExact() : null);
                     newCatState.setCreateUser(userReference);
                     newCatState.setChangeStartDate(now);
                     if (rangeValueModel.getDisabled() == Boolean.TRUE) {
@@ -277,8 +277,10 @@ public class PropertiesService {
                         .orElseThrow(() -> new VngBadRequestException("Provided id of category does not match any known categories."));
                     PropertyRangeCategoryValueState rangeValueState = Collections.max(rangeValue.getStates(), Comparator.comparing(ChangeDataSuperclass::getChangeStartDate));
 
-                    boolean updateNameMinMax = !Objects.equals(rangeValueModel.getName(), rangeValueState.getName()) ||
-                        !Objects.equals(rangeValueModel.getMax(), rangeValueState.getMax()) || !Objects.equals(rangeValueModel.getMin(), rangeValueState.getMin());
+                    boolean updateNameMinMax =
+                            !Objects.equals(rangeValueModel.getName(), rangeValueState.getName()) ||
+                            !Objects.equals(rangeValueModel.getMax() != null ? rangeValueModel.getMax().longValueExact() : null, rangeValueState.getMax()) ||
+                            !Objects.equals(rangeValueModel.getMin() != null ? rangeValueModel.getMin().longValueExact() : null, rangeValueState.getMin());
                     boolean disableCatValue = (rangeValueModel.getDisabled()) && (rangeValueState.getChangeEndDate() == null);
                     boolean enableCatValue = (!rangeValueModel.getDisabled()) && (rangeValueState.getChangeEndDate() != null);
 
@@ -290,8 +292,8 @@ public class PropertiesService {
                             PropertyRangeCategoryValueState newRangeValueState = new PropertyRangeCategoryValueState();
                             newRangeValueState.setRangeCategoryValue(rangeValue);
                             newRangeValueState.setName(rangeValueModel.getName());
-                            newRangeValueState.setMax(rangeValueModel.getMax().longValueExact());
-                            newRangeValueState.setMin(rangeValueModel.getMin().longValueExact());
+                            newRangeValueState.setMax(rangeValueModel.getMax() != null ? rangeValueModel.getMax().longValueExact() : null);
+                            newRangeValueState.setMin(rangeValueModel.getMin() != null ? rangeValueModel.getMin().longValueExact() : null);
                             newRangeValueState.setCreateUser(userReference);
                             newRangeValueState.setChangeStartDate(now);
                             if (rangeValueModel.getDisabled()) {
