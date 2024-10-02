@@ -49,6 +49,11 @@ public class PropertyModel {
     @JsonProperty(required = true)
     private Boolean disabled;
 
+    @JsonProperty(required = true)
+    private Boolean mandatory;
+
+    private Boolean singleSelect;
+
     @Type(value = JsonListType.class)
     private List<SelectDisabledModel> categories;
 
@@ -88,6 +93,10 @@ public class PropertyModel {
             return "Property object-type can not be null.";
         } else if (this.propertyType == null) {
             return "Property property-type can not be null.";
+        } else if (this.mandatory == null) {
+            return "Property mandatory flag can not be null.";
+        } else if (this.singleSelect == null && this.propertyType == PropertyType.CATEGORY) {
+            return "Property single-select flag can not be null for category properties.";
         } else if (this.getCategories() != null) {
             for (SelectDisabledModel category : this.getCategories()) {
                 if (category.getName() == null || category.getName().isEmpty()) {

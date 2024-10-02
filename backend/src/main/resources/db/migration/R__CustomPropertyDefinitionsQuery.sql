@@ -15,6 +15,8 @@ OR REPLACE FUNCTION diwi.get_property_definitions (
         type diwi.property_type,
         objectType diwi.maatwerk_object_soort,
         propertyType diwi.maatwerk_eigenschap_type,
+        mandatory BOOL,
+        singleSelect BOOL,
         disabled BOOL,
         categories JSONB,
         ordinals JSONB,
@@ -30,6 +32,8 @@ SELECT cp.id                                                                    
        cp.type                                                                                                                        AS type,
        cpState.property_object_type                                                                                                   AS objectType,
        cpState.property_type                                                                                                          AS propertyType,
+       cpState.mandatory                                                                                                              AS mandatory,
+       CASE WHEN cpState.property_type = 'CATEGORY' THEN cpState.single_select ELSE null END                                          AS singleSelect,
        CASE WHEN cpState.change_end_date IS NULL THEN false ELSE TRUE END                                                             AS disabled,
        to_jsonb(array_agg(
            jsonb_build_object('id', catState.category_value_id, 'name', catState.value_label, 'disabled',
@@ -96,7 +100,7 @@ WHERE
         ELSE 1 = 1
     END
 
-GROUP BY cp.id, cpState.property_name, cp.type, cpState.property_object_type, cpState.property_type, disabled
+GROUP BY cp.id, cpState.property_name, cp.type, cpState.property_object_type, cpState.property_type, cpState.mandatory, cpState.single_select, disabled
 
 ORDER BY cpState.property_name;
 

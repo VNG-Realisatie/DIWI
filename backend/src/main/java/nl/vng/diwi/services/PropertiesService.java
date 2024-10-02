@@ -79,6 +79,8 @@ public class PropertiesService {
         propertyState.setPropertyType(propertyModel.getPropertyType());
         propertyState.setChangeStartDate(createTime);
         propertyState.setCreateUser(repo.findById(User.class, loggedUserUuid));
+        propertyState.setMandatory(propertyModel.getMandatory());
+        propertyState.setSingleSelect(propertyModel.getSingleSelect());
         repo.persist(propertyState);
 
         if (PropertyType.CATEGORY.equals(propertyModel.getPropertyType())) {
@@ -135,8 +137,10 @@ public class PropertiesService {
 
         User userReference = repo.getReferenceById(User.class, loggedUserUuid);
 
-        if (!state.getPropertyName().equals(propertyModel.getName())) {
-            if (property.getType() != PropertyKind.CUSTOM) {
+        if (!state.getPropertyName().equals(propertyModel.getName()) ||
+            !state.getMandatory().equals(propertyModel.getMandatory()) ||
+            !state.getSingleSelect().equals(propertyModel.getSingleSelect())) {
+            if (property.getType() != PropertyKind.CUSTOM && !state.getPropertyName().equals(propertyModel.getName())) {
                 throw new VngNotFoundException("Only custom properties can have the name updated.");
             }
             PropertyState newState = new PropertyState();
@@ -144,6 +148,8 @@ public class PropertiesService {
             newState.setPropertyName(propertyModel.getName());
             newState.setObjectType(state.getObjectType());
             newState.setPropertyType(state.getPropertyType());
+            newState.setMandatory(propertyModel.getMandatory());
+            newState.setSingleSelect(propertyModel.getSingleSelect());
             newState.setChangeStartDate(now);
             newState.setCreateUser(userReference);
             repo.persist(newState);
