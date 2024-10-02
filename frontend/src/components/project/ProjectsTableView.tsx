@@ -2,7 +2,6 @@ import {
     DataGrid,
     GridColDef,
     GridColumnResizeParams,
-    GridColumnVisibilityModel,
     GridFilterInputMultipleSingleSelect,
     GridFilterItem,
     GridFilterModel,
