@@ -143,6 +143,11 @@ public class PropertiesService {
             if (property.getType() != PropertyKind.CUSTOM && !state.getPropertyName().equals(propertyModel.getName())) {
                 throw new VngNotFoundException("Only custom properties can have the name updated.");
             }
+            state.setChangeEndDate(now);
+            state.setChangeUser(userReference);
+            repo.persist(state);
+            repo.flush();
+
             PropertyState newState = new PropertyState();
             newState.setProperty(property);
             newState.setPropertyName(propertyModel.getName());
@@ -153,10 +158,6 @@ public class PropertiesService {
             newState.setChangeStartDate(now);
             newState.setCreateUser(userReference);
             repo.persist(newState);
-
-            state.setChangeEndDate(now);
-            state.setChangeUser(userReference);
-            repo.persist(state);
         }
 
         if (PropertyType.CATEGORY.equals(state.getPropertyType()) && propertyModel.getCategories() != null) {
