@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import TestComponentWrapper from "../../test/TestComponentWrapper";
 import PropertyDialog from "./PropertyDialog";
 
@@ -40,6 +40,8 @@ describe("PropertyDialog", () => {
             disabled: false,
             categories: undefined,
             ordinals: undefined,
+            mandatory: false,
+            singleSelect: undefined,
         });
 
         // Wait for promises to resolve
@@ -60,11 +62,13 @@ describe("PropertyDialog", () => {
                 { id: "2", name: "Second", level: 2, disabled: false },
                 { id: "1", name: "First", level: 1, disabled: false },
             ],
+            mandatory: false,
+            singleSelect: undefined,
         };
 
         getCustomPropertyMock.mockReturnValue({
-            then: (cb: (prop: Property) => void) => {
-                act(() => cb(prop));
+            then: async (cb: (prop: Property) => void) => {
+                await waitFor(() => cb(prop));
             },
         });
 
@@ -94,4 +98,53 @@ describe("PropertyDialog", () => {
         expect(categories[1]).toHaveValue("First1");
         expect(categories[2]).toHaveValue("Second2");
     });
+});
+
+it("ensures singleSelect is true or false for CATEGORY propertyType", async () => {
+    const prop: Property = {
+        id: "18",
+        name: "Category Property",
+        type: "CUSTOM",
+        objectType: "PROJECT",
+        propertyType: "CATEGORY",
+        disabled: false,
+        categories: [
+            {
+                id: "1",
+                name: "1",
+                disabled: false,
+            },
+            {
+                id: "2",
+                name: "2",
+                disabled: false,
+            },
+        ],
+        ordinals: undefined,
+        mandatory: false,
+        singleSelect: undefined,
+    };
+
+    getCustomPropertyMock.mockReturnValue({
+        then: async (cb: (prop: Property) => void) => {
+            await waitFor(() => cb(prop));
+        },
+    });
+
+    const { rerender } = render(
+        <TestComponentWrapper>
+            <PropertyDialog openDialog={true} setOpenDialog={vi.fn()} setCustomProperties={vi.fn()} id="18" />
+        </TestComponentWrapper>,
+    );
+
+    rerender(
+        <TestComponentWrapper>
+            <PropertyDialog openDialog={true} setOpenDialog={vi.fn()} setCustomProperties={vi.fn()} id="18" />
+        </TestComponentWrapper>,
+    );
+
+    const singleSelect = screen.getByRole("checkbox", { name: "admin.settings.singleSelect" });
+    expect(singleSelect).toBeInTheDocument();
+    expect(singleSelect).not.toBeUndefined();
+    expect(singleSelect).toHaveProperty("checked", expect.any(Boolean));
 });

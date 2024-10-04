@@ -2,13 +2,54 @@ import { Property } from "../api/adminSettingServices";
 import { CustomPropertyValue } from "../api/customPropServices";
 import { Project } from "../api/projectsServices";
 
+type CustomValueType =
+    | string
+    | number
+    | boolean
+    | string[]
+    | { value?: string; min?: string; max?: string }
+    | { value?: number; min?: number; max?: number }
+    | null
+    | undefined;
+
+export function getCustomValue(customValue: CustomPropertyValue | undefined): CustomValueType {
+    let value: CustomValueType;
+    if (customValue?.propertyType) {
+        if (customValue.propertyType === "TEXT") {
+            value = customValue.textValue;
+        } else if (customValue.propertyType === "NUMERIC") {
+            value = customValue.numericValue?.value || customValue.numericValue?.value;
+        } else if (customValue.propertyType === "BOOLEAN") {
+            value = customValue.booleanValue;
+        } else if (customValue.propertyType === "CATEGORY") {
+            value = customValue.categories && customValue.categories.length > 0 ? "true" : "";
+        } else if (customValue.propertyType === "ORDINAL") {
+            value = customValue.ordinals?.value;
+        }
+    } else if (customValue) {
+        const rest = { ...customValue };
+        delete rest.customPropertyId;
+        value = Object.values(rest)[0] ?? null;
+
+        if (typeof value === "object" && value !== null) {
+            if (Array.isArray(value)) {
+                value = value.length > 0 ? "true" : "";
+            } else if ("value" in value) {
+                value = value.value || value.min || null;
+            }
+        }
+    }
+    return value;
+}
 export function validateCustomProperties(customValues: CustomPropertyValue[], customDefinitions: Property[]) {
-    customDefinitions.forEach((property) => {
+    for (const property of customDefinitions) {
         const customValue = customValues.find((cv) => cv.customPropertyId === property.id);
-        if (!customValue && property.mandatory) {
+        const value = getCustomValue(customValue);
+
+        if (property.mandatory && (!customValue || value === null || value === "" || value === 0 || value === undefined)) {
             return false;
         }
-    });
+    }
     return true;
 }
 
@@ -22,7 +63,7 @@ export function validateForm(project: Project, validOwner: boolean = true, custo
         !project.confidentialityLevel ||
         !validOwner ||
         project.projectOwners.length === 0 ||
-        (project.customProperties && !validateCustomProperties(project.customProperties, customDefinitions))
+        !(project.customProperties && validateCustomProperties(project.customProperties, customDefinitions))
     ) {
         return false;
     }

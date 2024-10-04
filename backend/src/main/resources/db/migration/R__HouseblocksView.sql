@@ -10,6 +10,7 @@ CREATE OR REPLACE FUNCTION diwi.get_houseblocks_view (
         project_id                  UUID,
         houseblock_id               UUID,
         no_of_houses                INTEGER,
+        mutation_sign               INTEGER,
         delivery_date               DATE,
         property_category_options   UUID[],
         property_boolean_options    JSONB[],
@@ -122,11 +123,11 @@ RETURN QUERY
         active_woningbloks_totalvalue AS (
             SELECT
                 aw.woningblok_id,
-                wmc.amount *
+                wmc.amount AS total_value,
                 CASE wmc.mutation_kind
                     WHEN 'CONSTRUCTION' THEN 1
                     WHEN 'DEMOLITION' THEN -1
-                END AS total_value
+                END AS mutation_sign
             FROM
                 active_woningbloks aw
                     JOIN diwi.woningblok_mutatie_changelog wmc ON aw.woningblok_id = wmc.woningblok_id AND wmc.change_end_date IS NULL
@@ -197,18 +198,30 @@ RETURN QUERY
                 sms.date <= NOW() AND NOW() < ems.date
             GROUP BY aw.woningblok_id
         ),
-        active_woningbloks_housetypes_physical_app AS (
+        active_woningbloks_housetypes AS (
             SELECT
                 aw.woningblok_id,
-                array_agg(jsonb_build_object('house_type', wtfctv.woning_type, 'amount', wtfctv.amount)) FILTER (WHERE wtfctv.woning_type IS NOT NULL) AS house_type,
+                array_agg(jsonb_build_object('house_type', wtfctv.woning_type, 'amount', wtfctv.amount)) FILTER (WHERE wtfctv.woning_type IS NOT NULL) AS house_type
+            FROM
+                active_woningbloks aw
+                    JOIN diwi.woningblok_type_en_fysiek_changelog wtfc ON aw.woningblok_id = wtfc.woningblok_id AND wtfc.change_end_date IS NULL
+                    JOIN diwi.milestone_state sms ON sms.milestone_id = wtfc.start_milestone_id AND sms.change_end_date IS NULL
+                    JOIN diwi.milestone_state ems ON ems.milestone_id = wtfc.end_milestone_id AND ems.change_end_date IS NULL
+                    JOIN diwi.woningblok_type_en_fysiek_changelog_type_value wtfctv ON wtfc.id = wtfctv.woningblok_type_en_fysiek_voorkomen_changelog_id
+            WHERE
+                sms.date <= NOW() AND NOW() < ems.date
+            GROUP BY aw.woningblok_id
+        ),
+        active_woningbloks_physical_app AS (
+            SELECT
+                aw.woningblok_id,
                 array_agg(jsonb_build_object('physical_appearance', wtfcfv.property_value_id, 'amount', wtfcfv.amount)) FILTER (WHERE wtfcfv.property_value_id IS NOT NULL) AS physical_appearance
             FROM
                 active_woningbloks aw
                     JOIN diwi.woningblok_type_en_fysiek_changelog wtfc ON aw.woningblok_id = wtfc.woningblok_id AND wtfc.change_end_date IS NULL
                     JOIN diwi.milestone_state sms ON sms.milestone_id = wtfc.start_milestone_id AND sms.change_end_date IS NULL
                     JOIN diwi.milestone_state ems ON ems.milestone_id = wtfc.end_milestone_id AND ems.change_end_date IS NULL
-                    LEFT JOIN diwi.woningblok_type_en_fysiek_changelog_type_value wtfctv ON wtfc.id = wtfctv.woningblok_type_en_fysiek_voorkomen_changelog_id
-                    LEFT JOIN diwi.woningblok_type_en_fysiek_changelog_fysiek_value wtfcfv ON wtfc.id = wtfcfv.woningblok_type_en_fysiek_voorkomen_changelog_id
+                    JOIN diwi.woningblok_type_en_fysiek_changelog_fysiek_value wtfcfv ON wtfc.id = wtfcfv.woningblok_type_en_fysiek_voorkomen_changelog_id
             WHERE
                 sms.date <= NOW() AND NOW() < ems.date
             GROUP BY aw.woningblok_id
@@ -285,11 +298,11 @@ RETURN QUERY
         past_woningbloks_totalvalue AS (
             SELECT
                 pw.woningblok_id,
-                wmc.amount *
+                wmc.amount AS total_value,
                 CASE wmc.mutation_kind
                     WHEN 'CONSTRUCTION' THEN 1
                     WHEN 'DEMOLITION' THEN -1
-                END AS total_value
+                END AS mutation_sign
             FROM
                 past_woningbloks pw
                     JOIN diwi.woningblok_mutatie_changelog wmc ON pw.woningblok_id = wmc.woningblok_id
@@ -348,17 +361,26 @@ RETURN QUERY
                         AND wbc.end_milestone_id = pw.end_milestone_id AND wbc.change_end_date IS NULL
             GROUP BY pw.woningblok_id
         ),
-        past_woningbloks_housetypes_physical_app AS (
+        past_woningbloks_housetypes AS (
             SELECT
                 pw.woningblok_id,
-                array_agg(jsonb_build_object('house_type', wtfctv.woning_type, 'amount', wtfctv.amount)) FILTER (WHERE wtfctv.woning_type IS NOT NULL) AS house_type,
+                array_agg(jsonb_build_object('house_type', wtfctv.woning_type, 'amount', wtfctv.amount)) FILTER (WHERE wtfctv.woning_type IS NOT NULL) AS house_type
+            FROM
+                past_woningbloks pw
+                    JOIN diwi.woningblok_type_en_fysiek_changelog wtfc ON pw.woningblok_id = wtfc.woningblok_id
+                        AND wtfc.end_milestone_id = pw.end_milestone_id AND wtfc.change_end_date IS NULL
+                    JOIN diwi.woningblok_type_en_fysiek_changelog_type_value wtfctv ON wtfc.id = wtfctv.woningblok_type_en_fysiek_voorkomen_changelog_id
+            GROUP BY pw.woningblok_id
+        ),
+        past_woningbloks_physical_app AS (
+            SELECT
+                pw.woningblok_id,
                 array_agg(jsonb_build_object('physical_appearance', wtfcfv.property_value_id, 'amount', wtfcfv.amount)) FILTER (WHERE wtfcfv.property_value_id IS NOT NULL) AS physical_appearance
             FROM
                 past_woningbloks pw
                     JOIN diwi.woningblok_type_en_fysiek_changelog wtfc ON pw.woningblok_id = wtfc.woningblok_id
                         AND wtfc.end_milestone_id = pw.end_milestone_id AND wtfc.change_end_date IS NULL
-                    LEFT JOIN diwi.woningblok_type_en_fysiek_changelog_type_value wtfctv ON wtfc.id = wtfctv.woningblok_type_en_fysiek_voorkomen_changelog_id
-                    LEFT JOIN diwi.woningblok_type_en_fysiek_changelog_fysiek_value wtfcfv ON wtfc.id = wtfcfv.woningblok_type_en_fysiek_voorkomen_changelog_id
+                    JOIN diwi.woningblok_type_en_fysiek_changelog_fysiek_value wtfcfv ON wtfc.id = wtfcfv.woningblok_type_en_fysiek_voorkomen_changelog_id
             GROUP BY pw.woningblok_id
         ),
         past_woningbloks_targetgroup AS (
@@ -412,11 +434,12 @@ SELECT
     aw.project_id      AS project_id,
     aw.woningblok_id   AS houseblock_id,
     awv.total_value    AS no_of_houses,
+    awv.mutation_sign       AS mutation_sign,
     awd.delivery_date  AS delivery_date,
     awc.category_values || awpc.category_values AS property_category_options,
     awbp.boolean_values || awpbp.boolean_values AS property_boolean_options,
-    awhp.house_type AS house_type,
-    awhp.physical_appearance AS physical_appearance,
+    awht.house_type AS house_type,
+    awpa.physical_appearance AS physical_appearance,
     awtg.target_group   AS target_group,
     awgp.ground_position AS ground_position,
     awp.programming     AS programming,
@@ -429,7 +452,8 @@ FROM
         LEFT JOIN active_woningbloks_project_property_categories awpc ON awpc.project_id = aw.project_id
         LEFT JOIN active_woningbloks_boolean_properties awbp ON awbp.woningblok_id = aw.woningblok_id
         LEFT JOIN active_woningbloks_project_boolean_properties awpbp ON awpbp.project_id = aw.project_id
-        LEFT JOIN active_woningbloks_housetypes_physical_app awhp ON awhp.woningblok_id = aw.woningblok_id
+        LEFT JOIN active_woningbloks_housetypes awht ON awht.woningblok_id = aw.woningblok_id
+        LEFT JOIN active_woningbloks_physical_app awpa ON awpa.woningblok_id = aw.woningblok_id
         LEFT JOIN active_woningbloks_targetgroup awtg ON awtg.woningblok_id = aw.woningblok_id
         LEFT JOIN active_woningbloks_ground_positions awgp ON awgp.woningblok_id = aw.woningblok_id
         LEFT JOIN active_woningbloks_programming awp ON awp.woningblok_id = aw.woningblok_id
@@ -441,11 +465,12 @@ SELECT
     pw.project_id      AS project_id,
     pw.woningblok_id   AS houseblock_id,
     pwv.total_value    AS no_of_houses,
+    pwv.mutation_sign  AS mutation_sign,
     pwd.delivery_date  AS delivery_date,
     pwc.category_values || pwpc.category_values AS property_category_options,
     pwbp.boolean_values || pwpbp.boolean_values AS property_boolean_options,
-    pwhp.house_type AS house_type,
-    pwhp.physical_appearance AS physical_appearance,
+    pwht.house_type AS house_type,
+    pwpa.physical_appearance AS physical_appearance,
     pwtg.target_group   AS target_group,
     pwgp.ground_position AS ground_position,
     pwp.programming     AS programming,
@@ -458,7 +483,8 @@ FROM
         LEFT JOIN past_woningbloks_project_property_categories pwpc ON pwpc.project_id = pw.project_id
         LEFT JOIN past_woningbloks_boolean_properties pwbp ON pwbp.woningblok_id = pw.woningblok_id
         LEFT JOIN past_woningbloks_project_boolean_properties pwpbp ON pwpbp.project_id = pw.project_id
-        LEFT JOIN past_woningbloks_housetypes_physical_app pwhp ON pwhp.woningblok_id = pw.woningblok_id
+        LEFT JOIN past_woningbloks_housetypes pwht ON pwht.woningblok_id = pw.woningblok_id
+        LEFT JOIN past_woningbloks_physical_app pwpa ON pwpa.woningblok_id = pw.woningblok_id
         LEFT JOIN past_woningbloks_targetgroup pwtg ON pwtg.woningblok_id = pw.woningblok_id
         LEFT JOIN past_woningbloks_ground_positions pwgp ON pwgp.woningblok_id = pw.woningblok_id
         LEFT JOIN past_woningbloks_programming pwp ON pwp.woningblok_id = pw.woningblok_id

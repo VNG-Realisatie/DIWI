@@ -2,6 +2,7 @@ import { Autocomplete, TextField } from "@mui/material";
 import { Property } from "../api/adminSettingServices";
 import { CustomPropertyValue } from "../api/customPropServices";
 import { useTranslation } from "react-i18next";
+import { getCustomValue } from "../utils/formValidation";
 
 type Props = {
     readOnly: boolean;
@@ -11,9 +12,16 @@ type Props = {
 };
 
 function hasError(customValue: CustomPropertyValue | undefined, readOnly: boolean, mandatory: boolean): boolean {
-    if (!readOnly && !customValue && mandatory) {
+    if (readOnly || !mandatory) {
+        return false;
+    }
+
+    const value = getCustomValue(customValue);
+
+    if (!customValue || value === undefined || value === null || value === "" || value === 0) {
         return true;
     }
+
     return false;
 }
 
@@ -68,7 +76,9 @@ export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, cu
                         options={customDefinition.categories || []}
                         getOptionLabel={(option) => option?.name || ""}
                         value={values ? values[0] : null}
-                        onChange={(_, newValue) => setCustomValue({ ...customValue, categories: newValue ? [newValue.id].filter((id): id is string => id !== undefined) : [] })}
+                        onChange={(_, newValue) =>
+                            setCustomValue({ ...customValue, categories: newValue ? [newValue.id].filter((id): id is string => id !== undefined) : [] })
+                        }
                         renderInput={(params) => <TextField {...params} size="small" error={error} helperText={error ? errorText : ""} />}
                         isOptionEqualToValue={(option, value) => !!value && !!option && option.id === value.id}
                     />
