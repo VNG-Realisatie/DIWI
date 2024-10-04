@@ -18,7 +18,7 @@ export function getCustomValue(customValue: CustomPropertyValue | undefined): Cu
         if (customValue.propertyType === "TEXT") {
             value = customValue.textValue;
         } else if (customValue.propertyType === "NUMERIC") {
-            value = customValue.numericValue?.value || customValue.numericValue?.value;
+            value = customValue.numericValue?.value || customValue.numericValue?.min || 0;
         } else if (customValue.propertyType === "BOOLEAN") {
             value = customValue.booleanValue;
         } else if (customValue.propertyType === "CATEGORY") {
@@ -35,7 +35,7 @@ export function getCustomValue(customValue: CustomPropertyValue | undefined): Cu
             if (Array.isArray(value)) {
                 value = value.length > 0 ? "true" : "";
             } else if ("value" in value) {
-                value = value.value || value.min || null;
+                value = value.value || value.min || 0;
             }
         }
     }
@@ -46,7 +46,7 @@ export function validateCustomProperties(customValues: CustomPropertyValue[], cu
         const customValue = customValues.find((cv) => cv.customPropertyId === property.id);
         const value = getCustomValue(customValue);
 
-        if (property.mandatory && (!customValue || value === null || value === "" || value === 0 || value === undefined)) {
+        if (property.mandatory && (value === null || value === "" || value === undefined)) {
             return false;
         }
     }
