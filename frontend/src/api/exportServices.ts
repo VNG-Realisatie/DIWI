@@ -25,10 +25,6 @@ export type ExportData = {
     properties?: Property[];
 };
 
-export async function getTemplateProperties(templateName: string): Promise<Property[]> {
-    return getJson(`${API_URI}/dataexchange/template/${templateName}`);
-}
-
 export async function getExportData(): Promise<ExportData[]> {
     return getJson(`${API_URI}/dataexchange`);
 }

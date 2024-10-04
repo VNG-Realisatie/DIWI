@@ -3,7 +3,7 @@ import { Grid, Button, Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import TextInput from "../components/project/inputs/TextInput";
 import CategoryInput from "../components/project/inputs/CategoryInput";
-import { addExportData, ExportData, getExportDataById, updateExportData, Property, getTemplateProperties } from "../api/exportServices";
+import { addExportData, ExportData, getExportDataById, updateExportData, Property } from "../api/exportServices";
 import useAlert from "../hooks/useAlert";
 import { useNavigate, useParams } from "react-router-dom";
 import ActionNotAllowed from "./ActionNotAllowed";
@@ -22,9 +22,9 @@ type TypeConfig = {
     };
 };
 
-interface FormData {
-    [key: string]: string | Property[];
-}
+type FormData = {
+    [key: string]: string;
+};
 
 function ExportAdminPage() {
     const { t } = useTranslation();
@@ -44,27 +44,20 @@ function ExportAdminPage() {
     };
     const [type, setType] = useState<string>("ESRI_ZUID_HOLLAND");
     const [formData, setFormData] = useState<FormData>(generateInitialState(type));
-    const [availableProperties, setAvailableProperties] = useState<Property[]>([]);
+    const [properties, setProperties] = useState<Property[]>([]);
     const { setAlert } = useAlert();
 
     useEffect(() => {
         if (id) {
             const fetchData = async () => {
                 const data = await getExportDataById(id);
-                setFormData(data);
+                const { properties, ...formData } = data;
+                setFormData(formData);
+                setProperties(properties || []);
             };
             fetchData();
         }
     }, [id]);
-
-    useEffect(() => {
-        const fetchTemplateProperties = async () => {
-            const properties = await getTemplateProperties(formData.type as string);
-            setAvailableProperties(properties);
-        };
-
-        fetchTemplateProperties();
-    }, [formData.type]);
 
     if (!allowedActions.includes("EDIT_DATA_EXCHANGES")) {
         return <ActionNotAllowed errorMessage={t("admin.export.actionNotAllowed")} />;
@@ -72,7 +65,7 @@ function ExportAdminPage() {
 
     function generateInitialState(type: string): FormData {
         const fields = typeConfig[type]?.fields || [];
-        const initialState: FormData = { type, properties: [] };
+        const initialState: FormData = { type };
         fields.forEach((field) => {
             initialState[field.name] = "";
         });
@@ -87,15 +80,12 @@ function ExportAdminPage() {
     };
 
     const handlePropertyChange = (index: number, fieldName: string) => (event: ChangeEvent<HTMLInputElement>) => {
-        const updatedProperties = [...(formData.properties as Property[])];
+        const updatedProperties = [...properties];
         updatedProperties[index] = {
             ...updatedProperties[index],
             [fieldName]: event.target.value,
         };
-        setFormData({
-            ...formData,
-            properties: updatedProperties,
-        });
+        setProperties(updatedProperties);
     };
 
     const handleAddProperty = () => {
@@ -105,22 +95,19 @@ function ExportAdminPage() {
             mandatory: false,
             options: [],
         };
-        setFormData({
-            ...formData,
-            properties: [...(formData.properties as Property[]), newProperty],
-        });
+        setProperties([...properties, newProperty]);
     };
 
     const handleSubmit = async () => {
         try {
             const exportData: ExportData = {
                 id: id || "",
-                name: formData.name as string,
-                type: formData.type as string,
-                apiKey: formData.apiKey as string,
-                projectUrl: formData.projectUrl as string,
-                projectdetailUrl: formData.projectdetailUrl as string,
-                properties: formData.properties as Property[],
+                name: formData.name,
+                type: formData.type,
+                apiKey: formData.apiKey,
+                projectUrl: formData.projectUrl,
+                projectdetailUrl: formData.projectdetailUrl,
+                properties,
             };
             id ? await updateExportData(id, exportData) : await addExportData(exportData);
             setAlert(id ? t("admin.export.notification.updated") : t("admin.export.notification.created"), "success");
@@ -130,12 +117,10 @@ function ExportAdminPage() {
         }
     };
 
-    const { properties, ...restFormData } = formData;
-    const fields = typeConfig[restFormData.type as string]?.fields || [];
-    const propertiesArray = formData.properties as Property[];
+    const fields = typeConfig[formData.type]?.fields || [];
 
     const isFormValid = () => {
-        return fields.every((field) => !field.mandatory || (formData[field.name] as string).trim() !== "");
+        return fields.every((field) => !field.mandatory || formData[field.name].trim() !== "");
     };
 
     return (
@@ -143,8 +128,8 @@ function ExportAdminPage() {
             <Grid container spacing={2}>
                 <Grid item xs={12}>
                     <CategoryInput
-                        values={formData.type as string}
-                        setValue={(event) => setType((event.target as HTMLInputElement).value as string)}
+                        values={formData.type}
+                        setValue={(event) => setType((event.target as HTMLInputElement).value)}
                         readOnly={false}
                         mandatory={true}
                         title="Type"
@@ -156,7 +141,7 @@ function ExportAdminPage() {
                 {fields.map((field) => (
                     <Grid item xs={12} key={field.name}>
                         <TextInput
-                            value={formData[field.name] as string}
+                            value={formData[field.name]}
                             setValue={handleChange(field.name)}
                             readOnly={false}
                             mandatory={field.mandatory}
@@ -167,7 +152,7 @@ function ExportAdminPage() {
                     </Grid>
                 ))}
 
-                {/* {propertiesArray.map((property, index) => (
+                {properties.map((property, index) => (
                     <Grid item xs={12} key={index}>
                         <TextInput
                             value={property.name}
@@ -186,7 +171,7 @@ function ExportAdminPage() {
                             title={t("admin.export.property.customPropertyId")}
                             type="text"
                         />
-                        {/* {property.options?.map((option, optIndex) => (
+                        {property.options?.map((option, optIndex) => (
                             <TextInput
                                 key={optIndex}
                                 value={option.name}
@@ -198,13 +183,7 @@ function ExportAdminPage() {
                             />
                         ))}
                     </Grid>
-                ))} */}
-
-                {/* <Grid item xs={12}>
-                    <Button variant="contained" color="primary" onClick={handleAddProperty}>
-                        {t("admin.export.addProperty")}
-                    </Button>
-                </Grid> */}
+                ))}
 
                 <Grid item xs={12}>
                     <Button variant="contained" color="primary" onClick={handleSubmit} disabled={!isFormValid()}>
