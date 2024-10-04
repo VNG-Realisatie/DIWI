@@ -2,6 +2,7 @@ import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import fs from "fs";
+import checker from "vite-plugin-checker";
 
 export default defineConfig(({ mode }) => {
     const rootPath = path.resolve(__dirname, "..");
@@ -9,14 +10,18 @@ export default defineConfig(({ mode }) => {
 
     const versionEnvPath = path.resolve(__dirname, "../version.env");
     if (fs.existsSync(versionEnvPath)) {
-        const envConfig = fs.readFileSync(versionEnvPath, 'utf-8')
-            .split('\n')
+        const envConfig = fs
+            .readFileSync(versionEnvPath, "utf-8")
+            .split("\n")
             .filter(Boolean)
-            .reduce((acc, line) => {
-                const [key, value] = line.split('=');
-                acc[key] = value;
-                return acc;
-            }, {} as Record<string, string>);
+            .reduce(
+                (acc, line) => {
+                    const [key, value] = line.split("=");
+                    acc[key] = value;
+                    return acc;
+                },
+                {} as Record<string, string>,
+            );
 
         process.env = { ...process.env, ...envConfig };
     }
@@ -32,13 +37,15 @@ export default defineConfig(({ mode }) => {
             },
         },
         assetsInclude: "**/*.xlsx",
-        plugins: [react()],
+        plugins: [react(), checker({ typescript: true, eslint: {
+            lintCommand: 'eslint "./src/**/*.{ts,tsx}"',
+          }, })],
         optimizeDeps: {
             include: ["@emotion/react", "@emotion/styled", "@mui/material/Tooltip"],
         },
         define: {
-            'import.meta.env.VITE_REACT_APP_GIT_SHA': JSON.stringify(process.env.VITE_REACT_APP_GIT_SHA),
-            'import.meta.env.VITE_REACT_APP_VERSION_NUMBER': JSON.stringify(process.env.VITE_REACT_APP_VERSION_NUMBER),
+            "import.meta.env.VITE_REACT_APP_GIT_SHA": JSON.stringify(process.env.VITE_REACT_APP_GIT_SHA),
+            "import.meta.env.VITE_REACT_APP_VERSION_NUMBER": JSON.stringify(process.env.VITE_REACT_APP_VERSION_NUMBER),
         },
     };
 });
