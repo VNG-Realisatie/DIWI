@@ -3,7 +3,7 @@ import { Grid, Button, Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import TextInput from "../components/project/inputs/TextInput";
 import CategoryInput from "../components/project/inputs/CategoryInput";
-import { addExportData, ExportData, getExportDataById, updateExportData, Property } from "../api/exportServices";
+import { addExportData, ExportData, getExportDataById, updateExportData, Property, getTemplateProperties } from "../api/exportServices";
 import useAlert from "../hooks/useAlert";
 import { useNavigate, useParams } from "react-router-dom";
 import ActionNotAllowed from "./ActionNotAllowed";
@@ -42,7 +42,9 @@ function ExportAdminPage() {
         },
         // Other types can be added here in the future
     };
-    const [formData, setFormData] = useState<FormData>(generateInitialState("ESRI_ZUID_HOLLAND"));
+    const [type, setType] = useState<string>("ESRI_ZUID_HOLLAND");
+    const [formData, setFormData] = useState<FormData>(generateInitialState(type));
+    const [availableProperties, setAvailableProperties] = useState<Property[]>([]);
     const { setAlert } = useAlert();
 
     useEffect(() => {
@@ -54,6 +56,15 @@ function ExportAdminPage() {
             fetchData();
         }
     }, [id]);
+
+    useEffect(() => {
+        const fetchTemplateProperties = async () => {
+            const properties = await getTemplateProperties(formData.type as string);
+            setAvailableProperties(properties);
+        };
+
+        fetchTemplateProperties();
+    }, [formData.type]);
 
     if (!allowedActions.includes("EDIT_DATA_EXCHANGES")) {
         return <ActionNotAllowed errorMessage={t("admin.export.actionNotAllowed")} />;
@@ -133,8 +144,8 @@ function ExportAdminPage() {
                 <Grid item xs={12}>
                     <CategoryInput
                         values={formData.type as string}
-                        setValue={() => {}}
-                        readOnly={true}
+                        setValue={(event) => setType((event.target as HTMLInputElement).value as string)}
+                        readOnly={false}
                         mandatory={true}
                         title="Type"
                         options={[{ name: "ESRI_ZUID_HOLLAND", id: "ESRI_ZUID_HOLLAND" }]}
@@ -156,7 +167,7 @@ function ExportAdminPage() {
                     </Grid>
                 ))}
 
-                {propertiesArray.map((property, index) => (
+                {/* {propertiesArray.map((property, index) => (
                     <Grid item xs={12} key={index}>
                         <TextInput
                             value={property.name}
@@ -175,8 +186,7 @@ function ExportAdminPage() {
                             title={t("admin.export.property.customPropertyId")}
                             type="text"
                         />
-                        {/* Render options if they exist */}
-                        {property.options?.map((option, optIndex) => (
+                        {/* {property.options?.map((option, optIndex) => (
                             <TextInput
                                 key={optIndex}
                                 value={option.name}
@@ -188,13 +198,13 @@ function ExportAdminPage() {
                             />
                         ))}
                     </Grid>
-                ))}
+                ))} */}
 
-                <Grid item xs={12}>
+                {/* <Grid item xs={12}>
                     <Button variant="contained" color="primary" onClick={handleAddProperty}>
                         {t("admin.export.addProperty")}
                     </Button>
-                </Grid>
+                </Grid> */}
 
                 <Grid item xs={12}>
                     <Button variant="contained" color="primary" onClick={handleSubmit} disabled={!isFormValid()}>
