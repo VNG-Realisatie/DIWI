@@ -1,5 +1,11 @@
 # Change log
 
+## DIWI RELEASE 1.6.3
+
+### FIXED
+
+- fixed an error in the migration script to support really large values in the price categories
+
 ## DIWI RELEASE 1.6.2
 
 ### FIXED
