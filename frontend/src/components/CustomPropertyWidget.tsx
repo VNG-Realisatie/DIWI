@@ -15,10 +15,8 @@ function hasError(customValue: CustomPropertyValue | undefined, readOnly: boolea
     if (readOnly || !mandatory) {
         return false;
     }
-
     const value = getCustomValue(customValue);
-
-    if (!customValue || value === undefined || value === null || value === "" || value === 0) {
+    if (value === undefined || value === null || value === "") {
         return true;
     }
 
@@ -138,7 +136,7 @@ export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, cu
                     },
                 }}
                 type="number"
-                value={customValue?.numericValue?.value || 0}
+                value={customValue?.numericValue?.value}
                 onChange={(e) => setCustomValue({ ...customValue, numericValue: { value: parseFloat(e.target.value) } })}
                 error={error}
                 helperText={error ? errorText : ""}
