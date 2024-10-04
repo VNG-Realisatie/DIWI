@@ -1,6 +1,7 @@
 import {
     DataGrid,
     GridColDef,
+    GridColumnResizeParams,
     GridFilterInputMultipleSingleSelect,
     GridFilterItem,
     GridFilterModel,
@@ -34,6 +35,46 @@ import { getCustomProperties } from "../../api/adminSettingServices";
 interface RowData {
     id: number;
 }
+
+type ColumnField =
+    | "projectName"
+    | "totalValue"
+    | "projectOwners"
+    | "confidentialityLevel"
+    | "startDate"
+    | "endDate"
+    | "planType"
+    | "priority"
+    | "municipalityRole"
+    | "projectPhase"
+    | "planningPlanStatus"
+    | "municipality"
+    | "district"
+    | "neighbourhood";
+
+type ColumnConfig = {
+    [key in ColumnField]?: {
+        width?: number;
+        show?: boolean;
+    };
+};
+
+const initialColumnConfig: ColumnConfig = {
+    projectName: {},
+    totalValue: {},
+    projectOwners: {},
+    confidentialityLevel: {},
+    startDate: {},
+    endDate: {},
+    planType: {},
+    priority: {},
+    municipalityRole: {},
+    projectPhase: {},
+    planningPlanStatus: {},
+    municipality: {},
+    district: {},
+    neighbourhood: {},
+};
 
 type Props = {
     showCheckBox?: boolean;
@@ -73,6 +114,15 @@ const confidentialityLevelComparator = (v1: string, v2: string): number => {
     return label1.localeCompare(label2);
 };
 
+const saveColumnConfig = (config: ColumnConfig) => {
+    localStorage.setItem("projectsTableColumnConfig", JSON.stringify(config));
+};
+
+const loadColumnConfig = (): ColumnConfig | null => {
+    const config = localStorage.getItem("projectsTableColumnConfig");
+    return config ? JSON.parse(config) : null;
+};
+
 export const ProjectsTableView = ({
     showCheckBox,
     isExportPage = false,
@@ -94,6 +144,7 @@ export const ProjectsTableView = ({
     const [sortModel, setSortModel] = useState<GridSortModel | undefined>();
     const [previousSelection, setPreviousSelection] = useState<GridRowSelectionModel>([]);
     const [areaProperties, setAreaProperties] = useState<AreaProperties | null>(null);
+    const [columnConfig, setColumnConfig] = useState<ColumnConfig>(loadColumnConfig() || initialColumnConfig);
 
     const { allowedActions } = useAllowedActions();
     const { filterUrl, rows, filteredProjectsSize } = useCustomSearchParams(sortModel, filterModel, paginationInfo);
@@ -185,7 +236,7 @@ export const ProjectsTableView = ({
             field: "projectName",
             headerName: capitalizeFirstLetters(t("projects.tableColumns.projectName")),
             display: "flex",
-            width: 300,
+            width: columnConfig?.projectName?.width || 300,
             filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
                 return (
@@ -209,7 +260,7 @@ export const ProjectsTableView = ({
             field: "totalValue",
             headerName: capitalizeFirstLetters(t("projects.tableColumns.totalValue")),
             display: "flex",
-            width: 120,
+            width: columnConfig?.totalValue?.width || 120,
             filterable: false,
             preProcessEditCellProps: createErrorReport,
         },
@@ -217,7 +268,7 @@ export const ProjectsTableView = ({
             field: "projectOwners",
             headerName: capitalizeFirstLetters(t("projects.tableColumns.projectOwners")),
             display: "flex",
-            width: 270,
+            width: columnConfig?.projectOwners?.width || 270,
             filterable: false,
             preProcessEditCellProps: createErrorReport,
             renderCell: (cellValues) => {
@@ -244,7 +295,7 @@ export const ProjectsTableView = ({
                 return { value: c.id, label: t(`projectTable.confidentialityLevelOptions.${c.name}`) };
             }),
             type: "singleSelect",
-            width: 250,
+            width: columnConfig?.confidentialityLevel?.width || 250,
             filterOperators: getGridSingleSelectOperators().filter((o) => o.value === "isAnyOf"),
             preProcessEditCellProps: createErrorReport,
             sortComparator: confidentialityLevelComparator,
@@ -254,6 +305,7 @@ export const ProjectsTableView = ({
             headerName: capitalizeFirstLetters(t("projects.tableColumns.startDate")),
             display: "flex",
             type: "dateTime",
+            width: columnConfig?.startDate?.width || 100,
             valueFormatter: (p) => dayjs(p).format(dateFormats.keyboardDate),
             filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
             valueGetter: (value) => value && new Date(value),
@@ -264,6 +316,7 @@ export const ProjectsTableView = ({
             headerName: capitalizeFirstLetters(t("projects.tableColumns.endDate")),
             display: "flex",
             type: "dateTime",
+            width: columnConfig?.endDate?.width || 100,
             valueFormatter: (p) => dayjs(p).format(dateFormats.keyboardDate),
             filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
             valueGetter: (value) => value && new Date(value),
@@ -273,7 +326,7 @@ export const ProjectsTableView = ({
             field: "planType",
             headerName: capitalizeFirstLetters(t("projects.tableColumns.planType")),
             display: "flex",
-            width: 500,
+            width: columnConfig?.planType?.width || 500,
             valueOptions: planTypeOptions.map((pt) => pt.id),
             type: "singleSelect",
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
@@ -287,6 +340,7 @@ export const ProjectsTableView = ({
             field: "priority",
             headerName: capitalizeFirstLetters(t("projects.tableColumns.priority")),
             display: "flex",
+            width: columnConfig?.priority?.width || 100,
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
                 return <>{cellValues.row?.priority?.value?.name}</>; //TODO FIX AFTER MIN MAX INTEGRATED
             },
@@ -296,7 +350,7 @@ export const ProjectsTableView = ({
             field: "municipalityRole",
             headerName: capitalizeFirstLetters(t("projects.tableColumns.municipalityRole")),
             display: "flex",
-            width: 320,
+            width: columnConfig?.municipalityRole?.width || 150,
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
                 return <CategoriesCell cellValues={cellValues?.row?.municipalityRole || []} />;
             },
@@ -310,7 +364,7 @@ export const ProjectsTableView = ({
                 return { value: c.id, label: t(`projectTable.projectPhaseOptions.${c.name}`) };
             }),
             type: "singleSelect",
-            width: 250,
+            width: columnConfig?.projectPhase?.width || 250,
             filterOperators: getGridSingleSelectOperators().filter((o) => o.value === "isAnyOf"),
             preProcessEditCellProps: createErrorReport,
         },
@@ -318,7 +372,7 @@ export const ProjectsTableView = ({
             field: "planningPlanStatus",
             headerName: capitalizeFirstLetters(t("projects.tableColumns.planningPlanStatus")),
             display: "flex",
-            width: 500,
+            width: columnConfig?.planningPlanStatus?.width || 500,
             preProcessEditCellProps: createErrorReport,
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
                 const fixedProperties = cellValues?.row?.planningPlanStatus?.map((fp) => ({ id: fp, name: t(`projectTable.planningPlanStatus.${fp}`) })) || [];
@@ -329,7 +383,7 @@ export const ProjectsTableView = ({
             field: "municipality",
             headerName: capitalizeFirstLetters(t("projects.tableColumns.municipality")),
             display: "flex",
-            width: 320,
+            width: columnConfig?.municipality?.width || 320,
             type: "singleSelect",
             valueOptions: areaProperties?.municipality.map((c) => {
                 const option = { value: c.name, label: c.name };
@@ -346,7 +400,7 @@ export const ProjectsTableView = ({
             field: "district",
             headerName: capitalizeFirstLetters(t("projects.tableColumns.district")),
             display: "flex",
-            width: 320,
+            width: columnConfig?.district?.width || 320,
             type: "singleSelect",
             valueOptions: areaProperties?.district.map((c) => {
                 const option = { value: c.name, label: c.name };
@@ -363,7 +417,7 @@ export const ProjectsTableView = ({
             field: "neighbourhood",
             headerName: capitalizeFirstLetters(t("projects.tableColumns.neighbourhood")),
             display: "flex",
-            width: 320,
+            width: columnConfig?.neighbourhood?.width || 320,
             type: "singleSelect",
             valueOptions: areaProperties?.neighbourhood.map((c) => {
                 const option = { value: c.name, label: c.name };
@@ -402,6 +456,21 @@ export const ProjectsTableView = ({
         exportProjects();
         setShowDialog(false);
     };
+
+    const handleColumnSizeChange = (params: GridColumnResizeParams) => {
+        const field = params.colDef.field as ColumnField;
+        const newColumnConfig = { ...columnConfig, [field]: { ...columnConfig[field], width: params.colDef.width } };
+        setColumnConfig(newColumnConfig);
+        saveColumnConfig(newColumnConfig);
+    };
+
+    const initialVisibilityModel = Object.keys(columnConfig).reduce(
+        (model, key) => {
+            model[key as ColumnField] = !columnConfig[key as ColumnField]?.show;
+            return model;
+        },
+        {} as { [key in ColumnField]: boolean },
+    );
 
     return (
         <Stack
@@ -449,7 +518,21 @@ export const ProjectsTableView = ({
                 sortModel={sortModel}
                 onSortModelChange={handleSortModelChange}
                 rowSelectionModel={selectedProjects}
+                columnVisibilityModel={initialVisibilityModel}
+                onColumnVisibilityModelChange={(newModel) => {
+                    setColumnConfig((prevConfig: ColumnConfig) => {
+                        const newConfig = { ...prevConfig };
+                        Object.keys(newModel).forEach((key) => {
+                            if (newConfig[key as ColumnField]) {
+                                newConfig[key as ColumnField]!.show = !newModel[key as ColumnField];
+                            }
+                        });
+                        saveColumnConfig(newConfig);
+                        return newConfig;
+                    });
+                }}
                 onRowSelectionModelChange={handleSelectionChange}
+                onColumnResize={handleColumnSizeChange}
             />
             <Dialog open={showDialog} onClose={() => setShowDialog(false)} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
                 <DialogTitle id="alert-dialog-title">{t("projects.confirmExport")}</DialogTitle>
