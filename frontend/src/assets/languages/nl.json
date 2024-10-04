@@ -39,7 +39,8 @@
       "cutSelection": "Knip perceel",
       "cancelCutSelection": "Annuleer knip",
       "deleteSelection": "Verwijder (sub)perceel",
-      "cancelDeleteSelection": "Annuleer verwijder"
+      "cancelDeleteSelection": "Annuleer verwijder",
+      "thisFieldIsRequired": "Dit veld is verplicht"
     },
     "import": {
       "errorsTitle": "Import fouten",
@@ -664,6 +665,8 @@
       "settings": {
         "title": "Lijst met maatwerk velden",
         "duplicatedOption": "is een dubbele optie",
+        "mandatory": "Verplicht",
+        "singleSelect": "Enkele selectie",
         "tableHeader": {
           "name": "Naam",
           "objectType": "Project of woningblok",

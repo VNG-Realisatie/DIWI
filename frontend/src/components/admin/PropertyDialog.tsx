@@ -1,5 +1,20 @@
 import React, { ChangeEvent, useCallback, useContext, useEffect, useState } from "react";
-import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, InputLabel, MenuItem, Select, Stack, TextField, Tooltip } from "@mui/material";
+import {
+    Alert,
+    Button,
+    Checkbox,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    FormControlLabel,
+    InputLabel,
+    MenuItem,
+    Select,
+    Stack,
+    TextField,
+    Tooltip,
+} from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
 import { useTranslation } from "react-i18next";
 import AlertContext from "../../context/AlertContext";
@@ -38,6 +53,8 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
     const { setAlert } = useContext(AlertContext);
     const { t } = useTranslation();
     const [activeProperty, setActiveProperty] = useState<Property>();
+    const [mandatory, setMandatory] = useState(false);
+    const [singleSelect, setSingleSelect] = useState(false);
 
     const updateDialog = useCallback(
         (property: Property): void => {
@@ -53,6 +70,8 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
             setActive(property.disabled);
             setSelectedObjectType(property.objectType);
             setSelectedPropertyType(property.propertyType);
+            property.mandatory && setMandatory(property.mandatory);
+            property.singleSelect && setSingleSelect(property.singleSelect);
         },
         [
             setActiveProperty,
@@ -63,6 +82,8 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
             setActive,
             setSelectedObjectType,
             setSelectedPropertyType,
+            setMandatory,
+            setSingleSelect,
             t,
         ],
     );
@@ -81,6 +102,8 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
         setSelectedObjectType("PROJECT");
         setSelectedPropertyType("TEXT");
         setActive(false);
+        setMandatory(false);
+        setSingleSelect(false);
     };
 
     const handleClose = () => {
@@ -119,19 +142,21 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
                 selectedPropertyType === "ORDINAL" && ordinals.length > 0
                     ? ordinals.map(({ id, level, name, disabled }) => ({ id, level, name, disabled }))
                     : undefined,
+            mandatory,
+            singleSelect: selectedPropertyType === "CATEGORY" ? singleSelect : undefined,
         };
 
         saveAction(newProperty);
     };
 
     useEffect(() => {
-        const filteredCategories = categories.filter(category => !category.disabled);
+        const filteredCategories = categories.filter((category) => !category.disabled);
         const duplicated = getDuplicatedPropertyInfo(filteredCategories);
         setPropertyDuplicationInfo(duplicated);
     }, [categories]);
 
     useEffect(() => {
-        const filteredOrdinals = ordinals.filter(ordinal => !ordinal.disabled);
+        const filteredOrdinals = ordinals.filter((ordinal) => !ordinal.disabled);
         const duplicated = getDuplicatedPropertyInfo(filteredOrdinals);
         setPropertyDuplicationInfo(duplicated);
     }, [ordinals]);
@@ -203,6 +228,16 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
                                 setOrdinalCategories(refinedCategoryValue);
                             }}
                             ordered={true}
+                        />
+                    )}
+                    <FormControlLabel
+                        control={<Checkbox checked={mandatory} onChange={(e) => setMandatory(e.target.checked)} />}
+                        label={t("admin.settings.mandatory")}
+                    />
+                    {selectedPropertyType === "CATEGORY" && (
+                        <FormControlLabel
+                            control={<Checkbox checked={singleSelect} onChange={(e) => setSingleSelect(e.target.checked)} />}
+                            label={t("admin.settings.singleSelect")}
                         />
                     )}
                     {propertyDuplicationInfo?.duplicatedStatus && (

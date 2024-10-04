@@ -22,7 +22,7 @@ type Props = {
     setOpenHouseBlockDialog: (open: boolean) => void;
 };
 export const HouseBlocksList = ({ setOpenHouseBlockDialog }: Props) => {
-    const { houseBlocks, refresh } = useContext(HouseBlockContext);
+    const { houseBlocks, refresh} = useContext(HouseBlockContext);
     const [displayAddButton, setDisplayAddButton] = useState<boolean>(false);
     const location = useLocation();
     useEffect(() => {
@@ -57,11 +57,12 @@ export const HouseBlockAccordionWithControls = ({ houseBlock, refresh }: HouseBl
     const { setAlert } = useAlert();
     const { targetGroupCategories, physicalAppearanceCategories } = useCustomPropertyDefinitions();
     const { getEditPermission } = useHasEditPermission();
+    const { customDefinitions} = useContext(HouseBlockContext);
 
     const isDemolition = houseBlock.mutation.kind === "DEMOLITION";
 
     const handleSave = async () => {
-        if (validateHouseBlock(newHouseBlock, setAlert)) {
+        if (validateHouseBlock(newHouseBlock, setAlert, customDefinitions)) {
             try {
                 const targetGroupCategoryIds = targetGroupCategories?.map((cat) => cat.id);
                 const physicalAppearanceCategoryIds = physicalAppearanceCategories?.map((cat) => cat.id);
