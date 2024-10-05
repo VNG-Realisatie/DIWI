@@ -1,5 +1,6 @@
 package nl.vng.diwi.dal;
 
+import nl.vng.diwi.dal.entities.DataExchangePropertySqlModel;
 import nl.vng.diwi.dal.entities.DataExchangeState;
 import org.hibernate.Session;
 
@@ -21,5 +22,27 @@ public class DataExchangeDAO extends AbstractRepository {
     public List<DataExchangeState> getActiveDataExchangeStates() {
         return session.createQuery("FROM DataExchangeState des WHERE des.changeEndDate IS NULL ORDER BY des.name", DataExchangeState.class)
             .list();
+    }
+
+    public List<DataExchangePropertySqlModel> getDataExchangeProperties(UUID dataExchangeId) {
+        return session.createNativeQuery(String.format("""
+            SELECT
+                dep.id                          AS id,
+                dep.data_exchange_property_name AS name,
+                dep.object_type                 AS objectType,
+                dep.property_type               AS propertyTypes,
+                dep.mandatory                   AS mandatory,
+                dep.single_select               AS singleSelect,
+                deps.property_id                AS customPropertyId,
+                to_jsonb(array_agg(jsonb_build_object('id', deo.id, 'name', deo.data_exchange_option_name))
+                    FILTER (WHERE deo.id IS NOT NULL)) AS options
+            FROM diwi.data_exchange_property dep
+                LEFT JOIN diwi.data_exchange_property_state deps ON dep.id = deps.data_exchange_property_id AND deps.change_end_date IS NULL
+                LEFT JOIN diwi.data_exchange_option deo ON dep.id = deo.data_exchange_property_id
+            WHERE data_exchange_id = :dataExchangeId
+                    GROUP BY dep.id, dep.data_exchange_property_name, dep.mandatory, deps.property_id """,
+                GenericRepository.VNG_SCHEMA_NAME), DataExchangePropertySqlModel.class)
+            .setParameter("dataExchangeId", dataExchangeId)
+            .getResultList();
     }
 }

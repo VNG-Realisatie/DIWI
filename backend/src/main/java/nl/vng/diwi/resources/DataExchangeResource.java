@@ -56,7 +56,7 @@ public class DataExchangeResource {
     @Produces(MediaType.APPLICATION_JSON)
     public DataExchangeModel getDataExchange(@PathParam("id") UUID dataExchangeUuid) throws VngNotFoundException {
 
-        return new DataExchangeModel(dataExchangeService.getDataExchange(repo, dataExchangeUuid));
+        return dataExchangeService.getDataExchangeModel(repo, dataExchangeUuid);
 
     }
 
@@ -77,7 +77,7 @@ public class DataExchangeResource {
             UUID dataExchangeUuid = dataExchangeService.createDataExchange(repo, dataExchangeModel, ZonedDateTime.now(), loggedUser.getUuid());
             transaction.commit();
 
-            return new DataExchangeModel(dataExchangeService.getDataExchange(repo, dataExchangeUuid));
+            return dataExchangeService.getDataExchangeModel(repo, dataExchangeUuid);
         }
     }
 
@@ -110,7 +110,7 @@ public class DataExchangeResource {
             }
         }
 
-        return new DataExchangeModel(dataExchangeService.getDataExchange(repo, dataExchangeUuid));
+        return dataExchangeService.getDataExchangeModel(repo, dataExchangeUuid);
     }
 
     @DELETE

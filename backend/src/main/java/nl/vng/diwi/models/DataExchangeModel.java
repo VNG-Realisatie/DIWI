@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import nl.vng.diwi.dal.entities.DataExchangeState;
 import nl.vng.diwi.dal.entities.DataExchangeType;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -28,6 +30,8 @@ public class DataExchangeModel {
     private String projectUrl;
 
     private String projectDetailUrl;
+
+    private List<DataExchangePropertyModel> properties = new ArrayList<>();
 
     public DataExchangeModel(DataExchangeState dataExchangeState) {
         this.setId(dataExchangeState.getDataExchange().getId());
