@@ -8,7 +8,11 @@ import nl.vng.diwi.dal.entities.enums.ObjectType;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Data
@@ -40,6 +44,20 @@ public class DataExchangePropertyModel {
         this.propertyTypes = sqlProperty.getPropertyTypes();
         this.mandatory = sqlProperty.getMandatory();
         this.singleSelect = sqlProperty.getSingleSelect();
-        sqlProperty.getOptions().forEach(option -> this.options.add(new DataExchangeOptionModel(option)));
+        Map<UUID, DataExchangeOptionModel> optionsMap = new HashMap<>();
+        sqlProperty.getOptions().forEach(option -> {
+            if (!optionsMap.containsKey(option.getId())) {
+                optionsMap.put(option.getId(), new DataExchangeOptionModel(option));
+            }
+            DataExchangeOptionModel optionModel = optionsMap.get(option.getId());
+            if (option.getPropertyCategoryValueId() != null) {
+                optionModel.getPropertyCategoryValueIds().add(option.getPropertyCategoryValueId());
+            }
+            if (option.getPropertyOrdinalValueId() != null) {
+                optionModel.getPropertyOrdinalValueIds().add(option.getPropertyOrdinalValueId());
+            }
+        });
+        this.options.addAll(optionsMap.values());
+        this.options.sort(Comparator.comparing(DataExchangeOptionModel::getName));
     }
 }

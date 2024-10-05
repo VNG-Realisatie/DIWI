@@ -14,4 +14,8 @@ public class DataExchangeOptionSqlModel {
     private UUID id;
 
     private String name;
+
+    private UUID propertyCategoryValueId;
+
+    private UUID propertyOrdinalValueId;
 }
