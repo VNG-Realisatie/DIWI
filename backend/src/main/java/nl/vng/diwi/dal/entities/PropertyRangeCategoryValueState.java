@@ -12,8 +12,6 @@ import lombok.Setter;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.entities.superclasses.ChangeDataSuperclass;
 
-import java.math.BigDecimal;
-
 @Entity
 @Table(name = "property_range_category_value_state", schema = GenericRepository.VNG_SCHEMA_NAME)
 @Getter
@@ -29,9 +27,9 @@ public class PropertyRangeCategoryValueState extends ChangeDataSuperclass {
     private String name;
 
     @Column(name = "min")
-    private BigDecimal min;
+    private Long min;
 
     @Column(name = "max")
-    private BigDecimal max;
+    private Long max;
 
 }
