@@ -2,17 +2,21 @@ import { getJson, postJson, putJson, deleteJson } from "../utils/requests";
 import { API_URI } from "../utils/urls";
 
 export type PropertyOption = {
+    id: string;
     name: string;
-    propertyCategoryValueId?: string;
-    propertyOrdinalValueId?: string;
+    propertyCategoryValueIds?: string[];
+    propertyOrdinalValueIds?: string[];
 };
 
-export type Property = {
+export type ExportProperty = {
     name: string;
     customPropertyId?: string;
     objectType: "PROJECT" | "WONINGBLOK";
     mandatory: boolean;
     options?: PropertyOption[];
+    propertyTypes: string[];
+    singleSelect?: boolean;
+    id?: string;
 };
 
 export type ExportData = {
@@ -22,7 +26,7 @@ export type ExportData = {
     apiKey?: string;
     projectUrl?: string;
     projectdetailUrl?: string;
-    properties?: Property[];
+    properties?: ExportProperty[];
 };
 
 export async function getExportData(): Promise<ExportData[]> {

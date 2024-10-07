@@ -3,11 +3,13 @@ import { Grid, Button, Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import TextInput from "../components/project/inputs/TextInput";
 import CategoryInput from "../components/project/inputs/CategoryInput";
-import { addExportData, ExportData, getExportDataById, updateExportData, Property } from "../api/exportServices";
+import { addExportData, ExportData, getExportDataById, updateExportData, ExportProperty } from "../api/exportServices";
 import useAlert from "../hooks/useAlert";
 import { useNavigate, useParams } from "react-router-dom";
 import ActionNotAllowed from "./ActionNotAllowed";
 import useAllowedActions from "../hooks/useAllowedActions";
+import { getCustomProperties, Property } from "../api/adminSettingServices";
+import { CustomPropertyWidget } from "../components/CustomPropertyWidget";
 
 type FieldConfig = {
     name: string;
@@ -44,7 +46,8 @@ function ExportAdminPage() {
     };
     const [type, setType] = useState<string>("ESRI_ZUID_HOLLAND");
     const [formData, setFormData] = useState<FormData>(generateInitialState(type));
-    const [properties, setProperties] = useState<Property[]>([]);
+    const [properties, setProperties] = useState<ExportProperty[]>([]);
+    const [customProperties, setCustomProperties] = useState<Property[]>([]);
     const { setAlert } = useAlert();
 
     useEffect(() => {
@@ -58,6 +61,13 @@ function ExportAdminPage() {
             fetchData();
         }
     }, [id]);
+
+    useEffect(() => {
+        getCustomProperties().then((properties) => {
+            const filteredProperties = properties.filter((property) => !property.disabled);
+            setCustomProperties(filteredProperties);
+        });
+    }, []);
 
     if (!allowedActions.includes("EDIT_DATA_EXCHANGES")) {
         return <ActionNotAllowed errorMessage={t("admin.export.actionNotAllowed")} />;
@@ -77,25 +87,6 @@ function ExportAdminPage() {
             ...formData,
             [fieldName]: event.target.value,
         });
-    };
-
-    const handlePropertyChange = (index: number, fieldName: string) => (event: ChangeEvent<HTMLInputElement>) => {
-        const updatedProperties = [...properties];
-        updatedProperties[index] = {
-            ...updatedProperties[index],
-            [fieldName]: event.target.value,
-        };
-        setProperties(updatedProperties);
-    };
-
-    const handleAddProperty = () => {
-        const newProperty: Property = {
-            name: "",
-            objectType: "PROJECT",
-            mandatory: false,
-            options: [],
-        };
-        setProperties([...properties, newProperty]);
     };
 
     const handleSubmit = async () => {
@@ -120,7 +111,39 @@ function ExportAdminPage() {
     const fields = typeConfig[formData.type]?.fields || [];
 
     const isFormValid = () => {
-        return fields.every((field) => !field.mandatory || formData[field.name].trim() !== "");
+        return fields.every((field) => !field.mandatory || formData[field.name]?.trim() !== "");
+    };
+
+    const handlePropertyChange = (index: number, value: any) => {
+
+        const updatedProperties = [...properties];
+
+        updatedProperties[index].options?.map((option) => {
+            option.propertyCategoryValueIds = [];
+        });
+
+        updatedProperties[index].customPropertyId = value.id;
+        setProperties(updatedProperties);
+    };
+
+    const mapPropertyToCustomDefinition = (property: ExportProperty, selectedProperty: Property): Property => {
+        const matchingCustomProperty = customProperties.find((customProperty) => customProperty.id === selectedProperty.id);
+
+        const categoriesOrOrdinals = matchingCustomProperty?.categories?.length
+            ? matchingCustomProperty.categories
+            : matchingCustomProperty?.ordinals?.length
+              ? matchingCustomProperty.ordinals
+              : [];
+        return {
+            id: property.id,
+            name: property.name,
+            type: "CUSTOM",
+            objectType: property.objectType,
+            propertyType: property.propertyTypes[0] as "BOOLEAN" | "CATEGORY" | "ORDINAL" | "NUMERIC" | "TEXT" | "RANGE_CATEGORY",
+            disabled: false,
+            categories: categoriesOrOrdinals.map((item) => ({ ...item, disabled: false })),
+            singleSelect: property.singleSelect,
+        };
     };
 
     return (
@@ -129,7 +152,7 @@ function ExportAdminPage() {
                 <Grid item xs={12}>
                     <CategoryInput
                         values={formData.type}
-                        setValue={(event) => setType((event.target as HTMLInputElement).value)}
+                        setValue={(event, value) => setType(value)}
                         readOnly={false}
                         mandatory={true}
                         title="Type"
@@ -152,40 +175,83 @@ function ExportAdminPage() {
                     </Grid>
                 ))}
 
-                {properties.map((property, index) => (
-                    <Grid item xs={12} key={index}>
-                        <TextInput
-                            value={property.name}
-                            setValue={handlePropertyChange(index, "name")}
-                            readOnly={false}
-                            mandatory={property.mandatory}
-                            title={t("admin.export.property.name")}
-                            type="text"
-                            errorText={t("admin.export.error.required", { field: t("admin.export.property.name") })}
-                        />
-                        <TextInput
-                            value={property.customPropertyId || ""}
-                            setValue={handlePropertyChange(index, "customPropertyId")}
-                            readOnly={false}
-                            mandatory={false}
-                            title={t("admin.export.property.customPropertyId")}
-                            type="text"
-                        />
-                        {property.options?.map((option, optIndex) => (
+                {properties.map((property, index) => {
+                    const selectedOption = customProperties.find((customProperty) => customProperty.id === property.customPropertyId);
+                    return (
+                        <Grid item xs={12} key={index}>
                             <TextInput
-                                key={optIndex}
-                                value={option.name}
-                                setValue={handlePropertyChange(index, `options[${optIndex}].name`)}
-                                readOnly={false}
-                                mandatory={false}
-                                title={t("admin.export.property.option.name")}
+                                value={property.name}
+                                setValue={() => {}}
+                                readOnly={true}
+                                mandatory={property.mandatory}
                                 type="text"
+                                errorText={t("admin.export.error.required", { field: t("admin.export.property.name") })}
                             />
-                        ))}
-                    </Grid>
-                ))}
+                            <CategoryInput
+                                readOnly={false}
+                                mandatory={property.mandatory}
+                                options={customProperties
+                                    .filter(
+                                        (customProperty) =>
+                                            property.propertyTypes.some((type) => type === customProperty.propertyType) &&
+                                            property.objectType === customProperty.objectType,
+                                    )
+                                    .map((property) => {
+                                        return {
+                                            id: property.id,
+                                            name: property.type === "FIXED" ? t(`admin.settings.fixedPropertyType.${property.name}`) : property.name,
+                                            propertyType: property.propertyType,
+                                            type: property.type,
+                                        };
+                                    })}
+                                values={
+                                    selectedOption
+                                        ? {
+                                              id: selectedOption.id,
+                                              name:
+                                                  selectedOption.type === "FIXED"
+                                                      ? t(`admin.settings.fixedPropertyType.${selectedOption.name}`)
+                                                      : selectedOption.name,
+                                              propertyType: selectedOption.propertyType,
+                                              type: selectedOption.type,
+                                          }
+                                        : null
+                                }
+                                setValue={(event, value) => handlePropertyChange(index, value)}
+                                multiple={false}
+                                hasTooltipOption={false}
+                                error={t("goals.errors.selectProperty")}
+                            />
+                            {selectedOption &&
+                                (selectedOption.propertyType === "CATEGORY" || selectedOption.propertyType === "ORDINAL") &&
+                                property?.options?.map((option, optionIndex) => (
+                                    <Box key={optionIndex} marginLeft={10}>
+                                        <TextInput value={option.name} setValue={() => {}} readOnly={true} mandatory={false} type="text" />
+                                        <CustomPropertyWidget
+                                            readOnly={false}
+                                            customValue={
+                                                property.options &&
+                                                property.options[optionIndex] && { categories: property.options[optionIndex].propertyCategoryValueIds }
+                                            }
+                                            customDefinition={mapPropertyToCustomDefinition(property, selectedOption)}
+                                            setCustomValue={(newValue) => {
+                                                console.log(newValue);
+                                                const updatedProperties = [...properties];
+                                                if (updatedProperties[index].options) {
+                                                    if (newValue.categories) {
+                                                        updatedProperties[index].options[optionIndex].propertyCategoryValueIds = newValue.categories;
+                                                    }
+                                                }
+                                                setProperties(updatedProperties);
+                                            }}
+                                        />
+                                    </Box>
+                                ))}
+                        </Grid>
+                    );
+                })}
 
-                <Grid item xs={12}>
+                <Grid item xs={12} sx={{ mb: 10 }}>
                     <Button variant="contained" color="primary" onClick={handleSubmit} disabled={!isFormValid()}>
                         {t("generic.save")}
                     </Button>
