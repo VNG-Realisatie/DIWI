@@ -104,10 +104,10 @@ function ExportAdminPage() {
                 id: id || "",
                 name: formData.name,
                 type: formData.type,
-                apiKey: formData.apiKey,
+                ...(formData.apiKey && { apiKey: formData.apiKey }),
                 projectUrl: formData.projectUrl,
                 projectdetailUrl: formData.projectdetailUrl,
-                properties,
+                ...(id && { properties }),
             };
             id ? await updateExportData(id, exportData) : await addExportData(exportData);
             setAlert(id ? t("admin.export.notification.updated") : t("admin.export.notification.created"), "success");
