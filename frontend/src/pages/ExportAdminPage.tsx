@@ -10,6 +10,15 @@ import ActionNotAllowed from "./ActionNotAllowed";
 import useAllowedActions from "../hooks/useAllowedActions";
 import { getCustomProperties, Property } from "../api/adminSettingServices";
 import { CustomPropertyWidget } from "../components/CustomPropertyWidget";
+import { LabelComponent } from "../components/project/LabelComponent";
+import { configuredExport, updateExportSettings } from "../Paths";
+
+type SelectedOption = {
+    id: string;
+    name: string;
+    propertyType: string;
+    type: string;
+};
 
 type FieldConfig = {
     name: string;
@@ -37,7 +46,7 @@ function ExportAdminPage() {
         ESRI_ZUID_HOLLAND: {
             fields: [
                 { name: "name", label: t("admin.export.name"), type: "text", mandatory: true },
-                { name: "apiKey", label: t("admin.export.apiKey"), type: "password", mandatory: true },
+                { name: "apiKey", label: t("admin.export.apiKey"), type: "password", mandatory: id ? false : true },
                 { name: "projectUrl", label: t("admin.export.projectUrl"), type: "text", mandatory: false },
                 { name: "projectDetailUrl", label: t("admin.export.projectdetailUrl"), type: "text", mandatory: false },
             ],
@@ -100,9 +109,11 @@ function ExportAdminPage() {
                 projectdetailUrl: formData.projectdetailUrl,
                 ...(id && { properties }),
             };
-            id ? await updateExportData(id, exportData) : await addExportData(exportData);
+            const data = id ? await updateExportData(id, exportData) : await addExportData(exportData);
             setAlert(id ? t("admin.export.notification.updated") : t("admin.export.notification.created"), "success");
-            navigate("/exchangedata/export");
+            if (!id) {
+                navigate(updateExportSettings.toPath({ id: data.id }));
+            }
         } catch (error: unknown) {
             if (error instanceof Error) setAlert(error.message, "error");
         }
@@ -114,13 +125,9 @@ function ExportAdminPage() {
         return fields.every((field) => !field.mandatory || formData[field.name]?.trim() !== "");
     };
 
-    const handlePropertyChange = (index: number, value: any) => {
-
+    const handlePropertyChange = (index: number, value: SelectedOption) => {
+        if (!value) return;
         const updatedProperties = [...properties];
-
-        updatedProperties[index].options?.map((option) => {
-            option.propertyCategoryValueIds = [];
-        });
 
         updatedProperties[index].customPropertyId = value.id;
         setProperties(updatedProperties);
@@ -147,7 +154,7 @@ function ExportAdminPage() {
     };
 
     return (
-        <Box p={2}>
+        <Box p={2} sx={{ backgroundColor: "#F0F0F0" }}>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
                     <CategoryInput
@@ -179,22 +186,17 @@ function ExportAdminPage() {
                     const selectedOption = customProperties.find((customProperty) => customProperty.id === property.customPropertyId);
                     return (
                         <Grid item xs={12} key={index}>
-                            <TextInput
-                                value={property.name}
-                                setValue={() => {}}
-                                readOnly={true}
-                                mandatory={property.mandatory}
-                                type="text"
-                                errorText={t("admin.export.error.required", { field: t("admin.export.property.name") })}
-                            />
+                            <LabelComponent text={property.name} required={false} disabled={false} />
                             <CategoryInput
                                 readOnly={false}
-                                mandatory={property.mandatory}
+                                mandatory={false}
                                 options={customProperties
                                     .filter(
                                         (customProperty) =>
                                             property.propertyTypes.some((type) => type === customProperty.propertyType) &&
-                                            property.objectType === customProperty.objectType,
+                                            property.objectType === customProperty.objectType &&
+                                            property.mandatory === customProperty.mandatory &&
+                                            property.singleSelect === customProperty.singleSelect,
                                     )
                                     .map((property) => {
                                         return {
@@ -226,7 +228,7 @@ function ExportAdminPage() {
                                 (selectedOption.propertyType === "CATEGORY" || selectedOption.propertyType === "ORDINAL") &&
                                 property?.options?.map((option, optionIndex) => (
                                     <Box key={optionIndex} marginLeft={10}>
-                                        <TextInput value={option.name} setValue={() => {}} readOnly={true} mandatory={false} type="text" />
+                                        <LabelComponent text={option.name} required={false} disabled={false} />
                                         <CustomPropertyWidget
                                             readOnly={false}
                                             customValue={
@@ -235,7 +237,6 @@ function ExportAdminPage() {
                                             }
                                             customDefinition={mapPropertyToCustomDefinition(property, selectedOption)}
                                             setCustomValue={(newValue) => {
-                                                console.log(newValue);
                                                 const updatedProperties = [...properties];
                                                 if (updatedProperties[index].options) {
                                                     if (newValue.categories) {
@@ -251,7 +252,11 @@ function ExportAdminPage() {
                     );
                 })}
 
-                <Grid item xs={12} sx={{ mb: 10 }}>
+                <Grid item xs={12} sx={{ mb: 10, display: "flex", flexDirection: "row", gap: 2, justifyContent: "flex-end" }}>
+                    <Button variant="outlined" color="primary" onClick={() => navigate(configuredExport.toPath())}>
+                        {t("generic.cancel")}
+                    </Button>
+
                     <Button variant="contained" color="primary" onClick={handleSubmit} disabled={!isFormValid()}>
                         {t("generic.save")}
                     </Button>
