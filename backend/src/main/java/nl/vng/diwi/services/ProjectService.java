@@ -143,12 +143,16 @@ public class ProjectService {
         var projectEndMilestone = project.getDuration().get(0).getEndMilestone();
         var projectEndDate = (new MilestoneModel(projectEndMilestone)).getDate();
 
+        boolean finalIsCurrentOrFuture;
         LocalDate referenceDate = LocalDate.now();
         if (projectStartDate.isAfter(referenceDate)) {
             referenceDate = projectStartDate;
-        }
-        else if (projectEndDate.isBefore(referenceDate)) {
+            finalIsCurrentOrFuture = true;
+        } else if (projectEndDate.isBefore(referenceDate)) {
             referenceDate = projectEndDate;
+            finalIsCurrentOrFuture = false;
+        } else {
+            finalIsCurrentOrFuture = true;
         }
         final LocalDate finalReferenceDate = referenceDate;
 
@@ -157,7 +161,8 @@ public class ProjectService {
             .filter(pc -> {
                 LocalDate startDate = (new MilestoneModel(pc.getStartMilestone())).getDate();
                 LocalDate endDate = (new MilestoneModel(pc.getEndMilestone())).getDate();
-                return (!startDate.isAfter(finalReferenceDate)) && (endDate.isAfter(finalReferenceDate) || endDate.isEqual(finalReferenceDate));
+                return (finalIsCurrentOrFuture && !startDate.isAfter(finalReferenceDate) && endDate.isAfter(finalReferenceDate)) ||
+                    (!finalIsCurrentOrFuture && endDate.isEqual(finalReferenceDate));
             })
             .findFirst().orElse(null);
 
