@@ -1,11 +1,11 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid } from "@mui/material";
 import { t } from "i18next";
 import TextInput from "../../project/inputs/TextInput";
-import { User } from "../../../pages/UserManagement";
 import CategoryInput from "../../project/inputs/CategoryInput";
 import { roleTypeOptions } from "../../../types/enums";
 import { ChangeEvent } from "react";
 import { validateEmail } from "../../../utils/emailValidation";
+import { User } from "../../../api/userServices";
 
 type UserDialogProps = {
     open: boolean;

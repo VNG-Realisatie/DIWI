@@ -1,30 +1,5 @@
 import { useState, useEffect } from "react";
-import { getCurrentUser } from "../api/userServices";
-
-export type AllowedActions =
-    | "VIEW_API"
-    | "VIEW_USERS"
-    | "EDIT_USERS"
-    | "VIEW_GROUPS"
-    | "EDIT_GROUPS"
-    | "VIEW_CONFIG"
-    | "EDIT_CONFIG"
-    | "VIEW_CUSTOM_PROPERTIES"
-    | "EDIT_CUSTOM_PROPERTIES"
-    | "CAN_OWN_PROJECTS"
-    | "VIEW_OTHERS_PROJECTS"
-    | "VIEW_OWN_PROJECTS"
-    | "EDIT_OWN_PROJECTS"
-    | "EDIT_ALL_PROJECTS"
-    | "CREATE_NEW_PROJECT"
-    | "IMPORT_PROJECTS"
-    | "EXPORT_PROJECTS"
-    | "VIEW_ALL_BLUEPRINTS"
-    | "EDIT_ALL_BLUEPRINTS"
-    | "VIEW_OWN_BLUEPRINTS"
-    | "EDIT_GOALS"
-    | "VIEW_DATA_EXCHANGES"
-    | "EDIT_DATA_EXCHANGES";
+import { AllowedActions, getCurrentUser } from "../api/userServices";
 
 function useAllowedActions() {
     const [allowedActions, setAllowedActions] = useState<AllowedActions[]>([]);
