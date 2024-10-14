@@ -105,6 +105,7 @@ const PriceCategoriesDialog = ({ open, setOpen, id, propertyName, setRangeCatego
                 },
             ],
             disabled: false,
+            mandatory: false,
         };
 
         saveAction(newProperty);
