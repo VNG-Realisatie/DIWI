@@ -27,16 +27,16 @@ export function getCustomValue(customValue: CustomPropertyValue | undefined): Cu
             value = customValue.ordinals?.value;
         }
     } else if (customValue) {
-        const rest = { ...customValue };
-        delete rest.customPropertyId;
-        value = Object.values(rest)[0] ?? null;
-
-        if (typeof value === "object" && value !== null) {
-            if (Array.isArray(value)) {
-                value = value.length > 0 ? "true" : "";
-            } else if ("value" in value) {
-                value = value.value || value.min || 0;
-            }
+        if (customValue.textValue) {
+            value = customValue.textValue;
+        } else if (customValue.numericValue) {
+            value = customValue.numericValue.value || customValue.numericValue.min || 0;
+        } else if (customValue.booleanValue !== undefined) {
+            value = customValue.booleanValue;
+        } else if (customValue.categories) {
+            value = customValue.categories.length > 0 ? "true" : "";
+        } else if (customValue.ordinals) {
+            value = customValue.ordinals.value;
         }
     }
     return value;
