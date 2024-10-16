@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import RangeNumberInput from "../project/inputs/RangeNumberInput";
 import { getDuplicatedPropertyInfo } from "../../utils/getDuplicatedPropertyInfo";
 import useAllowedActions from "../../hooks/useAllowedActions";
+import { MAX_INT_LARGER } from "../../utils/houseblocks/houseBlocksFunctions";
 
 type RangeNumber = {
     value: number | null;
@@ -106,6 +107,7 @@ const PriceCategoriesDialog = ({ open, setOpen, id, propertyName, setRangeCatego
             ],
             disabled: false,
             mandatory: false,
+            singleSelect: true,
         };
 
         saveAction(newProperty);
@@ -139,6 +141,7 @@ const PriceCategoriesDialog = ({ open, setOpen, id, propertyName, setRangeCatego
                     mandatory={true}
                     title={t("admin.priceCategories.amount")}
                     errorText={t("admin.priceCategories.amountError")}
+                    maxValue={MAX_INT_LARGER}
                 />
             </DialogContent>
             <DialogActions>

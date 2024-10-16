@@ -602,6 +602,7 @@
         "deleteConfirmation": "Weet je zeker dat je deze prijscategorie wilt verwijderen?",
         "nameError": "Vul de naam in",
         "amountError": "Vul de waarde in",
+        "amountLimitError": "Getal te groot voor invoerveld",
         "successfullySaved": "Prijscategorieën succesvol opgeslagen",
         "successfullyDeleted": "Prijscategorieën succesvol verwijderd"
       },
