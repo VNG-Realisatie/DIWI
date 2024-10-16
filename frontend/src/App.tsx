@@ -44,6 +44,7 @@ import { CreateCustomDashboard } from "./pages/CreateCustomDashboard";
 import { CustomDashboardList } from "./pages/CustomDashboardList";
 import { Goals } from "./pages/Goals";
 import { GoalWizard } from "./pages/GoalWizard";
+import useCurrentUserRole from "./hooks/useCurrentUserRole";
 
 enum UserStatus {
     Authenticated,
@@ -164,22 +165,27 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
     );
 };
 function App() {
+    const { currentUserRole } = useCurrentUserRole();
     return (
         <Providers>
             <BrowserRouter>
                 <Routes>
                     <Route path={Paths.forbidden.path} element={<Forbidden />} />
                     <Route path="/" element={<RequiresLogin />}>
-                        <Route
-                            index
-                            element={
-                                <>
-                                    <ProjectProvider>
-                                        <Projects />
-                                    </ProjectProvider>
-                                </>
-                            }
-                        />
+                        {currentUserRole === "Admin" ? (
+                            <Route index element={<UserManagement />} />
+                        ) : (
+                            <Route
+                                index
+                                element={
+                                    <>
+                                        <ProjectProvider>
+                                            <Projects />
+                                        </ProjectProvider>
+                                    </>
+                                }
+                            />
+                        )}
                         <Route
                             path={Paths.projects.path}
                             element={
