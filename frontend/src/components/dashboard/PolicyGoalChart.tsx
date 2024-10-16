@@ -106,7 +106,10 @@ export const PolicyGoalChart = ({ goal, isPDF = false }: Props) => {
 
     return (
         <Stack width="100%">
-            <Box sx={styles.goalBox}>{`${goal.name} ${t(`goals.goalType.direction.${goal.goalDirection}`)} ${goal.goal}${isNumericGoal ? "" : "%"}`}</Box>
+            <Box sx={styles.goalBox}>
+                {goal.name} goal: {!isNumericGoal && t(`goals.goalType.direction.${goal.goalDirection}`)} {goal.goal}
+                {!isNumericGoal && "%"}
+            </Box>
             {isNumericGoal ? (
                 <Stack direction="row" alignItems="center" width="100%" marginBottom="17px">
                     <Box sx={{ ...styles.filledBox, width: `${filledWidth}%` }}>{amount}</Box>
