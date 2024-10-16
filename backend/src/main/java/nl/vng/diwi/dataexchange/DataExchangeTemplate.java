@@ -1,5 +1,6 @@
 package nl.vng.diwi.dataexchange;
 
+import com.google.common.collect.ImmutableMap;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -9,9 +10,7 @@ import nl.vng.diwi.dal.entities.enums.ObjectType;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -34,7 +33,7 @@ public class DataExchangeTemplate {
         private List<String> options;
     }
 
-    public static Map<DataExchangeType, DataExchangeTemplate> templates = new HashMap<>();
+    public static final ImmutableMap<DataExchangeType, DataExchangeTemplate> templates;
 
     static {
         DataExchangeTemplate zuidHollandTemplate = new DataExchangeTemplate();
@@ -77,6 +76,6 @@ public class DataExchangeTemplate {
         zuidHollandTemplate.properties.add(new TemplateProperty("ph_short8", ObjectType.PROJECT, List.of(PropertyType.NUMERIC), true, null, null));
         zuidHollandTemplate.properties.add(new TemplateProperty("ph_short9", ObjectType.PROJECT, List.of(PropertyType.NUMERIC), true, null, null));
 
-        templates.put(DataExchangeType.ESRI_ZUID_HOLLAND, zuidHollandTemplate);
+        templates = ImmutableMap.of(DataExchangeType.ESRI_ZUID_HOLLAND, zuidHollandTemplate);
     }
 }

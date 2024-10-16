@@ -26,6 +26,6 @@ public class DataExchangeOption extends IdSuperclass {
     private DataExchangeProperty dataExchangeProperty;
 
     @Column(name = "data_exchange_option_name")
-    private String dxOptionName;
+    private String name;
 
 }

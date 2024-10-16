@@ -18,6 +18,7 @@ import nl.vng.diwi.dataexchange.DataExchangeTemplate;
 import nl.vng.diwi.models.DataExchangeModel;
 import nl.vng.diwi.models.DataExchangePropertyModel;
 import nl.vng.diwi.rest.VngNotFoundException;
+import nl.vng.diwi.rest.VngServerErrorException;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -72,27 +73,28 @@ public class DataExchangeService {
 
         DataExchangeTemplate template = DataExchangeTemplate.templates.get(type);
 
-        if (template != null) {
-            template.getProperties().forEach(prop -> {
-                DataExchangeProperty dxProp = new DataExchangeProperty();
-                dxProp.setDataExchange(dataExchange);
-                dxProp.setDxPropertyName(prop.getName());
-                dxProp.setMandatory(prop.getMandatory());
-                dxProp.setSingleSelect(prop.getSingleSelect());
-                dxProp.setObjectType(prop.getObjectType());
-                dxProp.setPropertyTypes(prop.getPropertyTypes().toArray(PropertyType[]::new));
-                repo.persist(dxProp);
-
-                if (prop.getOptions() != null) {
-                    prop.getOptions().forEach(option -> {
-                        DataExchangeOption dxOption = new DataExchangeOption();
-                        dxOption.setDataExchangeProperty(dxProp);
-                        dxOption.setDxOptionName(option);
-                        repo.persist(dxOption);
-                    });
-                }
-            });
+        if (template == null) {
+            throw new VngServerErrorException("Template for type " + type.name() + " is not defined.");
         }
+        template.getProperties().forEach(prop -> {
+            DataExchangeProperty dxProp = new DataExchangeProperty();
+            dxProp.setDataExchange(dataExchange);
+            dxProp.setDxPropertyName(prop.getName());
+            dxProp.setMandatory(prop.getMandatory());
+            dxProp.setSingleSelect(prop.getSingleSelect());
+            dxProp.setObjectType(prop.getObjectType());
+            dxProp.setPropertyTypes(prop.getPropertyTypes().toArray(PropertyType[]::new));
+            repo.persist(dxProp);
+
+            if (prop.getOptions() != null) {
+                prop.getOptions().forEach(option -> {
+                    DataExchangeOption dxOption = new DataExchangeOption();
+                    dxOption.setDataExchangeProperty(dxProp);
+                    dxOption.setName(option);
+                    repo.persist(dxOption);
+                });
+            }
+        });
     }
 
     public void createDataExchangeState(VngRepository repo, UUID dataExchangeUuid, DataExchangeModel model, ZonedDateTime zdtNow, UUID loggedUserUuid) {
