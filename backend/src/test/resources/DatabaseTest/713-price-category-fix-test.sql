@@ -4164,6 +4164,13 @@ INSERT INTO public.flyway_schema_history (installed_rank, version, description, 
 INSERT INTO public.flyway_schema_history (installed_rank, version, description, type, script, checksum, installed_by, installed_on, execution_time, success) VALUES (59, NULL, 'ProjectDashboardSnapshotQuery', 'SQL', 'R__ProjectDashboardSnapshotQuery.sql', -156730825, 'emiel', '2024-09-10 06:45:36.147784', 6, true);
 INSERT INTO public.flyway_schema_history (installed_rank, version, description, type, script, checksum, installed_by, installed_on, execution_time, success) VALUES (60, NULL, 'ProjectSnapshotQuery', 'SQL', 'R__ProjectSnapshotQuery.sql', 1099409163, 'emiel', '2024-09-10 06:45:36.164414', 7, true);
 INSERT INTO public.flyway_schema_history (installed_rank, version, description, type, script, checksum, installed_by, installed_on, execution_time, success) VALUES (61, NULL, 'ProjectsListQuery', 'SQL', 'R__ProjectsListQuery.sql', -112425552, 'emiel', '2024-09-10 06:45:36.184148', 6, true);
+
+INSERT INTO diwi.property_range_category_value (id, property_id)
+    VALUES ('0191daaf-f08d-7f9b-aaa6-1db056e999a1', '560aa6bc-1852-43f1-945d-cb55481b20c3');
+INSERT INTO diwi.property_range_category_value_state (id, range_category_value_id, name, min, max, create_user_id, change_user_id, change_start_date, change_end_date)
+    VALUES ('0191daaf-f08d-7d05-9afd-c4b7d59e4038', '0191daaf-f08d-7f9b-aaa6-1db056e999a1', 'Verschrikkelijke dure koop', 100000000.000000, NULL, '0191daa8-72a7-7484-803f-c41451b33e1b', NULL, '2024-09-10 08:47:29.159038+02', NULL);
+
+
 ALTER TABLE ONLY diwi.blueprint
     ADD CONSTRAINT blueprint_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY diwi.blueprint_state
