@@ -203,9 +203,9 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
         private UUID id;
         private OwnershipType type;
         private Integer amount;
-        private SingleValueOrRangeModel<Integer> value = new SingleValueOrRangeModel<>();
+        private SingleValueOrRangeModel<Long> value = new SingleValueOrRangeModel<>();
         private UUID valueCategoryId;
-        private SingleValueOrRangeModel<Integer> rentalValue = new SingleValueOrRangeModel<>();
+        private SingleValueOrRangeModel<Long> rentalValue = new SingleValueOrRangeModel<>();
         private UUID rentalValueCategoryId;
     }
 

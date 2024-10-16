@@ -346,14 +346,14 @@ public class GeoJsonImportModel {
                 ov.setType(mutationData.ownershipType);
                 ov.setAmount(mutationData.getAmount());
                 if (ownershipValue != null) {
-                    SingleValueOrRangeModel<Integer> valueRange = new SingleValueOrRangeModel<>();
+                    SingleValueOrRangeModel<Long> valueRange = new SingleValueOrRangeModel<>();
                     boolean valueRangeUsed = false;
                     if (ownershipValue.min != null) {
-                        valueRange.setMin((int) (ownershipValue.min * 100));
+                        valueRange.setMin((long) (ownershipValue.min * 100));
                         valueRangeUsed = true;
                     }
                     if (ownershipValue.max != null) {
-                        valueRange.setMax((int) (ownershipValue.max * 100));
+                        valueRange.setMax((long) (ownershipValue.max * 100));
                         valueRangeUsed = true;
                     }
                     if (ownershipValue.categoryName != null) {
