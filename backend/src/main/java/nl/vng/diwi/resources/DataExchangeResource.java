@@ -16,8 +16,8 @@ import jakarta.ws.rs.core.MediaType;
 import nl.vng.diwi.dal.AutoCloseTransaction;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.VngRepository;
-import nl.vng.diwi.dal.entities.DataExchangeState;
 import nl.vng.diwi.models.DataExchangeModel;
+import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.security.LoggedUser;
@@ -46,7 +46,7 @@ public class DataExchangeResource {
     @Produces(MediaType.APPLICATION_JSON)
     public List<DataExchangeModel> getAllDataExchanges() {
 
-        return dataExchangeService.getDataExchangeList(repo);
+        return dataExchangeService.getDataExchangeList(repo, false);
 
     }
 
@@ -56,7 +56,7 @@ public class DataExchangeResource {
     @Produces(MediaType.APPLICATION_JSON)
     public DataExchangeModel getDataExchange(@PathParam("id") UUID dataExchangeUuid) throws VngNotFoundException {
 
-        return new DataExchangeModel(dataExchangeService.getDataExchange(repo, dataExchangeUuid));
+        return dataExchangeService.getDataExchangeModel(repo, dataExchangeUuid, false);
 
     }
 
@@ -69,7 +69,7 @@ public class DataExchangeResource {
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
 
-            String validationError = dataExchangeModel.validate();
+            String validationError = dataExchangeModel.validateDxState();
             if (validationError != null) {
                 throw new VngBadRequestException(validationError);
             }
@@ -77,7 +77,7 @@ public class DataExchangeResource {
             UUID dataExchangeUuid = dataExchangeService.createDataExchange(repo, dataExchangeModel, ZonedDateTime.now(), loggedUser.getUuid());
             transaction.commit();
 
-            return new DataExchangeModel(dataExchangeService.getDataExchange(repo, dataExchangeUuid));
+            return dataExchangeService.getDataExchangeModel(repo, dataExchangeUuid, false);
         }
     }
 
@@ -89,28 +89,36 @@ public class DataExchangeResource {
     public DataExchangeModel updateDataExchange(@PathParam("id") UUID dataExchangeUuid, DataExchangeModel dataExchangeModel, @Context LoggedUser loggedUser)
         throws VngNotFoundException, VngBadRequestException {
 
-        String validationError = dataExchangeModel.validate();
+        dataExchangeModel.setId(dataExchangeUuid);
+        String validationError = dataExchangeModel.validateDxState();
         if (validationError != null) {
             throw new VngBadRequestException(validationError);
         }
 
-        DataExchangeState oldState = repo.getDataExchangeDAO().getActiveDataExchangeStateByDataExchangeUuid(dataExchangeUuid);
-        if (oldState == null) {
-            throw new VngNotFoundException();
-        }
-        DataExchangeModel oldModel = new DataExchangeModel(oldState);
-
-        dataExchangeModel.setId(dataExchangeUuid);
-        if (!oldModel.equals(dataExchangeModel)) {
-
-            try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-                dataExchangeService.updateDataExchange(repo, dataExchangeModel, ZonedDateTime.now(), loggedUser.getUuid());
-                transaction.commit();
-                repo.getSession().clear();
-            }
+        DataExchangeModel oldModel = dataExchangeService.getDataExchangeModel(repo, dataExchangeUuid, true);
+        String validateTemplateError = dataExchangeModel.validateTemplateFields(oldModel.getProperties());
+        if (validateTemplateError != null) {
+            throw new VngBadRequestException(validateTemplateError);
         }
 
-        return new DataExchangeModel(dataExchangeService.getDataExchange(repo, dataExchangeUuid));
+        List<PropertyModel> propertyModels = repo.getPropertyDAO().getPropertiesList(null, false, null);
+        String validatePropertiesError = dataExchangeModel.validateDxProperties(propertyModels);
+        if (validatePropertiesError != null) {
+            throw new VngBadRequestException(validatePropertiesError);
+        }
+
+        if (dataExchangeModel.getApiKey() == null) {
+            dataExchangeModel.setApiKey(oldModel.getApiKey());
+        }
+        dataExchangeModel.setType(oldModel.getType());
+
+        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+            dataExchangeService.updateDataExchange(repo, dataExchangeModel, oldModel, ZonedDateTime.now(), loggedUser.getUuid());
+            transaction.commit();
+            repo.getSession().clear();
+        }
+
+        return dataExchangeService.getDataExchangeModel(repo, dataExchangeUuid, false);
     }
 
     @DELETE
