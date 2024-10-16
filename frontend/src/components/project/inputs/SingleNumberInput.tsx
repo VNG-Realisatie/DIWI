@@ -33,20 +33,20 @@ export const SingleNumberInput = ({
 }: SingleNumberEdit) => {
     const hasError = mandatory && (value === null || (value !== null && value < 0));
 
+    const min = 0;
+    const max = acceptsDecimal ? 99999999.99 : 99999999;
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const inputValue = e.target.value;
         let newValue: number | null = null;
 
         if (inputValue === "") {
-            newValue = 0;
+            newValue = min;
         } else {
-            newValue = acceptsDecimal ? parseFloat(inputValue) : parseInt(inputValue, 10);
-            if (isNaN(newValue)) {
-                newValue = 0;
-            }
+            newValue = acceptsDecimal ? parseFloat(parseFloat(inputValue).toFixed(2)) : parseInt(inputValue, 10);
         }
 
-        onChange(newValue);
+        if (newValue <= max && newValue >= min && !isNaN(newValue)) onChange(newValue);
     };
 
     const inputField = (
@@ -60,7 +60,8 @@ export const SingleNumberInput = ({
             }}
             InputProps={{
                 inputProps: {
-                    min: 0,
+                    min: min,
+                    max: max,
                     step: acceptsDecimal ? "0.01" : "1",
                 },
                 startAdornment: isDemolition && value != 0 && value != null && (
@@ -73,7 +74,7 @@ export const SingleNumberInput = ({
             id={name ? name.replace(/\s/g, "") : ""}
             size="small"
             variant="outlined"
-            value={value}
+            value={value?.toString()}
             onChange={handleChange}
             error={hasError}
             helperText={hasError ? error : ""}
