@@ -143,6 +143,7 @@ public class PropertiesServiceTest {
         model.setId(propertyUuid);
         model.setName(propertyName);
         model.setRanges(List.of(range));
+        model.setMandatory(true);
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             service.updatePropertyNameOrValues(repo, model, now, userUuid);

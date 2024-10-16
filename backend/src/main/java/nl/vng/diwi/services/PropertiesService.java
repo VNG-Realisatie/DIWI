@@ -139,7 +139,7 @@ public class PropertiesService {
 
         if (!state.getPropertyName().equals(propertyModel.getName()) ||
             !state.getMandatory().equals(propertyModel.getMandatory()) ||
-            !state.getSingleSelect().equals(propertyModel.getSingleSelect())) {
+            !Objects.equals(state.getSingleSelect(), propertyModel.getSingleSelect())) {
             if (property.getType() != PropertyKind.CUSTOM && !state.getPropertyName().equals(propertyModel.getName())) {
                 throw new VngNotFoundException("Only custom properties can have the name updated.");
             }
