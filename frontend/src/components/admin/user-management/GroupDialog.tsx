@@ -2,8 +2,9 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle } from "
 import { t } from "i18next";
 import TextInput from "../../project/inputs/TextInput";
 import CategoryInput from "../../project/inputs/CategoryInput";
-import { Group, User } from "../../../pages/UserManagement";
+import { Group } from "../../../pages/UserManagement";
 import { ChangeEvent } from "react";
+import { User } from "../../../api/userServices";
 
 type GroupDialogProps = {
     open: boolean;

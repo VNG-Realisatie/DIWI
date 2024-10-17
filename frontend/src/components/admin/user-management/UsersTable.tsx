@@ -4,12 +4,11 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
-import { User } from "../../../pages/UserManagement";
 import useAlert from "../../../hooks/useAlert";
 import UserDialog from "./UserDialog";
 import DeleteDialogWithConfirmation from "./DeleteDialogWithConfirmation";
 import useAllowedActions from "../../../hooks/useAllowedActions";
-import { deleteUser, updateUser } from "../../../api/userServices";
+import { deleteUser, updateUser, User } from "../../../api/userServices";
 
 type Props = {
     rows: User[];
