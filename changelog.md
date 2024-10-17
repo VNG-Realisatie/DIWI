@@ -7,7 +7,6 @@
 - Policy goals have been implemented. They are editable and viewable through the dashboard section
 - Subplots feature is now implemented on the map
 - piecharts for purchase and rent stats and a table for planning have been added to the dashboard
-- The projects table is now sticky: settings will be remembered (until the session ends)
 
 ### CHANGED
 
