@@ -31,10 +31,13 @@ export const exportPdf = async (t: (key: string) => string, setPdfExport: (value
     const newElements = policyDashboardProjects.map((project: { id: string }) => ({
         id: project.id,
         width: 436,
-        height: 35,
+        height: 35
     }));
 
-    const allElements: Element[] = [...elements, ...newElements];
+    const allElements: Element[] = [
+        ...elements,
+        ...newElements
+    ];
 
     const getElementImage = async (element: Element) => {
         const el = document.getElementById(element.id);
@@ -61,10 +64,7 @@ export const exportPdf = async (t: (key: string) => string, setPdfExport: (value
     let chartsInLine = 0;
     const pageHeight = pdf.internal.pageSize.height;
 
-    const lastIndexSmallChart = filteredChartsArray.map((chart) => chart.width).lastIndexOf(205);
-
-    filteredChartsArray.forEach(({ chart, width, height }, index) => {
-
+    filteredChartsArray.forEach(({ chart, width, height }) => {
         if (width === 436) {
             if (y + height > pageHeight) {
                 pdf.addPage();
@@ -94,7 +94,7 @@ export const exportPdf = async (t: (key: string) => string, setPdfExport: (value
             lineHeight = Math.max(lineHeight, height);
             chartsInLine += 1;
 
-            if (chartsInLine === 2 || index === lastIndexSmallChart) {
+            if (chartsInLine === 2) {
                 x = 5;
                 y += lineHeight + 10;
                 lineHeight = 0;
