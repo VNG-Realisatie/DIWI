@@ -1,5 +1,23 @@
 # Change log
 
+## DIWI RELEASE 1.7.0
+
+### ADDED
+
+- Policy goals have been implemented. They are editable and viewable through the dashboard section
+
+### CHANGED
+
+- Houseblocks can now have a value of 0
+- Export page is hidden in the menu, until it is ready for release
+
+### FIXED
+
+- Fixed an issue where sorting and filtering on wijk / buurt did not work
+- There was an issue where UserPlus changes to plots were not persisted
+- Addressed an issue where the new policy goals displays would not show the correct percentages
+- Fixed an issue where the dashboard pie charts would display demolition in positive numbers
+
 ## DIWI RELEASE 1.6.3
 
 ### FIXED
