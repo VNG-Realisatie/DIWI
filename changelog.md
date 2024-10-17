@@ -5,11 +5,15 @@
 ### ADDED
 
 - Policy goals have been implemented. They are editable and viewable through the dashboard section
+- Subplots feature is now implemented on the map
+- piecharts for purchase and rent stats and a table for planning have been added to the dashboard
+- The projects table is now sticky: settings will be remembered (until the session ends)
 
 ### CHANGED
 
 - Houseblocks can now have a value of 0
 - Export page is hidden in the menu, until it is ready for release
+- The controls for plot selection have been slightly altered to accomodate the new features better
 
 ### FIXED
 
