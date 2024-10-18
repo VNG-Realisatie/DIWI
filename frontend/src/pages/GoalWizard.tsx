@@ -108,8 +108,6 @@ export function GoalWizard() {
     const navigate = useNavigate();
     const { allowedActions } = useAllowedActions();
 
-    if (!allowedActions.includes("EDIT_GOALS")) return <ActionNotAllowed errorMessage={t("admin.userManagement.forbidden")} />;
-
     useEffect(() => {
         if (goalId) {
             getGoal(goalId).then((goal) => {
@@ -140,6 +138,8 @@ export function GoalWizard() {
             setProperties(filteredProperties);
         });
     }, []);
+
+    if (!allowedActions.includes("EDIT_GOALS")) return <ActionNotAllowed errorMessage={t("admin.userManagement.forbidden")} />;
 
     const handleGoalTypeChange = (event: React.MouseEvent<HTMLElement>, newGoalType: GoalType) => {
         if (newGoalType !== null && event) {
