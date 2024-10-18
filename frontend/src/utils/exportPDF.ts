@@ -8,14 +8,18 @@ type Element = {
     height?: number;
 };
 
+const pieChartWidth = 205;
+
+const otherChartWidth = 436;
+
 const elements: Element[] = [
-    { id: "totalValues", width: 436, height: 25 },
-    { id: "projectPhaseChart", width: 205, height: 75 },
-    { id: "targetGroupChart", width: 205, height: 75 },
-    { id: "physicalAppearanceChart", width: 205, height: 75 },
-    { id: "buy", width: 205, height: 75 },
-    { id: "rent", width: 205, height: 75 },
-    { id: "deliverables", width: 205, height: 75 },
+    { id: "totalValues", width: otherChartWidth, height: 25 },
+    { id: "projectPhaseChart", width: pieChartWidth, height: 75 },
+    { id: "targetGroupChart", width: pieChartWidth, height: 75 },
+    { id: "physicalAppearanceChart", width: pieChartWidth, height: 75 },
+    { id: "buy", width: pieChartWidth, height: 75 },
+    { id: "rent", width: pieChartWidth, height: 75 },
+    { id: "deliverables", width: pieChartWidth, height: 75 },
 
     //add more elements here
 ];
@@ -30,7 +34,7 @@ export const exportPdf = async (t: (key: string) => string, setPdfExport: (value
 
     const newElements = policyDashboardProjects.map((project: { id: string }) => ({
         id: project.id,
-        width: 436,
+        width: otherChartWidth,
         height: 35,
     }));
 
@@ -61,7 +65,6 @@ export const exportPdf = async (t: (key: string) => string, setPdfExport: (value
     let chartsInLine = 0;
     const pageHeight = pdf.internal.pageSize.height;
 
-    const pieChartWidth = 205;
     const lastIndexSmallChart = filteredChartsArray.map((chart) => chart.width).lastIndexOf(pieChartWidth);
 
     filteredChartsArray.forEach(({ chart, width, height }, index) => {
