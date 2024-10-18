@@ -18,6 +18,8 @@ import { PropertyRadioGroup } from "../components/goals/PropertyRadioGroup";
 import { conditionFieldTypeOptions, goalDirectionOptions } from "../components/goals/constants";
 import { OwnershipRowInputs } from "../components/project-wizard/house-blocks/ownership-information/OwnershipRowInputs";
 import { OwnershipSingleValue } from "../types/houseBlockTypes";
+import useAllowedActions from "../hooks/useAllowedActions";
+import ActionNotAllowed from "./ActionNotAllowed";
 
 const emptyGoal = {
     startDate: "",
@@ -104,6 +106,9 @@ export function GoalWizard() {
     const [properties, setProperties] = useState<Property[]>([]);
     const { setAlert } = useContext(AlertContext);
     const navigate = useNavigate();
+    const { allowedActions } = useAllowedActions();
+
+    if (!allowedActions.includes("EDIT_GOALS")) return <ActionNotAllowed errorMessage={t("admin.userManagement.forbidden")} />;
 
     useEffect(() => {
         if (goalId) {

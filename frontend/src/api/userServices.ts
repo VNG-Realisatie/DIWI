@@ -1,9 +1,43 @@
 import { Group } from "../pages/UserManagement";
+import { RoleType } from "../types/enums";
 import { components } from "../types/schema";
 import { getJson, postJson, deleteJson, putJson } from "../utils/requests";
 import { API_URI } from "../utils/urls";
 
-export type User = components["schemas"]["UserGroupUserModel"];
+export type User = components["schemas"]["UserGroupUserModel"] & {
+    role?: RoleType | undefined | string;
+    organization?: string;
+    phoneNumber?: string;
+    department?: string;
+    contactPerson?: string;
+    prefixes?: string;
+    allowedActions?:
+        | (
+              | "VIEW_API"
+              | "VIEW_USERS"
+              | "EDIT_USERS"
+              | "VIEW_GROUPS"
+              | "EDIT_GROUPS"
+              | "VIEW_CONFIG"
+              | "EDIT_CONFIG"
+              | "VIEW_CUSTOM_PROPERTIES"
+              | "EDIT_CUSTOM_PROPERTIES"
+              | "CAN_OWN_PROJECTS"
+              | "VIEW_OTHERS_PROJECTS"
+              | "VIEW_OWN_PROJECTS"
+              | "EDIT_OWN_PROJECTS"
+              | "EDIT_ALL_PROJECTS"
+              | "CREATE_NEW_PROJECT"
+              | "IMPORT_PROJECTS"
+              | "EXPORT_PROJECTS"
+              | "VIEW_ALL_BLUEPRINTS"
+              | "EDIT_ALL_BLUEPRINTS"
+              | "VIEW_OWN_BLUEPRINTS"
+              | "EDIT_GOALS"
+              | "VIEW_GOALS"
+          )[]
+        | undefined;
+};
 
 export async function getCurrentUser(): Promise<User> {
     return getJson(`${API_URI}/users/userinfo`);

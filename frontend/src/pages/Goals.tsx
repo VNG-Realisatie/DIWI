@@ -9,6 +9,7 @@ import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined
 import DeleteDialogWithConfirmation from "../components/admin/user-management/DeleteDialogWithConfirmation";
 import AlertContext from "../context/AlertContext";
 import { t } from "i18next";
+import useAllowedActions from "../hooks/useAllowedActions";
 
 export const Goals = () => {
     const [goals, setGoals] = useState<Goal[]>([]);
@@ -16,6 +17,7 @@ export const Goals = () => {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const { setAlert } = useContext(AlertContext);
     const [idToDelete, setIdToDelete] = useState<string>("");
+    const { allowedActions } = useAllowedActions();
     useEffect(() => {
         getAllGoals().then((goals) => {
             setGoals(goals);
@@ -36,17 +38,19 @@ export const Goals = () => {
             sortable: false,
             renderCell: (params: GridCellParams) => (
                 <Box display="flex" alignItems="center" justifyContent="center" style={{ height: "100%" }} gap="10px">
-                    <>
-                        <EditOutlinedIcon style={{ cursor: "pointer" }} color="primary" onClick={() => navigate(`/goals/${params.row.id}`)} />
-                        <DeleteForeverOutlinedIcon
-                            style={{ cursor: "pointer" }}
-                            color="error"
-                            onClick={() => {
-                                setIdToDelete(params.row.id);
-                                setDeleteDialogOpen(true);
-                            }}
-                        />
-                    </>
+                    {allowedActions.includes("EDIT_GOALS") && (
+                        <>
+                            <EditOutlinedIcon style={{ cursor: "pointer" }} color="primary" onClick={() => navigate(`/goals/${params.row.id}`)} />
+                            <DeleteForeverOutlinedIcon
+                                style={{ cursor: "pointer" }}
+                                color="error"
+                                onClick={() => {
+                                    setIdToDelete(params.row.id);
+                                    setDeleteDialogOpen(true);
+                                }}
+                            />
+                        </>
+                    )}
                 </Box>
             ),
         },
@@ -90,9 +94,11 @@ export const Goals = () => {
                     pageSizeOptions={[5, 10, 25]}
                     disableRowSelectionOnClick
                 />
-                <Box sx={{ position: "relative", top: "80px" }}>
-                    <AddGoalButton />
-                </Box>
+                {allowedActions.includes("EDIT_GOALS") && (
+                    <Box sx={{ position: "relative", top: "80px" }}>
+                        <AddGoalButton />
+                    </Box>
+                )}
             </Box>
 
             <DeleteDialogWithConfirmation
