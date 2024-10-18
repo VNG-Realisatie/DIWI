@@ -32,7 +32,7 @@ export const menu: MenuSection[] = [
         menuItems: [
             {
                 name: "sidebar.goals",
-                required_permission: ["EDIT_GOALS"],
+                required_permission: ["VIEW_GOALS"],
                 link: Paths.goals.path,
             },
             {
