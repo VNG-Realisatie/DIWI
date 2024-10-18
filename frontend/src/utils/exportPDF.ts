@@ -61,7 +61,8 @@ export const exportPdf = async (t: (key: string) => string, setPdfExport: (value
     let chartsInLine = 0;
     const pageHeight = pdf.internal.pageSize.height;
 
-    const lastIndexSmallChart = filteredChartsArray.map((chart) => chart.width).lastIndexOf(205);
+    const pieChartWidth = 205;
+    const lastIndexSmallChart = filteredChartsArray.map((chart) => chart.width).lastIndexOf(pieChartWidth);
 
     filteredChartsArray.forEach(({ chart, width, height }, index) => {
 
