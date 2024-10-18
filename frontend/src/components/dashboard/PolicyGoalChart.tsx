@@ -38,7 +38,10 @@ const calculateWidths = (isNumericGoal: boolean, isSurplus: boolean, amount: num
     let remainingWidth = 0;
 
     if (isNumericGoal) {
-        if (amount > 0) {
+        if (amount === 0) {
+            filledWidth = 50;
+            remainingWidth = 50;
+        } else if (amount > 0) {
             filledWidth = isSurplus ? (goal / amount) * 100 : (amount / goal) * 100;
         } else {
             filledWidth = isPDF ? 8 : 4;
@@ -112,7 +115,7 @@ export const PolicyGoalChart = ({ goal, isPDF = false }: Props) => {
             </Box>
             {isNumericGoal ? (
                 <Stack direction="row" alignItems="center" width="100%" marginBottom="17px">
-                    <Box sx={{ ...styles.filledBox, width: `${filledWidth}%` }}>{amount}</Box>
+                    <Box sx={{ ...styles.filledBox, width: `${filledWidth}%` }}>{amount === 0 ? t("goals.dashboard.noHouses") : amount}</Box>
                     {!equalGoalandAmount && <Box sx={{ ...styles.remainingBox, width: `${remainingWidth}%` }}>{text}</Box>}
                 </Stack>
             ) : (
