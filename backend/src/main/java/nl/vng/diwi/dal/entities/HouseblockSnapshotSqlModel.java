@@ -36,10 +36,6 @@ import java.util.UUID;
     attributeName = "numrange",
     converter = PostgreSQLRangeType.class
 )
-@Convert(
-    attributeName = "int4range",
-    converter = PostgreSQLRangeType.class
-)
 public class HouseblockSnapshotSqlModel {
 
     private UUID projectId;

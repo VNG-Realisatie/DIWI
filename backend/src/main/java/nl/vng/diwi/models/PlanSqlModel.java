@@ -117,16 +117,16 @@ public class PlanSqlModel {
     @Setter
     public static class PlanSqlOwnershipOptionModel {
         private OwnershipType ownershipType;
-        private Integer value;
-        private Integer rentValue;
+        private Long value;
+        private Long rentValue;
         private UUID rangeCategoryId;
         private UUID rentRangeCategoryId;
         private String rangeCategoryName;
         private String rentRangeCategoryName;
-        private Integer valueRangeMin;
-        private Integer valueRangeMax;
-        private Integer rentValueRangeMin;
-        private Integer rentValueRangeMax;
+        private Long valueRangeMin;
+        private Long valueRangeMax;
+        private Long rentValueRangeMin;
+        private Long rentValueRangeMax;
     }
 
     @Getter
