@@ -20,6 +20,8 @@
 - There was an issue where UserPlus changes to plots were not persisted
 - Addressed an issue where the new policy goals displays would not show the correct percentages
 - Fixed an issue where the dashboard pie charts would display demolition in positive numbers
+- Addressed situations where certain user types had access to pages that should not be accessible and/or hidden
+- fixed an issue in the pdf where an odd number of items would cause the goals to look wonky
 
 ## DIWI RELEASE 1.6.3
 
