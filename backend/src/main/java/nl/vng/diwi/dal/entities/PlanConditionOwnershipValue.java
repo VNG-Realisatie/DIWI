@@ -34,22 +34,22 @@ public class PlanConditionOwnershipValue extends ChangeDataSuperclass {
     private PlanCondition planCondition;
 
     @Column(name = "waarde_value")
-    private Integer value;
+    private Long value;
 
     @Type(PostgreSQLRangeType.class)
-    @Column(name = "waarde_value_range", columnDefinition = "int4range")
-    private Range<Integer> valueRange;
+    @Column(name = "waarde_value_range", columnDefinition = "int8range")
+    private Range<Long> valueRange;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ownership_property_value_id")
     private PropertyRangeCategoryValue ownershipRangeCategoryValue;
 
     @Column(name = "huurbedrag_value")
-    private Integer rentalValue;
+    private Long rentalValue;
 
     @Type(PostgreSQLRangeType.class)
-    @Column(name = "huurbedrag_value_range", columnDefinition = "int4range")
-    private Range<Integer> rentalValueRange;
+    @Column(name = "huurbedrag_value_range", columnDefinition = "int8range")
+    private Range<Long> rentalValueRange;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "rental_property_value_id")
