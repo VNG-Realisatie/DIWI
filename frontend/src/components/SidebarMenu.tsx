@@ -47,7 +47,7 @@ export const menu: MenuSection[] = [
             },
             {
                 name: "sidebar.customDashboardList",
-                required_permission: ["VIEW_ALL_BLUEPRINTS"],
+                required_permission: ["VIEW_OWN_BLUEPRINTS"],
                 link: Paths.customDashboardList.path,
             },
         ],

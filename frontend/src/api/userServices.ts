@@ -35,6 +35,7 @@ export type AllowedActions =
     | "VIEW_ALL_BLUEPRINTS"
     | "EDIT_ALL_BLUEPRINTS"
     | "VIEW_OWN_BLUEPRINTS"
+    | "VIEW_DASHBOARDS"
     | "EDIT_GOALS"
     | "VIEW_GOALS";
 
