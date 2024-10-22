@@ -35,6 +35,7 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
+import lombok.Getter;
 import nl.vng.diwi.config.ProjectConfig;
 import nl.vng.diwi.dal.AutoCloseTransaction;
 import nl.vng.diwi.dal.FilterPaginationSorting;
@@ -79,6 +80,7 @@ import nl.vng.diwi.services.GeoJsonImportService;
 import nl.vng.diwi.services.PropertiesService;
 import nl.vng.diwi.services.HouseblockService;
 import nl.vng.diwi.services.ProjectService;
+import nl.vng.diwi.services.UserGroupService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
@@ -86,6 +88,7 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 
 @Path("/projects")
 @RolesAllowed("BLOCKED_BY_DEFAULT") // This forces us to make sure each end-point has action(s) assigned, so we never have things open by default.
+@Getter
 public class ProjectsResource {
 
     private static final Logger logger = LogManager.getLogger();
@@ -94,6 +97,7 @@ public class ProjectsResource {
     private final VngRepository repo;
     private final ProjectService projectService;
     private final HouseblockService houseblockService;
+    private final UserGroupService userGroupService;
     private final PropertiesService propertiesService;
     private final ProjectConfig projectConfig;
     private final ExcelImportService excelImportService;
@@ -104,6 +108,7 @@ public class ProjectsResource {
             GenericRepository genericRepository,
             ProjectService projectService,
             HouseblockService houseblockService,
+            UserGroupService userGroupService,
             PropertiesService propertiesService,
             ProjectConfig projectConfig,
             ExcelImportService excelImportService,
@@ -111,6 +116,7 @@ public class ProjectsResource {
         this.repo = new VngRepository(genericRepository.getDal().getSession());
         this.projectService = projectService;
         this.houseblockService = houseblockService;
+        this.userGroupService = userGroupService;
         this.propertiesService = propertiesService;
         this.projectConfig = projectConfig;
         this.excelImportService = excelImportService;
@@ -144,6 +150,14 @@ public class ProjectsResource {
             if (projectSnapshotModel.getConfidentialityLevel() == Confidentiality.PRIVATE) {
                 throw new VngBadRequestException("Cannot create private projects that you are not the owner of.");
             }
+        }
+
+        Set<UUID> newOwnerGroups = projectSnapshotModel.getProjectOwners().stream().map(UserGroupModel::getUuid).collect(Collectors.toSet());
+        Set<UUID> allowedOwnerGroups = userGroupService.getAllUserGroups(true, true).stream()
+            .map(UserGroupModel::getUuid).collect(Collectors.toSet());
+
+        if (!allowedOwnerGroups.containsAll(newOwnerGroups)) {
+            throw new VngBadRequestException("Project owner usergroups cannot contain Management or Council users.");
         }
 
         ZonedDateTime now = ZonedDateTime.now();
@@ -438,6 +452,14 @@ public class ProjectsResource {
             if (!newOwnerIds.contains(loggedUser.getUuid()) && currentOwnerIds.contains(loggedUser.getUuid())) {
                 throw new VngBadRequestException("Cannot remove yourself as owner of a private project.");
             }
+        }
+
+        Set<UUID> newOwnerGroups = projectSnapshotModelToUpdate.getProjectOwners().stream().map(UserGroupModel::getUuid).collect(Collectors.toSet());
+        Set<UUID> allowedOwnerGroups = userGroupService.getAllUserGroups(true, true).stream()
+            .map(UserGroupModel::getUuid).collect(Collectors.toSet());
+
+        if (!allowedOwnerGroups.containsAll(newOwnerGroups)) {
+            throw new VngBadRequestException("Project owner usergroups cannot contain Management or Council users.");
         }
 
         List<ProjectUpdateModel> projectUpdateModelList = new ArrayList<>();
