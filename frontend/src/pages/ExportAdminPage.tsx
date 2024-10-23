@@ -150,6 +150,7 @@ function ExportAdminPage() {
             disabled: false,
             categories: categoriesOrOrdinals.map((item) => ({ ...item, disabled: false })),
             singleSelect: property.singleSelect,
+            mandatory: property.mandatory,
         };
     };
 
