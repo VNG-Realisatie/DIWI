@@ -39,20 +39,14 @@ export function getCustomValue(customValue: CustomPropertyValue | undefined): Cu
             value = customValue.ordinals.value;
         }
     }
-    console.log("getCustomValue:", { customValue, value });
     return value;
 }
-
 export function validateCustomProperties(customValues: CustomPropertyValue[], customDefinitions: Property[]) {
-    console.log("validateCustomProperties:", { customValues, customDefinitions });
     for (const property of customDefinitions) {
         const customValue = customValues.find((cv) => cv.customPropertyId === property.id);
         const value = getCustomValue(customValue);
 
-        console.log("validateCustomProperties loop:", { property, customValue, value });
-
         if (property.mandatory && (value === null || value === "" || value === undefined)) {
-            console.log("validateCustomProperties failed:", { property, value });
             return false;
         }
     }
@@ -60,7 +54,6 @@ export function validateCustomProperties(customValues: CustomPropertyValue[], cu
 }
 
 export function validateForm(project: Project, validOwner: boolean = true, customDefinitions: Property[]) {
-    console.log("validateForm:", { project, validOwner, customDefinitions });
     if (
         !project.projectName ||
         !project.startDate ||
@@ -72,7 +65,6 @@ export function validateForm(project: Project, validOwner: boolean = true, custo
         project.projectOwners.length === 0 ||
         (project.customProperties && !validateCustomProperties(project.customProperties, customDefinitions))
     ) {
-        console.log("validateForm failed:", { project });
         return false;
     }
     return true;
