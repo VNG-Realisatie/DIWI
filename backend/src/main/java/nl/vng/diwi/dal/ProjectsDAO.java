@@ -7,6 +7,8 @@ import java.util.UUID;
 
 import nl.vng.diwi.dal.entities.MultiProjectPolicyGoalSqlModel;
 import nl.vng.diwi.dal.entities.ProjectAuditSqlModel;
+import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
+import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import org.hibernate.Session;
 import org.hibernate.query.SelectionQuery;
 
@@ -192,5 +194,17 @@ public class ProjectsDAO extends AbstractRepository {
             .list();
 
         return result;
+    }
+
+    public List<ProjectExportSqlModel> getProjectsExportList(List<Confidentiality> allowedConfidentialities, LocalDate exportDate, LoggedUser loggedUser) {
+        SelectionQuery<ProjectExportSqlModel> q = session.createNativeQuery(String.format(
+                "SELECT * FROM %s.get_projects_export_list(:exportDate, :userRole, :userUuid, :allowedConfidentialities) ",
+                GenericRepository.VNG_SCHEMA_NAME), ProjectExportSqlModel.class)
+            .setParameter("exportDate", exportDate)
+            .setParameter("userRole", loggedUser.getRole().name())
+            .setParameter("userUuid", loggedUser.getUuid())
+            .setParameter("allowedConfidentialities", allowedConfidentialities.stream().map(Confidentiality::name).toList().toArray(new String[0]));
+
+        return q.getResultList();
     }
 }
