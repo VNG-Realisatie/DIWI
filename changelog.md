@@ -22,6 +22,7 @@
 - Fixed an issue where the dashboard pie charts would display demolition in positive numbers
 - Addressed situations where certain user types had access to pages that should not be accessible and/or hidden
 - fixed an issue in the pdf where an odd number of items would cause the goals to look wonky
+- Addressed display issues in graphs, ranging from bar widths to data used for display
 
 ## DIWI RELEASE 1.6.3
 
