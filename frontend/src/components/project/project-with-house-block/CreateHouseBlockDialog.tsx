@@ -14,7 +14,7 @@ type Props = {
     setOpenHouseBlockDialog: (openDialog: boolean) => void;
 };
 export const CreateHouseBlockDialog = ({ openHouseBlockDialog, setOpenHouseBlockDialog }: Props) => {
-    const { refresh, getEmptyHouseBlock } = useContext(HouseBlockContext);
+    const { refresh, getEmptyHouseBlock, customDefinitions } = useContext(HouseBlockContext);
     const { updateProject } = useContext(ProjectContext);
     const [houseBlock, setHouseBlock] = useState<HouseBlockWithCustomProperties>(getEmptyHouseBlock());
     const { setAlert } = useAlert();
@@ -44,7 +44,7 @@ export const CreateHouseBlockDialog = ({ openHouseBlockDialog, setOpenHouseBlock
                     variant="contained"
                     color="success"
                     onClick={async () => {
-                        if (validateHouseBlock(houseBlock, setAlert)) {
+                        if (validateHouseBlock(houseBlock, setAlert, customDefinitions)) {
                             try {
                                 await saveHouseBlockWithCustomProperties(houseBlock);
                                 refresh();

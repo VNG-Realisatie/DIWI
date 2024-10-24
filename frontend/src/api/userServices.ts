@@ -5,14 +5,18 @@ import { getJson, postJson, deleteJson, putJson } from "../utils/requests";
 import { API_URI } from "../utils/urls";
 
 export type User = components["schemas"]["UserGroupUserModel"] & {
-    role?: RoleType | undefined | string;
+    email?: string;
+    role?: UserRole;
     organization?: string;
     phoneNumber?: string;
     department?: string;
     contactPerson?: string;
     prefixes?: string;
     allowedActions?: AllowedActions[];
+    id?: string;
 };
+
+export type UserRole = "Admin" | "UserPlus" | "User" | "Management" | "Council" | "External";
 
 export type AllowedActions =
     | "VIEW_API"
@@ -35,9 +39,11 @@ export type AllowedActions =
     | "VIEW_ALL_BLUEPRINTS"
     | "EDIT_ALL_BLUEPRINTS"
     | "VIEW_OWN_BLUEPRINTS"
-    | "VIEW_DASHBOARDS"
     | "EDIT_GOALS"
-    | "VIEW_GOALS";
+    | "VIEW_GOALS"
+    | "VIEW_DATA_EXCHANGES"
+    | "EDIT_DATA_EXCHANGES";
+
 
 export async function getCurrentUser(): Promise<User> {
     return getJson(`${API_URI}/users/userinfo`);

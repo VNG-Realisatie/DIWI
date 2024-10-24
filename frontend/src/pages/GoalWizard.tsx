@@ -397,6 +397,7 @@ export function GoalWizard() {
                                             objectType: "PROJECT",
                                             propertyType: "CATEGORY",
                                             disabled: false,
+                                            mandatory: false,
                                         }
                                     }
                                 />

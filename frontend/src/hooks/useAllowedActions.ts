@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { AllowedActions, getCurrentUser } from "../api/userServices";
 
-
 function useAllowedActions() {
     const [allowedActions, setAllowedActions] = useState<AllowedActions[]>([]);
     useEffect(() => {

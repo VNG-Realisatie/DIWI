@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { Project, getProject, getProjects, getProjectsSize } from "../api/projectsServices";
 import { components } from "../types/schema";
 import { GridPaginationModel } from "@mui/x-data-grid";
+import { getCustomPropertiesWithQuery, Property } from "../api/adminSettingServices";
 
 export type ProjectType = null | components["schemas"]["ProjectListModel"];
 
@@ -17,6 +18,7 @@ type ProjectContextType = {
     setPaginationInfo(info: GridPaginationModel): void;
     updateProject(): void;
     updateProjects(): void;
+    customDefinitions: Property[];
 };
 
 const ProjectContext = createContext<ProjectContextType | null>(null) as React.Context<ProjectContextType>;
@@ -27,6 +29,14 @@ export const ProjectProvider = ({ children }: PropsWithChildren) => {
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
     const [paginationInfo, setPaginationInfo] = useState<GridPaginationModel>({ page: 1, pageSize: 10 });
     const [totalProjectCount, setTotalProjectCount] = useState(0);
+    const [customDefinitions, setCustomDefinitions] = useState<Property[]>([]);
+
+    useEffect(() => {
+        getCustomPropertiesWithQuery("PROJECT").then((properties) => {
+            setCustomDefinitions(properties.filter((property) => !property.disabled));
+        });
+    }, []);
+
 
     const updateProjects = useCallback(() => {
         getProjects(paginationInfo.page, paginationInfo.pageSize)
@@ -66,6 +76,7 @@ export const ProjectProvider = ({ children }: PropsWithChildren) => {
                 setPaginationInfo,
                 updateProject,
                 updateProjects,
+                customDefinitions
             }}
         >
             {children}

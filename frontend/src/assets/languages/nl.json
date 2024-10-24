@@ -11,6 +11,8 @@
       "saved": "Opgeslagen",
       "next": "Opslaan en volgende",
       "previous": "Opslaan en vorige",
+      "nextStep": "Volgende",
+      "previousStep": "Vorige",
       "cancelChanges": "Stop veranderingen",
       "saveChanges": "Veranderingen opslaan",
       "edit": "Bewerken",
@@ -37,7 +39,8 @@
       "cutSelection": "Knip perceel",
       "cancelCutSelection": "Annuleer knip",
       "deleteSelection": "Verwijder (sub)perceel",
-      "cancelDeleteSelection": "Annuleer verwijder"
+      "cancelDeleteSelection": "Annuleer verwijder",
+      "thisFieldIsRequired": "Dit veld is verplicht"
     },
     "import": {
       "errorsTitle": "Import fouten",
@@ -283,7 +286,8 @@
       "addProject": "Project toevoegen",
       "projectOverview": "Overzicht projecten",
       "knowledgeBase": "Kennisbank",
-      "goals": "Beleidsdoelen"
+      "goals": "Beleidsdoelen",
+      "exportSettings": "Data uitwisseling"
     },
     "about": {
       "heading": "Over deze website",
@@ -302,7 +306,17 @@
       "exportIt": "Exporteer",
       "confirmExport": "Weet je het zeker?",
       "cancelExport": "Annuleer",
+      "saveSetting": "INSTELLINGEN OPSLAAN",
+      "resetSetting": "INSTELLINGEN RESETTEN",
       "successExport": "Gelukt! Je ontvangt de bevestiging via de mail.",
+      "saveColumnConfig": "Opslaan kolomconfiguratie",
+      "resetColumnConfig": "Reset kolomconfiguratie",
+      "successSaveColumnConfig": "Kolomconfiguratie succesvol opgeslagen",
+      "successResetColumnConfig": "Kolomconfiguratie succesvol gereset",
+      "toolbarColumns": "Kolommen",
+      "toolbarColumnsLabel": "Selecteer kolommen",
+      "toolbarFiltersLabel": "Filters wegeven",
+
       "tableColumns": {
         "projectName": "Project naam",
         "totalValue": "Totaal aantal",
@@ -567,6 +581,27 @@
       }
     },
     "admin": {
+      "export": {
+        "title": {
+          "selectProject" : "Selecteer Projecten om te Exporteren",
+          "selectExport": "Selecteer Gegevens Exporteren"
+        },
+        "name": "Naam",
+        "apiKey": "API sleutel",
+        "type": "Type",
+        "projectUrl": "Create layer URL",
+        "projectdetailUrl": "Project details URL",
+        "error": {
+          "required": "{{field}} is verplicht"
+        },
+        "deleteConfirmation": "Weet je zeker dat je deze export wilt verwijderen?",
+        "notification": {
+          "created": "Export succesvol aangemaakt",
+          "updated": "Export succesvol geüpdatet",
+          "deleted": "Export succesvol verwijderd"
+        },
+        "actionNotAllowed": "Exportfunctie is niet toegankelijk. Neem contact op met uw beheerder."
+      },
       "priceCategories": {
         "name": "Naam",
         "amount": "Waarde",
@@ -577,6 +612,7 @@
         "deleteConfirmation": "Weet je zeker dat je deze prijscategorie wilt verwijderen?",
         "nameError": "Vul de naam in",
         "amountError": "Vul de waarde in",
+        "amountLimitError": "Getal te groot voor invoerveld",
         "successfullySaved": "Prijscategorieën succesvol opgeslagen",
         "successfullyDeleted": "Prijscategorieën succesvol verwijderd"
       },
@@ -640,6 +676,8 @@
       "settings": {
         "title": "Lijst met maatwerk velden",
         "duplicatedOption": "is een dubbele optie",
+        "mandatory": "Verplicht",
+        "singleSelect": "Enkele selectie",
         "tableHeader": {
           "name": "Naam",
           "objectType": "Project of woningblok",

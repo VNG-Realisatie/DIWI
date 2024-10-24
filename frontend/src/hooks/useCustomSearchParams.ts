@@ -3,7 +3,7 @@ import { GridFilterModel, GridLogicOperator, GridPaginationModel, GridSortModel 
 import { useCallback, useEffect, useState } from "react";
 import queryString from "query-string";
 import { filterTable } from "../api/projectsTableServices";
-import { getProjects } from "../api/projectsServices";
+import { getProjects, getProjectsSizeWithParameters } from "../api/projectsServices";
 import { Project } from "../api/projectsServices";
 
 const useCustomSearchParams = (sort: GridSortModel | undefined, filter: GridFilterModel | undefined, paginationInfo: GridPaginationModel) => {
@@ -12,6 +12,7 @@ const useCustomSearchParams = (sort: GridSortModel | undefined, filter: GridFilt
     const [projects, setProjects] = useState<Array<Project>>([]);
     const location = useLocation();
     const [filterUrl, setFilterUrl] = useState("");
+    const [filteredProjectsSize, setFilteredProjectsSize] = useState<number>(0);
 
     useEffect(() => {
         if (filter) {
@@ -34,6 +35,14 @@ const useCustomSearchParams = (sort: GridSortModel | undefined, filter: GridFilt
         const queryParams = ["pageNumber", "pageSize", "filterColumn", "filterValue", "filterCondition"];
         return queryParams.every((e) => location.search.includes(e));
     }, [location.search]);
+
+    useEffect(() => {
+        getProjectsSizeWithParameters(filterUrl)
+            .then((size) => {
+                setFilteredProjectsSize(size.size);
+            })
+            .catch((err) => console.log(err));
+    }, [filterUrl]);
 
     useEffect(() => {
         if (isFilteredUrl() || isSortedUrl()) {
@@ -103,7 +112,7 @@ const useCustomSearchParams = (sort: GridSortModel | undefined, filter: GridFilt
         return { ...p, id: p.projectId };
     });
 
-    return { filterUrl, rows };
+    return { filterUrl, rows, filteredProjectsSize };
 };
 
 export default useCustomSearchParams;

@@ -611,7 +611,7 @@ public class ExcelImportService {
                                              DataFormatter formatter, FormulaEvaluator evaluator, List<ImportError> excelErrors) {
         Integer ownershipValueAmount = getIntegerValue(projectId, houseblockRowModel.getName(), cell, formatter, evaluator, excelErrors);
         if (ownershipValueAmount != null && ownershipValueAmount > 0) {
-            SingleValueOrRangeModel<Integer> subheaderRange;
+            SingleValueOrRangeModel<Long> subheaderRange;
             if (subheader.equalsIgnoreCase(Onbekend)) {
                 subheaderRange = null;
             } else {
@@ -623,14 +623,14 @@ public class ExcelImportService {
                 try {
                     if (substringRangeStrList.size() == 1) {
                         Double value = Double.parseDouble(substringRangeStrList.get(0)) * 100;
-                        subheaderRange.setValue(value.intValue());
+                        subheaderRange.setValue(value.longValue());
                     } else {
                         Double minValue = Double.parseDouble(substringRangeStrList.get(0)) * 100;
-                        subheaderRange.setMin(minValue.intValue());
+                        subheaderRange.setMin(minValue.longValue());
                         String maxValueStr = substringRangeStrList.get(1);
                         if (!maxValueStr.equalsIgnoreCase("Inf")) {
                             Double maxValue = Double.parseDouble(substringRangeStrList.get(1)) * 100;
-                            subheaderRange.setMax(maxValue.intValue());
+                            subheaderRange.setMax(maxValue.longValue());
                         }
                     }
                 } catch (NumberFormatException e) {

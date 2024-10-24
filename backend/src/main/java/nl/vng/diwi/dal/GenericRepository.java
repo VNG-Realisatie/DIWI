@@ -26,6 +26,12 @@ public class GenericRepository implements AutoCloseable {
                 BlueprintState.class,
                 BlueprintToElement.class,
                 BlueprintToUserGroup.class,
+                DataExchange.class,
+                DataExchangeState.class,
+                DataExchangeProperty.class,
+                DataExchangePropertyState.class,
+                DataExchangeOption.class,
+                DataExchangeOptionState.class,
                 PropertyCategoryValue.class,
                 PropertyCategoryValueState.class,
                 PropertyRangeCategoryValue.class,
@@ -110,7 +116,8 @@ public class GenericRepository implements AutoCloseable {
                 HouseblockSnapshotSqlModel.class,
                 PropertyModel.class,
                 ProjectHouseblockCustomPropertySqlModel.class,
-                PlanSqlModel.class);
+                PlanSqlModel.class,
+                DataExchangePropertySqlModel.class);
         return entities;
     }
 
