@@ -1,8 +1,6 @@
 package nl.vng.diwi.dal.entities;
 
 import io.hypersistence.utils.hibernate.type.range.PostgreSQLRangeType;
-import io.hypersistence.utils.hibernate.type.range.Range;
-import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -15,14 +13,11 @@ import lombok.Setter;
 import nl.vng.diwi.dal.JsonListType;
 import nl.vng.diwi.dal.entities.enums.MutationType;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
-import nl.vng.diwi.dal.entities.enums.ValueType;
-import nl.vng.diwi.models.AmountModel;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.Type;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,30 +56,9 @@ public class HouseblockExportSqlModel {
     private Integer intentionPermissionOwner;
     private Integer formalPermissionOwner;
 
-    @Type(value = JsonListType.class)
-    @Getter(AccessLevel.NONE)
-    private List<AmountModel> physicalAppearanceList;
-
     private Integer meergezinswoning;
     private Integer eengezinswoning;
 
-    @Type(value = JsonListType.class)
-    @Getter(AccessLevel.NONE)
-    private List<AmountModel> targetGroupList;
-
-    public List<AmountModel> getPhysicalAppearanceList() {
-        if (physicalAppearanceList == null) {
-            return new ArrayList<>();
-        }
-        return physicalAppearanceList;
-    }
-
-    public List<AmountModel> getTargetGroupList() {
-        if (targetGroupList == null) {
-            return new ArrayList<>();
-        }
-        return targetGroupList;
-    }
 
     public List<OwnershipValueSqlModel> getOwnershipValueList() {
         if (ownershipValueList == null) {

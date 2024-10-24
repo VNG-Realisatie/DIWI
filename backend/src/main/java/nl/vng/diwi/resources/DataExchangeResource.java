@@ -15,10 +15,12 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.StreamingOutput;
+import nl.vng.diwi.config.ProjectConfig;
 import nl.vng.diwi.dal.AutoCloseTransaction;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
+import nl.vng.diwi.models.ConfigModel;
 import nl.vng.diwi.models.DataExchangeModel;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.rest.VngBadRequestException;
@@ -39,13 +41,15 @@ public class DataExchangeResource {
 
     private final VngRepository repo;
     private final DataExchangeService dataExchangeService;
+    private final ConfigModel configModel;
 
     public static final ObjectMapper MAPPER = new ObjectMapper();
 
     @Inject
-    public DataExchangeResource(GenericRepository genericRepository, DataExchangeService dataExchangeService) {
+    public DataExchangeResource(GenericRepository genericRepository, DataExchangeService dataExchangeService, ProjectConfig projectConfig) {
         this.repo = new VngRepository(genericRepository.getDal().getSession());
         this.dataExchangeService = dataExchangeService;
+        this.configModel = projectConfig.getConfigModel();
     }
 
     @GET
@@ -161,7 +165,7 @@ public class DataExchangeResource {
 
         List<Confidentiality> allowedConfidentialities = List.of(Confidentiality.EXTERNAL_REGIONAL, Confidentiality.EXTERNAL_GOVERNMENTAL, Confidentiality.PUBLIC);
 
-        Object exportObj = dataExchangeService.getExportObject(repo, dataExchangeUuid, allowedConfidentialities, exportDate, errors, warnings, loggedUser);
+        Object exportObj = dataExchangeService.getExportObject(repo, configModel, dataExchangeUuid, allowedConfidentialities, exportDate, errors, warnings, loggedUser);
 
         return output -> {
             MAPPER.writeValue(output, exportObj);

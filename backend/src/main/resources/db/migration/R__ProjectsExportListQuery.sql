@@ -18,7 +18,8 @@ CREATE OR REPLACE FUNCTION diwi.get_projects_export_list (
         textProperties JSONB,
         numericProperties JSONB,
         booleanProperties JSONB,
-        categoryProperties JSONB
+        categoryProperties JSONB,
+        geometries TEXT[]
 	)
 	LANGUAGE plpgsql
 AS $$
@@ -36,7 +37,8 @@ SELECT  q.projectId,
         q.textProperties,
         q.numericProperties,
         q.booleanProperties,
-        q.categoryProperties
+        q.categoryProperties,
+        q.geometries
 FROM (
 
     WITH
@@ -126,6 +128,19 @@ FROM (
             WHERE
                 sms.date <= _export_date_ AND _export_date_ < ems.date
             GROUP BY pppc.project_id
+        ),
+        active_project_geometries AS (
+            SELECT
+                prlc.project_id, array_agg(prlcv.plot_feature::TEXT) AS geometries
+            FROM
+                active_projects ap
+                    JOIN diwi.project_registry_link_changelog prlc ON ap.id = prlc.project_id AND prlc.change_end_date IS NULL
+                    JOIN diwi.milestone_state sms ON sms.milestone_id = prlc.start_milestone_id AND sms.change_end_date IS NULL
+                    JOIN diwi.milestone_state ems ON ems.milestone_id = prlc.end_milestone_id AND ems.change_end_date IS NULL
+                    JOIN diwi.project_registry_link_changelog_value prlcv ON prlc.id = prlcv.project_registry_link_changelog_id
+            WHERE
+                sms.date <= _export_date_ AND _export_date_ < ems.date
+            GROUP BY prlc.project_id
         ),
         active_project_textCP AS (
             SELECT
@@ -240,6 +255,16 @@ FROM (
                     JOIN diwi.project_planologische_planstatus_changelog_value pppcv ON pppc.id = pppcv.planologische_planstatus_changelog_id
             GROUP BY pppc.project_id
         ),
+        past_project_geometries AS (
+            SELECT
+                prlc.project_id, array_agg(prlcv.plot_feature::TEXT) AS geometries
+            FROM
+                past_projects pp
+                    JOIN diwi.project_registry_link_changelog prlc ON pp.id = prlc.project_id
+                        AND prlc.end_milestone_id = pp.end_milestone_id AND prlc.change_end_date IS NULL
+                    JOIN diwi.project_registry_link_changelog_value prlcv ON prlc.id = prlcv.project_registry_link_changelog_id
+            GROUP BY prlc.project_id
+        ),
         past_project_textCP AS (
             SELECT
                 ptc.project_id, to_jsonb(array_agg(jsonb_build_object('propertyId', ptc.property_id, 'textValue', ptc.value))) AS text_properties
@@ -292,7 +317,8 @@ FROM (
            apt.text_properties      AS textProperties,
            apnp.numeric_properties  AS numericProperties,
            apb.boolean_properties   AS booleanProperties,
-           apc.category_properties  AS categoryProperties
+           apc.category_properties  AS categoryProperties,
+           apg.geometries           AS geometries
     FROM
         active_projects ap
             LEFT JOIN active_project_names apn ON apn.project_id = ap.id
@@ -303,6 +329,7 @@ FROM (
             LEFT JOIN active_project_numericCP apnp ON apnp.project_id = ap.id
             LEFT JOIN active_project_booleanCP apb ON apb.project_id = ap.id
             LEFT JOIN active_project_categoryCP apc ON apc.project_id = ap.id
+            LEFT JOIN active_project_geometries apg ON apg.project_id = ap.id
 
     UNION
 
@@ -317,7 +344,8 @@ FROM (
            ppt.text_properties      AS textProperties,
            ppnp.numeric_properties  AS numericProperties,
            ppb.boolean_properties   AS booleanProperties,
-           ppc.category_properties  AS categoryProperties
+           ppc.category_properties  AS categoryProperties,
+           ppg.geometries           AS geometries
     FROM
         past_projects pp
             LEFT JOIN past_project_names ppn ON ppn.project_id = pp.id
@@ -328,6 +356,7 @@ FROM (
             LEFT JOIN past_project_numericCP ppnp ON ppnp.project_id = pp.id
             LEFT JOIN past_project_booleanCP ppb ON ppb.project_id = pp.id
             LEFT JOIN past_project_categoryCP ppc ON ppc.project_id = pp.id
+            LEFT JOIN past_project_geometries ppg ON ppg.project_id = pp.id
 
 ) AS q
 

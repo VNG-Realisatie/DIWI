@@ -1,16 +1,24 @@
 package nl.vng.diwi.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import nl.vng.diwi.dal.entities.DataExchangeType;
 import nl.vng.diwi.dal.entities.HouseblockExportSqlModel;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
 import nl.vng.diwi.dataexchange.DataExchangeTemplate;
+import nl.vng.diwi.generic.Constants;
+import nl.vng.diwi.models.ConfigModel;
 import nl.vng.diwi.models.DataExchangePropertyModel;
+import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
 import org.geojson.Crs;
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
+import org.geojson.MultiPolygon;
+import org.geojson.Polygon;
 import org.geojson.jackson.CrsType;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -24,6 +32,8 @@ import java.util.stream.Collectors;
 
 public class EsriZuidHollandExport {
 
+    private static final ObjectMapper MAPPER = JsonMapper.builder().findAndAddModules().build();
+
     static final Map<String, DataExchangeTemplate.TemplateProperty> templatePropertyMap;
 
     static {
@@ -32,9 +42,9 @@ public class EsriZuidHollandExport {
     }
 
 
-    public static FeatureCollection buildExportObject(List<ProjectExportSqlModel> projects, List<HouseblockExportSqlModel> houseblocks,
-                                                      Map<String, DataExchangePropertyModel> dxPropertiesMap, LocalDate exportDate, List<Object> errors,
-                                                      List<Object> warnings) {
+    public static FeatureCollection buildExportObject(ConfigModel configModel, List<ProjectExportSqlModel> projects, List<HouseblockExportSqlModel> houseblocks,
+                                                      List<PropertyModel> projectFixedProps, Map<String, DataExchangePropertyModel> dxPropertiesMap, LocalDate exportDate,
+                                                      List<Object> errors, List<Object> warnings) {
 
         Map<UUID, List<HouseblockExportSqlModel>> houseblocksMap = new HashMap<>();
         houseblocks.forEach(houseblock -> {
@@ -50,21 +60,40 @@ public class EsriZuidHollandExport {
         crs.getProperties().put("name", "EPSG:28992");
         exportObject.setCrs(crs);
 
-        projects.forEach(project -> exportObject.add(getProjectFeature(project,
+        projects.forEach(project -> exportObject.add(getProjectFeature(configModel, project,
             houseblocksMap.containsKey(project.getProjectId()) ? houseblocksMap.get(project.getProjectId()) : new ArrayList<>(),
-            dxPropertiesMap, exportDate, errors, warnings)));
+            projectFixedProps, dxPropertiesMap, exportDate, errors, warnings)));
 
         return exportObject;
     }
 
-    private static Feature getProjectFeature(ProjectExportSqlModel project, List<HouseblockExportSqlModel> houseblockExportSqlModels,
-                                             Map<String, DataExchangePropertyModel> dxPropertiesMap, LocalDate exportDate, List<Object> errors,
-                                             List<Object> warnings) {
+    private static Feature getProjectFeature(ConfigModel configModel, ProjectExportSqlModel project, List<HouseblockExportSqlModel> houseblockExportSqlModels,
+                                             List<PropertyModel> projectFixedProps, Map<String, DataExchangePropertyModel> dxPropertiesMap, LocalDate exportDate,
+                                             List<Object> errors, List<Object> warnings) {
 
         Feature projectFeature = new Feature();
         projectFeature.setProperties(new LinkedHashMap<>());
 
-        //TODO: set geometry
+        MultiPolygon multiPolygon = new MultiPolygon();
+        for (String geometryString : project.getGeometries()) {
+            FeatureCollection geometryObject;
+            try {
+                geometryObject = MAPPER.readValue(geometryString, FeatureCollection.class);
+                geometryObject.getFeatures().forEach(f -> {
+                    if (f.getGeometry() instanceof Polygon) {
+                        multiPolygon.add((Polygon) f.getGeometry());
+                    } else {
+                        //TODO: error - this should always be a polygon
+                    }
+                });
+            } catch (IOException e) {
+                //TODO: error / warning
+            }
+        }
+        if (!multiPolygon.getCoordinates().isEmpty()) {
+            projectFeature.setGeometry(multiPolygon);
+        }
+
 
         List<Map<String, Object>> houseblockProperties = houseblockExportSqlModels.stream()
             .map(EsriZuidHollandExport::getHouseblockProperties).toList();
@@ -81,18 +110,30 @@ public class EsriZuidHollandExport {
         for (var prop : EsriZuidHollandProjectProps.values()) {
             switch (prop) {
                 case plannaam -> projectFeature.getProperties().put(prop.name(), project.getName());
-                case provincie -> {
-                } //TODO
-                case regio -> {
-                } //TODO
-                case gemeente -> {
-                } //TODO
+                case provincie -> projectFeature.getProperties().put(prop.name(), configModel.getProvinceName());
+                case regio -> projectFeature.getProperties().put(prop.name(), configModel.getRegionName());
+                case gemeente -> projectFeature.getProperties().put(prop.name(), configModel.getMunicipalityName());
                 case woonplaats -> {
-                } //TODO
+                    String woonplaatsName = null;
+                    PropertyModel municipalityFixedProp = projectFixedProps.stream()
+                            .filter(pfp -> pfp.getName().equals(Constants.FIXED_PROPERTY_MUNICIPALITY)).findFirst().orElse(null);
+                    if (municipalityFixedProp != null) {
+                        List<UUID> municipalityOptions = projectCategoricalCustomProps.get(municipalityFixedProp.getId());
+                        if (municipalityOptions == null || municipalityOptions.isEmpty()) {
+                            //TODO: is this mandatory? add error? if mandatory, flag needs to be updated in DB in property_state
+                        } else if (municipalityOptions.size() > 1) {
+                            //TODO: is this single select? add error? update flag in property_state?
+                        } else {
+                            woonplaatsName = municipalityFixedProp.getCategories().stream().filter(o -> o.getId()
+                                    .equals(municipalityOptions.get(0))).findFirst().get().getName();
+                        }
+                    }
+                    projectFeature.getProperties().put(prop.name(), woonplaatsName);
+                }
                 case vertrouwelijkheid -> projectFeature.getProperties().put(prop.name(),
                     EsriZuidHollandEnumMappings.getEsriZuidHollandConfidentiality(project.getConfidentiality()).name());
-                case opdrachtgever_type -> {
-                } //TODO  categorical custom prop
+                case opdrachtgever_type -> addProjectCategoricalCustomProperty(projectFeature,
+                        templatePropertyMap.get(EsriZuidHollandProjectProps.opdrachtgever_type.name()), dxPropertiesMap, projectCategoricalCustomProps);
                 case opdrachtgever_naam -> addProjectTextCustomProperty(projectFeature,
                         templatePropertyMap.get(EsriZuidHollandProjectProps.opdrachtgever_naam.name()), dxPropertiesMap, projectTextCustomProps);
                 case oplevering_eerste -> {

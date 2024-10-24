@@ -10,16 +10,12 @@ import java.time.LocalDate;
 public class EsriZuidHollandEnumMappings {
 
     public static EsriZuidHollandConfidentiality getEsriZuidHollandConfidentiality(Confidentiality diwiConfidentiality) {
-        return  EsriZuidHollandConfidentiality.Openbaar;
-        //        return switch (diwiConfidentiality) {  //TODO
-//            case PRIVATE -> null;
-//            case INTERNAL_CIVIL -> null;
-//            case INTERNAL_MANAGEMENT -> null;
-//            case INTERNAL_COUNCIL -> null;
-//            case EXTERNAL_REGIONAL -> null;
-//            case EXTERNAL_GOVERNMENTAL -> null;
-//            case PUBLIC -> EsriZuidHollandConfidentiality.Openbaar;
-//        };
+        return switch (diwiConfidentiality) {
+            case PRIVATE, INTERNAL_CIVIL, INTERNAL_MANAGEMENT, INTERNAL_COUNCIL -> EsriZuidHollandConfidentiality.Gemeente;
+            case EXTERNAL_REGIONAL -> EsriZuidHollandConfidentiality.Regio;
+            case EXTERNAL_GOVERNMENTAL -> EsriZuidHollandConfidentiality.Provincie;
+            case PUBLIC -> EsriZuidHollandConfidentiality.Openbaar;
+        };
     }
 
     public static String getEsriZuidHollandPlanType(PlanType diwiPlanType) {

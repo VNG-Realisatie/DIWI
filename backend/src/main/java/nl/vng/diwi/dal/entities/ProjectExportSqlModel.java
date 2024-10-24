@@ -77,6 +77,11 @@ public class ProjectExportSqlModel {
     @Getter(AccessLevel.NONE)
     private List<CategoryPropertyModel> categoryProperties;
 
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    @Column(columnDefinition = "text[]")
+    @Getter(AccessLevel.NONE)
+    private List<String> geometries;
+
     public List<PlanType> getPlanType() {
         return planType == null ? new ArrayList<>() : planType;
     }
@@ -99,6 +104,10 @@ public class ProjectExportSqlModel {
 
     public List<CategoryPropertyModel> getCategoryProperties() {
         return categoryProperties == null ? new ArrayList<>() : categoryProperties;
+    }
+
+    public List<String> getGeometries() {
+        return geometries == null ? new ArrayList<>() : geometries;
     }
 
     @Data

@@ -16,10 +16,14 @@ import nl.vng.diwi.dal.entities.PropertyCategoryValue;
 import nl.vng.diwi.dal.entities.PropertyOrdinalValue;
 import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
+import nl.vng.diwi.dal.entities.enums.ObjectType;
+import nl.vng.diwi.dal.entities.enums.PropertyKind;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
 import nl.vng.diwi.dataexchange.DataExchangeTemplate;
+import nl.vng.diwi.models.ConfigModel;
 import nl.vng.diwi.models.DataExchangeModel;
 import nl.vng.diwi.models.DataExchangePropertyModel;
+import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
@@ -213,7 +217,7 @@ public class DataExchangeService {
 
     }
 
-    public Object getExportObject(VngRepository repo, UUID dataExchangeUuid, List<Confidentiality> allowedConfidentialities,
+    public Object getExportObject(VngRepository repo, ConfigModel configModel, UUID dataExchangeUuid, List<Confidentiality> allowedConfidentialities,
                                   LocalDate exportDate, List<Object> errors, List<Object> warnings, LoggedUser loggedUser)
         throws VngNotFoundException {
 
@@ -225,8 +229,9 @@ public class DataExchangeService {
         List<HouseblockExportSqlModel> houseblocks = new ArrayList<>();
 //        List<HouseblockExportSqlModel> houseblocks = repo.getHouseblockDAO().getHouseblocksExportList(exportDate, loggedUser);
 
+        List<PropertyModel> projectFixedProps = repo.getPropertyDAO().getPropertiesList(ObjectType.PROJECT, false, PropertyKind.FIXED);
         return switch (dataExchangeModel.getType()) {
-            case ESRI_ZUID_HOLLAND -> EsriZuidHollandExport.buildExportObject(projects, houseblocks, dxPropertiesMap, exportDate, errors, warnings);
+            case ESRI_ZUID_HOLLAND -> EsriZuidHollandExport.buildExportObject(configModel, projects, houseblocks, projectFixedProps, dxPropertiesMap, exportDate, errors, warnings);
         };
 
     }
