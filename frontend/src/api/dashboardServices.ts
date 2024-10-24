@@ -1,9 +1,22 @@
 import { deleteJson, getJson, postJson, putJson } from "../utils/requests";
 import { API_URI } from "../utils/urls";
+import { GoalDirection, GoalType } from "./goalsServices";
 
 type PhysicalAppearance = {
     name: string;
     amount: number;
+};
+
+export type PolicyGoal = {
+    name: string;
+    category: string;
+    id: string;
+    goal: number;
+    amount: number;
+    percentage: number;
+    totalAmount: number;
+    goalDirection: GoalDirection;
+    goalType: GoalType;
 };
 
 export type Planning = {
@@ -46,9 +59,20 @@ export async function getDashboardProject(
     return getJson(`${API_URI}/dashboard/project/${id}?snapshotDate=${todaysDate}`);
 }
 
-export async function getDashboardProjects(): Promise<{ physicalAppearance: PhysicalAppearance[]; targetGroup: PhysicalAppearance[] }> {
+export async function getDashboardProjects(): Promise<{
+    physicalAppearance: PhysicalAppearance[];
+    targetGroup: PhysicalAppearance[];
+    priceCategoryOwn: PriceCategory[];
+    priceCategoryRent: PriceCategory[];
+    planning: Planning[];
+}> {
     const todaysDate = new Date().toISOString().split("T")[0]; // change this logic later
     return getJson(`${API_URI}/dashboard/projects?snapshotDate=${todaysDate}`);
+}
+
+export async function getPolicyDashboardProjects(): Promise<PolicyGoal[]> {
+    const todaysDate = new Date().toISOString().split("T")[0]; // change this logic later
+    return getJson(`${API_URI}/dashboard/projects/policygoals?snapshotDate=${todaysDate}`);
 }
 
 export async function getAllBlueprints(): Promise<Blueprint[]> {

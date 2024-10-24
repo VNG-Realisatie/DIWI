@@ -26,7 +26,7 @@ export const GroundPositionGroup = ({ houseBlock, setHouseBlock, readOnly }: Gro
                 </Typography>
             </Stack>
             <SingleNumberInput
-                value={houseBlock?.groundPosition?.noPermissionOwner}
+                value={houseBlock?.groundPosition?.noPermissionOwner ?? 0}
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onChange={(e: any) =>
                     houseBlock &&
@@ -44,7 +44,7 @@ export const GroundPositionGroup = ({ houseBlock, setHouseBlock, readOnly }: Gro
                 mandatory={false}
             />
             <SingleNumberInput
-                value={houseBlock?.groundPosition?.intentionPermissionOwner}
+                value={houseBlock?.groundPosition?.intentionPermissionOwner ?? 0}
                 onChange={(e) =>
                     houseBlock &&
                     setHouseBlock({
@@ -61,7 +61,7 @@ export const GroundPositionGroup = ({ houseBlock, setHouseBlock, readOnly }: Gro
                 mandatory={false}
             />
             <SingleNumberInput
-                value={houseBlock?.groundPosition?.formalPermissionOwner}
+                value={houseBlock?.groundPosition?.formalPermissionOwner ?? 0}
                 onChange={(e) =>
                     houseBlock &&
                     setHouseBlock({

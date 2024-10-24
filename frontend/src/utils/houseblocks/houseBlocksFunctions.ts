@@ -7,7 +7,6 @@ export const validateOwnership = (houseBlock: HouseBlockWithCustomProperties) =>
         houseBlock.ownershipValue.some((owner) => !isOwnershipAmountValid(owner.amount)) ||
         houseBlock.ownershipValue.some(
             (owner) =>
-                owner.amount > 0 &&
                 !owner.rentalValueCategoryId &&
                 !owner.valueCategoryId &&
                 JSON.stringify(owner.rentalValue) === JSON.stringify({ value: null, min: null, max: null }) &&
@@ -22,8 +21,8 @@ export const isHouseBlockInvalid = (houseBlock: HouseBlockWithCustomProperties, 
         !houseBlock.startDate ||
         houseBlock.endDate < houseBlock.startDate ||
         !houseBlock.houseblockName ||
-        !houseBlock.mutation.amount ||
-        houseBlock.mutation.amount <= 0 ||
+        houseBlock.mutation.amount === null ||
+        houseBlock.mutation.amount < 0 ||
         !houseBlock.mutation.kind ||
         invalidOwnershipAmount ||
         !checkConsistencyOwnerShipValueAndMutation(houseBlock)

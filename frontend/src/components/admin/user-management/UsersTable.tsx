@@ -83,7 +83,7 @@ const UsersTable = ({ rows, setUsers }: Props) => {
             field: "acties",
             headerName: t("admin.userManagement.tableHeader.actions"),
             flex: 0.5,
-            sortable: true,
+            sortable: false,
             renderCell: (params: GridCellParams) => (
                 <Box display="flex" alignItems="center" justifyContent="center" style={{ height: "100%" }} gap="10px">
                     {allowedActions.includes("EDIT_USERS") && (

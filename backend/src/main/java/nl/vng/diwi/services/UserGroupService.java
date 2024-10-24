@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import jakarta.inject.Inject;
 import lombok.Getter;
+import lombok.Setter;
 import nl.vng.diwi.dal.UserGroupDAO;
 import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.dal.entities.UserGroup;
@@ -23,6 +24,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Getter
+@Setter
 public class UserGroupService {
 
     private static final Logger logger = LogManager.getLogger();
@@ -34,9 +36,9 @@ public class UserGroupService {
         this.userGroupDAO = userGroupDAO;
     }
 
-    public List<UserGroupModel> getAllUserGroups(boolean includeSingleUser) {
+    public List<UserGroupModel> getAllUserGroups(boolean includeSingleUser, boolean projectOwnersOnly) {
 
-        List<UserGroupUserModel> userGroupUserList = userGroupDAO.getAllUserGroupsUsersList(includeSingleUser);
+        List<UserGroupUserModel> userGroupUserList = userGroupDAO.getAllUserGroupsUsersList(includeSingleUser, projectOwnersOnly);
         return UserGroupModel.fromUserGroupUserModelListToUserGroupModelList(userGroupUserList);
     }
 

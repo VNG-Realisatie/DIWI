@@ -7,11 +7,13 @@ import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.Houseblock;
 import nl.vng.diwi.dal.entities.HouseblockDurationChangelog;
+import nl.vng.diwi.dal.entities.HouseblockMutatieChangelog;
 import nl.vng.diwi.dal.entities.HouseblockNameChangelog;
 import nl.vng.diwi.dal.entities.HouseblockState;
 import nl.vng.diwi.dal.entities.Milestone;
 import nl.vng.diwi.dal.entities.Project;
 import nl.vng.diwi.dal.entities.User;
+import nl.vng.diwi.dal.entities.enums.MutationType;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.testutil.TestDb;
 import org.junit.jupiter.api.AfterAll;
@@ -258,6 +260,20 @@ public class HouseblockServiceTest {
         nameChangelog.setName(name);
         repo.persist(nameChangelog);
         return nameChangelog;
+    }
+
+    public static HouseblockMutatieChangelog createHouseblockMutationChangelog(VngRepository repo, Houseblock houseblock, MutationType mutationType, Milestone startMilestone,
+                                                                               Milestone endMilestone, User user) {
+        HouseblockMutatieChangelog mutationChangelog = new HouseblockMutatieChangelog();
+        mutationChangelog.setHouseblock(houseblock);
+        mutationChangelog.setCreateUser(user);
+        mutationChangelog.setStartMilestone(startMilestone);
+        mutationChangelog.setEndMilestone(endMilestone);
+        mutationChangelog.setChangeStartDate(ZonedDateTime.now());
+        mutationChangelog.setMutationType(mutationType);
+        mutationChangelog.setAmount(10);
+        repo.persist(mutationChangelog);
+        return mutationChangelog;
     }
 
 }

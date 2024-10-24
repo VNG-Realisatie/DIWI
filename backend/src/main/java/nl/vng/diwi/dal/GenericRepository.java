@@ -5,6 +5,7 @@ import java.util.List;
 
 import jakarta.inject.Inject;
 import nl.vng.diwi.dal.entities.*;
+import nl.vng.diwi.models.PlanSqlModel;
 import nl.vng.diwi.models.PropertyModel;
 
 public class GenericRepository implements AutoCloseable {
@@ -77,6 +78,27 @@ public class GenericRepository implements AutoCloseable {
                 ProjectCategoryPropertyChangelog.class,
                 ProjectCategoryPropertyChangelogValue.class,
                 ProjectOrdinalPropertyChangelog.class,
+                Plan.class,
+                PlanState.class,
+                PlanCategory.class,
+                PlanCategoryState.class,
+                PlanCondition.class,
+                PlanConditionState.class,
+                PlanConditionRegistryLink.class,
+                PlanConditionRegistryLinkValue.class,
+                PlanConditionGroundPosition.class,
+                PlanConditionGroundPositionValue.class,
+                PlanConditionProgramming.class,
+                PlanConditionOwnershipValue.class,
+                PlanConditionAppearanceAndType.class,
+                PlanConditionPhysicalAppearanceValue.class,
+                PlanConditionHouseTypeValue.class,
+                PlanConditionBooleanCustomProperty.class,
+                PlanConditionOrdinalCustomProperty.class,
+                PlanConditionCategoryCustomProperty.class,
+                PlanConditionCategoryCustomPropertyValue.class,
+                PlanConditionTargetGroup.class,
+                PlanConditionTargetGroupValue.class,
                 User.class,
                 UserState.class,
                 UserToUserGroup.class,
@@ -84,9 +106,11 @@ public class GenericRepository implements AutoCloseable {
                 BlueprintSqlModel.class,
                 ProjectListSqlModel.class,
                 ProjectDashboardSqlModel.class,
+                MultiProjectPolicyGoalSqlModel.class,
                 HouseblockSnapshotSqlModel.class,
                 PropertyModel.class,
-                ProjectHouseblockCustomPropertySqlModel.class);
+                ProjectHouseblockCustomPropertySqlModel.class,
+                PlanSqlModel.class);
         return entities;
     }
 

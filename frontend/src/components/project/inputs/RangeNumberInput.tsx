@@ -34,7 +34,7 @@ function parseMonetary(value: string) {
     const [euros, cents] = value.split(decimalSeparator);
     let result = parseInt(euros) * 100;
     if (cents !== undefined) {
-        let parsedCents = parseInt(cents);
+        let parsedCents = parseInt(cents) || 0;
         if (cents.length === 1) {
             parsedCents *= 10;
         }
@@ -73,8 +73,8 @@ function fromStringToRange(stringValue: string | null, isMonetary: boolean): Val
         return { value: null, min: null, max: null };
     } else if (inputValue.includes("-")) {
         const [minStr, maxStr] = inputValue.split("-");
-        const min = minStr ? (isMonetary ? parseMonetary(minStr) : parseFloat(minStr)) : null;
-        const max = maxStr ? (isMonetary ? parseMonetary(maxStr) : parseFloat(maxStr)) : null;
+        const min = minStr ? (isMonetary ? parseMonetary(minStr.replace(/\./g, "")) : parseFloat(minStr.replace(/\./g, ""))) : null;
+        const max = maxStr ? (isMonetary ? parseMonetary(maxStr.replace(/\./g, "")) : parseFloat(maxStr.replace(/\./g, ""))) : null;
 
         if (min !== null && max !== null) {
             return { value: null, min, max };
@@ -87,7 +87,7 @@ function fromStringToRange(stringValue: string | null, isMonetary: boolean): Val
             return { value: null, min: null, max: null };
         }
     } else {
-        const newValue = isMonetary ? parseMonetary(inputValue) : parseFloat(inputValue);
+        const newValue = isMonetary ? parseMonetary(inputValue.replace(/\./g, "")) : parseFloat(inputValue.replace(/\./g, ""));
         return { value: newValue, min: null, max: null };
     }
 }
@@ -121,7 +121,14 @@ const RangeNumberInput = ({
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         let newValue = e.target.value;
-        newValue = newValue.replace(".", ",");
+
+        newValue = newValue.replace(/\./g, "");
+
+        const lastPeriodIndex = newValue.lastIndexOf(".");
+        if (lastPeriodIndex !== -1) {
+            newValue = newValue.substring(0, lastPeriodIndex) + "," + newValue.substring(lastPeriodIndex + 1);
+        }
+
         const isValidInput = /^-?\d*(,\d{0,2})?(-\d*(,?\d{0,2})?)?$/.test(newValue);
         const checkRangeValidation = newValue.trim() !== "-" ? newValue.trim() !== "" : false;
         setIsRangeValid && setIsRangeValid(checkRangeValidation);

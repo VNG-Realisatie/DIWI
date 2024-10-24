@@ -42,9 +42,10 @@ public class UserGroupResource {
     @GET
     @RolesAllowed({UserActionConstants.VIEW_GROUPS})
     @Produces(MediaType.APPLICATION_JSON)
-    public List<UserGroupModel> getAllUserGroups(@QueryParam("includeSingleUser") boolean includeSingleUser) {
+    public List<UserGroupModel> getAllUserGroups(@QueryParam("includeSingleUser") boolean includeSingleUser,
+                                                 @QueryParam("projectOwners") boolean projectOwnersOnly) {
 
-        return userGroupService.getAllUserGroups(includeSingleUser);
+        return userGroupService.getAllUserGroups(includeSingleUser, projectOwnersOnly);
 
     }
 

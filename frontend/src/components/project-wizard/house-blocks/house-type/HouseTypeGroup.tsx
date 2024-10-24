@@ -28,7 +28,7 @@ export const HouseTypeGroup = ({ houseBlock, setHouseBlock, readOnly }: HouseTyp
                 </Typography>
             </Stack>
             <SingleNumberInput
-                value={houseBlock?.houseType?.meergezinswoning}
+                value={houseBlock?.houseType?.meergezinswoning ?? 0}
                 onChange={(e) =>
                     houseBlock &&
                     setHouseBlock({
@@ -46,7 +46,7 @@ export const HouseTypeGroup = ({ houseBlock, setHouseBlock, readOnly }: HouseTyp
                 tooltipInfoText={t("tooltipInfo.woningtype.meergezinswoningen")}
             />
             <SingleNumberInput
-                value={houseBlock?.houseType?.eengezinswoning}
+                value={houseBlock?.houseType?.eengezinswoning ?? 0}
                 onChange={(e) =>
                     houseBlock &&
                     setHouseBlock({

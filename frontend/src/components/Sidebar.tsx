@@ -4,12 +4,11 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { Link } from "react-router-dom";
-
-import * as Paths from "../Paths";
 import { useTranslation } from "react-i18next";
 import { useContext } from "react";
 import ConfigContext from "../context/ConfigContext";
 import useAllowedActions from "../hooks/useAllowedActions";
+import { menu, MenuSection } from "./SidebarMenu";
 
 type SideBarProps = {
     open: boolean;
@@ -28,11 +27,24 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 const typographyStyles = { fontSize: "20px", fontWeight: "600" };
 const linkStyles = { color: "#FFFFFF", textDecoration: "none" };
 
+const filterMenuByPermissions = (menu: MenuSection[], allowedActions: string[]): MenuSection[] => {
+    return menu
+        .map((section: MenuSection) => {
+            const filteredMenuItems = section.menuItems.filter(
+                (item) => item.required_permission.length === 0 || item.required_permission.some((perm) => allowedActions.includes(perm)),
+            );
+            return filteredMenuItems.length > 0 ? { ...section, menuItems: filteredMenuItems } : null;
+        })
+        .filter((section): section is MenuSection => section !== null);
+};
+
 export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
     const theme = useTheme();
     const { t } = useTranslation();
     const { municipalityName } = useContext(ConfigContext);
     const { allowedActions } = useAllowedActions();
+
+    const filteredMenu = filterMenuByPermissions(menu, allowedActions);
 
     return (
         <Drawer variant="persistent" anchor="left" open={open}>
@@ -47,94 +59,19 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
             </DrawerHeader>
             <Divider />
 
-            <List sx={{ ml: 3 }}>
-                <Typography sx={typographyStyles}>{t("sidebar.projects")}</Typography>
-                <Link key="Overzicht projecten" to="/projects/table" style={linkStyles}>
-                    <ListItemButton onClick={handleDrawerClose}>
-                        <ListItemText primary={t("sidebar.projectOverview")} />
-                    </ListItemButton>
-                </Link>
-                {allowedActions.includes("CREATE_NEW_PROJECT") && (
-                    <Link key="Project toevoegen" to="/project/create" style={linkStyles}>
-                        <ListItemButton onClick={handleDrawerClose}>
-                            <ListItemText primary={t("sidebar.addProject")} />
-                        </ListItemButton>
-                    </Link>
-                )}
-            </List>
-            <List sx={{ ml: 3 }}>
-                <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>{t("sidebar.dashboards")}</Typography>
-                {/*
-                <Link to={Paths.policygoal.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
-                    <ListItemButton>
-                        <ListItemText primary="Beleidsdoelen" />
-                    </ListItemButton>
-                </Link> */}
-                {allowedActions.includes("VIEW_ALL_BLUEPRINTS") && (
-                    <Link to={Paths.dashboard.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
-                        <ListItemButton onClick={handleDrawerClose}>
-                            <ListItemText primary={t("sidebar.dashboardProject")} />
-                        </ListItemButton>
-                    </Link>
-                )}
-                {allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
-                    <Link to={Paths.createCustomDashbord.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
-                        <ListItemButton onClick={handleDrawerClose}>
-                            <ListItemText primary={t("sidebar.makeCustomDashboard")} />
-                        </ListItemButton>
-                    </Link>
-                )}
-                <Link to={Paths.customDashbordList.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
-                    <ListItemButton onClick={handleDrawerClose}>
-                        <ListItemText primary={t("sidebar.customDashboardList")} />
-                    </ListItemButton>
-                </Link>
-            </List>
-            {/* <List sx={{ ml: 3 }}>
-                <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>{t("sidebar.users")}</Typography>
-            </List> */}
-            {/* <List sx={{ ml: 3 }}>
-                <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>{t("sidebar.dataExchange")}</Typography>
-                <Link to={Paths.exchangedata.path} style={{ color: "#FFFFFF", textDecoration: "none" }}>
-                    <ListItemButton>
-                        <ListItemText primary="Data uitwisselen" />
-                    </ListItemButton>
-                </Link>
-            </List> */}
-            <List sx={{ ml: 3 }}>
-                <Typography sx={typographyStyles}>{t("sidebar.settings")}</Typography>
-                {allowedActions.includes("VIEW_CUSTOM_PROPERTIES") && (
-                    <Link to={Paths.userSettings.path} style={linkStyles} onClick={handleDrawerClose}>
-                        <ListItemButton>
-                            <ListItemText primary={t("customProperties.title")} />
-                        </ListItemButton>
-                    </Link>
-                )}
-                {allowedActions.includes("VIEW_CUSTOM_PROPERTIES") && (
-                    <Link to={Paths.priceCategories.path} style={linkStyles} onClick={handleDrawerClose}>
-                        <ListItemButton>
-                            <ListItemText primary={t("sidebar.priceCategories")} />
-                        </ListItemButton>
-                    </Link>
-                )}
-                {(allowedActions.includes("VIEW_USERS") || allowedActions.includes("VIEW_GROUPS")) && (
-                    <Link to={Paths.userManagement.path} style={linkStyles} onClick={handleDrawerClose}>
-                        <ListItemButton>
-                            <ListItemText primary={t("sidebar.users")} />
-                        </ListItemButton>
-                    </Link>
-                )}
-            </List>
-            <List sx={{ ml: 3 }}>
-                <Typography sx={typographyStyles}>{t("sidebar.dataExchange")}</Typography>
-                {allowedActions.includes("IMPORT_PROJECTS") && (
-                    <Link to={Paths.exchangeimportdata.path} style={linkStyles} onClick={handleDrawerClose}>
-                        <ListItemButton>
-                            <ListItemText primary={t("sidebar.import")} />
-                        </ListItemButton>
-                    </Link>
-                )}
-            </List>
+            {filteredMenu.map((section, index) => (
+                <List key={index} sx={{ ml: 3 }}>
+                    <Typography sx={typographyStyles}>{t(section.header)}</Typography>
+                    {section.menuItems.map((item, index) => (
+                        <Link key={index} to={item.link} style={linkStyles} onClick={handleDrawerClose}>
+                            <ListItemButton>
+                                <ListItemText primary={t(item.name)} />
+                            </ListItemButton>
+                        </Link>
+                    ))}
+                </List>
+            ))}
+
             <List sx={{ ml: 3, marginTop: "auto", marginBottom: "20px" }}>
                 <Link to="https://support.diwi.vng.client.phinion.com/help/nl-nl" target="_blank" style={linkStyles} onClick={handleDrawerClose}>
                     <Typography style={typographyStyles}>{t("sidebar.knowledgeBase")}</Typography>

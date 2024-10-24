@@ -17,9 +17,19 @@ public class UserGroupDAO extends AbstractRepository {
         super(session);
     }
 
-    public List<UserGroupUserModel> getAllUserGroupsUsersList(boolean includeSingleUser) {
+    public List<UserGroupUserModel> getAllUserGroupsUsersList(boolean includeSingleUser, boolean projectOwnersOnly) {
 
-        String querySql = String.format("""
+        String querySql = String.format(
+            (projectOwnersOnly ? """
+                WITH usergroups_not_project_owners AS (
+                        SELECT DISTINCT ug.id AS userGroupUuid
+                        FROM %1$s.userGroup ug
+                            JOIN %1$s.usergroup_state ugs ON ug.id = ugs.usergroup_id AND ugs.change_end_date IS NULL
+                            LEFT JOIN %1$s.user_to_usergroup utug ON utug.usergroup_id = ugs.usergroup_id AND utug.change_end_date IS NULL
+                            LEFT JOIN %1$s.user_state us ON us.user_id = utug.user_id AND us.change_end_date IS NULL
+                        WHERE us.role = 'Council' OR us.role = 'Management'
+                )""" : "") +
+                """
                 SELECT ug.id AS userGroupUuid,
                     ugs.naam AS userGroupName,
                     us.user_id AS uuid,
@@ -29,8 +39,10 @@ public class UserGroupDAO extends AbstractRepository {
                 FROM %1$s.userGroup ug
                     JOIN %1$s.usergroup_state ugs ON ug.id = ugs.usergroup_id AND ugs.change_end_date IS NULL
                     LEFT JOIN %1$s.user_to_usergroup utug ON utug.usergroup_id = ugs.usergroup_id AND utug.change_end_date IS NULL
-                    LEFT JOIN %1$s.user_state us ON us.user_id = utug.user_id AND us.change_end_date IS NULL """, GenericRepository.VNG_SCHEMA_NAME) +
-                (includeSingleUser ? "" : " WHERE ug.single_user = false ") +
+                    LEFT JOIN %1$s.user_state us ON us.user_id = utug.user_id AND us.change_end_date IS NULL
+                    WHERE 1 = 1""", GenericRepository.VNG_SCHEMA_NAME) +
+                (includeSingleUser ? "" : " AND ug.single_user = false ") +
+                (projectOwnersOnly ? " AND ug.id NOT IN (SELECT * FROM usergroups_not_project_owners) " : "")  +
                 " ORDER BY userGroupName, initials, lastName, firstName ";
 
         return session.createNativeQuery(querySql, Object[].class)

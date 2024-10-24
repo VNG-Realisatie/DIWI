@@ -138,7 +138,7 @@ it.each([
     ["1,0", 100],
     ["100,1", 10010],
     ["100,0", 10000],
-    ["1", 100],
+    ["1,", 100],
 ])("should convert euros to cents", (input, expected) => {
     const updateCallBack = vi.fn();
     const value = { value: null, min: null, max: null };
@@ -245,4 +245,58 @@ it("should not allow characters except for hyphens and commas", () => {
 
     expect(screen.getByRole("textbox")).toHaveValue("10,2-20,30");
     expect(updateCallBack).toHaveBeenLastCalledWith({ value: null, min: 1020, max: 2030 });
+});
+
+it("should allow updating the value and display dots as thousand separators and a comma as the decimal separator", () => {
+    const updateCallBack = vi.fn();
+    const value = { value: 20000000, min: null, max: null };
+
+    render(<RangeNumberInput value={value} updateCallBack={updateCallBack} labelText="hi" mandatory={false} readOnly={false} isMonetary={true} />);
+
+    const input = screen.getByRole("textbox");
+    userEvent.clear(input);
+    userEvent.type(input, "300.000,50");
+    userEvent.keyboard("{enter}");
+
+    expect(input).toHaveValue("300000,50");
+    expect(updateCallBack).toHaveBeenLastCalledWith({ value: 30000050, min: null, max: null });
+});
+
+it("should parse the input value correctly when the user submits the form", () => {
+    const updateCallBack = vi.fn();
+    const value = { value: null, min: null, max: null };
+
+    render(<RangeNumberInput value={value} updateCallBack={updateCallBack} labelText="hi" mandatory={false} readOnly={false} isMonetary={true} />);
+
+    const input = screen.getByRole("textbox");
+    userEvent.type(input, "1.234,56");
+    userEvent.keyboard("{enter}");
+
+    expect(input).toHaveValue("1234,56");
+    expect(updateCallBack).toHaveBeenLastCalledWith({ value: 123456, min: null, max: null });
+});
+
+it("should correctly parse monetary ranges for large numbers", () => {
+    const updateCallBack = vi.fn();
+    const value = { value: null, min: 10000000, max: 20000000 };
+
+    render(<RangeNumberInput value={value} updateCallBack={updateCallBack} labelText="hi" mandatory={false} readOnly={false} isMonetary={true} />);
+
+    const input = screen.getByRole("textbox");
+
+    expect(input).toHaveValue("100.000,00-200.000,00");
+});
+
+it.each([
+    [100000, "1.000,00"],
+    [1000000, "10.000,00"],
+    [10000000, "100.000,00"],
+    [100000000, "1.000.000,00"],
+])("should format large numbers with dot as thousand separator for monetary values", (input, expected) => {
+    const updateCallBack = vi.fn();
+    const value = { value: input, min: null, max: null };
+
+    render(<RangeNumberInput value={value} updateCallBack={updateCallBack} labelText="hi" mandatory={false} readOnly={false} isMonetary={true} />);
+
+    expect(screen.getByRole("textbox")).toHaveValue(expected);
 });

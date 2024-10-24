@@ -571,7 +571,7 @@ FROM (
         END
 
     ORDER BY
-        CASE WHEN _sortColumn_ = 'projectName' AND _sortDirection_ = 'ASC' THEN q.projectName END ASC,
+        CASE WHEN _sortColumn_ = 'projectName' AND _sortDirection_ = 'ASC' THEN q.projectName COLLATE "diwi_numeric" END ASC,
         CASE WHEN _sortColumn_ = 'totalValue' AND _sortDirection_ = 'ASC' THEN q.totalValue END ASC,
         CASE WHEN _sortColumn_ = 'endDate' AND _sortDirection_ = 'ASC' THEN q.endDate END ASC,
         CASE WHEN _sortColumn_ = 'startDate' AND _sortDirection_ = 'ASC' THEN q.startDate END ASC,
@@ -586,7 +586,7 @@ FROM (
         CASE WHEN _sortColumn_ = 'neighbourhood' AND _sortDirection_ = 'ASC' THEN q.neighbourhoodNamesList END ASC,
         CASE WHEN _sortColumn_ = 'projectOwners' AND _sortDirection_ = 'ASC' THEN q.projectOwnersInitials END ASC,
 
-        CASE WHEN _sortColumn_ = 'projectName' AND _sortDirection_ = 'DESC' THEN q.projectName END DESC,
+        CASE WHEN _sortColumn_ = 'projectName' AND _sortDirection_ = 'DESC' THEN q.projectName COLLATE "diwi_numeric" END DESC,
         CASE WHEN _sortColumn_ = 'totalValue' AND _sortDirection_ = 'DESC' THEN q.totalValue END DESC,
         CASE WHEN _sortColumn_ = 'endDate' AND _sortDirection_ = 'DESC' THEN q.endDate END DESC,
         CASE WHEN _sortColumn_ = 'startDate' AND _sortDirection_ = 'DESC' THEN q.startDate END DESC,

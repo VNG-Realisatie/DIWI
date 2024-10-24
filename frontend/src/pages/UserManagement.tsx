@@ -65,6 +65,8 @@ export type User = {
               | "VIEW_ALL_BLUEPRINTS"
               | "EDIT_ALL_BLUEPRINTS"
               | "VIEW_OWN_BLUEPRINTS"
+              | "EDIT_GOALS"
+              | "VIEW_GOALS"
           )[]
         | undefined;
 };

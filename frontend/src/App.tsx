@@ -30,7 +30,6 @@ import { ProjectTimeline } from "./pages/ProjectTimeline";
 import ProjectPlotSelector from "./components/map/ProjectPlotSelector";
 import { ConfigProvider } from "./context/ConfigContext";
 import { UserProvider } from "./context/UserContext";
-import { ProjectWizardMap } from "./pages/ProjectWizardMap";
 import "dayjs/locale/nl";
 import { HouseBlockProvider } from "./context/HouseBlockContext";
 import ProjectWizard from "./pages/ProjectWizard";
@@ -43,6 +42,9 @@ import { DashboardProject } from "./pages/DashboardProject";
 import PriceCategories from "./pages/PriceCategories";
 import { CreateCustomDashboard } from "./pages/CreateCustomDashboard";
 import { CustomDashboardList } from "./pages/CustomDashboardList";
+import { Goals } from "./pages/Goals";
+import { GoalWizard } from "./pages/GoalWizard";
+import useCurrentUserRole from "./hooks/useCurrentUserRole";
 
 enum UserStatus {
     Authenticated,
@@ -163,22 +165,27 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
     );
 };
 function App() {
+    const { currentUserRole } = useCurrentUserRole();
     return (
         <Providers>
             <BrowserRouter>
                 <Routes>
                     <Route path={Paths.forbidden.path} element={<Forbidden />} />
                     <Route path="/" element={<RequiresLogin />}>
-                        <Route
-                            index
-                            element={
-                                <>
-                                    <ProjectProvider>
-                                        <Projects />
-                                    </ProjectProvider>
-                                </>
-                            }
-                        />
+                        {currentUserRole === "Admin" ? (
+                            <Route index element={<UserManagement />} />
+                        ) : (
+                            <Route
+                                index
+                                element={
+                                    <>
+                                        <ProjectProvider>
+                                            <Projects />
+                                        </ProjectProvider>
+                                    </>
+                                }
+                            />
+                        )}
                         <Route
                             path={Paths.projects.path}
                             element={
@@ -225,7 +232,7 @@ function App() {
                             path={Paths.projectWizardMap.path}
                             element={
                                 <ProjectProvider>
-                                    <ProjectWizardMap />
+                                    <ProjectPlotSelector wizard={true} />
                                 </ProjectProvider>
                             }
                         />
@@ -265,6 +272,9 @@ function App() {
                         />
                         <Route path={Paths.policygoal.path} element={<PolicyLists />} />
                         <Route path={Paths.policygoalDashboard.path} element={<PolicyLists />} />
+                        <Route path={Paths.goals.path} element={<Goals />} />
+                        <Route path={Paths.goalWizard.path} element={<GoalWizard />} />
+                        <Route path={Paths.goalMenu.path} element={<GoalWizard />} />
                         <Route
                             path={Paths.dashboard.path}
                             element={
@@ -274,7 +284,7 @@ function App() {
                             }
                         />
                         <Route
-                            path={Paths.createCustomDashbord.path}
+                            path={Paths.createCustomDashboard.path}
                             element={
                                 <ProjectProvider>
                                     <CreateCustomDashboard />
@@ -282,21 +292,14 @@ function App() {
                             }
                         />
                         <Route
-                            path={Paths.updateCustomDashbord.path}
+                            path={Paths.updateCustomDashboard.path}
                             element={
                                 <ProjectProvider>
                                     <CreateCustomDashboard />
                                 </ProjectProvider>
                             }
                         />
-                        <Route
-                            path={Paths.customDashbordList.path}
-                            element={
-                                <ProjectProvider>
-                                    <CustomDashboardList />
-                                </ProjectProvider>
-                            }
-                        />
+                        <Route path={Paths.customDashboardList.path} element={<CustomDashboardList />} />
                         <Route
                             path={Paths.dashboardProject.path}
                             element={

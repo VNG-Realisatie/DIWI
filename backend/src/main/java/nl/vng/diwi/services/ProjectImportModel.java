@@ -186,6 +186,12 @@ public class ProjectImportModel {
                             rowErrors.add(new ImportError(excelRowNo, projectRowModel.getId(), this.name, ImportError.ERROR.HOUSEBLOCK_DELIVERY_DATE_BEFORE_PROJECT_DELIVERY_PHASE));
                         }
                     });
+                } else {
+                    deliveryDateMap.keySet().forEach(dd -> {
+                        if (dd.isAfter(projectRowModel.getProjectEndDate()) || !dd.isAfter(projectRowModel.getProjectStartDate())) {
+                            rowErrors.add(new ImportError(excelRowNo, projectRowModel.getId(), this.name, ImportError.ERROR.HOUSEBLOCK_DELIVERY_DATE_BEFORE_PROJECT_DELIVERY_PHASE));
+                        }
+                    });
                 }
             }
 
