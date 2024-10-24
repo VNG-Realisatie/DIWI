@@ -1,5 +1,4 @@
 import { Group } from "../pages/UserManagement";
-import { RoleType } from "../types/enums";
 import { components } from "../types/schema";
 import { getJson, postJson, deleteJson, putJson } from "../utils/requests";
 import { API_URI } from "../utils/urls";
