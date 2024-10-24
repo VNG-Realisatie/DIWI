@@ -21,6 +21,7 @@ type Props = {
 };
 
 const isSingleUserIncluded = true;
+const projectOwnersOnly = true;
 
 const shouldDisplayError = (mandatory: boolean, userGroup: UserGroup[]) => {
     return mandatory && userGroup.length === 0;
@@ -40,7 +41,7 @@ export const UserGroupSelect = ({
     const { t } = useTranslation();
 
     useEffect(() => {
-        getUserGroupList(isSingleUserIncluded).then((groups) => {
+        getUserGroupList(isSingleUserIncluded, projectOwnersOnly).then((groups) => {
             setOwnerOptions(groups);
         });
     }, []);
