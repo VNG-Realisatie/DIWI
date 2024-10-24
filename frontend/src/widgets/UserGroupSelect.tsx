@@ -45,7 +45,7 @@ export const UserGroupSelect = ({
         getUserGroupList(isSingleUserIncluded, projectOwnersOnly).then((groups) => {
             setOwnerOptions(groups);
         });
-    }, []);
+    }, [projectOwnersOnly]);
 
     const getErrorText = () => {
         if (hasError) {
