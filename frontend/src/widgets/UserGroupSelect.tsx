@@ -18,10 +18,10 @@ type Props = {
     errorText: string;
     placeholder?: string;
     checkIsOwnerValidWithConfidentialityLevel: () => boolean;
+    projectOwnersOnly?: boolean;
 };
 
 const isSingleUserIncluded = true;
-const projectOwnersOnly = true;
 
 const shouldDisplayError = (mandatory: boolean, userGroup: UserGroup[]) => {
     return mandatory && userGroup.length === 0;
@@ -35,6 +35,7 @@ export const UserGroupSelect = ({
     errorText,
     placeholder = "",
     checkIsOwnerValidWithConfidentialityLevel,
+    projectOwnersOnly = false
 }: Props) => {
     const [ownerOptions, setOwnerOptions] = useState<UserGroup[]>();
     const hasError = shouldDisplayError(mandatory, userGroup);
