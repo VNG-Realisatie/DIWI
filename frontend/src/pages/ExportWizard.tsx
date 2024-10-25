@@ -64,7 +64,6 @@ const ExportWizard = () => {
         if (!selectedExport) return;
         try {
             await downloadExportData(selectedExport.id);
-            //doesnt do anything at the moment. downloadExportData returns some data which i dont know hot to interpret
         } catch (error: unknown) {
             if (error instanceof Error) setAlert(error.message, "warning");
         }
