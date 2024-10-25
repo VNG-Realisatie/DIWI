@@ -112,6 +112,8 @@ public class ProjectConfig {
 
         getDefaultMapBounds(env.getOrDefault("DEFAULT_MAP_BOUNDS", ""));
         this.configModel.setMunicipalityName(env.getOrDefault("MUNICIPALITY_NAME", ""));
+        this.configModel.setRegionName(env.getOrDefault("REGION_NAME", ""));
+        this.configModel.setProvinceName(env.getOrDefault("PROVINCE_NAME", ""));
 
         this.mailConfig = new MailConfig(env);
     }

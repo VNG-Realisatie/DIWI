@@ -6,6 +6,7 @@ import nl.vng.diwi.dal.entities.HouseblockBooleanCustomPropertyChangelog;
 import nl.vng.diwi.dal.entities.HouseblockCategoryCustomPropertyChangelog;
 import nl.vng.diwi.dal.entities.HouseblockDeliveryDateChangelog;
 import nl.vng.diwi.dal.entities.HouseblockDurationChangelog;
+import nl.vng.diwi.dal.entities.HouseblockExportSqlModel;
 import nl.vng.diwi.dal.entities.HouseblockGroundPositionChangelog;
 import nl.vng.diwi.dal.entities.HouseblockMutatieChangelog;
 import nl.vng.diwi.dal.entities.HouseblockNameChangelog;
@@ -21,6 +22,7 @@ import nl.vng.diwi.dal.entities.MilestoneState;
 import nl.vng.diwi.dal.entities.ProjectHouseblockCustomPropertySqlModel;
 import nl.vng.diwi.dal.entities.superclasses.HouseblockMilestoneChangeDataSuperclass;
 import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
+import nl.vng.diwi.security.LoggedUser;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.hibernate.query.SelectionQuery;
@@ -132,5 +134,16 @@ public class HouseblockDAO extends AbstractRepository {
         query.setParameter("houseblockUuid", houseblockUuid);
         query.setParameter("endMilestoneUuid", endMilestoneUuid);
         return query.getResultList();
+    }
+
+    public List<HouseblockExportSqlModel> getHouseblocksExportList(LocalDate exportDate, LoggedUser loggedUser) {
+        SelectionQuery<HouseblockExportSqlModel> q = session.createNativeQuery(String.format(
+                "SELECT * FROM %s.get_houseblocks_export_list(:exportDate, :userRole, :userUuid) ",
+                GenericRepository.VNG_SCHEMA_NAME), HouseblockExportSqlModel.class)
+            .setParameter("exportDate", exportDate)
+            .setParameter("userRole", loggedUser.getRole().name())
+            .setParameter("userUuid", loggedUser.getUuid());
+
+        return q.getResultList();
     }
 }
