@@ -49,6 +49,10 @@ export async function deleteExportData(id: string): Promise<void> {
     return deleteJson(`${API_URI}/dataexchange/${id}`);
 }
 
+export async function downloadExportData(id: string): Promise<void> {
+    return getJson(`${API_URI}/dataexchange/${id}/export`);
+}
+
 //this dunction needs to be updated
 export async function exportProjects(exportId: string, projectIds?: string[]): Promise<void> {
     const url = `${API_URI}/projects/export/${exportId}`;
