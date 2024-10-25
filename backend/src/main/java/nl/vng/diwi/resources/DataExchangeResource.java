@@ -1,5 +1,6 @@
 package nl.vng.diwi.resources;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -13,9 +14,13 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.StreamingOutput;
+import nl.vng.diwi.config.ProjectConfig;
 import nl.vng.diwi.dal.AutoCloseTransaction;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.VngRepository;
+import nl.vng.diwi.dal.entities.enums.Confidentiality;
+import nl.vng.diwi.models.ConfigModel;
 import nl.vng.diwi.models.DataExchangeModel;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.rest.VngBadRequestException;
@@ -24,7 +29,9 @@ import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.security.UserActionConstants;
 import nl.vng.diwi.services.DataExchangeService;
 
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,11 +41,15 @@ public class DataExchangeResource {
 
     private final VngRepository repo;
     private final DataExchangeService dataExchangeService;
+    private final ConfigModel configModel;
+
+    public static final ObjectMapper MAPPER = new ObjectMapper();
 
     @Inject
-    public DataExchangeResource(GenericRepository genericRepository, DataExchangeService dataExchangeService) {
+    public DataExchangeResource(GenericRepository genericRepository, DataExchangeService dataExchangeService, ProjectConfig projectConfig) {
         this.repo = new VngRepository(genericRepository.getDal().getSession());
         this.dataExchangeService = dataExchangeService;
+        this.configModel = projectConfig.getConfigModel();
     }
 
     @GET
@@ -89,6 +100,10 @@ public class DataExchangeResource {
     public DataExchangeModel updateDataExchange(@PathParam("id") UUID dataExchangeUuid, DataExchangeModel dataExchangeModel, @Context LoggedUser loggedUser)
         throws VngNotFoundException, VngBadRequestException {
 
+        //TODO: validate dataexchange
+        // - check that our options correspond to only one of theirs
+        // - check that all our options are used
+
         dataExchangeModel.setId(dataExchangeUuid);
         String validationError = dataExchangeModel.validateDxState();
         if (validationError != null) {
@@ -131,6 +146,32 @@ public class DataExchangeResource {
             dataExchangeService.deleteDataExchangeState(repo, dataExchangeUuid, ZonedDateTime.now(), loggedUser.getUuid());
             transaction.commit();
         }
+    }
+
+
+    @GET
+    @Path("/{id}/export")
+    @RolesAllowed(UserActionConstants.EDIT_DATA_EXCHANGES)  // ??
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public StreamingOutput exportProjects(@PathParam("id") UUID dataExchangeUuid,
+                                     ContainerRequestContext requestContext) throws VngNotFoundException {
+
+        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
+        LocalDate exportDate = LocalDate.now();
+        List<Object> errors = new ArrayList<>();
+        List<Object> warnings = new ArrayList<>();
+        //TODO: flag dry-run
+        //TODO: flag include internal projects
+
+        List<Confidentiality> allowedConfidentialities = List.of(Confidentiality.EXTERNAL_REGIONAL, Confidentiality.EXTERNAL_GOVERNMENTAL, Confidentiality.PUBLIC);
+
+        Object exportObj = dataExchangeService.getExportObject(repo, configModel, dataExchangeUuid, allowedConfidentialities, exportDate, errors, warnings, loggedUser);
+
+        return output -> {
+            MAPPER.writeValue(output, exportObj);
+            output.flush();
+        };
+
     }
 
 }

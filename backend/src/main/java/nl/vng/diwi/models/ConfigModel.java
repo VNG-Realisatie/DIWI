@@ -8,6 +8,8 @@ public class ConfigModel {
 
     private MapBounds defaultMapBounds;
     private String municipalityName;
+    private String regionName;
+    private String provinceName;
 
     @Data
     @AllArgsConstructor
@@ -15,5 +17,5 @@ public class ConfigModel {
         private LocationModel corner1;
         private LocationModel corner2;
     }
-    
+
 }
