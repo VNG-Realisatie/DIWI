@@ -33,7 +33,7 @@ SELECT
     pgv.type        AS goalType,
     pgv.direction   AS goalDirection,
     (SELECT COALESCE(SUM(hv.no_of_houses * hv.mutation_sign), 0)
-        FROM houseblocks_view hv
+     FROM houseblocks_view hv
      WHERE hv.delivery_date >= pgv.start_date AND hv.delivery_date <= pgv.end_date
     )               AS totalAmount,
     (

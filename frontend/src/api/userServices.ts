@@ -39,8 +39,10 @@ export type AllowedActions =
     | "EDIT_ALL_BLUEPRINTS"
     | "VIEW_OWN_BLUEPRINTS"
     | "EDIT_GOALS"
+    | "VIEW_GOALS"
     | "VIEW_DATA_EXCHANGES"
     | "EDIT_DATA_EXCHANGES";
+
 
 export async function getCurrentUser(): Promise<User> {
     return getJson(`${API_URI}/users/userinfo`);

@@ -19,7 +19,7 @@ vi.mock("utils/requests", () => ({
     getJson: vi.fn().mockResolvedValue({}),
 }));
 
-test("renders projecten", () => {
+test("renders sidebar", () => {
     render(
         <MemoryRouter>
             <ConfigContext.Provider value={{ municipalityName: "test", mapBounds: { corner1: { lng: 0, lat: 0 }, corner2: { lng: 0, lat: 0 } } }}>
@@ -27,6 +27,6 @@ test("renders projecten", () => {
             </ConfigContext.Provider>
         </MemoryRouter>,
     );
-    const vngElement = screen.getByText(t("sidebar.projectOverview"));
+    const vngElement = screen.getByText(t("sidebar.knowledgeBase"));
     expect(vngElement).toBeInTheDocument();
 });

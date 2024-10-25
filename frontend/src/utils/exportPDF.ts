@@ -8,14 +8,18 @@ type Element = {
     height?: number;
 };
 
+const pieChartWidth = 205;
+
+const otherChartWidth = 436;
+
 const elements: Element[] = [
-    { id: "totalValues", width: 436, height: 25 },
-    { id: "projectPhaseChart", width: 205, height: 75 },
-    { id: "targetGroupChart", width: 205, height: 75 },
-    { id: "physicalAppearanceChart", width: 205, height: 75 },
-    { id: "buy", width: 205, height: 75 },
-    { id: "rent", width: 205, height: 75 },
-    { id: "deliverables", width: 205, height: 75 },
+    { id: "totalValues", width: otherChartWidth, height: 25 },
+    { id: "projectPhaseChart", width: pieChartWidth, height: 75 },
+    { id: "targetGroupChart", width: pieChartWidth, height: 75 },
+    { id: "physicalAppearanceChart", width: pieChartWidth, height: 75 },
+    { id: "buy", width: pieChartWidth, height: 75 },
+    { id: "rent", width: pieChartWidth, height: 75 },
+    { id: "deliverables", width: pieChartWidth, height: 75 },
 
     //add more elements here
 ];
@@ -30,14 +34,11 @@ export const exportPdf = async (t: (key: string) => string, setPdfExport: (value
 
     const newElements = policyDashboardProjects.map((project: { id: string }) => ({
         id: project.id,
-        width: 436,
-        height: 35
+        width: otherChartWidth,
+        height: 35,
     }));
 
-    const allElements: Element[] = [
-        ...elements,
-        ...newElements
-    ];
+    const allElements: Element[] = [...elements, ...newElements];
 
     const getElementImage = async (element: Element) => {
         const el = document.getElementById(element.id);
@@ -64,7 +65,10 @@ export const exportPdf = async (t: (key: string) => string, setPdfExport: (value
     let chartsInLine = 0;
     const pageHeight = pdf.internal.pageSize.height;
 
-    filteredChartsArray.forEach(({ chart, width, height }) => {
+    const lastIndexSmallChart = filteredChartsArray.map((chart) => chart.width).lastIndexOf(pieChartWidth);
+
+    filteredChartsArray.forEach(({ chart, width, height }, index) => {
+
         if (width === 436) {
             if (y + height > pageHeight) {
                 pdf.addPage();
@@ -94,7 +98,7 @@ export const exportPdf = async (t: (key: string) => string, setPdfExport: (value
             lineHeight = Math.max(lineHeight, height);
             chartsInLine += 1;
 
-            if (chartsInLine === 2) {
+            if (chartsInLine === 2 || index === lastIndexSmallChart) {
                 x = 5;
                 y += lineHeight + 10;
                 lineHeight = 0;

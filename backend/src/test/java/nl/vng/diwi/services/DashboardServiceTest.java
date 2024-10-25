@@ -6,8 +6,8 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;
 
+import nl.vng.diwi.dal.entities.enums.MutationType;
 import nl.vng.diwi.models.PlanningModel;
-import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
 import org.hibernate.Session;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -110,6 +110,8 @@ public class DashboardServiceTest {
                     endMilestone, user);
             HouseblockServiceTest.createHouseblockNameChangelog(repo, houseblock, "Name 1", startMilestone,
                     endMilestone, user);
+            HouseblockServiceTest.createHouseblockMutationChangelog(repo, houseblock, MutationType.CONSTRUCTION, startMilestone,
+                endMilestone, user);
 
             transaction.commit();
             repo.getSession().clear();
@@ -208,14 +210,14 @@ public class DashboardServiceTest {
     }
 
     @Test
-    void getMultiProjectDashboardSnapshot() throws VngNotFoundException {
+    void getMultiProjectDashboardPropertiesSerSnapshot() throws VngNotFoundException {
         // when
         var result = dashboardService.getMultiProjectDashboardSnapshot(repo, now.toLocalDate(), loggedUser);
 
         var expected = new MultiProjectDashboardModel();
         expected.setPhysicalAppearance(List.of(new PieChartModel("AppearanceOption", 1)));
         expected.setTargetGroup(List.of(new PieChartModel("GroupOption", 2)));
-        expected.setPlanning(List.of(new PlanningModel(project.getId(), null, 0, now.getYear())));
+        expected.setPlanning(List.of(new PlanningModel(project.getId(), null, 10, now.getYear())));
 
         // then
         assertThat(result).usingRecursiveComparison()
