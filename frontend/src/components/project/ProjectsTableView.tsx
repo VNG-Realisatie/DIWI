@@ -11,12 +11,17 @@ import {
     GridRowParams,
     GridRowSelectionModel,
     GridSortModel,
+    GridToolbarColumnsButton,
+    GridToolbarContainer,
+    GridToolbarFilterButton,
     getGridSingleSelectOperators,
     getGridStringOperators,
 } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
-import { Box, Button, Dialog, DialogActions, DialogTitle, Stack, Typography } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogTitle, Stack, Tooltip, Typography } from "@mui/material";
+import SaveAsIcon from "@mui/icons-material/SaveAs";
+import UndoIcon from "@mui/icons-material/Undo";
 import useAlert from "../../hooks/useAlert";
 import { Project } from "../../api/projectsServices";
 import { useTranslation } from "react-i18next";
@@ -231,7 +236,209 @@ export const ProjectsTableView = ({
         },
         InputComponent: GridFilterInputMultipleSingleSelect,
     };
-    const columns: GridColDef[] = [
+
+    const defaultColumnsWithSize: GridColDef[] = [
+        {
+            field: "projectName",
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.projectName")),
+            display: "flex",
+            width: 300,
+            filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
+            renderCell: (cellValues: GridRenderCellParams<Project>) => {
+                return (
+                    <Stack direction="row" spacing={1} alignItems="center">
+                        <Box width="15px" height="15px" borderRadius="50%" sx={{ background: cellValues.row.projectColor }} />
+                        <Typography fontSize={14}>{cellValues.row.projectName}</Typography>
+                    </Stack>
+                );
+            },
+            preProcessEditCellProps: createErrorReport,
+            sortComparator: (v1: string, v2: string): number => {
+                const num1 = parseInt(v1.replace(/\D/g, ""));
+                const num2 = parseInt(v2.replace(/\D/g, ""));
+                if (!isNaN(num1) && !isNaN(num2)) {
+                    return num1 - num2;
+                }
+                return v1.localeCompare(v2);
+            },
+        },
+        {
+            field: "totalValue",
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.totalValue")),
+            display: "flex",
+            width: 120,
+            filterable: false,
+            preProcessEditCellProps: createErrorReport,
+        },
+        {
+            field: "projectOwners",
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.projectOwners")),
+            display: "flex",
+            width: 270,
+            filterable: false,
+            preProcessEditCellProps: createErrorReport,
+            renderCell: (cellValues) => {
+                return (
+                    cellValues.row.projectOwners &&
+                    cellValues.row.projectOwners.length > 0 && (
+                        <UserGroupSelect
+                            checkIsOwnerValidWithConfidentialityLevel={() => true}
+                            mandatory={false}
+                            errorText=""
+                            readOnly={true}
+                            userGroup={cellValues.row.projectOwners}
+                            setUserGroup={() => {}}
+                        />
+                    )
+                );
+            },
+        },
+        {
+            field: "confidentialityLevel",
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.confidentialityLevel")),
+            display: "flex",
+            valueOptions: confidentialityLevelOptions.map((c) => {
+                return { value: c.id, label: t(`projectTable.confidentialityLevelOptions.${c.name}`) };
+            }),
+            type: "singleSelect",
+            width: 250,
+            filterOperators: getGridSingleSelectOperators().filter((o) => o.value === "isAnyOf"),
+            preProcessEditCellProps: createErrorReport,
+            sortComparator: confidentialityLevelComparator,
+        },
+        {
+            field: "startDate",
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.startDate")),
+            display: "flex",
+            type: "dateTime",
+            width: 100,
+            valueFormatter: (p) => dayjs(p).format(dateFormats.keyboardDate),
+            filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
+            valueGetter: (value) => value && new Date(value),
+            preProcessEditCellProps: createErrorReport,
+        },
+        {
+            field: "endDate",
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.endDate")),
+            display: "flex",
+            type: "dateTime",
+            width: 100,
+            valueFormatter: (p) => dayjs(p).format(dateFormats.keyboardDate),
+            filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
+            valueGetter: (value) => value && new Date(value),
+            preProcessEditCellProps: createErrorReport,
+        },
+        {
+            field: "planType",
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.planType")),
+            display: "flex",
+            width: 500,
+            valueOptions: planTypeOptions.map((pt) => pt.id),
+            type: "singleSelect",
+            renderCell: (cellValues: GridRenderCellParams<Project>) => {
+                const defaultPlanTypes = cellValues.row.planType?.map((c) => ({ id: c, name: t(`projectTable.planTypeOptions.${c}`) })) || [];
+                return <CategoriesCell cellValues={defaultPlanTypes} />;
+            },
+            filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
+            preProcessEditCellProps: createErrorReport,
+        },
+        {
+            field: "priority",
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.priority")),
+            display: "flex",
+            width: 100,
+            renderCell: (cellValues: GridRenderCellParams<Project>) => {
+                return <>{cellValues.row?.priority?.value?.name}</>; //TODO FIX AFTER MIN MAX INTEGRATED
+            },
+            preProcessEditCellProps: createErrorReport,
+        },
+        {
+            field: "municipalityRole",
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.municipalityRole")),
+            display: "flex",
+            width: 150,
+            renderCell: (cellValues: GridRenderCellParams<Project>) => {
+                return <CategoriesCell cellValues={cellValues?.row?.municipalityRole || []} />;
+            },
+            preProcessEditCellProps: createErrorReport,
+        },
+        {
+            field: "projectPhase",
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.projectPhase")),
+            display: "flex",
+            valueOptions: projectPhaseOptions.map((c) => {
+                return { value: c.id, label: t(`projectTable.projectPhaseOptions.${c.name}`) };
+            }),
+            type: "singleSelect",
+            width: 250,
+            filterOperators: getGridSingleSelectOperators().filter((o) => o.value === "isAnyOf"),
+            preProcessEditCellProps: createErrorReport,
+        },
+        {
+            field: "planningPlanStatus",
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.planningPlanStatus")),
+            display: "flex",
+            width: 500,
+            preProcessEditCellProps: createErrorReport,
+            renderCell: (cellValues: GridRenderCellParams<Project>) => {
+                const fixedProperties = cellValues?.row?.planningPlanStatus?.map((fp) => ({ id: fp, name: t(`projectTable.planningPlanStatus.${fp}`) })) || [];
+                return <CategoriesCell cellValues={fixedProperties} />;
+            },
+        },
+        {
+            field: "municipality",
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.municipality")),
+            display: "flex",
+            width: 320,
+            type: "singleSelect",
+            valueOptions: areaProperties?.municipality.map((c) => {
+                const option = { value: c.name, label: c.name };
+                return option;
+            }),
+            filterOperators: [customAreaFilterOperator],
+            renderCell: (cellValues: GridRenderCellParams<Project>) => {
+                const fixedProperties = cellValues?.row?.municipality || [];
+                return <CategoriesCell cellValues={fixedProperties} />;
+            },
+            preProcessEditCellProps: createErrorReport,
+        },
+        {
+            field: "district",
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.district")),
+            display: "flex",
+            width: 320,
+            type: "singleSelect",
+            valueOptions: areaProperties?.district.map((c) => {
+                const option = { value: c.name, label: c.name };
+                return option;
+            }),
+            filterOperators: [customAreaFilterOperator],
+            renderCell: (cellValues: GridRenderCellParams<Project>) => {
+                const fixedProperties = cellValues?.row?.district || [];
+                return <CategoriesCell cellValues={fixedProperties} />;
+            },
+            preProcessEditCellProps: createErrorReport,
+        },
+        {
+            field: "neighbourhood",
+            headerName: capitalizeFirstLetters(t("projects.tableColumns.neighbourhood")),
+            display: "flex",
+            width: 320,
+            type: "singleSelect",
+            valueOptions: areaProperties?.neighbourhood.map((c) => {
+                const option = { value: c.name, label: c.name };
+                return option;
+            }),
+            filterOperators: [customAreaFilterOperator],
+            renderCell: (cellValues: GridRenderCellParams<Project>) => {
+                const fixedProperties = cellValues?.row?.neighbourhood || [];
+                return <CategoriesCell cellValues={fixedProperties} />;
+            },
+            preProcessEditCellProps: createErrorReport,
+        },
+    ];
+
+    const defaultColumns: GridColDef[] = [
         {
             field: "projectName",
             headerName: capitalizeFirstLetters(t("projects.tableColumns.projectName")),
@@ -431,6 +638,7 @@ export const ProjectsTableView = ({
             preProcessEditCellProps: createErrorReport,
         },
     ];
+    const [columns, setColumns] = useState<GridColDef[]>(defaultColumns);
 
     const handleFilterModelChange = (newModel: GridFilterModel) => {
         if (isExportPage) return;
@@ -461,7 +669,6 @@ export const ProjectsTableView = ({
         const field = params.colDef.field as ColumnField;
         const newColumnConfig = { ...columnConfig, [field]: { ...columnConfig[field], width: params.colDef.width } };
         setColumnConfig(newColumnConfig);
-        saveColumnConfig(newColumnConfig);
     };
 
     const initialVisibilityModel = Object.keys(columnConfig).reduce(
@@ -471,7 +678,6 @@ export const ProjectsTableView = ({
         },
         {} as { [key in ColumnField]: boolean },
     );
-
     return (
         <Stack
             width="100%"
@@ -527,12 +733,75 @@ export const ProjectsTableView = ({
                                 newConfig[key as ColumnField]!.show = !newModel[key as ColumnField];
                             }
                         });
-                        saveColumnConfig(newConfig);
                         return newConfig;
                     });
                 }}
                 onRowSelectionModelChange={handleSelectionChange}
                 onColumnResize={handleColumnSizeChange}
+                localeText={{
+                    toolbarColumns: t("projects.toolbarColumns"),
+                    toolbarColumnsLabel: t("projects.toolbarColumnsLabel"),
+                    toolbarFiltersLabel: t("projects.toolbarFiltersLabel"),
+                }}
+                slots={{
+                    toolbar: () => (
+                        <GridToolbarContainer>
+                            <GridToolbarColumnsButton />
+                            <GridToolbarFilterButton />
+                            <Tooltip title={t("projects.saveColumnConfig")}>
+                                <Stack
+                                    direction="row"
+                                    alignItems="center"
+                                    onClick={() => {
+                                        saveColumnConfig(columnConfig);
+                                        setAlert(t("projects.successSaveColumnConfig"), "success");
+                                    }}
+                                    p={0.5}
+                                    sx={{
+                                        cursor: "pointer",
+                                        borderRadius: 1,
+                                        "&:hover": {
+                                            backgroundColor: "#f8f8f8",
+                                        },
+                                    }}
+                                >
+                                    <SaveAsIcon color="primary" />
+                                    <Typography color="primary" variant="caption" ml={1}>
+                                        {" "}
+                                        {t("projects.saveSetting")}
+                                    </Typography>
+                                </Stack>
+                            </Tooltip>
+                            <Tooltip title={t("projects.resetColumnConfig")}>
+                                <Stack
+                                    direction="row"
+                                    alignItems="center"
+                                    onClick={() => {
+                                        saveColumnConfig(initialColumnConfig);
+                                        localStorage.removeItem("projectsTableColumnConfig");
+                                        setAlert(t("projects.successResetColumnConfig"), "success");
+                                        setColumns(defaultColumnsWithSize);
+                                        setColumnConfig(initialColumnConfig);
+                                    }}
+                                    p={0.5}
+                                    sx={{
+                                        cursor: "pointer",
+                                        borderRadius: 1,
+                                        "&:hover": {
+                                            backgroundColor: "#f8f8f8",
+                                        },
+                                    }}
+                                >
+                                    <UndoIcon color="primary" />
+                                    <Typography color="primary" variant="caption" ml={1}>
+                                        {" "}
+                                        {t("projects.resetSetting")}
+                                    </Typography>
+                                </Stack>
+                            </Tooltip>
+                        </GridToolbarContainer>
+                    ),
+                }}
             />
             <Dialog open={showDialog} onClose={() => setShowDialog(false)} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
                 <DialogTitle id="alert-dialog-title">{t("projects.confirmExport")}</DialogTitle>

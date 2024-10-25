@@ -306,7 +306,17 @@
       "exportIt": "Exporteer",
       "confirmExport": "Weet je het zeker?",
       "cancelExport": "Annuleer",
+      "saveSetting": "INSTELLINGEN OPSLAAN",
+      "resetSetting": "INSTELLINGEN RESETTEN",
       "successExport": "Gelukt! Je ontvangt de bevestiging via de mail.",
+      "saveColumnConfig": "Opslaan kolomconfiguratie",
+      "resetColumnConfig": "Reset kolomconfiguratie",
+      "successSaveColumnConfig": "Kolomconfiguratie succesvol opgeslagen",
+      "successResetColumnConfig": "Kolomconfiguratie succesvol gereset",
+      "toolbarColumns": "Kolommen",
+      "toolbarColumnsLabel": "Selecteer kolommen",
+      "toolbarFiltersLabel": "Filters wegeven",
+
       "tableColumns": {
         "projectName": "Project naam",
         "totalValue": "Totaal aantal",

@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
 import { ImportErrorObject, ImportErrors } from "../components/ImportErrors";
 import { t } from "i18next";
+import useAllowedActions from "../hooks/useAllowedActions";
+import ActionNotAllowed from "./ActionNotAllowed";
 
 type FunctionalityType = "excel" | "squit" | "geojson";
 
@@ -21,6 +23,11 @@ export const ImportPage = ({ functionality }: Props) => {
     const [errors, setErrors] = useState<ImportErrorObject>({ error: [] });
 
     const { setAlert } = useAlert();
+    const { allowedActions } = useAllowedActions();
+
+    if (!allowedActions.includes("IMPORT_PROJECTS")) {
+        return <ActionNotAllowed errorMessage={t("dashboard.forbidden")} />;
+    }
 
     function handleUploadStackClick(): void {
         if (fileInputRef.current) {

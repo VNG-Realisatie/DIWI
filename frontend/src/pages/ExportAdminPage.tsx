@@ -3,11 +3,22 @@ import { Grid, Button, Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import TextInput from "../components/project/inputs/TextInput";
 import CategoryInput from "../components/project/inputs/CategoryInput";
-import { addExportData, ExportData, getExportDataById, updateExportData } from "../api/exportServices";
+import { addExportData, ExportData, getExportDataById, updateExportData, ExportProperty } from "../api/exportServices";
 import useAlert from "../hooks/useAlert";
 import { useNavigate, useParams } from "react-router-dom";
 import ActionNotAllowed from "./ActionNotAllowed";
 import useAllowedActions from "../hooks/useAllowedActions";
+import { getCustomProperties, Property } from "../api/adminSettingServices";
+import { CustomPropertyWidget } from "../components/CustomPropertyWidget";
+import { LabelComponent } from "../components/project/LabelComponent";
+import { configuredExport, updateExportSettings } from "../Paths";
+
+type SelectedOption = {
+    id: string;
+    name: string;
+    propertyType: string;
+    type: string;
+};
 
 type FieldConfig = {
     name: string;
@@ -22,9 +33,9 @@ type TypeConfig = {
     };
 };
 
-interface FormData {
+type FormData = {
     [key: string]: string;
-}
+};
 
 function ExportAdminPage() {
     const { t } = useTranslation();
@@ -35,28 +46,40 @@ function ExportAdminPage() {
         ESRI_ZUID_HOLLAND: {
             fields: [
                 { name: "name", label: t("admin.export.name"), type: "text", mandatory: true },
-                { name: "apiKey", label: t("admin.export.apiKey"), type: "password", mandatory: true },
+                { name: "apiKey", label: t("admin.export.apiKey"), type: "password", mandatory: id ? false : true },
                 { name: "projectUrl", label: t("admin.export.projectUrl"), type: "text", mandatory: false },
                 { name: "projectDetailUrl", label: t("admin.export.projectdetailUrl"), type: "text", mandatory: false },
             ],
         },
         // Other types can be added here in the future
     };
-    const [formData, setFormData] = useState<FormData>(generateInitialState("ESRI_ZUID_HOLLAND"));
+    const [type, setType] = useState<string>("ESRI_ZUID_HOLLAND");
+    const [formData, setFormData] = useState<FormData>(generateInitialState(type));
+    const [properties, setProperties] = useState<ExportProperty[]>([]);
+    const [customProperties, setCustomProperties] = useState<Property[]>([]);
     const { setAlert } = useAlert();
 
     useEffect(() => {
         if (id) {
             const fetchData = async () => {
                 const data = await getExportDataById(id);
-                setFormData(data);
+                const { properties, ...formData } = data;
+                setFormData(formData);
+                setProperties(properties || []);
             };
             fetchData();
         }
     }, [id]);
 
+    useEffect(() => {
+        getCustomProperties().then((properties) => {
+            const filteredProperties = properties.filter((property) => !property.disabled);
+            setCustomProperties(filteredProperties);
+        });
+    }, []);
+
     if (!allowedActions.includes("EDIT_DATA_EXCHANGES")) {
-        return <ActionNotAllowed errorMessage={t("admin.export.actionNotAllowed")}/>
+        return <ActionNotAllowed errorMessage={t("admin.export.actionNotAllowed")} />;
     }
 
     function generateInitialState(type: string): FormData {
@@ -74,17 +97,23 @@ function ExportAdminPage() {
             [fieldName]: event.target.value,
         });
     };
+
     const handleSubmit = async () => {
         try {
             const exportData: ExportData = {
                 id: id || "",
                 name: formData.name,
                 type: formData.type,
-                ...formData,
+                ...(formData.apiKey && { apiKey: formData.apiKey }),
+                projectUrl: formData.projectUrl,
+                projectdetailUrl: formData.projectdetailUrl,
+                ...(id && { properties }),
             };
-            id ? await updateExportData(id, exportData) : await addExportData(exportData);
+            const data = id ? await updateExportData(id, exportData) : await addExportData(exportData);
             setAlert(id ? t("admin.export.notification.updated") : t("admin.export.notification.created"), "success");
-            navigate("/exchangedata/export");
+            if (!id) {
+                navigate(updateExportSettings.toPath({ id: data.id }));
+            }
         } catch (error: unknown) {
             if (error instanceof Error) setAlert(error.message, "error");
         }
@@ -93,17 +122,46 @@ function ExportAdminPage() {
     const fields = typeConfig[formData.type]?.fields || [];
 
     const isFormValid = () => {
-        return fields.every((field) => !field.mandatory || formData[field.name].trim() !== "");
+        return fields.every((field) => !field.mandatory || formData[field.name]?.trim() !== "");
+    };
+
+    const handlePropertyChange = (index: number, value: SelectedOption) => {
+        if (!value) return;
+        const updatedProperties = [...properties];
+
+        updatedProperties[index].customPropertyId = value.id;
+        setProperties(updatedProperties);
+    };
+
+    const mapPropertyToCustomDefinition = (property: ExportProperty, selectedProperty: Property): Property => {
+        const matchingCustomProperty = customProperties.find((customProperty) => customProperty.id === selectedProperty.id);
+
+        const categoriesOrOrdinals = matchingCustomProperty?.categories?.length
+            ? matchingCustomProperty.categories
+            : matchingCustomProperty?.ordinals?.length
+              ? matchingCustomProperty.ordinals
+              : [];
+        return {
+            id: property.id,
+            name: property.name,
+            type: "CUSTOM",
+            objectType: property.objectType,
+            propertyType: property.propertyTypes[0] as "BOOLEAN" | "CATEGORY" | "ORDINAL" | "NUMERIC" | "TEXT" | "RANGE_CATEGORY",
+            disabled: false,
+            categories: categoriesOrOrdinals.map((item) => ({ ...item, disabled: false })),
+            singleSelect: property.singleSelect,
+            mandatory: property.mandatory,
+        };
     };
 
     return (
-        <Box p={2}>
+        <Box p={2} sx={{ backgroundColor: "#F0F0F0" }}>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
                     <CategoryInput
                         values={formData.type}
-                        setValue={() => {}}
-                        readOnly={true}
+                        setValue={(event, value) => setType(value)}
+                        readOnly={false}
                         mandatory={true}
                         title="Type"
                         options={[{ name: "ESRI_ZUID_HOLLAND", id: "ESRI_ZUID_HOLLAND" }]}
@@ -125,7 +183,81 @@ function ExportAdminPage() {
                     </Grid>
                 ))}
 
-                <Grid item xs={12}>
+                {properties.map((property, index) => {
+                    const selectedOption = customProperties.find((customProperty) => customProperty.id === property.customPropertyId);
+                    return (
+                        <Grid item xs={12} key={index}>
+                            <LabelComponent text={property.name} required={false} disabled={false} />
+                            <CategoryInput
+                                readOnly={false}
+                                mandatory={false}
+                                options={customProperties
+                                    .filter(
+                                        (customProperty) =>
+                                            property.propertyTypes.some((type) => type === customProperty.propertyType) &&
+                                            property.objectType === customProperty.objectType &&
+                                            property.mandatory === customProperty.mandatory &&
+                                            property.singleSelect === customProperty.singleSelect,
+                                    )
+                                    .map((property) => {
+                                        return {
+                                            id: property.id,
+                                            name: property.type === "FIXED" ? t(`admin.settings.fixedPropertyType.${property.name}`) : property.name,
+                                            propertyType: property.propertyType,
+                                            type: property.type,
+                                        };
+                                    })}
+                                values={
+                                    selectedOption
+                                        ? {
+                                              id: selectedOption.id,
+                                              name:
+                                                  selectedOption.type === "FIXED"
+                                                      ? t(`admin.settings.fixedPropertyType.${selectedOption.name}`)
+                                                      : selectedOption.name,
+                                              propertyType: selectedOption.propertyType,
+                                              type: selectedOption.type,
+                                          }
+                                        : null
+                                }
+                                setValue={(event, value) => handlePropertyChange(index, value)}
+                                multiple={false}
+                                hasTooltipOption={false}
+                                error={t("goals.errors.selectProperty")}
+                            />
+                            {selectedOption &&
+                                (selectedOption.propertyType === "CATEGORY" || selectedOption.propertyType === "ORDINAL") &&
+                                property?.options?.map((option, optionIndex) => (
+                                    <Box key={optionIndex} marginLeft={10}>
+                                        <LabelComponent text={option.name} required={false} disabled={false} />
+                                        <CustomPropertyWidget
+                                            readOnly={false}
+                                            customValue={
+                                                property.options &&
+                                                property.options[optionIndex] && { categories: property.options[optionIndex].propertyCategoryValueIds }
+                                            }
+                                            customDefinition={mapPropertyToCustomDefinition(property, selectedOption)}
+                                            setCustomValue={(newValue) => {
+                                                const updatedProperties = [...properties];
+                                                if (updatedProperties[index].options) {
+                                                    if (newValue.categories) {
+                                                        updatedProperties[index].options[optionIndex].propertyCategoryValueIds = newValue.categories;
+                                                    }
+                                                }
+                                                setProperties(updatedProperties);
+                                            }}
+                                        />
+                                    </Box>
+                                ))}
+                        </Grid>
+                    );
+                })}
+
+                <Grid item xs={12} sx={{ mb: 10, display: "flex", flexDirection: "row", gap: 2, justifyContent: "flex-end" }}>
+                    <Button variant="outlined" color="primary" onClick={() => navigate(configuredExport.toPath())}>
+                        {t("generic.cancel")}
+                    </Button>
+
                     <Button variant="contained" color="primary" onClick={handleSubmit} disabled={!isFormValid()}>
                         {t("generic.save")}
                     </Button>

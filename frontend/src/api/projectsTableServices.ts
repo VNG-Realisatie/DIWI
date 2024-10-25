@@ -6,6 +6,6 @@ export async function filterTable(query: string) {
     return getJson(`${API_URI}/projects/table${query}`);
 }
 
-export async function getUserGroupList(includeSingleUser: boolean): Promise<Array<UserGroup>> {
-    return getJson(`${API_URI}/groups?includeSingleUser=${includeSingleUser}`);
+export async function getUserGroupList(includeSingleUser: boolean, projectOwnersOnly: boolean): Promise<Array<UserGroup>> {
+    return getJson(`${API_URI}/groups?includeSingleUser=${includeSingleUser}&projectOwners=${projectOwnersOnly}`);
 }

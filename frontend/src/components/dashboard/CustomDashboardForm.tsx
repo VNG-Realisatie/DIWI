@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect } from "react";
+import { ChangeEvent, useContext, useEffect } from "react";
 import { Box, Button, Grid } from "@mui/material";
 import TextInput from "../project/inputs/TextInput";
 
@@ -13,6 +13,7 @@ import useAllowedActions from "../../hooks/useAllowedActions";
 import { TooltipInfo } from "../../widgets/TooltipInfo";
 import { FileDownload } from "@mui/icons-material";
 import { exportPdf } from "../../utils/exportPDF";
+import UserContext from "../../context/UserContext";
 
 const emptyBlueprint: Blueprint = {
     name: "",
@@ -35,6 +36,7 @@ export const CustomDashboardForm = ({ visibility, newBlueprint, setNewBlueprint,
     const { id } = useParams();
     const navigate = useNavigate();
     const { allowedActions } = useAllowedActions();
+    const { user } = useContext(UserContext);
 
     const disabledForm = !allowedActions.includes("EDIT_ALL_BLUEPRINTS");
 
@@ -110,16 +112,18 @@ export const CustomDashboardForm = ({ visibility, newBlueprint, setNewBlueprint,
                 )}
             </Grid>
             <Grid item xs={3}>
-                <Box display="flex" justifyContent="flex-end" width="100%">
-                    <TooltipInfo text={t("dashboard.exportpdf")}>
-                        <FileDownload
-                            onClick={() => {
-                                setPdfExport(true);
-                            }}
-                            sx={{ fill: "#002C64", cursor: "pointer" }}
-                        />
-                    </TooltipInfo>
-                </Box>
+                {user?.role != "External" && (
+                    <Box display="flex" justifyContent="flex-end" width="100%">
+                        <TooltipInfo text={t("dashboard.exportpdf")}>
+                            <FileDownload
+                                onClick={() => {
+                                    setPdfExport(true);
+                                }}
+                                sx={{ fill: "#002C64", cursor: "pointer" }}
+                            />
+                        </TooltipInfo>
+                    </Box>
+                )}
             </Grid>
         </Grid>
     );

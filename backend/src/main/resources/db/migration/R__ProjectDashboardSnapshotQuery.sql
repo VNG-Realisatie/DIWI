@@ -49,9 +49,23 @@ FROM (
                         JOIN diwi.milestone_state ems ON ems.milestone_id = wdc.end_milestone_id AND ems.change_end_date IS NULL
                 WHERE  sms.date <= _snapshot_date_ AND _snapshot_date_ < ems.date AND w.project_id = _project_uuid_
             ),
+            woningbloks_mutation_sign AS (
+                SELECT
+                    w.id,
+                    CASE wmc.mutation_kind
+                        WHEN 'CONSTRUCTION' THEN 1
+                        WHEN 'DEMOLITION' THEN -1
+                    END AS mutation_sign
+                FROM
+                    woningbloks w
+                        JOIN diwi.woningblok_mutatie_changelog wmc ON w.id = wmc.woningblok_id AND wmc.change_end_date IS NULL
+                        JOIN diwi.milestone_state sms ON sms.milestone_id = wmc.start_milestone_id AND sms.change_end_date IS NULL
+                        JOIN diwi.milestone_state ems ON ems.milestone_id = wmc.end_milestone_id AND ems.change_end_date IS NULL
+                WHERE  sms.date <= _snapshot_date_ AND _snapshot_date_ < ems.date
+            ),
             woningbloks_physical_appearance AS (
                 SELECT
-                    pcvs.value_label AS label, SUM(wcfv.amount) AS amount
+                    pcvs.value_label AS label, SUM(wcfv.amount * wms.mutation_sign) AS amount
                 FROM
                     woningbloks w
                         JOIN diwi.woningblok_type_en_fysiek_changelog wtfc ON w.id = wtfc.woningblok_id AND wtfc.change_end_date IS NULL
@@ -59,32 +73,35 @@ FROM (
                         JOIN diwi.milestone_state ems ON ems.milestone_id = wtfc.end_milestone_id AND ems.change_end_date IS NULL
                         JOIN diwi.woningblok_type_en_fysiek_changelog_fysiek_value wcfv ON wcfv.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
                         JOIN diwi.property_category_value_state pcvs ON pcvs.category_value_id = wcfv.property_value_id AND pcvs.change_end_date IS NULL
+                        JOIN woningbloks_mutation_sign wms ON wms.id = w.id
                 WHERE
                     sms.date <= _snapshot_date_ AND _snapshot_date_ < ems.date
                 GROUP BY pcvs.value_label
             ),
             woningbloks_pricecategory_own AS (
                 SELECT
-                    prcvs.id AS id, prcvs.name AS label, prcvs.min AS min, prcvs.max AS max, SUM(wewc.amount) AS amount
+                    prcvs.id AS id, prcvs.name AS label, prcvs.min AS min, prcvs.max AS max, SUM(wewc.amount * wms.mutation_sign) AS amount
                 FROM
                     woningbloks w
                         JOIN diwi.woningblok_eigendom_en_waarde_changelog wewc ON w.id = wewc.woningblok_id AND wewc.change_end_date IS NULL
                         JOIN diwi.milestone_state sms ON sms.milestone_id = wewc.start_milestone_id AND sms.change_end_date IS NULL
                         JOIN diwi.milestone_state ems ON ems.milestone_id = wewc.end_milestone_id AND ems.change_end_date IS NULL
                         JOIN diwi.property_range_category_value_state prcvs ON prcvs.range_category_value_id = wewc.ownership_property_value_id AND prcvs.change_end_date IS NULL
+                        JOIN woningbloks_mutation_sign wms ON wms.id = w.id
                 WHERE
                     sms.date <= _snapshot_date_ AND _snapshot_date_ < ems.date AND wewc.eigendom_soort = 'KOOPWONING'
                 GROUP BY prcvs.id, prcvs.name
             ),
             woningbloks_pricecategory_rent AS (
                 SELECT
-                    prcvs.id AS id, prcvs.name AS label,  prcvs.min AS min, prcvs.max AS max, SUM(wewc.amount) AS amount
+                    prcvs.id AS id, prcvs.name AS label,  prcvs.min AS min, prcvs.max AS max, SUM(wewc.amount * wms.mutation_sign) AS amount
                 FROM
                     woningbloks w
                         JOIN diwi.woningblok_eigendom_en_waarde_changelog wewc ON w.id = wewc.woningblok_id AND wewc.change_end_date IS NULL
                         JOIN diwi.milestone_state sms ON sms.milestone_id = wewc.start_milestone_id AND sms.change_end_date IS NULL
                         JOIN diwi.milestone_state ems ON ems.milestone_id = wewc.end_milestone_id AND ems.change_end_date IS NULL
                         JOIN diwi.property_range_category_value_state prcvs ON prcvs.range_category_value_id = wewc.rental_property_value_id AND prcvs.change_end_date IS NULL
+                        JOIN woningbloks_mutation_sign wms ON wms.id = w.id
                 WHERE
                     sms.date <= _snapshot_date_ AND _snapshot_date_ < ems.date AND wewc.eigendom_soort != 'KOOPWONING'
                 GROUP BY prcvs.id, prcvs.name

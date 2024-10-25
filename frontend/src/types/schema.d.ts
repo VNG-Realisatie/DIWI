@@ -467,6 +467,20 @@ export interface components {
             /** Format: uuid */
             projectId: string;
         };
+        UserGroupModel: {
+            /** Format: uuid */
+            uuid: string;
+            name: string;
+            users?: components["schemas"]["UserGroupUserModel"][];
+        };
+        UserGroupUserModel: {
+            /** Format: uuid */
+            uuid?: string;
+            id?: string;
+            firstName?: string;
+            lastName?: string;
+            initials?: string;
+        };
         ProjectCreateSnapshotModel: {
             /** Format: date */
             startDate?: string;

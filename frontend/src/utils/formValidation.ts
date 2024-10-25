@@ -63,7 +63,7 @@ export function validateForm(project: Project, validOwner: boolean = true, custo
         !project.confidentialityLevel ||
         !validOwner ||
         project.projectOwners.length === 0 ||
-        !(project.customProperties && validateCustomProperties(project.customProperties, customDefinitions))
+        (project.customProperties && !validateCustomProperties(project.customProperties, customDefinitions))
     ) {
         return false;
     }

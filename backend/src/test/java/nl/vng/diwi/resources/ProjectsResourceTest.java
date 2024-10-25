@@ -29,6 +29,7 @@ import nl.vng.diwi.services.PropertiesService;
 import nl.vng.diwi.services.HouseblockService;
 import nl.vng.diwi.services.ProjectService;
 import nl.vng.diwi.services.ProjectServiceTest;
+import nl.vng.diwi.services.UserGroupService;
 import nl.vng.diwi.testutil.TestDb;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -58,7 +59,7 @@ public class ProjectsResourceTest {
         testDb.reset();
         dalFactory = testDb.getDalFactory();
         projectResource = new ProjectsResource(new GenericRepository(dalFactory.constructDal()),
-            new ProjectService(), new HouseblockService(), new PropertiesService(), testDb.projectConfig, new ExcelImportService(), new GeoJsonImportService());
+            new ProjectService(), new HouseblockService(), new UserGroupService(null), new PropertiesService(), testDb.projectConfig, new ExcelImportService(), new GeoJsonImportService());
     }
 
     @AfterAll
@@ -70,6 +71,7 @@ public class ProjectsResourceTest {
     void beforeEach() {
         dal = dalFactory.constructDal();
         repo = new VngRepository(dal.getSession());
+        projectResource.getUserGroupService().setUserGroupDAO(repo.getUsergroupDAO());
     }
 
     @AfterEach

@@ -1,6 +1,24 @@
 import { getJson, postJson, putJson, deleteJson } from "../utils/requests";
 import { API_URI } from "../utils/urls";
 
+export type PropertyOption = {
+    id: string;
+    name: string;
+    propertyCategoryValueIds?: string[];
+    propertyOrdinalValueIds?: string[];
+};
+
+export type ExportProperty = {
+    name: string;
+    customPropertyId?: string;
+    objectType: "PROJECT" | "WONINGBLOK";
+    mandatory: boolean;
+    options?: PropertyOption[];
+    propertyTypes: string[];
+    singleSelect?: boolean;
+    id?: string;
+};
+
 export type ExportData = {
     id: string;
     name: string;
@@ -8,6 +26,7 @@ export type ExportData = {
     apiKey?: string;
     projectUrl?: string;
     projectdetailUrl?: string;
+    properties?: ExportProperty[];
 };
 
 export async function getExportData(): Promise<ExportData[]> {
