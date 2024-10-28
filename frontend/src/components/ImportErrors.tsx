@@ -2,6 +2,7 @@ import { Alert, Typography, Stack, Accordion, AccordionSummary, AccordionDetails
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { t } from "i18next";
 import { capitalizeFirstLetters } from "../utils/stringFunctions";
+import CustomPropertiesCreateButton from "./CustomPropertiesCreateButton";
 
 export type ImportErrorObject = {
     error: Array<ImportErrorType>;
@@ -50,25 +51,28 @@ export const ImportErrors = ({ errors, isGeoJson = false }: ImportErrorProps) =>
                                     <Typography className="import-error">{t(`import.errorCodes.${error.errorCode}`)}</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails>
-                                    <List
-                                        dense
-                                        sx={{
-                                            listStyleType: "disc",
-                                            pl: 1,
-                                            "& .MuiListItem-root": {
-                                                display: "list-item",
-                                                padding: 0,
-                                            },
-                                        }}
-                                    >
-                                        <PropertyListItem label={t("import.errorProperties.row")} value={error.row} />
-                                        <PropertyListItem label={t("import.errorProperties.column")} value={error.column} />
-                                        <PropertyListItem label={t("import.errorProperties.value")} value={error.value} />
-                                        <PropertyListItem label={t("import.errorProperties.propertyName")} value={error.propertyName} />
-                                        <PropertyListItem label={t("import.errorProperties.houseblockName")} value={error.houseblockName} />
-                                        <PropertyListItem label={t("import.errorProperties.identificationNumber")} value={error.identificationNumber} />
-                                        <PropertyListItem label={t("import.errorProperties.customPropertyId")} value={error.customPropertyId} />
-                                    </List>
+                                    <>
+                                        <List
+                                            dense
+                                            sx={{
+                                                listStyleType: "disc",
+                                                pl: 1,
+                                                "& .MuiListItem-root": {
+                                                    display: "list-item",
+                                                    padding: 0,
+                                                },
+                                            }}
+                                        >
+                                            <PropertyListItem label={t("import.errorProperties.row")} value={error.row} />
+                                            <PropertyListItem label={t("import.errorProperties.column")} value={error.column} />
+                                            <PropertyListItem label={t("import.errorProperties.value")} value={error.value} />
+                                            <PropertyListItem label={t("import.errorProperties.propertyName")} value={error.propertyName} />
+                                            <PropertyListItem label={t("import.errorProperties.houseblockName")} value={error.houseblockName} />
+                                            <PropertyListItem label={t("import.errorProperties.identificationNumber")} value={error.identificationNumber} />
+                                            <PropertyListItem label={t("import.errorProperties.customPropertyId")} value={error.customPropertyId} />
+                                        </List>
+                                        <CustomPropertiesCreateButton error={error} />
+                                    </>
                                 </AccordionDetails>
                             </Accordion>
                         );
