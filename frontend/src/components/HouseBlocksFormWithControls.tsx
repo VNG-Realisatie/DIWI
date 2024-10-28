@@ -20,12 +20,12 @@ type Props = {
 export const HouseBlocksFormWithControls = ({ houseBlock }: Props) => {
     const [readOnly, setReadOnly] = useState(true);
     const [newHouseBlock, setNewHouseBlock] = useState<HouseBlockWithCustomProperties>(houseBlock);
-    const { refresh, customDefinitions } = useContext(HouseBlockContext);
+    const { refresh, nonFixedCustomDefinitions } = useContext(HouseBlockContext);
     const { setAlert } = useAlert();
     const { allowedActions } = useAllowedActions();
 
     const handleSave = () => {
-        if (validateHouseBlock(newHouseBlock, setAlert, customDefinitions)) {
+        if (validateHouseBlock(newHouseBlock, setAlert, nonFixedCustomDefinitions)) {
             saveHouseBlockWithCustomProperties(newHouseBlock);
             setReadOnly(true);
         }

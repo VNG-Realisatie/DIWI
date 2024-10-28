@@ -57,12 +57,12 @@ export const HouseBlockAccordionWithControls = ({ houseBlock, refresh }: HouseBl
     const { setAlert } = useAlert();
     const { targetGroupCategories, physicalAppearanceCategories } = useCustomPropertyDefinitions();
     const { getEditPermission } = useHasEditPermission();
-    const { customDefinitions} = useContext(HouseBlockContext);
+    const { nonFixedCustomDefinitions} = useContext(HouseBlockContext);
 
     const isDemolition = houseBlock.mutation.kind === "DEMOLITION";
 
     const handleSave = async () => {
-        if (validateHouseBlock(newHouseBlock, setAlert, customDefinitions)) {
+        if (validateHouseBlock(newHouseBlock, setAlert, nonFixedCustomDefinitions)) {
             try {
                 const targetGroupCategoryIds = targetGroupCategories?.map((cat) => cat.id);
                 const physicalAppearanceCategoryIds = physicalAppearanceCategories?.map((cat) => cat.id);
