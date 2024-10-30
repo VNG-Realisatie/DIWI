@@ -487,22 +487,24 @@ export const DashboardCharts = ({
                                     }
                                     return expandedCategories.map((category) => (
                                         <Grid item {...chartCardStyling} key={category.id}>
-                                        {(isPrintingFullDashboard || (category.id && categoriesVisibility?.[category.id])) && (
-                                            <>
-                                                <Box display="flex" justifyContent="space-between" alignItems="center">
-                                                    <Typography variant="h6" fontSize={16} paddingBottom={2}>
-                                                        {category.name ? category.name : t("goals.dashboard.noCategory")}
-                                                    </Typography>
-                                                </Box>
+                                            {(isPrintingFullDashboard || (category.id && categoriesVisibility?.[category.id])) && (
+                                                <>
+                                                    <Box display="flex" justifyContent="space-between" alignItems="center">
+                                                        <Typography variant="h6" fontSize={16} paddingBottom={2}>
+                                                            {category.name ? category.name : t("goals.dashboard.noCategory")}
+                                                        </Typography>
+                                                    </Box>
 
-                                                {policyGoals
-                                                    .filter((goal) => goal.category === category.name)
-                                                    .map((goal) => (
-                                                        <PolicyGoalChart key={goal.id} goal={goal} />
-                                                    ))}
-                                            </>
-                                        )}
-                                    </Grid>
+                                                    {policyGoals
+                                                        .filter((goal) => goal.category === category.name)
+                                                        .map((goal) => (
+                                                            <Box key={goal.id} id={goal.id}>
+                                                                <PolicyGoalChart isPDF={true} goal={goal} />
+                                                            </Box>
+                                                        ))}
+                                                </>
+                                            )}
+                                        </Grid>
                                     ));
                                 })()}
                         </Box>
