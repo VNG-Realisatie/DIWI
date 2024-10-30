@@ -86,11 +86,11 @@ export const ProjectTimelineSvg = ({ setTimeScaleIndex, timeScaleIndex, showToda
     const diffDays = projectEndDate.diff(projectStartDate, "days");
     const timePeriod = () => {
         if (diffDays <= 30) {
-            return 10;
+            return 18;
         } else if (diffDays < 180) {
-            return 3;
+            return 12;
         }
-        return 2;
+        return 8;
     };
     const pixelsPerDay = timeScaleIndex * timePeriod();
     const chartWidth = diffDays * pixelsPerDay;
