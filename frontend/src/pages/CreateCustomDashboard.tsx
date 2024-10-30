@@ -7,11 +7,13 @@ import { UserGroup } from "../api/projectsServices";
 import { Typography } from "@mui/material";
 import { t } from "i18next";
 import { CustomDashboardForm } from "../components/dashboard/CustomDashboardForm";
+import { getAllCategories } from "../api/goalsServices";
 
 const emptyBlueprint: Blueprint = {
     name: "",
     userGroups: [],
     elements: [],
+    categories: [],
 };
 
 export const CreateCustomDashboard = () => {
@@ -26,13 +28,31 @@ export const CreateCustomDashboard = () => {
         DELIVERABLES: true,
         DELAYED_PROJECTS: true,
     };
+
     const [visibility, setVisibility] = useState(initialVisibility);
     const [newBlueprint, setNewBlueprint] = useState<Blueprint>(emptyBlueprint);
     const [userGroups, setUserGroups] = useState<UserGroup[]>([]);
     const [pdfExport, setPdfExport] = useState(false);
 
+    const [categoriesVisibility, setCategoriesVisibility] = useState<{ [key: string]: boolean }>({});
+
     const { id } = useParams();
     const { setAlert } = useAlert();
+
+    useEffect(() => {
+        getAllCategories().then((categories) => {
+            const initialCategoryVisibility = categories.reduce(
+                (acc, category) => {
+                    if (category.id) {
+                        acc[category.id] = true;
+                    }
+                    return acc;
+                },
+                {} as { [key: string]: boolean },
+            );
+            setCategoriesVisibility(initialCategoryVisibility);
+        });
+    }, []);
 
     useEffect(() => {
         if (id) {
@@ -46,6 +66,15 @@ export const CreateCustomDashboard = () => {
                         }
                     });
                     setVisibility({ ...initialVisibility });
+
+                    const updatedCategoryVisibility = { ...categoriesVisibility };
+                    Object.keys(categoriesVisibility).forEach((key) => {
+                        if (!blueprint.categories.includes(key)) {
+                            updatedCategoryVisibility[key] = false;
+                        }
+                    });
+                    setCategoriesVisibility(updatedCategoryVisibility);
+
                     setNewBlueprint(blueprint);
                 } catch (error) {
                     if (error instanceof Error) setAlert(error.message, "error");
@@ -74,8 +103,16 @@ export const CreateCustomDashboard = () => {
                 setUserGroups={setUserGroups}
                 setPdfExport={setPdfExport}
                 pdfExport={pdfExport}
+                categoriesVisibility={categoriesVisibility}
             />
-            <DashboardCharts isPrintingFullDashboard={false} isPdf={pdfExport} visibility={visibility} setVisibility={setVisibility} />
+            <DashboardCharts
+                isPrintingFullDashboard={false}
+                isPdf={pdfExport}
+                visibility={visibility}
+                setVisibility={setVisibility}
+                categoriesVisibility={categoriesVisibility}
+                setCategoriesVisibility={setCategoriesVisibility}
+            />
         </>
     );
 };

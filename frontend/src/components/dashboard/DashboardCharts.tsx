@@ -14,6 +14,7 @@ import { CellContainer } from "../project/project-with-house-block/CellContainer
 import { MyResponsiveBar } from "./BarChart";
 import { PolicyGoalChart } from "./PolicyGoalChart";
 import { formatMonetaryValue } from "../../utils/inputHelpers";
+import { CustomCategory, getAllCategories } from "../../api/goalsServices";
 
 const chartCardStyling = { backgroundColor: "#F0F0F0", my: 1, p: 2, xs: 12, md: 5.9 };
 
@@ -45,19 +46,40 @@ type Props = {
     setVisibility?: Dispatch<SetStateAction<Visibility>>;
     isPdf?: boolean;
     isPrintingFullDashboard: boolean;
+    categoriesVisibility?: { [key: string]: boolean };
+    setCategoriesVisibility?: Dispatch<SetStateAction<{ [key: string]: boolean }>>;
 };
 
-export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashboard, isPdf = false }: Props) => {
+export const DashboardCharts = ({
+    visibility,
+    setVisibility,
+    isPrintingFullDashboard,
+    isPdf = false,
+    categoriesVisibility,
+    setCategoriesVisibility,
+}: Props) => {
     const [dashboardProjects, setDashboardProjects] = useState<DashboardProjects>();
     const [projectPhaseSums, setProjectPhaseSums] = useState([]);
     const [dashboardMutationValues, setDashboardMutationValues] = useState<MutationValues>();
     const { allowedActions } = useAllowedActions();
     const [policyGoals, setPolicyGoals] = useState<PolicyGoal[]>();
+    const [categories, setCategories] = useState<CustomCategory[]>([]);
+    useEffect(() => {
+        getAllCategories().then((categories) => {
+            setCategories(categories);
+        });
+    }, []);
 
     const handleToggleVisibility = (item: VisibilityElement) => {
         if (!setVisibility) return;
 
         setVisibility((prev) => ({ ...prev, [item]: !prev[item] }));
+    };
+
+    const handleToggleCategoryVisibility = (category: string) => {
+        if (!setCategoriesVisibility) return;
+
+        setCategoriesVisibility((prev) => ({ ...prev, [category]: !prev[category] }));
     };
 
     const { t } = useTranslation();
@@ -303,39 +325,44 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                             </Grid>
                         )}
                     </Grid>
-                    {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.DELAYED_PROJECTS) && (
-                        <Grid item {...chartCardStyling}>
-                            <Box display="flex" justifyContent="space-between" alignItems="center">
-                                <Typography variant="h6" fontSize={16}></Typography>
-                                {visibility && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
-                                    // visibility needs to be updated
-                                    <Switch
-                                        checked={visibility.DELAYED_PROJECTS}
-                                        onChange={() => handleToggleVisibility("DELAYED_PROJECTS")}
-                                        inputProps={{ "aria-label": "controlled" }}
-                                    />
-                                )}
-                            </Box>
-                            {policyGoals &&
-                                (() => {
-                                    const categories = Array.from(new Set(policyGoals.map((goal) => goal.category))).sort();
+                    <Grid item {...chartCardStyling}>
+                        <Box display="flex" justifyContent="space-between" alignItems="center">
+                            <Typography variant="h6" fontSize={16}></Typography>
+                        </Box>
+                        {policyGoals &&
+                            (() => {
+                                let expandedCategories = categories;
+                                if (policyGoals.some((goal) => goal.category === null)) {
+                                    expandedCategories = [...categories, { id: "", name: null }];
+                                }
+                                return expandedCategories.map((category) => (
+                                    <Grid item {...chartCardStyling} key={category.id}>
+                                        {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || (category.id && categoriesVisibility?.[category.id])) && (
+                                            <>
+                                                <Box display="flex" justifyContent="space-between" alignItems="center">
+                                                    <Typography variant="h6" fontSize={16} paddingBottom={2}>
+                                                        {category.name ? category.name : t("goals.dashboard.noCategory")}
+                                                    </Typography>
+                                                    {categoriesVisibility && category.name && allowedActions.includes("EDIT_ALL_BLUEPRINTS") && (
+                                                        <Switch
+                                                            checked={category.id !== undefined && categoriesVisibility?.[category.id]}
+                                                            onChange={() => category.id && handleToggleCategoryVisibility(category.id)}
+                                                            inputProps={{ "aria-label": "controlled" }}
+                                                        />
+                                                    )}
+                                                </Box>
 
-                                    return categories.map((category) => (
-                                        <Grid item {...chartCardStyling} key={category}>
-                                            <Typography variant="h6" fontSize={16} paddingBottom={2}>
-                                                {category ? category : t("goals.dashboard.noCategory")}
-                                            </Typography>
-
-                                            {policyGoals
-                                                .filter((goal) => goal.category === category)
-                                                .map((goal) => (
-                                                    <PolicyGoalChart key={goal.id} goal={goal} />
-                                                ))}
-                                        </Grid>
-                                    ));
-                                })()}
-                        </Grid>
-                    )}
+                                                {policyGoals
+                                                    .filter((goal) => goal.category === category.name)
+                                                    .map((goal) => (
+                                                        <PolicyGoalChart key={goal.id} goal={goal} />
+                                                    ))}
+                                            </>
+                                        )}
+                                    </Grid>
+                                ));
+                            })()}
+                    </Grid>
                 </>
             )}
 
@@ -454,22 +481,28 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                             <Typography variant="h6" fontSize={16}></Typography>
                             {policyGoals &&
                                 (() => {
-                                    const categories = Array.from(new Set(policyGoals.map((goal) => goal.category))).sort();
+                                    let expandedCategories = categories;
+                                    if (policyGoals.some((goal) => goal.category === null)) {
+                                        expandedCategories = [...categories, { id: "", name: null }];
+                                    }
+                                    return expandedCategories.map((category) => (
+                                        <Grid item {...chartCardStyling} key={category.id}>
+                                        {(isPrintingFullDashboard || (category.id && categoriesVisibility?.[category.id])) && (
+                                            <>
+                                                <Box display="flex" justifyContent="space-between" alignItems="center">
+                                                    <Typography variant="h6" fontSize={16} paddingBottom={2}>
+                                                        {category.name ? category.name : t("goals.dashboard.noCategory")}
+                                                    </Typography>
+                                                </Box>
 
-                                    return categories.map((category) => (
-                                        <Grid item {...chartCardStyling} key={category}>
-                                            <Typography variant="h6" fontSize={16} paddingBottom={2}>
-                                                {category ? category : t("goals.dashboard.noCategory")}
-                                            </Typography>
-
-                                            {policyGoals
-                                                .filter((goal) => goal.category === category)
-                                                .map((goal) => (
-                                                    <Box key={goal.id} id={goal.id}>
-                                                        <PolicyGoalChart isPDF={true} goal={goal} />
-                                                    </Box>
-                                                ))}
-                                        </Grid>
+                                                {policyGoals
+                                                    .filter((goal) => goal.category === category.name)
+                                                    .map((goal) => (
+                                                        <PolicyGoalChart key={goal.id} goal={goal} />
+                                                    ))}
+                                            </>
+                                        )}
+                                    </Grid>
                                     ));
                                 })()}
                         </Box>

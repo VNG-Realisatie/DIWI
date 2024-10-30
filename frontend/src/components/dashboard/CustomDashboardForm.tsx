@@ -19,6 +19,7 @@ const emptyBlueprint: Blueprint = {
     name: "",
     userGroups: [],
     elements: [],
+    categories: [],
 };
 
 type Props = {
@@ -29,9 +30,19 @@ type Props = {
     setUserGroups: (userGroups: UserGroup[]) => void;
     setPdfExport: (pdfExport: boolean) => void;
     pdfExport: boolean;
+    categoriesVisibility: { [key: string]: boolean };
 };
 
-export const CustomDashboardForm = ({ visibility, newBlueprint, setNewBlueprint, userGroups, setUserGroups, setPdfExport, pdfExport }: Props) => {
+export const CustomDashboardForm = ({
+    visibility,
+    newBlueprint,
+    setNewBlueprint,
+    userGroups,
+    setUserGroups,
+    setPdfExport,
+    pdfExport,
+    categoriesVisibility,
+}: Props) => {
     const { setAlert } = useAlert();
     const { id } = useParams();
     const navigate = useNavigate();
@@ -60,10 +71,17 @@ export const CustomDashboardForm = ({ visibility, newBlueprint, setNewBlueprint,
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             .filter(([_, value]) => value === true)
             .map(([key]) => key);
+
+        const categoriesToAdd = Object.entries(categoriesVisibility)
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            .filter(([_, value]) => value === true)
+            .map(([key]) => key);
+
         const updatedBlueprint = {
             ...newBlueprint,
             userGroups: userGroups.map((group) => ({ uuid: group.uuid, name: group.name })),
             elements: elementsToAdd as VisibilityElement[],
+            categories: categoriesToAdd,
         };
 
         try {
