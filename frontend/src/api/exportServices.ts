@@ -1,4 +1,4 @@
-import { getJson, postJson, putJson, deleteJson } from "../utils/requests";
+import { getJson, postJson, putJson, deleteJson, download } from "../utils/requests";
 import { API_URI } from "../utils/urls";
 
 export type PropertyOption = {
@@ -47,6 +47,10 @@ export async function updateExportData(id: string, data: ExportData): Promise<Ex
 
 export async function deleteExportData(id: string): Promise<void> {
     return deleteJson(`${API_URI}/dataexchange/${id}`);
+}
+
+export async function downloadExportData(id: string): Promise<void> {
+    return download(`${API_URI}/dataexchange/${id}/export`, 'export.geojson');
 }
 
 //this dunction needs to be updated
