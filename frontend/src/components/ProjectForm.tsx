@@ -225,6 +225,7 @@ export const ProjectForm = ({
                                 mandatory={true}
                                 errorText={t("createProject.hasMissingRequiredAreas.owner")}
                                 checkIsOwnerValidWithConfidentialityLevel={checkIsOwnerValidWithConfidentialityLevel}
+                                projectOwnersOnly={true}
                             />
                         </Grid>
 
