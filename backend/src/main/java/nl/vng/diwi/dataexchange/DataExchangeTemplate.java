@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import nl.vng.diwi.dal.entities.DataExchangeType;
 import nl.vng.diwi.dal.entities.enums.ObjectType;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
-import nl.vng.diwi.services.EsriZuidHollandExport.EsriZuidHollandProjectProps;
+import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandExport.EsriZuidHollandProjectProps;
 
 import java.util.ArrayList;
 import java.util.List;

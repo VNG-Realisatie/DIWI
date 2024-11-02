@@ -19,7 +19,8 @@ CREATE OR REPLACE FUNCTION diwi.get_projects_export_list (
         numericProperties JSONB,
         booleanProperties JSONB,
         categoryProperties JSONB,
-        geometries TEXT[]
+        geometries TEXT[],
+        houseblocks JSONB
 	)
 	LANGUAGE plpgsql
 AS $$
@@ -38,7 +39,8 @@ SELECT  q.projectId,
         q.numericProperties,
         q.booleanProperties,
         q.categoryProperties,
-        q.geometries
+        q.geometries,
+        q.houseblocks
 FROM (
 
     WITH
@@ -198,6 +200,224 @@ FROM (
             FROM prj_cat_props pcp
             GROUP BY pcp.project_id
         ),
+        active_project_houseblocks AS (
+            WITH
+                active_project_active_woningbloks AS (
+                    SELECT
+                         w.id, w.project_id, sms.date AS startDate, ems.date AS endDate
+                    FROM
+                        active_projects ap
+                            JOIN diwi.woningblok w ON w.project_id = ap.id
+                            JOIN diwi.woningblok_state ws ON ws.woningblok_id = w.id AND ws.change_end_date IS NULL
+                            JOIN diwi.woningblok_duration_changelog wdc ON wdc.woningblok_id = w.id AND wdc.change_end_date IS NULL
+                            JOIN diwi.milestone_state sms ON sms.milestone_id = wdc.start_milestone_id AND sms.change_end_date IS NULL
+                            JOIN diwi.milestone_state ems ON ems.milestone_id = wdc.end_milestone_id AND ems.change_end_date IS NULL
+                    WHERE sms.date <= _export_date_ AND _export_date_ < ems.date
+                ),
+                active_project_active_woningbloks_delivery AS (
+                    SELECT
+                        apaw.id, EXTRACT(YEAR FROM wdc.latest_deliverydate)::INTEGER AS deliveryYear
+                    FROM
+                        active_project_active_woningbloks apaw
+                        JOIN diwi.woningblok_deliverydate_changelog wdc ON apaw.id = wdc.woningblok_id AND wdc.change_end_date IS NULL
+                        JOIN diwi.milestone_state sms ON sms.milestone_id = wdc.start_milestone_id AND sms.change_end_date IS NULL
+                        JOIN diwi.milestone_state ems ON ems.milestone_id = wdc.end_milestone_id AND ems.change_end_date IS NULL
+                    WHERE
+                        sms.date <= _export_date_ AND _export_date_ < ems.date
+                ),
+                active_project_active_woningbloks_mutation AS (
+                    SELECT
+                        apaw.id, wmc.mutation_kind AS mutationKind, wmc.amount AS mutationAmount
+                    FROM
+                        active_project_active_woningbloks apaw
+                        JOIN diwi.woningblok_mutatie_changelog wmc ON apaw.id = wmc.woningblok_id AND wmc.change_end_date IS NULL
+                        JOIN diwi.milestone_state sms ON sms.milestone_id = wmc.start_milestone_id AND sms.change_end_date IS NULL
+                        JOIN diwi.milestone_state ems ON ems.milestone_id = wmc.end_milestone_id AND ems.change_end_date IS NULL
+                    WHERE
+                        sms.date <= _export_date_ AND _export_date_ < ems.date
+                ),
+                active_project_active_woningbloks_housetypes AS (
+                    SELECT
+                        apaw.id, meer.amount AS meergezinswoning, eeng.amount AS eengezinswoning
+                    FROM
+                        active_project_active_woningbloks apaw
+                        JOIN diwi.woningblok_type_en_fysiek_changelog wtfc ON apaw.id = wtfc.woningblok_id AND wtfc.change_end_date IS NULL
+                        JOIN diwi.milestone_state sms ON sms.milestone_id = wtfc.start_milestone_id AND sms.change_end_date IS NULL
+                        JOIN diwi.milestone_state ems ON ems.milestone_id = wtfc.end_milestone_id AND ems.change_end_date IS NULL
+                        LEFT JOIN diwi.woningblok_type_en_fysiek_changelog_type_value eeng ON eeng.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
+                            AND eeng.woning_type = 'EENGEZINSWONING'
+                        LEFT JOIN diwi.woningblok_type_en_fysiek_changelog_type_value meer ON meer.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
+                            AND meer.woning_type = 'MEERGEZINSWONING'
+                    WHERE
+                        sms.date <= _export_date_ AND _export_date_ < ems.date
+                ),
+                active_project_active_ownership_value AS (
+                    SELECT
+                        apaw.id, to_jsonb(array_agg(jsonb_build_object('ownershipId', wewc.id, 'ownershipType', wewc.eigendom_soort, 'ownershipAmount', wewc.amount,
+                                    'ownershipValue', wewc.waarde_value, 'ownershipRentalValue', wewc.huurbedrag_value,
+                                    'ownershipValueRangeMin', lower(wewc.waarde_value_range), 'ownershipRentalValueRangeMin', lower(huurbedrag_value_range),
+                                    'ownershipValueRangeMax', upper(wewc.waarde_value_range) - 1, 'ownershipRentalValueRangeMax', upper(huurbedrag_value_range) - 1,
+                                    'ownershipRangeCategoryId', wewc.ownership_property_value_id, 'ownershipRentalRangeCategoryId', wewc.rental_property_value_id))) AS ownershipValue
+                    FROM
+                        active_project_active_woningbloks apaw
+                        JOIN diwi.woningblok_eigendom_en_waarde_changelog wewc ON apaw.id = wewc.woningblok_id AND wewc.change_end_date IS NULL
+                        JOIN diwi.milestone_state sms ON sms.milestone_id = wewc.start_milestone_id AND sms.change_end_date IS NULL
+                        JOIN diwi.milestone_state ems ON ems.milestone_id = wewc.end_milestone_id AND ems.change_end_date IS NULL
+                    WHERE
+                        sms.date <= _export_date_ AND _export_date_ < ems.date
+                    GROUP BY apaw.id
+                ),
+
+                active_project_future_woningbloks AS (
+                    SELECT
+                         w.id, w.project_id, sms.date AS startDate, sms.milestone_id AS start_milestone_id
+                    FROM
+                        active_projects ap
+                            JOIN diwi.woningblok w ON w.project_id = ap.id
+                            JOIN diwi.woningblok_state ws ON ws.woningblok_id = w.id AND ws.change_end_date IS NULL
+                            JOIN diwi.woningblok_duration_changelog wdc ON wdc.woningblok_id = w.id AND wdc.change_end_date IS NULL
+                            JOIN diwi.milestone_state sms ON sms.milestone_id = wdc.start_milestone_id AND sms.change_end_date IS NULL
+                    WHERE _export_date_ < sms.date
+                ),
+                active_project_future_woningbloks_delivery AS (
+                    SELECT
+                        apfw.id, EXTRACT(YEAR FROM wdc.latest_deliverydate)::INTEGER AS deliveryYear
+                    FROM
+                        active_project_future_woningbloks apfw
+                        JOIN diwi.woningblok_deliverydate_changelog wdc ON apfw.id = wdc.woningblok_id AND wdc.change_end_date IS NULL
+                            AND wdc.start_milestone_id = apfw.start_milestone_id
+                ),
+                active_project_future_woningbloks_mutation AS (
+                    SELECT
+                        apfw.id, wmc.mutation_kind AS mutationKind, wmc.amount AS mutationAmount
+                    FROM
+                        active_project_future_woningbloks apfw
+                        JOIN diwi.woningblok_mutatie_changelog wmc ON apfw.id = wmc.woningblok_id AND wmc.change_end_date IS NULL
+                            AND wmc.start_milestone_id = apfw.start_milestone_id
+                ),
+                active_project_future_woningbloks_housetypes AS (
+                    SELECT
+                        apfw.id, meer.amount AS meergezinswoning, eeng.amount AS eengezinswoning
+                    FROM
+                        active_project_future_woningbloks apfw
+                        JOIN diwi.woningblok_type_en_fysiek_changelog wtfc ON apfw.id = wtfc.woningblok_id AND wtfc.change_end_date IS NULL
+                            AND wtfc.start_milestone_id = apfw.start_milestone_id
+                        LEFT JOIN diwi.woningblok_type_en_fysiek_changelog_type_value eeng ON eeng.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
+                            AND eeng.woning_type = 'EENGEZINSWONING'
+                        LEFT JOIN diwi.woningblok_type_en_fysiek_changelog_type_value meer ON meer.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
+                            AND meer.woning_type = 'MEERGEZINSWONING'
+                ),
+                active_project_future_ownership_value AS (
+                    SELECT
+                        apfw.id, to_jsonb(array_agg(jsonb_build_object('ownershipId', wewc.id, 'ownershipType', wewc.eigendom_soort, 'ownershipAmount', wewc.amount,
+                                    'ownershipValue', wewc.waarde_value, 'ownershipRentalValue', wewc.huurbedrag_value,
+                                    'ownershipValueRangeMin', lower(wewc.waarde_value_range), 'ownershipRentalValueRangeMin', lower(huurbedrag_value_range),
+                                    'ownershipValueRangeMax', upper(wewc.waarde_value_range) - 1, 'ownershipRentalValueRangeMax', upper(huurbedrag_value_range) - 1,
+                                    'ownershipRangeCategoryId', wewc.ownership_property_value_id, 'ownershipRentalRangeCategoryId', wewc.rental_property_value_id))) AS ownershipValue
+                    FROM
+                        active_project_future_woningbloks apfw
+                        JOIN diwi.woningblok_eigendom_en_waarde_changelog wewc ON apfw.id = wewc.woningblok_id AND wewc.change_end_date IS NULL
+                            AND wewc.start_milestone_id = apfw.start_milestone_id
+                    GROUP BY apfw.id
+                ),
+
+                active_project_past_woningbloks AS (
+                    SELECT
+                         w.id, w.project_id, ems.date AS endDate, ems.milestone_id AS end_milestone_id
+                    FROM
+                        active_projects ap
+                            JOIN diwi.woningblok w ON w.project_id = ap.id
+                            JOIN diwi.woningblok_state ws ON ws.woningblok_id = w.id AND ws.change_end_date IS NULL
+                            JOIN diwi.woningblok_duration_changelog wdc ON wdc.woningblok_id = w.id AND wdc.change_end_date IS NULL
+                            JOIN diwi.milestone_state ems ON ems.milestone_id = wdc.end_milestone_id AND ems.change_end_date IS NULL
+                    WHERE  ems.date <= _export_date_
+                ),
+                active_project_past_woningbloks_delivery AS (
+                    SELECT
+                        appw.id, EXTRACT(YEAR FROM wdc.latest_deliverydate)::INTEGER AS deliveryYear
+                    FROM
+                        active_project_past_woningbloks appw
+                        JOIN diwi.woningblok_deliverydate_changelog wdc ON appw.id = wdc.woningblok_id AND wdc.change_end_date IS NULL
+                            AND wdc.end_milestone_id = appw.end_milestone_id
+                ),
+                active_project_past_woningbloks_mutation AS (
+                    SELECT
+                        appw.id, wmc.mutation_kind AS mutationKind, wmc.amount AS mutationAmount
+                    FROM
+                        active_project_past_woningbloks appw
+                        JOIN diwi.woningblok_mutatie_changelog wmc ON appw.id = wmc.woningblok_id AND wmc.change_end_date IS NULL
+                            AND wmc.end_milestone_id = appw.end_milestone_id
+                ),
+                active_project_past_woningbloks_housetypes AS (
+                    SELECT
+                        appw.id, meer.amount AS meergezinswoning, eeng.amount AS eengezinswoning
+                    FROM
+                        active_project_past_woningbloks appw
+                        JOIN diwi.woningblok_type_en_fysiek_changelog wtfc ON appw.id = wtfc.woningblok_id AND wtfc.change_end_date IS NULL
+                            AND wtfc.end_milestone_id = appw.end_milestone_id
+                        LEFT JOIN diwi.woningblok_type_en_fysiek_changelog_type_value eeng ON eeng.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
+                            AND eeng.woning_type = 'EENGEZINSWONING'
+                        LEFT JOIN diwi.woningblok_type_en_fysiek_changelog_type_value meer ON meer.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
+                            AND meer.woning_type = 'MEERGEZINSWONING'
+                ),
+                active_project_past_ownership_value AS (
+                    SELECT
+                        appw.id, to_jsonb(array_agg(jsonb_build_object('ownershipId', wewc.id, 'ownershipType', wewc.eigendom_soort, 'ownershipAmount', wewc.amount,
+                                    'ownershipValue', wewc.waarde_value, 'ownershipRentalValue', wewc.huurbedrag_value,
+                                    'ownershipValueRangeMin', lower(wewc.waarde_value_range), 'ownershipRentalValueRangeMin', lower(huurbedrag_value_range),
+                                    'ownershipValueRangeMax', upper(wewc.waarde_value_range) - 1, 'ownershipRentalValueRangeMax', upper(huurbedrag_value_range) - 1,
+                                    'ownershipRangeCategoryId', wewc.ownership_property_value_id, 'ownershipRentalRangeCategoryId', wewc.rental_property_value_id))) AS ownershipValue
+                    FROM
+                        active_project_past_woningbloks appw
+                        JOIN diwi.woningblok_eigendom_en_waarde_changelog wewc ON appw.id = wewc.woningblok_id AND wewc.change_end_date IS NULL
+                            AND wewc.end_milestone_id = appw.end_milestone_id
+                    GROUP BY appw.id
+                ),
+
+                houseblocks AS (
+                    SELECT
+                        apaw.project_id,
+                        jsonb_build_object('houseblockId', apaw.id, 'deliveryYear', apawd.deliveryYear, 'mutationKind', apawm.mutationKind, 'mutationAmount', apawm.mutationAmount,
+                         'meergezinswoning', apawh.meergezinswoning, 'eengezinswoning', apawh.eengezinswoning, 'ownershipValueList', apaov.ownershipValue) AS houseblocks
+                    FROM
+                        active_project_active_woningbloks apaw
+                            JOIN active_project_active_woningbloks_mutation apawm ON apaw.id = apawm.id
+                            LEFT JOIN active_project_active_woningbloks_delivery apawd ON apawd.id = apaw.id
+                            LEFT JOIN active_project_active_woningbloks_housetypes apawh ON apawh.id = apaw.id
+                            LEFT JOIN active_project_active_ownership_value apaov ON apaov.id = apaw.id
+
+                    UNION
+
+                    SELECT
+                        apfw.project_id,
+                        jsonb_build_object('houseblockId', apfw.id, 'deliveryYear', apfwd.deliveryYear, 'mutationKind', apfwm.mutationKind, 'mutationAmount', apfwm.mutationAmount,
+                         'meergezinswoning', apfwh.meergezinswoning, 'eengezinswoning', apfwh.eengezinswoning, 'ownershipValueList', apfov.ownershipValue) AS houseblocks
+                    FROM
+                        active_project_future_woningbloks apfw
+                            JOIN active_project_future_woningbloks_mutation apfwm ON apfw.id = apfwm.id
+                            LEFT JOIN active_project_future_woningbloks_delivery apfwd ON apfwd.id = apfw.id
+                            LEFT JOIN active_project_future_woningbloks_housetypes apfwh ON apfwh.id = apfw.id
+                            LEFT JOIN active_project_future_ownership_value apfov ON apfov.id = apfw.id
+
+                    UNION
+
+                    SELECT
+                        appw.project_id,
+                        jsonb_build_object('houseblockId', appw.id, 'deliveryYear', appwd.deliveryYear, 'mutationKind', appwm.mutationKind, 'mutationAmount', appwm.mutationAmount,
+                         'meergezinswoning', appwh.meergezinswoning, 'eengezinswoning', appwh.eengezinswoning, 'ownershipValueList', appov.ownershipValue) AS houseblocks
+                    FROM
+                        active_project_past_woningbloks appw
+                            JOIN active_project_past_woningbloks_mutation appwm ON appw.id = appwm.id
+                            LEFT JOIN active_project_past_woningbloks_delivery appwd ON appwd.id = appw.id
+                            LEFT JOIN active_project_past_woningbloks_housetypes appwh ON appwh.id = appw.id
+                            LEFT JOIN active_project_past_ownership_value appov ON appov.id = appw.id
+                )
+
+                SELECT
+                    hb.project_id, to_jsonb(array_agg(hb.houseblocks)) AS houseblocks
+                FROM houseblocks hb
+                GROUP BY hb.project_id
+        ),
         past_projects AS (
             SELECT
                 p.id, ps.confidentiality_level AS confidentiality, sms.date AS startDate, ems.date AS endDate, ems.milestone_id AS end_milestone_id
@@ -304,6 +524,79 @@ FROM (
                 pcp.project_id, to_jsonb(array_agg(jsonb_build_object('propertyId', pcp.property_id, 'optionValues', pcp.category_options))) AS category_properties
             FROM prj_cat_props pcp
             GROUP BY pcp.project_id
+        ),
+        past_project_houseblocks AS (
+            WITH
+                past_project_past_woningbloks AS (
+                    SELECT
+                         w.id, w.project_id, ems.date AS endDate, ems.milestone_id AS end_milestone_id
+                    FROM
+                        past_projects pp
+                            JOIN diwi.woningblok w ON w.project_id = pp.id
+                            JOIN diwi.woningblok_state ws ON ws.woningblok_id = w.id AND ws.change_end_date IS NULL
+                            JOIN diwi.woningblok_duration_changelog wdc ON wdc.woningblok_id = w.id AND wdc.change_end_date IS NULL
+                            JOIN diwi.milestone_state ems ON ems.milestone_id = wdc.end_milestone_id AND ems.change_end_date IS NULL
+                    WHERE  ems.date <= _export_date_
+                ),
+                past_project_past_woningbloks_delivery AS (
+                    SELECT
+                        pppw.id, EXTRACT(YEAR FROM wdc.latest_deliverydate)::INTEGER AS deliveryYear
+                    FROM
+                        past_project_past_woningbloks pppw
+                        JOIN diwi.woningblok_deliverydate_changelog wdc ON pppw.id = wdc.woningblok_id AND wdc.change_end_date IS NULL
+                            AND wdc.end_milestone_id = pppw.end_milestone_id
+                ),
+                past_project_past_woningbloks_mutation AS (
+                    SELECT
+                        pppw.id, wmc.mutation_kind AS mutationKind, wmc.amount AS mutationAmount
+                    FROM
+                        past_project_past_woningbloks pppw
+                        JOIN diwi.woningblok_mutatie_changelog wmc ON pppw.id = wmc.woningblok_id AND wmc.change_end_date IS NULL
+                            AND wmc.end_milestone_id = pppw.end_milestone_id
+                ),
+                past_project_past_woningbloks_housetypes AS (
+                    SELECT
+                        pppw.id, meer.amount AS meergezinswoning, eeng.amount AS eengezinswoning
+                    FROM
+                        past_project_past_woningbloks pppw
+                        JOIN diwi.woningblok_type_en_fysiek_changelog wtfc ON pppw.id = wtfc.woningblok_id AND wtfc.change_end_date IS NULL
+                            AND wtfc.end_milestone_id = pppw.end_milestone_id
+                        LEFT JOIN diwi.woningblok_type_en_fysiek_changelog_type_value eeng ON eeng.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
+                            AND eeng.woning_type = 'EENGEZINSWONING'
+                        LEFT JOIN diwi.woningblok_type_en_fysiek_changelog_type_value meer ON meer.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
+                            AND meer.woning_type = 'MEERGEZINSWONING'
+                ),
+                past_project_past_ownership_value AS (
+                    SELECT
+                        pppw.id, to_jsonb(array_agg(jsonb_build_object('ownershipId', wewc.id, 'ownershipType', wewc.eigendom_soort, 'ownershipAmount', wewc.amount,
+                                    'ownershipValue', wewc.waarde_value, 'ownershipRentalValue', wewc.huurbedrag_value,
+                                    'ownershipValueRangeMin', lower(wewc.waarde_value_range), 'ownershipRentalValueRangeMin', lower(huurbedrag_value_range),
+                                    'ownershipValueRangeMax', upper(wewc.waarde_value_range) - 1, 'ownershipRentalValueRangeMax', upper(huurbedrag_value_range) - 1,
+                                    'ownershipRangeCategoryId', wewc.ownership_property_value_id, 'ownershipRentalRangeCategoryId', wewc.rental_property_value_id))) AS ownershipValue
+                    FROM
+                        past_project_past_woningbloks pppw
+                        JOIN diwi.woningblok_eigendom_en_waarde_changelog wewc ON pppw.id = wewc.woningblok_id AND wewc.change_end_date IS NULL
+                            AND wewc.end_milestone_id = pppw.end_milestone_id
+                    GROUP BY pppw.id
+                ),
+
+                houseblocks AS (
+                    SELECT
+                        pppw.project_id,
+                        jsonb_build_object('houseblockId', pppw.id, 'deliveryYear', pppwd.deliveryYear, 'mutationKind', pppwm.mutationKind, 'mutationAmount', pppwm.mutationAmount,
+                         'meergezinswoning', pppwh.meergezinswoning, 'eengezinswoning', pppwh.eengezinswoning, 'ownershipValueList', pppov.ownershipValue) AS houseblocks
+                    FROM
+                        past_project_past_woningbloks pppw
+                            JOIN past_project_past_woningbloks_mutation pppwm ON pppw.id = pppwm.id
+                            LEFT JOIN past_project_past_woningbloks_delivery pppwd ON pppwd.id = pppw.id
+                            LEFT JOIN past_project_past_woningbloks_housetypes pppwh ON pppwh.id = pppw.id
+                            LEFT JOIN past_project_past_ownership_value pppov ON pppov.id = pppw.id
+                )
+
+                SELECT
+                    hb.project_id, to_jsonb(array_agg(hb.houseblocks)) AS houseblocks
+                FROM houseblocks hb
+                GROUP BY hb.project_id
         )
 
     SELECT ap.id                    AS projectId,
@@ -318,7 +611,8 @@ FROM (
            apnp.numeric_properties  AS numericProperties,
            apb.boolean_properties   AS booleanProperties,
            apc.category_properties  AS categoryProperties,
-           apg.geometries           AS geometries
+           apg.geometries           AS geometries,
+           aph.houseblocks          AS houseblocks
     FROM
         active_projects ap
             LEFT JOIN active_project_names apn ON apn.project_id = ap.id
@@ -330,6 +624,7 @@ FROM (
             LEFT JOIN active_project_booleanCP apb ON apb.project_id = ap.id
             LEFT JOIN active_project_categoryCP apc ON apc.project_id = ap.id
             LEFT JOIN active_project_geometries apg ON apg.project_id = ap.id
+            LEFT JOIN active_project_houseblocks aph ON aph.project_id = ap.id
 
     UNION
 
@@ -345,7 +640,8 @@ FROM (
            ppnp.numeric_properties  AS numericProperties,
            ppb.boolean_properties   AS booleanProperties,
            ppc.category_properties  AS categoryProperties,
-           ppg.geometries           AS geometries
+           ppg.geometries           AS geometries,
+           pph.houseblocks          AS houseblocks
     FROM
         past_projects pp
             LEFT JOIN past_project_names ppn ON ppn.project_id = pp.id
@@ -357,6 +653,7 @@ FROM (
             LEFT JOIN past_project_booleanCP ppb ON ppb.project_id = pp.id
             LEFT JOIN past_project_categoryCP ppc ON ppc.project_id = pp.id
             LEFT JOIN past_project_geometries ppg ON ppg.project_id = pp.id
+            LEFT JOIN past_project_houseblocks pph ON pph.project_id = pp.id
 
 ) AS q
 
