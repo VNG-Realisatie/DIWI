@@ -161,8 +161,8 @@ public class DataExchangeService {
                 List<DataExchangeOptionState> optionStates = repo.getDataExchangeDAO().getActiveDataExchangeOptionsStatesByDataExchangeOptionUuid(oldDxOption.getId());
                 optionStates.forEach(os -> {
                     if (newDxOption == null ||
-                        (os.getPropertyCategoryValue() != null && !newDxOption.getPropertyCategoryValueIds().contains(os.getPropertyCategoryValue().getId())) ||
-                        os.getPropertyOrdinalValue() != null && !newDxOption.getPropertyOrdinalValueIds().contains(os.getPropertyOrdinalValue().getId())) {
+                        (os.getPropertyCategoryValue() != null && (newDxOption.getPropertyCategoryValueIds() == null || !newDxOption.getPropertyCategoryValueIds().contains(os.getPropertyCategoryValue().getId()))) ||
+                        (os.getPropertyOrdinalValue() != null && (newDxOption.getPropertyOrdinalValueIds() == null || !newDxOption.getPropertyOrdinalValueIds().contains(os.getPropertyOrdinalValue().getId())))) {
                         os.setChangeUser(loggedUser);
                         os.setChangeEndDate(now);
                         repo.persist(os);
