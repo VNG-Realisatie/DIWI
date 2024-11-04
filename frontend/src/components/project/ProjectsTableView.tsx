@@ -88,6 +88,7 @@ type Props = {
     selectedProjects?: string[];
     handleBack?: () => void;
     exportProjects?: () => void;
+    handleDownload?: () => void;
 };
 
 export interface GenericOptionType<Type> {
@@ -135,6 +136,7 @@ export const ProjectsTableView = ({
     selectedProjects = [],
     handleBack = () => {},
     exportProjects = () => {},
+    handleDownload = () => {},
 }: Props) => {
     const { paginationInfo, setPaginationInfo, totalProjectCount } = useContext(ProjectContext);
 
@@ -826,15 +828,21 @@ export const ProjectsTableView = ({
                     </Button>
                 )}
                 {(showCheckBox || isExportPage) && allowedActions.includes("EXPORT_PROJECTS") && (
-                    <Button
-                        sx={{ width: "130px", my: 2 }}
-                        variant="contained"
-                        onClick={() => {
-                            setShowDialog(true);
-                        }}
-                    >
-                        {t("projects.export")}
-                    </Button>
+                    <>
+                        <Button
+                            disabled={true}
+                            sx={{ width: "130px", my: 2 }}
+                            variant="contained"
+                            onClick={() => {
+                                setShowDialog(true);
+                            }}
+                        >
+                            {t("projects.export")}
+                        </Button>
+                        <Button sx={{ width: "130px", my: 2 }} variant="contained" onClick={handleDownload}>
+                            {t("projects.download")}
+                        </Button>
+                    </>
                 )}
             </Box>
             <Box sx={{ height: 100 }}></Box>

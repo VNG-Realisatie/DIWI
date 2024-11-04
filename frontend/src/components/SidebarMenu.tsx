@@ -80,6 +80,16 @@ export const menu: MenuSection[] = [
                 required_permission: ["IMPORT_PROJECTS"],
                 link: Paths.exchangeimportdata.path,
             },
+            {
+                name: "sidebar.exportSettings",
+                required_permission: ["EXPORT_PROJECTS"],
+                link: Paths.exportSettings.path,
+            },
+            {
+                name: "sidebar.export",
+                required_permission: ["EXPORT_PROJECTS"],
+                link: Paths.configuredExport.path,
+            },
         ],
     },
 ];

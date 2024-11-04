@@ -9,7 +9,7 @@ type HouseBlockContextType = {
     houseBlocks: HouseBlockWithCustomProperties[];
     refresh: () => void;
     getEmptyHouseBlock: () => HouseBlockWithCustomProperties;
-    customDefinitions: Property[];
+    nonFixedCustomDefinitions: Property[];
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -54,7 +54,7 @@ const defaultHouseBlockContext: HouseBlockContextType = {
     houseBlocks: [],
     refresh: () => {},
     getEmptyHouseBlock: getEmptyHouseBlock,
-    customDefinitions: [],
+    nonFixedCustomDefinitions: [],
 };
 
 const HouseBlockContext = createContext<HouseBlockContextType>(defaultHouseBlockContext);
@@ -64,11 +64,13 @@ export const HouseBlockProvider = ({ children }: PropsWithChildren) => {
 
     const { projectId, selectedProject } = useContext(ProjectContext);
     const { physicalAppearanceCategories, targetGroupCategories } = useCustomPropertyDefinitions();
-    const [customDefinitions, setCustomDefinitions] = useState<Property[]>([]);
+    const [nonFixedCustomDefinitions, setNonFixedCustomDefinitions] = useState<Property[]>([]);
 
     useEffect(() => {
         getCustomPropertiesWithQuery("WONINGBLOK").then((properties) => {
-            setCustomDefinitions(properties.filter((property) => !property.disabled));
+            setNonFixedCustomDefinitions(
+                properties.filter((property) => !property.disabled && property.type !== "FIXED")
+            );
         });
     }, []);
 
@@ -139,7 +141,7 @@ export const HouseBlockProvider = ({ children }: PropsWithChildren) => {
                 houseBlocks,
                 refresh,
                 getEmptyHouseBlock,
-                customDefinitions,
+                nonFixedCustomDefinitions,
             }}
         >
             {children}

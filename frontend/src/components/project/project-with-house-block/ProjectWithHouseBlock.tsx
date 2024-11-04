@@ -18,7 +18,7 @@ import UserContext from "../../../context/UserContext";
 import { checkIsOwnerValidWithConfidentialityLevel } from "../../../utils/checkIsOwnerValidWithConfidentialityLevel";
 
 export const ProjectsWithHouseBlock = () => {
-    const { selectedProject, updateProject, customDefinitions } = useContext(ProjectContext);
+    const { selectedProject, updateProject, nonFixedCustomDefinitions } = useContext(ProjectContext);
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const [openColorDialog, setOpenColorDialog] = useState(false);
     const [readOnly, setReadOnly] = useState(true);
@@ -49,7 +49,7 @@ export const ProjectsWithHouseBlock = () => {
 
     const handleProjectSave = async () => {
         if (projectForm) {
-            if (!validateForm(projectForm, checkIsOwnerValidWithConfidentialityLevel(projectForm, user), customDefinitions)) {
+            if (!validateForm(projectForm, checkIsOwnerValidWithConfidentialityLevel(projectForm, user), nonFixedCustomDefinitions)) {
                 setAlert(t("createProject.hasMissingRequiredAreas.hasmissingProperty"), "warning");
                 return;
             }

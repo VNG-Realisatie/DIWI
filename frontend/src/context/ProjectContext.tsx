@@ -18,7 +18,7 @@ type ProjectContextType = {
     setPaginationInfo(info: GridPaginationModel): void;
     updateProject(): void;
     updateProjects(): void;
-    customDefinitions: Property[];
+    nonFixedCustomDefinitions: Property[];
 };
 
 const ProjectContext = createContext<ProjectContextType | null>(null) as React.Context<ProjectContextType>;
@@ -29,11 +29,13 @@ export const ProjectProvider = ({ children }: PropsWithChildren) => {
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
     const [paginationInfo, setPaginationInfo] = useState<GridPaginationModel>({ page: 1, pageSize: 10 });
     const [totalProjectCount, setTotalProjectCount] = useState(0);
-    const [customDefinitions, setCustomDefinitions] = useState<Property[]>([]);
+    const [nonFixedCustomDefinitions, setNonFixedCustomDefinitions] = useState<Property[]>([]);
 
     useEffect(() => {
         getCustomPropertiesWithQuery("PROJECT").then((properties) => {
-            setCustomDefinitions(properties.filter((property) => !property.disabled));
+            setNonFixedCustomDefinitions(
+                properties.filter((property) => !property.disabled && property.type !== "FIXED")
+            );
         });
     }, []);
 
@@ -76,7 +78,7 @@ export const ProjectProvider = ({ children }: PropsWithChildren) => {
                 setPaginationInfo,
                 updateProject,
                 updateProjects,
-                customDefinitions
+                nonFixedCustomDefinitions,
             }}
         >
             {children}
