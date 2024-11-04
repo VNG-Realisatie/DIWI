@@ -254,6 +254,7 @@ function ExportAdminPage() {
                                                 }
                                                 setProperties(updatedProperties);
                                             }}
+                                            isExportPage={true}
                                         />
                                     </Box>
                                 ))}
