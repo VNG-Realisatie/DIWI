@@ -7,6 +7,8 @@ import { t } from "i18next";
 
 type Props = {
     error: ImportErrorType;
+    isButtonDisabledMap: { [key: string]: boolean };
+    setIsButtonDisabledMap: React.Dispatch<React.SetStateAction<{ [key: string]: boolean }>>;
 };
 type ErrorMappings = {
     [key: string]: {
@@ -29,7 +31,7 @@ const property: Property = {
     ranges: undefined,
 };
 
-export default function CustomPropertiesCreateButton({ error }: Props) {
+export default function CustomPropertiesCreateButton({ error, isButtonDisabledMap, setIsButtonDisabledMap }: Props) {
     const { setAlert } = useContext(AlertContext);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [categoricalProperty, setCategoricalProperty] = useState<Property | null>(null);
@@ -38,18 +40,18 @@ export default function CustomPropertiesCreateButton({ error }: Props) {
     const [priceRangeBuyCategories, setPriceRangeBuyCategories] = useState<Property[]>([]);
     const [customProperties, setCustomProperties] = useState<Property[]>([]);
 
-    const fetchCustomProperties = async () => {
-        const customProperties = await getCustomProperties();
-        setCustomProperties(customProperties);
-        const rentCategories = customProperties.filter((property) => property.name === "priceRangeRent");
-        const buyCategories = customProperties.filter((property) => property.name === "priceRangeBuy");
-        setPriceRangeRentCategories(rentCategories);
-        setPriceRangeBuyCategories(buyCategories);
-    };
-
     useEffect(() => {
+        const fetchCustomProperties = async () => {
+            const customProperties = await getCustomProperties();
+            setCustomProperties(customProperties);
+            const rentCategories = customProperties.filter((property) => property.name === "priceRangeRent");
+            const buyCategories = customProperties.filter((property) => property.name === "priceRangeBuy");
+            setPriceRangeRentCategories(rentCategories);
+            setPriceRangeBuyCategories(buyCategories);
+        };
+
         fetchCustomProperties();
-    }, [fetchCustomProperties]);
+    }, [isButtonDisabled]);
 
     useEffect(() => {
         const fetchCustomProperty = async () => {
@@ -67,11 +69,10 @@ export default function CustomPropertiesCreateButton({ error }: Props) {
 
         const categoryExists = property?.categories?.some((category) => category.name === error.value);
 
-        if (categoryExists) {
-            setIsButtonDisabled(true);
-        } else {
-            setIsButtonDisabled(false);
-        }
+        setIsButtonDisabledMap((prevState) => ({
+            ...prevState,
+            [`${error.customPropertyId}-${error.value}`]: categoryExists || false,
+        }));
     }, [customProperties, error.customPropertyId, error.value]);
 
     const errorMappings: ErrorMappings = {
@@ -149,7 +150,6 @@ export default function CustomPropertiesCreateButton({ error }: Props) {
                 mapping.id ? await updateCustomProperty(mapping.id, mapping.body) : await addCustomProperty(mapping.body);
                 setAlert(t("admin.settings.notifications.successfullySaved"), "success");
                 setIsButtonDisabled(true);
-                await fetchCustomProperties();
             } catch (error: unknown) {
                 if (error instanceof Error) {
                     setAlert(error.message, "error");
@@ -161,7 +161,12 @@ export default function CustomPropertiesCreateButton({ error }: Props) {
     const shouldRenderButton = Object.keys(errorMappings).includes(error.errorCode);
 
     return shouldRenderButton ? (
-        <Button variant="contained" color="primary" onClick={handleClick} disabled={isButtonDisabled}>
+        <Button
+            variant="contained"
+            color="primary"
+            onClick={handleClick}
+            disabled={isButtonDisabled || isButtonDisabledMap[`${error.customPropertyId}-${error.value}`]}
+        >
             {mapping.id ? t("import.addCustomProperty") : t("import.addCategory")}
         </Button>
     ) : null;

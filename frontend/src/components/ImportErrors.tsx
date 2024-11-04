@@ -3,6 +3,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { t } from "i18next";
 import { capitalizeFirstLetters } from "../utils/stringFunctions";
 import CustomPropertiesCreateButton from "./CustomPropertiesCreateButton";
+import { useState } from "react";
 
 export type ImportErrorObject = {
     error: Array<ImportErrorType>;
@@ -25,6 +26,7 @@ export type ImportErrorType = {
 type ImportErrorProps = { errors: ImportErrorType[]; isGeoJson?: boolean };
 
 export const ImportErrors = ({ errors, isGeoJson = false }: ImportErrorProps) => {
+    const [isButtonDisabledMap, setIsButtonDisabledMap] = useState<{ [key: string]: boolean }>({});
     return (
         <>
             {/* This INFO text can be removed later or kept if valuable */}
@@ -71,7 +73,11 @@ export const ImportErrors = ({ errors, isGeoJson = false }: ImportErrorProps) =>
                                             <PropertyListItem label={t("import.errorProperties.identificationNumber")} value={error.identificationNumber} />
                                             <PropertyListItem label={t("import.errorProperties.customPropertyId")} value={error.customPropertyId} />
                                         </List>
-                                        <CustomPropertiesCreateButton error={error} />
+                                        <CustomPropertiesCreateButton
+                                            error={error}
+                                            isButtonDisabledMap={isButtonDisabledMap}
+                                            setIsButtonDisabledMap={setIsButtonDisabledMap}
+                                        />
                                     </>
                                 </AccordionDetails>
                             </Accordion>
