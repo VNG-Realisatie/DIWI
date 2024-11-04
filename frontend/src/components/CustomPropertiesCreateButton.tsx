@@ -1,9 +1,17 @@
 import { Button } from "@mui/material";
 import { ImportErrorType } from "./ImportErrors";
 import { addCustomProperty, getCustomProperties, getCustomProperty, Property, updateCustomProperty } from "../api/adminSettingServices";
-import { useContext, useEffect, useState, useCallback } from "react";
+import { useContext, useEffect, useState } from "react";
 import AlertContext from "../context/AlertContext";
 import { t } from "i18next";
+import RangeNumberInput from "./project/inputs/RangeNumberInput";
+import { MAX_INT_LARGER } from "../utils/houseblocks/houseBlocksFunctions";
+
+type RangeNumber = {
+    value: number | null;
+    min: number | null;
+    max: number | null;
+};
 
 type Props = {
     error: ImportErrorType;
@@ -40,6 +48,12 @@ export default function CustomPropertiesCreateButton({ error, isButtonDisabledMa
     const [priceRangeBuyCategories, setPriceRangeBuyCategories] = useState<Property[]>([]);
     const [customProperties, setCustomProperties] = useState<Property[]>([]);
 
+    const [rangeValue, setRangeValue] = useState<RangeNumber>({ value: 0, min: null, max: null });
+    const [isRangeValid, setIsRangeValid] = useState<boolean>(true);
+
+    const priceRangeRentId = customProperties.find((property) => property.name === "priceRangeRent")?.id;
+    const priceRangeBuyId = customProperties.find((property) => property.name === "priceRangeBuy")?.id;
+
     useEffect(() => {
         const fetchCustomProperties = async () => {
             const customProperties = await getCustomProperties();
@@ -64,16 +78,51 @@ export default function CustomPropertiesCreateButton({ error, isButtonDisabledMa
         fetchCustomProperty();
     }, [error.customPropertyId, error.value]);
 
-    useEffect(() => {
-        const property = customProperties.find((property) => property.id === error.customPropertyId);
+    const getPropertyByErrorCode = (
+        error: ImportErrorType,
+        customProperties: Property[],
+        priceRangeRentId?: string,
+        priceRangeBuyId?: string,
+    ): { duplicationCheckProperty?: Property; id: string } => {
+        let duplicationCheckProperty: Property | undefined;
+        let id: string;
+        if (error.errorCode === "unknown_price_rent_range_category" && priceRangeRentId) {
+            id = priceRangeRentId;
+            duplicationCheckProperty = customProperties.find((property) => property.id === id);
+        } else if (error.errorCode === "unknown_price_buy_range_category" && priceRangeBuyId) {
+            id = priceRangeBuyId;
+            duplicationCheckProperty = customProperties.find((property) => property.id === id);
+        } else {
+            id = error.customPropertyId || "";
+            duplicationCheckProperty = customProperties.find((property) => property.id === id);
+        }
+        return { duplicationCheckProperty, id };
+    };
 
-        const categoryExists = property?.categories?.some((category) => category.name === error.value);
+    const doesCategoryExist = (property?: Property, value?: string): boolean => {
+        return property?.categories?.some((category) => category.name === value) || property?.ranges?.some((category) => category.name === value) || false;
+    };
+
+    const { duplicationCheckProperty, id } = getPropertyByErrorCode(error, customProperties, priceRangeRentId, priceRangeBuyId);
+
+    useEffect(() => {
+        const categoryExists = doesCategoryExist(duplicationCheckProperty, error.value);
 
         setIsButtonDisabledMap((prevState) => ({
             ...prevState,
-            [`${error.customPropertyId}-${error.value}`]: categoryExists || false,
+            [`${id}-${error.value}`]: categoryExists,
         }));
-    }, [customProperties, error.customPropertyId, error.value]);
+    }, [customProperties, error, setIsButtonDisabledMap, duplicationCheckProperty, id]);
+
+    const handleRangeValueUpdate = (newValue: RangeNumber) => {
+        setRangeValue(newValue);
+        if (newValue.value) {
+            setRangeValue((prevState) => ({
+                ...prevState,
+                min: newValue.value,
+            }));
+        }
+    };
 
     const errorMappings: ErrorMappings = {
         unknown_houseblock_numeric_property: {
@@ -99,7 +148,8 @@ export default function CustomPropertiesCreateButton({ error, isButtonDisabledMa
                     ...(priceRangeRentCategories[0]?.ranges || []),
                     {
                         name: error.value || "",
-                        min: 0,
+                        min: rangeValue.min || 0,
+                        max: rangeValue.max || undefined,
                         id: "",
                         disabled: false,
                     },
@@ -116,7 +166,8 @@ export default function CustomPropertiesCreateButton({ error, isButtonDisabledMa
                     ...(priceRangeBuyCategories[0]?.ranges || []),
                     {
                         name: error.value || "",
-                        min: 0,
+                        min: rangeValue.min || 0,
+                        max: rangeValue.max || undefined,
                         id: "",
                         disabled: false,
                     },
@@ -161,13 +212,28 @@ export default function CustomPropertiesCreateButton({ error, isButtonDisabledMa
     const shouldRenderButton = Object.keys(errorMappings).includes(error.errorCode);
 
     return shouldRenderButton ? (
-        <Button
-            variant="contained"
-            color="primary"
-            onClick={handleClick}
-            disabled={isButtonDisabled || isButtonDisabledMap[`${error.customPropertyId}-${error.value}`]}
-        >
-            {mapping.id ? t("import.addCustomProperty") : t("import.addCategory")}
-        </Button>
+        <>
+            <Button
+                variant="contained"
+                color="primary"
+                onClick={handleClick}
+                disabled={isButtonDisabled || isButtonDisabledMap[`${id}-${error.value}`] || !isRangeValid}
+            >
+                {mapping.id ? t("import.addCustomProperty") : t("import.addCategory")}
+            </Button>
+            {(error.errorCode === "unknown_price_buy_range_category" || error.errorCode === "unknown_price_rent_range_category") && (
+                <RangeNumberInput
+                    isMonetary={true}
+                    setIsRangeValid={setIsRangeValid}
+                    value={rangeValue}
+                    updateCallBack={handleRangeValueUpdate}
+                    readOnly={false}
+                    mandatory={true}
+                    title={t("admin.priceCategories.amount")}
+                    errorText={t("admin.priceCategories.amountError")}
+                    maxValue={MAX_INT_LARGER}
+                />
+            )}
+        </>
     ) : null;
 }
