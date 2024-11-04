@@ -1,7 +1,7 @@
 import { Button } from "@mui/material";
 import { ImportErrorType } from "./ImportErrors";
 import { addCustomProperty, getCustomProperties, getCustomProperty, Property, updateCustomProperty } from "../api/adminSettingServices";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useCallback } from "react";
 import AlertContext from "../context/AlertContext";
 import { t } from "i18next";
 
@@ -28,6 +28,7 @@ const property: Property = {
     singleSelect: undefined,
     ranges: undefined,
 };
+
 export default function CustomPropertiesCreateButton({ error }: Props) {
     const { setAlert } = useContext(AlertContext);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
@@ -35,15 +36,20 @@ export default function CustomPropertiesCreateButton({ error }: Props) {
 
     const [priceRangeRentCategories, setPriceRangeRentCategories] = useState<Property[]>([]);
     const [priceRangeBuyCategories, setPriceRangeBuyCategories] = useState<Property[]>([]);
+    const [customProperties, setCustomProperties] = useState<Property[]>([]);
+
+    const fetchCustomProperties = async () => {
+        const customProperties = await getCustomProperties();
+        setCustomProperties(customProperties);
+        const rentCategories = customProperties.filter((property) => property.name === "priceRangeRent");
+        const buyCategories = customProperties.filter((property) => property.name === "priceRangeBuy");
+        setPriceRangeRentCategories(rentCategories);
+        setPriceRangeBuyCategories(buyCategories);
+    };
 
     useEffect(() => {
-        getCustomProperties().then((customProperties) => {
-            const rentCategories = customProperties.filter((property) => property.name === "priceRangeRent");
-            const buyCategories = customProperties.filter((property) => property.name === "priceRangeBuy");
-            setPriceRangeRentCategories(rentCategories);
-            setPriceRangeBuyCategories(buyCategories);
-        });
-    }, [setPriceRangeRentCategories, setPriceRangeBuyCategories]);
+        fetchCustomProperties();
+    }, [fetchCustomProperties]);
 
     useEffect(() => {
         const fetchCustomProperty = async () => {
@@ -54,7 +60,19 @@ export default function CustomPropertiesCreateButton({ error }: Props) {
         };
 
         fetchCustomProperty();
-    }, [error.customPropertyId]);
+    }, [error.customPropertyId, error.value]);
+
+    useEffect(() => {
+        const property = customProperties.find((property) => property.id === error.customPropertyId);
+
+        const categoryExists = property?.categories?.some((category) => category.name === error.value);
+
+        if (categoryExists) {
+            setIsButtonDisabled(true);
+        } else {
+            setIsButtonDisabled(false);
+        }
+    }, [customProperties, error.customPropertyId, error.value]);
 
     const errorMappings: ErrorMappings = {
         unknown_houseblock_numeric_property: {
@@ -131,6 +149,7 @@ export default function CustomPropertiesCreateButton({ error }: Props) {
                 mapping.id ? await updateCustomProperty(mapping.id, mapping.body) : await addCustomProperty(mapping.body);
                 setAlert(t("admin.settings.notifications.successfullySaved"), "success");
                 setIsButtonDisabled(true);
+                await fetchCustomProperties();
             } catch (error: unknown) {
                 if (error instanceof Error) {
                     setAlert(error.message, "error");
@@ -143,7 +162,7 @@ export default function CustomPropertiesCreateButton({ error }: Props) {
 
     return shouldRenderButton ? (
         <Button variant="contained" color="primary" onClick={handleClick} disabled={isButtonDisabled}>
-            {mapping.id ? t("admin.settings.update") : t("admin.settings.create")}
+            {mapping.id ? t("import.addCustomProperty") : t("import.addCategory")}
         </Button>
     ) : null;
 }
