@@ -202,7 +202,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                             </Grid>
                         )}
                         {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.PHYSICAL_APPEARANCE) && (
-                            <Grid item {...chartCardStyling}>
+                            <Grid item {...chartCardStyling} sx={{ width: "100%" }}>
                                 <Box display="flex" justifyContent="space-between" alignItems="center">
                                     <Typography variant="h6" fontSize={16}>
                                         {t("dashboard.residentialFeatures")}
