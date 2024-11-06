@@ -17,7 +17,7 @@ import {
     getGridSingleSelectOperators,
     getGridStringOperators,
 } from "@mui/x-data-grid";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { Box, Button, Dialog, DialogActions, DialogTitle, Stack, Tooltip, Typography } from "@mui/material";
 import SaveAsIcon from "@mui/icons-material/SaveAs";
@@ -36,6 +36,7 @@ import { capitalizeFirstLetters } from "../../utils/stringFunctions";
 import useAllowedActions from "../../hooks/useAllowedActions";
 import { UserGroupSelect } from "../../widgets/UserGroupSelect";
 import { getCustomProperties } from "../../api/adminSettingServices";
+import { configuredExport, projectsTable } from "../../Paths";
 
 interface RowData {
     id: number;
@@ -155,16 +156,18 @@ export const ProjectsTableView = ({
 
     const { allowedActions } = useAllowedActions();
     const { filterUrl, rows, filteredProjectsSize } = useCustomSearchParams(sortModel, filterModel, paginationInfo);
+    const { id: selectedExportId } = useParams();
 
     useEffect(() => {
         if (filterUrl !== "") {
             if (!isExportPage) {
-                navigate(`/projects/table${filterUrl}`);
+                navigate(projectsTable.toPath() + `${filterUrl}`);
             } else {
-                navigate(`/exchangedata/export${filterUrl}`);
+                if (!selectedExportId) return;
+                navigate(configuredExport.toPath() + `/${selectedExportId}/${filterUrl}`);
             }
         }
-    }, [filterUrl, navigate, filterModel, sortModel, isExportPage]);
+    }, [filterUrl, navigate, filterModel, sortModel, isExportPage, selectedExportId]);
 
     useEffect(() => {
         if (isExportPage) {

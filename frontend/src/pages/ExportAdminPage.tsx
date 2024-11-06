@@ -11,7 +11,7 @@ import useAllowedActions from "../hooks/useAllowedActions";
 import { getCustomProperties, Property } from "../api/adminSettingServices";
 import { CustomPropertyWidget } from "../components/CustomPropertyWidget";
 import { LabelComponent } from "../components/project/LabelComponent";
-import { configuredExport, updateExportSettings } from "../Paths";
+import { exportSettings, updateExportSettings } from "../Paths";
 
 type SelectedOption = {
     id: string;
@@ -254,7 +254,7 @@ function ExportAdminPage() {
                 })}
 
                 <Grid item xs={12} sx={{ mb: 10, display: "flex", flexDirection: "row", gap: 2, justifyContent: "flex-end" }}>
-                    <Button variant="outlined" color="primary" onClick={() => navigate(configuredExport.toPath())}>
+                    <Button variant="outlined" color="primary" onClick={() => navigate(exportSettings.toPath())}>
                         {t("generic.cancel")}
                     </Button>
 

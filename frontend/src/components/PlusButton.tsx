@@ -119,3 +119,14 @@ export const AddGoalButton: React.FC = () => {
 
     return  <PlusButton {...buttonProps} />
 }
+
+export const AddExportButton: React.FC = () => {
+    const { t } = useTranslation();
+    const buttonProps: PlusButtonProps = {
+        color: theme.palette.primary.customLightGrey,
+        link: Paths.createExportSettings.path,
+        text: t("exchangeData.addExport"),
+    };
+
+    return  <PlusButton {...buttonProps} />
+}
