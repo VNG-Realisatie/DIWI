@@ -4,6 +4,7 @@ CREATE OR REPLACE FUNCTION diwi.get_projects_export_list (
   _export_date_ date,
   _user_role_ text,
   _user_uuid_ uuid,
+  _allowed_projects_ UUID[],
   _allowed_confidentialities_ TEXT[]
 )
 	RETURNS TABLE (
@@ -81,7 +82,11 @@ FROM (
                     (_user_role_ = 'Management' AND ps.confidentiality_level NOT IN ('PRIVATE', 'INTERNAL_CIVIL')) OR
                     (_user_role_ = 'Council' AND ps.confidentiality_level NOT IN ('PRIVATE', 'INTERNAL_CIVIL', 'INTERNAL_MANAGEMENT'))
                 )
-                AND ps.confidentiality_level::TEXT = ANY(_allowed_confidentialities_)
+                AND
+                    CASE
+                        WHEN _allowed_confidentialities_ IS NOT NULL THEN ps.confidentiality_level::TEXT = ANY(_allowed_confidentialities_)
+                        WHEN _allowed_projects_ IS NOT NULL THEN p.id = ANY(_allowed_projects_)
+                    END
         ),
         active_project_names AS (
             SELECT
@@ -437,7 +442,11 @@ FROM (
                     (_user_role_ = 'Management' AND ps.confidentiality_level NOT IN ('PRIVATE', 'INTERNAL_CIVIL')) OR
                     (_user_role_ = 'Council' AND ps.confidentiality_level NOT IN ('PRIVATE', 'INTERNAL_CIVIL', 'INTERNAL_MANAGEMENT'))
                 )
-                AND ps.confidentiality_level::TEXT = ANY(_allowed_confidentialities_)
+                AND
+                    CASE
+                        WHEN _allowed_confidentialities_ IS NOT NULL THEN ps.confidentiality_level::TEXT = ANY(_allowed_confidentialities_)
+                        WHEN _allowed_projects_ IS NOT NULL THEN p.id = ANY(_allowed_projects_)
+                    END
         ),
         past_project_names AS (
             SELECT

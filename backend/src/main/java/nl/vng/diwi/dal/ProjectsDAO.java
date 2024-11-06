@@ -8,7 +8,7 @@ import java.util.UUID;
 import nl.vng.diwi.dal.entities.MultiProjectPolicyGoalSqlModel;
 import nl.vng.diwi.dal.entities.ProjectAuditSqlModel;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
-import nl.vng.diwi.dal.entities.enums.Confidentiality;
+import nl.vng.diwi.models.DataExchangeExportModel;
 import org.hibernate.Session;
 import org.hibernate.query.SelectionQuery;
 
@@ -196,14 +196,15 @@ public class ProjectsDAO extends AbstractRepository {
         return result;
     }
 
-    public List<ProjectExportSqlModel> getProjectsExportList(List<Confidentiality> allowedConfidentialities, LocalDate exportDate, LoggedUser loggedUser) {
+    public List<ProjectExportSqlModel> getProjectsExportList(DataExchangeExportModel dxExportModel, LoggedUser loggedUser) {
         SelectionQuery<ProjectExportSqlModel> q = session.createNativeQuery(String.format(
-                "SELECT * FROM %s.get_projects_export_list(:exportDate, :userRole, :userUuid, :allowedConfidentialities) ",
+                "SELECT * FROM %s.get_projects_export_list(:exportDate, :userRole, :userUuid, :allowedProjectIds, :allowedConfidentialities) ",
                 GenericRepository.VNG_SCHEMA_NAME), ProjectExportSqlModel.class)
-            .setParameter("exportDate", exportDate)
+            .setParameter("exportDate", dxExportModel.getExportDate())
             .setParameter("userRole", loggedUser.getRole().name())
             .setParameter("userUuid", loggedUser.getUuid())
-            .setParameter("allowedConfidentialities", allowedConfidentialities.stream().map(Confidentiality::name).toList().toArray(new String[0]));
+            .setParameter("allowedProjectIds", dxExportModel.getProjectIds() != null ? dxExportModel.getProjectIds().toArray(new UUID[0]) : null)
+            .setParameter("allowedConfidentialities", (dxExportModel.getConfidentialityLevelsAsStrings() != null) ? dxExportModel.getConfidentialityLevelsAsStrings().toArray(new String[0]) : null);
 
         return q.getResultList();
     }

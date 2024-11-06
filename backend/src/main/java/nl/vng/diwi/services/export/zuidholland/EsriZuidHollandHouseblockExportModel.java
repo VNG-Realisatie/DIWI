@@ -6,6 +6,8 @@ import nl.vng.diwi.dal.entities.enums.MutationType;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.models.RangeSelectDisabledModel;
+import nl.vng.diwi.services.DataExchangeExportError;
+import nl.vng.diwi.services.DataExchangeExportError.EXPORT_ERROR;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,7 +28,8 @@ public class EsriZuidHollandHouseblockExportModel {
 
     private List<OwnershipValueModel> ownershipValueList = new ArrayList<>();
 
-    public EsriZuidHollandHouseblockExportModel(ProjectExportSqlModel.HouseblockExportSqlModel sqlModel, PropertyModel priceRangeBuyFixedProp, PropertyModel priceRangeRentFixedProp) {
+    public EsriZuidHollandHouseblockExportModel(UUID projectUuid, ProjectExportSqlModel.HouseblockExportSqlModel sqlModel, PropertyModel priceRangeBuyFixedProp,
+                                                PropertyModel priceRangeRentFixedProp, List<DataExchangeExportError> errors) {
         this.houseblockId = sqlModel.getHouseblockId();
         this.deliveryYear = sqlModel.getDeliveryYear();
         this.mutationAmount = sqlModel.getMutationAmount();
@@ -38,12 +41,11 @@ public class EsriZuidHollandHouseblockExportModel {
            OwnershipValueModel oModel = new OwnershipValueModel();
            oModel.setOwnershipType(o.getOwnershipType());
            oModel.setAmount(o.getOwnershipAmount());
-           //TODO: error if not possible
             if (o.getOwnershipType() == OwnershipType.KOOPWONING) {
                 if (o.getOwnershipValue() != null) {
                     oModel.setOwnershipCategory(getOwnershipCategory(o.getOwnershipType(), o.getOwnershipValue()));
                 } else if (o.getOwnershipValueRangeMin() != null) {
-                    oModel.setOwnershipCategory(getOwnershipCategory(o.getOwnershipType(), o.getOwnershipValueRangeMin(), o.getOwnershipValueRangeMax()));
+                    oModel.setOwnershipCategory(getOwnershipCategory(projectUuid, sqlModel.getHouseblockId(), o.getOwnershipType(), o.getOwnershipValueRangeMin(), o.getOwnershipValueRangeMax(), errors));
                 } else if (o.getOwnershipRangeCategoryId() != null) {
                     RangeSelectDisabledModel rangeOption = priceRangeBuyFixedProp.getRanges().stream()
                         .filter(r -> r.getDisabled() == Boolean.FALSE && r.getId().equals(o.getOwnershipRangeCategoryId()))
@@ -51,7 +53,7 @@ public class EsriZuidHollandHouseblockExportModel {
                     if (rangeOption == null) {
                         oModel.setOwnershipCategory(OwnershipCategory.koop_onb);
                     } else {
-                        oModel.setOwnershipCategory(getOwnershipCategory(o.getOwnershipType(), rangeOption.getMin().longValue(), rangeOption.getMax().longValue()));
+                        oModel.setOwnershipCategory(getOwnershipCategory(projectUuid, sqlModel.getHouseblockId(), o.getOwnershipType(), rangeOption.getMin().longValue(), rangeOption.getMax().longValue(), errors));
                     }
                 } else {
                     oModel.setOwnershipCategory(OwnershipCategory.koop_onb);
@@ -60,7 +62,7 @@ public class EsriZuidHollandHouseblockExportModel {
                 if (o.getOwnershipRentalValue() != null) {
                     oModel.setOwnershipCategory(getOwnershipCategory(o.getOwnershipType(), o.getOwnershipRentalValue()));
                 } else if (o.getOwnershipRentalValueRangeMin() != null) {
-                    oModel.setOwnershipCategory(getOwnershipCategory(o.getOwnershipType(), o.getOwnershipRentalValueRangeMin(), o.getOwnershipRentalValueRangeMax()));
+                    oModel.setOwnershipCategory(getOwnershipCategory(projectUuid, sqlModel.getHouseblockId(), o.getOwnershipType(), o.getOwnershipRentalValueRangeMin(), o.getOwnershipRentalValueRangeMax(), errors));
                 } else if (o.getOwnershipRentalRangeCategoryId() != null) {
                     RangeSelectDisabledModel rangeOption = priceRangeRentFixedProp.getRanges().stream()
                         .filter(r -> r.getDisabled() == Boolean.FALSE && r.getId().equals(o.getOwnershipRentalRangeCategoryId()))
@@ -68,7 +70,7 @@ public class EsriZuidHollandHouseblockExportModel {
                     if (rangeOption == null) {
                         oModel.setOwnershipCategory(OwnershipCategory.huur_onb);
                     } else {
-                        oModel.setOwnershipCategory(getOwnershipCategory(o.getOwnershipType(), rangeOption.getMin().longValue(), rangeOption.getMax().longValue()));
+                        oModel.setOwnershipCategory(getOwnershipCategory(projectUuid, sqlModel.getHouseblockId(), o.getOwnershipType(), rangeOption.getMin().longValue(), rangeOption.getMax().longValue(), errors));
                     }
                 } else {
                     oModel.setOwnershipCategory(OwnershipCategory.huur_onb);
@@ -79,7 +81,7 @@ public class EsriZuidHollandHouseblockExportModel {
     }
 
     private OwnershipCategory getOwnershipCategory(OwnershipType ownershipType, Long priceValue) {
-        if (ownershipType == OwnershipType.KOOPWONING) {  //TODO: use < OR <= signs ??
+        if (ownershipType == OwnershipType.KOOPWONING) {
             if (priceValue == null) {
                 return OwnershipCategory.koop_onb;
             } else if (priceValue < zuidHollandPriceRangeCategories.get(OwnershipCategory.koop2)) {
@@ -106,14 +108,15 @@ public class EsriZuidHollandHouseblockExportModel {
         }
     }
 
-    private OwnershipCategory getOwnershipCategory(OwnershipType ownershipType, Long priceValueMin, Long priceValueMax) {
+    private OwnershipCategory getOwnershipCategory(UUID projectUuid, UUID houseblockUuid, OwnershipType ownershipType, Long priceValueMin, Long priceValueMax,
+                                                   List<DataExchangeExportError> errors) {
         OwnershipCategory cat1 = getOwnershipCategory(ownershipType, priceValueMin);
         OwnershipCategory cat2 = getOwnershipCategory(ownershipType, priceValueMax);
 
         if (cat1 == cat2) {
             return cat1;
         } else {
-            //TODO: error - range does not fit into one category
+            errors.add(new DataExchangeExportError(projectUuid, houseblockUuid, EXPORT_ERROR.OWNERSHIP_RANGE_MAPPING_ERROR));
             return ownershipType == OwnershipType.KOOPWONING ? OwnershipCategory.koop_onb : OwnershipCategory.huur_onb;
         }
     }
