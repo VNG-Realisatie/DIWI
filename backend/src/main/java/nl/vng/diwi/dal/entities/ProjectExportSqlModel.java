@@ -63,6 +63,10 @@ public class ProjectExportSqlModel {
     @Getter(AccessLevel.NONE)
     private List<PlanStatus> planningPlanStatus;
 
+    private LocalDate realizationPhaseDate;
+
+    private LocalDate planStatusPhase1Date;
+
     @Type(value = JsonListType.class)
     @Getter(AccessLevel.NONE)
     private List<TextPropertyModel> textProperties;

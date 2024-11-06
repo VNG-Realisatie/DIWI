@@ -283,12 +283,8 @@ public class EsriZuidHollandExport {
                         errors.add(new DataExchangeExportError(project.getProjectId(), ph_short9.name(), VALUE_LARGER_THAN_CONSTRUCTION_HOUSEBLOCKS));
                     }
                 }
-                case ph_date1 -> {
-                    projectFeature.getProperties().put(prop.name(), null);
-                } //TODO  Start date of the project phase "Realisatiefase". May be in the future and in the past. null if missing
-                case ph_date2 -> {
-                    projectFeature.getProperties().put(prop.name(), null);
-                } //TODO Start date of the planologische planstatus 1a, b or c. May be in the future and in the past. null if missing
+                case ph_date1 -> projectFeature.getProperties().put(prop.name(), project.getRealizationPhaseDate() != null ? project.getRealizationPhaseDate().toString() : null);
+                case ph_date2 ->  projectFeature.getProperties().put(prop.name(), project.getPlanStatusPhase1Date() != null ? project.getPlanStatusPhase1Date().toString() : null);
                 case ph_date3 -> projectFeature.getProperties().put(prop.name(), exportDate.toString());
                 case year_properties -> projectFeature.getProperties().put(prop.name(), houseblockProperties);
             }

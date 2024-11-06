@@ -16,6 +16,8 @@ CREATE OR REPLACE FUNCTION diwi.get_projects_export_list (
         planType TEXT[],
         projectPhase diwi.project_phase,
         planningPlanStatus TEXT[],
+        realizationPhaseDate DATE,
+        planStatusPhase1Date DATE,
         textProperties JSONB,
         numericProperties JSONB,
         booleanProperties JSONB,
@@ -36,6 +38,8 @@ SELECT  q.projectId,
         q.planType,
         q.projectPhase,
         q.planningPlanStatus,
+        q.realizationPhaseDate,
+        q.planStatusPhase1Date,
         q.textProperties,
         q.numericProperties,
         q.booleanProperties,
@@ -148,6 +152,26 @@ FROM (
             WHERE
                 sms.date <= _export_date_ AND _export_date_ < ems.date
             GROUP BY prlc.project_id
+        ),
+        active_project_realization_phase AS (
+            SELECT
+                pfc.project_id, MIN(sms.date) AS realization_phase_start_date, pfc.project_fase
+            FROM
+                active_projects ap
+                    JOIN diwi.project_fase_changelog pfc ON ap.id = pfc.project_id AND pfc.change_end_date IS NULL AND pfc.project_fase = '_6_REALIZATION'
+                    JOIN diwi.milestone_state sms ON sms.milestone_id = pfc.start_milestone_id AND sms.change_end_date IS NULL
+            GROUP BY pfc.project_id, pfc.project_fase
+        ),
+        active_project_planstatus_phase1 AS (
+            SELECT
+                pppc.project_id, MIN(sms.date) AS planstatus_phase1_date
+            FROM
+                active_projects ap
+                    JOIN diwi.project_planologische_planstatus_changelog pppc ON ap.id = pppc.project_id AND pppc.change_end_date IS NULL
+                    JOIN diwi.project_planologische_planstatus_changelog_value pppcv ON pppc.id = pppcv.planologische_planstatus_changelog_id
+                        AND pppcv.planologische_planstatus IN ('_1A_ONHERROEPELIJK', '_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG', '_1C_ONHERROEPELIJK_MET_BW_NODIG')
+                    JOIN diwi.milestone_state sms ON sms.milestone_id = pppc.start_milestone_id AND sms.change_end_date IS NULL
+            GROUP BY pppc.project_id
         ),
         active_project_textCP AS (
             SELECT
@@ -494,6 +518,26 @@ FROM (
                     JOIN diwi.project_registry_link_changelog_value prlcv ON prlc.id = prlcv.project_registry_link_changelog_id
             GROUP BY prlc.project_id
         ),
+        past_project_realization_phase AS (
+            SELECT
+                pfc.project_id, MIN(sms.date) AS realization_phase_start_date, pfc.project_fase
+            FROM
+                past_projects pp
+                    JOIN diwi.project_fase_changelog pfc ON pp.id = pfc.project_id AND pfc.change_end_date IS NULL AND pfc.project_fase = '_6_REALIZATION'
+                    JOIN diwi.milestone_state sms ON sms.milestone_id = pfc.start_milestone_id AND sms.change_end_date IS NULL
+            GROUP BY pfc.project_id, pfc.project_fase
+        ),
+        past_project_planstatus_phase1 AS (
+            SELECT
+                pppc.project_id, MIN(sms.date) AS planstatus_phase1_date
+            FROM
+                past_projects pp
+                    JOIN diwi.project_planologische_planstatus_changelog pppc ON pp.id = pppc.project_id AND pppc.change_end_date IS NULL
+                    JOIN diwi.project_planologische_planstatus_changelog_value pppcv ON pppc.id = pppcv.planologische_planstatus_changelog_id
+                        AND pppcv.planologische_planstatus IN ('_1A_ONHERROEPELIJK', '_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG', '_1C_ONHERROEPELIJK_MET_BW_NODIG')
+                    JOIN diwi.milestone_state sms ON sms.milestone_id = pppc.start_milestone_id AND sms.change_end_date IS NULL
+            GROUP BY pppc.project_id
+        ),
         past_project_textCP AS (
             SELECT
                 ptc.project_id, to_jsonb(array_agg(jsonb_build_object('propertyId', ptc.property_id, 'textValue', ptc.value))) AS text_properties
@@ -616,6 +660,8 @@ FROM (
            appt.plan_types          AS planType,
            apf.project_fase         AS projectPhase,
            appp.planning_planstatus AS planningPlanStatus,
+           aprp.realization_phase_start_date AS realizationPhaseDate,
+           appp1.planstatus_phase1_date AS planStatusPhase1Date,
            apt.text_properties      AS textProperties,
            apnp.numeric_properties  AS numericProperties,
            apb.boolean_properties   AS booleanProperties,
@@ -634,6 +680,8 @@ FROM (
             LEFT JOIN active_project_categoryCP apc ON apc.project_id = ap.id
             LEFT JOIN active_project_geometries apg ON apg.project_id = ap.id
             LEFT JOIN active_project_houseblocks aph ON aph.project_id = ap.id
+            LEFT JOIN active_project_realization_phase aprp ON aprp.project_id = ap.id
+            LEFT JOIN active_project_planstatus_phase1 appp1 ON appp1.project_id = ap.id
 
     UNION
 
@@ -645,6 +693,8 @@ FROM (
            pppt.plan_types          AS planType,
            ppf.project_fase         AS projectPhase,
            pppp.planning_planstatus AS planningPlanStatus,
+           pprp.realization_phase_start_date AS realizationPhaseDate,
+           pppp1.planstatus_phase1_date AS planStatusPhase1Date,
            ppt.text_properties      AS textProperties,
            ppnp.numeric_properties  AS numericProperties,
            ppb.boolean_properties   AS booleanProperties,
@@ -663,6 +713,8 @@ FROM (
             LEFT JOIN past_project_categoryCP ppc ON ppc.project_id = pp.id
             LEFT JOIN past_project_geometries ppg ON ppg.project_id = pp.id
             LEFT JOIN past_project_houseblocks pph ON pph.project_id = pp.id
+            LEFT JOIN past_project_realization_phase pprp ON pprp.project_id = pp.id
+            LEFT JOIN past_project_planstatus_phase1 pppp1 ON pppp1.project_id = pp.id
 
 ) AS q
 
