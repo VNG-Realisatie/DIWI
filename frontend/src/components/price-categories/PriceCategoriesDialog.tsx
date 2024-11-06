@@ -3,11 +3,11 @@ import TextInput from "../project/inputs/TextInput";
 import { CategoryType, Property, updateCustomProperty } from "../../api/adminSettingServices";
 import useAlert from "../../hooks/useAlert";
 import { t } from "i18next";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import RangeNumberInput from "../project/inputs/RangeNumberInput";
 import { getDuplicatedPropertyInfo } from "../../utils/getDuplicatedPropertyInfo";
-import useAllowedActions from "../../hooks/useAllowedActions";
 import { MAX_INT_LARGER } from "../../utils/houseblocks/houseBlocksFunctions";
+import UserContext from "../../context/UserContext";
 
 type RangeNumber = {
     value: number | null;
@@ -41,7 +41,7 @@ const PriceCategoriesDialog = ({ open, setOpen, id, propertyName, setRangeCatego
     const { setAlert } = useAlert();
     const [propertyDuplicationInfo, setPropertyDuplicationInfo] = useState<{ duplicatedStatus: boolean; duplicatedName: string }>();
     const [isRangeValid, setIsRangeValid] = useState<boolean>(true);
-    const { allowedActions } = useAllowedActions();
+    const { allowedActions } = useContext(UserContext);
 
     useEffect(() => {
         if (categoryToEdit) {

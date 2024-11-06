@@ -8,7 +8,7 @@ import { useContext, useState } from "react";
 import DeleteDialogWithConfirmation from "../admin/user-management/DeleteDialogWithConfirmation";
 import AlertContext from "../../context/AlertContext";
 import { t } from "i18next";
-import useAllowedActions from "../../hooks/useAllowedActions";
+import UserContext from "../../context/UserContext";
 
 type Props = {
     exportData: ExportData[];
@@ -22,7 +22,7 @@ const ExportTable = ({ exportData, selectedExport, setSelectedExport, setExportD
     const [idToDelete, setIdToDelete] = useState<string>("");
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const { setAlert } = useContext(AlertContext);
-    const { allowedActions } = useAllowedActions();
+    const { allowedActions } = useContext(UserContext);
 
     const handleDelete = async (id: string) => {
         try {

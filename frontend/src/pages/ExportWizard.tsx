@@ -4,16 +4,16 @@ import { downloadExportData, ExportData, exportProjects, getExportData } from ".
 import ExportTable from "../components/export/ExportTable";
 import { t } from "i18next";
 import { ProjectsTableView } from "../components/project/ProjectsTableView";
-import useAllowedActions from "../hooks/useAllowedActions";
 import ActionNotAllowed from "./ActionNotAllowed";
 import AlertContext from "../context/AlertContext";
+import UserContext from "../context/UserContext";
 
 const ExportWizard = () => {
     const [step, setStep] = useState(1);
     const [exportData, setExportData] = useState<ExportData[]>([]);
     const [selectedExport, setSelectedExport] = useState<ExportData | null>(null);
     const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
-    const { allowedActions } = useAllowedActions();
+    const { allowedActions } = useContext(UserContext);
     const { setAlert } = useContext(AlertContext);
 
     useEffect(() => {
