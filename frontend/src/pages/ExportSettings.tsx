@@ -1,16 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Grid, Box, Typography } from "@mui/material";
 import { ExportData, getExportData } from "../api/exportServices";
 import ExportTable from "../components/export/ExportTable";
 import { t } from "i18next";
-import useAllowedActions from "../hooks/useAllowedActions";
 import ActionNotAllowed from "./ActionNotAllowed";
 import { AddExportButton } from "../components/PlusButton";
+import UserContext from "../context/UserContext";
 
 const ExportSettings = () => {
     const [exportData, setExportData] = useState<ExportData[]>([]);
     const [selectedExport, setSelectedExport] = useState<ExportData | null>(null);
-    const { allowedActions } = useAllowedActions();
+    const { allowedActions } = useContext(UserContext);
 
     useEffect(() => {
         const fetchData = async () => {

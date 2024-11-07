@@ -15,6 +15,8 @@ import { useNavigate } from "react-router-dom";
 export const ExchangeImportData = () => {
     const { t } = useTranslation();
     const { allowedActions } = useContext(UserContext);
+    const [exportData, setExportData] = useState<ExportData[]>([])
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {

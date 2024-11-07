@@ -45,7 +45,6 @@ import { CustomDashboardList } from "./pages/CustomDashboardList";
 import { Goals } from "./pages/Goals";
 import { GoalWizard } from "./pages/GoalWizard";
 import ExportAdminPage from "./pages/ExportAdminPage";
-import useCurrentUserRole from "./hooks/useCurrentUserRole";
 import ExportSettings from "./pages/ExportSettings";
 import ExportWizard from "./pages/ExportWizard";
 
