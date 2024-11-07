@@ -102,6 +102,7 @@ export const CustomDashboardForm = ({ visibility, newBlueprint, setNewBlueprint,
                     setUserGroup={setUserGroups}
                     mandatory={true}
                     errorText=""
+                    projectOwnersOnly={false}
                 />
             </Grid>
             <Grid item xs={3}>
