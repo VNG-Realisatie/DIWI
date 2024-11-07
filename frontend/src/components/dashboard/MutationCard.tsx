@@ -4,7 +4,8 @@ import { WizardCard } from "../project-wizard/WizardCard";
 import { LabelComponent } from "../project/LabelComponent";
 import { CellContainer } from "../project/project-with-house-block/CellContainer";
 import { Visibility } from "./DashboardCharts";
-import useAllowedActions from "../../hooks/useAllowedActions";
+import { useContext } from "react";
+import UserContext from "../../context/UserContext";
 type Props = {
     demolitionAmount: number;
     constructionAmount: number;
@@ -13,7 +14,7 @@ type Props = {
 };
 
 export const MutationCard = ({ demolitionAmount, constructionAmount, visibility = undefined, handleToggle }: Props) => {
-    const { allowedActions } = useAllowedActions();
+    const { allowedActions } = useContext(UserContext);
     return (
         <Grid item xs={12} m={{ xs: 0, md: 1 }}>
             <WizardCard>

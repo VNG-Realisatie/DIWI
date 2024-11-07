@@ -1,12 +1,12 @@
 import { projects } from "../api/dummyData";
 import { Button, Stack, Typography } from "@mui/material";
 import { ImportProjectCardItem } from "../components/ImportProjectCardItem";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { SelectFromMapForm } from "../components/SelectFromMapForm";
 import { TimelineForm } from "../components/TimelineForm";
-import useAllowedActions from "../hooks/useAllowedActions";
 import ActionNotAllowed from "./ActionNotAllowed";
 import { t } from "i18next";
+import UserContext from "../context/UserContext";
 
 type Props = {
     type: string;
@@ -23,7 +23,7 @@ export const ImportedProjects = (props: Props) => {
     const projectTypeInitialState = importedDummyProjects.map((p) => {
         return { id: p.id, status: "new" };
     });
-    const { allowedActions } = useAllowedActions();
+    const { allowedActions } = useContext(UserContext);
     const [projectsType, setProjectsType] = useState<Array<{ id: number; status: string }>>(projectTypeInitialState);
 
     if (!allowedActions.includes("IMPORT_PROJECTS")) {

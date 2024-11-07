@@ -2,6 +2,8 @@ import { Alert, Typography, Stack, Accordion, AccordionSummary, AccordionDetails
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { t } from "i18next";
 import { capitalizeFirstLetters } from "../utils/stringFunctions";
+import CustomPropertiesCreateButton from "./CustomPropertiesCreateButton";
+import { useState } from "react";
 
 export type ImportErrorObject = {
     error: Array<ImportErrorType>;
@@ -24,6 +26,7 @@ export type ImportErrorType = {
 type ImportErrorProps = { errors: ImportErrorType[]; isGeoJson?: boolean };
 
 export const ImportErrors = ({ errors, isGeoJson = false }: ImportErrorProps) => {
+    const [isButtonDisabledMap, setIsButtonDisabledMap] = useState<{ [key: string]: boolean }>({});
     return (
         <>
             {/* This INFO text can be removed later or kept if valuable */}
@@ -50,25 +53,32 @@ export const ImportErrors = ({ errors, isGeoJson = false }: ImportErrorProps) =>
                                     <Typography className="import-error">{t(`import.errorCodes.${error.errorCode}`)}</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails>
-                                    <List
-                                        dense
-                                        sx={{
-                                            listStyleType: "disc",
-                                            pl: 1,
-                                            "& .MuiListItem-root": {
-                                                display: "list-item",
-                                                padding: 0,
-                                            },
-                                        }}
-                                    >
-                                        <PropertyListItem label={t("import.errorProperties.row")} value={error.row} />
-                                        <PropertyListItem label={t("import.errorProperties.column")} value={error.column} />
-                                        <PropertyListItem label={t("import.errorProperties.value")} value={error.value} />
-                                        <PropertyListItem label={t("import.errorProperties.propertyName")} value={error.propertyName} />
-                                        <PropertyListItem label={t("import.errorProperties.houseblockName")} value={error.houseblockName} />
-                                        <PropertyListItem label={t("import.errorProperties.identificationNumber")} value={error.identificationNumber} />
-                                        <PropertyListItem label={t("import.errorProperties.customPropertyId")} value={error.customPropertyId} />
-                                    </List>
+                                    <>
+                                        <List
+                                            dense
+                                            sx={{
+                                                listStyleType: "disc",
+                                                pl: 1,
+                                                "& .MuiListItem-root": {
+                                                    display: "list-item",
+                                                    padding: 0,
+                                                },
+                                            }}
+                                        >
+                                            <PropertyListItem label={t("import.errorProperties.row")} value={error.row} />
+                                            <PropertyListItem label={t("import.errorProperties.column")} value={error.column} />
+                                            <PropertyListItem label={t("import.errorProperties.value")} value={error.value} />
+                                            <PropertyListItem label={t("import.errorProperties.propertyName")} value={error.propertyName} />
+                                            <PropertyListItem label={t("import.errorProperties.houseblockName")} value={error.houseblockName} />
+                                            <PropertyListItem label={t("import.errorProperties.identificationNumber")} value={error.identificationNumber} />
+                                            <PropertyListItem label={t("import.errorProperties.customPropertyId")} value={error.customPropertyId} />
+                                        </List>
+                                        <CustomPropertiesCreateButton
+                                            error={error}
+                                            isButtonDisabledMap={isButtonDisabledMap}
+                                            setIsButtonDisabledMap={setIsButtonDisabledMap}
+                                        />
+                                    </>
                                 </AccordionDetails>
                             </Accordion>
                         );

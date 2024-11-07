@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import UsersTable from "../components/admin/user-management/UsersTable";
 import { getGroups, getUsers, User } from "../api/userServices";
 import GroupUserTable from "../components/admin/user-management/GroupUserTable";
@@ -9,9 +9,9 @@ import { addGroup } from "../api/userServices";
 import useAlert from "../hooks/useAlert";
 import GroupDialog from "../components/admin/user-management/GroupDialog";
 import UserDialog from "../components/admin/user-management/UserDialog";
-import useAllowedActions from "../hooks/useAllowedActions";
 import { addUser } from "../api/userServices";
 import ActionNotAllowed from "./ActionNotAllowed";
+import UserContext from "../context/UserContext";
 
 const emptyGroupForm: Group = {
     uuid: "",
@@ -45,7 +45,7 @@ const UserManagement = () => {
     const [newGroup, setNewGroup] = useState<Group>(emptyGroupForm);
     const [newUser, setNewUser] = useState<User>(emptyUserForm);
     const { setAlert } = useAlert();
-    const { allowedActions } = useAllowedActions();
+    const { allowedActions } = useContext(UserContext);
     useEffect(() => {
         getUsers().then((data) => setUsers(data));
     }, []);

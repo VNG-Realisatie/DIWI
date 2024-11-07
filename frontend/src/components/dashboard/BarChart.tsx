@@ -45,7 +45,7 @@ export const MyResponsiveBar = ({ chartData, selectedProject }: Props) => {
                     {t("dashboard.chartData.noData")}
                 </Typography>
             ) : (
-                <Stack height={size.height} pb={3}>
+                <Stack height={size.height} pb={3} sx={{ width: "100%" }}>
                     <BarChart
                         height={size.height}
                         xAxis={[{ scaleType: "band", data: convertedData.years }]}
@@ -55,12 +55,12 @@ export const MyResponsiveBar = ({ chartData, selectedProject }: Props) => {
                         tooltip={{ trigger: "item" }}
                         grid={{ horizontal: true }}
                     />
-                    <Stack flexDirection="row" m="auto">
+                    <Stack flexDirection="row" m="auto" sx={{ width: "100%" }}>
                         {selectedProject && <Box height={18} width={18} sx={{ backgroundColor: "#00A9F3" }}></Box>}
                         <Typography variant="caption" ml={1}>
                             {selectedProject && selectedProject.projectName ? selectedProject.projectName : ""}
                         </Typography>
-                        <Stack flexDirection="row" alignItems="center" ml={2}>
+                        <Stack flexDirection="row" alignItems="center" ml={2} sx={{ width: "100%" }}>
                             {selectedProject ? (
                                 <>
                                     <Box height={18} width={6} sx={{ backgroundColor: grayScaleColors[0] }}></Box>
@@ -71,7 +71,18 @@ export const MyResponsiveBar = ({ chartData, selectedProject }: Props) => {
                                     </Typography>
                                 </>
                             ) : (
-                                <Box sx={{ display: "flex", flexWrap: "wrap" }}>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        height: 50,
+                                        overflowX: "auto",
+                                        overflowY: "hidden",
+                                        whiteSpace: "nowrap",
+                                        width: "95%",
+                                    }}
+                                >
                                     {chartData.map((data, i) => {
                                         return (
                                             <Stack direction="row" sx={{ m: 0.5 }} key={i}>

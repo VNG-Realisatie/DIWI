@@ -1,6 +1,6 @@
 import { Box, CircularProgress, Grid, Stack, Switch, Typography } from "@mui/material";
 import { DashboardPieChart } from "./PieChart";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 import { ChartType } from "../../pages/DashboardProject";
 import { MutationCard } from "./MutationCard";
 import ProjectOverviewMap from "../map/ProjectOverviewMap";
@@ -8,12 +8,12 @@ import { getDashboardProjects, getPolicyDashboardProjects, Planning, PolicyGoal,
 import { getProjects } from "../../api/projectsServices";
 import { getProjectHouseBlocksWithCustomProperties } from "../../api/houseBlockServices";
 import { useTranslation } from "react-i18next";
-import useAllowedActions from "../../hooks/useAllowedActions";
 import { LabelComponent } from "../project/LabelComponent";
 import { CellContainer } from "../project/project-with-house-block/CellContainer";
 import { MyResponsiveBar } from "./BarChart";
 import { PolicyGoalChart } from "./PolicyGoalChart";
 import { formatMonetaryValue } from "../../utils/inputHelpers";
+import UserContext from "../../context/UserContext";
 
 const chartCardStyling = { backgroundColor: "#F0F0F0", my: 1, p: 2, xs: 12, md: 5.9 };
 
@@ -51,7 +51,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
     const [dashboardProjects, setDashboardProjects] = useState<DashboardProjects>();
     const [projectPhaseSums, setProjectPhaseSums] = useState([]);
     const [dashboardMutationValues, setDashboardMutationValues] = useState<MutationValues>();
-    const { allowedActions } = useAllowedActions();
+    const { allowedActions } = useContext(UserContext);
     const [policyGoals, setPolicyGoals] = useState<PolicyGoal[]>();
 
     const handleToggleVisibility = (item: VisibilityElement) => {
@@ -202,7 +202,7 @@ export const DashboardCharts = ({ visibility, setVisibility, isPrintingFullDashb
                             </Grid>
                         )}
                         {(allowedActions.includes("VIEW_ALL_BLUEPRINTS") || visibility?.PHYSICAL_APPEARANCE) && (
-                            <Grid item {...chartCardStyling}>
+                            <Grid item {...chartCardStyling} sx={{ width: "100%" }}>
                                 <Box display="flex" justifyContent="space-between" alignItems="center">
                                     <Typography variant="h6" fontSize={16}>
                                         {t("dashboard.residentialFeatures")}
