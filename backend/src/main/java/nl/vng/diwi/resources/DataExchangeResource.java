@@ -19,17 +19,17 @@ import nl.vng.diwi.config.ProjectConfig;
 import nl.vng.diwi.dal.AutoCloseTransaction;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.VngRepository;
-import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.models.ConfigModel;
+import nl.vng.diwi.models.DataExchangeExportModel;
 import nl.vng.diwi.models.DataExchangeModel;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.security.UserActionConstants;
+import nl.vng.diwi.services.DataExchangeExportError;
 import nl.vng.diwi.services.DataExchangeService;
 
-import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -149,28 +149,31 @@ public class DataExchangeResource {
     }
 
 
-    @GET
+    @POST
     @Path("/{id}/export")
-    @RolesAllowed(UserActionConstants.EDIT_DATA_EXCHANGES)  // ??
+    @RolesAllowed(UserActionConstants.EDIT_DATA_EXCHANGES)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public StreamingOutput exportProjects(@PathParam("id") UUID dataExchangeUuid,
-                                     ContainerRequestContext requestContext) throws VngNotFoundException {
+    public StreamingOutput exportProjects(@PathParam("id") UUID dataExchangeUuid, DataExchangeExportModel dataExchangeExportModel, @Context LoggedUser loggedUser)
+        throws VngNotFoundException, VngBadRequestException {
 
-        var loggedUser = (LoggedUser) requestContext.getProperty("loggedUser");
-        LocalDate exportDate = LocalDate.now();
-        List<Object> errors = new ArrayList<>();
-        List<Object> warnings = new ArrayList<>();
-        //TODO: flag dry-run
-        //TODO: flag include internal projects
+        String validationError = dataExchangeExportModel.validate();
+        if (validationError != null) {
+            throw new VngBadRequestException(validationError);
+        }
 
-        List<Confidentiality> allowedConfidentialities = List.of(Confidentiality.EXTERNAL_REGIONAL, Confidentiality.EXTERNAL_GOVERNMENTAL, Confidentiality.PUBLIC);
+        List<DataExchangeExportError> errors = new ArrayList<>();
 
-        Object exportObj = dataExchangeService.getExportObject(repo, configModel, dataExchangeUuid, allowedConfidentialities, exportDate, errors, warnings, loggedUser);
+        Object exportObj = dataExchangeService.getExportObject(repo, configModel, dataExchangeUuid, dataExchangeExportModel, errors, loggedUser);
 
-        return output -> {
-            MAPPER.writeValue(output, exportObj);
-            output.flush();
-        };
+        if (errors.isEmpty()) {
+            return output -> {
+                MAPPER.writeValue(output, exportObj);
+                output.flush();
+            };
+        } else {
+            throw new VngBadRequestException(errors);
+        }
 
     }
 

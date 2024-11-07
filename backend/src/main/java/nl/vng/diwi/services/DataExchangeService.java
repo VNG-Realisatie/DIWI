@@ -9,26 +9,24 @@ import nl.vng.diwi.dal.entities.DataExchangePropertySqlModel;
 import nl.vng.diwi.dal.entities.DataExchangePropertyState;
 import nl.vng.diwi.dal.entities.DataExchangeState;
 import nl.vng.diwi.dal.entities.DataExchangeType;
-import nl.vng.diwi.dal.entities.HouseblockExportSqlModel;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
 import nl.vng.diwi.dal.entities.Property;
 import nl.vng.diwi.dal.entities.PropertyCategoryValue;
 import nl.vng.diwi.dal.entities.PropertyOrdinalValue;
 import nl.vng.diwi.dal.entities.User;
-import nl.vng.diwi.dal.entities.enums.Confidentiality;
-import nl.vng.diwi.dal.entities.enums.ObjectType;
 import nl.vng.diwi.dal.entities.enums.PropertyKind;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
 import nl.vng.diwi.dataexchange.DataExchangeTemplate;
 import nl.vng.diwi.models.ConfigModel;
+import nl.vng.diwi.models.DataExchangeExportModel;
 import nl.vng.diwi.models.DataExchangeModel;
 import nl.vng.diwi.models.DataExchangePropertyModel;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandExport;
 
-import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -162,8 +160,8 @@ public class DataExchangeService {
                 List<DataExchangeOptionState> optionStates = repo.getDataExchangeDAO().getActiveDataExchangeOptionsStatesByDataExchangeOptionUuid(oldDxOption.getId());
                 optionStates.forEach(os -> {
                     if (newDxOption == null ||
-                        (os.getPropertyCategoryValue() != null && !newDxOption.getPropertyCategoryValueIds().contains(os.getPropertyCategoryValue().getId())) ||
-                        os.getPropertyOrdinalValue() != null && !newDxOption.getPropertyOrdinalValueIds().contains(os.getPropertyOrdinalValue().getId())) {
+                        (os.getPropertyCategoryValue() != null && (newDxOption.getPropertyCategoryValueIds() == null || !newDxOption.getPropertyCategoryValueIds().contains(os.getPropertyCategoryValue().getId()))) ||
+                        (os.getPropertyOrdinalValue() != null && (newDxOption.getPropertyOrdinalValueIds() == null || !newDxOption.getPropertyOrdinalValueIds().contains(os.getPropertyOrdinalValue().getId())))) {
                         os.setChangeUser(loggedUser);
                         os.setChangeEndDate(now);
                         repo.persist(os);
@@ -217,21 +215,19 @@ public class DataExchangeService {
 
     }
 
-    public Object getExportObject(VngRepository repo, ConfigModel configModel, UUID dataExchangeUuid, List<Confidentiality> allowedConfidentialities,
-                                  LocalDate exportDate, List<Object> errors, List<Object> warnings, LoggedUser loggedUser)
+    public Object getExportObject(VngRepository repo, ConfigModel configModel, UUID dataExchangeUuid, DataExchangeExportModel dxExportModel,
+                                  List<DataExchangeExportError> errors, LoggedUser loggedUser)
         throws VngNotFoundException {
 
         DataExchangeModel dataExchangeModel = getDataExchangeModel(repo, dataExchangeUuid, false);
 
         Map<String, DataExchangePropertyModel> dxPropertiesMap = dataExchangeModel.getProperties().stream()
             .collect(Collectors.toMap(DataExchangePropertyModel::getName, Function.identity()));
-        List<ProjectExportSqlModel> projects = repo.getProjectsDAO().getProjectsExportList(allowedConfidentialities, exportDate, loggedUser);
-        List<HouseblockExportSqlModel> houseblocks = new ArrayList<>();
-//        List<HouseblockExportSqlModel> houseblocks = repo.getHouseblockDAO().getHouseblocksExportList(exportDate, loggedUser);
+        List<ProjectExportSqlModel> projects = repo.getProjectsDAO().getProjectsExportList(dxExportModel, loggedUser);
 
-        List<PropertyModel> projectFixedProps = repo.getPropertyDAO().getPropertiesList(ObjectType.PROJECT, false, PropertyKind.FIXED);
+        List<PropertyModel> fixedProps = repo.getPropertyDAO().getPropertiesList(null, false, PropertyKind.FIXED);
         return switch (dataExchangeModel.getType()) {
-            case ESRI_ZUID_HOLLAND -> EsriZuidHollandExport.buildExportObject(configModel, projects, houseblocks, projectFixedProps, dxPropertiesMap, exportDate, errors, warnings);
+            case ESRI_ZUID_HOLLAND -> EsriZuidHollandExport.buildExportObject(configModel, projects, fixedProps, dxPropertiesMap, dxExportModel.getExportDate(), errors);
         };
 
     }
