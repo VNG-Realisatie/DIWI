@@ -111,7 +111,9 @@
         "invalid_numeric_range": "De waarde komt niet overeen met een numeriek bereik.",
 
         "feature_error": "Unable to import due to an error."
-      }
+      },
+      "addCustomProperty": "Voeg eigenschap toe",
+      "addCategory": "Voeg categorie toe"
     },
     "createProject": {
       "information": "Projectinformatie",
@@ -303,6 +305,7 @@
       "table": "Tabel",
       "createNewProject": "Nieuw project toevoegen",
       "export": "Exporteren",
+      "download": "Downloaden",
       "exportIt": "Exporteer",
       "confirmExport": "Weet je het zeker?",
       "cancelExport": "Annuleer",

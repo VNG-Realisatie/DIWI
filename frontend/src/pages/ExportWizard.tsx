@@ -1,18 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Grid, Button, Box, Typography } from "@mui/material";
-import { ExportData, exportProjects, getExportData } from "../api/exportServices";
+import { downloadExportData, ExportData, exportProjects, getExportData } from "../api/exportServices";
 import ExportTable from "../components/export/ExportTable";
 import { t } from "i18next";
 import { ProjectsTableView } from "../components/project/ProjectsTableView";
-import useAllowedActions from "../hooks/useAllowedActions";
 import ActionNotAllowed from "./ActionNotAllowed";
+import AlertContext from "../context/AlertContext";
+import UserContext from "../context/UserContext";
 
 const ExportWizard = () => {
     const [step, setStep] = useState(1);
     const [exportData, setExportData] = useState<ExportData[]>([]);
     const [selectedExport, setSelectedExport] = useState<ExportData | null>(null);
     const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
-    const { allowedActions } = useAllowedActions();
+    const { allowedActions } = useContext(UserContext);
+    const { setAlert } = useContext(AlertContext);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -58,6 +60,15 @@ const ExportWizard = () => {
         }
     };
 
+    const handleDownload = async () => {
+        if (!selectedExport) return;
+        try {
+            await downloadExportData(selectedExport.id);
+        } catch (error: unknown) {
+            if (error instanceof Error) setAlert(error.message, "warning");
+        }
+    };
+
     return (
         <Box p={2}>
             {step === 1 && (
@@ -98,6 +109,7 @@ const ExportWizard = () => {
                             selectedProjects={selectedProjects}
                             handleBack={handleBack}
                             exportProjects={handleExportProjects}
+                            handleDownload={handleDownload}
                         />
                     </Grid>
                 </Grid>

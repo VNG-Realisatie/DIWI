@@ -2,14 +2,14 @@ import { Box, Grid, TextField, Typography } from "@mui/material";
 import { columnTitleStyle } from "../ImportProjectCardItem";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
-import { useState } from "react";
-import useAllowedActions from "../../hooks/useAllowedActions";
+import { useContext, useState } from "react";
+import UserContext from "../../context/UserContext";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const ProjectHouseBlockCardItem = (props: any) => {
     const { hb } = props;
     const [editable, setEditable] = useState(false);
-    const { allowedActions } = useAllowedActions();
+    const { allowedActions } = useContext(UserContext);
 
     return (
         <>

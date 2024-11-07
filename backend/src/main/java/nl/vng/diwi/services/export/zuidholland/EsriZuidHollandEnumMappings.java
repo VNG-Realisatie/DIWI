@@ -1,4 +1,4 @@
-package nl.vng.diwi.services;
+package nl.vng.diwi.services.export.zuidholland;
 
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;

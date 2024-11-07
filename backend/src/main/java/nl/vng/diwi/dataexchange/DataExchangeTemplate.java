@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import nl.vng.diwi.dal.entities.DataExchangeType;
 import nl.vng.diwi.dal.entities.enums.ObjectType;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
-import nl.vng.diwi.services.EsriZuidHollandExport.EsriZuidHollandProjectProps;
+import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandExport.EsriZuidHollandProjectProps;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +63,7 @@ public class DataExchangeTemplate {
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.opmerkingen_kwalitatief.name(), ObjectType.PROJECT, List.of(PropertyType.TEXT), false, null, null));
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text1.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), true, true,
             List.of("1a harde plannen, in voorbereiding of in uitvoering", "1b kansrijke plannen", "1c bestuurlijke afspraken", "2 reserveplannen", "Onbekend")));
+        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text3.name(), ObjectType.PROJECT, List.of(PropertyType.BOOLEAN), false, null, null));
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_date3.name(), ObjectType.PROJECT, List.of(PropertyType.BOOLEAN), false, null, null));
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_short2.name(), ObjectType.PROJECT, List.of(PropertyType.NUMERIC), true, null, null));
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text4.name(), ObjectType.PROJECT, List.of(PropertyType.BOOLEAN), false, null, null));

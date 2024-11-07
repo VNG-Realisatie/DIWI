@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { DataGrid, GridCellParams, GridColDef } from "@mui/x-data-grid";
 
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button, Box } from "@mui/material";
@@ -9,7 +9,7 @@ import UserGroupSelect from "../widgets/UserGroupSelect";
 import { t } from "i18next";
 import useAlert from "../hooks/useAlert";
 import { useNavigate } from "react-router-dom";
-import useAllowedActions from "../hooks/useAllowedActions";
+import UserContext from "../context/UserContext";
 
 export const CustomDashboardList = () => {
     const [blueprints, setBlueprints] = useState<Blueprint[]>([]);
@@ -17,7 +17,7 @@ export const CustomDashboardList = () => {
     const [selectedBlueprint, setSelectedBlueprint] = useState<Blueprint | null>(null);
     const { setAlert } = useAlert();
     const navigate = useNavigate();
-    const { allowedActions } = useAllowedActions();
+    const { allowedActions } = useContext(UserContext);
 
     const handleCellClick = (params: GridCellParams) => {
         if (params.field !== "actions") {

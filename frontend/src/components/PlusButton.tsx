@@ -1,11 +1,11 @@
 import { IconButton, Typography } from "@mui/material";
 import Add from "@mui/icons-material/Add";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { theme } from "../theme";
 import * as Paths from "../Paths";
-import useAllowedActions from "../hooks/useAllowedActions";
+import UserContext from "../context/UserContext";
 
 export type PlusButtonProps = {
     color: string | undefined;
@@ -82,7 +82,7 @@ function PlusButton({ color, link, text }: PlusButtonProps) {
 }
 
 export const AddHouseBlockButton: React.FC<{ onClick: () => void }> = ({ onClick }) => {
-    const { allowedActions } = useAllowedActions();
+    const { allowedActions } = useContext(UserContext);
     const { t } = useTranslation();
     const handleClick = () => {
         onClick();
@@ -98,7 +98,7 @@ export const AddHouseBlockButton: React.FC<{ onClick: () => void }> = ({ onClick
 };
 
 export const AddProjectButton: React.FC = () => {
-    const { allowedActions } = useAllowedActions();
+    const { allowedActions } = useContext(UserContext);
     const { t } = useTranslation();
     const buttonProps: PlusButtonProps = {
         color: theme.palette.primary.customDarkBlue,
