@@ -646,8 +646,6 @@ export const ProjectsTableView = ({
     const [columns, setColumns] = useState<GridColDef[]>(defaultColumns);
 
     const handleFilterModelChange = (newModel: GridFilterModel) => {
-        if (isExportPage) return;
-
         if (newModel.items.some((item) => item.value)) {
             setFilterModel(newModel);
         } else {
