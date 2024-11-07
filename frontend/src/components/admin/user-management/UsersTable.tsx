@@ -3,12 +3,12 @@ import { DataGrid, GridCellParams } from "@mui/x-data-grid";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import useAlert from "../../../hooks/useAlert";
 import UserDialog from "./UserDialog";
 import DeleteDialogWithConfirmation from "./DeleteDialogWithConfirmation";
-import useAllowedActions from "../../../hooks/useAllowedActions";
 import { deleteUser, updateUser, User } from "../../../api/userServices";
+import UserContext from "../../../context/UserContext";
 
 type Props = {
     rows: User[];
@@ -21,7 +21,7 @@ const UsersTable = ({ rows, setUsers }: Props) => {
     const [editUserOpen, setUserDialogOpen] = useState(false);
     const [userToEdit, setUserToEdit] = useState<User | null>(null);
     const { setAlert } = useAlert();
-    const { allowedActions } = useAllowedActions();
+    const { allowedActions } = useContext(UserContext);
 
     const { t } = useTranslation();
     const handleEdit = (user: User) => {

@@ -4,12 +4,12 @@ import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import { styled } from "@mui/material/styles";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
-import { useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { drawerWidth, theme } from "../theme";
 
 import * as Paths from "../Paths";
-import { getCurrentUser, User } from "../api/userServices";
 import { t } from "i18next";
+import UserContext from "../context/UserContext";
 
 type Props = {
     open: boolean;
@@ -44,11 +44,7 @@ const typographyStyles = {
 
 export const Header = ({ open, handleDrawerOpen }: Props) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const [user, setUser] = useState<User | null>(null);
-
-    useEffect(() => {
-        getCurrentUser().then(setUser);
-    }, []);
+    const { user } = useContext(UserContext);
 
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);

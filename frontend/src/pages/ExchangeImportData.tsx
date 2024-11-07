@@ -5,11 +5,12 @@ import geojsonIcon from "../assets/geojson.svg";
 
 import * as Paths from "../Paths";
 import { useTranslation } from "react-i18next";
-import useAllowedActions from "../hooks/useAllowedActions";
+import { useContext } from "react";
+import UserContext from "../context/UserContext";
 
 export const ExchangeImportData = () => {
     const { t } = useTranslation();
-    const { allowedActions } = useAllowedActions();
+    const { allowedActions } = useContext(UserContext);
 
     return (
         <Stack border="solid 1px #ddd" py={5} px={8} mb={10}>

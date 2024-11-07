@@ -9,8 +9,8 @@ import { useContext, useEffect, useState } from "react";
 import { CategoryType, Property, updateCustomProperty } from "../../api/adminSettingServices";
 import DeleteDialog from "./DeleteDialog";
 import AlertContext from "../../context/AlertContext";
-import useAllowedActions from "../../hooks/useAllowedActions";
 import { formatMonetaryValue } from "../../utils/inputHelpers";
+import UserContext from "../../context/UserContext";
 
 type Category = {
     id: string;
@@ -34,7 +34,7 @@ const PriceCategoriesTable = ({ property, setRangeCategories }: Props) => {
     const { setAlert } = useContext(AlertContext);
     const [categories, setCategories] = useState<CategoryType[]>([]);
 
-    const { allowedActions } = useAllowedActions();
+    const { allowedActions } = useContext(UserContext);
 
     useEffect(() => {
         const rows = (property.ranges ?? []).filter((range) => !range.disabled);

@@ -4,6 +4,7 @@ import { expect, test, vi } from "vitest";
 import { Layout } from "./components/Layout";
 import ConfigContext from "./context/ConfigContext";
 import { t } from "i18next";
+import { UserProvider } from "./context/UserContext";
 
 vi.mock("query-string", () => ({
     //mock whatever you use from query-string
@@ -22,9 +23,11 @@ vi.mock("utils/requests", () => ({
 test("renders sidebar", () => {
     render(
         <MemoryRouter>
-            <ConfigContext.Provider value={{ municipalityName: "test", mapBounds: { corner1: { lng: 0, lat: 0 }, corner2: { lng: 0, lat: 0 } } }}>
-                <Layout />
-            </ConfigContext.Provider>
+            <UserProvider>
+                <ConfigContext.Provider value={{ municipalityName: "test", mapBounds: { corner1: { lng: 0, lat: 0 }, corner2: { lng: 0, lat: 0 } } }}>
+                    <Layout />
+                </ConfigContext.Provider>
+            </UserProvider>
         </MemoryRouter>,
     );
     const vngElement = screen.getByText(t("sidebar.knowledgeBase"));

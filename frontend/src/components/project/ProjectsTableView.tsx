@@ -33,9 +33,9 @@ import { AddProjectButton } from "../PlusButton";
 import dayjs from "dayjs";
 import { dateFormats } from "../../localization";
 import { capitalizeFirstLetters } from "../../utils/stringFunctions";
-import useAllowedActions from "../../hooks/useAllowedActions";
 import { UserGroupSelect } from "../../widgets/UserGroupSelect";
 import { getCustomProperties } from "../../api/adminSettingServices";
+import UserContext from "../../context/UserContext";
 
 interface RowData {
     id: number;
@@ -153,7 +153,7 @@ export const ProjectsTableView = ({
     const [areaProperties, setAreaProperties] = useState<AreaProperties | null>(null);
     const [columnConfig, setColumnConfig] = useState<ColumnConfig>(loadColumnConfig() || initialColumnConfig);
 
-    const { allowedActions } = useAllowedActions();
+    const { allowedActions } = useContext(UserContext);
     const { filterUrl, rows, filteredProjectsSize } = useCustomSearchParams(sortModel, filterModel, paginationInfo);
 
     useEffect(() => {

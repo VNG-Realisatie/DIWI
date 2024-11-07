@@ -7,8 +7,8 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useContext } from "react";
 import ConfigContext from "../context/ConfigContext";
-import useAllowedActions from "../hooks/useAllowedActions";
 import { menu, MenuSection } from "./SidebarMenu";
+import UserContext from "../context/UserContext";
 
 type SideBarProps = {
     open: boolean;
@@ -42,7 +42,7 @@ export const SideBar = ({ open, handleDrawerClose }: SideBarProps) => {
     const theme = useTheme();
     const { t } = useTranslation();
     const { municipalityName } = useContext(ConfigContext);
-    const { allowedActions } = useAllowedActions();
+    const { allowedActions } = useContext(UserContext);
 
     const filteredMenu = filterMenuByPermissions(menu, allowedActions);
 
