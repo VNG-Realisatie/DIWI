@@ -3,16 +3,16 @@ import { Grid, Box, Typography } from "@mui/material";
 import { downloadExportData, exportProjects } from "../api/exportServices";
 import { t } from "i18next";
 import { ProjectsTableView } from "../components/project/ProjectsTableView";
-import useAllowedActions from "../hooks/useAllowedActions";
 import ActionNotAllowed from "./ActionNotAllowed";
 import AlertContext from "../context/AlertContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { exchangeimportdata } from "../Paths";
+import UserContext from "../context/UserContext";
 
 const ExportWizard = () => {
     const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
     const { id: selectedExportId } = useParams();
-    const { allowedActions } = useAllowedActions();
+    const { allowedActions } = useContext(UserContext);
     const { setAlert } = useContext(AlertContext);
     const navigate = useNavigate();
 

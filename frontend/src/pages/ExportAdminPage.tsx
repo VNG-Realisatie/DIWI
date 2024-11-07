@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, useEffect } from "react";
+import { useState, ChangeEvent, useEffect, useContext } from "react";
 import { Grid, Button, Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import TextInput from "../components/project/inputs/TextInput";
@@ -7,11 +7,11 @@ import { addExportData, ExportData, getExportDataById, updateExportData, ExportP
 import useAlert from "../hooks/useAlert";
 import { useNavigate, useParams } from "react-router-dom";
 import ActionNotAllowed from "./ActionNotAllowed";
-import useAllowedActions from "../hooks/useAllowedActions";
 import { getCustomProperties, Property } from "../api/adminSettingServices";
 import { CustomPropertyWidget } from "../components/CustomPropertyWidget";
 import { LabelComponent } from "../components/project/LabelComponent";
 import { exportSettings, updateExportSettings } from "../Paths";
+import UserContext from "../context/UserContext";
 
 type SelectedOption = {
     id: string;
@@ -40,7 +40,7 @@ type FormData = {
 function ExportAdminPage() {
     const { t } = useTranslation();
     const { id } = useParams<string>();
-    const { allowedActions } = useAllowedActions();
+    const { allowedActions } = useContext(UserContext);
     const navigate = useNavigate();
     const typeConfig: TypeConfig = {
         ESRI_ZUID_HOLLAND: {

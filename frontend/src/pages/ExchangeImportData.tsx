@@ -6,16 +6,15 @@ import zuidHollandIcon from "../assets/zuid-holland.png";
 
 import * as Paths from "../Paths";
 import { useTranslation } from "react-i18next";
-import useAllowedActions from "../hooks/useAllowedActions";
+import { useContext } from "react";
+import UserContext from "../context/UserContext";
 import { ExportData, getExportData } from "../api/exportServices";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export const ExchangeImportData = () => {
     const { t } = useTranslation();
-    const { allowedActions } = useAllowedActions();
-    const [exportData, setExportData] = useState<ExportData[]>([]);
-    const navigate = useNavigate();
+    const { allowedActions } = useContext(UserContext);
 
     useEffect(() => {
         const fetchData = async () => {

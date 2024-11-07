@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import nl.vng.diwi.dal.JsonListType;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
+import nl.vng.diwi.dal.entities.enums.MutationType;
+import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
@@ -61,6 +63,10 @@ public class ProjectExportSqlModel {
     @Getter(AccessLevel.NONE)
     private List<PlanStatus> planningPlanStatus;
 
+    private LocalDate realizationPhaseDate;
+
+    private LocalDate planStatusPhase1Date;
+
     @Type(value = JsonListType.class)
     @Getter(AccessLevel.NONE)
     private List<TextPropertyModel> textProperties;
@@ -81,6 +87,10 @@ public class ProjectExportSqlModel {
     @Column(columnDefinition = "text[]")
     @Getter(AccessLevel.NONE)
     private List<String> geometries;
+
+    @Type(value = JsonListType.class)
+    @Getter(AccessLevel.NONE)
+    private List<HouseblockExportSqlModel> houseblocks;
 
     public List<PlanType> getPlanType() {
         return planType == null ? new ArrayList<>() : planType;
@@ -108,6 +118,10 @@ public class ProjectExportSqlModel {
 
     public List<String> getGeometries() {
         return geometries == null ? new ArrayList<>() : geometries;
+    }
+
+    public List<HouseblockExportSqlModel> getHouseblocks() {
+        return houseblocks == null ? new ArrayList<>() : houseblocks;
     }
 
     @Data
@@ -144,4 +158,45 @@ public class ProjectExportSqlModel {
         private List<UUID> optionValues;
     }
 
+    @Data
+    @NoArgsConstructor
+    public static class HouseblockExportSqlModel {
+
+        private UUID houseblockId;
+        private Integer deliveryYear;
+        private Integer mutationAmount;
+
+        @Enumerated(EnumType.STRING)
+        @JdbcType(PostgreSQLEnumJdbcType.class)
+        private MutationType mutationKind;
+
+        @Type(value = JsonListType.class)
+        @Getter(AccessLevel.NONE)
+        private List<OwnershipValueSqlModel> ownershipValueList;
+
+        private Integer meergezinswoning;
+        private Integer eengezinswoning;
+
+
+        public List<OwnershipValueSqlModel> getOwnershipValueList() {
+            return ownershipValueList == null ? new ArrayList<>() : ownershipValueList;
+        }
+
+    }
+
+    @Data
+    @NoArgsConstructor
+    public static class OwnershipValueSqlModel {
+        private UUID ownershipId;
+        private OwnershipType ownershipType;
+        private Integer ownershipAmount;
+        private Long ownershipValue;
+        private Long ownershipRentalValue;
+        private UUID ownershipRangeCategoryId;
+        private UUID ownershipRentalRangeCategoryId;
+        private Long ownershipValueRangeMin;
+        private Long ownershipValueRangeMax;
+        private Long ownershipRentalValueRangeMin;
+        private Long ownershipRentalValueRangeMax;
+    }
 }

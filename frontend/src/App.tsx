@@ -29,7 +29,7 @@ import { dateFormats } from "./localization";
 import { ProjectTimeline } from "./pages/ProjectTimeline";
 import ProjectPlotSelector from "./components/map/ProjectPlotSelector";
 import { ConfigProvider } from "./context/ConfigContext";
-import { UserProvider } from "./context/UserContext";
+import UserContext, { UserProvider } from "./context/UserContext";
 import "dayjs/locale/nl";
 import { HouseBlockProvider } from "./context/HouseBlockContext";
 import ProjectWizard from "./pages/ProjectWizard";
@@ -168,14 +168,14 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
     );
 };
 function App() {
-    const { currentUserRole } = useCurrentUserRole();
+    const { user } = useContext(UserContext);
     return (
         <Providers>
             <BrowserRouter>
                 <Routes>
                     <Route path={Paths.forbidden.path} element={<Forbidden />} />
                     <Route path="/" element={<RequiresLogin />}>
-                        {currentUserRole === "Admin" ? (
+                        {user?.role === "Admin" ? (
                             <Route index element={<UserManagement />} />
                         ) : (
                             <Route

@@ -33,7 +33,7 @@ vi.mock("../utils/requests", () => ({
 test("renders project wizard page 1", () => {
     render(
         <TestComponentWrapper>
-            <UserContext.Provider value={{ user: mockUser }}>
+            <UserContext.Provider value={{ user: mockUser, allowedActions: [] }}>
                 <ProjectProvider>
                     <HouseBlockProvider>
                         <ProjectWizard />
