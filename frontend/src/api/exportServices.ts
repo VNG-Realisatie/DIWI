@@ -34,6 +34,7 @@ export type ExportData = {
 export type ValidationError = {
     dxProperty: string;
     error: string;
+    errorCode: string;
     diwiOption: string | null;
 };
 
@@ -58,7 +59,7 @@ export async function deleteExportData(id: string): Promise<void> {
 }
 
 export async function downloadExportData(id: string): Promise<void> {
-    return download(`${API_URI}/dataexchange/${id}/export`, 'export.geojson');
+    return download(`${API_URI}/dataexchange/${id}/export`, "export.geojson");
 }
 
 //this dunction needs to be updated

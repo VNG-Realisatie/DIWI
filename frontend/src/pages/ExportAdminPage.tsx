@@ -227,7 +227,7 @@ function ExportAdminPage() {
                                 multiple={false}
                                 hasTooltipOption={false}
                                 displayError={error ? true : false}
-                                error={error?.error}
+                                error={error ? t(`exchangeData.validationErrors.${error.errorCode}`) : ""}
                             />
                             {selectedOption &&
                                 (selectedOption.propertyType === "CATEGORY" || selectedOption.propertyType === "ORDINAL") &&
