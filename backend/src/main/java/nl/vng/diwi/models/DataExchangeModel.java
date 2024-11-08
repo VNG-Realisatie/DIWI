@@ -164,7 +164,7 @@ public class DataExchangeModel {
         for (DataExchangePropertyModel dxPropModel : this.properties) {
             PropertyModel propertyModel = propertyModels.stream().filter(pm -> pm.getId().equals(dxPropModel.getCustomPropertyId())).findFirst().orElse(null);
             if (propertyModel == null) {
-                validationErrors.add(new ValidationError(dxPropModel.getName(), null, "Missing custom property."));
+                validationErrors.add(new ValidationError(dxPropModel.getName(), null, DxValidationError.MISSING_CUSTOM_PROP));
             } else if (propertyModel.getPropertyType() == PropertyType.CATEGORY) {
                 Map<UUID, List<UUID>> diwiOptionToDxOption = new HashMap<>();
                 dxPropModel.getOptions().forEach(dxOption -> {
@@ -181,9 +181,9 @@ public class DataExchangeModel {
                 propertyModel.getCategories().stream().filter(cOption -> cOption.getDisabled() == Boolean.FALSE)
                     .forEach(diwiOption -> {
                         if (!diwiOptionToDxOption.containsKey(diwiOption.getId())) {
-                            validationErrors.add(new ValidationError(dxPropModel.getName(), diwiOption.getName(), "Option of custom category is not mapped."));
+                            validationErrors.add(new ValidationError(dxPropModel.getName(), diwiOption.getName(), DxValidationError.OPTION_NOT_MAPPED));
                         } else if (diwiOptionToDxOption.get(diwiOption.getId()).size() > 1) {
-                            validationErrors.add(new ValidationError(dxPropModel.getName(), diwiOption.getName(), "Option of custom category is mapped to multiple template options."));
+                            validationErrors.add(new ValidationError(dxPropModel.getName(), diwiOption.getName(), DxValidationError.OPTION_MAPPED_MULTIPLE_TIMES));
                         }
                     });
             } else if (propertyModel.getPropertyType() == PropertyType.ORDINAL) {
@@ -202,9 +202,9 @@ public class DataExchangeModel {
                 propertyModel.getOrdinals().stream().filter(oOption -> oOption.getDisabled() == Boolean.FALSE)
                     .forEach(diwiOption -> {
                         if (!diwiOptionToDxOption.containsKey(diwiOption.getId())) {
-                            validationErrors.add(new ValidationError(dxPropModel.getName(), diwiOption.getName(), "Option of custom category is not mapped."));
+                            validationErrors.add(new ValidationError(dxPropModel.getName(), diwiOption.getName(), DxValidationError.OPTION_NOT_MAPPED));
                         } else if (diwiOptionToDxOption.get(diwiOption.getId()).size() > 1) {
-                            validationErrors.add(new ValidationError(dxPropModel.getName(), diwiOption.getName(), "Option of custom category is mapped to multiple template options."));
+                            validationErrors.add(new ValidationError(dxPropModel.getName(), diwiOption.getName(), DxValidationError.OPTION_MAPPED_MULTIPLE_TIMES));
                         }
                     });
             }
@@ -222,6 +222,23 @@ public class DataExchangeModel {
             !Objects.equals(this.valid, other.valid);
     }
 
+    public enum DxValidationError {
+
+        MISSING_CUSTOM_PROP("missing_custom_prop", "Missing custom property."),
+        OPTION_NOT_MAPPED("option_not_mapped", "Option of custom category is not mapped."),
+        OPTION_MAPPED_MULTIPLE_TIMES("option_mapped_multiple_times","Option of custom category is mapped to multiple template options.");
+
+        public final String errorMsg;
+
+        public final String errorCode;
+
+        DxValidationError(String errorCode, String errorMsg) {
+            this.errorCode = errorCode;
+            this.errorMsg = errorMsg;
+        }
+
+    }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -229,5 +246,13 @@ public class DataExchangeModel {
         private String dxProperty;
         private String diwiOption;
         private String error;
+        private String errorCode;
+
+        public ValidationError(String dxProperty, String diwiOption, DxValidationError dxError) {
+            this.dxProperty = dxProperty;
+            this.diwiOption = diwiOption;
+            this.error = dxError.errorMsg;
+            this.errorCode = dxError.errorCode;
+        }
     }
 }
