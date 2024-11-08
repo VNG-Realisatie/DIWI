@@ -27,6 +27,14 @@ export type ExportData = {
     projectUrl?: string;
     projectdetailUrl?: string;
     properties?: ExportProperty[];
+    valid?: boolean;
+    validationErrors?: ValidationError[];
+};
+
+export type ValidationError = {
+    dxProperty: string;
+    error: string;
+    diwiOption: string | null;
 };
 
 export async function getExportData(): Promise<ExportData[]> {

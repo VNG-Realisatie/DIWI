@@ -3,7 +3,7 @@ import { Grid, Button, Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import TextInput from "../components/project/inputs/TextInput";
 import CategoryInput from "../components/project/inputs/CategoryInput";
-import { addExportData, ExportData, getExportDataById, updateExportData, ExportProperty } from "../api/exportServices";
+import { addExportData, ExportData, getExportDataById, updateExportData, ExportProperty, ValidationError } from "../api/exportServices";
 import useAlert from "../hooks/useAlert";
 import { useNavigate, useParams } from "react-router-dom";
 import ActionNotAllowed from "./ActionNotAllowed";
@@ -58,12 +58,13 @@ function ExportAdminPage() {
     const [properties, setProperties] = useState<ExportProperty[]>([]);
     const [customProperties, setCustomProperties] = useState<Property[]>([]);
     const { setAlert } = useAlert();
+    const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
 
     useEffect(() => {
         if (id) {
             const fetchData = async () => {
                 const data = await getExportDataById(id);
-                const { properties, ...formData } = data;
+                const { properties, valid, validationErrors, ...formData } = data;
                 setFormData(formData);
                 setProperties(properties || []);
             };
@@ -110,6 +111,7 @@ function ExportAdminPage() {
                 ...(id && { properties }),
             };
             const data = id ? await updateExportData(id, exportData) : await addExportData(exportData);
+            setValidationErrors(data.validationErrors || []);
             setAlert(id ? t("admin.export.notification.updated") : t("admin.export.notification.created"), "success");
             if (!id) {
                 navigate(updateExportSettings.toPath({ id: data.id }));
@@ -185,6 +187,7 @@ function ExportAdminPage() {
 
                 {properties.map((property, index) => {
                     const selectedOption = customProperties.find((customProperty) => customProperty.id === property.customPropertyId);
+                    const error = validationErrors.find((error) => error.dxProperty === property.name);
                     return (
                         <Grid item xs={12} key={index}>
                             <LabelComponent text={property.name} required={false} disabled={false} />
@@ -223,7 +226,8 @@ function ExportAdminPage() {
                                 setValue={(event, value) => handlePropertyChange(index, value)}
                                 multiple={false}
                                 hasTooltipOption={false}
-                                error={t("goals.errors.selectProperty")}
+                                displayError={error ? true : false}
+                                error={error?.error}
                             />
                             {selectedOption &&
                                 (selectedOption.propertyType === "CATEGORY" || selectedOption.propertyType === "ORDINAL") &&
