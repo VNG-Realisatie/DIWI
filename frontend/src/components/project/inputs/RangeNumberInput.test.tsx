@@ -300,3 +300,43 @@ it.each([
 
     expect(screen.getByRole("textbox")).toHaveValue(expected);
 });
+
+it.each([
+    ["45035996273704,96", 2 ** 52, true],
+    ["4503599627370496", 2 ** 52, false],
+])("should parse large number up to max support integer in a double", (input, expected, monetary) => {
+    const updateCallBack = vi.fn();
+    const value = { value: null, min: null, max: null };
+
+    render(<RangeNumberInput value={value} updateCallBack={updateCallBack} labelText="hi" mandatory={false} readOnly={false} isMonetary={monetary} />);
+
+    const textbox = screen.getByRole("textbox");
+    userEvent.type(textbox, input);
+    userEvent.keyboard("{enter}");
+
+    expect(textbox).toHaveValue(input);
+    expect(screen.queryByText("admin.priceCategories.amountLimitError")).not.toBeInTheDocument();
+
+    expect(updateCallBack).toHaveBeenLastCalledWith({ value: expected, min: null, max: null });
+});
+
+it.each([
+    ["45035996273704,97", true, true], // 2^^52
+    ["4503599627370496", false, true], // 2^^52
+])("should show error if too large", (input, monetary, errorExpected) => {
+    const updateCallBack = vi.fn();
+    const value = { value: null, min: null, max: null };
+
+    render(<RangeNumberInput value={value} updateCallBack={updateCallBack} labelText="hi" mandatory={false} readOnly={false} isMonetary={monetary} />);
+
+    const textbox = screen.getByRole("textbox");
+    userEvent.type(textbox, input);
+    userEvent.keyboard("{enter}");
+
+    if (errorExpected) {
+        expect(screen.getByText("admin.priceCategories.amountLimitError")).toBeVisible();
+    } else {
+        expect(textbox).toHaveValue(input);
+        expect(screen.queryByText("admin.priceCategories.amountLimitError")).not.toBeInTheDocument();
+    }
+});

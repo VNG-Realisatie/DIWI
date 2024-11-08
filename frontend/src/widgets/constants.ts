@@ -15,3 +15,7 @@ export const planologischePlanStatus = [
     "4b_niet_opgenomen_in_visie",
 ];
 export const mutatiesoort = ["bouw", "sloop", "transformatie", "splitsing"];
+
+// Use 2 to the power of 52 instead of the theoretically possible 53 as this also works for fractions.
+// e.g. in the RangeNumberInput when using monetary values
+export const MAX_INT_IN_DOUBLE = Math.pow(2, 52);

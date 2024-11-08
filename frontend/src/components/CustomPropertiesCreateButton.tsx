@@ -5,7 +5,7 @@ import { useContext, useEffect, useState } from "react";
 import AlertContext from "../context/AlertContext";
 import { t } from "i18next";
 import RangeNumberInput from "./project/inputs/RangeNumberInput";
-import { MAX_INT_LARGER } from "../utils/houseblocks/houseBlocksFunctions";
+import { MAX_INT_IN_DOUBLE } from "../widgets/constants";
 
 type RangeNumber = {
     value: number | null;
@@ -231,7 +231,7 @@ export default function CustomPropertiesCreateButton({ error, isButtonDisabledMa
                     mandatory={true}
                     title={t("admin.priceCategories.amount")}
                     errorText={t("admin.priceCategories.amountError")}
-                    maxValue={MAX_INT_LARGER}
+                    maxValue={MAX_INT_IN_DOUBLE}
                 />
             )}
         </>
