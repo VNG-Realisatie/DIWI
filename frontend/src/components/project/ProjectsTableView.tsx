@@ -18,7 +18,7 @@ import {
     getGridStringOperators,
 } from "@mui/x-data-grid";
 import { useNavigate, useParams } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 import { Box, Button, Dialog, DialogActions, DialogTitle, Stack, Tooltip, Typography } from "@mui/material";
 import SaveAsIcon from "@mui/icons-material/SaveAs";
 import UndoIcon from "@mui/icons-material/Undo";
@@ -85,7 +85,7 @@ const initialColumnConfig: ColumnConfig = {
 type Props = {
     showCheckBox?: boolean;
     isExportPage?: boolean;
-    handleProjectSelection?: (projectId: string | null | string[]) => void;
+    setSelectedProjects?: Dispatch<SetStateAction<string[]>>;
     selectedProjects?: string[];
     handleBack?: () => void;
     exportProjects?: () => void;
@@ -133,11 +133,11 @@ const loadColumnConfig = (): ColumnConfig | null => {
 export const ProjectsTableView = ({
     showCheckBox,
     isExportPage = false,
-    handleProjectSelection = () => {},
     selectedProjects = [],
     handleBack = () => {},
     exportProjects = () => {},
     handleDownload = () => {},
+    setSelectedProjects = () => {},
 }: Props) => {
     const { paginationInfo, setPaginationInfo, totalProjectCount } = useContext(ProjectContext);
 
@@ -150,13 +150,13 @@ export const ProjectsTableView = ({
     const [showDialog, setShowDialog] = useState(false);
     const [filterModel, setFilterModel] = useState<GridFilterModel | undefined>();
     const [sortModel, setSortModel] = useState<GridSortModel | undefined>();
-    const [previousSelection, setPreviousSelection] = useState<GridRowSelectionModel>([]);
     const [areaProperties, setAreaProperties] = useState<AreaProperties | null>(null);
     const [columnConfig, setColumnConfig] = useState<ColumnConfig>(loadColumnConfig() || initialColumnConfig);
 
     const { allowedActions } = useContext(UserContext);
     const { filterUrl, rows, filteredProjectsSize } = useCustomSearchParams(sortModel, filterModel, paginationInfo);
     const { id: selectedExportId } = useParams();
+    const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
 
     useEffect(() => {
         if (filterUrl !== "") {
@@ -207,22 +207,12 @@ export const ProjectsTableView = ({
     };
 
     const handleSelectionChange = (newSelection: GridRowSelectionModel) => {
-        const added = newSelection.filter((id) => !previousSelection.includes(id));
-        const removed = previousSelection.filter((id) => !newSelection.includes(id));
+        setSelectionModel((prevSelection) => {
+            const updatedSelection = prevSelection.filter((id) => newSelection.includes(id));
 
-        if (newSelection.length === 0) {
-            handleProjectSelection(null);
-        } else if (newSelection.length === rows.length) {
-            handleProjectSelection(rows.map((row) => row.id));
-        } else {
-            if (added.length > 0) {
-                handleProjectSelection(added[0] as string);
-            } else if (removed.length > 0) {
-                handleProjectSelection(removed[0] as string);
-            }
-        }
-
-        setPreviousSelection(newSelection);
+            setSelectedProjects([...new Set([...updatedSelection, ...newSelection])] as string[]);
+            return [...new Set([...updatedSelection, ...newSelection])];
+        });
     };
 
     const customAreaFilterOperator: GridFilterOperator = {
@@ -726,7 +716,8 @@ export const ProjectsTableView = ({
                 onFilterModelChange={handleFilterModelChange}
                 sortModel={sortModel}
                 onSortModelChange={handleSortModelChange}
-                rowSelectionModel={selectedProjects}
+                keepNonExistentRowsSelected
+                rowSelectionModel={selectionModel}
                 columnVisibilityModel={initialVisibilityModel}
                 onColumnVisibilityModelChange={(newModel) => {
                     setColumnConfig((prevConfig: ColumnConfig) => {
