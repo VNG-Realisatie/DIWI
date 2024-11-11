@@ -3653,7 +3653,7 @@ CREATE TABLE diwi.software_module_rights (
 );
 CREATE TABLE diwi."user" (
     id uuid NOT NULL,
-    system_user boolean DEFAULT false NOT NULL
+    "system_user" boolean DEFAULT false NOT NULL
 );
 CREATE TABLE diwi.user_state (
     id uuid NOT NULL,
@@ -4052,10 +4052,10 @@ INSERT INTO diwi.property_state (id, property_name, property_type, create_user_i
 INSERT INTO diwi.property_state (id, property_name, property_type, create_user_id, change_start_date, change_end_date, property_id, property_object_type, change_user_id) VALUES ('4376743b-a714-45f1-9baa-7dd8be539176', 'geometry', 'TEXT', 'd9cedd33-a3b2-49b1-8f33-b7315aca84fa', '2024-09-10 08:36:03.770577+02', NULL, '0bb51933-743c-45c5-a6d4-722ac52ffa85', 'PROJECT', NULL);
 INSERT INTO diwi.property_state (id, property_name, property_type, create_user_id, change_start_date, change_end_date, property_id, property_object_type, change_user_id) VALUES ('853dd9f0-3227-49c0-a296-33e7c4d4f99f', 'priceRangeBuy', 'RANGE_CATEGORY', 'd9cedd33-a3b2-49b1-8f33-b7315aca84fa', '2024-09-10 08:45:36.01635+02', NULL, '560aa6bc-1852-43f1-945d-cb55481b20c3', 'WONINGBLOK', NULL);
 INSERT INTO diwi.property_state (id, property_name, property_type, create_user_id, change_start_date, change_end_date, property_id, property_object_type, change_user_id) VALUES ('260165b1-5121-49cf-91fd-50da574a4b58', 'priceRangeRent', 'RANGE_CATEGORY', 'd9cedd33-a3b2-49b1-8f33-b7315aca84fa', '2024-09-10 08:45:36.01635+02', NULL, 'fc95b3b7-3592-42b8-971e-b0bebe792c49', 'WONINGBLOK', NULL);
-INSERT INTO diwi."user" (id, system_user) VALUES ('d9cedd33-a3b2-49b1-8f33-b7315aca84fa', true);
-INSERT INTO diwi."user" (id, system_user) VALUES ('88e5153b-0c16-40b2-96bd-d1c52a0c2233', false);
-INSERT INTO diwi."user" (id, system_user) VALUES ('ad905510-b444-4eba-8db8-e901e9f4db72', false);
-INSERT INTO diwi."user" (id, system_user) VALUES ('0191daa8-72a7-7484-803f-c41451b33e1b', false);
+INSERT INTO diwi."user" (id, "system_user") VALUES ('d9cedd33-a3b2-49b1-8f33-b7315aca84fa', true);
+INSERT INTO diwi."user" (id, "system_user") VALUES ('88e5153b-0c16-40b2-96bd-d1c52a0c2233', false);
+INSERT INTO diwi."user" (id, "system_user") VALUES ('ad905510-b444-4eba-8db8-e901e9f4db72', false);
+INSERT INTO diwi."user" (id, "system_user") VALUES ('0191daa8-72a7-7484-803f-c41451b33e1b', false);
 INSERT INTO diwi.user_state (id, user_id, create_user_id, change_start_date, change_end_date, identity_provider_id, last_name, first_name, change_user_id, role, email, organization, phone_number, contact_person, department, prefixes) VALUES ('88e5153b-0c16-40b2-96bd-d1c52a0c2233', '88e5153b-0c16-40b2-96bd-d1c52a0c2233', 'd9cedd33-a3b2-49b1-8f33-b7315aca84fa', '2024-09-10 08:36:03.558552+02', NULL, '', '1', 'Demo user', NULL, 'UserPlus', NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO diwi.user_state (id, user_id, create_user_id, change_start_date, change_end_date, identity_provider_id, last_name, first_name, change_user_id, role, email, organization, phone_number, contact_person, department, prefixes) VALUES ('ad905510-b444-4eba-8db8-e901e9f4db72', 'ad905510-b444-4eba-8db8-e901e9f4db72', 'd9cedd33-a3b2-49b1-8f33-b7315aca84fa', '2024-09-10 08:36:03.558552+02', NULL, '', '2', 'Demo user', NULL, 'UserPlus', NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO diwi.user_state (id, user_id, create_user_id, change_start_date, change_end_date, identity_provider_id, last_name, first_name, change_user_id, role, email, organization, phone_number, contact_person, department, prefixes) VALUES ('0191daa8-72b1-7078-986a-421dd7c2b7aa', '0191daa8-72a7-7484-803f-c41451b33e1b', 'd9cedd33-a3b2-49b1-8f33-b7315aca84fa', '2024-09-10 08:39:18.153402+02', NULL, '9c31b066-1d56-4bdf-8356-f2321967581a', 'Min', 'Ad', NULL, 'UserPlus', 'noreply@phinin.com', NULL, NULL, NULL, NULL, NULL);
