@@ -322,7 +322,7 @@ it.each([
 
 it.each([
     ["45035996273704,97", true, true], // 2^^52
-    ["4503599627370496", false, true], // 2^^52
+    ["4503599627370497", false, true], // 2^^52
 ])("should show error if too large", (input, monetary, errorExpected) => {
     const updateCallBack = vi.fn();
     const value = { value: null, min: null, max: null };
