@@ -100,10 +100,6 @@ public class DataExchangeResource {
     public DataExchangeModel updateDataExchange(@PathParam("id") UUID dataExchangeUuid, DataExchangeModel dataExchangeModel, @Context LoggedUser loggedUser)
         throws VngNotFoundException, VngBadRequestException {
 
-        //TODO: validate dataexchange
-        // - check that our options correspond to only one of theirs
-        // - check that all our options are used
-
         dataExchangeModel.setId(dataExchangeUuid);
         String validationError = dataExchangeModel.validateDxState();
         if (validationError != null) {
@@ -122,6 +118,8 @@ public class DataExchangeResource {
             throw new VngBadRequestException(validatePropertiesError);
         }
 
+        List<DataExchangeModel.ValidationError> validationErrors = dataExchangeModel.validateConfigurationComplete(propertyModels);
+
         if (dataExchangeModel.getApiKey() == null) {
             dataExchangeModel.setApiKey(oldModel.getApiKey());
         }
@@ -133,7 +131,9 @@ public class DataExchangeResource {
             repo.getSession().clear();
         }
 
-        return dataExchangeService.getDataExchangeModel(repo, dataExchangeUuid, false);
+        DataExchangeModel updatedModel = dataExchangeService.getDataExchangeModel(repo, dataExchangeUuid, false);
+        updatedModel.setValidationErrors(validationErrors);
+        return updatedModel;
     }
 
     @DELETE

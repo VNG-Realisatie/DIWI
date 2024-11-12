@@ -125,11 +125,19 @@ function ExportAdminPage() {
         return fields.every((field) => !field.mandatory || formData[field.name]?.trim() !== "");
     };
 
-    const handlePropertyChange = (index: number, value: SelectedOption) => {
-        if (!value) return;
+    const handlePropertyChange = (index: number, value: SelectedOption | null) => {
         const updatedProperties = [...properties];
 
-        updatedProperties[index].customPropertyId = value.id;
+        if (value) {
+            updatedProperties[index].customPropertyId = value.id;
+        } else {
+            updatedProperties[index].customPropertyId = null;
+            updatedProperties[index].options?.forEach((option) => {
+                option.propertyCategoryValueIds = [];
+                option.propertyOrdinalValueIds = [];
+            });
+        }
+
         setProperties(updatedProperties);
     };
 
@@ -246,6 +254,7 @@ function ExportAdminPage() {
                                                 }
                                                 setProperties(updatedProperties);
                                             }}
+                                            isExportPage={true}
                                         />
                                     </Box>
                                 ))}
