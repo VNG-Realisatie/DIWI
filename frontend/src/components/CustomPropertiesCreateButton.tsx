@@ -237,9 +237,17 @@ export default function CustomPropertiesCreateButton({ error, isButtonDisabledMa
                     maxValue={MAX_INT_IN_DOUBLE}
                 />
             )}
-            {(error.errorCode === "unknown_houseblock_property" || error.errorCode === "unknown_project_property") && (
+            {(error.errorCode === "unknown_houseblock_property" ||
+                error.errorCode === "unknown_project_property" ||
+                error.errorCode === "unknown_houseblock_numeric_property" ||
+                error.errorCode === "unknown_project_category_property") && (
                 <>
-                    <PropertyTypeSelect selectedPropertyType={selectedPropertyType} setSelectedPropertyType={setSelectedPropertyType} disabled={false} />
+                    <PropertyTypeSelect
+                        selectedPropertyType={selectedPropertyType}
+                        setSelectedPropertyType={setSelectedPropertyType}
+                        disabled={false}
+                        error={error.errorCode}
+                    />
                     <PropertyCheckboxGroup
                         mandatory={mandatory}
                         setMandatory={setMandatory}
@@ -248,15 +256,6 @@ export default function CustomPropertiesCreateButton({ error, isButtonDisabledMa
                         selectedPropertyType={selectedPropertyType}
                     />
                 </>
-            )}
-            {(error.errorCode === "unknown_houseblock_numeric_property" || error.errorCode === "unknown_project_category_property") && (
-                <PropertyCheckboxGroup
-                    mandatory={mandatory}
-                    setMandatory={setMandatory}
-                    singleSelect={singleSelect}
-                    setSingleSelect={setSingleSelect}
-                    selectedPropertyType={selectedPropertyType}
-                />
             )}
             <Button
                 variant="contained"
