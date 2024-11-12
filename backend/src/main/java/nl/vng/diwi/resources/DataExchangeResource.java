@@ -25,6 +25,7 @@ import nl.vng.diwi.models.DataExchangeModel;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
+import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.security.UserActionConstants;
 import nl.vng.diwi.services.DataExchangeExportError;
@@ -34,6 +35,8 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import org.apache.commons.lang3.NotImplementedException;
 
 @Path("/dataexchange")
 @RolesAllowed("BLOCKED_BY_DEFAULT") // This forces us to make sure each end-point has action(s) assigned, so we never have things open by default.
@@ -148,13 +151,22 @@ public class DataExchangeResource {
         }
     }
 
-
     @POST
     @Path("/{id}/export")
     @RolesAllowed(UserActionConstants.EDIT_DATA_EXCHANGES)
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public void exportProjects(@PathParam("id") UUID dataExchangeUuid, DataExchangeExportModel dataExchangeExportModel, @Context LoggedUser loggedUser)
+    {
+        throw new VngServerErrorException("Not implemented yet");
+    }
+
+    @POST
+    @Path("/{id}/download")
+    @RolesAllowed(UserActionConstants.EDIT_DATA_EXCHANGES)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public StreamingOutput exportProjects(@PathParam("id") UUID dataExchangeUuid, DataExchangeExportModel dataExchangeExportModel, @Context LoggedUser loggedUser)
+    public StreamingOutput downloadProjects(@PathParam("id") UUID dataExchangeUuid, DataExchangeExportModel dataExchangeExportModel, @Context LoggedUser loggedUser)
         throws VngNotFoundException, VngBadRequestException {
 
         String validationError = dataExchangeExportModel.validate();
