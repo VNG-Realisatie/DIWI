@@ -35,13 +35,14 @@ export const UserGroupSelect = ({
     errorText,
     placeholder = "",
     checkIsOwnerValidWithConfidentialityLevel,
-    projectOwnersOnly = false
+    projectOwnersOnly
 }: Props) => {
     const [ownerOptions, setOwnerOptions] = useState<UserGroup[]>();
     const hasError = shouldDisplayError(mandatory, userGroup);
     const { t } = useTranslation();
 
     useEffect(() => {
+        if (projectOwnersOnly === undefined) return;
         getUserGroupList(isSingleUserIncluded, projectOwnersOnly).then((groups) => {
             setOwnerOptions(groups);
         });
