@@ -1,5 +1,15 @@
 import { PlanStatusOptions, PlanTypeOptions, ProjectPhaseOptions } from "../../types/enums";
-import { GenericOptionType, OptionType } from "../project/ProjectsTableView";
+import { GenericOptionType } from "../project/ProjectsTableView";
+
+export type ConfidentialityLevelOptions =
+    | "PRIVATE"
+    | "INTERNAL_CIVIL"
+    | "INTERNAL_MANAGEMENT"
+    | "INTERNAL_COUNCIL"
+    | "EXTERNAL_REGIONAL"
+    | "EXTERNAL_GOVERNMENTAL"
+    | "PUBLIC";
+
 
 export const planningPlanStatus: GenericOptionType<PlanStatusOptions>[] = [
     { id: "_1A_ONHERROEPELIJK", name: "_1A_ONHERROEPELIJK" },
@@ -32,7 +42,7 @@ export const projectPhaseOptions: GenericOptionType<ProjectPhaseOptions>[] = [
     { id: "_7_AFTERCARE", name: "_7_AFTERCARE" },
 ];
 
-export const confidentialityLevelOptions: OptionType[] = [
+export const confidentialityLevelOptions: GenericOptionType<ConfidentialityLevelOptions>[] = [
     { id: "PRIVATE", name: "1_PRIVATE" },
     { id: "INTERNAL_CIVIL", name: "2_INTERNAL_CIVIL" },
     { id: "INTERNAL_MANAGEMENT", name: "3_INTERNAL_MANAGEMENT" },

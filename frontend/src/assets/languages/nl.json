@@ -305,6 +305,8 @@
       "table": "Tabel",
       "createNewProject": "Nieuw project toevoegen",
       "export": "Exporteren",
+      "confidentialityChange": "Ga naar verander vertrouwelijkheid pagina",
+      "backToExport": "Ga door naar export",
       "download": "Downloaden",
       "exportIt": "Exporteer",
       "confirmExport": "Weet je het zeker?",
@@ -319,6 +321,7 @@
       "toolbarColumns": "Kolommen",
       "toolbarColumnsLabel": "Selecteer kolommen",
       "toolbarFiltersLabel": "Filters wegeven",
+      "confidentialityLevelUpdate": "Het vertrouwelijkheidsniveau van de geselecteerde projecten is bijgewerkt",
 
       "tableColumns": {
         "projectName": "Project naam",
@@ -396,6 +399,11 @@
         "value": "Waarde",
         "description": "Beschrijving",
         "errors": "Fouten"
+      },
+      "confidentialityChanger": {
+        "explanation": "Selecteer met de checkboxes projecten waarvan je het vertrouwelijkheid niveau wilt aanpassen.",
+        "changeTo": "Verander naar:",
+        "confidentialityUpdate": "Vertrouwelijkheid niveau veranderen"
       }
     },
     "policy": {

@@ -47,6 +47,7 @@ import { GoalWizard } from "./pages/GoalWizard";
 import ExportAdminPage from "./pages/ExportAdminPage";
 import ExportSettings from "./pages/ExportSettings";
 import ExportWizard from "./pages/ExportWizard";
+import ConfidentialityUpdateTable from "./pages/ConfidentialityUpdateTable";
 
 enum UserStatus {
     Authenticated,
@@ -346,6 +347,14 @@ function App() {
                             element={
                                 <ProjectProvider>
                                     <ExportWizard />
+                                </ProjectProvider>
+                            }
+                        />
+                        <Route
+                            path={Paths.confidentialityUpdate.path + "/:id"}
+                            element={
+                                <ProjectProvider>
+                                    <ConfidentialityUpdateTable />
                                 </ProjectProvider>
                             }
                         />
