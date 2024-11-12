@@ -22,6 +22,7 @@ import nl.vng.diwi.models.DataExchangeExportModel;
 import nl.vng.diwi.models.DataExchangeModel;
 import nl.vng.diwi.models.DataExchangePropertyModel;
 import nl.vng.diwi.models.PropertyModel;
+import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
@@ -116,6 +117,7 @@ public class DataExchangeService {
         state.setProjectDetailUrl(model.getProjectDetailUrl());
         state.setChangeStartDate(zdtNow);
         state.setCreateUser(repo.getReferenceById(User.class, loggedUserUuid));
+        state.setValid(model.getValid());
         repo.persist(state);
 
     }
@@ -217,9 +219,12 @@ public class DataExchangeService {
 
     public Object getExportObject(VngRepository repo, ConfigModel configModel, UUID dataExchangeUuid, DataExchangeExportModel dxExportModel,
                                   List<DataExchangeExportError> errors, LoggedUser loggedUser)
-        throws VngNotFoundException {
+        throws VngNotFoundException, VngBadRequestException {
 
         DataExchangeModel dataExchangeModel = getDataExchangeModel(repo, dataExchangeUuid, false);
+        if (dataExchangeModel.getValid() != Boolean.TRUE) {
+            throw new VngBadRequestException("Trying to export based on an invalid data exchange.");
+        }
 
         Map<String, DataExchangePropertyModel> dxPropertiesMap = dataExchangeModel.getProperties().stream()
             .collect(Collectors.toMap(DataExchangePropertyModel::getName, Function.identity()));

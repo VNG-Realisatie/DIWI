@@ -45,4 +45,7 @@ public class DataExchangeState extends ChangeDataSuperclass {
 
     @Column(name = "project_detail_url")
     private String projectDetailUrl;
+
+    @Column(name = "valid")
+    private Boolean valid;
 }

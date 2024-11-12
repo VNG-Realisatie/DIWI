@@ -5,7 +5,7 @@ import EuroIcon from "@mui/icons-material/Euro";
 import ClearInputAdornment from "./ClearInputAdornment";
 import { formatMonetaryValue } from "../../../utils/inputHelpers";
 import { t } from "i18next";
-import { MAX_INT } from "../../../utils/houseblocks/houseBlocksFunctions";
+import { MAX_INT_IN_DOUBLE } from "../../../widgets/constants";
 
 export type ValueType = {
     value: null | number;
@@ -113,7 +113,7 @@ const RangeNumberInput = ({
     errorText,
     setIsRangeValid,
     displayError = false,
-    maxValue = MAX_INT,
+    maxValue = MAX_INT_IN_DOUBLE,
 }: Props) => {
     const [stringValue, setStringValue] = useState<string | null>(null);
     const [errorString, setErrorString] = useState<string | null>(null);
@@ -137,12 +137,16 @@ const RangeNumberInput = ({
         const isValidInput = /^-?\d*(,\d{0,2})?(-\d*(,?\d{0,2})?)?$/.test(newValue);
         if (isValidInput) {
             const parts = newValue.split("-");
-            const parseNumber = (str: string) => parseFloat(str.replace(",", "."));
 
             const isValidSequence = parts.every((part) => {
                 if (part === "") return true;
-                const parsedNumber = parseNumber(part.trim());
-                return parsedNumber < maxValue / 100;
+                const parsedNumber = parseFloat(part.trim().replace(",", "."));
+
+                if (isMonetary) {
+                    return parsedNumber * 100 <= maxValue;
+                } else {
+                    return parsedNumber <= maxValue;
+                }
             });
 
             const checkRangeValidation = newValue.trim() !== "-" ? newValue.trim() !== "" : false;
