@@ -1,48 +1,34 @@
-import { useState, useEffect, useContext } from "react";
-import { Grid, Button, Box, Typography } from "@mui/material";
-import { downloadExportData, ExportData, exportProjects, getExportData } from "../api/exportServices";
-import ExportTable from "../components/export/ExportTable";
+import { useState, useContext } from "react";
+import { Grid, Box, Typography } from "@mui/material";
+import { downloadExportData, exportProjects } from "../api/exportServices";
 import { t } from "i18next";
 import { ProjectsTableView } from "../components/project/ProjectsTableView";
 import ActionNotAllowed from "./ActionNotAllowed";
 import AlertContext from "../context/AlertContext";
+import { useNavigate, useParams } from "react-router-dom";
+import { exchangeimportdata } from "../Paths";
 import UserContext from "../context/UserContext";
 
 const ExportWizard = () => {
-    const [step, setStep] = useState(1);
-    const [exportData, setExportData] = useState<ExportData[]>([]);
-    const [selectedExport, setSelectedExport] = useState<ExportData | null>(null);
     const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
+    const { id: selectedExportId } = useParams();
     const { allowedActions } = useContext(UserContext);
     const { setAlert } = useContext(AlertContext);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const exportdata = await getExportData();
-            setExportData(exportdata);
-        };
-        fetchData();
-    }, []);
+    const navigate = useNavigate();
 
     if (!allowedActions.includes("VIEW_DATA_EXCHANGES")) {
         return <ActionNotAllowed errorMessage={t("admin.export.actionNotAllowed")} />;
     }
 
-    const handleNext = () => {
-        if (step === 1 && selectedExport) {
-            setStep(2);
-        }
-    };
-
     const handleBack = () => {
-        setStep(1);
+        navigate(exchangeimportdata.toPath());
     };
 
-    //this function doesnt do anything at the moment
+    //this function doesnt do anything at the moment, functionality not implemented
     const handleExportProjects = async () => {
-        if (!selectedExport) return;
+        if (!selectedExportId) return;
         try {
-            await exportProjects(selectedExport.id, selectedProjects);
+            await exportProjects(selectedExportId, selectedProjects);
             console.log("Export successful");
         } catch (error) {
             console.error("Export failed", error);
@@ -61,9 +47,9 @@ const ExportWizard = () => {
     };
 
     const handleDownload = async () => {
-        if (!selectedExport) return;
+        if (!selectedExportId) return;
         try {
-            await downloadExportData(selectedExport.id);
+            await downloadExportData(selectedExportId);
         } catch (error: unknown) {
             if (error instanceof Error) setAlert(error.message, "warning");
         }
@@ -71,49 +57,21 @@ const ExportWizard = () => {
 
     return (
         <Box p={2}>
-            {step === 1 && (
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <Typography variant="h6">{t("admin.export.title.selectExport")}</Typography>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <ExportTable
-                            exportData={exportData}
-                            selectedExport={selectedExport}
-                            setSelectedExport={setSelectedExport}
-                            setExportData={setExportData}
-                        />
-                        <Box sx={{ display: "flex", justifyContent: "left" }}>
-                            <Button
-                                sx={{ width: "130px", my: 2, ml: "auto" }}
-                                variant="contained"
-                                color="primary"
-                                onClick={handleNext}
-                                disabled={!selectedExport}
-                            >
-                                {t("generic.nextStep")}
-                            </Button>
-                        </Box>
-                    </Grid>
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <Typography variant="h6">{t("admin.export.title.selectProject")}</Typography>
                 </Grid>
-            )}
-            {step === 2 && (
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <Typography variant="h6">{t("admin.export.title.selectProject")}</Typography>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <ProjectsTableView
-                            isExportPage={true}
-                            handleProjectSelection={handleProjectSelection}
-                            selectedProjects={selectedProjects}
-                            handleBack={handleBack}
-                            exportProjects={handleExportProjects}
-                            handleDownload={handleDownload}
-                        />
-                    </Grid>
+                <Grid item xs={12}>
+                    <ProjectsTableView
+                        isExportPage={true}
+                        handleProjectSelection={handleProjectSelection}
+                        selectedProjects={selectedProjects}
+                        handleBack={handleBack}
+                        exportProjects={handleExportProjects}
+                        handleDownload={handleDownload}
+                    />
                 </Grid>
-            )}
+            </Grid>
         </Box>
     );
 };

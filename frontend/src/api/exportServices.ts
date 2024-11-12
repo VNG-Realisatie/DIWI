@@ -10,7 +10,7 @@ export type PropertyOption = {
 
 export type ExportProperty = {
     name: string;
-    customPropertyId?: string;
+    customPropertyId?: string | null;
     objectType: "PROJECT" | "WONINGBLOK";
     mandatory: boolean;
     options?: PropertyOption[];

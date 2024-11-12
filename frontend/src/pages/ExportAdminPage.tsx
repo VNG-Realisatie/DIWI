@@ -10,7 +10,7 @@ import ActionNotAllowed from "./ActionNotAllowed";
 import { getCustomProperties, Property } from "../api/adminSettingServices";
 import { CustomPropertyWidget } from "../components/CustomPropertyWidget";
 import { LabelComponent } from "../components/project/LabelComponent";
-import { configuredExport, updateExportSettings } from "../Paths";
+import { exportSettings, updateExportSettings } from "../Paths";
 import UserContext from "../context/UserContext";
 
 type SelectedOption = {
@@ -127,11 +127,19 @@ function ExportAdminPage() {
         return fields.every((field) => !field.mandatory || formData[field.name]?.trim() !== "");
     };
 
-    const handlePropertyChange = (index: number, value: SelectedOption) => {
-        if (!value) return;
+    const handlePropertyChange = (index: number, value: SelectedOption | null) => {
         const updatedProperties = [...properties];
 
-        updatedProperties[index].customPropertyId = value.id;
+        if (value) {
+            updatedProperties[index].customPropertyId = value.id;
+        } else {
+            updatedProperties[index].customPropertyId = null;
+            updatedProperties[index].options?.forEach((option) => {
+                option.propertyCategoryValueIds = [];
+                option.propertyOrdinalValueIds = [];
+            });
+        }
+
         setProperties(updatedProperties);
     };
 
@@ -250,6 +258,7 @@ function ExportAdminPage() {
                                                 }
                                                 setProperties(updatedProperties);
                                             }}
+                                            isExportPage={true}
                                         />
                                     </Box>
                                 ))}
@@ -258,7 +267,7 @@ function ExportAdminPage() {
                 })}
 
                 <Grid item xs={12} sx={{ mb: 10, display: "flex", flexDirection: "row", gap: 2, justifyContent: "flex-end" }}>
-                    <Button variant="outlined" color="primary" onClick={() => navigate(configuredExport.toPath())}>
+                    <Button variant="outlined" color="primary" onClick={() => navigate(exportSettings.toPath())}>
                         {t("generic.cancel")}
                     </Button>
 
