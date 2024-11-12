@@ -8,6 +8,7 @@ import AlertContext from "../context/AlertContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { exchangeimportdata } from "../Paths";
 import UserContext from "../context/UserContext";
+import { ConfidentialityLevel } from "../types/enums";
 
 const ExportWizard = () => {
     const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
@@ -49,7 +50,12 @@ const ExportWizard = () => {
     const handleDownload = async () => {
         if (!selectedExportId) return;
         try {
-            await downloadExportData(selectedExportId);
+            const body = {
+                projectIds: selectedProjects,
+                confidentialityLevelsAsStrings: ["PUBLIC", "EXTERNAL_GOVERNMENTAL"] as ConfidentialityLevel[],
+                exportDate: new Date().toISOString(),
+            };
+            await downloadExportData(selectedExportId, body);
         } catch (error: unknown) {
             if (error instanceof Error) setAlert(error.message, "warning");
         }

@@ -1,4 +1,5 @@
-import { getJson, postJson, putJson, deleteJson, download } from "../utils/requests";
+import { ConfidentialityLevel } from "../types/enums";
+import { getJson, postJson, putJson, deleteJson, downloadPost } from "../utils/requests";
 import { API_URI } from "../utils/urls";
 
 export type PropertyOption = {
@@ -29,6 +30,12 @@ export type ExportData = {
     properties?: ExportProperty[];
 };
 
+export type DownloadType = {
+    exportDate?: string;
+    projectIds: string[];
+    confidentialityLevelsAsStrings?: ConfidentialityLevel[]
+};
+
 export async function getExportData(): Promise<ExportData[]> {
     return getJson(`${API_URI}/dataexchange`);
 }
@@ -49,8 +56,8 @@ export async function deleteExportData(id: string): Promise<void> {
     return deleteJson(`${API_URI}/dataexchange/${id}`);
 }
 
-export async function downloadExportData(id: string): Promise<void> {
-    return download(`${API_URI}/dataexchange/${id}/export`, 'export.geojson');
+export async function downloadExportData(id: string, body: DownloadType): Promise<void> {
+    return downloadPost(`${API_URI}/dataexchange/${id}/export`, "export.geojson", body);
 }
 
 //this dunction needs to be updated
