@@ -289,7 +289,7 @@
       "projectOverview": "Overzicht projecten",
       "knowledgeBase": "Kennisbank",
       "goals": "Beleidsdoelen",
-      "exportSettings": "Data uitwisseling"
+      "exportSettings": "Export instellingen"
     },
     "about": {
       "heading": "Over deze website",
@@ -359,6 +359,7 @@
       "title": "Data uitwisselen",
       "import": "Importeren:",
       "export": "Exporteren:",
+      "addExport": "Export toevoegen",
       "excel": "Excel",
       "geojson": "geojson",
       "system": "Systeem x",
