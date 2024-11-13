@@ -7,6 +7,7 @@ import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
 import nl.vng.diwi.dal.entities.enums.MutationType;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.dataexchange.DataExchangeTemplate;
+import nl.vng.diwi.dataexchange.DataExchangeTemplate.TemplateProperty;
 import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.models.ConfigModel;
 import nl.vng.diwi.models.DataExchangePropertyModel;
@@ -152,8 +153,17 @@ public class EsriZuidHollandExport {
                     EsriZuidHollandEnumMappings.getEsriZuidHollandConfidentiality(project.getConfidentiality()).name());
                 case opdrachtgever_type -> addProjectCategoricalCustomProperty(project.getProjectId(), projectFeature,
                         templatePropertyMap.get(EsriZuidHollandProjectProps.opdrachtgever_type.name()), dxPropertiesMap, projectCategoricalCustomProps, errors);
-                case opdrachtgever_naam -> addProjectTextCustomProperty(project.getProjectId(), projectFeature,
-                        templatePropertyMap.get(EsriZuidHollandProjectProps.opdrachtgever_naam.name()), dxPropertiesMap, projectTextCustomProps, errors);
+                case opdrachtgever_naam -> {
+                    TemplateProperty templateProperty = templatePropertyMap.get(EsriZuidHollandProjectProps.opdrachtgever_naam.name());
+                    DataExchangePropertyModel dxPropertyModel = dxPropertiesMap.get(EsriZuidHollandProjectProps.opdrachtgever_naam.name());
+                    if (projectTextCustomProps.containsKey(dxPropertyModel.getCustomPropertyId()))
+                    {
+                        addProjectTextCustomProperty(project.getProjectId(), projectFeature, templateProperty, dxPropertiesMap, projectTextCustomProps, errors);
+                    }
+                    else {
+                        addProjectCategoricalCustomProperty(project.getProjectId(), projectFeature, templateProperty, dxPropertiesMap, projectCategoricalCustomProps, errors);
+                    }
+                }
                 case oplevering_eerste -> {
                     Integer earliestDeliveryYear = null;
                     if (!houseblockExportModels.isEmpty()) {

@@ -41,7 +41,7 @@ public class DataExchangeTemplate {
 
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.opdrachtgever_type.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), true, true,
             List.of("Gemeente", "Woningcorporatie", "Projectontwikkelaar", "Particulieren", "Meerdere namelijk", "Anders", "Onbekend")));
-        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.opdrachtgever_naam.name(), ObjectType.PROJECT, List.of(PropertyType.TEXT), false, null, null));
+        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.opdrachtgever_naam.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY, PropertyType.TEXT), false, null, null));
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.opmerkingen_basis.name(), ObjectType.PROJECT, List.of(PropertyType.TEXT), false, null, null));
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.masterplan.name(), ObjectType.PROJECT, List.of(PropertyType.TEXT), false,  null, null));
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.bestemmingsplan.name(), ObjectType.PROJECT, List.of(PropertyType.TEXT), false,  null, null));
