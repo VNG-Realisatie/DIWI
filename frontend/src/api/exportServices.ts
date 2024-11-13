@@ -27,6 +27,15 @@ export type ExportData = {
     projectUrl?: string;
     projectdetailUrl?: string;
     properties?: ExportProperty[];
+    valid?: boolean;
+    validationErrors?: ValidationError[];
+};
+
+export type ValidationError = {
+    dxProperty: string;
+    error: string;
+    errorCode: string;
+    diwiOption: string | null;
 };
 
 export async function getExportData(): Promise<ExportData[]> {
@@ -50,7 +59,7 @@ export async function deleteExportData(id: string): Promise<void> {
 }
 
 export async function downloadExportData(id: string): Promise<void> {
-    return download(`${API_URI}/dataexchange/${id}/export`, 'export.geojson');
+    return download(`${API_URI}/dataexchange/${id}/export`, "export.geojson");
 }
 
 //this dunction needs to be updated

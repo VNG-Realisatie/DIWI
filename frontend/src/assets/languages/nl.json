@@ -373,6 +373,11 @@
         "squit": "Importeren vanuit Squit",
         "geojson": "Importeren vanuit GeoJSON"
       },
+      "validationErrors" : {
+        "missing_custom_prop": "Maatwerk eigenschap ontbreekt",
+        "option_not_mapped": "Optie van maatwerk categorie is niet gemapt",
+        "option_mapped_multiple_times": "Optie van maatwerk categorie is gemapt naar meerdere template opties"
+      },
 
       "download": {
         "excel": "Download Excel template hier",
