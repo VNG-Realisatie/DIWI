@@ -35,7 +35,7 @@ import { dateFormats } from "../../localization";
 import { capitalizeFirstLetters } from "../../utils/stringFunctions";
 import { UserGroupSelect } from "../../widgets/UserGroupSelect";
 import { getCustomProperties } from "../../api/adminSettingServices";
-import { configuredExport, projectsTable } from "../../Paths";
+import { confidentialityUpdate, configuredExport, projectsTable } from "../../Paths";
 import UserContext from "../../context/UserContext";
 
 interface RowData {
@@ -85,6 +85,7 @@ const initialColumnConfig: ColumnConfig = {
 type Props = {
     showCheckBox?: boolean;
     isExportPage?: boolean;
+    isConfidentialityUpdatePage?: boolean;
     setSelectedProjects?: Dispatch<SetStateAction<string[]>>;
     selectedProjects?: string[];
     handleBack?: () => void;
@@ -133,11 +134,12 @@ const loadColumnConfig = (): ColumnConfig | null => {
 export const ProjectsTableView = ({
     showCheckBox,
     isExportPage = false,
-    selectedProjects = [],
+    isConfidentialityUpdatePage = false,
     handleBack = () => {},
     exportProjects = () => {},
     handleDownload = () => {},
     setSelectedProjects = () => {},
+    selectedProjects = [],
 }: Props) => {
     const { paginationInfo, setPaginationInfo, totalProjectCount } = useContext(ProjectContext);
 
@@ -160,20 +162,36 @@ export const ProjectsTableView = ({
 
     useEffect(() => {
         if (filterUrl !== "") {
-            if (!isExportPage) {
-                navigate(projectsTable.toPath() + `${filterUrl}`);
-            } else {
+            if (isExportPage) {
                 if (!selectedExportId) return;
                 navigate(configuredExport.toPath() + `/${selectedExportId}/${filterUrl}`);
+            } else if (isConfidentialityUpdatePage) {
+                if (!selectedExportId) return;
+                navigate(confidentialityUpdate.toPath() + `/${selectedExportId}/${filterUrl}`);
+            } else {
+                navigate(projectsTable.toPath() + `${filterUrl}`);
             }
         }
-    }, [filterUrl, navigate, filterModel, sortModel, isExportPage, selectedExportId]);
+    }, [filterUrl, navigate, filterModel, sortModel, isExportPage, selectedExportId, isConfidentialityUpdatePage]);
 
     useEffect(() => {
         if (isExportPage) {
             setFilterModel({ items: [{ field: "confidentialityLevel", operator: "isAnyOf", value: ["PUBLIC", "EXTERNAL_GOVERNMENTAL"] }] });
         }
     }, [isExportPage]);
+
+    useEffect(() => {
+        if (rows.length === 0 && paginationInfo.page > 1) {
+            setPaginationInfo({ page: 1, pageSize: 10 });
+        }
+    }, [rows, setPaginationInfo, paginationInfo]);
+
+    useEffect(() => {
+        if (!isConfidentialityUpdatePage) return;
+        if (selectedProjects.length === 0) {
+            setSelectionModel([]);
+        }
+    }, [setSelectionModel, isConfidentialityUpdatePage, selectedProjects]);
 
     useEffect(() => {
         getCustomProperties().then((customProperties) => {
@@ -671,6 +689,9 @@ export const ProjectsTableView = ({
         },
         {} as { [key in ColumnField]: boolean },
     );
+
+    const disabledConfidentialityLevelsForExport = ["PRIVATE", "INTERNAL_CIVIL", "INTERNAL_MANAGEMENT", "INTERNAL_COUNCIL", "EXTERNAL_REGIONAL"];
+
     return (
         <Stack
             width="100%"
@@ -684,7 +705,7 @@ export const ProjectsTableView = ({
                 sx={{
                     borderRadius: 0,
                 }}
-                checkboxSelection={showCheckBox || isExportPage}
+                checkboxSelection={showCheckBox || isExportPage || isConfidentialityUpdatePage}
                 rows={rows}
                 columns={columns}
                 rowHeight={70}
@@ -700,7 +721,7 @@ export const ProjectsTableView = ({
                 rowCount={filterModel?.items.some((item) => item.value) ? filteredProjectsSize : totalProjectCount}
                 paginationMode="server"
                 onRowClick={
-                    isExportPage
+                    isExportPage || isConfidentialityUpdatePage
                         ? () => {}
                         : showCheckBox
                           ? handleExport
@@ -737,6 +758,7 @@ export const ProjectsTableView = ({
                     toolbarColumnsLabel: t("projects.toolbarColumnsLabel"),
                     toolbarFiltersLabel: t("projects.toolbarFiltersLabel"),
                 }}
+                isRowSelectable={(params) => (isExportPage ? !disabledConfidentialityLevelsForExport.includes(params.row.confidentialityLevel) : true)}
                 slots={{
                     toolbar: () => (
                         <GridToolbarContainer>
@@ -822,6 +844,15 @@ export const ProjectsTableView = ({
                 {(showCheckBox || isExportPage) && allowedActions.includes("EXPORT_PROJECTS") && (
                     <>
                         <Button
+                            sx={{ my: 2 }}
+                            variant="outlined"
+                            onClick={() => {
+                                navigate(confidentialityUpdate.toPath() + `/${selectedExportId}`);
+                            }}
+                        >
+                            {t("projects.confidentialityChange")}
+                        </Button>
+                        <Button
                             disabled={true}
                             sx={{ width: "130px", my: 2 }}
                             variant="contained"
@@ -836,9 +867,20 @@ export const ProjectsTableView = ({
                         </Button>
                     </>
                 )}
+                {isConfidentialityUpdatePage && (
+                    <Button
+                        sx={{ my: 2 }}
+                        variant="outlined"
+                        onClick={() => {
+                            navigate(configuredExport.toPath() + `/${selectedExportId}/?pageNumber=1&pageSize=10`);
+                        }}
+                    >
+                        {t("projects.backToExport")}
+                    </Button>
+                )}
             </Box>
             <Box sx={{ height: 100 }}></Box>
-            {!isExportPage && <AddProjectButton />}
+            {!isExportPage && !isConfidentialityUpdatePage && <AddProjectButton />}
         </Stack>
     );
 };
