@@ -1,5 +1,22 @@
 # Change log
 
+## DIWI RELEASE 1.8.0
+
+### ADDED
+
+### CHANGED
+
+### FIXED
+
+### REMOVED
+
+
+## DIWI RELEASE 1.7.1
+
+### FIXED
+
+- Fixed a bug where not all users were fetched in the custom dashboards wizard
+
 ## DIWI RELEASE 1.7.0
 
 ### ADDED
