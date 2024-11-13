@@ -34,18 +34,6 @@ const ExportWizard = () => {
             console.error("Export failed", error);
         }
     };
-    const handleProjectSelection = (projectId: string | null | string[]) => {
-        if (projectId === null) {
-            setSelectedProjects([]);
-        } else if (Array.isArray(projectId)) {
-            setSelectedProjects(projectId);
-        } else {
-            setSelectedProjects((prevSelected) =>
-                prevSelected.includes(projectId) ? prevSelected.filter((id) => id !== projectId) : [...prevSelected, projectId],
-            );
-        }
-    };
-
     const handleDownload = async () => {
         if (!selectedExportId) return;
         try {
@@ -64,7 +52,7 @@ const ExportWizard = () => {
                 <Grid item xs={12}>
                     <ProjectsTableView
                         isExportPage={true}
-                        handleProjectSelection={handleProjectSelection}
+                        setSelectedProjects={setSelectedProjects}
                         selectedProjects={selectedProjects}
                         handleBack={handleBack}
                         exportProjects={handleExportProjects}
