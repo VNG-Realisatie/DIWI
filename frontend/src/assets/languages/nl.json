@@ -109,11 +109,13 @@
         "no_houseblock_name": "Naam van het huisblok ontbreekt.",
         "invalid_plan_type": "Projectplantype heeft een onbekende waarde",
         "invalid_numeric_range": "De waarde komt niet overeen met een numeriek bereik.",
+        "unknown_price_rent_range_category": "De prijscategorie voor huur is niet bekend.",
+        "unknown_price_buy_range_category": "De prijscategorie voor koop is niet bekend.",
 
         "feature_error": "Unable to import due to an error."
       },
       "addCustomProperty": "Voeg eigenschap toe",
-      "addCategory": "Voeg categorie toe"
+      "addOption": "Voeg optie toe"
     },
     "createProject": {
       "information": "Projectinformatie",
