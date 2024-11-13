@@ -305,6 +305,8 @@
       "table": "Tabel",
       "createNewProject": "Nieuw project toevoegen",
       "export": "Exporteren",
+      "confidentialityChange": "Ga naar verander vertrouwelijkheid pagina",
+      "backToExport": "Ga door naar export",
       "download": "Downloaden",
       "exportIt": "Exporteer",
       "confirmExport": "Weet je het zeker?",
@@ -319,6 +321,7 @@
       "toolbarColumns": "Kolommen",
       "toolbarColumnsLabel": "Selecteer kolommen",
       "toolbarFiltersLabel": "Filters wegeven",
+      "confidentialityLevelUpdate": "Het vertrouwelijkheidsniveau van de geselecteerde projecten is bijgewerkt",
 
       "tableColumns": {
         "projectName": "Project naam",
@@ -373,6 +376,11 @@
         "squit": "Importeren vanuit Squit",
         "geojson": "Importeren vanuit GeoJSON"
       },
+      "validationErrors" : {
+        "missing_custom_prop": "Maatwerk eigenschap ontbreekt",
+        "option_not_mapped": "Optie van maatwerk categorie is niet gemapt",
+        "option_mapped_multiple_times": "Optie van maatwerk categorie is gemapt naar meerdere template opties"
+      },
 
       "download": {
         "excel": "Download Excel template hier",
@@ -396,6 +404,11 @@
         "value": "Waarde",
         "description": "Beschrijving",
         "errors": "Fouten"
+      },
+      "confidentialityChanger": {
+        "explanation": "Selecteer met de checkboxes projecten waarvan je het vertrouwelijkheid niveau wilt aanpassen.",
+        "changeTo": "Verander naar:",
+        "confidentialityUpdate": "Vertrouwelijkheid niveau veranderen"
       }
     },
     "policy": {

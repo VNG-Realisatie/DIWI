@@ -1,5 +1,29 @@
 # Change log
 
+## DIWI RELEASE 1.7.0
+
+### ADDED
+
+- Policy goals have been implemented. They are editable and viewable through the dashboard section
+- Subplots feature is now implemented on the map
+- piecharts for purchase and rent stats and a table for planning have been added to the dashboard
+
+### CHANGED
+
+- Houseblocks can now have a value of 0
+- Export page is hidden in the menu, until it is ready for release
+- The controls for plot selection have been slightly altered to accomodate the new features better
+
+### FIXED
+
+- Fixed an issue where sorting and filtering on wijk / buurt did not work
+- There was an issue where UserPlus changes to plots were not persisted
+- Addressed an issue where the new policy goals displays would not show the correct percentages
+- Fixed an issue where the dashboard pie charts would display demolition in positive numbers
+- Addressed situations where certain user types had access to pages that should not be accessible and/or hidden
+- fixed an issue in the pdf where an odd number of items would cause the goals to look wonky
+- Addressed display issues in graphs, ranging from bar widths to data used for display
+
 ## DIWI RELEASE 1.6.3
 
 ### FIXED
