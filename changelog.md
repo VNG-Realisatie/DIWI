@@ -6,11 +6,12 @@ This release is all about data exchenge with a main focus on export to Zuid-Holl
 
 ### ADDED
 
-- Added export functionality for Zuid-Holland provincie monitor to data exchange. The export creates a geojson that it can either send to recipient API or store locally
+- Added export functionality for Zuid-Holland provincie monitor to data exchange. The export creates a geojson that it can either send to recipient API or store locally. The back end enforces minimum confidentiality level for exports.
 - Added 'Export instellingen' page where exporting can be configured
 - Required property options added to endpoint
 - Added creation options in Import page for missing properties and categories
-- Projects table is now configureable. The settings will not be hard saved in the backend, but stored in a cookie locally, this means the settings will revert to default on each session.
+- Projects table is now configureable. The settings will not be hard saved in the backend, but stored in a cookie locally, this means the settings will revert to default on each session
+- Added bulk editing for confidentiality level
 
 ### CHANGED
 
@@ -20,11 +21,14 @@ This release is all about data exchenge with a main focus on export to Zuid-Holl
 - Required property options added to data base
 - Price ranges now accept int8, instead of int4 (64 bit vs 32 bit) allowing for larger numbers, now well exceeding the range of the plausible
 - custom properties can now be marked as mandatory and/or single select
+
 ### FIXED
 
 - Addressed an issue where the legend of a dashboard graph would go out of bounds in cases with large numbers of projects
 - More user access issues fixed, the back end enforces more now
 - Fixed an error generating an error pop up on log out
+- Addressed an issue where selection would not work cross page (max page length being 100 and projects to be selected able to exceed this number)
+- Fixed an issue where amounts would not be displayed in the projects table
 
 ### REMOVED
 
