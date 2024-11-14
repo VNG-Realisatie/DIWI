@@ -37,6 +37,16 @@ type FormData = {
     [key: string]: string;
 };
 
+function doesPropertyMatchExportProperty(property: ExportProperty, customProperty: Property): boolean {
+    if (!property.propertyTypes.some((type) => type === customProperty.propertyType)) return false;
+    if (property.objectType !== customProperty.objectType) return false;
+    if (["CATEGORY", "ORDINAL"].includes(customProperty.propertyType)) {
+        if (property.mandatory && !customProperty.mandatory) return false;
+        if (property.singleSelect && !customProperty.singleSelect) return false;
+    }
+    return true;
+}
+
 function ExportAdminPage() {
     const { t } = useTranslation();
     const { id } = useParams<string>();
@@ -203,13 +213,7 @@ function ExportAdminPage() {
                                 readOnly={false}
                                 mandatory={false}
                                 options={customProperties
-                                    .filter(
-                                        (customProperty) =>
-                                            property.propertyTypes.some((type) => type === customProperty.propertyType) &&
-                                            property.objectType === customProperty.objectType &&
-                                            property.mandatory === customProperty.mandatory &&
-                                            property.singleSelect === customProperty.singleSelect,
-                                    )
+                                    .filter((customProperty) => doesPropertyMatchExportProperty(property, customProperty))
                                     .map((property) => {
                                         return {
                                             id: property.id,

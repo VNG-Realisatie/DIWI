@@ -115,7 +115,7 @@ public class DataExchangeModel {
                     return "The selected property does not match the expected property type.";
                 } else if (prop.getMandatory() != dxProp.getMandatory()) { //TODO: can we be more lenient with this?
                     return "The selected property does not have the expected mandatory flag.";
-                } else if (prop.getSingleSelect() != dxProp.getSingleSelect()) {
+                } else if (List.of(PropertyType.CATEGORY, PropertyType.ORDINAL).contains(prop.getPropertyType()) && prop.getSingleSelect() != dxProp.getSingleSelect()) {
                     return "The selected property does not have the expected single select flag.";
                 }
                 if (dxProp.getOptions() != null) {
@@ -165,7 +165,7 @@ public class DataExchangeModel {
             PropertyModel propertyModel = propertyModels.stream().filter(pm -> pm.getId().equals(dxPropModel.getCustomPropertyId())).findFirst().orElse(null);
             if (propertyModel == null) {
                 validationErrors.add(new ValidationError(dxPropModel.getName(), null, DxValidationError.MISSING_CUSTOM_PROP));
-            } else if (propertyModel.getPropertyType() == PropertyType.CATEGORY) {
+            } else if (propertyModel.getPropertyType() == PropertyType.CATEGORY && dxPropModel.getOptions() != null) {
                 Map<UUID, List<UUID>> diwiOptionToDxOption = new HashMap<>();
                 dxPropModel.getOptions().forEach(dxOption -> {
                     if (dxOption.getPropertyCategoryValueIds() != null && !dxOption.getPropertyCategoryValueIds().isEmpty()) {
@@ -186,7 +186,7 @@ public class DataExchangeModel {
                             validationErrors.add(new ValidationError(dxPropModel.getName(), diwiOption.getName(), DxValidationError.OPTION_MAPPED_MULTIPLE_TIMES));
                         }
                     });
-            } else if (propertyModel.getPropertyType() == PropertyType.ORDINAL) {
+            } else if (propertyModel.getPropertyType() == PropertyType.ORDINAL && dxPropModel.getOptions() != null) {
                 Map<UUID, List<UUID>> diwiOptionToDxOption = new HashMap<>();
                 dxPropModel.getOptions().forEach(dxOption -> {
                     if (dxOption.getPropertyOrdinalValueIds() != null && !dxOption.getPropertyOrdinalValueIds().isEmpty()) {

@@ -7,10 +7,12 @@ import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
 import nl.vng.diwi.dal.entities.enums.MutationType;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.dataexchange.DataExchangeTemplate;
+import nl.vng.diwi.dataexchange.DataExchangeTemplate.TemplateProperty;
 import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.models.ConfigModel;
 import nl.vng.diwi.models.DataExchangePropertyModel;
 import nl.vng.diwi.models.PropertyModel;
+import nl.vng.diwi.models.SelectModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
 import nl.vng.diwi.services.DataExchangeExportError;
 import org.apache.logging.log4j.LogManager;
@@ -62,7 +64,7 @@ public class EsriZuidHollandExport {
 
 
     public static FeatureCollection buildExportObject(ConfigModel configModel, List<ProjectExportSqlModel> projects,
-                                                      List<PropertyModel> fixedProps, Map<String, DataExchangePropertyModel> dxPropertiesMap, LocalDate exportDate,
+                                                      List<PropertyModel> customProps, Map<String, DataExchangePropertyModel> dxPropertiesMap, LocalDate exportDate,
                                                       List<DataExchangeExportError> errors) {
 
         FeatureCollection exportObject = new FeatureCollection();
@@ -71,14 +73,24 @@ public class EsriZuidHollandExport {
         crs.getProperties().put("name", "EPSG:28992");
         exportObject.setCrs(crs);
 
+        PropertyModel priceRangeBuyFixedProp = customProps.stream()
+            .filter(pfp -> pfp.getName().equals(Constants.FIXED_PROPERTY_PRICE_RANGE_BUY)).findFirst().orElse(null);
+        PropertyModel priceRangeRentFixedProp = customProps.stream()
+            .filter(pfp -> pfp.getName().equals(Constants.FIXED_PROPERTY_PRICE_RANGE_RENT)).findFirst().orElse(null);
+        PropertyModel municipalityFixedProp = customProps.stream()
+            .filter(pfp -> pfp.getName().equals(Constants.FIXED_PROPERTY_MUNICIPALITY)).findFirst().orElse(null);
+
+        Map<UUID, PropertyModel> customPropsMap = customProps.stream().collect(Collectors.toMap(PropertyModel::getId, Function.identity()));
+
         projects.forEach(project -> exportObject.add(getProjectFeature(configModel, project,
-            fixedProps, dxPropertiesMap, exportDate, errors)));
+            customPropsMap, priceRangeBuyFixedProp, priceRangeRentFixedProp, municipalityFixedProp, dxPropertiesMap, exportDate, errors)));
 
         return exportObject;
     }
 
     private static Feature getProjectFeature(ConfigModel configModel, ProjectExportSqlModel project,
-                                             List<PropertyModel> fixedProps, Map<String, DataExchangePropertyModel> dxPropertiesMap, LocalDate exportDate,
+                                             Map<UUID, PropertyModel> customPropsMap, PropertyModel priceRangeBuyFixedProp, PropertyModel priceRangeRentFixedProp,
+                                             PropertyModel municipalityFixedProp, Map<String, DataExchangePropertyModel> dxPropertiesMap, LocalDate exportDate,
                                              List<DataExchangeExportError> errors) {
 
         Feature projectFeature = new Feature();
@@ -105,11 +117,6 @@ public class EsriZuidHollandExport {
         }
 
 
-        PropertyModel priceRangeBuyFixedProp = fixedProps.stream()
-            .filter(pfp -> pfp.getName().equals(Constants.FIXED_PROPERTY_PRICE_RANGE_BUY)).findFirst().orElse(null);
-        PropertyModel priceRangeRentFixedProp = fixedProps.stream()
-            .filter(pfp -> pfp.getName().equals(Constants.FIXED_PROPERTY_PRICE_RANGE_RENT)).findFirst().orElse(null);
-
         List<EsriZuidHollandHouseblockExportModel> houseblockExportModels = project.getHouseblocks().stream()
             .map(h -> new EsriZuidHollandHouseblockExportModel(project.getProjectId(), h, priceRangeBuyFixedProp, priceRangeRentFixedProp, errors)).toList();
         int totalProjectConstructionHouses = houseblockExportModels.stream()
@@ -133,8 +140,6 @@ public class EsriZuidHollandExport {
                 case gemeente -> projectFeature.getProperties().put(prop.name(), configModel.getMunicipalityName());
                 case woonplaats -> { //TODO:  have official list of values and validate against it
                     String woonplaatsName = null;
-                    PropertyModel municipalityFixedProp = fixedProps.stream()
-                            .filter(pfp -> pfp.getName().equals(Constants.FIXED_PROPERTY_MUNICIPALITY)).findFirst().orElse(null);
                     if (municipalityFixedProp != null) {
                         List<UUID> municipalityOptions = projectCategoricalCustomProps.get(municipalityFixedProp.getId());
                         if (municipalityOptions == null || municipalityOptions.isEmpty()) {
@@ -152,8 +157,18 @@ public class EsriZuidHollandExport {
                     EsriZuidHollandEnumMappings.getEsriZuidHollandConfidentiality(project.getConfidentiality()).name());
                 case opdrachtgever_type -> addProjectCategoricalCustomProperty(project.getProjectId(), projectFeature,
                         templatePropertyMap.get(EsriZuidHollandProjectProps.opdrachtgever_type.name()), dxPropertiesMap, projectCategoricalCustomProps, errors);
-                case opdrachtgever_naam -> addProjectTextCustomProperty(project.getProjectId(), projectFeature,
-                        templatePropertyMap.get(EsriZuidHollandProjectProps.opdrachtgever_naam.name()), dxPropertiesMap, projectTextCustomProps, errors);
+                case opdrachtgever_naam -> {
+                    TemplateProperty templateProperty = templatePropertyMap.get(EsriZuidHollandProjectProps.opdrachtgever_naam.name());
+                    DataExchangePropertyModel dxPropertyModel = dxPropertiesMap.get(EsriZuidHollandProjectProps.opdrachtgever_naam.name());
+                    if (projectTextCustomProps.containsKey(dxPropertyModel.getCustomPropertyId())) {
+                        addProjectTextCustomProperty(project.getProjectId(), projectFeature, templateProperty, dxPropertiesMap, projectTextCustomProps, errors);
+                    } else if (projectCategoricalCustomProps.containsKey(dxPropertyModel.getCustomPropertyId())) {
+                        addProjectCategoricalCustomPropertyAsText(project.getProjectId(), projectFeature, templateProperty, dxPropertiesMap,
+                            projectCategoricalCustomProps, customPropsMap, errors);
+                    } else {
+                        projectFeature.getProperties().put(EsriZuidHollandProjectProps.opdrachtgever_naam.name(), null);
+                    }
+                }
                 case oplevering_eerste -> {
                     Integer earliestDeliveryYear = null;
                     if (!houseblockExportModels.isEmpty()) {
@@ -212,7 +227,15 @@ public class EsriZuidHollandExport {
                         templatePropertyMap.get(EsriZuidHollandProjectProps.opmerkingen_kwalitatief.name()), dxPropertiesMap, projectTextCustomProps, errors);
                 case ph_text1 -> addProjectCategoricalCustomProperty(project.getProjectId(), projectFeature,
                         templatePropertyMap.get(EsriZuidHollandProjectProps.ph_text1.name()), dxPropertiesMap, projectCategoricalCustomProps, errors);
-                case ph_text3 -> addProjectBooleanCustomProperty(projectFeature, EsriZuidHollandProjectProps.ph_text3, dxPropertiesMap, projectBooleanCustomProps);
+                case ph_text3 -> {
+                    DataExchangePropertyModel dxPropertyModel = dxPropertiesMap.get(EsriZuidHollandProjectProps.ph_text3.name());
+                    if (projectCategoricalCustomProps.containsKey(dxPropertyModel.getCustomPropertyId())) {
+                        addProjectCategoricalCustomPropertyAsBoolean(project.getProjectId(), projectFeature, EsriZuidHollandProjectProps.ph_text3, dxPropertiesMap,
+                            projectCategoricalCustomProps, customPropsMap, errors);
+                    } else {
+                        addProjectBooleanCustomProperty(projectFeature, EsriZuidHollandProjectProps.ph_text3, dxPropertiesMap, projectBooleanCustomProps);
+                    }
+                }
                 case ph_short1 -> projectFeature.getProperties().put(prop.name(), project.getStartDate().getYear());
                 case ph_short2 -> {
                     BigDecimal val = addProjectNumericCustomProperty(project.getProjectId(), projectFeature,
@@ -221,7 +244,15 @@ public class EsriZuidHollandExport {
                         errors.add(new DataExchangeExportError(project.getProjectId(), ph_short2.name(), VALUE_LARGER_THAN_CONSTRUCTION_HOUSEBLOCKS));
                     }
                 }
-                case ph_text4 -> addProjectBooleanCustomProperty(projectFeature, EsriZuidHollandProjectProps.ph_text4, dxPropertiesMap, projectBooleanCustomProps);
+                case ph_text4 -> {
+                    DataExchangePropertyModel dxPropertyModel = dxPropertiesMap.get(EsriZuidHollandProjectProps.ph_text4.name());
+                    if (projectCategoricalCustomProps.containsKey(dxPropertyModel.getCustomPropertyId())) {
+                        addProjectCategoricalCustomPropertyAsBoolean(project.getProjectId(), projectFeature, EsriZuidHollandProjectProps.ph_text4, dxPropertiesMap,
+                            projectCategoricalCustomProps, customPropsMap, errors);
+                    } else {
+                        addProjectBooleanCustomProperty(projectFeature, EsriZuidHollandProjectProps.ph_text4, dxPropertiesMap, projectBooleanCustomProps);
+                    }
+                }
                 case ph_text5 -> addProjectCategoricalCustomProperty(project.getProjectId(), projectFeature,
                         templatePropertyMap.get(EsriZuidHollandProjectProps.ph_text5.name()), dxPropertiesMap, projectCategoricalCustomProps, errors);
                 case ph_text6 -> addProjectCategoricalCustomProperty(project.getProjectId(), projectFeature,
@@ -323,6 +354,47 @@ public class EsriZuidHollandExport {
         } else {
             projectFeature.getProperties().put(templateProperty.getName(), ezhValue.isEmpty() ? null : ezhValue);
         }
+    }
+
+
+    private static void addProjectCategoricalCustomPropertyAsText(UUID projectUuid, Feature projectFeature, TemplateProperty templateProperty,
+                                                                  Map<String, DataExchangePropertyModel> dxPropertiesMap, Map<UUID, List<UUID>> projectCategoricalCustomProps,
+                                                                  Map<UUID, PropertyModel> customPropsMap, List<DataExchangeExportError> errors) {
+        UUID customPropUuid = dxPropertiesMap.get(templateProperty.getName()).getCustomPropertyId();
+        String ezhValue = null;
+        if (customPropUuid == null) {
+            errors.add(new DataExchangeExportError(null, templateProperty.getName(), MISSING_DATAEXCHANGE_MAPPING));
+        } else if (projectCategoricalCustomProps.containsKey(customPropUuid)) {
+            UUID optionUuid = projectCategoricalCustomProps.get(customPropUuid).get(0);
+            PropertyModel propertyModel = customPropsMap.get(customPropUuid);
+            ezhValue = propertyModel.getCategories().stream().filter(o -> o.getDisabled() == Boolean.FALSE && o.getId().equals(optionUuid))
+                .map(SelectModel::getName).findFirst().orElse(null);
+        } else if (templateProperty.getMandatory()) {
+            errors.add(new DataExchangeExportError(projectUuid, templateProperty.getName(), MISSING_MANDATORY_VALUE));
+        }
+        projectFeature.getProperties().put(templateProperty.getName(), ezhValue);
+
+    }
+
+    private static void addProjectCategoricalCustomPropertyAsBoolean(UUID projectUuid, Feature projectFeature, EsriZuidHollandProjectProps ezhProperty,
+                                                                     Map<String, DataExchangePropertyModel> dxPropertiesMap, Map<UUID, List<UUID>> projectCategoricalCustomProps,
+                                                                     Map<UUID, PropertyModel> customPropsMap, List<DataExchangeExportError> errors) {
+        UUID customPropUuid = dxPropertiesMap.get(ezhProperty.name()).getCustomPropertyId();
+        String ezhValue = "Onbekend";
+
+        if (customPropUuid != null && projectCategoricalCustomProps.containsKey(customPropUuid)) {
+            UUID optionUuid = projectCategoricalCustomProps.get(customPropUuid).get(0);
+            PropertyModel propertyModel = customPropsMap.get(customPropUuid);
+            String propertyValue = propertyModel.getCategories().stream().filter(o -> o.getDisabled() == Boolean.FALSE && o.getId().equals(optionUuid))
+                .map(SelectModel::getName).findFirst().orElse(null);
+            if ("JA" .equalsIgnoreCase(propertyValue)) {
+                ezhValue = "JA";
+            } else if ("NEE" .equalsIgnoreCase(propertyValue)) {
+                ezhValue = "NEE";
+            }
+
+        }
+        projectFeature.getProperties().put(ezhProperty.name(), ezhValue);
     }
 
     private static void addProjectTextCustomProperty(UUID projectUuid, Feature projectFeature, DataExchangeTemplate.TemplateProperty templateProperty,

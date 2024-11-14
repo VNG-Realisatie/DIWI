@@ -14,7 +14,6 @@ import nl.vng.diwi.dal.entities.Property;
 import nl.vng.diwi.dal.entities.PropertyCategoryValue;
 import nl.vng.diwi.dal.entities.PropertyOrdinalValue;
 import nl.vng.diwi.dal.entities.User;
-import nl.vng.diwi.dal.entities.enums.PropertyKind;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
 import nl.vng.diwi.dataexchange.DataExchangeTemplate;
 import nl.vng.diwi.models.ConfigModel;
@@ -230,9 +229,9 @@ public class DataExchangeService {
             .collect(Collectors.toMap(DataExchangePropertyModel::getName, Function.identity()));
         List<ProjectExportSqlModel> projects = repo.getProjectsDAO().getProjectsExportList(dxExportModel, loggedUser);
 
-        List<PropertyModel> fixedProps = repo.getPropertyDAO().getPropertiesList(null, false, PropertyKind.FIXED);
+        List<PropertyModel> customProps = repo.getPropertyDAO().getPropertiesList(null, false, null);
         return switch (dataExchangeModel.getType()) {
-            case ESRI_ZUID_HOLLAND -> EsriZuidHollandExport.buildExportObject(configModel, projects, fixedProps, dxPropertiesMap, dxExportModel.getExportDate(), errors);
+            case ESRI_ZUID_HOLLAND -> EsriZuidHollandExport.buildExportObject(configModel, projects, customProps, dxPropertiesMap, dxExportModel.getExportDate(), errors);
         };
 
     }
