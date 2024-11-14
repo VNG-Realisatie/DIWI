@@ -230,9 +230,9 @@ public class DataExchangeService {
             .collect(Collectors.toMap(DataExchangePropertyModel::getName, Function.identity()));
         List<ProjectExportSqlModel> projects = repo.getProjectsDAO().getProjectsExportList(dxExportModel, loggedUser);
 
-        List<PropertyModel> fixedProps = repo.getPropertyDAO().getPropertiesList(null, false, PropertyKind.FIXED);
+        List<PropertyModel> customProps = repo.getPropertyDAO().getPropertiesList(null, false, null);
         return switch (dataExchangeModel.getType()) {
-            case ESRI_ZUID_HOLLAND -> EsriZuidHollandExport.buildExportObject(configModel, projects, fixedProps, dxPropertiesMap, dxExportModel.getExportDate(), errors);
+            case ESRI_ZUID_HOLLAND -> EsriZuidHollandExport.buildExportObject(configModel, projects, customProps, dxPropertiesMap, dxExportModel.getExportDate(), errors);
         };
 
     }
