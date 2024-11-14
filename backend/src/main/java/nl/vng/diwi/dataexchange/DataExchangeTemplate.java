@@ -52,7 +52,7 @@ public class DataExchangeTemplate {
             List.of("Centrum-stedelijk-plus", "Centrum-stedel", "Centrum-stedelijk", "Centrum-kleinstedelijk", "Stedelijk vooroorlogs",
                 "Stedelijk naoorlogs compact", "Stedelijk naoorlogs grondgebonden", "Kleinstedelijk", "Groen-stedelijk", "Groen-kleinstedelijk",
                 "Centrum-dorps", "Dorps", "Landelijk bereikbaar", "Landelijk perifeer", "Onbekend")));
-        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.knelpunten_meerkeuze.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), true, false,
+        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.knelpunten_meerkeuze.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), false, false,
             List.of("Aansluiting op nutsvoorzieningen", "Bereikbaarheid", "Capaciteit bouwsector", "Capaciteit overheid", "Compensatie bedrijventerreinen",
                 "Geluidhinder – industrie en bedrijven", "Geluidhinder – vliegverkeer", "Geluidhinder – weg- en railverkeer", "Geluidhinder – nestgeluid",
                 "Maatschappelijk draagvlak", "Natuurbescherming", "Netcongestie", "Onrendabele top", "Parkeren", "Procedures - Bezwaarprocedures",
@@ -64,7 +64,6 @@ public class DataExchangeTemplate {
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text1.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), true, true,
             List.of("1a harde plannen, in voorbereiding of in uitvoering", "1b kansrijke plannen", "1c bestuurlijke afspraken", "2 reserveplannen", "Onbekend")));
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text3.name(), ObjectType.PROJECT, List.of(PropertyType.BOOLEAN, PropertyType.CATEGORY), false, true, null));
-        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_date3.name(), ObjectType.PROJECT, List.of(PropertyType.BOOLEAN), false, null, null));
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_short2.name(), ObjectType.PROJECT, List.of(PropertyType.NUMERIC), true, null, null));
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text4.name(), ObjectType.PROJECT, List.of(PropertyType.BOOLEAN, PropertyType.CATEGORY), false, true, null));
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text5.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), false, true,
@@ -76,9 +75,9 @@ public class DataExchangeTemplate {
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text8.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), false, true,
             List.of("Warmtenet", "Elektra", "Overig", "Onbekend")));
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text10.name(), ObjectType.PROJECT, List.of(PropertyType.TEXT), false, null, null));
-        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_short7.name(), ObjectType.PROJECT, List.of(PropertyType.NUMERIC), true, null, null));
-        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_short8.name(), ObjectType.PROJECT, List.of(PropertyType.NUMERIC), true, null, null));
-        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_short9.name(), ObjectType.PROJECT, List.of(PropertyType.NUMERIC), true, null, null));
+        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_short7.name(), ObjectType.PROJECT, List.of(PropertyType.NUMERIC), false, null, null));
+        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_short8.name(), ObjectType.PROJECT, List.of(PropertyType.NUMERIC), false, null, null));
+        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_short9.name(), ObjectType.PROJECT, List.of(PropertyType.NUMERIC), false, null, null));
 
         templates = ImmutableMap.of(DataExchangeType.ESRI_ZUID_HOLLAND, zuidHollandTemplate);
     }
