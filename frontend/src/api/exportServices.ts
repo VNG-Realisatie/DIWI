@@ -41,8 +41,8 @@ export type ValidationError = {
 
 export type DownloadType = {
     exportDate?: string;
-    projectIds: string[];
-    confidentialityLevelsAsStrings?: ConfidentialityLevel[]
+    projectIds?: string[];
+    confidentialityLevels?: ConfidentialityLevel[]
 };
 
 export async function getExportData(): Promise<ExportData[]> {

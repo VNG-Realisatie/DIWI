@@ -38,10 +38,12 @@ const ExportWizard = () => {
     const handleDownload = async () => {
         if (!selectedExportId) return;
         try {
+            const projectIds = selectedProjects;
+            const confidentialityLevels = ["PUBLIC", "EXTERNAL_GOVERNMENTAL"] as ConfidentialityLevel[];
+
             const body = {
-                projectIds: selectedProjects,
-                confidentialityLevelsAsStrings: ["PUBLIC", "EXTERNAL_GOVERNMENTAL"] as ConfidentialityLevel[],
                 exportDate: new Date().toISOString(),
+                ...(projectIds.length > 0 ? { projectIds } : { confidentialityLevels }),
             };
             await downloadExportData(selectedExportId, body);
         } catch (error: unknown) {
