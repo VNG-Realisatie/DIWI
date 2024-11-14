@@ -69,11 +69,11 @@ public class DataExchangeTemplate {
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text4.name(), ObjectType.PROJECT, List.of(PropertyType.BOOLEAN), false, null, null));
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text5.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), false, true,
             List.of("20%", "40%", "60%", "80%", "100%", "Onbekend")));
-        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text6.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), true, true,
+        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text6.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), false, true,
             List.of("Onbekend", "Wettelijke norm", "Boven wettelijk", "Volledig energieneutraal")));
-        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text7.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), true, true,
+        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text7.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), false, true,
             List.of("Onbekend", "Nee", "Ja, minimale aandacht", "Ja, ruime aandacht")));
-        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text8.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), true, true,
+        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text8.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), false, true,
             List.of("Warmtenet", "Elektra", "Overig", "Onbekend")));
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text10.name(), ObjectType.PROJECT, List.of(PropertyType.TEXT), false, null, null));
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_short7.name(), ObjectType.PROJECT, List.of(PropertyType.NUMERIC), true, null, null));
