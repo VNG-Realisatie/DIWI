@@ -115,7 +115,7 @@ public class DataExchangeModel {
                     return "The selected property does not match the expected property type.";
                 } else if (prop.getMandatory() != dxProp.getMandatory()) { //TODO: can we be more lenient with this?
                     return "The selected property does not have the expected mandatory flag.";
-                } else if (prop.getSingleSelect() != dxProp.getSingleSelect()) {
+                } else if (List.of(PropertyType.CATEGORY, PropertyType.ORDINAL).contains(prop.getPropertyType()) && prop.getSingleSelect() != dxProp.getSingleSelect()) {
                     return "The selected property does not have the expected single select flag.";
                 }
                 if (dxProp.getOptions() != null) {
