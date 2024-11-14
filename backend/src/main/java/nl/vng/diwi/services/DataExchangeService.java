@@ -14,7 +14,6 @@ import nl.vng.diwi.dal.entities.Property;
 import nl.vng.diwi.dal.entities.PropertyCategoryValue;
 import nl.vng.diwi.dal.entities.PropertyOrdinalValue;
 import nl.vng.diwi.dal.entities.User;
-import nl.vng.diwi.dal.entities.enums.PropertyKind;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
 import nl.vng.diwi.dataexchange.DataExchangeTemplate;
 import nl.vng.diwi.models.ConfigModel;
