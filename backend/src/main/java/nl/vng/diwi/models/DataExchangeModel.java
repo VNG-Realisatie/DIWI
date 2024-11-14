@@ -115,7 +115,7 @@ public class DataExchangeModel {
                     return baseError + "does not match the expected object type (" + dxProp.getObjectType() +").";
                 } else if (!dxProp.getPropertyTypes().contains(prop.getPropertyType())) {
                     return baseError + "does not match the expected property type.";
-                } else if (!dxProp.getMandatory() ||(prop.getMandatory() != dxProp.getMandatory())) {
+                } else if (dxProp.getMandatory() && (prop.getMandatory() != dxProp.getMandatory())) {
                     return baseError + "does not have the expected mandatory flag (" + dxProp.getMandatory() +").";
                 } else if (List.of(PropertyType.CATEGORY, PropertyType.ORDINAL).contains(prop.getPropertyType()) && prop.getSingleSelect() != dxProp.getSingleSelect()) {
                     return baseError + "does not have the expected single select flag.";
