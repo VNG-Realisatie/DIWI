@@ -198,7 +198,7 @@ function ExportAdminPage() {
                     const error = validationErrors.find((error) => error.dxProperty === property.name);
                     return (
                         <Grid item xs={12} key={index}>
-                            <LabelComponent text={property.name} required={false} disabled={false} />
+                            <LabelComponent text={t(`exchangeData.labels.ESRI_ZUID_HOLLAND.${property.name}`)} required={false} disabled={false} />
                             <CategoryInput
                                 readOnly={false}
                                 mandatory={false}
