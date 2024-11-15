@@ -2,15 +2,19 @@ import { Property } from "../api/adminSettingServices";
 import { ExportProperty } from "../api/exportServices";
 import { doesPropertyMatchExportProperty } from "./exportUtils";
 
-it("should allow the correct types", () => {
-    const property: ExportProperty = {
+it.each([
+    [{ propertyTypes: ["BOOLEAN", "TEXT"] }, { propertyType: "TEXT" }],
+    [{ propertyTypes: ["CATEGORY", "TEXT"] }, { propertyType: "TEXT" }],
+    [{ propertyTypes: ["CATEGORY", "TEXT"] }, { propertyType: "CATEGORY" }],
+])("should allow the correct types", (dxProp, diwiProp) => {
+    const defaultDxProp: ExportProperty = {
         name: "",
         objectType: "PROJECT",
         mandatory: true,
         propertyTypes: ["BOOLEAN", "TEXT"],
     };
 
-    const customProperty: Property = {
+    const defaultDiwiProp: Property = {
         name: "",
         type: "CUSTOM",
         objectType: "PROJECT",
@@ -19,5 +23,5 @@ it("should allow the correct types", () => {
         mandatory: true,
     };
 
-    expect(doesPropertyMatchExportProperty(property, customProperty)).toBe(true);
+    expect(doesPropertyMatchExportProperty(defaultDxProp, defaultDiwiProp)).toBe(true);
 });
