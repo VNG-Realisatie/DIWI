@@ -436,7 +436,7 @@
             "ph_text7": "Klimaatadaptief bouwen (ph_text7, type: Categorie)",
             "ph_text8": "Warmtevoorziening (ph_text8, type: Categorie)",
             "toelichting_knelpunten": "Toelichting knelpunten (toelichting_knelpunten, type: Open tekstveld)",
-            "verhuurder_type": "Verhuurder type (verhuurder_type, type: Categorie)",
+            "verhuurder_type": "Verhuurder type (verhuurder_type, type: Categorie)"
           }
       }
     },
