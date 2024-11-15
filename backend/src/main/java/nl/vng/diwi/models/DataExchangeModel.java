@@ -107,16 +107,18 @@ public class DataExchangeModel {
         for (DataExchangePropertyModel dxProp : this.properties) {
             if (dxProp.getCustomPropertyId() != null) {
                 PropertyModel prop = propertiesMap.get(dxProp.getCustomPropertyId());
+
+                String baseError = "The selected property for '" + dxProp.getName() + "' ";
                 if (prop == null) {
-                    return "The selected property is not found.";
+                    return baseError + " with id " + dxProp.getCustomPropertyId() + " is not found.";
                 } else if (prop.getObjectType() != dxProp.getObjectType()) {
-                    return "The selected property does not match the expected object type.";
+                    return baseError + "does not match the expected object type (" + dxProp.getObjectType() +").";
                 } else if (!dxProp.getPropertyTypes().contains(prop.getPropertyType())) {
-                    return "The selected property does not match the expected property type.";
-                } else if (prop.getMandatory() != dxProp.getMandatory()) { //TODO: can we be more lenient with this?
-                    return "The selected property does not have the expected mandatory flag.";
+                    return baseError + "does not match the expected property type.";
+                } else if (dxProp.getMandatory() && (prop.getMandatory() != dxProp.getMandatory())) {
+                    return baseError + "does not have the expected mandatory flag (" + dxProp.getMandatory() +").";
                 } else if (List.of(PropertyType.CATEGORY, PropertyType.ORDINAL).contains(prop.getPropertyType()) && prop.getSingleSelect() != dxProp.getSingleSelect()) {
-                    return "The selected property does not have the expected single select flag.";
+                    return baseError + "does not have the expected single select flag.";
                 }
                 if (dxProp.getOptions() != null) {
                     List<UUID> catValues = new ArrayList<>();
@@ -137,10 +139,10 @@ public class DataExchangeModel {
                             dxPropOption.setPropertyOrdinalValueIds(new ArrayList<>());
                         }
                         if (prop.getPropertyType() == PropertyType.CATEGORY && !catValues.containsAll(dxPropOption.getPropertyCategoryValueIds())) {
-                            return "The selected property category value ids are not valid options for custom property " + prop.getId();
+                            return baseError + "category value ids are not valid options for custom property " + prop.getId();
                         }
                         if (prop.getPropertyType() == PropertyType.ORDINAL && !ordValues.containsAll(dxPropOption.getPropertyOrdinalValueIds())) {
-                            return "The selected property ordinal value ids are not valid options for custom property " + prop.getId();
+                            return baseError + "ordinal value ids are not valid options for custom property " + prop.getId();
                         }
                     }
 
