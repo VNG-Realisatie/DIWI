@@ -181,7 +181,7 @@ public class DataExchangeModel {
                 });
 
                 // If a dx prop has options to map to, check that that is done correctly.
-                if (dxPropModel.getOptions() != null || !dxPropModel.getOptions().isEmpty() && propertyModel.getCategories() != null) {
+                if (dxPropModel.getOptions() != null && !dxPropModel.getOptions().isEmpty() && propertyModel.getCategories() != null) {
                     propertyModel.getCategories().stream().filter(cOption -> cOption.getDisabled() == Boolean.FALSE)
                         .forEach(diwiOption -> {
                             if (!diwiOptionToDxOption.containsKey(diwiOption.getId())) {
