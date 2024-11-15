@@ -167,18 +167,6 @@ public class EsriZuidHollandExport {
                 }
                 case opdrachtgever_type -> addProjectCategoricalCustomProperty(project.getProjectId(), projectFeature,
                         templatePropertyMap.get(EsriZuidHollandProjectProps.opdrachtgever_type.name()), dxPropertiesMap, projectCategoricalCustomProps, errors);
-                case opdrachtgever_naam -> {
-                    TemplateProperty templateProperty = templatePropertyMap.get(EsriZuidHollandProjectProps.opdrachtgever_naam.name());
-                    DataExchangePropertyModel dxPropertyModel = dxPropertiesMap.get(EsriZuidHollandProjectProps.opdrachtgever_naam.name());
-                    if (projectTextCustomProps.containsKey(dxPropertyModel.getCustomPropertyId())) {
-                        addProjectTextCustomProperty(project.getProjectId(), projectFeature, templateProperty, dxPropertiesMap, projectTextCustomProps, errors);
-                    } else if (projectCategoricalCustomProps.containsKey(dxPropertyModel.getCustomPropertyId())) {
-                        addProjectCategoricalCustomPropertyAsText(project.getProjectId(), projectFeature, templateProperty, dxPropertiesMap,
-                            projectCategoricalCustomProps, customPropsMap, errors);
-                    } else {
-                        projectFeature.getProperties().put(EsriZuidHollandProjectProps.opdrachtgever_naam.name(), null);
-                    }
-                }
                 case oplevering_eerste -> {
                     Integer earliestDeliveryYear = null;
                     if (!houseblockExportModels.isEmpty()) {
@@ -312,23 +300,59 @@ public class EsriZuidHollandExport {
                 case year_properties -> projectFeature.getProperties().put(prop.name(), houseblockProperties);
                 default -> {
                     TemplateProperty templateProperty = templatePropertyMap.get(prop.name());
-                    if (templateProperty.getPropertyTypes().containsAll(List.of(PropertyType.CATEGORY))) {
-                        addProjectCategoricalCustomProperty(
-                                project.getProjectId(),
-                                projectFeature,
-                                templateProperty,
-                                dxPropertiesMap,
-                                projectCategoricalCustomProps,
-                                errors);
-                    }
-                    else {
-                        throw new NotImplementedException("Combination of types not implemented");
-                    }
+                    DataExchangePropertyModel dxPropertyModel = dxPropertiesMap.get(prop.name());
+                    addMappedProperty(
+                        project,
+                        customPropsMap,
+                        dxPropertiesMap,
+                        errors,
+                        projectFeature,
+                        projectTextCustomProps,
+                        projectCategoricalCustomProps,
+                        prop,
+                        templateProperty,
+                        dxPropertyModel);
                 }
             }
         }
 
         return projectFeature;
+    }
+
+    private static void addMappedProperty(
+            ProjectExportSqlModel project,
+            Map<UUID, PropertyModel> customPropsMap,
+            Map<String, DataExchangePropertyModel> dxPropertiesMap,
+            List<DataExchangeExportError> errors,
+            Feature projectFeature,
+            Map<UUID, String> projectTextCustomProps,
+            Map<UUID, List<UUID>> projectCategoricalCustomProps,
+            EsriZuidHollandProjectProps prop,
+            TemplateProperty templateProperty,
+            DataExchangePropertyModel dxPropertyModel) {
+        if (templateProperty.getPropertyTypes().contains(PropertyType.TEXT)){
+            // If it accepts a text property it should be able to map a category to it
+            if (projectTextCustomProps.containsKey(dxPropertyModel.getCustomPropertyId())) {
+                addProjectTextCustomProperty(project.getProjectId(), projectFeature, templateProperty, dxPropertiesMap, projectTextCustomProps, errors);
+            } else if (projectCategoricalCustomProps.containsKey(dxPropertyModel.getCustomPropertyId())) {
+                addProjectCategoricalCustomPropertyAsText(project.getProjectId(), projectFeature, templateProperty, dxPropertiesMap,
+                    projectCategoricalCustomProps, customPropsMap, errors);
+            } else {
+                projectFeature.getProperties().put(prop.name(), null);
+            }
+        }
+        else if (templateProperty.getPropertyTypes().containsAll(List.of(PropertyType.CATEGORY))) {
+            addProjectCategoricalCustomProperty(
+                    project.getProjectId(),
+                    projectFeature,
+                    templateProperty,
+                    dxPropertiesMap,
+                    projectCategoricalCustomProps,
+                    errors);
+        }
+        else {
+            throw new NotImplementedException("Combination of types not implemented");
+        }
     }
 
     private static void addProjectCategoricalCustomProperty(UUID projectUuid, Feature projectFeature, DataExchangeTemplate.TemplateProperty templateProperty,
