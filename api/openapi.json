@@ -482,6 +482,39 @@
         }
       }
     },
+    "/rest/dataexchange/{id}/download": {
+      "post": {
+        "operationId": "downloadProjects",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataExchangeExportModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/octet-stream": {}
+            }
+          }
+        }
+      }
+    },
     "/rest/dataexchange/{id}/export": {
       "post": {
         "operationId": "exportProjects",
@@ -509,7 +542,7 @@
           "default": {
             "description": "default response",
             "content": {
-              "application/octet-stream": {}
+              "application/json": {}
             }
           }
         }
@@ -2022,6 +2055,10 @@
           },
           "provinceName": {
             "type": "string"
+          },
+          "minimumExportConfidentiality": {
+            "type": "string",
+            "enum": ["PRIVATE", "INTERNAL_CIVIL", "INTERNAL_MANAGEMENT", "INTERNAL_COUNCIL", "EXTERNAL_REGIONAL", "EXTERNAL_GOVERNMENTAL", "PUBLIC"]
           }
         }
       },

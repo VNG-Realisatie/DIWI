@@ -52,6 +52,9 @@ export interface paths {
         put: operations["updateDataExchange"];
         delete: operations["deleteDataExchange"];
     };
+    "/rest/dataexchange/{id}/download": {
+        post: operations["downloadProjects"];
+    };
     "/rest/dataexchange/{id}/export": {
         post: operations["exportProjects"];
     };
@@ -212,6 +215,15 @@ export interface components {
             municipalityName?: string;
             regionName?: string;
             provinceName?: string;
+            /** @enum {string} */
+            minimumExportConfidentiality?:
+                | "PRIVATE"
+                | "INTERNAL_CIVIL"
+                | "INTERNAL_MANAGEMENT"
+                | "INTERNAL_COUNCIL"
+                | "EXTERNAL_REGIONAL"
+                | "EXTERNAL_GOVERNMENTAL"
+                | "PUBLIC";
         };
         LocationModel: {
             /** Format: double */
@@ -1145,7 +1157,7 @@ export interface operations {
             };
         };
     };
-    exportProjects: {
+    downloadProjects: {
         parameters: {
             path: {
                 id: string;
@@ -1161,6 +1173,26 @@ export interface operations {
             default: {
                 content: {
                     "application/octet-stream": unknown;
+                };
+            };
+        };
+    };
+    exportProjects: {
+        parameters: {
+            path: {
+                id: string;
+            };
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["DataExchangeExportModel"];
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": unknown;
                 };
             };
         };
