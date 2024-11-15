@@ -159,7 +159,7 @@ function ExportAdminPage() {
             objectType: property.objectType,
             propertyType: property.propertyTypes[0] as "BOOLEAN" | "CATEGORY" | "ORDINAL" | "NUMERIC" | "TEXT" | "RANGE_CATEGORY",
             disabled: false,
-            categories: categoriesOrOrdinals.map((item) => ({ ...item, disabled: false })),
+            categories: categoriesOrOrdinals.filter((item) => !item.disabled),
             singleSelect: property.singleSelect,
             mandatory: property.mandatory,
         };
