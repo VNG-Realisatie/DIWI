@@ -608,7 +608,6 @@ public class EsriZuidHollandExport {
         ph_text7,
         ph_text8,
         ph_text9,
-        ph_text10,
         ph_short3,
         ph_short4,
         ph_short7,
