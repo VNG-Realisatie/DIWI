@@ -39,10 +39,26 @@ public class DataExchangeTemplate {
     static {
         DataExchangeTemplate zuidHollandTemplate = new DataExchangeTemplate();
 
-        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.opdrachtgever_type.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), true, true,
-            List.of("Gemeente", "Woningcorporatie", "Projectontwikkelaar", "Particulieren", "Meerdere namelijk", "Anders", "Onbekend")));
-        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.opdrachtgever_naam.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY, PropertyType.TEXT), false, true, null));
-        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.opmerkingen_basis.name(), ObjectType.PROJECT, List.of(PropertyType.TEXT), false, null, null));
+        zuidHollandTemplate.properties.add(new TemplateProperty(
+                EsriZuidHollandProjectProps.opdrachtgever_type.name(),
+                ObjectType.PROJECT, List.of(PropertyType.CATEGORY),
+                true,
+                true,
+                List.of("Gemeente", "Woningcorporatie", "Projectontwikkelaar", "Particulieren", "Meerdere namelijk", "Anders", "Onbekend")));
+        zuidHollandTemplate.properties.add(new TemplateProperty(
+                EsriZuidHollandProjectProps.opdrachtgever_naam.name(),
+                ObjectType.PROJECT,
+                List.of(PropertyType.CATEGORY, PropertyType.TEXT),
+                false,
+                true,
+                null));
+        zuidHollandTemplate.properties.add(
+                new TemplateProperty(EsriZuidHollandProjectProps.opmerkingen_basis.name(),
+                ObjectType.PROJECT,
+                List.of(PropertyType.TEXT),
+                false,
+                null,
+                null));
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.masterplan.name(), ObjectType.PROJECT, List.of(PropertyType.TEXT), false,  null, null));
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.bestemmingsplan.name(), ObjectType.PROJECT, List.of(PropertyType.TEXT), false,  null, null));
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.opmerkingen_status.name(), ObjectType.PROJECT, List.of(PropertyType.TEXT), false,  null, null));
@@ -63,9 +79,21 @@ public class DataExchangeTemplate {
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.opmerkingen_kwalitatief.name(), ObjectType.PROJECT, List.of(PropertyType.TEXT), false, null, null));
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text1.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), true, true,
             List.of("1a harde plannen, in voorbereiding of in uitvoering", "1b kansrijke plannen", "1c bestuurlijke afspraken", "2 reserveplannen", "Onbekend")));
-        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text3.name(), ObjectType.PROJECT, List.of(PropertyType.BOOLEAN, PropertyType.CATEGORY), false, true, null));
+        zuidHollandTemplate.properties.add(new TemplateProperty(
+                EsriZuidHollandProjectProps.ph_text3.name(),
+                ObjectType.PROJECT,
+                List.of(PropertyType.CATEGORY),
+                false,
+                true,
+                List.of("Ja", "Nee", "Onbekend")));
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_short2.name(), ObjectType.PROJECT, List.of(PropertyType.NUMERIC), true, null, null));
-        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text4.name(), ObjectType.PROJECT, List.of(PropertyType.BOOLEAN, PropertyType.CATEGORY), false, true, null));
+        zuidHollandTemplate.properties.add(new TemplateProperty(
+                EsriZuidHollandProjectProps.ph_text4.name(),
+                ObjectType.PROJECT,
+                List.of(PropertyType.CATEGORY),
+                false,
+                true,
+                List.of("Ja", "Nee", "Onbekend")));
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text5.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), false, true,
             List.of("20%", "40%", "60%", "80%", "100%", "Onbekend")));
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text6.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), false, true,

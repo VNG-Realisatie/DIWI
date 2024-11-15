@@ -7,6 +7,7 @@ import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.MutationType;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
+import nl.vng.diwi.dal.entities.enums.PropertyType;
 import nl.vng.diwi.dataexchange.DataExchangeTemplate;
 import nl.vng.diwi.dataexchange.DataExchangeTemplate.TemplateProperty;
 import nl.vng.diwi.generic.Constants;
@@ -18,6 +19,7 @@ import nl.vng.diwi.models.SingleValueOrRangeModel;
 import nl.vng.diwi.services.DataExchangeExportError;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.poi.ss.formula.eval.NotImplementedException;
 import org.geojson.Crs;
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
@@ -235,30 +237,12 @@ public class EsriZuidHollandExport {
                         templatePropertyMap.get(EsriZuidHollandProjectProps.opmerkingen_kwalitatief.name()), dxPropertiesMap, projectTextCustomProps, errors);
                 case ph_text1 -> addProjectCategoricalCustomProperty(project.getProjectId(), projectFeature,
                         templatePropertyMap.get(EsriZuidHollandProjectProps.ph_text1.name()), dxPropertiesMap, projectCategoricalCustomProps, errors);
-                case ph_text3 -> {
-                    DataExchangePropertyModel dxPropertyModel = dxPropertiesMap.get(EsriZuidHollandProjectProps.ph_text3.name());
-                    if (projectCategoricalCustomProps.containsKey(dxPropertyModel.getCustomPropertyId())) {
-                        addProjectCategoricalCustomPropertyAsBoolean(project.getProjectId(), projectFeature, EsriZuidHollandProjectProps.ph_text3, dxPropertiesMap,
-                            projectCategoricalCustomProps, customPropsMap, errors);
-                    } else {
-                        addProjectBooleanCustomProperty(projectFeature, EsriZuidHollandProjectProps.ph_text3, dxPropertiesMap, projectBooleanCustomProps);
-                    }
-                }
                 case ph_short1 -> projectFeature.getProperties().put(prop.name(), project.getStartDate().getYear());
                 case ph_short2 -> {
                     BigDecimal val = addProjectNumericCustomProperty(project.getProjectId(), projectFeature,
                             templatePropertyMap.get(EsriZuidHollandProjectProps.ph_short2.name()), dxPropertiesMap, projectNumericCustomProps, errors);
                     if (val != null && val.intValue() > totalProjectConstructionHouses) {
                         errors.add(new DataExchangeExportError(project.getProjectId(), ph_short2.name(), VALUE_LARGER_THAN_CONSTRUCTION_HOUSEBLOCKS));
-                    }
-                }
-                case ph_text4 -> {
-                    DataExchangePropertyModel dxPropertyModel = dxPropertiesMap.get(EsriZuidHollandProjectProps.ph_text4.name());
-                    if (projectCategoricalCustomProps.containsKey(dxPropertyModel.getCustomPropertyId())) {
-                        addProjectCategoricalCustomPropertyAsBoolean(project.getProjectId(), projectFeature, EsriZuidHollandProjectProps.ph_text4, dxPropertiesMap,
-                            projectCategoricalCustomProps, customPropsMap, errors);
-                    } else {
-                        addProjectBooleanCustomProperty(projectFeature, EsriZuidHollandProjectProps.ph_text4, dxPropertiesMap, projectBooleanCustomProps);
                     }
                 }
                 case ph_text5 -> addProjectCategoricalCustomProperty(project.getProjectId(), projectFeature,
@@ -326,6 +310,21 @@ public class EsriZuidHollandExport {
                 case ph_date2 ->  projectFeature.getProperties().put(prop.name(), project.getPlanStatusPhase1Date() != null ? project.getPlanStatusPhase1Date().toString() : null);
                 case ph_date3 -> projectFeature.getProperties().put(prop.name(), exportDate.toString());
                 case year_properties -> projectFeature.getProperties().put(prop.name(), houseblockProperties);
+                default -> {
+                    TemplateProperty templateProperty = templatePropertyMap.get(prop.name());
+                    if (templateProperty.getPropertyTypes().containsAll(List.of(PropertyType.CATEGORY))) {
+                        addProjectCategoricalCustomProperty(
+                                project.getProjectId(),
+                                projectFeature,
+                                templateProperty,
+                                dxPropertiesMap,
+                                projectCategoricalCustomProps,
+                                errors);
+                    }
+                    else {
+                        throw new NotImplementedException("Combination of types not implemented");
+                    }
+                }
             }
         }
 
