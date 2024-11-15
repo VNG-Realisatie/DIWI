@@ -12,6 +12,7 @@ import { CustomPropertyWidget } from "../components/CustomPropertyWidget";
 import { LabelComponent } from "../components/project/LabelComponent";
 import { exportSettings, updateExportSettings } from "../Paths";
 import UserContext from "../context/UserContext";
+import { doesPropertyMatchExportProperty } from "../utils/exportUtils";
 
 type SelectedOption = {
     id: string;
@@ -36,16 +37,6 @@ type TypeConfig = {
 type FormData = {
     [key: string]: string;
 };
-
-function doesPropertyMatchExportProperty(property: ExportProperty, customProperty: Property): boolean {
-    if (!property.propertyTypes.some((type) => type === customProperty.propertyType)) return false;
-    if (property.objectType !== customProperty.objectType) return false;
-    if (["CATEGORY", "ORDINAL"].includes(customProperty.propertyType)) {
-        if (property.mandatory && !customProperty.mandatory) return false;
-        if (property.singleSelect && !customProperty.singleSelect) return false;
-    }
-    return true;
-}
 
 function ExportAdminPage() {
     const { t } = useTranslation();
@@ -168,7 +159,7 @@ function ExportAdminPage() {
             objectType: property.objectType,
             propertyType: property.propertyTypes[0] as "BOOLEAN" | "CATEGORY" | "ORDINAL" | "NUMERIC" | "TEXT" | "RANGE_CATEGORY",
             disabled: false,
-            categories: categoriesOrOrdinals.map((item) => ({ ...item, disabled: false })),
+            categories: categoriesOrOrdinals.filter((item) => !item.disabled),
             singleSelect: property.singleSelect,
             mandatory: property.mandatory,
         };
