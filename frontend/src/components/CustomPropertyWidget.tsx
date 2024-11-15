@@ -72,7 +72,7 @@ export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, cu
                                 backgroundColor: "#0000", // set 0 opacity when disabled
                             },
                         }}
-                        options={customDefinition.categories || []}
+                        options={customDefinition.categories?.filter((category) => !category.disabled) || []}
                         getOptionLabel={(option) => option?.name || ""}
                         value={values ? values[0] : null}
                         onChange={(_, newValue) =>
@@ -91,7 +91,7 @@ export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, cu
                                 backgroundColor: "#0000", // set 0 opacity when disabled
                             },
                         }}
-                        options={customDefinition.categories || []}
+                        options={customDefinition.categories?.filter((category) => !category.disabled) || []}
                         getOptionLabel={(option) => option?.name || ""}
                         value={values ? values : []}
                         multiple
