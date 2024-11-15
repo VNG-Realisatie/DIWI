@@ -437,7 +437,6 @@
             "ph_text8": "Warmtevoorziening (ph_text8, type: Categorie)",
             "toelichting_knelpunten": "Toelichting knelpunten (toelichting_knelpunten, type: Open tekstveld)",
             "verhuurder_type": "Verhuurder type (verhuurder_type, type: Categorie)",
-            "ph_text10" : "UNKNOWN (ph_text10, type: Open tekstveld)"
           }
       }
     },
