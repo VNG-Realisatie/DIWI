@@ -38,7 +38,8 @@ public class DataExchangeExportError {
         VALUE_LARGER_THAN_CONSTRUCTION_HOUSEBLOCKS("value_larger_than_construciton_houseblocks", "Value is greater than the total number of houses in the project's construction houseblocks, which is not allowed."),
         MISSING_DATAEXCHANGE_MAPPING("missing_dataexchange_mapping", "The dataexchange mapping is incomplete. A custom property is not configured for this field."),
         NUMERIC_RANGE_VALUE("numeric_range_value", "The numeric property has a range value assigned for this project, but only single values are allowed."),
-        OWNERSHIP_RANGE_MAPPING_ERROR("ownership_range_mapping_error", "The ownership range selected cannot be mapped within one interval of the export ranges.");
+        OWNERSHIP_RANGE_MAPPING_ERROR("ownership_range_mapping_error", "The ownership range selected cannot be mapped within one interval of the export ranges."),
+        CONFIDENTIALITY_ERROR("min_confidentiality_error", "The confidentiality level of the project is less than the minimum allowed export confidentiality");
 
         public final String errorMsg;
         public final String errorCode;

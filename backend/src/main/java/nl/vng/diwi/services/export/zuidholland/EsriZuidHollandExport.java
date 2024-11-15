@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import nl.vng.diwi.dal.entities.DataExchangeType;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
+import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.MutationType;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.dataexchange.DataExchangeTemplate;
@@ -36,6 +37,7 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static nl.vng.diwi.services.DataExchangeExportError.EXPORT_ERROR.CONFIDENTIALITY_ERROR;
 import static nl.vng.diwi.services.DataExchangeExportError.EXPORT_ERROR.MISSING_DATAEXCHANGE_MAPPING;
 import static nl.vng.diwi.services.DataExchangeExportError.EXPORT_ERROR.MISSING_MANDATORY_VALUE;
 import static nl.vng.diwi.services.DataExchangeExportError.EXPORT_ERROR.MULTIPLE_SINGLE_SELECT_VALUES;
@@ -65,7 +67,7 @@ public class EsriZuidHollandExport {
 
     public static FeatureCollection buildExportObject(ConfigModel configModel, List<ProjectExportSqlModel> projects,
                                                       List<PropertyModel> customProps, Map<String, DataExchangePropertyModel> dxPropertiesMap, LocalDate exportDate,
-                                                      List<DataExchangeExportError> errors) {
+                                                      Confidentiality minConfidentiality, List<DataExchangeExportError> errors) {
 
         FeatureCollection exportObject = new FeatureCollection();
         Crs crs = new Crs();
@@ -82,15 +84,15 @@ public class EsriZuidHollandExport {
 
         Map<UUID, PropertyModel> customPropsMap = customProps.stream().collect(Collectors.toMap(PropertyModel::getId, Function.identity()));
 
-        projects.forEach(project -> exportObject.add(getProjectFeature(configModel, project,
-            customPropsMap, priceRangeBuyFixedProp, priceRangeRentFixedProp, municipalityFixedProp, dxPropertiesMap, exportDate, errors)));
+        projects.forEach(project -> exportObject.add(getProjectFeature(configModel, project, customPropsMap, priceRangeBuyFixedProp, priceRangeRentFixedProp,
+            municipalityFixedProp, dxPropertiesMap, minConfidentiality, exportDate, errors)));
 
         return exportObject;
     }
 
-    private static Feature getProjectFeature(ConfigModel configModel, ProjectExportSqlModel project,
-                                             Map<UUID, PropertyModel> customPropsMap, PropertyModel priceRangeBuyFixedProp, PropertyModel priceRangeRentFixedProp,
-                                             PropertyModel municipalityFixedProp, Map<String, DataExchangePropertyModel> dxPropertiesMap, LocalDate exportDate,
+    private static Feature getProjectFeature(ConfigModel configModel, ProjectExportSqlModel project, Map<UUID, PropertyModel> customPropsMap,
+                                             PropertyModel priceRangeBuyFixedProp, PropertyModel priceRangeRentFixedProp, PropertyModel municipalityFixedProp,
+                                             Map<String, DataExchangePropertyModel> dxPropertiesMap, Confidentiality minConfidentiality, LocalDate exportDate,
                                              List<DataExchangeExportError> errors) {
 
         Feature projectFeature = new Feature();
@@ -153,8 +155,14 @@ public class EsriZuidHollandExport {
                     }
                     projectFeature.getProperties().put(prop.name(), woonplaatsName);
                 }
-                case vertrouwelijkheid -> projectFeature.getProperties().put(prop.name(),
-                    EsriZuidHollandEnumMappings.getEsriZuidHollandConfidentiality(project.getConfidentiality()).name());
+                case vertrouwelijkheid -> {
+                    if (Confidentiality.confidentialityMap.get(project.getConfidentiality()) < Confidentiality.confidentialityMap.get(minConfidentiality)) {
+                        errors.add(new DataExchangeExportError(project.getProjectId(), EsriZuidHollandProjectProps.vertrouwelijkheid.name(), CONFIDENTIALITY_ERROR));
+                    } else {
+                        projectFeature.getProperties().put(prop.name(),
+                            EsriZuidHollandEnumMappings.getEsriZuidHollandConfidentiality(project.getConfidentiality()).name());
+                    }
+                }
                 case opdrachtgever_type -> addProjectCategoricalCustomProperty(project.getProjectId(), projectFeature,
                         templatePropertyMap.get(EsriZuidHollandProjectProps.opdrachtgever_type.name()), dxPropertiesMap, projectCategoricalCustomProps, errors);
                 case opdrachtgever_naam -> {
