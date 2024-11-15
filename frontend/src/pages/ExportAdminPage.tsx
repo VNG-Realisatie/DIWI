@@ -208,7 +208,14 @@ function ExportAdminPage() {
                     const error = validationErrors.find((error) => error.dxProperty === property.name);
                     return (
                         <Grid item xs={12} key={index}>
-                            <LabelComponent text={t(`exchangeData.labels.${type}.${property.name}`)} required={false} disabled={false} />
+                            <LabelComponent
+                                text={
+                                    t(`exchangeData.labels.${type}.${property.name}`) +
+                                    ` (${property.name}, type: ${property.propertyTypes.map((type) => t(`admin.settings.propertyType.${type}`)).join(", ")})`
+                                }
+                                required={false}
+                                disabled={false}
+                            />
                             <CategoryInput
                                 readOnly={false}
                                 mandatory={false}
