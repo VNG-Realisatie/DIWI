@@ -180,14 +180,16 @@ public class DataExchangeModel {
                     }
                 });
 
-                propertyModel.getCategories().stream().filter(cOption -> cOption.getDisabled() == Boolean.FALSE)
-                    .forEach(diwiOption -> {
-                        if (!diwiOptionToDxOption.containsKey(diwiOption.getId())) {
-                            validationErrors.add(new ValidationError(dxPropModel.getName(), diwiOption.getName(), DxValidationError.OPTION_NOT_MAPPED));
-                        } else if (diwiOptionToDxOption.get(diwiOption.getId()).size() > 1) {
-                            validationErrors.add(new ValidationError(dxPropModel.getName(), diwiOption.getName(), DxValidationError.OPTION_MAPPED_MULTIPLE_TIMES));
-                        }
-                    });
+                if (propertyModel.getCategories() != null) {
+                    propertyModel.getCategories().stream().filter(cOption -> cOption.getDisabled() == Boolean.FALSE)
+                        .forEach(diwiOption -> {
+                            if (!diwiOptionToDxOption.containsKey(diwiOption.getId())) {
+                                validationErrors.add(new ValidationError(dxPropModel.getName(), diwiOption.getName(), DxValidationError.OPTION_NOT_MAPPED));
+                            } else if (diwiOptionToDxOption.get(diwiOption.getId()).size() > 1) {
+                                validationErrors.add(new ValidationError(dxPropModel.getName(), diwiOption.getName(), DxValidationError.OPTION_MAPPED_MULTIPLE_TIMES));
+                            }
+                        });
+                }
             } else if (propertyModel.getPropertyType() == PropertyType.ORDINAL && dxPropModel.getOptions() != null) {
                 Map<UUID, List<UUID>> diwiOptionToDxOption = new HashMap<>();
                 dxPropModel.getOptions().forEach(dxOption -> {
@@ -201,14 +203,16 @@ public class DataExchangeModel {
                     }
                 });
 
-                propertyModel.getOrdinals().stream().filter(oOption -> oOption.getDisabled() == Boolean.FALSE)
-                    .forEach(diwiOption -> {
-                        if (!diwiOptionToDxOption.containsKey(diwiOption.getId())) {
-                            validationErrors.add(new ValidationError(dxPropModel.getName(), diwiOption.getName(), DxValidationError.OPTION_NOT_MAPPED));
-                        } else if (diwiOptionToDxOption.get(diwiOption.getId()).size() > 1) {
-                            validationErrors.add(new ValidationError(dxPropModel.getName(), diwiOption.getName(), DxValidationError.OPTION_MAPPED_MULTIPLE_TIMES));
-                        }
-                    });
+                if (propertyModel.getOrdinals() != null) {
+                    propertyModel.getOrdinals().stream().filter(oOption -> oOption.getDisabled() == Boolean.FALSE)
+                        .forEach(diwiOption -> {
+                            if (!diwiOptionToDxOption.containsKey(diwiOption.getId())) {
+                                validationErrors.add(new ValidationError(dxPropModel.getName(), diwiOption.getName(), DxValidationError.OPTION_NOT_MAPPED));
+                            } else if (diwiOptionToDxOption.get(diwiOption.getId()).size() > 1) {
+                                validationErrors.add(new ValidationError(dxPropModel.getName(), diwiOption.getName(), DxValidationError.OPTION_MAPPED_MULTIPLE_TIMES));
+                            }
+                        });
+                }
             }
         }
 

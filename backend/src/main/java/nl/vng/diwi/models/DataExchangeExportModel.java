@@ -18,7 +18,7 @@ public class DataExchangeExportModel {
     private List<UUID> projectIds;
     private List<Confidentiality> confidentialityLevels;
 
-    public String validate() {
+    public String validate(ConfigModel configModel) {
         if (exportDate == null) {
             exportDate = LocalDate.now();
         }
@@ -36,6 +36,15 @@ public class DataExchangeExportModel {
         if (projectIds != null && confidentialityLevels != null) {
             return "Only one of projectIds and confidentialityLevels can be specified";
         }
+
+        if (confidentialityLevels != null) {
+            for (Confidentiality c : confidentialityLevels) {
+                if (Confidentiality.confidentialityMap.get(c) < Confidentiality.confidentialityMap.get(configModel.getMinimumExportConfidentiality())) {
+                    return "Selected confidentiality levels are below minimum allowed export confidentiality";
+                }
+            }
+        }
+
         return null;
     }
 
