@@ -19,6 +19,8 @@ public class DataExchangeExportError {
     private String message;
     private OwnershipCategory cat1;
     private OwnershipCategory cat2;
+    private Long priceValueMin;
+    private Long priceValueMax;
 
     public DataExchangeExportError(UUID projectId, String fieldName, EXPORT_ERROR exportError) {
         this.projectId = projectId;
@@ -34,13 +36,16 @@ public class DataExchangeExportError {
         this.message = exportError.errorMsg;
     }
 
-    public DataExchangeExportError(UUID projectId, UUID houseblockId, EXPORT_ERROR exportError, OwnershipCategory cat1, OwnershipCategory cat2) {
+    public DataExchangeExportError(UUID projectId, UUID houseblockId, EXPORT_ERROR exportError, OwnershipCategory cat1, OwnershipCategory cat2, Long priceValueMin, Long priceValueMax) {
         this.projectId = projectId;
         this.houseblockId = houseblockId;
         this.code = exportError.errorCode;
         this.message = exportError.errorMsg;
+
         this.cat1 = cat1;
         this.cat2 = cat2;
+        this.priceValueMin = priceValueMin;
+        this.priceValueMax = priceValueMax;
     }
 
     public enum EXPORT_ERROR {

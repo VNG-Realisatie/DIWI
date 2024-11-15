@@ -116,7 +116,7 @@ public class EsriZuidHollandHouseblockExportModel {
         if (cat1 == cat2) {
             return cat1;
         } else {
-            errors.add(new DataExchangeExportError(projectUuid, houseblockUuid, EXPORT_ERROR.OWNERSHIP_RANGE_MAPPING_ERROR, cat1, cat2));
+            errors.add(new DataExchangeExportError(projectUuid, houseblockUuid, EXPORT_ERROR.OWNERSHIP_RANGE_MAPPING_ERROR, cat1, cat2, priceValueMin, priceValueMax));
             return ownershipType == OwnershipType.KOOPWONING ? OwnershipCategory.koop_onb : OwnershipCategory.huur_onb;
         }
     }
