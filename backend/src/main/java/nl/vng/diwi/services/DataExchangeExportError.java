@@ -2,6 +2,7 @@ package nl.vng.diwi.services;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandHouseblockExportModel.OwnershipCategory;
 
 import java.util.UUID;
 
@@ -16,6 +17,8 @@ public class DataExchangeExportError {
 
     private String code;
     private String message;
+    private OwnershipCategory cat1;
+    private OwnershipCategory cat2;
 
     public DataExchangeExportError(UUID projectId, String fieldName, EXPORT_ERROR exportError) {
         this.projectId = projectId;
@@ -29,6 +32,15 @@ public class DataExchangeExportError {
         this.houseblockId = houseblockId;
         this.code = exportError.errorCode;
         this.message = exportError.errorMsg;
+    }
+
+    public DataExchangeExportError(UUID projectId, UUID houseblockId, EXPORT_ERROR exportError, OwnershipCategory cat1, OwnershipCategory cat2) {
+        this.projectId = projectId;
+        this.houseblockId = houseblockId;
+        this.code = exportError.errorCode;
+        this.message = exportError.errorMsg;
+        this.cat1 = cat1;
+        this.cat2 = cat2;
     }
 
     public enum EXPORT_ERROR {
