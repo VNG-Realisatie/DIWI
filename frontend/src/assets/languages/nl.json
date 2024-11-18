@@ -393,6 +393,15 @@
         "min_confidentiality_error": "Het vertrouwelijkheidsniveau van het project is lager dan het minimale toegestane exportvertrouwelijkheidsniveau.",
         "generic_error": "Er is een fout opgetreden bij het downloaden van het bestand."
       },
+      "downloadErrorProperties": {
+        "category": "Categorie",
+        "fieldName": "Veldnaam",
+        "houseblockId": "Woningblok ID",
+        "projectId": "Project ID",
+        "priceValueMax": "Maximale prijs",
+        "priceValueMin": "Minimale prijs"
+
+      },
       "download": {
         "excel": "Download Excel template hier",
         "squit": "Download Excel template hier",

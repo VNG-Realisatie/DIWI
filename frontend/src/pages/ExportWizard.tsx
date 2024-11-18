@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import { Grid, Box, Typography, Alert } from "@mui/material";
+import { Grid, Box, Typography, Alert, Stack, Accordion, AccordionSummary, AccordionDetails, List } from "@mui/material";
 import { downloadExportData, exportProjects } from "../api/exportServices";
 import { t } from "i18next";
 import { ProjectsTableView } from "../components/project/ProjectsTableView";
@@ -8,6 +8,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { exchangeimportdata } from "../Paths";
 import UserContext from "../context/UserContext";
 import { ConfidentialityLevel } from "../types/enums";
+import { GridExpandMoreIcon } from "@mui/x-data-grid";
+import { PropertyListItem } from "../components/PropertyListItem";
 
 type DownloadError = {
     cat1?: string;
@@ -83,15 +85,59 @@ const ExportWizard = () => {
                         exportProjects={handleExportProjects}
                         handleDownload={handleDownload}
                     />
-                </Grid>
-                {errors.map((error, index) => (
-                    <Grid item xs={12} key={index}>
-                        <Alert severity="warning">
-                            {t(`exchangeData.downloadErrors.${error.code}`)}
-                            {error.fieldName && ` : ${error.fieldName}`}
+                    {errors.length > 0 && (
+                        <Alert severity="error" sx={{ "& .MuiAlert-message": { width: "100%" } }}>
+                            <Stack>
+                                {errors.map((error) => {
+                                    return (
+                                        <Accordion defaultExpanded>
+                                            <AccordionSummary
+                                                expandIcon={<GridExpandMoreIcon />}
+                                                sx={{
+                                                    backgroundColor: "lightgray",
+                                                }}
+                                            >
+                                                <Typography className="import-error">{t(`exchangeData.downloadErrors.${error.code}`)}</Typography>
+                                            </AccordionSummary>
+                                            <AccordionDetails>
+                                                <>
+                                                    <List
+                                                        dense
+                                                        sx={{
+                                                            listStyleType: "disc",
+                                                            pl: 1,
+                                                            "& .MuiListItem-root": {
+                                                                display: "list-item",
+                                                                padding: 0,
+                                                            },
+                                                        }}
+                                                    >
+                                                        <PropertyListItem label={t("exchangeDatae.downloadErrorProperties.category")} value={error.cat1} />
+                                                        <PropertyListItem label={t("exchangeData.downloadErrorProperties.category")} value={error.cat2} />
+                                                        <PropertyListItem label={t("exchangeData.downloadErrorProperties.fieldName")} value={error.fieldName} />
+                                                        <PropertyListItem
+                                                            label={t("exchangeData.downloadErrorProperties.houseblockId")}
+                                                            value={error.houseblockId}
+                                                        />
+                                                        <PropertyListItem
+                                                            label={t("exchangeData.downloadErrorProperties.priceValueMax")}
+                                                            value={error.priceValueMax}
+                                                        />
+                                                        <PropertyListItem
+                                                            label={t("exchangeData.downloadErrorProperties.priceValueMin")}
+                                                            value={error.priceValueMin}
+                                                        />
+                                                        <PropertyListItem label={t("exchangeData.downloadErrorProperties.projectId")} value={error.projectId} />
+                                                    </List>
+                                                </>
+                                            </AccordionDetails>
+                                        </Accordion>
+                                    );
+                                })}
+                            </Stack>
                         </Alert>
-                    </Grid>
-                ))}
+                    )}
+                </Grid>
             </Grid>
         </Box>
     );
