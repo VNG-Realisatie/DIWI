@@ -1,21 +1,31 @@
 import { useState, useContext } from "react";
-import { Grid, Box, Typography } from "@mui/material";
+import { Grid, Box, Typography, Alert } from "@mui/material";
 import { downloadExportData, exportProjects } from "../api/exportServices";
 import { t } from "i18next";
 import { ProjectsTableView } from "../components/project/ProjectsTableView";
 import ActionNotAllowed from "./ActionNotAllowed";
-import AlertContext from "../context/AlertContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { exchangeimportdata } from "../Paths";
 import UserContext from "../context/UserContext";
 import { ConfidentialityLevel } from "../types/enums";
 
+type DownloadError = {
+    cat1?: string;
+    cat2?: string;
+    code: string;
+    fieldName?: string;
+    houseblockId?: string;
+    message?: string;
+    priceValueMax?: number;
+    priceValueMin?: number;
+    projectId?: string;
+};
 const ExportWizard = () => {
     const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
     const { id: selectedExportId } = useParams();
     const { allowedActions } = useContext(UserContext);
-    const { setAlert } = useContext(AlertContext);
     const navigate = useNavigate();
+    const [errors, setErrors] = useState<DownloadError[]>([]);
 
     if (!allowedActions.includes("VIEW_DATA_EXCHANGES")) {
         return <ActionNotAllowed errorMessage={t("admin.export.actionNotAllowed")} />;
@@ -46,8 +56,12 @@ const ExportWizard = () => {
                 ...(projectIds.length > 0 ? { projectIds } : { confidentialityLevels }),
             };
             await downloadExportData(selectedExportId, body);
+            setErrors([]);
         } catch (error: unknown) {
-            if (error instanceof Error) setAlert(error.message, "warning");
+            if (error instanceof Error) {
+                const parsedError = JSON.parse(error.message);
+                setErrors(parsedError);
+            }
         }
     };
 
@@ -67,6 +81,14 @@ const ExportWizard = () => {
                         handleDownload={handleDownload}
                     />
                 </Grid>
+                {errors.map((error, index) => (
+                    <Grid item xs={12} key={index}>
+                        <Alert severity="warning">
+                            {t(`exchangeData.downloadErrors.${error.code}`)}
+                            {error.fieldName && `: ${error.fieldName}`}
+                        </Alert>
+                    </Grid>
+                ))}
             </Grid>
         </Box>
     );
