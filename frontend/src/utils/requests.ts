@@ -49,13 +49,7 @@ export async function downloadPost(url: string, filename: string, body: any) {
     });
 
     if (!res.ok) {
-        if (res.status === 400) {
-            const response = await res.json();
-
-            throw Error(JSON.stringify(response));
-        } else {
-            throw Error(res.statusText);
-        }
+        throw await res.json();
     }
 
     const blob = await res.blob();

@@ -47,6 +47,7 @@ const ExportWizard = () => {
     };
     const handleDownload = async () => {
         if (!selectedExportId) return;
+
         try {
             const projectIds = selectedProjects;
             const confidentialityLevels = ["PUBLIC", "EXTERNAL_GOVERNMENTAL"] as ConfidentialityLevel[];
@@ -55,12 +56,14 @@ const ExportWizard = () => {
                 exportDate: new Date().toISOString(),
                 ...(projectIds.length > 0 ? { projectIds } : { confidentialityLevels }),
             };
+
             await downloadExportData(selectedExportId, body);
             setErrors([]);
         } catch (error: unknown) {
-            if (error instanceof Error) {
-                const parsedError = JSON.parse(error.message);
-                setErrors(parsedError);
+            if (Array.isArray(error)) {
+                setErrors(error);
+            } else {
+                setErrors([{ code: "generic_error" }]);
             }
         }
     };

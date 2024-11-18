@@ -390,7 +390,8 @@
         "missing_dataexchange_mapping": "De gegevensuitwisselingsmapping is onvolledig. Een aangepaste eigenschap is niet geconfigureerd voor dit veld.",
         "numeric_range_value": "De numerieke eigenschap heeft een bereikwaarde toegewezen voor dit project, maar alleen enkele waarden zijn toegestaan.",
         "ownership_range_mapping_error": "Het geselecteerde eigendomsbereik kan niet worden gemapt binnen één interval van de exportranges.",
-        "min_confidentiality_error": "Het vertrouwelijkheidsniveau van het project is lager dan het minimale toegestane exportvertrouwelijkheidsniveau."
+        "min_confidentiality_error": "Het vertrouwelijkheidsniveau van het project is lager dan het minimale toegestane exportvertrouwelijkheidsniveau.",
+        "generic_error": "Er is een fout opgetreden bij het downloaden van het bestand."
       },
       "download": {
         "excel": "Download Excel template hier",
