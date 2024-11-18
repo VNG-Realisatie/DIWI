@@ -161,6 +161,24 @@ export const ProjectsTableView = ({
     const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
 
     useEffect(() => {
+        getCustomProperties().then((customProperties) => {
+            const filteredProperties = customProperties.filter((property) => ["district", "municipality", "neighbourhood"].includes(property.name));
+            console.log(filteredProperties);
+
+            const areaProperties: AreaProperties = filteredProperties.reduce((acc, property) => {
+                acc[property.name as keyof AreaProperties] =
+                    property.categories?.map((category) => ({
+                        ...category,
+                        id: category.id || "",
+                    })) || [];
+                return acc;
+            }, {} as AreaProperties);
+
+            setAreaProperties(areaProperties);
+        });
+    }, []);
+
+    useEffect(() => {
         if (filterUrl !== "") {
             if (isExportPage) {
                 if (!selectedExportId) return;
@@ -193,26 +211,6 @@ export const ProjectsTableView = ({
         }
     }, [setSelectionModel, isConfidentialityUpdatePage, selectedProjects]);
 
-    useEffect(() => {
-        getCustomProperties().then((customProperties) => {
-            const filteredProperties = customProperties.filter((property) => ["district", "municipality", "neighbourhood"].includes(property.name));
-            console.log(filteredProperties);
-
-            const areaProperties: AreaProperties = filteredProperties.reduce((acc, property) => {
-                acc[property.name as keyof AreaProperties] =
-                    property.categories?.map((category) => ({
-                        ...category,
-                        id: category.id || "",
-                    })) || [];
-                return acc;
-            }, {} as AreaProperties);
-
-            console.log(areaProperties);
-
-            setAreaProperties(areaProperties);
-        });
-    }, []);
-
     const handleExport = (params: GridRowParams) => {
         const clickedRow: RowData = params.row as RowData;
         if (selectedRows.includes(clickedRow.id)) {
@@ -220,11 +218,6 @@ export const ProjectsTableView = ({
         } else {
             setSelectedRows([...selectedRows, clickedRow.id]);
         }
-    };
-
-    const createErrorReport = (params: GridPreProcessEditCellProps) => {
-        const hasError = params.props.value.length < 3;
-        return { ...params.props, error: hasError };
     };
 
     const handleSelectionChange = (newSelection: GridRowSelectionModel) => {
@@ -235,6 +228,43 @@ export const ProjectsTableView = ({
             return [...new Set([...updatedSelection, ...newSelection])];
         });
     };
+
+    const handleFilterModelChange = (newModel: GridFilterModel) => {
+        if (newModel.items.some((item) => item.value)) {
+            setFilterModel(newModel);
+        } else {
+            const updatedFilterModel: GridFilterModel = {
+                items: newModel.items.map((item) => ({
+                    ...item,
+                    value: undefined,
+                })),
+            };
+            setFilterModel(updatedFilterModel);
+        }
+    };
+
+    const handleSortModelChange = (newSortModel: GridSortModel) => {
+        setSortModel(newSortModel);
+    };
+
+    const handleProjectsExport = () => {
+        exportProjects();
+        setShowDialog(false);
+    };
+
+    const handleColumnSizeChange = (params: GridColumnResizeParams) => {
+        const field = params.colDef.field as ColumnField;
+        const newColumnConfig = { ...columnConfig, [field]: { ...columnConfig[field], width: params.colDef.width } };
+        setColumnConfig(newColumnConfig);
+    };
+
+    const initialVisibilityModel = Object.keys(columnConfig).reduce(
+        (model, key) => {
+            model[key as ColumnField] = !columnConfig[key as ColumnField]?.show;
+            return model;
+        },
+        {} as { [key in ColumnField]: boolean },
+    );
 
     const customAreaFilterOperator: GridFilterOperator = {
         label: "isAnyOf",
@@ -252,6 +282,12 @@ export const ProjectsTableView = ({
         },
         InputComponent: GridFilterInputMultipleSingleSelect,
     };
+    const createErrorReport = (params: GridPreProcessEditCellProps) => {
+        const hasError = params.props.value.length < 3;
+        return { ...params.props, error: hasError };
+    };
+
+    const disabledConfidentialityLevelsForExport = ["PRIVATE", "INTERNAL_CIVIL", "INTERNAL_MANAGEMENT", "INTERNAL_COUNCIL", "EXTERNAL_REGIONAL"];
 
     const defaultColumns: GridColDef[] = [
         {
@@ -453,47 +489,6 @@ export const ProjectsTableView = ({
             preProcessEditCellProps: createErrorReport,
         },
     ];
-    const [columns, setColumns] = useState<GridColDef[]>(defaultColumns);
-
-    const handleFilterModelChange = (newModel: GridFilterModel) => {
-        if (newModel.items.some((item) => item.value)) {
-            setFilterModel(newModel);
-        } else {
-            const updatedFilterModel: GridFilterModel = {
-                items: newModel.items.map((item) => ({
-                    ...item,
-                    value: undefined,
-                })),
-            };
-            setFilterModel(updatedFilterModel);
-        }
-    };
-
-    const handleSortModelChange = (newSortModel: GridSortModel) => {
-        setSortModel(newSortModel);
-    };
-
-    const handleProjectsExport = () => {
-        exportProjects();
-        setShowDialog(false);
-    };
-
-    const handleColumnSizeChange = (params: GridColumnResizeParams) => {
-        const field = params.colDef.field as ColumnField;
-        const newColumnConfig = { ...columnConfig, [field]: { ...columnConfig[field], width: params.colDef.width } };
-        setColumnConfig(newColumnConfig);
-    };
-
-    const initialVisibilityModel = Object.keys(columnConfig).reduce(
-        (model, key) => {
-            model[key as ColumnField] = !columnConfig[key as ColumnField]?.show;
-            return model;
-        },
-        {} as { [key in ColumnField]: boolean },
-    );
-
-    const disabledConfidentialityLevelsForExport = ["PRIVATE", "INTERNAL_CIVIL", "INTERNAL_MANAGEMENT", "INTERNAL_COUNCIL", "EXTERNAL_REGIONAL"];
-
     return (
         <Stack
             width="100%"
@@ -509,7 +504,7 @@ export const ProjectsTableView = ({
                 }}
                 checkboxSelection={showCheckBox || isExportPage || isConfidentialityUpdatePage}
                 rows={rows}
-                columns={columns}
+                columns={defaultColumns}
                 rowHeight={70}
                 initialState={{
                     pagination: {
@@ -598,7 +593,6 @@ export const ProjectsTableView = ({
                                         saveColumnConfig(initialColumnConfig);
                                         localStorage.removeItem("projectsTableColumnConfig");
                                         setAlert(t("projects.successResetColumnConfig"), "success");
-                                        setColumns(defaultColumns);
                                         setColumnConfig(initialColumnConfig);
                                     }}
                                     p={0.5}
