@@ -383,7 +383,25 @@
         "option_not_mapped": "Optie van maatwerk categorie is niet gemapt",
         "option_mapped_multiple_times": "Optie van maatwerk categorie is gemapt naar meerdere template opties"
       },
+      "downloadErrors": {
+        "missing_mandatory_value": "Waarde is verplicht in de export, maar ontbreekt in de projecteigenschappen.",
+        "multiple_single_select_values": "Waarde is een enkele selectie in de export, maar er zijn meerdere waarden toegewezen in de projecteigenschappen.",
+        "value_larger_than_construciton_houseblocks": "Waarde is groter dan het totale aantal huizen in de constructiehuizenblokken van het project, wat niet is toegestaan.",
+        "missing_dataexchange_mapping": "De gegevensuitwisselingsmapping is onvolledig. Een aangepaste eigenschap is niet geconfigureerd voor dit veld.",
+        "numeric_range_value": "De numerieke eigenschap heeft een bereikwaarde toegewezen voor dit project, maar alleen enkele waarden zijn toegestaan.",
+        "ownership_range_mapping_error": "Het geselecteerde eigendomsbereik kan niet worden gemapt binnen één interval van de exportranges.",
+        "min_confidentiality_error": "Het vertrouwelijkheidsniveau van het project is lager dan het minimale toegestane exportvertrouwelijkheidsniveau.",
+        "generic_error": "Er is een fout opgetreden bij het downloaden van het bestand."
+      },
+      "downloadErrorProperties": {
+        "category": "Categorie",
+        "fieldName": "Veldnaam",
+        "houseblockId": "Woningblok ID",
+        "projectId": "Project ID",
+        "priceValueMax": "Maximale prijs",
+        "priceValueMin": "Minimale prijs"
 
+      },
       "download": {
         "excel": "Download Excel template hier",
         "squit": "Download Excel template hier",

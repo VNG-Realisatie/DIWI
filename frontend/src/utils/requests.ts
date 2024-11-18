@@ -40,14 +40,19 @@ export async function download(url: string, filename: string) {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function downloadPost(url: string, filename: string, body: any) {
     const stringifiedBody = JSON.stringify(body);
-    const data = await diwiFetch(encodeURI(url), {
+    const res = await diwiFetch(encodeURI(url), {
         method: "POST",
         body: stringifiedBody,
         headers: {
             "Content-Type": "application/json",
         },
     });
-    const blob = await data.blob();
+
+    if (!res.ok) {
+        throw await res.json();
+    }
+
+    const blob = await res.blob();
     const downloadedDataURL = URL.createObjectURL(blob);
 
     const anchor = document.createElement("a");
