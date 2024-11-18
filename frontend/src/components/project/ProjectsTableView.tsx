@@ -163,7 +163,6 @@ export const ProjectsTableView = ({
     useEffect(() => {
         getCustomProperties().then((customProperties) => {
             const filteredProperties = customProperties.filter((property) => ["district", "municipality", "neighbourhood"].includes(property.name));
-            console.log(filteredProperties);
 
             const areaProperties: AreaProperties = filteredProperties.reduce((acc, property) => {
                 acc[property.name as keyof AreaProperties] =
@@ -270,10 +269,12 @@ export const ProjectsTableView = ({
         label: "isAnyOf",
         value: "isAnyOf",
         getApplyFilterFn: (filterItem: GridFilterItem) => {
+            console.log(filterItem);
             if (!filterItem.value || !Array.isArray(filterItem.value) || filterItem.value.length === 0) {
                 return () => true;
             }
             return (row) => {
+                console.log(row);
                 if (!row || row.length === 0) {
                     return () => true;
                 }
@@ -385,13 +386,16 @@ export const ProjectsTableView = ({
             headerName: capitalizeFirstLetters(t("projects.tableColumns.planType")),
             display: "flex",
             width: columnConfig?.planType?.width || 500,
-            valueOptions: planTypeOptions.map((pt) => pt.id),
+            valueOptions: planTypeOptions.map((pt) => {
+                return { value: pt.name, label: t(`projectTable.planTypeOptions.${pt.name}`) };
+            }),
             type: "singleSelect",
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                const defaultPlanTypes = cellValues.row.planType?.map((c) => ({ id: c, name: t(`projectTable.planTypeOptions.${c}`) })) || [];
+                const defaultPlanTypes =
+                    cellValues.row.planType?.map((c) => ({ id: c, name: t(`projectTable.planTypeOptions.${c}`) })) || [];
                 return <CategoriesCell cellValues={defaultPlanTypes} />;
             },
-            filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
+            filterOperators: [customAreaFilterOperator],
             preProcessEditCellProps: createErrorReport,
         },
         {
