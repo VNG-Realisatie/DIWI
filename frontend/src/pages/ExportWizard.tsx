@@ -88,7 +88,7 @@ const ExportWizard = () => {
                     <Grid item xs={12} key={index}>
                         <Alert severity="warning">
                             {t(`exchangeData.downloadErrors.${error.code}`)}
-                            {error.fieldName && `: ${error.fieldName}`}
+                            {error.fieldName && ` : ${error.fieldName}`}
                         </Alert>
                     </Grid>
                 ))}
