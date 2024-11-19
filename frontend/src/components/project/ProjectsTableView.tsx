@@ -26,7 +26,7 @@ import useAlert from "../../hooks/useAlert";
 import { Project } from "../../api/projectsServices";
 import { useTranslation } from "react-i18next";
 import { CategoriesCell } from "../table/CategoriesCell";
-import { confidentialityLevelOptions, planTypeOptions, projectPhaseOptions } from "../table/constants";
+import { confidentialityLevelOptions, planningPlanStatus, planTypeOptions, projectPhaseOptions } from "../table/constants";
 import ProjectContext from "../../context/ProjectContext";
 import useCustomSearchParams from "../../hooks/useCustomSearchParams";
 import { AddProjectButton } from "../PlusButton";
@@ -34,9 +34,9 @@ import dayjs from "dayjs";
 import { dateFormats } from "../../localization";
 import { capitalizeFirstLetters } from "../../utils/stringFunctions";
 import { UserGroupSelect } from "../../widgets/UserGroupSelect";
-import { getCustomProperties } from "../../api/adminSettingServices";
 import { confidentialityUpdate, configuredExport, projectsTable } from "../../Paths";
 import UserContext from "../../context/UserContext";
+import useProperties from "../../hooks/useProperties";
 
 interface RowData {
     id: number;
@@ -104,18 +104,6 @@ export type SelectedOptionWithId = {
     id: string;
     option: OptionType[];
 };
-
-type Category = {
-    id: string;
-    name: string;
-};
-
-type AreaProperties = {
-    district: Category[];
-    municipality: Category[];
-    neighbourhood: Category[];
-};
-
 const confidentialityLevelComparator = (v1: string, v2: string): number => {
     const label1 = confidentialityLevelOptions.find((option) => option.id === v1)?.name || "";
     const label2 = confidentialityLevelOptions.find((option) => option.id === v2)?.name || "";
@@ -152,30 +140,13 @@ export const ProjectsTableView = ({
     const [showDialog, setShowDialog] = useState(false);
     const [filterModel, setFilterModel] = useState<GridFilterModel | undefined>();
     const [sortModel, setSortModel] = useState<GridSortModel | undefined>();
-    const [areaProperties, setAreaProperties] = useState<AreaProperties | null>(null);
     const [columnConfig, setColumnConfig] = useState<ColumnConfig>(loadColumnConfig() || initialColumnConfig);
 
     const { allowedActions } = useContext(UserContext);
     const { filterUrl, rows, filteredProjectsSize } = useCustomSearchParams(sortModel, filterModel, paginationInfo);
     const { id: selectedExportId } = useParams();
     const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
-
-    useEffect(() => {
-        getCustomProperties().then((customProperties) => {
-            const filteredProperties = customProperties.filter((property) => ["district", "municipality", "neighbourhood"].includes(property.name));
-
-            const areaProperties: AreaProperties = filteredProperties.reduce((acc, property) => {
-                acc[property.name as keyof AreaProperties] =
-                    property.categories?.map((category) => ({
-                        ...category,
-                        id: category.id || "",
-                    })) || [];
-                return acc;
-            }, {} as AreaProperties);
-
-            setAreaProperties(areaProperties);
-        });
-    }, []);
+    const { municipalityRolesOptions, districtOptions, neighbourhoodOptions, municipalityOptions } = useProperties();
 
     useEffect(() => {
         if (filterUrl !== "") {
@@ -269,16 +240,31 @@ export const ProjectsTableView = ({
         label: "isAnyOf",
         value: "isAnyOf",
         getApplyFilterFn: (filterItem: GridFilterItem) => {
-            console.log(filterItem);
             if (!filterItem.value || !Array.isArray(filterItem.value) || filterItem.value.length === 0) {
                 return () => true;
             }
             return (row) => {
-                console.log(row);
                 if (!row || row.length === 0) {
                     return () => true;
                 }
                 return row.some((item: { name: string }) => filterItem.value.includes(item.name));
+            };
+        },
+        InputComponent: GridFilterInputMultipleSingleSelect,
+    };
+
+    const planningFilterOperator: GridFilterOperator = {
+        label: "isAnyOf",
+        value: "isAnyOf",
+        getApplyFilterFn: (filterItem: GridFilterItem) => {
+            if (!filterItem.value || !Array.isArray(filterItem.value) || filterItem.value.length === 0) {
+                return () => true;
+            }
+            return (row) => {
+                if (!row || row.length === 0) {
+                    return () => true;
+                }
+                return row.some((item: []) => filterItem.value.includes(item));
             };
         },
         InputComponent: GridFilterInputMultipleSingleSelect,
@@ -390,12 +376,11 @@ export const ProjectsTableView = ({
                 return { value: pt.name, label: t(`projectTable.planTypeOptions.${pt.name}`) };
             }),
             type: "singleSelect",
+            filterOperators: [planningFilterOperator],
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                const defaultPlanTypes =
-                    cellValues.row.planType?.map((c) => ({ id: c, name: t(`projectTable.planTypeOptions.${c}`) })) || [];
+                const defaultPlanTypes = cellValues.row.planType?.map((c) => ({ id: c, name: t(`projectTable.planTypeOptions.${c}`) })) || [];
                 return <CategoriesCell cellValues={defaultPlanTypes} />;
             },
-            filterOperators: [customAreaFilterOperator],
             preProcessEditCellProps: createErrorReport,
         },
         {
@@ -413,6 +398,12 @@ export const ProjectsTableView = ({
             headerName: capitalizeFirstLetters(t("projects.tableColumns.municipalityRole")),
             display: "flex",
             width: columnConfig?.municipalityRole?.width || 150,
+            type: "singleSelect",
+            valueOptions: municipalityRolesOptions?.map((c) => {
+                const option = { value: c.name, label: c.name };
+                return option;
+            }),
+            filterOperators: [customAreaFilterOperator],
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
                 return <CategoriesCell cellValues={cellValues?.row?.municipalityRole || []} />;
             },
@@ -435,6 +426,11 @@ export const ProjectsTableView = ({
             headerName: capitalizeFirstLetters(t("projects.tableColumns.planningPlanStatus")),
             display: "flex",
             width: columnConfig?.planningPlanStatus?.width || 500,
+            valueOptions: planningPlanStatus.map((pt) => {
+                return { value: pt.name, label: t(`projectTable.planningPlanStatus.${pt.name}`) };
+            }),
+            type: "singleSelect",
+            filterOperators: [planningFilterOperator],
             preProcessEditCellProps: createErrorReport,
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
                 const fixedProperties = cellValues?.row?.planningPlanStatus?.map((fp) => ({ id: fp, name: t(`projectTable.planningPlanStatus.${fp}`) })) || [];
@@ -447,7 +443,7 @@ export const ProjectsTableView = ({
             display: "flex",
             width: columnConfig?.municipality?.width || 320,
             type: "singleSelect",
-            valueOptions: areaProperties?.municipality.map((c) => {
+            valueOptions: municipalityOptions?.map((c) => {
                 const option = { value: c.name, label: c.name };
                 return option;
             }),
@@ -464,7 +460,7 @@ export const ProjectsTableView = ({
             display: "flex",
             width: columnConfig?.district?.width || 320,
             type: "singleSelect",
-            valueOptions: areaProperties?.district.map((c) => {
+            valueOptions: districtOptions?.map((c) => {
                 const option = { value: c.name, label: c.name };
                 return option;
             }),
@@ -481,7 +477,7 @@ export const ProjectsTableView = ({
             display: "flex",
             width: columnConfig?.neighbourhood?.width || 320,
             type: "singleSelect",
-            valueOptions: areaProperties?.neighbourhood.map((c) => {
+            valueOptions: neighbourhoodOptions?.map((c) => {
                 const option = { value: c.name, label: c.name };
                 return option;
             }),
