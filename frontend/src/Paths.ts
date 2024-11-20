@@ -39,6 +39,7 @@ export const exchangeimportdata = createPathObject(config.baseurl + "exchangeimp
 export const exportExcel = createPathObject(config.baseurl + "exchangedata/exportexcel");
 export const exportProvince = createPathObject(config.baseurl + "exchangedata/exportprovince");
 export const configuredExport = createPathObject(config.baseurl + "exchangedata/export");
+export const confidentialityUpdate = createPathObject(config.baseurl + "exchangedata/confidentiality-update");
 export const importExcel = createPathObject(config.baseurl + "exchangedata/importexcel");
 export const importGeoJson = createPathObject(config.baseurl + "exchangedata/importgeojson");
 export const importSquit = createPathObject(config.baseurl + "exchangedata/importsquit");

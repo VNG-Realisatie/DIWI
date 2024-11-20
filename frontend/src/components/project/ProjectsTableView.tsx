@@ -18,7 +18,7 @@ import {
     getGridStringOperators,
 } from "@mui/x-data-grid";
 import { useNavigate, useParams } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 import { Box, Button, Dialog, DialogActions, DialogTitle, Stack, Tooltip, Typography } from "@mui/material";
 import SaveAsIcon from "@mui/icons-material/SaveAs";
 import UndoIcon from "@mui/icons-material/Undo";
@@ -35,7 +35,7 @@ import { dateFormats } from "../../localization";
 import { capitalizeFirstLetters } from "../../utils/stringFunctions";
 import { UserGroupSelect } from "../../widgets/UserGroupSelect";
 import { getCustomProperties } from "../../api/adminSettingServices";
-import { configuredExport, projectsTable } from "../../Paths";
+import { confidentialityUpdate, configuredExport, projectsTable } from "../../Paths";
 import UserContext from "../../context/UserContext";
 
 interface RowData {
@@ -85,7 +85,8 @@ const initialColumnConfig: ColumnConfig = {
 type Props = {
     showCheckBox?: boolean;
     isExportPage?: boolean;
-    handleProjectSelection?: (projectId: string | null | string[]) => void;
+    isConfidentialityUpdatePage?: boolean;
+    setSelectedProjects?: Dispatch<SetStateAction<string[]>>;
     selectedProjects?: string[];
     handleBack?: () => void;
     exportProjects?: () => void;
@@ -133,11 +134,12 @@ const loadColumnConfig = (): ColumnConfig | null => {
 export const ProjectsTableView = ({
     showCheckBox,
     isExportPage = false,
-    handleProjectSelection = () => {},
-    selectedProjects = [],
+    isConfidentialityUpdatePage = false,
     handleBack = () => {},
     exportProjects = () => {},
     handleDownload = () => {},
+    setSelectedProjects = () => {},
+    selectedProjects = [],
 }: Props) => {
     const { paginationInfo, setPaginationInfo, totalProjectCount } = useContext(ProjectContext);
 
@@ -150,30 +152,46 @@ export const ProjectsTableView = ({
     const [showDialog, setShowDialog] = useState(false);
     const [filterModel, setFilterModel] = useState<GridFilterModel | undefined>();
     const [sortModel, setSortModel] = useState<GridSortModel | undefined>();
-    const [previousSelection, setPreviousSelection] = useState<GridRowSelectionModel>([]);
     const [areaProperties, setAreaProperties] = useState<AreaProperties | null>(null);
     const [columnConfig, setColumnConfig] = useState<ColumnConfig>(loadColumnConfig() || initialColumnConfig);
 
     const { allowedActions } = useContext(UserContext);
     const { filterUrl, rows, filteredProjectsSize } = useCustomSearchParams(sortModel, filterModel, paginationInfo);
     const { id: selectedExportId } = useParams();
+    const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
 
     useEffect(() => {
         if (filterUrl !== "") {
-            if (!isExportPage) {
-                navigate(projectsTable.toPath() + `${filterUrl}`);
-            } else {
+            if (isExportPage) {
                 if (!selectedExportId) return;
                 navigate(configuredExport.toPath() + `/${selectedExportId}/${filterUrl}`);
+            } else if (isConfidentialityUpdatePage) {
+                if (!selectedExportId) return;
+                navigate(confidentialityUpdate.toPath() + `/${selectedExportId}/${filterUrl}`);
+            } else {
+                navigate(projectsTable.toPath() + `${filterUrl}`);
             }
         }
-    }, [filterUrl, navigate, filterModel, sortModel, isExportPage, selectedExportId]);
+    }, [filterUrl, navigate, filterModel, sortModel, isExportPage, selectedExportId, isConfidentialityUpdatePage]);
 
     useEffect(() => {
         if (isExportPage) {
             setFilterModel({ items: [{ field: "confidentialityLevel", operator: "isAnyOf", value: ["PUBLIC", "EXTERNAL_GOVERNMENTAL"] }] });
         }
     }, [isExportPage]);
+
+    useEffect(() => {
+        if (rows.length === 0 && paginationInfo.page > 1) {
+            setPaginationInfo({ page: 1, pageSize: 10 });
+        }
+    }, [rows, setPaginationInfo, paginationInfo]);
+
+    useEffect(() => {
+        if (!isConfidentialityUpdatePage) return;
+        if (selectedProjects.length === 0) {
+            setSelectionModel([]);
+        }
+    }, [setSelectionModel, isConfidentialityUpdatePage, selectedProjects]);
 
     useEffect(() => {
         getCustomProperties().then((customProperties) => {
@@ -207,22 +225,12 @@ export const ProjectsTableView = ({
     };
 
     const handleSelectionChange = (newSelection: GridRowSelectionModel) => {
-        const added = newSelection.filter((id) => !previousSelection.includes(id));
-        const removed = previousSelection.filter((id) => !newSelection.includes(id));
+        setSelectionModel((prevSelection) => {
+            const updatedSelection = prevSelection.filter((id) => newSelection.includes(id));
 
-        if (newSelection.length === 0) {
-            handleProjectSelection(null);
-        } else if (newSelection.length === rows.length) {
-            handleProjectSelection(rows.map((row) => row.id));
-        } else {
-            if (added.length > 0) {
-                handleProjectSelection(added[0] as string);
-            } else if (removed.length > 0) {
-                handleProjectSelection(removed[0] as string);
-            }
-        }
-
-        setPreviousSelection(newSelection);
+            setSelectedProjects([...new Set([...updatedSelection, ...newSelection])] as string[]);
+            return [...new Set([...updatedSelection, ...newSelection])];
+        });
     };
 
     const customAreaFilterOperator: GridFilterOperator = {
@@ -646,8 +654,6 @@ export const ProjectsTableView = ({
     const [columns, setColumns] = useState<GridColDef[]>(defaultColumns);
 
     const handleFilterModelChange = (newModel: GridFilterModel) => {
-        if (isExportPage) return;
-
         if (newModel.items.some((item) => item.value)) {
             setFilterModel(newModel);
         } else {
@@ -683,6 +689,9 @@ export const ProjectsTableView = ({
         },
         {} as { [key in ColumnField]: boolean },
     );
+
+    const disabledConfidentialityLevelsForExport = ["PRIVATE", "INTERNAL_CIVIL", "INTERNAL_MANAGEMENT", "INTERNAL_COUNCIL", "EXTERNAL_REGIONAL"];
+
     return (
         <Stack
             width="100%"
@@ -696,7 +705,7 @@ export const ProjectsTableView = ({
                 sx={{
                     borderRadius: 0,
                 }}
-                checkboxSelection={showCheckBox || isExportPage}
+                checkboxSelection={showCheckBox || isExportPage || isConfidentialityUpdatePage}
                 rows={rows}
                 columns={columns}
                 rowHeight={70}
@@ -712,7 +721,7 @@ export const ProjectsTableView = ({
                 rowCount={filterModel?.items.some((item) => item.value) ? filteredProjectsSize : totalProjectCount}
                 paginationMode="server"
                 onRowClick={
-                    isExportPage
+                    isExportPage || isConfidentialityUpdatePage
                         ? () => {}
                         : showCheckBox
                           ? handleExport
@@ -728,7 +737,8 @@ export const ProjectsTableView = ({
                 onFilterModelChange={handleFilterModelChange}
                 sortModel={sortModel}
                 onSortModelChange={handleSortModelChange}
-                rowSelectionModel={selectedProjects}
+                keepNonExistentRowsSelected
+                rowSelectionModel={selectionModel}
                 columnVisibilityModel={initialVisibilityModel}
                 onColumnVisibilityModelChange={(newModel) => {
                     setColumnConfig((prevConfig: ColumnConfig) => {
@@ -748,6 +758,7 @@ export const ProjectsTableView = ({
                     toolbarColumnsLabel: t("projects.toolbarColumnsLabel"),
                     toolbarFiltersLabel: t("projects.toolbarFiltersLabel"),
                 }}
+                isRowSelectable={(params) => (isExportPage ? !disabledConfidentialityLevelsForExport.includes(params.row.confidentialityLevel) : true)}
                 slots={{
                     toolbar: () => (
                         <GridToolbarContainer>
@@ -833,6 +844,15 @@ export const ProjectsTableView = ({
                 {(showCheckBox || isExportPage) && allowedActions.includes("EXPORT_PROJECTS") && (
                     <>
                         <Button
+                            sx={{ my: 2 }}
+                            variant="outlined"
+                            onClick={() => {
+                                navigate(confidentialityUpdate.toPath() + `/${selectedExportId}`);
+                            }}
+                        >
+                            {t("projects.confidentialityChange")}
+                        </Button>
+                        <Button
                             disabled={true}
                             sx={{ width: "130px", my: 2 }}
                             variant="contained"
@@ -847,9 +867,20 @@ export const ProjectsTableView = ({
                         </Button>
                     </>
                 )}
+                {isConfidentialityUpdatePage && (
+                    <Button
+                        sx={{ my: 2 }}
+                        variant="outlined"
+                        onClick={() => {
+                            navigate(configuredExport.toPath() + `/${selectedExportId}/?pageNumber=1&pageSize=10`);
+                        }}
+                    >
+                        {t("projects.backToExport")}
+                    </Button>
+                )}
             </Box>
             <Box sx={{ height: 100 }}></Box>
-            {!isExportPage && <AddProjectButton />}
+            {!isExportPage && !isConfidentialityUpdatePage && <AddProjectButton />}
         </Stack>
     );
 };

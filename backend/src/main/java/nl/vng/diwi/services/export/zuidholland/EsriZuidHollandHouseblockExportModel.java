@@ -28,8 +28,9 @@ public class EsriZuidHollandHouseblockExportModel {
 
     private List<OwnershipValueModel> ownershipValueList = new ArrayList<>();
 
-    public EsriZuidHollandHouseblockExportModel(UUID projectUuid, ProjectExportSqlModel.HouseblockExportSqlModel sqlModel, PropertyModel priceRangeBuyFixedProp,
-                                                PropertyModel priceRangeRentFixedProp, List<DataExchangeExportError> errors) {
+    public EsriZuidHollandHouseblockExportModel(UUID projectUuid,
+            ProjectExportSqlModel.HouseblockExportSqlModel sqlModel, PropertyModel priceRangeBuyFixedProp,
+            PropertyModel priceRangeRentFixedProp, List<DataExchangeExportError> errors) {
         this.houseblockId = sqlModel.getHouseblockId();
         this.deliveryYear = sqlModel.getDeliveryYear();
         this.mutationAmount = sqlModel.getMutationAmount();
@@ -38,39 +39,50 @@ public class EsriZuidHollandHouseblockExportModel {
         this.eengezinswoning = sqlModel.getEengezinswoning();
 
         sqlModel.getOwnershipValueList().forEach(o -> {
-           OwnershipValueModel oModel = new OwnershipValueModel();
-           oModel.setOwnershipType(o.getOwnershipType());
-           oModel.setAmount(o.getOwnershipAmount());
+            OwnershipValueModel oModel = new OwnershipValueModel();
+            oModel.setOwnershipType(o.getOwnershipType());
+            oModel.setAmount(o.getOwnershipAmount());
             if (o.getOwnershipType() == OwnershipType.KOOPWONING) {
                 if (o.getOwnershipValue() != null) {
                     oModel.setOwnershipCategory(getOwnershipCategory(o.getOwnershipType(), o.getOwnershipValue()));
                 } else if (o.getOwnershipValueRangeMin() != null) {
-                    oModel.setOwnershipCategory(getOwnershipCategory(projectUuid, sqlModel.getHouseblockId(), o.getOwnershipType(), o.getOwnershipValueRangeMin(), o.getOwnershipValueRangeMax(), errors));
+                    oModel.setOwnershipCategory(
+                            getOwnershipCategory(projectUuid, sqlModel.getHouseblockId(), o.getOwnershipType(),
+                                    o.getOwnershipValueRangeMin(), o.getOwnershipValueRangeMax(), errors));
                 } else if (o.getOwnershipRangeCategoryId() != null) {
                     RangeSelectDisabledModel rangeOption = priceRangeBuyFixedProp.getRanges().stream()
-                        .filter(r -> r.getDisabled() == Boolean.FALSE && r.getId().equals(o.getOwnershipRangeCategoryId()))
-                        .findFirst().orElse(null);
+                            .filter(r -> r.getDisabled() == Boolean.FALSE
+                                    && r.getId().equals(o.getOwnershipRangeCategoryId()))
+                            .findFirst().orElse(null);
                     if (rangeOption == null) {
                         oModel.setOwnershipCategory(OwnershipCategory.koop_onb);
                     } else {
-                        oModel.setOwnershipCategory(getOwnershipCategory(projectUuid, sqlModel.getHouseblockId(), o.getOwnershipType(), rangeOption.getMin().longValue(), rangeOption.getMax().longValue(), errors));
+                        oModel.setOwnershipCategory(
+                                getOwnershipCategory(projectUuid, sqlModel.getHouseblockId(), o.getOwnershipType(),
+                                        rangeOption.getMin().longValue(), rangeOption.getMax().longValue(), errors));
                     }
                 } else {
                     oModel.setOwnershipCategory(OwnershipCategory.koop_onb);
                 }
             } else {
                 if (o.getOwnershipRentalValue() != null) {
-                    oModel.setOwnershipCategory(getOwnershipCategory(o.getOwnershipType(), o.getOwnershipRentalValue()));
+                    oModel.setOwnershipCategory(
+                            getOwnershipCategory(o.getOwnershipType(), o.getOwnershipRentalValue()));
                 } else if (o.getOwnershipRentalValueRangeMin() != null) {
-                    oModel.setOwnershipCategory(getOwnershipCategory(projectUuid, sqlModel.getHouseblockId(), o.getOwnershipType(), o.getOwnershipRentalValueRangeMin(), o.getOwnershipRentalValueRangeMax(), errors));
+                    oModel.setOwnershipCategory(
+                            getOwnershipCategory(projectUuid, sqlModel.getHouseblockId(), o.getOwnershipType(),
+                                    o.getOwnershipRentalValueRangeMin(), o.getOwnershipRentalValueRangeMax(), errors));
                 } else if (o.getOwnershipRentalRangeCategoryId() != null) {
                     RangeSelectDisabledModel rangeOption = priceRangeRentFixedProp.getRanges().stream()
-                        .filter(r -> r.getDisabled() == Boolean.FALSE && r.getId().equals(o.getOwnershipRentalRangeCategoryId()))
-                        .findFirst().orElse(null);
+                            .filter(r -> r.getDisabled() == Boolean.FALSE
+                                    && r.getId().equals(o.getOwnershipRentalRangeCategoryId()))
+                            .findFirst().orElse(null);
                     if (rangeOption == null) {
                         oModel.setOwnershipCategory(OwnershipCategory.huur_onb);
                     } else {
-                        oModel.setOwnershipCategory(getOwnershipCategory(projectUuid, sqlModel.getHouseblockId(), o.getOwnershipType(), rangeOption.getMin().longValue(), rangeOption.getMax().longValue(), errors));
+                        oModel.setOwnershipCategory(
+                                getOwnershipCategory(projectUuid, sqlModel.getHouseblockId(), o.getOwnershipType(),
+                                        rangeOption.getMin().longValue(), rangeOption.getMax().longValue(), errors));
                     }
                 } else {
                     oModel.setOwnershipCategory(OwnershipCategory.huur_onb);
@@ -80,7 +92,7 @@ public class EsriZuidHollandHouseblockExportModel {
         });
     }
 
-    private OwnershipCategory getOwnershipCategory(OwnershipType ownershipType, Long priceValue) {
+    public static OwnershipCategory getOwnershipCategory(OwnershipType ownershipType, Long priceValue) {
         if (ownershipType == OwnershipType.KOOPWONING) {
             if (priceValue == null) {
                 return OwnershipCategory.koop_onb;
@@ -108,15 +120,32 @@ public class EsriZuidHollandHouseblockExportModel {
         }
     }
 
-    private OwnershipCategory getOwnershipCategory(UUID projectUuid, UUID houseblockUuid, OwnershipType ownershipType, Long priceValueMin, Long priceValueMax,
-                                                   List<DataExchangeExportError> errors) {
+    public static OwnershipCategory getOwnershipCategory(
+            UUID projectUuid,
+            UUID houseblockUuid,
+            OwnershipType ownershipType,
+            Long priceValueMin,
+            Long priceValueMax,
+            List<DataExchangeExportError> errors) {
         OwnershipCategory cat1 = getOwnershipCategory(ownershipType, priceValueMin);
         OwnershipCategory cat2 = getOwnershipCategory(ownershipType, priceValueMax);
 
         if (cat1 == cat2) {
             return cat1;
-        } else {
-            errors.add(new DataExchangeExportError(projectUuid, houseblockUuid, EXPORT_ERROR.OWNERSHIP_RANGE_MAPPING_ERROR));
+        } else if (
+                ownershipType == OwnershipType.KOOPWONING &&
+                cat1 == OwnershipCategory.koop4 &&
+                cat2 == OwnershipCategory.koop_onb ) {
+            return cat1;
+        }
+        else if (
+                (ownershipType == OwnershipType.HUURWONING_WONINGCORPORATIE || ownershipType == OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER) &&
+                cat1 == OwnershipCategory.huur4 &&
+                cat2 == OwnershipCategory.huur_onb ) {
+            return cat1;
+        }
+        else {
+            errors.add(new DataExchangeExportError(projectUuid, houseblockUuid, EXPORT_ERROR.OWNERSHIP_RANGE_MAPPING_ERROR, cat1, cat2, priceValueMin, priceValueMax));
             return ownershipType == OwnershipType.KOOPWONING ? OwnershipCategory.koop_onb : OwnershipCategory.huur_onb;
         }
     }
@@ -144,7 +173,7 @@ public class EsriZuidHollandHouseblockExportModel {
 
     private static Map<OwnershipCategory, Long> zuidHollandPriceRangeCategories = new HashMap<>();
     static {
-        zuidHollandPriceRangeCategories.put(OwnershipCategory.koop1, 0L); //lower range limit in cents
+        zuidHollandPriceRangeCategories.put(OwnershipCategory.koop1, 0L); // lower range limit in cents
         zuidHollandPriceRangeCategories.put(OwnershipCategory.koop2, 28000000L);
         zuidHollandPriceRangeCategories.put(OwnershipCategory.koop3, 39000000L);
         zuidHollandPriceRangeCategories.put(OwnershipCategory.koop4, 60000000L);

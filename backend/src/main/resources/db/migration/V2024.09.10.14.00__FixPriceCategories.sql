@@ -3,19 +3,19 @@ SET
     ("name", min, max) = (
         SELECT
             CASE
-                WHEN u.system_user
+                WHEN u."system_user"
                 AND vs.min = vs.max THEN substring(
                     vs.name
                     FROM
                         0 FOR 7
                 ) || TRIM(to_char (vs.min, '9999999999999999999,00'))
-                WHEN u.system_user
+                WHEN u."system_user"
                 AND vs.max IS NULL THEN substring(
                     vs.name
                     FROM
                         0 FOR 7
                 ) || TRIM(to_char (vs.min, '9999999999999999999,00')) || ' en hoger'
-                WHEN u.system_user THEN substring(
+                WHEN u."system_user" THEN substring(
                     vs.name
                     FROM
                         0 FOR 7
@@ -23,13 +23,13 @@ SET
                 ELSE vs.name
             END,
             CASE
-                WHEN u.system_user THEN vs.min
+                WHEN u."system_user" THEN vs.min
                 ELSE vs.min * 100
             END,
             CASE
-                WHEN u.system_user
+                WHEN u."system_user"
                 AND vs.min != vs.max THEN vs.max - 1
-                WHEN u.system_user
+                WHEN u."system_user"
                 AND vs.min = vs.max THEN vs.max
                 ELSE vs.max * 100
             END

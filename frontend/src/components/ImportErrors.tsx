@@ -1,9 +1,9 @@
-import { Alert, Typography, Stack, Accordion, AccordionSummary, AccordionDetails, List, ListItem } from "@mui/material";
+import { Alert, Typography, Stack, Accordion, AccordionSummary, AccordionDetails, List } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { t } from "i18next";
-import { capitalizeFirstLetters } from "../utils/stringFunctions";
 import CustomPropertiesCreateButton from "./CustomPropertiesCreateButton";
 import { useState } from "react";
+import { PropertyListItem } from "./PropertyListItem";
 
 export type ImportErrorObject = {
     error: Array<ImportErrorType>;
@@ -87,26 +87,4 @@ export const ImportErrors = ({ errors, isGeoJson = false }: ImportErrorProps) =>
             </Alert>
         </>
     );
-};
-
-type PropertyListItemProps = {
-    label: string;
-    value: string | number | undefined;
-};
-
-const PropertyListItem = ({ label, value }: PropertyListItemProps) => {
-    if (value) {
-        let displayValue = typeof value === "number" ? value.toString() : value;
-        displayValue = displayValue.trim();
-        if (displayValue !== "") {
-            return (
-                <ListItem className={label}>
-                    <Typography>
-                        {capitalizeFirstLetters(label)}: {displayValue}
-                    </Typography>
-                </ListItem>
-            );
-        }
-    }
-    return <></>;
 };

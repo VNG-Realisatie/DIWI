@@ -482,6 +482,72 @@
         }
       }
     },
+    "/rest/dataexchange/{id}/download": {
+      "post": {
+        "operationId": "downloadProjects",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataExchangeExportModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/octet-stream": {}
+            }
+          }
+        }
+      }
+    },
+    "/rest/dataexchange/{id}/export": {
+      "post": {
+        "operationId": "exportProjects",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataExchangeExportModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
     "/rest/goals": {
       "get": {
         "operationId": "getAllGoals",
@@ -1602,6 +1668,13 @@
             "schema": {
               "type": "boolean"
             }
+          },
+          {
+            "name": "projectOwners",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
           }
         ],
         "responses": {
@@ -1976,6 +2049,16 @@
           },
           "municipalityName": {
             "type": "string"
+          },
+          "regionName": {
+            "type": "string"
+          },
+          "provinceName": {
+            "type": "string"
+          },
+          "minimumExportConfidentiality": {
+            "type": "string",
+            "enum": ["PRIVATE", "INTERNAL_CIVIL", "INTERNAL_MANAGEMENT", "INTERNAL_COUNCIL", "EXTERNAL_REGIONAL", "EXTERNAL_GOVERNMENTAL", "PUBLIC"]
           }
         }
       },
@@ -2182,6 +2265,132 @@
           },
           "projectDetailUrl": {
             "type": "string"
+          },
+          "valid": {
+            "type": "boolean"
+          },
+          "properties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DataExchangePropertyModel"
+            }
+          },
+          "validationErrors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            }
+          }
+        }
+      },
+      "DataExchangeOptionModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "propertyCategoryValueIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "propertyOrdinalValueIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      },
+      "DataExchangePropertyModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "customPropertyId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "objectType": {
+            "type": "string",
+            "enum": ["PROJECT", "WONINGBLOK"]
+          },
+          "propertyTypes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["BOOLEAN", "CATEGORY", "ORDINAL", "NUMERIC", "TEXT", "RANGE_CATEGORY"]
+            }
+          },
+          "mandatory": {
+            "type": "boolean"
+          },
+          "singleSelect": {
+            "type": "boolean"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DataExchangeOptionModel"
+            }
+          }
+        }
+      },
+      "ValidationError": {
+        "type": "object",
+        "properties": {
+          "dxProperty": {
+            "type": "string"
+          },
+          "diwiOption": {
+            "type": "string"
+          },
+          "error": {
+            "type": "string"
+          },
+          "errorCode": {
+            "type": "string"
+          }
+        }
+      },
+      "DataExchangeExportModel": {
+        "type": "object",
+        "properties": {
+          "exportDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "projectIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "confidentialityLevels": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["PRIVATE", "INTERNAL_CIVIL", "INTERNAL_MANAGEMENT", "INTERNAL_COUNCIL", "EXTERNAL_REGIONAL", "EXTERNAL_GOVERNMENTAL", "PUBLIC"]
+            }
+          },
+          "confidentialityLevelsAsStrings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       },
@@ -2319,7 +2528,7 @@
             "enum": ["KOOPWONING", "HUURWONING_PARTICULIERE_VERHUURDER", "HUURWONING_WONINGCORPORATIE"]
           },
           "value": {
-            "$ref": "#/components/schemas/SingleValueOrRangeModelInteger"
+            "$ref": "#/components/schemas/SingleValueOrRangeModelLong"
           },
           "rangeCategoryOption": {
             "$ref": "#/components/schemas/SelectModel"
@@ -2339,20 +2548,20 @@
           }
         }
       },
-      "SingleValueOrRangeModelInteger": {
+      "SingleValueOrRangeModelLong": {
         "type": "object",
         "properties": {
           "value": {
             "type": "integer",
-            "format": "int32"
+            "format": "int64"
           },
           "min": {
             "type": "integer",
-            "format": "int32"
+            "format": "int64"
           },
           "max": {
             "type": "integer",
-            "format": "int32"
+            "format": "int64"
           }
         }
       },
@@ -2506,14 +2715,14 @@
             "format": "int32"
           },
           "value": {
-            "$ref": "#/components/schemas/SingleValueOrRangeModelInteger"
+            "$ref": "#/components/schemas/SingleValueOrRangeModelLong"
           },
           "valueCategoryId": {
             "type": "string",
             "format": "uuid"
           },
           "rentalValue": {
-            "$ref": "#/components/schemas/SingleValueOrRangeModelInteger"
+            "$ref": "#/components/schemas/SingleValueOrRangeModelLong"
           },
           "rentalValueCategoryId": {
             "type": "string",

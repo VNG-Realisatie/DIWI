@@ -109,11 +109,13 @@
         "no_houseblock_name": "Naam van het huisblok ontbreekt.",
         "invalid_plan_type": "Projectplantype heeft een onbekende waarde",
         "invalid_numeric_range": "De waarde komt niet overeen met een numeriek bereik.",
+        "unknown_price_rent_range_category": "De prijscategorie voor huur is niet bekend.",
+        "unknown_price_buy_range_category": "De prijscategorie voor koop is niet bekend.",
 
         "feature_error": "Unable to import due to an error."
       },
       "addCustomProperty": "Voeg eigenschap toe",
-      "addCategory": "Voeg categorie toe"
+      "addOption": "Voeg optie toe"
     },
     "createProject": {
       "information": "Projectinformatie",
@@ -305,6 +307,8 @@
       "table": "Tabel",
       "createNewProject": "Nieuw project toevoegen",
       "export": "Exporteren",
+      "confidentialityChange": "Ga naar verander vertrouwelijkheid pagina",
+      "backToExport": "Ga door naar export",
       "download": "Downloaden",
       "exportIt": "Exporteer",
       "confirmExport": "Weet je het zeker?",
@@ -319,6 +323,7 @@
       "toolbarColumns": "Kolommen",
       "toolbarColumnsLabel": "Selecteer kolommen",
       "toolbarFiltersLabel": "Filters wegeven",
+      "confidentialityLevelUpdate": "Het vertrouwelijkheidsniveau van de geselecteerde projecten is bijgewerkt",
 
       "tableColumns": {
         "projectName": "Project naam",
@@ -373,7 +378,30 @@
         "squit": "Importeren vanuit Squit",
         "geojson": "Importeren vanuit GeoJSON"
       },
+      "validationErrors" : {
+        "missing_custom_prop": "Maatwerk eigenschap ontbreekt",
+        "option_not_mapped": "Optie van maatwerk categorie is niet gemapt",
+        "option_mapped_multiple_times": "Optie van maatwerk categorie is gemapt naar meerdere template opties"
+      },
+      "downloadErrors": {
+        "missing_mandatory_value": "Waarde is verplicht in de export, maar ontbreekt in de projecteigenschappen.",
+        "multiple_single_select_values": "Waarde is een enkele selectie in de export, maar er zijn meerdere waarden toegewezen in de projecteigenschappen.",
+        "value_larger_than_construciton_houseblocks": "Waarde is groter dan het totale aantal huizen in de constructiehuizenblokken van het project, wat niet is toegestaan.",
+        "missing_dataexchange_mapping": "De gegevensuitwisselingsmapping is onvolledig. Een aangepaste eigenschap is niet geconfigureerd voor dit veld.",
+        "numeric_range_value": "De numerieke eigenschap heeft een bereikwaarde toegewezen voor dit project, maar alleen enkele waarden zijn toegestaan.",
+        "ownership_range_mapping_error": "Het geselecteerde eigendomsbereik kan niet worden gemapt binnen één interval van de exportranges.",
+        "min_confidentiality_error": "Het vertrouwelijkheidsniveau van het project is lager dan het minimale toegestane exportvertrouwelijkheidsniveau.",
+        "generic_error": "Er is een fout opgetreden bij het downloaden van het bestand."
+      },
+      "downloadErrorProperties": {
+        "category": "Categorie",
+        "fieldName": "Veldnaam",
+        "houseblockId": "Woningblok ID",
+        "projectId": "Project ID",
+        "priceValueMax": "Maximale prijs",
+        "priceValueMin": "Minimale prijs"
 
+      },
       "download": {
         "excel": "Download Excel template hier",
         "squit": "Download Excel template hier",
@@ -396,6 +424,38 @@
         "value": "Waarde",
         "description": "Beschrijving",
         "errors": "Fouten"
+      },
+      "confidentialityChanger": {
+        "explanation": "Selecteer met de checkboxes projecten waarvan je het vertrouwelijkheid niveau wilt aanpassen.",
+        "changeTo": "Verander naar:",
+        "confidentialityUpdate": "Vertrouwelijkheid niveau veranderen"
+      },
+     "labels": {
+        "ESRI_ZUID_HOLLAND": {
+            "beoogd_woonmilieu_ABF5": "Boogd woonmilieu ABF5",
+            "beoogd_woonmilieu_ABF13": "Boogd woonmilieu ABF13",
+            "bestemmingsplan": "Bestemmingsplan",
+            "knelpunten_meerkeuze": "Belangrijkste knelpunten",
+            "masterplan": "Masterplan",
+            "opdrachtgever_naam": "Opdrachtgever naam",
+            "opdrachtgever_type": "Opdrachtgever type",
+            "opmerkingen_basis": "Opmerkingen basis informatie",
+            "opmerkingen_kwalitatief": "Opmerkingen kwalitatieve informatie",
+            "opmerkingen_status": "Opmerkingen status informatie",
+            "ph_short2": "Aantal studentenwoningen",
+            "ph_short7": "Aantal geclusterde ouderenwoningen",
+            "ph_short8": "Aantal nultredenwoningen",
+            "ph_short9": "Aantal zorggeschikte woningen",
+            "ph_text1": "Categorie planlijst",
+            "ph_text3": "Flexwoningen",
+            "ph_text4": "Tijdelijke woningen",
+            "ph_text5": "Realiseerbaarheid",
+            "ph_text6": "Energieneutraal bouwen",
+            "ph_text7": "Klimaatadaptief bouwen",
+            "ph_text8": "Warmtevoorziening",
+            "toelichting_knelpunten": "Toelichting knelpunten",
+            "verhuurder_type": "Verhuurder type"
+          }
       }
     },
     "policy": {

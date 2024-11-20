@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 export const ExchangeImportData = () => {
     const { t } = useTranslation();
     const { allowedActions } = useContext(UserContext);
-    const [exportData, setExportData] = useState<ExportData[]>([])
+    const [exportData, setExportData] = useState<ExportData[]>([]);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -53,11 +53,13 @@ export const ExchangeImportData = () => {
                             {t("exchangeData.export")}
                         </Typography>
                         <Stack mt={1} direction="row" alignItems="flex-start" justifyContent="flex-start" flexWrap="wrap">
-                            {exportData.map((exportItem) => (
-                                <DataCardItem key={exportItem.id} text={exportItem.name} link={Paths.configuredExport.path + `/${exportItem.id}`}>
-                                    <img src={zuidHollandIcon} height="125" width="125" alt="zuid-holland" />
-                                </DataCardItem>
-                            ))}
+                            {exportData
+                                .filter((exportItem) => exportItem.valid)
+                                .map((exportItem) => (
+                                    <DataCardItem key={exportItem.id} text={exportItem.name} link={Paths.configuredExport.path + `/${exportItem.id}`}>
+                                        <img src={zuidHollandIcon} height="125" width="125" alt="zuid-holland" />
+                                    </DataCardItem>
+                                ))}
                         </Stack>
                     </>
                 )}
