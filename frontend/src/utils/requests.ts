@@ -37,6 +37,34 @@ export async function download(url: string, filename: string) {
 
     URL.revokeObjectURL(downloadedDataURL);
 }
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function downloadPost(url: string, filename: string, body: any) {
+    const stringifiedBody = JSON.stringify(body);
+    const res = await diwiFetch(encodeURI(url), {
+        method: "POST",
+        body: stringifiedBody,
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+
+    if (!res.ok) {
+        throw await res.json();
+    }
+
+    const blob = await res.blob();
+    const downloadedDataURL = URL.createObjectURL(blob);
+
+    const anchor = document.createElement("a");
+    anchor.href = downloadedDataURL;
+    anchor.download = filename;
+
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+
+    URL.revokeObjectURL(downloadedDataURL);
+}
 
 export async function getJson(url: string) {
     const res = await diwiFetch(encodeURI(url));

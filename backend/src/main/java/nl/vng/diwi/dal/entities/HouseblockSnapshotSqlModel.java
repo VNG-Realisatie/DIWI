@@ -36,10 +36,6 @@ import java.util.UUID;
     attributeName = "numrange",
     converter = PostgreSQLRangeType.class
 )
-@Convert(
-    attributeName = "int4range",
-    converter = PostgreSQLRangeType.class
-)
 public class HouseblockSnapshotSqlModel {
 
     private UUID projectId;
@@ -115,14 +111,14 @@ public class HouseblockSnapshotSqlModel {
         private UUID ownershipId;
         private OwnershipType ownershipType;
         private Integer ownershipAmount;
-        private Integer ownershipValue;
-        private Integer ownershipRentalValue;
+        private Long ownershipValue;
+        private Long ownershipRentalValue;
         private UUID ownershipRangeCategoryId;
         private UUID ownershipRentalRangeCategoryId;
-        private Integer ownershipValueRangeMin;
-        private Integer ownershipValueRangeMax;
-        private Integer ownershipRentalValueRangeMin;
-        private Integer ownershipRentalValueRangeMax;
+        private Long ownershipValueRangeMin;
+        private Long ownershipValueRangeMax;
+        private Long ownershipRentalValueRangeMin;
+        private Long ownershipRentalValueRangeMax;
     }
 
 }

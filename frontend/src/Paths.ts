@@ -38,6 +38,8 @@ export const exchangedata = createPathObject(config.baseurl + "exchangedata");
 export const exchangeimportdata = createPathObject(config.baseurl + "exchangeimportdata");
 export const exportExcel = createPathObject(config.baseurl + "exchangedata/exportexcel");
 export const exportProvince = createPathObject(config.baseurl + "exchangedata/exportprovince");
+export const configuredExport = createPathObject(config.baseurl + "exchangedata/export");
+export const confidentialityUpdate = createPathObject(config.baseurl + "exchangedata/confidentiality-update");
 export const importExcel = createPathObject(config.baseurl + "exchangedata/importexcel");
 export const importGeoJson = createPathObject(config.baseurl + "exchangedata/importgeojson");
 export const importSquit = createPathObject(config.baseurl + "exchangedata/importsquit");
@@ -56,5 +58,8 @@ export const userInfo = createPathObject(config.baseurl + "rest/users/userinfo")
 export const userSettings = createPathObject(config.baseurl + "admin/settings");
 export const userManagement = createPathObject(config.baseurl + "admin/user-management");
 export const priceCategories = createPathObject(config.baseurl + "admin/price-categories");
+export const exportSettings = createPathObject(config.baseurl + "admin/export-settings");
+export const createExportSettings = createPathObject(config.baseurl + "admin/export-settings/create");
+export const updateExportSettings = createPathObject(config.baseurl + "admin/export-settings/:id");
 
 export const swagger = createPathObject(config.baseurl + "swagger");

@@ -4,6 +4,9 @@
  */
 
 export interface paths {
+    "/rest/audit/project": {
+        get: operations["getProjectAuditLog"];
+    };
     "/rest/auth/callback": {
         get: operations["callback"];
     };
@@ -16,14 +19,62 @@ export interface paths {
     "/rest/auth/logout": {
         get: operations["logout"];
     };
+    "/rest/blueprints": {
+        get: operations["getAllBlueprints"];
+        post: operations["createBlueprint"];
+    };
+    "/rest/blueprints/{id}": {
+        get: operations["getBlueprint"];
+        put: operations["updateBlueprint"];
+        delete: operations["deleteBlueprint"];
+    };
     "/rest/config": {
         get: operations["getConfig"];
     };
     "/rest/dashboard/projects": {
-        get: operations["getProjectDashboardSnapshot"];
+        get: operations["getMultiProjectDashboardSnapshot"];
+    };
+    "/rest/dashboard/projects/policygoals": {
+        get: operations["getMultiProjectPolicyGoals"];
+    };
+    "/rest/dashboard/blueprints": {
+        get: operations["getOwnBlueprints"];
     };
     "/rest/dashboard/project/{id}": {
-        get: operations["getProjectDashboardSnapshot_1"];
+        get: operations["getProjectDashboardSnapshot"];
+    };
+    "/rest/dataexchange": {
+        get: operations["getAllDataExchanges"];
+        post: operations["createDataExchange"];
+    };
+    "/rest/dataexchange/{id}": {
+        get: operations["getDataExchange"];
+        put: operations["updateDataExchange"];
+        delete: operations["deleteDataExchange"];
+    };
+    "/rest/dataexchange/{id}/download": {
+        post: operations["downloadProjects"];
+    };
+    "/rest/dataexchange/{id}/export": {
+        post: operations["exportProjects"];
+    };
+    "/rest/goals": {
+        get: operations["getAllGoals"];
+        post: operations["createGoal"];
+    };
+    "/rest/goals/categories": {
+        get: operations["getAllGoalCategories"];
+        post: operations["createGoalCategory"];
+    };
+    "/rest/goals/{id}": {
+        get: operations["getGoalById"];
+        put: operations["updateGoal"];
+        delete: operations["deleteGoal"];
+    };
+    "/rest/goals/categories/{id}": {
+        get: operations["getGoalCategory"];
+        put: operations["updateGoalCategory"];
+        delete: operations["deleteGoalCategory"];
     };
     "/rest/houseblock/add": {
         post: operations["createHouseblock"];
@@ -36,7 +87,7 @@ export interface paths {
     };
     "/rest/houseblock/{id}/customproperties": {
         get: operations["getProjectCustomProperties"];
-        put: operations["updateProjectCustomProperty"];
+        put: operations["updateHouseblockCustomProperty"];
     };
     "/rest/houseblock/update": {
         put: operations["updateHouseblock"];
@@ -62,7 +113,7 @@ export interface paths {
     };
     "/rest/projects/{id}/customproperties": {
         get: operations["getProjectCustomProperties_1"];
-        put: operations["updateProjectCustomProperty_1"];
+        put: operations["updateProjectCustomProperty"];
     };
     "/rest/projects/{id}/houseblocks": {
         get: operations["getProjectHouseblocks"];
@@ -114,9 +165,65 @@ export type webhooks = Record<string, never>;
 
 export interface components {
     schemas: {
+        ProjectAuditModel: {
+            projectName?: string;
+            /** Format: uuid */
+            projectId?: string;
+            /** @enum {string} */
+            action?: "CREATE" | "UPDATE" | "DELETE";
+            /** @enum {string} */
+            property?: "project" | "projectName" | "projectConfidentiality" | "projectColor" | "projectStartDate" | "projectEndDate";
+            oldValues?: string[];
+            newValues?: string[];
+            changeUser?: string;
+            /** Format: date-time */
+            changeDate?: string;
+        };
+        BlueprintModel: {
+            /** Format: uuid */
+            uuid?: string;
+            name: string;
+            userGroups?: components["schemas"]["UserGroupModel"][];
+            elements?: (
+                | "MUTATION"
+                | "PROJECT_PHASE"
+                | "TARGET_GROUP"
+                | "PHYSICAL_APPEARANCE"
+                | "OWNERSHIP_BUY"
+                | "OWNERSHIP_RENT"
+                | "PROJECT_MAP"
+                | "RESIDENTIAL_PROJECTS"
+                | "DELIVERABLES"
+                | "DELAYED_PROJECTS"
+            )[];
+        };
+        UserGroupModel: {
+            /** Format: uuid */
+            uuid: string;
+            name: string;
+            users?: components["schemas"]["UserGroupUserModel"][];
+        };
+        UserGroupUserModel: {
+            /** Format: uuid */
+            uuid?: string;
+            firstName?: string;
+            lastName?: string;
+            initials?: string;
+        };
         ConfigModel: {
             defaultMapBounds?: components["schemas"]["MapBounds"];
             municipalityName?: string;
+            regionName?: string;
+            provinceName?: string;
+            /** @enum {string} */
+            minimumExportConfidentiality?:
+                | "PRIVATE"
+                | "INTERNAL_CIVIL"
+                | "INTERNAL_MANAGEMENT"
+                | "INTERNAL_COUNCIL"
+                | "EXTERNAL_REGIONAL"
+                | "EXTERNAL_GOVERNMENTAL"
+                | "PUBLIC";
         };
         LocationModel: {
             /** Format: double */
@@ -131,14 +238,178 @@ export interface components {
         MultiProjectDashboardModel: {
             physicalAppearance?: components["schemas"]["PieChartModel"][];
             targetGroup?: components["schemas"]["PieChartModel"][];
+            priceCategoryRent?: components["schemas"]["RangeCategoryPieChartModel"][];
+            priceCategoryOwn?: components["schemas"]["RangeCategoryPieChartModel"][];
+            planning?: components["schemas"]["PlanningModel"][];
         };
         PieChartModel: {
             name?: string;
             /** Format: int32 */
             amount?: number;
         };
+        PlanningModel: {
+            /** Format: uuid */
+            projectId?: string;
+            name?: string;
+            /** Format: int32 */
+            amount?: number;
+            /** Format: int32 */
+            year?: number;
+        };
+        RangeCategoryPieChartModel: {
+            name?: string;
+            /** Format: int32 */
+            amount?: number;
+            /** Format: uuid */
+            id?: string;
+            min?: number;
+            max?: number;
+        };
+        MultiProjectPolicyGoalSqlModel: {
+            /** Format: uuid */
+            id?: string;
+            name?: string;
+            category?: string;
+            goal?: number;
+            /** Format: int64 */
+            amount?: number;
+            /** Format: int64 */
+            totalAmount?: number;
+            percentage?: number;
+            /** @enum {string} */
+            goalDirection?: "MINIMAL" | "MAXIMAL";
+            /** @enum {string} */
+            goalType?: "NUMBER" | "PERCENTAGE";
+        };
         ProjectDashboardModel: {
             physicalAppearance?: components["schemas"]["PieChartModel"][];
+            priceCategoryRent?: components["schemas"]["RangeCategoryPieChartModel"][];
+            priceCategoryOwn?: components["schemas"]["RangeCategoryPieChartModel"][];
+            planning?: components["schemas"]["PlanningModel"][];
+        };
+        DataExchangeModel: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            /** @enum {string} */
+            type: "ESRI_ZUID_HOLLAND";
+            apiKey?: string;
+            projectUrl?: string;
+            projectDetailUrl?: string;
+            valid?: boolean;
+            properties?: components["schemas"]["DataExchangePropertyModel"][];
+            validationErrors?: components["schemas"]["ValidationError"][];
+        };
+        DataExchangeOptionModel: {
+            /** Format: uuid */
+            id?: string;
+            name?: string;
+            propertyCategoryValueIds?: string[];
+            propertyOrdinalValueIds?: string[];
+        };
+        DataExchangePropertyModel: {
+            /** Format: uuid */
+            id?: string;
+            name?: string;
+            /** Format: uuid */
+            customPropertyId?: string;
+            /** @enum {string} */
+            objectType?: "PROJECT" | "WONINGBLOK";
+            propertyTypes?: ("BOOLEAN" | "CATEGORY" | "ORDINAL" | "NUMERIC" | "TEXT" | "RANGE_CATEGORY")[];
+            mandatory?: boolean;
+            singleSelect?: boolean;
+            options?: components["schemas"]["DataExchangeOptionModel"][];
+        };
+        ValidationError: {
+            dxProperty?: string;
+            diwiOption?: string;
+            error?: string;
+            errorCode?: string;
+        };
+        DataExchangeExportModel: {
+            /** Format: date */
+            exportDate?: string;
+            projectIds?: string[];
+            confidentialityLevels?: (
+                | "PRIVATE"
+                | "INTERNAL_CIVIL"
+                | "INTERNAL_MANAGEMENT"
+                | "INTERNAL_COUNCIL"
+                | "EXTERNAL_REGIONAL"
+                | "EXTERNAL_GOVERNMENTAL"
+                | "PUBLIC"
+            )[];
+            confidentialityLevelsAsStrings?: string[];
+        };
+        GeographyOptionModel: {
+            brkGemeenteCode?: string;
+            brkSectie?: string;
+            /** Format: int64 */
+            brkPerceelNummer?: number;
+        };
+        PlanConditionModel: {
+            /** Format: uuid */
+            conditionId?: string;
+            /** @enum {string} */
+            conditionFieldType?: "PROPERTY" | "GROUND_POSITION" | "PROGRAMMING" | "HOUSE_TYPE" | "OWNERSHIP";
+            /** Format: uuid */
+            propertyId?: string;
+            propertyName?: string;
+            /** @enum {string} */
+            propertyKind?: "FIXED" | "CUSTOM";
+            /** @enum {string} */
+            propertyType?: "BOOLEAN" | "CATEGORY" | "ORDINAL" | "NUMERIC" | "TEXT" | "RANGE_CATEGORY";
+            booleanValue?: boolean;
+            categoryOptions?: components["schemas"]["SelectModel"][];
+            ordinalOptions?: components["schemas"]["SingleValueOrRangeModelSelectModel"];
+            listOptions?: string[];
+            ownershipOptions?: components["schemas"]["PlanOwnershipModel"][];
+        };
+        PlanGeographyModel: {
+            /** Format: uuid */
+            conditionId?: string;
+            options?: components["schemas"]["GeographyOptionModel"][];
+        };
+        PlanModel: {
+            /** Format: date */
+            startDate?: string;
+            /** Format: date */
+            endDate?: string;
+            /** Format: uuid */
+            id?: string;
+            name: string;
+            /** @enum {string} */
+            goalType: "NUMBER" | "PERCENTAGE";
+            /** @enum {string} */
+            goalDirection: "MINIMAL" | "MAXIMAL";
+            goalValue: number;
+            category?: components["schemas"]["SelectModel"];
+            conditions?: components["schemas"]["PlanConditionModel"][];
+            geography?: components["schemas"]["PlanGeographyModel"];
+        };
+        PlanOwnershipModel: {
+            /** @enum {string} */
+            type?: "KOOPWONING" | "HUURWONING_PARTICULIERE_VERHUURDER" | "HUURWONING_WONINGCORPORATIE";
+            value?: components["schemas"]["SingleValueOrRangeModelLong"];
+            rangeCategoryOption?: components["schemas"]["SelectModel"];
+        };
+        SelectModel: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+        };
+        SingleValueOrRangeModelLong: {
+            /** Format: int64 */
+            value?: number;
+            /** Format: int64 */
+            min?: number;
+            /** Format: int64 */
+            max?: number;
+        };
+        SingleValueOrRangeModelSelectModel: {
+            value?: components["schemas"]["SelectModel"];
+            min?: components["schemas"]["SelectModel"];
+            max?: components["schemas"]["SelectModel"];
         };
         AmountModel: {
             /** Format: uuid */
@@ -193,10 +464,10 @@ export interface components {
             type?: "KOOPWONING" | "HUURWONING_PARTICULIERE_VERHUURDER" | "HUURWONING_WONINGCORPORATIE";
             /** Format: int32 */
             amount?: number;
-            value?: components["schemas"]["SingleValueOrRangeModelInteger"];
+            value?: components["schemas"]["SingleValueOrRangeModelLong"];
             /** Format: uuid */
             valueCategoryId?: string;
-            rentalValue?: components["schemas"]["SingleValueOrRangeModelInteger"];
+            rentalValue?: components["schemas"]["SingleValueOrRangeModelLong"];
             /** Format: uuid */
             rentalValueCategoryId?: string;
         };
@@ -214,14 +485,6 @@ export interface components {
         SingleValueOrRangeModelBigDecimal: {
             value?: number;
             min?: number;
-            max?: number;
-        };
-        SingleValueOrRangeModelInteger: {
-            /** Format: int32 */
-            value?: number;
-            /** Format: int32 */
-            min?: number;
-            /** Format: int32 */
             max?: number;
         };
         SingleValueOrRangeModelUUID: {
@@ -264,20 +527,6 @@ export interface components {
             projectOwners: components["schemas"]["UserGroupModel"][];
             /** Format: uuid */
             projectId: string;
-        };
-        UserGroupModel: {
-            /** Format: uuid */
-            uuid: string;
-            name: string;
-            users?: components["schemas"]["UserGroupUserModel"][];
-        };
-        UserGroupUserModel: {
-            /** Format: uuid */
-            uuid?: string;
-            id?: string;
-            firstName?: string;
-            lastName?: string;
-            initials?: string;
         };
         ProjectCreateSnapshotModel: {
             /** Format: date */
@@ -348,11 +597,6 @@ export interface components {
             neighbourhood?: components["schemas"]["SelectModel"][];
             location?: components["schemas"]["LocationModel"];
             geometry?: string;
-        };
-        SelectModel: {
-            /** Format: uuid */
-            id: string;
-            name: string;
         };
         ProjectSnapshotModel: {
             /** Format: date */
@@ -548,6 +792,8 @@ export interface components {
             /** @enum {string} */
             propertyType: "BOOLEAN" | "CATEGORY" | "ORDINAL" | "NUMERIC" | "TEXT" | "RANGE_CATEGORY";
             disabled: boolean;
+            mandatory: boolean;
+            singleSelect?: boolean;
             categories?: components["schemas"]["SelectDisabledModel"][];
             ordinals?: components["schemas"]["OrdinalSelectDisabledModel"][];
             ranges?: components["schemas"]["RangeSelectDisabledModel"][];
@@ -609,9 +855,18 @@ export interface components {
                 | "VIEW_OTHERS_PROJECTS"
                 | "VIEW_OWN_PROJECTS"
                 | "EDIT_OWN_PROJECTS"
+                | "EDIT_ALL_PROJECTS"
                 | "CREATE_NEW_PROJECT"
                 | "IMPORT_PROJECTS"
                 | "EXPORT_PROJECTS"
+                | "VIEW_DASHBOARDS"
+                | "VIEW_ALL_BLUEPRINTS"
+                | "EDIT_ALL_BLUEPRINTS"
+                | "VIEW_OWN_BLUEPRINTS"
+                | "VIEW_GOALS"
+                | "EDIT_GOALS"
+                | "VIEW_DATA_EXCHANGES"
+                | "EDIT_DATA_EXCHANGES"
             )[];
         };
     };
@@ -627,6 +882,23 @@ export type $defs = Record<string, never>;
 export type external = Record<string, never>;
 
 export interface operations {
+    getProjectAuditLog: {
+        parameters: {
+            query?: {
+                projectId?: string;
+                startTime?: string;
+                endTime?: string;
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["ProjectAuditModel"][];
+                };
+            };
+        };
+    };
     callback: {
         responses: {
             /** @description default response */
@@ -667,6 +939,81 @@ export interface operations {
             };
         };
     };
+    getAllBlueprints: {
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["BlueprintModel"][];
+                };
+            };
+        };
+    };
+    createBlueprint: {
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["BlueprintModel"];
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["BlueprintModel"];
+                };
+            };
+        };
+    };
+    getBlueprint: {
+        parameters: {
+            path: {
+                id: string;
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["BlueprintModel"];
+                };
+            };
+        };
+    };
+    updateBlueprint: {
+        parameters: {
+            path: {
+                id: string;
+            };
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["BlueprintModel"];
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["BlueprintModel"];
+                };
+            };
+        };
+    };
+    deleteBlueprint: {
+        parameters: {
+            path: {
+                id: string;
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "*/*": unknown;
+                };
+            };
+        };
+    };
     getConfig: {
         responses: {
             /** @description default response */
@@ -677,7 +1024,7 @@ export interface operations {
             };
         };
     };
-    getProjectDashboardSnapshot: {
+    getMultiProjectDashboardSnapshot: {
         parameters: {
             query?: {
                 snapshotDate?: string;
@@ -692,7 +1039,32 @@ export interface operations {
             };
         };
     };
-    getProjectDashboardSnapshot_1: {
+    getMultiProjectPolicyGoals: {
+        parameters: {
+            query?: {
+                snapshotDate?: string;
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["MultiProjectPolicyGoalSqlModel"][];
+                };
+            };
+        };
+    };
+    getOwnBlueprints: {
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["BlueprintModel"][];
+                };
+            };
+        };
+    };
+    getProjectDashboardSnapshot: {
         parameters: {
             query?: {
                 snapshotDate?: string;
@@ -706,6 +1078,271 @@ export interface operations {
             default: {
                 content: {
                     "application/json": components["schemas"]["ProjectDashboardModel"];
+                };
+            };
+        };
+    };
+    getAllDataExchanges: {
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["DataExchangeModel"][];
+                };
+            };
+        };
+    };
+    createDataExchange: {
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["DataExchangeModel"];
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["DataExchangeModel"];
+                };
+            };
+        };
+    };
+    getDataExchange: {
+        parameters: {
+            path: {
+                id: string;
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["DataExchangeModel"];
+                };
+            };
+        };
+    };
+    updateDataExchange: {
+        parameters: {
+            path: {
+                id: string;
+            };
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["DataExchangeModel"];
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["DataExchangeModel"];
+                };
+            };
+        };
+    };
+    deleteDataExchange: {
+        parameters: {
+            path: {
+                id: string;
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "*/*": unknown;
+                };
+            };
+        };
+    };
+    downloadProjects: {
+        parameters: {
+            path: {
+                id: string;
+            };
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["DataExchangeExportModel"];
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/octet-stream": unknown;
+                };
+            };
+        };
+    };
+    exportProjects: {
+        parameters: {
+            path: {
+                id: string;
+            };
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["DataExchangeExportModel"];
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    getAllGoals: {
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["PlanModel"][];
+                };
+            };
+        };
+    };
+    createGoal: {
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PlanModel"];
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["PlanModel"];
+                };
+            };
+        };
+    };
+    getAllGoalCategories: {
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["SelectModel"][];
+                };
+            };
+        };
+    };
+    createGoalCategory: {
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["SelectModel"];
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["SelectModel"];
+                };
+            };
+        };
+    };
+    getGoalById: {
+        parameters: {
+            path: {
+                id: string;
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["PlanModel"];
+                };
+            };
+        };
+    };
+    updateGoal: {
+        parameters: {
+            path: {
+                id: string;
+            };
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PlanModel"];
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["PlanModel"];
+                };
+            };
+        };
+    };
+    deleteGoal: {
+        parameters: {
+            path: {
+                id: string;
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "*/*": unknown;
+                };
+            };
+        };
+    };
+    getGoalCategory: {
+        parameters: {
+            path: {
+                id: string;
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["SelectModel"];
+                };
+            };
+        };
+    };
+    updateGoalCategory: {
+        parameters: {
+            path: {
+                id: string;
+            };
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["SelectModel"];
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": components["schemas"]["SelectModel"];
+                };
+            };
+        };
+    };
+    deleteGoalCategory: {
+        parameters: {
+            path: {
+                id: string;
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "*/*": unknown;
                 };
             };
         };
@@ -770,7 +1407,7 @@ export interface operations {
             };
         };
     };
-    updateProjectCustomProperty: {
+    updateHouseblockCustomProperty: {
         parameters: {
             path: {
                 id: string;
@@ -939,7 +1576,7 @@ export interface operations {
             };
         };
     };
-    updateProjectCustomProperty_1: {
+    updateProjectCustomProperty: {
         parameters: {
             path: {
                 id: string;
@@ -1132,6 +1769,7 @@ export interface operations {
         parameters: {
             query?: {
                 includeSingleUser?: boolean;
+                projectOwners?: boolean;
             };
         };
         responses: {

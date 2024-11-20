@@ -2,22 +2,40 @@ import { Autocomplete, TextField } from "@mui/material";
 import { Property } from "../api/adminSettingServices";
 import { CustomPropertyValue } from "../api/customPropServices";
 import { useTranslation } from "react-i18next";
+import { getCustomValue } from "../utils/formValidation";
 
 type Props = {
     readOnly: boolean;
     customValue: CustomPropertyValue | undefined;
     customDefinition: Property;
     setCustomValue: (newValue: CustomPropertyValue) => void;
+    isExportPage?: boolean;
 };
 
-export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, customDefinition }: Props) => {
+function hasError(customValue: CustomPropertyValue | undefined, readOnly: boolean, mandatory: boolean, isExportPage: boolean): boolean {
+    if (readOnly || !mandatory || isExportPage) {
+        return false;
+    }
+    const value = getCustomValue(customValue);
+    if (value === undefined || value === null || value === "") {
+        return true;
+    }
+
+    return false;
+}
+
+export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, customDefinition, isExportPage = false }: Props) => {
     const { t } = useTranslation();
     const trueishLabel = t("generic.true");
     const falsyLabel = t("generic.false");
+    const errorText = t("generic.thisFieldIsRequired");
+    const mandatory = customDefinition.mandatory || false;
 
     function booleanToLabel(value: boolean) {
         return value === true ? trueishLabel : falsyLabel;
     }
+
+    const error = hasError(customValue, readOnly, mandatory, isExportPage);
 
     if (customDefinition.propertyType === "BOOLEAN") {
         return (
@@ -36,30 +54,53 @@ export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, cu
                     const booleanValue = newValue === trueishLabel ? true : newValue === falsyLabel ? false : undefined;
                     setCustomValue({ ...customValue, booleanValue });
                 }}
-                renderInput={(params) => <TextField {...params} size="small" />}
+                renderInput={(params) => <TextField {...params} size="small" error={error} helperText={error ? errorText : ""} />}
                 isOptionEqualToValue={(option, value) => option === value}
             />
         );
     } else if (customDefinition.propertyType === "CATEGORY") {
         const values = customValue?.categories?.map((val) => customDefinition.categories?.find((d) => val === d.id));
         return (
-            <Autocomplete
-                id="category-custom-property"
-                size="small"
-                disabled={readOnly}
-                sx={{
-                    "& .MuiInputBase-input.Mui-disabled": {
-                        backgroundColor: "#0000", // set 0 opacity when disabled
-                    },
-                }}
-                options={customDefinition.categories || []}
-                getOptionLabel={(option) => option?.name || ""}
-                value={values ? values : []}
-                multiple
-                onChange={(_, newValue) => setCustomValue({ ...customValue, categories: newValue.map((c) => c?.id as string) })}
-                renderInput={(params) => <TextField {...params} size="small" />}
-                isOptionEqualToValue={(option, value) => !!value && !!option && option.id === value.id}
-            />
+            <>
+                {customDefinition.singleSelect ? (
+                    <Autocomplete
+                        id="category-custom-property-single"
+                        size="small"
+                        disabled={readOnly}
+                        sx={{
+                            "& .MuiInputBase-input.Mui-disabled": {
+                                backgroundColor: "#0000", // set 0 opacity when disabled
+                            },
+                        }}
+                        options={customDefinition.categories?.filter((category) => !category.disabled) || []}
+                        getOptionLabel={(option) => option?.name || ""}
+                        value={values ? values[0] : null}
+                        onChange={(_, newValue) =>
+                            setCustomValue({ ...customValue, categories: newValue ? [newValue.id].filter((id): id is string => id !== undefined) : [] })
+                        }
+                        renderInput={(params) => <TextField {...params} size="small" error={error} helperText={error ? errorText : ""} />}
+                        isOptionEqualToValue={(option, value) => !!value && !!option && option.id === value.id}
+                    />
+                ) : (
+                    <Autocomplete
+                        id="category-custom-property-multiple"
+                        size="small"
+                        disabled={readOnly}
+                        sx={{
+                            "& .MuiInputBase-input.Mui-disabled": {
+                                backgroundColor: "#0000", // set 0 opacity when disabled
+                            },
+                        }}
+                        options={customDefinition.categories?.filter((category) => !category.disabled) || []}
+                        getOptionLabel={(option) => option?.name || ""}
+                        value={values ? values : []}
+                        multiple
+                        onChange={(_, newValue) => setCustomValue({ ...customValue, categories: newValue.map((c) => c?.id as string) })}
+                        renderInput={(params) => <TextField {...params} size="small" error={error} helperText={error ? errorText : ""} />}
+                        isOptionEqualToValue={(option, value) => !!value && !!option && option.id === value.id}
+                    />
+                )}
+            </>
         );
     } else if (customDefinition.propertyType === "ORDINAL") {
         const value = customDefinition.ordinals?.find((d) => customValue?.ordinals?.value?.includes(d.id as string));
@@ -77,13 +118,14 @@ export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, cu
                 getOptionLabel={(option) => option?.name || ""}
                 value={value}
                 onChange={(_, newValue) => setCustomValue({ ...customValue, ordinals: { value: newValue?.id as string } })}
-                renderInput={(params) => <TextField {...params} size="small" sx={{ minWidth: "200px" }} />}
+                renderInput={(params) => <TextField {...params} size="small" error={error} helperText={error ? errorText : ""} sx={{ minWidth: "200px" }} />}
                 isOptionEqualToValue={(option, value) => !!value && !!option && option.id === value.id}
             />
         );
     } else if (customDefinition.propertyType === "NUMERIC") {
         return (
             <TextField
+                required={customDefinition?.mandatory}
                 id="numeric-custom-property"
                 fullWidth
                 variant="outlined"
@@ -95,13 +137,16 @@ export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, cu
                     },
                 }}
                 type="number"
-                value={customValue?.numericValue?.value || 0}
+                value={customValue?.numericValue?.value}
                 onChange={(e) => setCustomValue({ ...customValue, numericValue: { value: parseFloat(e.target.value) } })}
+                error={error}
+                helperText={error ? errorText : ""}
             />
         );
     } else if (customDefinition.propertyType === "TEXT") {
         return (
             <TextField
+                required={customDefinition?.mandatory}
                 id="text-custom-property"
                 fullWidth
                 variant="outlined"
@@ -114,6 +159,8 @@ export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, cu
                 }}
                 value={customValue?.textValue || ""}
                 onChange={(e) => setCustomValue({ ...customValue, textValue: e.target.value })}
+                error={error}
+                helperText={error ? errorText : ""}
             />
         );
     } else {

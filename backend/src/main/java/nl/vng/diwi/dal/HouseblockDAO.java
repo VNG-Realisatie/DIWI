@@ -133,4 +133,5 @@ public class HouseblockDAO extends AbstractRepository {
         query.setParameter("endMilestoneUuid", endMilestoneUuid);
         return query.getResultList();
     }
+
 }

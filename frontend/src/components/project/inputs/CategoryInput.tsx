@@ -97,7 +97,7 @@ const CategoryInput = ({
                 const tooltipText = getTooltipText(hasTooltipOption, tooltipInfoText || "", option.name || "");
 
                 return (
-                    <li {...props}>
+                    <li {...props} key={option.id}>
                         {t(displayName)}
                         {hasTooltipOption && <TooltipInfo text={t(tooltipText)} />}
                     </li>

@@ -9,10 +9,10 @@ import { useTranslation } from "react-i18next";
 import { DeleteButtonWithConfirm } from "../components/DeleteButtonWithConfirm";
 import { deleteProject } from "../api/projectsServices";
 import { useNavigate } from "react-router-dom";
-import useAllowedActions from "../hooks/useAllowedActions";
 import { CreateHouseBlockDialog } from "../components/project/project-with-house-block/CreateHouseBlockDialog";
 import { HouseBlocksList } from "../components/project/project-with-house-block/HouseBlocksList";
 import { useHasEditPermission } from "../hooks/useHasEditPermission";
+import UserContext from "../context/UserContext";
 
 const ProjectColorContext = createContext({
     selectedProjectColor: "",
@@ -25,7 +25,7 @@ export const ProjectDetail = ({ children }: PropsWithChildren) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const [selectedProjectColor, setSelectedProjectColor] = useState<string>("");
-    const { allowedActions } = useAllowedActions();
+    const { allowedActions } = useContext(UserContext);
     const [openHouseBlockDialog, setOpenHouseBlockDialog] = useState(false);
     const { getEditPermission } = useHasEditPermission();
     return (

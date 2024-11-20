@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import UsersTable from "../components/admin/user-management/UsersTable";
-import { getGroups, getUsers } from "../api/userServices";
+import { getGroups, getUsers, User } from "../api/userServices";
 import GroupUserTable from "../components/admin/user-management/GroupUserTable";
 import { Box, Stack } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
@@ -9,10 +9,9 @@ import { addGroup } from "../api/userServices";
 import useAlert from "../hooks/useAlert";
 import GroupDialog from "../components/admin/user-management/GroupDialog";
 import UserDialog from "../components/admin/user-management/UserDialog";
-import useAllowedActions from "../hooks/useAllowedActions";
 import { addUser } from "../api/userServices";
-import { RoleType } from "../types/enums";
 import ActionNotAllowed from "./ActionNotAllowed";
+import UserContext from "../context/UserContext";
 
 const emptyGroupForm: Group = {
     uuid: "",
@@ -32,45 +31,6 @@ const emptyUserForm: User = {
     prefixes: "",
 };
 
-export type User = {
-    id?: string;
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-    role?: RoleType | undefined | string;
-    organization?: string;
-    phoneNumber?: string;
-    department?: string;
-    contactPerson?: string;
-    prefixes?: string;
-    allowedActions?:
-        | (
-              | "VIEW_API"
-              | "VIEW_USERS"
-              | "EDIT_USERS"
-              | "VIEW_GROUPS"
-              | "EDIT_GROUPS"
-              | "VIEW_CONFIG"
-              | "EDIT_CONFIG"
-              | "VIEW_CUSTOM_PROPERTIES"
-              | "EDIT_CUSTOM_PROPERTIES"
-              | "CAN_OWN_PROJECTS"
-              | "VIEW_OTHERS_PROJECTS"
-              | "VIEW_OWN_PROJECTS"
-              | "EDIT_OWN_PROJECTS"
-              | "EDIT_ALL_PROJECTS"
-              | "CREATE_NEW_PROJECT"
-              | "IMPORT_PROJECTS"
-              | "EXPORT_PROJECTS"
-              | "VIEW_ALL_BLUEPRINTS"
-              | "EDIT_ALL_BLUEPRINTS"
-              | "VIEW_OWN_BLUEPRINTS"
-              | "EDIT_GOALS"
-              | "VIEW_GOALS"
-          )[]
-        | undefined;
-};
-
 export type Group = {
     uuid: string;
     name: string;
@@ -85,7 +45,7 @@ const UserManagement = () => {
     const [newGroup, setNewGroup] = useState<Group>(emptyGroupForm);
     const [newUser, setNewUser] = useState<User>(emptyUserForm);
     const { setAlert } = useAlert();
-    const { allowedActions } = useAllowedActions();
+    const { allowedActions } = useContext(UserContext);
     useEffect(() => {
         getUsers().then((data) => setUsers(data));
     }, []);
@@ -94,7 +54,8 @@ const UserManagement = () => {
         getGroups().then((data) => setUserGroups(data));
     }, []);
 
-    if (!allowedActions.includes("VIEW_USERS") && !allowedActions.includes("VIEW_GROUPS")) return <ActionNotAllowed errorMessage={t("admin.userManagement.forbidden")}/>;
+    if (!allowedActions.includes("VIEW_USERS") && !allowedActions.includes("VIEW_GROUPS"))
+        return <ActionNotAllowed errorMessage={t("admin.userManagement.forbidden")} />;
 
     const handleAddGroup = async () => {
         try {

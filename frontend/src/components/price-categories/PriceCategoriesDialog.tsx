@@ -3,10 +3,12 @@ import TextInput from "../project/inputs/TextInput";
 import { CategoryType, Property, updateCustomProperty } from "../../api/adminSettingServices";
 import useAlert from "../../hooks/useAlert";
 import { t } from "i18next";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import RangeNumberInput from "../project/inputs/RangeNumberInput";
 import { getDuplicatedPropertyInfo } from "../../utils/getDuplicatedPropertyInfo";
-import useAllowedActions from "../../hooks/useAllowedActions";
+
+import UserContext from "../../context/UserContext";
+import { MAX_INT_IN_DOUBLE } from "../../widgets/constants";
 
 type RangeNumber = {
     value: number | null;
@@ -40,7 +42,7 @@ const PriceCategoriesDialog = ({ open, setOpen, id, propertyName, setRangeCatego
     const { setAlert } = useAlert();
     const [propertyDuplicationInfo, setPropertyDuplicationInfo] = useState<{ duplicatedStatus: boolean; duplicatedName: string }>();
     const [isRangeValid, setIsRangeValid] = useState<boolean>(true);
-    const { allowedActions } = useAllowedActions();
+    const { allowedActions } = useContext(UserContext);
 
     useEffect(() => {
         if (categoryToEdit) {
@@ -105,6 +107,8 @@ const PriceCategoriesDialog = ({ open, setOpen, id, propertyName, setRangeCatego
                 },
             ],
             disabled: false,
+            mandatory: false,
+            singleSelect: true,
         };
 
         saveAction(newProperty);
@@ -138,6 +142,7 @@ const PriceCategoriesDialog = ({ open, setOpen, id, propertyName, setRangeCatego
                     mandatory={true}
                     title={t("admin.priceCategories.amount")}
                     errorText={t("admin.priceCategories.amountError")}
+                    maxValue={MAX_INT_IN_DOUBLE}
                 />
             </DialogContent>
             <DialogActions>

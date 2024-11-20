@@ -1,14 +1,14 @@
 import { Button, Stack, Typography } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { importExcelProjects, importGeoJsonProjects } from "../api/importServices";
 import useAlert from "../hooks/useAlert";
 import { useNavigate } from "react-router-dom";
 import * as Paths from "../Paths";
 import { ImportErrorObject, ImportErrors } from "../components/ImportErrors";
 import { t } from "i18next";
-import useAllowedActions from "../hooks/useAllowedActions";
 import ActionNotAllowed from "./ActionNotAllowed";
+import UserContext from "../context/UserContext";
 
 type FunctionalityType = "excel" | "squit" | "geojson";
 
@@ -23,7 +23,7 @@ export const ImportPage = ({ functionality }: Props) => {
     const [errors, setErrors] = useState<ImportErrorObject>({ error: [] });
 
     const { setAlert } = useAlert();
-    const { allowedActions } = useAllowedActions();
+    const { allowedActions } = useContext(UserContext);
 
     if (!allowedActions.includes("IMPORT_PROJECTS")) {
         return <ActionNotAllowed errorMessage={t("dashboard.forbidden")} />;

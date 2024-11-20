@@ -8,12 +8,12 @@ import useCustomSearchParams from "../hooks/useCustomSearchParams";
 import { Project } from "../api/projectsServices";
 import { useNavigate } from "react-router-dom";
 import { ChartType } from "./DashboardProject";
-import useAllowedActions from "../hooks/useAllowedActions";
 import ActionNotAllowed from "./ActionNotAllowed";
 import { FileDownload } from "@mui/icons-material";
 import { TooltipInfo } from "../widgets/TooltipInfo";
 import { DashboardCharts } from "../components/dashboard/DashboardCharts";
 import { exportPdf } from "../utils/exportPDF";
+import UserContext from "../context/UserContext";
 
 type DashboardProjects = {
     physicalAppearance: ChartType[];
@@ -28,8 +28,7 @@ export const DashboardProjects = () => {
     const { rows } = useCustomSearchParams(undefined, undefined, { page: 1, pageSize: 10000 });
     const { t } = useTranslation();
     const navigate = useNavigate();
-
-    const { allowedActions } = useAllowedActions();
+    const { allowedActions } = useContext(UserContext);
 
     const handleSelectProject = (project: Project | null) => {
         setSelectedProject(project);

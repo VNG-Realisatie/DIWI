@@ -2,14 +2,14 @@ import { Box, Typography } from "@mui/material";
 import { DataGrid, GridCellParams } from "@mui/x-data-grid";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
-import { deleteGroup, updateGroup } from "../../../api/userServices";
-import { useState } from "react";
+import { deleteGroup, updateGroup, User } from "../../../api/userServices";
+import { useContext, useState } from "react";
 import useAlert from "../../../hooks/useAlert";
 import GroupDialog from "./GroupDialog";
-import { Group, User } from "../../../pages/UserManagement";
+import { Group } from "../../../pages/UserManagement";
 import { useTranslation } from "react-i18next";
 import DeleteDialogWithConfirmation from "./DeleteDialogWithConfirmation";
-import useAllowedActions from "../../../hooks/useAllowedActions";
+import UserContext from "../../../context/UserContext";
 
 type Props = {
     rows: Group[];
@@ -24,7 +24,7 @@ const GroupUserTable = ({ rows, users, setUserGroups }: Props) => {
     const [groupToEdit, setGroupToEdit] = useState<Group | null>(null);
     const { setAlert } = useAlert();
     const { t } = useTranslation();
-    const { allowedActions } = useAllowedActions();
+    const { allowedActions } = useContext(UserContext);
     const columns = [
         {
             field: "name",

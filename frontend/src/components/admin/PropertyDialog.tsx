@@ -14,9 +14,10 @@ import {
 } from "../../api/adminSettingServices";
 import { ObjectType, PropertyType } from "../../types/enums";
 import { objectType } from "../../types/enums";
-import { propertyType } from "../../types/enums";
 import { CategoryCreateOption } from "./CategoryCreateOption";
 import { getDuplicatedPropertyInfo } from "../../utils/getDuplicatedPropertyInfo";
+import PropertyTypeSelect from "./PropertyTypeSelect";
+import PropertyCheckboxGroup from "./PropertyCheckboxGroup";
 
 interface Props {
     openDialog: boolean;
@@ -38,6 +39,8 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
     const { setAlert } = useContext(AlertContext);
     const { t } = useTranslation();
     const [activeProperty, setActiveProperty] = useState<Property>();
+    const [mandatory, setMandatory] = useState(false);
+    const [singleSelect, setSingleSelect] = useState(false);
 
     const updateDialog = useCallback(
         (property: Property): void => {
@@ -53,6 +56,8 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
             setActive(property.disabled);
             setSelectedObjectType(property.objectType);
             setSelectedPropertyType(property.propertyType);
+            property.mandatory && setMandatory(property.mandatory);
+            property.singleSelect && setSingleSelect(property.singleSelect);
         },
         [
             setActiveProperty,
@@ -63,6 +68,8 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
             setActive,
             setSelectedObjectType,
             setSelectedPropertyType,
+            setMandatory,
+            setSingleSelect,
             t,
         ],
     );
@@ -81,6 +88,8 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
         setSelectedObjectType("PROJECT");
         setSelectedPropertyType("TEXT");
         setActive(false);
+        setMandatory(false);
+        setSingleSelect(false);
     };
 
     const handleClose = () => {
@@ -119,19 +128,21 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
                 selectedPropertyType === "ORDINAL" && ordinals.length > 0
                     ? ordinals.map(({ id, level, name, disabled }) => ({ id, level, name, disabled }))
                     : undefined,
+            mandatory,
+            singleSelect: selectedPropertyType === "CATEGORY" ? singleSelect : undefined,
         };
 
         saveAction(newProperty);
     };
 
     useEffect(() => {
-        const filteredCategories = categories.filter(category => !category.disabled);
+        const filteredCategories = categories.filter((category) => !category.disabled);
         const duplicated = getDuplicatedPropertyInfo(filteredCategories);
         setPropertyDuplicationInfo(duplicated);
     }, [categories]);
 
     useEffect(() => {
-        const filteredOrdinals = ordinals.filter(ordinal => !ordinal.disabled);
+        const filteredOrdinals = ordinals.filter((ordinal) => !ordinal.disabled);
         const duplicated = getDuplicatedPropertyInfo(filteredOrdinals);
         setPropertyDuplicationInfo(duplicated);
     }, [ordinals]);
@@ -178,21 +189,7 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
                             <InfoIcon sx={{ fontSize: "20px", color: "#394048" }} />
                         </Tooltip>
                     </Stack>
-                    <Select
-                        size="small"
-                        disabled={!!id}
-                        value={selectedPropertyType}
-                        labelId="propertyType"
-                        onChange={(e) => setSelectedPropertyType(e.target.value as PropertyType)}
-                    >
-                        {propertyType
-                            .filter((p) => p !== "RANGE_CATEGORY")
-                            .map((property) => (
-                                <MenuItem key={property} value={property}>
-                                    {t(`admin.settings.propertyType.${property}`)}
-                                </MenuItem>
-                            ))}
-                    </Select>
+                    <PropertyTypeSelect selectedPropertyType={selectedPropertyType} setSelectedPropertyType={setSelectedPropertyType} disabled={!!id} />
 
                     {selectedPropertyType === "CATEGORY" && <CategoryCreateOption categoryValue={categories} setCategoryValue={setCategories} />}
                     {selectedPropertyType === "ORDINAL" && (
@@ -205,6 +202,13 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
                             ordered={true}
                         />
                     )}
+                    <PropertyCheckboxGroup
+                        mandatory={mandatory}
+                        setMandatory={setMandatory}
+                        singleSelect={singleSelect}
+                        setSingleSelect={setSingleSelect}
+                        selectedPropertyType={selectedPropertyType}
+                    />
                     {propertyDuplicationInfo?.duplicatedStatus && (
                         <Alert severity="error">{propertyDuplicationInfo?.duplicatedName + " " + t("admin.settings.duplicatedOption")}</Alert>
                     )}

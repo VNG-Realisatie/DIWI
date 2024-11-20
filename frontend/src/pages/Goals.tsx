@@ -9,7 +9,7 @@ import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined
 import DeleteDialogWithConfirmation from "../components/admin/user-management/DeleteDialogWithConfirmation";
 import AlertContext from "../context/AlertContext";
 import { t } from "i18next";
-import useAllowedActions from "../hooks/useAllowedActions";
+import UserContext from "../context/UserContext";
 
 export const Goals = () => {
     const [goals, setGoals] = useState<Goal[]>([]);
@@ -17,7 +17,7 @@ export const Goals = () => {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const { setAlert } = useContext(AlertContext);
     const [idToDelete, setIdToDelete] = useState<string>("");
-    const { allowedActions } = useAllowedActions();
+    const { allowedActions } = useContext(UserContext);
     useEffect(() => {
         getAllGoals().then((goals) => {
             setGoals(goals);

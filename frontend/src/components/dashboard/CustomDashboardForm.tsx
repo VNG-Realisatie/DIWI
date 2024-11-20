@@ -9,7 +9,6 @@ import useAlert from "../../hooks/useAlert";
 import { t } from "i18next";
 import { Visibility } from "./DashboardCharts";
 import { useNavigate, useParams } from "react-router-dom";
-import useAllowedActions from "../../hooks/useAllowedActions";
 import { TooltipInfo } from "../../widgets/TooltipInfo";
 import { FileDownload } from "@mui/icons-material";
 import { exportPdf } from "../../utils/exportPDF";
@@ -35,8 +34,7 @@ export const CustomDashboardForm = ({ visibility, newBlueprint, setNewBlueprint,
     const { setAlert } = useAlert();
     const { id } = useParams();
     const navigate = useNavigate();
-    const { allowedActions } = useAllowedActions();
-    const { user } = useContext(UserContext);
+    const { user, allowedActions } = useContext(UserContext);
 
     const disabledForm = !allowedActions.includes("EDIT_ALL_BLUEPRINTS");
 
@@ -102,6 +100,7 @@ export const CustomDashboardForm = ({ visibility, newBlueprint, setNewBlueprint,
                     setUserGroup={setUserGroups}
                     mandatory={true}
                     errorText=""
+                    projectOwnersOnly={false}
                 />
             </Grid>
             <Grid item xs={3}>

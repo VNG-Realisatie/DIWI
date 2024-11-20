@@ -24,8 +24,8 @@ const steps: string[] = [
 ];
 
 interface CustomStepIconProps {
-    active: boolean;
-    completed: boolean;
+    active?: boolean;
+    completed?: boolean;
 }
 type Props = {
     children: React.ReactNode;

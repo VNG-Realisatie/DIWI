@@ -5,6 +5,7 @@ import { ProjectProvider } from "../context/ProjectContext";
 import TestComponentWrapper from "../test/TestComponentWrapper";
 import ProjectWizard from "./ProjectWizard";
 import UserContext from "../context/UserContext";
+import { UserRole } from "../api/userServices";
 
 const mockUser = {
     name: "Test User",
@@ -12,7 +13,7 @@ const mockUser = {
     firstName: "Test",
     lastName: "User",
     initials: "TU",
-    role: "UserPlus",
+    role: "UserPlus" as UserRole,
 };
 
 vi.mock("../api/adminSettingServices", () => ({
@@ -32,7 +33,7 @@ vi.mock("../utils/requests", () => ({
 test("renders project wizard page 1", () => {
     render(
         <TestComponentWrapper>
-            <UserContext.Provider value={{ user: mockUser }}>
+            <UserContext.Provider value={{ user: mockUser, allowedActions: [] }}>
                 <ProjectProvider>
                     <HouseBlockProvider>
                         <ProjectWizard />

@@ -29,7 +29,7 @@ import { dateFormats } from "./localization";
 import { ProjectTimeline } from "./pages/ProjectTimeline";
 import ProjectPlotSelector from "./components/map/ProjectPlotSelector";
 import { ConfigProvider } from "./context/ConfigContext";
-import { UserProvider } from "./context/UserContext";
+import UserContext, { UserProvider } from "./context/UserContext";
 import "dayjs/locale/nl";
 import { HouseBlockProvider } from "./context/HouseBlockContext";
 import ProjectWizard from "./pages/ProjectWizard";
@@ -44,7 +44,10 @@ import { CreateCustomDashboard } from "./pages/CreateCustomDashboard";
 import { CustomDashboardList } from "./pages/CustomDashboardList";
 import { Goals } from "./pages/Goals";
 import { GoalWizard } from "./pages/GoalWizard";
-import useCurrentUserRole from "./hooks/useCurrentUserRole";
+import ExportAdminPage from "./pages/ExportAdminPage";
+import ExportSettings from "./pages/ExportSettings";
+import ExportWizard from "./pages/ExportWizard";
+import ConfidentialityUpdateTable from "./pages/ConfidentialityUpdateTable";
 
 enum UserStatus {
     Authenticated,
@@ -165,14 +168,14 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
     );
 };
 function App() {
-    const { currentUserRole } = useCurrentUserRole();
+    const { user } = useContext(UserContext);
     return (
         <Providers>
             <BrowserRouter>
                 <Routes>
                     <Route path={Paths.forbidden.path} element={<Forbidden />} />
                     <Route path="/" element={<RequiresLogin />}>
-                        {currentUserRole === "Admin" ? (
+                        {user?.role === "Admin" ? (
                             <Route index element={<UserManagement />} />
                         ) : (
                             <Route
@@ -331,11 +334,37 @@ function App() {
                                 </ProjectProvider>
                             }
                         />
+                        <Route
+                            path={Paths.exportSettings.path}
+                            element={
+                                <ProjectProvider>
+                                    <ExportSettings />
+                                </ProjectProvider>
+                            }
+                        />
+                        <Route
+                            path={Paths.configuredExport.path + "/:id"}
+                            element={
+                                <ProjectProvider>
+                                    <ExportWizard />
+                                </ProjectProvider>
+                            }
+                        />
+                        <Route
+                            path={Paths.confidentialityUpdate.path + "/:id"}
+                            element={
+                                <ProjectProvider>
+                                    <ConfidentialityUpdateTable />
+                                </ProjectProvider>
+                            }
+                        />
                         <Route path={Paths.userSettings.path} element={<Settings />} />
                         <Route path={Paths.userManagement.path} element={<UserManagement />} />
                         <Route path={Paths.priceCategories.path} element={<PriceCategories />} />
                         <Route path={Paths.importExcelProjects.path} element={<ImportedProjects type="Excel" />} />
                         <Route path={Paths.importSquitProjects.path} element={<ImportedProjects type="Squit" />} />
+                        <Route path={Paths.createExportSettings.path} element={<ExportAdminPage />} />
+                        <Route path={Paths.updateExportSettings.path} element={<ExportAdminPage />} />
                         <Route path={Paths.about.path} element={<About />} />
                         <Route path={Paths.swagger.path} element={<Swagger />} />
                         <Route path="*" element={<NoMatch />} />

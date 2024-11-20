@@ -1,6 +1,50 @@
 {
   "openapi": "3.0.1",
   "paths": {
+    "/rest/audit/project": {
+      "get": {
+        "operationId": "getProjectAuditLog",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "startTime",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "endTime",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProjectAuditModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/rest/auth/callback": {
       "get": {
         "operationId": "callback",
@@ -53,6 +97,135 @@
         }
       }
     },
+    "/rest/blueprints": {
+      "get": {
+        "operationId": "getAllBlueprints",
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BlueprintModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createBlueprint",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BlueprintModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BlueprintModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rest/blueprints/{id}": {
+      "get": {
+        "operationId": "getBlueprint",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BlueprintModel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "updateBlueprint",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BlueprintModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BlueprintModel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteBlueprint",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "*/*": {}
+            }
+          }
+        }
+      }
+    },
     "/rest/config": {
       "get": {
         "operationId": "getConfig",
@@ -72,7 +245,7 @@
     },
     "/rest/dashboard/projects": {
       "get": {
-        "operationId": "getProjectDashboardSnapshot",
+        "operationId": "getMultiProjectDashboardSnapshot",
         "parameters": [
           {
             "name": "snapshotDate",
@@ -96,9 +269,58 @@
         }
       }
     },
+    "/rest/dashboard/projects/policygoals": {
+      "get": {
+        "operationId": "getMultiProjectPolicyGoals",
+        "parameters": [
+          {
+            "name": "snapshotDate",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MultiProjectPolicyGoalSqlModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rest/dashboard/blueprints": {
+      "get": {
+        "operationId": "getOwnBlueprints",
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BlueprintModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/rest/dashboard/project/{id}": {
       "get": {
-        "operationId": "getProjectDashboardSnapshot_1",
+        "operationId": "getProjectDashboardSnapshot",
         "parameters": [
           {
             "name": "id",
@@ -126,6 +348,459 @@
                   "$ref": "#/components/schemas/ProjectDashboardModel"
                 }
               }
+            }
+          }
+        }
+      }
+    },
+    "/rest/dataexchange": {
+      "get": {
+        "operationId": "getAllDataExchanges",
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DataExchangeModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createDataExchange",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataExchangeModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataExchangeModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rest/dataexchange/{id}": {
+      "get": {
+        "operationId": "getDataExchange",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataExchangeModel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "updateDataExchange",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataExchangeModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataExchangeModel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteDataExchange",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "*/*": {}
+            }
+          }
+        }
+      }
+    },
+    "/rest/dataexchange/{id}/download": {
+      "post": {
+        "operationId": "downloadProjects",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataExchangeExportModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/octet-stream": {}
+            }
+          }
+        }
+      }
+    },
+    "/rest/dataexchange/{id}/export": {
+      "post": {
+        "operationId": "exportProjects",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataExchangeExportModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/rest/goals": {
+      "get": {
+        "operationId": "getAllGoals",
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PlanModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createGoal",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rest/goals/categories": {
+      "get": {
+        "operationId": "getAllGoalCategories",
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SelectModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createGoalCategory",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SelectModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SelectModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rest/goals/{id}": {
+      "get": {
+        "operationId": "getGoalById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanModel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "updateGoal",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanModel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteGoal",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "*/*": {}
+            }
+          }
+        }
+      }
+    },
+    "/rest/goals/categories/{id}": {
+      "get": {
+        "operationId": "getGoalCategory",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SelectModel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "updateGoalCategory",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SelectModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SelectModel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteGoalCategory",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "*/*": {}
             }
           }
         }
@@ -240,7 +915,7 @@
         }
       },
       "put": {
-        "operationId": "updateProjectCustomProperty",
+        "operationId": "updateHouseblockCustomProperty",
         "parameters": [
           {
             "name": "id",
@@ -624,7 +1299,7 @@
         }
       },
       "put": {
-        "operationId": "updateProjectCustomProperty_1",
+        "operationId": "updateProjectCustomProperty",
         "parameters": [
           {
             "name": "id",
@@ -993,6 +1668,13 @@
             "schema": {
               "type": "boolean"
             }
+          },
+          {
+            "name": "projectOwners",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
           }
         ],
         "responses": {
@@ -1246,6 +1928,119 @@
   },
   "components": {
     "schemas": {
+      "ProjectAuditModel": {
+        "type": "object",
+        "properties": {
+          "projectName": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string",
+            "enum": ["CREATE", "UPDATE", "DELETE"]
+          },
+          "property": {
+            "type": "string",
+            "enum": ["project", "projectName", "projectConfidentiality", "projectColor", "projectStartDate", "projectEndDate"]
+          },
+          "oldValues": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "newValues": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "changeUser": {
+            "type": "string"
+          },
+          "changeDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "BlueprintModel": {
+        "required": ["name"],
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "userGroups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserGroupModel"
+            }
+          },
+          "elements": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "MUTATION",
+                "PROJECT_PHASE",
+                "TARGET_GROUP",
+                "PHYSICAL_APPEARANCE",
+                "OWNERSHIP_BUY",
+                "OWNERSHIP_RENT",
+                "PROJECT_MAP",
+                "RESIDENTIAL_PROJECTS",
+                "DELIVERABLES",
+                "DELAYED_PROJECTS"
+              ]
+            }
+          }
+        }
+      },
+      "UserGroupModel": {
+        "required": ["name", "uuid"],
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "users": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserGroupUserModel"
+            }
+          }
+        }
+      },
+      "UserGroupUserModel": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "initials": {
+            "type": "string"
+          }
+        }
+      },
       "ConfigModel": {
         "type": "object",
         "properties": {
@@ -1254,6 +2049,16 @@
           },
           "municipalityName": {
             "type": "string"
+          },
+          "regionName": {
+            "type": "string"
+          },
+          "provinceName": {
+            "type": "string"
+          },
+          "minimumExportConfidentiality": {
+            "type": "string",
+            "enum": ["PRIVATE", "INTERNAL_CIVIL", "INTERNAL_MANAGEMENT", "INTERNAL_COUNCIL", "EXTERNAL_REGIONAL", "EXTERNAL_GOVERNMENTAL", "PUBLIC"]
           }
         }
       },
@@ -1296,6 +2101,24 @@
             "items": {
               "$ref": "#/components/schemas/PieChartModel"
             }
+          },
+          "priceCategoryRent": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RangeCategoryPieChartModel"
+            }
+          },
+          "priceCategoryOwn": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RangeCategoryPieChartModel"
+            }
+          },
+          "planning": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlanningModel"
+            }
           }
         }
       },
@@ -1311,6 +2134,85 @@
           }
         }
       },
+      "PlanningModel": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "year": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "RangeCategoryPieChartModel": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "min": {
+            "type": "number"
+          },
+          "max": {
+            "type": "number"
+          }
+        }
+      },
+      "MultiProjectPolicyGoalSqlModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "goal": {
+            "type": "number"
+          },
+          "amount": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalAmount": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "percentage": {
+            "type": "number"
+          },
+          "goalDirection": {
+            "type": "string",
+            "enum": ["MINIMAL", "MAXIMAL"]
+          },
+          "goalType": {
+            "type": "string",
+            "enum": ["NUMBER", "PERCENTAGE"]
+          }
+        }
+      },
       "ProjectDashboardModel": {
         "type": "object",
         "properties": {
@@ -1319,6 +2221,361 @@
             "items": {
               "$ref": "#/components/schemas/PieChartModel"
             }
+          },
+          "priceCategoryRent": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RangeCategoryPieChartModel"
+            }
+          },
+          "priceCategoryOwn": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RangeCategoryPieChartModel"
+            }
+          },
+          "planning": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlanningModel"
+            }
+          }
+        }
+      },
+      "DataExchangeModel": {
+        "required": ["id", "name", "type"],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["ESRI_ZUID_HOLLAND"]
+          },
+          "apiKey": {
+            "type": "string"
+          },
+          "projectUrl": {
+            "type": "string"
+          },
+          "projectDetailUrl": {
+            "type": "string"
+          },
+          "valid": {
+            "type": "boolean"
+          },
+          "properties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DataExchangePropertyModel"
+            }
+          },
+          "validationErrors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            }
+          }
+        }
+      },
+      "DataExchangeOptionModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "propertyCategoryValueIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "propertyOrdinalValueIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      },
+      "DataExchangePropertyModel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "customPropertyId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "objectType": {
+            "type": "string",
+            "enum": ["PROJECT", "WONINGBLOK"]
+          },
+          "propertyTypes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["BOOLEAN", "CATEGORY", "ORDINAL", "NUMERIC", "TEXT", "RANGE_CATEGORY"]
+            }
+          },
+          "mandatory": {
+            "type": "boolean"
+          },
+          "singleSelect": {
+            "type": "boolean"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DataExchangeOptionModel"
+            }
+          }
+        }
+      },
+      "ValidationError": {
+        "type": "object",
+        "properties": {
+          "dxProperty": {
+            "type": "string"
+          },
+          "diwiOption": {
+            "type": "string"
+          },
+          "error": {
+            "type": "string"
+          },
+          "errorCode": {
+            "type": "string"
+          }
+        }
+      },
+      "DataExchangeExportModel": {
+        "type": "object",
+        "properties": {
+          "exportDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "projectIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "confidentialityLevels": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["PRIVATE", "INTERNAL_CIVIL", "INTERNAL_MANAGEMENT", "INTERNAL_COUNCIL", "EXTERNAL_REGIONAL", "EXTERNAL_GOVERNMENTAL", "PUBLIC"]
+            }
+          },
+          "confidentialityLevelsAsStrings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "GeographyOptionModel": {
+        "type": "object",
+        "properties": {
+          "brkGemeenteCode": {
+            "type": "string"
+          },
+          "brkSectie": {
+            "type": "string"
+          },
+          "brkPerceelNummer": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "PlanConditionModel": {
+        "type": "object",
+        "properties": {
+          "conditionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "conditionFieldType": {
+            "type": "string",
+            "enum": ["PROPERTY", "GROUND_POSITION", "PROGRAMMING", "HOUSE_TYPE", "OWNERSHIP"]
+          },
+          "propertyId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "propertyName": {
+            "type": "string"
+          },
+          "propertyKind": {
+            "type": "string",
+            "enum": ["FIXED", "CUSTOM"]
+          },
+          "propertyType": {
+            "type": "string",
+            "enum": ["BOOLEAN", "CATEGORY", "ORDINAL", "NUMERIC", "TEXT", "RANGE_CATEGORY"]
+          },
+          "booleanValue": {
+            "type": "boolean"
+          },
+          "categoryOptions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SelectModel"
+            }
+          },
+          "ordinalOptions": {
+            "$ref": "#/components/schemas/SingleValueOrRangeModelSelectModel"
+          },
+          "listOptions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "ownershipOptions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlanOwnershipModel"
+            }
+          }
+        }
+      },
+      "PlanGeographyModel": {
+        "type": "object",
+        "properties": {
+          "conditionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GeographyOptionModel"
+            }
+          }
+        }
+      },
+      "PlanModel": {
+        "required": ["goalDirection", "goalType", "goalValue", "name"],
+        "type": "object",
+        "properties": {
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "goalType": {
+            "type": "string",
+            "enum": ["NUMBER", "PERCENTAGE"]
+          },
+          "goalDirection": {
+            "type": "string",
+            "enum": ["MINIMAL", "MAXIMAL"]
+          },
+          "goalValue": {
+            "type": "number"
+          },
+          "category": {
+            "$ref": "#/components/schemas/SelectModel"
+          },
+          "conditions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlanConditionModel"
+            }
+          },
+          "geography": {
+            "$ref": "#/components/schemas/PlanGeographyModel"
+          }
+        }
+      },
+      "PlanOwnershipModel": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["KOOPWONING", "HUURWONING_PARTICULIERE_VERHUURDER", "HUURWONING_WONINGCORPORATIE"]
+          },
+          "value": {
+            "$ref": "#/components/schemas/SingleValueOrRangeModelLong"
+          },
+          "rangeCategoryOption": {
+            "$ref": "#/components/schemas/SelectModel"
+          }
+        }
+      },
+      "SelectModel": {
+        "required": ["id", "name"],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "SingleValueOrRangeModelLong": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "min": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "max": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "SingleValueOrRangeModelSelectModel": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "$ref": "#/components/schemas/SelectModel"
+          },
+          "min": {
+            "$ref": "#/components/schemas/SelectModel"
+          },
+          "max": {
+            "$ref": "#/components/schemas/SelectModel"
           }
         }
       },
@@ -1458,14 +2715,14 @@
             "format": "int32"
           },
           "value": {
-            "$ref": "#/components/schemas/SingleValueOrRangeModelInteger"
+            "$ref": "#/components/schemas/SingleValueOrRangeModelLong"
           },
           "valueCategoryId": {
             "type": "string",
             "format": "uuid"
           },
           "rentalValue": {
-            "$ref": "#/components/schemas/SingleValueOrRangeModelInteger"
+            "$ref": "#/components/schemas/SingleValueOrRangeModelLong"
           },
           "rentalValueCategoryId": {
             "type": "string",
@@ -1516,23 +2773,6 @@
           },
           "max": {
             "type": "number"
-          }
-        }
-      },
-      "SingleValueOrRangeModelInteger": {
-        "type": "object",
-        "properties": {
-          "value": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "min": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "max": {
-            "type": "integer",
-            "format": "int32"
           }
         }
       },
@@ -1613,43 +2853,6 @@
           "projectId": {
             "type": "string",
             "format": "uuid"
-          }
-        }
-      },
-      "UserGroupModel": {
-        "required": ["name", "uuid"],
-        "type": "object",
-        "properties": {
-          "uuid": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "users": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/UserGroupUserModel"
-            }
-          }
-        }
-      },
-      "UserGroupUserModel": {
-        "type": "object",
-        "properties": {
-          "uuid": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "firstName": {
-            "type": "string"
-          },
-          "lastName": {
-            "type": "string"
-          },
-          "initials": {
-            "type": "string"
           }
         }
       },
@@ -1800,19 +3003,6 @@
             "$ref": "#/components/schemas/LocationModel"
           },
           "geometry": {
-            "type": "string"
-          }
-        }
-      },
-      "SelectModel": {
-        "required": ["id", "name"],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
             "type": "string"
           }
         }
@@ -2268,7 +3458,7 @@
         }
       },
       "PropertyModel": {
-        "required": ["disabled", "name", "objectType", "propertyType", "type"],
+        "required": ["disabled", "mandatory", "name", "objectType", "propertyType", "type"],
         "type": "object",
         "properties": {
           "id": {
@@ -2291,6 +3481,12 @@
             "enum": ["BOOLEAN", "CATEGORY", "ORDINAL", "NUMERIC", "TEXT", "RANGE_CATEGORY"]
           },
           "disabled": {
+            "type": "boolean"
+          },
+          "mandatory": {
+            "type": "boolean"
+          },
+          "singleSelect": {
             "type": "boolean"
           },
           "categories": {
@@ -2447,9 +3643,18 @@
                 "VIEW_OTHERS_PROJECTS",
                 "VIEW_OWN_PROJECTS",
                 "EDIT_OWN_PROJECTS",
+                "EDIT_ALL_PROJECTS",
                 "CREATE_NEW_PROJECT",
                 "IMPORT_PROJECTS",
-                "EXPORT_PROJECTS"
+                "EXPORT_PROJECTS",
+                "VIEW_DASHBOARDS",
+                "VIEW_ALL_BLUEPRINTS",
+                "EDIT_ALL_BLUEPRINTS",
+                "VIEW_OWN_BLUEPRINTS",
+                "VIEW_GOALS",
+                "EDIT_GOALS",
+                "VIEW_DATA_EXCHANGES",
+                "EDIT_DATA_EXCHANGES"
               ]
             }
           }

@@ -4,6 +4,8 @@ import InputLabelStack from "./InputLabelStack";
 import EuroIcon from "@mui/icons-material/Euro";
 import ClearInputAdornment from "./ClearInputAdornment";
 import { formatMonetaryValue } from "../../../utils/inputHelpers";
+import { t } from "i18next";
+import { MAX_INT_IN_DOUBLE } from "../../../widgets/constants";
 
 export type ValueType = {
     value: null | number;
@@ -22,6 +24,7 @@ type Props = {
     errorText?: string;
     setIsRangeValid?: (isValid: boolean) => void;
     displayError?: boolean;
+    maxValue?: number;
 };
 
 const decimalSeparator = ",";
@@ -110,8 +113,10 @@ const RangeNumberInput = ({
     errorText,
     setIsRangeValid,
     displayError = false,
+    maxValue = MAX_INT_IN_DOUBLE,
 }: Props) => {
     const [stringValue, setStringValue] = useState<string | null>(null);
+    const [errorString, setErrorString] = useState<string | null>(null);
 
     const hasError = shouldDisplayError(mandatory, stringValue, displayError);
 
@@ -130,9 +135,31 @@ const RangeNumberInput = ({
         }
 
         const isValidInput = /^-?\d*(,\d{0,2})?(-\d*(,?\d{0,2})?)?$/.test(newValue);
-        const checkRangeValidation = newValue.trim() !== "-" ? newValue.trim() !== "" : false;
-        setIsRangeValid && setIsRangeValid(checkRangeValidation);
-        if (isValidInput) setStringValue(newValue);
+        if (isValidInput) {
+            const parts = newValue.split("-");
+
+            const isValidSequence = parts.every((part) => {
+                if (part === "") return true;
+                const parsedNumber = parseFloat(part.trim().replace(",", "."));
+
+                if (isMonetary) {
+                    return parsedNumber * 100 <= maxValue;
+                } else {
+                    return parsedNumber <= maxValue;
+                }
+            });
+
+            const checkRangeValidation = newValue.trim() !== "-" ? newValue.trim() !== "" : false;
+            setIsRangeValid && setIsRangeValid(checkRangeValidation);
+
+            setStringValue(newValue);
+            if (isValidSequence) {
+                setErrorString(null);
+            } else {
+                setErrorString(t("admin.priceCategories.amountLimitError"));
+                setIsRangeValid && setIsRangeValid(false);
+            }
+        }
     };
 
     const handleBlur = () => {
@@ -150,6 +177,7 @@ const RangeNumberInput = ({
 
     const handleClearInput = () => {
         setStringValue("");
+        setErrorString(null);
         updateCallBack({ value: null, min: null, max: null });
     };
 
@@ -191,8 +219,8 @@ const RangeNumberInput = ({
                     },
                     "& .MuiInputAdornment-positionStart": { marginRight: "2px" },
                 }}
-                error={hasError}
-                helperText={hasError ? errorText : ""}
+                error={hasError || errorString ? true : false}
+                helperText={errorString || (hasError ? errorText : "")}
             />
         </InputLabelStack>
     );

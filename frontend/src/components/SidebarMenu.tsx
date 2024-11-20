@@ -76,9 +76,14 @@ export const menu: MenuSection[] = [
         header: "sidebar.dataExchange",
         menuItems: [
             {
-                name: "sidebar.import",
-                required_permission: ["IMPORT_PROJECTS"],
+                name: "sidebar.dataExchange",
+                required_permission: ["IMPORT_PROJECTS", "EXPORT_PROJECTS"],
                 link: Paths.exchangeimportdata.path,
+            },
+            {
+                name: "sidebar.exportSettings",
+                required_permission: ["VIEW_DATA_EXCHANGES", "EDIT_DATA_EXCHANGES"],
+                link: Paths.exportSettings.path,
             },
         ],
     },

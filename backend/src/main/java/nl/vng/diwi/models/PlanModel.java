@@ -369,7 +369,7 @@ public class PlanModel extends DatedDataModelSuperClass {
     public static class PlanOwnershipModel {
 
         private OwnershipType type;
-        private SingleValueOrRangeModel<Integer> value;
+        private SingleValueOrRangeModel<Long> value;
         private SelectModel rangeCategoryOption;
 
         public PlanOwnershipModel(PlanSqlModel.PlanSqlOwnershipOptionModel sqlOption) {

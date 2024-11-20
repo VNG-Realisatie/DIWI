@@ -10,8 +10,8 @@ import { DeleteButtonWithConfirm } from "./DeleteButtonWithConfirm";
 import { deleteHouseBlockWithCustomProperties, saveHouseBlockWithCustomProperties } from "../api/houseBlockServices";
 import HouseBlockContext from "../context/HouseBlockContext";
 import useAlert from "../hooks/useAlert";
-import useAllowedActions from "../hooks/useAllowedActions";
 import { validateHouseBlock } from "../utils/houseblocks/houseBlocksFunctions";
+import UserContext from "../context/UserContext";
 
 type Props = {
     houseBlock: HouseBlockWithCustomProperties;
@@ -20,12 +20,12 @@ type Props = {
 export const HouseBlocksFormWithControls = ({ houseBlock }: Props) => {
     const [readOnly, setReadOnly] = useState(true);
     const [newHouseBlock, setNewHouseBlock] = useState<HouseBlockWithCustomProperties>(houseBlock);
-    const { refresh } = useContext(HouseBlockContext);
+    const { refresh, nonFixedCustomDefinitions } = useContext(HouseBlockContext);
     const { setAlert } = useAlert();
-    const { allowedActions } = useAllowedActions();
+    const { allowedActions } = useContext(UserContext);
 
     const handleSave = () => {
-        if (validateHouseBlock(newHouseBlock, setAlert)) {
+        if (validateHouseBlock(newHouseBlock, setAlert, nonFixedCustomDefinitions)) {
             saveHouseBlockWithCustomProperties(newHouseBlock);
             setReadOnly(true);
         }
