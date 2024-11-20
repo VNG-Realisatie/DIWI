@@ -12,6 +12,10 @@ This release is all about data exchenge with a main focus on export to Zuid-Holl
 - Added creation options in Import page for missing properties and categories
 - Projects table is now configureable. The settings will not be hard saved in the backend, but stored in a cookie locally, this means the settings will revert to default on each session
 - Added bulk editing for confidentiality level
+- Added back end and front end validation to the export page
+- Added filter options to export page
+- Added confidentiality validation to export page
+- Added feedback concerning export errors to the UI
 
 ### CHANGED
 
@@ -20,7 +24,8 @@ This release is all about data exchenge with a main focus on export to Zuid-Holl
 - Required property options added to endpoint
 - Required property options added to data base
 - Price ranges now accept int8, instead of int4 (64 bit vs 32 bit) allowing for larger numbers, now well exceeding the range of the plausible
-- custom properties can now be marked as mandatory and/or single select
+- Custom properties can now be marked as mandatory and/or single select
+- Changed some functionality in the backend so it can handle a some category types as category or text when exporting
 
 ### FIXED
 
@@ -29,9 +34,7 @@ This release is all about data exchenge with a main focus on export to Zuid-Holl
 - Fixed an error generating an error pop up on log out
 - Addressed an issue where selection would not work cross page (max page length being 100 and projects to be selected able to exceed this number)
 - Fixed an issue where amounts would not be displayed in the projects table
-
-### REMOVED
-
+- Fixed a recurring bug where previously deleted categories for properties were nonetheless displayed in selectors
 
 ## DIWI RELEASE 1.7.1
 
