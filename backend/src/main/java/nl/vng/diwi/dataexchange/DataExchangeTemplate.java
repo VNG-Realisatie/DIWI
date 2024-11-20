@@ -65,7 +65,7 @@ public class DataExchangeTemplate {
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.beoogd_woonmilieu_ABF5.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), false, true,
             List.of("Centrum-stedelijk", "Buitencentrum", "Groen-stedelijk", "Dorps", "Landelijk", "Onbekend")));
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.beoogd_woonmilieu_ABF13.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), false, true,
-            List.of("Centrum-stedelijk-plus", "Centrum-stedel", "Centrum-stedelijk", "Centrum-kleinstedelijk", "Stedelijk vooroorlogs",
+            List.of("Centrum-stedelijk-plus", "Centrum-stedelijk", "Centrum-kleinstedelijk", "Stedelijk vooroorlogs",
                 "Stedelijk naoorlogs compact", "Stedelijk naoorlogs grondgebonden", "Kleinstedelijk", "Groen-stedelijk", "Groen-kleinstedelijk",
                 "Centrum-dorps", "Dorps", "Landelijk bereikbaar", "Landelijk perifeer", "Onbekend")));
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.knelpunten_meerkeuze.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), false, false,
