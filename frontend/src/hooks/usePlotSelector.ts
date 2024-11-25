@@ -65,6 +65,7 @@ const usePlotSelector = (id: string) => {
 
     const [map, setMap] = useState<Map>();
     const [selectedPlotLayerSource, setSelectedPlotLayerSource] = useState<VectorSource>();
+    const [projectLayerSource, setProjectLayerSource] = useState<VectorSource>();
     const [multiselectBoxLayerSource, setMultiselectBoxLayerSource] = useState<VectorSource>();
     const [cutLayerSource, setcutLayerSource] = useState<VectorSource>();
 
@@ -405,10 +406,45 @@ useEffect(
     useEffect(
         function zoomToExtent() {
             if (extent) {
-                map?.getView().fit(extent);
+                map?.getView().fit(extent, { padding: [20, 20, 20, 20] });
             }
         },
         [extent, map],
+    );
+
+    useEffect(
+        function updateProjectGeometry() {
+            if (!projectLayerSource || !map) return;
+
+            projectLayerSource.clear();
+
+            if (selectedProject?.geometry) {
+                try {
+                    const geometry = JSON.parse(selectedProject.geometry);
+
+                    const geojsonFeature = {
+                        type: "Feature",
+                        crs: geometry.crs,
+                        geometry,
+                        properties: {},
+                    };
+
+                    const feature = new GeoJSON().readFeature(geojsonFeature, {
+                        featureProjection: map.getView().getProjection(),
+                    });
+
+                    projectLayerSource.addFeature(feature);
+
+                    if (!projectLayerSource.isEmpty()) {
+                        const extent = projectLayerSource.getExtent();
+                        setExtent(extent);
+                    }
+                } catch (error) {
+                    console.error("Error processing geometry:", error);
+                }
+            }
+        },
+        [projectLayerSource, selectedProject?.geometry, map, setExtent],
     );
 
     useEffect(() => {
@@ -625,6 +661,18 @@ useEffect(
             const selectedPlotLayer = new VectorLayer({ source: selectedPlotSource, style: selectedFeatureStyle as StyleFunction });
             setSelectedPlotLayerSource(selectedPlotSource);
 
+            const projectGeometrySource = new VectorSource();
+
+            const projectGeometryLayer = new VectorLayer({
+                source: projectGeometrySource,
+                style: new Style({
+                    fill: new Fill({ color: "rgba(0, 0, 0, 0.2)" }),
+                    stroke: new Stroke({ color: "#000000", width: 5 }),
+                }),
+            });
+            setProjectLayerSource(projectGeometrySource);
+
+
             const multiselectSource = new VectorSource();
             const multiselectLayer = new VectorLayer({
                 source: multiselectSource,
@@ -647,7 +695,7 @@ useEffect(
 
             const newMap = new Map({
                 target: id,
-                layers: [osmLayer, kadasterLayers, selectedPlotLayer, multiselectLayer, cutLayer],
+                layers: [osmLayer, kadasterLayers, selectedPlotLayer, projectGeometryLayer, multiselectLayer, cutLayer],
                 view: new View({
                     center: extentToCenter(mapBoundsToExtent(mapBounds)),
                     zoom: 12,
