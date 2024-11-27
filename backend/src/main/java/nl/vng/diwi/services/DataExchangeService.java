@@ -113,7 +113,6 @@ public class DataExchangeService {
         state.setType(model.getType());
         state.setApiKey(model.getApiKey());
         state.setProjectUrl(model.getProjectUrl());
-        state.setProjectDetailUrl(model.getProjectDetailUrl());
         state.setChangeStartDate(zdtNow);
         state.setCreateUser(repo.getReferenceById(User.class, loggedUserUuid));
         state.setValid(model.getValid());

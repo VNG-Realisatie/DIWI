@@ -45,12 +45,7 @@ function ExportAdminPage() {
     const navigate = useNavigate();
     const typeConfig: TypeConfig = {
         ESRI_ZUID_HOLLAND: {
-            fields: [
-                { name: "name", label: t("admin.export.name"), type: "text", mandatory: true },
-                { name: "apiKey", label: t("admin.export.apiKey"), type: "password", mandatory: id ? false : true },
-                { name: "projectUrl", label: t("admin.export.projectUrl"), type: "text", mandatory: false },
-                { name: "projectDetailUrl", label: t("admin.export.projectdetailUrl"), type: "text", mandatory: false },
-            ],
+            fields: [{ name: "name", label: t("admin.export.name"), type: "text", mandatory: true }],
         },
         // Other types can be added here in the future
     };
@@ -108,7 +103,6 @@ function ExportAdminPage() {
                 type: formData.type,
                 ...(formData.apiKey && { apiKey: formData.apiKey }),
                 projectUrl: formData.projectUrl,
-                projectdetailUrl: formData.projectdetailUrl,
                 ...(id && { properties }),
             };
             const data = id ? await updateExportData(id, exportData) : await addExportData(exportData);
