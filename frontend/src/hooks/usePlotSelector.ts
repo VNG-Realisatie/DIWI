@@ -537,6 +537,11 @@ useEffect(
             pixelTolerance: snapTolerance,
         });
 
+        const snapInteractionProjectGeometry = new Snap({
+            source: projectLayerSource,
+            pixelTolerance: snapTolerance,
+        });
+
         const handleEnter = (event: KeyboardEvent) => {
             if (event.key === "Enter") {
                 if (currentFeature) {
@@ -568,15 +573,17 @@ useEffect(
         map.addInteraction(draw);
         map.addInteraction(snapInteraction);
         map.addInteraction(snapInteractionSubPlot);
+        map.addInteraction(snapInteractionProjectGeometry);
 
         return () => {
             map.removeInteraction(draw);
             map.removeInteraction(snapInteraction);
             map.removeInteraction(snapInteractionSubPlot);
+            map.removeInteraction(snapInteractionProjectGeometry);
             document.removeEventListener("keydown", handleEnter);
             document.removeEventListener("keydown", handleEscape);
         };
-    }, [map, selectionMode, handleCut, selectedPlotLayerSource, cutLayerSource, getEditPermission]);
+    }, [map, selectionMode, handleCut, selectedPlotLayerSource, cutLayerSource, getEditPermission, projectLayerSource]);
 
     useEffect(() => {
         if (selectionMode !== Buttons.DELETE || !map || !getEditPermission()) return;
