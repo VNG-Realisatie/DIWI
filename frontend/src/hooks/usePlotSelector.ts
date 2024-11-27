@@ -81,12 +81,15 @@ const usePlotSelector = (id: string) => {
     const { setAlert } = useAlert();
     const { t } = useTranslation();
 
-    const selectedFeatureStyle = useCallback((): Style => {
-        const fillOpacityHex = "99";
-        const borderOpacityHex = "DD";
-        const red = "#ff4122";
+    const selectedFeatureStyle = useCallback((hasSubplot?: boolean): Style => {
+        const fillOpacityHex = hasSubplot ? "00" : "99";
+        const borderOpacityHex = hasSubplot ? "00" : "DD";
+        const red = hasSubplot ? "#FFF" : "#ff4122";
+
         return new Style({
-            fill: new Fill({ color: (selectedProject?.projectColor ? selectedProject.projectColor : red) + fillOpacityHex }),
+            fill: new Fill({
+                color: (selectedProject?.projectColor ?? red) + fillOpacityHex
+            }),
             stroke: new Stroke({
                 color: (selectedProject?.projectColor ?? red) + borderOpacityHex,
                 width: 5,
@@ -388,6 +391,9 @@ useEffect(
                 });
 
                 cutLayerSource?.addFeature(subselectionFeature);
+                geojson.forEach((feature) => {
+                    feature.setStyle(selectedFeatureStyle(true));
+                });
             }
 
             selectedPlotLayerSource.addFeatures(geojson);
@@ -400,7 +406,7 @@ useEffect(
                 setExtent(mapBoundsToExtent(mapBounds));
             }
         }
-    }, [extent, originalSelectedPlots, selectedPlotLayerSource, selectedPlots, mapBounds, cutLayerSource]);
+    }, [extent, originalSelectedPlots, selectedPlotLayerSource, selectedPlots, mapBounds, cutLayerSource, selectedFeatureStyle]);
 
     useEffect(
         function zoomToExtent() {
@@ -622,7 +628,7 @@ useEffect(
             });
 
             const selectedPlotSource = new VectorSource();
-            const selectedPlotLayer = new VectorLayer({ source: selectedPlotSource, style: selectedFeatureStyle as StyleFunction });
+            const selectedPlotLayer = new VectorLayer({ source: selectedPlotSource, style: selectedFeatureStyle(false) as unknown as StyleFunction });
             setSelectedPlotLayerSource(selectedPlotSource);
 
             const multiselectSource = new VectorSource();
@@ -638,10 +644,7 @@ useEffect(
             const cutSource = new VectorSource();
             const cutLayer = new VectorLayer({
                 source: cutSource,
-                style: new Style({
-                    fill: new Fill({ color: colors.mapCutFillColor }),
-                    stroke: new Stroke({ color: colors.mapCutStrokeColor, width: 5 }),
-                }),
+                style: selectedFeatureStyle(false) as unknown as StyleFunction
             });
             setcutLayerSource(cutSource);
 
