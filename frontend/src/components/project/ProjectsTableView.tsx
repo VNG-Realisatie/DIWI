@@ -169,12 +169,6 @@ export const ProjectsTableView = ({
     }, [isExportPage]);
 
     useEffect(() => {
-        if (rows.length === 0 && paginationInfo.page > 1) {
-            setPaginationInfo({ page: 1, pageSize: 10 });
-        }
-    }, [rows, setPaginationInfo, paginationInfo]);
-
-    useEffect(() => {
         if (!isConfidentialityUpdatePage) return;
         if (selectedProjects.length === 0) {
             setSelectionModel([]);
@@ -281,6 +275,10 @@ export const ProjectsTableView = ({
     const createErrorReport = (params: GridPreProcessEditCellProps) => {
         const hasError = params.props.value.length < 3;
         return { ...params.props, error: hasError };
+    };
+    const handleNavigate = (path: string) => {
+        navigate(path);
+        setPaginationInfo({ page: 1, pageSize: 10 });
     };
 
     const disabledConfidentialityLevelsForExport = ["PRIVATE", "INTERNAL_CIVIL", "INTERNAL_MANAGEMENT", "INTERNAL_COUNCIL", "EXTERNAL_REGIONAL"];
@@ -652,7 +650,7 @@ export const ProjectsTableView = ({
                             sx={{ my: 2 }}
                             variant="outlined"
                             onClick={() => {
-                                navigate(confidentialityUpdate.toPath() + `/${selectedExportId}`);
+                                handleNavigate(confidentialityUpdate.toPath() + `/${selectedExportId}`);
                             }}
                         >
                             {t("projects.confidentialityChange")}
@@ -677,7 +675,7 @@ export const ProjectsTableView = ({
                         sx={{ my: 2 }}
                         variant="outlined"
                         onClick={() => {
-                            navigate(configuredExport.toPath() + `/${selectedExportId}/?pageNumber=1&pageSize=10`);
+                            handleNavigate(configuredExport.toPath() + `/${selectedExportId}`);
                         }}
                     >
                         {t("projects.backToExport")}
