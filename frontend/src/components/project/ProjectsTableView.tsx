@@ -191,11 +191,20 @@ export const ProjectsTableView = ({
     };
 
     const handleSelectionChange = (newSelection: GridRowSelectionModel) => {
-        setSelectionModel((prevSelection) => {
-            const updatedSelection = prevSelection.filter((id) => newSelection.includes(id));
+        setSelectionModel((prevSelection: GridRowSelectionModel) => {
+            const isSelectAllActive = rows.every((row) => newSelection.includes(row.id));
 
-            setSelectedProjects([...new Set([...updatedSelection, ...newSelection])] as string[]);
-            return [...new Set([...updatedSelection, ...newSelection])];
+            let newSelectionModel: GridRowSelectionModel;
+
+            if (isSelectAllActive) {
+                newSelectionModel = [...new Set([...prevSelection, ...newSelection])] as GridRowSelectionModel;
+            } else {
+                const filteredSelection = prevSelection.filter((id) => rows.every((row) => row.id !== id));
+                newSelectionModel = [...new Set([...filteredSelection, ...newSelection])] as GridRowSelectionModel;
+            }
+
+            setSelectedProjects(newSelectionModel as string[]);
+            return newSelectionModel;
         });
     };
 
