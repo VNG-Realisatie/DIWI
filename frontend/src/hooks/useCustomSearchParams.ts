@@ -13,6 +13,8 @@ const useCustomSearchParams = (sort: GridSortModel | undefined, filter: GridFilt
     const location = useLocation();
     const [filterUrl, setFilterUrl] = useState("");
     const [filteredProjectsSize, setFilteredProjectsSize] = useState<number>(0);
+    const [isFiltered, setIsFiltered] = useState(false);
+    const [isSorted, setIsSorted] = useState(false);
 
     useEffect(() => {
         if (filter) {
@@ -26,14 +28,12 @@ const useCustomSearchParams = (sort: GridSortModel | undefined, filter: GridFilt
         }
     }, [sort]);
 
-    const isSortedUrl = useCallback(() => {
-        const queryParams = ["pageNumber", "pageSize", "sortColumn", "sortDirection"];
-        return queryParams.every((e) => location.search.includes(e));
-    }, [location.search]);
+    useEffect(() => {
+        const querySortParams = ["pageNumber", "pageSize", "sortColumn", "sortDirection"];
+        setIsSorted(querySortParams.every((e) => location.search.includes(e)));
 
-    const isFilteredUrl = useCallback(() => {
-        const queryParams = ["pageNumber", "pageSize", "filterColumn", "filterValue", "filterCondition"];
-        return queryParams.every((e) => location.search.includes(e));
+        const queryFilterParams = ["pageNumber", "pageSize", "filterColumn", "filterValue", "filterCondition"];
+        setIsFiltered(queryFilterParams.every((e) => location.search.includes(e)));
     }, [location.search]);
 
     useEffect(() => {
@@ -45,7 +45,8 @@ const useCustomSearchParams = (sort: GridSortModel | undefined, filter: GridFilt
     }, [filterUrl]);
 
     useEffect(() => {
-        if (isFilteredUrl() || isSortedUrl()) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        if (isSorted || isFiltered) {
             filterTable(decodeURIComponent(location.search)).then((res) => {
                 setProjects(res);
             });
@@ -56,10 +57,10 @@ const useCustomSearchParams = (sort: GridSortModel | undefined, filter: GridFilt
                 })
                 .catch((err) => console.log(err));
         }
-    }, [isFilteredUrl, isSortedUrl, location.search, paginationInfo.page, paginationInfo.pageSize]);
+    }, [isFiltered, isSorted, paginationInfo.page, paginationInfo.pageSize]);
 
     useEffect(() => {
-        if (isFilteredUrl()) {
+        if (isFiltered) {
             const filterValues = queryString.parse(location.search);
 
             const filterColumn = filterValues["filterColumn"];
@@ -81,7 +82,7 @@ const useCustomSearchParams = (sort: GridSortModel | undefined, filter: GridFilt
                 setFilterModel(filter);
             }
         }
-    }, [isFilteredUrl, location.search]);
+    }, [isFiltered, location.search]);
 
     const updateUrl = useCallback(() => {
         let query = "";
