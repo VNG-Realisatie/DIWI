@@ -26,7 +26,7 @@ import useAlert from "../../hooks/useAlert";
 import { Project } from "../../api/projectsServices";
 import { useTranslation } from "react-i18next";
 import { CategoriesCell } from "../table/CategoriesCell";
-import { confidentialityLevelOptions, planTypeOptions, projectPhaseOptions } from "../table/constants";
+import { confidentialityLevelOptions, planningPlanStatus, planTypeOptions, projectPhaseOptions } from "../table/constants";
 import ProjectContext from "../../context/ProjectContext";
 import useCustomSearchParams from "../../hooks/useCustomSearchParams";
 import { AddProjectButton } from "../PlusButton";
@@ -34,9 +34,9 @@ import dayjs from "dayjs";
 import { dateFormats } from "../../localization";
 import { capitalizeFirstLetters } from "../../utils/stringFunctions";
 import { UserGroupSelect } from "../../widgets/UserGroupSelect";
-import { getCustomProperties } from "../../api/adminSettingServices";
 import { confidentialityUpdate, configuredExport, projectsTable } from "../../Paths";
 import UserContext from "../../context/UserContext";
+import useProperties from "../../hooks/useProperties";
 
 interface RowData {
     id: number;
@@ -104,18 +104,6 @@ export type SelectedOptionWithId = {
     id: string;
     option: OptionType[];
 };
-
-type Category = {
-    id: string;
-    name: string;
-};
-
-type AreaProperties = {
-    district: Category[];
-    municipality: Category[];
-    neighbourhood: Category[];
-};
-
 const confidentialityLevelComparator = (v1: string, v2: string): number => {
     const label1 = confidentialityLevelOptions.find((option) => option.id === v1)?.name || "";
     const label2 = confidentialityLevelOptions.find((option) => option.id === v2)?.name || "";
@@ -152,13 +140,13 @@ export const ProjectsTableView = ({
     const [showDialog, setShowDialog] = useState(false);
     const [filterModel, setFilterModel] = useState<GridFilterModel | undefined>();
     const [sortModel, setSortModel] = useState<GridSortModel | undefined>();
-    const [areaProperties, setAreaProperties] = useState<AreaProperties | null>(null);
     const [columnConfig, setColumnConfig] = useState<ColumnConfig>(loadColumnConfig() || initialColumnConfig);
 
     const { allowedActions } = useContext(UserContext);
     const { filterUrl, rows, filteredProjectsSize } = useCustomSearchParams(sortModel, filterModel, paginationInfo);
     const { id: selectedExportId } = useParams();
     const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
+    const { municipalityRolesOptions, districtOptions, neighbourhoodOptions, municipalityOptions } = useProperties();
 
     useEffect(() => {
         if (filterUrl !== "") {
@@ -193,23 +181,6 @@ export const ProjectsTableView = ({
         }
     }, [setSelectionModel, isConfidentialityUpdatePage, selectedProjects]);
 
-    useEffect(() => {
-        getCustomProperties().then((customProperties) => {
-            const filteredProperties = customProperties.filter((property) => ["district", "municipality", "neighbourhood"].includes(property.name));
-
-            const areaProperties: AreaProperties = filteredProperties.reduce((acc, property) => {
-                acc[property.name as keyof AreaProperties] =
-                    property.categories?.map((category) => ({
-                        ...category,
-                        id: category.id || "",
-                    })) || [];
-                return acc;
-            }, {} as AreaProperties);
-
-            setAreaProperties(areaProperties);
-        });
-    }, []);
-
     const handleExport = (params: GridRowParams) => {
         const clickedRow: RowData = params.row as RowData;
         if (selectedRows.includes(clickedRow.id)) {
@@ -217,11 +188,6 @@ export const ProjectsTableView = ({
         } else {
             setSelectedRows([...selectedRows, clickedRow.id]);
         }
-    };
-
-    const createErrorReport = (params: GridPreProcessEditCellProps) => {
-        const hasError = params.props.value.length < 3;
-        return { ...params.props, error: hasError };
     };
 
     const handleSelectionChange = (newSelection: GridRowSelectionModel) => {
@@ -232,6 +198,43 @@ export const ProjectsTableView = ({
             return [...new Set([...updatedSelection, ...newSelection])];
         });
     };
+
+    const handleFilterModelChange = (newModel: GridFilterModel) => {
+        if (newModel.items.some((item) => item.value)) {
+            setFilterModel(newModel);
+        } else {
+            const updatedFilterModel: GridFilterModel = {
+                items: newModel.items.map((item) => ({
+                    ...item,
+                    value: undefined,
+                })),
+            };
+            setFilterModel(updatedFilterModel);
+        }
+    };
+
+    const handleSortModelChange = (newSortModel: GridSortModel) => {
+        setSortModel(newSortModel);
+    };
+
+    const handleProjectsExport = () => {
+        exportProjects();
+        setShowDialog(false);
+    };
+
+    const handleColumnSizeChange = (params: GridColumnResizeParams) => {
+        const field = params.colDef.field as ColumnField;
+        const newColumnConfig = { ...columnConfig, [field]: { ...columnConfig[field], width: params.colDef.width } };
+        setColumnConfig(newColumnConfig);
+    };
+
+    const initialVisibilityModel = Object.keys(columnConfig).reduce(
+        (model, key) => {
+            model[key as ColumnField] = !columnConfig[key as ColumnField]?.show;
+            return model;
+        },
+        {} as { [key in ColumnField]: boolean },
+    );
 
     const customAreaFilterOperator: GridFilterOperator = {
         label: "isAnyOf",
@@ -250,206 +253,28 @@ export const ProjectsTableView = ({
         InputComponent: GridFilterInputMultipleSingleSelect,
     };
 
-    const defaultColumnsWithSize: GridColDef[] = [
-        {
-            field: "projectName",
-            headerName: capitalizeFirstLetters(t("projects.tableColumns.projectName")),
-            display: "flex",
-            width: 300,
-            filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
-            renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                return (
-                    <Stack direction="row" spacing={1} alignItems="center">
-                        <Box width="15px" height="15px" borderRadius="50%" sx={{ background: cellValues.row.projectColor }} />
-                        <Typography fontSize={14}>{cellValues.row.projectName}</Typography>
-                    </Stack>
-                );
-            },
-            preProcessEditCellProps: createErrorReport,
-            sortComparator: (v1: string, v2: string): number => {
-                const num1 = parseInt(v1.replace(/\D/g, ""));
-                const num2 = parseInt(v2.replace(/\D/g, ""));
-                if (!isNaN(num1) && !isNaN(num2)) {
-                    return num1 - num2;
+    const planningFilterOperator: GridFilterOperator = {
+        label: "isAnyOf",
+        value: "isAnyOf",
+        getApplyFilterFn: (filterItem: GridFilterItem) => {
+            if (!filterItem.value || !Array.isArray(filterItem.value) || filterItem.value.length === 0) {
+                return () => true;
+            }
+            return (row) => {
+                if (!row || row.length === 0) {
+                    return () => true;
                 }
-                return v1.localeCompare(v2);
-            },
+                return row.some((item: []) => filterItem.value.includes(item));
+            };
         },
-        {
-            field: "totalValue",
-            headerName: capitalizeFirstLetters(t("projects.tableColumns.totalValue")),
-            display: "flex",
-            width: 120,
-            filterable: false,
-            preProcessEditCellProps: createErrorReport,
-        },
-        {
-            field: "projectOwners",
-            headerName: capitalizeFirstLetters(t("projects.tableColumns.projectOwners")),
-            display: "flex",
-            width: 270,
-            filterable: false,
-            preProcessEditCellProps: createErrorReport,
-            renderCell: (cellValues) => {
-                return (
-                    cellValues.row.projectOwners &&
-                    cellValues.row.projectOwners.length > 0 && (
-                        <UserGroupSelect
-                            checkIsOwnerValidWithConfidentialityLevel={() => true}
-                            mandatory={false}
-                            errorText=""
-                            readOnly={true}
-                            userGroup={cellValues.row.projectOwners}
-                            setUserGroup={() => {}}
-                        />
-                    )
-                );
-            },
-        },
-        {
-            field: "confidentialityLevel",
-            headerName: capitalizeFirstLetters(t("projects.tableColumns.confidentialityLevel")),
-            display: "flex",
-            valueOptions: confidentialityLevelOptions.map((c) => {
-                return { value: c.id, label: t(`projectTable.confidentialityLevelOptions.${c.name}`) };
-            }),
-            type: "singleSelect",
-            width: 250,
-            filterOperators: getGridSingleSelectOperators().filter((o) => o.value === "isAnyOf"),
-            preProcessEditCellProps: createErrorReport,
-            sortComparator: confidentialityLevelComparator,
-        },
-        {
-            field: "startDate",
-            headerName: capitalizeFirstLetters(t("projects.tableColumns.startDate")),
-            display: "flex",
-            type: "dateTime",
-            width: 100,
-            valueFormatter: (p) => dayjs(p).format(dateFormats.keyboardDate),
-            filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
-            valueGetter: (value) => value && new Date(value),
-            preProcessEditCellProps: createErrorReport,
-        },
-        {
-            field: "endDate",
-            headerName: capitalizeFirstLetters(t("projects.tableColumns.endDate")),
-            display: "flex",
-            type: "dateTime",
-            width: 100,
-            valueFormatter: (p) => dayjs(p).format(dateFormats.keyboardDate),
-            filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
-            valueGetter: (value) => value && new Date(value),
-            preProcessEditCellProps: createErrorReport,
-        },
-        {
-            field: "planType",
-            headerName: capitalizeFirstLetters(t("projects.tableColumns.planType")),
-            display: "flex",
-            width: 500,
-            valueOptions: planTypeOptions.map((pt) => pt.id),
-            type: "singleSelect",
-            renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                const defaultPlanTypes = cellValues.row.planType?.map((c) => ({ id: c, name: t(`projectTable.planTypeOptions.${c}`) })) || [];
-                return <CategoriesCell cellValues={defaultPlanTypes} />;
-            },
-            filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
-            preProcessEditCellProps: createErrorReport,
-        },
-        {
-            field: "priority",
-            headerName: capitalizeFirstLetters(t("projects.tableColumns.priority")),
-            display: "flex",
-            width: 100,
-            renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                return <>{cellValues.row?.priority?.value?.name}</>; //TODO FIX AFTER MIN MAX INTEGRATED
-            },
-            preProcessEditCellProps: createErrorReport,
-        },
-        {
-            field: "municipalityRole",
-            headerName: capitalizeFirstLetters(t("projects.tableColumns.municipalityRole")),
-            display: "flex",
-            width: 150,
-            renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                return <CategoriesCell cellValues={cellValues?.row?.municipalityRole || []} />;
-            },
-            preProcessEditCellProps: createErrorReport,
-        },
-        {
-            field: "projectPhase",
-            headerName: capitalizeFirstLetters(t("projects.tableColumns.projectPhase")),
-            display: "flex",
-            valueOptions: projectPhaseOptions.map((c) => {
-                return { value: c.id, label: t(`projectTable.projectPhaseOptions.${c.name}`) };
-            }),
-            type: "singleSelect",
-            width: 250,
-            filterOperators: getGridSingleSelectOperators().filter((o) => o.value === "isAnyOf"),
-            preProcessEditCellProps: createErrorReport,
-        },
-        {
-            field: "planningPlanStatus",
-            headerName: capitalizeFirstLetters(t("projects.tableColumns.planningPlanStatus")),
-            display: "flex",
-            width: 500,
-            preProcessEditCellProps: createErrorReport,
-            renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                const fixedProperties = cellValues?.row?.planningPlanStatus?.map((fp) => ({ id: fp, name: t(`projectTable.planningPlanStatus.${fp}`) })) || [];
-                return <CategoriesCell cellValues={fixedProperties} />;
-            },
-        },
-        {
-            field: "municipality",
-            headerName: capitalizeFirstLetters(t("projects.tableColumns.municipality")),
-            display: "flex",
-            width: 320,
-            type: "singleSelect",
-            valueOptions: areaProperties?.municipality.map((c) => {
-                const option = { value: c.name, label: c.name };
-                return option;
-            }),
-            filterOperators: [customAreaFilterOperator],
-            renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                const fixedProperties = cellValues?.row?.municipality || [];
-                return <CategoriesCell cellValues={fixedProperties} />;
-            },
-            preProcessEditCellProps: createErrorReport,
-        },
-        {
-            field: "district",
-            headerName: capitalizeFirstLetters(t("projects.tableColumns.district")),
-            display: "flex",
-            width: 320,
-            type: "singleSelect",
-            valueOptions: areaProperties?.district.map((c) => {
-                const option = { value: c.name, label: c.name };
-                return option;
-            }),
-            filterOperators: [customAreaFilterOperator],
-            renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                const fixedProperties = cellValues?.row?.district || [];
-                return <CategoriesCell cellValues={fixedProperties} />;
-            },
-            preProcessEditCellProps: createErrorReport,
-        },
-        {
-            field: "neighbourhood",
-            headerName: capitalizeFirstLetters(t("projects.tableColumns.neighbourhood")),
-            display: "flex",
-            width: 320,
-            type: "singleSelect",
-            valueOptions: areaProperties?.neighbourhood.map((c) => {
-                const option = { value: c.name, label: c.name };
-                return option;
-            }),
-            filterOperators: [customAreaFilterOperator],
-            renderCell: (cellValues: GridRenderCellParams<Project>) => {
-                const fixedProperties = cellValues?.row?.neighbourhood || [];
-                return <CategoriesCell cellValues={fixedProperties} />;
-            },
-            preProcessEditCellProps: createErrorReport,
-        },
-    ];
+        InputComponent: GridFilterInputMultipleSingleSelect,
+    };
+    const createErrorReport = (params: GridPreProcessEditCellProps) => {
+        const hasError = params.props.value.length < 3;
+        return { ...params.props, error: hasError };
+    };
+
+    const disabledConfidentialityLevelsForExport = ["PRIVATE", "INTERNAL_CIVIL", "INTERNAL_MANAGEMENT", "INTERNAL_COUNCIL", "EXTERNAL_REGIONAL"];
 
     const defaultColumns: GridColDef[] = [
         {
@@ -547,13 +372,15 @@ export const ProjectsTableView = ({
             headerName: capitalizeFirstLetters(t("projects.tableColumns.planType")),
             display: "flex",
             width: columnConfig?.planType?.width || 500,
-            valueOptions: planTypeOptions.map((pt) => pt.id),
+            valueOptions: planTypeOptions.map((pt) => {
+                return { value: pt.name, label: t(`projectTable.planTypeOptions.${pt.name}`) };
+            }),
             type: "singleSelect",
+            filterOperators: [planningFilterOperator],
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
                 const defaultPlanTypes = cellValues.row.planType?.map((c) => ({ id: c, name: t(`projectTable.planTypeOptions.${c}`) })) || [];
                 return <CategoriesCell cellValues={defaultPlanTypes} />;
             },
-            filterOperators: getGridStringOperators().filter((o) => o.value === "contains"),
             preProcessEditCellProps: createErrorReport,
         },
         {
@@ -571,6 +398,12 @@ export const ProjectsTableView = ({
             headerName: capitalizeFirstLetters(t("projects.tableColumns.municipalityRole")),
             display: "flex",
             width: columnConfig?.municipalityRole?.width || 150,
+            type: "singleSelect",
+            valueOptions: municipalityRolesOptions?.map((c) => {
+                const option = { value: c.name, label: c.name };
+                return option;
+            }),
+            filterOperators: [customAreaFilterOperator],
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
                 return <CategoriesCell cellValues={cellValues?.row?.municipalityRole || []} />;
             },
@@ -593,6 +426,11 @@ export const ProjectsTableView = ({
             headerName: capitalizeFirstLetters(t("projects.tableColumns.planningPlanStatus")),
             display: "flex",
             width: columnConfig?.planningPlanStatus?.width || 500,
+            valueOptions: planningPlanStatus.map((pt) => {
+                return { value: pt.name, label: t(`projectTable.planningPlanStatus.${pt.name}`) };
+            }),
+            type: "singleSelect",
+            filterOperators: [planningFilterOperator],
             preProcessEditCellProps: createErrorReport,
             renderCell: (cellValues: GridRenderCellParams<Project>) => {
                 const fixedProperties = cellValues?.row?.planningPlanStatus?.map((fp) => ({ id: fp, name: t(`projectTable.planningPlanStatus.${fp}`) })) || [];
@@ -605,7 +443,7 @@ export const ProjectsTableView = ({
             display: "flex",
             width: columnConfig?.municipality?.width || 320,
             type: "singleSelect",
-            valueOptions: areaProperties?.municipality.map((c) => {
+            valueOptions: municipalityOptions?.map((c) => {
                 const option = { value: c.name, label: c.name };
                 return option;
             }),
@@ -622,7 +460,7 @@ export const ProjectsTableView = ({
             display: "flex",
             width: columnConfig?.district?.width || 320,
             type: "singleSelect",
-            valueOptions: areaProperties?.district.map((c) => {
+            valueOptions: districtOptions?.map((c) => {
                 const option = { value: c.name, label: c.name };
                 return option;
             }),
@@ -639,7 +477,7 @@ export const ProjectsTableView = ({
             display: "flex",
             width: columnConfig?.neighbourhood?.width || 320,
             type: "singleSelect",
-            valueOptions: areaProperties?.neighbourhood.map((c) => {
+            valueOptions: neighbourhoodOptions?.map((c) => {
                 const option = { value: c.name, label: c.name };
                 return option;
             }),
@@ -651,47 +489,6 @@ export const ProjectsTableView = ({
             preProcessEditCellProps: createErrorReport,
         },
     ];
-    const [columns, setColumns] = useState<GridColDef[]>(defaultColumns);
-
-    const handleFilterModelChange = (newModel: GridFilterModel) => {
-        if (newModel.items.some((item) => item.value)) {
-            setFilterModel(newModel);
-        } else {
-            const updatedFilterModel: GridFilterModel = {
-                items: newModel.items.map((item) => ({
-                    ...item,
-                    value: undefined,
-                })),
-            };
-            setFilterModel(updatedFilterModel);
-        }
-    };
-
-    const handleSortModelChange = (newSortModel: GridSortModel) => {
-        setSortModel(newSortModel);
-    };
-
-    const handleProjectsExport = () => {
-        exportProjects();
-        setShowDialog(false);
-    };
-
-    const handleColumnSizeChange = (params: GridColumnResizeParams) => {
-        const field = params.colDef.field as ColumnField;
-        const newColumnConfig = { ...columnConfig, [field]: { ...columnConfig[field], width: params.colDef.width } };
-        setColumnConfig(newColumnConfig);
-    };
-
-    const initialVisibilityModel = Object.keys(columnConfig).reduce(
-        (model, key) => {
-            model[key as ColumnField] = !columnConfig[key as ColumnField]?.show;
-            return model;
-        },
-        {} as { [key in ColumnField]: boolean },
-    );
-
-    const disabledConfidentialityLevelsForExport = ["PRIVATE", "INTERNAL_CIVIL", "INTERNAL_MANAGEMENT", "INTERNAL_COUNCIL", "EXTERNAL_REGIONAL"];
-
     return (
         <Stack
             width="100%"
@@ -707,7 +504,7 @@ export const ProjectsTableView = ({
                 }}
                 checkboxSelection={showCheckBox || isExportPage || isConfidentialityUpdatePage}
                 rows={rows}
-                columns={columns}
+                columns={defaultColumns}
                 rowHeight={70}
                 initialState={{
                     pagination: {
@@ -796,7 +593,6 @@ export const ProjectsTableView = ({
                                         saveColumnConfig(initialColumnConfig);
                                         localStorage.removeItem("projectsTableColumnConfig");
                                         setAlert(t("projects.successResetColumnConfig"), "success");
-                                        setColumns(defaultColumnsWithSize);
                                         setColumnConfig(initialColumnConfig);
                                     }}
                                     p={0.5}
