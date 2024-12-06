@@ -1,7 +1,7 @@
 import { Box, Chip, Dialog, DialogActions, DialogTitle, Button, Tooltip, Stack } from "@mui/material";
 import { DataGrid, GridColDef, GridActionsCellItem, getGridStringOperators } from "@mui/x-data-grid";
 import { useTranslation } from "react-i18next";
-import { deleteCustomProperty, CategoryType, OrdinalCategoryType, CustomPropertyStoreType } from "../../api/adminSettingServices";
+import { CategoryType, OrdinalCategoryType, CustomPropertyStoreType } from "../../api/adminSettingServices";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useContext, useState } from "react";
@@ -20,7 +20,7 @@ export const CustomPropertiesTable = observer(() => {
     const [editPropertyId, setEditPropertyId] = useState("");
     const { t } = useTranslation();
     const { allowedActions } = useContext(UserContext);
-    const { customProperties, fetchCustomProperties }: CustomPropertyStoreType = useCustomPropertyStore();
+    const { customProperties, deleteCustomProperty }: CustomPropertyStoreType = useCustomPropertyStore();
 
     if (!allowedActions.includes("VIEW_CUSTOM_PROPERTIES")) {
         return <ActionNotAllowed errorMessage={t("customProperties.forbidden")} />;
@@ -33,8 +33,7 @@ export const CustomPropertiesTable = observer(() => {
 
     const handleDialogDelete = async () => {
         try {
-            await deleteCustomProperty(deletePropertyInfo.id);
-            await fetchCustomProperties();
+            deleteCustomProperty(deletePropertyInfo.id);
             setAlert(t("admin.settings.notifications.successfullyDeleted"), "success");
         } catch (error) {
             console.error("Failed to delete custom property:", error);

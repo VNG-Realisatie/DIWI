@@ -11,6 +11,7 @@ export type CustomPropertyStoreType = {
     customProperties: Property[];
     fetchCustomProperties: () => void;
     addCustomProperty: (newData: Property) => Promise<Property>;
+    deleteCustomProperty: (id: string) => void;
 };
 
 export async function getCustomProperties(): Promise<Array<Property>> {
