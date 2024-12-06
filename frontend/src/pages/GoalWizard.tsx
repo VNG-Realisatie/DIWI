@@ -10,7 +10,7 @@ import { Dayjs } from "dayjs";
 import AlertContext from "../context/AlertContext";
 import { PropertyType } from "../types/enums";
 import { useNavigate, useParams } from "react-router-dom";
-import { getCustomProperties, Property } from "../api/adminSettingServices";
+import { CustomPropertyStoreType, getCustomProperties, Property } from "../api/adminSettingServices";
 import { CustomPropertyWidget } from "../components/CustomPropertyWidget";
 import CategoryAutocomplete from "../components/goals/CategoryAutocomplete";
 import { SingleNumberInput } from "../components/project/inputs/SingleNumberInput";
@@ -20,6 +20,7 @@ import { OwnershipRowInputs } from "../components/project-wizard/house-blocks/ow
 import { OwnershipSingleValue } from "../types/houseBlockTypes";
 import ActionNotAllowed from "./ActionNotAllowed";
 import UserContext from "../context/UserContext";
+import { useCustomPropertyStore } from "../context/CustomPropertiesContext";
 
 const emptyGoal = {
     startDate: "",
@@ -103,10 +104,10 @@ const SmallToggleButton = styled(ToggleButton)(({ theme }) => ({
 export function GoalWizard() {
     const { goalId } = useParams<{ goalId: string }>();
     const [goal, setGoal] = useState<Goal>(emptyGoal);
-    const [properties, setProperties] = useState<Property[]>([]);
     const { setAlert } = useContext(AlertContext);
     const navigate = useNavigate();
     const { allowedActions } = useContext(UserContext);
+    const { customProperties }: CustomPropertyStoreType = useCustomPropertyStore();
 
     useEffect(() => {
         if (goalId) {
@@ -129,17 +130,12 @@ export function GoalWizard() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [goal.goalType]);
 
-    useEffect(() => {
-        getCustomProperties().then((properties) => {
-            const filteredProperties = properties.filter(
-                //Supported property types are boolean and categorical at the moment.
-                (property) => !property.disabled && (property.propertyType === "CATEGORY" || property.propertyType === "BOOLEAN"),
-            );
-            setProperties(filteredProperties);
-        });
-    }, []);
-
     if (!allowedActions.includes("EDIT_GOALS")) return <ActionNotAllowed errorMessage={t("admin.userManagement.forbidden")} />;
+
+    //Supported property types are boolean and categorical at the moment.
+    const filteredProperties = customProperties.filter(
+        (property) => !property.disabled && (property.propertyType === "CATEGORY" || property.propertyType === "BOOLEAN"),
+    );
 
     const handleGoalTypeChange = (event: React.MouseEvent<HTMLElement>, newGoalType: GoalType) => {
         if (newGoalType !== null && event) {
@@ -220,7 +216,7 @@ export function GoalWizard() {
             return false;
         });
 
-    const matchingProperty = goal.conditions[0] ? properties.find((property) => property.id === goal.conditions[0].propertyId) : null;
+    const matchingProperty = goal.conditions[0] ? filteredProperties.find((property) => property.id === goal.conditions[0].propertyId) : null;
 
     const handleInputChange = (index: number, value: OwnershipSingleValue | null) => {
         const updatedValues = [...goal.conditions[0].ownershipOptions];
@@ -325,7 +321,7 @@ export function GoalWizard() {
                                     readOnly={false}
                                     mandatory={true}
                                     title={t("goals.selectProperty")}
-                                    options={properties.map((property) => {
+                                    options={filteredProperties.map((property) => {
                                         return {
                                             id: property.id,
                                             name: property.type === "FIXED" ? t(`admin.settings.fixedPropertyType.${property.name}`) : property.name,
@@ -365,7 +361,7 @@ export function GoalWizard() {
                                                 ],
                                             });
                                         } else if (goal.conditions[0].propertyType === "CATEGORY") {
-                                            const matchedProperty = properties.find((property) => property.id === goal.conditions[0].propertyId);
+                                            const matchedProperty = filteredProperties.find((property) => property.id === goal.conditions[0].propertyId);
                                             if (matchedProperty && matchedProperty.categories) {
                                                 const updatedCategories = (newValue.categories ?? [])
                                                     .map((id) => {
