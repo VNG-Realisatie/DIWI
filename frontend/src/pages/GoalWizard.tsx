@@ -319,32 +319,45 @@ export function GoalWizard() {
                             />
                         </Grid>
 
-                        {goal.conditions[0] && goal.conditions[0].conditionFieldType === "PROPERTY" && (
-                            <Grid item xs={12}>
-                                <CategoryInput
-                                    readOnly={false}
-                                    mandatory={true}
-                                    title={t("goals.selectProperty")}
-                                    options={properties.map((property) => {
-                                        return {
-                                            id: property.id,
-                                            name: property.type === "FIXED" ? t(`admin.settings.fixedPropertyType.${property.name}`) : property.name,
-                                            propertyType: property.propertyType,
-                                            propertyKind: property.type,
-                                        };
-                                    })}
-                                    values={
-                                        goal.conditions[0] && goal.conditions[0].propertyName
-                                            ? { id: goal.conditions[0].propertyId, name: goal.conditions[0].propertyName }
-                                            : null
-                                    }
-                                    setValue={handlePropertyChange}
-                                    multiple={false}
-                                    hasTooltipOption={false}
-                                    error={t("goals.errors.selectProperty")}
-                                />
-                            </Grid>
-                        )}
+                        {goal.conditions[0] &&
+                            goal.conditions[0].conditionFieldType === "PROPERTY" &&
+                            (() => {
+                                const matchingProperty = goal.conditions[0]
+                                    ? properties.find((property) => property.id === goal.conditions[0].propertyId)
+                                    : null;
+                                return (
+                                    <Grid item xs={12}>
+                                        <CategoryInput
+                                            readOnly={false}
+                                            mandatory={true}
+                                            title={t("goals.selectProperty")}
+                                            options={properties.map((property) => {
+                                                return {
+                                                    id: property.id,
+                                                    name: property.type === "FIXED" ? t(`admin.settings.fixedPropertyType.${property.name}`) : property.name,
+                                                    propertyType: property.propertyType,
+                                                    propertyKind: property.type,
+                                                };
+                                            })}
+                                            values={
+                                                goal.conditions[0] && goal.conditions[0].propertyName
+                                                    ? {
+                                                          id: goal.conditions[0].propertyId,
+                                                          name:
+                                                              goal.conditions[0].propertyKind === "FIXED"
+                                                                  ? t(`admin.settings.fixedPropertyType.${matchingProperty?.name}`)
+                                                                  : matchingProperty?.name,
+                                                      }
+                                                    : null
+                                            }
+                                            setValue={handlePropertyChange}
+                                            multiple={false}
+                                            hasTooltipOption={false}
+                                            error={t("goals.errors.selectProperty")}
+                                        />
+                                    </Grid>
+                                );
+                            })()}
                         {goal.conditions[0] && goal.conditions[0].propertyId && goal.conditions[0].conditionFieldType === "PROPERTY" && (
                             <Grid item xs={12}>
                                 <CustomPropertyWidget
