@@ -26,7 +26,6 @@ export type ExportData = {
     type: string;
     apiKey?: string;
     projectUrl?: string;
-    projectdetailUrl?: string;
     properties?: ExportProperty[];
     valid?: boolean;
     validationErrors?: ValidationError[];
@@ -42,7 +41,7 @@ export type ValidationError = {
 export type DownloadType = {
     exportDate?: string;
     projectIds?: string[];
-    confidentialityLevels?: ConfidentialityLevel[]
+    confidentialityLevels?: ConfidentialityLevel[];
 };
 
 export async function getExportData(): Promise<ExportData[]> {
