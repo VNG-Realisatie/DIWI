@@ -14,7 +14,7 @@ function ConfidentialityUpdateTable() {
         confidentialityLevelOptions[confidentialityLevelOptions.length - 1],
     );
     const navigate = useNavigate();
-    const { id: selectedExportId } = useParams();
+    const { exportId } = useParams();
     const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
     const { setAlert } = useAlert();
 
@@ -34,7 +34,7 @@ function ConfidentialityUpdateTable() {
             }
         } finally {
             setSelectedProjects([]);
-            navigate(confidentialityUpdate.toPath() + `/${selectedExportId}`);
+            navigate(confidentialityUpdate.toPath({ exportId }));
         }
     };
 
@@ -71,7 +71,11 @@ function ConfidentialityUpdateTable() {
                     </Button>
                 </Box>
             </Stack>
-            <ProjectsTableView isConfidentialityUpdatePage={true} setSelectedProjects={setSelectedProjects} selectedProjects={selectedProjects} />
+            <ProjectsTableView
+                redirectPath={confidentialityUpdate.toPath({ exportId })}
+                setSelectedProjects={setSelectedProjects}
+                selectedProjects={selectedProjects}
+            />
         </>
     );
 }

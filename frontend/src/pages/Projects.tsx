@@ -23,7 +23,7 @@ export const Projects = () => {
                 ]}
             />
             {(location.pathname === Paths.projects.path || location.pathname === Paths.root.path) && <ProjectOverviewMap />}
-            {location.pathname === Paths.projectsTable.path && <ProjectsTableView />}
+            {location.pathname === Paths.projectsTable.path && <ProjectsTableView redirectPath={Paths.projectsTable.toPath()}/>}
         </Stack>
     );
 };

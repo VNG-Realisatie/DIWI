@@ -12,6 +12,7 @@ function createPathObject<P extends object>(path: string) {
 export const root = createPathObject(config.baseurl);
 
 type ProjectId = { projectId: string };
+// type ExportId = { exportId: string }
 
 export const projects = createPathObject(config.baseurl + "projects");
 export const projectsTable = createPathObject(config.baseurl + "projects/table");
@@ -38,8 +39,8 @@ export const exchangedata = createPathObject(config.baseurl + "exchangedata");
 export const exchangeimportdata = createPathObject(config.baseurl + "exchangeimportdata");
 export const exportExcel = createPathObject(config.baseurl + "exchangedata/exportexcel");
 export const exportProvince = createPathObject(config.baseurl + "exchangedata/exportprovince");
-export const configuredExport = createPathObject(config.baseurl + "exchangedata/export");
-export const confidentialityUpdate = createPathObject(config.baseurl + "exchangedata/confidentiality-update");
+export const configuredExport = createPathObject(config.baseurl + "exchangedata/export/:exportId");
+export const confidentialityUpdate = createPathObject(config.baseurl + "exchangedata/confidentiality-update/:exportId");
 export const importExcel = createPathObject(config.baseurl + "exchangedata/importexcel");
 export const importGeoJson = createPathObject(config.baseurl + "exchangedata/importgeojson");
 export const importSquit = createPathObject(config.baseurl + "exchangedata/importsquit");
