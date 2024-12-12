@@ -12,7 +12,6 @@ function createPathObject<P extends object>(path: string) {
 export const root = createPathObject(config.baseurl);
 
 type ProjectId = { projectId: string };
-// type ExportId = { exportId: string }
 
 export const projects = createPathObject(config.baseurl + "projects");
 export const projectsTable = createPathObject(config.baseurl + "projects/table");

@@ -36,7 +36,6 @@ const ProjectPlotSelector = ({ wizard = false }) => {
     const handleNext = async () => {
         await handleSaveChange();
         if (projectId) {
-            console.log(projectDetailCharacteristics.toPath({ projectId }));
             navigate(projectDetailCharacteristics.toPath({ projectId }));
         }
     };
