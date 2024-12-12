@@ -128,6 +128,9 @@ export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProj
     const { municipalityRolesOptions, districtOptions, neighbourhoodOptions, municipalityOptions } = useProperties();
     const [showCheckBox, setShowCheckBox] = useState(false);
 
+    const configuredExportPath = configuredExport.toPath({ exportId });
+    const confidentialityUpdatePath = confidentialityUpdate.toPath({ exportId });
+
     useEffect(() => {
         if (filterUrl !== "") {
             navigate(redirectPath + `${filterUrl}`);
@@ -135,13 +138,13 @@ export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProj
     }, [filterUrl, navigate, redirectPath]);
 
     useEffect(() => {
-        if (redirectPath === configuredExport.toPath({ exportId }) || redirectPath === confidentialityUpdate.toPath({ exportId })) {
+        if (redirectPath === configuredExportPath || redirectPath === confidentialityUpdatePath) {
             setShowCheckBox(true);
         }
     }, []);
 
     useEffect(() => {
-        if (redirectPath === configuredExport.toPath({ exportId })) {
+        if (redirectPath === configuredExportPath) {
             setFilterModel({ items: [{ field: "confidentialityLevel", operator: "isAnyOf", value: ["PUBLIC", "EXTERNAL_GOVERNMENTAL"] }] });
         }
     }, [redirectPath]);
@@ -514,9 +517,7 @@ export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProj
                     toolbarFiltersLabel: t("projects.toolbarFiltersLabel"),
                 }}
                 isRowSelectable={(params) =>
-                    redirectPath === configuredExport.toPath({ exportId })
-                        ? !disabledConfidentialityLevelsForExport.includes(params.row.confidentialityLevel)
-                        : true
+                    redirectPath === configuredExportPath ? !disabledConfidentialityLevelsForExport.includes(params.row.confidentialityLevel) : true
                 }
                 slots={{
                     toolbar: () => (
