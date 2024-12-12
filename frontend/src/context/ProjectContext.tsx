@@ -33,12 +33,9 @@ export const ProjectProvider = ({ children }: PropsWithChildren) => {
 
     useEffect(() => {
         getCustomPropertiesWithQuery("PROJECT").then((properties) => {
-            setNonFixedCustomDefinitions(
-                properties.filter((property) => !property.disabled && property.type !== "FIXED")
-            );
+            setNonFixedCustomDefinitions(properties.filter((property) => !property.disabled && property.type !== "FIXED"));
         });
     }, []);
-
 
     const updateProjects = useCallback(() => {
         getProjects(paginationInfo.page, paginationInfo.pageSize)

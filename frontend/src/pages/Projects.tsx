@@ -2,11 +2,11 @@ import { Stack } from "@mui/material";
 
 import { useLocation } from "react-router-dom";
 import * as Paths from "../Paths";
-import { ProjectsTableView } from "../components/project/ProjectsTableView";
 
 import { useTranslation } from "react-i18next";
 import ProjectOverviewMap from "../components/map/ProjectOverviewMap";
 import BreadcrumbBar from "../components/header/BreadcrumbBar";
+import ProjectsTableWrapper from "../components/project/ProjectTableWrapper";
 
 export const Projects = () => {
     const location = useLocation();
@@ -23,7 +23,7 @@ export const Projects = () => {
                 ]}
             />
             {(location.pathname === Paths.projects.path || location.pathname === Paths.root.path) && <ProjectOverviewMap />}
-            {location.pathname === Paths.projectsTable.path && <ProjectsTableView redirectPath={Paths.projectsTable.toPath()}/>}
+            {location.pathname === Paths.projectsTable.path && <ProjectsTableWrapper redirectPath={Paths.projectsTable.toPath()} />}
         </Stack>
     );
 };
