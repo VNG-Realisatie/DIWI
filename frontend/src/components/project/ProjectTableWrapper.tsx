@@ -78,12 +78,12 @@ const ProjectsTableWrapper = ({
                 </DialogActions>
             </Dialog>
             <Box sx={{ display: "flex", justifyContent: "right", gap: "3px" }}>
-                {configuredExportPath && (
+                {redirectPath === configuredExportPath && (
                     <Button sx={{ width: "130px", my: 2 }} variant="contained" color="primary" onClick={handleBack}>
                         {t("generic.previousStep")}
                     </Button>
                 )}
-                {configuredExportPath && allowedActions.includes("EXPORT_PROJECTS") && (
+                {redirectPath === configuredExportPath && allowedActions.includes("EXPORT_PROJECTS") && (
                     <>
                         <Button
                             sx={{ my: 2 }}
@@ -109,7 +109,7 @@ const ProjectsTableWrapper = ({
                         </Button>
                     </>
                 )}
-                {confidentialityUpdatePath && (
+                {redirectPath === confidentialityUpdatePath && (
                     <Button
                         sx={{ my: 2 }}
                         variant="outlined"
@@ -122,7 +122,7 @@ const ProjectsTableWrapper = ({
                 )}
             </Box>
             <Box sx={{ height: 100 }}></Box>
-            {!confidentialityUpdatePath && !configuredExportPath && <AddProjectButton />}
+            {redirectPath != confidentialityUpdatePath && redirectPath != configuredExportPath && <AddProjectButton />}
         </Stack>
     );
 };
