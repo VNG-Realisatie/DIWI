@@ -26,7 +26,7 @@ abstract public class ProjectSnapshotModelSuperclass extends ProjectMinimalSnaps
 
     private UUID projectStateId;
 
-    private List<PlanStatus> planningPlanStatus;
+    private List<PlanStatus> planningPlanStatus = new ArrayList<>();;
     private List<PlanType> planType = new ArrayList<>();
     private PriorityModel priority = new PriorityModel();
     private List<SelectModel> municipalityRole = new ArrayList<>();
