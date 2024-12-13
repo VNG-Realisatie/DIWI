@@ -34,6 +34,9 @@ const ProjectsTableWrapper = ({
     const { setPaginationInfo } = useContext(ProjectContext) as { setPaginationInfo: Dispatch<SetStateAction<GridPaginationModel>> };
     const { exportId = "defaultExportId" } = useParams<{ exportId?: string }>();
 
+    const configuredExportPath = configuredExport.toPath({ exportId });
+    const confidentialityUpdatePath = confidentialityUpdate.toPath({ exportId });
+
     const handleProjectsExport = () => {
         exportProjects();
         setShowDialog(false);
@@ -75,12 +78,12 @@ const ProjectsTableWrapper = ({
                 </DialogActions>
             </Dialog>
             <Box sx={{ display: "flex", justifyContent: "right", gap: "3px" }}>
-                {redirectPath === configuredExport.toPath({ exportId }) && (
+                {configuredExportPath && (
                     <Button sx={{ width: "130px", my: 2 }} variant="contained" color="primary" onClick={handleBack}>
                         {t("generic.previousStep")}
                     </Button>
                 )}
-                {redirectPath === configuredExport.toPath({ exportId }) && allowedActions.includes("EXPORT_PROJECTS") && (
+                {configuredExportPath && allowedActions.includes("EXPORT_PROJECTS") && (
                     <>
                         <Button
                             sx={{ my: 2 }}
@@ -106,7 +109,7 @@ const ProjectsTableWrapper = ({
                         </Button>
                     </>
                 )}
-                {redirectPath === confidentialityUpdate.toPath({ exportId }) && (
+                {confidentialityUpdatePath && (
                     <Button
                         sx={{ my: 2 }}
                         variant="outlined"
@@ -119,7 +122,7 @@ const ProjectsTableWrapper = ({
                 )}
             </Box>
             <Box sx={{ height: 100 }}></Box>
-            {redirectPath != configuredExport.toPath({ exportId }) && redirectPath != confidentialityUpdate.toPath({ exportId }) && <AddProjectButton />}
+            {!confidentialityUpdatePath && !configuredExportPath && <AddProjectButton />}
         </Stack>
     );
 };

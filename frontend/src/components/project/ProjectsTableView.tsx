@@ -1,15 +1,14 @@
 import {
-    DataGrid,
     GridColDef,
     GridColumnResizeParams,
     GridFilterInputMultipleSingleSelect,
     GridFilterItem,
     GridFilterModel,
     GridFilterOperator,
+    GridLocaleText,
     GridPaginationModel,
     GridPreProcessEditCellProps,
     GridRenderCellParams,
-    GridRowParams,
     GridRowSelectionModel,
     GridSortModel,
     GridToolbarColumnsButton,
@@ -37,46 +36,8 @@ import { capitalizeFirstLetters } from "../../utils/stringFunctions";
 import { UserGroupSelect } from "../../widgets/UserGroupSelect";
 import { confidentialityUpdate, configuredExport } from "../../Paths";
 import useProperties from "../../hooks/useProperties";
-
-type ColumnField =
-    | "projectName"
-    | "totalValue"
-    | "projectOwners"
-    | "confidentialityLevel"
-    | "startDate"
-    | "endDate"
-    | "planType"
-    | "priority"
-    | "municipalityRole"
-    | "projectPhase"
-    | "planningPlanStatus"
-    | "municipality"
-    | "district"
-    | "neighbourhood";
-
-type ColumnConfig = {
-    [key in ColumnField]?: {
-        width?: number;
-        show?: boolean;
-    };
-};
-
-const initialColumnConfig: ColumnConfig = {
-    projectName: {},
-    totalValue: {},
-    projectOwners: {},
-    confidentialityLevel: {},
-    startDate: {},
-    endDate: {},
-    planType: {},
-    priority: {},
-    municipalityRole: {},
-    projectPhase: {},
-    planningPlanStatus: {},
-    municipality: {},
-    district: {},
-    neighbourhood: {},
-};
+import { ColumnConfig, ColumnField, initialColumnConfig, loadColumnConfig, saveColumnConfig } from "./projectTableConfig";
+import TableComponent from "./TableComponent";
 
 type Props = {
     redirectPath: string;
@@ -100,15 +61,6 @@ const confidentialityLevelComparator = (v1: string, v2: string): number => {
     const label1 = confidentialityLevelOptions.find((option) => option.id === v1)?.name || "";
     const label2 = confidentialityLevelOptions.find((option) => option.id === v2)?.name || "";
     return label1.localeCompare(label2);
-};
-
-const saveColumnConfig = (config: ColumnConfig) => {
-    localStorage.setItem("projectsTableColumnConfig", JSON.stringify(config));
-};
-
-const loadColumnConfig = (): ColumnConfig | null => {
-    const config = localStorage.getItem("projectsTableColumnConfig");
-    return config ? JSON.parse(config) : null;
 };
 
 export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProjects = [], redirectPath, setPaginationInfo }: Props) => {
@@ -141,13 +93,13 @@ export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProj
         if (redirectPath === configuredExportPath || redirectPath === confidentialityUpdatePath) {
             setShowCheckBox(true);
         }
-    }, []);
+    }, [redirectPath, configuredExportPath, confidentialityUpdatePath]);
 
     useEffect(() => {
         if (redirectPath === configuredExportPath) {
             setFilterModel({ items: [{ field: "confidentialityLevel", operator: "isAnyOf", value: ["PUBLIC", "EXTERNAL_GOVERNMENTAL"] }] });
         }
-    }, [redirectPath]);
+    }, [redirectPath, configuredExportPath]);
 
     useEffect(() => {
         if (selectedProjects.length === 0) {
@@ -460,50 +412,26 @@ export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProj
     ];
     return (
         <>
-            <DataGrid
-                autoHeight
-                sx={{
-                    borderRadius: 0,
-                }}
-                checkboxSelection={showCheckBox}
+            <TableComponent
+                showCheckBox={showCheckBox}
                 rows={rows}
                 columns={defaultColumns}
-                rowHeight={70}
-                initialState={{
-                    pagination: {
-                        paginationModel: { page: 0, pageSize: 10 },
-                    },
-                }}
-                pageSizeOptions={[5, 10, 25, 50, 100]}
-                onPaginationModelChange={(model) => {
-                    setPaginationInfo({ page: model.page + 1, pageSize: model.pageSize });
-                }}
+                setPaginationInfo={setPaginationInfo}
                 rowCount={filterModel?.items.some((item) => item.value) ? filteredProjectsSize : totalProjectCount}
                 paginationMode="server"
-                onRowClick={
-                    showCheckBox
-                        ? () => {}
-                        : (params: GridRowParams) => {
-                              navigate(`/projects/${params.id}/characteristics`);
-                          }
-                }
-                processRowUpdate={
-                    (updatedRow) => console.log(updatedRow)
-                    //todo add update endpoint later
-                }
+                onRowClick={showCheckBox ? () => {} : (params) => navigate(`/projects/${params.id}/characteristics`)}
                 filterModel={filterModel}
-                onFilterModelChange={handleFilterModelChange}
+                handleFilterModelChange={handleFilterModelChange}
                 sortModel={sortModel}
-                onSortModelChange={handleSortModelChange}
-                keepNonExistentRowsSelected
-                rowSelectionModel={selectionModel}
+                handleSortModelChange={handleSortModelChange}
+                selectionModel={selectionModel}
                 columnVisibilityModel={initialVisibilityModel}
                 onColumnVisibilityModelChange={(newModel) => {
                     setColumnConfig((prevConfig: ColumnConfig) => {
                         const newConfig = { ...prevConfig };
                         Object.keys(newModel).forEach((key) => {
                             if (newConfig[key as ColumnField]) {
-                                newConfig[key as ColumnField]!.show = !newModel[key as ColumnField];
+                                newConfig[key as ColumnField].show = !newModel[key as ColumnField];
                             }
                         });
                         return newConfig;
@@ -511,11 +439,13 @@ export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProj
                 }}
                 onRowSelectionModelChange={handleSelectionChange}
                 onColumnResize={handleColumnSizeChange}
-                localeText={{
-                    toolbarColumns: t("projects.toolbarColumns"),
-                    toolbarColumnsLabel: t("projects.toolbarColumnsLabel"),
-                    toolbarFiltersLabel: t("projects.toolbarFiltersLabel"),
-                }}
+                localeText={
+                    {
+                        toolbarColumns: t("projects.toolbarColumns"),
+                        toolbarColumnsLabel: t("projects.toolbarColumnsLabel"),
+                        toolbarFiltersLabel: t("projects.toolbarFiltersLabel"),
+                    } as GridLocaleText
+                }
                 isRowSelectable={(params) =>
                     redirectPath === configuredExportPath ? !disabledConfidentialityLevelsForExport.includes(params.row.confidentialityLevel) : true
                 }
