@@ -76,15 +76,17 @@ public class ProjectsResourceTest {
     private LoggedUser loggedUser;
     private ZonedDateTime now = ZonedDateTime.now();
     private LocalDate today = now.toLocalDate();
+    private HouseblockResource blockResource;
 
-    @BeforeEach
-    void beforeEach() {
-        dal = dalFactory.constructDal();
-        repo = new VngRepository(dal.getSession());
-        projectResource = new ProjectsResource(new GenericRepository(dal),
-                new ProjectService(), new HouseblockService(), new UserGroupService(null), new PropertiesService(), testDb.projectConfig,
-                new ExcelImportService(), new GeoJsonImportService());
-        projectResource.getUserGroupService().setUserGroupDAO(repo.getUsergroupDAO());
+        @BeforeEach
+        void beforeEach() {
+            dal = dalFactory.constructDal();
+            repo = new VngRepository(dal.getSession());
+            projectResource = new ProjectsResource(new GenericRepository(dal),
+                    new ProjectService(), new HouseblockService(), new UserGroupService(null), new PropertiesService(), testDb.projectConfig,
+                    new ExcelImportService(), new GeoJsonImportService());
+            projectResource.getUserGroupService().setUserGroupDAO(repo.getUsergroupDAO());
+            blockResource = new HouseblockResource(new GenericRepository(dal), new HouseblockService(), new ProjectService(), new PropertiesService());
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             user = new User();
@@ -240,47 +242,58 @@ public class ProjectsResourceTest {
     }
 
     @Test
-    public void changeEndDate() throws Exception {
-        LocalDate projectEndDate = today.plusDays(10);
-        var blockResource = new HouseblockResource(new GenericRepository(dal), new HouseblockService(), new ProjectService(), new PropertiesService());
+    public void changeProjectEndDate() throws Exception {
+        LocalDate startDate = today.minusDays(10);
+        LocalDate endDate = today.plusDays(10);
 
-        var createModel = new ProjectCreateSnapshotModel();
-        createModel.setStartDate(today);
-        createModel.setEndDate(projectEndDate);
-        createModel.setProjectName("changeEndDate project");
-        createModel.setProjectColor("#abcdef");
-        createModel.setConfidentialityLevel(Confidentiality.PUBLIC);
-        createModel.setProjectPhase(ProjectPhase._5_PREPARATION);
-        createModel.setProjectOwners(List.of(new UserGroupModel(userGroup)));
+        // Create an end date earlier than today so it will be before the milestones we end up creating
+        LocalDate earlierEndDate = today.minusDays(5);
 
-        ProjectMinimalSnapshotModel proj;
-        proj = projectResource.createProject(loggedUser, createModel);
+        var originalProjectModel = new ProjectCreateSnapshotModel();
+        originalProjectModel.setStartDate(startDate);
+        originalProjectModel.setEndDate(endDate);
+        originalProjectModel.setProjectName("changeEndDate project");
+        originalProjectModel.setProjectColor("#abcdef");
+        originalProjectModel.setConfidentialityLevel(Confidentiality.EXTERNAL_GOVERNMENTAL);
+        originalProjectModel.setProjectPhase(ProjectPhase._5_PREPARATION);
+        originalProjectModel.setProjectOwners(List.of(new UserGroupModel(userGroup)));
+
+        ProjectMinimalSnapshotModel createdProject = projectResource.createProject(loggedUser, originalProjectModel);
         repo.getSession().clear();
 
-        var blockModel = new HouseblockSnapshotModel();
-        blockModel.setStartDate(today);
-        blockModel.setEndDate(projectEndDate);
-        blockModel.setHouseblockName("changeEndDate block");
-        blockModel.setProjectId(proj.getProjectId());
+        var originalBlockModel = new HouseblockSnapshotModel();
+        originalBlockModel.setStartDate(startDate);
+        originalBlockModel.setEndDate(endDate);
+        originalBlockModel.setHouseblockName("changeEndDate block");
+        originalBlockModel.setProjectId(createdProject.getProjectId());
 
-        var bloc = blockResource.createHouseblock(loggedUser, blockModel);
+        var createdBlock = blockResource.createHouseblock(loggedUser, originalBlockModel);
         repo.getSession().clear();
 
-        // Create model and copy values from the create model
-        var updateModel = new ProjectSnapshotModel();
-        updateModel.setProjectId(proj.getProjectId());
-        updateModel.setStartDate(createModel.getStartDate());
-        updateModel.setProjectName(createModel.getProjectName());
-        updateModel.setProjectColor(createModel.getProjectColor());
-        updateModel.setConfidentialityLevel(createModel.getConfidentialityLevel());
-        updateModel.setProjectPhase(createModel.getProjectPhase());
-        updateModel.setProjectOwners(createModel.getProjectOwners());
+        // Create model and change everything except the start date, end date and the id to create a lot of milestones on the current day
+        var updateProjectModel = new ProjectSnapshotModel();
+        updateProjectModel.setProjectId(createdProject.getProjectId());
+        updateProjectModel.setStartDate(originalProjectModel.getStartDate());
+        updateProjectModel.setEndDate(originalProjectModel.getEndDate());
+        updateProjectModel.setProjectOwners(originalProjectModel.getProjectOwners());
 
-        // Set the end date to a date before the block end date
-        updateModel.setEndDate(projectEndDate.minusDays(5));
+        updateProjectModel.setProjectName("new name");
+        updateProjectModel.setProjectColor("#123456");
+        updateProjectModel.setConfidentialityLevel(Confidentiality.PUBLIC);
+        updateProjectModel.setProjectPhase(ProjectPhase._6_REALIZATION);
+        projectResource.updateProjectSnapshot(loggedUser, updateProjectModel);
 
-        var response = projectResource.updateProjectSnapshot(loggedUser, updateModel);
+        // Set the end date to a date before today so it will conflict with the milestones created by the changes above
+        updateProjectModel.setEndDate(earlierEndDate);
+        var updatedProjectModel = projectResource.updateProjectSnapshot(loggedUser, updateProjectModel);
         repo.getSession().clear();
+
+        // The end date of the houseblock model should have been changed as well.
+        HouseblockSnapshotModel expectedHouseblockModel = originalBlockModel.toBuilder()
+                .endDate(earlierEndDate)
+                .build();
+        assertThat(blockResource.getCurrentHouseblockSnapshot(createdBlock.getHouseblockId()))
+                .isEqualTo(expectedHouseblockModel);
     }
 
     private void persistUserAndUserGroup(VngRepository repo, User user, UserGroup userGroup) {
