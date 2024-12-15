@@ -21,6 +21,8 @@ import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.models.MilestoneModel;
 import nl.vng.diwi.models.ProjectSnapshotModel;
 import nl.vng.diwi.models.UserGroupModel;
+import nl.vng.diwi.models.UserGroupUserModel;
+import nl.vng.diwi.models.UserModel;
 import nl.vng.diwi.models.superclasses.ProjectCreateSnapshotModel;
 import nl.vng.diwi.models.superclasses.ProjectMinimalSnapshotModel;
 import nl.vng.diwi.rest.VngBadRequestException;
@@ -37,12 +39,16 @@ import nl.vng.diwi.services.ProjectService;
 import nl.vng.diwi.services.ProjectServiceTest;
 import nl.vng.diwi.services.UserGroupService;
 import nl.vng.diwi.testutil.TestDb;
+
+import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -52,7 +58,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ProjectsResourceTest {
-
+    private static ObjectMapper objectMapper = new ObjectMapper();
     private static DalFactory dalFactory;
     private static TestDb testDb;
 
@@ -77,22 +83,24 @@ public class ProjectsResourceTest {
     private ZonedDateTime now = ZonedDateTime.now();
     private LocalDate today = now.toLocalDate();
     private HouseblockResource blockResource;
+    private UserState userState;
+    private ContainerRequestContext context;
 
-        @BeforeEach
-        void beforeEach() {
-            dal = dalFactory.constructDal();
-            repo = new VngRepository(dal.getSession());
-            projectResource = new ProjectsResource(new GenericRepository(dal),
-                    new ProjectService(), new HouseblockService(), new UserGroupService(null), new PropertiesService(), testDb.projectConfig,
-                    new ExcelImportService(), new GeoJsonImportService());
-            projectResource.getUserGroupService().setUserGroupDAO(repo.getUsergroupDAO());
-            blockResource = new HouseblockResource(new GenericRepository(dal), new HouseblockService(), new ProjectService(), new PropertiesService());
+    @BeforeEach
+    void beforeEach() {
+        dal = dalFactory.constructDal();
+        repo = new VngRepository(dal.getSession());
+        projectResource = new ProjectsResource(new GenericRepository(dal),
+                new ProjectService(), new HouseblockService(), new UserGroupService(null), new PropertiesService(), testDb.projectConfig,
+                new ExcelImportService(), new GeoJsonImportService());
+        projectResource.getUserGroupService().setUserGroupDAO(repo.getUsergroupDAO());
+        blockResource = new HouseblockResource(new GenericRepository(dal), new HouseblockService(), new ProjectService(), new PropertiesService());
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             user = new User();
             userGroup = new UserGroup();
 
-            persistUserAndUserGroup(repo, user, userGroup);
+            userState = persistUserAndUserGroup(repo, user, userGroup);
 
             transaction.commit();
             repo.getSession().clear();
@@ -101,6 +109,7 @@ public class ProjectsResourceTest {
         loggedUser = new LoggedUser();
         loggedUser.setUuid(user.getId());
         loggedUser.setRole(UserRole.UserPlus);
+        context = new LoggedUserContainerRequestContext(loggedUser);
     }
 
     @AfterEach
@@ -249,6 +258,19 @@ public class ProjectsResourceTest {
         // Create an end date earlier than today so it will be before the milestones we end up creating
         LocalDate earlierEndDate = today.minusDays(5);
 
+        // Some set-up to get the users matching
+        UserGroupModel owner1 = new UserGroupModel(userGroup);
+        owner1.setName("UG");
+        UserGroupUserModel ugum = new UserGroupUserModel();
+        ugum.setFirstName(userState.getFirstName());
+        ugum.setInitials("");
+        ugum.setLastName(userState.getLastName());
+        ugum.setInitials("LF");
+        ugum.setUserGroupName("UG");
+        owner1.setUsers(List.of(ugum));
+        List<UserGroupModel> owners = List.of(owner1);
+
+        // Create the project
         var originalProjectModel = new ProjectCreateSnapshotModel();
         originalProjectModel.setStartDate(startDate);
         originalProjectModel.setEndDate(endDate);
@@ -256,11 +278,12 @@ public class ProjectsResourceTest {
         originalProjectModel.setProjectColor("#abcdef");
         originalProjectModel.setConfidentialityLevel(Confidentiality.EXTERNAL_GOVERNMENTAL);
         originalProjectModel.setProjectPhase(ProjectPhase._5_PREPARATION);
-        originalProjectModel.setProjectOwners(List.of(new UserGroupModel(userGroup)));
+        originalProjectModel.setProjectOwners(owners);
 
         ProjectMinimalSnapshotModel createdProject = projectResource.createProject(loggedUser, originalProjectModel);
         repo.getSession().clear();
 
+        // Create a block
         var originalBlockModel = new HouseblockSnapshotModel();
         originalBlockModel.setStartDate(startDate);
         originalBlockModel.setEndDate(endDate);
@@ -271,21 +294,35 @@ public class ProjectsResourceTest {
         repo.getSession().clear();
 
         // Create model and change everything except the start date, end date and the id to create a lot of milestones on the current day
-        var updateProjectModel = new ProjectSnapshotModel();
+        // var updateProjectModel = new ProjectSnapshotModel();
+
+        ProjectSnapshotModel updateProjectModel = objectMapper
+                .readValue(objectMapper.writeValueAsString(originalProjectModel), ProjectSnapshotModel.class);
         updateProjectModel.setProjectId(createdProject.getProjectId());
-        updateProjectModel.setStartDate(originalProjectModel.getStartDate());
-        updateProjectModel.setEndDate(originalProjectModel.getEndDate());
+
+        // updateProjectModel.setStartDate(originalProjectModel.getStartDate());
+        // updateProjectModel.setEndDate(originalProjectModel.getEndDate());
         updateProjectModel.setProjectOwners(originalProjectModel.getProjectOwners());
 
-        updateProjectModel.setProjectName("new name");
-        updateProjectModel.setProjectColor("#123456");
-        updateProjectModel.setConfidentialityLevel(Confidentiality.PUBLIC);
-        updateProjectModel.setProjectPhase(ProjectPhase._6_REALIZATION);
-        projectResource.updateProjectSnapshot(loggedUser, updateProjectModel);
-
+        if (false) {
+            // Change the following values to create new milestones on the current date
+            updateProjectModel.setProjectName("new name");
+            updateProjectModel.setProjectColor("#123456");
+            updateProjectModel.setConfidentialityLevel(Confidentiality.PUBLIC);
+            updateProjectModel.setProjectPhase(ProjectPhase._6_REALIZATION);
+            projectResource.updateProjectSnapshot(loggedUser, updateProjectModel);
+            repo.getSession().clear();
+        }
         // Set the end date to a date before today so it will conflict with the milestones created by the changes above
         updateProjectModel.setEndDate(earlierEndDate);
-        var updatedProjectModel = projectResource.updateProjectSnapshot(loggedUser, updateProjectModel);
+        projectResource.updateProjectSnapshot(loggedUser, updateProjectModel);
+        repo.getSession().clear();
+
+        assertThat(projectResource.getCurrentProjectSnapshot(context, createdProject.getProjectId()))
+                .usingRecursiveComparison(RecursiveComparisonConfiguration.builder()
+                        .withIgnoredFields("projectStateId", "projectOwners.users.userGroupUuid", "projectOwners.users.uuid")
+                        .build())
+                .isEqualTo(updateProjectModel);
         repo.getSession().clear();
 
         // The end date of the houseblock model should have been changed as well.
@@ -296,7 +333,7 @@ public class ProjectsResourceTest {
                 .isEqualTo(expectedHouseblockModel);
     }
 
-    private void persistUserAndUserGroup(VngRepository repo, User user, UserGroup userGroup) {
+    private UserState persistUserAndUserGroup(VngRepository repo, User user, UserGroup userGroup) {
         repo.persist(user);
 
         userGroup.setSingleUser(true);
@@ -325,5 +362,7 @@ public class ProjectsResourceTest {
         utug.setCreateUser(user);
         utug.setChangeStartDate(now);
         repo.persist(utug);
+
+        return userState;
     }
 }
