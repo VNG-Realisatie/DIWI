@@ -381,7 +381,8 @@
       "validationErrors": {
         "missing_custom_prop": "Maatwerk eigenschap ontbreekt",
         "option_not_mapped": "Optie van maatwerk categorie is niet gemapt",
-        "option_mapped_multiple_times": "Optie van maatwerk categorie is gemapt naar meerdere template opties"
+        "option_mapped_multiple_times": "Optie van maatwerk categorie is gemapt naar meerdere template opties",
+        "genericError": "Één of meer eigenschappen zijn niet correct gemapt"
       },
       "downloadErrors": {
         "missing_mandatory_value": "Waarde is verplicht in de export, maar ontbreekt in de projecteigenschappen.",
