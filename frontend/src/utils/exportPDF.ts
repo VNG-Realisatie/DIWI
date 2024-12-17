@@ -1,6 +1,5 @@
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import { getPolicyDashboardProjects } from "../api/dashboardServices";
 import { getAllCategories } from "../api/goalsServices";
 
 type Element = {
