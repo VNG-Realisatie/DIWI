@@ -62,7 +62,10 @@ export const CustomDashboardForm = ({
             }, 500);
     }, [pdfExport, setPdfExport]);
 
-    const buttonDisabled = !newBlueprint.name || userGroups.length === 0 || !Object.values(visibility).some((value) => value === true);
+    const buttonDisabled =
+        !newBlueprint.name ||
+        userGroups.length === 0 ||
+        (!Object.values(visibility).some((value) => value === true) && !Object.values(categoriesVisibility).some((value) => value === true));
 
     const handleSave = async () => {
         const elementsToAdd = Object.entries(visibility)
