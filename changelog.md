@@ -1,5 +1,71 @@
 # Change log
 
+## DIWI RELEASE 1.8.0
+
+This release is all about data exchenge with a main focus on export to Zuid-Holland provincie monitor and a side quest of making imports a lot easier
+
+### ADDED
+
+- Added export functionality for Zuid-Holland provincie monitor to data exchange. The export creates a geojson that it can either send to recipient API or store locally. The back end enforces minimum confidentiality level for exports.
+- Added 'Export instellingen' page where exporting can be configured
+- Required property options added to endpoint
+- Added creation options in Import page for missing properties and categories
+- Projects table is now configureable. The settings will not be hard saved in the backend, but stored in a cookie locally, this means the settings will revert to default on each session
+- Added bulk editing for confidentiality level
+- Added back end and front end validation to the export page
+- Added filter options to export page
+- Added confidentiality validation to export page
+- Added feedback concerning export errors to the UI
+
+### CHANGED
+
+- Moved Import page under 'Data uitwisseling' header
+- Data exchange page now contains an import section, an export section and a link to the setup page for geojson exports
+- Required property options added to endpoint
+- Required property options added to data base
+- Price ranges now accept int8, instead of int4 (64 bit vs 32 bit) allowing for larger numbers, now well exceeding the range of the plausible
+- Custom properties can now be marked as mandatory and/or single select
+- Changed some functionality in the backend so it can handle a some category types as category or text when exporting
+
+### FIXED
+
+- Addressed an issue where the legend of a dashboard graph would go out of bounds in cases with large numbers of projects
+- More user access issues fixed, the back end enforces more now
+- Fixed an error generating an error pop up on log out
+- Addressed an issue where selection would not work cross page (max page length being 100 and projects to be selected able to exceed this number)
+- Fixed an issue where amounts would not be displayed in the projects table
+- Fixed a recurring bug where previously deleted categories for properties were nonetheless displayed in selectors
+
+## DIWI RELEASE 1.7.1
+
+### FIXED
+
+- Fixed a bug where not all users were fetched in the custom dashboards wizard
+
+## DIWI RELEASE 1.7.0
+
+### ADDED
+
+- Policy goals have been implemented. They are editable and viewable through the dashboard section
+- Subplots feature is now implemented on the map
+- piecharts for purchase and rent stats and a table for planning have been added to the dashboard
+
+### CHANGED
+
+- Houseblocks can now have a value of 0
+- Export page is hidden in the menu, until it is ready for release
+- The controls for plot selection have been slightly altered to accomodate the new features better
+
+### FIXED
+
+- Fixed an issue where sorting and filtering on wijk / buurt did not work
+- There was an issue where UserPlus changes to plots were not persisted
+- Addressed an issue where the new policy goals displays would not show the correct percentages
+- Fixed an issue where the dashboard pie charts would display demolition in positive numbers
+- Addressed situations where certain user types had access to pages that should not be accessible and/or hidden
+- fixed an issue in the pdf where an odd number of items would cause the goals to look wonky
+- Addressed display issues in graphs, ranging from bar widths to data used for display
+
 ## DIWI RELEASE 1.6.3
 
 ### FIXED

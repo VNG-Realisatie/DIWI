@@ -118,6 +118,7 @@ export const CustomDashboardForm = ({
                     setUserGroup={setUserGroups}
                     mandatory={true}
                     errorText=""
+                    projectOwnersOnly={false}
                 />
             </Grid>
             <Grid item xs={3}>

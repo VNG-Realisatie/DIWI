@@ -1,20 +1,5 @@
 import React, { ChangeEvent, useCallback, useContext, useEffect, useState } from "react";
-import {
-    Alert,
-    Button,
-    Checkbox,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    FormControlLabel,
-    InputLabel,
-    MenuItem,
-    Select,
-    Stack,
-    TextField,
-    Tooltip,
-} from "@mui/material";
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, InputLabel, MenuItem, Select, Stack, TextField, Tooltip } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
 import { useTranslation } from "react-i18next";
 import AlertContext from "../../context/AlertContext";
@@ -29,9 +14,10 @@ import {
 } from "../../api/adminSettingServices";
 import { ObjectType, PropertyType } from "../../types/enums";
 import { objectType } from "../../types/enums";
-import { propertyType } from "../../types/enums";
 import { CategoryCreateOption } from "./CategoryCreateOption";
 import { getDuplicatedPropertyInfo } from "../../utils/getDuplicatedPropertyInfo";
+import PropertyTypeSelect from "./PropertyTypeSelect";
+import PropertyCheckboxGroup from "./PropertyCheckboxGroup";
 
 interface Props {
     openDialog: boolean;
@@ -203,21 +189,7 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
                             <InfoIcon sx={{ fontSize: "20px", color: "#394048" }} />
                         </Tooltip>
                     </Stack>
-                    <Select
-                        size="small"
-                        disabled={!!id}
-                        value={selectedPropertyType}
-                        labelId="propertyType"
-                        onChange={(e) => setSelectedPropertyType(e.target.value as PropertyType)}
-                    >
-                        {propertyType
-                            .filter((p) => p !== "RANGE_CATEGORY")
-                            .map((property) => (
-                                <MenuItem key={property} value={property}>
-                                    {t(`admin.settings.propertyType.${property}`)}
-                                </MenuItem>
-                            ))}
-                    </Select>
+                    <PropertyTypeSelect selectedPropertyType={selectedPropertyType} setSelectedPropertyType={setSelectedPropertyType} disabled={!!id} />
 
                     {selectedPropertyType === "CATEGORY" && <CategoryCreateOption categoryValue={categories} setCategoryValue={setCategories} />}
                     {selectedPropertyType === "ORDINAL" && (
@@ -230,16 +202,13 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
                             ordered={true}
                         />
                     )}
-                    <FormControlLabel
-                        control={<Checkbox checked={mandatory} onChange={(e) => setMandatory(e.target.checked)} />}
-                        label={t("admin.settings.mandatory")}
+                    <PropertyCheckboxGroup
+                        mandatory={mandatory}
+                        setMandatory={setMandatory}
+                        singleSelect={singleSelect}
+                        setSingleSelect={setSingleSelect}
+                        selectedPropertyType={selectedPropertyType}
                     />
-                    {selectedPropertyType === "CATEGORY" && (
-                        <FormControlLabel
-                            control={<Checkbox checked={singleSelect} onChange={(e) => setSingleSelect(e.target.checked)} />}
-                            label={t("admin.settings.singleSelect")}
-                        />
-                    )}
                     {propertyDuplicationInfo?.duplicatedStatus && (
                         <Alert severity="error">{propertyDuplicationInfo?.duplicatedName + " " + t("admin.settings.duplicatedOption")}</Alert>
                     )}

@@ -6,8 +6,9 @@ import { t } from "i18next";
 import { useContext, useEffect, useState } from "react";
 import RangeNumberInput from "../project/inputs/RangeNumberInput";
 import { getDuplicatedPropertyInfo } from "../../utils/getDuplicatedPropertyInfo";
-import { MAX_INT_LARGER } from "../../utils/houseblocks/houseBlocksFunctions";
+
 import UserContext from "../../context/UserContext";
+import { MAX_INT_IN_DOUBLE } from "../../widgets/constants";
 
 type RangeNumber = {
     value: number | null;
@@ -141,7 +142,7 @@ const PriceCategoriesDialog = ({ open, setOpen, id, propertyName, setRangeCatego
                     mandatory={true}
                     title={t("admin.priceCategories.amount")}
                     errorText={t("admin.priceCategories.amountError")}
-                    maxValue={MAX_INT_LARGER}
+                    maxValue={MAX_INT_IN_DOUBLE}
                 />
             </DialogContent>
             <DialogActions>

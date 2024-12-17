@@ -1,119 +1,144 @@
-import { useState, useEffect, useContext } from "react";
-import { Grid, Button, Box, Typography } from "@mui/material";
-import { downloadExportData, ExportData, exportProjects, getExportData } from "../api/exportServices";
-import ExportTable from "../components/export/ExportTable";
+import { useState, useContext } from "react";
+import { Grid, Box, Typography, Alert, Stack, Accordion, AccordionSummary, AccordionDetails, List } from "@mui/material";
+import { downloadExportData, exportProjects } from "../api/exportServices";
 import { t } from "i18next";
 import { ProjectsTableView } from "../components/project/ProjectsTableView";
 import ActionNotAllowed from "./ActionNotAllowed";
-import AlertContext from "../context/AlertContext";
+import { useNavigate, useParams } from "react-router-dom";
+import { exchangeimportdata } from "../Paths";
 import UserContext from "../context/UserContext";
+import { ConfidentialityLevel } from "../types/enums";
+import { GridExpandMoreIcon } from "@mui/x-data-grid";
+import { PropertyListItem } from "../components/PropertyListItem";
 
+type DownloadError = {
+    cat1?: string;
+    cat2?: string;
+    code: string;
+    fieldName?: string;
+    houseblockId?: string;
+    message?: string;
+    priceValueMax?: number;
+    priceValueMin?: number;
+    projectId?: string;
+};
 const ExportWizard = () => {
-    const [step, setStep] = useState(1);
-    const [exportData, setExportData] = useState<ExportData[]>([]);
-    const [selectedExport, setSelectedExport] = useState<ExportData | null>(null);
     const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
+    const { id: selectedExportId } = useParams();
     const { allowedActions } = useContext(UserContext);
-    const { setAlert } = useContext(AlertContext);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const exportdata = await getExportData();
-            setExportData(exportdata);
-        };
-        fetchData();
-    }, []);
+    const navigate = useNavigate();
+    const [errors, setErrors] = useState<DownloadError[]>([]);
 
     if (!allowedActions.includes("VIEW_DATA_EXCHANGES")) {
         return <ActionNotAllowed errorMessage={t("admin.export.actionNotAllowed")} />;
     }
 
-    const handleNext = () => {
-        if (step === 1 && selectedExport) {
-            setStep(2);
-        }
-    };
-
     const handleBack = () => {
-        setStep(1);
+        navigate(exchangeimportdata.toPath());
     };
 
-    //this function doesnt do anything at the moment
+    //this function doesnt do anything at the moment, functionality not implemented
     const handleExportProjects = async () => {
-        if (!selectedExport) return;
+        if (!selectedExportId) return;
         try {
-            await exportProjects(selectedExport.id, selectedProjects);
+            await exportProjects(selectedExportId, selectedProjects);
             console.log("Export successful");
         } catch (error) {
             console.error("Export failed", error);
         }
     };
-    const handleProjectSelection = (projectId: string | null | string[]) => {
-        if (projectId === null) {
-            setSelectedProjects([]);
-        } else if (Array.isArray(projectId)) {
-            setSelectedProjects(projectId);
-        } else {
-            setSelectedProjects((prevSelected) =>
-                prevSelected.includes(projectId) ? prevSelected.filter((id) => id !== projectId) : [...prevSelected, projectId],
-            );
-        }
-    };
-
     const handleDownload = async () => {
-        if (!selectedExport) return;
+        if (!selectedExportId) return;
+
         try {
-            await downloadExportData(selectedExport.id);
+            const projectIds = selectedProjects;
+            const confidentialityLevels = ["PUBLIC", "EXTERNAL_GOVERNMENTAL"] as ConfidentialityLevel[];
+
+            const body = {
+                exportDate: new Date().toISOString(),
+                ...(projectIds.length > 0 ? { projectIds } : { confidentialityLevels }),
+            };
+
+            await downloadExportData(selectedExportId, body);
+            setErrors([]);
         } catch (error: unknown) {
-            if (error instanceof Error) setAlert(error.message, "warning");
+            if (Array.isArray(error)) {
+                setErrors(error);
+            } else {
+                setErrors([{ code: "generic_error" }]);
+            }
         }
     };
 
     return (
         <Box p={2}>
-            {step === 1 && (
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <Typography variant="h6">{t("admin.export.title.selectExport")}</Typography>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <ExportTable
-                            exportData={exportData}
-                            selectedExport={selectedExport}
-                            setSelectedExport={setSelectedExport}
-                            setExportData={setExportData}
-                        />
-                        <Box sx={{ display: "flex", justifyContent: "left" }}>
-                            <Button
-                                sx={{ width: "130px", my: 2, ml: "auto" }}
-                                variant="contained"
-                                color="primary"
-                                onClick={handleNext}
-                                disabled={!selectedExport}
-                            >
-                                {t("generic.nextStep")}
-                            </Button>
-                        </Box>
-                    </Grid>
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <Typography variant="h6">{t("admin.export.title.selectProject")}</Typography>
                 </Grid>
-            )}
-            {step === 2 && (
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <Typography variant="h6">{t("admin.export.title.selectProject")}</Typography>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <ProjectsTableView
-                            isExportPage={true}
-                            handleProjectSelection={handleProjectSelection}
-                            selectedProjects={selectedProjects}
-                            handleBack={handleBack}
-                            exportProjects={handleExportProjects}
-                            handleDownload={handleDownload}
-                        />
-                    </Grid>
+                <Grid item xs={12}>
+                    <ProjectsTableView
+                        isExportPage={true}
+                        setSelectedProjects={setSelectedProjects}
+                        selectedProjects={selectedProjects}
+                        handleBack={handleBack}
+                        exportProjects={handleExportProjects}
+                        handleDownload={handleDownload}
+                    />
+                    {errors.length > 0 && (
+                        <Alert severity="error" sx={{ "& .MuiAlert-message": { width: "100%" } }}>
+                            <Stack>
+                                {errors.map((error) => {
+                                    return (
+                                        <Accordion defaultExpanded>
+                                            <AccordionSummary
+                                                expandIcon={<GridExpandMoreIcon />}
+                                                sx={{
+                                                    backgroundColor: "lightgray",
+                                                }}
+                                            >
+                                                <Typography className="import-error">{t(`exchangeData.downloadErrors.${error.code}`)}</Typography>
+                                            </AccordionSummary>
+                                            <AccordionDetails>
+                                                <>
+                                                    <List
+                                                        dense
+                                                        sx={{
+                                                            listStyleType: "disc",
+                                                            pl: 1,
+                                                            "& .MuiListItem-root": {
+                                                                display: "list-item",
+                                                                padding: 0,
+                                                            },
+                                                        }}
+                                                    >
+                                                        <PropertyListItem label={t("exchangeDatae.downloadErrorProperties.category")} value={error.cat1} />
+                                                        <PropertyListItem label={t("exchangeData.downloadErrorProperties.category")} value={error.cat2} />
+                                                        <PropertyListItem label={t("exchangeData.downloadErrorProperties.fieldName")} value={error.fieldName} />
+                                                        <PropertyListItem
+                                                            label={t("exchangeData.downloadErrorProperties.houseblockId")}
+                                                            value={error.houseblockId}
+                                                        />
+                                                        <PropertyListItem
+                                                            label={t("exchangeData.downloadErrorProperties.priceValueMax")}
+                                                            value={error.priceValueMax}
+                                                        />
+                                                        <PropertyListItem
+                                                            label={t("exchangeData.downloadErrorProperties.priceValueMin")}
+                                                            value={error.priceValueMin}
+                                                        />
+                                                        <PropertyListItem label={t("exchangeData.downloadErrorProperties.projectId")} value={error.projectId} />
+                                                    </List>
+                                                </>
+                                            </AccordionDetails>
+                                        </Accordion>
+                                    );
+                                })}
+                            </Stack>
+                        </Alert>
+                    )}
                 </Grid>
-            )}
+            </Grid>
         </Box>
     );
 };

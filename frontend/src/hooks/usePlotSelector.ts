@@ -65,6 +65,7 @@ const usePlotSelector = (id: string) => {
 
     const [map, setMap] = useState<Map>();
     const [selectedPlotLayerSource, setSelectedPlotLayerSource] = useState<VectorSource>();
+    const [projectLayerSource, setProjectLayerSource] = useState<VectorSource>();
     const [multiselectBoxLayerSource, setMultiselectBoxLayerSource] = useState<VectorSource>();
     const [cutLayerSource, setcutLayerSource] = useState<VectorSource>();
 
@@ -81,12 +82,15 @@ const usePlotSelector = (id: string) => {
     const { setAlert } = useAlert();
     const { t } = useTranslation();
 
-    const selectedFeatureStyle = useCallback((): Style => {
-        const fillOpacityHex = "99";
-        const borderOpacityHex = "DD";
-        const red = "#ff4122";
+    const selectedFeatureStyle = useCallback((hasSubplot?: boolean): Style => {
+        const fillOpacityHex = hasSubplot ? "00" : "99";
+        const borderOpacityHex = hasSubplot ? "00" : "DD";
+        const red = hasSubplot ? "#FFF" : "#ff4122";
+
         return new Style({
-            fill: new Fill({ color: (selectedProject?.projectColor ? selectedProject.projectColor : red) + fillOpacityHex }),
+            fill: new Fill({
+                color: (selectedProject?.projectColor ?? red) + fillOpacityHex
+            }),
             stroke: new Stroke({
                 color: (selectedProject?.projectColor ?? red) + borderOpacityHex,
                 width: 5,
@@ -388,6 +392,9 @@ useEffect(
                 });
 
                 cutLayerSource?.addFeature(subselectionFeature);
+                geojson.forEach((feature) => {
+                    feature.setStyle(selectedFeatureStyle(true));
+                });
             }
 
             selectedPlotLayerSource.addFeatures(geojson);
@@ -400,15 +407,50 @@ useEffect(
                 setExtent(mapBoundsToExtent(mapBounds));
             }
         }
-    }, [extent, originalSelectedPlots, selectedPlotLayerSource, selectedPlots, mapBounds, cutLayerSource]);
+    }, [extent, originalSelectedPlots, selectedPlotLayerSource, selectedPlots, mapBounds, cutLayerSource, selectedFeatureStyle]);
 
     useEffect(
         function zoomToExtent() {
             if (extent) {
-                map?.getView().fit(extent);
+                map?.getView().fit(extent, { padding: [20, 20, 20, 20] });
             }
         },
         [extent, map],
+    );
+
+    useEffect(
+        function updateProjectGeometry() {
+            if (!projectLayerSource || !map) return;
+
+            projectLayerSource.clear();
+
+            if (selectedProject?.geometry) {
+                try {
+                    const geometry = JSON.parse(selectedProject.geometry);
+
+                    const geojsonFeature = {
+                        type: "Feature",
+                        crs: geometry.crs,
+                        geometry,
+                        properties: {},
+                    };
+
+                    const feature = new GeoJSON().readFeature(geojsonFeature, {
+                        featureProjection: map.getView().getProjection(),
+                    });
+
+                    projectLayerSource.addFeature(feature);
+
+                    if (!projectLayerSource.isEmpty()) {
+                        const extent = projectLayerSource.getExtent();
+                        setExtent(extent);
+                    }
+                } catch (error) {
+                    console.error("Error processing geometry:", error);
+                }
+            }
+        },
+        [projectLayerSource, selectedProject?.geometry, map, setExtent],
     );
 
     useEffect(() => {
@@ -501,6 +543,11 @@ useEffect(
             pixelTolerance: snapTolerance,
         });
 
+        const snapInteractionProjectGeometry = new Snap({
+            source: projectLayerSource,
+            pixelTolerance: snapTolerance,
+        });
+
         const handleEnter = (event: KeyboardEvent) => {
             if (event.key === "Enter") {
                 if (currentFeature) {
@@ -532,15 +579,17 @@ useEffect(
         map.addInteraction(draw);
         map.addInteraction(snapInteraction);
         map.addInteraction(snapInteractionSubPlot);
+        map.addInteraction(snapInteractionProjectGeometry);
 
         return () => {
             map.removeInteraction(draw);
             map.removeInteraction(snapInteraction);
             map.removeInteraction(snapInteractionSubPlot);
+            map.removeInteraction(snapInteractionProjectGeometry);
             document.removeEventListener("keydown", handleEnter);
             document.removeEventListener("keydown", handleEscape);
         };
-    }, [map, selectionMode, handleCut, selectedPlotLayerSource, cutLayerSource, getEditPermission]);
+    }, [map, selectionMode, handleCut, selectedPlotLayerSource, cutLayerSource, getEditPermission, projectLayerSource]);
 
     useEffect(() => {
         if (selectionMode !== Buttons.DELETE || !map || !getEditPermission()) return;
@@ -622,8 +671,20 @@ useEffect(
             });
 
             const selectedPlotSource = new VectorSource();
-            const selectedPlotLayer = new VectorLayer({ source: selectedPlotSource, style: selectedFeatureStyle as StyleFunction });
+            const selectedPlotLayer = new VectorLayer({ source: selectedPlotSource, style: selectedFeatureStyle(false) as unknown as StyleFunction });
             setSelectedPlotLayerSource(selectedPlotSource);
+
+            const projectGeometrySource = new VectorSource();
+
+            const projectGeometryLayer = new VectorLayer({
+                source: projectGeometrySource,
+                style: new Style({
+                    fill: new Fill({ color: "rgba(0, 0, 0, 0.2)" }),
+                    stroke: new Stroke({ color: "#000000", width: 5 }),
+                }),
+            });
+            setProjectLayerSource(projectGeometrySource);
+
 
             const multiselectSource = new VectorSource();
             const multiselectLayer = new VectorLayer({
@@ -638,16 +699,13 @@ useEffect(
             const cutSource = new VectorSource();
             const cutLayer = new VectorLayer({
                 source: cutSource,
-                style: new Style({
-                    fill: new Fill({ color: colors.mapCutFillColor }),
-                    stroke: new Stroke({ color: colors.mapCutStrokeColor, width: 5 }),
-                }),
+                style: selectedFeatureStyle(false) as unknown as StyleFunction
             });
             setcutLayerSource(cutSource);
 
             const newMap = new Map({
                 target: id,
-                layers: [osmLayer, kadasterLayers, selectedPlotLayer, multiselectLayer, cutLayer],
+                layers: [osmLayer, kadasterLayers, selectedPlotLayer, projectGeometryLayer, multiselectLayer, cutLayer],
                 view: new View({
                     center: extentToCenter(mapBoundsToExtent(mapBounds)),
                     zoom: 12,

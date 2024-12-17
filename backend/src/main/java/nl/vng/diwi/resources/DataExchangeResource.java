@@ -25,6 +25,7 @@ import nl.vng.diwi.models.DataExchangeModel;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
+import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.security.UserActionConstants;
 import nl.vng.diwi.services.DataExchangeExportError;
@@ -100,10 +101,6 @@ public class DataExchangeResource {
     public DataExchangeModel updateDataExchange(@PathParam("id") UUID dataExchangeUuid, DataExchangeModel dataExchangeModel, @Context LoggedUser loggedUser)
         throws VngNotFoundException, VngBadRequestException {
 
-        //TODO: validate dataexchange
-        // - check that our options correspond to only one of theirs
-        // - check that all our options are used
-
         dataExchangeModel.setId(dataExchangeUuid);
         String validationError = dataExchangeModel.validateDxState();
         if (validationError != null) {
@@ -122,6 +119,8 @@ public class DataExchangeResource {
             throw new VngBadRequestException(validatePropertiesError);
         }
 
+        List<DataExchangeModel.ValidationError> validationErrors = dataExchangeModel.validateConfigurationComplete(propertyModels);
+
         if (dataExchangeModel.getApiKey() == null) {
             dataExchangeModel.setApiKey(oldModel.getApiKey());
         }
@@ -133,7 +132,9 @@ public class DataExchangeResource {
             repo.getSession().clear();
         }
 
-        return dataExchangeService.getDataExchangeModel(repo, dataExchangeUuid, false);
+        DataExchangeModel updatedModel = dataExchangeService.getDataExchangeModel(repo, dataExchangeUuid, false);
+        updatedModel.setValidationErrors(validationErrors);
+        return updatedModel;
     }
 
     @DELETE
@@ -148,16 +149,24 @@ public class DataExchangeResource {
         }
     }
 
-
     @POST
     @Path("/{id}/export")
     @RolesAllowed(UserActionConstants.EDIT_DATA_EXCHANGES)
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public void exportProjects(@PathParam("id") UUID dataExchangeUuid, DataExchangeExportModel dataExchangeExportModel, @Context LoggedUser loggedUser) {
+        throw new VngServerErrorException("Not implemented yet");
+    }
+
+    @POST
+    @Path("/{id}/download")
+    @RolesAllowed(UserActionConstants.EDIT_DATA_EXCHANGES)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public StreamingOutput exportProjects(@PathParam("id") UUID dataExchangeUuid, DataExchangeExportModel dataExchangeExportModel, @Context LoggedUser loggedUser)
+    public StreamingOutput downloadProjects(@PathParam("id") UUID dataExchangeUuid, DataExchangeExportModel dataExchangeExportModel, @Context LoggedUser loggedUser)
         throws VngNotFoundException, VngBadRequestException {
 
-        String validationError = dataExchangeExportModel.validate();
+        String validationError = dataExchangeExportModel.validate(configModel);
         if (validationError != null) {
             throw new VngBadRequestException(validationError);
         }

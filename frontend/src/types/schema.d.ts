@@ -52,6 +52,12 @@ export interface paths {
         put: operations["updateDataExchange"];
         delete: operations["deleteDataExchange"];
     };
+    "/rest/dataexchange/{id}/download": {
+        post: operations["downloadProjects"];
+    };
+    "/rest/dataexchange/{id}/export": {
+        post: operations["exportProjects"];
+    };
     "/rest/goals": {
         get: operations["getAllGoals"];
         post: operations["createGoal"];
@@ -207,6 +213,17 @@ export interface components {
         ConfigModel: {
             defaultMapBounds?: components["schemas"]["MapBounds"];
             municipalityName?: string;
+            regionName?: string;
+            provinceName?: string;
+            /** @enum {string} */
+            minimumExportConfidentiality?:
+                | "PRIVATE"
+                | "INTERNAL_CIVIL"
+                | "INTERNAL_MANAGEMENT"
+                | "INTERNAL_COUNCIL"
+                | "EXTERNAL_REGIONAL"
+                | "EXTERNAL_GOVERNMENTAL"
+                | "PUBLIC";
         };
         LocationModel: {
             /** Format: double */
@@ -279,6 +296,50 @@ export interface components {
             apiKey?: string;
             projectUrl?: string;
             projectDetailUrl?: string;
+            valid?: boolean;
+            properties?: components["schemas"]["DataExchangePropertyModel"][];
+            validationErrors?: components["schemas"]["ValidationError"][];
+        };
+        DataExchangeOptionModel: {
+            /** Format: uuid */
+            id?: string;
+            name?: string;
+            propertyCategoryValueIds?: string[];
+            propertyOrdinalValueIds?: string[];
+        };
+        DataExchangePropertyModel: {
+            /** Format: uuid */
+            id?: string;
+            name?: string;
+            /** Format: uuid */
+            customPropertyId?: string;
+            /** @enum {string} */
+            objectType?: "PROJECT" | "WONINGBLOK";
+            propertyTypes?: ("BOOLEAN" | "CATEGORY" | "ORDINAL" | "NUMERIC" | "TEXT" | "RANGE_CATEGORY")[];
+            mandatory?: boolean;
+            singleSelect?: boolean;
+            options?: components["schemas"]["DataExchangeOptionModel"][];
+        };
+        ValidationError: {
+            dxProperty?: string;
+            diwiOption?: string;
+            error?: string;
+            errorCode?: string;
+        };
+        DataExchangeExportModel: {
+            /** Format: date */
+            exportDate?: string;
+            projectIds?: string[];
+            confidentialityLevels?: (
+                | "PRIVATE"
+                | "INTERNAL_CIVIL"
+                | "INTERNAL_MANAGEMENT"
+                | "INTERNAL_COUNCIL"
+                | "EXTERNAL_REGIONAL"
+                | "EXTERNAL_GOVERNMENTAL"
+                | "PUBLIC"
+            )[];
+            confidentialityLevelsAsStrings?: string[];
         };
         GeographyOptionModel: {
             brkGemeenteCode?: string;
@@ -329,7 +390,7 @@ export interface components {
         PlanOwnershipModel: {
             /** @enum {string} */
             type?: "KOOPWONING" | "HUURWONING_PARTICULIERE_VERHUURDER" | "HUURWONING_WONINGCORPORATIE";
-            value?: components["schemas"]["SingleValueOrRangeModelInteger"];
+            value?: components["schemas"]["SingleValueOrRangeModelLong"];
             rangeCategoryOption?: components["schemas"]["SelectModel"];
         };
         SelectModel: {
@@ -337,12 +398,12 @@ export interface components {
             id: string;
             name: string;
         };
-        SingleValueOrRangeModelInteger: {
-            /** Format: int32 */
+        SingleValueOrRangeModelLong: {
+            /** Format: int64 */
             value?: number;
-            /** Format: int32 */
+            /** Format: int64 */
             min?: number;
-            /** Format: int32 */
+            /** Format: int64 */
             max?: number;
         };
         SingleValueOrRangeModelSelectModel: {
@@ -403,10 +464,10 @@ export interface components {
             type?: "KOOPWONING" | "HUURWONING_PARTICULIERE_VERHUURDER" | "HUURWONING_WONINGCORPORATIE";
             /** Format: int32 */
             amount?: number;
-            value?: components["schemas"]["SingleValueOrRangeModelInteger"];
+            value?: components["schemas"]["SingleValueOrRangeModelLong"];
             /** Format: uuid */
             valueCategoryId?: string;
-            rentalValue?: components["schemas"]["SingleValueOrRangeModelInteger"];
+            rentalValue?: components["schemas"]["SingleValueOrRangeModelLong"];
             /** Format: uuid */
             rentalValueCategoryId?: string;
         };
@@ -466,20 +527,6 @@ export interface components {
             projectOwners: components["schemas"]["UserGroupModel"][];
             /** Format: uuid */
             projectId: string;
-        };
-        UserGroupModel: {
-            /** Format: uuid */
-            uuid: string;
-            name: string;
-            users?: components["schemas"]["UserGroupUserModel"][];
-        };
-        UserGroupUserModel: {
-            /** Format: uuid */
-            uuid?: string;
-            id?: string;
-            firstName?: string;
-            lastName?: string;
-            initials?: string;
         };
         ProjectCreateSnapshotModel: {
             /** Format: date */
@@ -1110,6 +1157,46 @@ export interface operations {
             };
         };
     };
+    downloadProjects: {
+        parameters: {
+            path: {
+                id: string;
+            };
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["DataExchangeExportModel"];
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/octet-stream": unknown;
+                };
+            };
+        };
+    };
+    exportProjects: {
+        parameters: {
+            path: {
+                id: string;
+            };
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["DataExchangeExportModel"];
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
     getAllGoals: {
         responses: {
             /** @description default response */
@@ -1682,6 +1769,7 @@ export interface operations {
         parameters: {
             query?: {
                 includeSingleUser?: boolean;
+                projectOwners?: boolean;
             };
         };
         responses: {

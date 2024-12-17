@@ -3754,7 +3754,7 @@ CREATE TABLE diwi_testset.software_module_rights (
 
 CREATE TABLE diwi_testset."user" (
     id uuid NOT NULL,
-    system_user boolean DEFAULT false NOT NULL
+    "system_user" boolean DEFAULT false NOT NULL
 );
 
 --

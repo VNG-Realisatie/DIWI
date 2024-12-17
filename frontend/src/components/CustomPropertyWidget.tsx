@@ -9,10 +9,11 @@ type Props = {
     customValue: CustomPropertyValue | undefined;
     customDefinition: Property;
     setCustomValue: (newValue: CustomPropertyValue) => void;
+    isExportPage?: boolean;
 };
 
-function hasError(customValue: CustomPropertyValue | undefined, readOnly: boolean, mandatory: boolean): boolean {
-    if (readOnly || !mandatory) {
+function hasError(customValue: CustomPropertyValue | undefined, readOnly: boolean, mandatory: boolean, isExportPage: boolean): boolean {
+    if (readOnly || !mandatory || isExportPage) {
         return false;
     }
     const value = getCustomValue(customValue);
@@ -23,7 +24,7 @@ function hasError(customValue: CustomPropertyValue | undefined, readOnly: boolea
     return false;
 }
 
-export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, customDefinition }: Props) => {
+export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, customDefinition, isExportPage = false }: Props) => {
     const { t } = useTranslation();
     const trueishLabel = t("generic.true");
     const falsyLabel = t("generic.false");
@@ -34,7 +35,7 @@ export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, cu
         return value === true ? trueishLabel : falsyLabel;
     }
 
-    const error = hasError(customValue, readOnly, mandatory);
+    const error = hasError(customValue, readOnly, mandatory, isExportPage);
 
     if (customDefinition.propertyType === "BOOLEAN") {
         return (
@@ -71,7 +72,7 @@ export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, cu
                                 backgroundColor: "#0000", // set 0 opacity when disabled
                             },
                         }}
-                        options={customDefinition.categories || []}
+                        options={customDefinition.categories?.filter((category) => !category.disabled) || []}
                         getOptionLabel={(option) => option?.name || ""}
                         value={values ? values[0] : null}
                         onChange={(_, newValue) =>
@@ -90,7 +91,7 @@ export const CustomPropertyWidget = ({ readOnly, customValue, setCustomValue, cu
                                 backgroundColor: "#0000", // set 0 opacity when disabled
                             },
                         }}
-                        options={customDefinition.categories || []}
+                        options={customDefinition.categories?.filter((category) => !category.disabled) || []}
                         getOptionLabel={(option) => option?.name || ""}
                         value={values ? values : []}
                         multiple

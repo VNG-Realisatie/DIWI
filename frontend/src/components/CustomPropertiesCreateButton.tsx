@@ -1,11 +1,14 @@
-import { Button } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { ImportErrorType } from "./ImportErrors";
 import { addCustomProperty, getCustomProperties, getCustomProperty, Property, updateCustomProperty } from "../api/adminSettingServices";
 import { useContext, useEffect, useState } from "react";
 import AlertContext from "../context/AlertContext";
 import { t } from "i18next";
 import RangeNumberInput from "./project/inputs/RangeNumberInput";
-import { MAX_INT_LARGER } from "../utils/houseblocks/houseBlocksFunctions";
+import { MAX_INT_IN_DOUBLE } from "../widgets/constants";
+import { PropertyType } from "../types/enums";
+import PropertyTypeSelect from "./admin/PropertyTypeSelect";
+import PropertyCheckboxGroup from "./admin/PropertyCheckboxGroup";
 
 type RangeNumber = {
     value: number | null;
@@ -50,6 +53,10 @@ export default function CustomPropertiesCreateButton({ error, isButtonDisabledMa
 
     const [rangeValue, setRangeValue] = useState<RangeNumber>({ value: 0, min: null, max: null });
     const [isRangeValid, setIsRangeValid] = useState<boolean>(true);
+
+    const [selectedPropertyType, setSelectedPropertyType] = useState<PropertyType>("TEXT" as PropertyType);
+    const [mandatory, setMandatory] = useState(false);
+    const [singleSelect, setSingleSelect] = useState<boolean | undefined>(false);
 
     const priceRangeRentId = customProperties.find((property) => property.name === "priceRangeRent")?.id;
     const priceRangeBuyId = customProperties.find((property) => property.name === "priceRangeBuy")?.id;
@@ -100,7 +107,11 @@ export default function CustomPropertiesCreateButton({ error, isButtonDisabledMa
     };
 
     const doesCategoryExist = (property?: Property, value?: string): boolean => {
-        return property?.categories?.some((category) => category.name === value) || property?.ranges?.some((category) => category.name === value) || false;
+        return (
+            property?.categories?.some((category) => category.name === value && !category.disabled) ||
+            property?.ranges?.some((category) => category.name === value && !category.disabled) ||
+            false
+        );
     };
 
     const { duplicationCheckProperty, id } = getPropertyByErrorCode(error, customProperties, priceRangeRentId, priceRangeBuyId);
@@ -126,16 +137,16 @@ export default function CustomPropertiesCreateButton({ error, isButtonDisabledMa
 
     const errorMappings: ErrorMappings = {
         unknown_houseblock_numeric_property: {
-            body: { ...property, name: error.value || "", objectType: "WONINGBLOK", propertyType: "NUMERIC" },
+            body: { ...property, name: error.value || "", objectType: "WONINGBLOK", propertyType: "NUMERIC", mandatory, singleSelect },
         },
         unknown_houseblock_property: {
-            body: { ...property, name: error.value || "", objectType: "WONINGBLOK", propertyType: "TEXT" },
+            body: { ...property, name: error.value || "", objectType: "WONINGBLOK", propertyType: selectedPropertyType, mandatory, singleSelect },
         },
         unknown_project_property: {
-            body: { ...property, name: error.value || "", objectType: "PROJECT", propertyType: "TEXT" },
+            body: { ...property, name: error.value || "", objectType: "PROJECT", propertyType: selectedPropertyType, mandatory, singleSelect },
         },
         unknown_project_category_property: {
-            body: { ...property, name: error.value || "", objectType: "PROJECT", propertyType: "CATEGORY", categories: [], singleSelect: false },
+            body: { ...property, name: error.value || "", objectType: "PROJECT", propertyType: "CATEGORY", categories: [], mandatory, singleSelect },
         },
         unknown_price_rent_range_category: {
             id: priceRangeRentCategories[0]?.id,
@@ -212,15 +223,7 @@ export default function CustomPropertiesCreateButton({ error, isButtonDisabledMa
     const shouldRenderButton = Object.keys(errorMappings).includes(error.errorCode);
 
     return shouldRenderButton ? (
-        <>
-            <Button
-                variant="contained"
-                color="primary"
-                onClick={handleClick}
-                disabled={isButtonDisabled || isButtonDisabledMap[`${id}-${error.value}`] || !isRangeValid}
-            >
-                {mapping.id ? t("import.addCustomProperty") : t("import.addCategory")}
-            </Button>
+        <Box sx={{ width: "20%", display: "flex", flexDirection: "column", gap: "5px" }}>
             {(error.errorCode === "unknown_price_buy_range_category" || error.errorCode === "unknown_price_rent_range_category") && (
                 <RangeNumberInput
                     isMonetary={true}
@@ -231,9 +234,37 @@ export default function CustomPropertiesCreateButton({ error, isButtonDisabledMa
                     mandatory={true}
                     title={t("admin.priceCategories.amount")}
                     errorText={t("admin.priceCategories.amountError")}
-                    maxValue={MAX_INT_LARGER}
+                    maxValue={MAX_INT_IN_DOUBLE}
                 />
             )}
-        </>
+            {(error.errorCode === "unknown_houseblock_property" ||
+                error.errorCode === "unknown_project_property" ||
+                error.errorCode === "unknown_houseblock_numeric_property" ||
+                error.errorCode === "unknown_project_category_property") && (
+                <>
+                    <PropertyTypeSelect
+                        selectedPropertyType={selectedPropertyType}
+                        setSelectedPropertyType={setSelectedPropertyType}
+                        disabled={false}
+                        error={error.errorCode}
+                    />
+                    <PropertyCheckboxGroup
+                        mandatory={mandatory}
+                        setMandatory={setMandatory}
+                        singleSelect={singleSelect}
+                        setSingleSelect={setSingleSelect}
+                        selectedPropertyType={selectedPropertyType}
+                    />
+                </>
+            )}
+            <Button
+                variant="contained"
+                color="primary"
+                onClick={handleClick}
+                disabled={isButtonDisabled || isButtonDisabledMap[`${id}-${error.value}`] || !isRangeValid}
+            >
+                {mapping.id ? t("import.addOption") : t("import.addCustomProperty")}
+            </Button>
+        </Box>
     ) : null;
 }
