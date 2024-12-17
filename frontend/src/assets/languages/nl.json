@@ -56,7 +56,7 @@
         "row": "rij",
         "column": "kolom",
         "value": "waarde",
-        "houseblockName": "huizenblok",
+        "houseblockName": "huisblok",
         "propertyName": "eigenschap",
         "identificationNumber": "identificatie code",
         "customPropertyId": "maatwerk eigenschap id"
