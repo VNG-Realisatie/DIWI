@@ -5,6 +5,9 @@ import lombok.Setter;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
 
+import org.apache.commons.lang3.NotImplementedException;
+import org.hibernate.Session;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
@@ -21,4 +24,11 @@ public class ProjectDurationChangelog extends MilestoneChangeDataSuperclass {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "project_id")
     private Project project;
+
+    @Override
+    public Object getCopyWithoutMilestones(Session session) {
+        var copy = new ProjectDurationChangelog();
+        copy.setProject(project);
+        return copy;
+    }
 }

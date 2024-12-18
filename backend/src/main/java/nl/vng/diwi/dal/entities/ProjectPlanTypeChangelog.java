@@ -2,6 +2,8 @@ package nl.vng.diwi.dal.entities;
 
 import java.util.List;
 
+import org.hibernate.Session;
+
 import lombok.Getter;
 import lombok.Setter;
 import nl.vng.diwi.dal.GenericRepository;
@@ -27,4 +29,12 @@ public class ProjectPlanTypeChangelog extends MilestoneChangeDataSuperclass {
     @JsonIgnoreProperties("planTypeChangelog")
     @OneToMany(mappedBy="planTypeChangelog", fetch = FetchType.EAGER)
     private List<ProjectPlanTypeChangelogValue> value;
+
+    @Override
+    public Object getCopyWithoutMilestones(Session session) {
+        var copy = new ProjectPlanTypeChangelog();
+        copy.setProject(project);
+        copy.setValue(value);
+        return copy;
+    }
 }

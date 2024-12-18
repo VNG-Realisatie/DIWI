@@ -386,9 +386,9 @@ public class HouseblockService {
         }
     }
 
-    private void updateChangelogDuration(VngRepository repo, HouseblockMilestoneChangeDataSuperclass activeChangelog, Milestone newStartMilestone, Milestone newEndMilestone,
+    private void updateChangelogDuration(VngRepository repo, MilestoneChangeDataSuperclass activeChangelog, Milestone newStartMilestone, Milestone newEndMilestone,
                                                 User userReference, ZonedDateTime now) {
-        var newChangelog = (HouseblockMilestoneChangeDataSuperclass) activeChangelog.getShallowCopy();
+        var newChangelog = (MilestoneChangeDataSuperclass) activeChangelog.getCopyWithoutMilestones(repo.getSession());
         newChangelog.setStartMilestone(newStartMilestone);
         newChangelog.setEndMilestone(newEndMilestone);
         newChangelog.setCreateUser(userReference);
@@ -443,7 +443,7 @@ public class HouseblockService {
 
         LocalDate newDeliveryDate = new MilestoneModel(newEndMilestone).getDate();
 
-        var newChangelog = (HouseblockDeliveryDateChangelog) changelog.getShallowCopy();
+        var newChangelog = (HouseblockDeliveryDateChangelog) changelog.getCopyWithoutMilestones(repo.getSession());
         newChangelog.setLatestDeliveryDate(newDeliveryDate);
         newChangelog.setEarliestDeliveryDate(newDeliveryDate);
         newChangelog.setChangeStartDate(ZonedDateTime.now());
@@ -454,7 +454,7 @@ public class HouseblockService {
             Milestone newMilestone = projectService.getOrCreateMilestoneForProject(repo, project, updateDate, loggedInUserUuid);
             newChangelog.setStartMilestone(newMilestone);
 
-            var oldChangelogV2 = (HouseblockDeliveryDateChangelog) changelog.getShallowCopy();
+            var oldChangelogV2 = (HouseblockDeliveryDateChangelog) changelog.getCopyWithoutMilestones(repo.getSession());
             oldChangelogV2.setChangeStartDate(ZonedDateTime.now());
             oldChangelogV2.setCreateUser(repo.getReferenceById(User.class, loggedInUserUuid));
             oldChangelogV2.setEndMilestone(newMilestone);

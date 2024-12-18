@@ -16,10 +16,14 @@ import nl.vng.diwi.dal.entities.UserGroupToProject;
 import nl.vng.diwi.dal.entities.UserState;
 import nl.vng.diwi.dal.entities.UserToUserGroup;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
+import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
+import nl.vng.diwi.models.DatedDataModel;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
+import nl.vng.diwi.models.LocationModel;
 import nl.vng.diwi.models.MilestoneModel;
 import nl.vng.diwi.models.ProjectSnapshotModel;
+import nl.vng.diwi.models.ProjectTimelineModel;
 import nl.vng.diwi.models.UserGroupModel;
 import nl.vng.diwi.models.UserGroupUserModel;
 import nl.vng.diwi.models.UserModel;
@@ -46,8 +50,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.LocalDate;
@@ -256,7 +264,7 @@ public class ProjectsResourceTest {
         LocalDate endDate = today.plusDays(10);
 
         // Create an end date earlier than today so it will be before the milestones we end up creating
-        LocalDate earlierEndDate = today.minusDays(5);
+        LocalDate newEndDate = today.minusDays(5);
 
         // Some set-up to get the users matching
         UserGroupModel owner1 = new UserGroupModel(userGroup);
@@ -282,43 +290,39 @@ public class ProjectsResourceTest {
 
         ProjectMinimalSnapshotModel createdProject = projectResource.createProject(loggedUser, originalProjectModel);
         repo.getSession().clear();
+        UUID projectId = createdProject.getProjectId();
 
         // Create a block
         var originalBlockModel = new HouseblockSnapshotModel();
         originalBlockModel.setStartDate(startDate);
         originalBlockModel.setEndDate(endDate);
         originalBlockModel.setHouseblockName("changeEndDate block");
-        originalBlockModel.setProjectId(createdProject.getProjectId());
+        originalBlockModel.setProjectId(projectId);
 
         var createdBlock = blockResource.createHouseblock(loggedUser, originalBlockModel);
         repo.getSession().clear();
 
         // Create model and change everything except the start date, end date and the id to create a lot of milestones on the current day
-        // var updateProjectModel = new ProjectSnapshotModel();
+        var updateProjectModel = jsonCopy(originalProjectModel, ProjectSnapshotModel.class);
+        updateProjectModel.setProjectId(projectId);
 
-        ProjectSnapshotModel updateProjectModel = objectMapper
-                .readValue(objectMapper.writeValueAsString(originalProjectModel), ProjectSnapshotModel.class);
-        updateProjectModel.setProjectId(createdProject.getProjectId());
-
-        // updateProjectModel.setStartDate(originalProjectModel.getStartDate());
-        // updateProjectModel.setEndDate(originalProjectModel.getEndDate());
         updateProjectModel.setProjectOwners(originalProjectModel.getProjectOwners());
 
-        if (false) {
-            // Change the following values to create new milestones on the current date
-            updateProjectModel.setProjectName("new name");
-            updateProjectModel.setProjectColor("#123456");
-            updateProjectModel.setConfidentialityLevel(Confidentiality.PUBLIC);
-            updateProjectModel.setProjectPhase(ProjectPhase._6_REALIZATION);
-            projectResource.updateProjectSnapshot(loggedUser, updateProjectModel);
-            repo.getSession().clear();
-        }
-        // Set the end date to a date before today so it will conflict with the milestones created by the changes above
-        updateProjectModel.setEndDate(earlierEndDate);
+        // Change the following values from their original values to create new milestones on the current date
+        updateProjectModel.setProjectName("new name");
+        updateProjectModel.setProjectColor("#123456");
+        updateProjectModel.setConfidentialityLevel(Confidentiality.PUBLIC);
+        updateProjectModel.setProjectPhase(ProjectPhase._6_REALIZATION);
+        updateProjectModel.setPlanningPlanStatus(List.of(PlanStatus._4B_NIET_OPGENOMEN_IN_VISIE));
         projectResource.updateProjectSnapshot(loggedUser, updateProjectModel);
         repo.getSession().clear();
 
-        assertThat(projectResource.getCurrentProjectSnapshot(context, createdProject.getProjectId()))
+        // Set the end date to a date before today so it will conflict with the milestones created by the changes above
+        updateProjectModel.setEndDate(newEndDate);
+        projectResource.updateProjectSnapshot(loggedUser, updateProjectModel);
+        repo.getSession().clear();
+
+        assertThat(projectResource.getCurrentProjectSnapshot(context, projectId))
                 .usingRecursiveComparison(RecursiveComparisonConfiguration.builder()
                         .withIgnoredFields("projectStateId", "projectOwners.users.userGroupUuid", "projectOwners.users.uuid")
                         .build())
@@ -327,10 +331,35 @@ public class ProjectsResourceTest {
 
         // The end date of the houseblock model should have been changed as well.
         HouseblockSnapshotModel expectedHouseblockModel = originalBlockModel.toBuilder()
-                .endDate(earlierEndDate)
+                .endDate(newEndDate)
                 .build();
         assertThat(blockResource.getCurrentHouseblockSnapshot(createdBlock.getHouseblockId()))
                 .isEqualTo(expectedHouseblockModel);
+
+        var expectedTimeline = new ProjectTimelineModel();
+        expectedTimeline.setConfidentialityLevel(Confidentiality.PUBLIC);
+        expectedTimeline.setEndDate(newEndDate);
+        expectedTimeline.setLocation(new LocationModel());
+        expectedTimeline
+                .setPlanningPlanStatus(List.of(new DatedDataModel<List<PlanStatus>>(List.of(PlanStatus._4B_NIET_OPGENOMEN_IN_VISIE), startDate, newEndDate)));
+        expectedTimeline.setProjectColor("#123456");
+        expectedTimeline.setProjectId(projectId);
+        expectedTimeline.setProjectName(List.of(new DatedDataModel<String>("new name", startDate, newEndDate)));
+        expectedTimeline.setProjectOwners(owners);
+        expectedTimeline.setProjectPhase(List.of(new DatedDataModel<ProjectPhase>(ProjectPhase._6_REALIZATION, startDate, newEndDate)));
+        expectedTimeline.setStartDate(startDate);
+
+        var actualTimeline = projectResource.getCurrentProjectTimeline(projectId);
+        assertThat(actualTimeline)
+                .usingRecursiveComparison(RecursiveComparisonConfiguration.builder()
+                        .withIgnoredFields("projectStateId", "projectOwners.users.userGroupUuid", "projectOwners.users.uuid")
+                        .build())
+                .isEqualTo(expectedTimeline);
+    }
+
+    private <T> T jsonCopy(Object original, Class<T> targetType) throws JsonProcessingException, JsonMappingException {
+        return objectMapper
+                .readValue(objectMapper.writeValueAsString(original), targetType);
     }
 
     private UserState persistUserAndUserGroup(VngRepository repo, User user, UserGroup userGroup) {

@@ -2,6 +2,8 @@ package nl.vng.diwi.dal.entities;
 
 import java.util.List;
 
+import org.hibernate.Session;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -30,4 +32,12 @@ public class ProjectRegistryLinkChangelog extends MilestoneChangeDataSuperclass 
 
     @OneToMany(mappedBy = "projectRegistryLinkChangelog", fetch = FetchType.LAZY)
     private List<ProjectRegistryLinkChangelogValue> values;
+
+    @Override
+    public Object getCopyWithoutMilestones(Session session) {
+        var copy = new ProjectRegistryLinkChangelog();
+        copy.setProject(project);
+        copy.setValues(values);
+        return copy;
+    }
 }
