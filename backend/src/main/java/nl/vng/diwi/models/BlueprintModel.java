@@ -25,11 +25,14 @@ public class BlueprintModel {
 
     List<BlueprintElement> elements = new ArrayList<>();
 
+    List<UUID> categories = new ArrayList<>();
+
     public BlueprintModel(BlueprintSqlModel sqlModel) {
         this.uuid = sqlModel.getId();
         this.name = sqlModel.getName();
         this.elements = sqlModel.getElements();
         this.userGroups = UserGroupModel.fromUserGroupUserModelListToUserGroupModelList(sqlModel.getUserModels());
+        this.categories = sqlModel.getCategories();
     }
 
     public String validate() {
@@ -43,16 +46,19 @@ public class BlueprintModel {
         if (this.elements == null) {
             this.elements = new ArrayList<>();
         }
-
+        if (this.categories == null) {
+            this.categories = new ArrayList<>();
+        }
         return null;
     }
 
     public boolean isSameAs(BlueprintModel that) {
-        if (!this.name.equals(that.name) || this.elements.size() != that.elements.size() || this.userGroups.size() != that.userGroups.size()) {
+        if (!this.name.equals(that.name) || this.elements.size() != that.elements.size() || this.userGroups.size() != that.userGroups.size()
+            || this.categories.size() != that.categories.size()) {
             return false;
         }
 
-        if (!this.elements.containsAll(that.elements)) {
+        if (!this.elements.containsAll(that.elements) || !this.categories.containsAll(that.categories)) {
             return false;
         }
 

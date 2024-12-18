@@ -74,7 +74,7 @@ public class EsriZuidHollandExport {
         FeatureCollection exportObject = new FeatureCollection();
         Crs crs = new Crs();
         crs.setType(CrsType.name);
-        crs.getProperties().put("name", "EPSG:28992");
+        crs.getProperties().put("name", "EPSG:3857");
         exportObject.setCrs(crs);
 
         PropertyModel priceRangeBuyFixedProp = customProps.stream()

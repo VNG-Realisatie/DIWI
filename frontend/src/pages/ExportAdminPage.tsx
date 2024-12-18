@@ -1,5 +1,5 @@
 import { useState, ChangeEvent, useEffect, useContext } from "react";
-import { Grid, Button, Box } from "@mui/material";
+import { Grid, Button, Box, Alert } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import TextInput from "../components/project/inputs/TextInput";
 import CategoryInput from "../components/project/inputs/CategoryInput";
@@ -263,6 +263,7 @@ function ExportAdminPage() {
                 })}
 
                 <Grid item xs={12} sx={{ mb: 10, display: "flex", flexDirection: "row", gap: 2, justifyContent: "flex-end" }}>
+                    {validationErrors.length > 0 && <Alert severity="warning">{t("exchangeData.validationErrors.genericError")}</Alert>}
                     <Button variant="outlined" color="primary" onClick={() => navigate(exportSettings.toPath())}>
                         {t("generic.cancel")}
                     </Button>
