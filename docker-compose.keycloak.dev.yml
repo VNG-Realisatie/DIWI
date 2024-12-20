@@ -6,6 +6,7 @@ services:
   keycloak:
     build:
       context: keycloak
+    user: ${UID}
     develop:
       watch:
         - action: rebuild
@@ -31,6 +32,7 @@ services:
 
   keycloak_database:
     image: git.phinion.com/phinion/dependency_proxy/containers/postgres:15
+    user: ${UID}
     network_mode: host
     environment:
       <<: *common
