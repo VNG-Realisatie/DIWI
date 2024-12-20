@@ -8,7 +8,7 @@
 
 ### FIXED
 
-- Addressed an issue whereth eprojects table would not filter on plantype, planstatus, gemeente, wijk, buurt
+- Addressed an issue where the projects table would not filter on plantype, planstatus, gemeente, wijk, buurt
 - Fixed speeling mistakes in export page xD
 - Addressed a situation where the untranslated name would be used for a property in the goals page
 - Fixed an issue where the table on the export page would tell you there was a certain amount of lines being displayed, whilst displaying a different amount
