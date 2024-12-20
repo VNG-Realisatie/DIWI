@@ -1,6 +1,7 @@
 import { Select, MenuItem } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { PropertyType, propertyType } from "../../types/enums";
+import { useEffect } from "react";
 
 type Props = {
     selectedPropertyType: PropertyType;
@@ -11,6 +12,15 @@ type Props = {
 
 const PropertyTypeSelect = ({ selectedPropertyType, setSelectedPropertyType, disabled, error }: Props) => {
     const { t } = useTranslation();
+
+    useEffect(() => {
+        if (error === "unknown_project_category_property") {
+            setSelectedPropertyType("CATEGORY" as PropertyType);
+        } else if (error === "unknown_houseblock_numeric_property") {
+            setSelectedPropertyType("NUMERIC" as PropertyType);
+        }
+    }, [error, setSelectedPropertyType]);
+
 
     return error === "unknown_project_category_property" || error === "unknown_houseblock_numeric_property" ? (
         <Select
