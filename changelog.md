@@ -15,7 +15,6 @@
 - Fixed the issue on the export page where selecting projects to export over multiple pages would yield unexpected results: some projects would not be exported
 - Fixed a bug where adding categories to a custom categorical property would override/reset the selections for mandatory and single select, after creation of the property
 - Fixed the issue where imported geometry was retained yet not displayed, as an overlay or otherwise
-- Fixed an issue where the imported geometry would end up in the Arctic Ocean
 
 ### REMOVED
 
