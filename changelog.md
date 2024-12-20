@@ -1,5 +1,25 @@
 # Change log
 
+## DIWI RELEASE 1.8.1
+
+### CHANGED
+
+- The plot will no longer be coloured/accentuated/highlighted when a subplot has been created
+
+### FIXED
+
+- Addressed an issue where the projects table would not filter on plantype, planstatus, gemeente, wijk, buurt
+- Fixed speeling mistakes in export page xD
+- Addressed a situation where the untranslated name would be used for a property in the goals page
+- Fixed an issue where the table on the export page would tell you there was a certain amount of lines being displayed, whilst displaying a different amount
+- Fixed the issue on the export page where selecting projects to export over multiple pages would yield unexpected results: some projects would not be exported
+- Fixed a bug where adding categories to a custom categorical property would override/reset the selections for mandatory and single select, after creation of the property
+- Fixed the issue where imported geometry was retained yet not displayed, as an overlay or otherwise
+
+### REMOVED
+
+- Removed the API key and URL boxes from the export settings. They are non-functional right now and may just create confusion. These should be reintroduced after gaining more clarity on the requirements for exporting
+
 ## DIWI RELEASE 1.8.0
 
 This release is all about data exchenge with a main focus on export to Zuid-Holland provincie monitor and a side quest of making imports a lot easier
