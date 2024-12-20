@@ -83,7 +83,6 @@ export const CreateCustomDashboard = () => {
     }, [id]);
 
     useEffect(() => {
-        console.log(newBlueprint);
         const updatedCategoryVisibility = { ...categoriesVisibility };
         if (!newBlueprint.uuid) {
             Object.keys(categoriesVisibility).forEach((key) => {
