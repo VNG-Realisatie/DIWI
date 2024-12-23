@@ -6,9 +6,20 @@ include:
   - docker-compose.keycloak.dev.yml
 
 services:
+  init_backend:
+    build:
+      context: docker/dev-permission-fixer
+    environment:
+      VOLUME_USER_ID: ${UID}
+    volumes:
+      - ./data/backend:/data
+
   backend:
     build:
       context: backend
+      args:
+        USER_ID: ${UID}
+    user: ${UID}
     develop:
       watch:
         - action: rebuild
@@ -42,4 +53,6 @@ services:
       - ./data/backend:/data
 
     depends_on:
-      - keycloak
+      init_backend:
+        condition: service_completed_successfully
+
