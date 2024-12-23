@@ -6,6 +6,7 @@ services:
   keycloak:
     build:
       context: keycloak
+    user: ${UID}
     develop:
       watch:
         - action: rebuild
@@ -29,8 +30,17 @@ services:
       - ./keycloak/realm-import:/opt/keycloak/data/import
     command: "start --import-realm --optimized --http-port=$${KEYCLOAK_PORT}"
 
+  init_keycloak_database:
+    build:
+      context: docker/dev-permission-fixer
+    environment:
+      VOLUME_USER_ID: ${UID}
+    volumes:
+      - ./data/keycloak:/data
+
   keycloak_database:
     image: git.phinion.com/phinion/dependency_proxy/containers/postgres:15
+    user: ${UID}
     network_mode: host
     environment:
       <<: *common
@@ -41,7 +51,11 @@ services:
     volumes:
       - ./data/keycloak:/var/lib/postgresql/data
     entrypoint: bash -c "/usr/local/bin/docker-entrypoint.sh -p $$KEYCLOAK_DB_PORT"
+    depends_on:
+      init_keycloak_database:
+        condition: service_completed_successfully
 
   mail:
     image: mailhog/mailhog
     network_mode: host
+
