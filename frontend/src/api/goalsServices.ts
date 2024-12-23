@@ -9,7 +9,7 @@ export type Category = {
 
 export type CustomCategory = {
     id?: string;
-    name: string;
+    name: string | null;
 };
 
 export type GoalDirection = "MINIMAL" | "MAXIMAL" | "";

@@ -24,6 +24,7 @@ public class GenericRepository implements AutoCloseable {
             Arrays.asList(
                 Blueprint.class,
                 BlueprintState.class,
+                BlueprintToCategory.class,
                 BlueprintToElement.class,
                 BlueprintToUserGroup.class,
                 DataExchange.class,
