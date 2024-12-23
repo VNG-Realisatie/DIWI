@@ -14,7 +14,7 @@ RUN --mount=type=cache,target=/root/.m2 \
 
 FROM tomcat:10-jdk17-temurin
 
-ARG USER_ID
+ARG USER_ID=0
 
 RUN chown ${USER_ID} /usr/local/tomcat/webapps
 
