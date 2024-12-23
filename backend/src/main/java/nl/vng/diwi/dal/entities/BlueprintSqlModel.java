@@ -39,6 +39,10 @@ public class BlueprintSqlModel {
     @Getter(AccessLevel.NONE)
     private List<UserGroupUserSqlModel> users;
 
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    @Column(columnDefinition = "UUID[]")
+    @Getter(AccessLevel.NONE)
+    private List<UUID> categories;
 
     public List<BlueprintElement> getElements() {
         if (elements == null) {
@@ -62,4 +66,10 @@ public class BlueprintSqlModel {
         return users.stream().map(UserGroupUserModel::new).toList();
     }
 
+    public List<UUID> getCategories() {
+        if (categories == null) {
+            return new ArrayList<>();
+        }
+        return categories;
+    }
 }

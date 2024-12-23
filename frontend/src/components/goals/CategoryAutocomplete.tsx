@@ -21,7 +21,7 @@ const CategoryAutocomplete = ({ goal, setGoal }: Props) => {
         });
     }, []);
 
-    const categoryExists = categories.some((category) => category.name.toLowerCase() === inputValue.toLowerCase());
+    const categoryExists = categories.some((category) => category.name && category.name.toLowerCase() === inputValue.toLowerCase());
 
     const handleCategoryChange = (_: React.ChangeEvent<unknown>, newValue: string | CustomCategory | null) => {
         if (typeof newValue === "string") {
@@ -57,7 +57,7 @@ const CategoryAutocomplete = ({ goal, setGoal }: Props) => {
                 inputValue={inputValue}
                 onInputChange={(_, newInputValue) => setInputValue(newInputValue)}
                 options={categories}
-                getOptionLabel={(option) => (typeof option === "string" ? option : option.name)}
+                getOptionLabel={(option) => (typeof option === "string" ? option : option.name || "")}
                 renderOption={(props, option) => (
                     <li {...props} key={option.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                         {option.name}

@@ -1,6 +1,6 @@
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import { getPolicyDashboardProjects } from "../api/dashboardServices";
+import { getAllCategories } from "../api/goalsServices";
 
 type Element = {
     id: string;
@@ -30,14 +30,13 @@ const h2c = async (element: HTMLElement) => {
 };
 
 export const exportPdf = async (t: (key: string) => string, setPdfExport: (value: boolean) => void) => {
-    const policyDashboardProjects = await getPolicyDashboardProjects();
+    const categories = await getAllCategories();
 
-    const newElements = policyDashboardProjects.map((project: { id: string }) => ({
-        id: project.id,
+    const newElements = categories.map(({ id }) => ({
+        id: id || "",
         width: otherChartWidth,
         height: 35,
     }));
-
     const allElements: Element[] = [...elements, ...newElements];
 
     const getElementImage = async (element: Element) => {
@@ -68,7 +67,6 @@ export const exportPdf = async (t: (key: string) => string, setPdfExport: (value
     const lastIndexSmallChart = filteredChartsArray.map((chart) => chart.width).lastIndexOf(pieChartWidth);
 
     filteredChartsArray.forEach(({ chart, width, height }, index) => {
-
         if (width === 436) {
             if (y + height > pageHeight) {
                 pdf.addPage();
