@@ -63,40 +63,42 @@ public class DashboardServiceTest {
         dashboardService = new DashboardService();
         propertiesService = new PropertiesService();
         houseblockService = new HouseblockService();
-        houseblockService.setProjectService(new ProjectService());
-    }
-
-    @AfterAll
-    static void afterAll() {
-        if (testDb != null) {
-            testDb.close();
+            houseblockService.setProjectService(new ProjectService());
         }
-    }
 
-    @BeforeEach
-    void beforeEach() throws Exception {
-        testDb.reset();
-        dalFactory = testDb.getDalFactory();
-        now = ZonedDateTime.now();
-        dal = dalFactory.constructDal();
-        Session session = dal.getSession();
-        repo = new VngRepository(session);
+        @AfterAll
+        static void afterAll() {
+            if (testDb != null) {
+                testDb.close();
+            }
+        }
 
-        Milestone startMilestone;
-        Milestone endMilestone;
-        User user;
-        try (AutoCloseTransaction transaction = repo.beginTransaction()) {
-            // User
-            user = repo.persist(new User());
-            var userUuid = user.getId();
-            loggedUser = new LoggedUser();
-            loggedUser.setUuid(userUuid);
-            loggedUser.setRole(UserRole.UserPlus);
+        private LocalDate endDate;
 
-            // Project
-            project = ProjectServiceTest.createProject(repo, user);
-            final LocalDate startDate = LocalDate.now().minusDays(10);
-            final LocalDate endDate = LocalDate.now().plusDays(10);
+        @BeforeEach
+        void beforeEach() throws Exception {
+            testDb.reset();
+            dalFactory = testDb.getDalFactory();
+            now = ZonedDateTime.now();
+            dal = dalFactory.constructDal();
+            Session session = dal.getSession();
+            repo = new VngRepository(session);
+
+            Milestone startMilestone;
+            Milestone endMilestone;
+            User user;
+            try (AutoCloseTransaction transaction = repo.beginTransaction()) {
+                // User
+                user = repo.persist(new User());
+                var userUuid = user.getId();
+                loggedUser = new LoggedUser();
+                loggedUser.setUuid(userUuid);
+                loggedUser.setRole(UserRole.UserPlus);
+
+                // Project
+                project = ProjectServiceTest.createProject(repo, user);
+                var startDate = LocalDate.now().minusDays(10);
+                endDate = LocalDate.now().plusDays(10);
             startMilestone = ProjectServiceTest.createMilestone(repo, project, startDate, user);
             endMilestone = ProjectServiceTest.createMilestone(repo, project, endDate, user);
             ProjectServiceTest.createProjectDurationChangelog(repo, project, startMilestone, endMilestone, user);
@@ -217,7 +219,7 @@ public class DashboardServiceTest {
         var expected = new MultiProjectDashboardModel();
         expected.setPhysicalAppearance(List.of(new PieChartModel("AppearanceOption", 1)));
         expected.setTargetGroup(List.of(new PieChartModel("GroupOption", 2)));
-        expected.setPlanning(List.of(new PlanningModel(project.getId(), null, 10, now.getYear())));
+        expected.setPlanning(List.of(new PlanningModel(project.getId(), null, 10, endDate.getYear())));
 
         // then
         assertThat(result).usingRecursiveComparison()
