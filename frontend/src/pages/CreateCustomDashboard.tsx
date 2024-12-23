@@ -7,7 +7,7 @@ import { UserGroup } from "../api/projectsServices";
 import { Typography } from "@mui/material";
 import { t } from "i18next";
 import { CustomDashboardForm } from "../components/dashboard/CustomDashboardForm";
-import { getAllCategories } from "../api/goalsServices";
+import { useCategoriesStore } from "../hooks/useCategoriesStore";
 
 const emptyBlueprint: Blueprint = {
     name: "",
@@ -33,26 +33,12 @@ export const CreateCustomDashboard = () => {
     const [newBlueprint, setNewBlueprint] = useState<Blueprint>(emptyBlueprint);
     const [userGroups, setUserGroups] = useState<UserGroup[]>([]);
     const [pdfExport, setPdfExport] = useState(false);
+    const { initialCategoryVisibility } = useCategoriesStore();
 
-    const [categoriesVisibility, setCategoriesVisibility] = useState<{ [key: string]: boolean }>({});
+    const [categoriesVisibility, setCategoriesVisibility] = useState<{ [key: string]: boolean }>(initialCategoryVisibility);
 
     const { id } = useParams();
     const { setAlert } = useAlert();
-
-    useEffect(() => {
-        getAllCategories().then((categories) => {
-            const initialCategoryVisibility = categories.reduce(
-                (acc, category) => {
-                    if (category.id) {
-                        acc[category.id] = true;
-                    }
-                    return acc;
-                },
-                {} as { [key: string]: boolean },
-            );
-            setCategoriesVisibility(initialCategoryVisibility);
-        });
-    }, []);
 
     useEffect(() => {
         if (id) {
@@ -66,6 +52,16 @@ export const CreateCustomDashboard = () => {
                         }
                     });
                     setVisibility({ ...initialVisibility });
+
+                    const updatedCategoryVisibility = { ...categoriesVisibility };
+
+                    Object.keys(categoriesVisibility).forEach((key) => {
+                        if (!blueprint.categories.includes(key)) {
+                            updatedCategoryVisibility[key] = false;
+                        }
+                    });
+
+                    setCategoriesVisibility(updatedCategoryVisibility);
 
                     setNewBlueprint(blueprint);
                 } catch (error) {
@@ -82,22 +78,6 @@ export const CreateCustomDashboard = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
-    useEffect(() => {
-        const updatedCategoryVisibility = { ...categoriesVisibility };
-        if (!newBlueprint.uuid) {
-            Object.keys(categoriesVisibility).forEach((key) => {
-                updatedCategoryVisibility[key] = true;
-            });
-        } else {
-            Object.keys(categoriesVisibility).forEach((key) => {
-                if (!newBlueprint.categories.includes(key)) {
-                    updatedCategoryVisibility[key] = false;
-                }
-            });
-        }
-        setCategoriesVisibility(updatedCategoryVisibility);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [newBlueprint]);
     if (!visibility) {
         return null;
     }
