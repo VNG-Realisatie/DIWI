@@ -868,16 +868,18 @@ public class ProjectService {
             Milestone endMilestone) {
         for (var milestoneType : List.of(
                 ProjectPlanTypeChangelog.class,
-                ProjectBooleanCustomPropertyChangelog.class,
                 ProjectNameChangelog.class,
-                ProjectCategoryPropertyChangelog.class,
                 ProjectPlanologischePlanstatusChangelog.class, // Issue with one to many
                 ProjectDurationChangelog.class,
                 ProjectRegistryLinkChangelog.class,
-                ProjectTextPropertyChangelog.class,
-                ProjectFaseChangelog.class,
-                ProjectOrdinalPropertyChangelog.class,
-                ProjectNumericCustomPropertyChangelog.class)) {
+                // ProjectBooleanCustomPropertyChangelog.class, // Custom property
+                // ProjectCategoryPropertyChangelog.class, // Custom property
+                // ProjectTextPropertyChangelog.class, // Custom property
+                // ProjectOrdinalPropertyChangelog.class, // Custom property
+                // ProjectNumericCustomPropertyChangelog.class, // Custom property
+                ProjectFaseChangelog.class
+                )
+                ) {
 
             var className = milestoneType.getSimpleName();
 
