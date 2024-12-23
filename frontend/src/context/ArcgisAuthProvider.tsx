@@ -1,9 +1,9 @@
-import React, { createContext, useContext, useState, ReactNode, useRef } from "react";
-import { generateCodeChallenge, generateCodeVerifier } from "../utils/pkceUtils";
+import React, { createContext, useContext, useState, ReactNode } from "react";
+import { ArcGISIdentityManager } from "@esri/arcgis-rest-request";
 
 interface ArcgisAuthContextProps {
-    login: () => void;
-    handleRedirect: () => Promise<void>;
+    login: (exportId: string) => void;
+    handleRedirect: (exportId: string) => Promise<void>;
     token: string | null;
 }
 
@@ -11,55 +11,48 @@ interface ArcgisAuthProviderProps {
     children: ReactNode;
 }
 
-const ArcgisAuthContext = createContext<ArcgisAuthContextProps | undefined>(undefined);
+export const ArcgisAuthContext = createContext<ArcgisAuthContextProps | undefined>(undefined);
 
 export const ArcgisAuthProvider = ({ children }: ArcgisAuthProviderProps) => {
     const [token, setToken] = useState<string | null>(null);
-    const codeVerifier = useRef<string>("");
-    const auth_url = "https://www.arcgis.com/sharing/rest/oauth2/authorize";
-    const token_url = "https://www.arcgis.com/sharing/rest/oauth2/token";
-    const client_id = "YOUR_CLIENT_ID"; // move to .env
-    const redirect_uri = "http://localhost:3000/exchangedata/export/0193ba92-b3cd-78da-a994-739c0108e685"; //updare redirect uri
+    const [authManager, setAuthManager] = useState<ArcGISIdentityManager | null>(null);
 
-    const login = async () => {
-        codeVerifier.current = generateCodeVerifier();
-        const codeChallenge = await generateCodeChallenge(codeVerifier.current);
+    const clientId = "YOUR_CLIENT_ID"; // Move to .env
 
-        const authUrl = `${auth_url}?client_id=${client_id}&response_type=code&redirect_uri=${encodeURIComponent(
-            redirect_uri!,
-        )}&code_challenge=${codeChallenge}&code_challenge_method=S256`;
-
-        window.location.href = authUrl;
-    };
-
-    const handleRedirect = async () => {
-        const params = new URLSearchParams(window.location.search);
-        const code = params.get("code");
-
-        if (code) {
-            const response = await fetch(token_url!, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-                body: new URLSearchParams({
-                    client_id: client_id!,
-                    grant_type: "authorization_code",
-                    code,
-                    redirect_uri: redirect_uri!,
-                    code_verifier: codeVerifier.current,
-                }).toString(),
+    const login = async (exportId: string) => {
+        const redirectUri = `http://localhost:3000/exchangedata/export/${exportId}`;
+        try {
+            const manager = await ArcGISIdentityManager.beginOAuth2({
+                clientId,
+                redirectUri,
+                popup: true,
             });
 
-            const data = await response.json();
-            setToken(data.access_token);
+            if (manager) {
+                setAuthManager(manager);
+                setToken(manager.token);
+            } else {
+                console.error("Authentication failed");
+            }
+        } catch (error) {
+            console.error("Authentication failed:", error);
+        }
+    };
+
+    const handleRedirect = async (exportId: string) => {
+        const redirectUri = `http://localhost:3000/exchangedata/export/${exportId}`;
+        try {
+            const manager = await ArcGISIdentityManager.completeOAuth2({
+                clientId,
+                redirectUri,
+                popup: true,
+            });
+            setAuthManager(manager);
+            setToken(manager.token);
+        } catch (error) {
+            console.error("Error completing OAuth2:", error);
         }
     };
 
     return <ArcgisAuthContext.Provider value={{ login, handleRedirect, token }}>{children}</ArcgisAuthContext.Provider>;
-};
-
-export const useArcgisAuth = () => {
-    const context = useContext(ArcgisAuthContext);
-    return context;
 };

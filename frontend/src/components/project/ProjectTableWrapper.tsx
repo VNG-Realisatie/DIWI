@@ -9,7 +9,7 @@ import { confidentialityUpdate, configuredExport } from "../../Paths";
 import { useNavigate, useParams } from "react-router-dom";
 import ProjectContext from "../../context/ProjectContext";
 import { GridPaginationModel } from "@mui/x-data-grid";
-import { useArcgisAuth } from "../../context/ArcgisAuthProvider";
+import { useArcgisAuth } from "../../hooks/useArcgisAuth";
 
 type Props = {
     redirectPath: string;
@@ -38,7 +38,7 @@ const ProjectsTableWrapper = ({
     const configuredExportPath = configuredExport.toPath({ exportId });
     const confidentialityUpdatePath = confidentialityUpdate.toPath({ exportId });
 
-    const arcgisAuth = useArcgisAuth();
+    const arcgisAuth = useArcgisAuth(exportId);
     const login = arcgisAuth?.login;
     const token = arcgisAuth?.token;
 

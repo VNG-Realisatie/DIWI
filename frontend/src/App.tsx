@@ -184,7 +184,9 @@ function App() {
                                 element={
                                     <>
                                         <ProjectProvider>
-                                            <Projects />
+                                            <ArcgisAuthProvider>
+                                                <Projects />
+                                            </ArcgisAuthProvider>
                                         </ProjectProvider>
                                     </>
                                 }
@@ -194,7 +196,9 @@ function App() {
                             path={Paths.projects.path}
                             element={
                                 <ProjectProvider>
-                                    <Projects />
+                                    <ArcgisAuthProvider>
+                                        <Projects />
+                                    </ArcgisAuthProvider>
                                 </ProjectProvider>
                             }
                         />
@@ -202,7 +206,9 @@ function App() {
                             path={Paths.projectsTable.path}
                             element={
                                 <ProjectProvider>
-                                    <Projects />
+                                    <ArcgisAuthProvider>
+                                        <Projects />
+                                    </ArcgisAuthProvider>
                                 </ProjectProvider>
                             }
                         />
@@ -357,7 +363,9 @@ function App() {
                             path={Paths.confidentialityUpdate.path}
                             element={
                                 <ProjectProvider>
-                                    <ConfidentialityUpdateTable />
+                                    <ArcgisAuthProvider>
+                                        <ConfidentialityUpdateTable />
+                                    </ArcgisAuthProvider>
                                 </ProjectProvider>
                             }
                         />
