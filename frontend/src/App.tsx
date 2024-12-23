@@ -48,6 +48,7 @@ import ExportAdminPage from "./pages/ExportAdminPage";
 import ExportSettings from "./pages/ExportSettings";
 import ExportWizard from "./pages/ExportWizard";
 import ConfidentialityUpdateTable from "./pages/ConfidentialityUpdateTable";
+import { ArcgisAuthProvider } from "./context/ArcgisAuthProvider";
 
 enum UserStatus {
     Authenticated,
@@ -346,7 +347,9 @@ function App() {
                             path={Paths.configuredExport.path}
                             element={
                                 <ProjectProvider>
-                                    <ExportWizard />
+                                    <ArcgisAuthProvider>
+                                        <ExportWizard />
+                                    </ArcgisAuthProvider>
                                 </ProjectProvider>
                             }
                         />
