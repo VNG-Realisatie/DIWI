@@ -37,7 +37,25 @@ public class ProjectRegistryLinkChangelog extends MilestoneChangeDataSuperclass 
     public Object getCopyWithoutMilestones(Session session) {
         var copy = new ProjectRegistryLinkChangelog();
         copy.setProject(project);
-        copy.setValues(values);
+        var newValues = values.stream()
+                .map(v -> {
+                    var newValue = new ProjectRegistryLinkChangelogValue();
+                    newValue.setBrkGemeenteCode(v.getBrkGemeenteCode());
+                    newValue.setBrkPerceelNummer(v.getBrkPerceelNummer());
+                    newValue.setBrkSectie(v.getBrkSectie());
+                    newValue.setPlotFeature(v.getPlotFeature());
+                    newValue.setSubselectionGeometry(v.getSubselectionGeometry());
+                    return newValue;
+                })
+                .toList();
+        copy.setValues(newValues);
         return copy;
+    }
+
+    @Override public void persistValues(Session session) {
+        for(var singleValue: values) {
+            singleValue.setProjectRegistryLinkChangelog(this);
+            session.persist(singleValue);
+        }
     }
 }
