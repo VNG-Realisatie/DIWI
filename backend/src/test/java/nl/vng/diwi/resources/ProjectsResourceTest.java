@@ -352,7 +352,7 @@ public class ProjectsResourceTest {
         var actualTimeline = projectResource.getCurrentProjectTimeline(projectId);
         assertThat(actualTimeline)
                 .usingRecursiveComparison(RecursiveComparisonConfiguration.builder()
-                        .withIgnoredFields("projectStateId", "projectOwners.users.userGroupUuid", "projectOwners.users.uuid")
+                        .withIgnoredFields("projectOwners.name", "projectOwners.users")
                         .build())
                 .isEqualTo(expectedTimeline);
     }

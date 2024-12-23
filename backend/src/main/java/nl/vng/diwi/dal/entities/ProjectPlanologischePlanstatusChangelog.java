@@ -43,11 +43,17 @@ public class ProjectPlanologischePlanstatusChangelog extends MilestoneChangeData
                     var newValue = new ProjectPlanologischePlanstatusChangelogValue();
                     newValue.setPlanStatus(v.getPlanStatus());
                     newValue.setPlanStatusChangelog(copy);
-                    session.persist(newValue);
                     return newValue;
                 })
                 .toList();
         copy.setValue(newValues);
         return copy;
+    }
+
+    @Override public void persistValues(Session session) {
+        for(var singleValue: value) {
+            singleValue.setPlanStatusChangelog(this);
+            session.persist(singleValue);
+        }
     }
 }

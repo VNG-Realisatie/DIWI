@@ -9,6 +9,7 @@ import org.apache.poi.ss.formula.functions.T;
 
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.Milestone;
+import nl.vng.diwi.dal.entities.ProjectPlanTypeChangelog;
 import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
 import nl.vng.diwi.models.MilestoneModel;
@@ -44,13 +45,17 @@ public class MilestoneService {
         for (var nameChangelog : orderedChangelogs) {
             T changelog = nameChangelog.getLeft();
             changelog.setChangeEndDate(zdtNow);
+            changelog.setChangeUser(loggedUser);
             repo.persist(changelog);
         }
-        var newName = (T) lastName.getCopyWithoutMilestones(repo.getSession());
-        newName.setStartMilestone(startMilestone);
-        newName.setEndMilestone(endMilestone);
-        newName.setCreateUser(loggedUser);
-        newName.setChangeStartDate(zdtNow);
-        repo.persist(newName);
+        var newChangelog = (T) lastName.getCopyWithoutMilestones(repo.getSession());
+        newChangelog.setStartMilestone(startMilestone);
+        newChangelog.setEndMilestone(endMilestone);
+        newChangelog.setCreateUser(loggedUser);
+        newChangelog.setChangeStartDate(zdtNow);
+
+        repo.persist(newChangelog);
+        newChangelog.persistValues(repo.getSession());
+
     }
 }

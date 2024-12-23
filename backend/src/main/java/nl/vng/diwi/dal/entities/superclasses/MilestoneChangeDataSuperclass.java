@@ -1,5 +1,7 @@
 package nl.vng.diwi.dal.entities.superclasses;
 
+import org.hibernate.Session;
+
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -14,7 +16,7 @@ import nl.vng.diwi.generic.CopyObject;
 @Getter
 @Setter
 @NoArgsConstructor
-public abstract class MilestoneChangeDataSuperclass extends ChangeDataSuperclass  implements CopyObject{
+public abstract class MilestoneChangeDataSuperclass extends ChangeDataSuperclass implements CopyObject {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "start_milestone_id")
@@ -24,4 +26,6 @@ public abstract class MilestoneChangeDataSuperclass extends ChangeDataSuperclass
     @JoinColumn(name = "end_milestone_id")
     private Milestone endMilestone;
 
+    public void persistValues(Session session) {
+    }
 }
