@@ -9,7 +9,6 @@ import org.apache.poi.ss.formula.functions.T;
 
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.Milestone;
-import nl.vng.diwi.dal.entities.ProjectPlanTypeChangelog;
 import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
 import nl.vng.diwi.models.MilestoneModel;
