@@ -327,9 +327,8 @@ public class ProjectsResourceTest {
         repo.getSession().clear();
 
         // The end date of the houseblock model should have been changed as well.
-        HouseblockSnapshotModel expectedHouseblockModel = originalBlockModel.toBuilder()
-                .endDate(newEndDate)
-                .build();
+        HouseblockSnapshotModel expectedHouseblockModel = jsonCopy(originalBlockModel, HouseblockSnapshotModel.class);
+        expectedHouseblockModel.setEndDate(newEndDate);
         assertThat(blockResource.getCurrentHouseblockSnapshot(createdBlock.getHouseblockId()))
                 .isEqualTo(expectedHouseblockModel);
 

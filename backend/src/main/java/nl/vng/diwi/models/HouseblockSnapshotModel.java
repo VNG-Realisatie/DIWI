@@ -5,7 +5,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
 import nl.vng.diwi.dal.entities.HouseblockSnapshotSqlModel;
 import nl.vng.diwi.dal.entities.enums.MutationType;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
@@ -19,7 +18,6 @@ import java.util.UUID;
 
 @Getter
 @Setter
-@SuperBuilder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 public class HouseblockSnapshotModel extends DatedDataModelSuperClass {

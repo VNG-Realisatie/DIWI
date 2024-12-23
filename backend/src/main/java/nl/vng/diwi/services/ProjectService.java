@@ -879,7 +879,6 @@ public class ProjectService {
                 ProjectOrdinalPropertyChangelog.class,
                 ProjectNumericCustomPropertyChangelog.class)) {
 
-            var tableName = milestoneType.getAnnotation(Table.class).name();
             var className = milestoneType.getSimpleName();
 
             var changeLogs = repo.getSession()
