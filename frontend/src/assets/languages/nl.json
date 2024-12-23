@@ -378,7 +378,7 @@
         "squit": "Importeren vanuit Squit",
         "geojson": "Importeren vanuit GeoJSON"
       },
-      "validationErrors" : {
+      "validationErrors": {
         "missing_custom_prop": "Maatwerk eigenschap ontbreekt",
         "option_not_mapped": "Optie van maatwerk categorie is niet gemapt",
         "option_mapped_multiple_times": "Optie van maatwerk categorie is gemapt naar meerdere template opties"
@@ -400,7 +400,6 @@
         "projectId": "Project ID",
         "priceValueMax": "Maximale prijs",
         "priceValueMin": "Minimale prijs"
-
       },
       "download": {
         "excel": "Download Excel template hier",
@@ -430,10 +429,10 @@
         "changeTo": "Verander naar:",
         "confidentialityUpdate": "Vertrouwelijkheid niveau veranderen"
       },
-     "labels": {
+      "labels": {
         "ESRI_ZUID_HOLLAND": {
-            "beoogd_woonmilieu_ABF5": "Boogd woonmilieu ABF5",
-            "beoogd_woonmilieu_ABF13": "Boogd woonmilieu ABF13",
+            "beoogd_woonmilieu_ABF5": "Beoogd woonmilieu ABF5",
+            "beoogd_woonmilieu_ABF13": "Beoogd woonmilieu ABF13",
             "bestemmingsplan": "Bestemmingsplan",
             "knelpunten_meerkeuze": "Belangrijkste knelpunten",
             "masterplan": "Masterplan",
@@ -513,18 +512,18 @@
         "goalDirection": "Kies de doelstelling",
         "selectProperty": "Selecteer eigenschap"
       },
-    "notifications": {
-      "updated" : "Succesvol geüpdatet",
-      "created" : "Succesvol aangemaakt",
-      "deleted" : "Succesvol verwijderd"
-    },
-    "dashboard": {
-          "deficit" : "tekort",
-          "surplus": "overschot",
-          "moreSpace": "ruimte over",
-          "noCategory": "Geen categorie",
-          "noHouses": "Geen huizen voldoen aan de geselecteerde voorwaarden"
-        }
+      "notifications": {
+        "updated": "Succesvol geüpdatet",
+        "created": "Succesvol aangemaakt",
+        "deleted": "Succesvol verwijderd"
+      },
+      "dashboard": {
+        "deficit": "tekort",
+        "surplus": "overschot",
+        "moreSpace": "ruimte over",
+        "noCategory": "Geen categorie",
+        "noHouses": "Geen huizen voldoen aan de geselecteerde voorwaarden"
+      }
     },
     "dashboard": {
       "title": "Dashboard",
@@ -647,14 +646,13 @@
     "admin": {
       "export": {
         "title": {
-          "selectProject" : "Selecteer Projecten om te Exporteren",
+          "selectProject": "Selecteer Projecten om te Exporteren",
           "selectExport": "Selecteer Gegevens Exporteren"
         },
         "name": "Naam",
         "apiKey": "API sleutel",
         "type": "Type",
         "projectUrl": "Create layer URL",
-        "projectdetailUrl": "Project details URL",
         "error": {
           "required": "{{field}} is verplicht"
         },
