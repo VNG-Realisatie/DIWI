@@ -8,7 +8,7 @@ export type Category = {
 };
 
 export type CustomCategory = {
-    id?: string;
+    id: string;
     name: string | null;
 };
 
