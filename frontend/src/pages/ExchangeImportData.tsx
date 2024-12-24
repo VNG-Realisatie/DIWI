@@ -56,7 +56,7 @@ export const ExchangeImportData = () => {
                             {exportData
                                 .filter((exportItem) => exportItem.valid)
                                 .map((exportItem) => (
-                                    <DataCardItem key={exportItem.id} text={exportItem.name} link={Paths.configuredExport.path + `/${exportItem.id}`}>
+                                    <DataCardItem key={exportItem.id} text={exportItem.name} link={Paths.configuredExport.toPath({ exportId: exportItem.id })}>
                                         <img src={zuidHollandIcon} height="125" width="125" alt="zuid-holland" />
                                     </DataCardItem>
                                 ))}

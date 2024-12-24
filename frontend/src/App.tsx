@@ -343,7 +343,7 @@ function App() {
                             }
                         />
                         <Route
-                            path={Paths.configuredExport.path + "/:id"}
+                            path={Paths.configuredExport.path}
                             element={
                                 <ProjectProvider>
                                     <ExportWizard />
@@ -351,7 +351,7 @@ function App() {
                             }
                         />
                         <Route
-                            path={Paths.confidentialityUpdate.path + "/:id"}
+                            path={Paths.confidentialityUpdate.path}
                             element={
                                 <ProjectProvider>
                                     <ConfidentialityUpdateTable />
