@@ -19,7 +19,6 @@ import java.util.UUID;
 
 @Getter
 @Setter
-@Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
@@ -30,25 +29,18 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
     private SingleValueOrRangeModel<BigDecimal> size;
     private Boolean programming;
 
-    // @Builder.Default
     private Mutation mutation = new Mutation();
 
-    // @Builder.Default
     private List<OwnershipValue> ownershipValue = new ArrayList<>();
 
-    // @Builder.Default
     private GroundPosition groundPosition = new GroundPosition();
 
-    // @Builder.Default
     private List<AmountModel> physicalAppearance = new ArrayList<>();
 
-    // @Builder.Default
     private HouseType houseType = new HouseType();
 
-    // @Builder.Default
     private List<AmountModel> targetGroup = new ArrayList<>();
 
-    // @Builder.Default
     private List<ProjectHouseblockCustomPropertyModel> customProperties = new ArrayList<>();
 
     public HouseblockSnapshotModel(HouseblockSnapshotSqlModel sqlModel) {
