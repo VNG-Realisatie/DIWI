@@ -48,6 +48,8 @@ import ExportAdminPage from "./pages/ExportAdminPage";
 import ExportSettings from "./pages/ExportSettings";
 import ExportWizard from "./pages/ExportWizard";
 import ConfidentialityUpdateTable from "./pages/ConfidentialityUpdateTable";
+import ProjectAudit from "./pages/ProjectAudit";
+import ProjectAuditTable from "./pages/ProjectAudit";
 
 enum UserStatus {
     Authenticated,
@@ -236,6 +238,14 @@ function App() {
                             element={
                                 <ProjectProvider>
                                     <ProjectPlotSelector wizard={true} />
+                                </ProjectProvider>
+                            }
+                        />
+                        <Route
+                            path={Paths.projectAudit.path}
+                            element={
+                                <ProjectProvider>
+                                    <ProjectAuditTable />
                                 </ProjectProvider>
                             }
                         />
