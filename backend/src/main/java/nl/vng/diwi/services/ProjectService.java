@@ -21,8 +21,8 @@ import org.apache.logging.log4j.Logger;
 
 import io.hypersistence.utils.hibernate.type.range.Range;
 import jakarta.annotation.Nullable;
-import jakarta.persistence.Table;
 import nl.vng.diwi.dal.FilterPaginationSorting;
+import nl.vng.diwi.dal.HouseblockDAO;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.Milestone;
 import nl.vng.diwi.dal.entities.MilestoneState;
@@ -76,10 +76,12 @@ import nl.vng.diwi.security.UserAction;
 public class ProjectService {
     private static final Logger logger = LogManager.getLogger();
 
-    MilestoneService milestoneService;
+    private MilestoneService milestoneService;
+    private HouseblockService houseblockService;
 
     public ProjectService() {
         milestoneService = new MilestoneService();
+        houseblockService = new HouseblockService();
     }
 
     public void checkProjectEditPermission(VngRepository repo, UUID projectUuid, LoggedUser loggedUser) throws VngNotFoundException, VngNotAllowedException {
@@ -869,7 +871,7 @@ public class ProjectService {
         for (var milestoneType : List.of(
                 ProjectPlanTypeChangelog.class,
                 ProjectNameChangelog.class,
-                ProjectPlanologischePlanstatusChangelog.class, // Issue with one to many
+                ProjectPlanologischePlanstatusChangelog.class,
                 ProjectDurationChangelog.class,
                 ProjectRegistryLinkChangelog.class,
                 // ProjectBooleanCustomPropertyChangelog.class, // Custom property
@@ -877,9 +879,7 @@ public class ProjectService {
                 // ProjectTextPropertyChangelog.class, // Custom property
                 // ProjectOrdinalPropertyChangelog.class, // Custom property
                 // ProjectNumericCustomPropertyChangelog.class, // Custom property
-                ProjectFaseChangelog.class
-                )
-                ) {
+                ProjectFaseChangelog.class)) {
 
             var className = milestoneType.getSimpleName();
 
@@ -891,6 +891,17 @@ public class ProjectService {
             milestoneService.replaceChangelogsWithSingleChangelog(repo, zdtNow, loggedUser, startMilestone, endMilestone, changeLogs);
         }
 
+        var blocks = houseblockService.getProjectHouseblocks(repo, project.getId());
+        for (var block : blocks) {
+            for (var milestoneType : HouseblockDAO.plainHouseblockChangelogs.keySet()) {
+                var className = milestoneType.getSimpleName();
+                var changeLogs = repo.getSession()
+                        .createQuery("FROM " + className + " cl WHERE cl.houseblock.id = :houseblockId", milestoneType)
+                        .setParameter("houseblockId", block.getHouseblockId())
+                        .list();
+                milestoneService.replaceChangelogsWithSingleChangelog(repo, zdtNow, loggedUser, startMilestone, endMilestone, changeLogs);
+            }
+        }
     }
 
     private <T extends MilestoneChangeDataSuperclass> T prepareProjectChangelogValuesToUpdate(VngRepository repo, Project project, List<T> changelogs,

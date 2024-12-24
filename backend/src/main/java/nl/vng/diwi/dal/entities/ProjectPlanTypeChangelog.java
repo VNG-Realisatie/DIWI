@@ -27,14 +27,28 @@ public class ProjectPlanTypeChangelog extends MilestoneChangeDataSuperclass {
     private Project project;
 
     @JsonIgnoreProperties("planTypeChangelog")
-    @OneToMany(mappedBy="planTypeChangelog", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "planTypeChangelog", fetch = FetchType.EAGER)
     private List<ProjectPlanTypeChangelogValue> value;
 
     @Override
     public Object getCopyWithoutMilestones(Session session) {
         var copy = new ProjectPlanTypeChangelog();
         copy.setProject(project);
-        copy.setValue(value);
+        var newValues = value.stream()
+                .map(v -> {
+                    var newValue = new ProjectPlanTypeChangelogValue();
+                    newValue.setPlanType(v.getPlanType());
+                    newValue.setPlanTypeChangelog(v.getPlanTypeChangelog());
+                    return newValue;
+                }).toList();
+        copy.setValue(newValues);
         return copy;
+    }
+
+    @Override
+    public void persistValues(Session session) {
+        for (var v : value) {
+            session.persist(v);
+        }
     }
 }

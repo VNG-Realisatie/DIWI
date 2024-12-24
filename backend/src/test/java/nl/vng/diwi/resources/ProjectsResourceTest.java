@@ -2,6 +2,7 @@ package nl.vng.diwi.resources;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -19,6 +20,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jakarta.persistence.Tuple;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import nl.vng.diwi.dal.AutoCloseTransaction;
 import nl.vng.diwi.dal.Dal;
@@ -35,16 +37,26 @@ import nl.vng.diwi.dal.entities.UserGroupToProject;
 import nl.vng.diwi.dal.entities.UserState;
 import nl.vng.diwi.dal.entities.UserToUserGroup;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
+import nl.vng.diwi.dal.entities.enums.GroundPosition;
+import nl.vng.diwi.dal.entities.enums.MutationType;
+import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
+import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
+import nl.vng.diwi.generic.Constants;
+import nl.vng.diwi.models.AmountModel;
 import nl.vng.diwi.models.DatedDataModel;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.models.LocationModel;
 import nl.vng.diwi.models.MilestoneModel;
 import nl.vng.diwi.models.ProjectSnapshotModel;
 import nl.vng.diwi.models.ProjectTimelineModel;
+import nl.vng.diwi.models.SingleValueOrRangeModel;
 import nl.vng.diwi.models.UserGroupModel;
 import nl.vng.diwi.models.UserGroupUserModel;
+import nl.vng.diwi.models.HouseblockSnapshotModel.HouseType;
+import nl.vng.diwi.models.HouseblockSnapshotModel.Mutation;
+import nl.vng.diwi.models.HouseblockSnapshotModel.OwnershipValue;
 import nl.vng.diwi.models.superclasses.ProjectCreateSnapshotModel;
 import nl.vng.diwi.models.superclasses.ProjectMinimalSnapshotModel;
 import nl.vng.diwi.rest.VngBadRequestException;
@@ -90,6 +102,7 @@ public class ProjectsResourceTest {
     private HouseblockResource blockResource;
     private UserState userState;
     private ContainerRequestContext context;
+    private PropertiesService propertiesService;
 
     @BeforeEach
     void beforeEach() {
@@ -100,6 +113,7 @@ public class ProjectsResourceTest {
                 new ExcelImportService(), new GeoJsonImportService());
         projectResource.getUserGroupService().setUserGroupDAO(repo.getUsergroupDAO());
         blockResource = new HouseblockResource(new GenericRepository(dal), new HouseblockService(), new ProjectService(), new PropertiesService());
+        propertiesService = new PropertiesService();
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             user = new User();
@@ -255,6 +269,9 @@ public class ProjectsResourceTest {
         assertThat(new MilestoneModel(futureNameChangelog.getEndMilestone()).getDate()).isEqualTo(today.plusDays(15));
     }
 
+    /**
+     * See trello https://trello.com/c/LXTzHbSF/487-changing-the-end-date-for-a-project-to-before-the-end-date-of-a-block-gives-a-confusing-error-message
+     */
     @Test
     public void changeProjectEndDate() throws Exception {
         LocalDate startDate = today.minusDays(10);
@@ -274,6 +291,10 @@ public class ProjectsResourceTest {
         ugum.setUserGroupName("UG");
         owner1.setUsers(List.of(ugum));
         List<UserGroupModel> owners = List.of(owner1);
+
+        // Get fixed properties
+        var physicalAppearance = propertiesService.getCategoryStatesByPropertyName(repo, Constants.FIXED_PROPERTY_PHYSICAL_APPEARANCE);
+        var targetGroup = propertiesService.getCategoryStatesByPropertyName(repo, Constants.FIXED_PROPERTY_TARGET_GROUP);
 
         // Create the project
         var originalProjectModel = new ProjectCreateSnapshotModel();
@@ -298,11 +319,11 @@ public class ProjectsResourceTest {
 
         var createdBlock = blockResource.createHouseblock(loggedUser, originalBlockModel);
         repo.getSession().clear();
+        UUID houseblockId = createdBlock.getHouseblockId();
 
         // Create model and change everything except the start date, end date and the id to create a lot of milestones on the current day
         var updateProjectModel = jsonCopy(originalProjectModel, ProjectSnapshotModel.class);
         updateProjectModel.setProjectId(projectId);
-
         updateProjectModel.setProjectOwners(originalProjectModel.getProjectOwners());
 
         // Change the following values from their original values to create new milestones on the current date
@@ -311,27 +332,64 @@ public class ProjectsResourceTest {
         updateProjectModel.setConfidentialityLevel(Confidentiality.PUBLIC);
         updateProjectModel.setProjectPhase(ProjectPhase._6_REALIZATION);
         updateProjectModel.setPlanningPlanStatus(List.of(PlanStatus._4B_NIET_OPGENOMEN_IN_VISIE));
+        updateProjectModel.setPlanType(List.of(PlanType.HERSTRUCTURERING));
         projectResource.updateProjectSnapshot(loggedUser, updateProjectModel);
         repo.getSession().clear();
 
+        HouseblockSnapshotModel.GroundPosition groundPosition = HouseblockSnapshotModel.GroundPosition.builder()
+                .formalPermissionOwner(1)
+                .intentionPermissionOwner(2)
+                .noPermissionOwner(3)
+                .build();
+        var updatedBlockModel = new HouseblockSnapshotModel();
+        updatedBlockModel.setProjectId(projectId);
+        updatedBlockModel.setHouseblockId(houseblockId);
+        updatedBlockModel.setStartDate(startDate);
+        updatedBlockModel.setEndDate(endDate);
+        updatedBlockModel.setHouseblockName("changeEndDate block new name");
+        updatedBlockModel.setGroundPosition(groundPosition);
+        updatedBlockModel.setTargetGroup(List.of(AmountModel.builder().amount(17).id(targetGroup.get(0).getCategoryValue().getId()).build()));
+        updatedBlockModel.setPhysicalAppearance(List.of(AmountModel.builder().amount(34).id(physicalAppearance.get(0).getCategoryValue().getId()).build()));
+        updatedBlockModel.setHouseType(HouseType.builder().eengezinswoning(1).meergezinswoning(2).build());
+        updatedBlockModel.setMutation(Mutation.builder().amount(33).build());
+        updatedBlockModel.setSize(new SingleValueOrRangeModel<BigDecimal>(BigDecimal.valueOf(1), null, null));
+        updatedBlockModel.setOwnershipValue(List.of(OwnershipValue.builder()
+                .amount(1)
+                .type(OwnershipType.KOOPWONING)
+                .value(new SingleValueOrRangeModel<Long>(1l, null))
+                .build()));
+        updatedBlockModel.setMutation(Mutation.builder().amount(1).kind(MutationType.CONSTRUCTION).build());
+        updatedBlockModel.setProgramming(true);
+        blockResource.updateHouseblock(loggedUser, updatedBlockModel);
+        repo.getSession().clear();
+
+        //
         // Set the end date to a date before today so it will conflict with the milestones created by the changes above
         updateProjectModel.setEndDate(newEndDate);
         projectResource.updateProjectSnapshot(loggedUser, updateProjectModel);
         repo.getSession().clear();
 
+        updateProjectModel.setTotalValue(1l);
         assertThat(projectResource.getCurrentProjectSnapshot(context, projectId))
                 .usingRecursiveComparison(RecursiveComparisonConfiguration.builder()
-                        .withIgnoredFields("projectStateId", "projectOwners.users.userGroupUuid", "projectOwners.users.uuid")
+                        .withIgnoredFields( // Ignore some things that are irrelevant/hard to check
+                                "projectStateId",
+                                "projectOwners.users.userGroupUuid",
+                                "projectOwners.users.uuid",
+                                "planType")
                         .build())
                 .isEqualTo(updateProjectModel);
         repo.getSession().clear();
 
-        // The end date of the houseblock model should have been changed as well.
+        //
+        // Check if the house block end date has changed as well
         HouseblockSnapshotModel expectedHouseblockModel = jsonCopy(originalBlockModel, HouseblockSnapshotModel.class);
         expectedHouseblockModel.setEndDate(newEndDate);
         assertThat(blockResource.getCurrentHouseblockSnapshot(createdBlock.getHouseblockId()))
                 .isEqualTo(expectedHouseblockModel);
 
+        //
+        // Check if the expected entries are in the project timeline model
         var expectedTimeline = new ProjectTimelineModel();
         expectedTimeline.setConfidentialityLevel(Confidentiality.PUBLIC);
         expectedTimeline.setEndDate(newEndDate);
@@ -348,9 +406,76 @@ public class ProjectsResourceTest {
         var actualTimeline = projectResource.getCurrentProjectTimeline(projectId);
         assertThat(actualTimeline)
                 .usingRecursiveComparison(RecursiveComparisonConfiguration.builder()
-                        .withIgnoredFields("projectOwners.name", "projectOwners.users")
+                        .withIgnoredFields(// Ignore some things that are irrelevant/hard to check
+                                "projectOwners.name",
+                                "projectOwners.users",
+                                "planType")
                         .build())
                 .isEqualTo(expectedTimeline);
+
+        var expectedMilestones = repo.getSession()
+                .createNativeQuery("""
+                        SELECT start_milestone_id, end_milestone_id
+                        FROM diwi.project_duration_changelog
+                        WHERE change_end_date IS NULL
+                          AND project_id = :projectId
+                        """, Tuple.class)
+                .setParameter("projectId", projectId)
+                .getSingleResult();
+
+        // Check if there is only one entry for all changelogs and it has the correct start and end milestones
+        for (var tableName : List.of(
+                // "project_category_changelog", // This one is not exposed in the resource
+                "project_duration_changelog",
+                "project_fase_changelog",
+                // "project_maatwerk_boolean_changelog", // custom properties are excluded
+                // "project_maatwerk_numeriek_changelog",
+                // "project_ordinal_changelog",
+                // "project_text_changelog"
+                "project_name_changelog",
+                "project_plan_type_changelog",
+                // "project_registry_link_changelog", // Only used when importing
+                "project_planologische_planstatus_changelog")) {
+            var tuple = repo.getSession()
+                    .createNativeQuery("""
+                            SELECT start_milestone_id, end_milestone_id
+                            FROM diwi.%s
+                            WHERE change_end_date IS NULL
+                              AND project_id = :projectId
+                            """.formatted(tableName), Tuple.class)
+                    .setParameter("projectId", projectId)
+                    .getSingleResult();
+            assertThat(tuple.toArray()).containsExactly(expectedMilestones.toArray());
+        }
+
+        for (var tableName : List.of(
+                "woningblok_deliverydate_changelog",
+                "woningblok_doelgroep_changelog",
+                "woningblok_duration_changelog",
+                "woningblok_eigendom_en_waarde_changelog",
+                "woningblok_grondpositie_changelog",
+                "woningblok_grootte_changelog",
+                // "woningblok_maatwerk_boolean_changelog", // custom properties are excluded
+                // "woningblok_maatwerk_categorie_changelog",
+                // "woningblok_maatwerk_numeriek_changelog",
+                // "woningblok_maatwerk_ordinaal_changelog",
+                // "woningblok_maatwerk_text_changelog",
+                "woningblok_mutatie_changelog",
+                "woningblok_naam_changelog",
+                "woningblok_programmering_changelog",
+                "woningblok_type_en_fysiek_changelog")) {
+
+            var tuple = repo.getSession()
+                    .createNativeQuery("""
+                            SELECT start_milestone_id, end_milestone_id
+                            FROM diwi.%s
+                            WHERE change_end_date IS NULL
+                              AND woningblok_id = :woningblokId
+                            """.formatted(tableName), Tuple.class)
+                    .setParameter("woningblokId", houseblockId)
+                    .getSingleResult();
+            assertThat(tuple.toArray()).containsExactly(expectedMilestones.toArray());
+        }
     }
 
     /**

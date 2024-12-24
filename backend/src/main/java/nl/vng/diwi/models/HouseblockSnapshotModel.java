@@ -1,6 +1,7 @@
 package nl.vng.diwi.models;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
+@Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
@@ -28,18 +30,25 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
     private SingleValueOrRangeModel<BigDecimal> size;
     private Boolean programming;
 
+    // @Builder.Default
     private Mutation mutation = new Mutation();
 
+    // @Builder.Default
     private List<OwnershipValue> ownershipValue = new ArrayList<>();
 
+    // @Builder.Default
     private GroundPosition groundPosition = new GroundPosition();
 
+    // @Builder.Default
     private List<AmountModel> physicalAppearance = new ArrayList<>();
 
+    // @Builder.Default
     private HouseType houseType = new HouseType();
 
+    // @Builder.Default
     private List<AmountModel> targetGroup = new ArrayList<>();
 
+    // @Builder.Default
     private List<ProjectHouseblockCustomPropertyModel> customProperties = new ArrayList<>();
 
     public HouseblockSnapshotModel(HouseblockSnapshotSqlModel sqlModel) {
@@ -190,6 +199,9 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
     @Getter
     @Setter
     @EqualsAndHashCode
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class Mutation {
         private MutationType kind;
         private Integer amount;
@@ -197,6 +209,7 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
 
     @Getter
     @Setter
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     @EqualsAndHashCode
@@ -204,8 +217,10 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
         private UUID id;
         private OwnershipType type;
         private Integer amount;
+        @Builder.Default
         private SingleValueOrRangeModel<Long> value = new SingleValueOrRangeModel<>();
         private UUID valueCategoryId;
+        @Builder.Default
         private SingleValueOrRangeModel<Long> rentalValue = new SingleValueOrRangeModel<>();
         private UUID rentalValueCategoryId;
     }
@@ -213,6 +228,9 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
     @Getter
     @Setter
     @EqualsAndHashCode
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class GroundPosition {
         private Integer noPermissionOwner;
         private Integer intentionPermissionOwner;
@@ -222,6 +240,9 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
     @Getter
     @Setter
     @EqualsAndHashCode
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class HouseType {
         private Integer meergezinswoning;
         private Integer eengezinswoning;
