@@ -353,6 +353,9 @@ public class ProjectsResourceTest {
                 .isEqualTo(expectedTimeline);
     }
 
+    /**
+     * Creates a deep copy by converting to JSON and back. Can be used to convert to similar types.
+     */
     private <T> T jsonCopy(Object original, Class<T> targetType) throws JsonProcessingException, JsonMappingException {
         return objectMapper
                 .readValue(objectMapper.writeValueAsString(original), targetType);
