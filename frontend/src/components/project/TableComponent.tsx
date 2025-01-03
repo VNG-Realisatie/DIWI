@@ -14,8 +14,7 @@ import {
 
 type Props = {
     showCheckBox: boolean;
-    // @ts-ignore
-    rows: any[];
+    rows: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
     columns: GridColDef[];
     setPaginationInfo?: (model: GridPaginationModel) => void;
     rowCount?: number;
