@@ -19,6 +19,8 @@ import lombok.Setter;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.entities.enums.ValueType;
 import nl.vng.diwi.dal.entities.superclasses.HouseblockMilestoneChangeDataSuperclass;
+
+import org.hibernate.Session;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.Type;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
@@ -55,7 +57,7 @@ public class HouseblockNumericCustomPropertyChangelog extends HouseblockMileston
     private ValueType valueType;
 
     @Override
-    public Object getShallowCopy() {
+    public Object getCopyWithoutMilestones(Session session) {
         var newChangelog = HouseblockNumericCustomPropertyChangelog.builder()
             .property(property).value(value).valueRange(valueRange).valueType(valueType).build();
         newChangelog.setHouseblock(getHouseblock());

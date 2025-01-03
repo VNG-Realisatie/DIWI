@@ -1,6 +1,7 @@
 package nl.vng.diwi.models;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
+@AllArgsConstructor
 @NoArgsConstructor
 public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
 
@@ -189,6 +191,9 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
     @Getter
     @Setter
     @EqualsAndHashCode
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class Mutation {
         private MutationType kind;
         private Integer amount;
@@ -196,6 +201,7 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
 
     @Getter
     @Setter
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     @EqualsAndHashCode
@@ -203,8 +209,10 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
         private UUID id;
         private OwnershipType type;
         private Integer amount;
+        @Builder.Default
         private SingleValueOrRangeModel<Long> value = new SingleValueOrRangeModel<>();
         private UUID valueCategoryId;
+        @Builder.Default
         private SingleValueOrRangeModel<Long> rentalValue = new SingleValueOrRangeModel<>();
         private UUID rentalValueCategoryId;
     }
@@ -212,6 +220,9 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
     @Getter
     @Setter
     @EqualsAndHashCode
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class GroundPosition {
         private Integer noPermissionOwner;
         private Integer intentionPermissionOwner;
@@ -221,6 +232,9 @@ public class HouseblockSnapshotModel extends DatedDataModelSuperClass {
     @Getter
     @Setter
     @EqualsAndHashCode
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class HouseType {
         private Integer meergezinswoning;
         private Integer eengezinswoning;

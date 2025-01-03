@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import nl.vng.diwi.dal.entities.superclasses.HouseblockMilestoneChangeDataSuperclass;
+
+import org.hibernate.Session;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.Type;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
@@ -44,7 +46,7 @@ public class HouseblockSizeChangelog extends HouseblockMilestoneChangeDataSuperc
     private ValueType valueType;
 
     @Override
-    public Object getShallowCopy() {
+    public Object getCopyWithoutMilestones(Session session) {
         var newChangelog = HouseblockSizeChangelog.builder()
             .size(size).sizeRange(sizeRange).valueType(valueType)
             .build();
