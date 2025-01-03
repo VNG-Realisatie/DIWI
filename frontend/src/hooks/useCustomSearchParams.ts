@@ -45,7 +45,6 @@ const useCustomSearchParams = (sort: GridSortModel | undefined, filter: GridFilt
     }, [filterUrl]);
 
     useEffect(() => {
-        // eslint-disable-next-line react-hooks/exhaustive-deps
         if (isSorted || isFiltered) {
             filterTable(decodeURIComponent(location.search)).then((res) => {
                 setProjects(res);
@@ -57,6 +56,7 @@ const useCustomSearchParams = (sort: GridSortModel | undefined, filter: GridFilt
                 })
                 .catch((err) => console.log(err));
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isFiltered, isSorted, paginationInfo.page, paginationInfo.pageSize]);
 
     useEffect(() => {
