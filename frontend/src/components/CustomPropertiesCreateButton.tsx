@@ -61,6 +61,7 @@ export default function CustomPropertiesCreateButton({ error, isButtonDisabledMa
     const priceRangeRentId = customProperties.find((property) => property.name === "priceRangeRent")?.id;
     const priceRangeBuyId = customProperties.find((property) => property.name === "priceRangeBuy")?.id;
 
+
     useEffect(() => {
         const fetchCustomProperties = async () => {
             const customProperties = await getCustomProperties();
@@ -200,7 +201,8 @@ export default function CustomPropertiesCreateButton({ error, isButtonDisabledMa
                         disabled: false,
                     },
                 ],
-                singleSelect: false,
+                singleSelect: categoricalProperty?.singleSelect,
+                mandatory: categoricalProperty?.mandatory || false,
             },
         },
     };
@@ -222,9 +224,22 @@ export default function CustomPropertiesCreateButton({ error, isButtonDisabledMa
 
     const shouldRenderButton = Object.keys(errorMappings).includes(error.errorCode);
 
+    const isPriceRangeCategoryError = (errorCode: string) => {
+        return errorCode === "unknown_price_buy_range_category" || errorCode === "unknown_price_rent_range_category";
+    };
+
+    const isPropertyError = (errorCode: string) => {
+        return (
+            errorCode === "unknown_houseblock_property" ||
+            errorCode === "unknown_project_property" ||
+            errorCode === "unknown_houseblock_numeric_property" ||
+            errorCode === "unknown_project_category_property"
+        );
+    };
+
     return shouldRenderButton ? (
         <Box sx={{ width: "20%", display: "flex", flexDirection: "column", gap: "5px" }}>
-            {(error.errorCode === "unknown_price_buy_range_category" || error.errorCode === "unknown_price_rent_range_category") && (
+            {isPriceRangeCategoryError(error.errorCode) && (
                 <RangeNumberInput
                     isMonetary={true}
                     setIsRangeValid={setIsRangeValid}
@@ -237,10 +252,7 @@ export default function CustomPropertiesCreateButton({ error, isButtonDisabledMa
                     maxValue={MAX_INT_IN_DOUBLE}
                 />
             )}
-            {(error.errorCode === "unknown_houseblock_property" ||
-                error.errorCode === "unknown_project_property" ||
-                error.errorCode === "unknown_houseblock_numeric_property" ||
-                error.errorCode === "unknown_project_category_property") && (
+            {isPropertyError(error.errorCode) && (
                 <>
                     <PropertyTypeSelect
                         selectedPropertyType={selectedPropertyType}

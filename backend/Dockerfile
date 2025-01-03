@@ -14,5 +14,11 @@ RUN --mount=type=cache,target=/root/.m2 \
 
 FROM tomcat:10-jdk17-temurin
 
+ARG USER_ID=0
+
+RUN chown ${USER_ID} /usr/local/tomcat/webapps
+
+USER ${USER_ID}
+
 COPY --from=build-backend /src/target/diwi.war /usr/local/tomcat/webapps/ROOT.war
 COPY ./tomcat-config/logging.properties /usr/local/tomcat/conf/logging.properties

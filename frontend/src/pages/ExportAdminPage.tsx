@@ -1,5 +1,5 @@
 import { useState, ChangeEvent, useEffect, useContext } from "react";
-import { Grid, Button, Box } from "@mui/material";
+import { Grid, Button, Box, Alert } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import TextInput from "../components/project/inputs/TextInput";
 import CategoryInput from "../components/project/inputs/CategoryInput";
@@ -45,12 +45,7 @@ function ExportAdminPage() {
     const navigate = useNavigate();
     const typeConfig: TypeConfig = {
         ESRI_ZUID_HOLLAND: {
-            fields: [
-                { name: "name", label: t("admin.export.name"), type: "text", mandatory: true },
-                { name: "apiKey", label: t("admin.export.apiKey"), type: "password", mandatory: id ? false : true },
-                { name: "projectUrl", label: t("admin.export.projectUrl"), type: "text", mandatory: false },
-                { name: "projectDetailUrl", label: t("admin.export.projectdetailUrl"), type: "text", mandatory: false },
-            ],
+            fields: [{ name: "name", label: t("admin.export.name"), type: "text", mandatory: true }],
         },
         // Other types can be added here in the future
     };
@@ -108,7 +103,6 @@ function ExportAdminPage() {
                 type: formData.type,
                 ...(formData.apiKey && { apiKey: formData.apiKey }),
                 projectUrl: formData.projectUrl,
-                projectdetailUrl: formData.projectdetailUrl,
                 ...(id && { properties }),
             };
             const data = id ? await updateExportData(id, exportData) : await addExportData(exportData);
@@ -269,6 +263,7 @@ function ExportAdminPage() {
                 })}
 
                 <Grid item xs={12} sx={{ mb: 10, display: "flex", flexDirection: "row", gap: 2, justifyContent: "flex-end" }}>
+                    {validationErrors.length > 0 && <Alert severity="warning">{t("exchangeData.validationErrors.genericError")}</Alert>}
                     <Button variant="outlined" color="primary" onClick={() => navigate(exportSettings.toPath())}>
                         {t("generic.cancel")}
                     </Button>

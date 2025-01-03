@@ -9,7 +9,8 @@ OR REPLACE FUNCTION diwi.get_dashboard_blueprints (
         id UUID,
         name TEXT,
         elements TEXT[],
-        users JSONB
+        users JSONB,
+        categories UUID[]
 	)
 	LANGUAGE plpgsql
 
@@ -66,17 +67,29 @@ WITH active_blueprints AS (
             active_blueprints ab
                 LEFT JOIN diwi.blueprint_to_element bte ON ab.blueprint_state_id = bte.blueprint_state_id
         GROUP BY ab.blueprint_id
+    ),
+
+    blueprint_categories AS (
+        SELECT
+            ab.blueprint_id    AS blueprint_id,
+            array_agg(btc.plan_category_id) FILTER (WHERE btc.plan_category_id IS NOT NULL) AS categories
+        FROM
+            active_blueprints ab
+                LEFT JOIN diwi.blueprint_to_category btc ON ab.blueprint_state_id = btc.blueprint_state_id
+        GROUP BY ab.blueprint_id
     )
 
 SELECT
     ab.blueprint_id,
     ab.name,
     be.elements,
-    bu.users
+    bu.users,
+    bc.categories
 FROM
     active_blueprints ab
         LEFT JOIN blueprint_users bu ON bu.blueprint_id = ab.blueprint_id
         LEFT JOIN blueprint_elements be ON be.blueprint_id = ab.blueprint_id
+        LEFT JOIN blueprint_categories bc ON bc.blueprint_id = ab.blueprint_id
 WHERE
     CASE
         WHEN _bp_user_uuid_ IS NOT NULL THEN bu.userIds @> ARRAY[_bp_user_uuid_]

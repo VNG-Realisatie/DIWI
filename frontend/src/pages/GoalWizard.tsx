@@ -331,7 +331,13 @@ export function GoalWizard() {
                                     })}
                                     values={
                                         goal.conditions[0] && goal.conditions[0].propertyName
-                                            ? { id: goal.conditions[0].propertyId, name: goal.conditions[0].propertyName }
+                                            ? {
+                                                  id: goal.conditions[0].propertyId,
+                                                  name:
+                                                      matchingProperty?.type === "FIXED"
+                                                          ? t(`admin.settings.fixedPropertyType.${matchingProperty?.name}`)
+                                                          : matchingProperty?.name,
+                                              }
                                             : null
                                     }
                                     setValue={handlePropertyChange}

@@ -1,5 +1,7 @@
 package nl.vng.diwi.dal.entities;
 
+import org.hibernate.Session;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -25,7 +27,7 @@ public class HouseblockProgrammingChangelog extends HouseblockMilestoneChangeDat
     private Boolean programming;
 
     @Override
-    public Object getShallowCopy() {
+    public Object getCopyWithoutMilestones(Session session) {
         var newChangelog = HouseblockProgrammingChangelog.builder()
             .programming(programming).build();
         newChangelog.setHouseblock(getHouseblock());
