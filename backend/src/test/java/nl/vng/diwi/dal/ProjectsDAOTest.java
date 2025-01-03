@@ -1,18 +1,6 @@
 package nl.vng.diwi.dal;
 
-import nl.vng.diwi.dal.entities.enums.Confidentiality;
-import nl.vng.diwi.dal.entities.enums.PlanType;
-import nl.vng.diwi.dal.entities.enums.ProjectPhase;
-import nl.vng.diwi.models.ProjectListModel;
-import nl.vng.diwi.dal.entities.ProjectListSqlModel;
-import nl.vng.diwi.security.LoggedUser;
-import nl.vng.diwi.security.UserAction;
-import nl.vng.diwi.security.UserRole;
-import nl.vng.diwi.testutil.TestDb;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,7 +11,23 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import nl.vng.diwi.dal.entities.ProjectListSqlModel;
+import nl.vng.diwi.dal.entities.enums.Confidentiality;
+import nl.vng.diwi.dal.entities.enums.PlanType;
+import nl.vng.diwi.dal.entities.enums.ProjectPhase;
+import nl.vng.diwi.models.ProjectListModel;
+import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.security.UserRole;
+import nl.vng.diwi.testutil.TestDb;
 
 public class ProjectsDAOTest {
 

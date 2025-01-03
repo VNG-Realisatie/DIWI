@@ -1,9 +1,13 @@
 package nl.vng.diwi.dal.entities;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
+
+import org.hibernate.Session;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -15,6 +19,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ProjectNameChangelog extends MilestoneChangeDataSuperclass {
 
     @JsonIgnoreProperties("name")
@@ -25,4 +31,11 @@ public class ProjectNameChangelog extends MilestoneChangeDataSuperclass {
     @Column(name = "name")
     private String name;
 
+    @Override
+    public Object getCopyWithoutMilestones(Session session) {
+        return ProjectNameChangelog.builder()
+                .project(project)
+                .name(name)
+                .build();
+    }
 }

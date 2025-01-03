@@ -1,5 +1,7 @@
 package nl.vng.diwi.dal.entities;
 
+import org.hibernate.Session;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -30,4 +32,12 @@ public class ProjectBooleanCustomPropertyChangelog extends MilestoneChangeDataSu
     @Column(name = "value")
     private Boolean value;
 
+    @Override
+    public Object getCopyWithoutMilestones(Session session) {
+        var copy = new ProjectBooleanCustomPropertyChangelog();
+        copy.setProject(project);
+        copy.setProperty(property);
+        copy.setValue(value);
+        return copy;
+    }
 }

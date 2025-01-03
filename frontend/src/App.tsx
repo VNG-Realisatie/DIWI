@@ -50,6 +50,7 @@ import ExportWizard from "./pages/ExportWizard";
 import ConfidentialityUpdateTable from "./pages/ConfidentialityUpdateTable";
 import ProjectAudit from "./pages/ProjectAudit";
 import ProjectAuditTable from "./pages/ProjectAudit";
+import { CategoriesProvider } from "./context/GoalCategoriesContext";
 
 enum UserStatus {
     Authenticated,
@@ -286,13 +287,29 @@ function App() {
                         <Route path={Paths.policygoal.path} element={<PolicyLists />} />
                         <Route path={Paths.policygoalDashboard.path} element={<PolicyLists />} />
                         <Route path={Paths.goals.path} element={<Goals />} />
-                        <Route path={Paths.goalWizard.path} element={<GoalWizard />} />
-                        <Route path={Paths.goalMenu.path} element={<GoalWizard />} />
+                        <Route
+                            path={Paths.goalWizard.path}
+                            element={
+                                <CategoriesProvider>
+                                    <GoalWizard />
+                                </CategoriesProvider>
+                            }
+                        />
+                        <Route
+                            path={Paths.goalMenu.path}
+                            element={
+                                <CategoriesProvider>
+                                    <GoalWizard />
+                                </CategoriesProvider>
+                            }
+                        />
                         <Route
                             path={Paths.dashboard.path}
                             element={
                                 <ProjectProvider>
-                                    <DashboardProjects />
+                                    <CategoriesProvider>
+                                        <DashboardProjects />
+                                    </CategoriesProvider>
                                 </ProjectProvider>
                             }
                         />
@@ -300,7 +317,9 @@ function App() {
                             path={Paths.createCustomDashboard.path}
                             element={
                                 <ProjectProvider>
-                                    <CreateCustomDashboard />
+                                    <CategoriesProvider>
+                                        <CreateCustomDashboard />
+                                    </CategoriesProvider>
                                 </ProjectProvider>
                             }
                         />
@@ -308,7 +327,9 @@ function App() {
                             path={Paths.updateCustomDashboard.path}
                             element={
                                 <ProjectProvider>
-                                    <CreateCustomDashboard />
+                                    <CategoriesProvider>
+                                        <CreateCustomDashboard />
+                                    </CategoriesProvider>
                                 </ProjectProvider>
                             }
                         />
@@ -318,7 +339,9 @@ function App() {
                             element={
                                 <ProjectProvider>
                                     <HouseBlockProvider>
-                                        <DashboardProject />
+                                        <CategoriesProvider>
+                                            <DashboardProject />
+                                        </CategoriesProvider>
                                     </HouseBlockProvider>
                                 </ProjectProvider>
                             }

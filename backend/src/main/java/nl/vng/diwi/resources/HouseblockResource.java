@@ -294,7 +294,6 @@ public class HouseblockResource {
                 project = projectService.getCurrentProject(repo, houseblockModelToUpdate.getProjectId());
             }
         }
-
         HouseblockUpdateModel endDateUpdateModel = houseblockUpdateModelList.stream()
             .filter(m -> m.getProperty().equals(HouseblockUpdateModel.HouseblockProperty.endDate))
             .findFirst().orElse(null);

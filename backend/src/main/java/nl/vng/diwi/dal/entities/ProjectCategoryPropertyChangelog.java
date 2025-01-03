@@ -14,6 +14,8 @@ import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
 
 import java.util.List;
 
+import org.hibernate.Session;
+
 @Entity
 @Table(name = "project_category_changelog", schema = GenericRepository.VNG_SCHEMA_NAME)
 @Getter
@@ -32,4 +34,12 @@ public class ProjectCategoryPropertyChangelog extends MilestoneChangeDataSupercl
     @OneToMany(mappedBy="categoryChangelog", fetch = FetchType.LAZY)
     private List<ProjectCategoryPropertyChangelogValue> changelogCategoryValues;
 
+    @Override
+    public Object getCopyWithoutMilestones(Session session) {
+        var copy = new ProjectCategoryPropertyChangelog();
+        copy.setProject(project);
+        copy.setProperty(property);
+        copy.setChangelogCategoryValues(changelogCategoryValues);
+        return copy;
+    }
 }

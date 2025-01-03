@@ -35,24 +35,29 @@ import java.util.UUID;
 
 public class HouseblockDAO extends AbstractRepository {
 
+
+    public static Map<Class<? extends HouseblockMilestoneChangeDataSuperclass>, String> plainHouseblockChangelogs = new HashMap<>();
+    public static Map<Class<? extends HouseblockMilestoneChangeDataSuperclass>, String> customHouseblockChangelogs = new HashMap<>();
     public static Map<Class<? extends HouseblockMilestoneChangeDataSuperclass>, String> houseblockChangelogs = new HashMap<>();
 
     static {
-        houseblockChangelogs.put(HouseblockTargetGroupChangelog.class, "woningblok_doelgroep_changelog");
-        houseblockChangelogs.put(HouseblockDurationChangelog.class, "woningblok_duration_changelog");
-        houseblockChangelogs.put(HouseblockOwnershipValueChangelog.class, "woningblok_eigendom_en_waarde_changelog");
-        houseblockChangelogs.put(HouseblockGroundPositionChangelog.class, "woningblok_grondpositie_changelog");
-        houseblockChangelogs.put(HouseblockSizeChangelog.class, "woningblok_grootte_changelog");
-        houseblockChangelogs.put(HouseblockBooleanCustomPropertyChangelog.class, "woningblok_maatwerk_boolean_changelog");
-        houseblockChangelogs.put(HouseblockCategoryCustomPropertyChangelog.class, "woningblok_maatwerk_categorie_changelog");
-        houseblockChangelogs.put(HouseblockNumericCustomPropertyChangelog.class, "woningblok_maatwerk_numeriek_changelog");
-        houseblockChangelogs.put(HouseblockOrdinalCustomPropertyChangelog.class, "woningblok_maatwerk_ordinaal_changelog");
-        houseblockChangelogs.put(HouseblockTextCustomPropertyChangelog.class, "woningblok_maatwerk_text_changelog");
-        houseblockChangelogs.put(HouseblockMutatieChangelog.class, "woningblok_mutatie_changelog");
-        houseblockChangelogs.put(HouseblockNameChangelog.class, "woningblok_naam_changelog");
-        houseblockChangelogs.put(HouseblockDeliveryDateChangelog.class, "woningblok_deliverydate_changelog");
-        houseblockChangelogs.put(HouseblockProgrammingChangelog.class, "woningblok_programmering_changelog");
-        houseblockChangelogs.put(HouseblockAppearanceAndTypeChangelog.class, "woningblok_type_en_fysiek_changelog");
+        plainHouseblockChangelogs.put(HouseblockTargetGroupChangelog.class, "woningblok_doelgroep_changelog");
+        plainHouseblockChangelogs.put(HouseblockDurationChangelog.class, "woningblok_duration_changelog");
+        plainHouseblockChangelogs.put(HouseblockOwnershipValueChangelog.class, "woningblok_eigendom_en_waarde_changelog");
+        plainHouseblockChangelogs.put(HouseblockGroundPositionChangelog.class, "woningblok_grondpositie_changelog");
+        plainHouseblockChangelogs.put(HouseblockSizeChangelog.class, "woningblok_grootte_changelog");
+        plainHouseblockChangelogs.put(HouseblockMutatieChangelog.class, "woningblok_mutatie_changelog");
+        plainHouseblockChangelogs.put(HouseblockNameChangelog.class, "woningblok_naam_changelog");
+        plainHouseblockChangelogs.put(HouseblockDeliveryDateChangelog.class, "woningblok_deliverydate_changelog");
+        plainHouseblockChangelogs.put(HouseblockProgrammingChangelog.class, "woningblok_programmering_changelog");
+        plainHouseblockChangelogs.put(HouseblockAppearanceAndTypeChangelog.class, "woningblok_type_en_fysiek_changelog");
+        customHouseblockChangelogs.put(HouseblockBooleanCustomPropertyChangelog.class, "woningblok_maatwerk_boolean_changelog");
+        customHouseblockChangelogs.put(HouseblockCategoryCustomPropertyChangelog.class, "woningblok_maatwerk_categorie_changelog");
+        customHouseblockChangelogs.put(HouseblockNumericCustomPropertyChangelog.class, "woningblok_maatwerk_numeriek_changelog");
+        customHouseblockChangelogs.put(HouseblockOrdinalCustomPropertyChangelog.class, "woningblok_maatwerk_ordinaal_changelog");
+        customHouseblockChangelogs.put(HouseblockTextCustomPropertyChangelog.class, "woningblok_maatwerk_text_changelog");
+        houseblockChangelogs.putAll(plainHouseblockChangelogs);
+        houseblockChangelogs.putAll(customHouseblockChangelogs);
     }
 
     public HouseblockDAO(Session session) {
