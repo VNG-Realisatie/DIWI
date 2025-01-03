@@ -48,7 +48,6 @@ import ExportAdminPage from "./pages/ExportAdminPage";
 import ExportSettings from "./pages/ExportSettings";
 import ExportWizard from "./pages/ExportWizard";
 import ConfidentialityUpdateTable from "./pages/ConfidentialityUpdateTable";
-import ProjectAudit from "./pages/ProjectAudit";
 import ProjectAuditTable from "./pages/ProjectAudit";
 import { CategoriesProvider } from "./context/GoalCategoriesContext";
 

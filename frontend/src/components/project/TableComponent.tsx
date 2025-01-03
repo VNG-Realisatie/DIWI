@@ -14,10 +14,11 @@ import {
 
 type Props = {
     showCheckBox: boolean;
+    // @ts-ignore
     rows: any[];
     columns: GridColDef[];
     setPaginationInfo?: (model: GridPaginationModel) => void;
-    rowCount: number;
+    rowCount?: number;
     paginationMode?: "client" | "server";
     onRowClick?: (params: GridRowParams) => void;
     filterModel?: GridFilterModel;
