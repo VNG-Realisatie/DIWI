@@ -34,7 +34,7 @@ const PropertyDialog: React.FC<Props> = observer(({ openDialog, setOpenDialog, i
     const [activeProperty, setActiveProperty] = useState<Property>();
     const [mandatory, setMandatory] = useState(false);
     const [singleSelect, setSingleSelect] = useState(false);
-    const { customProperties, fetchCustomProperties, addCustomProperty }: CustomPropertyStoreType = useCustomPropertyStore();
+    const { addCustomProperty }: CustomPropertyStoreType = useCustomPropertyStore();
 
     const updateDialog = useCallback(
         (property: Property): void => {
@@ -100,7 +100,6 @@ const PropertyDialog: React.FC<Props> = observer(({ openDialog, setOpenDialog, i
             const savedProperty = await (id ? updateCustomProperty(id, newProperty) : addCustomProperty(newProperty));
             setAlert(t("admin.settings.notifications.successfullySaved"), "success");
             updateDialog(savedProperty);
-            await fetchCustomProperties();
         } catch (error: unknown) {
             if (error instanceof Error) setAlert(error.message, "warning");
         } finally {
