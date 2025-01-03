@@ -15,7 +15,6 @@ import { PolicyLists } from "./pages/PolicyLists";
 import { DashboardProjects } from "./pages/DashboardProjects";
 import { ExchangeData } from "./pages/ExchangeData";
 import { ExchangeImportData } from "./pages/ExchangeImportData";
-import { ExportProject } from "./pages/ExportProject";
 import { ImportedProjects } from "./pages/ImportedProjects";
 import { About } from "./pages/About";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -341,22 +340,6 @@ function App() {
                         <Route path={Paths.importExcel.path} element={<ImportPage functionality="excel" />} />
                         <Route path={Paths.importGeoJson.path} element={<ImportPage functionality="geojson" />} />
                         <Route path={Paths.importSquit.path} element={<ImportPage functionality="squit" />} />
-                        <Route
-                            path={Paths.exportExcel.path}
-                            element={
-                                <ProjectProvider>
-                                    <ExportProject excelExport />
-                                </ProjectProvider>
-                            }
-                        />
-                        <Route
-                            path={Paths.exportProvince.path}
-                            element={
-                                <ProjectProvider>
-                                    <ExportProject excelExport={false} />
-                                </ProjectProvider>
-                            }
-                        />
                         <Route
                             path={Paths.exportSettings.path}
                             element={
