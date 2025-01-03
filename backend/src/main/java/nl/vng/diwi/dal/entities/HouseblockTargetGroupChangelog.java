@@ -13,6 +13,8 @@ import nl.vng.diwi.dal.entities.superclasses.HouseblockMilestoneChangeDataSuperc
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.Session;
+
 @Entity
 @Table(name = "woningblok_doelgroep_changelog", schema = GenericRepository.VNG_SCHEMA_NAME)
 @Getter
@@ -24,7 +26,7 @@ public class HouseblockTargetGroupChangelog extends HouseblockMilestoneChangeDat
     private List<HouseblockTargetGroupChangelogValue> targetGroupValues = new ArrayList<>();
 
     @Override
-    public Object getShallowCopy() {
+    public Object getCopyWithoutMilestones(Session session) {
         var newChangelog = new HouseblockTargetGroupChangelog();
         newChangelog.setHouseblock(getHouseblock());
         newChangelog.setStartMilestone(getStartMilestone());

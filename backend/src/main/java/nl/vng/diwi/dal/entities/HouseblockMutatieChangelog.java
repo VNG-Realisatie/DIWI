@@ -11,6 +11,8 @@ import nl.vng.diwi.dal.entities.superclasses.HouseblockMilestoneChangeDataSuperc
 
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
+
+import org.hibernate.Session;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
@@ -33,7 +35,7 @@ public class HouseblockMutatieChangelog extends HouseblockMilestoneChangeDataSup
 
 
     @Override
-    public Object getShallowCopy() {
+    public Object getCopyWithoutMilestones(Session session) {
         var newChangelog = HouseblockMutatieChangelog.builder()
             .amount(amount).mutationType(mutationType)
             .build();

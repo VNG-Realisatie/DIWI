@@ -14,6 +14,8 @@ import lombok.Setter;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.entities.enums.ValueType;
 import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
+
+import org.hibernate.Session;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
@@ -49,4 +51,15 @@ public class ProjectOrdinalPropertyChangelog extends MilestoneChangeDataSupercla
     @JdbcType(PostgreSQLEnumJdbcType.class)
     private ValueType valueType;
 
+    @Override
+    public Object getCopyWithoutMilestones(Session session) {
+        var copy = new ProjectOrdinalPropertyChangelog();
+        copy.setProject(project);
+        copy.setProperty(property);
+        copy.setValue(value);
+        copy.setMinValue(minValue);
+        copy.setMaxValue(maxValue);
+        copy.setValueType(valueType);
+        return copy;
+    }
 }

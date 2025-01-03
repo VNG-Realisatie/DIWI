@@ -16,6 +16,8 @@ import nl.vng.diwi.dal.entities.superclasses.HouseblockMilestoneChangeDataSuperc
 
 import java.util.List;
 
+import org.hibernate.Session;
+
 @Entity
 @Table(name = "woningblok_maatwerk_categorie_changelog", schema = GenericRepository.VNG_SCHEMA_NAME)
 @Getter
@@ -33,7 +35,7 @@ public class HouseblockCategoryCustomPropertyChangelog extends HouseblockMilesto
     private List<HouseblockCategoryCustomPropertyChangelogValue> changelogCategoryValues;
 
     @Override
-    public Object getShallowCopy() {
+    public Object getCopyWithoutMilestones(Session session) {
         var newChangelog = HouseblockCategoryCustomPropertyChangelog.builder().property(property).build();
         newChangelog.setHouseblock(getHouseblock());
         newChangelog.setStartMilestone(getStartMilestone());
