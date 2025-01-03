@@ -245,7 +245,9 @@ function App() {
                             path={Paths.projectAudit.path}
                             element={
                                 <ProjectProvider>
-                                    <ProjectAuditTable />
+                                    <ProjectDetail>
+                                        <ProjectAuditTable />
+                                    </ProjectDetail>
                                 </ProjectProvider>
                             }
                         />

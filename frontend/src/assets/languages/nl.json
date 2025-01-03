@@ -353,6 +353,7 @@
     "projectDetail": {
       "title": "Project",
       "map": "Kaart",
+      "audit": "Audit",
       "characteristics": "Eigenschappen",
       "timeline": "Tijdlijn",
       "colorEdit": "Kleur bewerken",

@@ -116,7 +116,7 @@ const ProjectAuditTable = () => {
     ];
 
     return (
-        <Box style={{ marginBottom: "40px" }}>
+        <Box style={{ margin: "10px 10px 40px 10px" }}>
             <Box style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px", gap: "40px" }}>
                 <DateInput
                     value={startDate ? startDate.format("YYYY-MM-DD") : null}
