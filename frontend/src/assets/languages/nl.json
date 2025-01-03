@@ -72,8 +72,8 @@
         "unknown_type": "Er werd een onbekend waardetype gevonden. Er werd een ander type verwacht.",
         "unknown_project_category_property": "Een projectcategorie-eigenschap met deze naam is niet gevonden.",
         "unknown_project_property": "Een projecteigenschap met deze naam is niet gevonden.",
-        "unknown_houseblock_property": "Een huisblokeigenschap met deze naam is niet gevonden.",
-        "unknown_houseblock_numeric_property": "Een numerieke huisblokeigenschap met deze naam is niet gevonden.",
+        "unknown_houseblock_property": "Een huizenblokeigenschap met deze naam is niet gevonden.",
+        "unknown_houseblock_numeric_property": "Een numerieke huizenblokeigenschap met deze naam is niet gevonden.",
         "unknown_property_value": "De waarde is niet gedefinieerd als een actieve optie voor de eigenschap in deze kolom.",
         "missing_fixed_property": "De vaste eigenschap is niet gevonden",
         "project_level_data_invalid": "Projectniveau-gegevens komen niet overeen met gegevens van vorig project met dezelfde id.",
@@ -85,10 +85,10 @@
         "incomplete_project_location": "Projectbuurt/district zijn aanwezig zonder dat district/gemeente aanwezig is",
         "project_owner_unknown": "Het e-mailadres van de eigenaar ontbreekt of behoort niet toe aan een actieve gebruiker die het recht heeft om projecten te bezitten.",
 
-        "houseblock_delivery_date": "Minstens één opleverdatum van het huisblok is na de einddatum van het project.",
-        "houseblock_housing_number": "Het mutatienummer van het huisblok is niet groter dan 0.",
+        "houseblock_delivery_date": "Minstens één opleverdatum van het huizenblok is na de einddatum van het project.",
+        "houseblock_housing_number": "Het mutatienummer van het huizenblok is niet groter dan 0.",
         "houseblock_delivery_total": "Het totaal aantal huizen in de leveringssectie komt niet overeen met het mutatiebedrag.",
-        "houseblock_delivery_phase": "De opleverdata van het huisblok zijn voor de opleverfase van het project",
+        "houseblock_delivery_phase": "De opleverdata van het huizenblok zijn voor de opleverfase van het project",
         "houseblock_ownership_total": "Het totaal aantal huizen in de sectie Eigendomstype komt niet overeen met het mutatiebedrag.",
         "houseblock_ownership_owner_total": "Het totaal aantal huizen in de sectie Woningwaarde komt niet overeen met het aantal eigen woningen.",
 
@@ -105,8 +105,8 @@
         "no_project_start_date": "Startdatum van het project ontbreekt of is ongeldig.",
         "no_project_end_date": "Einddatum van het project ontbreekt of is ongeldig.",
         "no_project_confidentiality": "Vertrouwelijkheidsniveau van het project ontbreekt of is ongeldig.",
-        "no_houseblock_mutation": "Mutatietype of -hoeveelheid van het huisblok ontbreekt.",
-        "no_houseblock_name": "Naam van het huisblok ontbreekt.",
+        "no_houseblock_mutation": "Mutatietype of -hoeveelheid van het huizenblok ontbreekt.",
+        "no_houseblock_name": "Naam van het huizenblok ontbreekt.",
         "invalid_plan_type": "Projectplantype heeft een onbekende waarde",
         "invalid_numeric_range": "De waarde komt niet overeen met een numeriek bereik.",
         "unknown_price_rent_range_category": "De prijscategorie voor huur is niet bekend.",
@@ -378,10 +378,11 @@
         "squit": "Importeren vanuit Squit",
         "geojson": "Importeren vanuit GeoJSON"
       },
-      "validationErrors" : {
+      "validationErrors": {
         "missing_custom_prop": "Maatwerk eigenschap ontbreekt",
         "option_not_mapped": "Optie van maatwerk categorie is niet gemapt",
-        "option_mapped_multiple_times": "Optie van maatwerk categorie is gemapt naar meerdere template opties"
+        "option_mapped_multiple_times": "Optie van maatwerk categorie is gemapt naar meerdere template opties",
+        "genericError": "Één of meer eigenschappen zijn niet correct gemapt"
       },
       "downloadErrors": {
         "missing_mandatory_value": "Waarde is verplicht in de export, maar ontbreekt in de projecteigenschappen.",
@@ -400,7 +401,6 @@
         "projectId": "Project ID",
         "priceValueMax": "Maximale prijs",
         "priceValueMin": "Minimale prijs"
-
       },
       "download": {
         "excel": "Download Excel template hier",
@@ -430,7 +430,7 @@
         "changeTo": "Verander naar:",
         "confidentialityUpdate": "Vertrouwelijkheid niveau veranderen"
       },
-     "labels": {
+      "labels": {
         "ESRI_ZUID_HOLLAND": {
             "beoogd_woonmilieu_ABF5": "Beoogd woonmilieu ABF5",
             "beoogd_woonmilieu_ABF13": "Beoogd woonmilieu ABF13",
@@ -513,18 +513,18 @@
         "goalDirection": "Kies de doelstelling",
         "selectProperty": "Selecteer eigenschap"
       },
-    "notifications": {
-      "updated" : "Succesvol geüpdatet",
-      "created" : "Succesvol aangemaakt",
-      "deleted" : "Succesvol verwijderd"
-    },
-    "dashboard": {
-          "deficit" : "tekort",
-          "surplus": "overschot",
-          "moreSpace": "ruimte over",
-          "noCategory": "Geen categorie",
-          "noHouses": "Geen huizen voldoen aan de geselecteerde voorwaarden"
-        }
+      "notifications": {
+        "updated": "Succesvol geüpdatet",
+        "created": "Succesvol aangemaakt",
+        "deleted": "Succesvol verwijderd"
+      },
+      "dashboard": {
+        "deficit": "tekort",
+        "surplus": "overschot",
+        "moreSpace": "ruimte over",
+        "noCategory": "Geen categorie",
+        "noHouses": "Geen huizen voldoen aan de geselecteerde voorwaarden"
+      }
     },
     "dashboard": {
       "title": "Dashboard",
@@ -634,7 +634,7 @@
         "warning": "Een of meer woningblokken zijn verkeerd ingevuld",
         "endDateWarning": "Einddatum moet een eerdere datum zijn",
         "startDateWarning": "Opvoerdatum in project moet een latere datum zijn",
-        "endDateInvalid": "De einddatum van een huisblok kan niet eerder zijn dan de startdatum",
+        "endDateInvalid": "De einddatum van een huizenblok kan niet eerder zijn dan de startdatum",
         "endDateWarningMissing": "​Vul het veld Datum laatste oplevering in",
         "startDateWarningMissing": "​Vul het veld Opvoerdatum in project in",
         "mutationAmountWarning": "​Vul het veld aantal in",
@@ -647,14 +647,13 @@
     "admin": {
       "export": {
         "title": {
-          "selectProject" : "Selecteer Projecten om te Exporteren",
+          "selectProject": "Selecteer Projecten om te Exporteren",
           "selectExport": "Selecteer Gegevens Exporteren"
         },
         "name": "Naam",
         "apiKey": "API sleutel",
         "type": "Type",
         "projectUrl": "Create layer URL",
-        "projectdetailUrl": "Project details URL",
         "error": {
           "required": "{{field}} is verplicht"
         },

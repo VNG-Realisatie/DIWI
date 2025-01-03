@@ -50,6 +50,7 @@ export type Blueprint = {
     name: string;
     userGroups: { uuid: string }[];
     elements: VisibilityElement[];
+    categories: string[];
 };
 
 export async function getDashboardProject(

@@ -18,6 +18,8 @@ import lombok.Setter;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.dal.entities.superclasses.HouseblockMilestoneChangeDataSuperclass;
+
+import org.hibernate.Session;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.Type;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
@@ -61,7 +63,7 @@ public class HouseblockOwnershipValueChangelog extends HouseblockMilestoneChange
     private OwnershipType ownershipType;
 
     @Override
-    public Object getShallowCopy() {
+    public Object getCopyWithoutMilestones(Session session) {
         var newChangelog = HouseblockOwnershipValueChangelog.builder()
             .value(value).valueRange(valueRange).ownershipRangeCategoryValue(ownershipRangeCategoryValue)
             .rentalValue(rentalValue).rentalValueRange(rentalValueRange).rentalRangeCategoryValue(rentalRangeCategoryValue)

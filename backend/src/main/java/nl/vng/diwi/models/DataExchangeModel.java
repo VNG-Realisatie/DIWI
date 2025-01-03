@@ -53,7 +53,6 @@ public class DataExchangeModel {
             this.setApiKey(dataExchangeState.getApiKey());
         }
         this.setProjectUrl(dataExchangeState.getProjectUrl());
-        this.setProjectDetailUrl(dataExchangeState.getProjectDetailUrl());
         this.setValid(dataExchangeState.getValid());
     }
 

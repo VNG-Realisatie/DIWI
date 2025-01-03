@@ -1,5 +1,7 @@
 package nl.vng.diwi.dal.entities;
 
+import org.hibernate.Session;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -31,7 +33,7 @@ public class HouseblockTextCustomPropertyChangelog extends HouseblockMilestoneCh
     private String value;
 
     @Override
-    public Object getShallowCopy() {
+    public Object getCopyWithoutMilestones(Session session) {
         var newChangelog = HouseblockTextCustomPropertyChangelog.builder()
             .property(property).value(value).build();
         newChangelog.setHouseblock(getHouseblock());
