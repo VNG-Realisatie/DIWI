@@ -13,8 +13,6 @@ const useCustomSearchParams = (sort: GridSortModel | undefined, filter: GridFilt
     const location = useLocation();
     const [filterUrl, setFilterUrl] = useState("");
     const [filteredProjectsSize, setFilteredProjectsSize] = useState<number>(0);
-    const [isFiltered, setIsFiltered] = useState(false);
-    const [isSorted, setIsSorted] = useState(false);
 
     useEffect(() => {
         if (filter) {
@@ -29,14 +27,6 @@ const useCustomSearchParams = (sort: GridSortModel | undefined, filter: GridFilt
     }, [sort]);
 
     useEffect(() => {
-        const querySortParams = ["pageNumber", "pageSize", "sortColumn", "sortDirection"];
-        setIsSorted(querySortParams.every((e) => location.search.includes(e)));
-
-        const queryFilterParams = ["pageNumber", "pageSize", "filterColumn", "filterValue", "filterCondition"];
-        setIsFiltered(queryFilterParams.every((e) => location.search.includes(e)));
-    }, [location.search]);
-
-    useEffect(() => {
         getProjectsSizeWithParameters(filterUrl)
             .then((size) => {
                 setFilteredProjectsSize(size.size);
@@ -44,8 +34,19 @@ const useCustomSearchParams = (sort: GridSortModel | undefined, filter: GridFilt
             .catch((err) => console.log(err));
     }, [filterUrl]);
 
+    const checkIsFilteredOrSorted = useCallback(() => {
+        const querySortParams = ["pageNumber", "pageSize", "sortColumn", "sortDirection"];
+        const isSorted = querySortParams.every((e) => location.search.includes(e));
+
+        const queryFilterParams = ["pageNumber", "pageSize", "filterColumn", "filterValue", "filterCondition"];
+        const isFiltered = queryFilterParams.every((e) => location.search.includes(e));
+
+        return { isSorted, isFiltered };
+    }, [location.search]);
+
     useEffect(() => {
-        if (isSorted || isFiltered) {
+        const { isFiltered, isSorted } = checkIsFilteredOrSorted();
+        if (isFiltered || isSorted) {
             filterTable(decodeURIComponent(location.search)).then((res) => {
                 setProjects(res);
             });
@@ -56,10 +57,11 @@ const useCustomSearchParams = (sort: GridSortModel | undefined, filter: GridFilt
                 })
                 .catch((err) => console.log(err));
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isFiltered, isSorted, paginationInfo.page, paginationInfo.pageSize]);
+    }, [location.search, paginationInfo.page, paginationInfo.pageSize, checkIsFilteredOrSorted]);
 
     useEffect(() => {
+        const { isFiltered } = checkIsFilteredOrSorted();
+
         if (isFiltered) {
             const filterValues = queryString.parse(location.search);
 
@@ -82,7 +84,7 @@ const useCustomSearchParams = (sort: GridSortModel | undefined, filter: GridFilt
                 setFilterModel(filter);
             }
         }
-    }, [isFiltered, location.search]);
+    }, [location.search, checkIsFilteredOrSorted]);
 
     const updateUrl = useCallback(() => {
         let query = "";
