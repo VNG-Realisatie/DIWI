@@ -16,38 +16,27 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
-import io.hypersistence.utils.hibernate.type.range.Range;
-import jakarta.annotation.Nullable;
-import nl.vng.diwi.dal.entities.ProjectAuditSqlModel;
-import nl.vng.diwi.dal.entities.PropertyCategoryValue;
-import nl.vng.diwi.dal.entities.PropertyOrdinalValue;
-import nl.vng.diwi.dal.entities.Property;
-import nl.vng.diwi.dal.entities.ProjectBooleanCustomPropertyChangelog;
-import nl.vng.diwi.dal.entities.ProjectCategoryPropertyChangelog;
-import nl.vng.diwi.dal.entities.ProjectCategoryPropertyChangelogValue;
-import nl.vng.diwi.dal.entities.ProjectNumericCustomPropertyChangelog;
-import nl.vng.diwi.dal.entities.ProjectOrdinalPropertyChangelog;
-import nl.vng.diwi.dal.entities.ProjectTextPropertyChangelog;
-import nl.vng.diwi.dal.entities.UserGroup;
-import nl.vng.diwi.dal.entities.UserGroupToProject;
-import nl.vng.diwi.models.ProjectAuditModel;
-import nl.vng.diwi.models.ProjectHouseblockCustomPropertyModel;
-import nl.vng.diwi.models.SingleValueOrRangeModel;
-import nl.vng.diwi.rest.VngNotAllowedException;
-import nl.vng.diwi.security.LoggedUser;
-import nl.vng.diwi.security.UserAction;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import io.hypersistence.utils.hibernate.type.range.Range;
+import jakarta.annotation.Nullable;
 import nl.vng.diwi.dal.FilterPaginationSorting;
+import nl.vng.diwi.dal.HouseblockDAO;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.Milestone;
 import nl.vng.diwi.dal.entities.MilestoneState;
 import nl.vng.diwi.dal.entities.Project;
+import nl.vng.diwi.dal.entities.ProjectAuditSqlModel;
+import nl.vng.diwi.dal.entities.ProjectBooleanCustomPropertyChangelog;
+import nl.vng.diwi.dal.entities.ProjectCategoryPropertyChangelog;
+import nl.vng.diwi.dal.entities.ProjectCategoryPropertyChangelogValue;
 import nl.vng.diwi.dal.entities.ProjectDurationChangelog;
 import nl.vng.diwi.dal.entities.ProjectFaseChangelog;
 import nl.vng.diwi.dal.entities.ProjectListSqlModel;
 import nl.vng.diwi.dal.entities.ProjectNameChangelog;
+import nl.vng.diwi.dal.entities.ProjectNumericCustomPropertyChangelog;
+import nl.vng.diwi.dal.entities.ProjectOrdinalPropertyChangelog;
 import nl.vng.diwi.dal.entities.ProjectPlanTypeChangelog;
 import nl.vng.diwi.dal.entities.ProjectPlanTypeChangelogValue;
 import nl.vng.diwi.dal.entities.ProjectPlanologischePlanstatusChangelog;
@@ -55,7 +44,13 @@ import nl.vng.diwi.dal.entities.ProjectPlanologischePlanstatusChangelogValue;
 import nl.vng.diwi.dal.entities.ProjectRegistryLinkChangelog;
 import nl.vng.diwi.dal.entities.ProjectRegistryLinkChangelogValue;
 import nl.vng.diwi.dal.entities.ProjectState;
+import nl.vng.diwi.dal.entities.ProjectTextPropertyChangelog;
+import nl.vng.diwi.dal.entities.Property;
+import nl.vng.diwi.dal.entities.PropertyCategoryValue;
+import nl.vng.diwi.dal.entities.PropertyOrdinalValue;
 import nl.vng.diwi.dal.entities.User;
+import nl.vng.diwi.dal.entities.UserGroup;
+import nl.vng.diwi.dal.entities.UserGroupToProject;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.MilestoneStatus;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
@@ -65,26 +60,38 @@ import nl.vng.diwi.dal.entities.enums.ValueType;
 import nl.vng.diwi.dal.entities.superclasses.MilestoneChangeDataSuperclass;
 import nl.vng.diwi.models.MilestoneModel;
 import nl.vng.diwi.models.PlotModel;
+import nl.vng.diwi.models.ProjectAuditModel;
+import nl.vng.diwi.models.ProjectHouseblockCustomPropertyModel;
 import nl.vng.diwi.models.ProjectListModel;
 import nl.vng.diwi.models.ProjectSnapshotModel;
+import nl.vng.diwi.models.SingleValueOrRangeModel;
 import nl.vng.diwi.models.superclasses.ProjectCreateSnapshotModel;
 import nl.vng.diwi.rest.VngBadRequestException;
+import nl.vng.diwi.rest.VngNotAllowedException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
+import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.security.UserAction;
 
 public class ProjectService {
     private static final Logger logger = LogManager.getLogger();
 
+    private MilestoneService milestoneService;
+    private HouseblockService houseblockService;
+
     public ProjectService() {
+        milestoneService = new MilestoneService();
+        houseblockService = new HouseblockService();
     }
 
     public void checkProjectEditPermission(VngRepository repo, UUID projectUuid, LoggedUser loggedUser) throws VngNotFoundException, VngNotAllowedException {
         checkProjectEditPermission(repo, projectUuid, null, loggedUser);
     }
 
-    public void checkProjectEditPermission(VngRepository repo, UUID projectUuid, @Nullable ProjectSnapshotModel projectSnapshot, LoggedUser loggedUser) throws VngNotFoundException, VngNotAllowedException {
+    public void checkProjectEditPermission(VngRepository repo, UUID projectUuid, @Nullable ProjectSnapshotModel projectSnapshot, LoggedUser loggedUser)
+            throws VngNotFoundException, VngNotAllowedException {
         if (loggedUser.getRole().allowedActions.contains(UserAction.EDIT_ALL_PROJECTS)) {
-            return; //permission is ok;
+            return; // permission is ok;
         } else if (loggedUser.getRole().allowedActions.contains(UserAction.EDIT_OWN_PROJECTS)) {
             if (projectSnapshot == null) {
                 projectSnapshot = getProjectSnapshot(repo, projectUuid, loggedUser);
@@ -158,13 +165,13 @@ public class ProjectService {
 
         List<ProjectRegistryLinkChangelog> registryLinks = project.getRegistryLinks();
         var currentChangelog = registryLinks.stream()
-            .filter(pc -> {
-                LocalDate startDate = (new MilestoneModel(pc.getStartMilestone())).getDate();
-                LocalDate endDate = (new MilestoneModel(pc.getEndMilestone())).getDate();
-                return (finalIsCurrentOrFuture && !startDate.isAfter(finalReferenceDate) && endDate.isAfter(finalReferenceDate)) ||
-                    (!finalIsCurrentOrFuture && endDate.isEqual(finalReferenceDate));
-            })
-            .findFirst().orElse(null);
+                .filter(pc -> {
+                    LocalDate startDate = (new MilestoneModel(pc.getStartMilestone())).getDate();
+                    LocalDate endDate = (new MilestoneModel(pc.getEndMilestone())).getDate();
+                    return (finalIsCurrentOrFuture && !startDate.isAfter(finalReferenceDate) && endDate.isAfter(finalReferenceDate)) ||
+                            (!finalIsCurrentOrFuture && endDate.isEqual(finalReferenceDate));
+                })
+                .findFirst().orElse(null);
 
         if (currentChangelog != null) {
             return currentChangelog.getValues().stream().map(PlotModel::new).toList();
@@ -191,13 +198,13 @@ public class ProjectService {
             repo.persist(newCl);
             for (var plot : plots) {
                 repo.persist(ProjectRegistryLinkChangelogValue.builder()
-                    .brkGemeenteCode(plot.getBrkGemeenteCode())
-                    .brkPerceelNummer(plot.getBrkPerceelNummer())
-                    .brkSectie(plot.getBrkSectie())
-                    .subselectionGeometry(plot.getSubselectionGeometry())
-                    .plotFeature(plot.getPlotFeature())
-                    .projectRegistryLinkChangelog(newCl)
-                    .build());
+                        .brkGemeenteCode(plot.getBrkGemeenteCode())
+                        .brkPerceelNummer(plot.getBrkPerceelNummer())
+                        .brkSectie(plot.getBrkSectie())
+                        .subselectionGeometry(plot.getSubselectionGeometry())
+                        .plotFeature(plot.getPlotFeature())
+                        .projectRegistryLinkChangelog(newCl)
+                        .build());
             }
         }
 
@@ -210,13 +217,13 @@ public class ProjectService {
 
                 for (var oldClValue : oldCl.getValues()) {
                     repo.persist(ProjectRegistryLinkChangelogValue.builder()
-                        .brkGemeenteCode(oldClValue.getBrkGemeenteCode())
-                        .brkPerceelNummer(oldClValue.getBrkPerceelNummer())
-                        .brkSectie(oldClValue.getBrkSectie())
-                        .subselectionGeometry(oldClValue.getSubselectionGeometry())
-                        .plotFeature(oldClValue.getPlotFeature())
-                        .projectRegistryLinkChangelog(oldClAfterUpdate)
-                        .build());
+                            .brkGemeenteCode(oldClValue.getBrkGemeenteCode())
+                            .brkPerceelNummer(oldClValue.getBrkPerceelNummer())
+                            .brkSectie(oldClValue.getBrkSectie())
+                            .subselectionGeometry(oldClValue.getSubselectionGeometry())
+                            .plotFeature(oldClValue.getPlotFeature())
+                            .projectRegistryLinkChangelog(oldClAfterUpdate)
+                            .build());
                 }
             }
         }
@@ -424,7 +431,7 @@ public class ProjectService {
     }
 
     public void updateProjectUserGroups(VngRepository repo, Project project, UUID userGroupToAdd,
-                                        UUID userGroupToRemove, UUID loggedInUserUuid) {
+            UUID userGroupToRemove, UUID loggedInUserUuid) {
 
         UUID projectUuid = project.getId();
 
@@ -489,7 +496,8 @@ public class ProjectService {
             newPlanStatusChangelog = new ProjectPlanologischePlanstatusChangelog();
             newPlanStatusChangelog.setProject(project);
         }
-        ProjectPlanologischePlanstatusChangelog oldPlanStatusChangelog = prepareProjectChangelogValuesToUpdate(repo, project, project.getPlanologischePlanstatus(),
+        ProjectPlanologischePlanstatusChangelog oldPlanStatusChangelog = prepareProjectChangelogValuesToUpdate(repo, project,
+                project.getPlanologischePlanstatus(),
                 newPlanStatusChangelog,
                 oldPlanStatusChangelogAfterUpdate, loggedInUserUuid, updateDate);
         if (newPlanStatusChangelog != null) {
@@ -523,7 +531,8 @@ public class ProjectService {
         }
     }
 
-    public void updateProjectPlanTypes(VngRepository repo, Project project, @Nonnull Set<PlanType> newProjectPlanTypes, UUID loggedInUserUuid, LocalDate updateDate) {
+    public void updateProjectPlanTypes(VngRepository repo, Project project, @Nonnull Set<PlanType> newProjectPlanTypes, UUID loggedInUserUuid,
+            LocalDate updateDate) {
 
         ProjectPlanTypeChangelog oldPlanTypeChangelogAfterUpdate = new ProjectPlanTypeChangelog();
         ProjectPlanTypeChangelog newPlanTypeChangelog = null;
@@ -670,7 +679,7 @@ public class ProjectService {
     }
 
     public void updateProjectCategoryProperty(VngRepository repo, Project project, UUID propertyId, Set<UUID> newCategoryValues,
-                                              UUID loggedInUserUuid, LocalDate updateDate) {
+            UUID loggedInUserUuid, LocalDate updateDate) {
         ProjectCategoryPropertyChangelog oldChangelogAfterUpdate = new ProjectCategoryPropertyChangelog();
         ProjectCategoryPropertyChangelog newChangelog = null;
         if (newCategoryValues != null && !newCategoryValues.isEmpty()) {
@@ -791,13 +800,13 @@ public class ProjectService {
         ZonedDateTime zdtNow = ZonedDateTime.now();
         User loggedUser = repo.getReferenceById(User.class, loggedInUserUuid);
 
-        Milestone milestone = null;
         MilestoneState oldMilestoneState = null;
         MilestoneState newMilestoneState = new MilestoneState();
 
+        var startMilestone = project.getDuration().get(0).getStartMilestone();
+
         if (newStartDate != null) {
-            milestone = project.getDuration().get(0).getStartMilestone();
-            MilestoneModel projectStartMilestone = new MilestoneModel(milestone);
+            MilestoneModel projectStartMilestone = new MilestoneModel(startMilestone);
             LocalDate nextMilestoneDate = project.getMilestones().stream()
                     .map(MilestoneModel::new)
                     .filter(mm -> !Objects.equals(mm.getId(), projectStartMilestone.getId()) && mm.getStateId() != null)
@@ -807,31 +816,40 @@ public class ProjectService {
 
             if (nextMilestoneDate.isAfter(newStartDate)) {
                 oldMilestoneState = repo.findById(MilestoneState.class, projectStartMilestone.getStateId());
-                newMilestoneState.setMilestone(milestone);
+                newMilestoneState.setMilestone(startMilestone);
                 newMilestoneState.setDate(newStartDate);
-                milestone.getState().add(newMilestoneState);
+                startMilestone.getState().add(newMilestoneState);
             } else {
                 throw new VngBadRequestException("Update is not possible because new start date overlaps other existing milestones in this project");
             }
         }
 
         if (newEndDate != null) {
-            milestone = project.getDuration().get(0).getEndMilestone();
+            Milestone milestone = project.getDuration().get(0).getEndMilestone();
             MilestoneModel projectEndMilestone = new MilestoneModel(milestone);
-            LocalDate previousMilestoneDate = project.getMilestones().stream()
+
+            List<MilestoneModel> milestones = project.getMilestones()
+                    .stream()
                     .map(MilestoneModel::new)
+                    .sorted((a, b) -> a.getDate().compareTo(b.getDate()))
+                    .toList();
+
+            LocalDate previousMilestoneDate = milestones
+                    .stream()
                     .filter(mm -> !Objects.equals(mm.getId(), projectEndMilestone.getId()) && mm.getStateId() != null)
                     .map(MilestoneModel::getDate)
                     .max(LocalDate::compareTo)
                     .orElseThrow(() -> new VngServerErrorException("Project does not have active milestones"));
 
-            if (previousMilestoneDate.isBefore(newEndDate)) {
-                oldMilestoneState = repo.findById(MilestoneState.class, projectEndMilestone.getStateId());
-                newMilestoneState.setMilestone(milestone);
-                newMilestoneState.setDate(newEndDate);
-                milestone.getState().add(newMilestoneState);
-            } else {
-                throw new VngBadRequestException("Update is not possible because new end date overlaps other existing milestones in this project");
+            oldMilestoneState = repo.findById(MilestoneState.class, projectEndMilestone.getStateId());
+            newMilestoneState.setMilestone(milestone);
+            newMilestoneState.setDate(newEndDate);
+            milestone.getState().add(newMilestoneState);
+
+            if (!previousMilestoneDate.isBefore(newEndDate)) {
+                replaceProjectChangelogsForNewEndDate(repo, project, zdtNow, loggedUser, startMilestone, milestone);
+
+                // throw new VngBadRequestException("Update is not possible because new end date overlaps other existing milestones in this project");
             }
         }
 
@@ -848,15 +866,53 @@ public class ProjectService {
         }
     }
 
+    private void replaceProjectChangelogsForNewEndDate(VngRepository repo, Project project, ZonedDateTime zdtNow, User loggedUser, Milestone startMilestone,
+            Milestone endMilestone) {
+        for (var milestoneType : List.of(
+                ProjectPlanTypeChangelog.class,
+                ProjectNameChangelog.class,
+                ProjectPlanologischePlanstatusChangelog.class,
+                ProjectDurationChangelog.class,
+                ProjectRegistryLinkChangelog.class,
+                // ProjectBooleanCustomPropertyChangelog.class, // Custom property
+                // ProjectCategoryPropertyChangelog.class, // Custom property
+                // ProjectTextPropertyChangelog.class, // Custom property
+                // ProjectOrdinalPropertyChangelog.class, // Custom property
+                // ProjectNumericCustomPropertyChangelog.class, // Custom property
+                ProjectFaseChangelog.class)) {
+
+            var className = milestoneType.getSimpleName();
+
+            var changeLogs = repo.getSession()
+                    .createQuery("FROM " + className + " cl WHERE cl.project.id = :projectId", milestoneType)
+                    .setParameter("projectId", project.getId())
+                    .list();
+
+            milestoneService.replaceChangelogsWithSingleChangelog(repo, zdtNow, loggedUser, startMilestone, endMilestone, changeLogs);
+        }
+
+        var blocks = houseblockService.getProjectHouseblocks(repo, project.getId());
+        for (var block : blocks) {
+            for (var milestoneType : HouseblockDAO.plainHouseblockChangelogs.keySet()) {
+                var className = milestoneType.getSimpleName();
+                var changeLogs = repo.getSession()
+                        .createQuery("FROM " + className + " cl WHERE cl.houseblock.id = :houseblockId", milestoneType)
+                        .setParameter("houseblockId", block.getHouseblockId())
+                        .list();
+                milestoneService.replaceChangelogsWithSingleChangelog(repo, zdtNow, loggedUser, startMilestone, endMilestone, changeLogs);
+            }
+        }
+    }
 
     private <T extends MilestoneChangeDataSuperclass> T prepareProjectChangelogValuesToUpdate(VngRepository repo, Project project, List<T> changelogs,
-                                                                                              T newProjectChangelog, T oldProjectChangelogAfterUpdate, UUID loggedInUserUuid, LocalDate updateDate) {
+            T newProjectChangelog, T oldProjectChangelogAfterUpdate, UUID loggedInUserUuid, LocalDate updateDate) {
 
         Milestone projectStartMilestone = project.getDuration().get(0).getStartMilestone();
         Milestone projectEndMilestone = project.getDuration().get(0).getEndMilestone();
 
-        return prepareChangelogValuesToUpdate(repo, project, changelogs, newProjectChangelog, oldProjectChangelogAfterUpdate, loggedInUserUuid, projectStartMilestone,
-            projectEndMilestone, updateDate);
+        return prepareChangelogValuesToUpdate(repo, project, changelogs, newProjectChangelog, oldProjectChangelogAfterUpdate, loggedInUserUuid,
+                projectStartMilestone,
+                projectEndMilestone, updateDate);
     }
 
     public <T extends MilestoneChangeDataSuperclass> T prepareChangelogValuesToUpdate(VngRepository repo, Project project, List<T> changelogs,
@@ -878,22 +934,19 @@ public class ProjectService {
         if (startDate.isAfter(updateDate)) {
             finalUpdateDate = startDate;
             finalIsCurrentOrFuture = true;
-        }
-        else if (endDate.isBefore(updateDate)) {
+        } else if (endDate.isBefore(updateDate)) {
             finalUpdateDate = endDate;
             finalIsCurrentOrFuture = false;
-        }
-        else {
+        } else {
             finalUpdateDate = updateDate;
             finalIsCurrentOrFuture = true;
         }
 
-
         oldChangelog = changelogs.stream()
-            .filter(pc -> finalIsCurrentOrFuture ? !(new MilestoneModel(pc.getStartMilestone())).getDate().isAfter(finalUpdateDate)
-                && (new MilestoneModel(pc.getEndMilestone())).getDate().isAfter(finalUpdateDate) :
-                (new MilestoneModel(pc.getEndMilestone())).getDate().equals(finalUpdateDate))
-            .findFirst().orElse(null);
+                .filter(pc -> finalIsCurrentOrFuture ? !(new MilestoneModel(pc.getStartMilestone())).getDate().isAfter(finalUpdateDate)
+                        && (new MilestoneModel(pc.getEndMilestone())).getDate().isAfter(finalUpdateDate)
+                        : (new MilestoneModel(pc.getEndMilestone())).getDate().equals(finalUpdateDate))
+                .findFirst().orElse(null);
 
         Milestone updateMilestone = getOrCreateMilestoneForProject(repo, project, finalUpdateDate, loggedInUserUuid);
 
@@ -996,7 +1049,8 @@ public class ProjectService {
         return milestone;
     }
 
-    public List<ProjectAuditModel> getProjectAuditLog(VngRepository repo, UUID projectId, LocalDateTime startDateTime, LocalDateTime endDateTime, LoggedUser loggedUser) {
+    public List<ProjectAuditModel> getProjectAuditLog(VngRepository repo, UUID projectId, LocalDateTime startDateTime, LocalDateTime endDateTime,
+            LoggedUser loggedUser) {
         List<ProjectAuditSqlModel> sqlAuditLog = repo.getProjectsDAO().getProjectAuditLog(projectId, startDateTime, endDateTime, loggedUser);
         List<ProjectAuditModel> result = sqlAuditLog.stream().map(ProjectAuditModel::new).toList();
         return result;

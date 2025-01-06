@@ -1,6 +1,8 @@
 package nl.vng.diwi.generic;
 
+import org.hibernate.Session;
+
 public interface CopyObject {
 
-    Object getShallowCopy();
+    Object getCopyWithoutMilestones(Session session);
 }

@@ -1,5 +1,7 @@
 package nl.vng.diwi.dal.entities;
 
+import org.hibernate.Session;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -16,7 +18,7 @@ import nl.vng.diwi.dal.entities.superclasses.HouseblockMilestoneChangeDataSuperc
 public class HouseblockDurationChangelog extends HouseblockMilestoneChangeDataSuperclass {
 
     @Override
-    public Object getShallowCopy() {
+    public Object getCopyWithoutMilestones(Session session) {
         var newChangelog = new HouseblockDurationChangelog();
         newChangelog.setHouseblock(getHouseblock());
         newChangelog.setStartMilestone(getStartMilestone());
