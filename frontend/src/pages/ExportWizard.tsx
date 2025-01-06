@@ -2,14 +2,14 @@ import { useState, useContext } from "react";
 import { Grid, Box, Typography, Alert, Stack, Accordion, AccordionSummary, AccordionDetails, List } from "@mui/material";
 import { downloadExportData, exportProjects } from "../api/exportServices";
 import { t } from "i18next";
-import { ProjectsTableView } from "../components/project/ProjectsTableView";
 import ActionNotAllowed from "./ActionNotAllowed";
 import { useNavigate, useParams } from "react-router-dom";
-import { exchangeimportdata } from "../Paths";
+import { configuredExport, exchangeimportdata } from "../Paths";
 import UserContext from "../context/UserContext";
 import { ConfidentialityLevel } from "../types/enums";
 import { GridExpandMoreIcon } from "@mui/x-data-grid";
 import { PropertyListItem } from "../components/PropertyListItem";
+import ProjectsTableWrapper from "../components/project/ProjectTableWrapper";
 
 type DownloadError = {
     cat1?: string;
@@ -24,10 +24,11 @@ type DownloadError = {
 };
 const ExportWizard = () => {
     const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
-    const { id: selectedExportId } = useParams();
+    const { exportId } = useParams();
     const { allowedActions } = useContext(UserContext);
     const navigate = useNavigate();
     const [errors, setErrors] = useState<DownloadError[]>([]);
+
 
     if (!allowedActions.includes("VIEW_DATA_EXCHANGES")) {
         return <ActionNotAllowed errorMessage={t("admin.export.actionNotAllowed")} />;
@@ -39,16 +40,16 @@ const ExportWizard = () => {
 
     //this function doesnt do anything at the moment, functionality not implemented
     const handleExportProjects = async () => {
-        if (!selectedExportId) return;
+        if (!exportId) return;
         try {
-            await exportProjects(selectedExportId, selectedProjects);
+            await exportProjects(exportId, selectedProjects);
             console.log("Export successful");
         } catch (error) {
             console.error("Export failed", error);
         }
     };
     const handleDownload = async () => {
-        if (!selectedExportId) return;
+        if (!exportId) return;
 
         try {
             const projectIds = selectedProjects;
@@ -59,7 +60,7 @@ const ExportWizard = () => {
                 ...(projectIds.length > 0 ? { projectIds } : { confidentialityLevels }),
             };
 
-            await downloadExportData(selectedExportId, body);
+            await downloadExportData(exportId, body);
             setErrors([]);
         } catch (error: unknown) {
             if (Array.isArray(error)) {
@@ -77,8 +78,8 @@ const ExportWizard = () => {
                     <Typography variant="h6">{t("admin.export.title.selectProject")}</Typography>
                 </Grid>
                 <Grid item xs={12}>
-                    <ProjectsTableView
-                        isExportPage={true}
+                    <ProjectsTableWrapper
+                        redirectPath={configuredExport.toPath({ exportId })}
                         setSelectedProjects={setSelectedProjects}
                         selectedProjects={selectedProjects}
                         handleBack={handleBack}
