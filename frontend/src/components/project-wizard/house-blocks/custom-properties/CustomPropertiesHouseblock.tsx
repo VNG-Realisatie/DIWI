@@ -1,11 +1,10 @@
 import { Stack, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Property, getCustomPropertiesWithQuery } from "../../../../api/adminSettingServices";
 import { LabelComponent } from "../../../project/LabelComponent";
 import { WizardCard } from "../../WizardCard";
 import { CustomPropertyValue } from "../../../../api/customPropServices";
 import { CustomPropertyWidget } from "../../../CustomPropertyWidget";
+import { useCustomPropertyStore } from "../../../../context/CustomPropertiesContext";
 
 type Props = {
     readOnly: boolean;
@@ -14,29 +13,19 @@ type Props = {
 };
 
 export const CustomPropertiesHouseblock = ({ readOnly, customPropertyValues, setCustomPropertyValues }: Props) => {
-    const [customDefinitions, setCustomDefinitions] = useState<Property[]>([]);
-
+    const { customProperties } = useCustomPropertyStore();
     const { t } = useTranslation();
-
     const translationPath = "customProperties";
 
-    useEffect(() => {
-        getCustomPropertiesWithQuery("WONINGBLOK").then((properties) => {
-            // Make sure to filter out no longer active and 'default' properties
-            setCustomDefinitions(
-                properties.filter(
-                    (property) =>
-                        !property.disabled &&
-                        !(
-                            property.name === "physicalAppearance" ||
-                            property.name === "targetGroup" ||
-                            property.name === "priceRangeBuy" ||
-                            property.name === "priceRangeRent"
-                        ),
-                ),
-            );
-        });
-    }, []);
+    const customDefinitions = customProperties.filter(
+        (property) =>
+            !property.disabled &&
+            property.objectType === "WONINGBLOK" &&
+            property.name !== "physicalAppearance" &&
+            property.name !== "targetGroup" &&
+            property.name !== "priceRangeBuy" &&
+            property.name !== "priceRangeRent",
+    );
 
     const setCustomValue = (newValue: CustomPropertyValue) => {
         const newCustomValues = customPropertyValues.filter((val) => val.customPropertyId !== newValue.customPropertyId);

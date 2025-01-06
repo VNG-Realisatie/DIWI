@@ -3,7 +3,8 @@ import { useParams } from "react-router-dom";
 import { Project, getProject, getProjects, getProjectsSize } from "../api/projectsServices";
 import { components } from "../types/schema";
 import { GridPaginationModel } from "@mui/x-data-grid";
-import { getCustomPropertiesWithQuery, Property } from "../api/adminSettingServices";
+import { Property } from "../api/adminSettingServices";
+import { useCustomPropertyStore } from "./CustomPropertiesContext";
 
 export type ProjectType = null | components["schemas"]["ProjectListModel"];
 
@@ -29,16 +30,11 @@ export const ProjectProvider = ({ children }: PropsWithChildren) => {
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
     const [paginationInfo, setPaginationInfo] = useState<GridPaginationModel>({ page: 1, pageSize: 10 });
     const [totalProjectCount, setTotalProjectCount] = useState(0);
-    const [nonFixedCustomDefinitions, setNonFixedCustomDefinitions] = useState<Property[]>([]);
+    const { customProperties } = useCustomPropertyStore();
 
-    useEffect(() => {
-        getCustomPropertiesWithQuery("PROJECT").then((properties) => {
-            setNonFixedCustomDefinitions(
-                properties.filter((property) => !property.disabled && property.type !== "FIXED")
-            );
-        });
-    }, []);
-
+    const nonFixedCustomDefinitions: Property[] = customProperties.filter(
+        (property) => !property.disabled && property.type !== "FIXED" && property.objectType === "PROJECT",
+    );
 
     const updateProjects = useCallback(() => {
         getProjects(paginationInfo.page, paginationInfo.pageSize)

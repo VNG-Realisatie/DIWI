@@ -6,11 +6,12 @@ import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import PriceCategoriesDialog from "./PriceCategoriesDialog";
 import { useContext, useEffect, useState } from "react";
-import { CategoryType, Property, updateCustomProperty } from "../../api/adminSettingServices";
+import { CategoryType, Property } from "../../api/adminSettingServices";
 import DeleteDialog from "./DeleteDialog";
 import AlertContext from "../../context/AlertContext";
 import { formatMonetaryValue } from "../../utils/inputHelpers";
 import UserContext from "../../context/UserContext";
+import { useCustomPropertyStore } from "../../context/CustomPropertiesContext";
 
 type Category = {
     id: string;
@@ -22,10 +23,9 @@ type Category = {
 
 type Props = {
     property: Property;
-    setRangeCategories: (rangeCategories: Property[]) => void;
 };
 
-const PriceCategoriesTable = ({ property, setRangeCategories }: Props) => {
+const PriceCategoriesTable = ({ property }: Props) => {
     const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -35,6 +35,7 @@ const PriceCategoriesTable = ({ property, setRangeCategories }: Props) => {
     const [categories, setCategories] = useState<CategoryType[]>([]);
 
     const { allowedActions } = useContext(UserContext);
+    const { updateCustomProperty } = useCustomPropertyStore();
 
     useEffect(() => {
         const rows = (property.ranges ?? []).filter((range) => !range.disabled);
@@ -60,8 +61,7 @@ const PriceCategoriesTable = ({ property, setRangeCategories }: Props) => {
         };
 
         try {
-            const savedProperty = await updateCustomProperty(property.id, updatedProperty);
-            setRangeCategories([savedProperty]);
+            await updateCustomProperty(property.id, updatedProperty);
             setAlert(t("admin.priceCategories.successfullyDeleted"), "success");
         } catch (error) {
             if (error instanceof Error) setAlert(error.message, "error");
@@ -155,7 +155,6 @@ const PriceCategoriesTable = ({ property, setRangeCategories }: Props) => {
             <PriceCategoriesDialog
                 open={dialogOpen}
                 setOpen={setDialogOpen}
-                setRangeCategories={setRangeCategories}
                 id={property.id}
                 propertyName={property.name}
                 categoryToEdit={categoryToEdit}

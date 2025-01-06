@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from "react";
+import { createContext, useContext } from "react";
 import { customPropertyStore } from "../stores/CustomPropertiesStore";
 
 const CustomPropertyStoreContext = createContext<CustomPropertyStoreType | null>(null);

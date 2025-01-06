@@ -3,7 +3,7 @@ import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Input
 import InfoIcon from "@mui/icons-material/Info";
 import { useTranslation } from "react-i18next";
 import AlertContext from "../../context/AlertContext";
-import { getCustomProperty, updateCustomProperty, CategoryType, OrdinalCategoryType, Property, CustomPropertyStoreType } from "../../api/adminSettingServices";
+import { getCustomProperty, CategoryType, OrdinalCategoryType, Property, CustomPropertyStoreType } from "../../api/adminSettingServices";
 import { ObjectType, PropertyType } from "../../types/enums";
 import { objectType } from "../../types/enums";
 import { CategoryCreateOption } from "./CategoryCreateOption";
@@ -34,7 +34,7 @@ const PropertyDialog: React.FC<Props> = observer(({ openDialog, setOpenDialog, i
     const [activeProperty, setActiveProperty] = useState<Property>();
     const [mandatory, setMandatory] = useState(false);
     const [singleSelect, setSingleSelect] = useState(false);
-    const { addCustomProperty }: CustomPropertyStoreType = useCustomPropertyStore();
+    const { addCustomProperty, updateCustomProperty }: CustomPropertyStoreType = useCustomPropertyStore();
 
     const updateDialog = useCallback(
         (property: Property): void => {

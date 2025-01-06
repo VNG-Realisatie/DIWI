@@ -1,6 +1,6 @@
 import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import TextInput from "../project/inputs/TextInput";
-import { CategoryType, Property, updateCustomProperty } from "../../api/adminSettingServices";
+import { CategoryType, Property } from "../../api/adminSettingServices";
 import useAlert from "../../hooks/useAlert";
 import { t } from "i18next";
 import { useContext, useEffect, useState } from "react";
@@ -9,6 +9,7 @@ import { getDuplicatedPropertyInfo } from "../../utils/getDuplicatedPropertyInfo
 
 import UserContext from "../../context/UserContext";
 import { MAX_INT_IN_DOUBLE } from "../../widgets/constants";
+import { useCustomPropertyStore } from "../../context/CustomPropertiesContext";
 
 type RangeNumber = {
     value: number | null;
@@ -29,20 +30,20 @@ type Props = {
     setOpen: (open: boolean) => void;
     id: string | undefined;
     propertyName: string;
-    setRangeCategories: (rangeCategories: Property[]) => void;
     categoryToEdit?: Category | null;
     setCategoryToEdit: (category: Category | null) => void;
     title: string;
     categories: CategoryType[];
 };
 
-const PriceCategoriesDialog = ({ open, setOpen, id, propertyName, setRangeCategories, categoryToEdit, setCategoryToEdit, title, categories }: Props) => {
+const PriceCategoriesDialog = ({ open, setOpen, id, propertyName, categoryToEdit, setCategoryToEdit, title, categories }: Props) => {
     const [name, setName] = useState<string>("");
     const [rangeValue, setRangeValue] = useState<RangeNumber>({ value: null, min: null, max: null });
     const { setAlert } = useAlert();
     const [propertyDuplicationInfo, setPropertyDuplicationInfo] = useState<{ duplicatedStatus: boolean; duplicatedName: string }>();
     const [isRangeValid, setIsRangeValid] = useState<boolean>(true);
     const { allowedActions } = useContext(UserContext);
+    const { updateCustomProperty } = useCustomPropertyStore();
 
     useEffect(() => {
         if (categoryToEdit) {
@@ -80,8 +81,7 @@ const PriceCategoriesDialog = ({ open, setOpen, id, propertyName, setRangeCatego
             return;
         }
         try {
-            const savedProperty = await updateCustomProperty(id, newProperty);
-            setRangeCategories([savedProperty]);
+            await updateCustomProperty(id, newProperty);
             setAlert(t("admin.priceCategories.successfullySaved"), "success");
         } catch (error: unknown) {
             if (error instanceof Error) setAlert(error.message, "warning");
