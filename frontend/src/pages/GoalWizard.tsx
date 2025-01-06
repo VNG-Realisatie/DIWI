@@ -10,7 +10,7 @@ import { Dayjs } from "dayjs";
 import AlertContext from "../context/AlertContext";
 import { PropertyType } from "../types/enums";
 import { useNavigate, useParams } from "react-router-dom";
-import { CustomPropertyStoreType, getCustomProperties, Property } from "../api/adminSettingServices";
+import { CustomPropertyStoreType } from "../api/adminSettingServices";
 import { CustomPropertyWidget } from "../components/CustomPropertyWidget";
 import CategoryAutocomplete from "../components/goals/CategoryAutocomplete";
 import { SingleNumberInput } from "../components/project/inputs/SingleNumberInput";

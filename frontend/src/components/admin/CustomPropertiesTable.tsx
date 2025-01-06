@@ -1,7 +1,7 @@
 import { Box, Chip, Dialog, DialogActions, DialogTitle, Button, Tooltip, Stack } from "@mui/material";
 import { DataGrid, GridColDef, GridActionsCellItem, getGridStringOperators } from "@mui/x-data-grid";
 import { useTranslation } from "react-i18next";
-import { CategoryType, OrdinalCategoryType, CustomPropertyStoreType } from "../../api/adminSettingServices";
+import { CategoryType, OrdinalCategoryType, CustomPropertyStoreType, Property } from "../../api/adminSettingServices";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useContext, useState } from "react";
@@ -41,6 +41,14 @@ export const CustomPropertiesTable = observer(() => {
         } finally {
             setDialogOpen(false);
         }
+    };
+
+    const sortCustomProperties = (properties: Property[]) => {
+        return properties.sort((a, b) => {
+            const nameA = a.type === "FIXED" ? t(`admin.settings.fixedPropertyType.${a.name}`) : a.name;
+            const nameB = b.type === "FIXED" ? t(`admin.settings.fixedPropertyType.${b.name}`) : b.name;
+            return nameA.localeCompare(nameB);
+        });
     };
     const columns: GridColDef[] = [
         {
@@ -160,7 +168,7 @@ export const CustomPropertiesTable = observer(() => {
         <>
             <Stack id="custom-properties-table">
                 <DataGrid
-                    rows={customProperties.filter((row) => !row.disabled && row.propertyType !== "RANGE_CATEGORY")}
+                    rows={sortCustomProperties(customProperties.filter((row) => !row.disabled && row.propertyType !== "RANGE_CATEGORY"))}
                     rowHeight={70}
                     rowSelection={false}
                     columns={columns}

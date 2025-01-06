@@ -1,15 +1,24 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import TestComponentWrapper from "../../test/TestComponentWrapper";
+import TestComponent from "../../test/TestComponentWrapper";
 import PropertyDialog from "./PropertyDialog";
 
 import { vi } from "vitest";
 import { Property, addCustomProperty, getCustomProperties, getCustomProperty } from "../../api/adminSettingServices";
+import { CustomPropertyStoreProvider } from "../../context/CustomPropertiesContext";
 
 vi.mock("../../api/adminSettingServices");
 
 const addCustomPropertyMock = addCustomProperty as jest.Mock;
 const getCustomPropertiesMock = getCustomProperties as jest.Mock;
 const getCustomPropertyMock = getCustomProperty as jest.Mock;
+
+const TestComponentWrapper = ({ children }: { children: React.ReactNode }) => {
+    return (
+        <TestComponent>
+            <CustomPropertyStoreProvider>{children}</CustomPropertyStoreProvider>
+        </TestComponent>
+    );
+};
 
 describe("PropertyDialog", () => {
     const customProperties: Property[] = [];
@@ -23,7 +32,7 @@ describe("PropertyDialog", () => {
         const setOpenDialog = vi.fn();
         render(
             <TestComponentWrapper>
-                <PropertyDialog openDialog={true} setOpenDialog={setOpenDialog} setCustomProperties={vi.fn()} />
+                <PropertyDialog openDialog={true} setOpenDialog={setOpenDialog} />
             </TestComponentWrapper>,
         );
 
@@ -74,13 +83,13 @@ describe("PropertyDialog", () => {
 
         const { rerender } = render(
             <TestComponentWrapper>
-                <PropertyDialog openDialog={true} setOpenDialog={vi.fn()} setCustomProperties={vi.fn()} id="17" />
+                <PropertyDialog openDialog={true} setOpenDialog={vi.fn()} id="17" />
             </TestComponentWrapper>,
         );
 
         rerender(
             <TestComponentWrapper>
-                <PropertyDialog openDialog={true} setOpenDialog={vi.fn()} setCustomProperties={vi.fn()} id="17" />
+                <PropertyDialog openDialog={true} setOpenDialog={vi.fn()} id="17" />
             </TestComponentWrapper>,
         );
 
@@ -133,13 +142,13 @@ it("ensures singleSelect is true or false for CATEGORY propertyType", async () =
 
     const { rerender } = render(
         <TestComponentWrapper>
-            <PropertyDialog openDialog={true} setOpenDialog={vi.fn()} setCustomProperties={vi.fn()} id="18" />
+            <PropertyDialog openDialog={true} setOpenDialog={vi.fn()} id="18" />
         </TestComponentWrapper>,
     );
 
     rerender(
         <TestComponentWrapper>
-            <PropertyDialog openDialog={true} setOpenDialog={vi.fn()} setCustomProperties={vi.fn()} id="18" />
+            <PropertyDialog openDialog={true} setOpenDialog={vi.fn()} id="18" />
         </TestComponentWrapper>,
     );
 

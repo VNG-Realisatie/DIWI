@@ -2,11 +2,9 @@ import { Stack, Typography } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { useTranslation } from "react-i18next";
 import { useContext, useState } from "react";
-import { CustomPropertyStoreType } from "../../api/adminSettingServices";
 import { CustomPropertiesTable } from "./CustomPropertiesTable";
 import PropertyDialog from "./PropertyDialog";
 import UserContext from "../../context/UserContext";
-import { useCustomPropertyStore } from "../../context/CustomPropertiesContext";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const rowStyle = {
@@ -18,7 +16,6 @@ export const Settings = () => {
     const { t } = useTranslation();
 
     const { allowedActions } = useContext(UserContext);
-    // const { customProperties, fetchCustomProperties, addCustomProperty }: CustomPropertyStoreType = useCustomPropertyStore();
 
     return (
         <Stack mt={2} mb={5} mx={2} pb={3}>
