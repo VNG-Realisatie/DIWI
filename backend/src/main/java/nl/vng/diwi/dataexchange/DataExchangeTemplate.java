@@ -37,7 +37,7 @@ public class DataExchangeTemplate {
     public static final ImmutableMap<DataExchangeType, DataExchangeTemplate> templates;
 
     static {
-        DataExchangeTemplate zuidHollandTemplate = new DataExchangeTemplate();
+        var zuidHollandTemplate = new DataExchangeTemplate();
 
         zuidHollandTemplate.properties.add(new TemplateProperty(
                 EsriZuidHollandProjectProps.opdrachtgever_type.name(),
@@ -106,6 +106,9 @@ public class DataExchangeTemplate {
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_short8.name(), ObjectType.PROJECT, List.of(PropertyType.NUMERIC), false, null, null));
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_short9.name(), ObjectType.PROJECT, List.of(PropertyType.NUMERIC), false, null, null));
 
-        templates = ImmutableMap.of(DataExchangeType.ESRI_ZUID_HOLLAND, zuidHollandTemplate);
+
+        var geoJSONTemplate = new DataExchangeTemplate();
+
+        templates = ImmutableMap.of(DataExchangeType.ESRI_ZUID_HOLLAND, zuidHollandTemplate, DataExchangeType.GEO_JSON, geoJSONTemplate);
     }
 }
