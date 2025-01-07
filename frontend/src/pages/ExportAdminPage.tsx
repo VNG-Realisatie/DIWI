@@ -38,6 +38,8 @@ type FormData = {
     [key: string]: string;
 };
 
+type ExportTypes = "ESRI_ZUID_HOLLAND" | "GEO_JSON";
+
 function ExportAdminPage() {
     const { t } = useTranslation();
     const { id } = useParams<string>();
@@ -47,9 +49,12 @@ function ExportAdminPage() {
         ESRI_ZUID_HOLLAND: {
             fields: [{ name: "name", label: t("admin.export.name"), type: "text", mandatory: true }],
         },
+        GEO_JSON: {
+            fields: [{ name: "name", label: t("admin.export.name"), type: "text", mandatory: true }],
+        },
         // Other types can be added here in the future
     };
-    const [type, setType] = useState<string>("ESRI_ZUID_HOLLAND");
+    const [type, setType] = useState<ExportTypes>("ESRI_ZUID_HOLLAND");
     const [formData, setFormData] = useState<FormData>(generateInitialState(type));
     const [properties, setProperties] = useState<ExportProperty[]>([]);
     const [customProperties, setCustomProperties] = useState<Property[]>([]);
@@ -169,7 +174,10 @@ function ExportAdminPage() {
                         readOnly={false}
                         mandatory={true}
                         title="Type"
-                        options={[{ name: "ESRI_ZUID_HOLLAND", id: "ESRI_ZUID_HOLLAND" }]}
+                        options={[
+                            { name: t("admin.export.ESRI_ZUID_HOLLAND"), id: "ESRI_ZUID_HOLLAND" },
+                            { name: t("admin.export.GEO_JSON"), id: "GEO_JSON" },
+                        ]}
                         multiple={false}
                     />
                 </Grid>

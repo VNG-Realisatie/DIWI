@@ -25,6 +25,7 @@ import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.services.export.geojson.GeoJSONExport;
 import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandExport;
 
 import java.time.ZonedDateTime;
@@ -62,7 +63,6 @@ public class DataExchangeService {
 
         return model;
     }
-
 
     public UUID createDataExchange(VngRepository repo, DataExchangeModel model, ZonedDateTime zdtNow, UUID loggedUserUuid) {
 
@@ -231,6 +231,8 @@ public class DataExchangeService {
         List<PropertyModel> customProps = repo.getPropertyDAO().getPropertiesList(null, false, null);
         return switch (dataExchangeModel.getType()) {
             case ESRI_ZUID_HOLLAND -> EsriZuidHollandExport.buildExportObject(configModel, projects, customProps, dxPropertiesMap, dxExportModel.getExportDate(),
+                configModel.getMinimumExportConfidentiality(), errors);
+                case GEO_JSON -> GeoJSONExport.buildExportObject(configModel, projects, customProps, dxPropertiesMap, dxExportModel.getExportDate(),
                 configModel.getMinimumExportConfidentiality(), errors);
         };
 
