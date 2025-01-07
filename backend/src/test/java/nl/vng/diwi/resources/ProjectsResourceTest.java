@@ -71,6 +71,7 @@ import nl.vng.diwi.services.ProjectService;
 import nl.vng.diwi.services.ProjectServiceTest;
 import nl.vng.diwi.services.PropertiesService;
 import nl.vng.diwi.services.UserGroupService;
+import nl.vng.diwi.testutil.ProjectsUtil;
 import nl.vng.diwi.testutil.TestDb;
 
 public class ProjectsResourceTest {
@@ -279,46 +280,25 @@ public class ProjectsResourceTest {
         // Create an end date earlier than today so it will be before the milestones we end up creating
         LocalDate newEndDate = today.minusDays(5);
 
-        // Some set-up to get the users matching
-        UserGroupModel owner1 = new UserGroupModel(userGroup);
-        owner1.setName("UG");
-        UserGroupUserModel ugum = new UserGroupUserModel();
-        ugum.setFirstName(userState.getFirstName());
-        ugum.setInitials("");
-        ugum.setLastName(userState.getLastName());
-        ugum.setInitials("LF");
-        ugum.setUserGroupName("UG");
-        owner1.setUsers(List.of(ugum));
-        List<UserGroupModel> owners = List.of(owner1);
-
         // Get fixed properties
         var physicalAppearance = propertiesService.getCategoryStatesByPropertyName(repo, Constants.FIXED_PROPERTY_PHYSICAL_APPEARANCE);
         var targetGroup = propertiesService.getCategoryStatesByPropertyName(repo, Constants.FIXED_PROPERTY_TARGET_GROUP);
 
-        // Create the project
-        var originalProjectModel = new ProjectCreateSnapshotModel();
-        originalProjectModel.setStartDate(startDate);
-        originalProjectModel.setEndDate(endDate);
-        originalProjectModel.setProjectName("changeEndDate project");
-        originalProjectModel.setProjectColor("#abcdef");
-        originalProjectModel.setConfidentialityLevel(Confidentiality.EXTERNAL_GOVERNMENTAL);
-        originalProjectModel.setProjectPhase(ProjectPhase._5_PREPARATION);
-        originalProjectModel.setProjectOwners(owners);
-
-        ProjectMinimalSnapshotModel createdProject = projectResource.createProject(loggedUser, originalProjectModel);
-        repo.getSession().clear();
-        UUID projectId = createdProject.getProjectId();
-
-        // Create a block
-        var originalBlockModel = new HouseblockSnapshotModel();
-        originalBlockModel.setStartDate(startDate);
-        originalBlockModel.setEndDate(endDate);
-        originalBlockModel.setHouseblockName("changeEndDate block");
-        originalBlockModel.setProjectId(projectId);
-
-        var createdBlock = blockResource.createHouseblock(loggedUser, originalBlockModel);
-        repo.getSession().clear();
-        UUID houseblockId = createdBlock.getHouseblockId();
+        // Create the initial project and block
+        var fixture = ProjectsUtil.createTestProject(
+                userGroup,
+                userState,
+                startDate,
+                endDate,
+                dal,
+                testDb.projectConfig,
+                repo,
+                loggedUser);
+        var originalProjectModel = fixture.getProject();
+        var projectId = originalProjectModel.getProjectId();
+        var originalBlockModel = fixture.getBlocks().get(0);
+        var houseblockId = originalBlockModel.getHouseblockId();
+        var owners = fixture.getOwners();
 
         // Create model and change everything except the start date, end date and the id to create a lot of milestones on the current day
         var updateProjectModel = jsonCopy(originalProjectModel, ProjectSnapshotModel.class);
@@ -384,7 +364,7 @@ public class ProjectsResourceTest {
         // Check if the house block end date has changed as well
         HouseblockSnapshotModel expectedHouseblockModel = jsonCopy(originalBlockModel, HouseblockSnapshotModel.class);
         expectedHouseblockModel.setEndDate(newEndDate);
-        assertThat(blockResource.getCurrentHouseblockSnapshot(createdBlock.getHouseblockId()))
+        assertThat(blockResource.getCurrentHouseblockSnapshot(houseblockId))
                 .isEqualTo(expectedHouseblockModel);
 
         //
