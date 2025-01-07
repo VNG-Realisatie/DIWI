@@ -5,7 +5,7 @@ import { LabelComponent } from "../LabelComponent";
 import { Typography } from "@mui/material";
 import { t } from "i18next";
 import { CellContainer } from "./CellContainer";
-import { useCustomPropertyStore } from "../../../context/CustomPropertiesContext";
+import { useCustomPropertyStore } from "../../../hooks/useCustomPropertyStore";
 
 type Props = {
     readOnly: boolean;

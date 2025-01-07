@@ -4,7 +4,7 @@ import { Project, getProject, getProjects, getProjectsSize } from "../api/projec
 import { components } from "../types/schema";
 import { GridPaginationModel } from "@mui/x-data-grid";
 import { Property } from "../api/adminSettingServices";
-import { useCustomPropertyStore } from "./CustomPropertiesContext";
+import { useCustomPropertyStore } from "../hooks/useCustomPropertyStore";
 
 export type ProjectType = null | components["schemas"]["ProjectListModel"];
 

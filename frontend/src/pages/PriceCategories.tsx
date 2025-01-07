@@ -1,8 +1,8 @@
 import PriceCategoriesTable from "../components/price-categories/PriceCategoriesTable";
 import { Typography } from "@mui/material";
 import { t } from "i18next";
-import { useCustomPropertyStore } from "../context/CustomPropertiesContext";
 import { observer } from "mobx-react-lite";
+import { useCustomPropertyStore } from "../hooks/useCustomPropertyStore";
 
 const PriceCategories = observer(() => {
     const { customProperties } = useCustomPropertyStore();

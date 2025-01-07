@@ -11,7 +11,7 @@ import { getDuplicatedPropertyInfo } from "../../utils/getDuplicatedPropertyInfo
 import PropertyTypeSelect from "./PropertyTypeSelect";
 import PropertyCheckboxGroup from "./PropertyCheckboxGroup";
 import { observer } from "mobx-react-lite";
-import { useCustomPropertyStore } from "../../context/CustomPropertiesContext";
+import { useCustomPropertyStore } from "../../hooks/useCustomPropertyStore";
 
 interface Props {
     openDialog: boolean;

@@ -4,7 +4,7 @@ import { LabelComponent } from "../../../project/LabelComponent";
 import { WizardCard } from "../../WizardCard";
 import { CustomPropertyValue } from "../../../../api/customPropServices";
 import { CustomPropertyWidget } from "../../../CustomPropertyWidget";
-import { useCustomPropertyStore } from "../../../../context/CustomPropertiesContext";
+import { useCustomPropertyStore } from "../../../../hooks/useCustomPropertyStore";
 
 type Props = {
     readOnly: boolean;

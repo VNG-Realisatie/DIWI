@@ -13,7 +13,7 @@ import { LabelComponent } from "../components/project/LabelComponent";
 import { exportSettings, updateExportSettings } from "../Paths";
 import UserContext from "../context/UserContext";
 import { doesPropertyMatchExportProperty } from "../utils/exportUtils";
-import { useCustomPropertyStore } from "../context/CustomPropertiesContext";
+import { useCustomPropertyStore } from "../hooks/useCustomPropertyStore";
 
 type SelectedOption = {
     id: string;

@@ -7,7 +7,7 @@ import CategoryInput from "../../../project/inputs/CategoryInput";
 import RangeNumberInput from "../../../project/inputs/RangeNumberInput";
 import InputLabelStack from "../../../project/inputs/InputLabelStack";
 import { useEffect } from "react";
-import { useCustomPropertyStore } from "../../../../context/CustomPropertiesContext";
+import { useCustomPropertyStore } from "../../../../hooks/useCustomPropertyStore";
 
 const translationPath = "createProject.houseBlocksForm";
 

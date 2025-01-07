@@ -11,7 +11,7 @@ import DeleteDialog from "./DeleteDialog";
 import AlertContext from "../../context/AlertContext";
 import { formatMonetaryValue } from "../../utils/inputHelpers";
 import UserContext from "../../context/UserContext";
-import { useCustomPropertyStore } from "../../context/CustomPropertiesContext";
+import { useCustomPropertyStore } from "../../hooks/useCustomPropertyStore";
 
 type Category = {
     id: string;

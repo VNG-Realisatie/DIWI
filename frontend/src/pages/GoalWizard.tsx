@@ -20,7 +20,7 @@ import { OwnershipRowInputs } from "../components/project-wizard/house-blocks/ow
 import { OwnershipSingleValue } from "../types/houseBlockTypes";
 import ActionNotAllowed from "./ActionNotAllowed";
 import UserContext from "../context/UserContext";
-import { useCustomPropertyStore } from "../context/CustomPropertiesContext";
+import { useCustomPropertyStore } from "../hooks/useCustomPropertyStore";
 
 const emptyGoal = {
     startDate: "",

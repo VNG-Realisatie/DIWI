@@ -4,7 +4,7 @@ import PropertyDialog from "./PropertyDialog";
 
 import { vi } from "vitest";
 import { Property, addCustomProperty, getCustomProperties, getCustomProperty } from "../../api/adminSettingServices";
-import { CustomPropertyStoreProvider } from "../../context/CustomPropertiesContext";
+import { CustomPropertyStoreProvider } from "../../context/CustomPropertiesProvider";
 
 vi.mock("../../api/adminSettingServices");
 

@@ -4,7 +4,7 @@ import ProjectContext from "./ProjectContext";
 import * as houseBlockService from "../api/houseBlockServices";
 import { useCustomPropertyDefinitions } from "../hooks/useCustomPropertyDefinitions";
 import { Property } from "../api/adminSettingServices";
-import { useCustomPropertyStore } from "./CustomPropertiesContext";
+import { useCustomPropertyStore } from "../hooks/useCustomPropertyStore";
 
 type HouseBlockContextType = {
     houseBlocks: HouseBlockWithCustomProperties[];

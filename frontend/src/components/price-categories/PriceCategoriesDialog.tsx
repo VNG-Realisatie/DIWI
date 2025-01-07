@@ -9,7 +9,7 @@ import { getDuplicatedPropertyInfo } from "../../utils/getDuplicatedPropertyInfo
 
 import UserContext from "../../context/UserContext";
 import { MAX_INT_IN_DOUBLE } from "../../widgets/constants";
-import { useCustomPropertyStore } from "../../context/CustomPropertiesContext";
+import { useCustomPropertyStore } from "../../hooks/useCustomPropertyStore";
 
 type RangeNumber = {
     value: number | null;

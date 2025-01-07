@@ -6,7 +6,7 @@ import TestComponentWrapper from "../test/TestComponentWrapper";
 import ProjectWizard from "./ProjectWizard";
 import UserContext from "../context/UserContext";
 import { UserRole } from "../api/userServices";
-import { CustomPropertyStoreProvider } from "../context/CustomPropertiesContext";
+import { CustomPropertyStoreProvider } from "../context/CustomPropertiesProvider";
 
 const mockUser = {
     name: "Test User",

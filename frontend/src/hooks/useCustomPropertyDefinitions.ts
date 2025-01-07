@@ -1,5 +1,5 @@
 import { components } from "../types/schema";
-import { useCustomPropertyStore } from "../context/CustomPropertiesContext";
+import { useCustomPropertyStore } from "./useCustomPropertyStore";
 
 type Categories = components["schemas"]["SelectDisabledModel"];
 export type CategoriesStrict = Required<Categories>;

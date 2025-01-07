@@ -1,6 +1,6 @@
 import { CategoryType } from "../api/adminSettingServices";
 import { SelectModel } from "../api/projectsServices";
-import { useCustomPropertyStore } from "../context/CustomPropertiesContext";
+import { useCustomPropertyStore } from "./useCustomPropertyStore";
 
 const useProperties = () => {
     const { customProperties } = useCustomPropertyStore();

@@ -6,15 +6,12 @@ import reportWebVitals from "./reportWebVitals";
 import "./i18n";
 import { registerTransformations } from "./utils/gis";
 import { UserProvider } from "./context/UserContext";
-import { CustomPropertyStoreProvider } from "./context/CustomPropertiesContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(
     <React.StrictMode>
         <UserProvider>
-            <CustomPropertyStoreProvider>
-                <App />
-            </CustomPropertyStoreProvider>
+            <App />
         </UserProvider>
     </React.StrictMode>,
 );

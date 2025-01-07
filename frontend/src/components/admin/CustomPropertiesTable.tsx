@@ -9,8 +9,8 @@ import AlertContext from "../../context/AlertContext";
 import PropertyDialog from "./PropertyDialog";
 import ActionNotAllowed from "../../pages/ActionNotAllowed";
 import UserContext from "../../context/UserContext";
-import { useCustomPropertyStore } from "../../context/CustomPropertiesContext";
 import { observer } from "mobx-react-lite";
+import { useCustomPropertyStore } from "../../hooks/useCustomPropertyStore";
 
 export const CustomPropertiesTable = observer(() => {
     const [dialogOpen, setDialogOpen] = useState(false);
