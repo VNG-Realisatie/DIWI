@@ -17,7 +17,7 @@ const ProjectAuditTable = () => {
 
     const fetchAuditLogs = useCallback(async () => {
         const formattedStartDate = startDate ? encodeURIComponent(startDate.format("YYYY-MM-DDTHH:mm:ss")) : "";
-        const formattedEndDate = endDate ? encodeURIComponent(endDate.format("YYYY-MM-DDTHH:mm:ss")) : "";
+        const formattedEndDate = endDate ? encodeURIComponent(endDate.endOf("day").format("YYYY-MM-DDTHH:mm:ss")) : "";
         const query = `projectId=${projectId}&startTime=${formattedStartDate}&endTime=${formattedEndDate}`;
         const logs = await getProjectAudit(query);
         setAuditLogs(logs);
