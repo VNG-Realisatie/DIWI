@@ -1,7 +1,9 @@
 package nl.vng.diwi.models;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.With;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 
 import java.time.LocalDate;
@@ -9,6 +11,8 @@ import java.util.List;
 import java.util.UUID;
 
 @Data
+@With
+@AllArgsConstructor
 @NoArgsConstructor
 public class DataExchangeExportModel {
 

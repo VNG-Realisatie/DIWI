@@ -1,6 +1,7 @@
 package nl.vng.diwi.testutil;
 
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -13,8 +14,11 @@ import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.UserGroupDAO;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.PropertyCategoryValueState;
+import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.dal.entities.UserGroup;
+import nl.vng.diwi.dal.entities.UserGroupState;
 import nl.vng.diwi.dal.entities.UserState;
+import nl.vng.diwi.dal.entities.UserToUserGroup;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.generic.Constants;
@@ -26,6 +30,7 @@ import nl.vng.diwi.models.superclasses.ProjectMinimalSnapshotModel;
 import nl.vng.diwi.resources.HouseblockResource;
 import nl.vng.diwi.resources.ProjectsResource;
 import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.security.UserRole;
 import nl.vng.diwi.services.ExcelImportService;
 import nl.vng.diwi.services.GeoJsonImportService;
 import nl.vng.diwi.services.HouseblockService;
@@ -105,5 +110,38 @@ public class ProjectsUtil {
                 .blocks(List.of(createdBlock))
                 .owners(owners)
                 .build();
+    }
+
+    public static UserState persistUserAndUserGroup(VngRepository repo, User user, UserGroup userGroup, ZonedDateTime now) {
+        repo.persist(user);
+
+        userGroup.setSingleUser(true);
+        repo.persist(userGroup);
+
+        UserState userState = new UserState();
+        userState.setChangeStartDate(now);
+        userState.setUser(user);
+        userState.setFirstName("FN");
+        userState.setLastName("LN");
+        userState.setCreateUser(user);
+        userState.setIdentityProviderId("identityProviderId");
+        userState.setUserRole(UserRole.UserPlus);
+        repo.persist(userState);
+
+        UserGroupState userGroupState = new UserGroupState();
+        userGroupState.setName("UG");
+        userGroupState.setUserGroup(userGroup);
+        userGroupState.setCreateUser(user);
+        userGroupState.setChangeStartDate(now);
+        repo.persist(userGroupState);
+
+        UserToUserGroup utug = new UserToUserGroup();
+        utug.setUser(user);
+        utug.setUserGroup(userGroup);
+        utug.setCreateUser(user);
+        utug.setChangeStartDate(now);
+        repo.persist(utug);
+
+        return userState;
     }
 }

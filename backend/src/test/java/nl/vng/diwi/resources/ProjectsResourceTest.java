@@ -32,10 +32,8 @@ import nl.vng.diwi.dal.entities.Project;
 import nl.vng.diwi.dal.entities.ProjectNameChangelog;
 import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.dal.entities.UserGroup;
-import nl.vng.diwi.dal.entities.UserGroupState;
 import nl.vng.diwi.dal.entities.UserGroupToProject;
 import nl.vng.diwi.dal.entities.UserState;
-import nl.vng.diwi.dal.entities.UserToUserGroup;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.MutationType;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
@@ -46,18 +44,14 @@ import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.models.AmountModel;
 import nl.vng.diwi.models.DatedDataModel;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
+import nl.vng.diwi.models.HouseblockSnapshotModel.HouseType;
+import nl.vng.diwi.models.HouseblockSnapshotModel.Mutation;
+import nl.vng.diwi.models.HouseblockSnapshotModel.OwnershipValue;
 import nl.vng.diwi.models.LocationModel;
 import nl.vng.diwi.models.MilestoneModel;
 import nl.vng.diwi.models.ProjectSnapshotModel;
 import nl.vng.diwi.models.ProjectTimelineModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
-import nl.vng.diwi.models.UserGroupModel;
-import nl.vng.diwi.models.UserGroupUserModel;
-import nl.vng.diwi.models.HouseblockSnapshotModel.HouseType;
-import nl.vng.diwi.models.HouseblockSnapshotModel.Mutation;
-import nl.vng.diwi.models.HouseblockSnapshotModel.OwnershipValue;
-import nl.vng.diwi.models.superclasses.ProjectCreateSnapshotModel;
-import nl.vng.diwi.models.superclasses.ProjectMinimalSnapshotModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotAllowedException;
 import nl.vng.diwi.rest.VngNotFoundException;
@@ -97,7 +91,7 @@ public class ProjectsResourceTest {
     private User user;
     private UserGroup userGroup;
     private LoggedUser loggedUser;
-    private ZonedDateTime now = ZonedDateTime.now();
+    public ZonedDateTime now = ZonedDateTime.now();
     private LocalDate today = now.toLocalDate();
     private HouseblockResource blockResource;
     private UserState userState;
@@ -119,7 +113,7 @@ public class ProjectsResourceTest {
             user = new User();
             userGroup = new UserGroup();
 
-            userState = persistUserAndUserGroup(repo, user, userGroup);
+            userState = ProjectsUtil.persistUserAndUserGroup(repo, user, userGroup, now);
 
             transaction.commit();
             repo.getSession().clear();
@@ -463,38 +457,5 @@ public class ProjectsResourceTest {
     private <T> T jsonCopy(Object original, Class<T> targetType) throws JsonProcessingException, JsonMappingException {
         return objectMapper
                 .readValue(objectMapper.writeValueAsString(original), targetType);
-    }
-
-    private UserState persistUserAndUserGroup(VngRepository repo, User user, UserGroup userGroup) {
-        repo.persist(user);
-
-        userGroup.setSingleUser(true);
-        repo.persist(userGroup);
-
-        UserState userState = new UserState();
-        userState.setChangeStartDate(now);
-        userState.setUser(user);
-        userState.setFirstName("FN");
-        userState.setLastName("LN");
-        userState.setCreateUser(user);
-        userState.setIdentityProviderId("identityProviderId");
-        userState.setUserRole(UserRole.UserPlus);
-        repo.persist(userState);
-
-        UserGroupState userGroupState = new UserGroupState();
-        userGroupState.setName("UG");
-        userGroupState.setUserGroup(userGroup);
-        userGroupState.setCreateUser(user);
-        userGroupState.setChangeStartDate(now);
-        repo.persist(userGroupState);
-
-        UserToUserGroup utug = new UserToUserGroup();
-        utug.setUser(user);
-        utug.setUserGroup(userGroup);
-        utug.setCreateUser(user);
-        utug.setChangeStartDate(now);
-        repo.persist(utug);
-
-        return userState;
     }
 }
