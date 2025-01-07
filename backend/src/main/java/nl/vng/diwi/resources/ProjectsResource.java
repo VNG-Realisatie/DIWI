@@ -707,8 +707,8 @@ public class ProjectsResource {
         //save file to disk
         String fileSuffix = LocalDateTime.now().format(formatter);
         String filename = "excel_import_" + fileSuffix + ".xlsx";
-        String filePath = projectConfig.getDataDir() + filename;
-        java.nio.file.Path path = Paths.get(filePath);
+        java.nio.file.Path path = java.nio.file.Path.of(projectConfig.getDataDir(), filename);
+        var filePath = path.toString();
         try {
             Files.copy(inputStream, path, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
