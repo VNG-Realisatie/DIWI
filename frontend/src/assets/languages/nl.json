@@ -433,30 +433,30 @@
       },
       "labels": {
         "ESRI_ZUID_HOLLAND": {
-            "beoogd_woonmilieu_ABF5": "Beoogd woonmilieu ABF5",
-            "beoogd_woonmilieu_ABF13": "Beoogd woonmilieu ABF13",
-            "bestemmingsplan": "Bestemmingsplan",
-            "knelpunten_meerkeuze": "Belangrijkste knelpunten",
-            "masterplan": "Masterplan",
-            "opdrachtgever_naam": "Opdrachtgever naam",
-            "opdrachtgever_type": "Opdrachtgever type",
-            "opmerkingen_basis": "Opmerkingen basis informatie",
-            "opmerkingen_kwalitatief": "Opmerkingen kwalitatieve informatie",
-            "opmerkingen_status": "Opmerkingen status informatie",
-            "ph_short2": "Aantal studentenwoningen",
-            "ph_short7": "Aantal geclusterde ouderenwoningen",
-            "ph_short8": "Aantal nultredenwoningen",
-            "ph_short9": "Aantal zorggeschikte woningen",
-            "ph_text1": "Categorie planlijst",
-            "ph_text3": "Flexwoningen",
-            "ph_text4": "Tijdelijke woningen",
-            "ph_text5": "Realiseerbaarheid",
-            "ph_text6": "Energieneutraal bouwen",
-            "ph_text7": "Klimaatadaptief bouwen",
-            "ph_text8": "Warmtevoorziening",
-            "toelichting_knelpunten": "Toelichting knelpunten",
-            "verhuurder_type": "Verhuurder type"
-          }
+          "beoogd_woonmilieu_ABF5": "Beoogd woonmilieu ABF5",
+          "beoogd_woonmilieu_ABF13": "Beoogd woonmilieu ABF13",
+          "bestemmingsplan": "Bestemmingsplan",
+          "knelpunten_meerkeuze": "Belangrijkste knelpunten",
+          "masterplan": "Masterplan",
+          "opdrachtgever_naam": "Opdrachtgever naam",
+          "opdrachtgever_type": "Opdrachtgever type",
+          "opmerkingen_basis": "Opmerkingen basis informatie",
+          "opmerkingen_kwalitatief": "Opmerkingen kwalitatieve informatie",
+          "opmerkingen_status": "Opmerkingen status informatie",
+          "ph_short2": "Aantal studentenwoningen",
+          "ph_short7": "Aantal geclusterde ouderenwoningen",
+          "ph_short8": "Aantal nultredenwoningen",
+          "ph_short9": "Aantal zorggeschikte woningen",
+          "ph_text1": "Categorie planlijst",
+          "ph_text3": "Flexwoningen",
+          "ph_text4": "Tijdelijke woningen",
+          "ph_text5": "Realiseerbaarheid",
+          "ph_text6": "Energieneutraal bouwen",
+          "ph_text7": "Klimaatadaptief bouwen",
+          "ph_text8": "Warmtevoorziening",
+          "toelichting_knelpunten": "Toelichting knelpunten",
+          "verhuurder_type": "Verhuurder type"
+        }
       }
     },
     "policy": {
@@ -647,6 +647,8 @@
     },
     "admin": {
       "export": {
+        "ESRI_ZUID_HOLLAND": "ESRI Zuid-Holland",
+        "GEO_JSON": "DIWI GeoJSON",
         "title": {
           "selectProject": "Selecteer Projecten om te Exporteren",
           "selectExport": "Selecteer Gegevens Exporteren"

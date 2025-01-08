@@ -105,7 +105,7 @@ function ExportAdminPage() {
             const exportData: ExportData = {
                 id: id || "",
                 name: formData.name,
-                type: formData.type,
+                type: type,
                 ...(formData.apiKey && { apiKey: formData.apiKey }),
                 projectUrl: formData.projectUrl,
                 ...(id && { properties }),
@@ -169,8 +169,8 @@ function ExportAdminPage() {
             <Grid container spacing={2}>
                 <Grid item xs={12}>
                     <CategoryInput
-                        values={formData.type}
-                        setValue={(event, value) => setType(value)}
+                        values={type}
+                        setValue={(event, value) => setType(value.id)}
                         readOnly={false}
                         mandatory={true}
                         title="Type"
