@@ -79,7 +79,8 @@ public class EsriZuidHollandExport {
         FeatureCollection exportObject = new FeatureCollection();
         Crs crs = new Crs();
         crs.setType(CrsType.name);
-        crs.getProperties().put("name", "EPSG:3857");
+        String targetCrs = "EPSG:28992";
+        crs.getProperties().put("name", targetCrs);
         exportObject.setCrs(crs);
 
         PropertyModel priceRangeBuyFixedProp = customProps.stream()
@@ -92,7 +93,7 @@ public class EsriZuidHollandExport {
         Map<UUID, PropertyModel> customPropsMap = customProps.stream().collect(Collectors.toMap(PropertyModel::getId, Function.identity()));
 
         projects.forEach(project -> exportObject.add(getProjectFeature(configModel, project, customPropsMap, priceRangeBuyFixedProp, priceRangeRentFixedProp,
-            municipalityFixedProp, dxPropertiesMap, minConfidentiality, exportDate, errors)));
+            municipalityFixedProp, dxPropertiesMap, minConfidentiality, exportDate, errors, targetCrs)));
 
         return exportObject;
     }
@@ -100,12 +101,12 @@ public class EsriZuidHollandExport {
     private static Feature getProjectFeature(ConfigModel configModel, ProjectExportSqlModel project, Map<UUID, PropertyModel> customPropsMap,
                                              PropertyModel priceRangeBuyFixedProp, PropertyModel priceRangeRentFixedProp, PropertyModel municipalityFixedProp,
                                              Map<String, DataExchangePropertyModel> dxPropertiesMap, Confidentiality minConfidentiality, LocalDate exportDate,
-                                             List<DataExchangeExportError> errors) {
+                                             List<DataExchangeExportError> errors, String targetCrs) {
 
         Feature projectFeature = new Feature();
         projectFeature.setProperties(new LinkedHashMap<>());
 
-        MultiPolygon multiPolygon = ExportUtil.createPolygonForProject(project);
+        MultiPolygon multiPolygon = ExportUtil.createPolygonForProject(project, targetCrs);
         if (!multiPolygon.getCoordinates().isEmpty()) {
             projectFeature.setGeometry(multiPolygon);
         }

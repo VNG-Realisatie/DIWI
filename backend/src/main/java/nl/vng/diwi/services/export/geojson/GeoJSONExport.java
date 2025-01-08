@@ -5,6 +5,7 @@ import static nl.vng.diwi.util.Json.MAPPER;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -13,6 +14,11 @@ import org.geojson.Crs;
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.geojson.jackson.CrsType;
+import org.locationtech.proj4j.CRSFactory;
+import org.locationtech.proj4j.CoordinateReferenceSystem;
+import org.locationtech.proj4j.CoordinateTransform;
+import org.locationtech.proj4j.CoordinateTransformFactory;
+import org.locationtech.proj4j.ProjCoordinate;
 
 import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
@@ -41,7 +47,8 @@ public class GeoJSONExport {
         FeatureCollection exportObject = new FeatureCollection();
         Crs crs = new Crs();
         crs.setType(CrsType.name);
-        crs.getProperties().put("name", "EPSG:28992");
+        String targetCrs = "EPSG:28992";
+        crs.getProperties().put("name", targetCrs);
         exportObject.setCrs(crs);
 
         PropertyModel priceRangeBuyFixedProp = customProps.stream()
@@ -54,7 +61,7 @@ public class GeoJSONExport {
         Map<UUID, PropertyModel> customPropsMap = customProps.stream().collect(Collectors.toMap(PropertyModel::getId, Function.identity()));
 
         projects.forEach(project -> exportObject.add(getProjectFeature(configModel, project, customPropsMap, priceRangeBuyFixedProp, priceRangeRentFixedProp,
-                municipalityFixedProp, dxPropertiesMap, minConfidentiality, exportDate, errors)));
+                municipalityFixedProp, dxPropertiesMap, minConfidentiality, exportDate, errors, targetCrs)));
 
         return exportObject;
     }
@@ -68,10 +75,11 @@ public class GeoJSONExport {
             PropertyModel municipalityFixedProp,
             Map<String, DataExchangePropertyModel> dxPropertiesMap,
             Confidentiality minConfidentiality, LocalDate exportDate,
-            List<DataExchangeExportError> errors) {
+            List<DataExchangeExportError> errors,
+            String targetCrs) {
         var projectFeature = new Feature();
 
-        var multiPolygon = ExportUtil.createPolygonForProject(project);
+        var multiPolygon = ExportUtil.createPolygonForProject(project, targetCrs);
         if (!multiPolygon.getCoordinates().isEmpty()) {
             projectFeature.setGeometry(multiPolygon);
         }
@@ -92,7 +100,7 @@ public class GeoJSONExport {
                                 // .priority() // Needs adding to the model
                                 // .municipalityRole() // Needs adding to the model
                                 // .status()) // Need to guess based on future/pastness. Do in SQL
-                                //.owner()// Needs adding to the model
+                                // .owner()// Needs adding to the model
                                 .confidentialityLevel(project.getConfidentiality())
                                 .build())
                         .build())
