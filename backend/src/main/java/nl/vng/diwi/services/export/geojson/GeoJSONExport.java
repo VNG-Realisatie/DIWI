@@ -31,6 +31,7 @@ import nl.vng.diwi.services.GeoJsonImportModel;
 import nl.vng.diwi.services.GeoJsonImportModel.BasicProjectData;
 import nl.vng.diwi.services.GeoJsonImportModel.GeoJsonProject;
 import nl.vng.diwi.services.GeoJsonImportModel.ProjectData;
+import nl.vng.diwi.services.GeoJsonImportModel.ProjectDuration;
 import nl.vng.diwi.services.export.ExportUtil;
 import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandHouseblockExportModel;
 
@@ -103,7 +104,13 @@ public class GeoJSONExport {
                                 // .owner()// Needs adding to the model
                                 .confidentialityLevel(project.getConfidentiality())
                                 .build())
+                        // .roles(Map.of("projectleider", )) Is this a custom property
+                        .projectDuration(ProjectDuration.builder()
+                                .startDate(project.getStartDate())
+                                .endDate(project.getEndDate())
+                                .build())
                         .build())
+
                 .build();
 
         projectFeature.setProperty("projectgegevens", model.getProject());

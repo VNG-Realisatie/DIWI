@@ -1,7 +1,6 @@
 package nl.vng.diwi.services.export;
 
 import java.io.IOException;
-import java.util.Objects;
 
 import org.geojson.FeatureCollection;
 import org.geojson.MultiPolygon;

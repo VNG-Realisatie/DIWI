@@ -245,12 +245,16 @@ public class GeoJsonImportModel {
         private ProjectDuration projectDuration;
         @JsonProperty("locatie")
         private ProjectLocation projectLocation;
+        @Builder.Default
         @JsonProperty("rollen")
         private Map<String, String> roles = new HashMap<>();
+        @Builder.Default
         @JsonProperty("projectfasen")
         private Map<ProjectPhase, LocalDate> projectPhasesMap = new HashMap<>();
+        @Builder.Default
         @JsonProperty("planologische_planstatus")
         private Map<PlanStatus, LocalDate> projectPlanStatusesMap = new HashMap<>();
+        @Builder.Default
         @JsonProperty("maatwerk_projecteigenschappen")
         private Map<String, String> customPropertiesMap = new HashMap<>();
     }
@@ -306,7 +310,6 @@ public class GeoJsonImportModel {
     @Data
     @Builder
     public static class GeoJsonHouseblock {
-
         @JsonProperty("name")
         private String name;
         @JsonProperty("mutatiegegevens")
@@ -317,12 +320,16 @@ public class GeoJsonImportModel {
         private List<Object> size; //unused
         @JsonProperty("waarde")
         private OwnershipValueData ownershipValue;
+        @Builder.Default
         @JsonProperty("fysiek_voorkomen")
         private List<PhysicalAppearanceData> physicalAppearanceList = new ArrayList<>();
+        @Builder.Default
         @JsonProperty("doelgroep")
         private List<TargetGroupData> targetGroupList = new ArrayList<>();
+        @Builder.Default
         @JsonProperty("grondpositie")
         private Map<GroundPosition, Integer> groundPositionsMap = new HashMap<>();
+        @Builder.Default
         @JsonProperty("maatwerk_woningeigenschappen")
         private Map<String, String> customPropertiesMap = new HashMap<>();
 
