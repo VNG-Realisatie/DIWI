@@ -1,6 +1,5 @@
 {
     "type": "FeatureCollection",
-    "name": "GEO_JSON",
     "crs": { "type": "name", "properties": { "name": "EPSG:28992" } },
     "features": [
         {
@@ -13,7 +12,7 @@
                         "in_programmering": null,
                         "prioritering": null,
                         "rol_gemeente": null,
-                        "status": null,
+                        "status": "REALIZED",
                         "eigenaar": null,
                         "vertrouwelijkheid": "EXTERNAL_GOVERNMENTAL"
                     },
@@ -44,7 +43,7 @@
                 },
                 "woning_blokken": [
                     {
-                        "name": null,
+                        "name": "block name",
                         "mutatiegegevens": {
                             "mutatie_type": null,
                             "eigendom_type": null,

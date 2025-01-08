@@ -1,4 +1,4 @@
-package nl.vng.diwi.services;
+package nl.vng.diwi.services.export.geojson;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

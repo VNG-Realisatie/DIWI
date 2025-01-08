@@ -1,5 +1,9 @@
 package nl.vng.diwi.services.export.geojson;
 
+import static nl.vng.diwi.services.DataExchangeExportError.EXPORT_ERROR.MISSING_MANDATORY_VALUE;
+import static nl.vng.diwi.services.DataExchangeExportError.EXPORT_ERROR.MULTIPLE_SINGLE_SELECT_VALUES;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +11,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.geojson.Crs;
 import org.geojson.Feature;
@@ -21,15 +26,15 @@ import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.models.ConfigModel;
 import nl.vng.diwi.models.DataExchangePropertyModel;
 import nl.vng.diwi.models.PropertyModel;
+import nl.vng.diwi.models.SingleValueOrRangeModel;
 import nl.vng.diwi.services.DataExchangeExportError;
-import nl.vng.diwi.services.GeoJsonExportModel.BasicProjectData;
-import nl.vng.diwi.services.GeoJsonExportModel.GeoJsonHouseblock;
-import nl.vng.diwi.services.GeoJsonExportModel.GeoJsonProject;
-import nl.vng.diwi.services.GeoJsonExportModel.ProjectData;
-import nl.vng.diwi.services.GeoJsonExportModel.ProjectDuration;
-import nl.vng.diwi.services.GeoJsonExportModel.ProjectLocation;
 import nl.vng.diwi.services.export.ExportUtil;
-import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandHouseblockExportModel;
+import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.BasicProjectData;
+import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.GeoJsonHouseblock;
+import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.GeoJsonProject;
+import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.ProjectData;
+import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.ProjectDuration;
+import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.ProjectLocation;
 
 public class GeoJSONExport {
     static public FeatureCollection buildExportObject(
@@ -57,8 +62,23 @@ public class GeoJSONExport {
 
         Map<UUID, PropertyModel> customPropsMap = customProps.stream().collect(Collectors.toMap(PropertyModel::getId, Function.identity()));
 
-        projects.forEach(project -> exportObject.add(getProjectFeature(configModel, project, customPropsMap, priceRangeBuyFixedProp, priceRangeRentFixedProp,
-                municipalityFixedProp, dxPropertiesMap, minConfidentiality, exportDate, errors, targetCrs)));
+        var optionsMap = customProps.stream()
+                .flatMap(cp -> cp.getCategories() != null ? cp.getCategories().stream() : Stream.empty())
+                .collect(Collectors.toMap(option -> option.getId(), option -> option.getName()));
+
+        projects.forEach(project -> exportObject.add(getProjectFeature(
+                configModel,
+                project,
+                customPropsMap,
+                priceRangeBuyFixedProp,
+                priceRangeRentFixedProp,
+                municipalityFixedProp,
+                dxPropertiesMap,
+                minConfidentiality,
+                exportDate,
+                errors,
+                targetCrs,
+                optionsMap)));
 
         return exportObject;
     }
@@ -73,7 +93,8 @@ public class GeoJSONExport {
             Map<String, DataExchangePropertyModel> dxPropertiesMap,
             Confidentiality minConfidentiality, LocalDate exportDate,
             List<DataExchangeExportError> errors,
-            String targetCrs) {
+            String targetCrs,
+            Map<UUID, String> optionsMap) {
         var projectFeature = new Feature();
 
         var multiPolygon = ExportUtil.createPolygonForProject(project.getGeometries(), targetCrs, project.getProjectId());
@@ -81,14 +102,31 @@ public class GeoJSONExport {
             projectFeature.setGeometry(multiPolygon);
         }
 
-        List<GeoJsonHouseblockExportModel> houseblockExportModels = project
-                .getHouseblocks()
-                .stream()
-                .map(h -> new GeoJsonHouseblockExportModel(project.getProjectId(), h, priceRangeBuyFixedProp, priceRangeRentFixedProp, errors))
-                .toList();
-
         Map<ProjectPhase, LocalDate> phases = new HashMap<>();
         phases.put(ProjectPhase._6_REALIZATION, project.getRealizationPhaseDate());
+
+        Map<UUID, String> projectTextCustomProps = project.getTextProperties().stream()
+                .collect(Collectors.toMap(ProjectExportSqlModelPlus.TextPropertyModel::getPropertyId,
+                        ProjectExportSqlModelPlus.TextPropertyModel::getTextValue));
+        Map<UUID, SingleValueOrRangeModel<BigDecimal>> projectNumericCustomProps = project.getNumericProperties().stream()
+                .collect(Collectors.toMap(ProjectExportSqlModelPlus.NumericPropertyModel::getPropertyId,
+                        ProjectExportSqlModelPlus.NumericPropertyModel::getSingleValueOrRangeModel));
+        Map<UUID, Boolean> projectBooleanCustomProps = project.getBooleanProperties().stream()
+                .collect(Collectors.toMap(ProjectExportSqlModelPlus.BooleanPropertyModel::getPropertyId,
+                        ProjectExportSqlModelPlus.BooleanPropertyModel::getBooleanValue));
+        Map<UUID, List<UUID>> projectCategoricalCustomProps = project.getCategoryProperties().stream()
+                .collect(Collectors.toMap(ProjectExportSqlModelPlus.CategoryPropertyModel::getPropertyId,
+                        ProjectExportSqlModelPlus.CategoryPropertyModel::getOptionValues));
+
+        List<String> woonplaatsName;
+        List<UUID> municipalityOptions = projectCategoricalCustomProps.get(municipalityFixedProp.getId());
+        if (municipalityOptions == null || municipalityOptions.isEmpty()) {
+            woonplaatsName = List.of();
+        } else {
+            woonplaatsName = municipalityOptions.stream()
+                    .map(optionId -> optionsMap.get(optionId))
+                    .toList();
+        }
 
         final var geoJsonProject = GeoJsonProject.builder()
                 .basicProjectData(BasicProjectData.builder()
@@ -111,15 +149,17 @@ public class GeoJSONExport {
                         .build())
                 .projectPhasesMap(phases)
                 .projectLocation(ProjectLocation.builder()
-                        // .municipality()
+                        .municipality(woonplaatsName)
                         // .district()
                         // .neighbourhood()
                         .build())
                 .build();
 
-        final var geoJsonBlocks = houseblockExportModels.stream()
-                .map(blockModel -> GeoJsonHouseblock.builder()
-                        // .name(blockModel.getName())
+        final var geoJsonBlocks = project.getHouseblocks().stream()
+                .map(block -> GeoJsonHouseblock.builder()
+                        .name(block.getName())
+                        // .endDate(blockModel.)
+                        // .diwiId(blockModel.getId)
                         .build())
                 .toList();
 

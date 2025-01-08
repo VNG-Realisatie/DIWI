@@ -200,10 +200,10 @@ public class ProjectsUtil {
 
         // Create a block
         var originalBlockModel = new HouseblockSnapshotModel();
+        originalBlockModel.setProjectId(projectId);
+        originalBlockModel.setHouseblockName("block name");
         originalBlockModel.setStartDate(startDate);
         originalBlockModel.setEndDate(endDate);
-        originalBlockModel.setHouseblockName("block name");
-        originalBlockModel.setProjectId(projectId);
 
         var createdBlock = blockResource.createHouseblock(loggedUser, originalBlockModel);
         repo.getSession().clear();
