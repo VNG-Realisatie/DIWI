@@ -7,11 +7,14 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;
 
+import org.hibernate.tool.hbm2ddl.SchemaExportTask.ExportType;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -40,6 +43,7 @@ import nl.vng.diwi.services.PropertiesService;
 import nl.vng.diwi.services.UserGroupService;
 import nl.vng.diwi.testutil.ProjectsUtil;
 import nl.vng.diwi.testutil.TestDb;
+import nl.vng.diwi.util.Json;
 
 public class DataExchangeResourceTest {
     private static ObjectMapper objectMapper = new ObjectMapper();
@@ -111,8 +115,9 @@ public class DataExchangeResourceTest {
         dal.close();
     }
 
-    @Test
-    public void exportGeoJSON() throws Exception {
+    @EnumSource(names = { "GEO_JSON" })
+    @ParameterizedTest
+    public void exportGeoJSON(DataExchangeType type) throws Exception {
         LocalDate startDate = today.minusDays(10);
         LocalDate endDate = today.plusDays(10);
 
@@ -129,7 +134,7 @@ public class DataExchangeResourceTest {
 
         DataExchangeModel model = new DataExchangeModel()
                 .withName("geojson")
-                .withType(DataExchangeType.GEO_JSON)
+                .withType(type)
                 .withValid(true);
 
         var dataExchangeModel = dataExchangeResource.createDataExchange(model, loggedUser);
@@ -143,13 +148,14 @@ public class DataExchangeResourceTest {
         var result = new ByteArrayOutputStream();
         stream.write(result);
 
-        var expected = ResourceUtil.getResourceAsString("DataExchangeResourceTest/exportGeoJSON.geojson");
+        var expected = ResourceUtil.getResourceAsString("DataExchangeResourceTest/" + type.toString() + ".geojson");
 
+        // assertThat(objectMapper.readTree(result.toString()))
+        // .usingRecursiveComparison()
+        // .isEqualTo(Json.MAPPER.readTree(expected));
+        assertThat(objectMapper.readTree(result.toString()).toPrettyString())
+                .isEqualToIgnoringWhitespace(expected);
 
-        assertThat(objectMapper.readTree(result.toString()).toPrettyString()).isEqualToIgnoringWhitespace(expected);
-        assertThat(result.toString()).isEqualToIgnoringWhitespace(expected);
-
-
+        // assertThat(result.toString()).isEqualToIgnoringWhitespace(expected);
     }
-
 }

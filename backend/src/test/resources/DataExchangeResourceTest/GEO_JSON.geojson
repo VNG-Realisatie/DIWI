@@ -9,15 +9,11 @@
     "features": [
         {
             "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": []
-            },
             "properties": {
                 "projectgegevens": {
                     "basisgegevens": {
                         "identificatie_nr": null,
-                        "naam": null
+                        "naam": "project name"
                     },
                     "projectgegevens": {
                         "plan_soort": null,
@@ -26,7 +22,7 @@
                         "rol_gemeente": null,
                         "status": null,
                         "eigenaar": null,
-                        "vertrouwelijkheid": null
+                        "vertrouwelijkheid": "EXTERNAL_GOVERNMENTAL"
                     },
                     "rollen": {
                         "projectleider": null,
@@ -91,6 +87,10 @@
                         "maatwerk_woningeigenschappen": {}
                     }
                 ]
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": []
             }
         }
     ]

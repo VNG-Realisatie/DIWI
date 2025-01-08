@@ -1,7 +1,8 @@
 package nl.vng.diwi.dal;
 
+import static nl.vng.diwi.util.Json.MAPPER;
+
 import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.DynamicParameterizedType;
 import org.hibernate.usertype.UserType;
@@ -19,7 +20,6 @@ import java.util.*;
 
 public class JsonListType implements DynamicParameterizedType, UserType<ArrayList<?>> {
 
-    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private JavaType valueType = null;
 
