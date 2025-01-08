@@ -1,20 +1,13 @@
 {
     "type": "FeatureCollection",
-    "crs": {
-        "type": "name",
-        "properties": {
-            "name": "EPSG:28992"
-        }
-    },
+    "name": "GEO_JSON",
+    "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::28992" } },
     "features": [
         {
             "type": "Feature",
             "properties": {
                 "projectgegevens": {
-                    "basisgegevens": {
-                        "identificatie_nr": null,
-                        "naam": "project name"
-                    },
+                    "basisgegevens": { "identificatie_nr": null, "naam": "project name" },
                     "projectgegevens": {
                         "plan_soort": null,
                         "in_programmering": null,
@@ -24,14 +17,8 @@
                         "eigenaar": null,
                         "vertrouwelijkheid": "EXTERNAL_GOVERNMENTAL"
                     },
-                    "rollen": {
-                        "projectleider": null,
-                        "opdrachtgever": null
-                    },
-                    "projectduur": {
-                        "start_project": null,
-                        "eind_project": null
-                    },
+                    "rollen": { "projectleider": null, "opdrachtgever": null },
+                    "projectduur": { "start_project": null, "eind_project": null },
                     "projectfasen": {
                         "_1_CONCEPT": null,
                         "_2_INITIATIVE": null,
@@ -52,11 +39,7 @@
                         "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG": null,
                         "_1C_ONHERROEPELIJK_MET_BW_NODIG": null
                     },
-                    "locatie": {
-                        "gemeente": null,
-                        "wijk": null,
-                        "buurt": null
-                    },
+                    "locatie": { "gemeente": null, "wijk": null, "buurt": null },
                     "maatwerk_projecteigenschappen": {}
                 },
                 "woning_blokken": [
@@ -72,11 +55,7 @@
                         },
                         "einddatum": null,
                         "grootte": [],
-                        "waarde": {
-                            "hoog": null,
-                            "laag": null,
-                            "categorie": "name"
-                        },
+                        "waarde": { "hoog": null, "laag": null, "categorie": "name" },
                         "fysiek_voorkomen": [],
                         "doelgroep": [],
                         "grondpositie": {
@@ -93,21 +72,21 @@
                 "coordinates": [
                     [
                         [
-                            [586039.323963023, 6923651.204468503],
-                            [585792.7831803425, 6923442.3476212295],
-                            [585627.7685732216, 6921709.7218406005],
-                            [585580.6336043945, 6921214.753407342],
-                            [585227.3054058532, 6917503.446812156],
-                            [582434.4990003448, 6915975.8558852915],
-                            [578821.8509260346, 6913997.96494627],
-                            [574390.5798210843, 6911569.012909995],
-                            [572203.6365015268, 6910369.095696326],
-                            [571659.4709896009, 6910070.407333149],
-                            [564904.3504781805, 6906358.565980493],
-                            [568289.6714348193, 6901888.853878047],
-                            [586075.8578339716, 6901938.659254265],
-                            [586055.0843250913, 6914290.3242059015],
-                            [586039.323963023, 6923651.204468503]
+                            [146700.007791462296154, 521176.297378439747263],
+                            [146550.006122572289314, 521049.976775892369915],
+                            [146447.916812775452854, 519999.974645694193896],
+                            [146418.74788095447002, 519699.974117413454223],
+                            [146199.981103541387711, 517449.971811307303142],
+                            [144499.963524157763459, 516526.748551600438077],
+                            [142299.941916427924298, 515331.991592377249617],
+                            [139599.922776482068002, 513865.70977614808362],
+                            [138266.796077371865977, 513141.739080104802269],
+                            [137935.019598331942689, 512961.564417151035741],
+                            [133814.390295070130378, 510723.80557824880816],
+                            [135864.923552614520304, 508000.005473512341268],
+                            [146699.936347130860668, 508000.004498971393332],
+                            [146699.973290692199953, 515499.956828841590323],
+                            [146700.007791462296154, 521176.297378439747263]
                         ]
                     ]
                 ]
