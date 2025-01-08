@@ -51,6 +51,8 @@ type SizeData = {
     size: number;
 };
 
+export type ProjectAudit = components["schemas"]["ProjectAuditModel"];
+
 // The generated plot model doesn't work as the geojson definition is not correct.
 // Replace by PlotGeoJSON for now.
 type OgPlot = components["schemas"]["PlotModel"];
@@ -131,4 +133,9 @@ export async function getProjectPlots(id: string): Promise<Plot[]> {
 
 export async function updateProjectPlots(id: string, plots: Plot[]): Promise<Response> {
     return postJsonNoResponse(`${API_URI}/projects/${id}/plots`, plots);
+}
+
+export async function getProjectAudit(query: string): Promise<ProjectAudit[]> {
+    const decodedQuery = decodeURIComponent(query);
+    return getJson(`${API_URI}/audit/project?${decodedQuery}`);
 }
