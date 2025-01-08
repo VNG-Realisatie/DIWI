@@ -32,6 +32,7 @@ import nl.vng.diwi.services.export.ExportUtil;
 import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.BasicProjectData;
 import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.GeoJsonHouseblock;
 import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.GeoJsonProject;
+import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.MutationData;
 import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.ProjectData;
 import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.ProjectDuration;
 import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.ProjectLocation;
@@ -118,6 +119,14 @@ public class GeoJSONExport {
                 .collect(Collectors.toMap(ProjectExportSqlModelPlus.CategoryPropertyModel::getPropertyId,
                         ProjectExportSqlModelPlus.CategoryPropertyModel::getOptionValues));
 
+        Map<String, String> customProps = new HashMap<>();
+        for (var prop : projectTextCustomProps.entrySet()) {
+            customProps.put(customPropsMap.get(prop.getKey()).getName(), prop.getValue());
+        }
+        for (var prop : projectNumericCustomProps.entrySet()) {
+            customProps.put(customPropsMap.get(prop.getKey()).getName(), prop.getValue().getValue().toString());
+        }
+
         List<String> woonplaatsName;
         List<UUID> municipalityOptions = projectCategoricalCustomProps.get(municipalityFixedProp.getId());
         if (municipalityOptions == null || municipalityOptions.isEmpty()) {
@@ -129,6 +138,7 @@ public class GeoJSONExport {
         }
 
         final var geoJsonProject = GeoJsonProject.builder()
+                .diwiId(project.getProjectId())
                 .basicProjectData(BasicProjectData.builder()
                         .identificationNo(null) // Seems to be only used for error messages in the import
                         .name(project.getName())
@@ -153,13 +163,16 @@ public class GeoJSONExport {
                         // .district()
                         // .neighbourhood()
                         .build())
+                .customPropertiesMap(customProps)
                 .build();
 
         final var geoJsonBlocks = project.getHouseblocks().stream()
                 .map(block -> GeoJsonHouseblock.builder()
                         .name(block.getName())
-                        // .endDate(blockModel.)
-                        // .diwiId(blockModel.getId)
+                        .mutationData(MutationData.builder()
+                                .amount(block.getMutationAmount())
+                                .mutationType(block.getMutationKind())
+                                .build())
                         .build())
                 .toList();
 

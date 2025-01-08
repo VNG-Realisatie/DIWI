@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -39,6 +40,8 @@ public class GeoJsonExportModel {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class GeoJsonProject {
+        @JsonProperty("diwi_id")
+        private UUID diwiId;
         @JsonProperty("basisgegevens")
         private BasicProjectData basicProjectData;
         @JsonProperty("projectgegevens")
