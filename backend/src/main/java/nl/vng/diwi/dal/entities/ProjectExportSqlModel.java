@@ -17,6 +17,7 @@ import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
+import nl.vng.diwi.dal.entities.enums.ProjectStatus;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -91,6 +92,10 @@ public class ProjectExportSqlModel {
     @Type(value = JsonListType.class)
     @Getter(AccessLevel.NONE)
     private List<HouseblockExportSqlModel> houseblocks;
+
+    @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    private ProjectStatus status;
 
     public List<PlanType> getPlanType() {
         return planType == null ? new ArrayList<>() : planType;

@@ -15,7 +15,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.ws.rs.container.ContainerRequestContext;
@@ -147,14 +149,17 @@ public class DataExchangeResourceTest {
         StreamingOutput stream = dataExchangeResource.downloadProjects(dataExchangeModel.getId(), exportModel, loggedUser);
         var result = new ByteArrayOutputStream();
         stream.write(result);
+        var actualTree = objectMapper.readTree(result.toString());
 
         var expected = ResourceUtil.getResourceAsString("DataExchangeResourceTest/" + type.toString() + ".geojson");
+        var expectedTree = objectMapper.readTree(expected);
 
+        // assertThatJson(result.toString())
+        //     .isEqualTo(expected);
         // assertThat(objectMapper.readTree(result.toString()))
-        // .usingRecursiveComparison()
-        // .isEqualTo(Json.MAPPER.readTree(expected));
-        assertThat(objectMapper.readTree(result.toString()).toPrettyString())
-                .isEqualToIgnoringWhitespace(expected);
+        //         .isEqualTo(Json.MAPPER.readTree(expected));
+        assertThat(actualTree.toPrettyString())
+                .isEqualToIgnoringWhitespace(expectedTree.toPrettyString());
 
         // assertThat(result.toString()).isEqualToIgnoringWhitespace(expected);
     }
