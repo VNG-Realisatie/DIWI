@@ -42,8 +42,6 @@ const ProjectsTableWrapper = ({
     const login = arcgisAuth?.login;
     const token = arcgisAuth?.token;
 
-    console.log("token", token);
-
     const handleProjectsExport = () => {
         exportProjects();
         setShowDialog(false);
@@ -114,7 +112,13 @@ const ProjectsTableWrapper = ({
                         <Button sx={{ width: "130px", my: 2 }} variant="contained" onClick={handleDownload}>
                             {t("projects.download")}
                         </Button>
-                        <Button sx={{ width: "130px", my: 2 }} variant="outlined" color="secondary" onClick={login}>
+                        <Button
+                            sx={{ width: "130px", my: 2 }}
+                            variant="outlined"
+                            color="secondary"
+                            onClick={() => login(exportId)}
+                            disabled={token ? true : false}
+                        >
                             {t("projects.authenticate")}
                         </Button>
                     </>

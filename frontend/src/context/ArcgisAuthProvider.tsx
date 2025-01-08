@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useState, ReactNode } from "react";
 import { ArcGISIdentityManager } from "@esri/arcgis-rest-request";
 
 interface ArcgisAuthContextProps {
@@ -15,12 +15,11 @@ export const ArcgisAuthContext = createContext<ArcgisAuthContextProps | undefine
 
 export const ArcgisAuthProvider = ({ children }: ArcgisAuthProviderProps) => {
     const [token, setToken] = useState<string | null>(null);
-    const [authManager, setAuthManager] = useState<ArcGISIdentityManager | null>(null);
 
     const clientId = "YOUR_CLIENT_ID"; // Move to .env
 
     const login = async (exportId: string) => {
-        const redirectUri = `http://localhost:3000/exchangedata/export/${exportId}`;
+        const redirectUri = `http://localhost:3000/exchangedata/export/${exportId}`; // update
         try {
             const manager = await ArcGISIdentityManager.beginOAuth2({
                 clientId,
@@ -29,7 +28,6 @@ export const ArcgisAuthProvider = ({ children }: ArcgisAuthProviderProps) => {
             });
 
             if (manager) {
-                setAuthManager(manager);
                 setToken(manager.token);
             } else {
                 console.error("Authentication failed");
@@ -40,14 +38,13 @@ export const ArcgisAuthProvider = ({ children }: ArcgisAuthProviderProps) => {
     };
 
     const handleRedirect = async (exportId: string) => {
-        const redirectUri = `http://localhost:3000/exchangedata/export/${exportId}`;
+        const redirectUri = `http://localhost:3000/exchangedata/export/${exportId}`; // update
         try {
             const manager = await ArcGISIdentityManager.completeOAuth2({
                 clientId,
                 redirectUri,
                 popup: true,
             });
-            setAuthManager(manager);
             setToken(manager.token);
         } catch (error) {
             console.error("Error completing OAuth2:", error);
