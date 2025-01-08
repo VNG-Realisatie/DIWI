@@ -45,7 +45,6 @@ import nl.vng.diwi.services.PropertiesService;
 import nl.vng.diwi.services.UserGroupService;
 import nl.vng.diwi.testutil.ProjectsUtil;
 import nl.vng.diwi.testutil.TestDb;
-import nl.vng.diwi.util.Json;
 
 public class DataExchangeResourceTest {
     private static ObjectMapper objectMapper = new ObjectMapper();

@@ -65,7 +65,6 @@ import nl.vng.diwi.services.PropertiesService;
 import nl.vng.diwi.services.UserGroupService;
 import nl.vng.diwi.testutil.ProjectsUtil;
 import nl.vng.diwi.testutil.TestDb;
-import nl.vng.diwi.util.Json;
 
 public class ProjectsResourceTest {
     public static ObjectMapper objectMapper = new ObjectMapper();
@@ -294,7 +293,7 @@ public class ProjectsResourceTest {
         var owners = fixture.getOwners();
 
         // Create model and change everything except the start date, end date and the id to create a lot of milestones on the current day
-        var updateProjectModel = Json.jsonCopy(originalProjectModel, ProjectSnapshotModel.class);
+        var updateProjectModel = nl.vng.diwi.generic.Json.jsonCopy(originalProjectModel, ProjectSnapshotModel.class);
         updateProjectModel.setProjectId(projectId);
         updateProjectModel.setProjectOwners(originalProjectModel.getProjectOwners());
 
@@ -355,7 +354,7 @@ public class ProjectsResourceTest {
 
         //
         // Check if the house block end date has changed as well
-        HouseblockSnapshotModel expectedHouseblockModel = Json.jsonCopy(originalBlockModel, HouseblockSnapshotModel.class);
+        HouseblockSnapshotModel expectedHouseblockModel = nl.vng.diwi.generic.Json.jsonCopy(originalBlockModel, HouseblockSnapshotModel.class);
         expectedHouseblockModel.setEndDate(newEndDate);
         assertThat(blockResource.getCurrentHouseblockSnapshot(houseblockId))
                 .isEqualTo(expectedHouseblockModel);

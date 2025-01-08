@@ -29,6 +29,7 @@ import nl.vng.diwi.dal.entities.enums.ObjectType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.dal.entities.enums.PropertyKind;
 import nl.vng.diwi.generic.Constants;
+import nl.vng.diwi.generic.Json;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.models.PlotModel;
 import nl.vng.diwi.models.ProjectSnapshotModel;
@@ -51,7 +52,6 @@ import nl.vng.diwi.services.HouseblockService;
 import nl.vng.diwi.services.ProjectService;
 import nl.vng.diwi.services.PropertiesService;
 import nl.vng.diwi.services.UserGroupService;
-import nl.vng.diwi.util.Json;
 
 public class ProjectsUtil {
     private static final String PLOT_JSON_STRING = """
@@ -208,7 +208,7 @@ public class ProjectsUtil {
         var createdBlock = blockResource.createHouseblock(loggedUser, originalBlockModel);
         repo.getSession().clear();
 
-        var plot = Json.MAPPER.readValue(PLOT_JSON_STRING, ObjectNode.class);
+        var plot = Json.mapper.readValue(PLOT_JSON_STRING, ObjectNode.class);
         var plotModel = new PlotModel("1", "2", 3l, null, plot);
         projectResource.setProjectPlots(loggedUser, projectId, List.of(plotModel));
 

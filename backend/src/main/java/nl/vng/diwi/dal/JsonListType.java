@@ -1,8 +1,9 @@
 package nl.vng.diwi.dal;
 
-import static nl.vng.diwi.util.Json.MAPPER;
-
 import com.fasterxml.jackson.databind.JavaType;
+
+import nl.vng.diwi.generic.Json;
+
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.DynamicParameterizedType;
 import org.hibernate.usertype.UserType;
@@ -41,7 +42,7 @@ public class JsonListType implements DynamicParameterizedType, UserType<ArrayLis
             if (property != null) {
                 ParameterizedType listType = (ParameterizedType) property.getGenericType();
                 Class<?> listClass = (Class<?>) listType.getActualTypeArguments()[0];
-                valueType = MAPPER.getTypeFactory().constructCollectionType(ArrayList.class, listClass);
+                valueType = Json.mapper.getTypeFactory().constructCollectionType(ArrayList.class, listClass);
             }
         } catch (ClassNotFoundException e) {
             throw new IllegalArgumentException(e);
@@ -78,7 +79,7 @@ public class JsonListType implements DynamicParameterizedType, UserType<ArrayLis
             return null;
         }
         try {
-            return MAPPER.readValue(cellContent.getBytes(StandardCharsets.UTF_8), valueType);
+            return Json.mapper.readValue(cellContent.getBytes(StandardCharsets.UTF_8), valueType);
         } catch (final Exception ex) {
             throw new RuntimeException("Failed to convert String to JsonListType: " + ex.getMessage(), ex);
         }
@@ -92,7 +93,7 @@ public class JsonListType implements DynamicParameterizedType, UserType<ArrayLis
         }
         try {
             final StringWriter w = new StringWriter();
-            MAPPER.writeValue(w, value);
+            Json.mapper.writeValue(w, value);
             w.flush();
             st.setObject(i, w.toString(), Types.OTHER);
         } catch (final Exception ex) {
