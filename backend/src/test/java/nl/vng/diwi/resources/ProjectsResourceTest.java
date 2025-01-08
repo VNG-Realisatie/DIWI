@@ -16,8 +16,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.persistence.Tuple;
@@ -67,9 +65,10 @@ import nl.vng.diwi.services.PropertiesService;
 import nl.vng.diwi.services.UserGroupService;
 import nl.vng.diwi.testutil.ProjectsUtil;
 import nl.vng.diwi.testutil.TestDb;
+import nl.vng.diwi.util.Json;
 
 public class ProjectsResourceTest {
-    private static ObjectMapper objectMapper = new ObjectMapper();
+    public static ObjectMapper objectMapper = new ObjectMapper();
     private static DalFactory dalFactory;
     private static TestDb testDb;
 
@@ -295,7 +294,7 @@ public class ProjectsResourceTest {
         var owners = fixture.getOwners();
 
         // Create model and change everything except the start date, end date and the id to create a lot of milestones on the current day
-        var updateProjectModel = jsonCopy(originalProjectModel, ProjectSnapshotModel.class);
+        var updateProjectModel = Json.jsonCopy(originalProjectModel, ProjectSnapshotModel.class);
         updateProjectModel.setProjectId(projectId);
         updateProjectModel.setProjectOwners(originalProjectModel.getProjectOwners());
 
@@ -356,7 +355,7 @@ public class ProjectsResourceTest {
 
         //
         // Check if the house block end date has changed as well
-        HouseblockSnapshotModel expectedHouseblockModel = jsonCopy(originalBlockModel, HouseblockSnapshotModel.class);
+        HouseblockSnapshotModel expectedHouseblockModel = Json.jsonCopy(originalBlockModel, HouseblockSnapshotModel.class);
         expectedHouseblockModel.setEndDate(newEndDate);
         assertThat(blockResource.getCurrentHouseblockSnapshot(houseblockId))
                 .isEqualTo(expectedHouseblockModel);
@@ -449,13 +448,5 @@ public class ProjectsResourceTest {
                     .getSingleResult();
             assertThat(tuple.toArray()).containsExactly(expectedMilestones.toArray());
         }
-    }
-
-    /**
-     * Creates a deep copy by converting to JSON and back. Can be used to convert to similar types.
-     */
-    private <T> T jsonCopy(Object original, Class<T> targetType) throws JsonProcessingException, JsonMappingException {
-        return objectMapper
-                .readValue(objectMapper.writeValueAsString(original), targetType);
     }
 }

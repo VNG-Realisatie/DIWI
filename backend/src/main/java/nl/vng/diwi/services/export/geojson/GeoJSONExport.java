@@ -1,11 +1,9 @@
 package nl.vng.diwi.services.export.geojson;
 
-import static nl.vng.diwi.util.Json.MAPPER;
-
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -14,24 +12,22 @@ import org.geojson.Crs;
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.geojson.jackson.CrsType;
-import org.locationtech.proj4j.CRSFactory;
-import org.locationtech.proj4j.CoordinateReferenceSystem;
-import org.locationtech.proj4j.CoordinateTransform;
-import org.locationtech.proj4j.CoordinateTransformFactory;
-import org.locationtech.proj4j.ProjCoordinate;
 
 import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
+import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.models.ConfigModel;
 import nl.vng.diwi.models.DataExchangePropertyModel;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.services.DataExchangeExportError;
-import nl.vng.diwi.services.GeoJsonImportModel;
-import nl.vng.diwi.services.GeoJsonImportModel.BasicProjectData;
-import nl.vng.diwi.services.GeoJsonImportModel.GeoJsonProject;
-import nl.vng.diwi.services.GeoJsonImportModel.ProjectData;
-import nl.vng.diwi.services.GeoJsonImportModel.ProjectDuration;
+import nl.vng.diwi.services.GeoJsonExportModel;
+import nl.vng.diwi.services.GeoJsonExportModel.BasicProjectData;
+import nl.vng.diwi.services.GeoJsonExportModel.GeoJsonHouseblock;
+import nl.vng.diwi.services.GeoJsonExportModel.GeoJsonProject;
+import nl.vng.diwi.services.GeoJsonExportModel.ProjectData;
+import nl.vng.diwi.services.GeoJsonExportModel.ProjectDuration;
+import nl.vng.diwi.services.GeoJsonExportModel.ProjectLocation;
 import nl.vng.diwi.services.export.ExportUtil;
 import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandHouseblockExportModel;
 
@@ -85,35 +81,49 @@ public class GeoJSONExport {
             projectFeature.setGeometry(multiPolygon);
         }
 
-        List<EsriZuidHollandHouseblockExportModel> houseblockExportModels = project.getHouseblocks().stream()
+        List<EsriZuidHollandHouseblockExportModel> houseblockExportModels = project
+                .getHouseblocks()
+                .stream()
                 .map(h -> new EsriZuidHollandHouseblockExportModel(project.getProjectId(), h, priceRangeBuyFixedProp, priceRangeRentFixedProp, errors))
                 .toList();
 
-        var model = GeoJsonImportModel.builder()
-                .project(GeoJsonProject.builder()
-                        .basicProjectData(BasicProjectData.builder()
-                                .identificationNo(null) // Seems to be only used for error messages in the import
-                                .name(project.getName())
-                                .build())
-                        .projectData(ProjectData.builder()
-                                .planType(project.getPlanType().isEmpty() ? null : project.getPlanType().get(0))
-                                // .in_programmering() // Is a block property
-                                // .priority() // Needs adding to the model
-                                // .municipalityRole() // Needs adding to the model
-                                // .status()) // Need to guess based on future/pastness. Do in SQL
-                                // .owner()// Needs adding to the model
-                                .confidentialityLevel(project.getConfidentiality())
-                                .build())
-                        // .roles(Map.of("projectleider", )) Is this a custom property
-                        .projectDuration(ProjectDuration.builder()
-                                .startDate(project.getStartDate())
-                                .endDate(project.getEndDate())
-                                .build())
-                        .build())
+        Map<ProjectPhase, LocalDate> phases = new HashMap<>();
+        phases.put(ProjectPhase._6_REALIZATION, project.getRealizationPhaseDate());
 
+        final var geoJsonProject = GeoJsonProject.builder()
+                .basicProjectData(BasicProjectData.builder()
+                        .identificationNo(null) // Seems to be only used for error messages in the import
+                        .name(project.getName())
+                        .build())
+                .projectData(ProjectData.builder()
+                        .planType(project.getPlanType().isEmpty() ? null : project.getPlanType().get(0))
+                        // .in_programmering() // Is a block property, move to block
+                        // .priority() // This is a custom property in the importer
+                        // .municipalityRole() // This is a custom property
+                        .status(project.getStatus()) // Need to guess based on future/pastness. Do in SQL
+                        // .owner()// Needs adding to the model
+                        .confidentialityLevel(project.getConfidentiality())
+                        .build())
+                // .roles(Map.of("projectleider", )) This is a custom property
+                .projectDuration(ProjectDuration.builder()
+                        .startDate(project.getStartDate())
+                        .endDate(project.getEndDate())
+                        .build())
+                .projectPhasesMap(phases)
+                .projectLocation(ProjectLocation.builder()
+                        // .municipality()
+                        // .district()
+                        // .neighbourhood()
+                        .build())
                 .build();
 
-        projectFeature.setProperty("projectgegevens", model.getProject());
+        final var geoJsonBlocks = houseblockExportModels.stream()
+                .map(blockModel -> GeoJsonHouseblock.builder()
+                        // .name(blockModel.getName())
+                        .build())
+                .toList();
+        projectFeature.setProperty("projectgegevens", geoJsonProject);
+        projectFeature.setProperty("woning_blokken", geoJsonBlocks);
         return projectFeature;
     }
 }

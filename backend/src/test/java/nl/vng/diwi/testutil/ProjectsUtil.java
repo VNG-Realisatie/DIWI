@@ -2,8 +2,11 @@ package nl.vng.diwi.testutil;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -22,15 +25,24 @@ import nl.vng.diwi.dal.entities.UserGroupState;
 import nl.vng.diwi.dal.entities.UserState;
 import nl.vng.diwi.dal.entities.UserToUserGroup;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
+import nl.vng.diwi.dal.entities.enums.ObjectType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
+import nl.vng.diwi.dal.entities.enums.PropertyKind;
+import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.models.PlotModel;
+import nl.vng.diwi.models.ProjectSnapshotModel;
+import nl.vng.diwi.models.PropertyModel;
+import nl.vng.diwi.models.SelectDisabledModel;
 import nl.vng.diwi.models.UserGroupModel;
 import nl.vng.diwi.models.UserGroupUserModel;
 import nl.vng.diwi.models.superclasses.ProjectCreateSnapshotModel;
 import nl.vng.diwi.models.superclasses.ProjectMinimalSnapshotModel;
 import nl.vng.diwi.resources.HouseblockResource;
 import nl.vng.diwi.resources.ProjectsResource;
+import nl.vng.diwi.resources.PropertiesResource;
+import nl.vng.diwi.rest.VngBadRequestException;
+import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.security.UserRole;
 import nl.vng.diwi.services.ExcelImportService;
@@ -39,9 +51,80 @@ import nl.vng.diwi.services.HouseblockService;
 import nl.vng.diwi.services.ProjectService;
 import nl.vng.diwi.services.PropertiesService;
 import nl.vng.diwi.services.UserGroupService;
+import nl.vng.diwi.util.Json;
 
 public class ProjectsUtil {
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final String PLOT_JSON_STRING = """
+                    {
+                        "type": "FeatureCollection",
+                        "numberMatched": 1,
+                        "name": "Perceel",
+                        "crs": {
+                            "type": "name",
+                            "properties": { "name": "urn:ogc:def:crs:EPSG::3857" }
+                        },
+                        "features": [
+                        {
+                            "type": "Feature",
+                            "id": "perceel.e16d366b-7ecd-4c03-ac27-971e4e797907",
+                            "properties": {
+                            "identificatieNamespace": "NL.IMKAD.KadastraalObject",
+                            "identificatieLokaalID": "89250016870000",
+                            "beginGeldigheid": "2016/02/16 17:38:46+00",
+                            "tijdstipRegistratie": "2016/02/16 17:38:46+00",
+                            "volgnummer": 0,
+                            "statusHistorieCode": "G",
+                            "statusHistorieWaarde": "Geldig",
+                            "kadastraleGemeenteCode": "534",
+                            "kadastraleGemeenteWaarde": "Lelystad",
+                            "sectie": "R",
+                            "AKRKadastraleGemeenteCodeCode": "583",
+                            "AKRKadastraleGemeenteCodeWaarde": "LLS00",
+                            "kadastraleGrootteWaarde": 78501216,
+                            "soortGrootteCode": "1",
+                            "soortGrootteWaarde": "Vastgesteld",
+                            "perceelnummer": 168,
+                            "perceelnummerRotatie": 0,
+                            "perceelnummerVerschuivingDeltaX": 0,
+                            "perceelnummerVerschuivingDeltaY": 0,
+                            "perceelnummerPlaatscoordinaatX": 141278.5,
+                            "perceelnummerPlaatscoordinaatY": 511328.635
+                            },
+                            "bbox": [
+                            564904.3504781805, 6901888.853878047, 586075.8578339716,
+                            6923651.204468503
+                            ],
+                            "geometry": {
+                            "type": "Polygon",
+                            "coordinates": [
+                                [
+                                [586039.323963023, 6923651.204468503],
+                                [585792.7831803425, 6923442.3476212295],
+                                [585627.7685732216, 6921709.7218406005],
+                                [585580.6336043945, 6921214.753407342],
+                                [585227.3054058532, 6917503.446812156],
+                                [582434.4990003448, 6915975.8558852915],
+                                [578821.8509260346, 6913997.96494627],
+                                [574390.5798210843, 6911569.012909995],
+                                [572203.6365015268, 6910369.095696326],
+                                [571659.4709896009, 6910070.407333149],
+                                [564904.3504781805, 6906358.565980493],
+                                [568289.6714348193, 6901888.853878047],
+                                [586075.8578339716, 6901938.659254265],
+                                [586055.0843250913, 6914290.3242059015],
+                                [586039.323963023, 6923651.204468503]
+                                ]
+                            ]
+                            }
+                        }
+                        ],
+                        "bbox": [
+                        564904.35047818, 6901888.85387805, 586075.857833972, 6923651.2044685
+                        ]
+                    },
+                    "subselectionGeometry": null
+                    }
+            """;
 
     @Data
     @AllArgsConstructor
@@ -62,16 +145,18 @@ public class ProjectsUtil {
             VngRepository repo,
             LoggedUser loggedUser)
             throws Exception {
+        PropertiesService propertiesService = new PropertiesService();
+
         var projectResource = new ProjectsResource(
                 new GenericRepository(dal),
                 new ProjectService(),
                 new HouseblockService(),
                 new UserGroupService(new UserGroupDAO(dal.getSession())),
-                new PropertiesService(),
+                propertiesService,
                 projectConfig,
                 new ExcelImportService(),
                 new GeoJsonImportService());
-        var blockResource = new HouseblockResource(new GenericRepository(dal), new HouseblockService(), new ProjectService(), new PropertiesService());
+        var blockResource = new HouseblockResource(new GenericRepository(dal), new HouseblockService(), new ProjectService(), propertiesService);
 
         // Some set-up to get the users matching
         UserGroupModel owner = new UserGroupModel(userGroup);
@@ -85,11 +170,13 @@ public class ProjectsUtil {
         owner.setUsers(List.of(ugum));
         List<UserGroupModel> owners = List.of(owner);
 
+        final String projectName = "project name";
+
         // Create the project
         var originalProjectModel = new ProjectCreateSnapshotModel();
         originalProjectModel.setStartDate(startDate);
         originalProjectModel.setEndDate(endDate);
-        originalProjectModel.setProjectName("project name");
+        originalProjectModel.setProjectName(projectName);
         originalProjectModel.setProjectColor("#abcdef");
         originalProjectModel.setConfidentialityLevel(Confidentiality.EXTERNAL_GOVERNMENTAL);
         originalProjectModel.setProjectPhase(ProjectPhase._5_PREPARATION);
@@ -98,6 +185,18 @@ public class ProjectsUtil {
         ProjectMinimalSnapshotModel createdProject = projectResource.createProject(loggedUser, originalProjectModel);
         repo.getSession().clear();
         UUID projectId = createdProject.getProjectId();
+
+        // Create new municipality
+        final var propertyResource = new PropertiesResource(new GenericRepository(dal), propertiesService);
+        var propMap = propertyResource.getAllProperties(ObjectType.PROJECT, false, PropertyKind.FIXED)
+                .stream()
+                .collect(Collectors.toMap(PropertyModel::getName, p -> p));
+
+        // var newMunicipality = createNewMunicipality(loggedUser, projectName, propertyResource, propMap);
+
+        // var projectWithFixedProps = Json.jsonCopy(createdProject, ProjectSnapshotModel.class);
+        // projectWithFixedProps.setMunicipality(List.of(newMunicipality));
+        // projectResource.updateProjectSnapshot(loggedUser, projectWithFixedProps);
 
         // Create a block
         var originalBlockModel = new HouseblockSnapshotModel();
@@ -109,77 +208,7 @@ public class ProjectsUtil {
         var createdBlock = blockResource.createHouseblock(loggedUser, originalBlockModel);
         repo.getSession().clear();
 
-        var plot = MAPPER.readValue( """
-                {
-                    "type": "FeatureCollection",
-                    "numberMatched": 1,
-                    "name": "Perceel",
-                    "crs": {
-                        "type": "name",
-                        "properties": { "name": "urn:ogc:def:crs:EPSG::3857" }
-                    },
-                    "features": [
-                    {
-                        "type": "Feature",
-                        "id": "perceel.e16d366b-7ecd-4c03-ac27-971e4e797907",
-                        "properties": {
-                        "identificatieNamespace": "NL.IMKAD.KadastraalObject",
-                        "identificatieLokaalID": "89250016870000",
-                        "beginGeldigheid": "2016/02/16 17:38:46+00",
-                        "tijdstipRegistratie": "2016/02/16 17:38:46+00",
-                        "volgnummer": 0,
-                        "statusHistorieCode": "G",
-                        "statusHistorieWaarde": "Geldig",
-                        "kadastraleGemeenteCode": "534",
-                        "kadastraleGemeenteWaarde": "Lelystad",
-                        "sectie": "R",
-                        "AKRKadastraleGemeenteCodeCode": "583",
-                        "AKRKadastraleGemeenteCodeWaarde": "LLS00",
-                        "kadastraleGrootteWaarde": 78501216,
-                        "soortGrootteCode": "1",
-                        "soortGrootteWaarde": "Vastgesteld",
-                        "perceelnummer": 168,
-                        "perceelnummerRotatie": 0,
-                        "perceelnummerVerschuivingDeltaX": 0,
-                        "perceelnummerVerschuivingDeltaY": 0,
-                        "perceelnummerPlaatscoordinaatX": 141278.5,
-                        "perceelnummerPlaatscoordinaatY": 511328.635
-                        },
-                        "bbox": [
-                        564904.3504781805, 6901888.853878047, 586075.8578339716,
-                        6923651.204468503
-                        ],
-                        "geometry": {
-                        "type": "Polygon",
-                        "coordinates": [
-                            [
-                            [586039.323963023, 6923651.204468503],
-                            [585792.7831803425, 6923442.3476212295],
-                            [585627.7685732216, 6921709.7218406005],
-                            [585580.6336043945, 6921214.753407342],
-                            [585227.3054058532, 6917503.446812156],
-                            [582434.4990003448, 6915975.8558852915],
-                            [578821.8509260346, 6913997.96494627],
-                            [574390.5798210843, 6911569.012909995],
-                            [572203.6365015268, 6910369.095696326],
-                            [571659.4709896009, 6910070.407333149],
-                            [564904.3504781805, 6906358.565980493],
-                            [568289.6714348193, 6901888.853878047],
-                            [586075.8578339716, 6901938.659254265],
-                            [586055.0843250913, 6914290.3242059015],
-                            [586039.323963023, 6923651.204468503]
-                            ]
-                        ]
-                        }
-                    }
-                    ],
-                    "bbox": [
-                    564904.35047818, 6901888.85387805, 586075.857833972, 6923651.2044685
-                    ]
-                },
-                "subselectionGeometry": null
-                }
-        """, ObjectNode.class);
+        var plot = Json.MAPPER.readValue(PLOT_JSON_STRING, ObjectNode.class);
         var plotModel = new PlotModel("1", "2", 3l, null, plot);
         projectResource.setProjectPlots(loggedUser, projectId, List.of(plotModel));
 
@@ -188,6 +217,32 @@ public class ProjectsUtil {
                 .blocks(List.of(createdBlock))
                 .owners(owners)
                 .build();
+    }
+
+    private static SelectDisabledModel createNewMunicipality(
+            LoggedUser loggedUser,
+            final String projectName,
+            final PropertiesResource propertyResource,
+            Map<String, PropertyModel> propMap) throws VngNotFoundException, VngBadRequestException {
+        var municipalityProperty = propMap.get(Constants.FIXED_PROPERTY_MUNICIPALITY);
+        String optionName = projectName + " municipality";
+
+        var newMunicipality = new SelectDisabledModel();
+        newMunicipality.setName(optionName);
+        newMunicipality.setDisabled(false);
+
+        if (municipalityProperty.getCategories() == null) {
+            municipalityProperty.setCategories(new ArrayList<>());
+        }
+        municipalityProperty.getCategories().add(newMunicipality);
+
+        var updatedModel = propertyResource.updateProperty(municipalityProperty.getId(), loggedUser, municipalityProperty);
+        return updatedModel.getCategories()
+                .stream()
+                .filter(c -> c.getName().equals(optionName))
+                .findAny()
+                .orElseThrow();
+        // return newMunicipality;
     }
 
     public static UserState persistUserAndUserGroup(VngRepository repo, User user, UserGroup userGroup, ZonedDateTime now) {
