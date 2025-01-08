@@ -153,8 +153,8 @@ public class DataExchangeResourceTest {
         var expected = ResourceUtil.getResourceAsString("DataExchangeResourceTest/" + type.toString() + ".geojson");
         var expectedTree = objectMapper.readTree(expected);
 
-        // assertThatJson(result.toString())
-        //     .isEqualTo(expected);
+        assertThatJson(result.toString())
+            .isEqualTo(expected);
         // assertThat(objectMapper.readTree(result.toString()))
         //         .isEqualTo(Json.MAPPER.readTree(expected));
         assertThat(actualTree.toPrettyString())

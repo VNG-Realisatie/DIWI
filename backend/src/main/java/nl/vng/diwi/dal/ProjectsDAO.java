@@ -208,4 +208,17 @@ public class ProjectsDAO extends AbstractRepository {
 
         return q.getResultList();
     }
+
+
+    public List<ProjectExportSqlModel> getProjectsExportListSimplified(DataExchangeExportModel dxExportModel, LoggedUser loggedUser) {
+        SelectionQuery<ProjectExportSqlModel> q = session.createNativeQuery(String.format(
+                "SELECT * FROM %s.get_projects_export_list_simplified(:userRole, :userUuid, :allowedProjectIds, :allowedConfidentialities) ",
+                GenericRepository.VNG_SCHEMA_NAME), ProjectExportSqlModel.class)
+            .setParameter("userRole", loggedUser.getRole().name())
+            .setParameter("userUuid", loggedUser.getUuid())
+            .setParameter("allowedProjectIds", dxExportModel.getProjectIds() != null ? dxExportModel.getProjectIds().toArray(new UUID[0]) : null)
+            .setParameter("allowedConfidentialities", (dxExportModel.getConfidentialityLevelsAsStrings() != null) ? dxExportModel.getConfidentialityLevelsAsStrings().toArray(new String[0]) : null);
+
+        return q.getResultList();
+    }
 }

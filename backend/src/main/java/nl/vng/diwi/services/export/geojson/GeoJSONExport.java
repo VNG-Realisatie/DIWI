@@ -21,7 +21,6 @@ import nl.vng.diwi.models.ConfigModel;
 import nl.vng.diwi.models.DataExchangePropertyModel;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.services.DataExchangeExportError;
-import nl.vng.diwi.services.GeoJsonExportModel;
 import nl.vng.diwi.services.GeoJsonExportModel.BasicProjectData;
 import nl.vng.diwi.services.GeoJsonExportModel.GeoJsonHouseblock;
 import nl.vng.diwi.services.GeoJsonExportModel.GeoJsonProject;
@@ -122,8 +121,10 @@ public class GeoJSONExport {
                         // .name(blockModel.getName())
                         .build())
                 .toList();
+
         projectFeature.setProperty("projectgegevens", geoJsonProject);
         projectFeature.setProperty("woning_blokken", geoJsonBlocks);
+
         return projectFeature;
     }
 }

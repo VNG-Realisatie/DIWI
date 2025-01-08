@@ -226,14 +226,25 @@ public class DataExchangeService {
 
         Map<String, DataExchangePropertyModel> dxPropertiesMap = dataExchangeModel.getProperties().stream()
             .collect(Collectors.toMap(DataExchangePropertyModel::getName, Function.identity()));
-        List<ProjectExportSqlModel> projects = repo.getProjectsDAO().getProjectsExportList(dxExportModel, loggedUser);
 
         List<PropertyModel> customProps = repo.getPropertyDAO().getPropertiesList(null, false, null);
         return switch (dataExchangeModel.getType()) {
-            case ESRI_ZUID_HOLLAND -> EsriZuidHollandExport.buildExportObject(configModel, projects, customProps, dxPropertiesMap, dxExportModel.getExportDate(),
-                configModel.getMinimumExportConfidentiality(), errors);
-                case GEO_JSON -> GeoJSONExport.buildExportObject(configModel, projects, customProps, dxPropertiesMap, dxExportModel.getExportDate(),
-                configModel.getMinimumExportConfidentiality(), errors);
+            case ESRI_ZUID_HOLLAND -> EsriZuidHollandExport.buildExportObject(
+                    configModel,
+                    repo.getProjectsDAO().getProjectsExportList(dxExportModel, loggedUser),
+                    customProps,
+                    dxPropertiesMap,
+                    dxExportModel.getExportDate(),
+                    configModel.getMinimumExportConfidentiality(),
+                    errors);
+            case GEO_JSON -> GeoJSONExport.buildExportObject(
+                    configModel,
+                    repo.getProjectsDAO().getProjectsExportListSimplified(dxExportModel, loggedUser),
+                    customProps,
+                    dxPropertiesMap,
+                    dxExportModel.getExportDate(),
+                    configModel.getMinimumExportConfidentiality(),
+                    errors);
         };
 
     }
