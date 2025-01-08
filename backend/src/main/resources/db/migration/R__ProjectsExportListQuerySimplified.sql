@@ -6,7 +6,7 @@ CREATE OR REPLACE FUNCTION diwi.get_projects_export_list_simplified (
   _allowed_projects_ UUID[],
   _allowed_confidentialities_ TEXT[]
 )
-	RETURNS TABLE (
+    RETURNS TABLE (
         projectId UUID,
         name TEXT,
         confidentiality diwi.confidentiality,
@@ -24,8 +24,8 @@ CREATE OR REPLACE FUNCTION diwi.get_projects_export_list_simplified (
         geometries TEXT[],
         houseblocks JSONB,
         status TEXT
-	)
-	LANGUAGE plpgsql
+    )
+    LANGUAGE plpgsql
 AS $$
 BEGIN
 RETURN QUERY
@@ -68,7 +68,7 @@ FROM (
                  ) AS q
             GROUP BY q.project_id
         ),
-        past_projects AS (
+        projects AS (
             SELECT
                 p.id, ps.confidentiality_level AS confidentiality, sms.date AS startDate, ems.date AS endDate, ems.milestone_id AS end_milestone_id
             FROM
@@ -91,103 +91,103 @@ FROM (
                         WHEN _allowed_projects_ IS NOT NULL THEN p.id = ANY(_allowed_projects_)
                     END
         ),
-        past_project_names AS (
+        project_names AS (
             SELECT
                 pnc.project_id, pnc.name
             FROM
-                past_projects pp
+                projects pp
                     JOIN diwi.project_name_changelog pnc ON pp.id = pnc.project_id
                         AND pnc.end_milestone_id = pp.end_milestone_id AND pnc.change_end_date IS NULL
         ),
-        past_project_fases AS (
+        project_fases AS (
             SELECT
                  pfc.project_id, pfc.project_fase
             FROM
-                past_projects pp
+                projects pp
                     JOIN diwi.project_fase_changelog pfc ON pp.id = pfc.project_id
                         AND pfc.end_milestone_id = pp.end_milestone_id AND pfc.change_end_date IS NULL
         ),
-        past_project_plan_types AS (
+        project_plan_types AS (
             SELECT
                 pptc.project_id, array_agg(pptcv.plan_type::TEXT ORDER BY pptcv.plan_type::TEXT ASC) AS plan_types
             FROM
-                past_projects pp
+                projects pp
                     JOIN diwi.project_plan_type_changelog pptc ON pp.id = pptc.project_id
                         AND pptc.end_milestone_id = pp.end_milestone_id AND pptc.change_end_date IS NULL
                     JOIN diwi.project_plan_type_changelog_value pptcv ON pptc.id = pptcv.changelog_id
             GROUP BY pptc.project_id
         ),
-        past_project_planologische_planstatus AS (
+        project_planologische_planstatus AS (
             SELECT
                 pppc.project_id, array_agg(pppcv.planologische_planstatus::TEXT ORDER BY pppcv.planologische_planstatus::TEXT ASC) AS planning_planstatus
             FROM
-                past_projects pp
+                projects pp
                     JOIN diwi.project_planologische_planstatus_changelog pppc ON pp.id = pppc.project_id
                         AND pppc.end_milestone_id = pp.end_milestone_id AND pppc.change_end_date IS NULL
                     JOIN diwi.project_planologische_planstatus_changelog_value pppcv ON pppc.id = pppcv.planologische_planstatus_changelog_id
             GROUP BY pppc.project_id
         ),
-        past_project_geometries AS (
+        project_geometries AS (
             SELECT
                 prlc.project_id, array_agg(prlcv.plot_feature::TEXT) AS geometries
             FROM
-                past_projects pp
+                projects pp
                     JOIN diwi.project_registry_link_changelog prlc ON pp.id = prlc.project_id
                         AND prlc.end_milestone_id = pp.end_milestone_id AND prlc.change_end_date IS NULL
                     JOIN diwi.project_registry_link_changelog_value prlcv ON prlc.id = prlcv.project_registry_link_changelog_id
             GROUP BY prlc.project_id
         ),
-        past_project_realization_phase AS (
+        project_realization_phase AS (
             SELECT
                 pfc.project_id, MIN(sms.date) AS realization_phase_start_date, pfc.project_fase
             FROM
-                past_projects pp
+                projects pp
                     JOIN diwi.project_fase_changelog pfc ON pp.id = pfc.project_id AND pfc.change_end_date IS NULL AND pfc.project_fase = '_6_REALIZATION'
                     JOIN diwi.milestone_state sms ON sms.milestone_id = pfc.start_milestone_id AND sms.change_end_date IS NULL
             GROUP BY pfc.project_id, pfc.project_fase
         ),
-        past_project_planstatus_phase1 AS (
+        project_planstatus_phase1 AS (
             SELECT
                 pppc.project_id, MIN(sms.date) AS planstatus_phase1_date
             FROM
-                past_projects pp
+                projects pp
                     JOIN diwi.project_planologische_planstatus_changelog pppc ON pp.id = pppc.project_id AND pppc.change_end_date IS NULL
                     JOIN diwi.project_planologische_planstatus_changelog_value pppcv ON pppc.id = pppcv.planologische_planstatus_changelog_id
                         AND pppcv.planologische_planstatus IN ('_1A_ONHERROEPELIJK', '_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG', '_1C_ONHERROEPELIJK_MET_BW_NODIG')
                     JOIN diwi.milestone_state sms ON sms.milestone_id = pppc.start_milestone_id AND sms.change_end_date IS NULL
             GROUP BY pppc.project_id
         ),
-        past_project_textCP AS (
+        project_textCP AS (
             SELECT
                 ptc.project_id, to_jsonb(array_agg(jsonb_build_object('propertyId', ptc.property_id, 'textValue', ptc.value))) AS text_properties
             FROM
-                past_projects pp
+                projects pp
                     JOIN diwi.project_text_changelog ptc ON pp.id = ptc.project_id AND ptc.end_milestone_id = pp.end_milestone_id AND ptc.change_end_date IS NULL
             GROUP BY ptc.project_id
         ),
-        past_project_numericCP AS (
+        project_numericCP AS (
             SELECT
                 pnc.project_id, to_jsonb(array_agg(jsonb_build_object('propertyId', pnc.eigenschap_id, 'value', pnc.value, 'min', LOWER(pnc.value_range),
                                                                       'max', UPPER(pnc.value_range)))) AS numeric_properties
             FROM
-                past_projects pp
+                projects pp
                     JOIN diwi.project_maatwerk_numeriek_changelog pnc ON pp.id = pnc.project_id AND pnc.end_milestone_id = pp.end_milestone_id AND pnc.change_end_date IS NULL
             GROUP BY pnc.project_id
         ),
-        past_project_booleanCP AS (
+        project_booleanCP AS (
             SELECT
                 pbc.project_id, to_jsonb(array_agg(jsonb_build_object('propertyId', pbc.eigenschap_id, 'booleanValue', pbc.value))) AS boolean_properties
             FROM
-                past_projects pp
+                projects pp
                     JOIN diwi.project_maatwerk_boolean_changelog pbc ON pp.id = pbc.project_id AND pbc.end_milestone_id = pp.end_milestone_id AND pbc.change_end_date IS NULL
             GROUP BY pbc.project_id
         ),
-        past_project_categoryCP AS (
+        project_categoryCP AS (
             WITH prj_cat_props AS (
                 SELECT
                     pcc.project_id, pcc.property_id, array_agg(pccv.property_value_id) AS category_options
                 FROM
-                    past_projects pp
+                    projects pp
                         JOIN diwi.project_category_changelog pcc ON pp.id = pcc.project_id AND pcc.end_milestone_id = pp.end_milestone_id  AND pcc.change_end_date IS NULL
                         JOIN diwi.project_category_changelog_value pccv ON pccv.project_category_changelog_id = pcc.id
                 GROUP BY pcc.project_id, pcc.property_id
@@ -197,47 +197,54 @@ FROM (
             FROM prj_cat_props pcp
             GROUP BY pcp.project_id
         ),
-        past_project_houseblocks AS (
+        project_houseblocks AS (
             WITH
-                past_project_past_woningbloks AS (
+                project_woningbloks AS (
                     SELECT
                          w.id, w.project_id, ems.date AS endDate, ems.milestone_id AS end_milestone_id
                     FROM
-                        past_projects pp
-                            JOIN diwi.woningblok w ON w.project_id = pp.id
-                            JOIN diwi.woningblok_state ws ON ws.woningblok_id = w.id AND ws.change_end_date IS NULL
-                            JOIN diwi.woningblok_duration_changelog wdc ON wdc.woningblok_id = w.id AND wdc.change_end_date IS NULL
-                            JOIN diwi.milestone_state ems ON ems.milestone_id = wdc.end_milestone_id AND ems.change_end_date IS NULL
+                        projects pp
+                            JOIN diwi.woningblok w
+                                ON w.project_id = pp.id
+                            JOIN diwi.woningblok_state ws
+                                ON ws.woningblok_id = w.id
+                                AND ws.change_end_date IS NULL
+                            JOIN diwi.woningblok_duration_changelog wdc
+                                ON wdc.woningblok_id = w.id
+                                AND wdc.change_end_date IS NULL
+                            JOIN diwi.milestone_state ems
+                                ON ems.milestone_id = wdc.end_milestone_id
+                                AND ems.change_end_date IS NULL
                 ),
-                past_project_past_woningbloks_name AS (
+                project_woningbloks_name AS (
                     SELECT
                         pppw.id, wdc.naam as "name"
                     FROM
-                        past_project_past_woningbloks pppw
+                        project_woningbloks pppw
                         JOIN diwi.woningblok_naam_changelog wdc ON pppw.id = wdc.woningblok_id AND wdc.change_end_date IS NULL
                             AND wdc.end_milestone_id = pppw.end_milestone_id
                 ),
-                past_project_past_woningbloks_delivery AS (
+                project_woningbloks_delivery AS (
                     SELECT
                         pppw.id, EXTRACT(YEAR FROM wdc.latest_deliverydate)::INTEGER AS deliveryYear
                     FROM
-                        past_project_past_woningbloks pppw
+                        project_woningbloks pppw
                         JOIN diwi.woningblok_deliverydate_changelog wdc ON pppw.id = wdc.woningblok_id AND wdc.change_end_date IS NULL
                             AND wdc.end_milestone_id = pppw.end_milestone_id
                 ),
-                past_project_past_woningbloks_mutation AS (
+                project_woningbloks_mutation AS (
                     SELECT
                         pppw.id, wmc.mutation_kind AS mutationKind, wmc.amount AS mutationAmount
                     FROM
-                        past_project_past_woningbloks pppw
+                        project_woningbloks pppw
                         JOIN diwi.woningblok_mutatie_changelog wmc ON pppw.id = wmc.woningblok_id AND wmc.change_end_date IS NULL
                             AND wmc.end_milestone_id = pppw.end_milestone_id
                 ),
-                past_project_past_woningbloks_housetypes AS (
+                project_woningbloks_housetypes AS (
                     SELECT
                         pppw.id, meer.amount AS meergezinswoning, eeng.amount AS eengezinswoning
                     FROM
-                        past_project_past_woningbloks pppw
+                        project_woningbloks pppw
                         JOIN diwi.woningblok_type_en_fysiek_changelog wtfc ON pppw.id = wtfc.woningblok_id AND wtfc.change_end_date IS NULL
                             AND wtfc.end_milestone_id = pppw.end_milestone_id
                         LEFT JOIN diwi.woningblok_type_en_fysiek_changelog_type_value eeng ON eeng.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
@@ -245,7 +252,7 @@ FROM (
                         LEFT JOIN diwi.woningblok_type_en_fysiek_changelog_type_value meer ON meer.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
                             AND meer.woning_type = 'MEERGEZINSWONING'
                 ),
-                past_project_past_ownership_value AS (
+                project_ownership_value AS (
                     SELECT
                         pppw.id, to_jsonb(array_agg(jsonb_build_object('ownershipId', wewc.id, 'ownershipType', wewc.eigendom_soort, 'ownershipAmount', wewc.amount,
                                     'ownershipValue', wewc.waarde_value, 'ownershipRentalValue', wewc.huurbedrag_value,
@@ -253,7 +260,7 @@ FROM (
                                     'ownershipValueRangeMax', upper(wewc.waarde_value_range) - 1, 'ownershipRentalValueRangeMax', upper(huurbedrag_value_range) - 1,
                                     'ownershipRangeCategoryId', wewc.ownership_property_value_id, 'ownershipRentalRangeCategoryId', wewc.rental_property_value_id))) AS ownershipValue
                     FROM
-                        past_project_past_woningbloks pppw
+                        project_woningbloks pppw
                         JOIN diwi.woningblok_eigendom_en_waarde_changelog wewc ON pppw.id = wewc.woningblok_id AND wewc.change_end_date IS NULL
                             AND wewc.end_milestone_id = pppw.end_milestone_id
                     GROUP BY pppw.id
@@ -272,12 +279,12 @@ FROM (
                             'ownershipValueList', pppov.ownershipValue,
                             'name', pppn.name) AS houseblocks
                     FROM
-                        past_project_past_woningbloks pppw
-                            JOIN past_project_past_woningbloks_mutation pppwm ON pppw.id = pppwm.id
-                            LEFT JOIN past_project_past_woningbloks_delivery pppwd ON pppwd.id = pppw.id
-                            LEFT JOIN past_project_past_woningbloks_housetypes pppwh ON pppwh.id = pppw.id
-                            LEFT JOIN past_project_past_ownership_value pppov ON pppov.id = pppw.id
-                            LEFT JOIN past_project_past_woningbloks_name pppn ON pppn.id = pppw.id
+                        project_woningbloks pppw
+                            LEFT JOIN project_woningbloks_mutation pppwm ON pppw.id = pppwm.id
+                            LEFT JOIN project_woningbloks_delivery pppwd ON pppwd.id = pppw.id
+                            LEFT JOIN project_woningbloks_housetypes pppwh ON pppwh.id = pppw.id
+                            LEFT JOIN project_ownership_value pppov ON pppov.id = pppw.id
+                            LEFT JOIN project_woningbloks_name pppn ON pppn.id = pppw.id
                 )
 
                 SELECT
@@ -304,19 +311,19 @@ FROM (
            pph.houseblocks          AS houseblocks,
            'REALIZED'               AS "status"
     FROM
-        past_projects pp
-            LEFT JOIN past_project_names ppn ON ppn.project_id = pp.id
-            LEFT JOIN past_project_plan_types pppt ON pppt.project_id = pp.id
-            LEFT JOIN past_project_fases ppf ON ppf.project_id = pp.id
-            LEFT JOIN past_project_planologische_planstatus pppp ON pppp.project_id = pp.id
-            LEFT JOIN past_project_textCP ppt ON ppt.project_id = pp.id
-            LEFT JOIN past_project_numericCP ppnp ON ppnp.project_id = pp.id
-            LEFT JOIN past_project_booleanCP ppb ON ppb.project_id = pp.id
-            LEFT JOIN past_project_categoryCP ppc ON ppc.project_id = pp.id
-            LEFT JOIN past_project_geometries ppg ON ppg.project_id = pp.id
-            LEFT JOIN past_project_houseblocks pph ON pph.project_id = pp.id
-            LEFT JOIN past_project_realization_phase pprp ON pprp.project_id = pp.id
-            LEFT JOIN past_project_planstatus_phase1 pppp1 ON pppp1.project_id = pp.id
+        projects pp
+            LEFT JOIN project_names ppn ON ppn.project_id = pp.id
+            LEFT JOIN project_plan_types pppt ON pppt.project_id = pp.id
+            LEFT JOIN project_fases ppf ON ppf.project_id = pp.id
+            LEFT JOIN project_planologische_planstatus pppp ON pppp.project_id = pp.id
+            LEFT JOIN project_textCP ppt ON ppt.project_id = pp.id
+            LEFT JOIN project_numericCP ppnp ON ppnp.project_id = pp.id
+            LEFT JOIN project_booleanCP ppb ON ppb.project_id = pp.id
+            LEFT JOIN project_categoryCP ppc ON ppc.project_id = pp.id
+            LEFT JOIN project_geometries ppg ON ppg.project_id = pp.id
+            LEFT JOIN project_houseblocks pph ON pph.project_id = pp.id
+            LEFT JOIN project_realization_phase pprp ON pprp.project_id = pp.id
+            LEFT JOIN project_planstatus_phase1 pppp1 ON pppp1.project_id = pp.id
 
 ) AS q
 

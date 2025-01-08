@@ -106,7 +106,7 @@ public class EsriZuidHollandExport {
         Feature projectFeature = new Feature();
         projectFeature.setProperties(new LinkedHashMap<>());
 
-        MultiPolygon multiPolygon = ExportUtil.createPolygonForProject(project, targetCrs);
+        MultiPolygon multiPolygon = ExportUtil.createPolygonForProject(project.getGeometries(), targetCrs, project.getProjectId());
         if (!multiPolygon.getCoordinates().isEmpty()) {
             projectFeature.setGeometry(multiPolygon);
         }

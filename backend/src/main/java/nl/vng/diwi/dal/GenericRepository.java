@@ -119,7 +119,8 @@ public class GenericRepository implements AutoCloseable {
                 ProjectHouseblockCustomPropertySqlModel.class,
                 PlanSqlModel.class,
                 DataExchangePropertySqlModel.class,
-                ProjectExportSqlModel.class);
+                ProjectExportSqlModel.class,
+                ProjectExportSqlModelPlus.class);
         return entities;
     }
 

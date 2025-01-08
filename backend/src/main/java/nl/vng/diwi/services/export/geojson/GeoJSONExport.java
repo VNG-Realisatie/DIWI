@@ -14,6 +14,7 @@ import org.geojson.FeatureCollection;
 import org.geojson.jackson.CrsType;
 
 import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
+import nl.vng.diwi.dal.entities.ProjectExportSqlModelPlus;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.generic.Constants;
@@ -33,7 +34,7 @@ import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandHouseblockExportMo
 public class GeoJSONExport {
     static public FeatureCollection buildExportObject(
             ConfigModel configModel,
-            List<ProjectExportSqlModel> projects,
+            List<ProjectExportSqlModelPlus> projects,
             List<PropertyModel> customProps,
             Map<String, DataExchangePropertyModel> dxPropertiesMap,
             LocalDate exportDate,
@@ -64,7 +65,7 @@ public class GeoJSONExport {
 
     static private Feature getProjectFeature(
             ConfigModel configModel,
-            ProjectExportSqlModel project,
+            ProjectExportSqlModelPlus project,
             Map<UUID, PropertyModel> customPropsMap,
             PropertyModel priceRangeBuyFixedProp,
             PropertyModel priceRangeRentFixedProp,
@@ -75,15 +76,15 @@ public class GeoJSONExport {
             String targetCrs) {
         var projectFeature = new Feature();
 
-        var multiPolygon = ExportUtil.createPolygonForProject(project, targetCrs);
+        var multiPolygon = ExportUtil.createPolygonForProject(project.getGeometries(), targetCrs, project.getProjectId());
         if (!multiPolygon.getCoordinates().isEmpty()) {
             projectFeature.setGeometry(multiPolygon);
         }
 
-        List<EsriZuidHollandHouseblockExportModel> houseblockExportModels = project
+        List<GeoJsonHouseblockExportModel> houseblockExportModels = project
                 .getHouseblocks()
                 .stream()
-                .map(h -> new EsriZuidHollandHouseblockExportModel(project.getProjectId(), h, priceRangeBuyFixedProp, priceRangeRentFixedProp, errors))
+                .map(h -> new GeoJsonHouseblockExportModel(project.getProjectId(), h, priceRangeBuyFixedProp, priceRangeRentFixedProp, errors))
                 .toList();
 
         Map<ProjectPhase, LocalDate> phases = new HashMap<>();

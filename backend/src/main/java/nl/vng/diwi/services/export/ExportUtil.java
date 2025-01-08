@@ -1,6 +1,8 @@
 package nl.vng.diwi.services.export;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.UUID;
 
 import org.geojson.FeatureCollection;
 import org.geojson.MultiPolygon;
@@ -18,12 +20,12 @@ public class ExportUtil {
     static final CRSFactory crsFactory = new CRSFactory();
     static final CoordinateTransformFactory ctFactory = new CoordinateTransformFactory();
 
-    public static MultiPolygon createPolygonForProject(ProjectExportSqlModel project, String targetCrs) {
+    public static MultiPolygon createPolygonForProject(List<String> geometries, String targetCrs, UUID projectId) {
         MultiPolygon multiPolygon = new MultiPolygon();
 
         CoordinateReferenceSystem target = crsFactory.createFromName(targetCrs);
 
-        for (String geometryString : project.getGeometries()) {
+        for (String geometryString : geometries) {
             FeatureCollection geometryObject;
 
             try {
@@ -51,11 +53,11 @@ public class ExportUtil {
 
                         multiPolygon.add(polygon);
                     } else {
-                        EsriZuidHollandExport.logger.error("Geometry for project id {} is not instance of Polygon: {}", project.getProjectId(), geometryString);
+                        EsriZuidHollandExport.logger.error("Geometry for project id {} is not instance of Polygon: {}", projectId, geometryString);
                     }
                 });
             } catch (IOException e) {
-                EsriZuidHollandExport.logger.error("Geometry for project id {} could not be deserialized into a FeatureCollection: {}", project.getProjectId(),
+                EsriZuidHollandExport.logger.error("Geometry for project id {} could not be deserialized into a FeatureCollection: {}", projectId,
                         geometryString);
             }
         }
