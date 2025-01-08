@@ -209,6 +209,14 @@ FROM (
                             JOIN diwi.woningblok_duration_changelog wdc ON wdc.woningblok_id = w.id AND wdc.change_end_date IS NULL
                             JOIN diwi.milestone_state ems ON ems.milestone_id = wdc.end_milestone_id AND ems.change_end_date IS NULL
                 ),
+                past_project_past_woningbloks_name AS (
+                    SELECT
+                        pppw.id, wdc.naam as "name"
+                    FROM
+                        past_project_past_woningbloks pppw
+                        JOIN diwi.woningblok_naam_changelog wdc ON pppw.id = wdc.woningblok_id AND wdc.change_end_date IS NULL
+                            AND wdc.end_milestone_id = pppw.end_milestone_id
+                ),
                 past_project_past_woningbloks_delivery AS (
                     SELECT
                         pppw.id, EXTRACT(YEAR FROM wdc.latest_deliverydate)::INTEGER AS deliveryYear
@@ -254,14 +262,22 @@ FROM (
                 houseblocks AS (
                     SELECT
                         pppw.project_id,
-                        jsonb_build_object('houseblockId', pppw.id, 'deliveryYear', pppwd.deliveryYear, 'mutationKind', pppwm.mutationKind, 'mutationAmount', pppwm.mutationAmount,
-                         'meergezinswoning', pppwh.meergezinswoning, 'eengezinswoning', pppwh.eengezinswoning, 'ownershipValueList', pppov.ownershipValue) AS houseblocks
+                        jsonb_build_object(
+                            'houseblockId', pppw.id,
+                            'deliveryYear', pppwd.deliveryYear,
+                            'mutationKind', pppwm.mutationKind,
+                            'mutationAmount', pppwm.mutationAmount,
+                            'meergezinswoning', pppwh.meergezinswoning,
+                            'eengezinswoning', pppwh.eengezinswoning,
+                            'ownershipValueList', pppov.ownershipValue,
+                            'name', pppn.name) AS houseblocks
                     FROM
                         past_project_past_woningbloks pppw
                             JOIN past_project_past_woningbloks_mutation pppwm ON pppw.id = pppwm.id
                             LEFT JOIN past_project_past_woningbloks_delivery pppwd ON pppwd.id = pppw.id
                             LEFT JOIN past_project_past_woningbloks_housetypes pppwh ON pppwh.id = pppw.id
                             LEFT JOIN past_project_past_ownership_value pppov ON pppov.id = pppw.id
+                            LEFT JOIN past_project_past_woningbloks_name pppn ON pppn.id = pppw.id
                 )
 
                 SELECT
