@@ -2,8 +2,10 @@ package nl.vng.diwi.services;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.GroundPosition;
 import nl.vng.diwi.dal.entities.enums.HouseType;
@@ -34,6 +36,8 @@ import java.util.stream.Collectors;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class GeoJsonImportModel {
 
     @JsonProperty("projectgegevens")
@@ -236,6 +240,8 @@ public class GeoJsonImportModel {
 
     @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class GeoJsonProject {
         @JsonProperty("basisgegevens")
         private BasicProjectData basicProjectData;
@@ -261,6 +267,8 @@ public class GeoJsonImportModel {
 
     @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class BasicProjectData {
         @JsonProperty("identificatie_nr")
         private Integer identificationNo;
@@ -270,6 +278,8 @@ public class GeoJsonImportModel {
 
     @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class ProjectData {
         @JsonProperty("plan_soort")
         private PlanType planType;
@@ -289,6 +299,8 @@ public class GeoJsonImportModel {
 
     @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class ProjectDuration {
         @JsonProperty("start_project")
         private LocalDate startDate;
@@ -298,6 +310,8 @@ public class GeoJsonImportModel {
 
     @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class ProjectLocation {
         @JsonProperty("gemeente")
         private String municipality;
@@ -309,6 +323,8 @@ public class GeoJsonImportModel {
 
     @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class GeoJsonHouseblock {
         @JsonProperty("name")
         private String name;
@@ -462,6 +478,8 @@ public class GeoJsonImportModel {
 
     @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class MutationData {
         @JsonProperty("mutatie_type")
         private MutationType mutationType;
@@ -470,15 +488,17 @@ public class GeoJsonImportModel {
         @JsonProperty("woning_type")
         private HouseType houseType;
         @JsonProperty("status")
-        private ProjectStatus houseblockStatus; //unused
+        private ProjectStatus houseblockStatus; // unused
         @JsonProperty("contract_type")
-        private String contractType; //unused
+        private String contractType; // unused
         @JsonProperty("aantal")
         private Integer amount;
     }
 
     @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class TargetGroupData {
         @JsonProperty("doelgroep_categorie")
         private String categoryName;
@@ -488,6 +508,8 @@ public class GeoJsonImportModel {
 
     @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class PhysicalAppearanceData {
         @JsonProperty("fysiek_voorkomen")
         private String categoryName;
@@ -497,6 +519,8 @@ public class GeoJsonImportModel {
 
     @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class OwnershipValueData {
         @JsonProperty("laag")
         private Double min;
