@@ -111,10 +111,6 @@ public class ProjectExportSqlModelPlus {
     @Getter(AccessLevel.NONE)
     private List<HouseblockExportSqlModel> houseblocks;
 
-    @Enumerated(EnumType.STRING)
-    @JdbcType(PostgreSQLEnumJdbcType.class)
-    private ProjectStatus status;
-
     public List<PlanType> getPlanType() {
         return planType == null ? new ArrayList<>() : planType;
     }
