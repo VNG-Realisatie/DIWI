@@ -58,8 +58,8 @@
                         "doelgroep": [],
                         "grondpositie": {
                             "GEEN_TOESTEMMING_GRONDEIGENAAR": null,
-                            "FORMELE_TOESTEMMING_GRONDEIGENAAR": null,
-                            "INTENTIE_MEDEWERKING_GRONDEIGENAAR": null
+                            "INTENTIE_MEDEWERKING_GRONDEIGENAAR": null,
+                            "FORMELE_TOESTEMMING_GRONDEIGENAAR": null
                         },
                         "maatwerk_woningeigenschappen": {}
                     }

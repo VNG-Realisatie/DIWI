@@ -3,6 +3,7 @@ package nl.vng.diwi.services.export.geojson;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -286,7 +287,7 @@ public class GeoJSONExport {
                             })
                             .toList();
 
-                    Map<GroundPosition, Integer> groundPositions = new HashMap<>();
+                    Map<GroundPosition, Integer> groundPositions = new LinkedHashMap<>();
                     groundPositions.put(GroundPosition.GEEN_TOESTEMMING_GRONDEIGENAAR, block.getNoPermissionOwner());
                     groundPositions.put(GroundPosition.INTENTIE_MEDEWERKING_GRONDEIGENAAR, block.getIntentionPermissionOwner());
                     groundPositions.put(GroundPosition.FORMELE_TOESTEMMING_GRONDEIGENAAR, block.getFormalPermissionOwner());
