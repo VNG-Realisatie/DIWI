@@ -230,13 +230,13 @@ public class GeoJSONExport {
             projectFeature.setGeometry(multiPolygon);
         }
 
-        Map<ProjectPhase, LocalDate> phases = project.getProjectPhaseStartDateList()
+        Map<String, LocalDate> phases = project.getProjectPhaseStartDateList()
                 .stream()
-                .collect(Collectors.toMap(ph -> ph.getProjectPhase(), ph -> ph.getStartDate()));
+                .collect(Collectors.toMap(ph -> translate(ph.getProjectPhase()), ph -> ph.getStartDate()));
 
-        Map<PlanStatus, LocalDate> planstatuses = project.getProjectPlanStatusStartDateList()
+        Map<String, LocalDate> planstatuses = project.getProjectPlanStatusStartDateList()
                 .stream()
-                .collect(Collectors.toMap(ps -> ps.getPlanStatus(), ps -> ps.getStartDate()));
+                .collect(Collectors.toMap(ps -> translate(ps.getPlanStatus()), ps -> ps.getStartDate()));
 
         Map<String, String> customProps = customPropTool.getCustomPropertyMap(
                 project.getTextProperties(),
@@ -285,7 +285,7 @@ public class GeoJSONExport {
                                                                                                                       // future/pastness.
                                                                                                                       // Do in SQL
                         // .owner()// Needs adding to the model
-                        .confidentialityLevel(project.getConfidentiality())
+                        .confidentialityLevel(translate(project.getConfidentiality()))
                         .build())
                 .projectDuration(ProjectDuration.builder()
                         .startDate(project.getStartDate())
@@ -418,4 +418,41 @@ public class GeoJSONExport {
         return min != null ? min.doubleValue() : null;
     }
 
+    public static String translate(Confidentiality confidentiality) {
+        return switch (confidentiality) {
+        case PRIVATE -> "Prive";
+        case INTERNAL_CIVIL -> "Intern ambtelijk";
+        case INTERNAL_MANAGEMENT -> "Intern bestuurlijk";
+        case INTERNAL_COUNCIL -> "Intern raad";
+        case EXTERNAL_REGIONAL -> "Extern woonregio";
+        case EXTERNAL_GOVERNMENTAL -> "Extern mede-overheden";
+        case PUBLIC -> "Openbaar";
+        };
+    }
+
+    public static String translate(ProjectPhase projectPhase) {
+        return switch (projectPhase) {
+        case _1_CONCEPT -> "Concept";
+        case _2_INITIATIVE -> "Initiatief";
+        case _3_DEFINITION -> "Definitie";
+        case _4_DESIGN -> "Ontwerp";
+        case _5_PREPARATION -> "Voorbereiding";
+        case _6_REALIZATION -> "Realisatie";
+        case _7_AFTERCARE -> "Nazorg";
+        };
+    }
+
+    public static String translate(PlanStatus planStatus) {
+        return switch (planStatus) {
+        case _1A_ONHERROEPELIJK -> "1A Onherroepelijk";
+        case _1B_ONHERROEPELIJK_MET_UITWERKING_NODIG -> "1B Onherroepelijk met uitwerking nodig";
+        case _1C_ONHERROEPELIJK_MET_BW_NODIG -> "1C Onherroepelijk met bw nodig";
+        case _2A_VASTGESTELD -> "2A Vastgesteld";
+        case _2B_VASTGESTELD_MET_UITWERKING_NODIG -> "2B Vastgesteld met uitwerking nodig";
+        case _2C_VASTGESTELD_MET_BW_NODIG -> "2C Vastgesteld met bw nodig";
+        case _3_IN_VOORBEREIDING -> "3 In voorbereiding";
+        case _4A_OPGENOMEN_IN_VISIE -> "4A Opgenomen in visie";
+        case _4B_NIET_OPGENOMEN_IN_VISIE -> "4B Niet opgenomen in visie";
+        };
+    }
 }

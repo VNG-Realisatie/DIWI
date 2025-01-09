@@ -17,7 +17,6 @@ import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.GroundPosition;
 import nl.vng.diwi.dal.entities.enums.HouseType;
 import nl.vng.diwi.dal.entities.enums.MutationType;
-import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
@@ -52,10 +51,10 @@ public class GeoJsonExportModel {
         private ProjectLocation projectLocation;
         @Builder.Default
         @JsonProperty("projectfasen")
-        private Map<ProjectPhase, LocalDate> projectPhasesMap = new HashMap<>();
+        private Map<String, LocalDate> projectPhasesMap = new HashMap<>();
         @Builder.Default
         @JsonProperty("planologische_planstatus")
-        private Map<PlanStatus, LocalDate> projectPlanStatusesMap = new HashMap<>();
+        private Map<String, LocalDate> projectPlanStatusesMap = new HashMap<>();
         @Builder.Default
         @JsonProperty("maatwerk_projecteigenschappen")
         private Map<String, String> customPropertiesMap = new HashMap<>();
@@ -88,7 +87,7 @@ public class GeoJsonExportModel {
         @JsonProperty("eigenaar")
         private String owner;
         @JsonProperty("vertrouwelijkheid")
-        private Confidentiality confidentialityLevel;
+        private String confidentialityLevel;
     }
 
     @Data
