@@ -119,8 +119,8 @@ public class DataExchangeResourceTest {
     @EnumSource(names = { "GEO_JSON" })
     @ParameterizedTest
     public void exportGeoJSON(DataExchangeType type) throws Exception {
-        LocalDate startDate = today.minusDays(10);
-        LocalDate endDate = today.plusDays(10);
+        LocalDate startDate = LocalDate.of(2024, 12, 30);
+        LocalDate endDate = LocalDate.of(2025, 1, 19);
 
         // Create the initial project and block
         var fixture = ProjectsUtil.createTestProject(
@@ -157,8 +157,9 @@ public class DataExchangeResourceTest {
         //     .isEqualTo(expected);
         // assertThat(objectMapper.readTree(result.toString()))
         //         .isEqualTo(Json.MAPPER.readTree(expected));
-        assertThat(actualTree.toPrettyString())
-                .isEqualToIgnoringWhitespace(expectedTree.toPrettyString());
+
+        assertThat(actualTree.toPrettyString().replaceAll("^.*diwi_id.*$", ""))
+                .isEqualToIgnoringWhitespace(expectedTree.toPrettyString().replaceAll("^.*diwi_id.*$", ""));
 
         // assertThat(result.toString()).isEqualToIgnoringWhitespace(expected);
     }

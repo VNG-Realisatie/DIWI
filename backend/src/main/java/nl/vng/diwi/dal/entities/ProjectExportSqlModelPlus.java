@@ -171,6 +171,7 @@ public class ProjectExportSqlModelPlus {
 
         private UUID houseblockId;
         private String name;
+        private LocalDate endDate;
         private Integer deliveryYear;
         private Integer mutationAmount;
 

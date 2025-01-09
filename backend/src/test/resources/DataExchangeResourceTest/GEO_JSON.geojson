@@ -12,12 +12,15 @@
                         "in_programmering": null,
                         "prioritering": null,
                         "rol_gemeente": null,
-                        "status": "REALIZED",
+                        "status": "ACTIVE",
                         "eigenaar": null,
                         "vertrouwelijkheid": "EXTERNAL_GOVERNMENTAL"
                     },
                     "rollen": { "projectleider": null, "opdrachtgever": null },
-                    "projectduur": { "start_project": null, "eind_project": null },
+                    "projectduur": {
+                        "start_project": "2024-12-30",
+                        "eind_project": "2025-01-19"
+                    },
                     "projectfasen": {
                         "_1_CONCEPT": null,
                         "_2_INITIATIVE": null,
@@ -52,9 +55,9 @@
                             "status": null,
                             "aantal": null
                         },
-                        "einddatum": null,
+                        "einddatum": "2025-01-19",
                         "grootte": [],
-                        "waarde": { "hoog": null, "laag": null, "categorie": "name" },
+                        "waarde": [],
                         "fysiek_voorkomen": [],
                         "doelgroep": [],
                         "grondpositie": {

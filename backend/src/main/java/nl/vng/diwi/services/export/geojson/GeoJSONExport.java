@@ -1,8 +1,5 @@
 package nl.vng.diwi.services.export.geojson;
 
-import static nl.vng.diwi.services.DataExchangeExportError.EXPORT_ERROR.MISSING_MANDATORY_VALUE;
-import static nl.vng.diwi.services.DataExchangeExportError.EXPORT_ERROR.MULTIPLE_SINGLE_SELECT_VALUES;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -18,10 +15,11 @@ import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.geojson.jackson.CrsType;
 
-import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelPlus;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
+import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
+import nl.vng.diwi.dal.entities.enums.ProjectStatus;
 import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.models.ConfigModel;
 import nl.vng.diwi.models.DataExchangePropertyModel;
@@ -33,6 +31,7 @@ import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.BasicProjectData;
 import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.GeoJsonHouseblock;
 import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.GeoJsonProject;
 import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.MutationData;
+import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.OwnershipValueData;
 import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.ProjectData;
 import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.ProjectDuration;
 import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.ProjectLocation;
@@ -128,14 +127,16 @@ public class GeoJSONExport {
         }
 
         List<String> woonplaatsName;
-        List<UUID> municipalityOptions = projectCategoricalCustomProps.get(municipalityFixedProp.getId());
-        if (municipalityOptions == null || municipalityOptions.isEmpty()) {
+        List<UUID> optionIds = projectCategoricalCustomProps.get(municipalityFixedProp.getId());
+        if (optionIds == null || optionIds.isEmpty()) {
             woonplaatsName = List.of();
         } else {
-            woonplaatsName = municipalityOptions.stream()
+            woonplaatsName = optionIds.stream()
                     .map(optionId -> optionsMap.get(optionId))
                     .toList();
         }
+
+        LocalDate today = LocalDate.now();
 
         final var geoJsonProject = GeoJsonProject.builder()
                 .diwiId(project.getProjectId())
@@ -148,7 +149,8 @@ public class GeoJSONExport {
                         // .in_programmering() // Is a block property, move to block
                         // .priority() // This is a custom property in the importer
                         // .municipalityRole() // This is a custom property
-                        .status(project.getStatus()) // Need to guess based on future/pastness. Do in SQL
+                        .status(project.getEndDate().isBefore(today) ? ProjectStatus.REALIZED : ProjectStatus.ACTIVE) // Need to guess based on future/pastness.
+                                                                                                                      // Do in SQL
                         // .owner()// Needs adding to the model
                         .confidentialityLevel(project.getConfidentiality())
                         .build())
@@ -167,13 +169,34 @@ public class GeoJSONExport {
                 .build();
 
         final var geoJsonBlocks = project.getHouseblocks().stream()
-                .map(block -> GeoJsonHouseblock.builder()
-                        .name(block.getName())
-                        .mutationData(MutationData.builder()
-                                .amount(block.getMutationAmount())
-                                .mutationType(block.getMutationKind())
-                                .build())
-                        .build())
+                .map(block -> {
+                    var mutationData = MutationData.builder()
+                            .amount(block.getMutationAmount())
+                            .mutationType(block.getMutationKind())
+                            .build();
+
+                    var ownerShipValue = block.getOwnershipValueList().stream()
+                            .map(ov -> {
+                                return OwnershipValueData.builder()
+                                        .categoryName(ov.getOwnershipType().toString())
+                                        .max(ov.getOwnershipType() == OwnershipType.KOOPWONING ? (double) ov.getOwnershipValueRangeMax() / 100
+                                                : (double) ov.getOwnershipRentalValueRangeMax() / 100)
+                                        .min(ov.getOwnershipType() == OwnershipType.KOOPWONING ? (double) ov.getOwnershipValueRangeMin() / 100
+                                                : (double) ov.getOwnershipRentalValueRangeMin() / 100)
+                                        .build();
+                            })
+                            .toList();
+
+                    return GeoJsonHouseblock.builder()
+                            .diwiId(block.getHouseblockId())
+                            .name(block.getName())
+                            .endDate(block.getEndDate())
+                            .mutationData(mutationData)
+                            // .groundPositionsMap(null)
+
+                            .ownershipValue(ownerShipValue)
+                            .build();
+                })
                 .toList();
 
         projectFeature.setProperty("projectgegevens", geoJsonProject);

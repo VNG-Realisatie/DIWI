@@ -226,7 +226,7 @@ FROM (
                 ),
                 project_woningbloks_delivery AS (
                     SELECT
-                        pppw.id, EXTRACT(YEAR FROM wdc.latest_deliverydate)::INTEGER AS deliveryYear
+                        pppw.id, EXTRACT(YEAR FROM wdc.latest_deliverydate)::INTEGER AS deliveryYear, wdc.latest_deliverydate as endDate
                     FROM
                         project_woningbloks pppw
                         JOIN diwi.woningblok_deliverydate_changelog wdc ON pppw.id = wdc.woningblok_id AND wdc.change_end_date IS NULL
@@ -272,6 +272,7 @@ FROM (
                         jsonb_build_object(
                             'houseblockId', pppw.id,
                             'deliveryYear', pppwd.deliveryYear,
+                            'endDate', pppwd.endDate,
                             'mutationKind', pppwm.mutationKind,
                             'mutationAmount', pppwm.mutationAmount,
                             'meergezinswoning', pppwh.meergezinswoning,

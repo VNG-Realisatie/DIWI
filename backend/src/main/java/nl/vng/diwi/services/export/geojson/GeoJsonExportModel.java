@@ -125,6 +125,8 @@ public class GeoJsonExportModel {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class GeoJsonHouseblock {
+        @JsonProperty("diwi_id")
+        private UUID diwiId;
         @JsonProperty("name")
         private String name;
         @JsonProperty("mutatiegegevens")
@@ -134,7 +136,7 @@ public class GeoJsonExportModel {
         @JsonProperty("grootte")
         private List<Object> size; //unused
         @JsonProperty("waarde")
-        private OwnershipValueData ownershipValue;
+        private List<OwnershipValueData> ownershipValue;
         @Builder.Default
         @JsonProperty("fysiek_voorkomen")
         private List<PhysicalAppearanceData> physicalAppearanceList = new ArrayList<>();
