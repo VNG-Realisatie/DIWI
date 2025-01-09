@@ -45,7 +45,8 @@
                 },
                 "woning_blokken": [
                     {
-                        "name": "block name",
+                        "naam": "block name",
+                        "in_programmering": null,
                         "mutatiegegevens": {
                             "mutatie_type": null,
                             "woning_type": null,

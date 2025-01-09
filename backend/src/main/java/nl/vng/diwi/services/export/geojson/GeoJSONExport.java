@@ -20,6 +20,7 @@ import nl.vng.diwi.dal.entities.ProjectExportSqlModelPlus;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelPlus.BooleanPropertyModel;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelPlus.CategoryPropertyModel;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelPlus.NumericPropertyModel;
+import nl.vng.diwi.dal.entities.ProjectExportSqlModelPlus.OrdinalPropertyModel;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelPlus.TextPropertyModel;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.GroundPosition;
@@ -49,6 +50,7 @@ public class GeoJSONExport {
 
         private List<PropertyModel> properties;
         private Map<UUID, String> optionsMap;
+        private Map<UUID, String> ordinalsMap;
         private Map<UUID, PropertyModel> customPropsMap;
 
         public CustomProps(List<PropertyModel> customProps) {
@@ -56,6 +58,9 @@ public class GeoJSONExport {
 
             optionsMap = customProps.stream()
                     .flatMap(cp -> cp.getCategories() != null ? cp.getCategories().stream() : Stream.empty())
+                    .collect(Collectors.toMap(option -> option.getId(), option -> option.getName()));
+            ordinalsMap = customProps.stream()
+                    .flatMap(cp -> cp.getOrdinals() != null ? cp.getOrdinals().stream() : Stream.empty())
                     .collect(Collectors.toMap(option -> option.getId(), option -> option.getName()));
 
             customPropsMap = customProps.stream().collect(Collectors.toMap(PropertyModel::getId, Function.identity()));
@@ -92,6 +97,10 @@ public class GeoJSONExport {
             return optionsMap.get(id);
         }
 
+        public String getOrdinal(UUID id) {
+            return ordinalsMap.get(id);
+        }
+
         public List<String> getOptions(List<UUID> optionIds) {
             if (optionIds == null) {
                 return List.of();
@@ -106,7 +115,8 @@ public class GeoJSONExport {
                 List<TextPropertyModel> projectTextCustomProps,
                 List<NumericPropertyModel> projectNumericCustomProps,
                 List<BooleanPropertyModel> projectBooleanCustomProps,
-                List<CategoryPropertyModel> projectCategoricalCustomProps) {
+                List<CategoryPropertyModel> projectCategoricalCustomProps,
+                List<OrdinalPropertyModel> projectOrdinalPropertyModels) {
 
             Map<String, String> customProps = new HashMap<>();
             for (var prop : projectTextCustomProps) {
@@ -135,6 +145,15 @@ public class GeoJSONExport {
                             .map(optionId -> getOption(optionId))
                             .collect(Collectors.joining(","));
                     customProps.put(propertyModel.getName(), values);
+                }
+            }
+            for (var prop : projectOrdinalPropertyModels) {
+                PropertyModel propertyModel = getCustomProperty(prop.getPropertyId());
+                if (propertyModel != null) {
+                    String value = getOrdinal(prop.getPropertyValueId());
+                    String min = getOrdinal(prop.getMinPropertyValueId());
+                    String max = getOrdinal(prop.getMaxPropertyValueId());
+                    customProps.put(propertyModel.getName(), value != null ? value : min + "-" + max);
                 }
             }
             return customProps;
@@ -204,7 +223,8 @@ public class GeoJSONExport {
                 project.getTextProperties(),
                 project.getNumericProperties(),
                 project.getBooleanProperties(),
-                project.getCategoryProperties());
+                project.getCategoryProperties(),
+                project.getOrdinalProperties());
 
         Map<UUID, List<UUID>> projectCategoricalCustomProps = project.getCategoryProperties().stream()
                 .collect(Collectors.toMap(ProjectExportSqlModelPlus.CategoryPropertyModel::getPropertyId,
@@ -261,7 +281,8 @@ public class GeoJSONExport {
                             block.getTextProperties(),
                             block.getNumericProperties(),
                             block.getBooleanProperties(),
-                            block.getCategoryProperties());
+                            block.getCategoryProperties(),
+                            block.getOrdinalProperties());
 
                     var mutationData = MutationData.builder()
                             .amount(block.getMutationAmount())
