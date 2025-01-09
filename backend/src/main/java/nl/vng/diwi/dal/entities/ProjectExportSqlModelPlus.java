@@ -61,6 +61,14 @@ public class ProjectExportSqlModelPlus {
     @JdbcType(PostgreSQLEnumJdbcType.class)
     private ProjectPhase projectPhase;
 
+    @Type(value = JsonListType.class)
+    @Getter(AccessLevel.NONE)
+    private List<ProjectPhaseStartDate> projectPhaseStartDateList;
+
+    @Type(value = JsonListType.class)
+    @Getter(AccessLevel.NONE)
+    private List<ProjectPlanStatusStartDate> projectPlanStatusStartDateList;
+
     @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(columnDefinition = "text[]")
     @Getter(AccessLevel.NONE)
@@ -107,6 +115,14 @@ public class ProjectExportSqlModelPlus {
         return planningPlanStatus == null ? new ArrayList<>() : planningPlanStatus;
     }
 
+    public List<ProjectPhaseStartDate> getProjectPhaseStartDateList() {
+        return projectPhaseStartDateList == null ? new ArrayList<>() : projectPhaseStartDateList;
+    }
+
+    public List<ProjectPlanStatusStartDate> getProjectPlanStatusStartDateList() {
+        return projectPlanStatusStartDateList == null ? new ArrayList<>() : projectPlanStatusStartDateList;
+    }
+
     public List<TextPropertyModel> getTextProperties() {
         return textProperties == null ? new ArrayList<>() : textProperties;
     }
@@ -129,6 +145,20 @@ public class ProjectExportSqlModelPlus {
 
     public List<HouseblockExportSqlModel> getHouseblocks() {
         return houseblocks == null ? new ArrayList<>() : houseblocks;
+    }
+
+    @Data
+    @NoArgsConstructor
+    public static class ProjectPhaseStartDate {
+        private ProjectPhase projectPhase;
+        private LocalDate startDate;
+    }
+
+    @Data
+    @NoArgsConstructor
+    public static class ProjectPlanStatusStartDate {
+        private PlanStatus planStatus;
+        private LocalDate startDate;
     }
 
     @Data
