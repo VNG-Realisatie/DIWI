@@ -107,7 +107,11 @@ export function GoalWizard() {
     const { setAlert } = useContext(AlertContext);
     const navigate = useNavigate();
     const { allowedActions } = useContext(UserContext);
-    const { customProperties }: CustomPropertyStoreType = useCustomPropertyStore();
+    const { customProperties, fetchCustomProperties }: CustomPropertyStoreType = useCustomPropertyStore();
+
+    useEffect(() => {
+        fetchCustomProperties();
+    }, [fetchCustomProperties]);
 
     useEffect(() => {
         if (goalId) {

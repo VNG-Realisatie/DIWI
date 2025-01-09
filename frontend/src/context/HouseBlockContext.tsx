@@ -65,11 +65,9 @@ export const HouseBlockProvider = ({ children }: PropsWithChildren) => {
 
     const { projectId, selectedProject } = useContext(ProjectContext);
     const { physicalAppearanceCategories, targetGroupCategories } = useCustomPropertyDefinitions();
-    const { customProperties } = useCustomPropertyStore();
+    const { houseBlockCustomProperties } = useCustomPropertyStore();
 
-    const nonFixedCustomDefinitions = customProperties.filter(
-        (property) => !property.disabled && property.type !== "FIXED" && property.objectType === "WONINGBLOK",
-    );
+    const nonFixedCustomDefinitions = houseBlockCustomProperties.filter((property) => !property.disabled && property.type !== "FIXED");
 
     const refresh = useCallback(() => {
         if (!projectId) {

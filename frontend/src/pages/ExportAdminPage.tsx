@@ -55,7 +55,11 @@ function ExportAdminPage() {
     const [properties, setProperties] = useState<ExportProperty[]>([]);
     const { setAlert } = useAlert();
     const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
-    const { customProperties: unfilteredCustomProperties } = useCustomPropertyStore();
+    const { customProperties: unfilteredCustomProperties, fetchCustomProperties } = useCustomPropertyStore();
+
+    useEffect(() => {
+        fetchCustomProperties();
+    }, [fetchCustomProperties]);
 
     useEffect(() => {
         if (id) {

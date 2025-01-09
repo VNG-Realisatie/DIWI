@@ -30,11 +30,9 @@ export const ProjectProvider = ({ children }: PropsWithChildren) => {
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
     const [paginationInfo, setPaginationInfo] = useState<GridPaginationModel>({ page: 1, pageSize: 10 });
     const [totalProjectCount, setTotalProjectCount] = useState(0);
-    const { customProperties } = useCustomPropertyStore();
+    const { projectCustomProperties } = useCustomPropertyStore();
 
-    const nonFixedCustomDefinitions: Property[] = customProperties.filter(
-        (property) => !property.disabled && property.type !== "FIXED" && property.objectType === "PROJECT",
-    );
+    const nonFixedCustomDefinitions: Property[] = projectCustomProperties.filter((property) => !property.disabled && property.type !== "FIXED");
 
     const updateProjects = useCallback(() => {
         getProjects(paginationInfo.page, paginationInfo.pageSize)

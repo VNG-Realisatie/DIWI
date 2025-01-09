@@ -14,11 +14,11 @@ type Props = {
 };
 
 export const CustomPropertiesProject = ({ readOnly, customValues, setCustomValues }: Props) => {
-    const { customProperties } = useCustomPropertyStore();
-    const customDefinitions = customProperties.filter(
+    const { projectCustomProperties } = useCustomPropertyStore();
+
+    const customDefinitions = projectCustomProperties.filter(
         (property) =>
             !property.disabled &&
-            property.objectType === "PROJECT" &&
             property.name !== "geometry" &&
             property.name !== "district" &&
             property.name !== "municipality" &&

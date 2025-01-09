@@ -9,6 +9,8 @@ export type Property = components["schemas"]["PropertyModel"];
 
 export type CustomPropertyStoreType = {
     customProperties: Property[];
+    projectCustomProperties: Property[];
+    houseBlockCustomProperties: Property[];
     fetchCustomProperties: () => void;
     addCustomProperty: (newData: Property) => Promise<Property>;
     deleteCustomProperty: (id: string) => void;

@@ -56,12 +56,16 @@ const CustomPropertiesCreateButton = observer(({ error, isButtonDisabledMap, set
     const [mandatory, setMandatory] = useState(false);
     const [singleSelect, setSingleSelect] = useState<boolean | undefined>(false);
 
-    const { updateCustomProperty, customProperties, addCustomProperty } = useCustomPropertyStore();
+    const { updateCustomProperty, customProperties, addCustomProperty, fetchCustomProperties } = useCustomPropertyStore();
     const priceRangeBuyCategories = customProperties.filter((property) => property.name === "priceRangeBuy") || [];
     const priceRangeRentCategories = customProperties.filter((property) => property.name === "priceRangeRent") || [];
 
     const priceRangeRentId = priceRangeRentCategories[0]?.id;
     const priceRangeBuyId = priceRangeBuyCategories[0]?.id;
+
+    useEffect(() => {
+        fetchCustomProperties();
+    }, [fetchCustomProperties]);
 
     useEffect(() => {
         const fetchCustomProperty = async () => {

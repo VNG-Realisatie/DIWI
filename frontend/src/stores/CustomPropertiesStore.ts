@@ -1,4 +1,5 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, runInAction } from "mobx";
+import { isEqual } from "lodash";
 import { addCustomProperty, deleteCustomProperty, getCustomProperties, Property, updateCustomProperty } from "../api/adminSettingServices";
 
 class CustomPropertyStore {
@@ -9,28 +10,47 @@ class CustomPropertyStore {
         this.fetchCustomProperties();
     }
 
+    get projectCustomProperties(): Property[] {
+        return this.customProperties.filter((property) => property.objectType === "PROJECT");
+    }
+
+    get houseBlockCustomProperties(): Property[] {
+        return this.customProperties.filter((property) => property.objectType === "WONINGBLOK");
+    }
+
     fetchCustomProperties = async () => {
-        this.customProperties = await getCustomProperties();
+        const newProperties = await getCustomProperties();
+        runInAction(() => {
+            if (!isEqual(newProperties, this.customProperties)) {
+                this.customProperties = newProperties;
+            }
+        });
     };
 
     deleteCustomProperty = async (id: string) => {
         await deleteCustomProperty(id);
-        this.customProperties = this.customProperties.filter((property) => property.id !== id);
+        runInAction(() => {
+            this.customProperties = this.customProperties.filter((property) => property.id !== id);
+        });
     };
 
     addCustomProperty = async (newData: Property) => {
         const added = await addCustomProperty(newData);
-        this.customProperties.push(added);
+        runInAction(() => {
+            this.customProperties.push(added);
+        });
         return added;
     };
 
     updateCustomProperty = async (id: string, newData: Property): Promise<Property> => {
         const updated = await updateCustomProperty(id, newData);
-        this.customProperties = this.customProperties.map((property) => {
-            if (property.id === id) {
-                return updated;
-            }
-            return property;
+        runInAction(() => {
+            this.customProperties = this.customProperties.map((property) => {
+                if (property.id === id) {
+                    return updated;
+                }
+                return property;
+            });
         });
         return updated;
     };

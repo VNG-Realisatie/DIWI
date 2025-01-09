@@ -81,10 +81,9 @@ export const OwnershipRowInputs = ({
 }: Props) => {
     const isKoopwoning = ownership.type === "KOOPWONING";
     const isHuurwoning = ownership.type === "HUURWONING_PARTICULIERE_VERHUURDER" || ownership.type === "HUURWONING_WONINGCORPORATIE";
-    const { customProperties } = useCustomPropertyStore();
-    const rangeCategories = customProperties.filter(
-        (property) => !property.disabled && property.propertyType === "RANGE_CATEGORY" && property.objectType === "WONINGBLOK",
-    );
+    const { houseBlockCustomProperties } = useCustomPropertyStore();
+
+    const rangeCategories = houseBlockCustomProperties.filter((property) => !property.disabled && property.propertyType === "RANGE_CATEGORY");
 
     const filteredCategories = rangeCategories.filter((property) => {
         if (isKoopwoning && property.name === "priceRangeBuy") {

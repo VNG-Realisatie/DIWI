@@ -22,6 +22,7 @@ vi.mock("../api/adminSettingServices", () => ({
     getCustomPropertiesWithQuery: vi.fn().mockResolvedValue([]),
     addCustomProperty: vi.fn().mockResolvedValue({}),
     deleteCustomProperty: vi.fn().mockResolvedValue({}),
+    updateCustomProperty: vi.fn().mockResolvedValue({}),
 }));
 
 vi.mock("../api/projectsTableServices", () => ({
@@ -37,13 +38,13 @@ test("renders project wizard page 1", () => {
     render(
         <TestComponentWrapper>
             <UserContext.Provider value={{ user: mockUser, allowedActions: [] }}>
-                <ProjectProvider>
-                    <CustomPropertyStoreProvider>
+                <CustomPropertyStoreProvider>
+                    <ProjectProvider>
                         <HouseBlockProvider>
                             <ProjectWizard />
                         </HouseBlockProvider>
-                    </CustomPropertyStoreProvider>
-                </ProjectProvider>
+                    </ProjectProvider>
+                </CustomPropertyStoreProvider>
             </UserContext.Provider>
         </TestComponentWrapper>,
     );

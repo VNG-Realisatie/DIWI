@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { CategoryType, OrdinalCategoryType, CustomPropertyStoreType, Property } from "../../api/adminSettingServices";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import AlertContext from "../../context/AlertContext";
 import PropertyDialog from "./PropertyDialog";
 import ActionNotAllowed from "../../pages/ActionNotAllowed";
@@ -20,7 +20,11 @@ export const CustomPropertiesTable = observer(() => {
     const [editPropertyId, setEditPropertyId] = useState("");
     const { t } = useTranslation();
     const { allowedActions } = useContext(UserContext);
-    const { customProperties, deleteCustomProperty }: CustomPropertyStoreType = useCustomPropertyStore();
+    const { customProperties, deleteCustomProperty, fetchCustomProperties }: CustomPropertyStoreType = useCustomPropertyStore();
+
+    useEffect(() => {
+        fetchCustomProperties();
+    }, [fetchCustomProperties]);
 
     if (!allowedActions.includes("VIEW_CUSTOM_PROPERTIES")) {
         return <ActionNotAllowed errorMessage={t("customProperties.forbidden")} />;

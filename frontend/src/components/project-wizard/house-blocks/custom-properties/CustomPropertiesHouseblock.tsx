@@ -13,14 +13,14 @@ type Props = {
 };
 
 export const CustomPropertiesHouseblock = ({ readOnly, customPropertyValues, setCustomPropertyValues }: Props) => {
-    const { customProperties } = useCustomPropertyStore();
+    const { houseBlockCustomProperties } = useCustomPropertyStore();
     const { t } = useTranslation();
+
     const translationPath = "customProperties";
 
-    const customDefinitions = customProperties.filter(
+    const customDefinitions = houseBlockCustomProperties.filter(
         (property) =>
             !property.disabled &&
-            property.objectType === "WONINGBLOK" &&
             property.name !== "physicalAppearance" &&
             property.name !== "targetGroup" &&
             property.name !== "priceRangeBuy" &&
