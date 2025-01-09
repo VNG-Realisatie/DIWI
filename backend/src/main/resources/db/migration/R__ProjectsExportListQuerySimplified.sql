@@ -312,6 +312,34 @@ FROM (
                          LEFT JOIN diwi.woningblok_grondpositie_changelog_value gtg ON gtg.woningblok_grondpositie_changelog_id = wgpc.id
                                 AND gtg.grondpositie = 'GEEN_TOESTEMMING_GRONDEIGENAAR'
                 ),
+                block_programming AS (
+                    SELECT
+                        w.id, wpc.programmering as programming
+                    FROM
+                        project_woningbloks w
+                        JOIN diwi.woningblok_programmering_changelog wpc ON w.id = wpc.woningblok_id AND wpc.change_end_date IS NULL
+                            AND wpc.end_milestone_id = w.end_milestone_id
+                ),
+                block_targetGroups AS (
+                    SELECT
+                        w.id, to_jsonb(array_agg(jsonb_build_object('propertyValueId', wdcv.property_value_id, 'amount', wdcv.amount))) AS target_groups
+                    FROM
+                        project_woningbloks w
+                        JOIN diwi.woningblok_doelgroep_changelog wdc ON w.id = wdc.woningblok_id AND wdc.change_end_date IS NULL
+                            AND wdc.end_milestone_id = w.end_milestone_id
+                        JOIN diwi.woningblok_doelgroep_changelog_value wdcv ON wdcv.woningblok_doelgroep_changelog_id = wdc.id
+                    GROUP BY w.id
+                ),
+                block_physicalAppearances AS (
+                    SELECT
+                        w.id, to_jsonb(array_agg(jsonb_build_object('propertyValueId', wtfcv.property_value_id, 'amount', wtfcv.amount))) AS physical_appearances
+                    FROM
+                        project_woningbloks w
+                        JOIN diwi.woningblok_type_en_fysiek_changelog wtfc ON w.id = wtfc.woningblok_id AND wtfc.change_end_date IS NULL
+                            AND wtfc.end_milestone_id = w.end_milestone_id
+                        JOIN diwi.woningblok_type_en_fysiek_changelog_fysiek_value wtfcv ON wtfcv.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
+                    GROUP BY w.id
+                ),
                 block_textCP AS (
                     SELECT
                         w.id, to_jsonb(array_agg(jsonb_build_object('propertyId', wtc.eigenschap_id, 'textValue', wtc.value))) AS text_properties
@@ -377,10 +405,13 @@ FROM (
                             'intentionPermissionOwner', bgp.intentionPermissionOwner,
                             'noPermissionOwner', bgp.noPermissionOwner,
                             'name', pppn.name,
+                            'programming', bp.programming,
                             'textProperties', btp.text_properties,
                             'numericProperties', bnp.numeric_properties,
                             'booleanProperties', bbp.boolean_properties,
-                            'categoryProperties', bcp.category_properties
+                            'categoryProperties', bcp.category_properties,
+                            'targetGroups', btg.target_groups,
+                            'physicalAppearances', bpa.physical_appearances
                         ) AS houseblocks
 
                     FROM
@@ -395,6 +426,9 @@ FROM (
                             LEFT JOIN block_numericCP bnp ON bnp.id = pppw.id
                             LEFT JOIN block_booleanCP bbp ON bbp.id = pppw.id
                             LEFT JOIN block_categoryCP bcp ON bcp.id = pppw.id
+                            LEFT JOIN block_programming bp ON bp.id = pppw.id
+                            LEFT JOIN block_targetGroups btg ON btg.id = pppw.id
+                            LEFT JOIN block_physicalAppearances bpa ON bpa.id = pppw.id
                 )
 
                 SELECT
