@@ -230,6 +230,13 @@ public class GeoJSONExport {
 
         final var geoJsonBlocks = project.getHouseblocks().stream()
                 .map(block -> {
+
+                    Map<String, String> blockCustomProps = customPropTool.getCustomProps(
+                        block.getTextProperties(),
+                        block.getNumericProperties(),
+                        block.getBooleanProperties(),
+                        block.getCategoryProperties());
+
                     var mutationData = MutationData.builder()
                             .amount(block.getMutationAmount())
                             .mutationType(block.getMutationKind())
@@ -279,8 +286,8 @@ public class GeoJSONExport {
                             .endDate(block.getEndDate())
                             .mutationData(mutationData)
                             .groundPositionsMap(groundPositions)
-
                             .ownershipValue(ownerShipValue)
+                            .customPropertiesMap(blockCustomProps)
                             .build();
                 })
                 .toList();
