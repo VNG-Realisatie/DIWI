@@ -25,6 +25,7 @@ import nl.vng.diwi.dal.entities.ProjectExportSqlModelPlus.OrdinalPropertyModel;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelPlus.TextPropertyModel;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.GroundPosition;
+import nl.vng.diwi.dal.entities.enums.MutationType;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
@@ -313,7 +314,7 @@ public class GeoJSONExport {
 
                     var mutationData = MutationData.builder()
                             .amount(block.getMutationAmount())
-                            .mutationType(block.getMutationKind())
+                            .mutationType(translate(block.getMutationKind()))
                             .build();
 
                     var ownerShipValue = block.getOwnershipValueList().stream()
@@ -430,8 +431,11 @@ public class GeoJSONExport {
         };
     }
 
-    public static String translate(ProjectPhase projectPhase) {
-        return switch (projectPhase) {
+    public static String translate(ProjectPhase in) {
+        if (in == null) {
+            return null;
+        }
+        return switch (in) {
         case _1_CONCEPT -> "Concept";
         case _2_INITIATIVE -> "Initiatief";
         case _3_DEFINITION -> "Definitie";
@@ -442,8 +446,11 @@ public class GeoJSONExport {
         };
     }
 
-    public static String translate(PlanStatus planStatus) {
-        return switch (planStatus) {
+    public static String translate(PlanStatus in) {
+        if (in == null) {
+            return null;
+        }
+        return switch (in) {
         case _1A_ONHERROEPELIJK -> "1A Onherroepelijk";
         case _1B_ONHERROEPELIJK_MET_UITWERKING_NODIG -> "1B Onherroepelijk met uitwerking nodig";
         case _1C_ONHERROEPELIJK_MET_BW_NODIG -> "1C Onherroepelijk met bw nodig";
@@ -453,6 +460,16 @@ public class GeoJSONExport {
         case _3_IN_VOORBEREIDING -> "3 In voorbereiding";
         case _4A_OPGENOMEN_IN_VISIE -> "4A Opgenomen in visie";
         case _4B_NIET_OPGENOMEN_IN_VISIE -> "4B Niet opgenomen in visie";
+        };
+    }
+
+    public static String translate(MutationType in) {
+        if (in == null) {
+            return null;
+        }
+        return switch (in) {
+        case DEMOLITION -> "Sloop";
+        case CONSTRUCTION -> "Bouw";
         };
     }
 }

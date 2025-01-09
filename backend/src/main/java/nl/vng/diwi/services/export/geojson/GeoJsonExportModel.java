@@ -182,7 +182,7 @@ public class GeoJsonExportModel {
     @AllArgsConstructor
     public static class MutationData {
         @JsonProperty("mutatie_type")
-        private MutationType mutationType;
+        private String mutationType;
         @JsonProperty("woning_type")
         private HouseType houseType;
         @JsonProperty("aantal")
