@@ -84,7 +84,7 @@ public class GeoJsonExportModel {
         @JsonProperty("prioritering")
         private String priority;
         @JsonProperty("rol_gemeente")
-        private String municipalityRole;
+        private List<String> municipalityRole;
         @JsonProperty("status")
         private ProjectStatus status;
         @JsonProperty("eigenaar")

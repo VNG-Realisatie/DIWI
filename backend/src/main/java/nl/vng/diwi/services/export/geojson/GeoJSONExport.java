@@ -227,13 +227,11 @@ public class GeoJSONExport {
             projectFeature.setGeometry(multiPolygon);
         }
 
-        Map<ProjectPhase, LocalDate> phases = new HashMap<>();
-        project.getProjectPhaseStartDateList()
+        Map<ProjectPhase, LocalDate> phases = project.getProjectPhaseStartDateList()
                 .stream()
                 .collect(Collectors.toMap(ph -> ph.getProjectPhase(), ph -> ph.getStartDate()));
 
-        Map<PlanStatus, LocalDate> planstatuses;
-        project.getProjectPlanStatusStartDateList()
+        Map<PlanStatus, LocalDate> planstatuses = project.getProjectPlanStatusStartDateList()
                 .stream()
                 .collect(Collectors.toMap(ps -> ps.getPlanStatus(), ps -> ps.getStartDate()));
 
@@ -248,19 +246,23 @@ public class GeoJSONExport {
                 .collect(Collectors.toMap(ProjectExportSqlModelPlus.CategoryPropertyModel::getPropertyId,
                         ProjectExportSqlModelPlus.CategoryPropertyModel::getOptionValues));
 
-        List<String> gemeente = customPropTool.getOptions(
+        List<String> municipalities = customPropTool.getOptions(
                 projectCategoricalCustomProps.get(
                         customPropTool.get(Constants.FIXED_PROPERTY_MUNICIPALITY).getId()));
 
-        List<String> buurt = customPropTool.getOptions(
+        List<String> neighbourhoods = customPropTool.getOptions(
                 projectCategoricalCustomProps.get(
                         customPropTool.get(Constants.FIXED_PROPERTY_NEIGHBOURHOOD).getId()));
 
-        List<String> wijk = customPropTool.getOptions(
+        List<String> districts = customPropTool.getOptions(
                 projectCategoricalCustomProps.get(
                         customPropTool.get(Constants.FIXED_PROPERTY_DISTRICT).getId()));
 
         LocalDate today = LocalDate.now();
+
+        List<String> municipalityRole = customPropTool.getOptions(
+                projectCategoricalCustomProps.get(
+                        customPropTool.get(Constants.FIXED_PROPERTY_MUNICIPALITY_ROLE).getId()));
 
         final var geoJsonProject = GeoJsonProject.builder()
                 .diwiId(project.getProjectId())
@@ -270,9 +272,8 @@ public class GeoJSONExport {
                         .build())
                 .projectData(ProjectData.builder()
                         .planType(project.getPlanType().isEmpty() ? null : project.getPlanType().get(0))
-                        // .in_programmering() // Is a block property, move to block
                         // .priority() // This is a custom property in the importer
-                        // .municipalityRole() // This is a custom property
+                        .municipalityRole(municipalityRole) // This is a custom property
                         .status(project.getEndDate().isBefore(today) ? ProjectStatus.REALIZED : ProjectStatus.ACTIVE) // Need to guess based on
                                                                                                                       // future/pastness.
                                                                                                                       // Do in SQL
@@ -286,9 +287,9 @@ public class GeoJSONExport {
                 .projectPhasesMap(phases)
                 .projectPlanStatusesMap(planstatuses)
                 .projectLocation(ProjectLocation.builder()
-                        .municipality(gemeente)
-                        .district(wijk)
-                        .neighbourhood(buurt)
+                        .municipality(municipalities)
+                        .district(districts)
+                        .neighbourhood(neighbourhoods)
                         .build())
                 .customPropertiesMap(customProps)
                 .build();
