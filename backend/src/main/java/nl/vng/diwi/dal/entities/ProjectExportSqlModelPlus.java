@@ -197,6 +197,13 @@ public class ProjectExportSqlModelPlus {
 
     @Data
     @NoArgsConstructor
+    public static class CategoryValueAmountModel {
+        private UUID propertyValueId;
+        private Integer amount;
+    }
+
+    @Data
+    @NoArgsConstructor
     public static class HouseblockExportSqlModel {
 
         private UUID houseblockId;
@@ -204,6 +211,8 @@ public class ProjectExportSqlModelPlus {
         private LocalDate endDate;
         private Integer deliveryYear;
         private Integer mutationAmount;
+
+        private Boolean programming;
 
         @Enumerated(EnumType.STRING)
         @JdbcType(PostgreSQLEnumJdbcType.class)
@@ -219,6 +228,14 @@ public class ProjectExportSqlModelPlus {
         private Integer formalPermissionOwner;
         private Integer intentionPermissionOwner;
         private Integer noPermissionOwner;
+
+        @Type(value = JsonListType.class)
+        @Getter(AccessLevel.NONE)
+        private List<CategoryValueAmountModel> targetGroups;
+
+        @Type(value = JsonListType.class)
+        @Getter(AccessLevel.NONE)
+        private List<CategoryValueAmountModel> physicalAppearances;
 
         @Type(value = JsonListType.class)
         @Getter(AccessLevel.NONE)
@@ -254,6 +271,14 @@ public class ProjectExportSqlModelPlus {
 
         public List<CategoryPropertyModel> getCategoryProperties() {
             return categoryProperties == null ? new ArrayList<>() : categoryProperties;
+        }
+
+        public List<CategoryValueAmountModel> getTargetGroups() {
+            return targetGroups == null ? new ArrayList<>() : targetGroups;
+        }
+
+        public List<CategoryValueAmountModel> getPhysicalAppearances() {
+            return physicalAppearances == null ? new ArrayList<>() : physicalAppearances;
         }
     }
 
