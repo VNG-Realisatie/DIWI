@@ -51,8 +51,8 @@
                             "mutatie_type": null,
                             "eigendom_type": null,
                             "woning_type": null,
-                            "contract_type": null,
                             "status": null,
+                            "contract_type": null,
                             "aantal": null
                         },
                         "einddatum": "2025-01-19",
@@ -61,9 +61,9 @@
                         "fysiek_voorkomen": [],
                         "doelgroep": [],
                         "grondpositie": {
-                            "GEEN_TOESTEMMING_GRONDEIGENAAR": null,
+                            "FORMELE_TOESTEMMING_GRONDEIGENAAR": null,
                             "INTENTIE_MEDEWERKING_GRONDEIGENAAR": null,
-                            "FORMELE_TOESTEMMING_GRONDEIGENAAR": null
+                            "GEEN_TOESTEMMING_GRONDEIGENAAR": null
                         },
                         "maatwerk_woningeigenschappen": {}
                     }

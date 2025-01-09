@@ -23,7 +23,9 @@ CREATE OR REPLACE FUNCTION diwi.get_projects_export_list_simplified (
         categoryProperties JSONB,
         geometries TEXT[],
         houseblocks JSONB,
-        status TEXT
+        status TEXT,
+        projectPhaseStartDateList JSONB,
+        projectPlanStatusStartDateList JSONB
     )
     LANGUAGE plpgsql
 AS $$
@@ -46,7 +48,9 @@ SELECT  q.projectId,
         q.categoryProperties,
         q.geometries,
         q.houseblocks,
-        q.status
+        q.status,
+        q.projectPhaseStartDateList,
+        q.projectPlanStatusStartDateList
 FROM (
 
     WITH
@@ -156,6 +160,31 @@ FROM (
                         AND pppcv.planologische_planstatus IN ('_1A_ONHERROEPELIJK', '_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG', '_1C_ONHERROEPELIJK_MET_BW_NODIG')
                     JOIN diwi.milestone_state sms ON sms.milestone_id = pppc.start_milestone_id AND sms.change_end_date IS NULL
             GROUP BY pppc.project_id
+        ),
+        project_phase_history AS (
+            WITH all_project_phases AS (
+                SELECT pfc.project_id, min(ms.date) AS startDate, pfc.project_fase
+                    FROM diwi.project_fase_changelog pfc
+                        JOIN diwi.milestone_state ms ON pfc.start_milestone_id = ms.milestone_id and ms.change_end_date IS NULL
+                    WHERE pfc.change_end_date IS NULL
+                    GROUP BY pfc.project_id, pfc.project_fase
+            )
+            SELECT aph.project_id, to_jsonb(array_agg(jsonb_build_object('projectPhase', aph.project_fase, 'startDate', aph.startDate ))) AS phase_history
+                FROM all_project_phases aph
+            GROUP BY aph.project_id
+        ),
+        project_planstatus_history AS (
+            WITH all_project_planologische_planstatus AS (
+                SELECT pppc.project_id, min(ms.date) AS startDate, pppcv.planologische_planstatus
+                    FROM diwi.project_planologische_planstatus_changelog pppc
+                        JOIN diwi.project_planologische_planstatus_changelog_value pppcv ON pppcv.planologische_planstatus_changelog_id = pppc.id
+                        JOIN diwi.milestone_state ms ON pppc.start_milestone_id = ms.milestone_id and ms.change_end_date IS NULL
+                    WHERE pppc.change_end_date IS NULL
+                    GROUP BY pppc.project_id, pppcv.planologische_planstatus
+            )
+            SELECT appp.project_id, to_jsonb(array_agg(jsonb_build_object('planStatus', appp.planologische_planstatus, 'startDate', appp.startDate ))) AS planstatus_history
+                FROM all_project_planologische_planstatus appp
+            GROUP BY appp.project_id
         ),
         project_textCP AS (
             SELECT
@@ -390,7 +419,9 @@ FROM (
            ppc.category_properties  AS categoryProperties,
            ppg.geometries           AS geometries,
            pph.houseblocks          AS houseblocks,
-           'REALIZED'               AS "status"
+           'REALIZED'               AS "status",
+           pphl.phase_history        AS projectPhaseStartDateList,
+           ppshl.planstatus_history AS projectPlanStatusStartDateList
     FROM
         projects pp
             LEFT JOIN project_names ppn ON ppn.project_id = pp.id
@@ -405,6 +436,8 @@ FROM (
             LEFT JOIN project_houseblocks pph ON pph.project_id = pp.id
             LEFT JOIN project_realization_phase pprp ON pprp.project_id = pp.id
             LEFT JOIN project_planstatus_phase1 pppp1 ON pppp1.project_id = pp.id
+            LEFT JOIN project_phase_history pphl ON pphl.project_id = pp.id
+            LEFT JOIN project_planstatus_history ppshl ON ppshl.project_id = pp.id
 
 ) AS q
 
