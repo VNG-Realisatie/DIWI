@@ -63,6 +63,10 @@ public class ProjectExportSqlModelPlus {
 
     @Type(value = JsonListType.class)
     @Getter(AccessLevel.NONE)
+    private List<ProjectOwnerGroup> ownerGroupList;
+
+    @Type(value = JsonListType.class)
+    @Getter(AccessLevel.NONE)
     private List<ProjectPhaseStartDate> projectPhaseStartDateList;
 
     @Type(value = JsonListType.class)
@@ -119,6 +123,10 @@ public class ProjectExportSqlModelPlus {
         return planningPlanStatus == null ? new ArrayList<>() : planningPlanStatus;
     }
 
+    public List<ProjectOwnerGroup> getOwnerGroupList() {
+        return ownerGroupList == null ? new ArrayList<>() : ownerGroupList;
+    }
+
     public List<ProjectPhaseStartDate> getProjectPhaseStartDateList() {
         return projectPhaseStartDateList == null ? new ArrayList<>() : projectPhaseStartDateList;
     }
@@ -153,6 +161,23 @@ public class ProjectExportSqlModelPlus {
 
     public List<HouseblockExportSqlModel> getHouseblocks() {
         return houseblocks == null ? new ArrayList<>() : houseblocks;
+    }
+
+    @Data
+    @NoArgsConstructor
+    public static class ProjectOwnerGroup {
+        private UUID groupId;
+        private String groupName;
+        private List<OwnerUser> users;
+    }
+
+    @Data
+    @NoArgsConstructor
+    public static class OwnerUser {
+        private UUID userId;
+        private String userFirstName;
+        private String userLastName;
+        private String userEmail;
     }
 
     @Data
