@@ -1,6 +1,5 @@
 package nl.vng.diwi.services.export.geojson;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -28,7 +27,6 @@ import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.dal.entities.enums.ProjectStatus;
 import nl.vng.diwi.dal.entities.enums.PropertyKind;
-import nl.vng.diwi.dal.entities.enums.PropertyType;
 import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.models.ConfigModel;
 import nl.vng.diwi.models.DataExchangePropertyModel;
@@ -75,6 +73,14 @@ public class GeoJSONExport {
                     .orElse(null);
         }
 
+        public PropertyModel getCustomProperty(UUID id) {
+            PropertyModel propertyModel = customPropsMap.get(id);
+            if (propertyModel.getType().equals(PropertyKind.CUSTOM)) {
+                return propertyModel;
+            }
+            return null;
+        }
+
         public PropertyModel getCustomProperty(String propName) {
             return properties.stream()
                     .filter(pfp -> pfp.getType().equals(PropertyKind.CUSTOM) && pfp.getName().equals(propName))
@@ -96,7 +102,7 @@ public class GeoJSONExport {
             }
         }
 
-        public Map<String, String> getCustomProps(
+        public Map<String, String> getCustomPropertyMap(
                 List<TextPropertyModel> projectTextCustomProps,
                 List<NumericPropertyModel> projectNumericCustomProps,
                 List<BooleanPropertyModel> projectBooleanCustomProps,
@@ -104,25 +110,25 @@ public class GeoJSONExport {
 
             Map<String, String> customProps = new HashMap<>();
             for (var prop : projectTextCustomProps) {
-                PropertyModel propertyModel = get(prop.getPropertyId());
+                PropertyModel propertyModel = getCustomProperty(prop.getPropertyId());
                 if (propertyModel != null) {
                     customProps.put(propertyModel.getName(), prop.getTextValue());
                 }
             }
             for (var prop : projectNumericCustomProps) {
-                PropertyModel propertyModel = get(prop.getPropertyId());
+                PropertyModel propertyModel = getCustomProperty(prop.getPropertyId());
                 if (propertyModel != null) {
                     customProps.put(propertyModel.getName(), prop.getValue().toString());
                 }
             }
             for (var prop : projectBooleanCustomProps) {
-                PropertyModel propertyModel = get(prop.getPropertyId());
+                PropertyModel propertyModel = getCustomProperty(prop.getPropertyId());
                 if (propertyModel != null) {
                     customProps.put(propertyModel.getName(), prop.getBooleanValue().toString());
                 }
             }
             for (var prop : projectCategoricalCustomProps) {
-                PropertyModel propertyModel = get(prop.getPropertyId());
+                PropertyModel propertyModel = getCustomProperty(prop.getPropertyId());
                 if (propertyModel != null) {
                     String values = prop.getOptionValues()
                             .stream()
@@ -194,7 +200,7 @@ public class GeoJSONExport {
         Map<ProjectPhase, LocalDate> phases = new HashMap<>();
         phases.put(ProjectPhase._6_REALIZATION, project.getRealizationPhaseDate());
 
-        Map<String, String> customProps = customPropTool.getCustomProps(
+        Map<String, String> customProps = customPropTool.getCustomPropertyMap(
                 project.getTextProperties(),
                 project.getNumericProperties(),
                 project.getBooleanProperties(),
@@ -251,7 +257,7 @@ public class GeoJSONExport {
         final var geoJsonBlocks = project.getHouseblocks().stream()
                 .map(block -> {
 
-                    Map<String, String> blockCustomProps = customPropTool.getCustomProps(
+                    Map<String, String> blockCustomProps = customPropTool.getCustomPropertyMap(
                             block.getTextProperties(),
                             block.getNumericProperties(),
                             block.getBooleanProperties(),
