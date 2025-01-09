@@ -15,6 +15,7 @@ import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.geojson.jackson.CrsType;
 
+import lombok.Data;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelPlus;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.GroundPosition;
@@ -38,6 +39,52 @@ import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.ProjectDuration;
 import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.ProjectLocation;
 
 public class GeoJSONExport {
+
+    @Data
+    static public class CustomProps {
+
+        private List<PropertyModel> customProps;
+        private Map<UUID, String> optionsMap;
+        private Map<UUID, PropertyModel> customPropsMap;
+
+        public CustomProps(List<PropertyModel> customProps) {
+            this.customProps = customProps;
+
+            optionsMap = customProps.stream()
+                    .flatMap(cp -> cp.getCategories() != null ? cp.getCategories().stream() : Stream.empty())
+                    .collect(Collectors.toMap(option -> option.getId(), option -> option.getName()));
+
+            customPropsMap = customProps.stream().collect(Collectors.toMap(PropertyModel::getId, Function.identity()));
+
+        }
+
+        public PropertyModel get(UUID id) {
+            return customPropsMap.get(id);
+        }
+
+        public PropertyModel get(String propName) {
+            return customProps.stream()
+                    .filter(pfp -> pfp.getName().equals(propName))
+                    .findFirst()
+                    .orElse(null);
+        }
+
+        public String getOption(UUID id) {
+            return optionsMap.get(id);
+        }
+
+        public List<String> getOptions(List<UUID> optionIds) {
+            if (optionIds == null) {
+                return List.of();
+            } else {
+                return optionIds.stream()
+                        .map(optionId -> optionsMap.get(optionId))
+                        .toList();
+            }
+        }
+
+    }
+
     static public FeatureCollection buildExportObject(
             ConfigModel configModel,
             List<ProjectExportSqlModelPlus> projects,
@@ -54,23 +101,14 @@ public class GeoJSONExport {
         crs.getProperties().put("name", targetCrs);
         exportObject.setCrs(crs);
 
-        PropertyModel priceRangeBuyFixedProp = customProps.stream()
-                .filter(pfp -> pfp.getName().equals(Constants.FIXED_PROPERTY_PRICE_RANGE_BUY)).findFirst().orElse(null);
-        PropertyModel priceRangeRentFixedProp = customProps.stream()
-                .filter(pfp -> pfp.getName().equals(Constants.FIXED_PROPERTY_PRICE_RANGE_RENT)).findFirst().orElse(null);
-        PropertyModel municipalityFixedProp = customProps.stream()
-                .filter(pfp -> pfp.getName().equals(Constants.FIXED_PROPERTY_MUNICIPALITY)).findFirst().orElse(null);
-
-        Map<UUID, PropertyModel> customPropsMap = customProps.stream().collect(Collectors.toMap(PropertyModel::getId, Function.identity()));
-
-        var optionsMap = customProps.stream()
-                .flatMap(cp -> cp.getCategories() != null ? cp.getCategories().stream() : Stream.empty())
-                .collect(Collectors.toMap(option -> option.getId(), option -> option.getName()));
+        var customPropsTool = new CustomProps(customProps);
+        PropertyModel priceRangeBuyFixedProp = customPropsTool.get(Constants.FIXED_PROPERTY_PRICE_RANGE_BUY);
+        PropertyModel priceRangeRentFixedProp = customPropsTool.get(Constants.FIXED_PROPERTY_PRICE_RANGE_RENT);
+        PropertyModel municipalityFixedProp = customPropsTool.get(Constants.FIXED_PROPERTY_MUNICIPALITY);
 
         projects.forEach(project -> exportObject.add(getProjectFeature(
                 configModel,
                 project,
-                customPropsMap,
                 priceRangeBuyFixedProp,
                 priceRangeRentFixedProp,
                 municipalityFixedProp,
@@ -79,7 +117,7 @@ public class GeoJSONExport {
                 exportDate,
                 errors,
                 targetCrs,
-                optionsMap)));
+                customPropsTool)));
 
         return exportObject;
     }
@@ -87,7 +125,6 @@ public class GeoJSONExport {
     static private Feature getProjectFeature(
             ConfigModel configModel,
             ProjectExportSqlModelPlus project,
-            Map<UUID, PropertyModel> customPropsMap,
             PropertyModel priceRangeBuyFixedProp,
             PropertyModel priceRangeRentFixedProp,
             PropertyModel municipalityFixedProp,
@@ -95,7 +132,7 @@ public class GeoJSONExport {
             Confidentiality minConfidentiality, LocalDate exportDate,
             List<DataExchangeExportError> errors,
             String targetCrs,
-            Map<UUID, String> optionsMap) {
+            CustomProps customPropTool) {
         var projectFeature = new Feature();
 
         var multiPolygon = ExportUtil.createPolygonForProject(project.getGeometries(), targetCrs, project.getProjectId());
@@ -121,21 +158,25 @@ public class GeoJSONExport {
 
         Map<String, String> customProps = new HashMap<>();
         for (var prop : projectTextCustomProps.entrySet()) {
-            customProps.put(customPropsMap.get(prop.getKey()).getName(), prop.getValue());
+            customProps.put(customPropTool.get(prop.getKey()).getName(), prop.getValue());
         }
         for (var prop : projectNumericCustomProps.entrySet()) {
-            customProps.put(customPropsMap.get(prop.getKey()).getName(), prop.getValue().getValue().toString());
+            customProps.put(customPropTool.get(prop.getKey()).getName(), prop.getValue().getValue().toString());
         }
+        for (var prop : projectBooleanCustomProps.entrySet()) {
+            customProps.put(customPropTool.get(prop.getKey()).getName(), prop.getValue().toString());
+        }
+        // for (var prop : projectCategoricalCustomProps.entrySet()) {
+        // String values = prop.getValue()
+        // .stream()
+        // .map(optionId -> customPropsTool.getOption(optionId))
+        // .collect(Collectors.joining(",")));
+        // customProps.put(customPropsMap.get(prop.getKey()).getName(), values);
+        // }
 
-        List<String> woonplaatsName;
-        List<UUID> optionIds = projectCategoricalCustomProps.get(municipalityFixedProp.getId());
-        if (optionIds == null || optionIds.isEmpty()) {
-            woonplaatsName = List.of();
-        } else {
-            woonplaatsName = optionIds.stream()
-                    .map(optionId -> optionsMap.get(optionId))
-                    .toList();
-        }
+        List<String> woonplaatsName = customPropTool.getOptions(
+                projectCategoricalCustomProps.get(
+                        customPropTool.get(Constants.FIXED_PROPERTY_MUNICIPALITY).getId()));
 
         LocalDate today = LocalDate.now();
 
