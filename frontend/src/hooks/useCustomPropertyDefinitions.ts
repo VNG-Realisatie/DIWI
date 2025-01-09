@@ -1,17 +1,25 @@
+import { useEffect, useState } from "react";
+import { getCustomProperties } from "../api/adminSettingServices";
 import { components } from "../types/schema";
-import { useCustomPropertyStore } from "./useCustomPropertyStore";
 
 type Categories = components["schemas"]["SelectDisabledModel"];
 export type CategoriesStrict = Required<Categories>;
 
 export const useCustomPropertyDefinitions = () => {
-    const { houseBlockCustomProperties } = useCustomPropertyStore();
+    const [physicalAppearanceCategories, setPhysicalAppearances] = useState<Array<CategoriesStrict>>();
+    const [targetGroupCategories, setTargetGroup] = useState<Array<CategoriesStrict>>();
 
-    const physicalAppearance = houseBlockCustomProperties.filter((prop) => prop.name === "physicalAppearance")[0];
-    const physicalAppearanceCategories = physicalAppearance?.categories?.filter((cat) => cat.id !== undefined && !cat.disabled) as CategoriesStrict[];
+    useEffect(() => {
+        getCustomProperties().then((res) => {
+            const pa = res.filter((prop) => prop.objectType === "WONINGBLOK" && prop.name === "physicalAppearance")[0];
+            const paCategories = pa?.categories?.filter((cat) => cat.id !== undefined && !cat.disabled) as CategoriesStrict[];
+            setPhysicalAppearances(paCategories);
 
-    const targetGroup = houseBlockCustomProperties.filter((prop) => prop.name === "targetGroup")[0];
-    const targetGroupCategories = targetGroup?.categories?.filter((cat) => cat.id !== undefined && !cat.disabled) as CategoriesStrict[];
+            const tg = res.filter((prop) => prop.objectType === "WONINGBLOK" && prop.name === "targetGroup")[0];
+            const tgCategories = tg?.categories?.filter((cat) => cat.id !== undefined && !cat.disabled) as CategoriesStrict[];
+            setTargetGroup(tgCategories);
+        });
+    }, []);
 
     return { physicalAppearanceCategories, targetGroupCategories };
 };
