@@ -38,6 +38,7 @@ import nl.vng.diwi.models.RangeSelectDisabledModel;
 import nl.vng.diwi.services.DataExchangeExportError;
 import nl.vng.diwi.services.export.ExportUtil;
 import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.BasicProjectData;
+import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.BlockTypeData;
 import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.GeoJsonHouseblock;
 import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.GeoJsonProject;
 import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.MutationData;
@@ -371,6 +372,19 @@ public class GeoJSONExport {
                     groundPositions.put(GroundPosition.GEEN_TOESTEMMING_GRONDEIGENAAR, block.getNoPermissionOwner());
                     groundPositions.put(GroundPosition.INTENTIE_MEDEWERKING_GRONDEIGENAAR, block.getIntentionPermissionOwner());
                     groundPositions.put(GroundPosition.FORMELE_TOESTEMMING_GRONDEIGENAAR, block.getFormalPermissionOwner());
+
+                    Integer unknownBlockType = block.getMutationAmount();
+                    if (unknownBlockType != null) {
+                        if (block.getEengezinswoning() != null) {
+                            unknownBlockType -= block.getEengezinswoning();
+                        }
+                        if (block.getMeergezinswoning() != null) {
+                            unknownBlockType -= block.getMeergezinswoning();
+                        }
+                    } else {
+                        unknownBlockType = 0;
+                    }
+
                     return GeoJsonHouseblock.builder()
                             .diwiId(block.getHouseblockId())
                             .name(block.getName())
@@ -379,6 +393,11 @@ public class GeoJSONExport {
                                     .max(toDouble(size.getMax()))
                                     .value(toDouble(size.getValue()))
                                     .build() : null)
+                            .type(BlockTypeData.builder()
+                                    .singleFamily(block.getEengezinswoning())
+                                    .multipleFamily(block.getMeergezinswoning())
+                                    .unknown(unknownBlockType)
+                                    .build())
                             .endDate(block.getEndDate())
                             .mutationData(mutationData)
                             .groundPositionsMap(groundPositions)
@@ -386,13 +405,13 @@ public class GeoJSONExport {
                             .customPropertiesMap(blockCustomProps)
                             .programming(block.getProgramming())
                             .build();
-                })
-                .toList();
+                }).toList();
 
         projectFeature.setProperty("projectgegevens", geoJsonProject);
         projectFeature.setProperty("woning_blokken", geoJsonBlocks);
 
         return projectFeature;
+
     }
 
     private static Double toDouble(BigDecimal min) {

@@ -48,6 +48,11 @@
                             "aantal": null
                         },
                         "einddatum": "2025-01-19",
+                        "woning_type": {
+                            "meergezinswoning": null,
+                            "eengezinswoning": null,
+                            "onbekend": 0
+                        },
                         "grootte": null,
                         "waarde": [],
                         "fysiek_voorkomen": [],

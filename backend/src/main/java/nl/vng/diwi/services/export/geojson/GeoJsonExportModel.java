@@ -130,6 +130,8 @@ public class GeoJsonExportModel {
         private MutationData mutationData;
         @JsonProperty("einddatum")
         private LocalDate endDate;
+        @JsonProperty("woning_type")
+        private BlockTypeData type;
         @JsonProperty("grootte")
         private SizeData size;
         @JsonProperty("waarde")
@@ -146,6 +148,19 @@ public class GeoJsonExportModel {
         @Builder.Default
         @JsonProperty("maatwerk_woningeigenschappen")
         private Map<String, String> customPropertiesMap = new HashMap<>();
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class BlockTypeData {
+        @JsonProperty("meergezinswoning")
+        private Integer multipleFamily;
+        @JsonProperty("eengezinswoning")
+        private Integer singleFamily;
+        @JsonProperty("onbekend")
+        private Integer unknown;
     }
 
     @Data
