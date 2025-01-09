@@ -86,7 +86,7 @@ public class GeoJSONExport {
 
         public PropertyModel getCustomProperty(UUID id) {
             PropertyModel propertyModel = customPropsMap.get(id);
-            if (propertyModel.getType() != null && propertyModel.getType().equals(PropertyKind.CUSTOM)) {
+            if (propertyModel != null && propertyModel.getType().equals(PropertyKind.CUSTOM)) {
                 return propertyModel;
             }
             return null;
