@@ -214,7 +214,6 @@ public class GeoJSONExport {
                         // .owner()// Needs adding to the model
                         .confidentialityLevel(project.getConfidentiality())
                         .build())
-                // .roles(Map.of("projectleider", )) This is a custom property
                 .projectDuration(ProjectDuration.builder()
                         .startDate(project.getStartDate())
                         .endDate(project.getEndDate())
@@ -244,7 +243,7 @@ public class GeoJSONExport {
 
                     var ownerShipValue = block.getOwnershipValueList().stream()
                             .map(ov -> {
-                                // TODO categories
+                                // TODO global categories
                                 Double max = null;
                                 if (ov.getOwnershipType() == OwnershipType.KOOPWONING && ov.getOwnershipValueRangeMax() != null) {
                                     max = (double) ov.getOwnershipValueRangeMax() / 100;
@@ -268,7 +267,7 @@ public class GeoJSONExport {
                                 }
 
                                 return OwnershipValueData.builder()
-                                        .categoryName(ov.getOwnershipType().toString())
+                                        .ownershipType(ov.getOwnershipType().toString())
                                         .max(max)
                                         .min(min)
                                         .value(value)

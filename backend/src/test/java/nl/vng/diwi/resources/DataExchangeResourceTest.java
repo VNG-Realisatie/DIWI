@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.hibernate.tool.hbm2ddl.SchemaExportTask.ExportType;
 import org.junit.jupiter.api.AfterAll;
@@ -148,18 +149,23 @@ public class DataExchangeResourceTest {
         StreamingOutput stream = dataExchangeResource.downloadProjects(dataExchangeModel.getId(), exportModel, loggedUser);
         var result = new ByteArrayOutputStream();
         stream.write(result);
-        var actualTree = objectMapper.readTree(result.toString());
+        String actualString = result.toString();
+        var actualTree = objectMapper.readTree(actualString);
 
         var expected = ResourceUtil.getResourceAsString("DataExchangeResourceTest/" + type.toString() + ".geojson");
         var expectedTree = objectMapper.readTree(expected);
 
         // assertThatJson(result.toString())
-        //     .isEqualTo(expected);
+        // .isEqualTo(expected);
         // assertThat(objectMapper.readTree(result.toString()))
-        //         .isEqualTo(Json.MAPPER.readTree(expected));
+        // .isEqualTo(Json.MAPPER.readTree(expected));
 
-        assertThat(actualTree.toPrettyString().replaceAll("^.*diwi_id.*$", ""))
-                .isEqualToIgnoringWhitespace(expectedTree.toPrettyString().replaceAll("^.*diwi_id.*$", ""));
+        assertThat(
+                actualTree.toPrettyString()
+                        .lines()
+                        .filter(l -> !l.contains("diwi_id"))
+                        .collect(Collectors.joining("\n")))
+                .isEqualToIgnoringWhitespace(expectedTree.toPrettyString());
 
         // assertThat(result.toString()).isEqualToIgnoringWhitespace(expected);
     }
