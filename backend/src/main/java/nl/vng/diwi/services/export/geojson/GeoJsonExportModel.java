@@ -201,6 +201,8 @@ public class GeoJsonExportModel {
         private Double min;
         @JsonProperty("hoog")
         private Double max;
+        @JsonProperty("waarde")
+        private Double value;
         @JsonProperty("categorie")
         private String categoryName;
     }

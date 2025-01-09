@@ -186,6 +186,10 @@ public class ProjectExportSqlModelPlus {
         private Integer meergezinswoning;
         private Integer eengezinswoning;
 
+        private Integer formalPermissionOwner;
+        private Integer intentionPermissionOwner;
+        private Integer noPermissionOwner;
+
 
         public List<OwnershipValueSqlModel> getOwnershipValueList() {
             return ownershipValueList == null ? new ArrayList<>() : ownershipValueList;

@@ -261,9 +261,27 @@ FROM (
                                     'ownershipRangeCategoryId', wewc.ownership_property_value_id, 'ownershipRentalRangeCategoryId', wewc.rental_property_value_id))) AS ownershipValue
                     FROM
                         project_woningbloks pppw
-                        JOIN diwi.woningblok_eigendom_en_waarde_changelog wewc ON pppw.id = wewc.woningblok_id AND wewc.change_end_date IS NULL
+                        JOIN diwi.woningblok_eigendom_en_waarde_changelog wewc
+                            ON pppw.id = wewc.woningblok_id
+                            AND wewc.change_end_date IS NULL
                             AND wewc.end_milestone_id = pppw.end_milestone_id
                     GROUP BY pppw.id
+                ),
+                block_ground_position AS (
+                    SELECT
+                        w.id, ftg.amount AS formalPermissionOwner, img.amount AS intentionPermissionOwner, gtg.amount AS noPermissionOwner
+                    FROM
+                        project_woningbloks w
+                        JOIN diwi.woningblok_grondpositie_changelog wgpc
+                                ON w.id = wgpc.woningblok_id
+                                AND wgpc.end_milestone_id = w.end_milestone_id
+                                AND wgpc.change_end_date IS NULL
+                         LEFT JOIN diwi.woningblok_grondpositie_changelog_value ftg ON ftg.woningblok_grondpositie_changelog_id = wgpc.id
+                                AND ftg.grondpositie = 'FORMELE_TOESTEMMING_GRONDEIGENAAR'
+                         LEFT JOIN diwi.woningblok_grondpositie_changelog_value img ON img.woningblok_grondpositie_changelog_id = wgpc.id
+                                AND img.grondpositie = 'INTENTIE_MEDEWERKING_GRONDEIGENAAR'
+                         LEFT JOIN diwi.woningblok_grondpositie_changelog_value gtg ON gtg.woningblok_grondpositie_changelog_id = wgpc.id
+                                AND gtg.grondpositie = 'GEEN_TOESTEMMING_GRONDEIGENAAR'
                 ),
 
                 houseblocks AS (
@@ -278,6 +296,9 @@ FROM (
                             'meergezinswoning', pppwh.meergezinswoning,
                             'eengezinswoning', pppwh.eengezinswoning,
                             'ownershipValueList', pppov.ownershipValue,
+                            'formalPermissionOwner', bgp.formalPermissionOwner,
+                            'intentionPermissionOwner', bgp.intentionPermissionOwner,
+                            'noPermissionOwner', bgp.noPermissionOwner,
                             'name', pppn.name) AS houseblocks
                     FROM
                         project_woningbloks pppw
@@ -286,6 +307,7 @@ FROM (
                             LEFT JOIN project_woningbloks_housetypes pppwh ON pppwh.id = pppw.id
                             LEFT JOIN project_ownership_value pppov ON pppov.id = pppw.id
                             LEFT JOIN project_woningbloks_name pppn ON pppn.id = pppw.id
+                            LEFT JOIN block_ground_position bgp ON bgp.id = pppw.id
                 )
 
                 SELECT

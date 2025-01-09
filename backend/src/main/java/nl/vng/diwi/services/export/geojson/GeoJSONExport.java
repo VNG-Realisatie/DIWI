@@ -17,6 +17,7 @@ import org.geojson.jackson.CrsType;
 
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelPlus;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
+import nl.vng.diwi.dal.entities.enums.GroundPosition;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.dal.entities.enums.ProjectStatus;
@@ -177,22 +178,48 @@ public class GeoJSONExport {
 
                     var ownerShipValue = block.getOwnershipValueList().stream()
                             .map(ov -> {
+                                // TODO categories
+                                Double max = null;
+                                if (ov.getOwnershipType() == OwnershipType.KOOPWONING && ov.getOwnershipValueRangeMax() != null) {
+                                    max = (double) ov.getOwnershipValueRangeMax() / 100;
+
+                                } else if (ov.getOwnershipRentalValueRangeMax() != null) {
+                                    max = (double) ov.getOwnershipRentalValueRangeMax() / 100;
+                                }
+
+                                Double min = null;
+                                if (ov.getOwnershipType() == OwnershipType.KOOPWONING && ov.getOwnershipValueRangeMax() != null) {
+                                    min = (double) ov.getOwnershipValueRangeMin() / 100;
+                                } else if (ov.getOwnershipRentalValueRangeMin() != null) {
+                                    min = (double) ov.getOwnershipRentalValueRangeMin() / 100;
+                                }
+
+                                Double value = null;
+                                if (ov.getOwnershipType() == OwnershipType.KOOPWONING && ov.getOwnershipValue() != null) {
+                                    value = (double) ov.getOwnershipValue() / 100;
+                                } else if (ov.getOwnershipRentalValue() != null) {
+                                    value = (double) ov.getOwnershipRentalValue() / 100;
+                                }
+
                                 return OwnershipValueData.builder()
                                         .categoryName(ov.getOwnershipType().toString())
-                                        .max(ov.getOwnershipType() == OwnershipType.KOOPWONING ? (double) ov.getOwnershipValueRangeMax() / 100
-                                                : (double) ov.getOwnershipRentalValueRangeMax() / 100)
-                                        .min(ov.getOwnershipType() == OwnershipType.KOOPWONING ? (double) ov.getOwnershipValueRangeMin() / 100
-                                                : (double) ov.getOwnershipRentalValueRangeMin() / 100)
+                                        .max(max)
+                                        .min(min)
+                                        .value(value)
                                         .build();
                             })
                             .toList();
 
+                    Map<GroundPosition, Integer> groundPositions = new HashMap<>();
+                    groundPositions.put(GroundPosition.GEEN_TOESTEMMING_GRONDEIGENAAR, block.getNoPermissionOwner());
+                    groundPositions.put(GroundPosition.INTENTIE_MEDEWERKING_GRONDEIGENAAR, block.getIntentionPermissionOwner());
+                    groundPositions.put(GroundPosition.FORMELE_TOESTEMMING_GRONDEIGENAAR, block.getFormalPermissionOwner());
                     return GeoJsonHouseblock.builder()
                             .diwiId(block.getHouseblockId())
                             .name(block.getName())
                             .endDate(block.getEndDate())
                             .mutationData(mutationData)
-                            // .groundPositionsMap(null)
+                            .groundPositionsMap(groundPositions)
 
                             .ownershipValue(ownerShipValue)
                             .build();
