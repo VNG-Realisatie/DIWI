@@ -14,6 +14,7 @@ CREATE OR REPLACE FUNCTION diwi.get_projects_export_list_simplified (
         endDate DATE,
         planType TEXT[],
         projectPhase diwi.project_phase,
+        ownerGroupList JSONB,
         planningPlanStatus TEXT[],
         realizationPhaseDate DATE,
         planStatusPhase1Date DATE,
@@ -40,6 +41,7 @@ SELECT  q.projectId,
         q.endDate,
         q.planType,
         q.projectPhase,
+        q.ownerGroupList,
         q.planningPlanStatus,
         q.realizationPhaseDate,
         q.planStatusPhase1Date,
@@ -56,21 +58,32 @@ SELECT  q.projectId,
 FROM (
 
     WITH
+        all_project_owners AS (
+            SELECT DISTINCT
+                ps.project_id AS project_id,
+                ugs.usergroup_id AS usergroup_id,
+                ugs.naam AS usergroup_name,
+                us.user_id AS user_id,
+                us.last_name AS user_last_name,
+                us.first_name AS user_first_name,
+                us.email AS user_email
+            FROM diwi.project_state ps
+                JOIN diwi.usergroup_to_project ugtp ON ps.project_id = ugtp.project_id AND ugtp.change_end_date IS NULL
+                JOIN diwi.usergroup_state ugs ON ugtp.usergroup_id = ugs.usergroup_id AND ugs.change_end_date IS NULL
+                LEFT JOIN diwi.user_to_usergroup utug ON ugtp.usergroup_id = utug.usergroup_id AND utug.change_end_date IS NULL
+                LEFT JOIN diwi.user_state us ON utug.user_id = us.user_id AND us.change_end_date IS NULL
+            WHERE
+                ps.change_end_date IS NULL
+        ),
         project_owners AS (
             SELECT
                 q.project_id    AS project_id,
                 array_agg(q.user_id) AS users
             FROM (
                      SELECT DISTINCT
-                         ps.project_id as project_id,
-                         us.user_id AS user_id
-                     FROM diwi.project_state ps
-                              JOIN diwi.usergroup_to_project ugtp ON ps.project_id = ugtp.project_id AND ugtp.change_end_date IS NULL
-                              JOIN diwi.usergroup_state ugs ON ugtp.usergroup_id = ugs.usergroup_id AND ugs.change_end_date IS NULL
-                              LEFT JOIN diwi.user_to_usergroup utug ON ugtp.usergroup_id = utug.usergroup_id AND utug.change_end_date IS NULL
-                              LEFT JOIN diwi.user_state us ON utug.user_id = us.user_id AND us.change_end_date IS NULL
-                     WHERE
-                         ps.change_end_date IS NULL
+                         apo.project_id as project_id,
+                         apo.user_id AS user_id
+                     FROM all_project_owners apo
                  ) AS q
             GROUP BY q.project_id
         ),
@@ -96,6 +109,20 @@ FROM (
                         WHEN _allowed_confidentialities_ IS NOT NULL THEN ps.confidentiality_level::TEXT = ANY(_allowed_confidentialities_)
                         WHEN _allowed_projects_ IS NOT NULL THEN p.id = ANY(_allowed_projects_)
                     END
+        ),
+        project_group_owners AS (
+            WITH project_group_info AS (
+                SELECT apo.project_id, apo.usergroup_id, apo.usergroup_name,
+                    array_agg(jsonb_build_object('userId', apo.user_id, 'userEmail', apo.user_email,
+                        'userFirstName', apo.user_first_name, 'userLastName', apo.user_last_name)) AS user_info
+                FROM projects pp
+                    JOIN all_project_owners apo ON pp.id = apo.project_id
+                GROUP BY apo.project_id, apo.usergroup_id, apo.usergroup_name
+            )
+            SELECT
+                pgi.project_id, to_jsonb(array_agg(jsonb_build_object( 'groupId', pgi.usergroup_id, 'groupName', pgi.usergroup_name, 'users', pgi.user_info ))) AS owners
+            FROM project_group_info pgi
+            GROUP BY pgi.project_id
         ),
         project_names AS (
             SELECT
@@ -480,6 +507,7 @@ FROM (
            pp.endDate               AS endDate,
            pppt.plan_types          AS planType,
            ppf.project_fase         AS projectPhase,
+           pgo.owners               AS ownerGroupList,
            pppp.planning_planstatus AS planningPlanStatus,
            pprp.realization_phase_start_date AS realizationPhaseDate,
            pppp1.planstatus_phase1_date AS planStatusPhase1Date,
@@ -510,6 +538,7 @@ FROM (
             LEFT JOIN project_planstatus_phase1 pppp1 ON pppp1.project_id = pp.id
             LEFT JOIN project_phase_history pphl ON pphl.project_id = pp.id
             LEFT JOIN project_planstatus_history ppshl ON ppshl.project_id = pp.id
+            LEFT JOIN project_group_owners pgo ON pgo.project_id = pp.id
 
 ) AS q
 
