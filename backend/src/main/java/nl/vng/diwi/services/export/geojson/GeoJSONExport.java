@@ -227,7 +227,9 @@ public class GeoJSONExport {
         }
 
         Map<ProjectPhase, LocalDate> phases = new HashMap<>();
-        phases.put(ProjectPhase._6_REALIZATION, project.getRealizationPhaseDate());
+        project.getProjectPhaseStartDateList()
+                .stream()
+                .collect(Collectors.toMap(ph -> ph.getProjectPhase(), ph -> ph.getStartDate()));
 
         Map<String, String> customProps = customPropTool.getCustomPropertyMap(
                 project.getTextProperties(),
@@ -312,8 +314,8 @@ public class GeoJSONExport {
                                 var range = rangeId != null ? customPropTool.getRange(rangeId) : null;
                                 if (range != null) {
                                     return builder
-                                            .min(range.getMin() != null ? range.getMin().doubleValue() : null)
-                                            .max(range.getMax() != null ? range.getMax().doubleValue() : null)
+                                            .min(range.getMin() != null ? range.getMin().doubleValue() / 100 : null)
+                                            .max(range.getMax() != null ? range.getMax().doubleValue() / 100 : null)
                                             .categorie(range.getName())
                                             .build();
                                 } else {
