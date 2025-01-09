@@ -252,7 +252,7 @@ FROM (
                         LEFT JOIN diwi.woningblok_type_en_fysiek_changelog_type_value meer ON meer.woningblok_type_en_fysiek_voorkomen_changelog_id = wtfc.id
                             AND meer.woning_type = 'MEERGEZINSWONING'
                 ),
-                project_ownership_value AS (
+                block_ownership_value AS (
                     SELECT
                         pppw.id, to_jsonb(array_agg(jsonb_build_object('ownershipId', wewc.id, 'ownershipType', wewc.eigendom_soort, 'ownershipAmount', wewc.amount,
                                     'ownershipValue', wewc.waarde_value, 'ownershipRentalValue', wewc.huurbedrag_value,
@@ -283,6 +283,54 @@ FROM (
                          LEFT JOIN diwi.woningblok_grondpositie_changelog_value gtg ON gtg.woningblok_grondpositie_changelog_id = wgpc.id
                                 AND gtg.grondpositie = 'GEEN_TOESTEMMING_GRONDEIGENAAR'
                 ),
+                block_textCP AS (
+                    SELECT
+                        w.id, to_jsonb(array_agg(jsonb_build_object('propertyId', wtc.eigenschap_id, 'textValue', wtc.value))) AS text_properties
+                    FROM
+                        project_woningbloks w
+                        JOIN diwi.woningblok_maatwerk_text_changelog wtc ON w.id = wtc.woningblok_id
+                            AND wtc.change_end_date IS NULL
+                            AND wtc.end_milestone_id = w.end_milestone_id
+                        GROUP BY w.id
+                ),
+                block_numericCP AS (
+                    SELECT
+                        w.id, to_jsonb(array_agg(jsonb_build_object('propertyId', wnc.eigenschap_id, 'value', wnc.value, 'min', LOWER(wnc.value_range),
+                                                                              'max', UPPER(wnc.value_range)))) AS numeric_properties
+                    FROM
+                        project_woningbloks w
+                        JOIN diwi.woningblok_maatwerk_numeriek_changelog wnc ON w.id = wnc.woningblok_id
+                            AND wnc.change_end_date IS NULL
+                            AND wnc.end_milestone_id = w.end_milestone_id
+                    GROUP BY w.id
+                ),
+                block_booleanCP AS (
+                    SELECT
+                        w.id, to_jsonb(array_agg(jsonb_build_object('propertyId', wbc.eigenschap_id, 'booleanValue', wbc.value))) AS boolean_properties
+                    FROM
+                        project_woningbloks w
+                        JOIN diwi.woningblok_maatwerk_boolean_changelog wbc ON w.id = wbc.woningblok_id
+                            AND wbc.end_milestone_id = w.end_milestone_id
+                            AND wbc.change_end_date IS NULL
+                    GROUP BY w.id
+                ),
+                block_categoryCP AS (
+                    WITH block_cat_props AS (
+                        SELECT
+                            w.id, wcc.eigenschap_id AS property_id, array_agg(wccv.eigenschap_waarde_id) AS category_options
+                        FROM
+                            project_woningbloks w
+                                JOIN diwi.woningblok_maatwerk_categorie_changelog wcc ON w.id = wcc.woningblok_id
+                                    AND wcc.change_end_date IS NULL
+                                    AND wcc.end_milestone_id = w.end_milestone_id
+                                JOIN diwi.woningblok_maatwerk_categorie_changelog_value wccv ON wccv.woningblok_maatwerk_categorie_changelog_id = wcc.id
+                        GROUP BY w.id, wcc.eigenschap_id
+                    )
+                    SELECT
+                        bcp.id, to_jsonb(array_agg(jsonb_build_object('propertyId', bcp.property_id, 'optionValues', bcp.category_options))) AS category_properties
+                    FROM block_cat_props bcp
+                    GROUP BY bcp.id
+                ),
 
                 houseblocks AS (
                     SELECT
@@ -295,19 +343,29 @@ FROM (
                             'mutationAmount', pppwm.mutationAmount,
                             'meergezinswoning', pppwh.meergezinswoning,
                             'eengezinswoning', pppwh.eengezinswoning,
-                            'ownershipValueList', pppov.ownershipValue,
+                            'ownershipValueList', bov.ownershipValue,
                             'formalPermissionOwner', bgp.formalPermissionOwner,
                             'intentionPermissionOwner', bgp.intentionPermissionOwner,
                             'noPermissionOwner', bgp.noPermissionOwner,
-                            'name', pppn.name) AS houseblocks
+                            'name', pppn.name,
+                            'textProperties', btp.text_properties,
+                            'numericProperties', bnp.numeric_properties,
+                            'booleanProperties', bbp.boolean_properties,
+                            'categoryProperties', bcp.category_properties
+                        ) AS houseblocks
+
                     FROM
                         project_woningbloks pppw
                             LEFT JOIN project_woningbloks_mutation pppwm ON pppw.id = pppwm.id
                             LEFT JOIN project_woningbloks_delivery pppwd ON pppwd.id = pppw.id
                             LEFT JOIN project_woningbloks_housetypes pppwh ON pppwh.id = pppw.id
-                            LEFT JOIN project_ownership_value pppov ON pppov.id = pppw.id
+                            LEFT JOIN block_ownership_value bov ON bov.id = pppw.id
                             LEFT JOIN project_woningbloks_name pppn ON pppn.id = pppw.id
                             LEFT JOIN block_ground_position bgp ON bgp.id = pppw.id
+                            LEFT JOIN block_textCP btp ON btp.id = pppw.id
+                            LEFT JOIN block_numericCP bnp ON bnp.id = pppw.id
+                            LEFT JOIN block_booleanCP bbp ON bbp.id = pppw.id
+                            LEFT JOIN block_categoryCP bcp ON bcp.id = pppw.id
                 )
 
                 SELECT

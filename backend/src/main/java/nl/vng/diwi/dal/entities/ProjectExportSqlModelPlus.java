@@ -190,11 +190,41 @@ public class ProjectExportSqlModelPlus {
         private Integer intentionPermissionOwner;
         private Integer noPermissionOwner;
 
+        @Type(value = JsonListType.class)
+        @Getter(AccessLevel.NONE)
+        private List<TextPropertyModel> textProperties;
+
+        @Type(value = JsonListType.class)
+        @Getter(AccessLevel.NONE)
+        private List<NumericPropertyModel> numericProperties;
+
+        @Type(value = JsonListType.class)
+        @Getter(AccessLevel.NONE)
+        private List<BooleanPropertyModel> booleanProperties;
+
+        @Type(value = JsonListType.class)
+        @Getter(AccessLevel.NONE)
+        private List<CategoryPropertyModel> categoryProperties;
 
         public List<OwnershipValueSqlModel> getOwnershipValueList() {
             return ownershipValueList == null ? new ArrayList<>() : ownershipValueList;
         }
 
+        public List<TextPropertyModel> getTextProperties() {
+            return textProperties == null ? new ArrayList<>() : textProperties;
+        }
+
+        public List<NumericPropertyModel> getNumericProperties() {
+            return numericProperties == null ? new ArrayList<>() : numericProperties;
+        }
+
+        public List<BooleanPropertyModel> getBooleanProperties() {
+            return booleanProperties == null ? new ArrayList<>() : booleanProperties;
+        }
+
+        public List<CategoryPropertyModel> getCategoryProperties() {
+            return categoryProperties == null ? new ArrayList<>() : categoryProperties;
+        }
     }
 
     @Data
