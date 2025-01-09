@@ -79,10 +79,8 @@ public class GeoJsonExportModel {
     public static class ProjectData {
         @JsonProperty("plan_soort")
         private PlanType planType;
-        @JsonProperty("in_programmering")
-        private Boolean programming;
         @JsonProperty("prioritering")
-        private String priority;
+        private List<String> priority;
         @JsonProperty("rol_gemeente")
         private List<String> municipalityRole;
         @JsonProperty("status")

@@ -266,6 +266,10 @@ public class GeoJSONExport {
                 projectCategoricalCustomProps.get(
                         customPropTool.get(Constants.FIXED_PROPERTY_MUNICIPALITY_ROLE).getId()));
 
+        List<String> priority = customPropTool.getOptions(
+            projectCategoricalCustomProps.get(
+                    customPropTool.get(Constants.FIXED_PROPERTY_PRIORITY).getId()));
+
         final var geoJsonProject = GeoJsonProject.builder()
                 .diwiId(project.getProjectId())
                 .basicProjectData(BasicProjectData.builder()
@@ -274,7 +278,7 @@ public class GeoJSONExport {
                         .build())
                 .projectData(ProjectData.builder()
                         .planType(project.getPlanType().isEmpty() ? null : project.getPlanType().get(0))
-                        // .priority() // This is a custom property in the importer
+                        .priority(priority) // This is a custom property in the importer
                         .municipalityRole(municipalityRole) // This is a custom property
                         .status(project.getEndDate().isBefore(today) ? ProjectStatus.REALIZED : ProjectStatus.ACTIVE) // Need to guess based on
                                                                                                                       // future/pastness.
