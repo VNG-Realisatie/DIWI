@@ -126,6 +126,8 @@ public class GeoJsonExportModel {
         private UUID diwiId;
         @JsonProperty("naam")
         private String name;
+        @JsonProperty("in_programmering")
+        private Boolean programming;
         @JsonProperty("mutatiegegevens")
         private MutationData mutationData;
         @JsonProperty("einddatum")

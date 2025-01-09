@@ -298,6 +298,7 @@ public class GeoJSONExport {
                             .groundPositionsMap(groundPositions)
                             .ownershipValue(ownerShipValue)
                             .customPropertiesMap(blockCustomProps)
+                            .programming(block.getProgramming())
                             .build();
                 })
                 .toList();
