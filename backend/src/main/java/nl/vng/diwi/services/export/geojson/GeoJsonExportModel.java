@@ -51,9 +51,6 @@ public class GeoJsonExportModel {
         @JsonProperty("locatie")
         private ProjectLocation projectLocation;
         @Builder.Default
-        @JsonProperty("rollen")
-        private Map<String, String> roles = new HashMap<>();
-        @Builder.Default
         @JsonProperty("projectfasen")
         private Map<ProjectPhase, LocalDate> projectPhasesMap = new HashMap<>();
         @Builder.Default
@@ -127,8 +124,10 @@ public class GeoJsonExportModel {
     public static class GeoJsonHouseblock {
         @JsonProperty("diwi_id")
         private UUID diwiId;
-        @JsonProperty("name")
+        @JsonProperty("naam")
         private String name;
+        @JsonProperty("in_programmering")
+        private Boolean programming;
         @JsonProperty("mutatiegegevens")
         private MutationData mutationData;
         @JsonProperty("einddatum")
@@ -158,14 +157,8 @@ public class GeoJsonExportModel {
     public static class MutationData {
         @JsonProperty("mutatie_type")
         private MutationType mutationType;
-        @JsonProperty("eigendom_type")
-        private OwnershipType ownershipType;
         @JsonProperty("woning_type")
         private HouseType houseType;
-        @JsonProperty("status")
-        private ProjectStatus houseblockStatus; // unused
-        @JsonProperty("contract_type")
-        private String contractType; // unused
         @JsonProperty("aantal")
         private Integer amount;
     }
@@ -203,8 +196,8 @@ public class GeoJsonExportModel {
         private Double max;
         @JsonProperty("waarde")
         private Double value;
-        @JsonProperty("categorie")
-        private String categoryName;
+        @JsonProperty("eigendom_type")
+        private String ownershipType;
     }
 
 }

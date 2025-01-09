@@ -30,7 +30,6 @@ import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.models.ConfigModel;
 import nl.vng.diwi.models.DataExchangePropertyModel;
 import nl.vng.diwi.models.PropertyModel;
-import nl.vng.diwi.models.SingleValueOrRangeModel;
 import nl.vng.diwi.services.DataExchangeExportError;
 import nl.vng.diwi.services.export.ExportUtil;
 import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.BasicProjectData;
@@ -95,20 +94,32 @@ public class GeoJSONExport {
 
             Map<String, String> customProps = new HashMap<>();
             for (var prop : projectTextCustomProps) {
-                customProps.put(get(prop.getPropertyId()).getName(), prop.getTextValue());
+                PropertyModel propertyModel = get(prop.getPropertyId());
+                if (propertyModel != null) {
+                    customProps.put(propertyModel.getName(), prop.getTextValue());
+                }
             }
             for (var prop : projectNumericCustomProps) {
-                customProps.put(get(prop.getPropertyId()).getName(), prop.getValue().toString());
+                PropertyModel propertyModel = get(prop.getPropertyId());
+                if (propertyModel != null) {
+                    customProps.put(propertyModel.getName(), prop.getValue().toString());
+                }
             }
             for (var prop : projectBooleanCustomProps) {
-                customProps.put(get(prop.getPropertyId()).getName(), prop.getBooleanValue().toString());
+                PropertyModel propertyModel = get(prop.getPropertyId());
+                if (propertyModel != null) {
+                    customProps.put(propertyModel.getName(), prop.getBooleanValue().toString());
+                }
             }
             for (var prop : projectCategoricalCustomProps) {
-                String values = prop.getOptionValues()
-                        .stream()
-                        .map(optionId -> getOption(optionId))
-                        .collect(Collectors.joining(","));
-                customProps.put(customPropsMap.get(prop.getPropertyId()).getName(), values);
+                PropertyModel propertyModel = get(prop.getPropertyId());
+                if (propertyModel != null) {
+                    String values = prop.getOptionValues()
+                            .stream()
+                            .map(optionId -> getOption(optionId))
+                            .collect(Collectors.joining(","));
+                    customProps.put(propertyModel.getName(), values);
+                }
             }
             return customProps;
         }
@@ -214,7 +225,6 @@ public class GeoJSONExport {
                         // .owner()// Needs adding to the model
                         .confidentialityLevel(project.getConfidentiality())
                         .build())
-                // .roles(Map.of("projectleider", )) This is a custom property
                 .projectDuration(ProjectDuration.builder()
                         .startDate(project.getStartDate())
                         .endDate(project.getEndDate())
@@ -232,10 +242,10 @@ public class GeoJSONExport {
                 .map(block -> {
 
                     Map<String, String> blockCustomProps = customPropTool.getCustomProps(
-                        block.getTextProperties(),
-                        block.getNumericProperties(),
-                        block.getBooleanProperties(),
-                        block.getCategoryProperties());
+                            block.getTextProperties(),
+                            block.getNumericProperties(),
+                            block.getBooleanProperties(),
+                            block.getCategoryProperties());
 
                     var mutationData = MutationData.builder()
                             .amount(block.getMutationAmount())
@@ -244,7 +254,7 @@ public class GeoJSONExport {
 
                     var ownerShipValue = block.getOwnershipValueList().stream()
                             .map(ov -> {
-                                // TODO categories
+                                // TODO global categories
                                 Double max = null;
                                 if (ov.getOwnershipType() == OwnershipType.KOOPWONING && ov.getOwnershipValueRangeMax() != null) {
                                     max = (double) ov.getOwnershipValueRangeMax() / 100;
@@ -268,7 +278,7 @@ public class GeoJSONExport {
                                 }
 
                                 return OwnershipValueData.builder()
-                                        .categoryName(ov.getOwnershipType().toString())
+                                        .ownershipType(ov.getOwnershipType().toString())
                                         .max(max)
                                         .min(min)
                                         .value(value)
@@ -288,6 +298,7 @@ public class GeoJSONExport {
                             .groundPositionsMap(groundPositions)
                             .ownershipValue(ownerShipValue)
                             .customPropertiesMap(blockCustomProps)
+                            .programming(block.getProgramming())
                             .build();
                 })
                 .toList();
