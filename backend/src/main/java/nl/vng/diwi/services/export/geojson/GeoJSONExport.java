@@ -25,6 +25,7 @@ import nl.vng.diwi.dal.entities.ProjectExportSqlModelPlus.TextPropertyModel;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.GroundPosition;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
+import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.dal.entities.enums.ProjectStatus;
 import nl.vng.diwi.dal.entities.enums.PropertyKind;
@@ -231,6 +232,11 @@ public class GeoJSONExport {
                 .stream()
                 .collect(Collectors.toMap(ph -> ph.getProjectPhase(), ph -> ph.getStartDate()));
 
+        Map<PlanStatus, LocalDate> planstatuses;
+        project.getProjectPlanStatusStartDateList()
+                .stream()
+                .collect(Collectors.toMap(ps -> ps.getPlanStatus(), ps -> ps.getStartDate()));
+
         Map<String, String> customProps = customPropTool.getCustomPropertyMap(
                 project.getTextProperties(),
                 project.getNumericProperties(),
@@ -278,6 +284,7 @@ public class GeoJSONExport {
                         .endDate(project.getEndDate())
                         .build())
                 .projectPhasesMap(phases)
+                .projectPlanStatusesMap(planstatuses)
                 .projectLocation(ProjectLocation.builder()
                         .municipality(gemeente)
                         .district(wijk)
