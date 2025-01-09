@@ -109,6 +109,8 @@ public class DataExchangeTemplate {
 
         var geoJSONTemplate = new DataExchangeTemplate();
 
-        templates = ImmutableMap.of(DataExchangeType.ESRI_ZUID_HOLLAND, zuidHollandTemplate, DataExchangeType.GEO_JSON, geoJSONTemplate);
+        var excelTemplate = new DataExchangeTemplate();
+
+        templates = ImmutableMap.of(DataExchangeType.ESRI_ZUID_HOLLAND, zuidHollandTemplate, DataExchangeType.GEO_JSON, geoJSONTemplate, DataExchangeType.EXCEL, excelTemplate);
     }
 }

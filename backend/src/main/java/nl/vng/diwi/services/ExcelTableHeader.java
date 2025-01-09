@@ -1,7 +1,9 @@
 package nl.vng.diwi.services;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import nl.vng.diwi.models.PropertyModel;
+import org.checkerframework.checker.units.qual.N;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -9,14 +11,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Data
+@NoArgsConstructor
 public class ExcelTableHeader {
 
     private Section section;
     private Column column;
+    private int columnIndex;
     private String subheader;
 
     private PropertyModel propertyModel;
     private LocalDate subheaderDateValue;
+
+    public ExcelTableHeader(Section section, Column column, int columnIndex) {
+        this.section = section;
+        this.column = column;
+        this.columnIndex = columnIndex;
+    }
 
     public enum Section {
         PROJECT_DATA("Projectgegevens"),

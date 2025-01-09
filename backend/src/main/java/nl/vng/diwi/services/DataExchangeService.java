@@ -25,6 +25,7 @@ import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.services.export.excel.ExcelExport;
 import nl.vng.diwi.services.export.geojson.GeoJSONExport;
 import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandExport;
 
@@ -245,6 +246,11 @@ public class DataExchangeService {
                     dxExportModel.getExportDate(),
                     configModel.getMinimumExportConfidentiality(),
                     errors);
+            case EXCEL -> ExcelExport.buildExportObject(
+                repo.getProjectsDAO().getProjectsExportListSimplified(dxExportModel, loggedUser),
+                customProps,
+                configModel.getMinimumExportConfidentiality(),
+                errors);
         };
 
     }

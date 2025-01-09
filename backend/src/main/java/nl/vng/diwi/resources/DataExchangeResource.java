@@ -186,10 +186,14 @@ public class DataExchangeResource {
         Object exportObj = dataExchangeService.getExportObject(repo, configModel, dataExchangeUuid, dataExchangeExportModel, errors, loggedUser);
 
         if (errors.isEmpty()) {
-            return output -> {
-                Json.mapper.writeValue(output, exportObj);
-                output.flush();
-            };
+            if (exportObj instanceof StreamingOutput) {
+                return (StreamingOutput) exportObj;
+            } else {
+                return output -> {
+                    Json.mapper.writeValue(output, exportObj);
+                    output.flush();
+                };
+            }
         } else {
             throw new VngBadRequestException(errors);
         }
