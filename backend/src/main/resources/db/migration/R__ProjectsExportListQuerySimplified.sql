@@ -333,6 +333,14 @@ FROM (
                         JOIN diwi.woningblok_programmering_changelog wpc ON w.id = wpc.woningblok_id AND wpc.change_end_date IS NULL
                             AND wpc.end_milestone_id = w.end_milestone_id
                 ),
+                block_size AS (
+                    SELECT
+                        w.id, jsonb_build_object('value', wgc.value, 'min', LOWER(wgc.value_range), 'max', UPPER(wgc.value_range)) AS blockSize
+                    FROM
+                        project_woningbloks w
+                        JOIN diwi.woningblok_grootte_changelog wgc ON w.id = wgc.woningblok_id AND wgc.change_end_date IS NULL
+                            AND wgc.end_milestone_id = w.end_milestone_id
+                ),
                 block_targetGroups AS (
                     SELECT
                         w.id, to_jsonb(array_agg(jsonb_build_object('propertyValueId', wdcv.property_value_id, 'amount', wdcv.amount))) AS target_groups
@@ -430,6 +438,7 @@ FROM (
                             'noPermissionOwner', bgp.noPermissionOwner,
                             'name', pppn.name,
                             'programming', bp.programming,
+                            'size', bs.blockSize,
                             'textProperties', btp.text_properties,
                             'numericProperties', bnp.numeric_properties,
                             'booleanProperties', bbp.boolean_properties,
@@ -453,6 +462,7 @@ FROM (
                             LEFT JOIN block_categoryCP bcp ON bcp.id = pppw.id
                             LEFT JOIN block_ordinalCP bop ON bop.id = pppw.id
                             LEFT JOIN block_programming bp ON bp.id = pppw.id
+                            LEFT JOIN block_size bs ON bs.id = pppw.id
                             LEFT JOIN block_targetGroups btg ON btg.id = pppw.id
                             LEFT JOIN block_physicalAppearances bpa ON bpa.id = pppw.id
                 )

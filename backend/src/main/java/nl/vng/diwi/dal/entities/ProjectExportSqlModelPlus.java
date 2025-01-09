@@ -231,6 +231,8 @@ public class ProjectExportSqlModelPlus {
 
         private Boolean programming;
 
+        private SingleValueOrRangeModel<BigDecimal> size;
+
         @Enumerated(EnumType.STRING)
         @JdbcType(PostgreSQLEnumJdbcType.class)
         private MutationType mutationKind;
