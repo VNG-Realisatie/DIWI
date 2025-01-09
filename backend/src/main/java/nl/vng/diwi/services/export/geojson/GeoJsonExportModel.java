@@ -133,7 +133,7 @@ public class GeoJsonExportModel {
         @JsonProperty("einddatum")
         private LocalDate endDate;
         @JsonProperty("grootte")
-        private List<Object> size; //unused
+        private SizeData size;
         @JsonProperty("waarde")
         private List<OwnershipValueData> ownershipValue;
         @Builder.Default
@@ -148,6 +148,20 @@ public class GeoJsonExportModel {
         @Builder.Default
         @JsonProperty("maatwerk_woningeigenschappen")
         private Map<String, String> customPropertiesMap = new HashMap<>();
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SizeData {
+        @JsonProperty("laag")
+        private Double min;
+        @JsonProperty("hoog")
+        private Double max;
+        @JsonProperty("waarde")
+        private Double value;
+
     }
 
     @Data

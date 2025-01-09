@@ -1,5 +1,6 @@
 package nl.vng.diwi.services.export.geojson;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -44,6 +45,7 @@ import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.OwnershipValueData
 import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.ProjectData;
 import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.ProjectDuration;
 import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.ProjectLocation;
+import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.SizeData;
 
 public class GeoJSONExport {
     @Data
@@ -359,6 +361,8 @@ public class GeoJSONExport {
                             })
                             .toList();
 
+                    var size = block.getSize();
+
                     Map<GroundPosition, Integer> groundPositions = new LinkedHashMap<>();
                     groundPositions.put(GroundPosition.GEEN_TOESTEMMING_GRONDEIGENAAR, block.getNoPermissionOwner());
                     groundPositions.put(GroundPosition.INTENTIE_MEDEWERKING_GRONDEIGENAAR, block.getIntentionPermissionOwner());
@@ -366,6 +370,11 @@ public class GeoJSONExport {
                     return GeoJsonHouseblock.builder()
                             .diwiId(block.getHouseblockId())
                             .name(block.getName())
+                            .size(SizeData.builder()
+                                    .min(toDouble(size.getMin()))
+                                    .max(toDouble(size.getMax()))
+                                    .value(toDouble(size.getValue()))
+                                    .build())
                             .endDate(block.getEndDate())
                             .mutationData(mutationData)
                             .groundPositionsMap(groundPositions)
@@ -380,6 +389,10 @@ public class GeoJSONExport {
         projectFeature.setProperty("woning_blokken", geoJsonBlocks);
 
         return projectFeature;
+    }
+
+    private static Double toDouble(BigDecimal min) {
+        return min != null ? min.doubleValue() : null;
     }
 
 }
