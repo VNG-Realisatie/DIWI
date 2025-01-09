@@ -267,8 +267,8 @@ public class GeoJSONExport {
                         customPropTool.get(Constants.FIXED_PROPERTY_MUNICIPALITY_ROLE).getId()));
 
         List<String> priority = customPropTool.getOptions(
-            projectCategoricalCustomProps.get(
-                    customPropTool.get(Constants.FIXED_PROPERTY_PRIORITY).getId()));
+                projectCategoricalCustomProps.get(
+                        customPropTool.get(Constants.FIXED_PROPERTY_PRIORITY).getId()));
 
         final var geoJsonProject = GeoJsonProject.builder()
                 .diwiId(project.getProjectId())
@@ -374,11 +374,11 @@ public class GeoJSONExport {
                     return GeoJsonHouseblock.builder()
                             .diwiId(block.getHouseblockId())
                             .name(block.getName())
-                            .size(SizeData.builder()
+                            .size(size != null ? SizeData.builder()
                                     .min(toDouble(size.getMin()))
                                     .max(toDouble(size.getMax()))
                                     .value(toDouble(size.getValue()))
-                                    .build())
+                                    .build() : null)
                             .endDate(block.getEndDate())
                             .mutationData(mutationData)
                             .groundPositionsMap(groundPositions)
