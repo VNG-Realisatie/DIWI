@@ -353,6 +353,7 @@
     "projectDetail": {
       "title": "Project",
       "map": "Kaart",
+      "audit": "Audit",
       "characteristics": "Eigenschappen",
       "timeline": "Tijdlijn",
       "colorEdit": "Kleur bewerken",
@@ -902,6 +903,43 @@
       "mutations": {
         "CONSTRUCTION": "Bouw van {{amount}} ",
         "DEMOLITION": "Sloop van {{amount}}"
+      }
+    },
+    "audit": {
+      "title": "Auditlog",
+      "tableHeader": {
+        "date": "Datum",
+        "user": "Gebruiker",
+        "action": "Actie",
+        "objectType": "Object type",
+        "objectName": "Object naam",
+        "oldValue": "Oude waarde",
+        "newValue": "Nieuwe waarde",
+        "property": "Eigenschap",
+        "endDate": "Einddatum",
+        "startDate": "Startdatum"
+      },
+      "property": {
+        "project": "Project",
+        "projectName": "Projectnaam",
+        "projectConfidentiality": "Vertrouwelijkheid",
+        "projectColor": "Kleur",
+        "projectStartDate": "Startdatum",
+        "projectEndDate": "Einddatum"
+      },
+      "action": {
+        "CREATE": "Aanmaken",
+        "UPDATE": "Bijwerken",
+        "DELETE": "Verwijderen"
+      },
+      "confidentialityLevel": {
+        "PRIVATE": "Prive",
+        "INTERNAL_CIVIL": "Intern ambtelijk",
+        "INTERNAL_MANAGEMENT": "Intern bestuurlijk",
+        "INTERNAL_COUNCIL": "Intern raad",
+        "EXTERNAL_REGIONAL": "Extern woonregio",
+        "EXTERNAL_GOVERNMENTAL": "Extern mede-overheden",
+        "PUBLIC": "Openbaar"
       }
     }
   }
