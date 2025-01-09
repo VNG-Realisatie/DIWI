@@ -21,7 +21,7 @@
                         "rol_gemeente": [],
                         "status": "ACTIVE",
                         "eigenaar": null,
-                        "vertrouwelijkheid": "EXTERNAL_GOVERNMENTAL"
+                        "vertrouwelijkheid": "Extern mede-overheden"
                     },
                     "projectduur": {
                         "start_project": "2024-12-30",
@@ -33,7 +33,7 @@
                         "buurt": []
                     },
                     "projectfasen": {
-                        "_5_PREPARATION": "2024-12-30"
+                        "Voorbereiding": "2024-12-30"
                     },
                     "planologische_planstatus": {},
                     "maatwerk_projecteigenschappen": {}
