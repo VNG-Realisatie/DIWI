@@ -32,6 +32,7 @@ import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.models.ConfigModel;
 import nl.vng.diwi.models.DataExchangePropertyModel;
 import nl.vng.diwi.models.PropertyModel;
+import nl.vng.diwi.models.RangeSelectDisabledModel;
 import nl.vng.diwi.services.DataExchangeExportError;
 import nl.vng.diwi.services.export.ExportUtil;
 import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.BasicProjectData;
@@ -44,14 +45,15 @@ import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.ProjectDuration;
 import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.ProjectLocation;
 
 public class GeoJSONExport {
-
     @Data
     static public class CustomProps {
 
         private List<PropertyModel> properties;
         private Map<UUID, String> optionsMap;
         private Map<UUID, String> ordinalsMap;
+        // private Map<UUID, String> ordinalsMap;
         private Map<UUID, PropertyModel> customPropsMap;
+        private Map<UUID, RangeSelectDisabledModel> rangeCategories;
 
         public CustomProps(List<PropertyModel> customProps) {
             this.properties = customProps;
@@ -62,6 +64,10 @@ public class GeoJSONExport {
             ordinalsMap = customProps.stream()
                     .flatMap(cp -> cp.getOrdinals() != null ? cp.getOrdinals().stream() : Stream.empty())
                     .collect(Collectors.toMap(option -> option.getId(), option -> option.getName()));
+
+            rangeCategories = customProps.stream()
+                    .flatMap(cp -> cp.getRanges() != null ? cp.getRanges().stream() : Stream.empty())
+                    .collect(Collectors.toMap(option -> option.getId(), option -> option));
 
             customPropsMap = customProps.stream().collect(Collectors.toMap(PropertyModel::getId, Function.identity()));
 
@@ -99,6 +105,10 @@ public class GeoJSONExport {
 
         public String getOrdinal(UUID id) {
             return ordinalsMap.get(id);
+        }
+
+        public RangeSelectDisabledModel getRange(UUID id) {
+            return rangeCategories.get(id);
         }
 
         public List<String> getOptions(List<UUID> optionIds) {
@@ -291,35 +301,51 @@ public class GeoJSONExport {
 
                     var ownerShipValue = block.getOwnershipValueList().stream()
                             .map(ov -> {
-                                // TODO global categories
-                                Double max = null;
-                                if (ov.getOwnershipType() == OwnershipType.KOOPWONING && ov.getOwnershipValueRangeMax() != null) {
-                                    max = (double) ov.getOwnershipValueRangeMax() / 100;
-
-                                } else if (ov.getOwnershipRentalValueRangeMax() != null) {
-                                    max = (double) ov.getOwnershipRentalValueRangeMax() / 100;
-                                }
-
-                                Double min = null;
-                                if (ov.getOwnershipType() == OwnershipType.KOOPWONING && ov.getOwnershipValueRangeMax() != null) {
-                                    min = (double) ov.getOwnershipValueRangeMin() / 100;
-                                } else if (ov.getOwnershipRentalValueRangeMin() != null) {
-                                    min = (double) ov.getOwnershipRentalValueRangeMin() / 100;
-                                }
-
-                                Double value = null;
-                                if (ov.getOwnershipType() == OwnershipType.KOOPWONING && ov.getOwnershipValue() != null) {
-                                    value = (double) ov.getOwnershipValue() / 100;
-                                } else if (ov.getOwnershipRentalValue() != null) {
-                                    value = (double) ov.getOwnershipRentalValue() / 100;
-                                }
-
-                                return OwnershipValueData.builder()
+                                var builder = OwnershipValueData.builder()
                                         .ownershipType(ov.getOwnershipType().toString())
-                                        .max(max)
-                                        .min(min)
-                                        .value(value)
-                                        .build();
+                                        .amount(ov.getOwnershipAmount());
+
+                                // First check if it is a global range
+                                var buyRangeId = ov.getOwnershipRangeCategoryId();
+                                var rentRangeId = ov.getOwnershipRentalRangeCategoryId();
+                                var rangeId = buyRangeId != null ? buyRangeId : rentRangeId;
+                                var range = rangeId != null ? customPropTool.getRange(rangeId) : null;
+                                if (range != null) {
+                                    return builder
+                                            .min(range.getMin() != null ? range.getMin().doubleValue() : null)
+                                            .max(range.getMax() != null ? range.getMax().doubleValue() : null)
+                                            .categorie(range.getName())
+                                            .build();
+                                } else {
+                                    // Otherwise use block specific values
+                                    Double max = null;
+                                    if (ov.getOwnershipType() == OwnershipType.KOOPWONING && ov.getOwnershipValueRangeMax() != null) {
+                                        max = (double) ov.getOwnershipValueRangeMax() / 100;
+
+                                    } else if (ov.getOwnershipRentalValueRangeMax() != null) {
+                                        max = (double) ov.getOwnershipRentalValueRangeMax() / 100;
+                                    }
+
+                                    Double min = null;
+                                    if (ov.getOwnershipType() == OwnershipType.KOOPWONING && ov.getOwnershipValueRangeMax() != null) {
+                                        min = (double) ov.getOwnershipValueRangeMin() / 100;
+                                    } else if (ov.getOwnershipRentalValueRangeMin() != null) {
+                                        min = (double) ov.getOwnershipRentalValueRangeMin() / 100;
+                                    }
+
+                                    Double value = null;
+                                    if (ov.getOwnershipType() == OwnershipType.KOOPWONING && ov.getOwnershipValue() != null) {
+                                        value = (double) ov.getOwnershipValue() / 100;
+                                    } else if (ov.getOwnershipRentalValue() != null) {
+                                        value = (double) ov.getOwnershipRentalValue() / 100;
+                                    }
+
+                                    return builder
+                                            .min(min)
+                                            .max(max)
+                                            .value(value)
+                                            .build();
+                                }
                             })
                             .toList();
 

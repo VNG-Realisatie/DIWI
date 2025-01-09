@@ -198,6 +198,10 @@ public class GeoJsonExportModel {
         private Double value;
         @JsonProperty("eigendom_type")
         private String ownershipType;
+        @JsonProperty("categorie")
+        private String categorie;
+        @JsonProperty("aantal")
+        private Integer amount;
     }
 
 }
