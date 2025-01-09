@@ -17,6 +17,10 @@ import org.geojson.jackson.CrsType;
 
 import lombok.Data;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelPlus;
+import nl.vng.diwi.dal.entities.ProjectExportSqlModelPlus.BooleanPropertyModel;
+import nl.vng.diwi.dal.entities.ProjectExportSqlModelPlus.CategoryPropertyModel;
+import nl.vng.diwi.dal.entities.ProjectExportSqlModelPlus.NumericPropertyModel;
+import nl.vng.diwi.dal.entities.ProjectExportSqlModelPlus.TextPropertyModel;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.GroundPosition;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
@@ -83,6 +87,32 @@ public class GeoJSONExport {
             }
         }
 
+        public Map<String, String> getCustomProps(
+                List<TextPropertyModel> projectTextCustomProps,
+                List<NumericPropertyModel> projectNumericCustomProps,
+                List<BooleanPropertyModel> projectBooleanCustomProps,
+                List<CategoryPropertyModel> projectCategoricalCustomProps) {
+
+            Map<String, String> customProps = new HashMap<>();
+            for (var prop : projectTextCustomProps) {
+                customProps.put(get(prop.getPropertyId()).getName(), prop.getTextValue());
+            }
+            for (var prop : projectNumericCustomProps) {
+                customProps.put(get(prop.getPropertyId()).getName(), prop.getValue().toString());
+            }
+            for (var prop : projectBooleanCustomProps) {
+                customProps.put(get(prop.getPropertyId()).getName(), prop.getBooleanValue().toString());
+            }
+            for (var prop : projectCategoricalCustomProps) {
+                String values = prop.getOptionValues()
+                        .stream()
+                        .map(optionId -> getOption(optionId))
+                        .collect(Collectors.joining(","));
+                customProps.put(customPropsMap.get(prop.getPropertyId()).getName(), values);
+            }
+            return customProps;
+        }
+
     }
 
     static public FeatureCollection buildExportObject(
@@ -143,40 +173,27 @@ public class GeoJSONExport {
         Map<ProjectPhase, LocalDate> phases = new HashMap<>();
         phases.put(ProjectPhase._6_REALIZATION, project.getRealizationPhaseDate());
 
-        Map<UUID, String> projectTextCustomProps = project.getTextProperties().stream()
-                .collect(Collectors.toMap(ProjectExportSqlModelPlus.TextPropertyModel::getPropertyId,
-                        ProjectExportSqlModelPlus.TextPropertyModel::getTextValue));
-        Map<UUID, SingleValueOrRangeModel<BigDecimal>> projectNumericCustomProps = project.getNumericProperties().stream()
-                .collect(Collectors.toMap(ProjectExportSqlModelPlus.NumericPropertyModel::getPropertyId,
-                        ProjectExportSqlModelPlus.NumericPropertyModel::getSingleValueOrRangeModel));
-        Map<UUID, Boolean> projectBooleanCustomProps = project.getBooleanProperties().stream()
-                .collect(Collectors.toMap(ProjectExportSqlModelPlus.BooleanPropertyModel::getPropertyId,
-                        ProjectExportSqlModelPlus.BooleanPropertyModel::getBooleanValue));
+        Map<String, String> customProps = customPropTool.getCustomProps(
+                project.getTextProperties(),
+                project.getNumericProperties(),
+                project.getBooleanProperties(),
+                project.getCategoryProperties());
+
         Map<UUID, List<UUID>> projectCategoricalCustomProps = project.getCategoryProperties().stream()
                 .collect(Collectors.toMap(ProjectExportSqlModelPlus.CategoryPropertyModel::getPropertyId,
                         ProjectExportSqlModelPlus.CategoryPropertyModel::getOptionValues));
 
-        Map<String, String> customProps = new HashMap<>();
-        for (var prop : projectTextCustomProps.entrySet()) {
-            customProps.put(customPropTool.get(prop.getKey()).getName(), prop.getValue());
-        }
-        for (var prop : projectNumericCustomProps.entrySet()) {
-            customProps.put(customPropTool.get(prop.getKey()).getName(), prop.getValue().getValue().toString());
-        }
-        for (var prop : projectBooleanCustomProps.entrySet()) {
-            customProps.put(customPropTool.get(prop.getKey()).getName(), prop.getValue().toString());
-        }
-        // for (var prop : projectCategoricalCustomProps.entrySet()) {
-        // String values = prop.getValue()
-        // .stream()
-        // .map(optionId -> customPropsTool.getOption(optionId))
-        // .collect(Collectors.joining(",")));
-        // customProps.put(customPropsMap.get(prop.getKey()).getName(), values);
-        // }
-
-        List<String> woonplaatsName = customPropTool.getOptions(
+        List<String> gemeente = customPropTool.getOptions(
                 projectCategoricalCustomProps.get(
                         customPropTool.get(Constants.FIXED_PROPERTY_MUNICIPALITY).getId()));
+
+        List<String> buurt = customPropTool.getOptions(
+                projectCategoricalCustomProps.get(
+                        customPropTool.get(Constants.FIXED_PROPERTY_NEIGHBOURHOOD).getId()));
+
+        List<String> wijk = customPropTool.getOptions(
+                projectCategoricalCustomProps.get(
+                        customPropTool.get(Constants.FIXED_PROPERTY_DISTRICT).getId()));
 
         LocalDate today = LocalDate.now();
 
@@ -191,7 +208,8 @@ public class GeoJSONExport {
                         // .in_programmering() // Is a block property, move to block
                         // .priority() // This is a custom property in the importer
                         // .municipalityRole() // This is a custom property
-                        .status(project.getEndDate().isBefore(today) ? ProjectStatus.REALIZED : ProjectStatus.ACTIVE) // Need to guess based on future/pastness.
+                        .status(project.getEndDate().isBefore(today) ? ProjectStatus.REALIZED : ProjectStatus.ACTIVE) // Need to guess based on
+                                                                                                                      // future/pastness.
                                                                                                                       // Do in SQL
                         // .owner()// Needs adding to the model
                         .confidentialityLevel(project.getConfidentiality())
@@ -203,15 +221,22 @@ public class GeoJSONExport {
                         .build())
                 .projectPhasesMap(phases)
                 .projectLocation(ProjectLocation.builder()
-                        .municipality(woonplaatsName)
-                        // .district()
-                        // .neighbourhood()
+                        .municipality(gemeente)
+                        .district(wijk)
+                        .neighbourhood(buurt)
                         .build())
                 .customPropertiesMap(customProps)
                 .build();
 
         final var geoJsonBlocks = project.getHouseblocks().stream()
                 .map(block -> {
+
+                    Map<String, String> blockCustomProps = customPropTool.getCustomProps(
+                        block.getTextProperties(),
+                        block.getNumericProperties(),
+                        block.getBooleanProperties(),
+                        block.getCategoryProperties());
+
                     var mutationData = MutationData.builder()
                             .amount(block.getMutationAmount())
                             .mutationType(block.getMutationKind())
@@ -261,8 +286,8 @@ public class GeoJSONExport {
                             .endDate(block.getEndDate())
                             .mutationData(mutationData)
                             .groundPositionsMap(groundPositions)
-
                             .ownershipValue(ownerShipValue)
+                            .customPropertiesMap(blockCustomProps)
                             .build();
                 })
                 .toList();
@@ -272,4 +297,5 @@ public class GeoJSONExport {
 
         return projectFeature;
     }
+
 }
