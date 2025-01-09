@@ -27,6 +27,8 @@ import nl.vng.diwi.dal.entities.enums.GroundPosition;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.dal.entities.enums.ProjectStatus;
+import nl.vng.diwi.dal.entities.enums.PropertyKind;
+import nl.vng.diwi.dal.entities.enums.PropertyType;
 import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.models.ConfigModel;
 import nl.vng.diwi.models.DataExchangePropertyModel;
@@ -47,12 +49,12 @@ public class GeoJSONExport {
     @Data
     static public class CustomProps {
 
-        private List<PropertyModel> customProps;
+        private List<PropertyModel> properties;
         private Map<UUID, String> optionsMap;
         private Map<UUID, PropertyModel> customPropsMap;
 
         public CustomProps(List<PropertyModel> customProps) {
-            this.customProps = customProps;
+            this.properties = customProps;
 
             optionsMap = customProps.stream()
                     .flatMap(cp -> cp.getCategories() != null ? cp.getCategories().stream() : Stream.empty())
@@ -67,8 +69,15 @@ public class GeoJSONExport {
         }
 
         public PropertyModel get(String propName) {
-            return customProps.stream()
+            return properties.stream()
                     .filter(pfp -> pfp.getName().equals(propName))
+                    .findFirst()
+                    .orElse(null);
+        }
+
+        public PropertyModel getCustomProperty(String propName) {
+            return properties.stream()
+                    .filter(pfp -> pfp.getType().equals(PropertyKind.CUSTOM) && pfp.getName().equals(propName))
                     .findFirst()
                     .orElse(null);
         }
