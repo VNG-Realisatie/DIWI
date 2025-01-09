@@ -21,6 +21,7 @@ CREATE OR REPLACE FUNCTION diwi.get_projects_export_list_simplified (
         numericProperties JSONB,
         booleanProperties JSONB,
         categoryProperties JSONB,
+        ordinalProperties JSONB,
         geometries TEXT[],
         houseblocks JSONB,
         status TEXT,
@@ -46,6 +47,7 @@ SELECT  q.projectId,
         q.numericProperties,
         q.booleanProperties,
         q.categoryProperties,
+        q.ordinalProperties,
         q.geometries,
         q.houseblocks,
         q.status,
@@ -226,6 +228,17 @@ FROM (
             FROM prj_cat_props pcp
             GROUP BY pcp.project_id
         ),
+        project_ordinalCP AS (
+            SELECT
+                poc.project_id, to_jsonb(array_agg(jsonb_build_object('propertyId', poc.property_id, 'propertyValueId', poc.value_id,
+                    'minPropertyValueId', poc.min_value_id, 'maxPropertyValueId', poc.max_value_id))) AS ordinal_properties
+            FROM
+                projects pp
+                    JOIN diwi.project_ordinal_changelog poc ON pp.id = poc.project_id
+                        AND poc.change_end_date IS NULL
+                        AND poc.end_milestone_id = pp.end_milestone_id
+            GROUP BY poc.project_id
+        ),
         project_houseblocks AS (
             WITH
                 project_woningbloks AS (
@@ -388,6 +401,17 @@ FROM (
                     FROM block_cat_props bcp
                     GROUP BY bcp.id
                 ),
+                block_ordinalCP AS (
+                    SELECT
+                        w.id, to_jsonb(array_agg(jsonb_build_object('propertyId', woc.eigenschap_id, 'propertyValueId', woc.value_id,
+                            'minPropertyValueId', woc.min_value_id, 'maxPropertyValueId', woc.max_value_id))) AS ordinal_properties
+                    FROM
+                        project_woningbloks w
+                        JOIN diwi.woningblok_maatwerk_ordinaal_changelog woc ON w.id = woc.woningblok_id
+                            AND woc.change_end_date IS NULL
+                            AND woc.end_milestone_id = w.end_milestone_id
+                    GROUP BY w.id
+                ),
 
                 houseblocks AS (
                     SELECT
@@ -410,6 +434,7 @@ FROM (
                             'numericProperties', bnp.numeric_properties,
                             'booleanProperties', bbp.boolean_properties,
                             'categoryProperties', bcp.category_properties,
+                            'ordinalProperties', bop.ordinal_properties,
                             'targetGroups', btg.target_groups,
                             'physicalAppearances', bpa.physical_appearances
                         ) AS houseblocks
@@ -426,6 +451,7 @@ FROM (
                             LEFT JOIN block_numericCP bnp ON bnp.id = pppw.id
                             LEFT JOIN block_booleanCP bbp ON bbp.id = pppw.id
                             LEFT JOIN block_categoryCP bcp ON bcp.id = pppw.id
+                            LEFT JOIN block_ordinalCP bop ON bop.id = pppw.id
                             LEFT JOIN block_programming bp ON bp.id = pppw.id
                             LEFT JOIN block_targetGroups btg ON btg.id = pppw.id
                             LEFT JOIN block_physicalAppearances bpa ON bpa.id = pppw.id
@@ -451,6 +477,7 @@ FROM (
            ppnp.numeric_properties  AS numericProperties,
            ppb.boolean_properties   AS booleanProperties,
            ppc.category_properties  AS categoryProperties,
+           poc.ordinal_properties   AS ordinalProperties,
            ppg.geometries           AS geometries,
            pph.houseblocks          AS houseblocks,
            'REALIZED'               AS "status",
@@ -466,6 +493,7 @@ FROM (
             LEFT JOIN project_numericCP ppnp ON ppnp.project_id = pp.id
             LEFT JOIN project_booleanCP ppb ON ppb.project_id = pp.id
             LEFT JOIN project_categoryCP ppc ON ppc.project_id = pp.id
+            LEFT JOIN project_ordinalCP poc ON poc.project_id = pp.id
             LEFT JOIN project_geometries ppg ON ppg.project_id = pp.id
             LEFT JOIN project_houseblocks pph ON pph.project_id = pp.id
             LEFT JOIN project_realization_phase pprp ON pprp.project_id = pp.id

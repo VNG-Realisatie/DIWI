@@ -94,6 +94,10 @@ public class ProjectExportSqlModelPlus {
     @Getter(AccessLevel.NONE)
     private List<CategoryPropertyModel> categoryProperties;
 
+    @Type(value = JsonListType.class)
+    @Getter(AccessLevel.NONE)
+    private List<OrdinalPropertyModel> ordinalProperties;
+
     @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(columnDefinition = "text[]")
     @Getter(AccessLevel.NONE)
@@ -137,6 +141,10 @@ public class ProjectExportSqlModelPlus {
 
     public List<CategoryPropertyModel> getCategoryProperties() {
         return categoryProperties == null ? new ArrayList<>() : categoryProperties;
+    }
+
+    public List<OrdinalPropertyModel> getOrdinalProperties() {
+        return ordinalProperties == null ? new ArrayList<>() : ordinalProperties;
     }
 
     public List<String> getGeometries() {
@@ -197,6 +205,15 @@ public class ProjectExportSqlModelPlus {
 
     @Data
     @NoArgsConstructor
+    public static class OrdinalPropertyModel {
+        private UUID propertyId;
+        private UUID propertyValueId;
+        private UUID minPropertyValueId;
+        private UUID maxPropertyValueId;
+    }
+
+    @Data
+    @NoArgsConstructor
     public static class CategoryValueAmountModel {
         private UUID propertyValueId;
         private Integer amount;
@@ -253,6 +270,10 @@ public class ProjectExportSqlModelPlus {
         @Getter(AccessLevel.NONE)
         private List<CategoryPropertyModel> categoryProperties;
 
+        @Type(value = JsonListType.class)
+        @Getter(AccessLevel.NONE)
+        private List<OrdinalPropertyModel> ordinalProperties;
+
         public List<OwnershipValueSqlModel> getOwnershipValueList() {
             return ownershipValueList == null ? new ArrayList<>() : ownershipValueList;
         }
@@ -271,6 +292,10 @@ public class ProjectExportSqlModelPlus {
 
         public List<CategoryPropertyModel> getCategoryProperties() {
             return categoryProperties == null ? new ArrayList<>() : categoryProperties;
+        }
+
+        public List<OrdinalPropertyModel> getOrdinalProperties() {
+            return ordinalProperties == null ? new ArrayList<>() : ordinalProperties;
         }
 
         public List<CategoryValueAmountModel> getTargetGroups() {
