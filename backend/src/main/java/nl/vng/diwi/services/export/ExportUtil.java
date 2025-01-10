@@ -13,7 +13,6 @@ import org.locationtech.proj4j.CoordinateTransform;
 import org.locationtech.proj4j.CoordinateTransformFactory;
 import org.locationtech.proj4j.ProjCoordinate;
 
-import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
 import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandExport;
 
 public class ExportUtil {
