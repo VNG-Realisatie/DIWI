@@ -56,7 +56,6 @@ public class GeoJSONExport {
         private List<PropertyModel> properties;
         private Map<UUID, String> optionsMap;
         private Map<UUID, String> ordinalsMap;
-        // private Map<UUID, String> ordinalsMap;
         private Map<UUID, PropertyModel> customPropsMap;
         private Map<UUID, RangeSelectDisabledModel> rangeCategories;
 
