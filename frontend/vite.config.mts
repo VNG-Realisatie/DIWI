@@ -37,15 +37,26 @@ export default defineConfig(({ mode }) => {
             },
         },
         assetsInclude: "**/*.xlsx",
-        plugins: [react(), checker({ typescript: true, eslint: {
-            lintCommand: 'eslint "./src/**/*.{ts,tsx}"',
-          }, })],
+        plugins: [
+            react(),
+            checker({
+                typescript: true,
+                eslint: {
+                    lintCommand: 'eslint "./src/**/*.{ts,tsx}"',
+                },
+            }),
+        ],
         optimizeDeps: {
             include: ["@emotion/react", "@emotion/styled", "@mui/material/Tooltip"],
         },
         define: {
             "import.meta.env.VITE_REACT_APP_GIT_SHA": JSON.stringify(process.env.VITE_REACT_APP_GIT_SHA),
             "import.meta.env.VITE_REACT_APP_VERSION_NUMBER": JSON.stringify(process.env.VITE_REACT_APP_VERSION_NUMBER),
+        },
+        build: {
+            rollupOptions: {
+                external: ["@esri/arcgis-rest-request"],
+            },
         },
     };
 });
