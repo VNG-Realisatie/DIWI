@@ -17,12 +17,12 @@ import org.geojson.FeatureCollection;
 import org.geojson.jackson.CrsType;
 
 import lombok.Data;
-import nl.vng.diwi.dal.entities.ProjectExportSqlModelPlus;
-import nl.vng.diwi.dal.entities.ProjectExportSqlModelPlus.BooleanPropertyModel;
-import nl.vng.diwi.dal.entities.ProjectExportSqlModelPlus.CategoryPropertyModel;
-import nl.vng.diwi.dal.entities.ProjectExportSqlModelPlus.NumericPropertyModel;
-import nl.vng.diwi.dal.entities.ProjectExportSqlModelPlus.OrdinalPropertyModel;
-import nl.vng.diwi.dal.entities.ProjectExportSqlModelPlus.TextPropertyModel;
+import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended;
+import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.BooleanPropertyModel;
+import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.CategoryPropertyModel;
+import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.NumericPropertyModel;
+import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.OrdinalPropertyModel;
+import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.TextPropertyModel;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.GroundPosition;
 import nl.vng.diwi.dal.entities.enums.MutationType;
@@ -177,7 +177,7 @@ public class GeoJSONExport {
 
     static public FeatureCollection buildExportObject(
             ConfigModel configModel,
-            List<ProjectExportSqlModelPlus> projects,
+            List<ProjectExportSqlModelExtended> projects,
             List<PropertyModel> customProps,
             Map<String, DataExchangePropertyModel> dxPropertiesMap,
             LocalDate exportDate,
@@ -214,7 +214,7 @@ public class GeoJSONExport {
 
     static private Feature getProjectFeature(
             ConfigModel configModel,
-            ProjectExportSqlModelPlus project,
+            ProjectExportSqlModelExtended project,
             PropertyModel priceRangeBuyFixedProp,
             PropertyModel priceRangeRentFixedProp,
             PropertyModel municipalityFixedProp,
@@ -246,8 +246,8 @@ public class GeoJSONExport {
                 project.getOrdinalProperties());
 
         Map<UUID, List<UUID>> projectCategoricalCustomProps = project.getCategoryProperties().stream()
-                .collect(Collectors.toMap(ProjectExportSqlModelPlus.CategoryPropertyModel::getPropertyId,
-                        ProjectExportSqlModelPlus.CategoryPropertyModel::getOptionValues));
+                .collect(Collectors.toMap(ProjectExportSqlModelExtended.CategoryPropertyModel::getPropertyId,
+                        ProjectExportSqlModelExtended.CategoryPropertyModel::getOptionValues));
 
         List<String> municipalities = customPropTool.getOptions(
                 projectCategoricalCustomProps.get(

@@ -1,6 +1,6 @@
-DROP FUNCTION IF EXISTS diwi.get_projects_export_list_simplified;
+DROP FUNCTION IF EXISTS diwi.get_projects_export_list_extended;
 
-CREATE OR REPLACE FUNCTION diwi.get_projects_export_list_simplified (
+CREATE OR REPLACE FUNCTION diwi.get_projects_export_list_extended (
   _user_role_ text,
   _user_uuid_ uuid,
   _allowed_projects_ UUID[],

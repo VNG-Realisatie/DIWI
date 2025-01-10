@@ -8,7 +8,7 @@ import java.util.UUID;
 import nl.vng.diwi.dal.entities.MultiProjectPolicyGoalSqlModel;
 import nl.vng.diwi.dal.entities.ProjectAuditSqlModel;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
-import nl.vng.diwi.dal.entities.ProjectExportSqlModelPlus;
+import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended;
 import nl.vng.diwi.models.DataExchangeExportModel;
 import org.hibernate.Session;
 import org.hibernate.query.SelectionQuery;
@@ -211,10 +211,10 @@ public class ProjectsDAO extends AbstractRepository {
     }
 
 
-    public List<ProjectExportSqlModelPlus> getProjectsExportListSimplified(DataExchangeExportModel dxExportModel, LoggedUser loggedUser) {
+    public List<ProjectExportSqlModelExtended> getProjectsExportListExtended(DataExchangeExportModel dxExportModel, LoggedUser loggedUser) {
         return session.createNativeQuery(String.format(
-                "SELECT * FROM %s.get_projects_export_list_simplified(:userRole, :userUuid, :allowedProjectIds, :allowedConfidentialities) ",
-                GenericRepository.VNG_SCHEMA_NAME), ProjectExportSqlModelPlus.class)
+                "SELECT * FROM %s.get_projects_export_list_extended(:userRole, :userUuid, :allowedProjectIds, :allowedConfidentialities) ",
+                GenericRepository.VNG_SCHEMA_NAME), ProjectExportSqlModelExtended.class)
             .setParameter("userRole", loggedUser.getRole().name())
             .setParameter("userUuid", loggedUser.getUuid())
             .setParameter("allowedProjectIds", dxExportModel.getProjectIds() != null ? dxExportModel.getProjectIds().toArray(new UUID[0]) : null)

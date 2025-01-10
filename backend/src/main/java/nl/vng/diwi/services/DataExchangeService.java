@@ -238,7 +238,7 @@ public class DataExchangeService {
                     errors);
             case GEO_JSON -> GeoJSONExport.buildExportObject(
                     configModel,
-                    repo.getProjectsDAO().getProjectsExportListSimplified(dxExportModel, loggedUser),
+                    repo.getProjectsDAO().getProjectsExportListExtended(dxExportModel, loggedUser),
                     customProps,
                     dxPropertiesMap,
                     dxExportModel.getExportDate(),

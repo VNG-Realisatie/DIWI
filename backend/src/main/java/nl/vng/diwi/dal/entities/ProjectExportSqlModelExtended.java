@@ -33,10 +33,9 @@ import nl.vng.diwi.models.SingleValueOrRangeModel;
 
 @Entity
 @NoArgsConstructor
-// @AllArgsConstructor
 @Getter
 @Setter
-public class ProjectExportSqlModelPlus {
+public class ProjectExportSqlModelExtended {
 
     @Id
     private UUID projectId;
