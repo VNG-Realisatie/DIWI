@@ -70,11 +70,13 @@ export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProj
     const { setAlert } = useAlert();
     const { t } = useTranslation();
 
-    const [filterModel, setFilterModel] = useState<GridFilterModel | undefined>();
-    const [sortModel, setSortModel] = useState<GridSortModel | undefined>();
     const [columnConfig, setColumnConfig] = useState<ColumnConfig>(loadColumnConfig() || initialColumnConfig);
 
-    const { filterUrl, rows, filteredProjectsSize } = useCustomSearchParams(sortModel, filterModel, paginationInfo);
+    const { filterUrl, rows, filteredProjectsSize, sortModel, setSortModel, filterModel, setFilterModel } = useCustomSearchParams(
+        undefined,
+        undefined,
+        paginationInfo,
+    );
     const { exportId = "defaultExportId" } = useParams<{ exportId?: string }>();
     const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
     const { municipalityRolesOptions, districtOptions, neighbourhoodOptions, municipalityOptions } = useProperties();
@@ -99,7 +101,7 @@ export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProj
         if (redirectPath === configuredExportPath) {
             setFilterModel({ items: [{ field: "confidentialityLevel", operator: "isAnyOf", value: ["PUBLIC", "EXTERNAL_GOVERNMENTAL"] }] });
         }
-    }, [redirectPath, configuredExportPath]);
+    }, [redirectPath, configuredExportPath, setFilterModel]);
 
     useEffect(() => {
         if (selectedProjects.length === 0) {

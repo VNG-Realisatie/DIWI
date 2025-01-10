@@ -38,9 +38,9 @@ export const ProjectProvider = ({ children }: PropsWithChildren) => {
     }, []);
 
     const updateProjects = useCallback(() => {
-        getProjects(paginationInfo.page, paginationInfo.pageSize)
-            .then((projects) => setProjects(projects))
-            .catch((err) => console.log(err));
+        // getProjects(paginationInfo.page, paginationInfo.pageSize)
+        //     .then((projects) => setProjects(projects))
+        //     .catch((err) => console.log(err));
         getProjectsSize()
             .then((data) => {
                 setTotalProjectCount(data.size);
