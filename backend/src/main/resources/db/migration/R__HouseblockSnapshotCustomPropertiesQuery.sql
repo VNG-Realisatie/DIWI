@@ -385,10 +385,10 @@ FROM (
              null AS numericValueType,
              null AS textValue,
              CAST (null AS UUID[])  AS categories,
+             fpo.eigenschap_id AS customPropertyId,
              fpo.ordinal_value_id AS ordinalValueId,
              fpo.ordinal_min_value_id AS ordinalMinValueId,
              fpo.ordinal_max_value_id AS ordinalMaxValueId,
-             fpo.eigenschap_id AS customPropertyId,
              'ORDINAL'::"diwi"."maatwerk_eigenschap_type" AS propertyType
          FROM future_woningbloks fp
              JOIN future_woningbloks_ordinalCP fpo ON fp.id = fpo.id
@@ -475,10 +475,10 @@ FROM (
              null AS numericValueType,
              null AS textValue,
              CAST (null AS UUID[])  AS categories,
+             pwo.eigenschap_id AS customPropertyId,
              pwo.ordinal_value_id AS ordinalValueId,
              pwo.ordinal_min_value_id AS ordinalMinValueId,
              pwo.ordinal_max_value_id AS ordinalMaxValueId,
-             pwo.eigenschap_id AS customPropertyId,
              'ORDINAL'::"diwi"."maatwerk_eigenschap_type" AS propertyType
          FROM past_woningbloks pw
              JOIN past_woningbloks_ordinalCP pwo ON pw.id = pwo.id

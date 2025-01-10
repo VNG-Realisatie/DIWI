@@ -23,8 +23,7 @@ CREATE OR REPLACE FUNCTION diwi.get_projects_export_list (
         booleanProperties JSONB,
         categoryProperties JSONB,
         geometries TEXT[],
-        houseblocks JSONB,
-        status TEXT
+        houseblocks JSONB
 	)
 	LANGUAGE plpgsql
 AS $$
@@ -46,8 +45,7 @@ SELECT  q.projectId,
         q.booleanProperties,
         q.categoryProperties,
         q.geometries,
-        q.houseblocks,
-        q.status
+        q.houseblocks
 FROM (
 
     WITH
@@ -669,8 +667,7 @@ FROM (
            apb.boolean_properties   AS booleanProperties,
            apc.category_properties  AS categoryProperties,
            apg.geometries           AS geometries,
-           aph.houseblocks          AS houseblocks,
-           'ACTIVE'                 AS "status"
+           aph.houseblocks          AS houseblocks
     FROM
         active_projects ap
             LEFT JOIN active_project_names apn ON apn.project_id = ap.id
@@ -703,8 +700,7 @@ FROM (
            ppb.boolean_properties   AS booleanProperties,
            ppc.category_properties  AS categoryProperties,
            ppg.geometries           AS geometries,
-           pph.houseblocks          AS houseblocks,
-           'REALIZED'               AS "status"
+           pph.houseblocks          AS houseblocks
     FROM
         past_projects pp
             LEFT JOIN past_project_names ppn ON ppn.project_id = pp.id

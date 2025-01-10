@@ -2,11 +2,8 @@ package nl.vng.diwi.testutil;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -24,24 +21,16 @@ import nl.vng.diwi.dal.entities.UserGroupState;
 import nl.vng.diwi.dal.entities.UserState;
 import nl.vng.diwi.dal.entities.UserToUserGroup;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
-import nl.vng.diwi.dal.entities.enums.ObjectType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
-import nl.vng.diwi.dal.entities.enums.PropertyKind;
-import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.generic.Json;
 import nl.vng.diwi.models.HouseblockSnapshotModel;
 import nl.vng.diwi.models.PlotModel;
-import nl.vng.diwi.models.PropertyModel;
-import nl.vng.diwi.models.SelectDisabledModel;
 import nl.vng.diwi.models.UserGroupModel;
 import nl.vng.diwi.models.UserGroupUserModel;
 import nl.vng.diwi.models.superclasses.ProjectCreateSnapshotModel;
 import nl.vng.diwi.models.superclasses.ProjectMinimalSnapshotModel;
 import nl.vng.diwi.resources.HouseblockResource;
 import nl.vng.diwi.resources.ProjectsResource;
-import nl.vng.diwi.resources.PropertiesResource;
-import nl.vng.diwi.rest.VngBadRequestException;
-import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.security.UserRole;
 import nl.vng.diwi.services.ExcelImportService;
@@ -184,18 +173,6 @@ public class ProjectsUtil {
         repo.getSession().clear();
         UUID projectId = createdProject.getProjectId();
 
-        // Create new municipality
-        final var propertyResource = new PropertiesResource(new GenericRepository(dal), propertiesService);
-        var propMap = propertyResource.getAllProperties(ObjectType.PROJECT, false, PropertyKind.FIXED)
-                .stream()
-                .collect(Collectors.toMap(PropertyModel::getName, p -> p));
-
-        // var newMunicipality = createNewMunicipality(loggedUser, projectName, propertyResource, propMap);
-
-        // var projectWithFixedProps = Json.jsonCopy(createdProject, ProjectSnapshotModel.class);
-        // projectWithFixedProps.setMunicipality(List.of(newMunicipality));
-        // projectResource.updateProjectSnapshot(loggedUser, projectWithFixedProps);
-
         // Create a block
         var originalBlockModel = new HouseblockSnapshotModel();
         originalBlockModel.setProjectId(projectId);
@@ -215,32 +192,6 @@ public class ProjectsUtil {
                 .blocks(List.of(createdBlock))
                 .owners(owners)
                 .build();
-    }
-
-    private static SelectDisabledModel createNewMunicipality(
-            LoggedUser loggedUser,
-            final String projectName,
-            final PropertiesResource propertyResource,
-            Map<String, PropertyModel> propMap) throws VngNotFoundException, VngBadRequestException {
-        var municipalityProperty = propMap.get(Constants.FIXED_PROPERTY_MUNICIPALITY);
-        String optionName = projectName + " municipality";
-
-        var newMunicipality = new SelectDisabledModel();
-        newMunicipality.setName(optionName);
-        newMunicipality.setDisabled(false);
-
-        if (municipalityProperty.getCategories() == null) {
-            municipalityProperty.setCategories(new ArrayList<>());
-        }
-        municipalityProperty.getCategories().add(newMunicipality);
-
-        var updatedModel = propertyResource.updateProperty(municipalityProperty.getId(), loggedUser, municipalityProperty);
-        return updatedModel.getCategories()
-                .stream()
-                .filter(c -> c.getName().equals(optionName))
-                .findAny()
-                .orElseThrow();
-        // return newMunicipality;
     }
 
     public static UserState persistUserAndUserGroup(VngRepository repo, User user, UserGroup userGroup, ZonedDateTime now) {

@@ -29,6 +29,7 @@ public class MilestoneService {
             Milestone startMilestone,
             Milestone endMilestone,
             List<T> changelogs) {
+
         if (changelogs.isEmpty()){
             return;
         }
