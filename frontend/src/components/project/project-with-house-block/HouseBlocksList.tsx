@@ -22,7 +22,7 @@ type Props = {
     setOpenHouseBlockDialog: (open: boolean) => void;
 };
 export const HouseBlocksList = ({ setOpenHouseBlockDialog }: Props) => {
-    const { houseBlocks, refresh} = useContext(HouseBlockContext);
+    const { houseBlocks, refresh } = useContext(HouseBlockContext);
     const [displayAddButton, setDisplayAddButton] = useState<boolean>(false);
     const location = useLocation();
     useEffect(() => {
@@ -57,7 +57,7 @@ export const HouseBlockAccordionWithControls = ({ houseBlock, refresh }: HouseBl
     const { setAlert } = useAlert();
     const { targetGroupCategories, physicalAppearanceCategories } = useCustomPropertyDefinitions();
     const { getEditPermission } = useHasEditPermission();
-    const { nonFixedCustomDefinitions} = useContext(HouseBlockContext);
+    const { nonFixedCustomDefinitions } = useContext(HouseBlockContext);
 
     const isDemolition = houseBlock.mutation.kind === "DEMOLITION";
 
@@ -72,8 +72,13 @@ export const HouseBlockAccordionWithControls = ({ houseBlock, refresh }: HouseBl
                     targetGroup: newHouseBlock.targetGroup.filter((tg) => targetGroupCategoryIds?.includes(tg.id)),
                     physicalAppearance: newHouseBlock.physicalAppearance.filter((pa) => physicalAppearanceCategoryIds?.includes(pa.id)),
                 };
+                const data = await saveHouseBlockWithCustomProperties(filteredHouseBlock);
+                const updatedHouseBlock = {
+                    ...houseBlock,
+                    ownershipValue: data.ownershipValue,
+                };
 
-                await saveHouseBlockWithCustomProperties(filteredHouseBlock);
+                setNewHouseBlock(updatedHouseBlock);
                 refresh();
                 setReadOnly(true);
                 setAlert(t("generic.saved"), "success");
