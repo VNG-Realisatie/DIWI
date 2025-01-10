@@ -210,7 +210,6 @@ public class ProjectsDAO extends AbstractRepository {
         return q.getResultList();
     }
 
-
     public List<ProjectExportSqlModelExtended> getProjectsExportListExtended(DataExchangeExportModel dxExportModel, LoggedUser loggedUser) {
         return session.createNativeQuery(String.format(
                 "SELECT * FROM %s.get_projects_export_list_extended(:userRole, :userUuid, :allowedProjectIds, :allowedConfidentialities) ",
