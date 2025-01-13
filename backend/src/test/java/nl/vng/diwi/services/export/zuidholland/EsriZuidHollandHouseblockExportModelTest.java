@@ -14,8 +14,6 @@ import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.services.DataExchangeExportError;
 import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandHouseblockExportModel.OwnershipCategory;
 
-// import static EsriZuidHollandHouseblockExportModel.;
-
 public class EsriZuidHollandHouseblockExportModelTest {
     private static Stream<Arguments> ranges() {
         return Stream.of(
