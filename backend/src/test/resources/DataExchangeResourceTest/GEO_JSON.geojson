@@ -1,0 +1,95 @@
+{
+    "type": "FeatureCollection",
+    "crs": {
+        "type": "name",
+        "properties": {
+            "name": "EPSG:28992"
+        }
+    },
+    "features": [
+        {
+            "type": "Feature",
+            "properties": {
+                "projectgegevens": {
+                    "basisgegevens": {
+                        "identificatie_nr": null,
+                        "naam": "project name"
+                    },
+                    "projectgegevens": {
+                        "plan_soort": null,
+                        "prioritering": [],
+                        "rol_gemeente": [],
+                        "status": "ACTIVE",
+                        "eigenaar": null,
+                        "vertrouwelijkheid": "Extern mede-overheden"
+                    },
+                    "projectduur": {
+                        "start_project": "2024-12-30",
+                        "eind_project": "2025-01-19"
+                    },
+                    "locatie": {
+                        "gemeente": [],
+                        "wijk": [],
+                        "buurt": []
+                    },
+                    "projectfasen": {
+                        "Voorbereiding": "2024-12-30"
+                    },
+                    "planologische_planstatus": {},
+                    "maatwerk_projecteigenschappen": {}
+                },
+                "woning_blokken": [
+                    {
+                        "naam": "block name",
+                        "in_programmering": null,
+                        "mutatiegegevens": {
+                            "mutatie_type": null,
+                            "woning_type": null,
+                            "aantal": null
+                        },
+                        "einddatum": "2025-01-19",
+                        "woning_type": {
+                            "meergezinswoning": null,
+                            "eengezinswoning": null,
+                            "onbekend": 0
+                        },
+                        "grootte": null,
+                        "waarde": [],
+                        "fysiek_voorkomen": [],
+                        "doelgroep": [],
+                        "grondpositie": {
+                            "GEEN_TOESTEMMING_GRONDEIGENAAR": null,
+                            "INTENTIE_MEDEWERKING_GRONDEIGENAAR": null,
+                            "FORMELE_TOESTEMMING_GRONDEIGENAAR": null
+                        },
+                        "maatwerk_woningeigenschappen": {}
+                    }
+                ]
+            },
+            "geometry": {
+                "type": "MultiPolygon",
+                "coordinates": [
+                    [
+                        [
+                            [146700.0032473421, 521176.29685654776],
+                            [146550.0015787365, 521049.97625574336],
+                            [146447.91226347035, 519999.9741333354],
+                            [146418.7433300885, 519699.97360727994],
+                            [146199.97654099308, 517449.9713178787],
+                            [144499.9589678819, 516526.74807443365],
+                            [142299.937368273, 515331.9911362055],
+                            [139599.9182382993, 513865.70934565633],
+                            [138266.791544115, 513141.7386622641],
+                            [137935.01506630122, 512961.56400245265],
+                            [133814.38577827546, 510723.8052024909],
+                            [135864.91900623095, 508000.0051045936],
+                            [146699.9317261782, 508000.0040677354],
+                            [146699.9687133115, 515499.95634588617],
+                            [146700.0032473421, 521176.29685654776]
+                        ]
+                    ]
+                ]
+            }
+        }
+    ]
+}

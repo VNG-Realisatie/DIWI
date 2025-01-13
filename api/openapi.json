@@ -548,6 +548,27 @@
         }
       }
     },
+    "/rest/dataexchange/types": {
+      "get": {
+        "operationId": "getTypes",
+        "responses": {
+          "default": {
+            "description": "default response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": ["ESRI_ZUID_HOLLAND", "GEO_JSON"]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/rest/goals": {
       "get": {
         "operationId": "getAllGoals",
@@ -2001,6 +2022,13 @@
                 "DELAYED_PROJECTS"
               ]
             }
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         }
       },
@@ -2255,7 +2283,7 @@
           },
           "type": {
             "type": "string",
-            "enum": ["ESRI_ZUID_HOLLAND"]
+            "enum": ["ESRI_ZUID_HOLLAND", "GEO_JSON"]
           },
           "apiKey": {
             "type": "string"

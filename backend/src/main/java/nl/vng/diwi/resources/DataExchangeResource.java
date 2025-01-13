@@ -19,6 +19,8 @@ import nl.vng.diwi.config.ProjectConfig;
 import nl.vng.diwi.dal.AutoCloseTransaction;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.VngRepository;
+import nl.vng.diwi.dal.entities.DataExchangeType;
+import nl.vng.diwi.generic.Json;
 import nl.vng.diwi.models.ConfigModel;
 import nl.vng.diwi.models.DataExchangeExportModel;
 import nl.vng.diwi.models.DataExchangeModel;
@@ -60,6 +62,14 @@ public class DataExchangeResource {
 
         return dataExchangeService.getDataExchangeList(repo, false);
 
+    }
+
+    @GET
+    @Path("/types")
+    @RolesAllowed(UserActionConstants.VIEW_DATA_EXCHANGES)
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<DataExchangeType> getTypes() {
+        return List.of(DataExchangeType.values());
     }
 
     @GET
@@ -177,13 +187,11 @@ public class DataExchangeResource {
 
         if (errors.isEmpty()) {
             return output -> {
-                MAPPER.writeValue(output, exportObj);
+                Json.mapper.writeValue(output, exportObj);
                 output.flush();
             };
         } else {
             throw new VngBadRequestException(errors);
         }
-
     }
-
 }
