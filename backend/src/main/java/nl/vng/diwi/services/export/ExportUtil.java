@@ -15,7 +15,6 @@ import org.locationtech.proj4j.ProjCoordinate;
 
 import lombok.extern.log4j.Log4j2;
 import nl.vng.diwi.generic.Json;
-import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandExport;
 
 @Log4j2
 public class ExportUtil {
