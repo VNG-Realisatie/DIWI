@@ -1,5 +1,14 @@
 package nl.vng.diwi.services;
 
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.DataExchange;
 import nl.vng.diwi.dal.entities.DataExchangeOption;
@@ -9,7 +18,6 @@ import nl.vng.diwi.dal.entities.DataExchangePropertySqlModel;
 import nl.vng.diwi.dal.entities.DataExchangePropertyState;
 import nl.vng.diwi.dal.entities.DataExchangeState;
 import nl.vng.diwi.dal.entities.DataExchangeType;
-import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
 import nl.vng.diwi.dal.entities.Property;
 import nl.vng.diwi.dal.entities.PropertyCategoryValue;
 import nl.vng.diwi.dal.entities.PropertyOrdinalValue;
@@ -25,16 +33,8 @@ import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.services.export.geojson.GeoJSONExport;
 import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandExport;
-
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class DataExchangeService {
 
@@ -62,7 +62,6 @@ public class DataExchangeService {
 
         return model;
     }
-
 
     public UUID createDataExchange(VngRepository repo, DataExchangeModel model, ZonedDateTime zdtNow, UUID loggedUserUuid) {
 
@@ -226,12 +225,25 @@ public class DataExchangeService {
 
         Map<String, DataExchangePropertyModel> dxPropertiesMap = dataExchangeModel.getProperties().stream()
             .collect(Collectors.toMap(DataExchangePropertyModel::getName, Function.identity()));
-        List<ProjectExportSqlModel> projects = repo.getProjectsDAO().getProjectsExportList(dxExportModel, loggedUser);
 
         List<PropertyModel> customProps = repo.getPropertyDAO().getPropertiesList(null, false, null);
         return switch (dataExchangeModel.getType()) {
-            case ESRI_ZUID_HOLLAND -> EsriZuidHollandExport.buildExportObject(configModel, projects, customProps, dxPropertiesMap, dxExportModel.getExportDate(),
-                configModel.getMinimumExportConfidentiality(), errors);
+            case ESRI_ZUID_HOLLAND -> EsriZuidHollandExport.buildExportObject(
+                    configModel,
+                    repo.getProjectsDAO().getProjectsExportList(dxExportModel, loggedUser),
+                    customProps,
+                    dxPropertiesMap,
+                    dxExportModel.getExportDate(),
+                    configModel.getMinimumExportConfidentiality(),
+                    errors);
+            case GEO_JSON -> GeoJSONExport.buildExportObject(
+                    configModel,
+                    repo.getProjectsDAO().getProjectsExportListExtended(dxExportModel, loggedUser),
+                    customProps,
+                    dxPropertiesMap,
+                    dxExportModel.getExportDate(),
+                    configModel.getMinimumExportConfidentiality(),
+                    errors);
         };
 
     }
