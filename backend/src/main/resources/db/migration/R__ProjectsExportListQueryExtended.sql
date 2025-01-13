@@ -1,6 +1,6 @@
-DROP FUNCTION IF EXISTS diwi.get_projects_export_list_simplified;
+DROP FUNCTION IF EXISTS diwi.get_projects_export_list_extended;
 
-CREATE OR REPLACE FUNCTION diwi.get_projects_export_list_simplified (
+CREATE OR REPLACE FUNCTION diwi.get_projects_export_list_extended (
   _user_role_ text,
   _user_uuid_ uuid,
   _allowed_projects_ UUID[],
@@ -25,7 +25,6 @@ CREATE OR REPLACE FUNCTION diwi.get_projects_export_list_simplified (
         ordinalProperties JSONB,
         geometries TEXT[],
         houseblocks JSONB,
-        status TEXT,
         projectPhaseStartDateList JSONB,
         projectPlanStatusStartDateList JSONB
     )
@@ -52,7 +51,6 @@ SELECT  q.projectId,
         q.ordinalProperties,
         q.geometries,
         q.houseblocks,
-        q.status,
         q.projectPhaseStartDateList,
         q.projectPlanStatusStartDateList
 FROM (
@@ -518,8 +516,7 @@ FROM (
            poc.ordinal_properties   AS ordinalProperties,
            ppg.geometries           AS geometries,
            pph.houseblocks          AS houseblocks,
-           'REALIZED'               AS "status",
-           pphl.phase_history        AS projectPhaseStartDateList,
+           pphl.phase_history       AS projectPhaseStartDateList,
            ppshl.planstatus_history AS projectPlanStatusStartDateList
     FROM
         projects pp

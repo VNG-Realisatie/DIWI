@@ -1,7 +1,5 @@
 package nl.vng.diwi.services.export.zuidholland;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import nl.vng.diwi.dal.entities.DataExchangeType;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
@@ -19,8 +17,6 @@ import nl.vng.diwi.models.SingleValueOrRangeModel;
 import nl.vng.diwi.services.DataExchangeExportError;
 import nl.vng.diwi.services.export.ExportUtil;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.formula.eval.NotImplementedException;
 import org.geojson.Crs;
 import org.geojson.Feature;
@@ -54,10 +50,6 @@ import static nl.vng.diwi.services.export.zuidholland.EsriZuidHollandExport.Esri
 import static nl.vng.diwi.services.export.zuidholland.EsriZuidHollandExport.EsriZuidHollandProjectProps.woonplaats;
 
 public class EsriZuidHollandExport {
-
-    public static final Logger logger = LogManager.getLogger();
-
-    public static final ObjectMapper MAPPER = JsonMapper.builder().findAndAddModules().build();
 
     static final Map<String, DataExchangeTemplate.TemplateProperty> templatePropertyMap;
 

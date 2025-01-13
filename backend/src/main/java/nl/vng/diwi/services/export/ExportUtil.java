@@ -13,9 +13,10 @@ import org.locationtech.proj4j.CoordinateTransform;
 import org.locationtech.proj4j.CoordinateTransformFactory;
 import org.locationtech.proj4j.ProjCoordinate;
 
-import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
-import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandExport;
+import lombok.extern.log4j.Log4j2;
+import nl.vng.diwi.generic.Json;
 
+@Log4j2
 public class ExportUtil {
     static final CRSFactory crsFactory = new CRSFactory();
     static final CoordinateTransformFactory ctFactory = new CoordinateTransformFactory();
@@ -29,7 +30,7 @@ public class ExportUtil {
             FeatureCollection geometryObject;
 
             try {
-                geometryObject = EsriZuidHollandExport.MAPPER.readValue(geometryString, FeatureCollection.class);
+                geometryObject = Json.mapper.readValue(geometryString, FeatureCollection.class);
 
                 String sourceCrsName = getCompatibleCrsName(geometryObject);
 
@@ -53,11 +54,11 @@ public class ExportUtil {
 
                         multiPolygon.add(polygon);
                     } else {
-                        EsriZuidHollandExport.logger.error("Geometry for project id {} is not instance of Polygon: {}", projectId, geometryString);
+                        log.error("Geometry for project id {} is not instance of Polygon: {}", projectId, geometryString);
                     }
                 });
             } catch (IOException e) {
-                EsriZuidHollandExport.logger.error("Geometry for project id {} could not be deserialized into a FeatureCollection: {}", projectId,
+                log.error("Geometry for project id {} could not be deserialized into a FeatureCollection: {}", projectId,
                         geometryString);
             }
         }

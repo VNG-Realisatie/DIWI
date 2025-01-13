@@ -13,14 +13,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.GroundPosition;
 import nl.vng.diwi.dal.entities.enums.HouseType;
-import nl.vng.diwi.dal.entities.enums.MutationType;
-import nl.vng.diwi.dal.entities.enums.OwnershipType;
-import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.PlanType;
-import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.dal.entities.enums.ProjectStatus;
 
 @Data
@@ -52,10 +47,10 @@ public class GeoJsonExportModel {
         private ProjectLocation projectLocation;
         @Builder.Default
         @JsonProperty("projectfasen")
-        private Map<ProjectPhase, LocalDate> projectPhasesMap = new HashMap<>();
+        private Map<String, LocalDate> projectPhasesMap = new HashMap<>();
         @Builder.Default
         @JsonProperty("planologische_planstatus")
-        private Map<PlanStatus, LocalDate> projectPlanStatusesMap = new HashMap<>();
+        private Map<String, LocalDate> projectPlanStatusesMap = new HashMap<>();
         @Builder.Default
         @JsonProperty("maatwerk_projecteigenschappen")
         private Map<String, String> customPropertiesMap = new HashMap<>();
@@ -79,18 +74,16 @@ public class GeoJsonExportModel {
     public static class ProjectData {
         @JsonProperty("plan_soort")
         private PlanType planType;
-        @JsonProperty("in_programmering")
-        private Boolean programming;
         @JsonProperty("prioritering")
-        private String priority;
+        private List<String> priority;
         @JsonProperty("rol_gemeente")
-        private String municipalityRole;
+        private List<String> municipalityRole;
         @JsonProperty("status")
         private ProjectStatus status;
         @JsonProperty("eigenaar")
         private String owner;
         @JsonProperty("vertrouwelijkheid")
-        private Confidentiality confidentialityLevel;
+        private String confidentialityLevel;
     }
 
     @Data
@@ -132,8 +125,10 @@ public class GeoJsonExportModel {
         private MutationData mutationData;
         @JsonProperty("einddatum")
         private LocalDate endDate;
+        @JsonProperty("woning_type")
+        private BlockTypeData type;
         @JsonProperty("grootte")
-        private List<Object> size; //unused
+        private SizeData size;
         @JsonProperty("waarde")
         private List<OwnershipValueData> ownershipValue;
         @Builder.Default
@@ -154,9 +149,36 @@ public class GeoJsonExportModel {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class BlockTypeData {
+        @JsonProperty("meergezinswoning")
+        private Integer multipleFamily;
+        @JsonProperty("eengezinswoning")
+        private Integer singleFamily;
+        @JsonProperty("onbekend")
+        private Integer unknown;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SizeData {
+        @JsonProperty("laag")
+        private Double min;
+        @JsonProperty("hoog")
+        private Double max;
+        @JsonProperty("waarde")
+        private Double value;
+
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class MutationData {
         @JsonProperty("mutatie_type")
-        private MutationType mutationType;
+        private String mutationType;
         @JsonProperty("woning_type")
         private HouseType houseType;
         @JsonProperty("aantal")
@@ -198,6 +220,10 @@ public class GeoJsonExportModel {
         private Double value;
         @JsonProperty("eigendom_type")
         private String ownershipType;
+        @JsonProperty("categorie")
+        private String categorie;
+        @JsonProperty("aantal")
+        private Integer amount;
     }
 
 }

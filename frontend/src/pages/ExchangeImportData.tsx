@@ -57,7 +57,18 @@ export const ExchangeImportData = () => {
                                 .filter((exportItem) => exportItem.valid)
                                 .map((exportItem) => (
                                     <DataCardItem key={exportItem.id} text={exportItem.name} link={Paths.configuredExport.toPath({ exportId: exportItem.id })}>
-                                        <img src={zuidHollandIcon} height="125" width="125" alt="zuid-holland" />
+                                        <img
+                                            src={
+                                                exportItem.type === "ESRI_ZUID_HOLLAND"
+                                                    ? zuidHollandIcon
+                                                    : exportItem.type === "GEO_JSON"
+                                                      ? geojsonIcon
+                                                      : undefined
+                                            }
+                                            height="125"
+                                            width="125"
+                                            alt={exportItem.type === "ESRI_ZUID_HOLLAND" ? "zuid-holland" : "geojson"}
+                                        />
                                     </DataCardItem>
                                 ))}
                         </Stack>

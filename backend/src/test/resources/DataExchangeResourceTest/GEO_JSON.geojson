@@ -1,65 +1,66 @@
 {
     "type": "FeatureCollection",
-    "crs": { "type": "name", "properties": { "name": "EPSG:28992" } },
+    "crs": {
+        "type": "name",
+        "properties": {
+            "name": "EPSG:28992"
+        }
+    },
     "features": [
         {
             "type": "Feature",
             "properties": {
                 "projectgegevens": {
-                    "basisgegevens": { "identificatie_nr": null, "naam": "project name" },
+                    "basisgegevens": {
+                        "identificatie_nr": null,
+                        "naam": "project name"
+                    },
                     "projectgegevens": {
                         "plan_soort": null,
-                        "in_programmering": null,
-                        "prioritering": null,
-                        "rol_gemeente": null,
+                        "prioritering": [],
+                        "rol_gemeente": [],
                         "status": "ACTIVE",
                         "eigenaar": null,
-                        "vertrouwelijkheid": "EXTERNAL_GOVERNMENTAL"
+                        "vertrouwelijkheid": "Extern mede-overheden"
                     },
                     "projectduur": {
                         "start_project": "2024-12-30",
                         "eind_project": "2025-01-19"
                     },
-                    "locatie": { "gemeente": [], "wijk": [], "buurt": [] },
+                    "locatie": {
+                        "gemeente": [],
+                        "wijk": [],
+                        "buurt": []
+                    },
                     "projectfasen": {
-                        "_1_CONCEPT": null,
-                        "_2_INITIATIVE": null,
-                        "_3_DEFINITION": null,
-                        "_4_DESIGN": null,
-                        "_5_PREPARATION": null,
-                        "_6_REALIZATION": null,
-                        "_7_AFTERCARE": null
+                        "Voorbereiding": "2024-12-30"
                     },
-                    "planologische_planstatus": {
-                        "_4A_OPGENOMEN_IN_VISIE": null,
-                        "_4B_NIET_OPGENOMEN_IN_VISIE": null,
-                        "_3_IN_VOORBEREIDING": null,
-                        "_2A_VASTGESTELD": null,
-                        "_2B_VASTGESTELD_MET_UITWERKING_NODIG": null,
-                        "_2C_VASTGESTELD_MET_BW_NODIG": null,
-                        "_1A_ONHERROEPELIJK": null,
-                        "_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG": null,
-                        "_1C_ONHERROEPELIJK_MET_BW_NODIG": null
-                    },
+                    "planologische_planstatus": {},
                     "maatwerk_projecteigenschappen": {}
                 },
                 "woning_blokken": [
                     {
-                        "name": "block name",
+                        "naam": "block name",
+                        "in_programmering": null,
                         "mutatiegegevens": {
                             "mutatie_type": null,
                             "woning_type": null,
                             "aantal": null
                         },
                         "einddatum": "2025-01-19",
-                        "grootte": [],
+                        "woning_type": {
+                            "meergezinswoning": null,
+                            "eengezinswoning": null,
+                            "onbekend": 0
+                        },
+                        "grootte": null,
                         "waarde": [],
                         "fysiek_voorkomen": [],
                         "doelgroep": [],
                         "grondpositie": {
                             "GEEN_TOESTEMMING_GRONDEIGENAAR": null,
-                            "FORMELE_TOESTEMMING_GRONDEIGENAAR": null,
-                            "INTENTIE_MEDEWERKING_GRONDEIGENAAR": null
+                            "INTENTIE_MEDEWERKING_GRONDEIGENAAR": null,
+                            "FORMELE_TOESTEMMING_GRONDEIGENAAR": null
                         },
                         "maatwerk_woningeigenschappen": {}
                     }
