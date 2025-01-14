@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import { vi } from "vitest";
 import { getCustomProperties } from "../../../api/adminSettingServices";
 import { saveHouseBlockWithCustomProperties } from "../../../api/houseBlockServices";

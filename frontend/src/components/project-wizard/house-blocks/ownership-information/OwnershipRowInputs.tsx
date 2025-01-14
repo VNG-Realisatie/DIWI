@@ -6,8 +6,8 @@ import { OwnershipSingleValue } from "../../../../types/houseBlockTypes";
 import CategoryInput from "../../../project/inputs/CategoryInput";
 import RangeNumberInput from "../../../project/inputs/RangeNumberInput";
 import InputLabelStack from "../../../project/inputs/InputLabelStack";
-import { getCustomPropertiesWithQuery, Property } from "../../../../api/adminSettingServices";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useCustomPropertyStore } from "../../../../hooks/useCustomPropertyStore";
 
 const translationPath = "createProject.houseBlocksForm";
 
@@ -81,13 +81,9 @@ export const OwnershipRowInputs = ({
 }: Props) => {
     const isKoopwoning = ownership.type === "KOOPWONING";
     const isHuurwoning = ownership.type === "HUURWONING_PARTICULIERE_VERHUURDER" || ownership.type === "HUURWONING_WONINGCORPORATIE";
-    const [rangeCategories, setRangeCategories] = useState<Property[]>([]);
+    const { houseBlockCustomProperties } = useCustomPropertyStore();
 
-    useEffect(() => {
-        getCustomPropertiesWithQuery("WONINGBLOK").then((properties) => {
-            setRangeCategories(properties.filter((property) => !property.disabled && property.propertyType === "RANGE_CATEGORY"));
-        });
-    }, []);
+    const rangeCategories = houseBlockCustomProperties.filter((property) => !property.disabled && property.propertyType === "RANGE_CATEGORY");
 
     const filteredCategories = rangeCategories.filter((property) => {
         if (isKoopwoning && property.name === "priceRangeBuy") {
