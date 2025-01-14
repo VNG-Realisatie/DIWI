@@ -19,7 +19,7 @@ export const ArcgisAuthProvider = ({ children }: ArcgisAuthProviderProps) => {
     const clientId = "YOUR_CLIENT_ID"; // Move to .env
 
     const login = async (exportId: string) => {
-        const redirectUri = `http://localhost:3000/exchangedata/export/${exportId}`; // update
+        const redirectUri = `${window.location.origin}/exchangedata/export/${exportId}`;
         try {
             const manager = await ArcGISIdentityManager.beginOAuth2({
                 clientId,
@@ -38,7 +38,7 @@ export const ArcgisAuthProvider = ({ children }: ArcgisAuthProviderProps) => {
     };
 
     const handleRedirect = async (exportId: string) => {
-        const redirectUri = `http://localhost:3000/exchangedata/export/${exportId}`; // update
+        const redirectUri = `${window.location.origin}/exchangedata/export/${exportId}`;
         try {
             const manager = await ArcGISIdentityManager.completeOAuth2({
                 clientId,
