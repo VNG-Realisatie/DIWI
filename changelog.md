@@ -11,7 +11,7 @@
 ### CHANGED
 
 - Projects table was refactored, we are now using a component that can be used independantly over multiple pages
-- Changed the milestone proces to clean up old and unused milestones, as this could cause cobflicts when changing names and dates multiple times
+- Changed the milestone proces to clean up old and unused milestones, as this could cause conflicts when changing names and dates multiple times
 
 ### FIXED
 
