@@ -8,7 +8,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useTranslation } from "react-i18next";
 import { DeleteButtonWithConfirm } from "../components/DeleteButtonWithConfirm";
 import { deleteProject } from "../api/projectsServices";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { CreateHouseBlockDialog } from "../components/project/project-with-house-block/CreateHouseBlockDialog";
 import { HouseBlocksList } from "../components/project/project-with-house-block/HouseBlocksList";
 import { useHasEditPermission } from "../hooks/useHasEditPermission";
@@ -28,6 +28,9 @@ export const ProjectDetail = ({ children }: PropsWithChildren) => {
     const { allowedActions } = useContext(UserContext);
     const [openHouseBlockDialog, setOpenHouseBlockDialog] = useState(false);
     const { getEditPermission } = useHasEditPermission();
+
+    const location = useLocation();
+    const isAuditPage = location.pathname === Paths.projectAudit.toPath({ projectId: projectId || "" });
     return (
         <Stack direction="column" justifyContent="space-between" position="relative" border="solid 1px #ddd" mb={10}>
             <BreadcrumbBar
@@ -36,6 +39,7 @@ export const ProjectDetail = ({ children }: PropsWithChildren) => {
                     { title: t("projectDetail.map"), link: Paths.projectDetail.toPath({ projectId: projectId || "" }) },
                     { title: t("projectDetail.characteristics"), link: Paths.projectDetailCharacteristics.toPath({ projectId: projectId || "" }) },
                     { title: t("projectDetail.timeline"), link: Paths.projectDetailTimeline.toPath({ projectId: projectId || "" }) },
+                    { title: t("projectDetail.audit"), link: Paths.projectAudit.toPath({ projectId: projectId || "" }) },
                 ]}
             />
             <Accordion sx={{ width: "100%" }} key={projectId} disableGutters defaultExpanded>
@@ -47,7 +51,7 @@ export const ProjectDetail = ({ children }: PropsWithChildren) => {
                 >
                     <Typography variant="h5">{selectedProject?.projectName}</Typography>
                     <Box sx={{ marginLeft: "auto", marginTop: "5px", marginRight: "20px" }}>
-                        {selectedProject && allowedActions.includes("CREATE_NEW_PROJECT") && getEditPermission() && (
+                        {selectedProject && allowedActions.includes("CREATE_NEW_PROJECT") && getEditPermission() && !isAuditPage && (
                             <DeleteButtonWithConfirm
                                 typeAndName={`${t("generic.project")} ${selectedProject.projectName}`}
                                 iconColor={"#FFFFFF"}

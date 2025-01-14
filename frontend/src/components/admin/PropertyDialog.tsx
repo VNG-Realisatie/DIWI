@@ -3,31 +3,24 @@ import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Input
 import InfoIcon from "@mui/icons-material/Info";
 import { useTranslation } from "react-i18next";
 import AlertContext from "../../context/AlertContext";
-import {
-    getCustomProperty,
-    updateCustomProperty,
-    addCustomProperty,
-    CategoryType,
-    OrdinalCategoryType,
-    Property,
-    getCustomProperties,
-} from "../../api/adminSettingServices";
+import { getCustomProperty, CategoryType, OrdinalCategoryType, Property, CustomPropertyStoreType } from "../../api/adminSettingServices";
 import { ObjectType, PropertyType } from "../../types/enums";
 import { objectType } from "../../types/enums";
 import { CategoryCreateOption } from "./CategoryCreateOption";
 import { getDuplicatedPropertyInfo } from "../../utils/getDuplicatedPropertyInfo";
 import PropertyTypeSelect from "./PropertyTypeSelect";
 import PropertyCheckboxGroup from "./PropertyCheckboxGroup";
+import { observer } from "mobx-react-lite";
+import { useCustomPropertyStore } from "../../hooks/useCustomPropertyStore";
 
 interface Props {
     openDialog: boolean;
     setOpenDialog: (openDialog: boolean) => void;
     id?: string;
-    setCustomProperties: (cp: Property[]) => void;
     setId?: (id: string) => void;
 }
 
-const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCustomProperties, setId }) => {
+const PropertyDialog: React.FC<Props> = observer(({ openDialog, setOpenDialog, id, setId }) => {
     const [selectedObjectType, setSelectedObjectType] = useState<ObjectType>("PROJECT");
     const [selectedPropertyType, setSelectedPropertyType] = useState<PropertyType>("TEXT");
     const [active, setActive] = useState(false);
@@ -41,6 +34,7 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
     const [activeProperty, setActiveProperty] = useState<Property>();
     const [mandatory, setMandatory] = useState(false);
     const [singleSelect, setSingleSelect] = useState(false);
+    const { addCustomProperty, updateCustomProperty }: CustomPropertyStoreType = useCustomPropertyStore();
 
     const updateDialog = useCallback(
         (property: Property): void => {
@@ -106,8 +100,6 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
             const savedProperty = await (id ? updateCustomProperty(id, newProperty) : addCustomProperty(newProperty));
             setAlert(t("admin.settings.notifications.successfullySaved"), "success");
             updateDialog(savedProperty);
-            const customProperties = await getCustomProperties();
-            setCustomProperties(customProperties);
         } catch (error: unknown) {
             if (error instanceof Error) setAlert(error.message, "warning");
         } finally {
@@ -231,6 +223,6 @@ const PropertyDialog: React.FC<Props> = ({ openDialog, setOpenDialog, id, setCus
             </DialogActions>
         </Dialog>
     );
-};
+});
 
 export default PropertyDialog;

@@ -47,7 +47,9 @@ import ExportAdminPage from "./pages/ExportAdminPage";
 import ExportSettings from "./pages/ExportSettings";
 import ExportWizard from "./pages/ExportWizard";
 import ConfidentialityUpdateTable from "./pages/ConfidentialityUpdateTable";
+import ProjectAuditTable from "./pages/ProjectAudit";
 import { CategoriesProvider } from "./context/GoalCategoriesContext";
+import { CustomPropertyStoreProvider } from "./context/CustomPropertiesProvider";
 
 enum UserStatus {
     Authenticated,
@@ -159,7 +161,7 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
                     <AlertPopup />
                     <ScopedCssBaseline>
                         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="nl" dateFormats={dateFormats}>
-                            {children}
+                            <CustomPropertyStoreProvider>{children}</CustomPropertyStoreProvider>
                         </LocalizationProvider>
                     </ScopedCssBaseline>
                 </AlertProvider>
@@ -236,6 +238,16 @@ function App() {
                             element={
                                 <ProjectProvider>
                                     <ProjectPlotSelector wizard={true} />
+                                </ProjectProvider>
+                            }
+                        />
+                        <Route
+                            path={Paths.projectAudit.path}
+                            element={
+                                <ProjectProvider>
+                                    <ProjectDetail>
+                                        <ProjectAuditTable />
+                                    </ProjectDetail>
                                 </ProjectProvider>
                             }
                         />

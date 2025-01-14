@@ -11,27 +11,26 @@ import {
     GridColumnResizeParams,
     GridSlotsComponent,
 } from "@mui/x-data-grid";
-import { Project } from "../../api/projectsServices";
 
 type Props = {
     showCheckBox: boolean;
-    rows: Project[]; // any???
+    rows: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
     columns: GridColDef[];
-    setPaginationInfo: (model: GridPaginationModel) => void;
-    rowCount: number;
-    paginationMode: "client" | "server";
-    onRowClick: (params: GridRowParams) => void;
+    setPaginationInfo?: (model: GridPaginationModel) => void;
+    rowCount?: number;
+    paginationMode?: "client" | "server";
+    onRowClick?: (params: GridRowParams) => void;
     filterModel?: GridFilterModel;
-    handleFilterModelChange: (model: GridFilterModel) => void;
+    handleFilterModelChange?: (model: GridFilterModel) => void;
     sortModel?: GridSortModel;
-    handleSortModelChange: (model: GridSortModel) => void;
-    selectionModel: GridRowSelectionModel;
-    columnVisibilityModel: GridColumnVisibilityModel;
-    onColumnVisibilityModelChange: (model: GridColumnVisibilityModel) => void;
-    onRowSelectionModelChange: (model: GridRowSelectionModel) => void;
-    onColumnResize: (params: GridColumnResizeParams) => void;
-    localeText: GridLocaleText;
-    isRowSelectable: (params: GridRowParams) => boolean;
+    handleSortModelChange?: (model: GridSortModel) => void;
+    selectionModel?: GridRowSelectionModel;
+    columnVisibilityModel?: GridColumnVisibilityModel;
+    onColumnVisibilityModelChange?: (model: GridColumnVisibilityModel) => void;
+    onRowSelectionModelChange?: (model: GridRowSelectionModel) => void;
+    onColumnResize?: (params: GridColumnResizeParams) => void;
+    localeText?: GridLocaleText;
+    isRowSelectable?: (params: GridRowParams) => boolean;
     slots?: Partial<GridSlotsComponent>;
 };
 
@@ -41,7 +40,7 @@ const TableComponent = ({
     columns,
     setPaginationInfo,
     rowCount,
-    paginationMode,
+    paginationMode = "client",
     onRowClick,
     filterModel,
     handleFilterModelChange,
@@ -73,7 +72,7 @@ const TableComponent = ({
             }}
             pageSizeOptions={[5, 10, 25, 50, 100]}
             onPaginationModelChange={(model) => {
-                setPaginationInfo({ page: model.page + 1, pageSize: model.pageSize });
+                setPaginationInfo && setPaginationInfo({ page: model.page + 1, pageSize: model.pageSize });
             }}
             rowCount={rowCount}
             paginationMode={paginationMode}

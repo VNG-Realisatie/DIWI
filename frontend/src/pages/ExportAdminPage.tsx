@@ -7,12 +7,13 @@ import { addExportData, ExportData, getExportDataById, updateExportData, ExportP
 import useAlert from "../hooks/useAlert";
 import { useNavigate, useParams } from "react-router-dom";
 import ActionNotAllowed from "./ActionNotAllowed";
-import { getCustomProperties, Property } from "../api/adminSettingServices";
+import { Property } from "../api/adminSettingServices";
 import { CustomPropertyWidget } from "../components/CustomPropertyWidget";
 import { LabelComponent } from "../components/project/LabelComponent";
 import { exportSettings, updateExportSettings } from "../Paths";
 import UserContext from "../context/UserContext";
 import { doesPropertyMatchExportProperty } from "../utils/exportUtils";
+import { useCustomPropertyStore } from "../hooks/useCustomPropertyStore";
 
 type SelectedOption = {
     id: string;
@@ -38,6 +39,8 @@ type FormData = {
     [key: string]: string;
 };
 
+type ExportTypes = "ESRI_ZUID_HOLLAND" | "GEO_JSON";
+
 function ExportAdminPage() {
     const { t } = useTranslation();
     const { id } = useParams<string>();
@@ -47,14 +50,21 @@ function ExportAdminPage() {
         ESRI_ZUID_HOLLAND: {
             fields: [{ name: "name", label: t("admin.export.name"), type: "text", mandatory: true }],
         },
+        GEO_JSON: {
+            fields: [{ name: "name", label: t("admin.export.name"), type: "text", mandatory: true }],
+        },
         // Other types can be added here in the future
     };
-    const [type, setType] = useState<string>("ESRI_ZUID_HOLLAND");
+    const [type, setType] = useState<ExportTypes>("ESRI_ZUID_HOLLAND");
     const [formData, setFormData] = useState<FormData>(generateInitialState(type));
     const [properties, setProperties] = useState<ExportProperty[]>([]);
-    const [customProperties, setCustomProperties] = useState<Property[]>([]);
     const { setAlert } = useAlert();
     const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
+    const { customProperties: unfilteredCustomProperties, fetchCustomProperties } = useCustomPropertyStore();
+
+    useEffect(() => {
+        fetchCustomProperties();
+    }, [fetchCustomProperties]);
 
     useEffect(() => {
         if (id) {
@@ -68,12 +78,7 @@ function ExportAdminPage() {
         }
     }, [id]);
 
-    useEffect(() => {
-        getCustomProperties().then((properties) => {
-            const filteredProperties = properties.filter((property) => !property.disabled);
-            setCustomProperties(filteredProperties);
-        });
-    }, []);
+    const customProperties = unfilteredCustomProperties.filter((property) => !property.disabled);
 
     if (!allowedActions.includes("EDIT_DATA_EXCHANGES")) {
         return <ActionNotAllowed errorMessage={t("admin.export.actionNotAllowed")} />;
@@ -100,7 +105,7 @@ function ExportAdminPage() {
             const exportData: ExportData = {
                 id: id || "",
                 name: formData.name,
-                type: formData.type,
+                type: type,
                 ...(formData.apiKey && { apiKey: formData.apiKey }),
                 projectUrl: formData.projectUrl,
                 ...(id && { properties }),
@@ -164,12 +169,15 @@ function ExportAdminPage() {
             <Grid container spacing={2}>
                 <Grid item xs={12}>
                     <CategoryInput
-                        values={formData.type}
-                        setValue={(event, value) => setType(value)}
+                        values={type}
+                        setValue={(event, value) => setType(value.id)}
                         readOnly={false}
                         mandatory={true}
                         title="Type"
-                        options={[{ name: "ESRI_ZUID_HOLLAND", id: "ESRI_ZUID_HOLLAND" }]}
+                        options={[
+                            { name: t("admin.export.ESRI_ZUID_HOLLAND"), id: "ESRI_ZUID_HOLLAND" },
+                            { name: t("admin.export.GEO_JSON"), id: "GEO_JSON" },
+                        ]}
                         multiple={false}
                     />
                 </Grid>

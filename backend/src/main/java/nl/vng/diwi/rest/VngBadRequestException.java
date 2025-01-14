@@ -17,6 +17,7 @@ public class VngBadRequestException extends Exception implements ExceptionMapper
     }
 
     public VngBadRequestException(Object entity) {
+        super(entity.toString());
         this.entity = entity;
     }
 

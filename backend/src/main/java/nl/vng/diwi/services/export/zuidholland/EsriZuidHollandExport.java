@@ -1,7 +1,5 @@
 package nl.vng.diwi.services.export.zuidholland;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import nl.vng.diwi.dal.entities.DataExchangeType;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
@@ -17,17 +15,15 @@ import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.models.SelectModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
 import nl.vng.diwi.services.DataExchangeExportError;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import nl.vng.diwi.services.export.ExportUtil;
+
 import org.apache.poi.ss.formula.eval.NotImplementedException;
 import org.geojson.Crs;
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.geojson.MultiPolygon;
-import org.geojson.Polygon;
 import org.geojson.jackson.CrsType;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -55,10 +51,6 @@ import static nl.vng.diwi.services.export.zuidholland.EsriZuidHollandExport.Esri
 
 public class EsriZuidHollandExport {
 
-    private static final Logger logger = LogManager.getLogger();
-
-    private static final ObjectMapper MAPPER = JsonMapper.builder().findAndAddModules().build();
-
     static final Map<String, DataExchangeTemplate.TemplateProperty> templatePropertyMap;
 
     static {
@@ -67,14 +59,20 @@ public class EsriZuidHollandExport {
     }
 
 
-    public static FeatureCollection buildExportObject(ConfigModel configModel, List<ProjectExportSqlModel> projects,
-                                                      List<PropertyModel> customProps, Map<String, DataExchangePropertyModel> dxPropertiesMap, LocalDate exportDate,
-                                                      Confidentiality minConfidentiality, List<DataExchangeExportError> errors) {
+    public static FeatureCollection buildExportObject(
+            ConfigModel configModel,
+            List<ProjectExportSqlModel> projects,
+            List<PropertyModel> customProps,
+            Map<String, DataExchangePropertyModel> dxPropertiesMap,
+            LocalDate exportDate,
+            Confidentiality minConfidentiality,
+            List<DataExchangeExportError> errors) {
 
         FeatureCollection exportObject = new FeatureCollection();
         Crs crs = new Crs();
         crs.setType(CrsType.name);
-        crs.getProperties().put("name", "EPSG:3857");
+        String targetCrs = "EPSG:28992";
+        crs.getProperties().put("name", targetCrs);
         exportObject.setCrs(crs);
 
         PropertyModel priceRangeBuyFixedProp = customProps.stream()
@@ -87,7 +85,7 @@ public class EsriZuidHollandExport {
         Map<UUID, PropertyModel> customPropsMap = customProps.stream().collect(Collectors.toMap(PropertyModel::getId, Function.identity()));
 
         projects.forEach(project -> exportObject.add(getProjectFeature(configModel, project, customPropsMap, priceRangeBuyFixedProp, priceRangeRentFixedProp,
-            municipalityFixedProp, dxPropertiesMap, minConfidentiality, exportDate, errors)));
+            municipalityFixedProp, dxPropertiesMap, minConfidentiality, exportDate, errors, targetCrs)));
 
         return exportObject;
     }
@@ -95,27 +93,12 @@ public class EsriZuidHollandExport {
     private static Feature getProjectFeature(ConfigModel configModel, ProjectExportSqlModel project, Map<UUID, PropertyModel> customPropsMap,
                                              PropertyModel priceRangeBuyFixedProp, PropertyModel priceRangeRentFixedProp, PropertyModel municipalityFixedProp,
                                              Map<String, DataExchangePropertyModel> dxPropertiesMap, Confidentiality minConfidentiality, LocalDate exportDate,
-                                             List<DataExchangeExportError> errors) {
+                                             List<DataExchangeExportError> errors, String targetCrs) {
 
         Feature projectFeature = new Feature();
         projectFeature.setProperties(new LinkedHashMap<>());
 
-        MultiPolygon multiPolygon = new MultiPolygon();
-        for (String geometryString : project.getGeometries()) {
-            FeatureCollection geometryObject;
-            try {
-                geometryObject = MAPPER.readValue(geometryString, FeatureCollection.class);
-                geometryObject.getFeatures().forEach(f -> {
-                    if (f.getGeometry() instanceof Polygon) {
-                        multiPolygon.add((Polygon) f.getGeometry());
-                    } else {
-                        logger.error("Geometry for project id {} is not instance of Polygon: {}", project.getProjectId(), geometryString);
-                    }
-                });
-            } catch (IOException e) {
-                logger.error("Geometry for project id {} could not be deserialized into a FeatureCollection: {}", project.getProjectId(), geometryString);
-            }
-        }
+        MultiPolygon multiPolygon = ExportUtil.createPolygonForProject(project.getGeometries(), targetCrs, project.getProjectId());
         if (!multiPolygon.getCoordinates().isEmpty()) {
             projectFeature.setGeometry(multiPolygon);
         }
