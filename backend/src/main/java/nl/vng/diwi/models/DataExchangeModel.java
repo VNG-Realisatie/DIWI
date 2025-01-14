@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.With;
 import nl.vng.diwi.dal.entities.DataExchangeState;
 import nl.vng.diwi.dal.entities.DataExchangeType;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
@@ -20,6 +21,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Data
+@With
+@AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
 public class DataExchangeModel {
