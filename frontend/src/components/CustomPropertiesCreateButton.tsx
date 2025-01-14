@@ -1,6 +1,6 @@
 import { Box, Button } from "@mui/material";
 import { ImportErrorType } from "./ImportErrors";
-import { addCustomProperty, getCustomProperties, getCustomProperty, Property, updateCustomProperty } from "../api/adminSettingServices";
+import { getCustomProperty, Property } from "../api/adminSettingServices";
 import { useContext, useEffect, useState } from "react";
 import AlertContext from "../context/AlertContext";
 import { t } from "i18next";
@@ -9,6 +9,8 @@ import { MAX_INT_IN_DOUBLE } from "../widgets/constants";
 import { PropertyType } from "../types/enums";
 import PropertyTypeSelect from "./admin/PropertyTypeSelect";
 import PropertyCheckboxGroup from "./admin/PropertyCheckboxGroup";
+import { useCustomPropertyStore } from "../hooks/useCustomPropertyStore";
+import { observer } from "mobx-react-lite";
 
 type RangeNumber = {
     value: number | null;
@@ -42,14 +44,10 @@ const property: Property = {
     ranges: undefined,
 };
 
-export default function CustomPropertiesCreateButton({ error, isButtonDisabledMap, setIsButtonDisabledMap }: Props) {
+const CustomPropertiesCreateButton = observer(({ error, isButtonDisabledMap, setIsButtonDisabledMap }: Props) => {
     const { setAlert } = useContext(AlertContext);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [categoricalProperty, setCategoricalProperty] = useState<Property | null>(null);
-
-    const [priceRangeRentCategories, setPriceRangeRentCategories] = useState<Property[]>([]);
-    const [priceRangeBuyCategories, setPriceRangeBuyCategories] = useState<Property[]>([]);
-    const [customProperties, setCustomProperties] = useState<Property[]>([]);
 
     const [rangeValue, setRangeValue] = useState<RangeNumber>({ value: 0, min: null, max: null });
     const [isRangeValid, setIsRangeValid] = useState<boolean>(true);
@@ -58,22 +56,16 @@ export default function CustomPropertiesCreateButton({ error, isButtonDisabledMa
     const [mandatory, setMandatory] = useState(false);
     const [singleSelect, setSingleSelect] = useState<boolean | undefined>(false);
 
-    const priceRangeRentId = customProperties.find((property) => property.name === "priceRangeRent")?.id;
-    const priceRangeBuyId = customProperties.find((property) => property.name === "priceRangeBuy")?.id;
+    const { updateCustomProperty, customProperties, addCustomProperty, fetchCustomProperties } = useCustomPropertyStore();
+    const priceRangeBuyCategories = customProperties.filter((property) => property.name === "priceRangeBuy") || [];
+    const priceRangeRentCategories = customProperties.filter((property) => property.name === "priceRangeRent") || [];
 
+    const priceRangeRentId = priceRangeRentCategories[0]?.id;
+    const priceRangeBuyId = priceRangeBuyCategories[0]?.id;
 
     useEffect(() => {
-        const fetchCustomProperties = async () => {
-            const customProperties = await getCustomProperties();
-            setCustomProperties(customProperties);
-            const rentCategories = customProperties.filter((property) => property.name === "priceRangeRent");
-            const buyCategories = customProperties.filter((property) => property.name === "priceRangeBuy");
-            setPriceRangeRentCategories(rentCategories);
-            setPriceRangeBuyCategories(buyCategories);
-        };
-
         fetchCustomProperties();
-    }, [isButtonDisabled]);
+    }, [fetchCustomProperties]);
 
     useEffect(() => {
         const fetchCustomProperty = async () => {
@@ -279,4 +271,6 @@ export default function CustomPropertiesCreateButton({ error, isButtonDisabledMa
             </Button>
         </Box>
     ) : null;
-}
+});
+
+export default CustomPropertiesCreateButton;

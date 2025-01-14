@@ -3,7 +3,8 @@ import { HouseBlockWithCustomProperties } from "../types/houseBlockTypes";
 import ProjectContext from "./ProjectContext";
 import * as houseBlockService from "../api/houseBlockServices";
 import { useCustomPropertyDefinitions } from "../hooks/useCustomPropertyDefinitions";
-import { getCustomPropertiesWithQuery, Property } from "../api/adminSettingServices";
+import { Property } from "../api/adminSettingServices";
+import { useCustomPropertyStore } from "../hooks/useCustomPropertyStore";
 
 type HouseBlockContextType = {
     houseBlocks: HouseBlockWithCustomProperties[];
@@ -64,15 +65,9 @@ export const HouseBlockProvider = ({ children }: PropsWithChildren) => {
 
     const { projectId, selectedProject } = useContext(ProjectContext);
     const { physicalAppearanceCategories, targetGroupCategories } = useCustomPropertyDefinitions();
-    const [nonFixedCustomDefinitions, setNonFixedCustomDefinitions] = useState<Property[]>([]);
+    const { houseBlockCustomProperties } = useCustomPropertyStore();
 
-    useEffect(() => {
-        getCustomPropertiesWithQuery("WONINGBLOK").then((properties) => {
-            setNonFixedCustomDefinitions(
-                properties.filter((property) => !property.disabled && property.type !== "FIXED")
-            );
-        });
-    }, []);
+    const nonFixedCustomDefinitions = houseBlockCustomProperties.filter((property) => !property.disabled && property.type !== "FIXED");
 
     const refresh = useCallback(() => {
         if (!projectId) {
