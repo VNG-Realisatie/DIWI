@@ -1,5 +1,15 @@
 # Change log
 
+## DIWI RELEASE 1.9.0
+
+## ADDED
+
+### CHANGED
+
+### FIXED
+
+### REMOVED
+
 ## DIWI RELEASE 1.8.1
 
 ### CHANGED
