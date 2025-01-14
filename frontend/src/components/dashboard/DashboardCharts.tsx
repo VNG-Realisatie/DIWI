@@ -137,10 +137,12 @@ export const DashboardCharts = ({
                 return acc;
             }, {});
 
-            const phaseCountsArray = Object.entries(phaseCounts).map(([label, value]) => ({
-                label: t(`dashboard.projectPhaseOptions.${label}`),
-                value,
-            }));
+            const phaseCountsArray = Object.entries(phaseCounts)
+                .filter((entry) => entry[0] !== "null")
+                .map(([label, value]) => ({
+                    label: t(`dashboard.projectPhaseOptions.${label}`),
+                    value,
+                }));
             //@ts-expect-error type error
             setProjectPhaseSums(phaseCountsArray);
         });
