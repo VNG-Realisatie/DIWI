@@ -1,9 +1,11 @@
 package nl.vng.diwi.services.export.excel;
 
 import jakarta.ws.rs.core.StreamingOutput;
-import nl.vng.diwi.dal.entities.ProjectExportSqlModelPlus;
+import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.MutationType;
+import nl.vng.diwi.dal.entities.enums.PlanStatus;
+import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.dal.entities.enums.PropertyKind;
 import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.models.PropertyModel;
@@ -13,7 +15,9 @@ import nl.vng.diwi.services.ExcelStrings;
 import nl.vng.diwi.services.ExcelTableHeader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -26,8 +30,11 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -41,7 +48,7 @@ public class ExcelExport {
     public static String PROJECT_SHEET_NAME = "Data";
 
         static public StreamingOutput buildExportObject(
-            List<ProjectExportSqlModelPlus> projects,
+            List<ProjectExportSqlModelExtended> projects,
             List<PropertyModel> customProps,
             Confidentiality minConfidentiality,
             List<DataExchangeExportError> errors) {
@@ -55,37 +62,49 @@ public class ExcelExport {
 
             Sheet sheet = workbook.getSheet(PROJECT_SHEET_NAME);
 
-            CreationHelper createHelper = workbook.getCreationHelper();
-            short dateFormat = createHelper.createDataFormat().getFormat("mm/dd/yyyy");
-            short doubleFormat = createHelper.createDataFormat().getFormat("0.00");
-            short integerFormat = createHelper.createDataFormat().getFormat("0");
-            short stringFormat = createHelper.createDataFormat().getFormat("General");
+            ExcelExportCellStyles styles = new ExcelExportCellStyles(workbook);
 
             ExcelExportTemplateColumns header = new ExcelExportTemplateColumns();
 
             Set<UUID> projectCustomPropIds = new HashSet<>();
+            Set<LocalDate> hhDeliveryDatesSet = new HashSet<>();
             projects.forEach(p -> {
                 p.getBooleanProperties().forEach(prop -> projectCustomPropIds.add(prop.getPropertyId()));
                 p.getTextProperties().forEach(prop -> projectCustomPropIds.add(prop.getPropertyId()));
                 p.getCategoryProperties().forEach(prop -> projectCustomPropIds.add(prop.getPropertyId()));
                 p.getNumericProperties().forEach(prop -> projectCustomPropIds.add(prop.getPropertyId()));
+                p.getOrdinalProperties().forEach(prop -> projectCustomPropIds.add(prop.getPropertyId()));
+                p.getHouseblocks().forEach(h -> hhDeliveryDatesSet.add(h.getEndDate()));
             });
             List<PropertyModel> projectCustomProps = customProps.stream().filter(cp -> cp.getType() == PropertyKind.CUSTOM && projectCustomPropIds.contains(cp.getId()))
                 .sorted(Comparator.comparing(PropertyModel::getName)).toList();
+            List<LocalDate> hbDeliveryDates = hhDeliveryDatesSet.stream().sorted().toList();
 
             for (int i = ExcelExportTemplateColumns.PROJECT_CUSTOM_PROPS_COLUMNS_DEFAULT; i < projectCustomProps.size(); i++) {
-                int newColumnIndex = header.insertColumn(ExcelTableHeader.Column.PROJECT_CUSTOM_PROPERTY);
+                int newColumnIndex = header.insertColumn(ExcelTableHeader.Section.PROJECT_DATA, ExcelTableHeader.Column.PROJECT_CUSTOM_PROPERTY);
+                insertNewColumnBefore(sheet, newColumnIndex);
+            }
+            for (int i = ExcelExportTemplateColumns.HOUSEBLOCK_DELIVERY_DATES_COLUMNS_DEFAULT; i < hbDeliveryDates.size(); i++) {
+                int newColumnIndex = header.insertColumn(ExcelTableHeader.Section.CONSTRUCTION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_DELIVERY_DATE);
+                insertNewColumnBefore(sheet, newColumnIndex);
+            }
+            for (int i = ExcelExportTemplateColumns.HOUSEBLOCK_DELIVERY_DATES_COLUMNS_DEFAULT; i < hbDeliveryDates.size(); i++) {
+                int newColumnIndex = header.insertColumn(ExcelTableHeader.Section.DEMOLITION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_DELIVERY_DATE);
                 insertNewColumnBefore(sheet, newColumnIndex);
             }
 
             Row suhheaderRow = sheet.getRow(4);
             int projectCpCount = 0;
+            int hbConstructionDDCount = 0;
+            int hbDemolitionDDCount = 0;
             for (var h : header.templateTableHeaders) {
                 if (h.getColumn() == ExcelTableHeader.Column.PROJECT_CUSTOM_PROPERTY) {
-                    h.setPropertyModel(projectCustomProps.get(projectCpCount));
-                    h.setSubheader(h.getPropertyModel().getName());
-                    createCellWithValue(suhheaderRow, h.getColumnIndex(), h.getSubheader(), stringFormat);
-                    projectCpCount++;
+                    if (projectCpCount < projectCustomProps.size()) {
+                        h.setPropertyModel(projectCustomProps.get(projectCpCount));
+                        h.setSubheader(h.getPropertyModel().getName());
+                        createCellWithValue(suhheaderRow, h.getColumnIndex(), h.getSubheader(), styles, null);
+                        projectCpCount++;
+                    }
                 } else if (h.getColumn() == ExcelTableHeader.Column.PROJECT_MUNICIPALITY) {
                     h.setPropertyModel(customProps.stream()
                         .filter(cp -> cp.getType() == PropertyKind.FIXED && cp.getName().equals(Constants.FIXED_PROPERTY_MUNICIPALITY))
@@ -106,6 +125,18 @@ public class ExcelExport {
                     h.setPropertyModel(customProps.stream()
                         .filter(cp -> cp.getType() == PropertyKind.FIXED && cp.getName().equals(Constants.FIXED_PROPERTY_PRIORITY))
                         .findFirst().orElse(null));
+                } else if (h.getColumn() == ExcelTableHeader.Column.HOUSEBLOCK_DELIVERY_DATE && h.getSection() == ExcelTableHeader.Section.CONSTRUCTION_DATA) {
+                    if (hbConstructionDDCount < hbDeliveryDates.size()) {
+                        h.setSubheaderDateValue(hbDeliveryDates.get(hbConstructionDDCount));
+                        createCellWithValue(suhheaderRow, h.getColumnIndex(), h.getSubheaderDateValue(), styles, null);
+                        hbConstructionDDCount++;
+                    }
+                } else if (h.getColumn() == ExcelTableHeader.Column.HOUSEBLOCK_DELIVERY_DATE && h.getSection() == ExcelTableHeader.Section.DEMOLITION_DATA) {
+                    if (hbDemolitionDDCount < hbDeliveryDates.size()) {
+                        h.setSubheaderDateValue(hbDeliveryDates.get(hbDemolitionDDCount));
+                        createCellWithValue(suhheaderRow, h.getColumnIndex(), h.getSubheaderDateValue(), styles, null);
+                        hbDemolitionDDCount++;
+                    }
                 }
             }
 
@@ -116,7 +147,7 @@ public class ExcelExport {
                     if (row == null) {
                         row = sheet.createRow(rowCount);
                     }
-                    createProjectCells(header, row, project, stringFormat, dateFormat, integerFormat, doubleFormat);
+                    createProjectCells(header, row, project, styles);
                     rowCount++;
                 } else {
                     for (var houseblock : project.getHouseblocks()) {
@@ -124,8 +155,8 @@ public class ExcelExport {
                         if (row == null) {
                             row = sheet.createRow(rowCount);
                         }
-                        createProjectCells(header, row, project, stringFormat, dateFormat, integerFormat, doubleFormat);
-                        createHouseblockCells(header, row, houseblock, stringFormat, dateFormat, integerFormat, doubleFormat);
+                        createProjectCells(header, row, project, styles);
+                        createHouseblockCells(header, row, houseblock, styles);
                         rowCount++;
                     }
                 }
@@ -150,61 +181,139 @@ public class ExcelExport {
         return null;
     }
 
-    private static void createProjectCells(ExcelExportTemplateColumns header, Row row, ProjectExportSqlModelPlus project,
-                                           short stringFormat, short dateFormat, short integerFormat, short doubleFormat) {
+    private static void createProjectCells(ExcelExportTemplateColumns header, Row row, ProjectExportSqlModelExtended project, ExcelExportCellStyles styles) {
 
             for (var columnHeader : header.templateTableHeaders) {
                 switch (columnHeader.getColumn()) {
-                    case PROJECT_ID -> createCellWithValue(row, columnHeader.getColumnIndex(), project.getProjectId().toString(), stringFormat);
-                    case PROJECT_NAME -> createCellWithValue(row, columnHeader.getColumnIndex(), project.getName(), stringFormat);
+                    case PROJECT_ID -> createCellWithValue(row, columnHeader.getColumnIndex(), project.getProjectId().toString(), styles,
+                        CellStyleType.getCellStyleType(CellContentType.STRING, columnHeader.getBorderStyle()));
+                    case PROJECT_NAME -> createCellWithValue(row, columnHeader.getColumnIndex(), project.getName(), styles,
+                        CellStyleType.getCellStyleType(CellContentType.STRING, columnHeader.getBorderStyle()));
 //                    case PROJECT_OWNER -> //TODO
-                    case PROJECT_CONFIDENTIALITY -> createCellWithValue(row, columnHeader.getColumnIndex(), ExcelStrings.getExcelStringFromEnumValue(project.getConfidentiality().name()), stringFormat);
+                    case PROJECT_CONFIDENTIALITY -> createCellWithValue(row, columnHeader.getColumnIndex(), ExcelStrings.getExcelStringFromEnumValue(project.getConfidentiality().name()),
+                        styles, CellStyleType.getCellStyleType(CellContentType.STRING, columnHeader.getBorderStyle()));
                     case PROJECT_PLAN_TYPE -> {
                         if (project.getPlanType() != null && !project.getPlanType().isEmpty()) {
                             List<String> planTypes = project.getPlanType().stream().map(pt -> ExcelStrings.getExcelStringFromEnumValue(pt.name())).toList();
-                            createCellWithValue(row, columnHeader.getColumnIndex(), String.join(", ", planTypes), stringFormat);
+                            createCellWithValue(row, columnHeader.getColumnIndex(), String.join(", ", planTypes), styles,
+                                CellStyleType.getCellStyleType(CellContentType.STRING, columnHeader.getBorderStyle()));
                         }
                     }
 //                    case PROJECT_PRIORITY -> TODO
-                    case PROJECT_STATUS -> createCellWithValue(row, columnHeader.getColumnIndex(), ExcelStrings.getExcelStringFromEnumValue(project.getStatus().name()), (short) 0);
-                    case PROJECT_START_DATE -> createCellWithValue(row, columnHeader.getColumnIndex(), project.getStartDate(), dateFormat);
-                    case PROJECT_END_DATE -> createCellWithValue(row, columnHeader.getColumnIndex(), project.getEndDate(), dateFormat);
+//                    case PROJECT_STATUS -> createCellWithValue(row, columnHeader.getColumnIndex(), ExcelStrings.getExcelStringFromEnumValue(project.getStatus().name()), (short) 0);
+                    case PROJECT_START_DATE -> createCellWithValue(row, columnHeader.getColumnIndex(), project.getStartDate(), styles,
+                        CellStyleType.getCellStyleType(CellContentType.DATE, columnHeader.getBorderStyle()));
+                    case PROJECT_END_DATE -> createCellWithValue(row, columnHeader.getColumnIndex(), project.getEndDate(), styles,
+                        CellStyleType.getCellStyleType(CellContentType.DATE, columnHeader.getBorderStyle()));
+
+                    case PROJECT_PHASE_1_CONCEPT -> project.getProjectPhaseStartDateList().stream()
+                            .filter(pph -> pph.getStartDate() != null && pph.getProjectPhase() == ProjectPhase._1_CONCEPT).findFirst()
+                            .ifPresent(pph -> createCellWithValue(row, columnHeader.getColumnIndex(), pph.getStartDate(), styles,
+                                CellStyleType.getCellStyleType(CellContentType.DATE, columnHeader.getBorderStyle())));
+                    case PROJECT_PHASE_2_INITIATIVE -> project.getProjectPhaseStartDateList().stream()
+                            .filter(pph -> pph.getStartDate() != null && pph.getProjectPhase() == ProjectPhase._2_INITIATIVE).findFirst()
+                            .ifPresent(pph -> createCellWithValue(row, columnHeader.getColumnIndex(), pph.getStartDate(), styles,
+                                CellStyleType.getCellStyleType(CellContentType.DATE, columnHeader.getBorderStyle())));
+                    case PROJECT_PHASE_3_DEFINITION -> project.getProjectPhaseStartDateList().stream()
+                            .filter(pph -> pph.getStartDate() != null && pph.getProjectPhase() == ProjectPhase._3_DEFINITION).findFirst()
+                            .ifPresent(pph -> createCellWithValue(row, columnHeader.getColumnIndex(), pph.getStartDate(), styles,
+                                CellStyleType.getCellStyleType(CellContentType.DATE, columnHeader.getBorderStyle())));
+                    case PROJECT_PHASE_4_DESIGN -> project.getProjectPhaseStartDateList().stream()
+                            .filter(pph -> pph.getStartDate() != null && pph.getProjectPhase() == ProjectPhase._4_DESIGN).findFirst()
+                            .ifPresent(pph -> createCellWithValue(row, columnHeader.getColumnIndex(), pph.getStartDate(), styles,
+                                CellStyleType.getCellStyleType(CellContentType.DATE, columnHeader.getBorderStyle())));
+                    case PROJECT_PHASE_5_PREPARATION -> project.getProjectPhaseStartDateList().stream()
+                            .filter(pph -> pph.getStartDate() != null && pph.getProjectPhase() == ProjectPhase._5_PREPARATION).findFirst()
+                            .ifPresent(pph -> createCellWithValue(row, columnHeader.getColumnIndex(), pph.getStartDate(), styles,
+                                CellStyleType.getCellStyleType(CellContentType.DATE, columnHeader.getBorderStyle())));
+                    case PROJECT_PHASE_6_REALIZATION -> project.getProjectPhaseStartDateList().stream()
+                            .filter(pph -> pph.getStartDate() != null && pph.getProjectPhase() == ProjectPhase._6_REALIZATION).findFirst()
+                            .ifPresent(pph -> createCellWithValue(row, columnHeader.getColumnIndex(), pph.getStartDate(), styles,
+                                CellStyleType.getCellStyleType(CellContentType.DATE, columnHeader.getBorderStyle())));
+                    case PROJECT_PHASE_7_AFTERCARE -> project.getProjectPhaseStartDateList().stream()
+                            .filter(pph -> pph.getStartDate() != null && pph.getProjectPhase() == ProjectPhase._7_AFTERCARE).findFirst()
+                            .ifPresent(pph -> createCellWithValue(row, columnHeader.getColumnIndex(), pph.getStartDate(), styles,
+                                CellStyleType.getCellStyleType(CellContentType.DATE, columnHeader.getBorderStyle())));
+
+
+                    case PROJECT_PLAN_STATUS_1A_ONHERROEPELIJK -> project.getProjectPlanStatusStartDateList().stream()
+                            .filter(pps -> pps.getStartDate() != null && pps.getPlanStatus() == PlanStatus._1A_ONHERROEPELIJK).findFirst()
+                            .ifPresent(pps -> createCellWithValue(row, columnHeader.getColumnIndex(), pps.getStartDate(), styles,
+                                CellStyleType.getCellStyleType(CellContentType.DATE, columnHeader.getBorderStyle())));
+                    case PROJECT_PLAN_STATUS_1B_ONHERROEPELIJK_MET_UITWERKING_NODIG -> project.getProjectPlanStatusStartDateList().stream()
+                            .filter(pps -> pps.getStartDate() != null && pps.getPlanStatus() == PlanStatus._1B_ONHERROEPELIJK_MET_UITWERKING_NODIG).findFirst()
+                            .ifPresent(pps -> createCellWithValue(row, columnHeader.getColumnIndex(), pps.getStartDate(), styles,
+                                CellStyleType.getCellStyleType(CellContentType.DATE, columnHeader.getBorderStyle())));
+                    case PROJECT_PLAN_STATUS_1C_ONHERROEPELIJK_MET_BW_NODIG -> project.getProjectPlanStatusStartDateList().stream()
+                            .filter(pps -> pps.getStartDate() != null && pps.getPlanStatus() == PlanStatus._1C_ONHERROEPELIJK_MET_BW_NODIG).findFirst()
+                            .ifPresent(pps -> createCellWithValue(row, columnHeader.getColumnIndex(), pps.getStartDate(), styles,
+                                CellStyleType.getCellStyleType(CellContentType.DATE, columnHeader.getBorderStyle())));
+                    case PROJECT_PLAN_STATUS_2A_VASTGESTELD -> project.getProjectPlanStatusStartDateList().stream()
+                            .filter(pps -> pps.getStartDate() != null && pps.getPlanStatus() == PlanStatus._2A_VASTGESTELD).findFirst()
+                            .ifPresent(pps -> createCellWithValue(row, columnHeader.getColumnIndex(), pps.getStartDate(), styles,
+                                CellStyleType.getCellStyleType(CellContentType.DATE, columnHeader.getBorderStyle())));
+                    case PROJECT_PLAN_STATUS_2B_VASTGESTELD_MET_UITWERKING_NODIG -> project.getProjectPlanStatusStartDateList().stream()
+                            .filter(pps -> pps.getStartDate() != null && pps.getPlanStatus() == PlanStatus._2B_VASTGESTELD_MET_UITWERKING_NODIG).findFirst()
+                            .ifPresent(pps -> createCellWithValue(row, columnHeader.getColumnIndex(), pps.getStartDate(), styles,
+                                CellStyleType.getCellStyleType(CellContentType.DATE, columnHeader.getBorderStyle())));
+                    case PROJECT_PLAN_STATUS_2C_VASTGESTELD_MET_BW_NODIG -> project.getProjectPlanStatusStartDateList().stream()
+                            .filter(pps -> pps.getStartDate() != null && pps.getPlanStatus() == PlanStatus._2C_VASTGESTELD_MET_BW_NODIG).findFirst()
+                            .ifPresent(pps -> createCellWithValue(row, columnHeader.getColumnIndex(), pps.getStartDate(), styles,
+                                CellStyleType.getCellStyleType(CellContentType.DATE, columnHeader.getBorderStyle())));
+                    case PROJECT_PLAN_STATUS_3_IN_VOORBEREIDING -> project.getProjectPlanStatusStartDateList().stream()
+                            .filter(pps -> pps.getStartDate() != null && pps.getPlanStatus() == PlanStatus._3_IN_VOORBEREIDING).findFirst()
+                            .ifPresent(pps -> createCellWithValue(row, columnHeader.getColumnIndex(), pps.getStartDate(), styles,
+                                CellStyleType.getCellStyleType(CellContentType.DATE, columnHeader.getBorderStyle())));
+                    case PROJECT_PLAN_STATUS_4A_OPGENOMEN_IN_VISIE -> project.getProjectPlanStatusStartDateList().stream()
+                            .filter(pps -> pps.getStartDate() != null && pps.getPlanStatus() == PlanStatus._4A_OPGENOMEN_IN_VISIE).findFirst()
+                            .ifPresent(pps -> createCellWithValue(row, columnHeader.getColumnIndex(), pps.getStartDate(), styles,
+                                CellStyleType.getCellStyleType(CellContentType.DATE, columnHeader.getBorderStyle())));
+                    case PROJECT_PLAN_STATUS_4B_NIET_OPGENOMEN_IN_VISIE -> project.getProjectPlanStatusStartDateList().stream()
+                            .filter(pps -> pps.getStartDate() != null && pps.getPlanStatus() == PlanStatus._4B_NIET_OPGENOMEN_IN_VISIE).findFirst()
+                            .ifPresent(pps -> createCellWithValue(row, columnHeader.getColumnIndex(), pps.getStartDate(), styles,
+                                CellStyleType.getCellStyleType(CellContentType.DATE, columnHeader.getBorderStyle())));
 
                     case PROJECT_MUNICIPALITY_ROLE, PROJECT_MUNICIPALITY, PROJECT_DISTRICT, PROJECT_NEIGHBOURHOOD, PROJECT_CUSTOM_PROPERTY -> {
                         switch (columnHeader.getPropertyModel().getPropertyType()) {
                             case TEXT -> project.getTextProperties().stream()
                                 .filter(tp -> tp.getPropertyId().equals(columnHeader.getPropertyModel().getId())).findFirst()
-                                .ifPresent(tpm -> createCellWithValue(row, columnHeader.getColumnIndex(), tpm.getTextValue(), stringFormat));
+                                .ifPresent(tpm -> createCellWithValue(row, columnHeader.getColumnIndex(), tpm.getTextValue(), styles,
+                                    CellStyleType.getCellStyleType(CellContentType.STRING, columnHeader.getBorderStyle())));
                             case CATEGORY -> project.getCategoryProperties().stream()
                                 .filter(cp -> cp.getPropertyId().equals(columnHeader.getPropertyModel().getId())).findFirst()
                                 .ifPresent(cpm -> {
                                     List<String> cats = columnHeader.getPropertyModel().getCategories().stream()
                                         .filter(c -> c.getDisabled() == Boolean.FALSE && cpm.getOptionValues().contains(c.getId()))
                                         .map(SelectModel::getName).sorted().toList();
-                                    createCellWithValue(row, columnHeader.getColumnIndex(), String.join(", ", cats), stringFormat);
+                                    createCellWithValue(row, columnHeader.getColumnIndex(), String.join(", ", cats), styles,
+                                        CellStyleType.getCellStyleType(CellContentType.STRING, columnHeader.getBorderStyle()));
                                 });
                             case NUMERIC -> project.getNumericProperties().stream()
                                 .filter(np -> np.getPropertyId().equals(columnHeader.getPropertyModel().getId())).findFirst()
                                 .ifPresent(npm -> {
                                     if (npm.getValue() != null) {
                                         if (isIntegerValue(npm.getValue())) {
-                                            createCellWithValue(row, columnHeader.getColumnIndex(), npm.getValue().longValue(), integerFormat);
+                                            createCellWithValue(row, columnHeader.getColumnIndex(), npm.getValue().longValue(), styles,
+                                                CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
                                         } else {
-                                            createCellWithValue(row, columnHeader.getColumnIndex(), npm.getValue().doubleValue(), doubleFormat);
+                                            createCellWithValue(row, columnHeader.getColumnIndex(), npm.getValue().doubleValue(), styles,
+                                                CellStyleType.getCellStyleType(CellContentType.DOUBLE, columnHeader.getBorderStyle()));
                                         }
                                     }
                                 });
                             case BOOLEAN -> project.getBooleanProperties().stream()//TODO
                                 .filter(bp -> bp.getPropertyId().equals(columnHeader.getPropertyModel().getId())).findFirst()
-                                .ifPresent(bpm -> createCellWithValue(row, columnHeader.getColumnIndex(), bpm.getBooleanValue().toString(), stringFormat));
+                                .ifPresent(bpm -> createCellWithValue(row, columnHeader.getColumnIndex(), bpm.getBooleanValue().toString(), styles,
+                                    CellStyleType.getCellStyleType(CellContentType.STRING, columnHeader.getBorderStyle())));
+//                            case ORDINAL -> TODO
                         }
                     }
                 }
             }
     }
 
-    private static void createHouseblockCells(ExcelExportTemplateColumns header, Row row, ProjectExportSqlModelPlus.HouseblockExportSqlModel houseblock,
-                                              short stringFormat, short dateFormat, short integerFormat, short doubleFormat) {
+    private static void createHouseblockCells(ExcelExportTemplateColumns header, Row row, ProjectExportSqlModelExtended.HouseblockExportSqlModel houseblock,
+                                              ExcelExportCellStyles styles) {
         for (var columnHeader : header.templateTableHeaders) {
 
             MutationType sectionMutationKind = null;
@@ -220,16 +329,28 @@ public class ExcelExport {
 //                    case PROJECT_PROGRAMMING ->
                     case HOUSEBLOCK_MUTATION_BUILD -> {
                         if (houseblock.getMutationKind() == MutationType.CONSTRUCTION) {
-                            createCellWithValue(row, columnHeader.getColumnIndex(), houseblock.getMutationAmount(), integerFormat);
+                            createCellWithValue(row, columnHeader.getColumnIndex(), houseblock.getMutationAmount(), styles,
+                                CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
                         }
                     }
                     case HOUSEBLOCK_MUTATION_DEMOLISH -> {
                         if (houseblock.getMutationKind() == MutationType.DEMOLITION) {
-                            createCellWithValue(row, columnHeader.getColumnIndex(), houseblock.getMutationAmount(), integerFormat);
+                            createCellWithValue(row, columnHeader.getColumnIndex(), houseblock.getMutationAmount(),  styles,
+                                CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
                         }
                     }
-                    case HOUSEBLOCK_TYPE_SINGLE_FAMILY -> createCellWithValue(row, columnHeader.getColumnIndex(), houseblock.getEengezinswoning(), integerFormat);
-                    case HOUSEBLOCK_TYPE_MULTI_FAMILY ->  createCellWithValue(row, columnHeader.getColumnIndex(), houseblock.getMeergezinswoning(), integerFormat);
+
+                    case HOUSEBLOCK_DELIVERY_DATE -> {
+                        if (Objects.equals(columnHeader.getSubheaderDateValue(), houseblock.getEndDate())) {
+                            createCellWithValue(row, columnHeader.getColumnIndex(), houseblock.getMutationAmount(),  styles,
+                                CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
+                        }
+                    }
+
+                    case HOUSEBLOCK_TYPE_SINGLE_FAMILY -> createCellWithValue(row, columnHeader.getColumnIndex(), houseblock.getEengezinswoning(),  styles,
+                        CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
+                    case HOUSEBLOCK_TYPE_MULTI_FAMILY ->  createCellWithValue(row, columnHeader.getColumnIndex(), houseblock.getMeergezinswoning(),  styles,
+                        CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
                     case HOUSEBLOCK_TYPE_UNKNOWN -> {
                         Integer unknownVal = houseblock.getMutationAmount();
                         if (houseblock.getEengezinswoning() != null) {
@@ -239,7 +360,8 @@ public class ExcelExport {
                             unknownVal -= houseblock.getMeergezinswoning();
                         }
                         if (unknownVal != 0) {
-                            createCellWithValue(row, columnHeader.getColumnIndex(), unknownVal, stringFormat);
+                            createCellWithValue(row, columnHeader.getColumnIndex(), unknownVal,  styles,
+                                CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
                         }
                     }
                 }
@@ -252,12 +374,14 @@ public class ExcelExport {
         return bd.stripTrailingZeros().scale() <= 0;
     }
 
-    private static void createCellWithValue(Row row, int columnIndex, Object value, short format) {
+    private static void createCellWithValue(Row row, int columnIndex, Object value, ExcelExportCellStyles styles, CellStyleType styleType) {
         Cell cell = row.getCell(columnIndex);
         if (cell == null) {
             cell = row.createCell(columnIndex);
         }
-        cell.getCellStyle().setDataFormat(format);
+        if (styleType != null) {
+            cell.setCellStyle(styles.getCellStyle(styleType, row.getRowNum() == 5));
+        }
         if (value != null) {
             if (value instanceof String) {
                 cell.setCellValue((String) value);
@@ -325,6 +449,114 @@ public class ExcelExport {
             case STRING -> cNew.setCellValue(cOld.getStringCellValue());
             case ERROR -> cNew.setCellValue(cOld.getErrorCellValue());
             case FORMULA -> cNew.setCellFormula(cOld.getCellFormula());
+        }
+    }
+
+
+    public enum CellContentType {
+        STRING,
+        DATE,
+        INTEGER,
+        DOUBLE;
+    }
+
+    public enum CellStyleType {
+        STRING_LEFT_BORDER,
+        STRING_RIGHT_BORDER,
+        STRING_NO_BORDER,
+
+        INTEGER_LEFT_BORDER,
+        INTEGER_RIGHT_BORDER,
+        INTEGER_NO_BORDER,
+
+        DOUBLE_LEFT_BORDER,
+        DOUBLE_RIGHT_BORDER,
+        DOUBLE_NO_BORDER,
+
+        DATE_LEFT_BORDER,
+        DATE_RIGHT_BORDER,
+        DATE_NO_BORDER;
+
+        public static CellStyleType getCellStyleType(CellContentType cellContentType, ExcelTableHeader.Border border) {
+            if (cellContentType == CellContentType.STRING) {
+                if (border == ExcelTableHeader.Border.LEFT) {
+                    return CellStyleType.STRING_LEFT_BORDER;
+                } else if (border == ExcelTableHeader.Border.RIGHT) {
+                    return CellStyleType.STRING_RIGHT_BORDER;
+                } else {
+                    return CellStyleType.STRING_NO_BORDER;
+                }
+            } else if (cellContentType == CellContentType.DATE) {
+                if (border == ExcelTableHeader.Border.LEFT) {
+                    return CellStyleType.DATE_LEFT_BORDER;
+                } else if (border == ExcelTableHeader.Border.RIGHT) {
+                    return CellStyleType.DATE_RIGHT_BORDER;
+                } else {
+                    return CellStyleType.DATE_NO_BORDER;
+                }
+            }
+            return null;
+        }
+    }
+
+    public static class ExcelExportCellStyles {
+
+        private Map<CellStyleType, CellStyle> styles = new HashMap<>();
+        private Map<CellStyleType, CellStyle> topBorderStyles = new HashMap<>();
+
+        public ExcelExportCellStyles(Workbook workbook) {
+            CreationHelper createHelper = workbook.getCreationHelper();
+
+            styles.put(CellStyleType.STRING_LEFT_BORDER, createCellStyle(createHelper, workbook, "General", BorderStyle.THIN, BorderStyle.THIN, BorderStyle.MEDIUM, BorderStyle.THIN));
+            styles.put(CellStyleType.STRING_RIGHT_BORDER, createCellStyle(createHelper, workbook, "General", BorderStyle.THIN, BorderStyle.THIN, BorderStyle.THIN, BorderStyle.MEDIUM));
+            styles.put(CellStyleType.STRING_NO_BORDER, createCellStyle(createHelper, workbook, "General", BorderStyle.THIN, BorderStyle.THIN, BorderStyle.THIN, BorderStyle.THIN));
+
+            topBorderStyles.put(CellStyleType.STRING_LEFT_BORDER, createCellStyle(createHelper, workbook, "General", BorderStyle.MEDIUM, BorderStyle.THIN, BorderStyle.MEDIUM, BorderStyle.THIN));
+            topBorderStyles.put(CellStyleType.STRING_RIGHT_BORDER, createCellStyle(createHelper, workbook, "General", BorderStyle.MEDIUM, BorderStyle.THIN, BorderStyle.THIN, BorderStyle.MEDIUM));
+            topBorderStyles.put(CellStyleType.STRING_NO_BORDER, createCellStyle(createHelper, workbook, "General", BorderStyle.MEDIUM, BorderStyle.THIN, BorderStyle.THIN, BorderStyle.THIN));
+
+            styles.put(CellStyleType.INTEGER_LEFT_BORDER, createCellStyle(createHelper, workbook, "0", BorderStyle.THIN, BorderStyle.THIN, BorderStyle.MEDIUM, BorderStyle.THIN));
+            styles.put(CellStyleType.INTEGER_RIGHT_BORDER, createCellStyle(createHelper, workbook, "0", BorderStyle.THIN, BorderStyle.THIN, BorderStyle.THIN, BorderStyle.MEDIUM));
+            styles.put(CellStyleType.INTEGER_NO_BORDER, createCellStyle(createHelper, workbook, "0", BorderStyle.THIN, BorderStyle.THIN, BorderStyle.THIN, BorderStyle.THIN));
+
+            topBorderStyles.put(CellStyleType.INTEGER_LEFT_BORDER, createCellStyle(createHelper, workbook, "0.00", BorderStyle.MEDIUM, BorderStyle.THIN, BorderStyle.MEDIUM, BorderStyle.THIN));
+            topBorderStyles.put(CellStyleType.INTEGER_RIGHT_BORDER, createCellStyle(createHelper, workbook, "0.00", BorderStyle.MEDIUM, BorderStyle.THIN, BorderStyle.THIN, BorderStyle.MEDIUM));
+            topBorderStyles.put(CellStyleType.INTEGER_NO_BORDER, createCellStyle(createHelper, workbook, "0.00", BorderStyle.MEDIUM, BorderStyle.THIN, BorderStyle.THIN, BorderStyle.THIN));
+
+            styles.put(CellStyleType.DOUBLE_LEFT_BORDER, createCellStyle(createHelper, workbook, "0.00", BorderStyle.THIN, BorderStyle.THIN, BorderStyle.MEDIUM, BorderStyle.THIN));
+            styles.put(CellStyleType.DOUBLE_RIGHT_BORDER, createCellStyle(createHelper, workbook, "0.00", BorderStyle.THIN, BorderStyle.THIN, BorderStyle.THIN, BorderStyle.MEDIUM));
+            styles.put(CellStyleType.DOUBLE_NO_BORDER, createCellStyle(createHelper, workbook, "0.00", BorderStyle.THIN, BorderStyle.THIN, BorderStyle.THIN, BorderStyle.THIN));
+
+            topBorderStyles.put(CellStyleType.DOUBLE_LEFT_BORDER, createCellStyle(createHelper, workbook, "0", BorderStyle.MEDIUM, BorderStyle.THIN, BorderStyle.MEDIUM, BorderStyle.THIN));
+            topBorderStyles.put(CellStyleType.DOUBLE_RIGHT_BORDER, createCellStyle(createHelper, workbook, "0", BorderStyle.MEDIUM, BorderStyle.THIN, BorderStyle.THIN, BorderStyle.MEDIUM));
+            topBorderStyles.put(CellStyleType.DOUBLE_NO_BORDER, createCellStyle(createHelper, workbook, "0", BorderStyle.MEDIUM, BorderStyle.THIN, BorderStyle.THIN, BorderStyle.THIN));
+
+            styles.put(CellStyleType.DATE_LEFT_BORDER, createCellStyle(createHelper, workbook, "mm/dd/yyyy", BorderStyle.THIN, BorderStyle.THIN, BorderStyle.MEDIUM, BorderStyle.THIN));
+            styles.put(CellStyleType.DATE_RIGHT_BORDER, createCellStyle(createHelper, workbook, "mm/dd/yyyy", BorderStyle.THIN, BorderStyle.THIN, BorderStyle.THIN, BorderStyle.MEDIUM));
+            styles.put(CellStyleType.DATE_NO_BORDER, createCellStyle(createHelper, workbook, "mm/dd/yyyy", BorderStyle.THIN, BorderStyle.THIN, BorderStyle.THIN, BorderStyle.THIN));
+
+            topBorderStyles.put(CellStyleType.DATE_LEFT_BORDER, createCellStyle(createHelper, workbook, "mm/dd/yyyy", BorderStyle.MEDIUM, BorderStyle.THIN, BorderStyle.MEDIUM, BorderStyle.THIN));
+            topBorderStyles.put(CellStyleType.DATE_RIGHT_BORDER, createCellStyle(createHelper, workbook, "mm/dd/yyyy", BorderStyle.MEDIUM, BorderStyle.THIN, BorderStyle.THIN, BorderStyle.MEDIUM));
+            topBorderStyles.put(CellStyleType.DATE_NO_BORDER, createCellStyle(createHelper, workbook, "mm/dd/yyyy", BorderStyle.MEDIUM, BorderStyle.THIN, BorderStyle.THIN, BorderStyle.THIN));
+            }
+
+        private static CellStyle createCellStyle(CreationHelper creationHelper, Workbook workbook, String format,
+                                                 BorderStyle top, BorderStyle bottom, BorderStyle left, BorderStyle right) {
+            CellStyle cellStyle = workbook.createCellStyle();
+            cellStyle.setDataFormat(creationHelper.createDataFormat().getFormat(format));
+            cellStyle.setBorderBottom(bottom);
+            cellStyle.setBorderTop(top);
+            cellStyle.setBorderLeft(left);
+            cellStyle.setBorderRight(right);
+            return cellStyle;
+        }
+
+        public CellStyle getCellStyle(CellStyleType styleType, boolean topBorder) {
+            if (topBorder) {
+                return topBorderStyles.get(styleType);
+            } else {
+               return styles.get(styleType);
+            }
         }
     }
 }

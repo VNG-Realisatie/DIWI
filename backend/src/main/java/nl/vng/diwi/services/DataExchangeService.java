@@ -246,7 +246,7 @@ public class DataExchangeService {
                     configModel.getMinimumExportConfidentiality(),
                     errors);
             case EXCEL -> ExcelExport.buildExportObject(
-                repo.getProjectsDAO().getProjectsExportListSimplified(dxExportModel, loggedUser),
+                repo.getProjectsDAO().getProjectsExportListExtended(dxExportModel, loggedUser),
                 customProps,
                 configModel.getMinimumExportConfidentiality(),
                 errors);

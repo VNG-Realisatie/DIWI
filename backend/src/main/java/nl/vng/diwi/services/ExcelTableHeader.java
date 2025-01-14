@@ -22,10 +22,13 @@ public class ExcelTableHeader {
     private PropertyModel propertyModel;
     private LocalDate subheaderDateValue;
 
-    public ExcelTableHeader(Section section, Column column, int columnIndex) {
+    private Border borderStyle;
+
+    public ExcelTableHeader(Section section, Column column, int columnIndex, Border borderStyle) {
         this.section = section;
         this.column = column;
         this.columnIndex = columnIndex;
+        this.borderStyle = borderStyle;
     }
 
     public enum Section {
@@ -132,4 +135,9 @@ public class ExcelTableHeader {
 
     }
 
+    public enum Border {
+        LEFT,
+        RIGHT,
+        NONE;
+    }
 }
