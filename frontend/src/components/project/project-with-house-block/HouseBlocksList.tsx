@@ -72,7 +72,12 @@ export const HouseBlockAccordionWithControls = ({ houseBlock, refresh }: HouseBl
                     targetGroup: newHouseBlock.targetGroup.filter((tg) => targetGroupCategoryIds?.includes(tg.id)),
                     physicalAppearance: newHouseBlock.physicalAppearance.filter((pa) => physicalAppearanceCategoryIds?.includes(pa.id)),
                 };
-                const updatedHouseBlock = await saveHouseBlockWithCustomProperties(filteredHouseBlock);
+                const data = await saveHouseBlockWithCustomProperties(filteredHouseBlock);
+
+                const updatedHouseBlock = {
+                    ...data,
+                    customProperties: Array.isArray(data.customProperties[0]) ? data.customProperties[0] : data.customProperties,
+                };
 
                 setNewHouseBlock(updatedHouseBlock);
                 refresh();
