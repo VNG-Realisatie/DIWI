@@ -27,7 +27,7 @@ const ProjectWizard = () => {
     const { projectId } = useParams();
     const navigate = useNavigate();
     const { setAlert } = useAlert();
-    const { updateProjects, nonFixedCustomDefinitions } = useContext(ProjectContext);
+    const { nonFixedCustomDefinitions } = useContext(ProjectContext);
     const { user } = useContext(UserContext);
     const validOwner = true; //we are not checking valid owner her, but validateForm requires 2nd parameter to be passed, and if its not passed then its true
 
@@ -61,7 +61,6 @@ const ProjectWizard = () => {
 
                 navigate(projectWizardWithId.toPath({ projectId: project.projectId }));
             }
-            updateProjects();
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             setAlert(error.message, "error");

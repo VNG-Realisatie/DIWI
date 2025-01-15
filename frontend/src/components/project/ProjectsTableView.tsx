@@ -43,7 +43,6 @@ type Props = {
     redirectPath: string;
     setSelectedProjects?: Dispatch<SetStateAction<string[]>>;
     selectedProjects?: string[];
-    setPaginationInfo: Dispatch<SetStateAction<GridPaginationModel>>;
 };
 
 export interface GenericOptionType<Type> {
@@ -63,20 +62,15 @@ const confidentialityLevelComparator = (v1: string, v2: string): number => {
     return label1.localeCompare(label2);
 };
 
-export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProjects = [], redirectPath, setPaginationInfo }: Props) => {
-    const { paginationInfo, totalProjectCount } = useContext(ProjectContext);
-
+export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProjects = [], redirectPath }: Props) => {
     const navigate = useNavigate();
     const { setAlert } = useAlert();
     const { t } = useTranslation();
 
     const [columnConfig, setColumnConfig] = useState<ColumnConfig>(loadColumnConfig() || initialColumnConfig);
 
-    const { filterUrl, rows, filteredProjectsSize, sortModel, setSortModel, filterModel, setFilterModel } = useCustomSearchParams(
-        undefined,
-        undefined,
-        paginationInfo,
-    );
+    const { filterUrl, rows, filteredProjectsSize, sortModel, setSortModel, filterModel, setFilterModel, totalProjectCount, setPage, setPageSize } =
+        useCustomSearchParams(undefined, undefined, { page: 1, pageSize: 10 });
     const { exportId = "defaultExportId" } = useParams<{ exportId?: string }>();
     const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
     const { municipalityRolesOptions, districtOptions, neighbourhoodOptions, municipalityOptions } = useProperties();
@@ -418,7 +412,10 @@ export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProj
                 showCheckBox={showCheckBox}
                 rows={rows}
                 columns={defaultColumns}
-                setPaginationInfo={setPaginationInfo}
+                setPaginationInfo={(info) => {
+                    setPage(info.page);
+                    setPageSize(info.pageSize);
+                }}
                 rowCount={filterModel?.items.some((item) => item.value) ? filteredProjectsSize : totalProjectCount}
                 paginationMode="server"
                 onRowClick={showCheckBox ? () => {} : (params) => navigate(`/projects/${params.id}/characteristics`)}

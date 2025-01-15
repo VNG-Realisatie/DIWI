@@ -21,7 +21,7 @@ const ProjectColorContext = createContext({
 });
 
 export const ProjectDetail = ({ children }: PropsWithChildren) => {
-    const { selectedProject, projectId, updateProjects } = useContext(ProjectContext);
+    const { selectedProject, projectId } = useContext(ProjectContext);
     const { t } = useTranslation();
     const navigate = useNavigate();
     const [selectedProjectColor, setSelectedProjectColor] = useState<string>("");
@@ -57,7 +57,6 @@ export const ProjectDetail = ({ children }: PropsWithChildren) => {
                                 iconColor={"#FFFFFF"}
                                 deleteFunction={() => deleteProject(projectId ?? null)}
                                 afterDelete={() => {
-                                    updateProjects();
                                     navigate("/projects/table");
                                 }}
                             />

@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { GridFilterModel, GridLogicOperator, GridPaginationModel, GridSortModel } from "@mui/x-data-grid";
 import { useCallback, useEffect, useState } from "react";
 import queryString from "query-string";
@@ -6,6 +6,7 @@ import { filterTable } from "../api/projectsTableServices";
 import { getProjects, getProjectsSizeWithParameters } from "../api/projectsServices";
 import { Project } from "../api/projectsServices";
 import { reactWhatChanged } from "react-what-changed";
+
 const useCustomSearchParams = (
     defaultSort: GridSortModel | undefined,
     defaultFilter: GridFilterModel | undefined,
@@ -19,12 +20,15 @@ const useCustomSearchParams = (
     const [filteredProjectsSize, setFilteredProjectsSize] = useState<number>(0);
 
     // const [params, setParams] = useSearchParams();
-    const [isSorted, setSorted] = useState<boolean>(false);
-    const [isFiltered, setFiltered] = useState<boolean>(false);
     const [filterValues, setFilterValues] = useState<queryString.ParsedQuery<string>>();
     const [filterTableParams, setFilterTableParams] = useState<string>(decodeURIComponent(location.search));
+
     const [page, setPage] = useState<number>(defaultPaginationInfo.page);
     const [pageSize, setPageSize] = useState<number>(defaultPaginationInfo.pageSize);
+    const [filterColumn, setFilterColumn] = useState<string | null>(null);
+    const [totalProjectCount, setTotalProjectCount] = useState();
+
+    useSearchParams();
 
     useEffect(() => {
         getProjectsSizeWithParameters(filterUrl)
@@ -35,31 +39,26 @@ const useCustomSearchParams = (
     }, [filterUrl]);
 
     useEffect(() => {
-        const querySortParams = ["pageNumber", "pageSize", "sortColumn", "sortDirection"];
-        const isSorted = querySortParams.every((e) => location.search.includes(e));
-
-        const queryFilterParams = ["pageNumber", "pageSize", "filterColumn", "filterValue", "filterCondition"];
-        const isFiltered = queryFilterParams.every((e) => location.search.includes(e));
-
         const filterValues = queryString.parse(location.search);
 
-        setSorted(isSorted);
-        setFiltered(isFiltered);
         setFilterValues(filterValues);
-        setFilterTableParams(decodeURIComponent(location.search));
-        const pageSize = filterValues["pageSize"];
-        const page = filterValues["pageNumber"];
+        const pageSize = typeof filterValues["pageSize"] === "string" ? filterValues["pageSize"] : "10";
+        const page = typeof filterValues["pageNumber"] === "string" ? filterValues["pageNumber"] : "1";
+        const filterColumn = filterValues["filterColumn"];
+
         if (typeof page === "string" && typeof pageSize === "string") {
             setPageSize(parseInt(pageSize));
             setPage(parseInt(page));
         }
+        setFilterColumn(typeof filterColumn === "string" ? filterColumn : null);
     }, [location.search]);
 
     useEffect(
         () => {
-            console.log(filterTableParams);
-            if (isFiltered || isSorted) {
-                filterTable(filterTableParams).then((res) => {
+            if (filterModel || sortModel) {
+                const url = createSearchString(sortModel, filterModel, page, pageSize);
+
+                filterTable(url).then((res) => {
                     setProjects(res);
                 });
             } else {
@@ -71,7 +70,7 @@ const useCustomSearchParams = (
             }
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        reactWhatChanged([page, pageSize, isFiltered, isSorted, filterTableParams]),
+        reactWhatChanged([page, pageSize, filterModel, sortModel]),
     );
 
     useEffect(() => {
@@ -98,23 +97,7 @@ const useCustomSearchParams = (
     }, [filterValues, isFiltered]);
 
     const updateUrl = useCallback(() => {
-        let query = "";
-
-        if (sortModel && sortModel.length > 0) {
-            const sortQuery = sortModel.map((sortItem) => `sortColumn=${sortItem.field}&sortDirection=${sortItem.sort?.toUpperCase()}`);
-            query += sortQuery;
-        }
-
-        if (filterModel && filterModel.items && filterModel.items.length > 0) {
-            const filterQuery = queryString.stringify({
-                filterColumn: filterModel.items[0].field,
-                filterValue: filterModel.items[0].value,
-                filterCondition: filterModel.items[0].operator === "isAnyOf" ? "ANY_OF" : "CONTAINS",
-            });
-            query += query ? `&${filterQuery}` : `${filterQuery}`;
-        }
-
-        const url = `?pageNumber=${page}&pageSize=${pageSize}&${query}`;
+        const url = createSearchString(sortModel, filterModel, page, pageSize);
         setFilterUrl(url);
     }, [filterModel, sortModel, page, pageSize]);
 
@@ -126,7 +109,27 @@ const useCustomSearchParams = (
         return { ...p, id: p.projectId };
     });
 
-    return { filterUrl, rows, filteredProjectsSize, sortModel, setSortModel, filterModel, setFilterModel };
+    return { filterUrl, rows, filteredProjectsSize, sortModel, setSortModel, filterModel, setFilterModel, totalProjectCount, setPage, setPageSize };
 };
 
 export default useCustomSearchParams;
+function createSearchString(sortModel: GridSortModel | undefined, filterModel: GridFilterModel | undefined, page: number, pageSize: number) {
+    let query = "";
+
+    if (sortModel && sortModel.length > 0) {
+        const sortQuery = sortModel.map((sortItem) => `sortColumn=${sortItem.field}&sortDirection=${sortItem.sort?.toUpperCase()}`);
+        query += sortQuery;
+    }
+
+    if (filterModel && filterModel.items && filterModel.items.length > 0) {
+        const filterQuery = queryString.stringify({
+            filterColumn: filterModel.items[0].field,
+            filterValue: filterModel.items[0].value,
+            filterCondition: filterModel.items[0].operator === "isAnyOf" ? "ANY_OF" : "CONTAINS",
+        });
+        query += query ? `&${filterQuery}` : `${filterQuery}`;
+    }
+
+    const url = `?pageNumber=${page}&pageSize=${pageSize}&${query}`;
+    return url;
+}
