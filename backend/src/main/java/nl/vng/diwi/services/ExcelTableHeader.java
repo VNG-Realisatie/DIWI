@@ -3,12 +3,12 @@ package nl.vng.diwi.services;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import nl.vng.diwi.models.PropertyModel;
-import org.checkerframework.checker.units.qual.N;
 
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -21,7 +21,7 @@ public class ExcelTableHeader {
 
     private PropertyModel propertyModel;
     private LocalDate subheaderDateValue;
-
+    private UUID subheaderUuid;
     private Border borderStyle;
 
     public ExcelTableHeader(Section section, Column column, int columnIndex, Border borderStyle) {
