@@ -163,6 +163,10 @@ public class ProjectExportSqlModelExtended {
         private UUID groupId;
         private String groupName;
         private List<OwnerUser> users;
+
+        public List<OwnerUser> getUsers() {
+            return users == null ? new ArrayList<>() : users;
+        }
     }
 
     @Data

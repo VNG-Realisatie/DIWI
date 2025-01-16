@@ -14,6 +14,8 @@ public class ExcelExportTemplateColumns {
     public static final Integer HOUSEBLOCK_DELIVERY_DATES_COLUMNS_DEFAULT = 10;
     public static final Integer HOUSEBLOCK_TARGET_GROUP_COLUMNS_DEFAULT = 6;
     public static final Integer HOUSEBLOCK_PHYSICAL_APPEARANCE_COLUMNS_DEFAULT = 6;
+    public static final Integer HOUSEBLOCK_CUSTOM_PROPS_COLUMNS_DEFAULT = 5;
+    public static final Integer HOUSEBLOCK_PRICE_RANGE_COLUMNS_DEFAULT = 4;
 
     public List<ExcelTableHeader> templateTableHeaders = new ArrayList<>();
 

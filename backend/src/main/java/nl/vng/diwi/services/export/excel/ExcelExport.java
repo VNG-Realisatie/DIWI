@@ -4,11 +4,14 @@ import jakarta.ws.rs.core.StreamingOutput;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.MutationType;
+import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
+import nl.vng.diwi.dal.entities.enums.ProjectStatus;
 import nl.vng.diwi.dal.entities.enums.PropertyKind;
 import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.models.PropertyModel;
+import nl.vng.diwi.models.RangeSelectDisabledModel;
 import nl.vng.diwi.models.SelectDisabledModel;
 import nl.vng.diwi.models.SelectModel;
 import nl.vng.diwi.services.DataExchangeExportError;
@@ -67,139 +70,7 @@ public class ExcelExport {
             ExcelExportCellStyles styles = new ExcelExportCellStyles(workbook);
 
             ExcelExportTemplateColumns header = new ExcelExportTemplateColumns();
-
-            Set<UUID> projectCustomPropIds = new HashSet<>();
-            Set<LocalDate> hhDeliveryDatesSet = new HashSet<>();
-            projects.forEach(p -> {
-                p.getBooleanProperties().forEach(prop -> projectCustomPropIds.add(prop.getPropertyId()));
-                p.getTextProperties().forEach(prop -> projectCustomPropIds.add(prop.getPropertyId()));
-                p.getCategoryProperties().forEach(prop -> projectCustomPropIds.add(prop.getPropertyId()));
-                p.getNumericProperties().forEach(prop -> projectCustomPropIds.add(prop.getPropertyId()));
-                p.getOrdinalProperties().forEach(prop -> projectCustomPropIds.add(prop.getPropertyId()));
-                p.getHouseblocks().forEach(h -> {
-                    hhDeliveryDatesSet.add(h.getEndDate());
-                });
-            });
-
-            List<PropertyModel> projectCustomProps = customProps.stream().filter(cp -> cp.getType() == PropertyKind.CUSTOM && projectCustomPropIds.contains(cp.getId()))
-                .sorted(Comparator.comparing(PropertyModel::getName)).toList();
-            List<LocalDate> hbDeliveryDates = hhDeliveryDatesSet.stream().sorted().toList();
-
-            PropertyModel targetGroupProp = customProps.stream().filter(cp -> cp.getType() == PropertyKind.FIXED && cp.getName().equals(Constants.FIXED_PROPERTY_TARGET_GROUP))
-                .findFirst().orElse(null);
-            List<SelectDisabledModel> targetGroupPropOptions = new ArrayList<>();
-            if (targetGroupProp.getCategories() != null) {
-                targetGroupPropOptions.addAll(targetGroupProp.getCategories().stream().filter(c -> c.getDisabled() == Boolean.FALSE)
-                    .sorted(Comparator.comparing(SelectDisabledModel::getName)).toList());
-            }
-
-            PropertyModel physicalAppearanceProp = customProps.stream().filter(cp -> cp.getType() == PropertyKind.FIXED && cp.getName().equals(Constants.FIXED_PROPERTY_PHYSICAL_APPEARANCE))
-                .findFirst().orElse(null);
-            List<SelectDisabledModel> physicalAppPropOptions = new ArrayList<>();
-            if (physicalAppearanceProp.getCategories() != null) {
-                physicalAppPropOptions.addAll(physicalAppearanceProp.getCategories().stream().filter(c -> c.getDisabled() == Boolean.FALSE)
-                    .sorted(Comparator.comparing(SelectDisabledModel::getName)).toList());
-            }
-
-            int newColumnIndex;
-            for (int i = ExcelExportTemplateColumns.PROJECT_CUSTOM_PROPS_COLUMNS_DEFAULT; i < projectCustomProps.size(); i++) {
-                newColumnIndex = header.insertColumn(ExcelTableHeader.Section.PROJECT_DATA, ExcelTableHeader.Column.PROJECT_CUSTOM_PROPERTY);
-                insertNewColumnBefore(sheet, newColumnIndex);
-            }
-            for (int i = ExcelExportTemplateColumns.HOUSEBLOCK_DELIVERY_DATES_COLUMNS_DEFAULT; i < hbDeliveryDates.size(); i++) {
-                newColumnIndex = header.insertColumn(ExcelTableHeader.Section.CONSTRUCTION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_DELIVERY_DATE);
-                insertNewColumnBefore(sheet, newColumnIndex);
-                newColumnIndex = header.insertColumn(ExcelTableHeader.Section.DEMOLITION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_DELIVERY_DATE);
-                insertNewColumnBefore(sheet, newColumnIndex);
-            }
-            for (int i = ExcelExportTemplateColumns.HOUSEBLOCK_TARGET_GROUP_COLUMNS_DEFAULT; i < targetGroupPropOptions.size(); i++) {
-                newColumnIndex = header.insertColumn(ExcelTableHeader.Section.CONSTRUCTION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_TARGET_GROUP);
-                insertNewColumnBefore(sheet, newColumnIndex);
-                newColumnIndex = header.insertColumn(ExcelTableHeader.Section.DEMOLITION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_TARGET_GROUP);
-                insertNewColumnBefore(sheet, newColumnIndex);
-            }
-            for (int i = ExcelExportTemplateColumns.HOUSEBLOCK_PHYSICAL_APPEARANCE_COLUMNS_DEFAULT; i < physicalAppPropOptions.size(); i++) {
-                newColumnIndex = header.insertColumn(ExcelTableHeader.Section.CONSTRUCTION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_PHYSICAL_APPEARANCE);
-                insertNewColumnBefore(sheet, newColumnIndex);
-                newColumnIndex = header.insertColumn(ExcelTableHeader.Section.DEMOLITION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_PHYSICAL_APPEARANCE);
-                insertNewColumnBefore(sheet, newColumnIndex);
-            }
-
-            Row suhheaderRow = sheet.getRow(4);
-            int projectCpCount = 0;
-            int hbConstructionDDCount = 0;
-            int hbDemolitionDDCount = 0;
-            int hbConstructionTargetGroupCount = 0;
-            int hbDemolitionTargetGroupCount = 0;
-            int hbConstructionPhysicalAppCount = 0;
-            int hbDemolitionPhysicalAppCount = 0;
-
-            for (var h : header.templateTableHeaders) {
-                if (h.getColumn() == ExcelTableHeader.Column.PROJECT_CUSTOM_PROPERTY) {
-                    if (projectCpCount < projectCustomProps.size()) {
-                        h.setPropertyModel(projectCustomProps.get(projectCpCount));
-                        h.setSubheader(h.getPropertyModel().getName());
-                        createCellWithValue(suhheaderRow, h.getColumnIndex(), h.getSubheader(), styles, null);
-                        projectCpCount++;
-                    }
-                } else if (h.getColumn() == ExcelTableHeader.Column.PROJECT_MUNICIPALITY) {
-                    h.setPropertyModel(customProps.stream()
-                        .filter(cp -> cp.getType() == PropertyKind.FIXED && cp.getName().equals(Constants.FIXED_PROPERTY_MUNICIPALITY))
-                        .findFirst().orElse(null));
-                } else if (h.getColumn() == ExcelTableHeader.Column.PROJECT_DISTRICT) {
-                    h.setPropertyModel(customProps.stream()
-                        .filter(cp -> cp.getType() == PropertyKind.FIXED && cp.getName().equals(Constants.FIXED_PROPERTY_DISTRICT))
-                        .findFirst().orElse(null));
-                } else if (h.getColumn() == ExcelTableHeader.Column.PROJECT_NEIGHBOURHOOD) {
-                    h.setPropertyModel(customProps.stream()
-                        .filter(cp -> cp.getType() == PropertyKind.FIXED && cp.getName().equals(Constants.FIXED_PROPERTY_NEIGHBOURHOOD))
-                        .findFirst().orElse(null));
-                } else if (h.getColumn() == ExcelTableHeader.Column.PROJECT_MUNICIPALITY_ROLE) {
-                    h.setPropertyModel(customProps.stream()
-                        .filter(cp -> cp.getType() == PropertyKind.FIXED && cp.getName().equals(Constants.FIXED_PROPERTY_MUNICIPALITY_ROLE))
-                        .findFirst().orElse(null));
-                } else if (h.getColumn() == ExcelTableHeader.Column.PROJECT_PRIORITY) {
-                    h.setPropertyModel(customProps.stream()
-                        .filter(cp -> cp.getType() == PropertyKind.FIXED && cp.getName().equals(Constants.FIXED_PROPERTY_PRIORITY))
-                        .findFirst().orElse(null));
-                } else if (h.getColumn() == ExcelTableHeader.Column.HOUSEBLOCK_DELIVERY_DATE && h.getSection() == ExcelTableHeader.Section.CONSTRUCTION_DATA) {
-                    if (hbConstructionDDCount < hbDeliveryDates.size()) {
-                        h.setSubheaderDateValue(hbDeliveryDates.get(hbConstructionDDCount));
-                        createCellWithValue(suhheaderRow, h.getColumnIndex(), h.getSubheaderDateValue(), styles, null);
-                        hbConstructionDDCount++;
-                    }
-                } else if (h.getColumn() == ExcelTableHeader.Column.HOUSEBLOCK_DELIVERY_DATE && h.getSection() == ExcelTableHeader.Section.DEMOLITION_DATA) {
-                    if (hbDemolitionDDCount < hbDeliveryDates.size()) {
-                        h.setSubheaderDateValue(hbDeliveryDates.get(hbDemolitionDDCount));
-                        createCellWithValue(suhheaderRow, h.getColumnIndex(), h.getSubheaderDateValue(), styles, null);
-                        hbDemolitionDDCount++;
-                    }
-                } else if (h.getColumn() == ExcelTableHeader.Column.HOUSEBLOCK_TARGET_GROUP && h.getSection() == ExcelTableHeader.Section.CONSTRUCTION_DATA) {
-                    if (hbConstructionTargetGroupCount < targetGroupPropOptions.size()) {
-                        h.setSubheaderUuid(targetGroupPropOptions.get(hbConstructionTargetGroupCount).getId());
-                        createCellWithValue(suhheaderRow, h.getColumnIndex(), targetGroupPropOptions.get(hbConstructionTargetGroupCount).getName(), styles, null);
-                        hbConstructionTargetGroupCount++;
-                    }
-                } else if (h.getColumn() == ExcelTableHeader.Column.HOUSEBLOCK_TARGET_GROUP && h.getSection() == ExcelTableHeader.Section.DEMOLITION_DATA) {
-                    if (hbDemolitionTargetGroupCount < targetGroupPropOptions.size()) {
-                        h.setSubheaderUuid(targetGroupPropOptions.get(hbDemolitionTargetGroupCount).getId());
-                        createCellWithValue(suhheaderRow, h.getColumnIndex(), targetGroupPropOptions.get(hbDemolitionTargetGroupCount).getName(), styles, null);
-                        hbDemolitionTargetGroupCount++;
-                    }
-                } else if (h.getColumn() == ExcelTableHeader.Column.HOUSEBLOCK_PHYSICAL_APPEARANCE && h.getSection() == ExcelTableHeader.Section.CONSTRUCTION_DATA) {
-                    if (hbConstructionPhysicalAppCount < physicalAppPropOptions.size()) {
-                        h.setSubheaderUuid(physicalAppPropOptions.get(hbConstructionPhysicalAppCount).getId());
-                        createCellWithValue(suhheaderRow, h.getColumnIndex(), physicalAppPropOptions.get(hbConstructionPhysicalAppCount).getName(), styles, null);
-                        hbConstructionPhysicalAppCount++;
-                    }
-                } else if (h.getColumn() == ExcelTableHeader.Column.HOUSEBLOCK_PHYSICAL_APPEARANCE && h.getSection() == ExcelTableHeader.Section.DEMOLITION_DATA) {
-                    if (hbDemolitionPhysicalAppCount < physicalAppPropOptions.size()) {
-                        h.setSubheaderUuid(physicalAppPropOptions.get(hbDemolitionPhysicalAppCount).getId());
-                        createCellWithValue(suhheaderRow, h.getColumnIndex(), physicalAppPropOptions.get(hbDemolitionPhysicalAppCount).getName(), styles, null);
-                        hbDemolitionPhysicalAppCount++;
-                    }
-                }
-            }
+            addExcelColumnsAndAssignHeaderProperties(projects, customProps, header, sheet, styles);
 
             int rowCount = 5;
             for (var project : projects) {
@@ -242,6 +113,282 @@ public class ExcelExport {
         return null;
     }
 
+    private static void addExcelColumnsAndAssignHeaderProperties(List<ProjectExportSqlModelExtended> projects, List<PropertyModel> customProps,
+                                                                 ExcelExportTemplateColumns header, Sheet sheet, ExcelExportCellStyles styles) {
+
+        Set<UUID> projectCustomPropIds = new HashSet<>();
+        Set<LocalDate> hhDeliveryDatesSet = new HashSet<>();
+        Set<UUID> hbCustomPropIds = new HashSet<>();
+        projects.forEach(p -> {
+            p.getBooleanProperties().forEach(prop -> projectCustomPropIds.add(prop.getPropertyId()));
+            p.getTextProperties().forEach(prop -> projectCustomPropIds.add(prop.getPropertyId()));
+            p.getCategoryProperties().forEach(prop -> projectCustomPropIds.add(prop.getPropertyId()));
+            p.getNumericProperties().forEach(prop -> projectCustomPropIds.add(prop.getPropertyId()));
+            p.getOrdinalProperties().forEach(prop -> projectCustomPropIds.add(prop.getPropertyId()));
+            p.getHouseblocks().forEach(h -> {
+                hhDeliveryDatesSet.add(h.getEndDate());
+                h.getBooleanProperties().forEach(prop -> hbCustomPropIds.add(prop.getPropertyId()));
+                h.getTextProperties().forEach(prop -> hbCustomPropIds.add(prop.getPropertyId()));
+                h.getCategoryProperties().forEach(prop -> hbCustomPropIds.add(prop.getPropertyId()));
+                h.getNumericProperties().forEach(prop -> hbCustomPropIds.add(prop.getPropertyId()));
+                h.getOrdinalProperties().forEach(prop -> hbCustomPropIds.add(prop.getPropertyId()));
+            });
+        });
+
+        List<PropertyModel> projectCustomProps = customProps.stream().filter(cp -> cp.getType() == PropertyKind.CUSTOM && projectCustomPropIds.contains(cp.getId()))
+            .sorted(Comparator.comparing(PropertyModel::getName)).toList();
+        List<PropertyModel> hbCustomProps = customProps.stream().filter(cp -> cp.getType() == PropertyKind.CUSTOM && hbCustomPropIds.contains(cp.getId()))
+            .sorted(Comparator.comparing(PropertyModel::getName)).toList();
+        List<LocalDate> hbDeliveryDates = hhDeliveryDatesSet.stream().sorted().toList();
+
+        PropertyModel targetGroupProp = customProps.stream().filter(cp -> cp.getType() == PropertyKind.FIXED && cp.getName().equals(Constants.FIXED_PROPERTY_TARGET_GROUP))
+            .findFirst().orElse(null);
+        List<SelectDisabledModel> targetGroupPropOptions = new ArrayList<>();
+        if (targetGroupProp.getCategories() != null) {
+            targetGroupPropOptions.addAll(targetGroupProp.getCategories().stream().filter(c -> c.getDisabled() == Boolean.FALSE)
+                .sorted(Comparator.comparing(SelectDisabledModel::getName)).toList());
+        }
+
+        PropertyModel physicalAppearanceProp = customProps.stream().filter(cp -> cp.getType() == PropertyKind.FIXED && cp.getName().equals(Constants.FIXED_PROPERTY_PHYSICAL_APPEARANCE))
+            .findFirst().orElse(null);
+        List<SelectDisabledModel> physicalAppPropOptions = new ArrayList<>();
+        if (physicalAppearanceProp.getCategories() != null) {
+            physicalAppPropOptions.addAll(physicalAppearanceProp.getCategories().stream().filter(c -> c.getDisabled() == Boolean.FALSE)
+                .sorted(Comparator.comparing(SelectDisabledModel::getName)).toList());
+        }
+
+        PropertyModel priceRangeBuy = customProps.stream().filter(cp -> cp.getType() == PropertyKind.FIXED && cp.getName().equals(Constants.FIXED_PROPERTY_PRICE_RANGE_BUY))
+            .findFirst().orElse(null);
+        List<RangeSelectDisabledModel> priceRangeBuyOptions = new ArrayList<>();
+        if (priceRangeBuy.getRanges() != null) {
+            priceRangeBuyOptions.addAll(priceRangeBuy.getRanges().stream().filter(o -> o.getDisabled() == Boolean.FALSE)
+                .sorted(Comparator.comparing(RangeSelectDisabledModel::getMin)).toList());
+        }
+
+        PropertyModel priceRangeRent = customProps.stream().filter(cp -> cp.getType() == PropertyKind.FIXED && cp.getName().equals(Constants.FIXED_PROPERTY_PRICE_RANGE_RENT))
+            .findFirst().orElse(null);
+        List<RangeSelectDisabledModel> priceRangeRentOptions = new ArrayList<>();
+        if (priceRangeRent.getRanges() != null) {
+            priceRangeRentOptions.addAll(priceRangeRent.getRanges().stream().filter(o -> o.getDisabled() == Boolean.FALSE)
+                .sorted(Comparator.comparing(RangeSelectDisabledModel::getMin)).toList());
+        }
+
+        int newColumnIndex;
+        for (int i = ExcelExportTemplateColumns.PROJECT_CUSTOM_PROPS_COLUMNS_DEFAULT; i < projectCustomProps.size(); i++) {
+            newColumnIndex = header.insertColumn(ExcelTableHeader.Section.PROJECT_DATA, ExcelTableHeader.Column.PROJECT_CUSTOM_PROPERTY);
+            insertNewColumnBefore(sheet, newColumnIndex);
+        }
+        for (int i = ExcelExportTemplateColumns.HOUSEBLOCK_DELIVERY_DATES_COLUMNS_DEFAULT; i < hbDeliveryDates.size(); i++) {
+            newColumnIndex = header.insertColumn(ExcelTableHeader.Section.CONSTRUCTION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_DELIVERY_DATE);
+            insertNewColumnBefore(sheet, newColumnIndex);
+            newColumnIndex = header.insertColumn(ExcelTableHeader.Section.DEMOLITION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_DELIVERY_DATE);
+            insertNewColumnBefore(sheet, newColumnIndex);
+        }
+        for (int i = ExcelExportTemplateColumns.HOUSEBLOCK_PRICE_RANGE_COLUMNS_DEFAULT - 1; i < priceRangeBuyOptions.size(); i++) {
+            newColumnIndex = header.insertColumn(ExcelTableHeader.Section.CONSTRUCTION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_PROPERTY_PURCHASE_PRICE_RANGE_CATEGORY);
+            insertNewColumnBefore(sheet, newColumnIndex);
+            newColumnIndex = header.insertColumn(ExcelTableHeader.Section.DEMOLITION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_PROPERTY_PURCHASE_PRICE_RANGE_CATEGORY);
+            insertNewColumnBefore(sheet, newColumnIndex);
+        }
+        for (int i = ExcelExportTemplateColumns.HOUSEBLOCK_PRICE_RANGE_COLUMNS_DEFAULT - 1; i < priceRangeRentOptions.size(); i++) {
+            newColumnIndex = header.insertColumn(ExcelTableHeader.Section.CONSTRUCTION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_PROPERTY_LANDLORD_RENTAL_PRICE_RANGE_CATEGORY);
+            insertNewColumnBefore(sheet, newColumnIndex);
+            newColumnIndex = header.insertColumn(ExcelTableHeader.Section.CONSTRUCTION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_PROPERTY_HOUSING_ASSOCIATION_RENTAL_PRICE_RANGE_CATEGORY);
+            insertNewColumnBefore(sheet, newColumnIndex);
+            newColumnIndex = header.insertColumn(ExcelTableHeader.Section.DEMOLITION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_PROPERTY_LANDLORD_RENTAL_PRICE_RANGE_CATEGORY);
+            insertNewColumnBefore(sheet, newColumnIndex);
+            newColumnIndex = header.insertColumn(ExcelTableHeader.Section.DEMOLITION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_PROPERTY_HOUSING_ASSOCIATION_RENTAL_PRICE_RANGE_CATEGORY);
+            insertNewColumnBefore(sheet, newColumnIndex);
+        }
+        for (int i = ExcelExportTemplateColumns.HOUSEBLOCK_TARGET_GROUP_COLUMNS_DEFAULT; i < targetGroupPropOptions.size(); i++) {
+            newColumnIndex = header.insertColumn(ExcelTableHeader.Section.CONSTRUCTION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_TARGET_GROUP);
+            insertNewColumnBefore(sheet, newColumnIndex);
+            newColumnIndex = header.insertColumn(ExcelTableHeader.Section.DEMOLITION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_TARGET_GROUP);
+            insertNewColumnBefore(sheet, newColumnIndex);
+        }
+        for (int i = ExcelExportTemplateColumns.HOUSEBLOCK_PHYSICAL_APPEARANCE_COLUMNS_DEFAULT; i < physicalAppPropOptions.size(); i++) {
+            newColumnIndex = header.insertColumn(ExcelTableHeader.Section.CONSTRUCTION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_PHYSICAL_APPEARANCE);
+            insertNewColumnBefore(sheet, newColumnIndex);
+            newColumnIndex = header.insertColumn(ExcelTableHeader.Section.DEMOLITION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_PHYSICAL_APPEARANCE);
+            insertNewColumnBefore(sheet, newColumnIndex);
+        }
+        for (int i = ExcelExportTemplateColumns.HOUSEBLOCK_CUSTOM_PROPS_COLUMNS_DEFAULT; i < hbCustomProps.size(); i++) {
+            newColumnIndex = header.insertColumn(ExcelTableHeader.Section.CONSTRUCTION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_CUSTOM_PROPERTY);
+            insertNewColumnBefore(sheet, newColumnIndex);
+            newColumnIndex = header.insertColumn(ExcelTableHeader.Section.DEMOLITION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_CUSTOM_PROPERTY);
+            insertNewColumnBefore(sheet, newColumnIndex);
+        }
+
+        Row suhheaderRow = sheet.getRow(4);
+        int projectCpCount = 0;
+        int hbConstructionDDCount = 0;
+        int hbDemolitionDDCount = 0;
+        int hbConstructionTargetGroupCount = 0;
+        int hbDemolitionTargetGroupCount = 0;
+        int hbConstructionPhysicalAppCount = 0;
+        int hbDemolitionPhysicalAppCount = 0;
+        int hbConstructionCustomPropsCount = 0;
+        int hbDemolitionCustomPropsCount = 0;
+        int hbConstructionPurchasePriceRangeCount = 0;
+        int hbDemolitionPurchasePriceRangeCount = 0;
+        int hbConstructionLandlordPriceRangeCount = 0;
+        int hbDemolitionLandlordPriceRangeCount = 0;
+        int hbConstructionHousingAssocPriceRangeCount = 0;
+        int hbDemolitionHousingAssocPriceRangeCount = 0;
+
+        for (var h : header.templateTableHeaders) {
+            switch (h.getColumn()) {
+                case PROJECT_CUSTOM_PROPERTY -> {
+                    if (projectCpCount < projectCustomProps.size()) {
+                        h.setPropertyModel(projectCustomProps.get(projectCpCount));
+                        h.setSubheader(h.getPropertyModel().getName());
+                        createCellWithValue(suhheaderRow, h.getColumnIndex(), h.getSubheader(), styles, null);
+                        projectCpCount++;
+                    }
+                }
+                case PROJECT_MUNICIPALITY ->
+                    h.setPropertyModel(customProps.stream()
+                        .filter(cp -> cp.getType() == PropertyKind.FIXED && cp.getName().equals(Constants.FIXED_PROPERTY_MUNICIPALITY))
+                        .findFirst().orElse(null));
+
+                case PROJECT_DISTRICT ->
+                    h.setPropertyModel(customProps.stream()
+                        .filter(cp -> cp.getType() == PropertyKind.FIXED && cp.getName().equals(Constants.FIXED_PROPERTY_DISTRICT))
+                        .findFirst().orElse(null));
+                case PROJECT_NEIGHBOURHOOD ->
+                    h.setPropertyModel(customProps.stream()
+                        .filter(cp -> cp.getType() == PropertyKind.FIXED && cp.getName().equals(Constants.FIXED_PROPERTY_NEIGHBOURHOOD))
+                        .findFirst().orElse(null));
+                case PROJECT_MUNICIPALITY_ROLE ->
+                    h.setPropertyModel(customProps.stream()
+                        .filter(cp -> cp.getType() == PropertyKind.FIXED && cp.getName().equals(Constants.FIXED_PROPERTY_MUNICIPALITY_ROLE))
+                        .findFirst().orElse(null));
+                case PROJECT_PRIORITY ->
+                    h.setPropertyModel(customProps.stream()
+                        .filter(cp -> cp.getType() == PropertyKind.FIXED && cp.getName().equals(Constants.FIXED_PROPERTY_PRIORITY))
+                        .findFirst().orElse(null));
+
+                case HOUSEBLOCK_DELIVERY_DATE -> {
+                    if (h.getSection() == ExcelTableHeader.Section.CONSTRUCTION_DATA && hbConstructionDDCount < hbDeliveryDates.size()) {
+                        h.setSubheaderDateValue(hbDeliveryDates.get(hbConstructionDDCount));
+                        createCellWithValue(suhheaderRow, h.getColumnIndex(), h.getSubheaderDateValue(), styles, null);
+                        hbConstructionDDCount++;
+                    } else if (h.getSection() == ExcelTableHeader.Section.DEMOLITION_DATA && hbDemolitionDDCount < hbDeliveryDates.size()) {
+                        h.setSubheaderDateValue(hbDeliveryDates.get(hbDemolitionDDCount));
+                        createCellWithValue(suhheaderRow, h.getColumnIndex(), h.getSubheaderDateValue(), styles, null);
+                        hbDemolitionDDCount++;
+                    }
+                }
+                case HOUSEBLOCK_PROPERTY_PURCHASE_PRICE_RANGE_CATEGORY -> {
+                    if (h.getSection() == ExcelTableHeader.Section.CONSTRUCTION_DATA && hbConstructionPurchasePriceRangeCount < priceRangeBuyOptions.size()) {
+                        RangeSelectDisabledModel rsm = priceRangeBuyOptions.get(hbConstructionPurchasePriceRangeCount);
+                        h.setSubheaderUuid(rsm.getId());
+                        h.setSubheader(getRangeSubheaderName(rsm));
+                        createCellWithValue(suhheaderRow, h.getColumnIndex(), h.getSubheader(), styles, null);
+                        hbConstructionPurchasePriceRangeCount++;
+                    } else if (h.getSection() == ExcelTableHeader.Section.DEMOLITION_DATA && hbDemolitionPurchasePriceRangeCount < priceRangeBuyOptions.size()) {
+                        RangeSelectDisabledModel rsm = priceRangeBuyOptions.get(hbDemolitionPurchasePriceRangeCount);
+                        h.setSubheaderUuid(rsm.getId());
+                        h.setSubheader(getRangeSubheaderName(rsm));
+                        createCellWithValue(suhheaderRow, h.getColumnIndex(), h.getSubheader(), styles, null);
+                        hbDemolitionPurchasePriceRangeCount++;
+                    } else if ("Onbekend".equalsIgnoreCase(getCellStringValue(suhheaderRow.getCell(h.getColumnIndex())))) {
+                        h.setSubheader("Onbekend");
+                    }
+                }
+                case HOUSEBLOCK_PROPERTY_LANDLORD_RENTAL_PRICE_RANGE_CATEGORY -> {
+                    if (h.getSection() == ExcelTableHeader.Section.CONSTRUCTION_DATA && hbConstructionLandlordPriceRangeCount < priceRangeRentOptions.size()) {
+                        RangeSelectDisabledModel rsm = priceRangeRentOptions.get(hbConstructionLandlordPriceRangeCount);
+                        h.setSubheaderUuid(rsm.getId());
+                        h.setSubheader(getRangeSubheaderName(rsm));
+                        createCellWithValue(suhheaderRow, h.getColumnIndex(), h.getSubheader(), styles, null);
+                        hbConstructionLandlordPriceRangeCount++;
+                    } else if (h.getSection() == ExcelTableHeader.Section.DEMOLITION_DATA && hbDemolitionLandlordPriceRangeCount < priceRangeRentOptions.size()) {
+                        RangeSelectDisabledModel rsm = priceRangeRentOptions.get(hbDemolitionLandlordPriceRangeCount);
+                        h.setSubheaderUuid(rsm.getId());
+                        h.setSubheader(getRangeSubheaderName(rsm));
+                        createCellWithValue(suhheaderRow, h.getColumnIndex(), h.getSubheader(), styles, null);
+                        hbDemolitionLandlordPriceRangeCount++;
+                    } else if ("Onbekend".equalsIgnoreCase(getCellStringValue(suhheaderRow.getCell(h.getColumnIndex())))) {
+                        h.setSubheader("Onbekend");
+                    }
+                }
+                case HOUSEBLOCK_PROPERTY_HOUSING_ASSOCIATION_RENTAL_PRICE_RANGE_CATEGORY -> {
+                    if (h.getSection() == ExcelTableHeader.Section.CONSTRUCTION_DATA && hbConstructionHousingAssocPriceRangeCount < priceRangeRentOptions.size()) {
+                        RangeSelectDisabledModel rsm = priceRangeRentOptions.get(hbConstructionHousingAssocPriceRangeCount);
+                        h.setSubheaderUuid(rsm.getId());
+                        h.setSubheader(getRangeSubheaderName(rsm));
+                        createCellWithValue(suhheaderRow, h.getColumnIndex(), h.getSubheader(), styles, null);
+                        hbConstructionHousingAssocPriceRangeCount++;
+                    } else if (h.getSection() == ExcelTableHeader.Section.DEMOLITION_DATA && hbDemolitionHousingAssocPriceRangeCount < priceRangeRentOptions.size()) {
+                        RangeSelectDisabledModel rsm = priceRangeRentOptions.get(hbDemolitionHousingAssocPriceRangeCount);
+                        h.setSubheaderUuid(rsm.getId());
+                        h.setSubheader(getRangeSubheaderName(rsm));
+                        createCellWithValue(suhheaderRow, h.getColumnIndex(), h.getSubheader(), styles, null);
+                        hbDemolitionHousingAssocPriceRangeCount++;
+                    } else if ("Onbekend".equalsIgnoreCase(getCellStringValue(suhheaderRow.getCell(h.getColumnIndex())))) {
+                        h.setSubheader("Onbekend");
+                    }
+                }
+
+                case HOUSEBLOCK_TARGET_GROUP -> {
+                    if (h.getSection() == ExcelTableHeader.Section.CONSTRUCTION_DATA && hbConstructionTargetGroupCount < targetGroupPropOptions.size()) {
+                        h.setSubheaderUuid(targetGroupPropOptions.get(hbConstructionTargetGroupCount).getId());
+                        createCellWithValue(suhheaderRow, h.getColumnIndex(), targetGroupPropOptions.get(hbConstructionTargetGroupCount).getName(), styles, null);
+                        hbConstructionTargetGroupCount++;
+                    } else if (h.getSection() == ExcelTableHeader.Section.DEMOLITION_DATA && hbDemolitionTargetGroupCount < targetGroupPropOptions.size()) {
+                        h.setSubheaderUuid(targetGroupPropOptions.get(hbDemolitionTargetGroupCount).getId());
+                        createCellWithValue(suhheaderRow, h.getColumnIndex(), targetGroupPropOptions.get(hbDemolitionTargetGroupCount).getName(), styles, null);
+                        hbDemolitionTargetGroupCount++;
+                    }
+                }
+                case HOUSEBLOCK_PHYSICAL_APPEARANCE -> {
+                    if (h.getSection() == ExcelTableHeader.Section.CONSTRUCTION_DATA && hbConstructionPhysicalAppCount < physicalAppPropOptions.size()) {
+                        h.setSubheaderUuid(physicalAppPropOptions.get(hbConstructionPhysicalAppCount).getId());
+                        createCellWithValue(suhheaderRow, h.getColumnIndex(), physicalAppPropOptions.get(hbConstructionPhysicalAppCount).getName(), styles, null);
+                        hbConstructionPhysicalAppCount++;
+                    } else if (h.getSection() == ExcelTableHeader.Section.DEMOLITION_DATA && hbDemolitionPhysicalAppCount < physicalAppPropOptions.size()) {
+                        h.setSubheaderUuid(physicalAppPropOptions.get(hbDemolitionPhysicalAppCount).getId());
+                        createCellWithValue(suhheaderRow, h.getColumnIndex(), physicalAppPropOptions.get(hbDemolitionPhysicalAppCount).getName(), styles, null);
+                        hbDemolitionPhysicalAppCount++;
+                    }
+                }
+                case HOUSEBLOCK_CUSTOM_PROPERTY -> {
+                    if (h.getSection() == ExcelTableHeader.Section.CONSTRUCTION_DATA && hbConstructionCustomPropsCount < hbCustomProps.size()) {
+                        h.setPropertyModel(hbCustomProps.get(hbConstructionCustomPropsCount));
+                        h.setSubheader(h.getPropertyModel().getName());
+                        createCellWithValue(suhheaderRow, h.getColumnIndex(), h.getSubheader(), styles, null);
+                        hbConstructionCustomPropsCount++;
+                    } else if (h.getSection() == ExcelTableHeader.Section.DEMOLITION_DATA && hbDemolitionCustomPropsCount < hbCustomProps.size()) {
+                        h.setPropertyModel(hbCustomProps.get(hbDemolitionCustomPropsCount));
+                        h.setSubheader(h.getPropertyModel().getName());
+                        createCellWithValue(suhheaderRow, h.getColumnIndex(), h.getSubheader(), styles, null);
+                        hbDemolitionCustomPropsCount++;
+                    }
+                }
+            }
+        }
+    }
+
+    private static String getCellStringValue(Cell cell) {
+        if (cell != null) {
+            return cell.getStringCellValue();
+        }
+        return "";
+    }
+
+    private static String getRangeSubheaderName(RangeSelectDisabledModel rsm) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(rsm.getMin());
+        sb.append(" - ");
+        if (rsm.getMax() != null) {
+            sb.append(rsm.getMax());
+        } else {
+            sb.append("Inf");
+        }
+        return sb.toString();
+    }
+
     private static void createProjectCells(ExcelExportTemplateColumns header, Row row, ProjectExportSqlModelExtended project, ExcelExportCellStyles styles) {
 
             for (var columnHeader : header.templateTableHeaders) {
@@ -250,9 +397,17 @@ public class ExcelExport {
                         CellStyleType.getCellStyleType(CellContentType.STRING, columnHeader.getBorderStyle()));
                     case PROJECT_NAME -> createCellWithValue(row, columnHeader.getColumnIndex(), project.getName(), styles,
                         CellStyleType.getCellStyleType(CellContentType.STRING, columnHeader.getBorderStyle()));
-//                    case PROJECT_OWNER -> //TODO
+                    case PROJECT_OWNER -> {
+                        Set<String> ownerEmails = new HashSet<>();
+                        project.getOwnerGroupList().forEach(group -> group.getUsers().forEach(u -> ownerEmails.add(u.getUserEmail())));
+                        if (!ownerEmails.isEmpty()) {
+                            List<String> emails = ownerEmails.stream().sorted().toList();
+                            createCellWithValue(row, columnHeader.getColumnIndex(), String.join(", ", emails), styles,
+                                CellStyleType.getCellStyleType(CellContentType.STRING, columnHeader.getBorderStyle()));
+                        }
+                    }
                     case PROJECT_CONFIDENTIALITY -> createCellWithValue(row, columnHeader.getColumnIndex(), ExcelStrings.getExcelStringFromEnumValue(project.getConfidentiality().name()),
-                        styles, CellStyleType.getCellStyleType(CellContentType.STRING, columnHeader.getBorderStyle()));
+                       styles, CellStyleType.getCellStyleType(CellContentType.STRING, columnHeader.getBorderStyle()));
                     case PROJECT_PLAN_TYPE -> {
                         if (project.getPlanType() != null && !project.getPlanType().isEmpty()) {
                             List<String> planTypes = project.getPlanType().stream().map(pt -> ExcelStrings.getExcelStringFromEnumValue(pt.name())).toList();
@@ -260,8 +415,16 @@ public class ExcelExport {
                                 CellStyleType.getCellStyleType(CellContentType.STRING, columnHeader.getBorderStyle()));
                         }
                     }
-//                    case PROJECT_PRIORITY -> TODO
-//                    case PROJECT_STATUS -> createCellWithValue(row, columnHeader.getColumnIndex(), ExcelStrings.getExcelStringFromEnumValue(project.getStatus().name()), (short) 0);
+                    case PROJECT_STATUS -> {
+                        String status;
+                        if (project.getEndDate().isBefore(LocalDate.now())) {
+                            status = ExcelStrings.getExcelStringFromEnumValue(ProjectStatus.REALIZED.name());
+                        } else {
+                            status = ExcelStrings.getExcelStringFromEnumValue(ProjectStatus.ACTIVE.name());
+                        }
+                        createCellWithValue(row, columnHeader.getColumnIndex(), status, styles,
+                            CellStyleType.getCellStyleType(CellContentType.STRING, columnHeader.getBorderStyle()));
+                    }
                     case PROJECT_START_DATE -> createCellWithValue(row, columnHeader.getColumnIndex(), project.getStartDate(), styles,
                         CellStyleType.getCellStyleType(CellContentType.DATE, columnHeader.getBorderStyle()));
                     case PROJECT_END_DATE -> createCellWithValue(row, columnHeader.getColumnIndex(), project.getEndDate(), styles,
@@ -295,7 +458,6 @@ public class ExcelExport {
                             .filter(pph -> pph.getStartDate() != null && pph.getProjectPhase() == ProjectPhase._7_AFTERCARE).findFirst()
                             .ifPresent(pph -> createCellWithValue(row, columnHeader.getColumnIndex(), pph.getStartDate(), styles,
                                 CellStyleType.getCellStyleType(CellContentType.DATE, columnHeader.getBorderStyle())));
-
 
                     case PROJECT_PLAN_STATUS_1A_ONHERROEPELIJK -> project.getProjectPlanStatusStartDateList().stream()
                             .filter(pps -> pps.getStartDate() != null && pps.getPlanStatus() == PlanStatus._1A_ONHERROEPELIJK).findFirst()
@@ -334,43 +496,63 @@ public class ExcelExport {
                             .ifPresent(pps -> createCellWithValue(row, columnHeader.getColumnIndex(), pps.getStartDate(), styles,
                                 CellStyleType.getCellStyleType(CellContentType.DATE, columnHeader.getBorderStyle())));
 
-                    case PROJECT_MUNICIPALITY_ROLE, PROJECT_MUNICIPALITY, PROJECT_DISTRICT, PROJECT_NEIGHBOURHOOD, PROJECT_CUSTOM_PROPERTY -> {
-                        switch (columnHeader.getPropertyModel().getPropertyType()) {
-                            case TEXT -> project.getTextProperties().stream()
-                                .filter(tp -> tp.getPropertyId().equals(columnHeader.getPropertyModel().getId())).findFirst()
-                                .ifPresent(tpm -> createCellWithValue(row, columnHeader.getColumnIndex(), tpm.getTextValue(), styles,
-                                    CellStyleType.getCellStyleType(CellContentType.STRING, columnHeader.getBorderStyle())));
-                            case CATEGORY -> project.getCategoryProperties().stream()
-                                .filter(cp -> cp.getPropertyId().equals(columnHeader.getPropertyModel().getId())).findFirst()
-                                .ifPresent(cpm -> {
-                                    List<String> cats = columnHeader.getPropertyModel().getCategories().stream()
-                                        .filter(c -> c.getDisabled() == Boolean.FALSE && cpm.getOptionValues().contains(c.getId()))
-                                        .map(SelectModel::getName).sorted().toList();
-                                    createCellWithValue(row, columnHeader.getColumnIndex(), String.join(", ", cats), styles,
-                                        CellStyleType.getCellStyleType(CellContentType.STRING, columnHeader.getBorderStyle()));
-                                });
-                            case NUMERIC -> project.getNumericProperties().stream()
-                                .filter(np -> np.getPropertyId().equals(columnHeader.getPropertyModel().getId())).findFirst()
-                                .ifPresent(npm -> {
-                                    if (npm.getValue() != null) {
-                                        if (isIntegerValue(npm.getValue())) {
-                                            createCellWithValue(row, columnHeader.getColumnIndex(), npm.getValue().longValue(), styles,
-                                                CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
-                                        } else {
-                                            createCellWithValue(row, columnHeader.getColumnIndex(), npm.getValue().doubleValue(), styles,
-                                                CellStyleType.getCellStyleType(CellContentType.DOUBLE, columnHeader.getBorderStyle()));
+                    case PROJECT_MUNICIPALITY_ROLE, PROJECT_MUNICIPALITY, PROJECT_DISTRICT, PROJECT_NEIGHBOURHOOD, PROJECT_CUSTOM_PROPERTY, PROJECT_PRIORITY -> {
+                        if (columnHeader.getPropertyModel() != null) {
+                            switch (columnHeader.getPropertyModel().getPropertyType()) {
+                                case TEXT -> project.getTextProperties().stream()
+                                    .filter(tp -> tp.getPropertyId().equals(columnHeader.getPropertyModel().getId())).findFirst()
+                                    .ifPresent(tpm -> createCellWithValue(row, columnHeader.getColumnIndex(), tpm.getTextValue(), styles,
+                                        CellStyleType.getCellStyleType(CellContentType.STRING, columnHeader.getBorderStyle())));
+                                case CATEGORY -> project.getCategoryProperties().stream()
+                                    .filter(cp -> cp.getPropertyId().equals(columnHeader.getPropertyModel().getId())).findFirst()
+                                    .ifPresent(cpm -> {
+                                        List<String> cats = columnHeader.getPropertyModel().getCategories().stream()
+                                            .filter(c -> c.getDisabled() == Boolean.FALSE && cpm.getOptionValues().contains(c.getId()))
+                                            .map(SelectModel::getName).sorted().toList();
+                                        createCellWithValue(row, columnHeader.getColumnIndex(), String.join(", ", cats), styles,
+                                            CellStyleType.getCellStyleType(CellContentType.STRING, columnHeader.getBorderStyle()));
+                                    });
+                                case NUMERIC -> project.getNumericProperties().stream()
+                                    .filter(np -> np.getPropertyId().equals(columnHeader.getPropertyModel().getId())).findFirst()
+                                    .ifPresent(npm -> {
+                                        if (npm.getValue() != null) {
+                                            if (isIntegerValue(npm.getValue())) {
+                                                createCellWithValue(row, columnHeader.getColumnIndex(), npm.getValue().longValue(), styles,
+                                                    CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
+                                            } else {
+                                                createCellWithValue(row, columnHeader.getColumnIndex(), npm.getValue().doubleValue(), styles,
+                                                    CellStyleType.getCellStyleType(CellContentType.DOUBLE, columnHeader.getBorderStyle()));
+                                            }
                                         }
-                                    }
-                                });
-                            case BOOLEAN -> project.getBooleanProperties().stream()
-                                .filter(bp -> bp.getBooleanValue() != null && bp.getPropertyId().equals(columnHeader.getPropertyModel().getId())).findFirst()
-                                .ifPresent(bpm -> createCellWithValue(row, columnHeader.getColumnIndex(), bpm.getBooleanValue() == Boolean.TRUE ? 1 : 0, styles,
-                                    CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle())));
-//                            case ORDINAL -> TODO
+                                    });
+                                case BOOLEAN -> project.getBooleanProperties().stream()
+                                    .filter(bp -> bp.getBooleanValue() != null && bp.getPropertyId().equals(columnHeader.getPropertyModel().getId())).findFirst()
+                                    .ifPresent(bpm -> createCellWithValue(row, columnHeader.getColumnIndex(), bpm.getBooleanValue() == Boolean.TRUE ? 1 : 0, styles,
+                                        CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle())));
+                                case ORDINAL -> project.getOrdinalProperties().stream()
+                                    .filter(op -> op.getPropertyId().equals(columnHeader.getPropertyModel().getId())).findFirst()
+                                    .ifPresent(opm -> createCellWithValue(row, columnHeader.getColumnIndex(), createOrdinalCellValue(opm, columnHeader.getPropertyModel()), styles,
+                                        CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle())));
+                            }
                         }
                     }
                 }
             }
+    }
+
+    private static String createOrdinalCellValue(ProjectExportSqlModelExtended.OrdinalPropertyModel opm, PropertyModel prop) {
+        StringBuilder sb = new StringBuilder();
+        if (opm.getPropertyValueId() != null) {
+            prop.getOrdinals().stream().filter(o -> o.getDisabled() == Boolean.FALSE && o.getId().equals(opm.getPropertyValueId())).findFirst()
+                .ifPresent(o -> sb.append(o.getOrdinalValue()));
+        } else {
+            prop.getOrdinals().stream().filter(o -> o.getDisabled() == Boolean.FALSE && o.getId().equals(opm.getMinPropertyValueId())).findFirst()
+                .ifPresent(o -> sb.append(o.getOrdinalValue()));
+            sb.append(" - ");
+        }
+        prop.getOrdinals().stream().filter(o -> o.getDisabled() == Boolean.FALSE && o.getId().equals(opm.getMaxPropertyValueId())).findFirst()
+            .ifPresent(o -> sb.append(o.getOrdinalValue()));
+        return sb.toString();
     }
 
     private static void createHouseblockCells(ExcelExportTemplateColumns header, Row row, ProjectExportSqlModelExtended.HouseblockExportSqlModel houseblock,
@@ -401,21 +583,106 @@ public class ExcelExport {
                     }
                     case HOUSEBLOCK_MUTATION_DEMOLISH -> {
                         if (houseblock.getMutationKind() == MutationType.DEMOLITION) {
-                            createCellWithValue(row, columnHeader.getColumnIndex(), houseblock.getMutationAmount(),  styles,
+                            createCellWithValue(row, columnHeader.getColumnIndex(), houseblock.getMutationAmount(), styles,
                                 CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
                         }
                     }
 
                     case HOUSEBLOCK_DELIVERY_DATE -> {
                         if (Objects.equals(columnHeader.getSubheaderDateValue(), houseblock.getEndDate())) {
-                            createCellWithValue(row, columnHeader.getColumnIndex(), houseblock.getMutationAmount(),  styles,
+                            createCellWithValue(row, columnHeader.getColumnIndex(), houseblock.getMutationAmount(), styles,
                                 CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
                         }
                     }
 
-                    case HOUSEBLOCK_TYPE_SINGLE_FAMILY -> createCellWithValue(row, columnHeader.getColumnIndex(), houseblock.getEengezinswoning(),  styles,
+                    case HOUSEBLOCK_PROPERTY_TYPE_OWNER -> {
+                        int htOwnerAmount = houseblock.getOwnershipValueList().stream()
+                            .filter(o -> o.getOwnershipType() == OwnershipType.KOOPWONING)
+                            .mapToInt(ProjectExportSqlModelExtended.OwnershipValueSqlModel::getOwnershipAmount).sum();
+                        if (htOwnerAmount != 0) {
+                            createCellWithValue(row, columnHeader.getColumnIndex(), htOwnerAmount, styles,
+                                CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
+                        }
+                    }
+                    case HOUSEBLOCK_PROPERTY_TYPE_LANDLORD -> {
+                        int htLandlordAmount = houseblock.getOwnershipValueList().stream()
+                            .filter(o -> o.getOwnershipType() == OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER)
+                            .mapToInt(ProjectExportSqlModelExtended.OwnershipValueSqlModel::getOwnershipAmount).sum();
+                        if (htLandlordAmount != 0) {
+                            createCellWithValue(row, columnHeader.getColumnIndex(), htLandlordAmount, styles,
+                                CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
+                        }
+                    }
+                    case HOUSEBLOCK_PROPERTY_TYPE_HOUSING_ASSOCIATION -> {
+                        int htHousingAssocAmount = houseblock.getOwnershipValueList().stream()
+                            .filter(o -> o.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE)
+                            .mapToInt(ProjectExportSqlModelExtended.OwnershipValueSqlModel::getOwnershipAmount).sum();
+                        if (htHousingAssocAmount != 0) {
+                            createCellWithValue(row, columnHeader.getColumnIndex(), htHousingAssocAmount, styles,
+                                CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
+                        }
+                    }
+                    case HOUSEBLOCK_PROPERTY_TYPE_UNKNOWN -> {
+                        int htKnown = houseblock.getOwnershipValueList().stream()
+                            .mapToInt(ProjectExportSqlModelExtended.OwnershipValueSqlModel::getOwnershipAmount).sum();
+                        if (htKnown != houseblock.getMutationAmount()) {
+                            createCellWithValue(row, columnHeader.getColumnIndex(), houseblock.getMutationAmount() - htKnown, styles,
+                                CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
+                        }
+                    }
+
+                    case HOUSEBLOCK_PROPERTY_PURCHASE_PRICE_RANGE_CATEGORY -> {
+                        int amount = 0;
+                        if (columnHeader.getSubheaderUuid() != null) {
+                            amount = houseblock.getOwnershipValueList().stream().filter(ov -> ov.getOwnershipType() == OwnershipType.KOOPWONING &&
+                                    columnHeader.getSubheaderUuid().equals(ov.getOwnershipRangeCategoryId()))
+                                .mapToInt(ProjectExportSqlModelExtended.OwnershipValueSqlModel::getOwnershipAmount).sum();
+                        } else if ("Onbekend".equalsIgnoreCase(columnHeader.getSubheader())) {
+                            amount = houseblock.getOwnershipValueList().stream().filter(ov -> ov.getOwnershipType() == OwnershipType.KOOPWONING &&
+                                    ov.getOwnershipRangeCategoryId() == null && ov.getOwnershipValue() == null && ov.getOwnershipValueRangeMin() == null)
+                                .mapToInt(ProjectExportSqlModelExtended.OwnershipValueSqlModel::getOwnershipAmount).sum();
+                        }
+                        if (amount > 0) {
+                            createCellWithValue(row, columnHeader.getColumnIndex(), amount, styles,
+                                CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
+                        }
+                    }
+                    case HOUSEBLOCK_PROPERTY_LANDLORD_RENTAL_PRICE_RANGE_CATEGORY -> {
+                        int amount = 0;
+                        if (columnHeader.getSubheaderUuid() != null) {
+                            amount = houseblock.getOwnershipValueList().stream().filter(ov -> ov.getOwnershipType() == OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER &&
+                                    columnHeader.getSubheaderUuid().equals(ov.getOwnershipRentalRangeCategoryId()))
+                                .mapToInt(ProjectExportSqlModelExtended.OwnershipValueSqlModel::getOwnershipAmount).sum();
+                        } else if ("Onbekend".equalsIgnoreCase(columnHeader.getSubheader())) {
+                            amount = houseblock.getOwnershipValueList().stream().filter(ov -> ov.getOwnershipType() == OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER &&
+                                    ov.getOwnershipRentalRangeCategoryId() == null && ov.getOwnershipRentalValue() == null && ov.getOwnershipRentalValueRangeMin() == null)
+                                .mapToInt(ProjectExportSqlModelExtended.OwnershipValueSqlModel::getOwnershipAmount).sum();
+                        }
+                        if (amount > 0) {
+                            createCellWithValue(row, columnHeader.getColumnIndex(), amount, styles,
+                                CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
+                        }
+                    }
+                    case HOUSEBLOCK_PROPERTY_HOUSING_ASSOCIATION_RENTAL_PRICE_RANGE_CATEGORY -> {
+                        int amount = 0;
+                        if (columnHeader.getSubheaderUuid() != null) {
+                            amount = houseblock.getOwnershipValueList().stream().filter(ov -> ov.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE &&
+                                    columnHeader.getSubheaderUuid().equals(ov.getOwnershipRentalRangeCategoryId()))
+                                .mapToInt(ProjectExportSqlModelExtended.OwnershipValueSqlModel::getOwnershipAmount).sum();
+                        } else if ("Onbekend".equalsIgnoreCase(columnHeader.getSubheader())) {
+                            amount = houseblock.getOwnershipValueList().stream().filter(ov -> ov.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE &&
+                                    ov.getOwnershipRentalRangeCategoryId() == null && ov.getOwnershipRentalValue() == null && ov.getOwnershipRentalValueRangeMin() == null)
+                                .mapToInt(ProjectExportSqlModelExtended.OwnershipValueSqlModel::getOwnershipAmount).sum();
+                        }
+                        if (amount > 0) {
+                            createCellWithValue(row, columnHeader.getColumnIndex(), amount, styles,
+                                CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
+                        }
+                    }
+
+                    case HOUSEBLOCK_TYPE_SINGLE_FAMILY -> createCellWithValue(row, columnHeader.getColumnIndex(), houseblock.getEengezinswoning(), styles,
                         CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
-                    case HOUSEBLOCK_TYPE_MULTI_FAMILY ->  createCellWithValue(row, columnHeader.getColumnIndex(), houseblock.getMeergezinswoning(),  styles,
+                    case HOUSEBLOCK_TYPE_MULTI_FAMILY ->  createCellWithValue(row, columnHeader.getColumnIndex(), houseblock.getMeergezinswoning(), styles,
                         CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
                     case HOUSEBLOCK_TYPE_UNKNOWN -> {
                         Integer unknownVal = houseblock.getMutationAmount();
@@ -426,28 +693,68 @@ public class ExcelExport {
                             unknownVal -= houseblock.getMeergezinswoning();
                         }
                         if (unknownVal != 0) {
-                            createCellWithValue(row, columnHeader.getColumnIndex(), unknownVal,  styles,
+                            createCellWithValue(row, columnHeader.getColumnIndex(), unknownVal, styles,
                                 CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
                         }
                     }
 
-                    case HOUSEBLOCK_GROUND_POSITION_COOPERATE_INTENTION -> createCellWithValue(row, columnHeader.getColumnIndex(), houseblock.getIntentionPermissionOwner(),  styles,
+                    case HOUSEBLOCK_GROUND_POSITION_COOPERATE_INTENTION -> createCellWithValue(row, columnHeader.getColumnIndex(), houseblock.getIntentionPermissionOwner(), styles,
                         CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
-                    case HOUSEBLOCK_GROUND_POSITION_FORMAL_PERMISSION -> createCellWithValue(row, columnHeader.getColumnIndex(), houseblock.getFormalPermissionOwner(),  styles,
+                    case HOUSEBLOCK_GROUND_POSITION_FORMAL_PERMISSION -> createCellWithValue(row, columnHeader.getColumnIndex(), houseblock.getFormalPermissionOwner(), styles,
                         CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
-                    case HOUSEBLOCK_GROUND_POSITION_NO_PERMISSION -> createCellWithValue(row, columnHeader.getColumnIndex(), houseblock.getNoPermissionOwner(),  styles,
+                    case HOUSEBLOCK_GROUND_POSITION_NO_PERMISSION -> createCellWithValue(row, columnHeader.getColumnIndex(), houseblock.getNoPermissionOwner(), styles,
                         CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
 
                     case HOUSEBLOCK_PHYSICAL_APPEARANCE -> houseblock.getPhysicalAppearances().stream()
                         .filter(pa -> pa.getPropertyValueId().equals(columnHeader.getSubheaderUuid())).findFirst()
-                        .ifPresent(pa -> createCellWithValue(row, columnHeader.getColumnIndex(), pa.getAmount(),  styles,
+                        .ifPresent(pa -> createCellWithValue(row, columnHeader.getColumnIndex(), pa.getAmount(), styles,
                             CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle())));
 
                     case HOUSEBLOCK_TARGET_GROUP -> houseblock.getTargetGroups().stream()
                         .filter(tg -> tg.getPropertyValueId().equals(columnHeader.getSubheaderUuid())).findFirst()
-                        .ifPresent(tg -> createCellWithValue(row, columnHeader.getColumnIndex(), tg.getAmount(),  styles,
+                        .ifPresent(tg -> createCellWithValue(row, columnHeader.getColumnIndex(), tg.getAmount(), styles,
                             CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle())));
 
+                    case HOUSEBLOCK_CUSTOM_PROPERTY -> {
+                        if (columnHeader.getPropertyModel() != null) {
+                            switch (columnHeader.getPropertyModel().getPropertyType()) {
+                                case TEXT -> houseblock.getTextProperties().stream()
+                                    .filter(tp -> tp.getPropertyId().equals(columnHeader.getPropertyModel().getId())).findFirst()
+                                    .ifPresent(tpm -> createCellWithValue(row, columnHeader.getColumnIndex(), tpm.getTextValue(), styles,
+                                        CellStyleType.getCellStyleType(CellContentType.STRING, columnHeader.getBorderStyle())));
+                                case CATEGORY -> houseblock.getCategoryProperties().stream()
+                                    .filter(cp -> cp.getPropertyId().equals(columnHeader.getPropertyModel().getId())).findFirst()
+                                    .ifPresent(cpm -> {
+                                        List<String> cats = columnHeader.getPropertyModel().getCategories().stream()
+                                            .filter(c -> c.getDisabled() == Boolean.FALSE && cpm.getOptionValues().contains(c.getId()))
+                                            .map(SelectModel::getName).sorted().toList();
+                                        createCellWithValue(row, columnHeader.getColumnIndex(), String.join(", ", cats), styles,
+                                            CellStyleType.getCellStyleType(CellContentType.STRING, columnHeader.getBorderStyle()));
+                                    });
+                                case NUMERIC -> houseblock.getNumericProperties().stream()
+                                    .filter(np -> np.getPropertyId().equals(columnHeader.getPropertyModel().getId())).findFirst()
+                                    .ifPresent(npm -> {
+                                        if (npm.getValue() != null) {
+                                            if (isIntegerValue(npm.getValue())) {
+                                                createCellWithValue(row, columnHeader.getColumnIndex(), npm.getValue().longValue(), styles,
+                                                    CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
+                                            } else {
+                                                createCellWithValue(row, columnHeader.getColumnIndex(), npm.getValue().doubleValue(), styles,
+                                                    CellStyleType.getCellStyleType(CellContentType.DOUBLE, columnHeader.getBorderStyle()));
+                                            }
+                                        }
+                                    });
+                                case BOOLEAN -> houseblock.getBooleanProperties().stream()
+                                    .filter(bp -> bp.getBooleanValue() != null && bp.getPropertyId().equals(columnHeader.getPropertyModel().getId())).findFirst()
+                                    .ifPresent(bpm -> createCellWithValue(row, columnHeader.getColumnIndex(), bpm.getBooleanValue() == Boolean.TRUE ? 1 : 0, styles,
+                                        CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle())));
+                                case ORDINAL -> houseblock.getOrdinalProperties().stream()
+                                    .filter(op -> op.getPropertyId().equals(columnHeader.getPropertyModel().getId())).findFirst()
+                                    .ifPresent(opm -> createCellWithValue(row, columnHeader.getColumnIndex(), createOrdinalCellValue(opm, columnHeader.getPropertyModel()), styles,
+                                        CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle())));
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -622,7 +929,7 @@ public class ExcelExport {
             topBorderStyles.put(CellStyleType.DATE_LEFT_BORDER, createCellStyle(createHelper, workbook, "mm/dd/yyyy", BorderStyle.MEDIUM, BorderStyle.THIN, BorderStyle.MEDIUM, BorderStyle.THIN));
             topBorderStyles.put(CellStyleType.DATE_RIGHT_BORDER, createCellStyle(createHelper, workbook, "mm/dd/yyyy", BorderStyle.MEDIUM, BorderStyle.THIN, BorderStyle.THIN, BorderStyle.MEDIUM));
             topBorderStyles.put(CellStyleType.DATE_NO_BORDER, createCellStyle(createHelper, workbook, "mm/dd/yyyy", BorderStyle.MEDIUM, BorderStyle.THIN, BorderStyle.THIN, BorderStyle.THIN));
-            }
+        }
 
         private static CellStyle createCellStyle(CreationHelper creationHelper, Workbook workbook, String format,
                                                  BorderStyle top, BorderStyle bottom, BorderStyle left, BorderStyle right) {
