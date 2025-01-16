@@ -1,6 +1,6 @@
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import { getAllCategories } from "../api/goalsServices";
+import { getAllCategories, getAllGoals } from "../api/goalsServices";
 
 type Element = {
     id: string;
@@ -31,12 +31,24 @@ const h2c = async (element: HTMLElement) => {
 
 export const exportPdf = async (t: (key: string) => string, setPdfExport: (value: boolean) => void) => {
     const categories = await getAllCategories();
+    const policyGoals = await getAllGoals();
 
-    const newElements = categories.map(({ id }) => ({
-        id: id || "",
-        width: otherChartWidth,
-        height: 35,
-    }));
+    const categoryCountMap: { [key: string]: number } = {};
+    policyGoals.forEach(({ category }) => {
+        if (category && category.id) {
+            categoryCountMap[category.id] = (categoryCountMap[category.id] || 0) + 1;
+        }
+    });
+
+    const newElements = categories.map(({ id }) => {
+        const count = categoryCountMap[id] || 1;
+        return {
+            id: id || "",
+            width: otherChartWidth,
+            height: 35 * count,
+        };
+    });
+
     const allElements: Element[] = [...elements, ...newElements];
 
     const getElementImage = async (element: Element) => {

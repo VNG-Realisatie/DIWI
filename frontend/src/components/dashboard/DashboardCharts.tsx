@@ -500,7 +500,7 @@ export const DashboardCharts = ({
                                                 {policyGoals
                                                     .filter((goal) => goal.category === category.name)
                                                     .map((goal) => (
-                                                        <Box key={goal.id} id={category.id}>
+                                                        <Box key={goal.id} id={categoriesVisibility?.[category.id] ? goal.id : ""}>
                                                             <PolicyGoalChart isPDF={true} goal={goal} />
                                                         </Box>
                                                     ))}
