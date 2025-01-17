@@ -49,6 +49,7 @@ import ExportWizard from "./pages/ExportWizard";
 import ConfidentialityUpdateTable from "./pages/ConfidentialityUpdateTable";
 import ProjectAuditTable from "./pages/ProjectAudit";
 import { CategoriesProvider } from "./context/GoalCategoriesContext";
+import { CustomPropertyStoreProvider } from "./context/CustomPropertiesProvider";
 
 enum UserStatus {
     Authenticated,
@@ -160,7 +161,7 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
                     <AlertPopup />
                     <ScopedCssBaseline>
                         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="nl" dateFormats={dateFormats}>
-                            {children}
+                            <CustomPropertyStoreProvider>{children}</CustomPropertyStoreProvider>
                         </LocalizationProvider>
                     </ScopedCssBaseline>
                 </AlertProvider>

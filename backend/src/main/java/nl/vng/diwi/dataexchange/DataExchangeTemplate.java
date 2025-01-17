@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import nl.vng.diwi.dal.entities.DataExchangeType;
+import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.ObjectType;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
 import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandExport.EsriZuidHollandProjectProps;
@@ -20,6 +21,11 @@ import java.util.List;
 public class DataExchangeTemplate {
 
     private List<TemplateProperty> properties = new ArrayList<>();
+
+    /**
+     * // Default to an external level, can be overriden for exports meant for internal use.
+     */
+    private Confidentiality minimumConfidentiality = Confidentiality.EXTERNAL_REGIONAL;
 
     @Data
     @NoArgsConstructor
@@ -106,8 +112,8 @@ public class DataExchangeTemplate {
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_short8.name(), ObjectType.PROJECT, List.of(PropertyType.NUMERIC), false, null, null));
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_short9.name(), ObjectType.PROJECT, List.of(PropertyType.NUMERIC), false, null, null));
 
-
         var geoJSONTemplate = new DataExchangeTemplate();
+        geoJSONTemplate.setMinimumConfidentiality(Confidentiality.PRIVATE);
 
         var excelTemplate = new DataExchangeTemplate();
 

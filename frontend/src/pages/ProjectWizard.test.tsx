@@ -6,6 +6,7 @@ import TestComponentWrapper from "../test/TestComponentWrapper";
 import ProjectWizard from "./ProjectWizard";
 import UserContext from "../context/UserContext";
 import { UserRole } from "../api/userServices";
+import { CustomPropertyStoreProvider } from "../context/CustomPropertiesProvider";
 
 const mockUser = {
     name: "Test User",
@@ -19,6 +20,9 @@ const mockUser = {
 vi.mock("../api/adminSettingServices", () => ({
     getCustomProperties: vi.fn().mockResolvedValue([]),
     getCustomPropertiesWithQuery: vi.fn().mockResolvedValue([]),
+    addCustomProperty: vi.fn().mockResolvedValue({}),
+    deleteCustomProperty: vi.fn().mockResolvedValue({}),
+    updateCustomProperty: vi.fn().mockResolvedValue({}),
 }));
 
 vi.mock("../api/projectsTableServices", () => ({
@@ -33,13 +37,15 @@ vi.mock("../utils/requests", () => ({
 test("renders project wizard page 1", () => {
     render(
         <TestComponentWrapper>
-            <UserContext.Provider value={{ user: mockUser, allowedActions: [] }}>
-                <ProjectProvider>
-                    <HouseBlockProvider>
-                        <ProjectWizard />
-                    </HouseBlockProvider>
-                </ProjectProvider>
-            </UserContext.Provider>
+            <CustomPropertyStoreProvider>
+                <UserContext.Provider value={{ user: mockUser, allowedActions: [] }}>
+                    <ProjectProvider>
+                        <HouseBlockProvider>
+                            <ProjectWizard />
+                        </HouseBlockProvider>
+                    </ProjectProvider>
+                </UserContext.Provider>
+            </CustomPropertyStoreProvider>
         </TestComponentWrapper>,
     );
 

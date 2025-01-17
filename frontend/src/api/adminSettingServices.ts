@@ -7,6 +7,16 @@ export type CategoryType = components["schemas"]["SelectDisabledModel"];
 export type OrdinalCategoryType = components["schemas"]["OrdinalSelectDisabledModel"];
 export type Property = components["schemas"]["PropertyModel"];
 
+export type CustomPropertyStoreType = {
+    customProperties: Property[];
+    projectCustomProperties: Property[];
+    houseBlockCustomProperties: Property[];
+    fetchCustomProperties: () => void;
+    addCustomProperty: (newData: Property) => Promise<Property>;
+    deleteCustomProperty: (id: string) => void;
+    updateCustomProperty: (id: string, newData: Property) => Promise<Property>;
+};
+
 export async function getCustomProperties(): Promise<Array<Property>> {
     return getJson(`${API_URI}/properties`);
 }

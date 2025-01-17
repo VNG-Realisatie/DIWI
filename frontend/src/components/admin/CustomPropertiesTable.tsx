@@ -1,21 +1,18 @@
 import { Box, Chip, Dialog, DialogActions, DialogTitle, Button, Tooltip, Stack } from "@mui/material";
 import { DataGrid, GridColDef, GridActionsCellItem, getGridStringOperators } from "@mui/x-data-grid";
 import { useTranslation } from "react-i18next";
-import { Property, deleteCustomProperty, getCustomProperties, CategoryType, OrdinalCategoryType } from "../../api/adminSettingServices";
+import { CategoryType, OrdinalCategoryType, CustomPropertyStoreType, Property } from "../../api/adminSettingServices";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import AlertContext from "../../context/AlertContext";
 import PropertyDialog from "./PropertyDialog";
 import ActionNotAllowed from "../../pages/ActionNotAllowed";
 import UserContext from "../../context/UserContext";
+import { observer } from "mobx-react-lite";
+import { useCustomPropertyStore } from "../../hooks/useCustomPropertyStore";
 
-type Props = {
-    customProperties: Property[];
-    setCustomProperties: (customProperties: Property[]) => void;
-};
-
-export const CustomPropertiesTable = ({ customProperties, setCustomProperties }: Props) => {
+export const CustomPropertiesTable = observer(() => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editDialogOpen, setEditDialogOpen] = useState(false);
     const { setAlert } = useContext(AlertContext);
@@ -23,6 +20,11 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
     const [editPropertyId, setEditPropertyId] = useState("");
     const { t } = useTranslation();
     const { allowedActions } = useContext(UserContext);
+    const { customProperties, deleteCustomProperty, fetchCustomProperties }: CustomPropertyStoreType = useCustomPropertyStore();
+
+    useEffect(() => {
+        fetchCustomProperties();
+    }, [fetchCustomProperties]);
 
     if (!allowedActions.includes("VIEW_CUSTOM_PROPERTIES")) {
         return <ActionNotAllowed errorMessage={t("customProperties.forbidden")} />;
@@ -33,13 +35,25 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
         setDeletePropertyInfo({ id, name });
     };
 
-    const handleDialogDelete = () =>
-        deleteCustomProperty(deletePropertyInfo.id).then(() => {
+    const handleDialogDelete = async () => {
+        try {
+            deleteCustomProperty(deletePropertyInfo.id);
             setAlert(t("admin.settings.notifications.successfullyDeleted"), "success");
+        } catch (error) {
+            console.error("Failed to delete custom property:", error);
+            // Optionally, you can set an error alert here
+        } finally {
             setDialogOpen(false);
-            getCustomProperties().then((customProperties) => setCustomProperties(customProperties));
-        });
+        }
+    };
 
+    const sortCustomProperties = (properties: Property[]) => {
+        return properties.sort((a, b) => {
+            const nameA = a.type === "FIXED" ? t(`admin.settings.fixedPropertyType.${a.name}`) : a.name;
+            const nameB = b.type === "FIXED" ? t(`admin.settings.fixedPropertyType.${b.name}`) : b.name;
+            return nameA.localeCompare(nameB);
+        });
+    };
     const columns: GridColDef[] = [
         {
             field: "name",
@@ -158,7 +172,7 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
         <>
             <Stack id="custom-properties-table">
                 <DataGrid
-                    rows={customProperties.filter((row) => !row.disabled && row.propertyType !== "RANGE_CATEGORY")}
+                    rows={sortCustomProperties(customProperties.filter((row) => !row.disabled && row.propertyType !== "RANGE_CATEGORY"))}
                     rowHeight={70}
                     rowSelection={false}
                     columns={columns}
@@ -185,13 +199,7 @@ export const CustomPropertiesTable = ({ customProperties, setCustomProperties }:
                     </Box>
                 </DialogActions>
             </Dialog>
-            <PropertyDialog
-                setCustomProperties={setCustomProperties}
-                openDialog={editDialogOpen}
-                setOpenDialog={setEditDialogOpen}
-                id={editPropertyId}
-                setId={setEditPropertyId}
-            />
+            <PropertyDialog openDialog={editDialogOpen} setOpenDialog={setEditDialogOpen} id={editPropertyId} setId={setEditPropertyId} />
         </>
     );
-};
+});

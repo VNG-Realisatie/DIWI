@@ -8,17 +8,13 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.hibernate.tool.hbm2ddl.SchemaExportTask.ExportType;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.ws.rs.container.ContainerRequestContext;
@@ -155,18 +151,11 @@ public class DataExchangeResourceTest {
         var expected = ResourceUtil.getResourceAsString("DataExchangeResourceTest/" + type.toString() + ".geojson");
         var expectedTree = objectMapper.readTree(expected);
 
-        // assertThatJson(result.toString())
-        // .isEqualTo(expected);
-        // assertThat(objectMapper.readTree(result.toString()))
-        // .isEqualTo(Json.MAPPER.readTree(expected));
-
         assertThat(
                 actualTree.toPrettyString()
                         .lines()
                         .filter(l -> !l.contains("diwi_id"))
                         .collect(Collectors.joining("\n")))
                 .isEqualToIgnoringWhitespace(expectedTree.toPrettyString());
-
-        // assertThat(result.toString()).isEqualToIgnoringWhitespace(expected);
     }
 }
