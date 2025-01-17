@@ -331,6 +331,22 @@ public class ProjectExportSqlModelExtended {
         public List<CategoryValueAmountModel> getPhysicalAppearances() {
             return physicalAppearances == null ? new ArrayList<>() : physicalAppearances;
         }
+
+        public Integer getHouseTypeUnknownAmount() {
+
+            Integer unknownBlockType = mutationAmount;
+            if (unknownBlockType != null) {
+                if (eengezinswoning != null) {
+                    unknownBlockType -= eengezinswoning;
+                }
+                if (meergezinswoning != null) {
+                    unknownBlockType -= meergezinswoning;
+                }
+            } else {
+                unknownBlockType = 0;
+            }
+            return unknownBlockType;
+        }
     }
 
     @Data

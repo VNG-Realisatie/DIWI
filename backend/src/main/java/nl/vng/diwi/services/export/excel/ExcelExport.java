@@ -2,7 +2,6 @@ package nl.vng.diwi.services.export.excel;
 
 import jakarta.ws.rs.core.StreamingOutput;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended;
-import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.MutationType;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.dal.entities.enums.PlanStatus;
@@ -15,7 +14,6 @@ import nl.vng.diwi.models.RangeSelectDisabledModel;
 import nl.vng.diwi.models.SelectDisabledModel;
 import nl.vng.diwi.models.SelectModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
-import nl.vng.diwi.services.DataExchangeExportError;
 import nl.vng.diwi.services.ExcelStrings;
 import nl.vng.diwi.services.ExcelTableHeader;
 import org.apache.logging.log4j.LogManager;
@@ -55,10 +53,9 @@ public class ExcelExport {
     public static BigDecimal HOUSING_PRICE_DIVIDE_FACTOR = BigDecimal.valueOf(100L);
     public static String UNKNOWN = "Onbekend";
 
-        static public StreamingOutput buildExportObject(
-            List<ProjectExportSqlModelExtended> projects,
-            List<PropertyModel> customProps) {
-
+    public static StreamingOutput buildExportObject(
+        List<ProjectExportSqlModelExtended> projects,
+        List<PropertyModel> customProps) {
 
         try {
             File excelFile = new File(ExcelExport.class.getClassLoader().getResource(EXCEL_TEMPLATE_PATH).getPath());
@@ -853,13 +850,7 @@ public class ExcelExport {
                     case HOUSEBLOCK_TYPE_MULTI_FAMILY ->  createCellWithValue(row, columnHeader.getColumnIndex(), houseblock.getMeergezinswoning(), styles,
                         CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
                     case HOUSEBLOCK_TYPE_UNKNOWN -> {
-                        Integer unknownVal = houseblock.getMutationAmount();
-                        if (houseblock.getEengezinswoning() != null) {
-                            unknownVal -= houseblock.getEengezinswoning();
-                        }
-                        if (houseblock.getMeergezinswoning() != null) {
-                            unknownVal -= houseblock.getMeergezinswoning();
-                        }
+                        Integer unknownVal = houseblock.getHouseTypeUnknownAmount();
                         if (unknownVal != 0) {
                             createCellWithValue(row, columnHeader.getColumnIndex(), unknownVal, styles,
                                 CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));

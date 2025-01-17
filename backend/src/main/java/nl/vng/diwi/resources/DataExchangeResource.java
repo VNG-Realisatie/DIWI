@@ -20,7 +20,6 @@ import nl.vng.diwi.dal.AutoCloseTransaction;
 import nl.vng.diwi.dal.GenericRepository;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.DataExchangeType;
-import nl.vng.diwi.generic.Json;
 import nl.vng.diwi.models.ConfigModel;
 import nl.vng.diwi.models.DataExchangeExportModel;
 import nl.vng.diwi.models.DataExchangeModel;
@@ -183,17 +182,10 @@ public class DataExchangeResource {
 
         List<DataExchangeExportError> errors = new ArrayList<>();
 
-        Object exportObj = dataExchangeService.getExportObject(repo, configModel, dataExchangeUuid, dataExchangeExportModel, errors, loggedUser);
+        StreamingOutput exportObj = dataExchangeService.getExportObject(repo, configModel, dataExchangeUuid, dataExchangeExportModel, errors, loggedUser);
 
         if (errors.isEmpty()) {
-            if (exportObj instanceof StreamingOutput) {
-                return (StreamingOutput) exportObj;
-            } else {
-                return output -> {
-                    Json.mapper.writeValue(output, exportObj);
-                    output.flush();
-                };
-            }
+            return exportObj;
         } else {
             throw new VngBadRequestException(errors);
         }
