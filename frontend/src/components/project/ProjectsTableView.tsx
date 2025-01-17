@@ -69,7 +69,7 @@ export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProj
 
     const [columnConfig, setColumnConfig] = useState<ColumnConfig>(loadColumnConfig() || initialColumnConfig);
 
-    const { filterUrl, rows, filteredProjectsSize, sortModel, setSortModel, filterModel, setFilterModel, totalProjectCount, setPage, setPageSize } =
+    const { filterUrl, rows, sortModel, setSortModel, filterModel, setFilterModel, totalProjectCount, setPage, setPageSize } =
         useCustomSearchParams(undefined, undefined, { page: 1, pageSize: 10 });
     const { exportId = "defaultExportId" } = useParams<{ exportId?: string }>();
     const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
@@ -416,7 +416,7 @@ export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProj
                     setPage(info.page);
                     setPageSize(info.pageSize);
                 }}
-                rowCount={filterModel?.items.some((item) => item.value) ? filteredProjectsSize : totalProjectCount}
+                rowCount={totalProjectCount}
                 paginationMode="server"
                 onRowClick={showCheckBox ? () => {} : (params) => navigate(`/projects/${params.id}/characteristics`)}
                 filterModel={filterModel}
