@@ -7791,11 +7791,6 @@ react-transition-group@^4.4.5:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react-what-changed@^1.1.2:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/react-what-changed/-/react-what-changed-1.1.2.tgz#20dcbfa925adc85620e69734fed26f0b54a1ad1b"
-  integrity sha512-uICi+PGfaOVl70BrZrNwOko19kMS11WBKef1i1d37Utsx+N9Zvu04V3hDxeTOexJziIi1+Q1Ok8+7NnvrGPzHA==
-
 react@^18.2.0:
   version "18.3.1"
   resolved "https://registry.yarnpkg.com/react/-/react-18.3.1.tgz#49ab892009c53933625bd16b2533fc754cab2891"
