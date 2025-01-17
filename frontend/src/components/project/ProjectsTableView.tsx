@@ -6,7 +6,6 @@ import {
     GridFilterModel,
     GridFilterOperator,
     GridLocaleText,
-    GridPaginationModel,
     GridPreProcessEditCellProps,
     GridRenderCellParams,
     GridRowSelectionModel,
@@ -18,7 +17,7 @@ import {
     getGridStringOperators,
 } from "@mui/x-data-grid";
 import { useNavigate, useParams } from "react-router-dom";
-import { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Box, Stack, Tooltip, Typography } from "@mui/material";
 import SaveAsIcon from "@mui/icons-material/SaveAs";
 import UndoIcon from "@mui/icons-material/Undo";
@@ -27,7 +26,7 @@ import { Project } from "../../api/projectsServices";
 import { useTranslation } from "react-i18next";
 import { CategoriesCell } from "../table/CategoriesCell";
 import { confidentialityLevelOptions, planningPlanStatus, planTypeOptions, projectPhaseOptions } from "../table/constants";
-import ProjectContext from "../../context/ProjectContext";
+
 import useCustomSearchParams from "../../hooks/useCustomSearchParams";
 
 import dayjs from "dayjs";
@@ -69,8 +68,7 @@ export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProj
 
     const [columnConfig, setColumnConfig] = useState<ColumnConfig>(loadColumnConfig() || initialColumnConfig);
 
-    const { filterUrl, rows, sortModel, setSortModel, filterModel, setFilterModel, totalProjectCount, setPage, setPageSize } =
-        useCustomSearchParams(undefined, undefined, { page: 1, pageSize: 10 });
+    const { filterUrl, rows, sortModel, setSortModel, filterModel, setFilterModel, totalProjectCount, setPage, setPageSize } = useCustomSearchParams();
     const { exportId = "defaultExportId" } = useParams<{ exportId?: string }>();
     const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
     const { municipalityRolesOptions, districtOptions, neighbourhoodOptions, municipalityOptions } = useProperties();

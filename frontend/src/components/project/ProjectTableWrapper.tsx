@@ -7,8 +7,6 @@ import UserContext from "../../context/UserContext";
 import useAlert from "../../hooks/useAlert";
 import { confidentialityUpdate, configuredExport } from "../../Paths";
 import { useNavigate, useParams } from "react-router-dom";
-import ProjectContext from "../../context/ProjectContext";
-import { GridPaginationModel } from "@mui/x-data-grid";
 
 type Props = {
     redirectPath: string;
