@@ -21,6 +21,7 @@
 - Fixed a bug where changing project and block dates repeatedly back and forth would change the ownership ID, which should be stable in this instance
 - Fixed an issue whith coordinate system mismatches, causing plots to end up in the Siberian Sea, which in turn caused an issue that would not let the user correct the plot
 - Fixed an issue where imported files were stored in the wrong folder within DIWI, hence not being retrievable
+- Fixed a bug where the dashboard PDF would only show one policy goal per policy goal category
 
 ## DIWI RELEASE 1.8.1
 
