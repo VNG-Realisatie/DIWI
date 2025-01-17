@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,7 +24,7 @@ public class ExcelTableHeader {
     private PropertyModel propertyModel;
     private LocalDate subheaderDateValue;
     private UUID subheaderUuid;
-    private SingleValueOrRangeModel subheaderRangeValue;
+    private SingleValueOrRangeModel<BigDecimal> subheaderRangeValue;
     private Border borderStyle;
 
     public ExcelTableHeader(Section section, Column column, int columnIndex, Border borderStyle) {

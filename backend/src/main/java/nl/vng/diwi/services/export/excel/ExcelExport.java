@@ -52,7 +52,7 @@ public class ExcelExport {
     public static String EXCEL_TEMPLATE_PATH = "templates/" + EXCEL_TEMPLATE_NAME;
 
     public static String PROJECT_SHEET_NAME = "Data";
-    public static Integer HOUSING_PRICE_DIVIDE_FACTOR = 1;
+    public static BigDecimal HOUSING_PRICE_DIVIDE_FACTOR = BigDecimal.valueOf(100L);
     public static String UNKNOWN = "Onbekend";
 
         static public StreamingOutput buildExportObject(
@@ -123,9 +123,9 @@ public class ExcelExport {
         Set<LocalDate> hhDeliveryDatesSet = new HashSet<>();
         Set<UUID> hbCustomPropIds = new HashSet<>();
         Set<SingleValueOrRangeModel<BigDecimal>> hbSizes = new HashSet<>();
-        Set<SingleValueOrRangeModel<Long>> hbPurchasePrices = new HashSet<>();
-        Set<SingleValueOrRangeModel<Long>> hbLandlordRentPrices = new HashSet<>();
-        Set<SingleValueOrRangeModel<Long>> hbHousingRentPrices = new HashSet<>();
+        Set<SingleValueOrRangeModel<BigDecimal>> hbPurchasePrices = new HashSet<>();
+        Set<SingleValueOrRangeModel<BigDecimal>> hbLandlordRentPrices = new HashSet<>();
+        Set<SingleValueOrRangeModel<BigDecimal>> hbHousingRentPrices = new HashSet<>();
         projects.forEach(p -> {
             p.getBooleanProperties().forEach(prop -> projectCustomPropIds.add(prop.getPropertyId()));
             p.getTextProperties().forEach(prop -> projectCustomPropIds.add(prop.getPropertyId()));
@@ -162,9 +162,9 @@ public class ExcelExport {
             .sorted(Comparator.comparing(PropertyModel::getName)).toList();
         List<LocalDate> hbDeliveryDates = hhDeliveryDatesSet.stream().sorted().toList();
         List<SingleValueOrRangeModel<BigDecimal>> hbSizesList = hbSizes.stream().sorted().toList();
-        List<SingleValueOrRangeModel<Long>> hbPurchasePricesList = hbPurchasePrices.stream().filter(Objects::nonNull).sorted().toList();
-        List<SingleValueOrRangeModel<Long>> hbLandlordRentPricesList = hbLandlordRentPrices.stream().filter(Objects::nonNull).sorted().toList();
-        List<SingleValueOrRangeModel<Long>> hbHousingRentPricesList = hbHousingRentPrices.stream().filter(Objects::nonNull).sorted().toList();
+        List<SingleValueOrRangeModel<BigDecimal>> hbPurchasePricesList = hbPurchasePrices.stream().filter(Objects::nonNull).sorted().toList();
+        List<SingleValueOrRangeModel<BigDecimal>> hbLandlordRentPricesList = hbLandlordRentPrices.stream().filter(Objects::nonNull).sorted().toList();
+        List<SingleValueOrRangeModel<BigDecimal>> hbHousingRentPricesList = hbHousingRentPrices.stream().filter(Objects::nonNull).sorted().toList();
 
         PropertyModel targetGroupProp = customProps.stream().filter(cp -> cp.getType() == PropertyKind.FIXED && cp.getName().equals(Constants.FIXED_PROPERTY_TARGET_GROUP))
             .findFirst().orElse(null);
@@ -494,15 +494,15 @@ public class ExcelExport {
         return sb.toString();
     }
 
-    private static <T extends Comparable<? super T>> String getSingleValueOrRangeSubheaderName(SingleValueOrRangeModel<T> svrm) {
+    private static String getSingleValueOrRangeSubheaderName(SingleValueOrRangeModel<BigDecimal> svrm) {
         StringBuilder sb = new StringBuilder();
         if (svrm.getValue() != null) {
-            sb.append(svrm.getValue());
+            sb.append(isIntegerValue(svrm.getValue()) ? svrm.getValue().intValue() : svrm.getValue());
         } else {
-            sb.append(svrm.getMin());
+            sb.append(isIntegerValue(svrm.getMin()) ? svrm.getMin().intValue() : svrm.getMin());
             sb.append(" - ");
             if (svrm.getMax() != null) {
-                sb.append(svrm.getMax());
+                sb.append(isIntegerValue(svrm.getMax()) ? svrm.getMax().intValue() : svrm.getMax());
             } else {
                 sb.append("Inf");
             }

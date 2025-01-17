@@ -1,6 +1,7 @@
 package nl.vng.diwi.dal.entities;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -347,22 +348,22 @@ public class ProjectExportSqlModelExtended {
         private Long ownershipRentalValueRangeMin;
         private Long ownershipRentalValueRangeMax;
 
-        public SingleValueOrRangeModel<Long> getSingleValueOrRangeValue(boolean isRental, Integer divideFactor) {
+        public SingleValueOrRangeModel<BigDecimal> getSingleValueOrRangeValue(boolean isRental, BigDecimal divideFactor) {
             if (isRental) {
                 if (ownershipRentalValue == null && ownershipRentalValueRangeMin == null) {
                     return null;
                 } else {
-                    return new SingleValueOrRangeModel<>(ownershipRentalValue == null ? null : ownershipRentalValue / divideFactor,
-                        ownershipRentalValueRangeMin == null ? null : ownershipRentalValueRangeMin / divideFactor,
-                        ownershipRentalValueRangeMax == null ? null : ownershipRentalValueRangeMax / divideFactor);
+                    return new SingleValueOrRangeModel<>(ownershipRentalValue == null ? null : BigDecimal.valueOf(ownershipRentalValue, 2).divide(divideFactor, RoundingMode.HALF_DOWN),
+                        ownershipRentalValueRangeMin == null ? null : BigDecimal.valueOf(ownershipRentalValueRangeMin, 2).divide(divideFactor, RoundingMode.HALF_DOWN),
+                        ownershipRentalValueRangeMax == null ? null : BigDecimal.valueOf(ownershipRentalValueRangeMax, 2).divide(divideFactor, RoundingMode.HALF_DOWN));
                 }
             } else {
                 if (ownershipValue == null && ownershipValueRangeMin == null) {
                     return null;
                 } else {
-                    return new SingleValueOrRangeModel<>(ownershipValue == null ? null : ownershipValue / divideFactor,
-                        ownershipValueRangeMin == null ? null : ownershipValueRangeMin / divideFactor,
-                        ownershipValueRangeMax == null ? null : ownershipValueRangeMax / divideFactor);
+                    return new SingleValueOrRangeModel<>(ownershipValue == null ? null : BigDecimal.valueOf(ownershipValue, 2).divide(divideFactor, RoundingMode.HALF_DOWN),
+                        ownershipValueRangeMin == null ? null : BigDecimal.valueOf(ownershipValueRangeMin, 2).divide(divideFactor, RoundingMode.HALF_DOWN),
+                        ownershipValueRangeMax == null ? null : BigDecimal.valueOf(ownershipValueRangeMax, 2).divide(divideFactor, RoundingMode.HALF_DOWN));
                 }
             }
         }
