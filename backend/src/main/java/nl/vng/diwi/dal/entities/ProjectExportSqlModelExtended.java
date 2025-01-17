@@ -346,5 +346,25 @@ public class ProjectExportSqlModelExtended {
         private Long ownershipValueRangeMax;
         private Long ownershipRentalValueRangeMin;
         private Long ownershipRentalValueRangeMax;
+
+        public SingleValueOrRangeModel<Long> getSingleValueOrRangeValue(boolean isRental, Integer divideFactor) {
+            if (isRental) {
+                if (ownershipRentalValue == null && ownershipRentalValueRangeMin == null) {
+                    return null;
+                } else {
+                    return new SingleValueOrRangeModel<>(ownershipRentalValue == null ? null : ownershipRentalValue / divideFactor,
+                        ownershipRentalValueRangeMin == null ? null : ownershipRentalValueRangeMin / divideFactor,
+                        ownershipRentalValueRangeMax == null ? null : ownershipRentalValueRangeMax / divideFactor);
+                }
+            } else {
+                if (ownershipValue == null && ownershipValueRangeMin == null) {
+                    return null;
+                } else {
+                    return new SingleValueOrRangeModel<>(ownershipValue == null ? null : ownershipValue / divideFactor,
+                        ownershipValueRangeMin == null ? null : ownershipValueRangeMin / divideFactor,
+                        ownershipValueRangeMax == null ? null : ownershipValueRangeMax / divideFactor);
+                }
+            }
+        }
     }
 }

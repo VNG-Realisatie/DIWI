@@ -12,10 +12,12 @@ public class ExcelExportTemplateColumns {
 
     public static final Integer PROJECT_CUSTOM_PROPS_COLUMNS_DEFAULT = 6;
     public static final Integer HOUSEBLOCK_DELIVERY_DATES_COLUMNS_DEFAULT = 10;
+    public static final Integer HOUSEBLOCK_SIZE_COLUMNS_DEFAULT = 7;
     public static final Integer HOUSEBLOCK_TARGET_GROUP_COLUMNS_DEFAULT = 6;
     public static final Integer HOUSEBLOCK_PHYSICAL_APPEARANCE_COLUMNS_DEFAULT = 6;
     public static final Integer HOUSEBLOCK_CUSTOM_PROPS_COLUMNS_DEFAULT = 5;
     public static final Integer HOUSEBLOCK_PRICE_RANGE_COLUMNS_DEFAULT = 4;
+    public static final Integer HOUSEBLOCK_PRICE_VALUES_COLUMNS_DEFAULT = 4;
 
     public List<ExcelTableHeader> templateTableHeaders = new ArrayList<>();
 
@@ -77,7 +79,13 @@ public class ExcelExportTemplateColumns {
         templateTableHeaders.add(new ExcelTableHeader(Section.CONSTRUCTION_DATA, Column.HOUSEBLOCK_DELIVERY_DATE, 52, ExcelTableHeader.Border.NONE));
         templateTableHeaders.add(new ExcelTableHeader(Section.CONSTRUCTION_DATA, Column.HOUSEBLOCK_DELIVERY_DATE, 53, ExcelTableHeader.Border.RIGHT));
 
-        //Grotte - 54 - 60
+        templateTableHeaders.add(new ExcelTableHeader(Section.CONSTRUCTION_DATA, Column.HOUSEBLOCK_SIZE, 54, ExcelTableHeader.Border.LEFT));
+        templateTableHeaders.add(new ExcelTableHeader(Section.CONSTRUCTION_DATA, Column.HOUSEBLOCK_SIZE, 55, ExcelTableHeader.Border.NONE));
+        templateTableHeaders.add(new ExcelTableHeader(Section.CONSTRUCTION_DATA, Column.HOUSEBLOCK_SIZE, 56, ExcelTableHeader.Border.NONE));
+        templateTableHeaders.add(new ExcelTableHeader(Section.CONSTRUCTION_DATA, Column.HOUSEBLOCK_SIZE, 57, ExcelTableHeader.Border.NONE));
+        templateTableHeaders.add(new ExcelTableHeader(Section.CONSTRUCTION_DATA, Column.HOUSEBLOCK_SIZE, 58, ExcelTableHeader.Border.NONE));
+        templateTableHeaders.add(new ExcelTableHeader(Section.CONSTRUCTION_DATA, Column.HOUSEBLOCK_SIZE, 59, ExcelTableHeader.Border.NONE));
+        templateTableHeaders.add(new ExcelTableHeader(Section.CONSTRUCTION_DATA, Column.HOUSEBLOCK_SIZE, 60, ExcelTableHeader.Border.RIGHT));
 
         templateTableHeaders.add(new ExcelTableHeader(Section.CONSTRUCTION_DATA, Column.HOUSEBLOCK_PROPERTY_TYPE_OWNER, 61, ExcelTableHeader.Border.LEFT));
         templateTableHeaders.add(new ExcelTableHeader(Section.CONSTRUCTION_DATA, Column.HOUSEBLOCK_PROPERTY_TYPE_LANDLORD, 62, ExcelTableHeader.Border.NONE));
@@ -153,7 +161,13 @@ public class ExcelExportTemplateColumns {
         templateTableHeaders.add(new ExcelTableHeader(Section.DEMOLITION_DATA, Column.HOUSEBLOCK_DELIVERY_DATE, 121, ExcelTableHeader.Border.NONE));
         templateTableHeaders.add(new ExcelTableHeader(Section.DEMOLITION_DATA, Column.HOUSEBLOCK_DELIVERY_DATE, 122, ExcelTableHeader.Border.RIGHT));
 
-        //Grotte - 123 - 129
+        templateTableHeaders.add(new ExcelTableHeader(Section.DEMOLITION_DATA, Column.HOUSEBLOCK_SIZE, 123, ExcelTableHeader.Border.LEFT));
+        templateTableHeaders.add(new ExcelTableHeader(Section.DEMOLITION_DATA, Column.HOUSEBLOCK_SIZE, 124, ExcelTableHeader.Border.NONE));
+        templateTableHeaders.add(new ExcelTableHeader(Section.DEMOLITION_DATA, Column.HOUSEBLOCK_SIZE, 125, ExcelTableHeader.Border.NONE));
+        templateTableHeaders.add(new ExcelTableHeader(Section.DEMOLITION_DATA, Column.HOUSEBLOCK_SIZE, 126, ExcelTableHeader.Border.NONE));
+        templateTableHeaders.add(new ExcelTableHeader(Section.DEMOLITION_DATA, Column.HOUSEBLOCK_SIZE, 127, ExcelTableHeader.Border.NONE));
+        templateTableHeaders.add(new ExcelTableHeader(Section.DEMOLITION_DATA, Column.HOUSEBLOCK_SIZE, 128, ExcelTableHeader.Border.NONE));
+        templateTableHeaders.add(new ExcelTableHeader(Section.DEMOLITION_DATA, Column.HOUSEBLOCK_SIZE, 129, ExcelTableHeader.Border.RIGHT));
 
         templateTableHeaders.add(new ExcelTableHeader(Section.DEMOLITION_DATA, Column.HOUSEBLOCK_PROPERTY_TYPE_OWNER, 130, ExcelTableHeader.Border.LEFT));
         templateTableHeaders.add(new ExcelTableHeader(Section.DEMOLITION_DATA, Column.HOUSEBLOCK_PROPERTY_TYPE_LANDLORD, 131, ExcelTableHeader.Border.NONE));

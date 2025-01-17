@@ -14,6 +14,7 @@ import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.models.RangeSelectDisabledModel;
 import nl.vng.diwi.models.SelectDisabledModel;
 import nl.vng.diwi.models.SelectModel;
+import nl.vng.diwi.models.SingleValueOrRangeModel;
 import nl.vng.diwi.services.DataExchangeExportError;
 import nl.vng.diwi.services.ExcelStrings;
 import nl.vng.diwi.services.ExcelTableHeader;
@@ -51,6 +52,8 @@ public class ExcelExport {
     public static String EXCEL_TEMPLATE_PATH = "templates/" + EXCEL_TEMPLATE_NAME;
 
     public static String PROJECT_SHEET_NAME = "Data";
+    public static Integer HOUSING_PRICE_DIVIDE_FACTOR = 1;
+    public static String UNKNOWN = "Onbekend";
 
         static public StreamingOutput buildExportObject(
             List<ProjectExportSqlModelExtended> projects,
@@ -119,6 +122,10 @@ public class ExcelExport {
         Set<UUID> projectCustomPropIds = new HashSet<>();
         Set<LocalDate> hhDeliveryDatesSet = new HashSet<>();
         Set<UUID> hbCustomPropIds = new HashSet<>();
+        Set<SingleValueOrRangeModel<BigDecimal>> hbSizes = new HashSet<>();
+        Set<SingleValueOrRangeModel<Long>> hbPurchasePrices = new HashSet<>();
+        Set<SingleValueOrRangeModel<Long>> hbLandlordRentPrices = new HashSet<>();
+        Set<SingleValueOrRangeModel<Long>> hbHousingRentPrices = new HashSet<>();
         projects.forEach(p -> {
             p.getBooleanProperties().forEach(prop -> projectCustomPropIds.add(prop.getPropertyId()));
             p.getTextProperties().forEach(prop -> projectCustomPropIds.add(prop.getPropertyId()));
@@ -132,6 +139,20 @@ public class ExcelExport {
                 h.getCategoryProperties().forEach(prop -> hbCustomPropIds.add(prop.getPropertyId()));
                 h.getNumericProperties().forEach(prop -> hbCustomPropIds.add(prop.getPropertyId()));
                 h.getOrdinalProperties().forEach(prop -> hbCustomPropIds.add(prop.getPropertyId()));
+                if (h.getSize() != null && (h.getSize().getValue() != null || h.getSize().getMin() != null)) {
+                    hbSizes.add(h.getSize());
+                }
+                h.getOwnershipValueList().forEach(o -> {
+                    if (o.getOwnershipType() == OwnershipType.KOOPWONING) {
+                        hbPurchasePrices.add(o.getSingleValueOrRangeValue(false, HOUSING_PRICE_DIVIDE_FACTOR));
+                    }
+                    if (o.getOwnershipType() == OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER) {
+                        hbLandlordRentPrices.add(o.getSingleValueOrRangeValue(true, HOUSING_PRICE_DIVIDE_FACTOR));
+                    }
+                    if (o.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE) {
+                        hbHousingRentPrices.add(o.getSingleValueOrRangeValue(true, HOUSING_PRICE_DIVIDE_FACTOR));
+                    }
+                });
             });
         });
 
@@ -140,6 +161,10 @@ public class ExcelExport {
         List<PropertyModel> hbCustomProps = customProps.stream().filter(cp -> cp.getType() == PropertyKind.CUSTOM && hbCustomPropIds.contains(cp.getId()))
             .sorted(Comparator.comparing(PropertyModel::getName)).toList();
         List<LocalDate> hbDeliveryDates = hhDeliveryDatesSet.stream().sorted().toList();
+        List<SingleValueOrRangeModel<BigDecimal>> hbSizesList = hbSizes.stream().sorted().toList();
+        List<SingleValueOrRangeModel<Long>> hbPurchasePricesList = hbPurchasePrices.stream().filter(Objects::nonNull).sorted().toList();
+        List<SingleValueOrRangeModel<Long>> hbLandlordRentPricesList = hbLandlordRentPrices.stream().filter(Objects::nonNull).sorted().toList();
+        List<SingleValueOrRangeModel<Long>> hbHousingRentPricesList = hbHousingRentPrices.stream().filter(Objects::nonNull).sorted().toList();
 
         PropertyModel targetGroupProp = customProps.stream().filter(cp -> cp.getType() == PropertyKind.FIXED && cp.getName().equals(Constants.FIXED_PROPERTY_TARGET_GROUP))
             .findFirst().orElse(null);
@@ -200,6 +225,24 @@ public class ExcelExport {
             newColumnIndex = header.insertColumn(ExcelTableHeader.Section.DEMOLITION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_PROPERTY_HOUSING_ASSOCIATION_RENTAL_PRICE_RANGE_CATEGORY);
             insertNewColumnBefore(sheet, newColumnIndex);
         }
+        for (int i = ExcelExportTemplateColumns.HOUSEBLOCK_PRICE_VALUES_COLUMNS_DEFAULT - 1; i < hbPurchasePricesList.size(); i++) {
+            newColumnIndex = header.insertColumn(ExcelTableHeader.Section.CONSTRUCTION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_PROPERTY_PURCHASE_PRICE);
+            insertNewColumnBefore(sheet, newColumnIndex);
+            newColumnIndex = header.insertColumn(ExcelTableHeader.Section.DEMOLITION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_PROPERTY_PURCHASE_PRICE);
+            insertNewColumnBefore(sheet, newColumnIndex);
+        }
+        for (int i = ExcelExportTemplateColumns.HOUSEBLOCK_PRICE_VALUES_COLUMNS_DEFAULT - 1; i < hbLandlordRentPricesList.size(); i++) {
+            newColumnIndex = header.insertColumn(ExcelTableHeader.Section.CONSTRUCTION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_PROPERTY_LANDLORD_RENTAL_PRICE);
+            insertNewColumnBefore(sheet, newColumnIndex);
+            newColumnIndex = header.insertColumn(ExcelTableHeader.Section.DEMOLITION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_PROPERTY_LANDLORD_RENTAL_PRICE);
+            insertNewColumnBefore(sheet, newColumnIndex);
+        }
+        for (int i = ExcelExportTemplateColumns.HOUSEBLOCK_PRICE_VALUES_COLUMNS_DEFAULT - 1; i < hbHousingRentPricesList.size(); i++) {
+            newColumnIndex = header.insertColumn(ExcelTableHeader.Section.CONSTRUCTION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_PROPERTY_HOUSING_ASSOCIATION_RENTAL_PRICE);
+            insertNewColumnBefore(sheet, newColumnIndex);
+            newColumnIndex = header.insertColumn(ExcelTableHeader.Section.DEMOLITION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_PROPERTY_HOUSING_ASSOCIATION_RENTAL_PRICE);
+            insertNewColumnBefore(sheet, newColumnIndex);
+        }
         for (int i = ExcelExportTemplateColumns.HOUSEBLOCK_TARGET_GROUP_COLUMNS_DEFAULT; i < targetGroupPropOptions.size(); i++) {
             newColumnIndex = header.insertColumn(ExcelTableHeader.Section.CONSTRUCTION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_TARGET_GROUP);
             insertNewColumnBefore(sheet, newColumnIndex);
@@ -216,6 +259,12 @@ public class ExcelExport {
             newColumnIndex = header.insertColumn(ExcelTableHeader.Section.CONSTRUCTION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_CUSTOM_PROPERTY);
             insertNewColumnBefore(sheet, newColumnIndex);
             newColumnIndex = header.insertColumn(ExcelTableHeader.Section.DEMOLITION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_CUSTOM_PROPERTY);
+            insertNewColumnBefore(sheet, newColumnIndex);
+        }
+        for (int i = ExcelExportTemplateColumns.HOUSEBLOCK_SIZE_COLUMNS_DEFAULT - 1; i < hbSizesList.size(); i++) {
+            newColumnIndex = header.insertColumn(ExcelTableHeader.Section.CONSTRUCTION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_SIZE);
+            insertNewColumnBefore(sheet, newColumnIndex);
+            newColumnIndex = header.insertColumn(ExcelTableHeader.Section.DEMOLITION_DATA, ExcelTableHeader.Column.HOUSEBLOCK_SIZE);
             insertNewColumnBefore(sheet, newColumnIndex);
         }
 
@@ -235,6 +284,14 @@ public class ExcelExport {
         int hbDemolitionLandlordPriceRangeCount = 0;
         int hbConstructionHousingAssocPriceRangeCount = 0;
         int hbDemolitionHousingAssocPriceRangeCount = 0;
+        int hbConstructionSizeCount = 0;
+        int hbDemolitionSizeCount = 0;
+        int hbConstructionPurchasePriceCount = 0;
+        int hbDemolitionPurchasePriceCount = 0;
+        int hbConstructionLandlordPriceCount = 0;
+        int hbDemolitionLandlordPriceCount = 0;
+        int hbConstructionHousingAssocPriceCount = 0;
+        int hbDemolitionHousingAssocPriceCount = 0;
 
         for (var h : header.templateTableHeaders) {
             switch (h.getColumn()) {
@@ -279,6 +336,19 @@ public class ExcelExport {
                         hbDemolitionDDCount++;
                     }
                 }
+                case HOUSEBLOCK_SIZE -> {
+                    if (h.getSection() == ExcelTableHeader.Section.CONSTRUCTION_DATA && hbConstructionSizeCount < hbSizesList.size()) {
+                        h.setSubheaderRangeValue(hbSizesList.get(hbConstructionSizeCount));
+                        createCellWithValue(suhheaderRow, h.getColumnIndex(), getSingleValueOrRangeSubheaderName(h.getSubheaderRangeValue()), styles, null);
+                        hbConstructionSizeCount++;
+                    } else if (h.getSection() == ExcelTableHeader.Section.DEMOLITION_DATA && hbDemolitionSizeCount < hbSizesList.size()) {
+                        h.setSubheaderRangeValue(hbSizesList.get(hbDemolitionSizeCount));
+                        createCellWithValue(suhheaderRow, h.getColumnIndex(), getSingleValueOrRangeSubheaderName(h.getSubheaderRangeValue()), styles, null);
+                        hbDemolitionSizeCount++;
+                    } else if (UNKNOWN.equalsIgnoreCase(getCellStringValue(suhheaderRow.getCell(h.getColumnIndex())))) {
+                        h.setSubheader(UNKNOWN);
+                    }
+                }
                 case HOUSEBLOCK_PROPERTY_PURCHASE_PRICE_RANGE_CATEGORY -> {
                     if (h.getSection() == ExcelTableHeader.Section.CONSTRUCTION_DATA && hbConstructionPurchasePriceRangeCount < priceRangeBuyOptions.size()) {
                         RangeSelectDisabledModel rsm = priceRangeBuyOptions.get(hbConstructionPurchasePriceRangeCount);
@@ -292,10 +362,22 @@ public class ExcelExport {
                         h.setSubheader(getRangeSubheaderName(rsm));
                         createCellWithValue(suhheaderRow, h.getColumnIndex(), h.getSubheader(), styles, null);
                         hbDemolitionPurchasePriceRangeCount++;
-                    } else if ("Onbekend".equalsIgnoreCase(getCellStringValue(suhheaderRow.getCell(h.getColumnIndex())))) {
-                        h.setSubheader("Onbekend");
+                    } else if (UNKNOWN.equalsIgnoreCase(getCellStringValue(suhheaderRow.getCell(h.getColumnIndex())))) {
+                        h.setSubheader(UNKNOWN);
                     }
                 }
+                case HOUSEBLOCK_PROPERTY_PURCHASE_PRICE -> {
+                    if (h.getSection() == ExcelTableHeader.Section.CONSTRUCTION_DATA && hbConstructionPurchasePriceCount < hbPurchasePricesList.size()) {
+                        h.setSubheaderRangeValue(hbPurchasePricesList.get(hbConstructionPurchasePriceCount));
+                        createCellWithValue(suhheaderRow, h.getColumnIndex(), getSingleValueOrRangeSubheaderName(h.getSubheaderRangeValue()), styles, null);
+                        hbConstructionPurchasePriceCount++;
+                    } else if (h.getSection() == ExcelTableHeader.Section.DEMOLITION_DATA && hbDemolitionPurchasePriceCount < hbPurchasePricesList.size()) {
+                        h.setSubheaderRangeValue(hbPurchasePricesList.get(hbDemolitionPurchasePriceCount));
+                        createCellWithValue(suhheaderRow, h.getColumnIndex(), getSingleValueOrRangeSubheaderName(h.getSubheaderRangeValue()), styles, null);
+                        hbDemolitionPurchasePriceCount++;
+                    }
+                }
+
                 case HOUSEBLOCK_PROPERTY_LANDLORD_RENTAL_PRICE_RANGE_CATEGORY -> {
                     if (h.getSection() == ExcelTableHeader.Section.CONSTRUCTION_DATA && hbConstructionLandlordPriceRangeCount < priceRangeRentOptions.size()) {
                         RangeSelectDisabledModel rsm = priceRangeRentOptions.get(hbConstructionLandlordPriceRangeCount);
@@ -309,10 +391,22 @@ public class ExcelExport {
                         h.setSubheader(getRangeSubheaderName(rsm));
                         createCellWithValue(suhheaderRow, h.getColumnIndex(), h.getSubheader(), styles, null);
                         hbDemolitionLandlordPriceRangeCount++;
-                    } else if ("Onbekend".equalsIgnoreCase(getCellStringValue(suhheaderRow.getCell(h.getColumnIndex())))) {
-                        h.setSubheader("Onbekend");
+                    } else if (UNKNOWN.equalsIgnoreCase(getCellStringValue(suhheaderRow.getCell(h.getColumnIndex())))) {
+                        h.setSubheader(UNKNOWN);
                     }
                 }
+                case HOUSEBLOCK_PROPERTY_LANDLORD_RENTAL_PRICE -> {
+                    if (h.getSection() == ExcelTableHeader.Section.CONSTRUCTION_DATA && hbConstructionLandlordPriceCount < hbLandlordRentPricesList.size()) {
+                        h.setSubheaderRangeValue(hbLandlordRentPricesList.get(hbConstructionLandlordPriceCount));
+                        createCellWithValue(suhheaderRow, h.getColumnIndex(), getSingleValueOrRangeSubheaderName(h.getSubheaderRangeValue()), styles, null);
+                        hbConstructionLandlordPriceCount++;
+                    } else if (h.getSection() == ExcelTableHeader.Section.DEMOLITION_DATA && hbDemolitionLandlordPriceCount < hbLandlordRentPricesList.size()) {
+                        h.setSubheaderRangeValue(hbLandlordRentPricesList.get(hbDemolitionLandlordPriceCount));
+                        createCellWithValue(suhheaderRow, h.getColumnIndex(), getSingleValueOrRangeSubheaderName(h.getSubheaderRangeValue()), styles, null);
+                        hbDemolitionLandlordPriceCount++;
+                    }
+                }
+
                 case HOUSEBLOCK_PROPERTY_HOUSING_ASSOCIATION_RENTAL_PRICE_RANGE_CATEGORY -> {
                     if (h.getSection() == ExcelTableHeader.Section.CONSTRUCTION_DATA && hbConstructionHousingAssocPriceRangeCount < priceRangeRentOptions.size()) {
                         RangeSelectDisabledModel rsm = priceRangeRentOptions.get(hbConstructionHousingAssocPriceRangeCount);
@@ -326,8 +420,19 @@ public class ExcelExport {
                         h.setSubheader(getRangeSubheaderName(rsm));
                         createCellWithValue(suhheaderRow, h.getColumnIndex(), h.getSubheader(), styles, null);
                         hbDemolitionHousingAssocPriceRangeCount++;
-                    } else if ("Onbekend".equalsIgnoreCase(getCellStringValue(suhheaderRow.getCell(h.getColumnIndex())))) {
-                        h.setSubheader("Onbekend");
+                    } else if (UNKNOWN.equalsIgnoreCase(getCellStringValue(suhheaderRow.getCell(h.getColumnIndex())))) {
+                        h.setSubheader(UNKNOWN);
+                    }
+                }
+                case HOUSEBLOCK_PROPERTY_HOUSING_ASSOCIATION_RENTAL_PRICE -> {
+                    if (h.getSection() == ExcelTableHeader.Section.CONSTRUCTION_DATA && hbConstructionHousingAssocPriceCount < hbHousingRentPricesList.size()) {
+                        h.setSubheaderRangeValue(hbHousingRentPricesList.get(hbConstructionHousingAssocPriceCount));
+                        createCellWithValue(suhheaderRow, h.getColumnIndex(), getSingleValueOrRangeSubheaderName(h.getSubheaderRangeValue()), styles, null);
+                        hbConstructionHousingAssocPriceCount++;
+                    } else if (h.getSection() == ExcelTableHeader.Section.DEMOLITION_DATA && hbDemolitionHousingAssocPriceCount < hbHousingRentPricesList.size()) {
+                        h.setSubheaderRangeValue(hbHousingRentPricesList.get(hbDemolitionHousingAssocPriceCount));
+                        createCellWithValue(suhheaderRow, h.getColumnIndex(), getSingleValueOrRangeSubheaderName(h.getSubheaderRangeValue()), styles, null);
+                        hbDemolitionHousingAssocPriceCount++;
                     }
                 }
 
@@ -385,6 +490,22 @@ public class ExcelExport {
             sb.append(rsm.getMax());
         } else {
             sb.append("Inf");
+        }
+        return sb.toString();
+    }
+
+    private static <T extends Comparable<? super T>> String getSingleValueOrRangeSubheaderName(SingleValueOrRangeModel<T> svrm) {
+        StringBuilder sb = new StringBuilder();
+        if (svrm.getValue() != null) {
+            sb.append(svrm.getValue());
+        } else {
+            sb.append(svrm.getMin());
+            sb.append(" - ");
+            if (svrm.getMax() != null) {
+                sb.append(svrm.getMax());
+            } else {
+                sb.append("Inf");
+            }
         }
         return sb.toString();
     }
@@ -595,6 +716,17 @@ public class ExcelExport {
                         }
                     }
 
+                    case HOUSEBLOCK_SIZE -> {
+                        if (columnHeader.getSubheaderRangeValue() != null && Objects.equals(columnHeader.getSubheaderRangeValue(), houseblock.getSize())) {
+                            createCellWithValue(row, columnHeader.getColumnIndex(), houseblock.getMutationAmount(), styles,
+                                CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
+                        } else if (UNKNOWN.equalsIgnoreCase(columnHeader.getSubheader()) &&
+                            (houseblock.getSize() == null || (houseblock.getSize().getValue() == null && houseblock.getSize().getMin() == null))) {
+                            createCellWithValue(row, columnHeader.getColumnIndex(), houseblock.getMutationAmount(), styles,
+                                CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
+                        }
+                    }
+
                     case HOUSEBLOCK_PROPERTY_TYPE_OWNER -> {
                         int htOwnerAmount = houseblock.getOwnershipValueList().stream()
                             .filter(o -> o.getOwnershipType() == OwnershipType.KOOPWONING)
@@ -637,7 +769,7 @@ public class ExcelExport {
                             amount = houseblock.getOwnershipValueList().stream().filter(ov -> ov.getOwnershipType() == OwnershipType.KOOPWONING &&
                                     columnHeader.getSubheaderUuid().equals(ov.getOwnershipRangeCategoryId()))
                                 .mapToInt(ProjectExportSqlModelExtended.OwnershipValueSqlModel::getOwnershipAmount).sum();
-                        } else if ("Onbekend".equalsIgnoreCase(columnHeader.getSubheader())) {
+                        } else if (UNKNOWN.equalsIgnoreCase(columnHeader.getSubheader())) {
                             amount = houseblock.getOwnershipValueList().stream().filter(ov -> ov.getOwnershipType() == OwnershipType.KOOPWONING &&
                                     ov.getOwnershipRangeCategoryId() == null && ov.getOwnershipValue() == null && ov.getOwnershipValueRangeMin() == null)
                                 .mapToInt(ProjectExportSqlModelExtended.OwnershipValueSqlModel::getOwnershipAmount).sum();
@@ -647,13 +779,26 @@ public class ExcelExport {
                                 CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
                         }
                     }
+                    case HOUSEBLOCK_PROPERTY_PURCHASE_PRICE -> {
+                        if (columnHeader.getSubheaderRangeValue() != null) {
+                            int amount = houseblock.getOwnershipValueList().stream()
+                                .filter(ov -> ov.getOwnershipType() == OwnershipType.KOOPWONING &&
+                                    Objects.equals(columnHeader.getSubheaderRangeValue(), ov.getSingleValueOrRangeValue(false, HOUSING_PRICE_DIVIDE_FACTOR)))
+                                .mapToInt(ProjectExportSqlModelExtended.OwnershipValueSqlModel::getOwnershipAmount).sum();
+                            if (amount > 0) {
+                                createCellWithValue(row, columnHeader.getColumnIndex(), amount, styles,
+                                    CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
+                            }
+                        }
+                    }
+
                     case HOUSEBLOCK_PROPERTY_LANDLORD_RENTAL_PRICE_RANGE_CATEGORY -> {
                         int amount = 0;
                         if (columnHeader.getSubheaderUuid() != null) {
                             amount = houseblock.getOwnershipValueList().stream().filter(ov -> ov.getOwnershipType() == OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER &&
                                     columnHeader.getSubheaderUuid().equals(ov.getOwnershipRentalRangeCategoryId()))
                                 .mapToInt(ProjectExportSqlModelExtended.OwnershipValueSqlModel::getOwnershipAmount).sum();
-                        } else if ("Onbekend".equalsIgnoreCase(columnHeader.getSubheader())) {
+                        } else if (UNKNOWN.equalsIgnoreCase(columnHeader.getSubheader())) {
                             amount = houseblock.getOwnershipValueList().stream().filter(ov -> ov.getOwnershipType() == OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER &&
                                     ov.getOwnershipRentalRangeCategoryId() == null && ov.getOwnershipRentalValue() == null && ov.getOwnershipRentalValueRangeMin() == null)
                                 .mapToInt(ProjectExportSqlModelExtended.OwnershipValueSqlModel::getOwnershipAmount).sum();
@@ -663,13 +808,26 @@ public class ExcelExport {
                                 CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
                         }
                     }
+                    case HOUSEBLOCK_PROPERTY_LANDLORD_RENTAL_PRICE -> {
+                        if (columnHeader.getSubheaderRangeValue() != null) {
+                            int amount = houseblock.getOwnershipValueList().stream()
+                                .filter(ov -> ov.getOwnershipType() == OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER &&
+                                    Objects.equals(columnHeader.getSubheaderRangeValue(), ov.getSingleValueOrRangeValue(true, HOUSING_PRICE_DIVIDE_FACTOR)))
+                                .mapToInt(ProjectExportSqlModelExtended.OwnershipValueSqlModel::getOwnershipAmount).sum();
+                            if (amount > 0) {
+                                createCellWithValue(row, columnHeader.getColumnIndex(), amount, styles,
+                                    CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
+                            }
+                        }
+                    }
+
                     case HOUSEBLOCK_PROPERTY_HOUSING_ASSOCIATION_RENTAL_PRICE_RANGE_CATEGORY -> {
                         int amount = 0;
                         if (columnHeader.getSubheaderUuid() != null) {
                             amount = houseblock.getOwnershipValueList().stream().filter(ov -> ov.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE &&
                                     columnHeader.getSubheaderUuid().equals(ov.getOwnershipRentalRangeCategoryId()))
                                 .mapToInt(ProjectExportSqlModelExtended.OwnershipValueSqlModel::getOwnershipAmount).sum();
-                        } else if ("Onbekend".equalsIgnoreCase(columnHeader.getSubheader())) {
+                        } else if (UNKNOWN.equalsIgnoreCase(columnHeader.getSubheader())) {
                             amount = houseblock.getOwnershipValueList().stream().filter(ov -> ov.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE &&
                                     ov.getOwnershipRentalRangeCategoryId() == null && ov.getOwnershipRentalValue() == null && ov.getOwnershipRentalValueRangeMin() == null)
                                 .mapToInt(ProjectExportSqlModelExtended.OwnershipValueSqlModel::getOwnershipAmount).sum();
@@ -677,6 +835,18 @@ public class ExcelExport {
                         if (amount > 0) {
                             createCellWithValue(row, columnHeader.getColumnIndex(), amount, styles,
                                 CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
+                        }
+                    }
+                    case HOUSEBLOCK_PROPERTY_HOUSING_ASSOCIATION_RENTAL_PRICE -> {
+                        if (columnHeader.getSubheaderRangeValue() != null) {
+                            int amount = houseblock.getOwnershipValueList().stream()
+                                .filter(ov -> ov.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE &&
+                                    Objects.equals(columnHeader.getSubheaderRangeValue(), ov.getSingleValueOrRangeValue(true, HOUSING_PRICE_DIVIDE_FACTOR)))
+                                .mapToInt(ProjectExportSqlModelExtended.OwnershipValueSqlModel::getOwnershipAmount).sum();
+                            if (amount > 0) {
+                                createCellWithValue(row, columnHeader.getColumnIndex(), amount, styles,
+                                    CellStyleType.getCellStyleType(CellContentType.INTEGER, columnHeader.getBorderStyle()));
+                            }
                         }
                     }
 

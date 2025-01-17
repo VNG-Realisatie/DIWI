@@ -3,6 +3,7 @@ package nl.vng.diwi.services;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import nl.vng.diwi.models.PropertyModel;
+import nl.vng.diwi.models.SingleValueOrRangeModel;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -22,6 +23,7 @@ public class ExcelTableHeader {
     private PropertyModel propertyModel;
     private LocalDate subheaderDateValue;
     private UUID subheaderUuid;
+    private SingleValueOrRangeModel subheaderRangeValue;
     private Border borderStyle;
 
     public ExcelTableHeader(Section section, Column column, int columnIndex, Border borderStyle) {
@@ -93,7 +95,7 @@ public class ExcelTableHeader {
         HOUSEBLOCK_MUTATION_BUILD("Bouw", false),
         HOUSEBLOCK_MUTATION_DEMOLISH("Sloop", false),
         HOUSEBLOCK_DELIVERY_DATE("Opleverdatum", true),
-        //Grootte - ignore section for now
+        HOUSEBLOCK_SIZE("Grootte categorie", true), //Grootte - ignore section for now
         HOUSEBLOCK_PROPERTY_TYPE_OWNER("Koopwoning", false),
         HOUSEBLOCK_PROPERTY_TYPE_LANDLORD("Particuliere verhuurder", false),
         HOUSEBLOCK_PROPERTY_TYPE_HOUSING_ASSOCIATION("Huur woningcorporatie", false),
