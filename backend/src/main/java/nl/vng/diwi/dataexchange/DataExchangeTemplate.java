@@ -116,6 +116,7 @@ public class DataExchangeTemplate {
         geoJSONTemplate.setMinimumConfidentiality(Confidentiality.PRIVATE);
 
         var excelTemplate = new DataExchangeTemplate();
+        excelTemplate.setMinimumConfidentiality(Confidentiality.PRIVATE);
 
         templates = ImmutableMap.of(DataExchangeType.ESRI_ZUID_HOLLAND, zuidHollandTemplate, DataExchangeType.GEO_JSON, geoJSONTemplate, DataExchangeType.EXCEL, excelTemplate);
     }

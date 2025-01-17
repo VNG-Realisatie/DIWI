@@ -241,7 +241,7 @@ public class DataExchangeService {
 
         List<PropertyModel> customProps = repo.getPropertyDAO().getPropertiesList(null, false, null);
         return switch (dataExchangeModel.getType()) {
-        case ESRI_ZUID_HOLLAND -> EsriZuidHollandExport.buildExportObject(
+            case ESRI_ZUID_HOLLAND -> EsriZuidHollandExport.buildExportObject(
                 configModel,
                 repo.getProjectsDAO().getProjectsExportList(dxExportModel, loggedUser),
                 customProps,
@@ -249,7 +249,7 @@ public class DataExchangeService {
                 dxExportModel.getExportDate(),
                 configModel.getMinimumExportConfidentiality(),
                 errors);
-        case GEO_JSON -> GeoJSONExport.buildExportObject(
+            case GEO_JSON -> GeoJSONExport.buildExportObject(
                 configModel,
                 repo.getProjectsDAO().getProjectsExportListExtended(dxExportModel, loggedUser),
                 customProps,
@@ -257,11 +257,9 @@ public class DataExchangeService {
                 dxExportModel.getExportDate(),
                 configModel.getMinimumExportConfidentiality(),
                 errors);
-        case EXCEL -> ExcelExport.buildExportObject(
+            case EXCEL -> ExcelExport.buildExportObject(
                 repo.getProjectsDAO().getProjectsExportListExtended(dxExportModel, loggedUser),
-                customProps,
-                configModel.getMinimumExportConfidentiality(),
-                errors);
+                customProps);
         };
 
     }

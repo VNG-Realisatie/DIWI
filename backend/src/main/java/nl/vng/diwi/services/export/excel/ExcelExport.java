@@ -57,9 +57,7 @@ public class ExcelExport {
 
         static public StreamingOutput buildExportObject(
             List<ProjectExportSqlModelExtended> projects,
-            List<PropertyModel> customProps,
-            Confidentiality minConfidentiality,
-            List<DataExchangeExportError> errors) {
+            List<PropertyModel> customProps) {
 
 
         try {
