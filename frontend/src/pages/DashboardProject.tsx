@@ -108,28 +108,35 @@ export const DashboardProject = () => {
 
     useEffect(() => {
         if (projectId) {
-            getDashboardProject(projectId).then((data) => {
-                const convertedPAData = data.physicalAppearance.map((d) => {
-                    return { label: d.name, value: d.amount };
-                });
-                const convertedPurchaseData = data.priceCategoryOwn.map((d) => {
-                    return {
-                        label: `${d.name}\n(€${d.min} ${d.max ? `- €${d.max}` : t("generic.andMore")})`,
-                        value: d.amount,
-                    };
-                });
-                const convertedRentData = data.priceCategoryRent.map((d) => {
-                    return {
-                        label: `${d.name}\n(€${d.min} ${d.max ? `- €${d.max}` : t("generic.andMore")})`,
-                        value: d.amount,
-                    };
-                });
+            getDashboardProject(projectId)
+                .then((data) => {
+                    const convertedPAData = data.physicalAppearance.map((d) => {
+                        return { label: d.name, value: d.amount };
+                    });
+                    const convertedPurchaseData = data.priceCategoryOwn.map((d) => {
+                        return {
+                            label: `${d.name}\n(€${d.min} ${d.max ? `- €${d.max}` : t("generic.andMore")})`,
+                            value: d.amount,
+                        };
+                    });
+                    const convertedRentData = data.priceCategoryRent.map((d) => {
+                        return {
+                            label: `${d.name}\n(€${d.min} ${d.max ? `- €${d.max}` : t("generic.andMore")})`,
+                            value: d.amount,
+                        };
+                    });
 
-                setPhysicalAppearance(convertedPAData);
-                setPlanning(data.planning);
-                setPriceSegmentsPurchase(convertedPurchaseData);
-                setPriceSegmentsRent(convertedRentData);
-            });
+                    setPhysicalAppearance(convertedPAData);
+                    setPlanning(data.planning);
+                    setPriceSegmentsPurchase(convertedPurchaseData);
+                    setPriceSegmentsRent(convertedRentData);
+                })
+                .catch(() => {
+                    setPhysicalAppearance([]);
+                    setPlanning([]);
+                    setPriceSegmentsPurchase([]);
+                    setPriceSegmentsRent([]);
+                });
         }
     }, [projectId, t]);
 
