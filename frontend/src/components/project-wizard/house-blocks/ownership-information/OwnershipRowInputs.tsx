@@ -143,6 +143,8 @@ export const OwnershipRowInputs = ({
                     multiple={false}
                     translationPath="createProject.houseBlocksForm.ownershipAndValue.type."
                     tooltipInfoText={t("tooltipInfo.soort.title")}
+                    displayError={!ownership.type}
+                    error={t("wizard.houseBlocks.ownershipType")}
                 />
             </Grid>
             {!isPolicyGoal && (

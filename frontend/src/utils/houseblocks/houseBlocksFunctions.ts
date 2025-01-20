@@ -10,10 +10,11 @@ export const validateOwnership = (houseBlock: HouseBlockWithCustomProperties) =>
         houseBlock.ownershipValue.some((owner) => owner.amount !== undefined && !isOwnershipAmountValid(owner.amount)) ||
         houseBlock.ownershipValue.some(
             (owner) =>
-                !owner.rentalValueCategoryId &&
-                !owner.valueCategoryId &&
-                JSON.stringify(owner.rentalValue) === JSON.stringify({ value: null, min: null, max: null }) &&
-                JSON.stringify(owner.value) === JSON.stringify({ value: null, min: null, max: null }),
+                !owner.type ||
+                (!owner.rentalValueCategoryId &&
+                    !owner.valueCategoryId &&
+                    JSON.stringify(owner.rentalValue) === JSON.stringify({ value: null, min: null, max: null }) &&
+                    JSON.stringify(owner.value) === JSON.stringify({ value: null, min: null, max: null })),
         ) ||
         houseBlock.ownershipValue.some((owner) => {
             const { value, rentalValue } = owner;
