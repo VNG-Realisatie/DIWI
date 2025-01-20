@@ -63,7 +63,7 @@ export const validateHouseBlock = (
 };
 
 export const isOwnershipAmountValid = (amount: number): boolean => {
-    return Number.isInteger(amount) && amount >= 0;
+    return Number.isInteger(amount) && amount > 0;
 };
 
 export function checkConsistencyOwnerShipValueAndMutation(houseBlock: HouseBlock) {
