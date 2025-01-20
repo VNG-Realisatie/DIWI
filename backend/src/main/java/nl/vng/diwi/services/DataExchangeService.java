@@ -9,6 +9,7 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import jakarta.ws.rs.core.StreamingOutput;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.DataExchange;
 import nl.vng.diwi.dal.entities.DataExchangeOption;
@@ -34,6 +35,7 @@ import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.services.export.excel.ExcelExport;
 import nl.vng.diwi.services.export.geojson.GeoJSONExport;
 import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandExport;
 
@@ -215,8 +217,8 @@ public class DataExchangeService {
 
     }
 
-    public Object getExportObject(VngRepository repo, ConfigModel configModel, UUID dataExchangeUuid, DataExchangeExportModel dxExportModel,
-            List<DataExchangeExportError> errors, LoggedUser loggedUser)
+    public StreamingOutput getExportObject(VngRepository repo, ConfigModel configModel, UUID dataExchangeUuid, DataExchangeExportModel dxExportModel,
+                                           List<DataExchangeExportError> errors, LoggedUser loggedUser)
             throws VngNotFoundException, VngBadRequestException {
 
         DataExchangeModel dataExchangeModel = getDataExchangeModel(repo, dataExchangeUuid, false);
@@ -240,7 +242,7 @@ public class DataExchangeService {
 
         List<PropertyModel> customProps = repo.getPropertyDAO().getPropertiesList(null, false, null);
         return switch (dataExchangeModel.getType()) {
-        case ESRI_ZUID_HOLLAND -> EsriZuidHollandExport.buildExportObject(
+            case ESRI_ZUID_HOLLAND -> EsriZuidHollandExport.buildExportObject(
                 configModel,
                 repo.getProjectsDAO().getProjectsExportList(dxExportModel, loggedUser),
                 customProps,
@@ -248,14 +250,17 @@ public class DataExchangeService {
                 dxExportModel.getExportDate(),
                 configModel.getMinimumExportConfidentiality(),
                 errors);
-        case GEO_JSON -> GeoJSONExport.buildExportObject(
+            case GEO_JSON -> GeoJSONExport.buildExportObject(
                 configModel,
-                    repo.getProjectsDAO().getProjectsExportListExtended(dxExportModel, loggedUser),
+                repo.getProjectsDAO().getProjectsExportListExtended(dxExportModel, loggedUser),
                 customProps,
                 dxPropertiesMap,
                 dxExportModel.getExportDate(),
                 configModel.getMinimumExportConfidentiality(),
                 errors);
+            case EXCEL -> ExcelExport.buildExportObject(
+                repo.getProjectsDAO().getProjectsExportListExtended(dxExportModel, loggedUser),
+                customProps);
         };
 
     }
