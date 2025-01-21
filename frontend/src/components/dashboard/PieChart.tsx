@@ -22,7 +22,7 @@ export const DashboardPieChart = ({ chartData, isPdfChart }: Props) => {
         height: 300,
     };
 
-    const chartDataWithoutNegativeValues = chartData.filter((data) => data.value >= 0);
+    const chartDataWithoutNegativeValues = chartData.filter((data) => data.value >= 0 && data.label);
 
     const chartMargin = isSmallScreen && !isPdfChart ? { top: 10, bottom: 100, left: 50 } : { top: 10, bottom: 50, left: 10, right: 10 };
 

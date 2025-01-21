@@ -7,11 +7,13 @@ import { UserGroup } from "../api/projectsServices";
 import { Typography } from "@mui/material";
 import { t } from "i18next";
 import { CustomDashboardForm } from "../components/dashboard/CustomDashboardForm";
+import { useCategoriesStore } from "../hooks/useCategoriesStore";
 
 const emptyBlueprint: Blueprint = {
     name: "",
     userGroups: [],
     elements: [],
+    categories: [],
 };
 
 export const CreateCustomDashboard = () => {
@@ -26,10 +28,14 @@ export const CreateCustomDashboard = () => {
         DELIVERABLES: true,
         DELAYED_PROJECTS: true,
     };
+
     const [visibility, setVisibility] = useState(initialVisibility);
     const [newBlueprint, setNewBlueprint] = useState<Blueprint>(emptyBlueprint);
     const [userGroups, setUserGroups] = useState<UserGroup[]>([]);
     const [pdfExport, setPdfExport] = useState(false);
+    const { initialCategoryVisibility } = useCategoriesStore();
+
+    const [categoriesVisibility, setCategoriesVisibility] = useState<{ [key: string]: boolean }>(initialCategoryVisibility);
 
     const { id } = useParams();
     const { setAlert } = useAlert();
@@ -46,6 +52,17 @@ export const CreateCustomDashboard = () => {
                         }
                     });
                     setVisibility({ ...initialVisibility });
+
+                    const updatedCategoryVisibility = { ...categoriesVisibility };
+
+                    Object.keys(categoriesVisibility).forEach((key) => {
+                        if (!blueprint.categories.includes(key)) {
+                            updatedCategoryVisibility[key] = false;
+                        }
+                    });
+
+                    setCategoriesVisibility(updatedCategoryVisibility);
+
                     setNewBlueprint(blueprint);
                 } catch (error) {
                     if (error instanceof Error) setAlert(error.message, "error");
@@ -60,6 +77,7 @@ export const CreateCustomDashboard = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
+
     if (!visibility) {
         return null;
     }
@@ -74,8 +92,16 @@ export const CreateCustomDashboard = () => {
                 setUserGroups={setUserGroups}
                 setPdfExport={setPdfExport}
                 pdfExport={pdfExport}
+                categoriesVisibility={categoriesVisibility}
             />
-            <DashboardCharts isPrintingFullDashboard={false} isPdf={pdfExport} visibility={visibility} setVisibility={setVisibility} />
+            <DashboardCharts
+                isPrintingFullDashboard={false}
+                isPdf={pdfExport}
+                visibility={visibility}
+                setVisibility={setVisibility}
+                categoriesVisibility={categoriesVisibility}
+                setCategoriesVisibility={setCategoriesVisibility}
+            />
         </>
     );
 };

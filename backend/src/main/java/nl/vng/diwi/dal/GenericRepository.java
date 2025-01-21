@@ -24,6 +24,7 @@ public class GenericRepository implements AutoCloseable {
             Arrays.asList(
                 Blueprint.class,
                 BlueprintState.class,
+                BlueprintToCategory.class,
                 BlueprintToElement.class,
                 BlueprintToUserGroup.class,
                 DataExchange.class,
@@ -118,7 +119,8 @@ public class GenericRepository implements AutoCloseable {
                 ProjectHouseblockCustomPropertySqlModel.class,
                 PlanSqlModel.class,
                 DataExchangePropertySqlModel.class,
-                ProjectExportSqlModel.class);
+                ProjectExportSqlModel.class,
+                ProjectExportSqlModelExtended.class);
         return entities;
     }
 

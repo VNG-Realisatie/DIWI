@@ -4,17 +4,18 @@ import { t } from "i18next";
 import { ConfidentialityLevelOptions, confidentialityLevelOptions } from "../components/table/constants";
 import { useState } from "react";
 import useAlert from "../hooks/useAlert";
-import { GenericOptionType, ProjectsTableView } from "../components/project/ProjectsTableView";
+import { GenericOptionType } from "../components/project/ProjectsTableView";
 import { getProject, updateProject } from "../api/projectsServices";
 import { useNavigate, useParams } from "react-router-dom";
 import { confidentialityUpdate } from "../Paths";
+import ProjectsTableWrapper from "../components/project/ProjectTableWrapper";
 
 function ConfidentialityUpdateTable() {
     const [confidentialityLevel, setConfidentialityLevel] = useState<GenericOptionType<ConfidentialityLevelOptions>>(
         confidentialityLevelOptions[confidentialityLevelOptions.length - 1],
     );
     const navigate = useNavigate();
-    const { id: selectedExportId } = useParams();
+    const { exportId } = useParams();
     const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
     const { setAlert } = useAlert();
 
@@ -34,7 +35,7 @@ function ConfidentialityUpdateTable() {
             }
         } finally {
             setSelectedProjects([]);
-            navigate(confidentialityUpdate.toPath() + `/${selectedExportId}`);
+            navigate(confidentialityUpdate.toPath({ exportId }));
         }
     };
 
@@ -71,7 +72,11 @@ function ConfidentialityUpdateTable() {
                     </Button>
                 </Box>
             </Stack>
-            <ProjectsTableView isConfidentialityUpdatePage={true} setSelectedProjects={setSelectedProjects} selectedProjects={selectedProjects} />
+            <ProjectsTableWrapper
+                redirectPath={confidentialityUpdate.toPath({ exportId })}
+                setSelectedProjects={setSelectedProjects}
+                selectedProjects={selectedProjects}
+            />
         </>
     );
 }

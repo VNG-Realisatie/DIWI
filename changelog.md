@@ -1,5 +1,28 @@
 # Change log
 
+## DIWI RELEASE 1.9.0
+
+## ADDED
+
+- Policy goals are now selectable by category in blueprints section
+- Added a page with the audit trail within each individual project
+- Added a Geojson export template
+
+### CHANGED
+
+- Projects table was refactored, we are now using a component that can be used independantly over multiple pages
+- Changed the milestone proces to clean up old and unused milestones, as this could cause conflicts when changing names and dates multiple times
+
+### FIXED
+
+- Fixed typo's in importer error messages
+- Fixed an issue where missing project phases from imports would be shown in the dashboard as a separate category
+- Fixed a typo in the user group pop up
+- Fixed a bug where changing project and block dates repeatedly back and forth would change the ownership ID, which should be stable in this instance
+- Fixed an issue whith coordinate system mismatches, causing plots to end up in the Siberian Sea, which in turn caused an issue that would not let the user correct the plot
+- Fixed an issue where imported files were stored in the wrong folder within DIWI, hence not being retrievable
+- Fixed a bug where the dashboard PDF would only show one policy goal per policy goal category
+
 ## DIWI RELEASE 1.8.1
 
 ### CHANGED

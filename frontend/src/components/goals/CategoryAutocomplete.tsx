@@ -1,27 +1,23 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Autocomplete, TextField, IconButton, InputAdornment } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { createCategory, CustomCategory, deleteCategory, getAllCategories, Goal } from "../../api/goalsServices";
+import { CustomCategory, Goal } from "../../api/goalsServices";
 import InputLabelStack from "../project/inputs/InputLabelStack";
 import { t } from "i18next";
+import { observer } from "mobx-react-lite";
+import { useCategoriesStore } from "../../hooks/useCategoriesStore";
 
 type Props = {
     goal: Goal;
     setGoal: (goal: Goal) => void;
 };
 
-const CategoryAutocomplete = ({ goal, setGoal }: Props) => {
+const CategoryAutocomplete = observer(({ goal, setGoal }: Props) => {
     const [inputValue, setInputValue] = useState("");
-    const [categories, setCategories] = useState<CustomCategory[]>([]);
+    const { categories, createCategoryAction, deleteCategoryAction } = useCategoriesStore();
 
-    useEffect(() => {
-        getAllCategories().then((categories) => {
-            setCategories(categories);
-        });
-    }, []);
-
-    const categoryExists = categories.some((category) => category.name.toLowerCase() === inputValue.toLowerCase());
+    const categoryExists = categories.some((category) => category.name && category.name.toLowerCase() === inputValue.toLowerCase());
 
     const handleCategoryChange = (_: React.ChangeEvent<unknown>, newValue: string | CustomCategory | null) => {
         if (typeof newValue === "string") {
@@ -31,21 +27,15 @@ const CategoryAutocomplete = ({ goal, setGoal }: Props) => {
         }
     };
 
-    const handleAddCategory = () => {
+    const handleAddCategory = async () => {
         if (categoryExists || inputValue.trim() === "") return;
-        createCategory({ name: inputValue }).then((newCategory) => {
-            setCategories([...categories, newCategory]);
-            setGoal({ ...goal, category: newCategory });
-            setInputValue("");
-        });
+        await createCategoryAction({ name: inputValue, id: "" });
+        setInputValue("");
     };
 
-    const handleDeleteCategory = (categoryId: string) => {
-        deleteCategory(categoryId).then(() => {
-            setCategories(categories.filter((category) => category.id !== categoryId));
-            setGoal({ ...goal, category: null });
-            setInputValue("");
-        });
+    const handleDeleteCategory = async (categoryId: string) => {
+        await deleteCategoryAction(categoryId);
+        setInputValue("");
     };
 
     return (
@@ -57,7 +47,7 @@ const CategoryAutocomplete = ({ goal, setGoal }: Props) => {
                 inputValue={inputValue}
                 onInputChange={(_, newInputValue) => setInputValue(newInputValue)}
                 options={categories}
-                getOptionLabel={(option) => (typeof option === "string" ? option : option.name)}
+                getOptionLabel={(option) => (typeof option === "string" ? option : option.name || "")}
                 renderOption={(props, option) => (
                     <li {...props} key={option.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                         {option.name}
@@ -86,6 +76,6 @@ const CategoryAutocomplete = ({ goal, setGoal }: Props) => {
             />
         </InputLabelStack>
     );
-};
+});
 
 export default CategoryAutocomplete;

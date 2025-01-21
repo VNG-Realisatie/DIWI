@@ -1,5 +1,7 @@
 package nl.vng.diwi.dal.entities;
 
+import org.hibernate.Session;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -30,4 +32,11 @@ public class ProjectTextPropertyChangelog extends MilestoneChangeDataSuperclass 
     @Column(name = "value")
     private String value;
 
+    @Override
+    public Object getCopyWithoutMilestones(Session session) {
+        var copy = new ProjectTextPropertyChangelog();
+        copy.setProject(project);
+        copy.setValue(value);
+        return copy;
+    }
 }

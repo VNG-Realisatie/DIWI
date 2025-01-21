@@ -3,10 +3,12 @@ package nl.vng.diwi.services;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.Blueprint;
 import nl.vng.diwi.dal.entities.BlueprintState;
+import nl.vng.diwi.dal.entities.BlueprintToCategory;
 import nl.vng.diwi.dal.entities.BlueprintToElement;
 import nl.vng.diwi.dal.entities.BlueprintToUserGroup;
 import nl.vng.diwi.dal.entities.MultiProjectDashboardSqlModel;
 import nl.vng.diwi.dal.entities.MultiProjectPolicyGoalSqlModel;
+import nl.vng.diwi.dal.entities.PlanCategory;
 import nl.vng.diwi.dal.entities.ProjectDashboardSqlModel;
 import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.dal.entities.UserGroup;
@@ -79,7 +81,7 @@ public class DashboardService {
         Blueprint blueprint = new Blueprint();
         repo.persist(blueprint);
 
-        createBlueprintStateWithElementsAndUserGroups(repo, blueprint, blueprintModel, zdtNow, loggedUserUuid);
+        createBlueprintStateWithElementsAndUserGroupsAndCategories(repo, blueprint, blueprintModel, zdtNow, loggedUserUuid);
 
         return blueprint.getId();
 
@@ -93,7 +95,7 @@ public class DashboardService {
         return false;
     }
 
-    private void createBlueprintStateWithElementsAndUserGroups(VngRepository repo, Blueprint blueprint, BlueprintModel blueprintModel, ZonedDateTime zdtNow, UUID loggedUserUuid) {
+    private void createBlueprintStateWithElementsAndUserGroupsAndCategories(VngRepository repo, Blueprint blueprint, BlueprintModel blueprintModel, ZonedDateTime zdtNow, UUID loggedUserUuid) {
         BlueprintState blueprintState = new BlueprintState();
         blueprintState.setBlueprint(blueprint);
         blueprintState.setName(blueprintModel.getName());
@@ -110,6 +112,14 @@ public class DashboardService {
             });
         }
 
+        if (blueprintModel.getCategories() != null) {
+            blueprintModel.getCategories().forEach(c -> {
+                BlueprintToCategory btc = new BlueprintToCategory();
+                btc.setBlueprintState(blueprintState);
+                btc.setCategory(repo.getReferenceById(PlanCategory.class, c));
+                repo.persist(btc);
+            });
+        }
 
         if (blueprintModel.getUserGroups() != null) {
             blueprintModel.getUserGroups().forEach(ug -> {
@@ -145,7 +155,7 @@ public class DashboardService {
         deleteBlueprint(repo, blueprintModel.getUuid(), loggedUserUuid);
 
         Blueprint blueprint = repo.getReferenceById(Blueprint.class, blueprintModel.getUuid());
-        createBlueprintStateWithElementsAndUserGroups(repo, blueprint, blueprintModel, zdtNow, loggedUserUuid);
+        createBlueprintStateWithElementsAndUserGroupsAndCategories(repo, blueprint, blueprintModel, zdtNow, loggedUserUuid);
 
     }
 }

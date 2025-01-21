@@ -2,6 +2,10 @@ package nl.vng.diwi.dal.entities;
 
 import java.util.List;
 
+import org.hibernate.Session;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import nl.vng.diwi.dal.GenericRepository;
@@ -17,6 +21,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ProjectPlanologischePlanstatusChangelog extends MilestoneChangeDataSuperclass {
 
     @JsonIgnoreProperties("planologischePlanstatus")
@@ -25,6 +31,29 @@ public class ProjectPlanologischePlanstatusChangelog extends MilestoneChangeData
     private Project project;
 
     @JsonIgnoreProperties("planStatusChangelog")
-    @OneToMany(mappedBy="planStatusChangelog", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "planStatusChangelog", fetch = FetchType.LAZY)
     private List<ProjectPlanologischePlanstatusChangelogValue> value;
+
+    @Override
+    public Object getCopyWithoutMilestones(Session session) {
+        var copy = new ProjectPlanologischePlanstatusChangelog();
+        copy.setProject(project);
+        var newValues = value.stream()
+                .map(v -> {
+                    var newValue = new ProjectPlanologischePlanstatusChangelogValue();
+                    newValue.setPlanStatus(v.getPlanStatus());
+                    newValue.setPlanStatusChangelog(copy);
+                    return newValue;
+                })
+                .toList();
+        copy.setValue(newValues);
+        return copy;
+    }
+
+    @Override public void persistValues(Session session) {
+        for(var singleValue: value) {
+            singleValue.setPlanStatusChangelog(this);
+            session.persist(singleValue);
+        }
+    }
 }

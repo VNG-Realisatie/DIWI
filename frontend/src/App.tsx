@@ -15,7 +15,6 @@ import { PolicyLists } from "./pages/PolicyLists";
 import { DashboardProjects } from "./pages/DashboardProjects";
 import { ExchangeData } from "./pages/ExchangeData";
 import { ExchangeImportData } from "./pages/ExchangeImportData";
-import { ExportProject } from "./pages/ExportProject";
 import { ImportedProjects } from "./pages/ImportedProjects";
 import { About } from "./pages/About";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -48,6 +47,8 @@ import ExportAdminPage from "./pages/ExportAdminPage";
 import ExportSettings from "./pages/ExportSettings";
 import ExportWizard from "./pages/ExportWizard";
 import ConfidentialityUpdateTable from "./pages/ConfidentialityUpdateTable";
+import ProjectAuditTable from "./pages/ProjectAudit";
+import { CategoriesProvider } from "./context/GoalCategoriesContext";
 
 enum UserStatus {
     Authenticated,
@@ -240,6 +241,16 @@ function App() {
                             }
                         />
                         <Route
+                            path={Paths.projectAudit.path}
+                            element={
+                                <ProjectProvider>
+                                    <ProjectDetail>
+                                        <ProjectAuditTable />
+                                    </ProjectDetail>
+                                </ProjectProvider>
+                            }
+                        />
+                        <Route
                             path={Paths.projectDetail.path}
                             element={
                                 <ProjectProvider>
@@ -276,13 +287,29 @@ function App() {
                         <Route path={Paths.policygoal.path} element={<PolicyLists />} />
                         <Route path={Paths.policygoalDashboard.path} element={<PolicyLists />} />
                         <Route path={Paths.goals.path} element={<Goals />} />
-                        <Route path={Paths.goalWizard.path} element={<GoalWizard />} />
-                        <Route path={Paths.goalMenu.path} element={<GoalWizard />} />
+                        <Route
+                            path={Paths.goalWizard.path}
+                            element={
+                                <CategoriesProvider>
+                                    <GoalWizard />
+                                </CategoriesProvider>
+                            }
+                        />
+                        <Route
+                            path={Paths.goalMenu.path}
+                            element={
+                                <CategoriesProvider>
+                                    <GoalWizard />
+                                </CategoriesProvider>
+                            }
+                        />
                         <Route
                             path={Paths.dashboard.path}
                             element={
                                 <ProjectProvider>
-                                    <DashboardProjects />
+                                    <CategoriesProvider>
+                                        <DashboardProjects />
+                                    </CategoriesProvider>
                                 </ProjectProvider>
                             }
                         />
@@ -290,7 +317,9 @@ function App() {
                             path={Paths.createCustomDashboard.path}
                             element={
                                 <ProjectProvider>
-                                    <CreateCustomDashboard />
+                                    <CategoriesProvider>
+                                        <CreateCustomDashboard />
+                                    </CategoriesProvider>
                                 </ProjectProvider>
                             }
                         />
@@ -298,7 +327,9 @@ function App() {
                             path={Paths.updateCustomDashboard.path}
                             element={
                                 <ProjectProvider>
-                                    <CreateCustomDashboard />
+                                    <CategoriesProvider>
+                                        <CreateCustomDashboard />
+                                    </CategoriesProvider>
                                 </ProjectProvider>
                             }
                         />
@@ -308,7 +339,9 @@ function App() {
                             element={
                                 <ProjectProvider>
                                     <HouseBlockProvider>
-                                        <DashboardProject />
+                                        <CategoriesProvider>
+                                            <DashboardProject />
+                                        </CategoriesProvider>
                                     </HouseBlockProvider>
                                 </ProjectProvider>
                             }
@@ -319,22 +352,6 @@ function App() {
                         <Route path={Paths.importGeoJson.path} element={<ImportPage functionality="geojson" />} />
                         <Route path={Paths.importSquit.path} element={<ImportPage functionality="squit" />} />
                         <Route
-                            path={Paths.exportExcel.path}
-                            element={
-                                <ProjectProvider>
-                                    <ExportProject excelExport />
-                                </ProjectProvider>
-                            }
-                        />
-                        <Route
-                            path={Paths.exportProvince.path}
-                            element={
-                                <ProjectProvider>
-                                    <ExportProject excelExport={false} />
-                                </ProjectProvider>
-                            }
-                        />
-                        <Route
                             path={Paths.exportSettings.path}
                             element={
                                 <ProjectProvider>
@@ -343,7 +360,7 @@ function App() {
                             }
                         />
                         <Route
-                            path={Paths.configuredExport.path + "/:id"}
+                            path={Paths.configuredExport.path}
                             element={
                                 <ProjectProvider>
                                     <ExportWizard />
@@ -351,7 +368,7 @@ function App() {
                             }
                         />
                         <Route
-                            path={Paths.confidentialityUpdate.path + "/:id"}
+                            path={Paths.confidentialityUpdate.path}
                             element={
                                 <ProjectProvider>
                                     <ConfidentialityUpdateTable />

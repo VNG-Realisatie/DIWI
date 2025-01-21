@@ -58,6 +58,9 @@ export interface paths {
     "/rest/dataexchange/{id}/export": {
         post: operations["exportProjects"];
     };
+    "/rest/dataexchange/types": {
+        get: operations["getTypes"];
+    };
     "/rest/goals": {
         get: operations["getAllGoals"];
         post: operations["createGoal"];
@@ -196,6 +199,7 @@ export interface components {
                 | "DELIVERABLES"
                 | "DELAYED_PROJECTS"
             )[];
+            categories?: string[];
         };
         UserGroupModel: {
             /** Format: uuid */
@@ -292,7 +296,7 @@ export interface components {
             id: string;
             name: string;
             /** @enum {string} */
-            type: "ESRI_ZUID_HOLLAND";
+            type: "ESRI_ZUID_HOLLAND" | "GEO_JSON";
             apiKey?: string;
             projectUrl?: string;
             projectDetailUrl?: string;
@@ -1193,6 +1197,16 @@ export interface operations {
             default: {
                 content: {
                     "application/json": unknown;
+                };
+            };
+        };
+    };
+    getTypes: {
+        responses: {
+            /** @description default response */
+            default: {
+                content: {
+                    "application/json": ("ESRI_ZUID_HOLLAND" | "GEO_JSON")[];
                 };
             };
         };

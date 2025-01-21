@@ -8,8 +8,8 @@ export type Category = {
 };
 
 export type CustomCategory = {
-    id?: string;
-    name: string;
+    id: string;
+    name: string | null;
 };
 
 export type GoalDirection = "MINIMAL" | "MAXIMAL" | "";

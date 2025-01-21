@@ -1,0 +1,1 @@
+ALTER TYPE diwi.data_exchange_type ADD VALUE 'GEO_JSON' AFTER 'ESRI_ZUID_HOLLAND';
