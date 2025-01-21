@@ -640,6 +640,7 @@
         "startDateWarningMissing": "​Vul het veld Opvoerdatum in project in",
         "mutationAmountWarning": "​Vul het veld aantal in",
         "mutationKindWarning": "​Vul het veld mutatiesoort in",
+        "ownershipType": "Vul het veld soort in",
         "generalInformation": {
           "title": "Algemene informatie"
         }
@@ -703,7 +704,7 @@
           "groupes": "Groepen",
           "users": "Gebruikers"
         },
-        "groupName": "Group naam",
+        "groupName": "Groep naam",
         "addMember": "Leden toevoegen",
         "addUser": "Gebruiker toevoegen",
         "addGroup": "Groep toevoegen",

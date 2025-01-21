@@ -13,7 +13,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @EqualsAndHashCode
 @ToString
-public class SingleValueOrRangeModel<T extends Comparable<? super T>> {
+public class SingleValueOrRangeModel<T extends Comparable<? super T>> implements Comparable<SingleValueOrRangeModel<T>> {
 
     private T value;
     private T min;
@@ -55,6 +55,23 @@ public class SingleValueOrRangeModel<T extends Comparable<? super T>> {
             return Range.closedInfinite(min);
         } else {
             return Range.closed(min, max);
+        }
+    }
+
+    @Override
+    public int compareTo(SingleValueOrRangeModel<T> o) {
+        if (value != null) {
+            if (o.value != null) {
+                return value.compareTo(o.value);
+            } else {
+                return value.compareTo(o.min);
+            }
+        } else {
+            if (o.value != null) {
+                return min.compareTo(o.value);
+            } else {
+                return min.compareTo(o.min);
+            }
         }
     }
 }
