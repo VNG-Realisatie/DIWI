@@ -7,8 +7,6 @@ import UserContext from "../../context/UserContext";
 import useAlert from "../../hooks/useAlert";
 import { confidentialityUpdate, configuredExport } from "../../Paths";
 import { useNavigate, useParams } from "react-router-dom";
-import ProjectContext from "../../context/ProjectContext";
-import { GridPaginationModel } from "@mui/x-data-grid";
 
 type Props = {
     redirectPath: string;
@@ -31,7 +29,6 @@ const ProjectsTableWrapper = ({
     const [showDialog, setShowDialog] = useState(false);
     const { setAlert } = useAlert();
     const navigate = useNavigate();
-    const { setPaginationInfo } = useContext(ProjectContext) as { setPaginationInfo: Dispatch<SetStateAction<GridPaginationModel>> };
     const { exportId = "defaultExportId" } = useParams<{ exportId?: string }>();
 
     const configuredExportPath = configuredExport.toPath({ exportId });
@@ -44,7 +41,6 @@ const ProjectsTableWrapper = ({
 
     const handleNavigate = (path: string) => {
         navigate(path);
-        setPaginationInfo({ page: 1, pageSize: 10 });
     };
 
     return (
@@ -55,12 +51,7 @@ const ProjectsTableWrapper = ({
                 overflowX: "auto",
             }}
         >
-            <ProjectsTableView
-                setSelectedProjects={setSelectedProjects}
-                selectedProjects={selectedProjects}
-                redirectPath={redirectPath}
-                setPaginationInfo={setPaginationInfo}
-            />
+            <ProjectsTableView setSelectedProjects={setSelectedProjects} selectedProjects={selectedProjects} redirectPath={redirectPath} />
             <Dialog open={showDialog} onClose={() => setShowDialog(false)} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
                 <DialogTitle id="alert-dialog-title">{t("projects.confirmExport")}</DialogTitle>
                 <DialogActions sx={{ px: 5, py: 3, ml: 15 }}>
