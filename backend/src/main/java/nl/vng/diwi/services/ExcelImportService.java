@@ -156,6 +156,9 @@ public class ExcelImportService {
                                              HOUSEBLOCK_PROPERTY_LANDLORD_RENTAL_PRICE_RANGE_CATEGORY ->
                                             addTableHeaderFixedPropertyModel(tableHeader, Constants.FIXED_PROPERTY_PRICE_RANGE_RENT,
                                                 ObjectType.WONINGBLOK, PropertyType.RANGE_CATEGORY, nextCell, activeProperties, excelErrors);
+                                        default -> {
+                                            // Only some enum values need to be handled here
+                                        }
                                     }
                                 }
                             }
@@ -241,6 +244,9 @@ public class ExcelImportService {
                                                     excelErrors.add(getExcelError(null, null, nextCell, subheader, ImportError.ERROR.UNKNOWN_PRICE_RENT_RANGE_CATEGORY));
                                                 }
                                             }
+                                        }
+                                        default -> {
+                                            // Only some cases need to be handled here
                                         }
                                     }
                                 }
@@ -427,6 +433,9 @@ public class ExcelImportService {
                                 case TEXT -> addProjectTextProperty(rowModel, propertyModel, nextCell, formatter, evaluator, rowErrors);
                             }
                         }
+                        default -> {
+                            // Only some cases need to be handled here
+                        }
                     }
                 }
                 if (tableHeader.getSection() == ExcelTableHeader.Section.HOUSE_NUMBERS) {
@@ -504,6 +513,9 @@ public class ExcelImportService {
                                     case BOOLEAN -> addHouseblockBooleanProperty(rowModel.getId(), houseblockRowModel, propertyModel, nextCell, formatter, evaluator, rowErrors);
                                     case TEXT -> addHouseblockTextProperty(rowModel.getId(), houseblockRowModel, propertyModel, nextCell, formatter, evaluator, rowErrors);
                                 }
+                            }
+                            default -> {
+                                // Only some cases need to be handled here
                             }
                         }
                     }
@@ -655,6 +667,9 @@ public class ExcelImportService {
                     ownershipValue.setRentalValue(subheaderRange);
                     ownershipValue.setValue(null);
                 }
+                default -> {
+                    // Only some cases need to be handled here
+                }
             }
             houseblockRowModel.getOwnershipValues().add(ownershipValue);
         }
@@ -683,6 +698,9 @@ public class ExcelImportService {
                 case HOUSEBLOCK_PROPERTY_HOUSING_ASSOCIATION_RENTAL_PRICE_RANGE_CATEGORY -> {
                     ownershipValue.setType(OwnershipType.HUURWONING_WONINGCORPORATIE);
                     ownershipValue.setRentalValueCategoryId(rangePropertyUuid);
+                }
+                default -> {
+                    // Only some cases need to be handled here
                 }
             }
             houseblockRowModel.getOwnershipValues().add(ownershipValue);
