@@ -25,7 +25,7 @@ export const DashboardProjects = () => {
     const [pdfExport, setPdfExport] = useState(false);
 
     const { municipalityName } = useContext(ConfigContext);
-    const { rows } = useCustomSearchParams(undefined, undefined, { page: 1, pageSize: 10000 });
+    const { rows } = useCustomSearchParams();
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { allowedActions } = useContext(UserContext);
