@@ -129,6 +129,11 @@ export const DashboardProject = () => {
                 setPlanning(data.planning);
                 setPriceSegmentsPurchase(convertedPurchaseData);
                 setPriceSegmentsRent(convertedRentData);
+            }).catch(() => {
+                setPhysicalAppearance([]);
+                setPlanning([]);
+                setPriceSegmentsPurchase([]);
+                setPriceSegmentsRent([]);
             });
         }
     }, [projectId, t]);
