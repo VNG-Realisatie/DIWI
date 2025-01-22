@@ -12,6 +12,12 @@ import { ExportData, getExportData } from "../api/exportServices";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+const iconMapping: { [key in ExportData["type"]]: { src: string; alt: string } } = {
+    ESRI_ZUID_HOLLAND: { src: zuidHollandIcon, alt: "ESRI_ZUID_HOLLAND" },
+    GEO_JSON: { src: geojsonIcon, alt: "GEO_JSON" },
+    EXCEL: { src: excelIcon, alt: "EXCEL" },
+};
+
 export const ExchangeImportData = () => {
     const { t } = useTranslation();
     const { allowedActions } = useContext(UserContext);
@@ -39,10 +45,10 @@ export const ExchangeImportData = () => {
                         </Typography>
                         <Stack mt={1} direction="row" alignItems="flex-start" justifyContent="flex-start" flexWrap="wrap">
                             <DataCardItem text={t("exchangeData.excel")} link={Paths.importExcel.path} isImport>
-                                <img src={excelIcon} alt="excel" />
+                                <img src={excelIcon} alt={t("admin.export.EXCEL")} />
                             </DataCardItem>
                             <DataCardItem text={t("exchangeData.geojson")} link={Paths.importGeoJson.path} isImport>
-                                <img src={geojsonIcon} alt="geojson" />
+                                <img src={geojsonIcon} alt={t("admin.export.GEO_JSON")} />
                             </DataCardItem>
                         </Stack>
                     </>
@@ -58,16 +64,10 @@ export const ExchangeImportData = () => {
                                 .map((exportItem) => (
                                     <DataCardItem key={exportItem.id} text={exportItem.name} link={Paths.configuredExport.toPath({ exportId: exportItem.id })}>
                                         <img
-                                            src={
-                                                exportItem.type === "ESRI_ZUID_HOLLAND"
-                                                    ? zuidHollandIcon
-                                                    : exportItem.type === "GEO_JSON"
-                                                      ? geojsonIcon
-                                                      : undefined
-                                            }
+                                            src={iconMapping[exportItem.type]?.src}
                                             height="125"
                                             width="125"
-                                            alt={exportItem.type === "ESRI_ZUID_HOLLAND" ? "zuid-holland" : "geojson"}
+                                            alt={t(`admin.export.${iconMapping[exportItem.type]?.alt}`)}
                                         />
                                     </DataCardItem>
                                 ))}

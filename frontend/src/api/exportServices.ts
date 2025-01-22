@@ -31,6 +31,7 @@ export type ExportData = {
     properties?: ExportProperty[];
     valid?: boolean;
     validationErrors?: ValidationError[];
+    minimumConfidentiality?: ConfidentialityLevel;
 };
 
 export type ValidationError = {
