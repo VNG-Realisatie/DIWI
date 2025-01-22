@@ -25,7 +25,7 @@ import useAlert from "../../hooks/useAlert";
 import { Project } from "../../api/projectsServices";
 import { useTranslation } from "react-i18next";
 import { CategoriesCell } from "../table/CategoriesCell";
-import { confidentialityLevelOptions, planningPlanStatus, planTypeOptions, projectPhaseOptions } from "../table/constants";
+import { ConfidentialityLevelOptions, confidentialityLevelOptions, planningPlanStatus, planTypeOptions, projectPhaseOptions } from "../table/constants";
 
 import useCustomSearchParams from "../../hooks/useCustomSearchParams";
 
@@ -37,14 +37,14 @@ import { confidentialityUpdate, configuredExport } from "../../Paths";
 import useProperties from "../../hooks/useProperties";
 import { ColumnConfig, ColumnField, initialColumnConfig, loadColumnConfig, saveColumnConfig } from "./projectTableConfig";
 import TableComponent from "./TableComponent";
-import { ConfidentialityLevel } from "../../types/enums";
 import { getAllowedConfidentialityLevels } from "../../utils/exportUtils";
+import { ExportData, getExportDataById } from "../../api/exportServices";
 
 type Props = {
     redirectPath: string;
     setSelectedProjects?: Dispatch<SetStateAction<string[]>>;
     selectedProjects?: string[];
-    minimumConfidentiality?: ConfidentialityLevel;
+    confidentialityLevel?: GenericOptionType<ConfidentialityLevelOptions>;
 };
 
 export interface GenericOptionType<Type> {
@@ -64,7 +64,7 @@ const confidentialityLevelComparator = (v1: string, v2: string): number => {
     return label1.localeCompare(label2);
 };
 
-export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProjects = [], redirectPath, minimumConfidentiality }: Props) => {
+export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProjects = [], redirectPath, confidentialityLevel }: Props) => {
     const navigate = useNavigate();
     const { setAlert } = useAlert();
     const { t } = useTranslation();
@@ -76,9 +76,19 @@ export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProj
     const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
     const { municipalityRolesOptions, districtOptions, neighbourhoodOptions, municipalityOptions } = useProperties();
     const [showCheckBox, setShowCheckBox] = useState(false);
+    const [exportData, setExportData] = useState<ExportData>();
 
     const configuredExportPath = configuredExport.toPath({ exportId });
     const confidentialityUpdatePath = confidentialityUpdate.toPath({ exportId });
+
+    useEffect(() => {
+        if (!exportId || redirectPath != configuredExportPath) return;
+        const fetchData = async () => {
+            const exportdata = await getExportDataById(exportId);
+            setExportData(exportdata);
+        };
+        fetchData();
+    }, [exportId, redirectPath, configuredExportPath]);
 
     useEffect(() => {
         if (filterUrl !== "") {
@@ -93,12 +103,12 @@ export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProj
     }, [redirectPath, configuredExportPath, confidentialityUpdatePath]);
 
     useEffect(() => {
-        if (!minimumConfidentiality || redirectPath != configuredExportPath) return;
+        if (!confidentialityLevel || redirectPath != configuredExportPath) return;
 
         setFilterModel({
-            items: [{ field: "confidentialityLevel", operator: "isAnyOf", value: getAllowedConfidentialityLevels(minimumConfidentiality) }],
+            items: [{ field: "confidentialityLevel", operator: "isAnyOf", value: getAllowedConfidentialityLevels(confidentialityLevel.id) }],
         });
-    }, [redirectPath, configuredExportPath, setFilterModel, minimumConfidentiality]);
+    }, [redirectPath, configuredExportPath, setFilterModel, confidentialityLevel]);
 
     useEffect(() => {
         if (selectedProjects.length === 0) {
@@ -447,8 +457,8 @@ export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProj
                     } as GridLocaleText
                 }
                 isRowSelectable={(params) => {
-                    if (!minimumConfidentiality) return false;
-                    return getAllowedConfidentialityLevels(minimumConfidentiality).includes(params.row.confidentialityLevel);
+                    if (!exportData?.minimumConfidentiality) return true;
+                    return getAllowedConfidentialityLevels(exportData.minimumConfidentiality).includes(params.row.confidentialityLevel);
                 }}
                 slots={{
                     toolbar: () => (

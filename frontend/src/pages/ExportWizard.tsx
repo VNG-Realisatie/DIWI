@@ -1,6 +1,6 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext } from "react";
 import { Grid, Box, Typography, Alert, Stack, Accordion, AccordionSummary, AccordionDetails, List } from "@mui/material";
-import { downloadExportData, ExportData, exportProjects, getExportDataById } from "../api/exportServices";
+import { downloadExportData, exportProjects } from "../api/exportServices";
 import { t } from "i18next";
 import ActionNotAllowed from "./ActionNotAllowed";
 import { useNavigate, useParams } from "react-router-dom";
@@ -10,6 +10,9 @@ import { GridExpandMoreIcon } from "@mui/x-data-grid";
 import { PropertyListItem } from "../components/PropertyListItem";
 import ProjectsTableWrapper from "../components/project/ProjectTableWrapper";
 import { getAllowedConfidentialityLevels } from "../utils/exportUtils";
+import { ConfidentialityLevel } from "../types/enums";
+import { GenericOptionType } from "../components/project/ProjectsTableView";
+import { ConfidentialityLevelOptions } from "../components/table/constants";
 
 type DownloadError = {
     cat1?: string;
@@ -29,16 +32,10 @@ const ExportWizard = () => {
     const { allowedActions } = useContext(UserContext);
     const navigate = useNavigate();
     const [errors, setErrors] = useState<DownloadError[]>([]);
-    const [exportData, setExportData] = useState<ExportData>();
-
-    useEffect(() => {
-        if (!exportId) return;
-        const fetchData = async () => {
-            const exportdata = await getExportDataById(exportId);
-            setExportData(exportdata);
-        };
-        fetchData();
-    }, [exportId]);
+    const [confidentialityLevel, setConfidentialityLevel] = useState<GenericOptionType<ConfidentialityLevelOptions>>({
+        id: "EXTERNAL_REGIONAL",
+        name: "5_EXTERNAL_REGIONAL",
+    });
 
     if (!allowedActions.includes("VIEW_DATA_EXCHANGES")) {
         return <ActionNotAllowed errorMessage={t("admin.export.actionNotAllowed")} />;
@@ -60,11 +57,11 @@ const ExportWizard = () => {
     };
 
     const handleDownload = async () => {
-        if (!exportId || !exportData) return;
+        if (!exportId) return;
 
         try {
             const projectIds = selectedProjects;
-            const allowedConfidentialityLevels = exportData.minimumConfidentiality ? getAllowedConfidentialityLevels(exportData.minimumConfidentiality) : [];
+            const allowedConfidentialityLevels = getAllowedConfidentialityLevels(confidentialityLevel.id as ConfidentialityLevel);
 
             const body = {
                 exportDate: new Date().toISOString(),
@@ -90,7 +87,8 @@ const ExportWizard = () => {
                 </Grid>
                 <Grid item xs={12}>
                     <ProjectsTableWrapper
-                        minimumConfidentiality={exportData?.minimumConfidentiality}
+                        confidentialityLevel={confidentialityLevel}
+                        setConfidentialityLevel={setConfidentialityLevel}
                         redirectPath={configuredExport.toPath({ exportId })}
                         setSelectedProjects={setSelectedProjects}
                         selectedProjects={selectedProjects}
