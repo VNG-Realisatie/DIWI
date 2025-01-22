@@ -2,6 +2,8 @@ import { ConfidentialityLevel } from "../types/enums";
 import { getJson, postJson, putJson, deleteJson, downloadPost } from "../utils/requests";
 import { API_URI } from "../utils/urls";
 
+export type ExportType = "ESRI_ZUID_HOLLAND" | "GEO_JSON" | "EXCEL";
+
 export type PropertyOption = {
     id: string;
     name: string;
@@ -29,6 +31,7 @@ export type ExportData = {
     properties?: ExportProperty[];
     valid?: boolean;
     validationErrors?: ValidationError[];
+    minimumConfidentiality?: ConfidentialityLevel;
 };
 
 export type ValidationError = {
@@ -73,4 +76,8 @@ export async function exportProjects(exportId: string, projectIds?: string[]): P
     const url = `${API_URI}/projects/export/${exportId}`;
     const body = projectIds && projectIds.length > 0 ? { projectIds } : undefined;
     await postJson(url, body);
+}
+
+export async function getExportTypes(): Promise<ExportType[]> {
+    return getJson(`${API_URI}/dataexchange/types`);
 }

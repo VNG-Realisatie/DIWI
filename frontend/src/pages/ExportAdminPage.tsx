@@ -1,9 +1,18 @@
-import { useState, ChangeEvent, useEffect, useContext } from "react";
+import { useState, ChangeEvent, useEffect, useContext, useCallback, useMemo } from "react";
 import { Grid, Button, Box, Alert } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import TextInput from "../components/project/inputs/TextInput";
 import CategoryInput from "../components/project/inputs/CategoryInput";
-import { addExportData, ExportData, getExportDataById, updateExportData, ExportProperty, ValidationError } from "../api/exportServices";
+import {
+    addExportData,
+    ExportData,
+    getExportDataById,
+    updateExportData,
+    ExportProperty,
+    ValidationError,
+    getExportTypes,
+    ExportType,
+} from "../api/exportServices";
 import useAlert from "../hooks/useAlert";
 import { useNavigate, useParams } from "react-router-dom";
 import ActionNotAllowed from "./ActionNotAllowed";
@@ -14,6 +23,11 @@ import { exportSettings, updateExportSettings } from "../Paths";
 import UserContext from "../context/UserContext";
 import { doesPropertyMatchExportProperty } from "../utils/exportUtils";
 import { useCustomPropertyStore } from "../hooks/useCustomPropertyStore";
+
+type ExportOption = {
+    id: ExportType;
+    name: string;
+};
 
 type SelectedOption = {
     id: string;
@@ -39,28 +53,64 @@ type FormData = {
     [key: string]: string;
 };
 
-type ExportTypes = "ESRI_ZUID_HOLLAND" | "GEO_JSON";
+const initialType = "ESRI_ZUID_HOLLAND";
 
 function ExportAdminPage() {
     const { t } = useTranslation();
     const { id } = useParams<string>();
     const { allowedActions } = useContext(UserContext);
     const navigate = useNavigate();
-    const typeConfig: TypeConfig = {
-        ESRI_ZUID_HOLLAND: {
-            fields: [{ name: "name", label: t("admin.export.name"), type: "text", mandatory: true }],
+    const [exportTypes, setExportTypes] = useState<ExportType[]>([]);
+
+    //can be mapped using exportTypes, but fields need to be clarified, so hardcoded for now.
+    const typeConfig: TypeConfig = useMemo(
+        () => ({
+            ESRI_ZUID_HOLLAND: {
+                fields: [{ name: "name", label: t("admin.export.name"), type: "text", mandatory: true }],
+            },
+            GEO_JSON: {
+                fields: [{ name: "name", label: t("admin.export.name"), type: "text", mandatory: true }],
+            },
+            EXCEL: {
+                fields: [{ name: "name", label: t("admin.export.name"), type: "text", mandatory: true }],
+            },
+        }),
+        [t],
+    );
+
+    const [type, setType] = useState<ExportOption>({
+        id: initialType,
+        name: t(`admin.export.${initialType}`),
+    });
+
+    const generateInitialState = useCallback(
+        (type: ExportOption): FormData => {
+            const fields = typeConfig[type.id]?.fields || [];
+            const initialState: FormData = { type: type.id };
+            fields.forEach((field) => {
+                initialState[field.name] = "";
+            });
+            return initialState;
         },
-        GEO_JSON: {
-            fields: [{ name: "name", label: t("admin.export.name"), type: "text", mandatory: true }],
-        },
-        // Other types can be added here in the future
-    };
-    const [type, setType] = useState<ExportTypes>("ESRI_ZUID_HOLLAND");
-    const [formData, setFormData] = useState<FormData>(generateInitialState(type));
+        [typeConfig],
+    );
+
+    const [formData, setFormData] = useState<FormData>();
     const [properties, setProperties] = useState<ExportProperty[]>([]);
     const { setAlert } = useAlert();
     const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
     const { customProperties: unfilteredCustomProperties, fetchCustomProperties } = useCustomPropertyStore();
+
+    useEffect(() => {
+        if (id) return;
+        setFormData(generateInitialState(type));
+    }, [type, id, generateInitialState]);
+
+    useEffect(() => {
+        getExportTypes().then((data) => {
+            setExportTypes(data);
+        });
+    }, []);
 
     useEffect(() => {
         fetchCustomProperties();
@@ -73,24 +123,16 @@ function ExportAdminPage() {
                 const { properties, valid, validationErrors, ...formData } = data;
                 setFormData(formData);
                 setProperties(properties || []);
+                setType({ id: data.type as ExportType, name: t(`admin.export.${data.type}`) });
             };
             fetchData();
         }
-    }, [id]);
+    }, [id, t]);
 
     const customProperties = unfilteredCustomProperties.filter((property) => !property.disabled);
 
     if (!allowedActions.includes("EDIT_DATA_EXCHANGES")) {
         return <ActionNotAllowed errorMessage={t("admin.export.actionNotAllowed")} />;
-    }
-
-    function generateInitialState(type: string): FormData {
-        const fields = typeConfig[type]?.fields || [];
-        const initialState: FormData = { type };
-        fields.forEach((field) => {
-            initialState[field.name] = "";
-        });
-        return initialState;
     }
 
     const handleChange = (fieldName: string) => (event: ChangeEvent<HTMLInputElement>) => {
@@ -104,10 +146,10 @@ function ExportAdminPage() {
         try {
             const exportData: ExportData = {
                 id: id || "",
-                name: formData.name,
-                type: type,
-                ...(formData.apiKey && { apiKey: formData.apiKey }),
-                projectUrl: formData.projectUrl,
+                name: formData?.name ?? "",
+                type: type.id,
+                ...(formData?.apiKey && { apiKey: formData.apiKey }),
+                projectUrl: formData?.projectUrl ?? "",
                 ...(id && { properties }),
             };
             const data = id ? await updateExportData(id, exportData) : await addExportData(exportData);
@@ -121,10 +163,10 @@ function ExportAdminPage() {
         }
     };
 
-    const fields = typeConfig[formData.type]?.fields || [];
+    const fields = typeConfig[formData?.type || ""]?.fields || [];
 
     const isFormValid = () => {
-        return fields.every((field) => !field.mandatory || formData[field.name]?.trim() !== "");
+        return fields.every((field) => !field.mandatory || (typeof formData?.[field.name] === "string" && formData?.[field.name]?.trim() !== ""));
     };
 
     const handlePropertyChange = (index: number, value: SelectedOption | null) => {
@@ -170,14 +212,16 @@ function ExportAdminPage() {
                 <Grid item xs={12}>
                     <CategoryInput
                         values={type}
-                        setValue={(event, value) => setType(value.id)}
-                        readOnly={false}
+                        setValue={(event, value) => setType({ id: value.id, name: value.name })}
+                        readOnly={formData?.id ? true : false}
                         mandatory={true}
                         title="Type"
-                        options={[
-                            { name: t("admin.export.ESRI_ZUID_HOLLAND"), id: "ESRI_ZUID_HOLLAND" },
-                            { name: t("admin.export.GEO_JSON"), id: "GEO_JSON" },
-                        ]}
+                        options={exportTypes.map((type) => {
+                            return {
+                                id: type,
+                                name: t(`admin.export.${type}`),
+                            };
+                        })}
                         multiple={false}
                     />
                 </Grid>
@@ -185,7 +229,7 @@ function ExportAdminPage() {
                 {fields.map((field) => (
                     <Grid item xs={12} key={field.name}>
                         <TextInput
-                            value={formData[field.name]}
+                            value={formData?.[field.name] ?? ""}
                             setValue={handleChange(field.name)}
                             readOnly={false}
                             mandatory={field.mandatory}
@@ -203,7 +247,7 @@ function ExportAdminPage() {
                         <Grid item xs={12} key={index}>
                             <LabelComponent
                                 text={
-                                    t(`exchangeData.labels.${type}.${property.name}`) +
+                                    t(`exchangeData.labels.${type.id}.${property.name}`) +
                                     ` (${property.name}, type: ${property.propertyTypes.map((type) => t(`admin.settings.propertyType.${type}`)).join(", ")})`
                                 }
                                 required={false}

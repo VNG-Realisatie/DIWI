@@ -7,6 +7,7 @@ import UserContext from "../../context/UserContext";
 import useAlert from "../../hooks/useAlert";
 import { confidentialityUpdate, configuredExport } from "../../Paths";
 import { useNavigate, useParams } from "react-router-dom";
+import { ConfidentialityLevel } from "../../types/enums";
 
 type Props = {
     redirectPath: string;
@@ -15,6 +16,7 @@ type Props = {
     handleBack?: () => void;
     exportProjects?: () => void;
     handleDownload?: () => void;
+    minimumConfidentiality?: ConfidentialityLevel;
 };
 
 const ProjectsTableWrapper = ({
@@ -24,6 +26,7 @@ const ProjectsTableWrapper = ({
     setSelectedProjects = () => {},
     selectedProjects = [],
     redirectPath,
+    minimumConfidentiality,
 }: Props) => {
     const { allowedActions } = useContext(UserContext);
     const [showDialog, setShowDialog] = useState(false);
@@ -51,7 +54,12 @@ const ProjectsTableWrapper = ({
                 overflowX: "auto",
             }}
         >
-            <ProjectsTableView setSelectedProjects={setSelectedProjects} selectedProjects={selectedProjects} redirectPath={redirectPath} />
+            <ProjectsTableView
+                setSelectedProjects={setSelectedProjects}
+                selectedProjects={selectedProjects}
+                redirectPath={redirectPath}
+                minimumConfidentiality={minimumConfidentiality}
+            />
             <Dialog open={showDialog} onClose={() => setShowDialog(false)} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
                 <DialogTitle id="alert-dialog-title">{t("projects.confirmExport")}</DialogTitle>
                 <DialogActions sx={{ px: 5, py: 3, ml: 15 }}>

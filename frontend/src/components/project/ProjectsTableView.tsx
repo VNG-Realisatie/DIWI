@@ -37,11 +37,14 @@ import { confidentialityUpdate, configuredExport } from "../../Paths";
 import useProperties from "../../hooks/useProperties";
 import { ColumnConfig, ColumnField, initialColumnConfig, loadColumnConfig, saveColumnConfig } from "./projectTableConfig";
 import TableComponent from "./TableComponent";
+import { ConfidentialityLevel } from "../../types/enums";
+import { getAllowedConfidentialityLevels } from "../../utils/exportUtils";
 
 type Props = {
     redirectPath: string;
     setSelectedProjects?: Dispatch<SetStateAction<string[]>>;
     selectedProjects?: string[];
+    minimumConfidentiality?: ConfidentialityLevel;
 };
 
 export interface GenericOptionType<Type> {
@@ -61,7 +64,7 @@ const confidentialityLevelComparator = (v1: string, v2: string): number => {
     return label1.localeCompare(label2);
 };
 
-export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProjects = [], redirectPath }: Props) => {
+export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProjects = [], redirectPath, minimumConfidentiality }: Props) => {
     const navigate = useNavigate();
     const { setAlert } = useAlert();
     const { t } = useTranslation();
@@ -90,10 +93,12 @@ export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProj
     }, [redirectPath, configuredExportPath, confidentialityUpdatePath]);
 
     useEffect(() => {
-        if (redirectPath === configuredExportPath) {
-            setFilterModel({ items: [{ field: "confidentialityLevel", operator: "isAnyOf", value: ["PUBLIC", "EXTERNAL_GOVERNMENTAL"] }] });
-        }
-    }, [redirectPath, configuredExportPath, setFilterModel]);
+        if (!minimumConfidentiality || redirectPath != configuredExportPath) return;
+
+        setFilterModel({
+            items: [{ field: "confidentialityLevel", operator: "isAnyOf", value: getAllowedConfidentialityLevels(minimumConfidentiality) }],
+        });
+    }, [redirectPath, configuredExportPath, setFilterModel, minimumConfidentiality]);
 
     useEffect(() => {
         if (selectedProjects.length === 0) {
@@ -188,8 +193,6 @@ export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProj
         const hasError = params.props.value.length < 3;
         return { ...params.props, error: hasError };
     };
-
-    const disabledConfidentialityLevelsForExport = ["PRIVATE", "INTERNAL_CIVIL", "INTERNAL_MANAGEMENT", "INTERNAL_COUNCIL", "EXTERNAL_REGIONAL"];
 
     const defaultColumns: GridColDef[] = [
         {
@@ -443,9 +446,10 @@ export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProj
                         toolbarFiltersLabel: t("projects.toolbarFiltersLabel"),
                     } as GridLocaleText
                 }
-                isRowSelectable={(params) =>
-                    redirectPath === configuredExportPath ? !disabledConfidentialityLevelsForExport.includes(params.row.confidentialityLevel) : true
-                }
+                isRowSelectable={(params) => {
+                    if (!minimumConfidentiality) return false;
+                    return getAllowedConfidentialityLevels(minimumConfidentiality).includes(params.row.confidentialityLevel);
+                }}
                 slots={{
                     toolbar: () => (
                         <GridToolbarContainer>
