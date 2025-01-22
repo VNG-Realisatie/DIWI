@@ -90,7 +90,7 @@ const ExportWizard = () => {
                 </Grid>
                 <Grid item xs={12}>
                     <ProjectsTableWrapper
-                        minimalConfidentiality={exportData?.minimumConfidentiality}
+                        minimumConfidentiality={exportData?.minimumConfidentiality}
                         redirectPath={configuredExport.toPath({ exportId })}
                         setSelectedProjects={setSelectedProjects}
                         selectedProjects={selectedProjects}

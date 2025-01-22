@@ -44,7 +44,7 @@ type Props = {
     redirectPath: string;
     setSelectedProjects?: Dispatch<SetStateAction<string[]>>;
     selectedProjects?: string[];
-    confidentiality?: ConfidentialityLevel;
+    minimumConfidentiality?: ConfidentialityLevel;
 };
 
 export interface GenericOptionType<Type> {
@@ -64,7 +64,7 @@ const confidentialityLevelComparator = (v1: string, v2: string): number => {
     return label1.localeCompare(label2);
 };
 
-export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProjects = [], redirectPath, confidentiality }: Props) => {
+export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProjects = [], redirectPath, minimumConfidentiality }: Props) => {
     const navigate = useNavigate();
     const { setAlert } = useAlert();
     const { t } = useTranslation();
@@ -93,12 +93,12 @@ export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProj
     }, [redirectPath, configuredExportPath, confidentialityUpdatePath]);
 
     useEffect(() => {
-        if (!confidentiality || redirectPath != configuredExportPath) return;
+        if (!minimumConfidentiality || redirectPath != configuredExportPath) return;
 
         setFilterModel({
-            items: [{ field: "confidentialityLevel", operator: "isAnyOf", value: getAllowedConfidentialityLevels(confidentiality) }],
+            items: [{ field: "confidentialityLevel", operator: "isAnyOf", value: getAllowedConfidentialityLevels(minimumConfidentiality) }],
         });
-    }, [redirectPath, configuredExportPath, setFilterModel, confidentiality]);
+    }, [redirectPath, configuredExportPath, setFilterModel, minimumConfidentiality]);
 
     useEffect(() => {
         if (selectedProjects.length === 0) {
@@ -447,8 +447,8 @@ export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProj
                     } as GridLocaleText
                 }
                 isRowSelectable={(params) => {
-                    if (!confidentiality) return false;
-                    return getAllowedConfidentialityLevels(confidentiality).includes(params.row.confidentialityLevel);
+                    if (!minimumConfidentiality) return false;
+                    return getAllowedConfidentialityLevels(minimumConfidentiality).includes(params.row.confidentialityLevel);
                 }}
                 slots={{
                     toolbar: () => (

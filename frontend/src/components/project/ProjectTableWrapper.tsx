@@ -16,7 +16,7 @@ type Props = {
     handleBack?: () => void;
     exportProjects?: () => void;
     handleDownload?: () => void;
-    minimalConfidentiality?: ConfidentialityLevel
+    minimumConfidentiality?: ConfidentialityLevel;
 };
 
 const ProjectsTableWrapper = ({
@@ -26,7 +26,7 @@ const ProjectsTableWrapper = ({
     setSelectedProjects = () => {},
     selectedProjects = [],
     redirectPath,
-    minimalConfidentiality
+    minimumConfidentiality,
 }: Props) => {
     const { allowedActions } = useContext(UserContext);
     const [showDialog, setShowDialog] = useState(false);
@@ -54,7 +54,12 @@ const ProjectsTableWrapper = ({
                 overflowX: "auto",
             }}
         >
-            <ProjectsTableView setSelectedProjects={setSelectedProjects} selectedProjects={selectedProjects} redirectPath={redirectPath} confidentiality={minimalConfidentiality}/>
+            <ProjectsTableView
+                setSelectedProjects={setSelectedProjects}
+                selectedProjects={selectedProjects}
+                redirectPath={redirectPath}
+                minimumConfidentiality={minimumConfidentiality}
+            />
             <Dialog open={showDialog} onClose={() => setShowDialog(false)} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
                 <DialogTitle id="alert-dialog-title">{t("projects.confirmExport")}</DialogTitle>
                 <DialogActions sx={{ px: 5, py: 3, ml: 15 }}>
