@@ -6,7 +6,6 @@ import {
     GridFilterModel,
     GridFilterOperator,
     GridLocaleText,
-    GridPaginationModel,
     GridPreProcessEditCellProps,
     GridRenderCellParams,
     GridRowSelectionModel,
@@ -18,7 +17,7 @@ import {
     getGridStringOperators,
 } from "@mui/x-data-grid";
 import { useNavigate, useParams } from "react-router-dom";
-import { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Box, Stack, Tooltip, Typography } from "@mui/material";
 import SaveAsIcon from "@mui/icons-material/SaveAs";
 import UndoIcon from "@mui/icons-material/Undo";
@@ -27,7 +26,7 @@ import { Project } from "../../api/projectsServices";
 import { useTranslation } from "react-i18next";
 import { CategoriesCell } from "../table/CategoriesCell";
 import { confidentialityLevelOptions, planningPlanStatus, planTypeOptions, projectPhaseOptions } from "../table/constants";
-import ProjectContext from "../../context/ProjectContext";
+
 import useCustomSearchParams from "../../hooks/useCustomSearchParams";
 
 import dayjs from "dayjs";
@@ -43,7 +42,6 @@ type Props = {
     redirectPath: string;
     setSelectedProjects?: Dispatch<SetStateAction<string[]>>;
     selectedProjects?: string[];
-    setPaginationInfo: Dispatch<SetStateAction<GridPaginationModel>>;
 };
 
 export interface GenericOptionType<Type> {
@@ -63,18 +61,14 @@ const confidentialityLevelComparator = (v1: string, v2: string): number => {
     return label1.localeCompare(label2);
 };
 
-export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProjects = [], redirectPath, setPaginationInfo }: Props) => {
-    const { paginationInfo, totalProjectCount } = useContext(ProjectContext);
-
+export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProjects = [], redirectPath }: Props) => {
     const navigate = useNavigate();
     const { setAlert } = useAlert();
     const { t } = useTranslation();
 
-    const [filterModel, setFilterModel] = useState<GridFilterModel | undefined>();
-    const [sortModel, setSortModel] = useState<GridSortModel | undefined>();
     const [columnConfig, setColumnConfig] = useState<ColumnConfig>(loadColumnConfig() || initialColumnConfig);
 
-    const { filterUrl, rows, filteredProjectsSize } = useCustomSearchParams(sortModel, filterModel, paginationInfo);
+    const { filterUrl, rows, sortModel, setSortModel, filterModel, setFilterModel, totalProjectCount, setPage, setPageSize } = useCustomSearchParams();
     const { exportId = "defaultExportId" } = useParams<{ exportId?: string }>();
     const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
     const { municipalityRolesOptions, districtOptions, neighbourhoodOptions, municipalityOptions } = useProperties();
@@ -99,7 +93,7 @@ export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProj
         if (redirectPath === configuredExportPath) {
             setFilterModel({ items: [{ field: "confidentialityLevel", operator: "isAnyOf", value: ["PUBLIC", "EXTERNAL_GOVERNMENTAL"] }] });
         }
-    }, [redirectPath, configuredExportPath]);
+    }, [redirectPath, configuredExportPath, setFilterModel]);
 
     useEffect(() => {
         if (selectedProjects.length === 0) {
@@ -416,8 +410,11 @@ export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProj
                 showCheckBox={showCheckBox}
                 rows={rows}
                 columns={defaultColumns}
-                setPaginationInfo={setPaginationInfo}
-                rowCount={filterModel?.items.some((item) => item.value) ? filteredProjectsSize : totalProjectCount}
+                setPaginationInfo={(info) => {
+                    setPage(info.page);
+                    setPageSize(info.pageSize);
+                }}
+                rowCount={totalProjectCount}
                 paginationMode="server"
                 onRowClick={showCheckBox ? () => {} : (params) => navigate(`/projects/${params.id}/characteristics`)}
                 filterModel={filterModel}

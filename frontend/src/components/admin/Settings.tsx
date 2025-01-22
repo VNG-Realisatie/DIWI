@@ -1,8 +1,7 @@
 import { Stack, Typography } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { useTranslation } from "react-i18next";
-import { useContext, useEffect, useState } from "react";
-import { Property, getCustomProperties } from "../../api/adminSettingServices";
+import { useContext, useState } from "react";
 import { CustomPropertiesTable } from "./CustomPropertiesTable";
 import PropertyDialog from "./PropertyDialog";
 import UserContext from "../../context/UserContext";
@@ -14,19 +13,14 @@ export const rowStyle = {
 };
 export const Settings = () => {
     const [openDialog, setOpenDialog] = useState(false);
-    const [customProperties, setCustomProperties] = useState<Property[]>([]);
     const { t } = useTranslation();
 
     const { allowedActions } = useContext(UserContext);
 
-    useEffect(() => {
-        getCustomProperties().then((customProperties) => setCustomProperties(customProperties));
-    }, []);
-
     return (
         <Stack mt={2} mb={5} mx={2} pb={3}>
             <Typography fontWeight={600}>{t("admin.settings.title")}</Typography>
-            <CustomPropertiesTable customProperties={customProperties} setCustomProperties={setCustomProperties} />
+            <CustomPropertiesTable />
             <Stack direction="row" alignItems="center" mt={1}>
                 {allowedActions.includes("EDIT_CUSTOM_PROPERTIES") && (
                     <>
@@ -35,7 +29,7 @@ export const Settings = () => {
                     </>
                 )}
             </Stack>
-            <PropertyDialog openDialog={openDialog} setOpenDialog={setOpenDialog} setCustomProperties={setCustomProperties} />
+            <PropertyDialog openDialog={openDialog} setOpenDialog={setOpenDialog} />
         </Stack>
     );
 };

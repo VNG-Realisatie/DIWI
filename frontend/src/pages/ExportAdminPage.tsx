@@ -7,12 +7,13 @@ import { addExportData, ExportData, getExportDataById, updateExportData, ExportP
 import useAlert from "../hooks/useAlert";
 import { useNavigate, useParams } from "react-router-dom";
 import ActionNotAllowed from "./ActionNotAllowed";
-import { getCustomProperties, Property } from "../api/adminSettingServices";
+import { Property } from "../api/adminSettingServices";
 import { CustomPropertyWidget } from "../components/CustomPropertyWidget";
 import { LabelComponent } from "../components/project/LabelComponent";
 import { exportSettings, updateExportSettings } from "../Paths";
 import UserContext from "../context/UserContext";
 import { doesPropertyMatchExportProperty } from "../utils/exportUtils";
+import { useCustomPropertyStore } from "../hooks/useCustomPropertyStore";
 
 type SelectedOption = {
     id: string;
@@ -57,9 +58,13 @@ function ExportAdminPage() {
     const [type, setType] = useState<ExportTypes>("ESRI_ZUID_HOLLAND");
     const [formData, setFormData] = useState<FormData>(generateInitialState(type));
     const [properties, setProperties] = useState<ExportProperty[]>([]);
-    const [customProperties, setCustomProperties] = useState<Property[]>([]);
     const { setAlert } = useAlert();
     const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
+    const { customProperties: unfilteredCustomProperties, fetchCustomProperties } = useCustomPropertyStore();
+
+    useEffect(() => {
+        fetchCustomProperties();
+    }, [fetchCustomProperties]);
 
     useEffect(() => {
         if (id) {
@@ -73,12 +78,7 @@ function ExportAdminPage() {
         }
     }, [id]);
 
-    useEffect(() => {
-        getCustomProperties().then((properties) => {
-            const filteredProperties = properties.filter((property) => !property.disabled);
-            setCustomProperties(filteredProperties);
-        });
-    }, []);
+    const customProperties = unfilteredCustomProperties.filter((property) => !property.disabled);
 
     if (!allowedActions.includes("EDIT_DATA_EXCHANGES")) {
         return <ActionNotAllowed errorMessage={t("admin.export.actionNotAllowed")} />;
