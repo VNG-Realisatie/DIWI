@@ -93,12 +93,11 @@ export const ProjectsTableView = ({ setSelectedProjects = () => {}, selectedProj
     }, [redirectPath, configuredExportPath, confidentialityUpdatePath]);
 
     useEffect(() => {
-        if (!confidentiality) return;
-        if (redirectPath === configuredExportPath) {
-            setFilterModel({
-                items: [{ field: "confidentialityLevel", operator: "isAnyOf", value: getAllowedConfidentialityLevels(confidentiality) }],
-            });
-        }
+        if (!confidentiality || redirectPath != configuredExportPath) return;
+
+        setFilterModel({
+            items: [{ field: "confidentialityLevel", operator: "isAnyOf", value: getAllowedConfidentialityLevels(confidentiality) }],
+        });
     }, [redirectPath, configuredExportPath, setFilterModel, confidentiality]);
 
     useEffect(() => {
