@@ -650,6 +650,7 @@
       "export": {
         "ESRI_ZUID_HOLLAND": "ESRI Zuid-Holland",
         "GEO_JSON": "DIWI GeoJSON",
+        "EXCEL": "DIWI Excel",
         "title": {
           "selectProject": "Selecteer Projecten om te Exporteren",
           "selectExport": "Selecteer Gegevens Exporteren"
