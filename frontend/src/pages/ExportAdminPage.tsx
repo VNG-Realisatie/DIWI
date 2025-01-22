@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, useEffect, useContext } from "react";
+import { useState, ChangeEvent, useEffect, useContext, useCallback, useMemo } from "react";
 import { Grid, Button, Box, Alert } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import TextInput from "../components/project/inputs/TextInput";
@@ -62,22 +62,48 @@ function ExportAdminPage() {
     const navigate = useNavigate();
     const [exportTypes, setExportTypes] = useState<ExportType[]>([]);
 
-    const typeConfig: TypeConfig = exportTypes.reduce((config: TypeConfig, type: string) => {
-        config[type] = {
-            fields: [{ name: "name", label: t("admin.export.name"), type: "text", mandatory: true }],
-        };
-        return config;
-    }, {});
+    //can be mapped using exportTypes, but fields need to be clarified, so hardcoded for now.
+    const typeConfig: TypeConfig = useMemo(
+        () => ({
+            ESRI_ZUID_HOLLAND: {
+                fields: [{ name: "name", label: t("admin.export.name"), type: "text", mandatory: true }],
+            },
+            GEO_JSON: {
+                fields: [{ name: "name", label: t("admin.export.name"), type: "text", mandatory: true }],
+            },
+            EXCEL: {
+                fields: [{ name: "name", label: t("admin.export.name"), type: "text", mandatory: true }],
+            },
+        }),
+        [t],
+    );
 
     const [type, setType] = useState<ExportOption>({
         id: initialType,
         name: t(`admin.export.${initialType}`),
     });
+
+    const generateInitialState = useCallback(
+        (type: ExportOption): FormData => {
+            const fields = typeConfig[type.id]?.fields || [];
+            const initialState: FormData = { type: type.id };
+            fields.forEach((field) => {
+                initialState[field.name] = "";
+            });
+            return initialState;
+        },
+        [typeConfig],
+    );
+
     const [formData, setFormData] = useState<FormData>(generateInitialState(type));
     const [properties, setProperties] = useState<ExportProperty[]>([]);
     const { setAlert } = useAlert();
     const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
     const { customProperties: unfilteredCustomProperties, fetchCustomProperties } = useCustomPropertyStore();
+
+    useEffect(() => {
+        setFormData(generateInitialState(type));
+    }, [type, generateInitialState]);
 
     useEffect(() => {
         getExportTypes().then((data) => {
@@ -100,7 +126,7 @@ function ExportAdminPage() {
             };
             fetchData();
         }
-    }, [id]);
+    }, [id, t]);
 
     const customProperties = unfilteredCustomProperties.filter((property) => !property.disabled);
 
@@ -108,14 +134,6 @@ function ExportAdminPage() {
         return <ActionNotAllowed errorMessage={t("admin.export.actionNotAllowed")} />;
     }
 
-    function generateInitialState(type: ExportOption): FormData {
-        const fields = typeConfig[type.id]?.fields || [];
-        const initialState: FormData = { type: type.id };
-        fields.forEach((field) => {
-            initialState[field.name] = "";
-        });
-        return initialState;
-    }
     const handleChange = (fieldName: string) => (event: ChangeEvent<HTMLInputElement>) => {
         setFormData({
             ...formData,
