@@ -95,15 +95,16 @@ function ExportAdminPage() {
         [typeConfig],
     );
 
-    const [formData, setFormData] = useState<FormData>(generateInitialState(type));
+    const [formData, setFormData] = useState<FormData>();
     const [properties, setProperties] = useState<ExportProperty[]>([]);
     const { setAlert } = useAlert();
     const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
     const { customProperties: unfilteredCustomProperties, fetchCustomProperties } = useCustomPropertyStore();
 
     useEffect(() => {
+        if (id) return;
         setFormData(generateInitialState(type));
-    }, [type, generateInitialState]);
+    }, [type, id, generateInitialState]);
 
     useEffect(() => {
         getExportTypes().then((data) => {
@@ -145,10 +146,10 @@ function ExportAdminPage() {
         try {
             const exportData: ExportData = {
                 id: id || "",
-                name: formData.name,
+                name: formData?.name ?? "",
                 type: type.id,
-                ...(formData.apiKey && { apiKey: formData.apiKey }),
-                projectUrl: formData.projectUrl,
+                ...(formData?.apiKey && { apiKey: formData.apiKey }),
+                projectUrl: formData?.projectUrl ?? "",
                 ...(id && { properties }),
             };
             const data = id ? await updateExportData(id, exportData) : await addExportData(exportData);
@@ -162,10 +163,10 @@ function ExportAdminPage() {
         }
     };
 
-    const fields = typeConfig[formData.type]?.fields || [];
+    const fields = typeConfig[formData?.type || ""]?.fields || [];
 
     const isFormValid = () => {
-        return fields.every((field) => !field.mandatory || formData[field.name]?.trim() !== "");
+        return fields.every((field) => !field.mandatory || (typeof formData?.[field.name] === "string" && formData?.[field.name]?.trim() !== ""));
     };
 
     const handlePropertyChange = (index: number, value: SelectedOption | null) => {
@@ -212,7 +213,7 @@ function ExportAdminPage() {
                     <CategoryInput
                         values={type}
                         setValue={(event, value) => setType({ id: value.id, name: value.name })}
-                        readOnly={false}
+                        readOnly={formData?.id ? true : false}
                         mandatory={true}
                         title="Type"
                         options={exportTypes.map((type) => {
@@ -228,7 +229,7 @@ function ExportAdminPage() {
                 {fields.map((field) => (
                     <Grid item xs={12} key={field.name}>
                         <TextInput
-                            value={formData[field.name]}
+                            value={formData?.[field.name] ?? ""}
                             setValue={handleChange(field.name)}
                             readOnly={false}
                             mandatory={field.mandatory}
@@ -246,7 +247,7 @@ function ExportAdminPage() {
                         <Grid item xs={12} key={index}>
                             <LabelComponent
                                 text={
-                                    t(`exchangeData.labels.${type}.${property.name}`) +
+                                    t(`exchangeData.labels.${type.id}.${property.name}`) +
                                     ` (${property.name}, type: ${property.propertyTypes.map((type) => t(`admin.settings.propertyType.${type}`)).join(", ")})`
                                 }
                                 required={false}
