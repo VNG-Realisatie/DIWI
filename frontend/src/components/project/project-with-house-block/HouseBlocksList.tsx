@@ -76,7 +76,7 @@ export const HouseBlockAccordionWithControls = ({ houseBlock, refresh }: HouseBl
 
                 const updatedHouseBlock = {
                     ...data,
-                    customProperties: Array.isArray(data.customProperties[1]) ? data.customProperties[1] : data.customProperties,
+                    customProperties: newHouseBlock.customProperties,
                 };
 
                 setNewHouseBlock(updatedHouseBlock);
