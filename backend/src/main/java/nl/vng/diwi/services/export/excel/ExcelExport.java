@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -106,7 +107,8 @@ public class ExcelExport {
             return stream;
 
         } catch (Exception ex) {
-            logger.error("Excel download Exception", ex);
+            logger.error("Excel download Exception", ex.getCause());
+            logger.error(Arrays.toString(ex.getStackTrace()));
         }
         return null;
     }
