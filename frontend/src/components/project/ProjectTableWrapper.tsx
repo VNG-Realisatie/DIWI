@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useContext, useState } from "react";
+import { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 import { Box, Button, Dialog, DialogActions, DialogTitle, Stack, Typography } from "@mui/material";
 import { GenericOptionType, ProjectsTableView } from "./ProjectsTableView";
 import { t } from "i18next";
@@ -9,6 +9,7 @@ import { confidentialityUpdate, configuredExport } from "../../Paths";
 import { useNavigate, useParams } from "react-router-dom";
 import CategoryInput from "./inputs/CategoryInput";
 import { ConfidentialityLevelOptions, confidentialityLevelOptions } from "../table/constants";
+import { getAllowedConfidentialityLevels } from "../../utils/exportUtils";
 
 type Props = {
     redirectPath: string;
@@ -18,7 +19,8 @@ type Props = {
     exportProjects?: () => void;
     handleDownload?: () => void;
     setConfidentialityLevel?: Dispatch<SetStateAction<GenericOptionType<ConfidentialityLevelOptions>>>;
-    confidentialityLevel?: GenericOptionType<ConfidentialityLevelOptions>;
+    selectedConfidentialityLevel?: GenericOptionType<ConfidentialityLevelOptions>;
+    minimumConfidentiality?: ConfidentialityLevelOptions;
 };
 
 const ProjectsTableWrapper = ({
@@ -29,7 +31,8 @@ const ProjectsTableWrapper = ({
     selectedProjects = [],
     redirectPath,
     setConfidentialityLevel,
-    confidentialityLevel,
+    selectedConfidentialityLevel,
+    minimumConfidentiality,
 }: Props) => {
     const { allowedActions } = useContext(UserContext);
     const [showDialog, setShowDialog] = useState(false);
@@ -37,8 +40,18 @@ const ProjectsTableWrapper = ({
     const navigate = useNavigate();
     const { exportId = "defaultExportId" } = useParams<{ exportId?: string }>();
 
+    const [filteredConfidentialityOptions, setFilteredConfidentialityOptions] = useState<GenericOptionType<ConfidentialityLevelOptions>[]>([]);
+
     const configuredExportPath = configuredExport.toPath({ exportId });
     const confidentialityUpdatePath = confidentialityUpdate.toPath({ exportId });
+
+    useEffect(() => {
+        if (!exportId || !minimumConfidentiality) return;
+
+        const allowedLevels = getAllowedConfidentialityLevels(minimumConfidentiality);
+        const filteredOptions = confidentialityLevelOptions.filter((option) => allowedLevels.includes(option.id));
+        setFilteredConfidentialityOptions(filteredOptions);
+    }, [exportId, minimumConfidentiality]);
 
     const handleProjectsExport = () => {
         exportProjects();
@@ -66,8 +79,8 @@ const ProjectsTableWrapper = ({
                         <CategoryInput
                             readOnly={false}
                             mandatory={false}
-                            options={confidentialityLevelOptions}
-                            values={confidentialityLevel}
+                            options={filteredConfidentialityOptions}
+                            values={selectedConfidentialityLevel}
                             setValue={(_, newValue) => {
                                 if (!setConfidentialityLevel) return;
                                 setConfidentialityLevel(newValue);
@@ -82,7 +95,8 @@ const ProjectsTableWrapper = ({
                 </Stack>
             )}
             <ProjectsTableView
-                confidentialityLevel={confidentialityLevel}
+                minimumConfidentiality={minimumConfidentiality}
+                selectedConfidentialityLevel={selectedConfidentialityLevel}
                 setSelectedProjects={setSelectedProjects}
                 selectedProjects={selectedProjects}
                 redirectPath={redirectPath}
