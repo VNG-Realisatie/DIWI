@@ -34,6 +34,10 @@ const ExportWizard = () => {
     const [errors, setErrors] = useState<DownloadError[]>([]);
     const [params] = useSearchParams();
     const [exportData, setExportData] = useState<ExportData>();
+    const [selectedConfidentialityLevel, setConfidentialityLevel] = useState<GenericOptionType<ConfidentialityLevelOptions>>({
+        id: "EXTERNAL_REGIONAL",
+        name: "5_EXTERNAL_REGIONAL",
+    });
 
     useEffect(() => {
         if (!exportId) return;
@@ -56,17 +60,8 @@ const ExportWizard = () => {
                     name: "5_EXTERNAL_REGIONAL",
                 });
             }
-        } else {
-            setConfidentialityLevel({
-                id: "EXTERNAL_REGIONAL",
-                name: "5_EXTERNAL_REGIONAL",
-            });
         }
     }, [params]);
-    const [selectedConfidentialityLevel, setConfidentialityLevel] = useState<GenericOptionType<ConfidentialityLevelOptions>>({
-        id: "EXTERNAL_REGIONAL",
-        name: "5_EXTERNAL_REGIONAL",
-    });
 
     if (!allowedActions.includes("VIEW_DATA_EXCHANGES")) {
         return <ActionNotAllowed errorMessage={t("admin.export.actionNotAllowed")} />;
