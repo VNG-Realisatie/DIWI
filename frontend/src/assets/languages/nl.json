@@ -429,7 +429,8 @@
       "confidentialityChanger": {
         "explanation": "Selecteer met de checkboxes projecten waarvan je het vertrouwelijkheid niveau wilt aanpassen.",
         "changeTo": "Verander naar:",
-        "confidentialityUpdate": "Vertrouwelijkheid niveau veranderen"
+        "confidentialityUpdate": "Vertrouwelijkheid niveau veranderen",
+        "selectConfidentialityLevel": "Selecteer het minimale vertrouwelijkheidsniveau"
       },
       "labels": {
         "ESRI_ZUID_HOLLAND": {

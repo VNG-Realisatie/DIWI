@@ -1,13 +1,15 @@
-import { Dispatch, SetStateAction, useContext, useState } from "react";
-import { Box, Button, Dialog, DialogActions, DialogTitle, Stack } from "@mui/material";
-import { ProjectsTableView } from "./ProjectsTableView";
+import { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
+import { Box, Button, Dialog, DialogActions, DialogTitle, Stack, Typography } from "@mui/material";
+import { GenericOptionType, ProjectsTableView } from "./ProjectsTableView";
 import { t } from "i18next";
 import { AddProjectButton } from "../PlusButton";
 import UserContext from "../../context/UserContext";
 import useAlert from "../../hooks/useAlert";
 import { confidentialityUpdate, configuredExport } from "../../Paths";
 import { useNavigate, useParams } from "react-router-dom";
-import { ConfidentialityLevel } from "../../types/enums";
+import CategoryInput from "./inputs/CategoryInput";
+import { ConfidentialityLevelOptionsType, confidentialityLevelOptions } from "../table/constants";
+import { getAllowedConfidentialityLevels } from "../../utils/exportUtils";
 
 type Props = {
     redirectPath: string;
@@ -16,7 +18,9 @@ type Props = {
     handleBack?: () => void;
     exportProjects?: () => void;
     handleDownload?: () => void;
-    minimumConfidentiality?: ConfidentialityLevel;
+    setConfidentialityLevel?: Dispatch<SetStateAction<GenericOptionType<ConfidentialityLevelOptionsType>>>;
+    selectedConfidentialityLevel?: GenericOptionType<ConfidentialityLevelOptionsType>;
+    minimumConfidentiality?: ConfidentialityLevelOptionsType;
 };
 
 const ProjectsTableWrapper = ({
@@ -26,6 +30,8 @@ const ProjectsTableWrapper = ({
     setSelectedProjects = () => {},
     selectedProjects = [],
     redirectPath,
+    setConfidentialityLevel,
+    selectedConfidentialityLevel,
     minimumConfidentiality,
 }: Props) => {
     const { allowedActions } = useContext(UserContext);
@@ -34,8 +40,18 @@ const ProjectsTableWrapper = ({
     const navigate = useNavigate();
     const { exportId = "defaultExportId" } = useParams<{ exportId?: string }>();
 
+    const [filteredConfidentialityOptions, setFilteredConfidentialityOptions] = useState<GenericOptionType<ConfidentialityLevelOptionsType>[]>([]);
+
     const configuredExportPath = configuredExport.toPath({ exportId });
     const confidentialityUpdatePath = confidentialityUpdate.toPath({ exportId });
+
+    useEffect(() => {
+        if (!exportId || !minimumConfidentiality) return;
+
+        const allowedLevels = getAllowedConfidentialityLevels(minimumConfidentiality);
+        const filteredOptions = confidentialityLevelOptions.filter((option) => allowedLevels.includes(option.id));
+        setFilteredConfidentialityOptions(filteredOptions);
+    }, [exportId, minimumConfidentiality]);
 
     const handleProjectsExport = () => {
         exportProjects();
@@ -54,11 +70,36 @@ const ProjectsTableWrapper = ({
                 overflowX: "auto",
             }}
         >
+            {redirectPath === configuredExportPath && (
+                <Stack sx={{ backgroundColor: "#D9D9D9", padding: "15px", width: "100%", gap: "15px", borderRadius: "4px", marginY: "10px" }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: "10px", width: "60%" }}>
+                        <Typography variant="h6" sx={{ whiteSpace: "nowrap" }}>
+                            {t("exchangeData.confidentialityChanger.selectConfidentialityLevel")}
+                        </Typography>
+                        <CategoryInput
+                            readOnly={false}
+                            mandatory={false}
+                            options={filteredConfidentialityOptions}
+                            values={selectedConfidentialityLevel}
+                            setValue={(_, newValue) => {
+                                if (!setConfidentialityLevel) return;
+                                setConfidentialityLevel(newValue);
+                            }}
+                            multiple={false}
+                            error={t("createProject.hasMissingRequiredAreas.confidentialityLevel")}
+                            translationPath="projectTable.confidentialityLevelOptions."
+                            tooltipInfoText={"tooltipInfo.vertrouwelijkheidsniveau.title"}
+                            hasTooltipOption={true}
+                        />
+                    </Box>
+                </Stack>
+            )}
             <ProjectsTableView
+                minimumConfidentiality={minimumConfidentiality}
+                selectedConfidentialityLevel={selectedConfidentialityLevel}
                 setSelectedProjects={setSelectedProjects}
                 selectedProjects={selectedProjects}
                 redirectPath={redirectPath}
-                minimumConfidentiality={minimumConfidentiality}
             />
             <Dialog open={showDialog} onClose={() => setShowDialog(false)} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
                 <DialogTitle id="alert-dialog-title">{t("projects.confirmExport")}</DialogTitle>
