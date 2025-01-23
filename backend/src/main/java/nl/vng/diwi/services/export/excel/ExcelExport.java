@@ -519,7 +519,7 @@ public class ExcelExport {
                         Set<String> ownerEmails = new HashSet<>();
                         project.getOwnerGroupList().forEach(group -> group.getUsers().forEach(u -> ownerEmails.add(u.getUserEmail())));
                         if (!ownerEmails.isEmpty()) {
-                            List<String> emails = ownerEmails.stream().sorted().toList();
+                            List<String> emails = ownerEmails.stream().filter(Objects::nonNull).sorted().toList();
                             createCellWithValue(row, columnHeader.getColumnIndex(), String.join(", ", emails), styles,
                                 CellStyleType.getCellStyleType(CellContentType.STRING, columnHeader.getBorderStyle()));
                         }
