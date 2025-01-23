@@ -12,7 +12,7 @@ import ProjectsTableWrapper from "../components/project/ProjectTableWrapper";
 import { getAllowedConfidentialityLevels } from "../utils/exportUtils";
 import { ConfidentialityLevel } from "../types/enums";
 import { GenericOptionType } from "../components/project/ProjectsTableView";
-import { confidentialityLevelOptions, ConfidentialityLevelOptions } from "../components/table/constants";
+import { confidentialityLevelOptions, ConfidentialityLevelOptionsType } from "../components/table/constants";
 
 type DownloadError = {
     cat1?: string;
@@ -34,7 +34,7 @@ const ExportWizard = () => {
     const [errors, setErrors] = useState<DownloadError[]>([]);
     const [params] = useSearchParams();
     const [exportData, setExportData] = useState<ExportData>();
-    const [selectedConfidentialityLevel, setConfidentialityLevel] = useState<GenericOptionType<ConfidentialityLevelOptions>>({
+    const [selectedConfidentialityLevel, setConfidentialityLevel] = useState<GenericOptionType<ConfidentialityLevelOptionsType>>({
         id: "EXTERNAL_REGIONAL",
         name: "5_EXTERNAL_REGIONAL",
     });

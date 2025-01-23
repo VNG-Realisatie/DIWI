@@ -8,7 +8,7 @@ import useAlert from "../../hooks/useAlert";
 import { confidentialityUpdate, configuredExport } from "../../Paths";
 import { useNavigate, useParams } from "react-router-dom";
 import CategoryInput from "./inputs/CategoryInput";
-import { ConfidentialityLevelOptions, confidentialityLevelOptions } from "../table/constants";
+import { ConfidentialityLevelOptionsType, confidentialityLevelOptions } from "../table/constants";
 import { getAllowedConfidentialityLevels } from "../../utils/exportUtils";
 
 type Props = {
@@ -18,9 +18,9 @@ type Props = {
     handleBack?: () => void;
     exportProjects?: () => void;
     handleDownload?: () => void;
-    setConfidentialityLevel?: Dispatch<SetStateAction<GenericOptionType<ConfidentialityLevelOptions>>>;
-    selectedConfidentialityLevel?: GenericOptionType<ConfidentialityLevelOptions>;
-    minimumConfidentiality?: ConfidentialityLevelOptions;
+    setConfidentialityLevel?: Dispatch<SetStateAction<GenericOptionType<ConfidentialityLevelOptionsType>>>;
+    selectedConfidentialityLevel?: GenericOptionType<ConfidentialityLevelOptionsType>;
+    minimumConfidentiality?: ConfidentialityLevelOptionsType;
 };
 
 const ProjectsTableWrapper = ({
@@ -40,7 +40,7 @@ const ProjectsTableWrapper = ({
     const navigate = useNavigate();
     const { exportId = "defaultExportId" } = useParams<{ exportId?: string }>();
 
-    const [filteredConfidentialityOptions, setFilteredConfidentialityOptions] = useState<GenericOptionType<ConfidentialityLevelOptions>[]>([]);
+    const [filteredConfidentialityOptions, setFilteredConfidentialityOptions] = useState<GenericOptionType<ConfidentialityLevelOptionsType>[]>([]);
 
     const configuredExportPath = configuredExport.toPath({ exportId });
     const confidentialityUpdatePath = confidentialityUpdate.toPath({ exportId });

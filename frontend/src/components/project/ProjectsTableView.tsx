@@ -25,7 +25,7 @@ import useAlert from "../../hooks/useAlert";
 import { Project } from "../../api/projectsServices";
 import { useTranslation } from "react-i18next";
 import { CategoriesCell } from "../table/CategoriesCell";
-import { ConfidentialityLevelOptions, confidentialityLevelOptions, planningPlanStatus, planTypeOptions, projectPhaseOptions } from "../table/constants";
+import { ConfidentialityLevelOptionsType, confidentialityLevelOptions, planningPlanStatus, planTypeOptions, projectPhaseOptions } from "../table/constants";
 
 import useCustomSearchParams from "../../hooks/useCustomSearchParams";
 
@@ -43,8 +43,8 @@ type Props = {
     redirectPath: string;
     setSelectedProjects?: Dispatch<SetStateAction<string[]>>;
     selectedProjects?: string[];
-    selectedConfidentialityLevel?: GenericOptionType<ConfidentialityLevelOptions>;
-    minimumConfidentiality?: ConfidentialityLevelOptions;
+    selectedConfidentialityLevel?: GenericOptionType<ConfidentialityLevelOptionsType>;
+    minimumConfidentiality?: ConfidentialityLevelOptionsType;
 };
 
 export interface GenericOptionType<Type> {
