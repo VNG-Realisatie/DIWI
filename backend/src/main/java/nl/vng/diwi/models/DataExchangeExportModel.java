@@ -2,11 +2,14 @@ package nl.vng.diwi.models;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import nl.vng.diwi.dal.entities.DataExchangeType;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+
+import static nl.vng.diwi.dal.entities.DataExchangeType.ESRI_ZUID_HOLLAND;
 
 @Data
 @NoArgsConstructor
@@ -18,7 +21,7 @@ public class DataExchangeExportModel {
     private List<UUID> projectIds;
     private List<Confidentiality> confidentialityLevels;
 
-    public String validate(ConfigModel configModel) {
+    public String validate(ConfigModel configModel, DataExchangeType type) {
         if (exportDate == null) {
             exportDate = LocalDate.now();
         }
@@ -37,7 +40,7 @@ public class DataExchangeExportModel {
             return "Only one of projectIds and confidentialityLevels can be specified";
         }
 
-        if (confidentialityLevels != null) {
+        if (ESRI_ZUID_HOLLAND == type && confidentialityLevels != null) {
             for (Confidentiality c : confidentialityLevels) {
                 if (Confidentiality.confidentialityMap.get(c) < Confidentiality.confidentialityMap.get(configModel.getMinimumExportConfidentiality())) {
                     return "Selected confidentiality levels are below minimum allowed export confidentiality";

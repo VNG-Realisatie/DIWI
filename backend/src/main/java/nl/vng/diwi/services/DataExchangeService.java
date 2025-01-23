@@ -225,6 +225,10 @@ public class DataExchangeService {
         if (dataExchangeModel.getValid() != Boolean.TRUE) {
             throw new VngBadRequestException("Trying to export based on an invalid data exchange.");
         }
+        String validationError = dxExportModel.validate(configModel, dataExchangeModel.getType());
+        if (validationError != null) {
+            throw new VngBadRequestException(validationError);
+        }
 
         var template = DataExchangeTemplate.templates.get(dataExchangeModel.getType());
 
