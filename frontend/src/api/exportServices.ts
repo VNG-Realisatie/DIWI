@@ -67,8 +67,8 @@ export async function deleteExportData(id: string): Promise<void> {
     return deleteJson(`${API_URI}/dataexchange/${id}`);
 }
 
-export async function downloadExportData(id: string, body: DownloadType): Promise<void> {
-    return downloadPost(`${API_URI}/dataexchange/${id}/download`, "export.geojson", body);
+export async function downloadExportData(id: string, body: DownloadType, type: ExportType): Promise<void> {
+    return downloadPost(`${API_URI}/dataexchange/${id}/download`, type === "EXCEL" ? "export.xls" : "export.geojson", body);
 }
 
 //this dunction needs to be updated
