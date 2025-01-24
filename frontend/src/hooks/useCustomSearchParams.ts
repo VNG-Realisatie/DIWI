@@ -1,5 +1,5 @@
 import { useSearchParams } from "react-router-dom";
-import { GridFilterModel, GridLogicOperator, GridSortModel } from "@mui/x-data-grid";
+import { GridFilterModel, GridSortModel } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import queryString from "query-string";
 import { filterTable } from "../api/projectsTableServices";
@@ -35,10 +35,6 @@ const useCustomSearchParams = () => {
 
     const [params] = useSearchParams();
 
-    const [filterColumn, setFilterColumn] = useState<string | null>(null);
-    const [filterValues, setFilterValues] = useState<string[]>([]);
-    const [filterCondition, setFilterCondition] = useState<string | null>(null);
-
     const [page, setPage] = useState<number | undefined>(undefined);
     const [pageSize, setPageSize] = useState<number | undefined>(undefined);
 
@@ -47,15 +43,10 @@ const useCustomSearchParams = () => {
     useEffect(() => {
         const pageSize = params.get("pageSize") || "10";
         const page = params.get("pageNumber") || "1";
-        const filterColumn = params.get("filterColumn");
-        const filterValues = params.getAll("filterValue");
-        const filterCondition = params.get("filterCondition");
 
         setPageSize(parseInt(pageSize));
         setPage(parseInt(page));
-        setFilterColumn(filterColumn);
-        setFilterValues(filterValues);
-        setFilterCondition(filterCondition);
+
     }, [params]);
 
     useEffect(() => {
@@ -71,23 +62,6 @@ const useCustomSearchParams = () => {
             setTotalProjectCount(size.size);
         });
     }, [page, pageSize, filterModel, sortModel]);
-
-    useEffect(() => {
-        if (filterColumn && filterCondition && filterValues) {
-            const operator = filterCondition === "ANY_OF" ? "isAnyOf" : "contains";
-            const filter = {
-                items: [
-                    {
-                        field: filterColumn as string,
-                        value: filterValues.length > 1 ? filterValues : filterValues[0],
-                        operator,
-                    },
-                ],
-                logicOperator: GridLogicOperator.And,
-            };
-            setFilterModel(filter);
-        }
-    }, [filterValues, filterColumn, filterCondition]);
 
     const rows = projects.map((p) => {
         return { ...p, id: p.projectId };
