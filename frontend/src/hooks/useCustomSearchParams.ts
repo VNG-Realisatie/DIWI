@@ -32,6 +32,7 @@ const useCustomSearchParams = () => {
     const [sortModel, setSortModel] = useState<GridSortModel | undefined>(undefined);
     const [projects, setProjects] = useState<Array<Project>>([]);
     const [filterUrl, setFilterUrl] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
     const [params] = useSearchParams();
 
@@ -46,11 +47,11 @@ const useCustomSearchParams = () => {
 
         setPageSize(parseInt(pageSize));
         setPage(parseInt(page));
-
     }, [params]);
 
     useEffect(() => {
         if (!page || !pageSize) return;
+        setIsLoading(true);
         const url = createSearchString(sortModel, filterModel, page, pageSize);
         setFilterUrl(url);
 
@@ -60,6 +61,7 @@ const useCustomSearchParams = () => {
 
         getProjectsSizeWithParameters(url).then((size) => {
             setTotalProjectCount(size.size);
+            setIsLoading(false);
         });
     }, [page, pageSize, filterModel, sortModel]);
 
@@ -67,7 +69,7 @@ const useCustomSearchParams = () => {
         return { ...p, id: p.projectId };
     });
 
-    return { filterUrl, rows, sortModel, setSortModel, filterModel, setFilterModel, totalProjectCount, setPage, setPageSize };
+    return { filterUrl, rows, sortModel, setSortModel, filterModel, setFilterModel, totalProjectCount, setPage, setPageSize, isLoading, page, pageSize };
 };
 
 export default useCustomSearchParams;
