@@ -8,6 +8,7 @@ import RangeNumberInput from "../../../project/inputs/RangeNumberInput";
 import InputLabelStack from "../../../project/inputs/InputLabelStack";
 import { useEffect } from "react";
 import { useCustomPropertyStore } from "../../../../hooks/useCustomPropertyStore";
+import { isOwnershipAmountValid } from "../../../../utils/houseblocks/houseBlocksFunctions";
 
 const translationPath = "createProject.houseBlocksForm";
 
@@ -28,11 +29,6 @@ type OwnershipProps = {
     title: string;
     mandatory: boolean;
     isOwnerShipValueAndMutationConsistent: boolean;
-};
-
-// eslint-disable-next-line react-refresh/only-export-components
-export const isOwnershipAmountValid = (amount: number): boolean => {
-    return Number.isInteger(amount) && amount >= 0;
 };
 
 const OwnershipAmountInput = ({ handleInputChange, ownership, index, readOnly, title, mandatory, isOwnerShipValueAndMutationConsistent }: OwnershipProps) => {
@@ -143,6 +139,8 @@ export const OwnershipRowInputs = ({
                     multiple={false}
                     translationPath="createProject.houseBlocksForm.ownershipAndValue.type."
                     tooltipInfoText={t("tooltipInfo.soort.title")}
+                    displayError={!ownership.type}
+                    error={t("wizard.houseBlocks.ownershipType")}
                 />
             </Grid>
             {!isPolicyGoal && (

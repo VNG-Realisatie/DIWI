@@ -1,8 +1,7 @@
 import { PropsWithChildren, createContext, useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Project, getProject, getProjects, getProjectsSize } from "../api/projectsServices";
+import { Project, getProject } from "../api/projectsServices";
 import { components } from "../types/schema";
-import { GridPaginationModel } from "@mui/x-data-grid";
 import { Property } from "../api/adminSettingServices";
 import { useCustomPropertyStore } from "../hooks/useCustomPropertyStore";
 
@@ -11,14 +10,8 @@ export type ProjectType = null | components["schemas"]["ProjectListModel"];
 type ProjectContextType = {
     selectedProject: Project | null;
     setSelectedProject(project: Project | null): void;
-    projects: Array<Project>;
-    setProjects(project: Array<Project>): void;
-    totalProjectCount: number;
     projectId: string | undefined;
-    paginationInfo: GridPaginationModel;
-    setPaginationInfo(info: GridPaginationModel): void;
     updateProject(): void;
-    updateProjects(): void;
     nonFixedCustomDefinitions: Property[];
 };
 
@@ -26,24 +19,10 @@ const ProjectContext = createContext<ProjectContextType | null>(null) as React.C
 
 export const ProjectProvider = ({ children }: PropsWithChildren) => {
     const { projectId } = useParams();
-    const [projects, setProjects] = useState<Array<Project>>([]);
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-    const [paginationInfo, setPaginationInfo] = useState<GridPaginationModel>({ page: 1, pageSize: 10 });
-    const [totalProjectCount, setTotalProjectCount] = useState(0);
     const { projectCustomProperties } = useCustomPropertyStore();
 
     const nonFixedCustomDefinitions: Property[] = projectCustomProperties.filter((property) => !property.disabled && property.type !== "FIXED");
-
-    const updateProjects = useCallback(() => {
-        getProjects(paginationInfo.page, paginationInfo.pageSize)
-            .then((projects) => setProjects(projects))
-            .catch((err) => console.log(err));
-        getProjectsSize()
-            .then((data) => {
-                setTotalProjectCount(data.size);
-            })
-            .catch((err) => console.log(err));
-    }, [paginationInfo.page, paginationInfo.pageSize]);
 
     const updateProject = useCallback(() => {
         if (projectId) {
@@ -55,23 +34,13 @@ export const ProjectProvider = ({ children }: PropsWithChildren) => {
         updateProject();
     }, [updateProject]);
 
-    useEffect(() => {
-        updateProjects();
-    }, [updateProjects]);
-
     return (
         <ProjectContext.Provider
             value={{
                 selectedProject,
                 setSelectedProject,
-                projects,
-                setProjects,
-                totalProjectCount,
                 projectId,
-                paginationInfo,
-                setPaginationInfo,
                 updateProject,
-                updateProjects,
                 nonFixedCustomDefinitions,
             }}
         >

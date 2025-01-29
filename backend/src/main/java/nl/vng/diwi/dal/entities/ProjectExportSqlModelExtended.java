@@ -1,6 +1,7 @@
 package nl.vng.diwi.dal.entities;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -163,6 +164,10 @@ public class ProjectExportSqlModelExtended {
         private UUID groupId;
         private String groupName;
         private List<OwnerUser> users;
+
+        public List<OwnerUser> getUsers() {
+            return users == null ? new ArrayList<>() : users;
+        }
     }
 
     @Data
@@ -326,6 +331,22 @@ public class ProjectExportSqlModelExtended {
         public List<CategoryValueAmountModel> getPhysicalAppearances() {
             return physicalAppearances == null ? new ArrayList<>() : physicalAppearances;
         }
+
+        public Integer getHouseTypeUnknownAmount() {
+
+            Integer unknownBlockType = mutationAmount;
+            if (unknownBlockType != null) {
+                if (eengezinswoning != null) {
+                    unknownBlockType -= eengezinswoning;
+                }
+                if (meergezinswoning != null) {
+                    unknownBlockType -= meergezinswoning;
+                }
+            } else {
+                unknownBlockType = 0;
+            }
+            return unknownBlockType;
+        }
     }
 
     @Data
@@ -342,5 +363,25 @@ public class ProjectExportSqlModelExtended {
         private Long ownershipValueRangeMax;
         private Long ownershipRentalValueRangeMin;
         private Long ownershipRentalValueRangeMax;
+
+        public SingleValueOrRangeModel<BigDecimal> getSingleValueOrRangeValue(boolean isRental, BigDecimal divideFactor) {
+            if (isRental) {
+                if (ownershipRentalValue == null && ownershipRentalValueRangeMin == null) {
+                    return null;
+                } else {
+                    return new SingleValueOrRangeModel<>(ownershipRentalValue == null ? null : BigDecimal.valueOf(ownershipRentalValue, 2).divide(divideFactor, RoundingMode.HALF_DOWN),
+                        ownershipRentalValueRangeMin == null ? null : BigDecimal.valueOf(ownershipRentalValueRangeMin, 2).divide(divideFactor, RoundingMode.HALF_DOWN),
+                        ownershipRentalValueRangeMax == null ? null : BigDecimal.valueOf(ownershipRentalValueRangeMax, 2).divide(divideFactor, RoundingMode.HALF_DOWN));
+                }
+            } else {
+                if (ownershipValue == null && ownershipValueRangeMin == null) {
+                    return null;
+                } else {
+                    return new SingleValueOrRangeModel<>(ownershipValue == null ? null : BigDecimal.valueOf(ownershipValue, 2).divide(divideFactor, RoundingMode.HALF_DOWN),
+                        ownershipValueRangeMin == null ? null : BigDecimal.valueOf(ownershipValueRangeMin, 2).divide(divideFactor, RoundingMode.HALF_DOWN),
+                        ownershipValueRangeMax == null ? null : BigDecimal.valueOf(ownershipValueRangeMax, 2).divide(divideFactor, RoundingMode.HALF_DOWN));
+                }
+            }
+        }
     }
 }

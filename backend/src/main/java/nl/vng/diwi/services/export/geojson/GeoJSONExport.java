@@ -11,6 +11,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import jakarta.ws.rs.core.StreamingOutput;
+import nl.vng.diwi.generic.Json;
 import org.geojson.Crs;
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
@@ -175,7 +177,7 @@ public class GeoJSONExport {
 
     }
 
-    static public FeatureCollection buildExportObject(
+    static public StreamingOutput buildExportObject(
             ConfigModel configModel,
             List<ProjectExportSqlModelExtended> projects,
             List<PropertyModel> customProps,
@@ -209,7 +211,10 @@ public class GeoJSONExport {
                 targetCrs,
                 customPropsTool)));
 
-        return exportObject;
+        return output -> {
+            Json.mapper.writeValue(output, exportObject);
+            output.flush();
+        };
     }
 
     static private Feature getProjectFeature(
@@ -373,17 +378,7 @@ public class GeoJSONExport {
                     groundPositions.put(GroundPosition.INTENTIE_MEDEWERKING_GRONDEIGENAAR, block.getIntentionPermissionOwner());
                     groundPositions.put(GroundPosition.FORMELE_TOESTEMMING_GRONDEIGENAAR, block.getFormalPermissionOwner());
 
-                    Integer unknownBlockType = block.getMutationAmount();
-                    if (unknownBlockType != null) {
-                        if (block.getEengezinswoning() != null) {
-                            unknownBlockType -= block.getEengezinswoning();
-                        }
-                        if (block.getMeergezinswoning() != null) {
-                            unknownBlockType -= block.getMeergezinswoning();
-                        }
-                    } else {
-                        unknownBlockType = 0;
-                    }
+                    Integer unknownBlockType = block.getHouseTypeUnknownAmount();
 
                     return GeoJsonHouseblock.builder()
                             .diwiId(block.getHouseblockId())

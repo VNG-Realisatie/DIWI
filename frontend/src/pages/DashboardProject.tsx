@@ -24,7 +24,7 @@ export type ChartType = {
 export const DashboardProject = () => {
     const { t } = useTranslation();
     const { selectedProject } = useContext(ProjectContext);
-    const { rows } = useCustomSearchParams(undefined, undefined, { page: 1, pageSize: 10000 });
+    const { rows } = useCustomSearchParams();
     const { projectId } = useParams();
     const navigate = useNavigate();
 
@@ -129,6 +129,11 @@ export const DashboardProject = () => {
                 setPlanning(data.planning);
                 setPriceSegmentsPurchase(convertedPurchaseData);
                 setPriceSegmentsRent(convertedRentData);
+            }).catch(() => {
+                setPhysicalAppearance([]);
+                setPlanning([]);
+                setPriceSegmentsPurchase([]);
+                setPriceSegmentsRent([]);
             });
         }
     }, [projectId, t]);

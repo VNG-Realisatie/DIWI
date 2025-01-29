@@ -73,9 +73,10 @@ export const HouseBlockAccordionWithControls = ({ houseBlock, refresh }: HouseBl
                     physicalAppearance: newHouseBlock.physicalAppearance.filter((pa) => physicalAppearanceCategoryIds?.includes(pa.id)),
                 };
                 const data = await saveHouseBlockWithCustomProperties(filteredHouseBlock);
+
                 const updatedHouseBlock = {
-                    ...houseBlock,
-                    ownershipValue: data.ownershipValue,
+                    ...data,
+                    customProperties: Array.isArray(data.customProperties[1]) ? data.customProperties[1] : data.customProperties,
                 };
 
                 setNewHouseBlock(updatedHouseBlock);
