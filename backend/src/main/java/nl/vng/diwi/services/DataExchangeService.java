@@ -2,6 +2,7 @@ package nl.vng.diwi.services;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -234,13 +235,12 @@ public class DataExchangeService {
 
         final var templateMinConfidentiality = template.getMinimumConfidentiality();
 
-        if (dxExportModel.getConfidentialityLevels() != null) {
-            for (var selectedMinConfidentiality : dxExportModel.getConfidentialityLevels()) {
-                if (Confidentiality.confidentialityMap.get(selectedMinConfidentiality) < Confidentiality.confidentialityMap.get(templateMinConfidentiality)) {
-                    throw new VngBadRequestException(
-                        "Selected minimum confidentiality (%s) is lower than the minimum confidentiality allowed by the export (%s)"
-                            .formatted(selectedMinConfidentiality, templateMinConfidentiality));
-                }
+        if (dxExportModel.getConfidentialityLevels() != null && !dxExportModel.getConfidentialityLevels().isEmpty()) {
+            var selectedMinConfidentiality = dxExportModel.getConfidentialityLevels().stream().min(Comparator.comparing(Confidentiality.confidentialityMap::get)).get();
+            if (Confidentiality.confidentialityMap.get(selectedMinConfidentiality) < Confidentiality.confidentialityMap.get(templateMinConfidentiality)) {
+                throw new VngBadRequestException(
+                    "Selected minimum confidentiality (%s) is lower than the minimum confidentiality allowed by the export (%s)"
+                        .formatted(selectedMinConfidentiality, templateMinConfidentiality));
             }
         }
 
