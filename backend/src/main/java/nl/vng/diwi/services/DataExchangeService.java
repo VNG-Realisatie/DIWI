@@ -225,20 +225,23 @@ public class DataExchangeService {
         if (dataExchangeModel.getValid() != Boolean.TRUE) {
             throw new VngBadRequestException("Trying to export based on an invalid data exchange.");
         }
-        String validationError = dxExportModel.validate(configModel, dataExchangeModel.getType());
+        String validationError = dxExportModel.validate(dataExchangeModel.getType());
         if (validationError != null) {
             throw new VngBadRequestException(validationError);
         }
 
         var template = DataExchangeTemplate.templates.get(dataExchangeModel.getType());
 
-        final var selectedMinConfidentiality = dataExchangeModel.getMinimumConfidentiality();
-        final var templateMinconfidentiality = template.getMinimumConfidentiality();
+        final var templateMinConfidentiality = template.getMinimumConfidentiality();
 
-        if (Confidentiality.confidentialityMap.get(selectedMinConfidentiality) < Confidentiality.confidentialityMap.get(templateMinconfidentiality)) {
-            throw new VngBadRequestException(
-                    "Selected minimum confidentiality (%s) is lower than the minimum confidentiality allowed by the export (%s)"
-                            .formatted(selectedMinConfidentiality, templateMinconfidentiality));
+        if (dxExportModel.getConfidentialityLevels() != null) {
+            for (var selectedMinConfidentiality : dxExportModel.getConfidentialityLevels()) {
+                if (Confidentiality.confidentialityMap.get(selectedMinConfidentiality) < Confidentiality.confidentialityMap.get(templateMinConfidentiality)) {
+                    throw new VngBadRequestException(
+                        "Selected minimum confidentiality (%s) is lower than the minimum confidentiality allowed by the export (%s)"
+                            .formatted(selectedMinConfidentiality, templateMinConfidentiality));
+                }
+            }
         }
 
         Map<String, DataExchangePropertyModel> dxPropertiesMap = dataExchangeModel.getProperties().stream()
@@ -252,16 +255,11 @@ public class DataExchangeService {
                 customProps,
                 dxPropertiesMap,
                 dxExportModel.getExportDate(),
-                configModel.getMinimumExportConfidentiality(),
+                templateMinConfidentiality,
                 errors);
             case GEO_JSON -> GeoJSONExport.buildExportObject(
-                configModel,
                 repo.getProjectsDAO().getProjectsExportListExtended(dxExportModel, loggedUser),
-                customProps,
-                dxPropertiesMap,
-                dxExportModel.getExportDate(),
-                configModel.getMinimumExportConfidentiality(),
-                errors);
+                customProps);
             case EXCEL -> ExcelExport.buildExportObject(
                 repo.getProjectsDAO().getProjectsExportListExtended(dxExportModel, loggedUser),
                 customProps);
