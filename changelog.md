@@ -13,6 +13,8 @@ This release focuses on exporting data for other purposes than provincial monito
 ### CHANGED
 
 - Different export types now have different minimal confidentiality settings. Exports that are by nature intended for external parties have a high minimum confidentiality, exports for internal use have a low minimum confidentiality
+- Changes to the way the front end keeps track of custom properties
+- Changes to pagination and filtering on tables
 
 ### FIXED
 
