@@ -175,11 +175,6 @@ public class DataExchangeResource {
     public StreamingOutput downloadProjects(@PathParam("id") UUID dataExchangeUuid, DataExchangeExportModel dataExchangeExportModel, @Context LoggedUser loggedUser)
         throws VngNotFoundException, VngBadRequestException {
 
-        String validationError = dataExchangeExportModel.validate(configModel);
-        if (validationError != null) {
-            throw new VngBadRequestException(validationError);
-        }
-
         List<DataExchangeExportError> errors = new ArrayList<>();
 
         StreamingOutput exportObj = dataExchangeService.getExportObject(repo, configModel, dataExchangeUuid, dataExchangeExportModel, errors, loggedUser);

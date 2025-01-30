@@ -34,11 +34,8 @@ import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.dal.entities.enums.ProjectStatus;
 import nl.vng.diwi.dal.entities.enums.PropertyKind;
 import nl.vng.diwi.generic.Constants;
-import nl.vng.diwi.models.ConfigModel;
-import nl.vng.diwi.models.DataExchangePropertyModel;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.models.RangeSelectDisabledModel;
-import nl.vng.diwi.services.DataExchangeExportError;
 import nl.vng.diwi.services.export.ExportUtil;
 import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.BasicProjectData;
 import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.BlockTypeData;
@@ -178,13 +175,8 @@ public class GeoJSONExport {
     }
 
     static public StreamingOutput buildExportObject(
-            ConfigModel configModel,
             List<ProjectExportSqlModelExtended> projects,
-            List<PropertyModel> customProps,
-            Map<String, DataExchangePropertyModel> dxPropertiesMap,
-            LocalDate exportDate,
-            Confidentiality minConfidentiality,
-            List<DataExchangeExportError> errors) {
+            List<PropertyModel> customProps) {
 
         FeatureCollection exportObject = new FeatureCollection();
         Crs crs = new Crs();
@@ -194,20 +186,9 @@ public class GeoJSONExport {
         exportObject.setCrs(crs);
 
         var customPropsTool = new CustomProps(customProps);
-        PropertyModel priceRangeBuyFixedProp = customPropsTool.get(Constants.FIXED_PROPERTY_PRICE_RANGE_BUY);
-        PropertyModel priceRangeRentFixedProp = customPropsTool.get(Constants.FIXED_PROPERTY_PRICE_RANGE_RENT);
-        PropertyModel municipalityFixedProp = customPropsTool.get(Constants.FIXED_PROPERTY_MUNICIPALITY);
 
         projects.forEach(project -> exportObject.add(getProjectFeature(
-                configModel,
                 project,
-                priceRangeBuyFixedProp,
-                priceRangeRentFixedProp,
-                municipalityFixedProp,
-                dxPropertiesMap,
-                minConfidentiality,
-                exportDate,
-                errors,
                 targetCrs,
                 customPropsTool)));
 
@@ -218,14 +199,7 @@ public class GeoJSONExport {
     }
 
     static private Feature getProjectFeature(
-            ConfigModel configModel,
             ProjectExportSqlModelExtended project,
-            PropertyModel priceRangeBuyFixedProp,
-            PropertyModel priceRangeRentFixedProp,
-            PropertyModel municipalityFixedProp,
-            Map<String, DataExchangePropertyModel> dxPropertiesMap,
-            Confidentiality minConfidentiality, LocalDate exportDate,
-            List<DataExchangeExportError> errors,
             String targetCrs,
             CustomProps customPropTool) {
         var projectFeature = new Feature();

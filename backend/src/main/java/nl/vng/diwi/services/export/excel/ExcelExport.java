@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -106,7 +107,8 @@ public class ExcelExport {
             return stream;
 
         } catch (Exception ex) {
-            logger.error("Excel download Exception", ex);
+            logger.error("Excel download Exception", ex.getCause());
+            logger.error(Arrays.toString(ex.getStackTrace()));
         }
         return null;
     }
@@ -517,7 +519,7 @@ public class ExcelExport {
                         Set<String> ownerEmails = new HashSet<>();
                         project.getOwnerGroupList().forEach(group -> group.getUsers().forEach(u -> ownerEmails.add(u.getUserEmail())));
                         if (!ownerEmails.isEmpty()) {
-                            List<String> emails = ownerEmails.stream().sorted().toList();
+                            List<String> emails = ownerEmails.stream().filter(Objects::nonNull).sorted().toList();
                             createCellWithValue(row, columnHeader.getColumnIndex(), String.join(", ", emails), styles,
                                 CellStyleType.getCellStyleType(CellContentType.STRING, columnHeader.getBorderStyle()));
                         }
