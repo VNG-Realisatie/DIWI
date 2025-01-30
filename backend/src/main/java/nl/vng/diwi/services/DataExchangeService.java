@@ -1,12 +1,7 @@
 package nl.vng.diwi.services;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -118,7 +113,7 @@ public class DataExchangeService {
         state.setProjectUrl(model.getProjectUrl());
         state.setChangeStartDate(zdtNow);
         state.setCreateUser(repo.getReferenceById(User.class, loggedUserUuid));
-        state.setValid(model.getValid());
+        state.setValid(getDefaultValidTypes().contains(model.getType()));
         repo.persist(state);
 
     }
@@ -265,5 +260,8 @@ public class DataExchangeService {
                 customProps);
         };
 
+    }
+    private Set<DataExchangeType> getDefaultValidTypes() {
+        return Set.of(DataExchangeType.GEO_JSON, DataExchangeType.EXCEL);
     }
 }
