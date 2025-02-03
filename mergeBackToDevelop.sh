@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 set -eux
 
-git switch -c merge-back-to-develop
+branchName=merge-to-develop/$(git rev-parse --abbrev-ref HEAD)/$(date -I)
 
-git push --set-upstream origin merge-back-to-develop \
+git switch -c "$branchName"
+
+git push --set-upstream origin "$branchName" \
         -o merge_request.create \
         -o merge_request.target=develop \
         -o merge_request.remove_source_branch \
