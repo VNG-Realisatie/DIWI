@@ -481,13 +481,14 @@ public class ExcelExport {
     }
 
     private static String getRangeSubheaderName(RangeSelectDisabledModel rsm) {
-
         String min = rsm.getMin() != null
-            ? rsm.getMin().divide(HOUSING_PRICE_DIVIDE_FACTOR, RoundingMode.HALF_DOWN).toString()
+            ? rsm.getMin().divide(HOUSING_PRICE_DIVIDE_FACTOR, RoundingMode.UNNECESSARY)
+            .setScale(2, RoundingMode.UNNECESSARY).toString()
             : "0";
 
         String max = rsm.getMax() != null
-            ? rsm.getMax().divide(HOUSING_PRICE_DIVIDE_FACTOR, RoundingMode.HALF_DOWN).toString()
+            ? rsm.getMax().divide(HOUSING_PRICE_DIVIDE_FACTOR, RoundingMode.UNNECESSARY)
+            .setScale(2, RoundingMode.UNNECESSARY).toString()
             : "Inf";
 
         return min + " - " + max;
