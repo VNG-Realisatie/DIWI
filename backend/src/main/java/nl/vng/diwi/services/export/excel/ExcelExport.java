@@ -16,6 +16,7 @@ import nl.vng.diwi.models.SelectModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
 import nl.vng.diwi.services.ExcelStrings;
 import nl.vng.diwi.services.ExcelTableHeader;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -481,16 +482,14 @@ public class ExcelExport {
     }
 
     private static String getRangeSubheaderName(RangeSelectDisabledModel rsm) {
-
-        String min = rsm.getMin() != null
-            ? rsm.getMin().divide(HOUSING_PRICE_DIVIDE_FACTOR, RoundingMode.HALF_DOWN).toString()
+        var min = rsm.getMin() != null
+            ? rsm.getMin().divide(HOUSING_PRICE_DIVIDE_FACTOR, 2, RoundingMode.UNNECESSARY).toString()
             : "0";
-
-        String max = rsm.getMax() != null
-            ? rsm.getMax().divide(HOUSING_PRICE_DIVIDE_FACTOR, RoundingMode.HALF_DOWN).toString()
+        var max = rsm.getMax() != null
+            ? rsm.getMax().divide(HOUSING_PRICE_DIVIDE_FACTOR, 2, RoundingMode.UNNECESSARY).toString()
             : "Inf";
 
-        return min + " - " + max;
+        return StringUtils.replace(min + " - " + max, ".", ",");
     }
 
     private static String getSingleValueOrRangeSubheaderName(SingleValueOrRangeModel<BigDecimal> svrm) {
