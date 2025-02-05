@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -480,17 +481,16 @@ public class ExcelExport {
     }
 
     private static String getRangeSubheaderName(RangeSelectDisabledModel rsm) {
-        StringBuilder sb = new StringBuilder();
-        if (rsm.getMin() != null) {
-            sb.append(rsm.getMin().divide(BigDecimal.valueOf(100)));
-        }
-        sb.append(" - ");
-        if (rsm.getMax() != null) {
-            sb.append(rsm.getMax().divide(BigDecimal.valueOf(100)));
-        } else {
-            sb.append("Inf");
-        }
-        return sb.toString();
+
+        String min = rsm.getMin() != null
+            ? rsm.getMin().divide(HOUSING_PRICE_DIVIDE_FACTOR, RoundingMode.HALF_DOWN).toString()
+            : "0";
+
+        String max = rsm.getMax() != null
+            ? rsm.getMax().divide(HOUSING_PRICE_DIVIDE_FACTOR, RoundingMode.HALF_DOWN).toString()
+            : "Inf";
+
+        return min + " - " + max;
     }
 
     private static String getSingleValueOrRangeSubheaderName(SingleValueOrRangeModel<BigDecimal> svrm) {
