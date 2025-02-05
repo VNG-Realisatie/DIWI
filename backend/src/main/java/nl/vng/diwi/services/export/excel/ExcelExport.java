@@ -782,7 +782,8 @@ public class ExcelExport {
                     case HOUSEBLOCK_PROPERTY_PURCHASE_PRICE -> {
                         if (columnHeader.getSubheaderRangeValue() != null) {
                             int amount = houseblock.getOwnershipValueList().stream()
-                                .filter(ov -> ov.getOwnershipType() == OwnershipType.KOOPWONING)
+                                .filter(ov -> ov.getOwnershipType() == OwnershipType.KOOPWONING &&
+                                    Objects.equals(columnHeader.getSubheaderRangeValue(), ov.getSingleValueOrRangeValue(false, BigDecimal.ONE)))
                                 .mapToInt(ProjectExportSqlModelExtended.OwnershipValueSqlModel::getOwnershipAmount).sum();
                             if (amount > 0) {
                                 createCellWithValue(row, columnHeader.getColumnIndex(), amount, styles,
