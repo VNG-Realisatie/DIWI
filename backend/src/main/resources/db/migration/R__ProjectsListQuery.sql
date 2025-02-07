@@ -599,7 +599,9 @@ FROM (
         CASE WHEN _sortColumn_ = 'municipality' AND _sortDirection_ = 'DESC' THEN q.municipalityNamesList END DESC,
         CASE WHEN _sortColumn_ = 'district' AND _sortDirection_ = 'DESC' THEN q.districtNamesList END DESC,
         CASE WHEN _sortColumn_ = 'neighbourhood' AND _sortDirection_ = 'DESC' THEN q.neighbourhoodNamesList END DESC,
-        CASE WHEN _sortColumn_ = 'projectOwners' AND _sortDirection_ = 'DESC' THEN q.projectOwnersInitials END DESC
+        CASE WHEN _sortColumn_ = 'projectOwners' AND _sortDirection_ = 'DESC' THEN q.projectOwnersInitials END DESC,
+
+        q.projectId ASC
 
     LIMIT _limit_ OFFSET _offset_;
 
