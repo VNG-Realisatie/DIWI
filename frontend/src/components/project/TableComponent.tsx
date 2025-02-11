@@ -32,6 +32,8 @@ type Props = {
     localeText?: GridLocaleText;
     isRowSelectable?: (params: GridRowParams) => boolean;
     slots?: Partial<GridSlotsComponent>;
+    page?: number;
+    pageSize?: number;
 };
 
 const TableComponent = ({
@@ -54,7 +56,10 @@ const TableComponent = ({
     localeText,
     isRowSelectable,
     slots,
+    page,
+    pageSize,
 }: Props) => {
+    if (paginationMode === "server" && (!page || !pageSize)) return null;
     return (
         <DataGrid
             autoHeight
@@ -67,7 +72,7 @@ const TableComponent = ({
             rowHeight={70}
             initialState={{
                 pagination: {
-                    paginationModel: { page: 0, pageSize: 10 },
+                    paginationModel: { page: page ? page - 1 : 0, pageSize: pageSize || 10 },
                 },
             }}
             pageSizeOptions={[5, 10, 25, 50, 100]}
