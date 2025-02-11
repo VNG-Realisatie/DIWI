@@ -17,7 +17,7 @@ type Props = {
     setSelectedProjects?: Dispatch<SetStateAction<string[]>>;
     selectedProjects?: string[];
     handleBack?: () => void;
-    exportProjects?: () => void;
+    exportProjects?: (token : string | null) => void;
     handleDownload?: () => void;
     setConfidentialityLevel?: Dispatch<SetStateAction<GenericOptionType<ConfidentialityLevelOptionsType>>>;
     selectedConfidentialityLevel?: GenericOptionType<ConfidentialityLevelOptionsType>;
@@ -46,9 +46,7 @@ const ProjectsTableWrapper = ({
     const configuredExportPath = configuredExport.toPath({ exportId });
     const confidentialityUpdatePath = confidentialityUpdate.toPath({ exportId });
 
-    const arcgisAuth = useArcgisAuth(exportId);
-    const login = arcgisAuth?.login;
-    const token = arcgisAuth?.token;
+    const { login, token } = useArcgisAuth();
 
     useEffect(() => {
         if (!exportId || !minimumConfidentiality) return;
@@ -59,7 +57,7 @@ const ProjectsTableWrapper = ({
     }, [exportId, minimumConfidentiality]);
 
     const handleProjectsExport = () => {
-        exportProjects();
+        exportProjects(token);
         setShowDialog(false);
     };
 
@@ -140,7 +138,7 @@ const ProjectsTableWrapper = ({
                             {t("projects.confidentialityChange")}
                         </Button>
                         <Button
-                            disabled={true}
+                            disabled={token ? false : true}
                             sx={{ width: "130px", my: 2 }}
                             variant="contained"
                             onClick={() => {
@@ -152,13 +150,7 @@ const ProjectsTableWrapper = ({
                         <Button sx={{ width: "130px", my: 2 }} variant="contained" onClick={handleDownload}>
                             {t("projects.download")}
                         </Button>
-                        <Button
-                            sx={{ width: "130px", my: 2 }}
-                            variant="outlined"
-                            color="secondary"
-                            onClick={() => login(exportId)}
-                            disabled={token ? true : false}
-                        >
+                        <Button sx={{ width: "130px", my: 2 }} variant="outlined" color="secondary" onClick={() => login()}>
                             {t("projects.authenticate")}
                         </Button>
                     </>

@@ -1,9 +1,9 @@
-import { createContext, useState, ReactNode } from "react";
+import { createContext, useState, ReactNode, useEffect, useCallback } from "react";
 import { ArcGISIdentityManager } from "@esri/arcgis-rest-request";
 
 interface ArcgisAuthContextProps {
-    login: (exportId: string) => void;
-    handleRedirect: (exportId: string) => Promise<void>;
+    login: () => void;
+    handleRedirect: () => Promise<void>;
     token: string | null;
 }
 
@@ -16,40 +16,46 @@ export const ArcgisAuthContext = createContext<ArcgisAuthContextProps | undefine
 export const ArcgisAuthProvider = ({ children }: ArcgisAuthProviderProps) => {
     const [token, setToken] = useState<string | null>(null);
 
-    const clientId = "YOUR_CLIENT_ID"; // Move to .env
+    const clientId = import.meta.env.VITE_REACT_APP_ARCGIS_CLIENT_ID;
+    const redirectUri = `${window.location.origin}/exchangeimportdata`;
 
-    const login = async (exportId: string) => {
-        const redirectUri = `${window.location.origin}/exchangedata/export/${exportId}`;
+    const login = async () => {
         try {
-            const manager = await ArcGISIdentityManager.beginOAuth2({
+            await ArcGISIdentityManager.beginOAuth2({
                 clientId,
                 redirectUri,
-                popup: true,
+                popup: false,
             });
-
-            if (manager) {
-                setToken(manager.token);
-            } else {
-                console.error("Authentication failed");
-            }
         } catch (error) {
-            console.error("Authentication failed:", error);
+            console.error(error);
         }
     };
 
-    const handleRedirect = async (exportId: string) => {
-        const redirectUri = `${window.location.origin}/exchangedata/export/${exportId}`;
+    const handleRedirect = useCallback(async () => {
         try {
             const manager = await ArcGISIdentityManager.completeOAuth2({
                 clientId,
                 redirectUri,
-                popup: true,
+                popup: false,
             });
             setToken(manager.token);
+            sessionStorage.setItem("arcgis_token", manager.token);
         } catch (error) {
-            console.error("Error completing OAuth2:", error);
+            console.error(error);
         }
-    };
+    }, [clientId, redirectUri]);
+
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has("code")) {
+            handleRedirect();
+        } else {
+            const storedToken = sessionStorage.getItem("arcgis_token");
+            if (storedToken) {
+                setToken(storedToken);
+            }
+        }
+    }, [handleRedirect]);
 
     return <ArcgisAuthContext.Provider value={{ login, handleRedirect, token }}>{children}</ArcgisAuthContext.Provider>;
 };
