@@ -824,10 +824,10 @@ public class ExcelExport {
                     case HOUSEBLOCK_PROPERTY_HOUSING_ASSOCIATION_RENTAL_PRICE_RANGE_CATEGORY -> {
                         int amount = 0;
                         if (columnHeader.getSubheaderUuid() != null) {
-                            amount = houseblock.getOwnershipValueList().stream()
+                            amount = houseblock.getOwnershipValueList()
+                                .stream()
                                 .filter(ov -> ov.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE &&
-                                    columnHeader.getSubheaderUuid().equals(ov.getOwnershipRentalRangeCategoryId()) &&
-                                    Objects.equals(columnHeader.getSubheaderRangeValue(), ov.getSingleValueOrRangeValue(true, HOUSING_PRICE_DIVIDE_FACTOR)))
+                                    columnHeader.getSubheaderUuid().equals(ov.getOwnershipRentalRangeCategoryId()))
                                 .mapToInt(ProjectExportSqlModelExtended.OwnershipValueSqlModel::getOwnershipAmount).sum();
                         } else if (UNKNOWN.equalsIgnoreCase(columnHeader.getSubheader())) {
                             amount = houseblock.getOwnershipValueList().stream().filter(ov -> ov.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE &&
@@ -842,7 +842,8 @@ public class ExcelExport {
                     case HOUSEBLOCK_PROPERTY_HOUSING_ASSOCIATION_RENTAL_PRICE -> {
                         if (columnHeader.getSubheaderRangeValue() != null) {
                             int amount = houseblock.getOwnershipValueList().stream()
-                                .filter(ov -> ov.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE)
+                                .filter(ov -> ov.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE &&
+                                Objects.equals(columnHeader.getSubheaderRangeValue(), ov.getSingleValueOrRangeValue(true, HOUSING_PRICE_DIVIDE_FACTOR)))
                                 .mapToInt(ProjectExportSqlModelExtended.OwnershipValueSqlModel::getOwnershipAmount).sum();
                             if (amount > 0) {
                                 createCellWithValue(row, columnHeader.getColumnIndex(), amount, styles,
