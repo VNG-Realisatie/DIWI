@@ -157,7 +157,8 @@ function ExportAdminPage() {
             };
             fetchData();
         }
-    }, [id, t]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id]);
 
     if (!allowedActions.includes("EDIT_DATA_EXCHANGES")) {
         return <ActionNotAllowed errorMessage={t("admin.export.actionNotAllowed")} />;

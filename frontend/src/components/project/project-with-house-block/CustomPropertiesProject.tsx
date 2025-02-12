@@ -1,5 +1,5 @@
 import Grid from "@mui/material/Grid";
-import { CustomPropDefinitions, CustomPropertyValue } from "../../../api/customPropServices";
+import { CustomPropertyValue } from "../../../api/customPropServices";
 import { CustomPropertyWidget } from "../../CustomPropertyWidget";
 import { LabelComponent } from "../LabelComponent";
 import { Typography } from "@mui/material";

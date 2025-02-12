@@ -1,4 +1,3 @@
-import { c } from "vite/dist/node/types.d-aGj9QkWt";
 import { Property } from "../api/adminSettingServices";
 import { CustomPropDefinitions, CustomPropertyValue } from "../api/customPropServices";
 import { Project } from "../api/projectsServices";
@@ -77,6 +76,10 @@ export const checkDeletedCategories = (customValue: CustomPropertyValue, propert
             property.categories?.some((propCategory) => propCategory.id === category && !propCategory.disabled),
         );
         return { ...customValue, categories: newCategories };
+    }
+    if (customValue.ordinals && customValue.ordinals.value) {
+        const newOrdinal = property.ordinals?.find((ord) => ord.id === customValue.ordinals?.value && !ord.disabled);
+        return { ...customValue, ordinals: newOrdinal ? { value: newOrdinal.id } : undefined };
     }
 
     return customValue;
