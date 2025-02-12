@@ -1,11 +1,12 @@
 import Grid from "@mui/material/Grid";
-import { CustomPropertyValue } from "../../../api/customPropServices";
+import { CustomPropDefinitions, CustomPropertyValue } from "../../../api/customPropServices";
 import { CustomPropertyWidget } from "../../CustomPropertyWidget";
 import { LabelComponent } from "../LabelComponent";
 import { Typography } from "@mui/material";
 import { t } from "i18next";
 import { CellContainer } from "./CellContainer";
 import { useCustomPropertyStore } from "../../../hooks/useCustomPropertyStore";
+import { checkDeletedCategories } from "../../../utils/formValidation";
 
 type Props = {
     readOnly: boolean;
@@ -36,6 +37,7 @@ export const CustomPropertiesProject = ({ readOnly, customValues, setCustomValue
             {customDefinitions.length > 0 &&
                 customDefinitions.map((property) => {
                     const customValue = customValues?.find((cv) => cv.customPropertyId === property.id);
+                    const filteredCustomValue = customValue ? checkDeletedCategories(customValue, property) : customValue;
                     return (
                         <Grid item xs={12} key={property.id}>
                             <Grid container spacing={2}>
@@ -54,7 +56,7 @@ export const CustomPropertiesProject = ({ readOnly, customValues, setCustomValue
                                     {/* Display value based on what type it is */}
                                     <CustomPropertyWidget
                                         readOnly={readOnly}
-                                        customValue={customValue}
+                                        customValue={filteredCustomValue}
                                         setCustomValue={(newValue) => {
                                             setCustomValue({ ...newValue, customPropertyId: property.id });
                                         }}

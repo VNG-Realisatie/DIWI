@@ -1,5 +1,6 @@
+import { c } from "vite/dist/node/types.d-aGj9QkWt";
 import { Property } from "../api/adminSettingServices";
-import { CustomPropertyValue } from "../api/customPropServices";
+import { CustomPropDefinitions, CustomPropertyValue } from "../api/customPropServices";
 import { Project } from "../api/projectsServices";
 
 type CustomValueType =
@@ -69,3 +70,14 @@ export function validateForm(project: Project, validOwner: boolean = true, custo
     }
     return true;
 }
+
+export const checkDeletedCategories = (customValue: CustomPropertyValue, property: CustomPropDefinitions) => {
+    if (customValue.categories && customValue.categories.length > 0) {
+        const newCategories = customValue.categories.filter((category) =>
+            property.categories?.some((propCategory) => propCategory.id === category && !propCategory.disabled),
+        );
+        return { ...customValue, categories: newCategories };
+    }
+
+    return customValue;
+};
