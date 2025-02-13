@@ -117,12 +117,13 @@ public class DataExchangeService {
         state.setName(model.getName());
         state.setType(model.getType());
         state.setApiKey(model.getApiKey());
+        state.setClientId(model.getClientId());
+        state.setUserId(model.getClientId() != null ? loggedUserUuid : null); //TODO confirm this : only store userId if we have a clientId
         state.setProjectUrl(model.getProjectUrl());
         state.setChangeStartDate(zdtNow);
         state.setCreateUser(repo.getReferenceById(User.class, loggedUserUuid));
         state.setValid(getDefaultValidTypes().contains(model.getType()));
         repo.persist(state);
-
     }
 
     public void updateDataExchange(VngRepository repo, DataExchangeModel dataExchangeModel, DataExchangeModel oldModel, ZonedDateTime now, UUID loggedUserUuid)

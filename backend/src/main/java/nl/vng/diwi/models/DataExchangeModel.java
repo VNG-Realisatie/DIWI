@@ -42,6 +42,8 @@ public class DataExchangeModel {
 
     private String apiKey;
 
+    private UUID clientId;
+
     private String projectUrl;
 
     private String projectDetailUrl;
@@ -66,6 +68,7 @@ public class DataExchangeModel {
 
         var template = DataExchangeTemplate.templates.get(dataExchangeState.getType());
         this.setMinimumConfidentiality(template.getMinimumConfidentiality());
+        this.setClientId(dataExchangeState.getClientId());
     }
 
     public String validateDxState() {

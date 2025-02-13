@@ -17,6 +17,8 @@ import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "data_exchange_state", schema = GenericRepository.VNG_SCHEMA_NAME)
 @Getter
@@ -39,6 +41,12 @@ public class DataExchangeState extends ChangeDataSuperclass {
 
     @Column(name = "api_key")
     private String apiKey;
+
+    @Column(name = "client_id")
+    private UUID clientId;
+
+    @Column(name = "user_id")
+    private UUID userId;
 
     @Column(name = "project_url")
     private String projectUrl;
