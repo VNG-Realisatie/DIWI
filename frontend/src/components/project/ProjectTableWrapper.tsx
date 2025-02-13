@@ -17,7 +17,7 @@ type Props = {
     setSelectedProjects?: Dispatch<SetStateAction<string[]>>;
     selectedProjects?: string[];
     handleBack?: () => void;
-    exportProjects?: (token : string | null) => void;
+    exportProjects?: (token: string | null) => void;
     handleDownload?: () => void;
     setConfidentialityLevel?: Dispatch<SetStateAction<GenericOptionType<ConfidentialityLevelOptionsType>>>;
     selectedConfidentialityLevel?: GenericOptionType<ConfidentialityLevelOptionsType>;

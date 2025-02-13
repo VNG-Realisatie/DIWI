@@ -1,9 +1,11 @@
 import { createContext, useState, ReactNode, useEffect, useCallback } from "react";
 import { ArcGISIdentityManager } from "@esri/arcgis-rest-request";
+import { useNavigate } from "react-router-dom";
+import { configuredExport } from "../Paths";
 
 interface ArcgisAuthContextProps {
     login: () => void;
-    handleRedirect: () => Promise<void>;
+    handleRedirect: (exportId: string | undefined) => Promise<void>;
     token: string | null;
 }
 
@@ -15,6 +17,7 @@ export const ArcgisAuthContext = createContext<ArcgisAuthContextProps | undefine
 
 export const ArcgisAuthProvider = ({ children }: ArcgisAuthProviderProps) => {
     const [token, setToken] = useState<string | null>(null);
+    const navigate = useNavigate();
 
     const clientId = import.meta.env.VITE_REACT_APP_ARCGIS_CLIENT_ID;
     const redirectUri = `${window.location.origin}/exchangeimportdata`;
@@ -31,8 +34,8 @@ export const ArcgisAuthProvider = ({ children }: ArcgisAuthProviderProps) => {
         }
     };
 
-    const handleRedirect = useCallback(async () => {
-        try {
+    const handleRedirect = useCallback(
+        async (exportId: string | undefined) => {
             const manager = await ArcGISIdentityManager.completeOAuth2({
                 clientId,
                 redirectUri,
@@ -40,15 +43,27 @@ export const ArcgisAuthProvider = ({ children }: ArcgisAuthProviderProps) => {
             });
             setToken(manager.token);
             sessionStorage.setItem("arcgis_token", manager.token);
-        } catch (error) {
-            console.error(error);
-        }
-    }, [clientId, redirectUri]);
+            if (exportId) {
+                navigate(configuredExport.toPath({ exportId }));
+            }
+        },
+        [clientId, redirectUri, navigate],
+    );
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
+        const stateParam = urlParams.get("state");
+        let exportId;
+        if (stateParam) {
+            const stateObj = JSON.parse(stateParam);
+            const originalUrl = stateObj.originalUrl;
+
+            const startIndex = originalUrl.indexOf("/export/") + "/export/".length;
+            const endIndex = originalUrl.indexOf("?", startIndex);
+            exportId = originalUrl.substring(startIndex, endIndex);
+        }
         if (urlParams.has("code")) {
-            handleRedirect();
+            handleRedirect(exportId);
         } else {
             const storedToken = sessionStorage.getItem("arcgis_token");
             if (storedToken) {

@@ -9,6 +9,6 @@ export const useArcgisAuth = () => {
     return {
         ...context,
         login: () => context.login(),
-        handleRedirect: (id : string) => context.handleRedirect(),
+        handleRedirect: (id: string | undefined) => context.handleRedirect(id),
     };
 };
