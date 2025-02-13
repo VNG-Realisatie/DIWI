@@ -404,6 +404,9 @@
         "priceValueMax": "Maximale prijs",
         "priceValueMin": "Minimale prijs"
       },
+      "arcgis": {
+        "loginSuccess": "Je bent ingelogd. Nu kun je projecten exporteren."
+      },
       "download": {
         "excel": "Download Excel template hier",
         "squit": "Download Excel template hier",

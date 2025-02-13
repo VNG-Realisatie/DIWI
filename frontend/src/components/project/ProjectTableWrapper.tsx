@@ -61,10 +61,6 @@ const ProjectsTableWrapper = ({
         setShowDialog(false);
     };
 
-    const handleNavigate = (path: string) => {
-        navigate(path);
-    };
-
     return (
         <Stack
             width="100%"
@@ -132,7 +128,7 @@ const ProjectsTableWrapper = ({
                             sx={{ my: 2 }}
                             variant="outlined"
                             onClick={() => {
-                                handleNavigate(confidentialityUpdate.toPath({ exportId }));
+                                navigate(confidentialityUpdate.toPath({ exportId }));
                             }}
                         >
                             {t("projects.confidentialityChange")}
@@ -160,7 +156,7 @@ const ProjectsTableWrapper = ({
                         sx={{ my: 2 }}
                         variant="outlined"
                         onClick={() => {
-                            handleNavigate(configuredExport.toPath({ exportId }));
+                            navigate(configuredExport.toPath({ exportId }));
                         }}
                     >
                         {t("projects.backToExport")}
