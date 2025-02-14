@@ -19,7 +19,7 @@ import ActionNotAllowed from "./ActionNotAllowed";
 import { Property } from "../api/adminSettingServices";
 import { CustomPropertyWidget } from "../components/CustomPropertyWidget";
 import { LabelComponent } from "../components/project/LabelComponent";
-import { exportSettings, updateExportSettings } from "../Paths";
+import { exchangeimportdata, exportSettings, updateExportSettings } from "../Paths";
 import UserContext from "../context/UserContext";
 import { doesPropertyMatchExportProperty } from "../utils/exportUtils";
 import { useCustomPropertyStore } from "../hooks/useCustomPropertyStore";
@@ -155,7 +155,9 @@ function ExportAdminPage() {
             const data = id ? await updateExportData(id, exportData) : await addExportData(exportData);
             setValidationErrors(data.validationErrors || []);
             setAlert(id ? t("admin.export.notification.updated") : t("admin.export.notification.created"), "success");
-            if (!id) {
+            if (type.id !== "ESRI_ZUID_HOLLAND") {
+                navigate(exchangeimportdata.toPath());
+            } else if (!id) {
                 navigate(updateExportSettings.toPath({ id: data.id }));
             }
         } catch (error: unknown) {
