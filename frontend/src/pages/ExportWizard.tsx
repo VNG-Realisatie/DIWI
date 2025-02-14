@@ -72,9 +72,11 @@ const ExportWizard = () => {
     };
 
     //this function doesnt do anything at the moment, functionality not implemented
-    const handleExportProjects = async () => {
+    const handleExportProjects = async (token: string | null) => {
+        console.log(token);
         if (!exportId) return;
         try {
+
             await exportProjects(exportId, selectedProjects);
             console.log("Export successful");
         } catch (error) {

@@ -10,13 +10,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import CategoryInput from "./inputs/CategoryInput";
 import { ConfidentialityLevelOptionsType, confidentialityLevelOptions } from "../table/constants";
 import { getAllowedConfidentialityLevels } from "../../utils/exportUtils";
+import { useArcgisAuth } from "../../hooks/useArcgisAuth";
 
 type Props = {
     redirectPath: string;
     setSelectedProjects?: Dispatch<SetStateAction<string[]>>;
     selectedProjects?: string[];
     handleBack?: () => void;
-    exportProjects?: () => void;
+    exportProjects?: (token: string | null) => void;
     handleDownload?: () => void;
     setConfidentialityLevel?: Dispatch<SetStateAction<GenericOptionType<ConfidentialityLevelOptionsType>>>;
     selectedConfidentialityLevel?: GenericOptionType<ConfidentialityLevelOptionsType>;
@@ -45,6 +46,8 @@ const ProjectsTableWrapper = ({
     const configuredExportPath = configuredExport.toPath({ exportId });
     const confidentialityUpdatePath = confidentialityUpdate.toPath({ exportId });
 
+    const { login, token } = useArcgisAuth();
+
     useEffect(() => {
         if (!exportId || !minimumConfidentiality) return;
 
@@ -54,12 +57,8 @@ const ProjectsTableWrapper = ({
     }, [exportId, minimumConfidentiality]);
 
     const handleProjectsExport = () => {
-        exportProjects();
+        exportProjects(token);
         setShowDialog(false);
-    };
-
-    const handleNavigate = (path: string) => {
-        navigate(path);
     };
 
     return (
@@ -129,13 +128,13 @@ const ProjectsTableWrapper = ({
                             sx={{ my: 2 }}
                             variant="outlined"
                             onClick={() => {
-                                handleNavigate(confidentialityUpdate.toPath({ exportId }));
+                                navigate(confidentialityUpdate.toPath({ exportId }));
                             }}
                         >
                             {t("projects.confidentialityChange")}
                         </Button>
                         <Button
-                            disabled={true}
+                            disabled={token ? false : true}
                             sx={{ width: "130px", my: 2 }}
                             variant="contained"
                             onClick={() => {
@@ -147,6 +146,9 @@ const ProjectsTableWrapper = ({
                         <Button sx={{ width: "130px", my: 2 }} variant="contained" onClick={handleDownload}>
                             {t("projects.download")}
                         </Button>
+                        <Button sx={{ width: "130px", my: 2 }} variant="outlined" color="secondary" onClick={() => login()}>
+                            {t("projects.authenticate")}
+                        </Button>
                     </>
                 )}
                 {redirectPath === confidentialityUpdatePath && (
@@ -154,7 +156,7 @@ const ProjectsTableWrapper = ({
                         sx={{ my: 2 }}
                         variant="outlined"
                         onClick={() => {
-                            handleNavigate(configuredExport.toPath({ exportId }));
+                            navigate(configuredExport.toPath({ exportId }));
                         }}
                     >
                         {t("projects.backToExport")}

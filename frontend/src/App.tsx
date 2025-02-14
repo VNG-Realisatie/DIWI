@@ -48,6 +48,7 @@ import ExportSettings from "./pages/ExportSettings";
 import ExportWizard from "./pages/ExportWizard";
 import ConfidentialityUpdateTable from "./pages/ConfidentialityUpdateTable";
 import ProjectAuditTable from "./pages/ProjectAudit";
+import { ArcgisAuthProvider } from "./context/ArcgisAuthProvider";
 import { CategoriesProvider } from "./context/GoalCategoriesContext";
 import { CustomPropertyStoreProvider } from "./context/CustomPropertiesProvider";
 
@@ -185,7 +186,9 @@ function App() {
                                 element={
                                     <>
                                         <ProjectProvider>
-                                            <Projects />
+                                            <ArcgisAuthProvider>
+                                                <Projects />
+                                            </ArcgisAuthProvider>
                                         </ProjectProvider>
                                     </>
                                 }
@@ -195,7 +198,9 @@ function App() {
                             path={Paths.projects.path}
                             element={
                                 <ProjectProvider>
-                                    <Projects />
+                                    <ArcgisAuthProvider>
+                                        <Projects />
+                                    </ArcgisAuthProvider>
                                 </ProjectProvider>
                             }
                         />
@@ -203,7 +208,9 @@ function App() {
                             path={Paths.projectsTable.path}
                             element={
                                 <ProjectProvider>
-                                    <Projects />
+                                    <ArcgisAuthProvider>
+                                        <Projects />
+                                    </ArcgisAuthProvider>
                                 </ProjectProvider>
                             }
                         />
@@ -348,7 +355,14 @@ function App() {
                             }
                         />
                         <Route path={Paths.exchangedata.path} element={<ExchangeData />} />
-                        <Route path={Paths.exchangeimportdata.path} element={<ExchangeImportData />} />
+                        <Route
+                            path={Paths.exchangeimportdata.path}
+                            element={
+                                <ArcgisAuthProvider>
+                                    <ExchangeImportData />
+                                </ArcgisAuthProvider>
+                            }
+                        />
                         <Route path={Paths.importExcel.path} element={<ImportPage functionality="excel" />} />
                         <Route path={Paths.importGeoJson.path} element={<ImportPage functionality="geojson" />} />
                         <Route path={Paths.importSquit.path} element={<ImportPage functionality="squit" />} />
@@ -364,7 +378,9 @@ function App() {
                             path={Paths.configuredExport.path}
                             element={
                                 <ProjectProvider>
-                                    <ExportWizard />
+                                    <ArcgisAuthProvider>
+                                        <ExportWizard />
+                                    </ArcgisAuthProvider>
                                 </ProjectProvider>
                             }
                         />
@@ -372,7 +388,9 @@ function App() {
                             path={Paths.confidentialityUpdate.path}
                             element={
                                 <ProjectProvider>
-                                    <ConfidentialityUpdateTable />
+                                    <ArcgisAuthProvider>
+                                        <ConfidentialityUpdateTable />
+                                    </ArcgisAuthProvider>
                                 </ProjectProvider>
                             }
                         />
