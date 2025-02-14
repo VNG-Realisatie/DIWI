@@ -42,7 +42,7 @@ public class DataExchangeModel {
 
     private String apiKey;
 
-    private UUID clientId;
+    private String clientId;
 
     private String projectUrl;
 

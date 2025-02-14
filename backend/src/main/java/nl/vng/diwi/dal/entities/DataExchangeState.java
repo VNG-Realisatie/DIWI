@@ -43,7 +43,7 @@ public class DataExchangeState extends ChangeDataSuperclass {
     private String apiKey;
 
     @Column(name = "client_id")
-    private UUID clientId;
+    private String clientId;
 
     @Column(name = "user_id")
     private UUID userId;
