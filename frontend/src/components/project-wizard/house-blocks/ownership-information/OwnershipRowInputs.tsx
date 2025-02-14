@@ -116,15 +116,18 @@ export const OwnershipRowInputs = ({
     const errorText = t("createProject.houseBlocksForm.ownershipAndValue.error");
 
     useEffect(() => {
+        const isValueCategoryIdValid = priceCategoryOptions?.some((option) => option.id === ownership.valueCategoryId);
+        const isRentalValueCategoryIdValid = priceCategoryOptions?.some((option) => option.id === ownership.rentalValueCategoryId);
+
         handleInputChange(index, {
             ...ownership,
             value: isPriceCategorySelected || isHuurwoning ? { value: null, min: null, max: null } : ownership.value,
             rentalValue: isPriceCategorySelected || isKoopwoning ? { value: null, min: null, max: null } : ownership.rentalValue,
-            valueCategoryId: isKoopwoning ? ownership.valueCategoryId : undefined,
-            rentalValueCategoryId: isHuurwoning ? ownership.rentalValueCategoryId : undefined,
+            valueCategoryId: isKoopwoning && isValueCategoryIdValid ? ownership.valueCategoryId : undefined,
+            rentalValueCategoryId: isHuurwoning && isRentalValueCategoryIdValid ? ownership.rentalValueCategoryId : undefined,
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isPriceCategorySelected, isKoopwoning, isHuurwoning]);
+    }, [isPriceCategorySelected, isKoopwoning, isHuurwoning, priceCategoryOptions]);
 
     return (
         <Grid container spacing={2} mt={1} direction="row">
