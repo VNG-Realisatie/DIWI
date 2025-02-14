@@ -13,7 +13,7 @@ import AlertContext from "../../../context/AlertContext";
 import { ProjectForm } from "../../ProjectForm";
 import useLoading from "../../../hooks/useLoading";
 import { useHasEditPermission } from "../../../hooks/useHasEditPermission";
-import { validateForm } from "../../../utils/formValidation";
+import { checkDeletedCategories, validateForm } from "../../../utils/formValidation";
 import UserContext from "../../../context/UserContext";
 import { checkIsOwnerValidWithConfidentialityLevel } from "../../../utils/checkIsOwnerValidWithConfidentialityLevel";
 
@@ -49,13 +49,19 @@ export const ProjectsWithHouseBlock = () => {
 
     const handleProjectSave = async () => {
         if (projectForm) {
-            if (!validateForm(projectForm, checkIsOwnerValidWithConfidentialityLevel(projectForm, user), nonFixedCustomDefinitions)) {
+            const updatedCustomProperties = projectForm.customProperties?.map((customProperty) => {
+                const customDefinition = nonFixedCustomDefinitions.find((definition) => definition.id === customProperty.customPropertyId);
+                const updatedCustomProperty = customDefinition ? checkDeletedCategories(customProperty, customDefinition) : customProperty;
+                return updatedCustomProperty;
+            });
+            const updatedProjectForm = { ...projectForm, customProperties: updatedCustomProperties };
+            if (!validateForm(updatedProjectForm, checkIsOwnerValidWithConfidentialityLevel(updatedProjectForm, user), nonFixedCustomDefinitions)) {
                 setAlert(t("createProject.hasMissingRequiredAreas.hasmissingProperty"), "warning");
                 return;
             }
             try {
                 setLoading(true);
-                const newProjectForm = await updateProjectWithCustomProperties(projectForm);
+                const newProjectForm = await updateProjectWithCustomProperties(updatedProjectForm);
                 setAlert(t("createProject.houseBlocksForm.notifications.successfullySaved"), "success");
                 setProjectForm(newProjectForm);
                 updateProject();
