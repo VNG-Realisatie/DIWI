@@ -13,6 +13,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import jakarta.ws.rs.core.StreamingOutput;
+import lombok.NoArgsConstructor;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.DataExchange;
 import nl.vng.diwi.dal.entities.DataExchangeOption;
@@ -42,10 +43,8 @@ import nl.vng.diwi.services.export.excel.ExcelExport;
 import nl.vng.diwi.services.export.geojson.GeoJSONExport;
 import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandExport;
 
+@NoArgsConstructor
 public class DataExchangeService {
-
-    public DataExchangeService() {
-    }
 
     public List<DataExchangeModel> getDataExchangeList(VngRepository repo, boolean includeApiKey) {
 
@@ -118,7 +117,7 @@ public class DataExchangeService {
         state.setType(model.getType());
         state.setApiKey(model.getApiKey());
         state.setClientId(model.getClientId());
-        state.setUserId(model.getClientId() != null ? loggedUserUuid : null); //TODO confirm this : only store userId if we have a clientId
+        state.setUserId(loggedUserUuid);
         state.setProjectUrl(model.getProjectUrl());
         state.setChangeStartDate(zdtNow);
         state.setCreateUser(repo.getReferenceById(User.class, loggedUserUuid));
