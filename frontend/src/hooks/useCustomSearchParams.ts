@@ -5,6 +5,7 @@ import queryString from "query-string";
 import { filterTable } from "../api/projectsTableServices";
 import { getProjectsSizeWithParameters } from "../api/projectsServices";
 import { Project } from "../api/projectsServices";
+import { debounce } from "lodash";
 
 function createSearchString(sortModel: GridSortModel | undefined, filterModel: GridFilterModel | undefined, page: number, pageSize: number) {
     let query = "";
@@ -50,19 +51,30 @@ const useCustomSearchParams = () => {
     }, [params]);
 
     useEffect(() => {
-        if (!page || !pageSize) return;
-        setIsLoading(true);
-        const url = createSearchString(sortModel, filterModel, page, pageSize);
-        setFilterUrl(url);
+        const debouncedFetchData = debounce(
+            (page: number | undefined, pageSize: number | undefined, sortModel: GridSortModel | undefined, filterModel: GridFilterModel | undefined) => {
+                if (!page || !pageSize) return;
+                setIsLoading(true);
+                const url = createSearchString(sortModel, filterModel, page, pageSize);
+                setFilterUrl(url);
 
-        filterTable(url).then((res) => {
-            setProjects(res);
-        });
+                filterTable(url).then((res) => {
+                    setProjects(res);
+                });
 
-        getProjectsSizeWithParameters(url).then((size) => {
-            setTotalProjectCount(size.size);
-            setIsLoading(false);
-        });
+                getProjectsSizeWithParameters(url).then((size) => {
+                    setTotalProjectCount(size.size);
+                    setIsLoading(false);
+                });
+            },
+            300,
+        );
+
+        debouncedFetchData(page, pageSize, sortModel, filterModel);
+
+        return () => {
+            debouncedFetchData.cancel();
+        };
     }, [page, pageSize, filterModel, sortModel]);
 
     const rows = projects.map((p) => {
