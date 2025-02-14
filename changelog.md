@@ -22,6 +22,7 @@ This release focuses on exporting data for other purposes than provincial monito
 - Addressed an issue that touches on the previous one, where updated/changed property values would not display correctly until after a page refresh
 - Fixed a dashboards display issue, where when switching from a valid project to an invalid project, the UI would display the values for the valid project
 - Fixed an issue where confidentiality settings server side would prevent exporting that should be possible
+- Fixed an issue where project order on tables was not fixed while browsing through the table's pages
 
 ### IMPROVED
 
