@@ -18,7 +18,7 @@ type Props = {
     handleBack?: () => void;
     exportProjects?: () => void;
     handleDownload?: () => void;
-    setConfidentialityLevel?: Dispatch<SetStateAction<GenericOptionType<ConfidentialityLevelOptionsType>>>;
+    setConfidentialityLevel?: Dispatch<SetStateAction<GenericOptionType<ConfidentialityLevelOptionsType> | undefined>>;
     selectedConfidentialityLevel?: GenericOptionType<ConfidentialityLevelOptionsType>;
     minimumConfidentiality?: ConfidentialityLevelOptionsType;
 };
@@ -52,6 +52,8 @@ const ProjectsTableWrapper = ({
         const filteredOptions = confidentialityLevelOptions.filter((option) => allowedLevels.includes(option.id));
         setFilteredConfidentialityOptions(filteredOptions);
     }, [exportId, minimumConfidentiality]);
+
+    if (!selectedConfidentialityLevel && redirectPath === configuredExportPath) return;
 
     const handleProjectsExport = () => {
         exportProjects();
@@ -90,6 +92,7 @@ const ProjectsTableWrapper = ({
                             translationPath="projectTable.confidentialityLevelOptions."
                             tooltipInfoText={"tooltipInfo.vertrouwelijkheidsniveau.title"}
                             hasTooltipOption={true}
+                            nullable={false}
                         />
                     </Box>
                 </Stack>

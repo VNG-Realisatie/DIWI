@@ -19,7 +19,7 @@ import ActionNotAllowed from "./ActionNotAllowed";
 import { Property } from "../api/adminSettingServices";
 import { CustomPropertyWidget } from "../components/CustomPropertyWidget";
 import { LabelComponent } from "../components/project/LabelComponent";
-import { exportSettings, updateExportSettings } from "../Paths";
+import { exchangeimportdata, exportSettings, updateExportSettings } from "../Paths";
 import UserContext from "../context/UserContext";
 import { doesPropertyMatchExportProperty } from "../utils/exportUtils";
 import { useCustomPropertyStore } from "../hooks/useCustomPropertyStore";
@@ -101,6 +101,8 @@ function ExportAdminPage() {
     const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
     const { customProperties: unfilteredCustomProperties, fetchCustomProperties } = useCustomPropertyStore();
 
+    const customProperties = unfilteredCustomProperties.filter((property) => !property.disabled);
+
     useEffect(() => {
         if (id) return;
         setFormData(generateInitialState(type));
@@ -121,15 +123,42 @@ function ExportAdminPage() {
             const fetchData = async () => {
                 const data = await getExportDataById(id);
                 const { properties, valid, validationErrors, ...formData } = data;
+
+                const updatedProperties = properties?.map((property) => {
+                    if (!customProperties.some((customProp) => customProp.id === property.customPropertyId)) {
+                        property.customPropertyId = undefined;
+                        if (property.options) {
+                            property.options = property.options.map((option) => ({
+                                ...option,
+                                propertyCategoryValueIds: [],
+                            }));
+                        }
+                    }
+                    if (property.options) {
+                        const matchingCustomProperty = customProperties.find((customProperty) => customProperty.id === property.customPropertyId);
+                        property.options.forEach((option) => {
+                            if (matchingCustomProperty) {
+                                option.propertyCategoryValueIds = option?.propertyCategoryValueIds?.filter((id) =>
+                                    matchingCustomProperty?.categories?.some((category) => category.id === id && !category.disabled),
+                                );
+
+                                option.propertyOrdinalValueIds = option?.propertyOrdinalValueIds?.filter((id) =>
+                                    matchingCustomProperty?.ordinals?.some((ordinal) => ordinal.id === id && !ordinal.disabled),
+                                );
+                            }
+                        });
+                    }
+                    return property;
+                });
+
                 setFormData(formData);
-                setProperties(properties || []);
+                setProperties(updatedProperties || []);
                 setType({ id: data.type as ExportType, name: t(`admin.export.${data.type}`) });
             };
             fetchData();
         }
-    }, [id, t]);
-
-    const customProperties = unfilteredCustomProperties.filter((property) => !property.disabled);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id]);
 
     if (!allowedActions.includes("EDIT_DATA_EXCHANGES")) {
         return <ActionNotAllowed errorMessage={t("admin.export.actionNotAllowed")} />;
@@ -155,7 +184,9 @@ function ExportAdminPage() {
             const data = id ? await updateExportData(id, exportData) : await addExportData(exportData);
             setValidationErrors(data.validationErrors || []);
             setAlert(id ? t("admin.export.notification.updated") : t("admin.export.notification.created"), "success");
-            if (!id) {
+            if (type.id !== "ESRI_ZUID_HOLLAND") {
+                navigate(exchangeimportdata.toPath());
+            } else if (!id) {
                 navigate(updateExportSettings.toPath({ id: data.id }));
             }
         } catch (error: unknown) {
