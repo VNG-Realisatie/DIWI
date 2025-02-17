@@ -68,7 +68,7 @@ function ExportAdminPage() {
             ESRI_ZUID_HOLLAND: {
                 fields: [
                     { name: "name", label: t("admin.export.name"), type: "text", mandatory: true },
-                    { name: "clientId", label: t("admin.export.clientId"), type: "text", mandatory: false },
+                    { name: "clientId", label: t("admin.export.clientId"), type: "text", mandatory: true },
                 ],
             },
             GEO_JSON: {
