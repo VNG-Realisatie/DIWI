@@ -43,6 +43,8 @@ import nl.vng.diwi.services.export.excel.ExcelExport;
 import nl.vng.diwi.services.export.geojson.GeoJSONExport;
 import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandExport;
 
+import static nl.vng.diwi.dal.entities.DataExchangeType.ESRI_ZUID_HOLLAND;
+
 @NoArgsConstructor
 public class DataExchangeService {
 
@@ -73,7 +75,7 @@ public class DataExchangeService {
         DataExchange dataExchange = new DataExchange();
         repo.persist(dataExchange);
 
-        createDataExchangeState(repo, dataExchange.getId(), model, zdtNow, loggedUserUuid);
+        createDataExchangeState(repo, dataExchange.getId(), model, zdtNow, loggedUserUuid, false);
 
         createDataExchangeTemplate(repo, dataExchange, model.getType());
 
@@ -109,7 +111,9 @@ public class DataExchangeService {
         });
     }
 
-    public void createDataExchangeState(VngRepository repo, UUID dataExchangeUuid, DataExchangeModel model, ZonedDateTime zdtNow, UUID loggedUserUuid) {
+    public void createDataExchangeState(VngRepository repo, UUID dataExchangeUuid,
+                                        DataExchangeModel model, ZonedDateTime zdtNow,
+                                        UUID loggedUserUuid, boolean isUpdate) {
 
         DataExchangeState state = new DataExchangeState();
         state.setDataExchange(repo.getReferenceById(DataExchange.class, dataExchangeUuid));
@@ -121,7 +125,7 @@ public class DataExchangeService {
         state.setProjectUrl(model.getProjectUrl());
         state.setChangeStartDate(zdtNow);
         state.setCreateUser(repo.getReferenceById(User.class, loggedUserUuid));
-        state.setValid(getDefaultValidTypes().contains(model.getType()));
+        state.setValid(getDefaultValidTypes().contains(model.getType()) || (isUpdate && model.getType() == ESRI_ZUID_HOLLAND));
         repo.persist(state);
     }
 
@@ -132,7 +136,7 @@ public class DataExchangeService {
 
         if (dataExchangeModel.areStateFieldsDifferent(oldModel)) {
             deleteDataExchangeState(repo, dataExchangeModel.getId(), now, loggedUserUuid);
-            createDataExchangeState(repo, dataExchangeModel.getId(), dataExchangeModel, now, loggedUserUuid);
+            createDataExchangeState(repo, dataExchangeModel.getId(), dataExchangeModel, now, loggedUserUuid, true);
         }
 
         Map<UUID, DataExchangePropertyModel> oldPropMap = oldModel.getProperties().stream().collect(Collectors.toMap(DataExchangePropertyModel::getId, p -> p));
