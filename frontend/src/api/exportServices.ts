@@ -26,6 +26,7 @@ export type ExportData = {
     id: string;
     name: string;
     type: string;
+    clientId?: string;
     apiKey?: string;
     projectUrl?: string;
     properties?: ExportProperty[];

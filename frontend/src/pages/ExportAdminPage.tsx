@@ -66,7 +66,10 @@ function ExportAdminPage() {
     const typeConfig: TypeConfig = useMemo(
         () => ({
             ESRI_ZUID_HOLLAND: {
-                fields: [{ name: "name", label: t("admin.export.name"), type: "text", mandatory: true }],
+                fields: [
+                    { name: "name", label: t("admin.export.name"), type: "text", mandatory: true },
+                    { name: "clientId", label: t("admin.export.clientId"), type: "text", mandatory: false },
+                ],
             },
             GEO_JSON: {
                 fields: [{ name: "name", label: t("admin.export.name"), type: "text", mandatory: true }],
@@ -177,7 +180,7 @@ function ExportAdminPage() {
                 id: id || "",
                 name: formData?.name ?? "",
                 type: type.id,
-                ...(formData?.apiKey && { apiKey: formData.apiKey }),
+                ...(formData?.clientId && { apiKey: formData.clientId }),
                 projectUrl: formData?.projectUrl ?? "",
                 ...(id && { properties }),
             };
