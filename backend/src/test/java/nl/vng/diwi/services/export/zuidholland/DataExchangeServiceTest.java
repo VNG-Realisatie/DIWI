@@ -33,7 +33,7 @@ class DataExchangeServiceTest {
     private VngRepository mockRepo;
     private DataExchangeService service;
     private DataExchangeModel mockModel;
-    private  DataExchange mockDataExchange;
+    private DataExchange mockDataExchange;
 
     @BeforeEach
     void setUp() {

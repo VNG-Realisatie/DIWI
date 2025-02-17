@@ -237,11 +237,12 @@ public class DataExchangeModel {
         return this.validationErrors;
     }
 
-    public boolean areStateFieldsDifferent(DataExchangeModel other) {
+    public boolean hasUpdatedStateFields(DataExchangeModel other) {
         return !Objects.equals(this.name, other.name) ||
                 !Objects.equals(this.projectUrl, other.projectUrl) ||
                 !Objects.equals(this.projectDetailUrl, other.projectDetailUrl) ||
                 !Objects.equals(this.apiKey, other.apiKey) ||
+                !Objects.equals(this.clientId, other.clientId) ||
                 !Objects.equals(this.valid, other.valid);
     }
 
