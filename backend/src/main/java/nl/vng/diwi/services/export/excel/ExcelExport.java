@@ -16,6 +16,7 @@ import nl.vng.diwi.models.SelectModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
 import nl.vng.diwi.services.ExcelStrings;
 import nl.vng.diwi.services.ExcelTableHeader;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -31,6 +32,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -141,13 +143,13 @@ public class ExcelExport {
                 }
                 h.getOwnershipValueList().forEach(o -> {
                     if (o.getOwnershipType() == OwnershipType.KOOPWONING) {
-                        hbPurchasePrices.add(o.getSingleValueOrRangeValue(false, HOUSING_PRICE_DIVIDE_FACTOR));
+                        hbPurchasePrices.add(o.getSingleValueOrRangeValue(false));
                     }
                     if (o.getOwnershipType() == OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER) {
-                        hbLandlordRentPrices.add(o.getSingleValueOrRangeValue(true, HOUSING_PRICE_DIVIDE_FACTOR));
+                        hbLandlordRentPrices.add(o.getSingleValueOrRangeValue(true));
                     }
                     if (o.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE) {
-                        hbHousingRentPrices.add(o.getSingleValueOrRangeValue(true, HOUSING_PRICE_DIVIDE_FACTOR));
+                        hbHousingRentPrices.add(o.getSingleValueOrRangeValue(true));
                     }
                 });
             });
@@ -480,15 +482,14 @@ public class ExcelExport {
     }
 
     private static String getRangeSubheaderName(RangeSelectDisabledModel rsm) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(rsm.getMin());
-        sb.append(" - ");
-        if (rsm.getMax() != null) {
-            sb.append(rsm.getMax());
-        } else {
-            sb.append("Inf");
-        }
-        return sb.toString();
+        var min = rsm.getMin() != null
+            ? rsm.getMin().divide(HOUSING_PRICE_DIVIDE_FACTOR, 2, RoundingMode.UNNECESSARY).toString()
+            : "0";
+        var max = rsm.getMax() != null
+            ? rsm.getMax().divide(HOUSING_PRICE_DIVIDE_FACTOR, 2, RoundingMode.UNNECESSARY).toString()
+            : "Inf";
+
+        return StringUtils.replace(min + " - " + max, ".", ",");
     }
 
     private static String getSingleValueOrRangeSubheaderName(SingleValueOrRangeModel<BigDecimal> svrm) {
@@ -763,7 +764,8 @@ public class ExcelExport {
                     case HOUSEBLOCK_PROPERTY_PURCHASE_PRICE_RANGE_CATEGORY -> {
                         int amount = 0;
                         if (columnHeader.getSubheaderUuid() != null) {
-                            amount = houseblock.getOwnershipValueList().stream().filter(ov -> ov.getOwnershipType() == OwnershipType.KOOPWONING &&
+                            amount = houseblock.getOwnershipValueList().stream()
+                                .filter(ov -> ov.getOwnershipType() == OwnershipType.KOOPWONING &&
                                     columnHeader.getSubheaderUuid().equals(ov.getOwnershipRangeCategoryId()))
                                 .mapToInt(ProjectExportSqlModelExtended.OwnershipValueSqlModel::getOwnershipAmount).sum();
                         } else if (UNKNOWN.equalsIgnoreCase(columnHeader.getSubheader())) {
@@ -780,7 +782,7 @@ public class ExcelExport {
                         if (columnHeader.getSubheaderRangeValue() != null) {
                             int amount = houseblock.getOwnershipValueList().stream()
                                 .filter(ov -> ov.getOwnershipType() == OwnershipType.KOOPWONING &&
-                                    Objects.equals(columnHeader.getSubheaderRangeValue(), ov.getSingleValueOrRangeValue(false, HOUSING_PRICE_DIVIDE_FACTOR)))
+                                    Objects.equals(columnHeader.getSubheaderRangeValue(), ov.getSingleValueOrRangeValue(false)))
                                 .mapToInt(ProjectExportSqlModelExtended.OwnershipValueSqlModel::getOwnershipAmount).sum();
                             if (amount > 0) {
                                 createCellWithValue(row, columnHeader.getColumnIndex(), amount, styles,
@@ -809,7 +811,7 @@ public class ExcelExport {
                         if (columnHeader.getSubheaderRangeValue() != null) {
                             int amount = houseblock.getOwnershipValueList().stream()
                                 .filter(ov -> ov.getOwnershipType() == OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER &&
-                                    Objects.equals(columnHeader.getSubheaderRangeValue(), ov.getSingleValueOrRangeValue(true, HOUSING_PRICE_DIVIDE_FACTOR)))
+                                    Objects.equals(columnHeader.getSubheaderRangeValue(), ov.getSingleValueOrRangeValue(true)))
                                 .mapToInt(ProjectExportSqlModelExtended.OwnershipValueSqlModel::getOwnershipAmount).sum();
                             if (amount > 0) {
                                 createCellWithValue(row, columnHeader.getColumnIndex(), amount, styles,
@@ -821,7 +823,9 @@ public class ExcelExport {
                     case HOUSEBLOCK_PROPERTY_HOUSING_ASSOCIATION_RENTAL_PRICE_RANGE_CATEGORY -> {
                         int amount = 0;
                         if (columnHeader.getSubheaderUuid() != null) {
-                            amount = houseblock.getOwnershipValueList().stream().filter(ov -> ov.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE &&
+                            amount = houseblock.getOwnershipValueList()
+                                .stream()
+                                .filter(ov -> ov.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE &&
                                     columnHeader.getSubheaderUuid().equals(ov.getOwnershipRentalRangeCategoryId()))
                                 .mapToInt(ProjectExportSqlModelExtended.OwnershipValueSqlModel::getOwnershipAmount).sum();
                         } else if (UNKNOWN.equalsIgnoreCase(columnHeader.getSubheader())) {
@@ -838,7 +842,7 @@ public class ExcelExport {
                         if (columnHeader.getSubheaderRangeValue() != null) {
                             int amount = houseblock.getOwnershipValueList().stream()
                                 .filter(ov -> ov.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE &&
-                                    Objects.equals(columnHeader.getSubheaderRangeValue(), ov.getSingleValueOrRangeValue(true, HOUSING_PRICE_DIVIDE_FACTOR)))
+                                Objects.equals(columnHeader.getSubheaderRangeValue(), ov.getSingleValueOrRangeValue(true)))
                                 .mapToInt(ProjectExportSqlModelExtended.OwnershipValueSqlModel::getOwnershipAmount).sum();
                             if (amount > 0) {
                                 createCellWithValue(row, columnHeader.getColumnIndex(), amount, styles,
