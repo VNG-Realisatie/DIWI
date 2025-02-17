@@ -1,5 +1,5 @@
 import { Property } from "../api/adminSettingServices";
-import { CustomPropertyValue } from "../api/customPropServices";
+import { CustomPropDefinitions, CustomPropertyValue } from "../api/customPropServices";
 import { Project } from "../api/projectsServices";
 
 type CustomValueType =
@@ -69,3 +69,18 @@ export function validateForm(project: Project, validOwner: boolean = true, custo
     }
     return true;
 }
+
+export const checkDeletedCategories = (customValue: CustomPropertyValue, property: CustomPropDefinitions) => {
+    if (customValue.categories && customValue.categories.length > 0) {
+        const newCategories = customValue.categories.filter((category) =>
+            property.categories?.some((propCategory) => propCategory.id === category && !propCategory.disabled),
+        );
+        return { ...customValue, categories: newCategories };
+    }
+    if (customValue.ordinals && customValue.ordinals.value) {
+        const newOrdinal = property.ordinals?.find((ord) => ord.id === customValue.ordinals?.value && !ord.disabled);
+        return { ...customValue, ordinals: newOrdinal ? { value: newOrdinal.id } : undefined };
+    }
+
+    return customValue;
+};

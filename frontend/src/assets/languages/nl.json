@@ -662,6 +662,7 @@
         },
         "name": "Naam",
         "apiKey": "API sleutel",
+        "clientId": "Client ID",
         "type": "Type",
         "projectUrl": "Create layer URL",
         "error": {

@@ -34,16 +34,21 @@ const ExportWizard = () => {
     const [errors, setErrors] = useState<DownloadError[]>([]);
     const [params] = useSearchParams();
     const [exportData, setExportData] = useState<ExportData>();
-    const [selectedConfidentialityLevel, setConfidentialityLevel] = useState<GenericOptionType<ConfidentialityLevelOptionsType>>({
-        id: "EXTERNAL_REGIONAL",
-        name: "5_EXTERNAL_REGIONAL",
-    });
+    const [selectedConfidentialityLevel, setConfidentialityLevel] = useState<GenericOptionType<ConfidentialityLevelOptionsType>>();
 
     useEffect(() => {
         if (!exportId) return;
         const fetchData = async () => {
             const exportdata = await getExportDataById(exportId);
             setExportData(exportdata);
+
+            const matchedOption = confidentialityLevelOptions.find((option) => option.id === exportdata.minimumConfidentiality);
+            setConfidentialityLevel(
+                matchedOption || {
+                    id: "EXTERNAL_REGIONAL",
+                    name: "5_EXTERNAL_REGIONAL",
+                },
+            );
         };
         fetchData();
     }, [exportId]);
@@ -55,13 +60,16 @@ const ExportWizard = () => {
             if (matchedOption) {
                 setConfidentialityLevel(matchedOption);
             } else {
-                setConfidentialityLevel({
-                    id: "EXTERNAL_REGIONAL",
-                    name: "5_EXTERNAL_REGIONAL",
-                });
+                const defaultOption = confidentialityLevelOptions.find((option) => option.id === exportData?.minimumConfidentiality);
+                setConfidentialityLevel(
+                    defaultOption || {
+                        id: "EXTERNAL_REGIONAL",
+                        name: "5_EXTERNAL_REGIONAL",
+                    },
+                );
             }
         }
-    }, [params]);
+    }, [params, exportData]);
 
     if (!allowedActions.includes("VIEW_DATA_EXCHANGES")) {
         return <ActionNotAllowed errorMessage={t("admin.export.actionNotAllowed")} />;
@@ -89,7 +97,9 @@ const ExportWizard = () => {
 
         try {
             const projectIds = selectedProjects;
-            const allowedConfidentialityLevels = getAllowedConfidentialityLevels(selectedConfidentialityLevel.id as ConfidentialityLevel);
+            const allowedConfidentialityLevels = selectedConfidentialityLevel
+                ? getAllowedConfidentialityLevels(selectedConfidentialityLevel.id as ConfidentialityLevel)
+                : [];
 
             const body = {
                 exportDate: new Date().toISOString(),
