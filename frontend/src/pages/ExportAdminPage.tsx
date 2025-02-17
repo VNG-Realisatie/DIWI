@@ -180,7 +180,7 @@ function ExportAdminPage() {
                 id: id || "",
                 name: formData?.name ?? "",
                 type: type.id,
-                ...(formData?.clientId && { apiKey: formData.clientId }),
+                clientId: formData?.clientId,
                 projectUrl: formData?.projectUrl ?? "",
                 ...(id && { properties }),
             };

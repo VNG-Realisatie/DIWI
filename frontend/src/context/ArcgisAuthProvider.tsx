@@ -4,10 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { configuredExport } from "../Paths";
 import useAlert from "../hooks/useAlert";
 import { t } from "i18next";
+import { getExportDataById } from "../api/exportServices";
 
 interface ArcgisAuthContextProps {
-    login: () => void;
-    handleRedirect: (exportId: string | undefined) => Promise<void>;
+    login: (exportId: string) => void;
+    handleRedirect: () => Promise<void>;
     token: string | null;
 }
 
@@ -21,12 +22,15 @@ export const ArcgisAuthProvider = ({ children }: ArcgisAuthProviderProps) => {
     const [token, setToken] = useState<string | null>(null);
     const navigate = useNavigate();
     const { setAlert } = useAlert();
-
-    const clientId = import.meta.env.VITE_REACT_APP_ARCGIS_CLIENT_ID;
+    const [exportId, setExportId] = useState<string | undefined>(undefined);
+    const [clientId, setClientId] = useState<string | undefined>(undefined);
     const redirectUri = `${window.location.origin}/exchangeimportdata`;
 
-    const login = async () => {
+    const login = async (exportId: string) => {
+        setExportId(exportId);
         try {
+            const { clientId } = await getExportDataById(exportId);
+            setClientId(clientId);
             await ArcGISIdentityManager.beginOAuth2({
                 clientId,
                 redirectUri,
@@ -37,38 +41,25 @@ export const ArcgisAuthProvider = ({ children }: ArcgisAuthProviderProps) => {
         }
     };
 
-    const handleRedirect = useCallback(
-        async (exportId: string | undefined) => {
-            const manager = await ArcGISIdentityManager.completeOAuth2({
-                clientId,
-                redirectUri,
-                popup: false,
-            });
-            setToken(manager.token);
-            sessionStorage.setItem("arcgis_token", manager.token);
-            setAlert(t("exchangeData.arcgis.loginSuccess"), "success");
+    const handleRedirect = useCallback(async () => {
+        const manager = await ArcGISIdentityManager.completeOAuth2({
+            clientId,
+            redirectUri,
+            popup: false,
+        });
+        setToken(manager.token);
+        sessionStorage.setItem("arcgis_token", manager.token);
+        setAlert(t("exchangeData.arcgis.loginSuccess"), "success");
 
-            if (exportId) {
-                navigate(configuredExport.toPath({ exportId }));
-            }
-        },
-        [clientId, redirectUri, navigate, setAlert],
-    );
+        if (exportId) {
+            navigate(configuredExport.toPath({ exportId }));
+        }
+    }, [clientId, redirectUri, navigate, setAlert, exportId]);
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
-        const stateParam = urlParams.get("state");
-        let exportId;
-        if (stateParam) {
-            const stateObj = JSON.parse(stateParam);
-            const originalUrl = stateObj.originalUrl;
-
-            const startIndex = originalUrl.indexOf("/export/") + "/export/".length;
-            const endIndex = originalUrl.indexOf("?", startIndex);
-            exportId = originalUrl.substring(startIndex, endIndex);
-        }
         if (urlParams.has("code")) {
-            handleRedirect(exportId);
+            handleRedirect();
         } else {
             const storedToken = sessionStorage.getItem("arcgis_token");
             if (storedToken) {
