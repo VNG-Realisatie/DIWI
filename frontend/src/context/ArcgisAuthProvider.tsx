@@ -47,7 +47,6 @@ export const ArcgisAuthProvider = ({ children }: ArcgisAuthProviderProps) => {
                     popup: false,
                 });
                 setToken(manager.token);
-                console.log(manager.token);
                 sessionStorage.setItem("arcgis_token", manager.token);
                 setAlert(t("exchangeData.arcgis.loginSuccess"), "success");
 
