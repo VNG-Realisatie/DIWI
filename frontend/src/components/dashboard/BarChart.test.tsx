@@ -1,7 +1,7 @@
 import { convertData } from "../../utils/convertChartData";
 import { OutputData, selectedProjectColor } from "./BarChart";
 
-it("Should convert chart data to format soutable for MUI bar chart", () => {
+it("Should convert chart data to format suitable for MUI bar chart", () => {
     const chartData = [
         { year: 2021, projectId: "1", amount: 100, name: "Project 1" },
         { year: 2022, projectId: "2", amount: 200, name: "Project 2" },
