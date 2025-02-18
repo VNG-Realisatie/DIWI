@@ -13,6 +13,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import jakarta.ws.rs.core.StreamingOutput;
+import lombok.NoArgsConstructor;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.DataExchange;
 import nl.vng.diwi.dal.entities.DataExchangeOption;
@@ -42,10 +43,10 @@ import nl.vng.diwi.services.export.excel.ExcelExport;
 import nl.vng.diwi.services.export.geojson.GeoJSONExport;
 import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandExport;
 
-public class DataExchangeService {
+import static nl.vng.diwi.dal.entities.DataExchangeType.ESRI_ZUID_HOLLAND;
 
-    public DataExchangeService() {
-    }
+@NoArgsConstructor
+public class DataExchangeService {
 
     public List<DataExchangeModel> getDataExchangeList(VngRepository repo, boolean includeApiKey) {
 
@@ -74,7 +75,7 @@ public class DataExchangeService {
         DataExchange dataExchange = new DataExchange();
         repo.persist(dataExchange);
 
-        createDataExchangeState(repo, dataExchange.getId(), model, zdtNow, loggedUserUuid);
+        createDataExchangeState(repo, dataExchange.getId(), model, zdtNow, loggedUserUuid, false);
 
         createDataExchangeTemplate(repo, dataExchange, model.getType());
 
@@ -110,29 +111,33 @@ public class DataExchangeService {
         });
     }
 
-    public void createDataExchangeState(VngRepository repo, UUID dataExchangeUuid, DataExchangeModel model, ZonedDateTime zdtNow, UUID loggedUserUuid) {
+    public void createDataExchangeState(VngRepository repo, UUID dataExchangeUuid,
+                                        DataExchangeModel model, ZonedDateTime zdtNow,
+                                        UUID loggedUserUuid, boolean isUpdate) {
 
         DataExchangeState state = new DataExchangeState();
         state.setDataExchange(repo.getReferenceById(DataExchange.class, dataExchangeUuid));
         state.setName(model.getName());
         state.setType(model.getType());
         state.setApiKey(model.getApiKey());
+        state.setClientId(model.getClientId());
+        state.setUserId(loggedUserUuid);
         state.setProjectUrl(model.getProjectUrl());
         state.setChangeStartDate(zdtNow);
         state.setCreateUser(repo.getReferenceById(User.class, loggedUserUuid));
-        state.setValid(getDefaultValidTypes().contains(model.getType()));
+        state.setValid(getDefaultValidTypes().contains(model.getType()) || (isUpdate && model.getType() == ESRI_ZUID_HOLLAND));
         repo.persist(state);
-
     }
 
-    public void updateDataExchange(VngRepository repo, DataExchangeModel dataExchangeModel, DataExchangeModel oldModel, ZonedDateTime now, UUID loggedUserUuid)
-            throws VngNotFoundException {
+    public void updateDataExchange(VngRepository repo, DataExchangeModel dataExchangeModel,
+                                   DataExchangeModel oldModel, ZonedDateTime now,
+                                   UUID loggedUserUuid) throws VngNotFoundException {
 
         User loggedUser = repo.getReferenceById(User.class, loggedUserUuid);
 
-        if (dataExchangeModel.areStateFieldsDifferent(oldModel)) {
+        if (dataExchangeModel.hasUpdatedStateFields(oldModel)) {
             deleteDataExchangeState(repo, dataExchangeModel.getId(), now, loggedUserUuid);
-            createDataExchangeState(repo, dataExchangeModel.getId(), dataExchangeModel, now, loggedUserUuid);
+            createDataExchangeState(repo, dataExchangeModel.getId(), dataExchangeModel, now, loggedUserUuid, true);
         }
 
         Map<UUID, DataExchangePropertyModel> oldPropMap = oldModel.getProperties().stream().collect(Collectors.toMap(DataExchangePropertyModel::getId, p -> p));
