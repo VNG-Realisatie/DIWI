@@ -19,6 +19,7 @@ export const TargetGroup = ({ houseBlock, setHouseBlock, readOnly }: TargetGroup
 
     // update houseblock so it will have amounts for every category
     useEffect(() => {
+        if (!houseBlock.targetGroup) return;
         const missingCategories = targetGroupCategories?.filter((cat) => !houseBlock.targetGroup.map((cat) => cat.id).includes(cat.id));
         if (missingCategories && missingCategories.length > 0) {
             const missingAmountObj = missingCategories.map((cat) => ({ id: cat.id, amount: 0 })) ?? [];
