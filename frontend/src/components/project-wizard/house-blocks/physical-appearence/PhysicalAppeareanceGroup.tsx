@@ -19,6 +19,8 @@ export const PhysicalAppeareanceGroup = ({ houseBlock, setHouseBlock, readOnly }
 
     // update houseblock so it will have amounts for every category
     useEffect(() => {
+        if (!houseBlock.physicalAppearance) return;
+
         const missingCategories = physicalAppearanceCategories?.filter((cat) => !houseBlock.physicalAppearance.map((cat) => cat.id).includes(cat.id));
         if (missingCategories && missingCategories.length > 0) {
             const missingAmountObj = missingCategories.map((cat) => ({ id: cat.id, amount: 0 })) ?? [];

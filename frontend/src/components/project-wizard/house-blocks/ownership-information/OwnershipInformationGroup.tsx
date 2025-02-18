@@ -53,6 +53,8 @@ export const OwnershipInformationGroup = ({ houseBlock, setHouseBlock, readOnly 
         };
     }, [houseBlock, setHouseBlock]);
 
+    if (!houseBlock.ownershipValue) return;
+
     const translationPath = "createProject.houseBlocksForm";
     return (
         <WizardCard>

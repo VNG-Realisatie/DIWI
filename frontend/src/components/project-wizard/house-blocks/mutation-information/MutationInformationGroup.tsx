@@ -13,6 +13,7 @@ export type MutationInformationProps = {
 };
 
 export const MutationInformationGroup = ({ houseBlock, setHouseBlock, readOnly }: MutationInformationProps) => {
+    if (!houseBlock.mutation) return;
     return (
         <WizardCard>
             <Typography
