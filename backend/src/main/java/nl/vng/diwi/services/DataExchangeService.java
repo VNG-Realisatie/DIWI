@@ -129,12 +129,13 @@ public class DataExchangeService {
         repo.persist(state);
     }
 
-    public void updateDataExchange(VngRepository repo, DataExchangeModel dataExchangeModel, DataExchangeModel oldModel, ZonedDateTime now, UUID loggedUserUuid)
-            throws VngNotFoundException {
+    public void updateDataExchange(VngRepository repo, DataExchangeModel dataExchangeModel,
+                                   DataExchangeModel oldModel, ZonedDateTime now,
+                                   UUID loggedUserUuid) throws VngNotFoundException {
 
         User loggedUser = repo.getReferenceById(User.class, loggedUserUuid);
 
-        if (dataExchangeModel.areStateFieldsDifferent(oldModel)) {
+        if (dataExchangeModel.hasUpdatedStateFields(oldModel)) {
             deleteDataExchangeState(repo, dataExchangeModel.getId(), now, loggedUserUuid);
             createDataExchangeState(repo, dataExchangeModel.getId(), dataExchangeModel, now, loggedUserUuid, true);
         }
