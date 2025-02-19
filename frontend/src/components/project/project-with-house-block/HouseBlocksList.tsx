@@ -17,6 +17,7 @@ import { useCustomPropertyDefinitions } from "../../../hooks/useCustomPropertyDe
 import { useHasEditPermission } from "../../../hooks/useHasEditPermission";
 import { useLocation } from "react-router-dom";
 import { validateHouseBlock } from "../../../utils/houseblocks/houseBlocksFunctions";
+import { checkDeletedCategories } from "../../../utils/formValidation";
 
 type Props = {
     setOpenHouseBlockDialog: (open: boolean) => void;
@@ -62,13 +63,20 @@ export const HouseBlockAccordionWithControls = ({ houseBlock, refresh }: HouseBl
     const isDemolition = houseBlock.mutation.kind === "DEMOLITION";
 
     const handleSave = async () => {
-        if (validateHouseBlock(newHouseBlock, setAlert, nonFixedCustomDefinitions)) {
+        const updatedCustomProperties = newHouseBlock.customProperties?.map((customProperty) => {
+            const customDefinition = nonFixedCustomDefinitions.find((definition) => definition.id === customProperty.customPropertyId);
+            const updatedCustomProperty = customDefinition ? checkDeletedCategories(customProperty, customDefinition) : customProperty;
+            return updatedCustomProperty;
+        });
+        const syncedHouseBlock = { ...newHouseBlock, customProperties: updatedCustomProperties };
+
+        if (validateHouseBlock(syncedHouseBlock, setAlert, nonFixedCustomDefinitions)) {
             try {
                 const targetGroupCategoryIds = targetGroupCategories?.map((cat) => cat.id);
                 const physicalAppearanceCategoryIds = physicalAppearanceCategories?.map((cat) => cat.id);
 
                 const filteredHouseBlock = {
-                    ...newHouseBlock,
+                    ...syncedHouseBlock,
                     targetGroup: newHouseBlock.targetGroup.filter((tg) => targetGroupCategoryIds?.includes(tg.id)),
                     physicalAppearance: newHouseBlock.physicalAppearance.filter((pa) => physicalAppearanceCategoryIds?.includes(pa.id)),
                 };
