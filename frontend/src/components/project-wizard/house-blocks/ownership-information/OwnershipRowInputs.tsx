@@ -1,7 +1,6 @@
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Grid, IconButton, TextField } from "@mui/material";
 import { t } from "i18next";
-import _ from "lodash";
 
 import { OwnershipValueType, ownershipValueOptions } from "../../../../types/enums";
 import { OwnershipSingleValue } from "../../../../types/houseBlockTypes";
@@ -125,23 +124,15 @@ export const OwnershipRowInputs = ({
         const isValueCategoryIdValid = priceCategoryOptions?.some((option) => option.id === ownership.valueCategoryId);
         const isRentalValueCategoryIdValid = priceCategoryOptions?.some((option) => option.id === ownership.rentalValueCategoryId);
 
-        const newValue = {
+        handleInputChange(index, {
             ...ownership,
             value: isPriceCategorySelected || isHuurwoning ? { value: null, min: null, max: null } : ownership.value,
             rentalValue: isPriceCategorySelected || isKoopwoning ? { value: null, min: null, max: null } : ownership.rentalValue,
-        };
-
-        if (isKoopwoning && isValueCategoryIdValid) {
-            newValue.valueCategoryId = ownership.valueCategoryId;
-        }
-        if (isHuurwoning && isRentalValueCategoryIdValid) {
-            newValue.rentalValueCategoryId = ownership.rentalValueCategoryId;
-        }
-
-        if (!_.isEqual(newValue, ownership)) {
-            handleInputChange(index, newValue);
-        }
-    }, [isPriceCategorySelected, isKoopwoning, isHuurwoning, priceCategoryOptions, handleInputChange, index, ownership]);
+            valueCategoryId: isKoopwoning && isValueCategoryIdValid ? ownership.valueCategoryId : undefined,
+            rentalValueCategoryId: isHuurwoning && isRentalValueCategoryIdValid ? ownership.rentalValueCategoryId : undefined,
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isPriceCategorySelected, isKoopwoning, isHuurwoning]);
 
     return (
         <Grid container spacing={2} mt={1} direction="row">

@@ -5,7 +5,6 @@ import { HouseBlock, OwnershipSingleValue } from "../../../../types/houseBlockTy
 import AddIcon from "@mui/icons-material/Add";
 import { OwnershipRowInputs } from "./OwnershipRowInputs";
 import { checkConsistencyOwnerShipValueAndMutation } from "../../../../utils/houseblocks/houseBlocksFunctions";
-import { useMemo } from "react";
 
 export type OwnershipInformationProps = {
     houseBlock: HouseBlock;
@@ -14,44 +13,38 @@ export type OwnershipInformationProps = {
 };
 
 export const OwnershipInformationGroup = ({ houseBlock, setHouseBlock, readOnly }: OwnershipInformationProps) => {
-    const handleAddRow = useMemo(() => {
-        return () => {
-            setHouseBlock({
-                ...houseBlock,
-                ownershipValue: [
-                    ...houseBlock.ownershipValue,
-                    {
-                        type: undefined,
-                        amount: 0,
-                        value: { value: null, min: null, max: null },
-                        rentalValue: { value: null, min: null, max: null },
-                    },
-                ],
-            });
-        };
-    }, [houseBlock, setHouseBlock]);
+    const handleAddRow = () => {
+        setHouseBlock({
+            ...houseBlock,
+            ownershipValue: [
+                ...houseBlock.ownershipValue,
+                {
+                    type: undefined,
+                    amount: 0,
+                    value: { value: null, min: null, max: null },
+                    rentalValue: { value: null, min: null, max: null },
+                },
+            ],
+        });
+    };
 
-    const handleInputChange = useMemo(() => {
-        return (index: number, value: OwnershipSingleValue) => {
-            const updatedValues = [...houseBlock.ownershipValue];
-            updatedValues[index] = value;
-            setHouseBlock({
-                ...houseBlock,
-                ownershipValue: updatedValues,
-            });
-        };
-    }, [houseBlock, setHouseBlock]);
+    const handleInputChange = (index: number, value: OwnershipSingleValue) => {
+        const updatedValues = [...houseBlock.ownershipValue];
+        updatedValues[index] = value;
+        setHouseBlock({
+            ...houseBlock,
+            ownershipValue: updatedValues,
+        });
+    };
 
-    const handleRemoveRow = useMemo(() => {
-        return (index: number) => {
-            const updatedValues = [...houseBlock.ownershipValue];
-            updatedValues.splice(index, 1);
-            setHouseBlock({
-                ...houseBlock,
-                ownershipValue: updatedValues,
-            });
-        };
-    }, [houseBlock, setHouseBlock]);
+    const handleRemoveRow = (index: number) => {
+        const updatedValues = [...houseBlock.ownershipValue];
+        updatedValues.splice(index, 1);
+        setHouseBlock({
+            ...houseBlock,
+            ownershipValue: updatedValues,
+        });
+    };
 
     if (!houseBlock.ownershipValue) return;
 
