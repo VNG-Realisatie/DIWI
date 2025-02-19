@@ -1,7 +1,7 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
 import CategoryInput from "../components/project/inputs/CategoryInput";
 import { t } from "i18next";
-import { ConfidentialityLevelOptions, confidentialityLevelOptions } from "../components/table/constants";
+import { ConfidentialityLevelOptionsType, confidentialityLevelOptions } from "../components/table/constants";
 import { useState } from "react";
 import useAlert from "../hooks/useAlert";
 import { GenericOptionType } from "../components/project/ProjectsTableView";
@@ -11,7 +11,7 @@ import { confidentialityUpdate } from "../Paths";
 import ProjectsTableWrapper from "../components/project/ProjectTableWrapper";
 
 function ConfidentialityUpdateTable() {
-    const [confidentialityLevel, setConfidentialityLevel] = useState<GenericOptionType<ConfidentialityLevelOptions>>(
+    const [confidentialityLevel, setConfidentialityLevel] = useState<GenericOptionType<ConfidentialityLevelOptionsType>>(
         confidentialityLevelOptions[confidentialityLevelOptions.length - 1],
     );
     const navigate = useNavigate();
@@ -24,7 +24,7 @@ function ConfidentialityUpdateTable() {
             await Promise.all(
                 selectedProjects.map(async (projectId) => {
                     const data = await getProject(projectId);
-                    const newData = { ...data, confidentialityLevel: confidentialityLevel.id as ConfidentialityLevelOptions };
+                    const newData = { ...data, confidentialityLevel: confidentialityLevel.id as ConfidentialityLevelOptionsType };
                     await updateProject(newData);
                 }),
             );

@@ -8,7 +8,9 @@ import lombok.NoArgsConstructor;
 import lombok.With;
 import nl.vng.diwi.dal.entities.DataExchangeState;
 import nl.vng.diwi.dal.entities.DataExchangeType;
+import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
+import nl.vng.diwi.dataexchange.DataExchangeTemplate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,6 +38,8 @@ public class DataExchangeModel {
     @JsonProperty(required = true)
     private DataExchangeType type;
 
+    private Confidentiality minimumConfidentiality;
+
     private String apiKey;
 
     private String projectUrl;
@@ -48,7 +52,9 @@ public class DataExchangeModel {
 
     private List<ValidationError> validationErrors;
 
-    public DataExchangeModel(DataExchangeState dataExchangeState, boolean includeApiKey) {
+    public DataExchangeModel(
+            DataExchangeState dataExchangeState,
+            boolean includeApiKey) {
         this.setId(dataExchangeState.getDataExchange().getId());
         this.setName(dataExchangeState.getName());
         this.setType(dataExchangeState.getType());
@@ -57,6 +63,9 @@ public class DataExchangeModel {
         }
         this.setProjectUrl(dataExchangeState.getProjectUrl());
         this.setValid(dataExchangeState.getValid());
+
+        var template = DataExchangeTemplate.templates.get(dataExchangeState.getType());
+        this.setMinimumConfidentiality(template.getMinimumConfidentiality());
     }
 
     public String validateDxState() {
@@ -114,24 +123,25 @@ public class DataExchangeModel {
                 if (prop == null) {
                     return baseError + " with id " + dxProp.getCustomPropertyId() + " is not found.";
                 } else if (prop.getObjectType() != dxProp.getObjectType()) {
-                    return baseError + "does not match the expected object type (" + dxProp.getObjectType() +").";
+                    return baseError + "does not match the expected object type (" + dxProp.getObjectType() + ").";
                 } else if (!dxProp.getPropertyTypes().contains(prop.getPropertyType())) {
                     return baseError + "does not match the expected property type.";
                 } else if (dxProp.getMandatory() && (prop.getMandatory() != dxProp.getMandatory())) {
-                    return baseError + "does not have the expected mandatory flag (" + dxProp.getMandatory() +").";
-                } else if (List.of(PropertyType.CATEGORY, PropertyType.ORDINAL).contains(prop.getPropertyType()) && prop.getSingleSelect() != dxProp.getSingleSelect()) {
+                    return baseError + "does not have the expected mandatory flag (" + dxProp.getMandatory() + ").";
+                } else if (List.of(PropertyType.CATEGORY, PropertyType.ORDINAL).contains(prop.getPropertyType())
+                        && prop.getSingleSelect() != dxProp.getSingleSelect()) {
                     return baseError + "does not have the expected single select flag.";
                 }
                 if (dxProp.getOptions() != null) {
                     List<UUID> catValues = new ArrayList<>();
                     if (prop.getCategories() != null) {
                         catValues.addAll(prop.getCategories().stream().filter(v -> v.getDisabled() == Boolean.FALSE)
-                            .map(SelectDisabledModel::getId).toList());
+                                .map(SelectDisabledModel::getId).toList());
                     }
                     List<UUID> ordValues = new ArrayList<>();
                     if (prop.getOrdinals() != null) {
                         ordValues.addAll(prop.getOrdinals().stream().filter(v -> v.getDisabled() == Boolean.FALSE)
-                            .map(SelectDisabledModel::getId).toList());
+                                .map(SelectDisabledModel::getId).toList());
                     }
                     for (var dxPropOption : dxProp.getOptions()) {
                         if (dxPropOption.getPropertyCategoryValueIds() == null) {
@@ -185,13 +195,14 @@ public class DataExchangeModel {
                 // If a dx prop has options to map to, check that that is done correctly.
                 if (dxPropModel.getOptions() != null && !dxPropModel.getOptions().isEmpty() && propertyModel.getCategories() != null) {
                     propertyModel.getCategories().stream().filter(cOption -> cOption.getDisabled() == Boolean.FALSE)
-                        .forEach(diwiOption -> {
-                            if (!diwiOptionToDxOption.containsKey(diwiOption.getId())) {
-                                validationErrors.add(new ValidationError(dxPropModel.getName(), diwiOption.getName(), DxValidationError.OPTION_NOT_MAPPED));
-                            } else if (diwiOptionToDxOption.get(diwiOption.getId()).size() > 1) {
-                                validationErrors.add(new ValidationError(dxPropModel.getName(), diwiOption.getName(), DxValidationError.OPTION_MAPPED_MULTIPLE_TIMES));
-                            }
-                        });
+                            .forEach(diwiOption -> {
+                                if (!diwiOptionToDxOption.containsKey(diwiOption.getId())) {
+                                    validationErrors.add(new ValidationError(dxPropModel.getName(), diwiOption.getName(), DxValidationError.OPTION_NOT_MAPPED));
+                                } else if (diwiOptionToDxOption.get(diwiOption.getId()).size() > 1) {
+                                    validationErrors.add(
+                                            new ValidationError(dxPropModel.getName(), diwiOption.getName(), DxValidationError.OPTION_MAPPED_MULTIPLE_TIMES));
+                                }
+                            });
                 }
             } else if (propertyModel.getPropertyType() == PropertyType.ORDINAL && dxPropModel.getOptions() != null) {
                 Map<UUID, List<UUID>> diwiOptionToDxOption = new HashMap<>();
@@ -208,13 +219,13 @@ public class DataExchangeModel {
 
                 if (propertyModel.getOrdinals() != null) {
                     propertyModel.getOrdinals().stream().filter(oOption -> oOption.getDisabled() == Boolean.FALSE)
-                        .forEach(diwiOption -> {
-                            if (!diwiOptionToDxOption.containsKey(diwiOption.getId())) {
-                                validationErrors.add(new ValidationError(dxPropModel.getName(), diwiOption.getName(), DxValidationError.OPTION_NOT_MAPPED));
-                            } else if (diwiOptionToDxOption.get(diwiOption.getId()).size() > 1) {
+                            .forEach(diwiOption -> {
+                                if (!diwiOptionToDxOption.containsKey(diwiOption.getId())) {
+                                    validationErrors.add(new ValidationError(dxPropModel.getName(), diwiOption.getName(), DxValidationError.OPTION_NOT_MAPPED));
+                                } else if (diwiOptionToDxOption.get(diwiOption.getId()).size() > 1) {
                                 validationErrors.add(new ValidationError(dxPropModel.getName(), diwiOption.getName(), DxValidationError.OPTION_MAPPED_MULTIPLE_TIMES));
-                            }
-                        });
+                                }
+                            });
                 }
             }
         }
@@ -225,17 +236,17 @@ public class DataExchangeModel {
 
     public boolean areStateFieldsDifferent(DataExchangeModel other) {
         return !Objects.equals(this.name, other.name) ||
-            !Objects.equals(this.projectUrl, other.projectUrl) ||
-            !Objects.equals(this.projectDetailUrl, other.projectDetailUrl) ||
-            !Objects.equals(this.apiKey, other.apiKey) ||
-            !Objects.equals(this.valid, other.valid);
+                !Objects.equals(this.projectUrl, other.projectUrl) ||
+                !Objects.equals(this.projectDetailUrl, other.projectDetailUrl) ||
+                !Objects.equals(this.apiKey, other.apiKey) ||
+                !Objects.equals(this.valid, other.valid);
     }
 
     public enum DxValidationError {
 
         MISSING_CUSTOM_PROP("missing_custom_prop", "Missing custom property."),
         OPTION_NOT_MAPPED("option_not_mapped", "Option of custom category is not mapped."),
-        OPTION_MAPPED_MULTIPLE_TIMES("option_mapped_multiple_times","Option of custom category is mapped to multiple template options.");
+        OPTION_MAPPED_MULTIPLE_TIMES("option_mapped_multiple_times", "Option of custom category is mapped to multiple template options.");
 
         public final String errorMsg;
 

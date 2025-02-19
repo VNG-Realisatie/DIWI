@@ -1,5 +1,33 @@
 # Change log
 
+## DIWI RELEASE 1.10.0
+
+This release focuses on exporting data for other purposes than provincial monitors.
+
+### ADDED
+
+- Added alert for validation errors on 'Export Instellingen'
+- Added front end validation for 'soort' and 'aantal' in houseblock ownership section
+- Added an Excel export template
+
+### CHANGED
+
+- Different export types now have different minimal confidentiality settings. Exports that are by nature intended for external parties have a high minimum confidentiality, exports for internal use have a low minimum confidentiality
+- Changes to the way the front end keeps track of custom properties
+- Changes to pagination and filtering on tables
+
+### FIXED
+
+- Addressed a recurring issue where block data like end date would not display the new value immediately after saving
+- Addressed an issue that touches on the previous one, where updated/changed property values would not display correctly until after a page refresh
+- Fixed a dashboards display issue, where when switching from a valid project to an invalid project, the UI would display the values for the valid project
+- Fixed an issue where confidentiality settings server side would prevent exporting that should be possible
+- Fixed an issue where project order on tables was not fixed while browsing through the table's pages
+
+### IMPROVED
+
+- There are superfluous fetches of endpoints occuring on multiple pages. A start has been made on removing the unnescessary ones, this is ongoing
+
 ## DIWI RELEASE 1.9.0
 
 ## ADDED

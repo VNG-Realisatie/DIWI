@@ -1,5 +1,6 @@
 package nl.vng.diwi.services.export.zuidholland;
 
+import jakarta.ws.rs.core.StreamingOutput;
 import nl.vng.diwi.dal.entities.DataExchangeType;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
@@ -9,6 +10,7 @@ import nl.vng.diwi.dal.entities.enums.PropertyType;
 import nl.vng.diwi.dataexchange.DataExchangeTemplate;
 import nl.vng.diwi.dataexchange.DataExchangeTemplate.TemplateProperty;
 import nl.vng.diwi.generic.Constants;
+import nl.vng.diwi.generic.Json;
 import nl.vng.diwi.models.ConfigModel;
 import nl.vng.diwi.models.DataExchangePropertyModel;
 import nl.vng.diwi.models.PropertyModel;
@@ -59,7 +61,7 @@ public class EsriZuidHollandExport {
     }
 
 
-    public static FeatureCollection buildExportObject(
+    public static StreamingOutput buildExportObject(
             ConfigModel configModel,
             List<ProjectExportSqlModel> projects,
             List<PropertyModel> customProps,
@@ -87,7 +89,10 @@ public class EsriZuidHollandExport {
         projects.forEach(project -> exportObject.add(getProjectFeature(configModel, project, customPropsMap, priceRangeBuyFixedProp, priceRangeRentFixedProp,
             municipalityFixedProp, dxPropertiesMap, minConfidentiality, exportDate, errors, targetCrs)));
 
-        return exportObject;
+        return output -> {
+            Json.mapper.writeValue(output, exportObject);
+            output.flush();
+        };
     }
 
     private static Feature getProjectFeature(ConfigModel configModel, ProjectExportSqlModel project, Map<UUID, PropertyModel> customPropsMap,

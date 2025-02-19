@@ -163,6 +163,10 @@ public class ProjectExportSqlModelExtended {
         private UUID groupId;
         private String groupName;
         private List<OwnerUser> users;
+
+        public List<OwnerUser> getUsers() {
+            return users == null ? new ArrayList<>() : users;
+        }
     }
 
     @Data
@@ -326,6 +330,22 @@ public class ProjectExportSqlModelExtended {
         public List<CategoryValueAmountModel> getPhysicalAppearances() {
             return physicalAppearances == null ? new ArrayList<>() : physicalAppearances;
         }
+
+        public Integer getHouseTypeUnknownAmount() {
+
+            Integer unknownBlockType = mutationAmount;
+            if (unknownBlockType != null) {
+                if (eengezinswoning != null) {
+                    unknownBlockType -= eengezinswoning;
+                }
+                if (meergezinswoning != null) {
+                    unknownBlockType -= meergezinswoning;
+                }
+            } else {
+                unknownBlockType = 0;
+            }
+            return unknownBlockType;
+        }
     }
 
     @Data
@@ -342,5 +362,25 @@ public class ProjectExportSqlModelExtended {
         private Long ownershipValueRangeMax;
         private Long ownershipRentalValueRangeMin;
         private Long ownershipRentalValueRangeMax;
+
+        public SingleValueOrRangeModel<BigDecimal> getSingleValueOrRangeValue(boolean isRental) {
+            if (isRental) {
+                if (ownershipRentalValue == null && ownershipRentalValueRangeMin == null) {
+                    return null;
+                } else {
+                    return new SingleValueOrRangeModel<>(ownershipRentalValue == null ? null : BigDecimal.valueOf(ownershipRentalValue, 2),
+                        ownershipRentalValueRangeMin == null ? null : BigDecimal.valueOf(ownershipRentalValueRangeMin, 2),
+                        ownershipRentalValueRangeMax == null ? null : BigDecimal.valueOf(ownershipRentalValueRangeMax, 2));
+                }
+            } else {
+                if (ownershipValue == null && ownershipValueRangeMin == null) {
+                    return null;
+                } else {
+                    return new SingleValueOrRangeModel<>(ownershipValue == null ? null : BigDecimal.valueOf(ownershipValue, 2),
+                        ownershipValueRangeMin == null ? null : BigDecimal.valueOf(ownershipValueRangeMin, 2),
+                        ownershipValueRangeMax == null ? null : BigDecimal.valueOf(ownershipValueRangeMax, 2));
+                }
+            }
+        }
     }
 }

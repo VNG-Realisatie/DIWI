@@ -2,9 +2,12 @@ package nl.vng.diwi.models;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import nl.vng.diwi.dal.entities.DataExchangeType;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
+import nl.vng.diwi.dataexchange.DataExchangeTemplate;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,13 +15,11 @@ import java.util.UUID;
 @NoArgsConstructor
 public class DataExchangeExportModel {
 
-    private static final List<Confidentiality> DEFAULT_CONFIDENTIALITIES = List.of(Confidentiality.EXTERNAL_REGIONAL, Confidentiality.EXTERNAL_GOVERNMENTAL, Confidentiality.PUBLIC);
-
     private LocalDate exportDate;
     private List<UUID> projectIds;
     private List<Confidentiality> confidentialityLevels;
 
-    public String validate(ConfigModel configModel) {
+    public String validate(DataExchangeType type) {
         if (exportDate == null) {
             exportDate = LocalDate.now();
         }
@@ -29,20 +30,14 @@ public class DataExchangeExportModel {
             confidentialityLevels = null;
         }
 
-        if ( projectIds == null && confidentialityLevels == null) {
-            this.confidentialityLevels = DEFAULT_CONFIDENTIALITIES;
+        if (projectIds == null && confidentialityLevels == null) {
+            Confidentiality minConfidentiality = DataExchangeTemplate.templates.get(type).getMinimumConfidentiality();
+            confidentialityLevels = Arrays.stream(Confidentiality.values())
+                .filter(c -> Confidentiality.confidentialityMap.get(c) >= Confidentiality.confidentialityMap.get(minConfidentiality)).toList();
         }
 
         if (projectIds != null && confidentialityLevels != null) {
             return "Only one of projectIds and confidentialityLevels can be specified";
-        }
-
-        if (confidentialityLevels != null) {
-            for (Confidentiality c : confidentialityLevels) {
-                if (Confidentiality.confidentialityMap.get(c) < Confidentiality.confidentialityMap.get(configModel.getMinimumExportConfidentiality())) {
-                    return "Selected confidentiality levels are below minimum allowed export confidentiality";
-                }
-            }
         }
 
         return null;

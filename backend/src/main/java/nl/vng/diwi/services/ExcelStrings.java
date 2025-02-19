@@ -6,6 +6,7 @@ import nl.vng.diwi.dal.entities.enums.ProjectStatus;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class ExcelStrings {
 
@@ -35,5 +36,10 @@ public class ExcelStrings {
         map.put("Openbaar", Confidentiality.PUBLIC.name());
     }
 
-
+    public static String getExcelStringFromEnumValue(String enumValue) {
+        return map.entrySet().stream()
+            .filter(entry -> Objects.equals(entry.getValue(), enumValue))
+            .map(Map.Entry::getKey)
+            .findFirst().orElse(null);
+    }
 }

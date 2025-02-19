@@ -11,6 +11,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import jakarta.ws.rs.core.StreamingOutput;
+import nl.vng.diwi.generic.Json;
 import org.geojson.Crs;
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
@@ -32,11 +34,8 @@ import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.dal.entities.enums.ProjectStatus;
 import nl.vng.diwi.dal.entities.enums.PropertyKind;
 import nl.vng.diwi.generic.Constants;
-import nl.vng.diwi.models.ConfigModel;
-import nl.vng.diwi.models.DataExchangePropertyModel;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.models.RangeSelectDisabledModel;
-import nl.vng.diwi.services.DataExchangeExportError;
 import nl.vng.diwi.services.export.ExportUtil;
 import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.BasicProjectData;
 import nl.vng.diwi.services.export.geojson.GeoJsonExportModel.BlockTypeData;
@@ -175,14 +174,9 @@ public class GeoJSONExport {
 
     }
 
-    static public FeatureCollection buildExportObject(
-            ConfigModel configModel,
+    static public StreamingOutput buildExportObject(
             List<ProjectExportSqlModelExtended> projects,
-            List<PropertyModel> customProps,
-            Map<String, DataExchangePropertyModel> dxPropertiesMap,
-            LocalDate exportDate,
-            Confidentiality minConfidentiality,
-            List<DataExchangeExportError> errors) {
+            List<PropertyModel> customProps) {
 
         FeatureCollection exportObject = new FeatureCollection();
         Crs crs = new Crs();
@@ -192,35 +186,20 @@ public class GeoJSONExport {
         exportObject.setCrs(crs);
 
         var customPropsTool = new CustomProps(customProps);
-        PropertyModel priceRangeBuyFixedProp = customPropsTool.get(Constants.FIXED_PROPERTY_PRICE_RANGE_BUY);
-        PropertyModel priceRangeRentFixedProp = customPropsTool.get(Constants.FIXED_PROPERTY_PRICE_RANGE_RENT);
-        PropertyModel municipalityFixedProp = customPropsTool.get(Constants.FIXED_PROPERTY_MUNICIPALITY);
 
         projects.forEach(project -> exportObject.add(getProjectFeature(
-                configModel,
                 project,
-                priceRangeBuyFixedProp,
-                priceRangeRentFixedProp,
-                municipalityFixedProp,
-                dxPropertiesMap,
-                minConfidentiality,
-                exportDate,
-                errors,
                 targetCrs,
                 customPropsTool)));
 
-        return exportObject;
+        return output -> {
+            Json.mapper.writeValue(output, exportObject);
+            output.flush();
+        };
     }
 
     static private Feature getProjectFeature(
-            ConfigModel configModel,
             ProjectExportSqlModelExtended project,
-            PropertyModel priceRangeBuyFixedProp,
-            PropertyModel priceRangeRentFixedProp,
-            PropertyModel municipalityFixedProp,
-            Map<String, DataExchangePropertyModel> dxPropertiesMap,
-            Confidentiality minConfidentiality, LocalDate exportDate,
-            List<DataExchangeExportError> errors,
             String targetCrs,
             CustomProps customPropTool) {
         var projectFeature = new Feature();
@@ -373,17 +352,7 @@ public class GeoJSONExport {
                     groundPositions.put(GroundPosition.INTENTIE_MEDEWERKING_GRONDEIGENAAR, block.getIntentionPermissionOwner());
                     groundPositions.put(GroundPosition.FORMELE_TOESTEMMING_GRONDEIGENAAR, block.getFormalPermissionOwner());
 
-                    Integer unknownBlockType = block.getMutationAmount();
-                    if (unknownBlockType != null) {
-                        if (block.getEengezinswoning() != null) {
-                            unknownBlockType -= block.getEengezinswoning();
-                        }
-                        if (block.getMeergezinswoning() != null) {
-                            unknownBlockType -= block.getMeergezinswoning();
-                        }
-                    } else {
-                        unknownBlockType = 0;
-                    }
+                    Integer unknownBlockType = block.getHouseTypeUnknownAmount();
 
                     return GeoJsonHouseblock.builder()
                             .diwiId(block.getHouseblockId())

@@ -1,5 +1,3 @@
-import { useState, useEffect } from "react";
-import { Property, getCustomPropertiesWithQuery } from "../../../api/adminSettingServices";
 import Grid from "@mui/material/Grid";
 import { CustomPropertyValue } from "../../../api/customPropServices";
 import { CustomPropertyWidget } from "../../CustomPropertyWidget";
@@ -7,6 +5,7 @@ import { LabelComponent } from "../LabelComponent";
 import { Typography } from "@mui/material";
 import { t } from "i18next";
 import { CellContainer } from "./CellContainer";
+import { useCustomPropertyStore } from "../../../hooks/useCustomPropertyStore";
 
 type Props = {
     readOnly: boolean;
@@ -15,28 +14,18 @@ type Props = {
 };
 
 export const CustomPropertiesProject = ({ readOnly, customValues, setCustomValues }: Props) => {
-    const [customDefinitions, setCustomDefinitions] = useState<Property[]>([]);
+    const { projectCustomProperties } = useCustomPropertyStore();
 
-    useEffect(() => {
-        getCustomPropertiesWithQuery("PROJECT").then((properties) => {
-            // Make sure to filter out no longer active and default properties
-            setCustomDefinitions(
-                properties.filter(
-                    (property) =>
-                        !property.disabled &&
-                        !(
-                            property.name === "geometry" ||
-                            property.name === "district" ||
-                            property.name === "municipality" ||
-                            property.name === "municipalityRole" ||
-                            property.name === "neighbourhood" ||
-                            property.name === "priority"
-                        ),
-                ),
-            );
-        });
-    }, []);
-
+    const customDefinitions = projectCustomProperties.filter(
+        (property) =>
+            !property.disabled &&
+            property.name !== "geometry" &&
+            property.name !== "district" &&
+            property.name !== "municipality" &&
+            property.name !== "municipalityRole" &&
+            property.name !== "neighbourhood" &&
+            property.name !== "priority",
+    );
     const setCustomValue = (newValue: CustomPropertyValue) => {
         const newCustomValues = customValues.filter((val) => val.customPropertyId !== newValue.customPropertyId);
         setCustomValues([...newCustomValues, newValue]);
