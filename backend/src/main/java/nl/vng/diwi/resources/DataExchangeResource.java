@@ -26,7 +26,6 @@ import nl.vng.diwi.models.DataExchangeModel;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
-import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.security.UserActionConstants;
 import nl.vng.diwi.services.DataExchangeExportError;
@@ -163,8 +162,15 @@ public class DataExchangeResource {
     @RolesAllowed(UserActionConstants.EDIT_DATA_EXCHANGES)
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public void exportProjects(@PathParam("id") UUID dataExchangeUuid, DataExchangeExportModel dataExchangeExportModel, @Context LoggedUser loggedUser) {
-        throw new VngServerErrorException("Not implemented yet");
+    public void exportProjects(@PathParam("id") UUID dataExchangeUuid, DataExchangeExportModel dataExchangeExportModel, @Context LoggedUser loggedUser)
+        throws VngBadRequestException, VngNotFoundException {
+
+        List<DataExchangeExportError> errors = new ArrayList<>();
+        StreamingOutput exportObj = dataExchangeService.getExportObject(repo, configModel, dataExchangeUuid, dataExchangeExportModel, errors, loggedUser);
+        if (!errors.isEmpty()) {
+            throw new VngBadRequestException("Could not export data");
+        }
+        dataExchangeService.exportProject(exportObj, dataExchangeExportModel.getToken());
     }
 
     @POST
