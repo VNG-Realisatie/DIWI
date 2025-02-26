@@ -1,5 +1,7 @@
 package nl.vng.diwi.services;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.time.ZonedDateTime;
 
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ import java.util.stream.Collectors;
 
 import jakarta.ws.rs.core.StreamingOutput;
 import lombok.NoArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.DataExchange;
 import nl.vng.diwi.dal.entities.DataExchangeOption;
@@ -42,11 +45,21 @@ import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.services.export.excel.ExcelExport;
 import nl.vng.diwi.services.export.geojson.GeoJSONExport;
 import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandExport;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okio.BufferedSink;
 
 import static nl.vng.diwi.dal.entities.DataExchangeType.ESRI_ZUID_HOLLAND;
 
 @NoArgsConstructor
+@Log4j2
 public class DataExchangeService {
+
+    private static final OkHttpClient CLIENT = new OkHttpClient();
 
     public List<DataExchangeModel> getDataExchangeList(VngRepository repo, boolean includeApiKey) {
 
@@ -276,4 +289,50 @@ public class DataExchangeService {
     private Set<DataExchangeType> getDefaultValidTypes() {
         return Set.of(DataExchangeType.GEO_JSON, DataExchangeType.EXCEL);
     }
+
+    public void exportProject(StreamingOutput output, String token) {
+
+        String username = "erombouts_prw"; //TODO how to get this in a dynamic way  (not hardcoded)
+        RequestBody fileStreamBody = new RequestBody() {
+            @Override
+            public MediaType contentType() {
+                return MediaType.parse("application/octet-stream");
+            }
+            @Override
+            public void writeTo(BufferedSink sink) throws IOException {
+                try (OutputStream outputStream = sink.outputStream()) {
+                    output.write(outputStream);
+                }
+            }
+        };
+
+        MultipartBody requestBody = new MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("type", "GeoJson")
+            .addFormDataPart("extension", "geojson")
+            .addFormDataPart("f", "json")
+            .addFormDataPart("async", "true")
+            .addFormDataPart("title", "geojson_testset_vladimir")
+            .addFormDataPart("token", token)
+            .addFormDataPart("file", "geojson_testset_v4.geojson", fileStreamBody)
+            .build();
+
+        String url = String.format("https://zuid-holland-hub.maps.arcgis.com/sharing/rest/content/users/%s/addItem", username);
+        Request request = new Request.Builder()
+            .url(url)
+            .post(requestBody)
+            .build();
+
+        try (Response response = CLIENT.newCall(request).execute()) {
+            if (response.isSuccessful() && response.body() != null) {
+                log.info("Upload successful: {}", response.body().string());
+            } else {
+                log.warn("Upload failed: {} - {}", response.code(), response.body() != null ? response.body().string() : "No response body");
+            }
+        } catch (IOException e) {
+            log.error("Error uploading GeoJSON file", e);
+            throw new VngServerErrorException("Error uploading GeoJSON file", e);
+        }
+    }
+
 }

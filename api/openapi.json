@@ -2419,6 +2419,10 @@
             "items": {
               "type": "string"
             }
+          },
+          "token": {
+            "type": "string",
+            "description": "Authentication token for the data exchange export"
           }
         }
       },

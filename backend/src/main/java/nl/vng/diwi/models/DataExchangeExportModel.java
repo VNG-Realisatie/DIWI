@@ -18,6 +18,7 @@ public class DataExchangeExportModel {
     private LocalDate exportDate;
     private List<UUID> projectIds;
     private List<Confidentiality> confidentialityLevels;
+    private String token;
 
     public String validate(DataExchangeType type) {
         if (exportDate == null) {
