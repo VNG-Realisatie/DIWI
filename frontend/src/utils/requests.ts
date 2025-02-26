@@ -106,6 +106,25 @@ export async function postJson(url: string, data: any) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function postJsonParcedError(url: string, data : any) {
+    const body = JSON.stringify(data);
+
+    const res = await diwiFetch(encodeURI(url), {
+        method: "POST",
+        body: body,
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+
+    if (!res.ok) {
+        throw await res.json();
+    }
+
+    return res.json();
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function putJson(url: string, data: any) {
     const body = JSON.stringify(data);
 

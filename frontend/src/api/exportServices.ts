@@ -1,5 +1,5 @@
 import { ConfidentialityLevel } from "../types/enums";
-import { getJson, postJson, putJson, deleteJson, downloadPost } from "../utils/requests";
+import { getJson, postJson, putJson, deleteJson, downloadPost, postJsonParcedError } from "../utils/requests";
 import { API_URI } from "../utils/urls";
 
 export type ExportType = "ESRI_ZUID_HOLLAND" | "GEO_JSON" | "EXCEL";
@@ -81,7 +81,7 @@ export async function exportProjects(exportId: string, token: string | null, pro
         token,
         exportDate,
     };
-    await postJson(url, body);
+    return postJsonParcedError(url, body);
 }
 
 export async function getExportTypes(): Promise<ExportType[]> {
