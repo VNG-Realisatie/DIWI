@@ -2423,6 +2423,10 @@
           "token": {
             "type": "string",
             "description": "Authentication token for the data exchange export"
+          },
+          "filename": {
+            "type": "string",
+            "description": "The name of the exported file"
           }
         }
       },

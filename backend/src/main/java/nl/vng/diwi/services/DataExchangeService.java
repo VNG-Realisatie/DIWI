@@ -2,7 +2,6 @@ package nl.vng.diwi.services;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.time.ZonedDateTime;
 
 import java.util.ArrayList;
@@ -52,7 +51,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okio.BufferedSink;
 
 import static nl.vng.diwi.dal.entities.DataExchangeType.ESRI_ZUID_HOLLAND;
 
@@ -291,7 +289,7 @@ public class DataExchangeService {
         return Set.of(DataExchangeType.GEO_JSON, DataExchangeType.EXCEL);
     }
 
-    public void exportProject(StreamingOutput output, String token) {
+    public void exportProject(StreamingOutput output, String token, String filename) {
 
         String username = "erombouts_prw"; //TODO how to get this in a dynamic way  (not hardcoded)
         // Convert StreamingOutput to byte array
@@ -308,9 +306,9 @@ public class DataExchangeService {
             .addFormDataPart("extension", "geojson")
             .addFormDataPart("f", "json")
             .addFormDataPart("async", "true")
-            .addFormDataPart("title", "geojson_testset_vladimir")
+            .addFormDataPart("title", filename)
             .addFormDataPart("token", token)
-            .addFormDataPart("file", "geojson_testset_v4.geojson", fileStreamBody)
+            .addFormDataPart("file", filename + ".geojson", fileStreamBody)
             .build();
 
         Request request = new Request.Builder()
