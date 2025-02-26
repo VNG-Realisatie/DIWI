@@ -90,9 +90,11 @@ const ExportWizard = () => {
 
             await exportProjects(exportId, token, selectedProjects, allowedConfidentialityLevels);
             setAlert(t("projects.successExport"), "success");
-        } catch (error) {
-            if (error instanceof Error) {
-                setAlert(error.message, "error");
+        } catch (error: unknown) {
+            if (Array.isArray(error)) {
+                setErrors(error);
+            } else {
+                setErrors([{ code: "generic_error" }]);
             }
         }
     };
