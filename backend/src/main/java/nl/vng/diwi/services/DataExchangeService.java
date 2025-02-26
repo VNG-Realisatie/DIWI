@@ -1,5 +1,6 @@
 package nl.vng.diwi.services;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.ZonedDateTime;
@@ -293,19 +294,14 @@ public class DataExchangeService {
     public void exportProject(StreamingOutput output, String token) {
 
         String username = "erombouts_prw"; //TODO how to get this in a dynamic way  (not hardcoded)
-        RequestBody fileStreamBody = new RequestBody() {
-            @Override
-            public MediaType contentType() {
-                return MediaType.parse("application/octet-stream");
-            }
-            @Override
-            public void writeTo(BufferedSink sink) throws IOException {
-                try (OutputStream outputStream = sink.outputStream()) {
-                    output.write(outputStream);
-                }
-            }
-        };
+        // Convert StreamingOutput to byte array
+        byte[] fileBytes = convertStreamingOutputToByteArray(output);
 
+        if (fileBytes.length == 0) {
+            throw new IllegalArgumentException("StreamingOutput is empty");
+        }
+        RequestBody fileStreamBody = RequestBody.create(fileBytes, MediaType.parse("application/octet-stream"));
+        // Create the multipart form body
         MultipartBody requestBody = new MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart("type", "GeoJson")
@@ -317,21 +313,28 @@ public class DataExchangeService {
             .addFormDataPart("file", "geojson_testset_v4.geojson", fileStreamBody)
             .build();
 
-        String url = String.format("https://zuid-holland-hub.maps.arcgis.com/sharing/rest/content/users/%s/addItem", username);
         Request request = new Request.Builder()
-            .url(url)
+            .url("https://zuid-holland-hub.maps.arcgis.com/sharing/rest/content/users/erombouts_prw/addItem")
             .post(requestBody)
             .build();
 
         try (Response response = CLIENT.newCall(request).execute()) {
             if (response.isSuccessful() && response.body() != null) {
-                log.info("Upload successful: {}", response.body().string());
+                System.out.println("Upload successful: " + response.body().string());
             } else {
-                log.warn("Upload failed: {} - {}", response.code(), response.body() != null ? response.body().string() : "No response body");
+                System.out.println("Upload failed: " + response.message());
             }
         } catch (IOException e) {
-            log.error("Error uploading GeoJSON file", e);
-            throw new VngServerErrorException("Error uploading GeoJSON file", e);
+            throw new RuntimeException("Error uploading GeoJSON file", e);
+        }
+    }
+
+    private byte[] convertStreamingOutputToByteArray(StreamingOutput streamingOutput) {
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            streamingOutput.write(byteArrayOutputStream);
+            return byteArrayOutputStream.toByteArray();
+        } catch (IOException e) {
+            throw new RuntimeException("Error converting StreamingOutput to byte array", e);
         }
     }
 
