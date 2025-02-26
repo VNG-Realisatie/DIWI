@@ -59,6 +59,19 @@ import static nl.vng.diwi.dal.entities.DataExchangeType.ESRI_ZUID_HOLLAND;
 public class DataExchangeService {
 
     private static final OkHttpClient CLIENT = new OkHttpClient();
+    private static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
+    private static final String TYPE = "type";
+    private static final String EXTENSION = "extension";
+    private static final String ARCGIS_SPECIFIC_FLAG = "f";
+    private static final String ASYNC = "async";
+    private static final String TITLE = "title";
+    private static final String TOKEN = "token";
+    private static final String FILE = "file";
+    private static final String GEO_JSON_TYPE = "GeoJson";
+    private static final String GEOJSON_EXTENSION = "geojson";
+    private static final String JSON = "json";
+    private static final String TRUE = "true";
+    private static final String ARCGIS_URL_ENV_KEY = "ARCGIS_URL";
 
     public List<DataExchangeModel> getDataExchangeList(VngRepository repo, boolean includeApiKey) {
 
@@ -287,14 +300,14 @@ public class DataExchangeService {
     }
 
     public void exportProject(StreamingOutput output, String token, String filename) {
-        String username = "erombouts_prw"; //TODO dinamicaly fetch it somehow
+        String username = "erombouts_prw"; //TODO dinamicaly get this value
         byte[] fileBytes = convertStreamingOutputToByteArray(output);
 
         if (fileBytes.length == 0) {
             throw new VngServerErrorException("StreamingOutput is empty");
         }
 
-        RequestBody fileStreamBody = RequestBody.create(fileBytes, MediaType.parse("application/octet-stream"));
+        RequestBody fileStreamBody = RequestBody.create(fileBytes, MediaType.parse(APPLICATION_OCTET_STREAM));
         MultipartBody requestBody = createMultipartBody(token, filename, fileStreamBody);
         Request request = createRequest(username, requestBody);
 
@@ -304,19 +317,22 @@ public class DataExchangeService {
     private MultipartBody createMultipartBody(String token, String filename, RequestBody fileStreamBody) {
         return new MultipartBody.Builder()
             .setType(MultipartBody.FORM)
-            .addFormDataPart("type", "GeoJson")
-            .addFormDataPart("extension", "geojson")
-            .addFormDataPart("f", "json")
-            .addFormDataPart("async", "true")
-            .addFormDataPart("title", filename)
-            .addFormDataPart("token", token)
-            .addFormDataPart("file", filename + ".geojson", fileStreamBody)
+            .addFormDataPart(TYPE, GEO_JSON_TYPE)
+            .addFormDataPart(EXTENSION, GEOJSON_EXTENSION)
+            .addFormDataPart(ARCGIS_SPECIFIC_FLAG, JSON)
+            .addFormDataPart(ASYNC, TRUE)
+            .addFormDataPart(TITLE, filename)
+            .addFormDataPart(TOKEN, token)
+            .addFormDataPart(FILE, filename + ".geojson", fileStreamBody)
             .build();
     }
 
     private Request createRequest(String username, MultipartBody requestBody) {
+        Map<String, String> environment = System.getenv();
+        String arcgisBaseUrl = environment.getOrDefault(ARCGIS_URL_ENV_KEY, "https://zuid-holland-hub.maps.arcgis.com");
+        String arcgisUploadUrl = arcgisBaseUrl + "/sharing/rest/content/users/" + username + "/addItem";
         return new Request.Builder()
-            .url("https://zuid-holland-hub.maps.arcgis.com/sharing/rest/content/users/" + username + "/addItem")
+            .url(arcgisUploadUrl)
             .post(requestBody)
             .build();
     }
