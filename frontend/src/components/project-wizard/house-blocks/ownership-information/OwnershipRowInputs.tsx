@@ -133,9 +133,13 @@ export const OwnershipRowInputs = ({
 
         if (isKoopwoning && isValueCategoryIdValid) {
             newValue.valueCategoryId = ownership.valueCategoryId;
+        } else {
+            newValue.valueCategoryId = undefined;
         }
         if (isHuurwoning && isRentalValueCategoryIdValid) {
             newValue.rentalValueCategoryId = ownership.rentalValueCategoryId;
+        } else {
+            newValue.rentalValueCategoryId = undefined;
         }
 
         if (!_.isEqual(newValue, ownership)) {
