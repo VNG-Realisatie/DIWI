@@ -13,6 +13,7 @@ import { getAllowedConfidentialityLevels } from "../utils/exportUtils";
 import { ConfidentialityLevel } from "../types/enums";
 import { GenericOptionType } from "../components/project/ProjectsTableView";
 import { confidentialityLevelOptions, ConfidentialityLevelOptionsType } from "../components/table/constants";
+import useAlert from "../hooks/useAlert";
 
 type DownloadError = {
     cat1?: string;
@@ -35,6 +36,7 @@ const ExportWizard = () => {
     const [params] = useSearchParams();
     const [exportData, setExportData] = useState<ExportData>();
     const [selectedConfidentialityLevel, setConfidentialityLevel] = useState<GenericOptionType<ConfidentialityLevelOptionsType>>();
+    const { setAlert } = useAlert();
 
     useEffect(() => {
         if (!exportId) return;
@@ -81,12 +83,14 @@ const ExportWizard = () => {
 
     //this function doesnt do anything at the moment, functionality not implemented
     const handleExportProjects = async (token: string | null) => {
-        console.log(token);
         if (!exportId) return;
         try {
+            const allowedConfidentialityLevels = selectedConfidentialityLevel
+                ? getAllowedConfidentialityLevels(selectedConfidentialityLevel.id as ConfidentialityLevel)
+                : [];
 
-            await exportProjects(exportId, selectedProjects);
-            console.log("Export successful");
+            await exportProjects(exportId, token, selectedProjects, allowedConfidentialityLevels);
+            setAlert(t("projects.successExport"), "success");
         } catch (error) {
             console.error("Export failed", error);
         }

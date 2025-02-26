@@ -1,7 +1,7 @@
 import { createContext, useState, ReactNode, useEffect, useCallback } from "react";
 import { ArcGISIdentityManager } from "@esri/arcgis-rest-request";
 import { useNavigate } from "react-router-dom";
-import { configuredExport } from "../Paths";
+import { arcgisRedirect, configuredExport } from "../Paths";
 import useAlert from "../hooks/useAlert";
 import { t } from "i18next";
 import { getExportDataById } from "../api/exportServices";
@@ -22,7 +22,7 @@ export const ArcgisAuthProvider = ({ children }: ArcgisAuthProviderProps) => {
     const [token, setToken] = useState<string | null>(null);
     const navigate = useNavigate();
     const { setAlert } = useAlert();
-    const redirectUri = `${window.location.origin}/exchangeimportdata`;
+    const redirectUri = `${window.location.origin}${arcgisRedirect.path}`;
 
     const login = async (exportId: string) => {
         try {

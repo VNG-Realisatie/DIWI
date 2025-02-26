@@ -405,6 +405,7 @@
         "priceValueMin": "Minimale prijs"
       },
       "arcgis": {
+        "authIsHappening": "Authenticatie is bezig, even geduld...",
         "loginSuccess": "Je bent ingelogd. Nu kun je projecten exporteren."
       },
       "download": {

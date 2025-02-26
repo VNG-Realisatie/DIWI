@@ -51,6 +51,7 @@ import ProjectAuditTable from "./pages/ProjectAudit";
 import { ArcgisAuthProvider } from "./context/ArcgisAuthProvider";
 import { CategoriesProvider } from "./context/GoalCategoriesContext";
 import { CustomPropertyStoreProvider } from "./context/CustomPropertiesProvider";
+import RedirectComponent from "./components/RedirectComponent";
 
 enum UserStatus {
     Authenticated,
@@ -392,6 +393,14 @@ function App() {
                                         <ConfidentialityUpdateTable />
                                     </ArcgisAuthProvider>
                                 </ProjectProvider>
+                            }
+                        />
+                        <Route
+                            path={Paths.arcgisRedirect.path}
+                            element={
+                                <ArcgisAuthProvider>
+                                    <RedirectComponent />
+                                </ArcgisAuthProvider>
                             }
                         />
                         <Route path={Paths.userSettings.path} element={<Settings />} />

@@ -72,10 +72,15 @@ export async function downloadExportData(id: string, body: DownloadType, type: E
     return downloadPost(`${API_URI}/dataexchange/${id}/download`, type === "EXCEL" ? "export.xlsx" : "export.geojson", body);
 }
 
-//this dunction needs to be updated
-export async function exportProjects(exportId: string, projectIds?: string[]): Promise<void> {
-    const url = `${API_URI}/projects/export/${exportId}`;
-    const body = projectIds && projectIds.length > 0 ? { projectIds } : undefined;
+export async function exportProjects(exportId: string, token: string | null, projectIds: string[], confidentialityLevels: string[]): Promise<void> {
+    const url = `${API_URI}/dataexchange/${exportId}/export`;
+    const exportDate = new Date().toISOString().split("T")[0];
+    const body = {
+        projectIds: projectIds && projectIds.length > 0 ? projectIds : undefined,
+        confidentialityLevels: projectIds && projectIds.length === 0 ? confidentialityLevels : undefined,
+        token,
+        exportDate,
+    };
     await postJson(url, body);
 }
 

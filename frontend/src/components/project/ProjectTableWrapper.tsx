@@ -4,7 +4,6 @@ import { GenericOptionType, ProjectsTableView } from "./ProjectsTableView";
 import { t } from "i18next";
 import { AddProjectButton } from "../PlusButton";
 import UserContext from "../../context/UserContext";
-import useAlert from "../../hooks/useAlert";
 import { confidentialityUpdate, configuredExport } from "../../Paths";
 import { useNavigate, useParams } from "react-router-dom";
 import CategoryInput from "./inputs/CategoryInput";
@@ -37,7 +36,6 @@ const ProjectsTableWrapper = ({
 }: Props) => {
     const { allowedActions } = useContext(UserContext);
     const [showDialog, setShowDialog] = useState(false);
-    const { setAlert } = useAlert();
     const navigate = useNavigate();
     const { exportId = "defaultExportId" } = useParams<{ exportId?: string }>();
 
@@ -111,7 +109,6 @@ const ProjectsTableWrapper = ({
                         variant="contained"
                         onClick={() => {
                             handleProjectsExport();
-                            setAlert(t("projects.successExport"), "success");
                         }}
                         autoFocus
                     >
