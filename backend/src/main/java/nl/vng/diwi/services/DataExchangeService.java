@@ -318,12 +318,12 @@ public class DataExchangeService {
 
         try (Response response = CLIENT.newCall(request).execute()) {
             if (response.isSuccessful() && response.body() != null) {
-                System.out.println("Upload successful: " + response.body().string());
+                log.info("Upload successful: {}", response.body().string());
             } else {
-                System.out.println("Upload failed: " + response.message());
+                log.info("Upload failed: {}", response.message());
             }
         } catch (IOException e) {
-            throw new RuntimeException("Error uploading GeoJSON file", e);
+            throw new VngServerErrorException("Error uploading GeoJSON file", e);
         }
     }
 
@@ -332,7 +332,7 @@ public class DataExchangeService {
             streamingOutput.write(byteArrayOutputStream);
             return byteArrayOutputStream.toByteArray();
         } catch (IOException e) {
-            throw new RuntimeException("Error converting StreamingOutput to byte array", e);
+            throw new VngServerErrorException("Error converting StreamingOutput to byte array", e);
         }
     }
 
