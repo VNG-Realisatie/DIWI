@@ -35,6 +35,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Path("/dataexchange")
 @RolesAllowed("BLOCKED_BY_DEFAULT") // This forces us to make sure each end-point has action(s) assigned, so we never have things open by default.
@@ -168,7 +169,10 @@ public class DataExchangeResource {
         List<DataExchangeExportError> errors = new ArrayList<>();
         StreamingOutput exportObj = dataExchangeService.getExportObject(repo, configModel, dataExchangeUuid, dataExchangeExportModel, errors, loggedUser);
         if (!errors.isEmpty()) {
-            throw new VngBadRequestException("Could not export data");
+            String errorMessages = errors.stream()
+                .map(DataExchangeExportError::getMessage) // Assuming getMessage() retrieves the error message
+                .collect(Collectors.joining("; "));
+            throw new VngBadRequestException("Could not export data. Validation errors: " + errorMessages);
         }
         dataExchangeService.exportProject(exportObj, dataExchangeExportModel.getToken());
     }
