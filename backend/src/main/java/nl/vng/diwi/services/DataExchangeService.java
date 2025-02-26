@@ -72,6 +72,7 @@ public class DataExchangeService {
     private static final String JSON = "json";
     private static final String TRUE = "true";
     private static final String ARCGIS_URL_ENV_KEY = "ARCGIS_URL";
+    public static final String ARCGIS_BASE_URL_DEFAULT_VALUE = "https://zuid-holland-hub.maps.arcgis.com";
 
     public List<DataExchangeModel> getDataExchangeList(VngRepository repo, boolean includeApiKey) {
 
@@ -329,7 +330,7 @@ public class DataExchangeService {
 
     private Request createRequest(String username, MultipartBody requestBody) {
         Map<String, String> environment = System.getenv();
-        String arcgisBaseUrl = environment.getOrDefault(ARCGIS_URL_ENV_KEY, "https://zuid-holland-hub.maps.arcgis.com");
+        String arcgisBaseUrl = environment.getOrDefault(ARCGIS_URL_ENV_KEY, ARCGIS_BASE_URL_DEFAULT_VALUE);
         String arcgisUploadUrl = arcgisBaseUrl + "/sharing/rest/content/users/" + username + "/addItem";
         return new Request.Builder()
             .url(arcgisUploadUrl)

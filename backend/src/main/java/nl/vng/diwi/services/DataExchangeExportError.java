@@ -3,13 +3,15 @@ package nl.vng.diwi.services;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.AccessLevel;
 import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandHouseblockExportModel.OwnershipCategory;
 
 import java.util.UUID;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class DataExchangeExportError {
 
     private UUID projectId;
@@ -22,30 +24,19 @@ public class DataExchangeExportError {
     private Long priceValueMin;
     private Long priceValueMax;
 
-    private DataExchangeExportError(UUID projectId, UUID houseblockId, String fieldName, EXPORT_ERROR exportError, OwnershipCategory cat1, OwnershipCategory cat2, Long priceValueMin, Long priceValueMax) {
-        this.projectId = projectId;
-        this.houseblockId = houseblockId;
-        this.fieldName = fieldName;
-        this.code = exportError.getErrorCode();
-        this.message = exportError.getErrorMessage();
-        this.cat1 = cat1;
-        this.cat2 = cat2;
-        this.priceValueMin = priceValueMin;
-        this.priceValueMax = priceValueMax;
-    }
-
     public DataExchangeExportError(UUID projectId, String fieldName, EXPORT_ERROR exportError) {
-        this(projectId, null, fieldName, exportError, null, null, null, null);
+        this(projectId, null, fieldName, exportError.getErrorCode(), exportError.getErrorMessage(), null, null, null, null);
     }
 
     public DataExchangeExportError(UUID projectId, UUID houseblockId, EXPORT_ERROR exportError) {
-        this(projectId, houseblockId, null, exportError, null, null, null, null);
+        this(projectId, houseblockId, null, exportError.getErrorCode(), exportError.getErrorMessage(), null, null, null, null);
     }
 
     public DataExchangeExportError(UUID projectId, UUID houseblockId, EXPORT_ERROR exportError, OwnershipCategory cat1, OwnershipCategory cat2, Long priceValueMin, Long priceValueMax) {
-        this(projectId, houseblockId, null, exportError, cat1, cat2, priceValueMin, priceValueMax);
+        this(projectId, houseblockId, null, exportError.getErrorCode(), exportError.getErrorMessage(), cat1, cat2, priceValueMin, priceValueMax);
     }
 
+    @Getter
     public enum EXPORT_ERROR {
         MISSING_MANDATORY_VALUE("missing_mandatory_value", "Value is mandatory in the export, but is missing from the project properties."),
         MULTIPLE_SINGLE_SELECT_VALUES("multiple_single_select_values", "Value is single-select in the export, but multiple values were assigned in the project properties."),
@@ -61,14 +52,6 @@ public class DataExchangeExportError {
         EXPORT_ERROR(String errorCode, String errorMessage) {
             this.errorCode = errorCode;
             this.errorMessage = errorMessage;
-        }
-
-        public String getErrorCode() {
-            return errorCode;
-        }
-
-        public String getErrorMessage() {
-            return errorMessage;
         }
     }
 }
