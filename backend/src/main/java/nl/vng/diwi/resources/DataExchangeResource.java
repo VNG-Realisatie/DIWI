@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Path("/dataexchange")
-//@RolesAllowed("BLOCKED_BY_DEFAULT") // This forces us to make sure each end-point has action(s) assigned, so we never have things open by default.
+@RolesAllowed("BLOCKED_BY_DEFAULT") // This forces us to make sure each end-point has action(s) assigned, so we never have things open by default.
 public class DataExchangeResource {
 
     private final VngRepository repo;
@@ -160,7 +160,7 @@ public class DataExchangeResource {
 
     @POST
     @Path("/{id}/export")
-//    @RolesAllowed(UserActionConstants.EDIT_DATA_EXCHANGES)
+    @RolesAllowed(UserActionConstants.EDIT_DATA_EXCHANGES)
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public void exportProjects(@PathParam("id") UUID dataExchangeUuid, @NonNull DataExchangeExportModel dataExchangeExportModel, @Context LoggedUser loggedUser)
