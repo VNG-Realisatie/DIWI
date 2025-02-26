@@ -285,22 +285,24 @@ public class DataExchangeService {
         };
 
     }
-    private Set<DataExchangeType> getDefaultValidTypes() {
-        return Set.of(DataExchangeType.GEO_JSON, DataExchangeType.EXCEL);
-    }
 
     public void exportProject(StreamingOutput output, String token, String filename) {
-
-        String username = "erombouts_prw"; //TODO how to get this in a dynamic way  (not hardcoded)
-        // Convert StreamingOutput to byte array
+        String username = "erombouts_prw"; //TODO dinamicaly fetch it somehow
         byte[] fileBytes = convertStreamingOutputToByteArray(output);
 
         if (fileBytes.length == 0) {
-            throw new IllegalArgumentException("StreamingOutput is empty");
+            throw new VngServerErrorException("StreamingOutput is empty");
         }
+
         RequestBody fileStreamBody = RequestBody.create(fileBytes, MediaType.parse("application/octet-stream"));
-        // Create the multipart form body
-        MultipartBody requestBody = new MultipartBody.Builder()
+        MultipartBody requestBody = createMultipartBody(token, filename, fileStreamBody);
+        Request request = createRequest(username, requestBody);
+
+        executeRequest(request);
+    }
+
+    private MultipartBody createMultipartBody(String token, String filename, RequestBody fileStreamBody) {
+        return new MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart("type", "GeoJson")
             .addFormDataPart("extension", "geojson")
@@ -310,12 +312,16 @@ public class DataExchangeService {
             .addFormDataPart("token", token)
             .addFormDataPart("file", filename + ".geojson", fileStreamBody)
             .build();
+    }
 
-        Request request = new Request.Builder()
-            .url("https://zuid-holland-hub.maps.arcgis.com/sharing/rest/content/users/erombouts_prw/addItem")
+    private Request createRequest(String username, MultipartBody requestBody) {
+        return new Request.Builder()
+            .url("https://zuid-holland-hub.maps.arcgis.com/sharing/rest/content/users/" + username + "/addItem")
             .post(requestBody)
             .build();
+    }
 
+    private void executeRequest(Request request) {
         try (Response response = CLIENT.newCall(request).execute()) {
             if (response.isSuccessful() && response.body() != null) {
                 log.info("Upload successful: {}", response.body().string());
@@ -334,6 +340,10 @@ public class DataExchangeService {
         } catch (IOException e) {
             throw new VngServerErrorException("Error converting StreamingOutput to byte array", e);
         }
+    }
+
+    private Set<DataExchangeType> getDefaultValidTypes() {
+        return Set.of(DataExchangeType.GEO_JSON, DataExchangeType.EXCEL);
     }
 
 }
