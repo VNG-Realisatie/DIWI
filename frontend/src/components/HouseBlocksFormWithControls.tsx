@@ -12,7 +12,6 @@ import HouseBlockContext from "../context/HouseBlockContext";
 import useAlert from "../hooks/useAlert";
 import { validateHouseBlock } from "../utils/houseblocks/houseBlocksFunctions";
 import UserContext from "../context/UserContext";
-import { checkDeletedCategories } from "../utils/formValidation";
 
 type Props = {
     houseBlock: HouseBlockWithCustomProperties;
@@ -26,14 +25,8 @@ export const HouseBlocksFormWithControls = ({ houseBlock }: Props) => {
     const { allowedActions } = useContext(UserContext);
 
     const handleSave = () => {
-        const updatedCustomProperties = newHouseBlock.customProperties?.map((customProperty) => {
-            const customDefinition = nonFixedCustomDefinitions.find((definition) => definition.id === customProperty.customPropertyId);
-            const updatedCustomProperty = customDefinition ? checkDeletedCategories(customProperty, customDefinition) : customProperty;
-            return updatedCustomProperty;
-        });
-        const updatedHouseBlock = { ...newHouseBlock, customProperties: updatedCustomProperties };
-        if (validateHouseBlock(updatedHouseBlock, setAlert, nonFixedCustomDefinitions)) {
-            saveHouseBlockWithCustomProperties(updatedHouseBlock);
+        if (validateHouseBlock(newHouseBlock, setAlert, nonFixedCustomDefinitions)) {
+            saveHouseBlockWithCustomProperties(newHouseBlock);
             setReadOnly(true);
         }
     };
