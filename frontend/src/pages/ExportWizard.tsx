@@ -81,7 +81,6 @@ const ExportWizard = () => {
         navigate(exchangeimportdata.toPath());
     };
 
-    //this function doesnt do anything at the moment, functionality not implemented
     const handleExportProjects = async (token: string | null) => {
         if (!exportId) return;
         try {
@@ -92,7 +91,9 @@ const ExportWizard = () => {
             await exportProjects(exportId, token, selectedProjects, allowedConfidentialityLevels);
             setAlert(t("projects.successExport"), "success");
         } catch (error) {
-            console.error("Export failed", error);
+            if (error instanceof Error) {
+                setAlert(error.message, "error");
+            }
         }
     };
 
