@@ -106,7 +106,7 @@ export async function postJson(url: string, data: any) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function postJsonParcedError(url: string, data : any) {
+export async function postJsonParcedError(url: string, data: any) {
     const body = JSON.stringify(data);
 
     const res = await diwiFetch(encodeURI(url), {
@@ -118,10 +118,11 @@ export async function postJsonParcedError(url: string, data : any) {
     });
 
     if (!res.ok) {
+        if (res.status === 204) {
+            return await res.json();
+        }
         throw await res.json();
     }
-
-    return res.json();
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
