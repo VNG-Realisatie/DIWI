@@ -13,6 +13,7 @@ import nl.vng.diwi.resources.DataExchangeResource;
 import nl.vng.diwi.resources.GoalResource;
 import nl.vng.diwi.resources.PropertiesResource;
 import nl.vng.diwi.resources.HouseblockResource;
+import nl.vng.diwi.services.export.ArcGisProjectExporter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.flywaydb.core.api.exception.FlywayValidateException;
@@ -41,13 +42,14 @@ import nl.vng.diwi.rest.pac4j.SecurityFilter;
 @ApplicationPath("rest")
 @MultipartConfig(fileSizeThreshold = 0, maxFileSize = -1, maxRequestSize = -1)
 public class VngApplication extends ResourceConfig {
-    private static Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger();
 
-    private ServletConfig config;
-    private DalFactory dalFactory;
-    private ProjectConfig projectConfig;
+    private final ServletConfig config;
+    private final DalFactory dalFactory;
+    private final ProjectConfig projectConfig;
+    private final ArcGisProjectExporter arcGisExporter;
 
-    private VngDependencyInjection dependencyInjection;
+    private final VngDependencyInjection dependencyInjection;
 
     public VngApplication(@jakarta.ws.rs.core.Context ServletConfig config) throws Exception {
         this.config = config;
@@ -65,6 +67,7 @@ public class VngApplication extends ResourceConfig {
         // Init
         try {
             dalFactory = new DalFactory(projectConfig, GenericRepository.getEntities());
+            arcGisExporter = new ArcGisProjectExporter();
 
             Properties prop = new Properties();
             prop.setProperty("org.quartz.threadPool.threadCount", "1");
@@ -73,7 +76,7 @@ public class VngApplication extends ResourceConfig {
         }
 
         // Dependency injectors
-        dependencyInjection = new VngDependencyInjection(dalFactory, projectConfig);
+        dependencyInjection = new VngDependencyInjection(dalFactory, projectConfig, arcGisExporter);
         register(dependencyInjection);
 
 
