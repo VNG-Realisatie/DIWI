@@ -171,7 +171,8 @@ public class DataExchangeResource {
         if (!errors.isEmpty()) {
             throw new VngBadRequestException(errors);
         }
-        dataExchangeService.exportProject(exportObj, dataExchangeExportModel.getToken(), dataExchangeExportModel.getFilename());
+        dataExchangeService.exportProject(exportObj, dataExchangeExportModel.getToken(), dataExchangeExportModel.getFilename(),
+            dataExchangeExportModel.getUsername());
     }
 
     @POST

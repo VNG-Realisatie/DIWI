@@ -20,6 +20,7 @@ public class DataExchangeExportModel {
     private List<Confidentiality> confidentialityLevels;
     private String token;
     private String filename;
+    private String username;
 
     public String validate(DataExchangeType type) {
         if (exportDate == null) {
