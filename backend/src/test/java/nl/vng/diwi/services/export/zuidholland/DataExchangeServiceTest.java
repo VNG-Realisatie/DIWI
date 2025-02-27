@@ -6,6 +6,7 @@ import nl.vng.diwi.dal.entities.DataExchangeState;
 import nl.vng.diwi.dal.entities.User;
 import nl.vng.diwi.models.DataExchangeModel;
 import nl.vng.diwi.services.DataExchangeService;
+import nl.vng.diwi.services.export.ArcGisProjectExporter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -34,11 +35,13 @@ class DataExchangeServiceTest {
     private DataExchangeService service;
     private DataExchangeModel mockModel;
     private DataExchange mockDataExchange;
+    private ArcGisProjectExporter mockArcGisProjectExporter;
 
     @BeforeEach
     void setUp() {
         mockRepo = mock(VngRepository.class);
-        service = new DataExchangeService();
+        mockArcGisProjectExporter = new ArcGisProjectExporter();
+        service = new DataExchangeService(mockArcGisProjectExporter);
         mockModel = mock(DataExchangeModel.class);
         mockDataExchange = mock(DataExchange.class);
     }

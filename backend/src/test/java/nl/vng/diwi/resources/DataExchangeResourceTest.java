@@ -8,6 +8,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import nl.vng.diwi.services.export.ArcGisProjectExporter;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -44,7 +45,7 @@ import nl.vng.diwi.testutil.ProjectsUtil;
 import nl.vng.diwi.testutil.TestDb;
 
 public class DataExchangeResourceTest {
-    private static ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper MAPPER = new ObjectMapper();
     private static DalFactory dalFactory;
     private static TestDb testDb;
 
@@ -75,10 +76,11 @@ public class DataExchangeResourceTest {
     private DataExchangeResource dataExchangeResource;
     private GenericRepository genericRepository;
     private DataExchangeService dataExchangeService;
-
+    private ArcGisProjectExporter arcGisProjectExporter;
     @BeforeEach
     void beforeEach() {
         dal = dalFactory.constructDal();
+
         repo = new VngRepository(dal.getSession());
         genericRepository = new GenericRepository(dal);
         projectResource = new ProjectsResource(genericRepository,
@@ -87,6 +89,7 @@ public class DataExchangeResourceTest {
         projectResource.getUserGroupService().setUserGroupDAO(repo.getUsergroupDAO());
         blockResource = new HouseblockResource(genericRepository, new HouseblockService(), new ProjectService(), new PropertiesService());
         propertiesService = new PropertiesService();
+
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             user = new User();
@@ -104,7 +107,8 @@ public class DataExchangeResourceTest {
 
         context = new LoggedUserContainerRequestContext(loggedUser);
 
-        dataExchangeService = new DataExchangeService();
+        arcGisProjectExporter = new ArcGisProjectExporter();
+        dataExchangeService = new DataExchangeService(arcGisProjectExporter);
         dataExchangeResource = new DataExchangeResource(genericRepository, dataExchangeService, testDb.projectConfig);
     }
 
@@ -146,10 +150,10 @@ public class DataExchangeResourceTest {
         var result = new ByteArrayOutputStream();
         stream.write(result);
         String actualString = result.toString();
-        var actualTree = objectMapper.readTree(actualString);
+        var actualTree = MAPPER.readTree(actualString);
 
         var expected = ResourceUtil.getResourceAsString("DataExchangeResourceTest/" + type.toString() + ".geojson");
-        var expectedTree = objectMapper.readTree(expected);
+        var expectedTree = MAPPER.readTree(expected);
 
         assertThat(
                 actualTree.toPrettyString()
