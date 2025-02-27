@@ -76,6 +76,7 @@ export async function exportProjects(exportId: string, token: string | null, pro
     const url = `${API_URI}/dataexchange/${exportId}/export`;
     const exportDate = new Date().toISOString().split("T")[0];
     const body = {
+        filename: "export",
         projectIds: projectIds && projectIds.length > 0 ? projectIds : undefined,
         confidentialityLevels: projectIds && projectIds.length === 0 ? confidentialityLevels : undefined,
         token,
