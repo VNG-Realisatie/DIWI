@@ -81,8 +81,10 @@ export async function exportProjects(
 ): Promise<void> {
     const url = `${API_URI}/dataexchange/${exportId}/export`;
     const exportDate = new Date().toISOString().split("T")[0];
+    const exportTime = new Date().toISOString().split("T")[1].split(".")[0].replace(/:/g, "-");
+    const filename = `export_${exportDate}_${exportTime}`;
     const body = {
-        filename: "export",
+        filename,
         projectIds: projectIds && projectIds.length > 0 ? projectIds : undefined,
         confidentialityLevels: projectIds && projectIds.length === 0 ? confidentialityLevels : undefined,
         token,
