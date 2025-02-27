@@ -2,7 +2,6 @@ package nl.vng.diwi.services;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.time.ZonedDateTime;
 
 import java.util.ArrayList;
@@ -52,7 +51,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okio.BufferedSink;
 
 import static nl.vng.diwi.dal.entities.DataExchangeType.ESRI_ZUID_HOLLAND;
 
@@ -61,6 +59,20 @@ import static nl.vng.diwi.dal.entities.DataExchangeType.ESRI_ZUID_HOLLAND;
 public class DataExchangeService {
 
     private static final OkHttpClient CLIENT = new OkHttpClient();
+    private static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
+    private static final String TYPE = "type";
+    private static final String EXTENSION = "extension";
+    private static final String ARCGIS_SPECIFIC_FLAG = "f";
+    private static final String ASYNC = "async";
+    private static final String TITLE = "title";
+    private static final String TOKEN = "token";
+    private static final String FILE = "file";
+    private static final String GEO_JSON_TYPE = "GeoJson";
+    private static final String GEOJSON_EXTENSION = "geojson";
+    private static final String JSON = "json";
+    private static final String TRUE = "true";
+    private static final String ARCGIS_URL_ENV_KEY = "ARCGIS_URL";
+    public static final String ARCGIS_BASE_URL_DEFAULT_VALUE = "https://zuid-holland-hub.maps.arcgis.com";
 
     public List<DataExchangeModel> getDataExchangeList(VngRepository repo, boolean includeApiKey) {
 
@@ -287,45 +299,54 @@ public class DataExchangeService {
         };
 
     }
-    private Set<DataExchangeType> getDefaultValidTypes() {
-        return Set.of(DataExchangeType.GEO_JSON, DataExchangeType.EXCEL);
-    }
 
-    public void exportProject(StreamingOutput output, String token) {
-
-        String username = "erombouts_prw"; //TODO how to get this in a dynamic way  (not hardcoded)
-        // Convert StreamingOutput to byte array
+    public void exportProject(StreamingOutput output, String token, String filename) {
+        String username = "erombouts_prw"; //TODO dinamicaly get this value
         byte[] fileBytes = convertStreamingOutputToByteArray(output);
 
         if (fileBytes.length == 0) {
-            throw new IllegalArgumentException("StreamingOutput is empty");
+            throw new VngServerErrorException("StreamingOutput is empty");
         }
-        RequestBody fileStreamBody = RequestBody.create(fileBytes, MediaType.parse("application/octet-stream"));
-        // Create the multipart form body
-        MultipartBody requestBody = new MultipartBody.Builder()
-            .setType(MultipartBody.FORM)
-            .addFormDataPart("type", "GeoJson")
-            .addFormDataPart("extension", "geojson")
-            .addFormDataPart("f", "json")
-            .addFormDataPart("async", "true")
-            .addFormDataPart("title", "geojson_testset_vladimir")
-            .addFormDataPart("token", token)
-            .addFormDataPart("file", "geojson_testset_v4.geojson", fileStreamBody)
-            .build();
 
-        Request request = new Request.Builder()
-            .url("https://zuid-holland-hub.maps.arcgis.com/sharing/rest/content/users/erombouts_prw/addItem")
+        RequestBody fileStreamBody = RequestBody.create(fileBytes, MediaType.parse(APPLICATION_OCTET_STREAM));
+        MultipartBody requestBody = createMultipartBody(token, filename, fileStreamBody);
+        Request request = createRequest(username, requestBody);
+
+        executeRequest(request);
+    }
+
+    private MultipartBody createMultipartBody(String token, String filename, RequestBody fileStreamBody) {
+        return new MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart(TYPE, GEO_JSON_TYPE)
+            .addFormDataPart(EXTENSION, GEOJSON_EXTENSION)
+            .addFormDataPart(ARCGIS_SPECIFIC_FLAG, JSON)
+            .addFormDataPart(ASYNC, TRUE)
+            .addFormDataPart(TITLE, filename)
+            .addFormDataPart(TOKEN, token)
+            .addFormDataPart(FILE, filename + ".geojson", fileStreamBody)
+            .build();
+    }
+
+    private Request createRequest(String username, MultipartBody requestBody) {
+        Map<String, String> environment = System.getenv();
+        String arcgisBaseUrl = environment.getOrDefault(ARCGIS_URL_ENV_KEY, ARCGIS_BASE_URL_DEFAULT_VALUE);
+        String arcgisUploadUrl = arcgisBaseUrl + "/sharing/rest/content/users/" + username + "/addItem";
+        return new Request.Builder()
+            .url(arcgisUploadUrl)
             .post(requestBody)
             .build();
+    }
 
+    private void executeRequest(Request request) {
         try (Response response = CLIENT.newCall(request).execute()) {
             if (response.isSuccessful() && response.body() != null) {
-                System.out.println("Upload successful: " + response.body().string());
+                log.info("Upload successful: {}", response.body().string());
             } else {
-                System.out.println("Upload failed: " + response.message());
+                log.info("Upload failed: {}", response.message());
             }
         } catch (IOException e) {
-            throw new RuntimeException("Error uploading GeoJSON file", e);
+            throw new VngServerErrorException("Error uploading GeoJSON file", e);
         }
     }
 
@@ -334,8 +355,12 @@ public class DataExchangeService {
             streamingOutput.write(byteArrayOutputStream);
             return byteArrayOutputStream.toByteArray();
         } catch (IOException e) {
-            throw new RuntimeException("Error converting StreamingOutput to byte array", e);
+            throw new VngServerErrorException("Error converting StreamingOutput to byte array", e);
         }
+    }
+
+    private Set<DataExchangeType> getDefaultValidTypes() {
+        return Set.of(DataExchangeType.GEO_JSON, DataExchangeType.EXCEL);
     }
 
 }

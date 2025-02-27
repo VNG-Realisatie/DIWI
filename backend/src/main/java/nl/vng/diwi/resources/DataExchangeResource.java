@@ -15,6 +15,7 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.StreamingOutput;
+import lombok.NonNull;
 import nl.vng.diwi.config.ProjectConfig;
 import nl.vng.diwi.dal.AutoCloseTransaction;
 import nl.vng.diwi.dal.GenericRepository;
@@ -162,7 +163,7 @@ public class DataExchangeResource {
     @RolesAllowed(UserActionConstants.EDIT_DATA_EXCHANGES)
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public void exportProjects(@PathParam("id") UUID dataExchangeUuid, DataExchangeExportModel dataExchangeExportModel, @Context LoggedUser loggedUser)
+    public void exportProjects(@PathParam("id") UUID dataExchangeUuid, @NonNull DataExchangeExportModel dataExchangeExportModel, @Context LoggedUser loggedUser)
         throws VngBadRequestException, VngNotFoundException {
 
         List<DataExchangeExportError> errors = new ArrayList<>();
@@ -170,7 +171,7 @@ public class DataExchangeResource {
         if (!errors.isEmpty()) {
             throw new VngBadRequestException(errors);
         }
-        dataExchangeService.exportProject(exportObj, dataExchangeExportModel.getToken());
+        dataExchangeService.exportProject(exportObj, dataExchangeExportModel.getToken(), dataExchangeExportModel.getFilename());
     }
 
     @POST
