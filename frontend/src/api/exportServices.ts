@@ -72,7 +72,13 @@ export async function downloadExportData(id: string, body: DownloadType, type: E
     return downloadPost(`${API_URI}/dataexchange/${id}/download`, type === "EXCEL" ? "export.xlsx" : "export.geojson", body);
 }
 
-export async function exportProjects(exportId: string, token: string | null, projectIds: string[], confidentialityLevels: string[]): Promise<void> {
+export async function exportProjects(
+    exportId: string,
+    token: string | null,
+    projectIds: string[],
+    confidentialityLevels: string[],
+    userName: string | null,
+): Promise<void> {
     const url = `${API_URI}/dataexchange/${exportId}/export`;
     const exportDate = new Date().toISOString().split("T")[0];
     const body = {
@@ -81,6 +87,7 @@ export async function exportProjects(exportId: string, token: string | null, pro
         confidentialityLevels: projectIds && projectIds.length === 0 ? confidentialityLevels : undefined,
         token,
         exportDate,
+        username: userName,
     };
     return postJsonParcedError(url, body);
 }

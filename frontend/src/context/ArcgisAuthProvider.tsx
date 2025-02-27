@@ -10,6 +10,7 @@ interface ArcgisAuthContextProps {
     login: (exportId: string) => void;
     handleRedirect: (exportId: string) => Promise<void>;
     token: string | null;
+    userName: string | null;
 }
 
 interface ArcgisAuthProviderProps {
@@ -20,6 +21,7 @@ export const ArcgisAuthContext = createContext<ArcgisAuthContextProps | undefine
 
 export const ArcgisAuthProvider = ({ children }: ArcgisAuthProviderProps) => {
     const [token, setToken] = useState<string | null>(null);
+    const [userName, setUserName] = useState<string | null>(null);
     const navigate = useNavigate();
     const { setAlert } = useAlert();
     const redirectUri = `${window.location.origin}${arcgisRedirect.path}`;
@@ -48,8 +50,11 @@ export const ArcgisAuthProvider = ({ children }: ArcgisAuthProviderProps) => {
                 });
                 setToken(manager.token);
                 sessionStorage.setItem("arcgis_token", manager.token);
-                setAlert(t("exchangeData.arcgis.loginSuccess"), "success");
 
+                const userProfile = await manager.getUser();
+                setUserName(userProfile.username);
+
+                setAlert(t("exchangeData.arcgis.loginSuccess"), "success");
                 navigate(configuredExport.toPath({ exportId: exportId }));
             } catch (error) {
                 console.error(error);
@@ -83,5 +88,5 @@ export const ArcgisAuthProvider = ({ children }: ArcgisAuthProviderProps) => {
         }
     }, []);
 
-    return <ArcgisAuthContext.Provider value={{ login, handleRedirect, token }}>{children}</ArcgisAuthContext.Provider>;
+    return <ArcgisAuthContext.Provider value={{ login, handleRedirect, token, userName }}>{children}</ArcgisAuthContext.Provider>;
 };

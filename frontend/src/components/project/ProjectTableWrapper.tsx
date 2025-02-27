@@ -16,7 +16,7 @@ type Props = {
     setSelectedProjects?: Dispatch<SetStateAction<string[]>>;
     selectedProjects?: string[];
     handleBack?: () => void;
-    exportProjects?: (token: string | null) => void;
+    exportProjects?: (token: string | null, userName: string | null) => void;
     handleDownload?: () => void;
     setConfidentialityLevel?: Dispatch<SetStateAction<GenericOptionType<ConfidentialityLevelOptionsType> | undefined>>;
     selectedConfidentialityLevel?: GenericOptionType<ConfidentialityLevelOptionsType>;
@@ -44,7 +44,7 @@ const ProjectsTableWrapper = ({
     const configuredExportPath = configuredExport.toPath({ exportId });
     const confidentialityUpdatePath = confidentialityUpdate.toPath({ exportId });
 
-    const { login, token } = useArcgisAuth();
+    const { login, token, userName } = useArcgisAuth();
 
     useEffect(() => {
         if (!exportId || !minimumConfidentiality) return;
@@ -57,7 +57,7 @@ const ProjectsTableWrapper = ({
     if (!selectedConfidentialityLevel && redirectPath === configuredExportPath) return;
 
     const handleProjectsExport = () => {
-        exportProjects(token);
+        exportProjects(token, userName);
         setShowDialog(false);
     };
 

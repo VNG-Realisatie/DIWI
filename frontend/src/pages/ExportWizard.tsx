@@ -81,14 +81,14 @@ const ExportWizard = () => {
         navigate(exchangeimportdata.toPath());
     };
 
-    const handleExportProjects = async (token: string | null) => {
+    const handleExportProjects = async (token: string | null, userName: string | null) => {
         if (!exportId) return;
         try {
             const allowedConfidentialityLevels = selectedConfidentialityLevel
                 ? getAllowedConfidentialityLevels(selectedConfidentialityLevel.id as ConfidentialityLevel)
                 : [];
 
-            await exportProjects(exportId, token, selectedProjects, allowedConfidentialityLevels);
+            await exportProjects(exportId, token, selectedProjects, allowedConfidentialityLevels, userName);
             setAlert(t("projects.successExport"), "success");
         } catch (error: unknown) {
             if (Array.isArray(error)) {
