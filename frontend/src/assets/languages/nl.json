@@ -316,7 +316,7 @@
       "cancelExport": "Annuleer",
       "saveSetting": "INSTELLINGEN OPSLAAN",
       "resetSetting": "INSTELLINGEN RESETTEN",
-      "successExport": "Gelukt! Je ontvangt de bevestiging via de mail.",
+      "successExport": "Gelukt! Projecten zijn geëxporteerd.",
       "saveColumnConfig": "Opslaan kolomconfiguratie",
       "resetColumnConfig": "Reset kolomconfiguratie",
       "successSaveColumnConfig": "Kolomconfiguratie succesvol opgeslagen",
