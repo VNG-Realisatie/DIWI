@@ -53,6 +53,7 @@ export const ArcgisAuthProvider = ({ children }: ArcgisAuthProviderProps) => {
 
                 const userProfile = await manager.getUser();
                 setUserName(userProfile.username);
+                sessionStorage.setItem("arcgis_userName", userProfile.username);
 
                 setAlert(t("exchangeData.arcgis.loginSuccess"), "success");
                 navigate(configuredExport.toPath({ exportId: exportId }));
@@ -83,8 +84,12 @@ export const ArcgisAuthProvider = ({ children }: ArcgisAuthProviderProps) => {
 
     useEffect(() => {
         const storedToken = sessionStorage.getItem("arcgis_token");
+        const storedUserName = sessionStorage.getItem("arcgis_userName");
         if (storedToken) {
             setToken(storedToken);
+        }
+        if (storedUserName) {
+            setUserName(storedUserName);
         }
     }, []);
 
