@@ -35,8 +35,7 @@ public class ArcGisProjectExporter {
     private static final String ARCGIS_BASE_URL_DEFAULT_VALUE = "https://zuid-holland-hub.maps.arcgis.com";
 
 
-    public void exportProject(StreamingOutput output, String token, String filename) {
-        String username = "erombouts_prw"; //TODO dinamicaly get this value
+    public void exportProject(StreamingOutput output, String token, String filename, String username) {
         byte[] fileBytes = convertStreamingOutputToByteArray(output);
 
         if (fileBytes.length == 0) {

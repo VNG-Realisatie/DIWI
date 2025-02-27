@@ -279,8 +279,8 @@ public class DataExchangeService {
 
     }
 
-    public void exportProject(StreamingOutput output, String token, String filename) {
-        arcGisProjectExporter.exportProject(output, token, filename);
+    public void exportProject(StreamingOutput output, String token, String filename, String username) {
+        arcGisProjectExporter.exportProject(output, token, filename, username);
     }
 
     private Set<DataExchangeType> getDefaultValidTypes() {
