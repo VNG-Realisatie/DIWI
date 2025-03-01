@@ -13,7 +13,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import jakarta.ws.rs.core.StreamingOutput;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import nl.vng.diwi.dal.VngRepository;
 import nl.vng.diwi.dal.entities.DataExchange;
 import nl.vng.diwi.dal.entities.DataExchangeOption;
@@ -39,14 +40,18 @@ import nl.vng.diwi.rest.VngBadRequestException;
 import nl.vng.diwi.rest.VngNotFoundException;
 import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
+import nl.vng.diwi.services.export.ArcGisProjectExporter;
 import nl.vng.diwi.services.export.excel.ExcelExport;
 import nl.vng.diwi.services.export.geojson.GeoJSONExport;
 import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandExport;
 
 import static nl.vng.diwi.dal.entities.DataExchangeType.ESRI_ZUID_HOLLAND;
 
-@NoArgsConstructor
+@RequiredArgsConstructor
+@Log4j2
 public class DataExchangeService {
+
+    private final ArcGisProjectExporter arcGisProjectExporter;
 
     public List<DataExchangeModel> getDataExchangeList(VngRepository repo, boolean includeApiKey) {
 
@@ -273,7 +278,13 @@ public class DataExchangeService {
         };
 
     }
+
+    public void exportProject(StreamingOutput output, String token, String filename, String username) {
+        arcGisProjectExporter.exportProject(output, token, filename, username);
+    }
+
     private Set<DataExchangeType> getDefaultValidTypes() {
         return Set.of(DataExchangeType.GEO_JSON, DataExchangeType.EXCEL);
     }
+
 }

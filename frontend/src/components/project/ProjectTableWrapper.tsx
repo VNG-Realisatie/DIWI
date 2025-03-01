@@ -4,19 +4,19 @@ import { GenericOptionType, ProjectsTableView } from "./ProjectsTableView";
 import { t } from "i18next";
 import { AddProjectButton } from "../PlusButton";
 import UserContext from "../../context/UserContext";
-import useAlert from "../../hooks/useAlert";
 import { confidentialityUpdate, configuredExport } from "../../Paths";
 import { useNavigate, useParams } from "react-router-dom";
 import CategoryInput from "./inputs/CategoryInput";
 import { ConfidentialityLevelOptionsType, confidentialityLevelOptions } from "../table/constants";
 import { getAllowedConfidentialityLevels } from "../../utils/exportUtils";
+import { useArcgisAuth } from "../../hooks/useArcgisAuth";
 
 type Props = {
     redirectPath: string;
     setSelectedProjects?: Dispatch<SetStateAction<string[]>>;
     selectedProjects?: string[];
     handleBack?: () => void;
-    exportProjects?: () => void;
+    exportProjects?: (token: string | null, userName: string | null) => void;
     handleDownload?: () => void;
     setConfidentialityLevel?: Dispatch<SetStateAction<GenericOptionType<ConfidentialityLevelOptionsType> | undefined>>;
     selectedConfidentialityLevel?: GenericOptionType<ConfidentialityLevelOptionsType>;
@@ -36,7 +36,6 @@ const ProjectsTableWrapper = ({
 }: Props) => {
     const { allowedActions } = useContext(UserContext);
     const [showDialog, setShowDialog] = useState(false);
-    const { setAlert } = useAlert();
     const navigate = useNavigate();
     const { exportId = "defaultExportId" } = useParams<{ exportId?: string }>();
 
@@ -44,6 +43,8 @@ const ProjectsTableWrapper = ({
 
     const configuredExportPath = configuredExport.toPath({ exportId });
     const confidentialityUpdatePath = confidentialityUpdate.toPath({ exportId });
+
+    const { login, token, userName } = useArcgisAuth();
 
     useEffect(() => {
         if (!exportId || !minimumConfidentiality) return;
@@ -56,12 +57,8 @@ const ProjectsTableWrapper = ({
     if (!selectedConfidentialityLevel && redirectPath === configuredExportPath) return;
 
     const handleProjectsExport = () => {
-        exportProjects();
+        exportProjects(token, userName);
         setShowDialog(false);
-    };
-
-    const handleNavigate = (path: string) => {
-        navigate(path);
     };
 
     return (
@@ -112,7 +109,6 @@ const ProjectsTableWrapper = ({
                         variant="contained"
                         onClick={() => {
                             handleProjectsExport();
-                            setAlert(t("projects.successExport"), "success");
                         }}
                         autoFocus
                     >
@@ -132,13 +128,13 @@ const ProjectsTableWrapper = ({
                             sx={{ my: 2 }}
                             variant="outlined"
                             onClick={() => {
-                                handleNavigate(confidentialityUpdate.toPath({ exportId }));
+                                navigate(confidentialityUpdate.toPath({ exportId }));
                             }}
                         >
                             {t("projects.confidentialityChange")}
                         </Button>
                         <Button
-                            disabled={true}
+                            disabled={token ? false : true}
                             sx={{ width: "130px", my: 2 }}
                             variant="contained"
                             onClick={() => {
@@ -150,6 +146,9 @@ const ProjectsTableWrapper = ({
                         <Button sx={{ width: "130px", my: 2 }} variant="contained" onClick={handleDownload}>
                             {t("projects.download")}
                         </Button>
+                        <Button sx={{ width: "130px", my: 2 }} variant="outlined" color="secondary" onClick={() => login(exportId)}>
+                            {t("projects.authenticate")}
+                        </Button>
                     </>
                 )}
                 {redirectPath === confidentialityUpdatePath && (
@@ -157,7 +156,7 @@ const ProjectsTableWrapper = ({
                         sx={{ my: 2 }}
                         variant="outlined"
                         onClick={() => {
-                            handleNavigate(configuredExport.toPath({ exportId }));
+                            navigate(configuredExport.toPath({ exportId }));
                         }}
                     >
                         {t("projects.backToExport")}

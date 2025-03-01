@@ -311,11 +311,12 @@
       "backToExport": "Ga door naar export",
       "download": "Downloaden",
       "exportIt": "Exporteer",
+      "authenticate": "Authenticeren",
       "confirmExport": "Weet je het zeker?",
       "cancelExport": "Annuleer",
       "saveSetting": "INSTELLINGEN OPSLAAN",
       "resetSetting": "INSTELLINGEN RESETTEN",
-      "successExport": "Gelukt! Je ontvangt de bevestiging via de mail.",
+      "successExport": "Gelukt! Projecten zijn geëxporteerd.",
       "saveColumnConfig": "Opslaan kolomconfiguratie",
       "resetColumnConfig": "Reset kolomconfiguratie",
       "successSaveColumnConfig": "Kolomconfiguratie succesvol opgeslagen",
@@ -402,6 +403,10 @@
         "projectId": "Project ID",
         "priceValueMax": "Maximale prijs",
         "priceValueMin": "Minimale prijs"
+      },
+      "arcgis": {
+        "authIsHappening": "Authenticatie is bezig, even geduld...",
+        "loginSuccess": "Je bent ingelogd. Nu kun je projecten exporteren."
       },
       "download": {
         "excel": "Download Excel template hier",
@@ -658,6 +663,7 @@
         },
         "name": "Naam",
         "apiKey": "API sleutel",
+        "clientId": "Client ID",
         "type": "Type",
         "projectUrl": "Create layer URL",
         "error": {

@@ -64,3 +64,5 @@ export const createExportSettings = createPathObject(config.baseurl + "admin/exp
 export const updateExportSettings = createPathObject(config.baseurl + "admin/export-settings/:id");
 
 export const swagger = createPathObject(config.baseurl + "swagger");
+
+export const arcgisRedirect = createPathObject(config.baseurl + "arcgis/redirect");

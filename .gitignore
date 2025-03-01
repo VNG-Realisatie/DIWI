@@ -16,8 +16,9 @@ sql/json/
 
 Servers/
 
-yarn.lock
-
+# Don't add package.json and other npm/yarn files in the root folder
+/package.json
+/yarn.lock
 node_modules/
 
 end-to-end-tests/results.xml
