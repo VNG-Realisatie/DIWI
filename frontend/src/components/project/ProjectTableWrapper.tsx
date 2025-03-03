@@ -21,6 +21,7 @@ type Props = {
     setConfidentialityLevel?: Dispatch<SetStateAction<GenericOptionType<ConfidentialityLevelOptionsType> | undefined>>;
     selectedConfidentialityLevel?: GenericOptionType<ConfidentialityLevelOptionsType>;
     minimumConfidentiality?: ConfidentialityLevelOptionsType;
+    clientId?: string;
 };
 
 const ProjectsTableWrapper = ({
@@ -33,6 +34,7 @@ const ProjectsTableWrapper = ({
     setConfidentialityLevel,
     selectedConfidentialityLevel,
     minimumConfidentiality,
+    clientId,
 }: Props) => {
     const { allowedActions } = useContext(UserContext);
     const [showDialog, setShowDialog] = useState(false);
@@ -133,22 +135,26 @@ const ProjectsTableWrapper = ({
                         >
                             {t("projects.confidentialityChange")}
                         </Button>
-                        <Button
-                            disabled={token ? false : true}
-                            sx={{ width: "130px", my: 2 }}
-                            variant="contained"
-                            onClick={() => {
-                                setShowDialog(true);
-                            }}
-                        >
-                            {t("projects.export")}
-                        </Button>
+                        {clientId && (
+                            <Button
+                                disabled={token ? false : true}
+                                sx={{ width: "130px", my: 2 }}
+                                variant="contained"
+                                onClick={() => {
+                                    setShowDialog(true);
+                                }}
+                            >
+                                {t("projects.export")}
+                            </Button>
+                        )}
                         <Button sx={{ width: "130px", my: 2 }} variant="contained" onClick={handleDownload}>
                             {t("projects.download")}
                         </Button>
-                        <Button sx={{ width: "130px", my: 2 }} variant="outlined" color="secondary" onClick={() => login(exportId)}>
-                            {t("projects.authenticate")}
-                        </Button>
+                        {clientId && (
+                            <Button sx={{ width: "130px", my: 2 }} variant="outlined" color="secondary" onClick={() => login(exportId)}>
+                                {t("projects.authenticate")}
+                            </Button>
+                        )}
                     </>
                 )}
                 {redirectPath === confidentialityUpdatePath && (
