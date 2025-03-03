@@ -141,6 +141,7 @@ const ExportWizard = () => {
                         handleBack={handleBack}
                         exportProjects={handleExportProjects}
                         handleDownload={handleDownload}
+                        clientId={exportData?.clientId}
                     />
                     {errors.length > 0 && (
                         <Alert severity="error" sx={{ "& .MuiAlert-message": { width: "100%" } }}>
