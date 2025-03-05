@@ -12,9 +12,12 @@ import nl.vng.diwi.dal.entities.DataExchangeType;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.ObjectType;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
+import nl.vng.diwi.generic.ResourceUtil;
 import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandExport.EsriZuidHollandProjectProps;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Data
@@ -145,10 +148,31 @@ public class DataExchangeTemplate {
         var gelderlandTemplate = DataExchangeTemplate.builder()
                 .properties(ImmutableList.<TemplateProperty>builder()
                         .add(TemplateProperty.builder()
+                                .name("gemeente")
+                                .objectType(ObjectType.PROJECT)
+                                .propertyTypes(List.of(PropertyType.CATEGORY))
+                                .options(loadStringListFromResource("dataexchange/gdb_gelderland_gemeente.txt"))
+                                .build())
+
+                        .add(TemplateProperty.builder()
+                                .name("woonplaats")
+                                .objectType(ObjectType.PROJECT)
+                                .propertyTypes(List.of(PropertyType.CATEGORY))
+                                .options(loadStringListFromResource("dataexchange/gdb_gelderland_woonplaats.txt"))
+                                .build())
+
+                        .add(TemplateProperty.builder()
                                 .name("opdrachtgever_type")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.CATEGORY))
-                                .options(List.of()) // TODO: What options?
+                                .options(List.of(
+                                        "Gemeente",
+                                        "Woningbouwcorporatie",
+                                        "Projectontwikkelaar",
+                                        "Particulieren",
+                                        "Meerdere namelijk",
+                                        "Anders",
+                                        "Onbekend"))
                                 .build())
                         .add(TemplateProperty.builder()
                                 .name("opdrachtgever_naam")
@@ -187,7 +211,13 @@ public class DataExchangeTemplate {
                                 .propertyTypes(List.of(PropertyType.CATEGORY))
                                 .mandatory(false)
                                 .singleSelect(true)
-                                .options(List.of("Centrum-stedelijk", "Buitencentrum", "Groen-stedelijk", "Dorps", "Landelijk", "Onbekend"))
+                                .options(List.of(
+                                        "Centrum-stedelijk",
+                                        "Buitencentrum",
+                                        "Groen-stedelijk",
+                                        "Dorps",
+                                        "Landelijk",
+                                        "Onbekend"))
                                 .build())
                         .add(TemplateProperty.builder()
                                 .name("beoogd_woonmilieu_ABF13")
@@ -195,9 +225,21 @@ public class DataExchangeTemplate {
                                 .propertyTypes(List.of(PropertyType.CATEGORY))
                                 .mandatory(false)
                                 .singleSelect(true)
-                                .options(List.of("Centrum-stedelijk-plus", "Centrum-stedelijk", "Centrum-kleinstedelijk", "Stedelijk vooroorlogs",
-                                        "Stedelijk naoorlogs compact", "Stedelijk naoorlogs grondgebonden", "Kleinstedelijk", "Groen-stedelijk",
-                                        "Groen-kleinstedelijk", "Centrum-dorps", "Dorps", "Landelijk bereikbaar", "Landelijk perifeer", "Onbekend"))
+                                .options(List.of(
+                                        "Centrum-stedelijk-plus",
+                                        "Centrum-stedelijk",
+                                        "Centrum-kleinstedelijk",
+                                        "Stedelijk vooroorlogs",
+                                        "Stedelijk naoorlogs compact",
+                                        "Stedelijk naoorlogs grondgebonden",
+                                        "Kleinstedelijk",
+                                        "Groen-stedelijk",
+                                        "Groen-kleinstedelijk",
+                                        "Centrum-dorps",
+                                        "Dorps",
+                                        "Landelijk bereikbaar",
+                                        "Landelijk perifeer",
+                                        "Onbekend"))
                                 .build())
                         // Knelpunten meerkeuze
 
@@ -245,25 +287,61 @@ public class DataExchangeTemplate {
                                 .name("energieconcept")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.CATEGORY))
-                                .options(List.of()) // TODO: What options
+                                .options(List.of(
+                                        "1. Individueel All-Electric",
+                                        "2. Hybride verwarming",
+                                        "3. Collectief Warmtenet zonder bijverwarming in woning",
+                                        "4. Collectief Warmtenet met bijverwarming in woning",
+                                        "5. Conventioneel aardgas verwarming",
+                                        "6. Individueel NOM",
+                                        "7. Duurzaam gasverwarming",
+                                        "8. Onbekend"))
                                 .build())
                         .add(TemplateProperty.builder()
                                 .name("tapwatervoorziening")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.CATEGORY))
-                                .options(List.of()) // TODO: What options
+                                .options(List.of(
+                                        "1. LT warmtepomp lucht-water",
+                                        "1. LT warmtepomp grond-water",
+                                        "2. Hybride warmtepomp met gas bijverwarming",
+                                        "3. LT (<35 graden) met wijk bijverwarming (GV aansluiting)",
+                                        "3. MT (35-60 graden) met wijk bijverwarming (GV aansluiting)",
+                                        "3. HT (60-90 graden) warmtenet zonder bijverwarming",
+                                        "4. LT (<35 graden) met warmtepomp",
+                                        "4. MT (35-60 graden) met tapwater verwarming",
+                                        "5. Aardgas",
+                                        "6. LT warmtepomp lucht-water",
+                                        "6. LT warmtepomp grond-water",
+                                        "7. Groengas",
+                                        "Onbekend"))
                                 .build())
                         .add(TemplateProperty.builder()
                                 .name("realisatiekans")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.CATEGORY))
-                                .options(List.of()) // TODO: What options
+                                .options(List.of(
+                                        "10%",
+                                        "20%",
+                                        "30%",
+                                        "40%",
+                                        "50%",
+                                        "60%",
+                                        "70%",
+                                        "80%",
+                                        "90%",
+                                        "100%"))
                                 .build())
                         .add(TemplateProperty.builder()
                                 .name("aandachtsgroepen")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.CATEGORY))
-                                .options(List.of()) // TODO: What options
+                                .options(List.of(
+                                        "Studenten",
+                                        "Ouderen",
+                                        "Arbeidsmigranten",
+                                        "Woonwagenbewoners",
+                                        "Overig"))
                                 .build())
                         .add(TemplateProperty.builder()
                                 .name("sleutelproject")
@@ -291,5 +369,13 @@ public class DataExchangeTemplate {
                 .put(DataExchangeType.EXCEL, excelTemplate)
                 .put(DataExchangeType.GDB_GELDERLAND, gelderlandTemplate)
                 .build();
+    }
+
+    private static List<String> loadStringListFromResource(String name) {
+        try {
+            return Arrays.asList(ResourceUtil.getResourceAsString(name).split("\n"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
