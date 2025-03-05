@@ -1,7 +1,10 @@
 package nl.vng.diwi.dataexchange;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -18,25 +21,33 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
+@Builder
 public class DataExchangeTemplate {
 
+    @Builder.Default
     private List<TemplateProperty> properties = new ArrayList<>();
 
     /**
      * // Default to an external level, can be overriden for exports meant for internal use.
      */
+    @Builder.Default
     private Confidentiality minimumConfidentiality = Confidentiality.EXTERNAL_REGIONAL;
 
     @Data
     @NoArgsConstructor
     @EqualsAndHashCode
     @AllArgsConstructor
+    @Builder
     public static class TemplateProperty {
         private String name;
         private ObjectType objectType;
         private List<PropertyType> propertyTypes;
-        private Boolean mandatory;
-        private Boolean singleSelect;
+
+        @Builder.Default
+        private Boolean mandatory = false;
+
+        @Builder.Default
+        private Boolean singleSelect = false;
         private List<String> options;
     }
 
@@ -60,31 +71,42 @@ public class DataExchangeTemplate {
                 null));
         zuidHollandTemplate.properties.add(
                 new TemplateProperty(EsriZuidHollandProjectProps.opmerkingen_basis.name(),
-                ObjectType.PROJECT,
-                List.of(PropertyType.TEXT),
-                false,
-                null,
-                null));
-        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.masterplan.name(), ObjectType.PROJECT, List.of(PropertyType.TEXT), false,  null, null));
-        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.bestemmingsplan.name(), ObjectType.PROJECT, List.of(PropertyType.TEXT), false,  null, null));
-        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.opmerkingen_status.name(), ObjectType.PROJECT, List.of(PropertyType.TEXT), false,  null, null));
-        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.beoogd_woonmilieu_ABF5.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), false, true,
-            List.of("Centrum-stedelijk", "Buitencentrum", "Groen-stedelijk", "Dorps", "Landelijk", "Onbekend")));
-        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.beoogd_woonmilieu_ABF13.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), false, true,
-            List.of("Centrum-stedelijk-plus", "Centrum-stedelijk", "Centrum-kleinstedelijk", "Stedelijk vooroorlogs",
-                "Stedelijk naoorlogs compact", "Stedelijk naoorlogs grondgebonden", "Kleinstedelijk", "Groen-stedelijk", "Groen-kleinstedelijk",
-                "Centrum-dorps", "Dorps", "Landelijk bereikbaar", "Landelijk perifeer", "Onbekend")));
-        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.knelpunten_meerkeuze.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), false, false,
-            List.of("Aansluiting op nutsvoorzieningen", "Bereikbaarheid", "Capaciteit bouwsector", "Capaciteit overheid", "Compensatie bedrijventerreinen",
-                "Geluidhinder – industrie en bedrijven", "Geluidhinder – vliegverkeer", "Geluidhinder – weg- en railverkeer", "Geluidhinder – nestgeluid",
-                "Maatschappelijk draagvlak", "Natuurbescherming", "Netcongestie", "Onrendabele top", "Parkeren", "Procedures - Bezwaarprocedures",
-                "Procedures - Beroepsprocedures", "Stikstof", "Vervuilde grond", "Anders", "Geen", "Onbekend")));
-        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.toelichting_knelpunten.name(), ObjectType.PROJECT, List.of(PropertyType.TEXT), false, null, null));
+                        ObjectType.PROJECT,
+                        List.of(PropertyType.TEXT),
+                        false,
+                        null,
+                        null));
+        zuidHollandTemplate.properties
+                .add(new TemplateProperty(EsriZuidHollandProjectProps.masterplan.name(), ObjectType.PROJECT, List.of(PropertyType.TEXT), false, null, null));
+        zuidHollandTemplate.properties.add(
+                new TemplateProperty(EsriZuidHollandProjectProps.bestemmingsplan.name(), ObjectType.PROJECT, List.of(PropertyType.TEXT), false, null, null));
+        zuidHollandTemplate.properties.add(
+                new TemplateProperty(EsriZuidHollandProjectProps.opmerkingen_status.name(), ObjectType.PROJECT, List.of(PropertyType.TEXT), false, null, null));
+        zuidHollandTemplate.properties.add(
+                new TemplateProperty(EsriZuidHollandProjectProps.beoogd_woonmilieu_ABF5.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), false, true,
+                        List.of("Centrum-stedelijk", "Buitencentrum", "Groen-stedelijk", "Dorps", "Landelijk", "Onbekend")));
+        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.beoogd_woonmilieu_ABF13.name(), ObjectType.PROJECT,
+                List.of(PropertyType.CATEGORY), false, true,
+                List.of("Centrum-stedelijk-plus", "Centrum-stedelijk", "Centrum-kleinstedelijk", "Stedelijk vooroorlogs",
+                        "Stedelijk naoorlogs compact", "Stedelijk naoorlogs grondgebonden", "Kleinstedelijk", "Groen-stedelijk", "Groen-kleinstedelijk",
+                        "Centrum-dorps", "Dorps", "Landelijk bereikbaar", "Landelijk perifeer", "Onbekend")));
+        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.knelpunten_meerkeuze.name(), ObjectType.PROJECT,
+                List.of(PropertyType.CATEGORY), false, false,
+                List.of("Aansluiting op nutsvoorzieningen", "Bereikbaarheid", "Capaciteit bouwsector", "Capaciteit overheid", "Compensatie bedrijventerreinen",
+                        "Geluidhinder – industrie en bedrijven", "Geluidhinder – vliegverkeer", "Geluidhinder – weg- en railverkeer",
+                        "Geluidhinder – nestgeluid",
+                        "Maatschappelijk draagvlak", "Natuurbescherming", "Netcongestie", "Onrendabele top", "Parkeren", "Procedures - Bezwaarprocedures",
+                        "Procedures - Beroepsprocedures", "Stikstof", "Vervuilde grond", "Anders", "Geen", "Onbekend")));
+        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.toelichting_knelpunten.name(), ObjectType.PROJECT,
+                List.of(PropertyType.TEXT), false, null, null));
         zuidHollandTemplate.properties.add(new TemplateProperty("verhuurder_type", ObjectType.PROJECT, List.of(PropertyType.CATEGORY), false, true,
-            List.of("Woningcorporatie", "Overig", "Combinatie", "Onbekend")));
-        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.opmerkingen_kwalitatief.name(), ObjectType.PROJECT, List.of(PropertyType.TEXT), false, null, null));
-        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text1.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), true, true,
-            List.of("1a harde plannen, in voorbereiding of in uitvoering", "1b kansrijke plannen", "1c bestuurlijke afspraken", "2 reserveplannen", "Onbekend")));
+                List.of("Woningcorporatie", "Overig", "Combinatie", "Onbekend")));
+        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.opmerkingen_kwalitatief.name(), ObjectType.PROJECT,
+                List.of(PropertyType.TEXT), false, null, null));
+        zuidHollandTemplate.properties
+                .add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text1.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), true, true,
+                        List.of("1a harde plannen, in voorbereiding of in uitvoering", "1b kansrijke plannen", "1c bestuurlijke afspraken", "2 reserveplannen",
+                                "Onbekend")));
         zuidHollandTemplate.properties.add(new TemplateProperty(
                 EsriZuidHollandProjectProps.ph_text3.name(),
                 ObjectType.PROJECT,
@@ -92,7 +114,8 @@ public class DataExchangeTemplate {
                 false,
                 true,
                 List.of("Ja", "Nee", "Onbekend")));
-        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_short2.name(), ObjectType.PROJECT, List.of(PropertyType.NUMERIC), true, null, null));
+        zuidHollandTemplate.properties
+                .add(new TemplateProperty(EsriZuidHollandProjectProps.ph_short2.name(), ObjectType.PROJECT, List.of(PropertyType.NUMERIC), true, null, null));
         zuidHollandTemplate.properties.add(new TemplateProperty(
                 EsriZuidHollandProjectProps.ph_text4.name(),
                 ObjectType.PROJECT,
@@ -100,17 +123,161 @@ public class DataExchangeTemplate {
                 false,
                 true,
                 List.of("Ja", "Nee", "Onbekend")));
-        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text5.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), false, true,
-            List.of("20%", "40%", "60%", "80%", "100%", "Onbekend")));
-        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text6.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), false, true,
-            List.of("Onbekend", "Wettelijke norm", "Boven wettelijk", "Volledig energieneutraal")));
-        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text7.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), false, true,
-            List.of("Onbekend", "Nee", "Ja, minimale aandacht", "Ja, ruime aandacht")));
-        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text8.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), false, true,
-            List.of("Warmtenet", "Elektra", "Overig", "Onbekend")));
-        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_short7.name(), ObjectType.PROJECT, List.of(PropertyType.NUMERIC), false, null, null));
-        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_short8.name(), ObjectType.PROJECT, List.of(PropertyType.NUMERIC), false, null, null));
-        zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_short9.name(), ObjectType.PROJECT, List.of(PropertyType.NUMERIC), false, null, null));
+        zuidHollandTemplate.properties
+                .add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text5.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), false, true,
+                        List.of("20%", "40%", "60%", "80%", "100%", "Onbekend")));
+        zuidHollandTemplate.properties
+                .add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text6.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), false, true,
+                        List.of("Onbekend", "Wettelijke norm", "Boven wettelijk", "Volledig energieneutraal")));
+        zuidHollandTemplate.properties
+                .add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text7.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), false, true,
+                        List.of("Onbekend", "Nee", "Ja, minimale aandacht", "Ja, ruime aandacht")));
+        zuidHollandTemplate.properties
+                .add(new TemplateProperty(EsriZuidHollandProjectProps.ph_text8.name(), ObjectType.PROJECT, List.of(PropertyType.CATEGORY), false, true,
+                        List.of("Warmtenet", "Elektra", "Overig", "Onbekend")));
+        zuidHollandTemplate.properties
+                .add(new TemplateProperty(EsriZuidHollandProjectProps.ph_short7.name(), ObjectType.PROJECT, List.of(PropertyType.NUMERIC), false, null, null));
+        zuidHollandTemplate.properties
+                .add(new TemplateProperty(EsriZuidHollandProjectProps.ph_short8.name(), ObjectType.PROJECT, List.of(PropertyType.NUMERIC), false, null, null));
+        zuidHollandTemplate.properties
+                .add(new TemplateProperty(EsriZuidHollandProjectProps.ph_short9.name(), ObjectType.PROJECT, List.of(PropertyType.NUMERIC), false, null, null));
+
+        var gelderlandTemplate = DataExchangeTemplate.builder()
+                .properties(ImmutableList.<TemplateProperty>builder()
+                        .add(TemplateProperty.builder()
+                                .name("opdrachtgever_type")
+                                .objectType(ObjectType.PROJECT)
+                                .propertyTypes(List.of(PropertyType.CATEGORY))
+                                .options(List.of()) // TODO: What options?
+                                .build())
+                        .add(TemplateProperty.builder()
+                                .name("opdrachtgever_naam")
+                                .objectType(ObjectType.PROJECT)
+                                .propertyTypes(List.of(PropertyType.TEXT))
+                                .build())
+                        .add(TemplateProperty.builder()
+                                .name("opmerkingen_basis")
+                                .objectType(ObjectType.PROJECT)
+                                .propertyTypes(List.of(PropertyType.TEXT))
+                                .build())
+                        .add(TemplateProperty.builder()
+                                .name("masterplan")
+                                .objectType(ObjectType.PROJECT)
+                                .propertyTypes(List.of(PropertyType.TEXT))
+                                .build())
+                        .add(TemplateProperty.builder()
+                                .name("bestemmingsplan")
+                                .objectType(ObjectType.PROJECT)
+                                .propertyTypes(List.of(PropertyType.TEXT))
+                                .build())
+                        .add(TemplateProperty.builder()
+                                .name("zoekgebied")
+                                .objectType(ObjectType.PROJECT)
+                                .propertyTypes(List.of(PropertyType.TEXT))
+                                .build())
+                        .add(TemplateProperty.builder()
+                                .name("opmerkingen_status")
+                                .objectType(ObjectType.PROJECT)
+                                .propertyTypes(List.of(PropertyType.TEXT))
+                                .build())
+
+                        .add(TemplateProperty.builder()
+                                .name("beoogd_woonmilieu_ABF5")
+                                .objectType(ObjectType.PROJECT)
+                                .propertyTypes(List.of(PropertyType.CATEGORY))
+                                .mandatory(false)
+                                .singleSelect(true)
+                                .options(List.of("Centrum-stedelijk", "Buitencentrum", "Groen-stedelijk", "Dorps", "Landelijk", "Onbekend"))
+                                .build())
+                        .add(TemplateProperty.builder()
+                                .name("beoogd_woonmilieu_ABF13")
+                                .objectType(ObjectType.PROJECT)
+                                .propertyTypes(List.of(PropertyType.CATEGORY))
+                                .mandatory(false)
+                                .singleSelect(true)
+                                .options(List.of("Centrum-stedelijk-plus", "Centrum-stedelijk", "Centrum-kleinstedelijk", "Stedelijk vooroorlogs",
+                                        "Stedelijk naoorlogs compact", "Stedelijk naoorlogs grondgebonden", "Kleinstedelijk", "Groen-stedelijk",
+                                        "Groen-kleinstedelijk", "Centrum-dorps", "Dorps", "Landelijk bereikbaar", "Landelijk perifeer", "Onbekend"))
+                                .build())
+                        // Knelpunten meerkeuze
+
+                        .add(TemplateProperty.builder()
+                                .name("toelichting_knelpunten")
+                                .objectType(ObjectType.PROJECT)
+                                .propertyTypes(List.of(PropertyType.TEXT))
+                                .build())
+
+                        .add(TemplateProperty.builder()
+                                .name("verhuurder_type")
+                                .objectType(ObjectType.PROJECT)
+                                .propertyTypes(List.of(PropertyType.CATEGORY))
+                                .options(List.of()) // TODO: What options
+                                .build())
+
+                        .add(TemplateProperty.builder()
+                                .name("opmerkingen_kwalitatief")
+                                .objectType(ObjectType.PROJECT)
+                                .propertyTypes(List.of(PropertyType.TEXT))
+                                .build())
+
+                        .add(TemplateProperty.builder()
+                                .name("aantal_tijdelijke_woningen")
+                                .objectType(ObjectType.PROJECT)
+                                .propertyTypes(List.of(PropertyType.NUMERIC))
+                                .build())
+                        .add(TemplateProperty.builder()
+                                .name("aantal_nultreden_woningen")
+                                .objectType(ObjectType.PROJECT)
+                                .propertyTypes(List.of(PropertyType.NUMERIC))
+                                .build())
+                        .add(TemplateProperty.builder()
+                                .name("aantal_geclusterde_woningen")
+                                .objectType(ObjectType.PROJECT)
+                                .propertyTypes(List.of(PropertyType.NUMERIC))
+                                .build())
+                        .add(TemplateProperty.builder()
+                                .name("aantal_zorggeschikte_woningen")
+                                .objectType(ObjectType.PROJECT)
+                                .propertyTypes(List.of(PropertyType.NUMERIC))
+                                .build())
+
+                        .add(TemplateProperty.builder()
+                                .name("energieconcept")
+                                .objectType(ObjectType.PROJECT)
+                                .propertyTypes(List.of(PropertyType.CATEGORY))
+                                .options(List.of()) // TODO: What options
+                                .build())
+                        .add(TemplateProperty.builder()
+                                .name("tapwatervoorziening")
+                                .objectType(ObjectType.PROJECT)
+                                .propertyTypes(List.of(PropertyType.CATEGORY))
+                                .options(List.of()) // TODO: What options
+                                .build())
+                        .add(TemplateProperty.builder()
+                                .name("realisatiekans")
+                                .objectType(ObjectType.PROJECT)
+                                .propertyTypes(List.of(PropertyType.CATEGORY))
+                                .options(List.of()) // TODO: What options
+                                .build())
+                        .add(TemplateProperty.builder()
+                                .name("aandachtsgroepen")
+                                .objectType(ObjectType.PROJECT)
+                                .propertyTypes(List.of(PropertyType.CATEGORY))
+                                .options(List.of()) // TODO: What options
+                                .build())
+                        .add(TemplateProperty.builder()
+                                .name("sleutelproject")
+                                .objectType(ObjectType.PROJECT)
+                                .propertyTypes(List.of(PropertyType.CATEGORY))
+                                .options(List.of()) // TODO: What options
+                                .build())
+                        .add(TemplateProperty.builder()
+                                .name("onzelfstandige_wooneenheden")
+                                .objectType(ObjectType.PROJECT)
+                                .propertyTypes(List.of(PropertyType.NUMERIC))
+                                .build())
+                        .build())
+                .build();
 
         var geoJSONTemplate = new DataExchangeTemplate();
         geoJSONTemplate.setMinimumConfidentiality(Confidentiality.PRIVATE);
@@ -118,6 +285,11 @@ public class DataExchangeTemplate {
         var excelTemplate = new DataExchangeTemplate();
         excelTemplate.setMinimumConfidentiality(Confidentiality.PRIVATE);
 
-        templates = ImmutableMap.of(DataExchangeType.ESRI_ZUID_HOLLAND, zuidHollandTemplate, DataExchangeType.GEO_JSON, geoJSONTemplate, DataExchangeType.EXCEL, excelTemplate);
+        templates = new ImmutableMap.Builder<DataExchangeType, DataExchangeTemplate>()
+                .put(DataExchangeType.ESRI_ZUID_HOLLAND, zuidHollandTemplate)
+                .put(DataExchangeType.GEO_JSON, geoJSONTemplate)
+                .put(DataExchangeType.EXCEL, excelTemplate)
+                .put(DataExchangeType.GDB_GELDERLAND, gelderlandTemplate)
+                .build();
     }
 }
