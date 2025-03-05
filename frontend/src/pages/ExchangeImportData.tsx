@@ -3,7 +3,7 @@ import { DataCardItem } from "../components/DataCardItem";
 import excelIcon from "../assets/excel.svg";
 import geojsonIcon from "../assets/geojson.svg";
 import zuidHollandIcon from "../assets/zuid-holland.png";
-import gelderlandIcon from "../assets/gelderland.svg";
+import gelderlandIcon from "../assets/gelderland.png";
 
 import * as Paths from "../Paths";
 import { useTranslation } from "react-i18next";
@@ -17,7 +17,7 @@ const iconMapping: { [key in ExportData["type"]]: { src: string; alt: string } }
     ESRI_ZUID_HOLLAND: { src: zuidHollandIcon, alt: "ESRI_ZUID_HOLLAND" },
     GEO_JSON: { src: geojsonIcon, alt: "GEO_JSON" },
     EXCEL: { src: excelIcon, alt: "EXCEL" },
-    ESRI_GELDERLAND: { src: gelderlandIcon, alt: "ESRI_GELDERLAND" },
+    GDB_GELDERLAND: { src: gelderlandIcon, alt: "GDB_GELDERLAND" },
 };
 
 export const ExchangeImportData = () => {

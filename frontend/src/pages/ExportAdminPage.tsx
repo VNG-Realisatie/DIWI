@@ -77,7 +77,7 @@ function ExportAdminPage() {
             EXCEL: {
                 fields: [{ name: "name", label: t("admin.export.name"), type: "text", mandatory: true }],
             },
-            ESRI_GELDERLAND: {
+            GDB_GELDERLAND: {
                 fields: [
                     { name: "name", label: t("admin.export.name"), type: "text", mandatory: true },
                     { name: "clientId", label: t("admin.export.clientId"), type: "text", mandatory: true },
@@ -193,7 +193,7 @@ function ExportAdminPage() {
             const data = id ? await updateExportData(id, exportData) : await addExportData(exportData);
             setValidationErrors(data.validationErrors || []);
             setAlert(id ? t("admin.export.notification.updated") : t("admin.export.notification.created"), "success");
-            if (type.id !== "ESRI_ZUID_HOLLAND" && type.id !== "ESRI_GELDERLAND") {
+            if (type.id !== "ESRI_ZUID_HOLLAND" && type.id !== "GDB_GELDERLAND") {
                 navigate(exchangeimportdata.toPath());
             } else if (!id) {
                 navigate(updateExportSettings.toPath({ id: data.id }));
