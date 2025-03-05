@@ -2,7 +2,7 @@ import { ConfidentialityLevel } from "../types/enums";
 import { getJson, postJson, putJson, deleteJson, downloadPost, postJsonParcedError } from "../utils/requests";
 import { API_URI } from "../utils/urls";
 
-export type ExportType = "ESRI_ZUID_HOLLAND" | "GEO_JSON" | "EXCEL";
+export type ExportType = "ESRI_ZUID_HOLLAND" | "ESRI_GELDERLAND" | "GEO_JSON" | "EXCEL";
 
 export type PropertyOption = {
     id: string;
