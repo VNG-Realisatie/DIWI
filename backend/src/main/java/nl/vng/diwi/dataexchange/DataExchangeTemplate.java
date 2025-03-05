@@ -2,6 +2,7 @@ package nl.vng.diwi.dataexchange;
 
 import com.google.common.collect.ImmutableMap;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -31,6 +32,7 @@ public class DataExchangeTemplate {
     @NoArgsConstructor
     @EqualsAndHashCode
     @AllArgsConstructor
+    @Builder
     public static class TemplateProperty {
         private String name;
         private ObjectType objectType;
@@ -112,12 +114,19 @@ public class DataExchangeTemplate {
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_short8.name(), ObjectType.PROJECT, List.of(PropertyType.NUMERIC), false, null, null));
         zuidHollandTemplate.properties.add(new TemplateProperty(EsriZuidHollandProjectProps.ph_short9.name(), ObjectType.PROJECT, List.of(PropertyType.NUMERIC), false, null, null));
 
+        var gelderlandTemplate = new DataExchangeTemplate();
+
         var geoJSONTemplate = new DataExchangeTemplate();
         geoJSONTemplate.setMinimumConfidentiality(Confidentiality.PRIVATE);
 
         var excelTemplate = new DataExchangeTemplate();
         excelTemplate.setMinimumConfidentiality(Confidentiality.PRIVATE);
 
-        templates = ImmutableMap.of(DataExchangeType.ESRI_ZUID_HOLLAND, zuidHollandTemplate, DataExchangeType.GEO_JSON, geoJSONTemplate, DataExchangeType.EXCEL, excelTemplate);
+        templates = new ImmutableMap.Builder<DataExchangeType, DataExchangeTemplate>()
+            .put(DataExchangeType.ESRI_ZUID_HOLLAND, zuidHollandTemplate)
+            .put(DataExchangeType.GEO_JSON, geoJSONTemplate)
+            .put(DataExchangeType.EXCEL, excelTemplate)
+            .put(DataExchangeType.GDB_GELDERLAND, gelderlandTemplate)
+            .build();
     }
 }
