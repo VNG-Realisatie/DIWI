@@ -78,10 +78,7 @@ function ExportAdminPage() {
                 fields: [{ name: "name", label: t("admin.export.name"), type: "text", mandatory: true }],
             },
             GDB_GELDERLAND: {
-                fields: [
-                    { name: "name", label: t("admin.export.name"), type: "text", mandatory: true },
-                    { name: "clientId", label: t("admin.export.clientId"), type: "text", mandatory: true },
-                ],
+                fields: [{ name: "name", label: t("admin.export.name"), type: "text", mandatory: true }],
             },
         }),
         [t],
