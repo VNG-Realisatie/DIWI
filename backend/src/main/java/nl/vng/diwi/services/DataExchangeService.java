@@ -13,6 +13,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import jakarta.ws.rs.core.StreamingOutput;
+import kotlin.NotImplementedError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import nl.vng.diwi.dal.VngRepository;
@@ -275,6 +276,8 @@ public class DataExchangeService {
             case EXCEL -> ExcelExport.buildExportObject(
                 repo.getProjectsDAO().getProjectsExportListExtended(dxExportModel, loggedUser),
                 customProps);
+
+            case GDB_GELDERLAND -> throw new NotImplementedError();
         };
 
     }
