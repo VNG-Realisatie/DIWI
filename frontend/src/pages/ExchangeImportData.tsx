@@ -3,7 +3,7 @@ import { DataCardItem } from "../components/DataCardItem";
 import excelIcon from "../assets/excel.svg";
 import geojsonIcon from "../assets/geojson.svg";
 import zuidHollandIcon from "../assets/zuid-holland.png";
-import gelderlandIcon from "../assets/gelderland.png";
+import gelderlandIcon from "../assets/gelderland.svg";
 
 import * as Paths from "../Paths";
 import { useTranslation } from "react-i18next";
