@@ -16,6 +16,9 @@ import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.*;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
@@ -73,6 +76,7 @@ public class GdbGelderlandExportTest {
                                         OwnershipValueSqlModel.builder()
                                                 .ownershipAmount(4)
                                                 .ownershipType(OwnershipType.HUURWONING_WONINGCORPORATIE)
+                                                .ownershipRentalValue(100l)
                                                 .build()))
                                 .meergezinswoning(4)
                                 .eengezinswoning(0)
@@ -86,6 +90,7 @@ public class GdbGelderlandExportTest {
                                         OwnershipValueSqlModel.builder()
                                                 .ownershipAmount(2)
                                                 .ownershipType(OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER)
+                                                .ownershipRentalValue(100l)
                                                 .build()))
                                 .meergezinswoning(0)
                                 .eengezinswoning(2)
@@ -99,6 +104,7 @@ public class GdbGelderlandExportTest {
                                         OwnershipValueSqlModel.builder()
                                                 .ownershipAmount(1)
                                                 .ownershipType(OwnershipType.KOOPWONING)
+                                                .ownershipValue(100l)
                                                 .build()))
                                 .meergezinswoning(0)
                                 .eengezinswoning(1)
@@ -107,6 +113,8 @@ public class GdbGelderlandExportTest {
                 .build();
 
         Map<String, DataExchangePropertyModel> dxPropertiesMap = new HashMap<>();
+        // var template = DataExchangeTemplate.templates.get(DataExchangeType.GDB_GELDERLAND);
+        // template.getProperties().stream()
 
         List<DataExchangeExportError> errors = new ArrayList<>();
 
@@ -119,7 +127,6 @@ public class GdbGelderlandExportTest {
         Map<UUID, PropertyModel> customPropsMap = customProps.stream().collect(Collectors.toMap(PropertyModel::getId, Function.identity()));
 
         var result = GdbGelderlandExport.getProjectFeature(
-                configModel,
                 project,
                 customPropsMap,
                 priceRangeBuyFixedProp,
@@ -135,11 +142,14 @@ public class GdbGelderlandExportTest {
 
         assertThat(errors).isEmpty();
 
-        Json.writerWithDefaultPrettyPrinter.writeValue(new File("src/test/resources/GdbGelderlandTest/feature.actual.json"), result);
+        JsonMapper.builder()
+                .configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true)
+                .build()
+                .writerWithDefaultPrettyPrinter()
+                .writeValue(new File("src/test/resources/GdbGelderlandTest/feature.actual.json"), result);
         var expected = ResourceUtil.getResourceAsString("GdbGelderlandTest/feature.expected.json");
 
         JSONAssert.assertEquals(expected, Json.mapper.writeValueAsString(result), JSONCompareMode.NON_EXTENSIBLE);
     }
-
 
 }

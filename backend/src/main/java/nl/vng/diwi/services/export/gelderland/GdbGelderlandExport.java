@@ -1,5 +1,7 @@
 package nl.vng.diwi.services.export.gelderland;
 
+import static nl.vng.diwi.services.export.ExportUtil.*;
+
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +18,7 @@ import org.geojson.jackson.CrsType;
 
 import jakarta.ws.rs.core.StreamingOutput;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
+import nl.vng.diwi.dal.entities.ProjectExportSqlModel.OwnershipValueSqlModel;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.MutationType;
@@ -24,16 +27,16 @@ import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.generic.Json;
-import nl.vng.diwi.models.ConfigModel;
 import nl.vng.diwi.models.DataExchangePropertyModel;
 import nl.vng.diwi.models.PropertyModel;
+import nl.vng.diwi.models.RangeSelectDisabledModel;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.services.DataExchangeExportError;
 import nl.vng.diwi.services.export.ExportUtil;
+import nl.vng.diwi.services.export.OwnershipCategory;
 
 public class GdbGelderlandExport {
     public static StreamingOutput buildExportObject(
-            ConfigModel configModel,
             List<ProjectExportSqlModelExtended> projects,
             List<PropertyModel> customProps,
             Map<String, DataExchangePropertyModel> dxPropertiesMap,
@@ -59,15 +62,15 @@ public class GdbGelderlandExport {
 
         int i = 0;
         for (var project : projects) {
-            exportObject.add(getProjectFeature(configModel, project, customPropsMap, priceRangeBuyFixedProp, priceRangeRentFixedProp,
+            exportObject.add(getProjectFeature(project, customPropsMap, priceRangeBuyFixedProp, priceRangeRentFixedProp,
                     municipalityFixedProp, dxPropertiesMap, minConfidentiality, exportDate, errors, targetCrs, ++i, user));
         }
 
-        //TODO: write .geojson file to disk(gdb_download_working_dir) and then call GdbConversionService.processGeoJsonToGdb();
-        //TODO: write .csv file to disk(gdb_download_working_dir) and gthen call GdbConversionService.processCsvToGdb();
+        // TODO: write .geojson file to disk(gdb_download_working_dir) and then call GdbConversionService.processGeoJsonToGdb();
+        // TODO: write .csv file to disk(gdb_download_working_dir) and gthen call GdbConversionService.processCsvToGdb();
 
-        //TODO: create .zip file from .gdb and place it inside the gdb_download_working_dir : GdbConversionService.createZip();
-        //TODO: delete .zip file after download : GdbConversionService.deleteFile(zipFile);
+        // TODO: create .zip file from .gdb and place it inside the gdb_download_working_dir : GdbConversionService.createZip();
+        // TODO: delete .zip file after download : GdbConversionService.deleteFile(zipFile);
 
         // For now just return the json
         return output -> {
@@ -77,7 +80,6 @@ public class GdbGelderlandExport {
     }
 
     public static Feature getProjectFeature(
-            ConfigModel configModel,
             ProjectExportSqlModelExtended project,
             Map<UUID, PropertyModel> customPropsMap,
             PropertyModel priceRangeBuyFixedProp,
@@ -137,7 +139,12 @@ public class GdbGelderlandExport {
         // klopt_geom // has note check with province
         // SHAPE_Length // Auto generated?
         // SHAPE_Area // Auto generated?
-        var sums = getSums(project, exportDate);
+        var sums = calculateAggregations(
+                project,
+                exportDate,
+                priceRangeBuyFixedProp,
+                priceRangeRentFixedProp,
+                errors);
         for (var sum : sums.entrySet()) {
             feature.setProperty(sum.getKey(), sum.getValue());
         }
@@ -148,17 +155,7 @@ public class GdbGelderlandExport {
         // aantal_nultreden_woningen // custom prop
         // aantal_geclusterde_woningen // custom prop
         // aantal_zorggeschikte_woningen // custom prop
-        // Totaal_koop1
-        // Totaal_koop2
-        // Totaal_koop3
-        // Totaal_koop4
-        // Totaal_koop_onbekend
-        // Totaal_huur1
-        // Totaal_huur2
-        // Totaal_huur3
-        // Totaal_huur4
-        // Totaal_huur_onbekend
-        // Totaal_eigendom_onbekend
+
         // energieconcept // custom prop
         // tapwatervoorziening // custom prop
         // realisatiekans // custom prop
@@ -170,7 +167,12 @@ public class GdbGelderlandExport {
         return feature;
     }
 
-    private static Map<String, Object> getSums(ProjectExportSqlModelExtended project, LocalDate exportDate) {
+    private static Map<String, Object> calculateAggregations(
+            ProjectExportSqlModelExtended project,
+            LocalDate exportDate,
+            PropertyModel priceRangeBuyFixedProp,
+            PropertyModel priceRangeRentFixedProp,
+            List<DataExchangeExportError> errors) {
         int Totaal_aantal_huurwoningen_corporatie = 0;
         int Totaal_bouw = 0;
         int Totaal_gerealiseerd = 0;
@@ -187,19 +189,30 @@ public class GdbGelderlandExport {
         int Totaal_koop_resterend = 0;
         int Totaal_huur_resterend = 0;
         int Totaal_koop_huur_onbekend_resterend = 0;
+        int Totaal_koop1 = 0;
+        int Totaal_koop2 = 0;
+        int Totaal_koop3 = 0;
+        int Totaal_koop4 = 0;
+        int Totaal_koop_onbekend = 0;
+        int Totaal_huur1 = 0;
+        int Totaal_huur2 = 0;
+        int Totaal_huur3 = 0;
+        int Totaal_huur4 = 0;
+        int Totaal_huur_onbekend = 0;
+        int Totaal_eigendom_onbekend = 0;
 
         for (var b : project.getHouseblocks()) {
             final boolean gerealiseerd = b.getEndDate().isBefore(exportDate);
 
-            int resterend = 0;
             boolean bouw = b.getMutationKind() == MutationType.CONSTRUCTION;
-
+            int bouwFactor = bouw ? 1 : -1;
+            // totals for construction and for house types (single family, etc)
             if (bouw) {
                 Totaal_bouw += b.getMutationAmount();
                 if (gerealiseerd) {
                     Totaal_gerealiseerd += b.getMutationAmount();
                 } else {
-                    resterend += b.getMutationAmount();
+                    Totaal_resterend += b.getMutationAmount();
                     Totaal_meergezins_resterend += b.getMeergezinswoning();
                     Totaal_eengezins_resterend += b.getEengezinswoning();
                     Totaal_type_onbekend_resterend = b.getMutationAmount() - b.getMeergezinswoning() - b.getEengezinswoning();
@@ -213,43 +226,63 @@ public class GdbGelderlandExport {
                 }
             }
 
-            int huur_resterend = 0;
-            int koop_resterend = 0;
+            // totals for ownership
+            // int huur_resterend = 0;
+            // int koop_resterend = 0;
+            // int koop1 = 0;
+            // int koop2 = 0;
+            // int koop3 = 0;
+            // int koop4 = 0;
+            // int koop_onbekend = 0;
+            // int huur1 = 0;
+            // int huur2 = 0;
+            // int huur3 = 0;
+            // int huur4 = 0;
+            // int huur_onbekend = 0;
+            // int eigendom_onbekend = 0;
             for (var o : b.getOwnershipValueList()) {
-                if (o.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE) {
+                var model = createOwnershipValueModel(
+                        project.getProjectId(),
+                        b,
+                        priceRangeBuyFixedProp,
+                        priceRangeRentFixedProp,
+                        errors,
+                        GelderlandConstants.priceRangeMap,
+                        o);
+
+                switch (model.getOwnershipCategory()) {
+                case huur1 -> Totaal_huur1 += bouwFactor * model.getAmount();
+                case huur2 -> Totaal_huur2 += bouwFactor * model.getAmount();
+                case huur3 -> Totaal_huur3 += bouwFactor * model.getAmount();
+                case huur4 -> Totaal_huur4 += bouwFactor * model.getAmount();
+                case huur_onb -> Totaal_huur_onbekend += bouwFactor * model.getAmount();
+
+                case koop1 -> Totaal_koop1 += bouwFactor * model.getAmount();
+                case koop2 -> Totaal_koop2 += bouwFactor * model.getAmount();
+                case koop3 -> Totaal_koop3 += bouwFactor * model.getAmount();
+                case koop4 -> Totaal_koop4 += bouwFactor * model.getAmount();
+                case koop_onb -> Totaal_koop_onbekend += bouwFactor * model.getAmount();
+                }
+
+                if (o.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE
+                        || o.getOwnershipType() == OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER) {
                     Totaal_aantal_huurwoningen_corporatie += o.getOwnershipAmount();
                     if (!gerealiseerd) {
-                        if (bouw) {
-                            huur_resterend += o.getOwnershipAmount();
-                        } else {
-                            huur_resterend -= o.getOwnershipAmount();
-                        }
+                        Totaal_huur_resterend += bouwFactor * o.getOwnershipAmount();
                     }
-                } else if (o.getOwnershipType() == OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER) {
-                    if (!gerealiseerd) {
-                        if (bouw) {
-                            huur_resterend += o.getOwnershipAmount();
-                        } else {
-                            huur_resterend -= o.getOwnershipAmount();
-                        }
-                    }
-
                 } else if (o.getOwnershipType() == OwnershipType.KOOPWONING) {
                     if (!gerealiseerd) {
-                        if (bouw) {
-                            koop_resterend += o.getOwnershipAmount();
-                        } else {
-                            koop_resterend -= o.getOwnershipAmount();
-                        }
+                        Totaal_koop_resterend += bouwFactor * o.getOwnershipAmount();
                     }
                 }
             }
 
-            Totaal_koop_huur_onbekend_resterend += resterend - huur_resterend - koop_resterend;
-            Totaal_koop_resterend += koop_resterend;
-            Totaal_huur_resterend += huur_resterend;
-            Totaal_resterend += resterend;
         }
+
+        Totaal_koop_huur_onbekend_resterend += Totaal_resterend - Totaal_huur_resterend - Totaal_koop_resterend;
+        // Totaal_koop_resterend += koop_resterend;
+        // Totaal_huur_resterend += huur_resterend;
+        // Totaal_resterend += resterend;
 
         Totaal_netto = Totaal_bouw - Totaal_sloop;
         Totaal_netto_gerealiseerd = Totaal_gerealiseerd - Totaal_sloop_gerealiseerd;
@@ -272,6 +305,17 @@ public class GdbGelderlandExport {
         map.put("Totaal_koop_resterend", Totaal_koop_resterend);
         map.put("Totaal_huur_resterend", Totaal_huur_resterend);
         map.put("Totaal_koop_huur_onbekend_resterend", Totaal_koop_huur_onbekend_resterend);
+        map.put("Totaal_koop1", Totaal_koop1);
+        map.put("Totaal_koop2", Totaal_koop2);
+        map.put("Totaal_koop3", Totaal_koop3);
+        map.put("Totaal_koop4", Totaal_koop4);
+        map.put("Totaal_koop_onbekend", Totaal_koop_onbekend);
+        map.put("Totaal_huur1", Totaal_huur1);
+        map.put("Totaal_huur2", Totaal_huur2);
+        map.put("Totaal_huur3", Totaal_huur3);
+        map.put("Totaal_huur4", Totaal_huur4);
+        map.put("Totaal_huur_onbekend", Totaal_huur_onbekend);
+        map.put("Totaal_eigendom_onbekend", Totaal_eigendom_onbekend);
         return map;
 
     }
@@ -327,4 +371,84 @@ public class GdbGelderlandExport {
         };
     }
 
+    static private OwnershipValueModel createOwnershipValueModel(
+            UUID projectUuid,
+            ProjectExportSqlModelExtended.HouseblockExportSqlModel sqlModel,
+            PropertyModel priceRangeBuyFixedProp,
+            PropertyModel priceRangeRentFixedProp,
+            List<DataExchangeExportError> errors,
+            Map<OwnershipCategory, Long> priceCategoryMap,
+            ProjectExportSqlModelExtended.OwnershipValueSqlModel o) {
+        OwnershipValueModel oModel = new OwnershipValueModel();
+        oModel.setOwnershipType(o.getOwnershipType());
+        oModel.setAmount(o.getOwnershipAmount());
+        if (o.getOwnershipType() == OwnershipType.KOOPWONING) {
+            if (o.getOwnershipValue() != null) {
+                oModel.setOwnershipCategory(
+                        getOwnershipCategory(o.getOwnershipType(), o.getOwnershipValue(), priceCategoryMap));
+            } else if (o.getOwnershipValueRangeMin() != null) {
+                oModel.setOwnershipCategory(ExportUtil.getOwnershipCategory(
+                        projectUuid,
+                        sqlModel.getHouseblockId(),
+                        o.getOwnershipType(),
+                        o.getOwnershipValueRangeMin(),
+                        o.getOwnershipValueRangeMax(),
+                        priceCategoryMap,
+                        errors));
+            } else if (o.getOwnershipRangeCategoryId() != null) {
+                RangeSelectDisabledModel rangeOption = priceRangeBuyFixedProp.getRanges().stream()
+                        .filter(r -> r.getDisabled() == Boolean.FALSE
+                                && r.getId().equals(o.getOwnershipRangeCategoryId()))
+                        .findFirst().orElse(null);
+                if (rangeOption == null) {
+                    oModel.setOwnershipCategory(OwnershipCategory.koop_onb);
+                } else {
+                    oModel.setOwnershipCategory(ExportUtil.getOwnershipCategory(
+                            projectUuid,
+                            sqlModel.getHouseblockId(),
+                            o.getOwnershipType(),
+                            rangeOption.getMin().longValue(),
+                            rangeOption.getMax().longValue(),
+                            priceCategoryMap,
+                            errors));
+                }
+            } else {
+                oModel.setOwnershipCategory(OwnershipCategory.koop_onb);
+            }
+        } else {
+            if (o.getOwnershipRentalValue() != null) {
+                oModel.setOwnershipCategory(getOwnershipCategory(o.getOwnershipType(), o.getOwnershipRentalValue(), priceCategoryMap));
+            } else if (o.getOwnershipRentalValueRangeMin() != null) {
+                oModel.setOwnershipCategory(
+                        ExportUtil.getOwnershipCategory(
+                                projectUuid,
+                                sqlModel.getHouseblockId(),
+                                o.getOwnershipType(),
+                                o.getOwnershipRentalValueRangeMin(),
+                                o.getOwnershipRentalValueRangeMax(),
+                                priceCategoryMap,
+                                errors));
+            } else if (o.getOwnershipRentalRangeCategoryId() != null) {
+                RangeSelectDisabledModel rangeOption = priceRangeRentFixedProp.getRanges().stream()
+                        .filter(r -> r.getDisabled() == Boolean.FALSE
+                                && r.getId().equals(o.getOwnershipRentalRangeCategoryId()))
+                        .findFirst().orElse(null);
+                if (rangeOption == null) {
+                    oModel.setOwnershipCategory(OwnershipCategory.huur_onb);
+                } else {
+                    oModel.setOwnershipCategory(
+                            ExportUtil.getOwnershipCategory(projectUuid,
+                                    sqlModel.getHouseblockId(),
+                                    o.getOwnershipType(),
+                                    rangeOption.getMin().longValue(),
+                                    rangeOption.getMax().longValue(),
+                                    priceCategoryMap,
+                                    errors));
+                }
+            } else {
+                oModel.setOwnershipCategory(OwnershipCategory.huur_onb);
+            }
+        }
+        return oModel;
+    }
 }

@@ -12,7 +12,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.services.DataExchangeExportError;
-import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandHouseblockExportModel.OwnershipCategory;
+import nl.vng.diwi.services.export.ExportUtil;
+import nl.vng.diwi.services.export.OwnershipCategory;
 
 public class EsriZuidHollandHouseblockExportModelTest {
     private static Stream<Arguments> ranges() {
@@ -40,7 +41,7 @@ public class EsriZuidHollandHouseblockExportModelTest {
         var uuid = new UUID(0, 0);
         var errors = new ArrayList<DataExchangeExportError>();
 
-        var cat = EsriZuidHollandHouseblockExportModel.getOwnershipCategory(
+        var cat = ExportUtil.getOwnershipCategory(
                 uuid,
                 uuid,
                 ownershipType,
