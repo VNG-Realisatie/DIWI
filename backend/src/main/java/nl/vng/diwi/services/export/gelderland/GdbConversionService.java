@@ -181,7 +181,7 @@ public class GdbConversionService {
         }
     }
 
-    private static void deleteFile(String folderPath, String zipExtension) {
+    private static void deleteFile(String folderPath, String extension) {
         File folder = new File(folderPath);
         if (!folder.exists() || !folder.isDirectory()) {
             throw new VngServerErrorException("The specified path does not exist or is not a directory.");
@@ -194,7 +194,7 @@ public class GdbConversionService {
         }
 
         for (File file : files) {
-            if (file.isFile() && file.getName().endsWith(zipExtension)) {
+            if (file.isFile() && file.getName().endsWith(extension)) {
                 if (file.delete()) {
                     log.info("Deleted file: {}", file.getName());
                 } else {
