@@ -1,6 +1,5 @@
 package nl.vng.diwi.services.export.gelderland;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.*;
 
 import java.io.File;
@@ -13,14 +12,11 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.core.util.UuidUtil;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
-import com.fasterxml.jackson.databind.ObjectWriter;
 
-import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.ObjectType;
