@@ -18,6 +18,8 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,6 +37,8 @@ import nl.vng.diwi.models.SingleValueOrRangeModel;
 @NoArgsConstructor
 @Getter
 @Setter
+@AllArgsConstructor
+@Builder
 public class ProjectExportSqlModelExtended {
 
     @Id
@@ -244,6 +248,8 @@ public class ProjectExportSqlModelExtended {
 
     @Data
     @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class HouseblockExportSqlModel {
 
         private UUID houseblockId;
