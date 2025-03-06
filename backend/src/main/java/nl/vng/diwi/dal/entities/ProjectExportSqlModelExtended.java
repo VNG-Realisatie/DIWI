@@ -356,6 +356,8 @@ public class ProjectExportSqlModelExtended {
 
     @Data
     @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class OwnershipValueSqlModel {
         private UUID ownershipId;
         private OwnershipType ownershipType;

@@ -7,15 +7,18 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import lombok.AllArgsConstructor;
 import org.geojson.Crs;
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.geojson.jackson.CrsType;
 
 import jakarta.ws.rs.core.StreamingOutput;
+import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
+import nl.vng.diwi.dal.entities.enums.OwnershipType;
+import nl.vng.diwi.dal.entities.enums.PlanType;
+import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.models.ConfigModel;
 import nl.vng.diwi.models.DataExchangePropertyModel;
@@ -33,7 +36,6 @@ public class GdbGelderlandExport {
             Confidentiality minConfidentiality,
             List<DataExchangeExportError> errors,
             LoggedUser user) {
-
         FeatureCollection exportObject = new FeatureCollection();
         Crs crs = new Crs();
         crs.setType(CrsType.name);
@@ -57,7 +59,6 @@ public class GdbGelderlandExport {
         }
 
         // Convert GeoJSON and CSV to GDB here
-        GdbConversionService.processGeoJsonToGdb();
 
         throw new UnsupportedOperationException("Unimplemented method 'buildExportObject'");
     }
@@ -82,9 +83,9 @@ public class GdbGelderlandExport {
         feature.setProperty("OBJECTID", objectId);
         feature.setProperty("GlobalID", project.getProjectId());
 
-        // feature.setProperty("Created", project.getCreationDate()); // TODO
+        // feature.setProperty("Created", project.getCreationDate()); // TODO add to query
         feature.setProperty("Editor", user.getFirstName() + " " + user.getLastName());
-        // feature.setProperty("Edited", project.getCreationDate()); // TODO
+        // feature.setProperty("Edited", project.getCreationDate()); // TODO add to query
 
         feature.setProperty("plannaam", project.getName());
         feature.setProperty("provincie", "Gelderland");
@@ -98,27 +99,27 @@ public class GdbGelderlandExport {
         // opdrachtgever_type // custom prop
         // opdrachtgever_naam // custom prop
         feature.setProperty("oplevering_eerste", getFirstDelivery(project));
-        feature.setProperty("oplevering_eerste", getLastDelivery(project));
-        // oplevering_laatste
-        // opmerkingen_basis
-        // plantype
-        // masterplan
-        // bestemmingsplan
-        // zoekgebied
-        // projectfase
+        feature.setProperty("oplevering_laatste", getLastDelivery(project));
+        // opmerkingen_basis // custom prop
+        feature.setProperty("plantype", mapPlanType(project.getPlanType()));
+        // masterplan // custom prop - text
+        // bestemmingsplan // custom prop - text
+        // zoekgebied // custom prop
+        feature.setProperty("projectfase", mapProjectPhase(project.getProjectPhase()));
         // status_planologisch
-        // opmerkingen_status
-        // beoogd_woonmilieu_ABF5
-        // beoogd_woonmilieu_ABF13
-        // knelpunten _meerkeuze
-        // toelichting_knelpunten
-        // verhuurder_type
-        // aantal_huurwoningen_corporatie
-        // opmerkingen_kwalitatief
-        // koppelid
-        // klopt_geom
-        // SHAPE_Length
-        // SHAPE_Area
+        // opmerkingen_status // custom prop - text
+        // beoogd_woonmilieu_ABF5 // custom prop - cat
+        // beoogd_woonmilieu_ABF13 // custom prop - cat
+        // knelpunten _meerkeuze // custom prop
+        // toelichting_knelpunten // custom prop
+        // verhuurder_type // custom prop
+        feature.setProperty("aantal_huurwoningen_corporatie", getSums(project));
+        // opmerkingen_kwalitatief // custom prop
+        feature.setProperty("koppelid", project.getProjectId());
+
+        // klopt_geom // has note check with province
+        // SHAPE_Length // Auto generated?
+        // SHAPE_Area // Auto generated?
         // Totaal_bouw
         // Totaal_gerealiseerd
         // Totaal_resterend
@@ -162,18 +163,55 @@ public class GdbGelderlandExport {
         return feature;
     }
 
+    private static Integer getSums(ProjectExportSqlModelExtended project) {
+        int corporation = 0;
+        for (var b : project.getHouseblocks()) {
+            for (var o : b.getOwnershipValueList()) {
+                if (o.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE) {
+                    o.getOwnershipAmount();
+                }
+            }
+        }
+        return corporation;
+
+    }
+
+    private static String mapProjectPhase(ProjectPhase projectPhase) {
+        if (projectPhase == null) {
+            return null;
+        }
+        return switch (projectPhase) {
+        case _2_INITIATIVE -> "1. Initiatief";
+        case _3_DEFINITION -> "2. Definitie";
+        case _4_DESIGN -> "3. Ontwerp";
+        case _5_PREPARATION -> "4. Voorbereiding";
+        case _6_REALIZATION -> "5. Realisatie";
+        case _7_AFTERCARE -> "6. Nazorg";
+        // case -> "7. Afgerond"; // TODO can we find this another way?
+        case _1_CONCEPT -> "Onbekend";
+        };
+    }
+
+    private static String mapPlanType(List<PlanType> planType) {
+        if (planType.isEmpty()) {
+            return null;
+        }
+        return switch (planType.get(0)) {
+        case HERSTRUCTURERING -> "Herstructurering";
+        case PAND_TRANSFORMATIE -> "Pand transformatie";
+        case TRANSFORMATIEGEBIED -> "Transformatiegebied";
+        case UITBREIDING_OVERIG -> "Uitbreiding overig";
+        case UITBREIDING_UITLEG -> "Uitbreiding uitleg";
+        case VERDICHTING -> "Verdichting";
+        };
+    }
+
     private static LocalDate getFirstDelivery(ProjectExportSqlModelExtended project) {
-        return project.getHouseblocks().stream()
-            .map(ProjectExportSqlModelExtended.HouseblockExportSqlModel::getEndDate)
-            .max(LocalDate::compareTo)
-            .orElse(null);
+        return project.getHouseblocks().stream().map(b -> b.getEndDate()).min(LocalDate::compareTo).orElse(null);
     }
 
     private static LocalDate getLastDelivery(ProjectExportSqlModelExtended project) {
-        return project.getHouseblocks().stream()
-            .map(ProjectExportSqlModelExtended.HouseblockExportSqlModel::getEndDate)
-            .min(LocalDate::compareTo)
-            .orElse(null);
+        return project.getHouseblocks().stream().map(b -> b.getEndDate()).max(LocalDate::compareTo).orElse(null);
     }
 
     private static String mapConfidentiality(Confidentiality confidentiality) {

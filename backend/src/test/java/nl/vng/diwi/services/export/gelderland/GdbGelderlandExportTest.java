@@ -1,6 +1,7 @@
 package nl.vng.diwi.services.export.gelderland;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.*;
 
 import java.io.File;
 import java.time.LocalDate;
@@ -23,6 +24,9 @@ import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.ObjectType;
+import nl.vng.diwi.dal.entities.enums.OwnershipType;
+import nl.vng.diwi.dal.entities.enums.PlanType;
+import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
 import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.generic.Json;
@@ -41,16 +45,23 @@ public class GdbGelderlandExportTest {
                 .projectId(UUID.fromString("fdd87435-025f-48ed-a2b4-d765246040cd"))
                 .name("project name")
                 .confidentiality(Confidentiality.EXTERNAL_GOVERNMENTAL)
+                .projectPhase(ProjectPhase._5_PREPARATION)
+                .planType(List.of(PlanType.TRANSFORMATIEGEBIED))
                 .houseblocks(List.of(
-                        ProjectExportSqlModelExtended.HouseblockExportSqlModel.builder()
+                        HouseblockExportSqlModel.builder()
                                 .name("block1")
+                                .ownershipValueList(List.of(
+                                        OwnershipValueSqlModel.builder()
+                                                .ownershipAmount(1)
+                                                .ownershipType(OwnershipType.HUURWONING_WONINGCORPORATIE)
+                                                .build()))
                                 .endDate(LocalDate.of(2025, 3, 1))
                                 .build(),
-                        ProjectExportSqlModelExtended.HouseblockExportSqlModel.builder()
+                        HouseblockExportSqlModel.builder()
                                 .name("block2")
                                 .endDate(LocalDate.of(2025, 3, 2))
                                 .build(),
-                        ProjectExportSqlModelExtended.HouseblockExportSqlModel.builder()
+                        HouseblockExportSqlModel.builder()
                                 .name("block3")
                                 .endDate(LocalDate.of(2025, 3, 3))
                                 .build()))
@@ -96,20 +107,10 @@ public class GdbGelderlandExportTest {
                 user);
 
         Json.writerWithDefaultPrettyPrinter.writeValue(new File("src/test/resources/GdbGelderlandTest/feature.actual.json"), result);
-        var actualTree = Json.mapper.readTree(new File("src/test/resources/GdbGelderlandTest/feature.actual.json"));
 
         var expected = ResourceUtil.getResourceAsString("GdbGelderlandTest/feature.expected.json");
-        var expectedTree = Json.mapper.readTree(expected);
 
-        JSONAssert.assertEquals(Json.mapper.writeValueAsString(result), expected, JSONCompareMode.NON_EXTENSIBLE);
-
-        // assertThat(
-        // Json.writerWithDefaultPrettyPrinter
-        // .writeValueAsString(result)
-        // .lines()
-        // .filter(l -> !l.contains("diwi_id"))
-        // .collect(Collectors.joining("\n")))
-        // .isEqualToIgnoringWhitespace(expectedTree.toPrettyString());
+        JSONAssert.assertEquals(expected, Json.mapper.writeValueAsString(result), JSONCompareMode.NON_EXTENSIBLE);
     }
 
 
