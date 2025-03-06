@@ -26,3 +26,5 @@ end-to-end-tests/results.xml
 .ucdetector_reports/
 
 *.orig
+
+backend/src/test/resources/GdbGelderlandTest/feature.actual.json

@@ -1,7 +1,8 @@
 package nl.vng.diwi.services;
 
-import java.time.ZonedDateTime;
+import static nl.vng.diwi.dal.entities.DataExchangeType.ESRI_ZUID_HOLLAND;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -13,7 +14,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import jakarta.ws.rs.core.StreamingOutput;
-import kotlin.NotImplementedError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import nl.vng.diwi.dal.VngRepository;
@@ -46,8 +46,6 @@ import nl.vng.diwi.services.export.excel.ExcelExport;
 import nl.vng.diwi.services.export.gelderland.GdbGelderlandExport;
 import nl.vng.diwi.services.export.geojson.GeoJSONExport;
 import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandExport;
-
-import static nl.vng.diwi.dal.entities.DataExchangeType.ESRI_ZUID_HOLLAND;
 
 @RequiredArgsConstructor
 @Log4j2

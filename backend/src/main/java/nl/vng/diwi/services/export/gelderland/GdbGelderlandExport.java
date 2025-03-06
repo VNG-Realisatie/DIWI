@@ -47,22 +47,36 @@ public class GdbGelderlandExport {
 
         Map<UUID, PropertyModel> customPropsMap = customProps.stream().collect(Collectors.toMap(PropertyModel::getId, Function.identity()));
 
-        projects.forEach(project -> {
-
+        int i = 0;
+        for (var project: projects) {
             exportObject.add(getProjectFeature(configModel, project, customPropsMap, priceRangeBuyFixedProp, priceRangeRentFixedProp,
-                municipalityFixedProp, dxPropertiesMap, minConfidentiality, exportDate, errors, targetCrs));
-        });
+                    municipalityFixedProp, dxPropertiesMap, minConfidentiality, exportDate, errors, targetCrs, ++i));
+        }
 
         // Convert GeoJSON and CSV to GDB here
 
         throw new UnsupportedOperationException("Unimplemented method 'buildExportObject'");
     }
 
-    private static Feature getProjectFeature(ConfigModel configModel, ProjectExportSqlModel project, Map<UUID, PropertyModel> customPropsMap,
-            PropertyModel priceRangeBuyFixedProp, PropertyModel priceRangeRentFixedProp, PropertyModel municipalityFixedProp,
-            Map<String, DataExchangePropertyModel> dxPropertiesMap, Confidentiality minConfidentiality, LocalDate exportDate,
-            List<DataExchangeExportError> errors, String targetCrs) {
-        throw new UnsupportedOperationException("Unimplemented method 'buildExportObject'");
+    public static Feature getProjectFeature(
+            ConfigModel configModel,
+            ProjectExportSqlModel project,
+            Map<UUID, PropertyModel> customPropsMap,
+            PropertyModel priceRangeBuyFixedProp,
+            PropertyModel priceRangeRentFixedProp,
+            PropertyModel municipalityFixedProp,
+            Map<String, DataExchangePropertyModel> dxPropertiesMap,
+            Confidentiality minConfidentiality,
+            LocalDate exportDate,
+            List<DataExchangeExportError> errors,
+            String targetCrs,
+            Integer objectId
+            ) {
+
+        Feature feature = new Feature();
+
+        feature.setProperty("OBJECTID", objectId);
+        return feature;
 
     }
 
