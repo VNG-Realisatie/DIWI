@@ -227,19 +227,6 @@ public class GdbGelderlandExport {
             }
 
             // totals for ownership
-            // int huur_resterend = 0;
-            // int koop_resterend = 0;
-            // int koop1 = 0;
-            // int koop2 = 0;
-            // int koop3 = 0;
-            // int koop4 = 0;
-            // int koop_onbekend = 0;
-            // int huur1 = 0;
-            // int huur2 = 0;
-            // int huur3 = 0;
-            // int huur4 = 0;
-            // int huur_onbekend = 0;
-            // int eigendom_onbekend = 0;
             for (var o : b.getOwnershipValueList()) {
                 var model = createOwnershipValueModel(
                         project.getProjectId(),
@@ -264,9 +251,12 @@ public class GdbGelderlandExport {
                 case koop_onb -> Totaal_koop_onbekend += bouwFactor * model.getAmount();
                 }
 
+                if (o.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE) {
+                    Totaal_aantal_huurwoningen_corporatie += o.getOwnershipAmount();
+                }
+
                 if (o.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE
                         || o.getOwnershipType() == OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER) {
-                    Totaal_aantal_huurwoningen_corporatie += o.getOwnershipAmount();
                     if (!gerealiseerd) {
                         Totaal_huur_resterend += bouwFactor * o.getOwnershipAmount();
                     }

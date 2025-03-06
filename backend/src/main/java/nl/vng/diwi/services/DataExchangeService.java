@@ -277,7 +277,6 @@ public class DataExchangeService {
                 customProps);
 
             case GDB_GELDERLAND -> GdbGelderlandExport.buildExportObject(
-                configModel,
                 repo.getProjectsDAO().getProjectsExportListExtended(dxExportModel, loggedUser),
                 customProps,
                 dxPropertiesMap,

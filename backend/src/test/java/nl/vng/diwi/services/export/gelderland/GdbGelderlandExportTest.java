@@ -17,8 +17,11 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
 import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import nl.vng.diwi.dal.entities.DataExchangeType;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.*;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
@@ -28,6 +31,7 @@ import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
+import nl.vng.diwi.dataexchange.DataExchangeTemplate;
 import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.generic.Json;
 import nl.vng.diwi.generic.ResourceUtil;
@@ -42,7 +46,6 @@ public class GdbGelderlandExportTest {
     @Test
     void testGetProjectFeature() throws Exception {
         // Some constants
-        ConfigModel configModel = new ConfigModel();
         LocalDate exportDate = LocalDate.of(2025, 3, 2); // Same as middle house block so we have future and past blocks
         Confidentiality minConfidentiality = Confidentiality.EXTERNAL_REGIONAL;
         String targetCrs = "EPSG:28992";
@@ -113,8 +116,12 @@ public class GdbGelderlandExportTest {
                 .build();
 
         Map<String, DataExchangePropertyModel> dxPropertiesMap = new HashMap<>();
-        // var template = DataExchangeTemplate.templates.get(DataExchangeType.GDB_GELDERLAND);
-        // template.getProperties().stream()
+        var template = DataExchangeTemplate.templates.get(DataExchangeType.GDB_GELDERLAND);
+        template.getProperties().stream()
+                .map(dxProp -> {
+                    return DataExchangePropertyModel.builder()
+                            .build();
+                });
 
         List<DataExchangeExportError> errors = new ArrayList<>();
 
@@ -143,8 +150,10 @@ public class GdbGelderlandExportTest {
         assertThat(errors).isEmpty();
 
         JsonMapper.builder()
+                .addModule(new JavaTimeModule())
                 .configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true)
                 .build()
+                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
                 .writerWithDefaultPrettyPrinter()
                 .writeValue(new File("src/test/resources/GdbGelderlandTest/feature.actual.json"), result);
         var expected = ResourceUtil.getResourceAsString("GdbGelderlandTest/feature.expected.json");

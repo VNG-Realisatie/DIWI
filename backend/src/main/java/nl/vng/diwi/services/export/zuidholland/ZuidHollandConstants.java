@@ -5,7 +5,7 @@ import java.util.Map;
 
 import nl.vng.diwi.services.export.OwnershipCategory;
 
-public class Constants {
+public class ZuidHollandConstants {
     public static Map<OwnershipCategory, Long> priceRangeMap = new HashMap<>();
     static {
         priceRangeMap.put(OwnershipCategory.koop1, 0L); // lower range limit in cents

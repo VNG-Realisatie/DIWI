@@ -40,11 +40,11 @@ public class EsriZuidHollandHouseblockExportModel {
         this.mutationKind = sqlModel.getMutationKind();
         this.meergezinswoning = sqlModel.getMeergezinswoning();
         this.eengezinswoning = sqlModel.getEengezinswoning();
-        var priceCategoryMap = Constants.priceRangeMap;
+        var priceCategoryMap = ZuidHollandConstants.priceRangeMap;
 
         sqlModel.getOwnershipValueList()
                 .forEach(o -> {
-                    var oModel = createOwnershipValueModel(projectUuid, sqlModel, priceRangeBuyFixedProp, priceRangeRentFixedProp, errors, priceCategoryMap, o)
+                    var oModel = createOwnershipValueModel(projectUuid, sqlModel, priceRangeBuyFixedProp, priceRangeRentFixedProp, errors, priceCategoryMap, o);
                     this.ownershipValueList.add(oModel);
                 });
     }

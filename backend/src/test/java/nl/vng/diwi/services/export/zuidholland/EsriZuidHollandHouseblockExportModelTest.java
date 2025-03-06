@@ -47,6 +47,7 @@ public class EsriZuidHollandHouseblockExportModelTest {
                 ownershipType,
                 min,
                 max,
+                ZuidHollandConstants.priceRangeMap,
                 errors);
 
         assertThat(cat).isEqualTo(expected);
