@@ -7,13 +7,13 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import lombok.AllArgsConstructor;
 import org.geojson.Crs;
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.geojson.jackson.CrsType;
 
 import jakarta.ws.rs.core.StreamingOutput;
-import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.generic.Constants;
@@ -33,6 +33,7 @@ public class GdbGelderlandExport {
             Confidentiality minConfidentiality,
             List<DataExchangeExportError> errors,
             LoggedUser user) {
+
         FeatureCollection exportObject = new FeatureCollection();
         Crs crs = new Crs();
         crs.setType(CrsType.name);
@@ -56,6 +57,7 @@ public class GdbGelderlandExport {
         }
 
         // Convert GeoJSON and CSV to GDB here
+        GdbConversionService.processGeoJsonToGdb();
 
         throw new UnsupportedOperationException("Unimplemented method 'buildExportObject'");
     }
@@ -161,11 +163,17 @@ public class GdbGelderlandExport {
     }
 
     private static LocalDate getFirstDelivery(ProjectExportSqlModelExtended project) {
-        return project.getHouseblocks().stream().map(b -> b.getEndDate()).max(LocalDate::compareTo).orElse(null);
+        return project.getHouseblocks().stream()
+            .map(ProjectExportSqlModelExtended.HouseblockExportSqlModel::getEndDate)
+            .max(LocalDate::compareTo)
+            .orElse(null);
     }
 
     private static LocalDate getLastDelivery(ProjectExportSqlModelExtended project) {
-        return project.getHouseblocks().stream().map(b -> b.getEndDate()).min(LocalDate::compareTo).orElse(null);
+        return project.getHouseblocks().stream()
+            .map(ProjectExportSqlModelExtended.HouseblockExportSqlModel::getEndDate)
+            .min(LocalDate::compareTo)
+            .orElse(null);
     }
 
     private static String mapConfidentiality(Confidentiality confidentiality) {
