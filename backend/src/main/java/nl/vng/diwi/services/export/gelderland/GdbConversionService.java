@@ -1,6 +1,7 @@
 package nl.vng.diwi.services.export.gelderland;
 
 import lombok.extern.log4j.Log4j2;
+import nl.vng.diwi.rest.VngServerErrorException;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 
@@ -72,7 +73,7 @@ public class GdbConversionService {
         File gdbDirectory = new File(WORKING_DIR + "/" + GDB_NAME);
 
         if (!gdbDirectory.exists() || !gdbDirectory.isDirectory()) {
-            throw new IllegalArgumentException("The specified directory does not exist or is not a valid .gdb directory.");
+            throw new VngServerErrorException("The specified directory does not exist or is not a valid .gdb directory.");
         }
 
         String zipFilePath = gdbDirectory.getParent() + "/" + ZIP_NAME;
@@ -97,7 +98,7 @@ public class GdbConversionService {
                 });
         } catch (IOException e) {
             log.error("Error creating ZIP file: {}", zipFilePath, e);
-            throw e;
+            throw new VngServerErrorException("Error creating ZIP file: " + zipFilePath, e);
         }
         log.info("Successfully created ZIP file: {}", zipFilePath);
 
@@ -114,6 +115,7 @@ public class GdbConversionService {
             log.info("Command executed successfully.");
         } catch (IOException | InterruptedException e) {
             log.error("Error executing command: {}", command, e);
+            throw new VngServerErrorException("Error executing command: " + command, e);
         }
     }
 
@@ -122,6 +124,7 @@ public class GdbConversionService {
             log.info("Deleted file: {}", file.getName());
         } else {
             log.error("Failed to delete file: {}", file.getName());
+            throw new RuntimeException("Failed to delete file: " + file.getName());
         }
     }
 
@@ -139,11 +142,13 @@ public class GdbConversionService {
                         }
                     } catch (Exception e) {
                         log.error("Error deleting file: {}", file.getName(), e);
+                        throw new VngServerErrorException("Error deleting file: " + file.getName(), e);
                     }
                 });
             log.info("Deleted folder: {}", folder.getName());
         } catch (IOException e) {
             log.error("Error walking through folder: {}", folder.getName(), e);
+            throw new VngServerErrorException("Error walking through folder: " + folder.getName(), e);
         }
     }
 
