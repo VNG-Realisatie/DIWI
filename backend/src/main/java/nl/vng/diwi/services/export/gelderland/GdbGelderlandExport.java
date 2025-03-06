@@ -16,6 +16,7 @@ import jakarta.ws.rs.core.StreamingOutput;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
+import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.generic.Constants;
@@ -82,9 +83,9 @@ public class GdbGelderlandExport {
         feature.setProperty("OBJECTID", objectId);
         feature.setProperty("GlobalID", project.getProjectId());
 
-        // feature.setProperty("Created", project.getCreationDate()); // TODO
+        // feature.setProperty("Created", project.getCreationDate()); // TODO add to query
         feature.setProperty("Editor", user.getFirstName() + " " + user.getLastName());
-        // feature.setProperty("Edited", project.getCreationDate()); // TODO
+        // feature.setProperty("Edited", project.getCreationDate()); // TODO add to query
 
         feature.setProperty("plannaam", project.getName());
         feature.setProperty("provincie", "Gelderland");
@@ -109,15 +110,16 @@ public class GdbGelderlandExport {
         // opmerkingen_status // custom prop - text
         // beoogd_woonmilieu_ABF5 // custom prop - cat
         // beoogd_woonmilieu_ABF13 // custom prop - cat
-        // knelpunten _meerkeuze
-        // toelichting_knelpunten
-        // verhuurder_type
-        // aantal_huurwoningen_corporatie
-        // opmerkingen_kwalitatief
-        // koppelid
-        // klopt_geom
-        // SHAPE_Length
-        // SHAPE_Area
+        // knelpunten _meerkeuze // custom prop
+        // toelichting_knelpunten // custom prop
+        // verhuurder_type // custom prop
+        feature.setProperty("aantal_huurwoningen_corporatie", getSums(project));
+        // opmerkingen_kwalitatief // custom prop
+        feature.setProperty("koppelid", project.getProjectId());
+
+        // klopt_geom // has note check with province
+        // SHAPE_Length // Auto generated?
+        // SHAPE_Area // Auto generated?
         // Totaal_bouw
         // Totaal_gerealiseerd
         // Totaal_resterend
@@ -159,6 +161,19 @@ public class GdbGelderlandExport {
         // onzelfstandige_wooneenheden
 
         return feature;
+    }
+
+    private static Integer getSums(ProjectExportSqlModelExtended project) {
+        int corporation = 0;
+        for (var b : project.getHouseblocks()) {
+            for (var o : b.getOwnershipValueList()) {
+                if (o.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE) {
+                    o.getOwnershipAmount();
+                }
+            }
+        }
+        return corporation;
+
     }
 
     private static String mapProjectPhase(ProjectPhase projectPhase) {

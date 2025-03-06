@@ -1,6 +1,7 @@
 package nl.vng.diwi.services.export.gelderland;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.*;
 
 import java.io.File;
 import java.time.LocalDate;
@@ -23,6 +24,7 @@ import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.ObjectType;
+import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
@@ -46,15 +48,20 @@ public class GdbGelderlandExportTest {
                 .projectPhase(ProjectPhase._5_PREPARATION)
                 .planType(List.of(PlanType.TRANSFORMATIEGEBIED))
                 .houseblocks(List.of(
-                        ProjectExportSqlModelExtended.HouseblockExportSqlModel.builder()
+                        HouseblockExportSqlModel.builder()
                                 .name("block1")
+                                .ownershipValueList(List.of(
+                                        OwnershipValueSqlModel.builder()
+                                                .ownershipAmount(1)
+                                                .ownershipType(OwnershipType.HUURWONING_WONINGCORPORATIE)
+                                                .build()))
                                 .endDate(LocalDate.of(2025, 3, 1))
                                 .build(),
-                        ProjectExportSqlModelExtended.HouseblockExportSqlModel.builder()
+                        HouseblockExportSqlModel.builder()
                                 .name("block2")
                                 .endDate(LocalDate.of(2025, 3, 2))
                                 .build(),
-                        ProjectExportSqlModelExtended.HouseblockExportSqlModel.builder()
+                        HouseblockExportSqlModel.builder()
                                 .name("block3")
                                 .endDate(LocalDate.of(2025, 3, 3))
                                 .build()))
@@ -103,6 +110,6 @@ public class GdbGelderlandExportTest {
 
         var expected = ResourceUtil.getResourceAsString("GdbGelderlandTest/feature.expected.json");
 
-        JSONAssert.assertEquals(Json.mapper.writeValueAsString(result), expected, JSONCompareMode.NON_EXTENSIBLE);
+        JSONAssert.assertEquals(expected, Json.mapper.writeValueAsString(result), JSONCompareMode.NON_EXTENSIBLE);
     }
 }
