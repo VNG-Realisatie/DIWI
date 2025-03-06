@@ -41,7 +41,7 @@ import nl.vng.diwi.services.PropertiesService;
 import nl.vng.diwi.services.UserGroupService;
 
 public class ProjectsUtil {
-    private static final String PLOT_JSON_STRING = """
+    public static final String PLOT_JSON_STRING = """
                     {
                         "type": "FeatureCollection",
                         "numberMatched": 1,

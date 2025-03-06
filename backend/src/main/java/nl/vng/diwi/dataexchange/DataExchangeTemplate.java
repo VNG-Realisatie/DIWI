@@ -253,7 +253,7 @@ public class DataExchangeTemplate {
                                 .name("verhuurder_type")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.CATEGORY))
-                                .options(List.of()) // TODO: What options
+                                .options(List.of("Woningcorporatie", "Overig", "Combinatie", "Onbekend"))
                                 .build())
 
                         .add(TemplateProperty.builder()
@@ -347,7 +347,7 @@ public class DataExchangeTemplate {
                                 .name("sleutelproject")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.CATEGORY))
-                                .options(List.of()) // TODO: What options
+                                .options(List.of("Ja", "Nee", "Onbekend"))
                                 .build())
                         .add(TemplateProperty.builder()
                                 .name("onzelfstandige_wooneenheden")
