@@ -21,7 +21,14 @@ public class GdbConversionService {
     private static final String ZIP_NAME = System.getenv().getOrDefault("ZIP_FOLDER_NAME", "outputTest.zip");
 
     /**
-     * Convert GeoJSON to GDB and delete the GeoJSON file
+     * Converts GeoJSON files to GDB format and deletes the original GeoJSON files.
+     * <p>
+     * This method searches for GeoJSON files in the working directory. If a GeoJSON file is found,
+     * it uses the `ogr2ogr` command to convert the GeoJSON data to GDB format. After the conversion,
+     * the original GeoJSON file is deleted.
+     * </p>
+     *
+     * @throws VngServerErrorException if an error occurs during the conversion process or file deletion.
      */
     public static void processGeoJsonToGdb() {
         File folder = new File(WORKING_DIR);
@@ -43,7 +50,14 @@ public class GdbConversionService {
     }
 
     /**
-     * Convert CSV to GDB and delete the CSV file
+     * Converts a CSV file to a GDB format and deletes the original CSV file.
+     * <p>
+     * This method searches for CSV files in the working directory. If a CSV file is found,
+     * it uses the `ogr2ogr` command to add the CSV data to the GDB. After the conversion,
+     * the original CSV file is deleted.
+     * </p>
+     *
+     * @throws VngServerErrorException if an error occurs during the conversion process or file deletion.
      */
     public static void processCsvToGdb() {
         File folder = new File(WORKING_DIR);
@@ -65,13 +79,20 @@ public class GdbConversionService {
     }
 
     /**
-     * Creates a ZIP file
+     * Creates a ZIP file from the contents of the specified directory.
+     * <p>
+     * This method first ensures that the working directory does not contain any other `.zip` files.
+     * It then checks if the specified GDB directory exists and is valid. If valid, it creates a ZIP
+     * file containing all files from the GDB directory. Finally, it deletes the original GDB directory.
+     * </p>
      *
-     * @throws IOException If an I/O error occurs.
+     * @throws VngServerErrorException if the specified GDB directory does not exist or is not valid,
+     *                                 or if an error occurs during the ZIP file creation process.
      */
-    public static void createZip() throws IOException {
+    public static void createZip() {
+        // First we need to make sure that the folder does not contain any other .zip file(s)
+        deleteFile(WORKING_DIR, ".zip");
         File gdbDirectory = new File(WORKING_DIR + "/" + GDB_NAME);
-
         if (!gdbDirectory.exists() || !gdbDirectory.isDirectory()) {
             throw new VngServerErrorException("The specified directory does not exist or is not a valid .gdb directory.");
         }
@@ -106,6 +127,27 @@ public class GdbConversionService {
         deleteFolder(gdbDirectory);
     }
 
+
+    /**
+     * Deletes the specified file.
+     * <p>
+     * This method attempts to delete the given file. If the deletion is successful,
+     * it logs an informational message. If the deletion fails, it logs an error message
+     * and throws a `VngServerErrorException`.
+     * </p>
+     *
+     * @param file the file to be deleted
+     * @throws RuntimeException if the file deletion fails
+     */
+    public static void deleteFile(File file) {
+        if (file.delete()) {
+            log.info("Deleted file: {}", file.getName());
+        } else {
+            log.error("Failed to delete file: {}", file.getName());
+            throw new VngServerErrorException("Failed to delete file: " + file.getName());
+        }
+    }
+
     private static void executeCommand(String command, File workingDir) {
         try {
             log.info("Executing command: {}", command);
@@ -120,15 +162,6 @@ public class GdbConversionService {
         }
     }
 
-    public static void deleteFile(File file) {
-        if (file.delete()) {
-            log.info("Deleted file: {}", file.getName());
-        } else {
-            log.error("Failed to delete file: {}", file.getName());
-            throw new RuntimeException("Failed to delete file: " + file.getName());
-        }
-    }
-
     private static void deleteFolder(File folder) {
         try {
             Files.walk(folder.toPath())
@@ -140,6 +173,7 @@ public class GdbConversionService {
                             log.info("Deleted file: {}", file.getName());
                         } else {
                             log.error("Failed to delete file: {}", file.getName());
+                            throw new RuntimeException("Failed to delete file: " + file.getName());
                         }
                     } catch (Exception e) {
                         log.error("Error deleting file: {}", file.getName(), e);
@@ -148,8 +182,30 @@ public class GdbConversionService {
                 });
             log.info("Deleted folder: {}", folder.getName());
         } catch (IOException e) {
-            log.error("Error walking through folder: {}", folder.getName(), e);
             throw new VngServerErrorException("Error walking through folder: " + folder.getName(), e);
+        }
+    }
+
+    private static void deleteFile(String folderPath, String zipExtension) {
+        File folder = new File(folderPath);
+        if (!folder.exists() || !folder.isDirectory()) {
+            throw new VngServerErrorException("The specified path does not exist or is not a directory.");
+        }
+
+        File[] files = folder.listFiles();
+        if (files == null || files.length == 0) {
+            log.warn("The folder is empty.");
+            return;
+        }
+
+        for (File file : files) {
+            if (file.isFile() && file.getName().endsWith(zipExtension)) {
+                if (file.delete()) {
+                    log.info("Deleted file: {}", file.getName());
+                } else {
+                    throw new VngServerErrorException("Failed to delete file: " + file.getName());
+                }
+            }
         }
     }
 
