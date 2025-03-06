@@ -94,6 +94,7 @@ public class GdbConversionService {
                         zos.closeArchiveEntry();
                     } catch (IOException e) {
                         log.error("Error while adding file to zip: {}", path, e);
+                        throw new VngServerErrorException("Error while adding file to zip: " + path, e);
                     }
                 });
         } catch (IOException e) {
