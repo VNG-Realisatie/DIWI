@@ -23,6 +23,8 @@ import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.ObjectType;
+import nl.vng.diwi.dal.entities.enums.PlanType;
+import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
 import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.generic.Json;
@@ -41,6 +43,8 @@ public class GdbGelderlandExportTest {
                 .projectId(UUID.fromString("fdd87435-025f-48ed-a2b4-d765246040cd"))
                 .name("project name")
                 .confidentiality(Confidentiality.EXTERNAL_GOVERNMENTAL)
+                .projectPhase(ProjectPhase._5_PREPARATION)
+                .planType(List.of(PlanType.TRANSFORMATIEGEBIED))
                 .houseblocks(List.of(
                         ProjectExportSqlModelExtended.HouseblockExportSqlModel.builder()
                                 .name("block1")
@@ -96,19 +100,9 @@ public class GdbGelderlandExportTest {
                 user);
 
         Json.writerWithDefaultPrettyPrinter.writeValue(new File("src/test/resources/GdbGelderlandTest/feature.actual.json"), result);
-        var actualTree = Json.mapper.readTree(new File("src/test/resources/GdbGelderlandTest/feature.actual.json"));
 
         var expected = ResourceUtil.getResourceAsString("GdbGelderlandTest/feature.expected.json");
-        var expectedTree = Json.mapper.readTree(expected);
 
         JSONAssert.assertEquals(Json.mapper.writeValueAsString(result), expected, JSONCompareMode.NON_EXTENSIBLE);
-
-        // assertThat(
-        // Json.writerWithDefaultPrettyPrinter
-        // .writeValueAsString(result)
-        // .lines()
-        // .filter(l -> !l.contains("diwi_id"))
-        // .collect(Collectors.joining("\n")))
-        // .isEqualToIgnoringWhitespace(expectedTree.toPrettyString());
     }
 }
