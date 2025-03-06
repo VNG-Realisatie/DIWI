@@ -8,7 +8,7 @@ import java.io.IOException;
 public class GdbConversionService {
 
     private static final String WORKING_DIR = "gdb_download_working_dir";
-    private static final String GDB_NAME = "output.gdb";
+    private static final String GDB_NAME = "outputTest.gdb";
 
     /**
      * Convert GeoJSON to GDB and delete the GeoJSON file
@@ -27,7 +27,7 @@ public class GdbConversionService {
 
         // Run ogr2ogr to convert GeoJSON to GDB
         String command = String.format("ogr2ogr -f OpenFileGDB %s %s", GDB_NAME, geoJsonFile.getAbsolutePath());
-        executeCommand(command);
+        executeCommand(command, geoJsonFile.getParentFile());
     }
 
     /**
@@ -47,15 +47,17 @@ public class GdbConversionService {
 
         // Run ogr2ogr to add CSV to GDB
         String command = String.format("ogr2ogr -nln DetailPlanning -f OpenFileGDB %s %s -update", GDB_NAME, csvFile.getAbsolutePath());
-        executeCommand(command);
+        executeCommand(command, csvFile.getParentFile());
 
         deleteFile(csvFile);
     }
 
-    private static void executeCommand(String command) {
+    private static void executeCommand(String command, File workingDir) {
         try {
             log.info("Executing command: {}", command);
-            Process process = new ProcessBuilder("bash", "-c", command).inheritIO().start();
+            Process process = new ProcessBuilder("bash", "-c", "cd " + workingDir.getAbsolutePath() + " && " + command)
+                .inheritIO()
+                .start();
             process.waitFor();
             log.info("Command executed successfully.");
         } catch (IOException | InterruptedException e) {
