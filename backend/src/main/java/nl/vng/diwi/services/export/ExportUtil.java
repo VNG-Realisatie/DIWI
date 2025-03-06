@@ -20,18 +20,17 @@ import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.generic.Json;
 import nl.vng.diwi.services.DataExchangeExportError;
 import nl.vng.diwi.services.DataExchangeExportError.EXPORT_ERROR;
-import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandHouseblockExportModel;
 
 @Log4j2
 public class ExportUtil {
     @Data
-	public static class OwnershipValueModel {
-	    private OwnershipType ownershipType;
-	    private Integer amount;
-	    private OwnershipCategory ownershipCategory;
-	}
+    public static class OwnershipValueModel {
+        private OwnershipType ownershipType;
+        private Integer amount;
+        private OwnershipCategory ownershipCategory;
+    }
 
-	static final CRSFactory crsFactory = new CRSFactory();
+    static final CRSFactory crsFactory = new CRSFactory();
     static final CoordinateTransformFactory ctFactory = new CoordinateTransformFactory();
 
     public static MultiPolygon createPolygonForProject(List<String> geometries, String targetCrs, UUID projectId) {
@@ -82,20 +81,20 @@ public class ExportUtil {
         String sourceCrsName = (String) geometryObject.getCrs().getProperties().get("name");
         String urnPrefix = "urn:ogc:def:crs:";
         if (sourceCrsName.startsWith(urnPrefix)) {
-            sourceCrsName =  sourceCrsName.substring(urnPrefix.length());
+            sourceCrsName = sourceCrsName.substring(urnPrefix.length());
         }
 
         String epsgDoubleColonPrefix = "EPSG::";
-        if (sourceCrsName.startsWith(epsgDoubleColonPrefix)){
+        if (sourceCrsName.startsWith(epsgDoubleColonPrefix)) {
             sourceCrsName = "EPSG:" + sourceCrsName.substring(epsgDoubleColonPrefix.length());
         }
         return sourceCrsName;
     }
 
     public static OwnershipCategory getOwnershipCategory(
-        OwnershipType ownershipType,
-        Long priceValue,
-        Map<OwnershipCategory, Long> priceCategoryMap) {
+            OwnershipType ownershipType,
+            Long priceValue,
+            Map<OwnershipCategory, Long> priceCategoryMap) {
         if (ownershipType == OwnershipType.KOOPWONING) {
             if (priceValue == null) {
                 return OwnershipCategory.koop_onb;

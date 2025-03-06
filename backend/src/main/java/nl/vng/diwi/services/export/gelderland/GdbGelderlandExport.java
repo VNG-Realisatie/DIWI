@@ -3,7 +3,7 @@ package nl.vng.diwi.services.export.gelderland;
 import static nl.vng.diwi.services.DataExchangeExportError.EXPORT_ERROR.MISSING_DATAEXCHANGE_MAPPING;
 import static nl.vng.diwi.services.DataExchangeExportError.EXPORT_ERROR.MISSING_MANDATORY_VALUE;
 import static nl.vng.diwi.services.DataExchangeExportError.EXPORT_ERROR.MULTIPLE_SINGLE_SELECT_VALUES;
-import static nl.vng.diwi.services.export.ExportUtil.*;
+import static nl.vng.diwi.services.export.ExportUtil.getOwnershipCategory;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -24,8 +24,6 @@ import org.geojson.jackson.CrsType;
 
 import jakarta.ws.rs.core.StreamingOutput;
 import nl.vng.diwi.dal.entities.DataExchangeType;
-import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
-import nl.vng.diwi.dal.entities.ProjectExportSqlModel.OwnershipValueSqlModel;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.MutationType;
@@ -47,7 +45,6 @@ import nl.vng.diwi.services.DataExchangeExportError;
 import nl.vng.diwi.services.export.ExportUtil;
 import nl.vng.diwi.services.export.ExportUtil.OwnershipValueModel;
 import nl.vng.diwi.services.export.OwnershipCategory;
-import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandExport.EsriZuidHollandProjectProps;
 
 public class GdbGelderlandExport {
     public static StreamingOutput buildExportObject(
