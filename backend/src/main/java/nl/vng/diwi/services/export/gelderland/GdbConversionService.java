@@ -12,6 +12,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @Log4j2
 public class GdbConversionService {
@@ -19,63 +22,21 @@ public class GdbConversionService {
     private static final String WORKING_DIR = System.getenv().getOrDefault("GDB_DOWNLOAD_WORKING_DIR", "gdb_download_working_dir");
     private static final String GDB_NAME = System.getenv().getOrDefault("GDB_FOLDER_NAME", "outputTest.gdb");
     private static final String ZIP_NAME = System.getenv().getOrDefault("ZIP_FOLDER_NAME", "outputTest.zip");
+    private static final String GEOJSON_EXTENSION = ".geojson";
+    private static final String CSV_EXTENSION = ".csv";
 
     /**
      * Converts GeoJSON files to GDB format and deletes the original GeoJSON files.
-     * <p>
-     * This method searches for GeoJSON files in the working directory. If a GeoJSON file is found,
-     * it uses the `ogr2ogr` command to convert the GeoJSON data to GDB format. After the conversion,
-     * the original GeoJSON file is deleted.
-     * </p>
-     *
-     * @throws VngServerErrorException if an error occurs during the conversion process or file deletion.
      */
     public static void processGeoJsonToGdb() {
-        File folder = new File(WORKING_DIR);
-        File[] geoJsonFiles = folder.listFiles((dir, name) -> name.endsWith(".geojson"));
-
-        if (geoJsonFiles == null || geoJsonFiles.length == 0) {
-            log.warn("No GeoJSON file found in the directory.");
-            return;
-        }
-
-        File geoJsonFile = geoJsonFiles[0];
-        log.info("Processing GeoJSON file: {}", geoJsonFile.getName());
-
-        // Run ogr2ogr to convert GeoJSON to GDB
-        String command = String.format("ogr2ogr -f OpenFileGDB %s %s", GDB_NAME, geoJsonFile.getAbsolutePath());
-        executeCommand(command, geoJsonFile.getParentFile());
-
-        deleteFile(geoJsonFile);
+        processFilesToGdb(GEOJSON_EXTENSION, "ogr2ogr -f OpenFileGDB %s %s");
     }
 
     /**
-     * Converts a CSV file to a GDB format and deletes the original CSV file.
-     * <p>
-     * This method searches for CSV files in the working directory. If a CSV file is found,
-     * it uses the `ogr2ogr` command to add the CSV data to the GDB. After the conversion,
-     * the original CSV file is deleted.
-     * </p>
-     *
-     * @throws VngServerErrorException if an error occurs during the conversion process or file deletion.
+     * Processes CSV files in the working directory and converts them to GDB format.
      */
     public static void processCsvToGdb() {
-        File folder = new File(WORKING_DIR);
-        File[] csvFiles = folder.listFiles((dir, name) -> name.endsWith(".csv"));
-
-        if (csvFiles == null || csvFiles.length == 0) {
-            log.warn("No CSV file found in the directory.");
-            return;
-        }
-
-        File csvFile = csvFiles[0];
-        log.info("Adding CSV file to GDB: {}", csvFile.getName());
-
-        // Run ogr2ogr to add CSV to GDB
-        String command = String.format("ogr2ogr -nln DetailPlanning -f OpenFileGDB %s %s -update", GDB_NAME, csvFile.getAbsolutePath());
-        executeCommand(command, csvFile.getParentFile());
-
-        deleteFile(csvFile);
+        processFilesToGdb(CSV_EXTENSION, "ogr2ogr -nln DetailPlanning -f OpenFileGDB %s %s -update");
     }
 
     /**
@@ -90,10 +51,10 @@ public class GdbConversionService {
      *                                 or if an error occurs during the ZIP file creation process.
      */
     public static void createZip() {
-        // First we need to make sure that the folder does not contain any other .zip file(s)
         deleteFile(WORKING_DIR, ".zip");
         File gdbDirectory = new File(WORKING_DIR + "/" + GDB_NAME);
         if (!gdbDirectory.exists() || !gdbDirectory.isDirectory()) {
+            log.error("Could not create zip file: " + gdbDirectory.getAbsolutePath());
             throw new VngServerErrorException("The specified directory does not exist or is not a valid .gdb directory.");
         }
 
@@ -111,7 +72,6 @@ public class GdbConversionService {
                         ZipArchiveEntry entry = new ZipArchiveEntry(path.toFile(), zipEntryName);
                         zos.putArchiveEntry(entry);
                         Files.copy(path, zos);
-
                         zos.closeArchiveEntry();
                     } catch (IOException e) {
                         log.error("Error while adding file to zip: {}", path, e);
@@ -127,7 +87,6 @@ public class GdbConversionService {
         deleteFolder(gdbDirectory);
     }
 
-
     /**
      * Deletes the specified file.
      * <p>
@@ -137,7 +96,7 @@ public class GdbConversionService {
      * </p>
      *
      * @param file the file to be deleted
-     * @throws RuntimeException if the file deletion fails
+     * @throws VngServerErrorException if the file deletion fails
      */
     public static void deleteFile(File file) {
         if (file.delete()) {
@@ -146,6 +105,41 @@ public class GdbConversionService {
             log.error("Failed to delete file: {}", file.getName());
             throw new VngServerErrorException("Failed to delete file: " + file.getName());
         }
+    }
+
+    /**
+     * Processes files in the working directory and converts them to GDB format.
+     * <p>
+     * This method searches for files with the specified extension in the working directory. If files are found,
+     * it uses the `ogr2ogr` command to convert the data to GDB format. After the conversion,
+     * the original files are deleted. The processing is done concurrently using an
+     * `ExecutorService` to improve performance.
+     * </p>
+     *
+     * @param fileExtension the file extension to search for
+     * @param commandFormat the command format string for conversion
+     * @throws VngServerErrorException if an error occurs during the conversion process or file deletion.
+     */
+    private static void processFilesToGdb(String fileExtension, String commandFormat) {
+        File[] files = new File(WORKING_DIR).listFiles((dir, name) -> name.endsWith(fileExtension));
+
+        if (files == null || files.length == 0) {
+            log.warn("No {} file found in the directory.", fileExtension);
+            return;
+        }
+
+        ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
+        for (File file : files) {
+            executor.submit(() -> {
+                log.info("Processing file: {}", file.getName());
+                String command = String.format(commandFormat, GDB_NAME, file.getAbsolutePath());
+                executeCommand(command, file.getParentFile());
+                deleteFile(file);
+            });
+        }
+
+        shutdownExecutor(executor);
     }
 
     private static void executeCommand(String command, File workingDir) {
@@ -182,6 +176,7 @@ public class GdbConversionService {
                 });
             log.info("Deleted folder: {}", folder.getName());
         } catch (IOException e) {
+            log.error("Error deleting folder: {}", folder.getName(), e);
             throw new VngServerErrorException("Error walking through folder: " + folder.getName(), e);
         }
     }
@@ -194,7 +189,7 @@ public class GdbConversionService {
 
         File[] files = folder.listFiles();
         if (files == null || files.length == 0) {
-            log.warn("The folder is empty.");
+            log.warn("The folder is empty : {}", folder.getAbsolutePath());
             return;
         }
 
@@ -203,10 +198,23 @@ public class GdbConversionService {
                 if (file.delete()) {
                     log.info("Deleted file: {}", file.getName());
                 } else {
+                    log.error("Failed to delete file: {}", file.getName());
                     throw new VngServerErrorException("Failed to delete file: " + file.getName());
                 }
             }
         }
     }
 
+    private static void shutdownExecutor(ExecutorService executor) {
+        executor.shutdown();
+        try {
+            if (!executor.awaitTermination(60, TimeUnit.MINUTES)) {
+                executor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            log.warn("Interrupted while shutting down executor. Retrying...", e);
+            executor.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+    }
 }
