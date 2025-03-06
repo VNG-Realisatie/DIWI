@@ -8,6 +8,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.geojson.Crs;
+import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.geojson.jackson.CrsType;
 
@@ -30,7 +31,7 @@ public class GdbGelderlandExport {
             LocalDate exportDate,
             Confidentiality minConfidentiality,
             List<DataExchangeExportError> errors) {
-                FeatureCollection exportObject = new FeatureCollection();
+        FeatureCollection exportObject = new FeatureCollection();
         Crs crs = new Crs();
         crs.setType(CrsType.name);
         String targetCrs = "EPSG:28992";
@@ -38,21 +39,31 @@ public class GdbGelderlandExport {
         exportObject.setCrs(crs);
 
         PropertyModel priceRangeBuyFixedProp = customProps.stream()
-            .filter(pfp -> pfp.getName().equals(Constants.FIXED_PROPERTY_PRICE_RANGE_BUY)).findFirst().orElse(null);
+                .filter(pfp -> pfp.getName().equals(Constants.FIXED_PROPERTY_PRICE_RANGE_BUY)).findFirst().orElse(null);
         PropertyModel priceRangeRentFixedProp = customProps.stream()
-            .filter(pfp -> pfp.getName().equals(Constants.FIXED_PROPERTY_PRICE_RANGE_RENT)).findFirst().orElse(null);
+                .filter(pfp -> pfp.getName().equals(Constants.FIXED_PROPERTY_PRICE_RANGE_RENT)).findFirst().orElse(null);
         PropertyModel municipalityFixedProp = customProps.stream()
-            .filter(pfp -> pfp.getName().equals(Constants.FIXED_PROPERTY_MUNICIPALITY)).findFirst().orElse(null);
+                .filter(pfp -> pfp.getName().equals(Constants.FIXED_PROPERTY_MUNICIPALITY)).findFirst().orElse(null);
 
         Map<UUID, PropertyModel> customPropsMap = customProps.stream().collect(Collectors.toMap(PropertyModel::getId, Function.identity()));
 
-        // projects.forEach(project -> exportObject.add(getProjectFeature(configModel, project, customPropsMap, priceRangeBuyFixedProp, priceRangeRentFixedProp,
-        //     municipalityFixedProp, dxPropertiesMap, minConfidentiality, exportDate, errors, targetCrs)));
+        projects.forEach(project -> {
 
+            exportObject.add(getProjectFeature(configModel, project, customPropsMap, priceRangeBuyFixedProp, priceRangeRentFixedProp,
+                municipalityFixedProp, dxPropertiesMap, minConfidentiality, exportDate, errors, targetCrs));
+        });
 
-        // Convert to GeoJSON here
+        // Convert GeoJSON and CSV to GDB here
 
         throw new UnsupportedOperationException("Unimplemented method 'buildExportObject'");
+    }
+
+    private static Feature getProjectFeature(ConfigModel configModel, ProjectExportSqlModel project, Map<UUID, PropertyModel> customPropsMap,
+            PropertyModel priceRangeBuyFixedProp, PropertyModel priceRangeRentFixedProp, PropertyModel municipalityFixedProp,
+            Map<String, DataExchangePropertyModel> dxPropertiesMap, Confidentiality minConfidentiality, LocalDate exportDate,
+            List<DataExchangeExportError> errors, String targetCrs) {
+        throw new UnsupportedOperationException("Unimplemented method 'buildExportObject'");
+
     }
 
 }
