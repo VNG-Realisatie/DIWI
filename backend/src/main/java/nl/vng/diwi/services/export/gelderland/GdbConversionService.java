@@ -119,7 +119,7 @@ public class GdbConversionService {
         }
     }
 
-    private static void deleteFile(File file) {
+    public static void deleteFile(File file) {
         if (file.delete()) {
             log.info("Deleted file: {}", file.getName());
         } else {

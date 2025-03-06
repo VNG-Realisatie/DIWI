@@ -63,7 +63,11 @@ public class GdbGelderlandExport {
                     municipalityFixedProp, dxPropertiesMap, minConfidentiality, exportDate, errors, targetCrs, ++i, user));
         }
 
-        // Convert GeoJSON and CSV to GDB here
+        //TODO: write .geojson file to disk(gdb_download_working_dir) and then call GdbConversionService.processGeoJsonToGdb();
+        //TODO: write .csv file to disk(gdb_download_working_dir) and gthen call GdbConversionService.processCsvToGdb();
+
+        //TODO: create .zip file from .gdb and place it inside the gdb_download_working_dir : GdbConversionService.createZip();
+        //TODO: delete .zip file after download : GdbConversionService.deleteFile(zipFile);
 
         // For now just return the json
         return output -> {
