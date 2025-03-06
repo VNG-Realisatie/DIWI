@@ -43,6 +43,7 @@ import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.services.export.ArcGisProjectExporter;
 import nl.vng.diwi.services.export.excel.ExcelExport;
+import nl.vng.diwi.services.export.gelderland.GdbGelderlandExport;
 import nl.vng.diwi.services.export.geojson.GeoJSONExport;
 import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandExport;
 
@@ -277,7 +278,14 @@ public class DataExchangeService {
                 repo.getProjectsDAO().getProjectsExportListExtended(dxExportModel, loggedUser),
                 customProps);
 
-            case GDB_GELDERLAND -> throw new NotImplementedError();
+            case GDB_GELDERLAND -> GdbGelderlandExport.buildExportObject(
+                configModel,
+                repo.getProjectsDAO().getProjectsExportList(dxExportModel, loggedUser),
+                customProps,
+                dxPropertiesMap,
+                dxExportModel.getExportDate(),
+                templateMinConfidentiality,
+                errors);
         };
 
     }
