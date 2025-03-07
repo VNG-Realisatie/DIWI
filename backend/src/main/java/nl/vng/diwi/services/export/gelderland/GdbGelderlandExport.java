@@ -545,10 +545,13 @@ public class GdbGelderlandExport {
     private static void addProjectTextCustomProperty(UUID projectUuid, Feature projectFeature, DataExchangeTemplate.TemplateProperty templateProperty,
             Map<String, DataExchangePropertyModel> dxPropertiesMap, Map<UUID, String> projectTextCustomProps,
             List<DataExchangeExportError> errors) {
-        UUID customPropUuid = dxPropertiesMap.get(templateProperty.getName()).getCustomPropertyId();
+        DataExchangePropertyModel dataExchangePropertyModel = dxPropertiesMap.get(templateProperty.getName());
+        UUID customPropUuid = dataExchangePropertyModel.getCustomPropertyId();
         String ezhValue = null;
         if (customPropUuid == null) {
-            errors.add(new DataExchangeExportError(null, templateProperty.getName(), MISSING_DATAEXCHANGE_MAPPING));
+            if (dataExchangePropertyModel.getMandatory()) {
+                errors.add(new DataExchangeExportError(null, templateProperty.getName(), MISSING_DATAEXCHANGE_MAPPING));
+            }
         } else if (projectTextCustomProps.containsKey(customPropUuid)) {
             ezhValue = projectTextCustomProps.get(customPropUuid);
         } else if (templateProperty.getMandatory()) {
@@ -560,10 +563,13 @@ public class GdbGelderlandExport {
     private static void addProjectCategoricalCustomPropertyAsText(UUID projectUuid, Feature projectFeature, TemplateProperty templateProperty,
             Map<String, DataExchangePropertyModel> dxPropertiesMap, Map<UUID, List<UUID>> projectCategoricalCustomProps,
             Map<UUID, PropertyModel> customPropsMap, List<DataExchangeExportError> errors) {
-        UUID customPropUuid = dxPropertiesMap.get(templateProperty.getName()).getCustomPropertyId();
+        DataExchangePropertyModel dataExchangePropertyModel = dxPropertiesMap.get(templateProperty.getName());
+        UUID customPropUuid = dataExchangePropertyModel.getCustomPropertyId();
         String ezhValue = null;
         if (customPropUuid == null) {
-            errors.add(new DataExchangeExportError(null, templateProperty.getName(), MISSING_DATAEXCHANGE_MAPPING));
+            if (dataExchangePropertyModel.getMandatory()) {
+                errors.add(new DataExchangeExportError(null, templateProperty.getName(), MISSING_DATAEXCHANGE_MAPPING));
+            }
         } else if (projectCategoricalCustomProps.containsKey(customPropUuid)) {
             UUID optionUuid = projectCategoricalCustomProps.get(customPropUuid).get(0);
             PropertyModel propertyModel = customPropsMap.get(customPropUuid);
@@ -579,14 +585,14 @@ public class GdbGelderlandExport {
     private static void addProjectCategoricalCustomProperty(UUID projectUuid, Feature projectFeature, DataExchangeTemplate.TemplateProperty templateProperty,
             Map<String, DataExchangePropertyModel> dxPropertiesMap, Map<UUID, List<UUID>> projectCategoricalCustomProps,
             List<DataExchangeExportError> errors) {
-        DataExchangePropertyModel dxPropertyModel = dxPropertiesMap.get(templateProperty.getName());
+        DataExchangePropertyModel dataExchangePropertyModel = dxPropertiesMap.get(templateProperty.getName());
         List<String> ezhValue = new ArrayList<>();
-        if (dxPropertyModel == null) {
+        if (dataExchangePropertyModel == null) {
             errors.add(new DataExchangeExportError(null, templateProperty.getName(), MISSING_DATAEXCHANGE_MAPPING));
-        } else if (projectCategoricalCustomProps.containsKey(dxPropertyModel.getCustomPropertyId())) {
-            List<UUID> projectCategoryOptions = projectCategoricalCustomProps.get(dxPropertyModel.getCustomPropertyId());
+        } else if (projectCategoricalCustomProps.containsKey(dataExchangePropertyModel.getCustomPropertyId())) {
+            List<UUID> projectCategoryOptions = projectCategoricalCustomProps.get(dataExchangePropertyModel.getCustomPropertyId());
             for (UUID option : projectCategoryOptions) {
-                dxPropertyModel.getOptions().forEach(dxOption -> {
+                dataExchangePropertyModel.getOptions().forEach(dxOption -> {
                     if (dxOption.getPropertyCategoryValueIds().contains(option)) {
                         ezhValue.add(dxOption.getName());
                     }
