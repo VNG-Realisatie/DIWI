@@ -3,9 +3,13 @@ package nl.vng.diwi.services.export.gelderland;
 import static nl.vng.diwi.services.DataExchangeExportError.EXPORT_ERROR.MISSING_DATAEXCHANGE_MAPPING;
 import static nl.vng.diwi.services.DataExchangeExportError.EXPORT_ERROR.MISSING_MANDATORY_VALUE;
 import static nl.vng.diwi.services.DataExchangeExportError.EXPORT_ERROR.MULTIPLE_SINGLE_SELECT_VALUES;
+import static nl.vng.diwi.services.DataExchangeExportError.EXPORT_ERROR.NUMERIC_RANGE_VALUE;
 import static nl.vng.diwi.services.export.ExportUtil.getOwnershipCategory;
 
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -82,6 +86,14 @@ public class GdbGelderlandExport {
 
         // TODO: create .zip file from .gdb and place it inside the gdb_download_working_dir : GdbConversionService.createZip();
         // TODO: delete .zip file after download : GdbConversionService.deleteFile(zipFile);
+
+        try {
+            var tempDir = Files.createTempDirectory("GdbGelderlandExport");
+            var geojsonFile = new File(tempDir.toFile(), "geojson.geojson");
+            Json.mapper.writeValue(geojsonFile, exportObject);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         // For now just return the json
         return output -> {
@@ -176,6 +188,7 @@ public class GdbGelderlandExport {
                     feature,
                     projectTextCustomProps,
                     projectCategoricalCustomProps,
+                    projectNumericCustomProps,
                     prop,
                     templateProperty,
                     dxPropertyModel);
@@ -251,9 +264,9 @@ public class GdbGelderlandExport {
 
         for (var b : project.getHouseblocks()) {
             final boolean gerealiseerd = b.getEndDate().isBefore(exportDate);
+            final boolean bouw = b.getMutationKind() == MutationType.CONSTRUCTION;
+            final int bouwFactor = bouw ? 1 : -1;
 
-            boolean bouw = b.getMutationKind() == MutationType.CONSTRUCTION;
-            int bouwFactor = bouw ? 1 : -1;
             // totals for construction and for house types (single family, etc)
             if (bouw) {
                 Totaal_bouw += b.getMutationAmount();
@@ -274,6 +287,8 @@ public class GdbGelderlandExport {
                 }
             }
 
+            int huur_resterend = 0;
+            int koop_resterend = 0;
             // totals for ownership
             for (var o : b.getOwnershipValueList()) {
                 var model = createOwnershipValueModel(
@@ -306,18 +321,23 @@ public class GdbGelderlandExport {
                 if (o.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE
                         || o.getOwnershipType() == OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER) {
                     if (!gerealiseerd) {
+                        huur_resterend += bouwFactor * o.getOwnershipAmount();
                         Totaal_huur_resterend += bouwFactor * o.getOwnershipAmount();
                     }
                 } else if (o.getOwnershipType() == OwnershipType.KOOPWONING) {
                     if (!gerealiseerd) {
+                        koop_resterend += bouwFactor * o.getOwnershipAmount();
                         Totaal_koop_resterend += bouwFactor * o.getOwnershipAmount();
                     }
                 }
             }
-
+            if (!gerealiseerd) {
+                int resterend = bouwFactor * b.getMutationAmount();
+                Totaal_koop_huur_onbekend_resterend += resterend - huur_resterend - koop_resterend;
+            }
         }
 
-        Totaal_koop_huur_onbekend_resterend += Totaal_resterend - Totaal_huur_resterend - Totaal_koop_resterend;
+        // Totaal_koop_huur_onbekend_resterend += Totaal_resterend - Totaal_huur_resterend - Totaal_koop_resterend;
         // Totaal_koop_resterend += koop_resterend;
         // Totaal_huur_resterend += huur_resterend;
         // Totaal_resterend += resterend;
@@ -501,6 +521,7 @@ public class GdbGelderlandExport {
             Feature projectFeature,
             Map<UUID, String> projectTextCustomProps,
             Map<UUID, List<UUID>> projectCategoricalCustomProps,
+            Map<UUID, SingleValueOrRangeModel<BigDecimal>> projectNumericCustomProps,
             String propName,
             TemplateProperty templateProperty,
             DataExchangePropertyModel dxPropertyModel) {
@@ -517,6 +538,14 @@ public class GdbGelderlandExport {
             } else {
                 projectFeature.getProperties().put(propName, null);
             }
+        } else if (templateProperty.getPropertyTypes().containsAll(List.of(PropertyType.NUMERIC))) {
+            addProjectNumericCustomProperty(
+                    project.getProjectId(),
+                    projectFeature,
+                    templateProperty,
+                    dxPropertiesMap,
+                    projectNumericCustomProps,
+                    errors);
         } else if (templateProperty.getPropertyTypes().containsAll(List.of(PropertyType.CATEGORY))) {
             addProjectCategoricalCustomProperty(
                     project.getProjectId(),
@@ -594,5 +623,27 @@ public class GdbGelderlandExport {
         } else {
             projectFeature.getProperties().put(templateProperty.getName(), ezhValue.isEmpty() ? null : ezhValue);
         }
+    }
+
+    private static BigDecimal addProjectNumericCustomProperty(UUID projectUuid, Feature projectFeature, DataExchangeTemplate.TemplateProperty templateProperty,
+            Map<String, DataExchangePropertyModel> dxPropertiesMap, Map<UUID, SingleValueOrRangeModel<BigDecimal>> projectNumericCustomProps,
+            List<DataExchangeExportError> errors) {
+        UUID customPropUuid = dxPropertiesMap.get(templateProperty.getName()).getCustomPropertyId();
+        BigDecimal ezhValue = null;
+        if (customPropUuid == null) {
+            errors.add(new DataExchangeExportError(null, templateProperty.getName(), MISSING_DATAEXCHANGE_MAPPING));
+        } else if (projectNumericCustomProps.containsKey(customPropUuid)) {
+            var numericVal = projectNumericCustomProps.get(customPropUuid);
+            if (numericVal.getValue() != null) {
+                ezhValue = numericVal.getValue();
+            } else if (numericVal.getMin() != null) {
+                errors.add(new DataExchangeExportError(projectUuid, templateProperty.getName(), NUMERIC_RANGE_VALUE));
+            }
+        } else if (templateProperty.getMandatory()) {
+            errors.add(new DataExchangeExportError(projectUuid, templateProperty.getName(), MISSING_MANDATORY_VALUE));
+        }
+        projectFeature.getProperties().put(templateProperty.getName(), ezhValue);
+
+        return ezhValue;
     }
 }

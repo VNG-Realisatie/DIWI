@@ -3,9 +3,9 @@ package nl.vng.diwi.services.export.gelderland;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -23,7 +23,10 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import nl.vng.diwi.dal.entities.DataExchangeType;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended;
-import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.*;
+import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.HouseblockExportSqlModel;
+import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.NumericPropertyModel;
+import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.OwnershipValueSqlModel;
+import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.TextPropertyModel;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.MutationType;
 import nl.vng.diwi.dal.entities.enums.ObjectType;
@@ -35,8 +38,8 @@ import nl.vng.diwi.dataexchange.DataExchangeTemplate;
 import nl.vng.diwi.generic.Constants;
 import nl.vng.diwi.generic.Json;
 import nl.vng.diwi.generic.ResourceUtil;
-import nl.vng.diwi.models.ConfigModel;
 import nl.vng.diwi.models.DataExchangePropertyModel;
+import nl.vng.diwi.models.DataExchangePropertyModel.DataExchangePropertyModelBuilder;
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.services.DataExchangeExportError;
@@ -55,11 +58,23 @@ public class GdbGelderlandExportTest {
                 .build();
 
         // Create some custom props
-        List<PropertyModel> customProps = List.of(PropertyModel.builder()
-                .name("text")
-                .objectType(ObjectType.PROJECT)
-                .propertyType(PropertyType.TEXT)
-                .build());
+        List<PropertyModel> customProps = List.of(
+                PropertyModel.builder()
+                        .id(UUID.randomUUID())
+                        .name("text")
+                        .objectType(ObjectType.PROJECT)
+                        .propertyType(PropertyType.TEXT)
+                        .build(),
+                PropertyModel.builder()
+                        .id(UUID.randomUUID())
+                        .name(PropertyType.NUMERIC.name())
+                        .objectType(ObjectType.PROJECT)
+                        .propertyType(PropertyType.NUMERIC)
+                        .build());
+
+        // Make it easy to find the custom prop
+        var customPropMap = customProps.stream()
+                .collect(Collectors.toMap(PropertyModel::getName, p -> p));
 
         // Create a project with some blocks
         ProjectExportSqlModelExtended project = ProjectExportSqlModelExtended.builder()
@@ -69,7 +84,10 @@ public class GdbGelderlandExportTest {
                 .confidentiality(Confidentiality.EXTERNAL_GOVERNMENTAL)
                 .projectPhase(ProjectPhase._5_PREPARATION)
                 .planType(List.of(PlanType.TRANSFORMATIEGEBIED))
-
+                .textProperties(List.of(
+                        new TextPropertyModel(customPropMap.get("text").getId(), "text_value")))
+                .numericProperties(List.of(
+                        new NumericPropertyModel(customPropMap.get(PropertyType.NUMERIC.name()).getId(), BigDecimal.valueOf(17), null, null)))
                 .houseblocks(List.of(
                         HouseblockExportSqlModel.builder()
                                 .name("block1")
@@ -115,13 +133,29 @@ public class GdbGelderlandExportTest {
                                 .build()))
                 .build();
 
-        Map<String, DataExchangePropertyModel> dxPropertiesMap = new HashMap<>();
+        // Create the mapping from custom props to dx props
+        // Map<String, DataExchangePropertyModel> dxPropertiesMap = new HashMap<>();
+        // dxPropertiesMap.put("opdrachtgever_naam", DataExchangePropertyModel.builder()
+        // .customPropertyId(customPropMap.get("text").getId())
+        // .name("opdrachtgever_naam")
+        // .build());
+
         var template = DataExchangeTemplate.templates.get(DataExchangeType.GDB_GELDERLAND);
-        template.getProperties().stream()
+        Map<String, DataExchangePropertyModel> dxPropertiesMap = template.getProperties().stream()
                 .map(dxProp -> {
-                    return DataExchangePropertyModel.builder()
-                            .build();
-                });
+                    DataExchangePropertyModelBuilder builder = DataExchangePropertyModel.builder()
+                            .name(dxProp.getName());
+                    if (dxProp.getPropertyTypes().contains(PropertyType.TEXT)) {
+                        return builder.customPropertyId(customPropMap.get("text").getId())
+                                .build();
+                    } else if (dxProp.getPropertyTypes().contains(PropertyType.NUMERIC)) {
+                        return builder.customPropertyId(customPropMap.get(PropertyType.NUMERIC.name()).getId())
+                                .build();
+                    }
+                    return null;
+                })
+                .filter(dxProp -> dxProp != null)
+                .collect(Collectors.toMap(DataExchangePropertyModel::getName, d -> d));
 
         List<DataExchangeExportError> errors = new ArrayList<>();
 

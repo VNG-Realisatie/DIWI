@@ -77,6 +77,7 @@ public class DataExchangeResourceTest {
     private GenericRepository genericRepository;
     private DataExchangeService dataExchangeService;
     private ArcGisProjectExporter arcGisProjectExporter;
+
     @BeforeEach
     void beforeEach() {
         dal = dalFactory.constructDal();
@@ -89,7 +90,6 @@ public class DataExchangeResourceTest {
         projectResource.getUserGroupService().setUserGroupDAO(repo.getUsergroupDAO());
         blockResource = new HouseblockResource(genericRepository, new HouseblockService(), new ProjectService(), new PropertiesService());
         propertiesService = new PropertiesService();
-
 
         try (AutoCloseTransaction transaction = repo.beginTransaction()) {
             user = new User();
@@ -161,5 +161,31 @@ public class DataExchangeResourceTest {
                         .filter(l -> !l.contains("diwi_id"))
                         .collect(Collectors.joining("\n")))
                 .isEqualToIgnoringWhitespace(expectedTree.toPrettyString());
+    }
+
+    @EnumSource(names = { "GDB_GELDERLAND" })
+    @ParameterizedTest
+    public void create(DataExchangeType type) throws Exception {
+        LocalDate startDate = LocalDate.of(2024, 12, 30);
+        LocalDate endDate = LocalDate.of(2025, 1, 19);
+
+        // Create the initial project and block
+        var fixture = ProjectsUtil.createTestProject(
+                userGroup,
+                userState,
+                startDate,
+                endDate,
+                dal,
+                testDb.projectConfig,
+                repo,
+                loggedUser);
+
+        DataExchangeModel model = new DataExchangeModel()
+                .withName(type.name())
+                .withType(type)
+                .withValid(true);
+
+        var dataExchangeModel = dataExchangeResource.createDataExchange(model, loggedUser);
+        assertThat(dataExchangeModel).isNotNull();
     }
 }
