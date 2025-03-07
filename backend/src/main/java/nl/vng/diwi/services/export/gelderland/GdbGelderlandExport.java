@@ -3,6 +3,7 @@ package nl.vng.diwi.services.export.gelderland;
 import static nl.vng.diwi.services.DataExchangeExportError.EXPORT_ERROR.MISSING_DATAEXCHANGE_MAPPING;
 import static nl.vng.diwi.services.DataExchangeExportError.EXPORT_ERROR.MISSING_MANDATORY_VALUE;
 import static nl.vng.diwi.services.DataExchangeExportError.EXPORT_ERROR.MULTIPLE_SINGLE_SELECT_VALUES;
+import static nl.vng.diwi.services.DataExchangeExportError.EXPORT_ERROR.NUMERIC_RANGE_VALUE;
 import static nl.vng.diwi.services.export.ExportUtil.getOwnershipCategory;
 
 import java.io.File;
@@ -187,6 +188,7 @@ public class GdbGelderlandExport {
                     feature,
                     projectTextCustomProps,
                     projectCategoricalCustomProps,
+                    projectNumericCustomProps,
                     prop,
                     templateProperty,
                     dxPropertyModel);
@@ -519,6 +521,7 @@ public class GdbGelderlandExport {
             Feature projectFeature,
             Map<UUID, String> projectTextCustomProps,
             Map<UUID, List<UUID>> projectCategoricalCustomProps,
+            Map<UUID, SingleValueOrRangeModel<BigDecimal>> projectNumericCustomProps,
             String propName,
             TemplateProperty templateProperty,
             DataExchangePropertyModel dxPropertyModel) {
@@ -535,6 +538,14 @@ public class GdbGelderlandExport {
             } else {
                 projectFeature.getProperties().put(propName, null);
             }
+        } else if (templateProperty.getPropertyTypes().containsAll(List.of(PropertyType.NUMERIC))) {
+            addProjectNumericCustomProperty(
+                    project.getProjectId(),
+                    projectFeature,
+                    templateProperty,
+                    dxPropertiesMap,
+                    projectNumericCustomProps,
+                    errors);
         } else if (templateProperty.getPropertyTypes().containsAll(List.of(PropertyType.CATEGORY))) {
             addProjectCategoricalCustomProperty(
                     project.getProjectId(),
@@ -612,5 +623,27 @@ public class GdbGelderlandExport {
         } else {
             projectFeature.getProperties().put(templateProperty.getName(), ezhValue.isEmpty() ? null : ezhValue);
         }
+    }
+
+    private static BigDecimal addProjectNumericCustomProperty(UUID projectUuid, Feature projectFeature, DataExchangeTemplate.TemplateProperty templateProperty,
+            Map<String, DataExchangePropertyModel> dxPropertiesMap, Map<UUID, SingleValueOrRangeModel<BigDecimal>> projectNumericCustomProps,
+            List<DataExchangeExportError> errors) {
+        UUID customPropUuid = dxPropertiesMap.get(templateProperty.getName()).getCustomPropertyId();
+        BigDecimal ezhValue = null;
+        if (customPropUuid == null) {
+            errors.add(new DataExchangeExportError(null, templateProperty.getName(), MISSING_DATAEXCHANGE_MAPPING));
+        } else if (projectNumericCustomProps.containsKey(customPropUuid)) {
+            var numericVal = projectNumericCustomProps.get(customPropUuid);
+            if (numericVal.getValue() != null) {
+                ezhValue = numericVal.getValue();
+            } else if (numericVal.getMin() != null) {
+                errors.add(new DataExchangeExportError(projectUuid, templateProperty.getName(), NUMERIC_RANGE_VALUE));
+            }
+        } else if (templateProperty.getMandatory()) {
+            errors.add(new DataExchangeExportError(projectUuid, templateProperty.getName(), MISSING_MANDATORY_VALUE));
+        }
+        projectFeature.getProperties().put(templateProperty.getName(), ezhValue);
+
+        return ezhValue;
     }
 }

@@ -206,6 +206,7 @@ public class ProjectExportSqlModelExtended {
 
     @Data
     @NoArgsConstructor
+    @AllArgsConstructor
     public static class NumericPropertyModel {
         private UUID propertyId;
         private BigDecimal value;
