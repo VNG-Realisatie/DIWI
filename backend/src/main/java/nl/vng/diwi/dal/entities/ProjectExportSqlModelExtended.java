@@ -55,8 +55,10 @@ public class ProjectExportSqlModelExtended {
     @Getter(AccessLevel.NONE)
     private List<PlanType> planType;
 
-    private LocalDate startDate;
+    private LocalDate creation_date;
+    private LocalDate last_edit_date;
 
+    private LocalDate startDate;
     private LocalDate endDate;
 
     @Enumerated(EnumType.STRING)

@@ -172,15 +172,19 @@ public class DataExchangeTemplate {
                         .add(TemplateProperty.builder()
                                 .name("gemeente")
                                 .objectType(ObjectType.PROJECT)
-                                .propertyTypes(List.of(PropertyType.CATEGORY))
-                                .options(loadStringListFromResource("dataexchange/gdb_gelderland_gemeente.txt"))
+                                .propertyTypes(List.of(PropertyType.TEXT, PropertyType.CATEGORY))
                                 .build())
 
                         .add(TemplateProperty.builder()
                                 .name("woonplaats")
                                 .objectType(ObjectType.PROJECT)
-                                .propertyTypes(List.of(PropertyType.CATEGORY))
-                                .options(loadStringListFromResource("dataexchange/gdb_gelderland_woonplaats.txt"))
+                                .propertyTypes(List.of(PropertyType.TEXT, PropertyType.CATEGORY))
+                                .build())
+
+                        .add(TemplateProperty.builder()
+                                .name("regio")
+                                .objectType(ObjectType.PROJECT)
+                                .propertyTypes(List.of(PropertyType.TEXT, PropertyType.CATEGORY))
                                 .build())
 
                         .add(TemplateProperty.builder()
