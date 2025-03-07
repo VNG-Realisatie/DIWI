@@ -28,6 +28,10 @@ services:
         - action: rebuild
           path: backend
     restart: unless-stopped
+    env_file:
+      - path: default.env
+      - path: .env
+        required: true
     environment:
       BASE_URL: ${BASE_URL:-http://localhost:${MAIN_PORT}}
       DIWI_DB_HOST: ${DIWI_DB_HOST:-database}

@@ -173,24 +173,28 @@ public class DataExchangeTemplate {
                                 .name("gemeente")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.TEXT, PropertyType.CATEGORY))
+                                .mandatory(false)
                                 .build())
 
                         .add(TemplateProperty.builder()
                                 .name("woonplaats")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.TEXT, PropertyType.CATEGORY))
+                                .mandatory(false)
                                 .build())
 
                         .add(TemplateProperty.builder()
                                 .name("regio")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.TEXT, PropertyType.CATEGORY))
+                                .mandatory(false)
                                 .build())
 
                         .add(TemplateProperty.builder()
                                 .name("opdrachtgever_type")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.CATEGORY))
+                                .mandatory(false)
                                 .options(List.of(
                                         "Gemeente",
                                         "Woningbouwcorporatie",
@@ -204,31 +208,37 @@ public class DataExchangeTemplate {
                                 .name("opdrachtgever_naam")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.TEXT))
+                                .mandatory(false)
                                 .build())
                         .add(TemplateProperty.builder()
                                 .name("opmerkingen_basis")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.TEXT))
+                                .mandatory(false)
                                 .build())
                         .add(TemplateProperty.builder()
                                 .name("masterplan")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.TEXT))
+                                .mandatory(false)
                                 .build())
                         .add(TemplateProperty.builder()
                                 .name("bestemmingsplan")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.TEXT))
+                                .mandatory(false)
                                 .build())
                         .add(TemplateProperty.builder()
                                 .name("zoekgebied")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.TEXT))
+                                .mandatory(false)
                                 .build())
                         .add(TemplateProperty.builder()
                                 .name("opmerkingen_status")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.TEXT))
+                                .mandatory(false)
                                 .build())
 
                         .add(TemplateProperty.builder()
@@ -236,7 +246,6 @@ public class DataExchangeTemplate {
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.CATEGORY))
                                 .mandatory(false)
-                                .singleSelect(true)
                                 .options(List.of(
                                         "Centrum-stedelijk",
                                         "Buitencentrum",
@@ -250,7 +259,6 @@ public class DataExchangeTemplate {
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.CATEGORY))
                                 .mandatory(false)
-                                .singleSelect(true)
                                 .options(List.of(
                                         "Centrum-stedelijk-plus",
                                         "Centrum-stedelijk",
@@ -273,12 +281,14 @@ public class DataExchangeTemplate {
                                 .name("toelichting_knelpunten")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.TEXT))
+                                .mandatory(false)
                                 .build())
 
                         .add(TemplateProperty.builder()
                                 .name("verhuurder_type")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.CATEGORY))
+                                .mandatory(false)
                                 .options(List.of("Woningcorporatie", "Overig", "Combinatie", "Onbekend"))
                                 .build())
 
@@ -286,33 +296,39 @@ public class DataExchangeTemplate {
                                 .name("opmerkingen_kwalitatief")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.TEXT))
+                                .mandatory(false)
                                 .build())
 
                         .add(TemplateProperty.builder()
                                 .name("aantal_tijdelijke_woningen")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.NUMERIC))
+                                .mandatory(false)
                                 .build())
                         .add(TemplateProperty.builder()
                                 .name("aantal_nultreden_woningen")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.NUMERIC))
+                                .mandatory(false)
                                 .build())
                         .add(TemplateProperty.builder()
                                 .name("aantal_geclusterde_woningen")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.NUMERIC))
+                                .mandatory(false)
                                 .build())
                         .add(TemplateProperty.builder()
                                 .name("aantal_zorggeschikte_woningen")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.NUMERIC))
+                                .mandatory(false)
                                 .build())
 
                         .add(TemplateProperty.builder()
                                 .name("energieconcept")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.CATEGORY))
+                                .mandatory(false)
                                 .options(List.of(
                                         "1. Individueel All-Electric",
                                         "2. Hybride verwarming",
@@ -327,6 +343,7 @@ public class DataExchangeTemplate {
                                 .name("tapwatervoorziening")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.CATEGORY))
+                                .mandatory(false)
                                 .options(List.of(
                                         "1. LT warmtepomp lucht-water",
                                         "1. LT warmtepomp grond-water",
@@ -346,6 +363,7 @@ public class DataExchangeTemplate {
                                 .name("realisatiekans")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.CATEGORY))
+                                .mandatory(false)
                                 .options(List.of(
                                         "10%",
                                         "20%",
@@ -362,6 +380,7 @@ public class DataExchangeTemplate {
                                 .name("aandachtsgroepen")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.CATEGORY))
+                                .mandatory(false)
                                 .options(List.of(
                                         "Studenten",
                                         "Ouderen",
@@ -373,12 +392,14 @@ public class DataExchangeTemplate {
                                 .name("sleutelproject")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.CATEGORY))
+                                .mandatory(false)
                                 .options(List.of("Ja", "Nee", "Onbekend"))
                                 .build())
                         .add(TemplateProperty.builder()
                                 .name("onzelfstandige_wooneenheden")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.NUMERIC))
+                                .mandatory(false)
                                 .build())
                         .build())
                 .build();
