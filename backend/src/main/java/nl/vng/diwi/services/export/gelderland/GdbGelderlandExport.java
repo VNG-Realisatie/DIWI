@@ -264,6 +264,7 @@ public class GdbGelderlandExport {
         int Totaal_huur4 = 0;
         int Totaal_huur_onbekend = 0;
         int Totaal_eigendom_onbekend = 0;
+        int aantal_middenhuur_corporatie = 0;
 
         for (var b : project.getHouseblocks()) {
             final boolean gerealiseerd = b.getEndDate().isBefore(exportDate);
@@ -319,6 +320,11 @@ public class GdbGelderlandExport {
 
                 if (o.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE) {
                     Totaal_aantal_huurwoningen_corporatie += o.getOwnershipAmount();
+
+                    if (model.getOwnershipCategory() == OwnershipCategory.huur2 ||
+                            model.getOwnershipCategory() == OwnershipCategory.huur3) {
+                        aantal_middenhuur_corporatie += bouwFactor * model.getAmount();
+                    }
                 }
 
                 if (o.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE
@@ -377,6 +383,7 @@ public class GdbGelderlandExport {
         map.put("Totaal_huur4", Totaal_huur4);
         map.put("Totaal_huur_onbekend", Totaal_huur_onbekend);
         map.put("Totaal_eigendom_onbekend", Totaal_eigendom_onbekend);
+        map.put("aantal_middenhuur_corporatie", aantal_middenhuur_corporatie);
         return map;
 
     }
