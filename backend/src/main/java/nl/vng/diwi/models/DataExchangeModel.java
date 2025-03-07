@@ -181,7 +181,9 @@ public class DataExchangeModel {
         for (DataExchangePropertyModel dxPropModel : this.properties) {
             PropertyModel propertyModel = propertyModels.stream().filter(pm -> pm.getId().equals(dxPropModel.getCustomPropertyId())).findFirst().orElse(null);
             if (propertyModel == null) {
-                validationErrors.add(new ValidationError(dxPropModel.getName(), null, DxValidationError.MISSING_CUSTOM_PROP));
+                if (dxPropModel.getMandatory()){
+                    validationErrors.add(new ValidationError(dxPropModel.getName(), null, DxValidationError.MISSING_CUSTOM_PROP));
+                }
             } else if (propertyModel.getPropertyType() == PropertyType.CATEGORY && dxPropModel.getOptions() != null) {
                 Map<UUID, List<UUID>> diwiOptionToDxOption = new HashMap<>();
                 dxPropModel.getOptions().forEach(dxOption -> {
