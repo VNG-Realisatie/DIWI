@@ -4,6 +4,7 @@ import lombok.extern.log4j.Log4j2;
 import nl.vng.diwi.rest.VngServerErrorException;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+import org.apache.commons.lang3.NotImplementedException;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -216,5 +217,10 @@ public class GdbConversionService {
             executor.shutdownNow();
             Thread.currentThread().interrupt();
         }
+    }
+
+    public static File convertToGdb(File geojsonFile, File csvFile) {
+        // Insert implementation here.
+        throw new NotImplementedException();
     }
 }
