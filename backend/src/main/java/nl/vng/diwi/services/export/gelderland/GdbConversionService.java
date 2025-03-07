@@ -20,6 +20,7 @@ public class GdbConversionService {
     private static final String WORKING_DIR = environment.getOrDefault("GDB_DOWNLOAD_WORKING_DIR", "gdb_download_working_dir");
     private static final String GDB_NAME = environment.getOrDefault("GDB_FOLDER_NAME", "outputTest.gdb");
     private static final String ZIP_NAME = environment.getOrDefault("ZIP_FOLDER_NAME", "outputTest.zip");
+    private static final String ZIP_EXTENSION = ".zip";
     private static final int THREAD_COUNT = 4;
     private static final int MAX_RETRIES = 3;
 
@@ -37,7 +38,6 @@ public class GdbConversionService {
      * @throws VngServerErrorException if any error occurs during the conversion or ZIP creation
      */
     public static File convertToGdb(File geojsonFile, File csvFile) {
-
         validateFile(geojsonFile, "GeoJSON");
         validateFile(csvFile, "CSV");
 
@@ -56,11 +56,21 @@ public class GdbConversionService {
         // Wait for both processes to complete
         CompletableFuture.allOf(geojsonFuture, csvFuture).join();
 
-        // Delete old zip files
-        deleteFile(".zip");
-        createZipAsync();
+        // Ensure GDB exists before proceeding
+        if (!gdbFile.exists() || !gdbFile.isDirectory()) {
+            throw new VngServerErrorException("Failed to create the Geodatabase (GDB) file.");
+        }
+
+        deleteFile(ZIP_EXTENSION);
+
+        // Run ZIP creation and wait for it to finish
+        CompletableFuture<Void> zipFuture = CompletableFuture.runAsync(GdbConversionService::createZip, executor);
+        zipFuture.join();
+
         deleteFile(geojsonFile);
         deleteFile(csvFile);
+
+        shutdownExecutor();
 
         return zipFile;
     }
@@ -71,37 +81,35 @@ public class GdbConversionService {
         }
     }
 
-    private static void createZipAsync() {
-        executor.submit(() -> {
-            File gdbDirectory = new File(WORKING_DIR + "/" + GDB_NAME);
-            if (!gdbDirectory.exists() || !gdbDirectory.isDirectory()) {
-                throw new VngServerErrorException("The specified directory does not exist or is not a valid .gdb directory.");
+    private static void createZip() {
+        File gdbDirectory = new File(WORKING_DIR + "/" + GDB_NAME);
+        if (!gdbDirectory.exists() || !gdbDirectory.isDirectory()) {
+            throw new VngServerErrorException("The specified directory does not exist or is not a valid .gdb directory.");
+        }
+
+        String zipFilePath = gdbDirectory.getParent() + "/" + ZIP_NAME;
+        try (FileOutputStream fos = new FileOutputStream(zipFilePath);
+             ZipArchiveOutputStream zos = new ZipArchiveOutputStream(fos);
+             Stream<Path> fileStream = Files.walk(gdbDirectory.toPath()).parallel()) {
+
+            List<Path> fileList = fileStream
+                .filter(Files::isRegularFile)
+                .toList();
+
+            for (Path filePath : fileList) {
+                String zipEntryName = gdbDirectory.toPath().relativize(filePath).toString();
+                ZipArchiveEntry entry = new ZipArchiveEntry(filePath.toFile(), zipEntryName);
+                zos.putArchiveEntry(entry);
+                Files.copy(filePath, zos);
+                zos.closeArchiveEntry();
             }
 
-            String zipFilePath = gdbDirectory.getParent() + "/" + ZIP_NAME;
-            try (FileOutputStream fos = new FileOutputStream(zipFilePath);
-                 ZipArchiveOutputStream zos = new ZipArchiveOutputStream(fos);
-                 Stream<Path> fileStream = Files.walk(gdbDirectory.toPath()).parallel()) {
+            log.info("Successfully created ZIP file: {}", zipFilePath);
+            deleteFolder(gdbDirectory);
 
-                List<Path> fileList = fileStream.
-                    filter(Files::isRegularFile)
-                    .toList();
-
-                for (Path filePath : fileList) {
-                    String zipEntryName = gdbDirectory.toPath().relativize(filePath).toString();
-                    ZipArchiveEntry entry = new ZipArchiveEntry(filePath.toFile(), zipEntryName);
-                    zos.putArchiveEntry(entry);
-                    Files.copy(filePath, zos);
-                    zos.closeArchiveEntry();
-                }
-
-                log.info("Successfully created ZIP file: {}", zipFilePath);
-                deleteFolder(gdbDirectory);
-
-            } catch (IOException e) {
-                throw new VngServerErrorException("Error creating ZIP file: " + zipFilePath, e);
-            }
-        });
+        } catch (IOException e) {
+            throw new VngServerErrorException("Error creating ZIP file: " + zipFilePath, e);
+        }
     }
 
     private static void deleteFile(File file) {
@@ -168,6 +176,21 @@ public class GdbConversionService {
                 .forEach(GdbConversionService::deleteFile);
         } catch (IOException e) {
             throw new VngServerErrorException("Error deleting files in folder: " + WORKING_DIR, e);
+        }
+    }
+
+    private static void shutdownExecutor() {
+        log.info("Shutting down executor service...");
+        executor.shutdown();
+        try {
+            if (!executor.awaitTermination(30, TimeUnit.SECONDS)) {
+                log.warn("Executor did not terminate in time, forcing shutdown...");
+                executor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            log.error("Executor shutdown interrupted", e);
+            executor.shutdownNow();
+            Thread.currentThread().interrupt();
         }
     }
 }
