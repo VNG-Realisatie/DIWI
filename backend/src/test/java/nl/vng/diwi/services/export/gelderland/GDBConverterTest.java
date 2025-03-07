@@ -1,6 +1,8 @@
 package nl.vng.diwi.services.export.gelderland;
 
 import lombok.SneakyThrows;
+
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -12,6 +14,7 @@ import java.util.Comparator;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Disabled("We need to make sure the ogr tool is available on gitlab before enabling")
 public class GDBConverterTest {
 
     @Test
