@@ -1,6 +1,8 @@
 package nl.vng.diwi.services.export.gelderland;
 
 import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -12,12 +14,13 @@ import java.util.Comparator;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Log4j2
 public class GDBConverterTest {
 
     @Test
     @SneakyThrows
     public void testGDBConverter() {
-        //IMPORTANT : for this test to work you need to go to : Modify Run Configuration -> Environment -> Add -> GDB_DOWNLOAD_WORKING_DIR -> src/test/resources/GdbExportFiles/temp
+        //IMPORTANT : for this test to work you need to go to : Modify Run Configuration -> Environment -> Add -> GDB_DOWNLOAD_WORKING_DIR=src/test/resources/GdbExportFiles/temp
         Path baseDirPath = Paths.get("src/test/resources/GdbExportFiles").toAbsolutePath();
         Path tempDirPath = baseDirPath.resolve("temp");
         Files.createDirectories(tempDirPath);
@@ -25,8 +28,8 @@ public class GDBConverterTest {
         Path geojsonPath = baseDirPath.resolve("test.geojson");
         Path csvPath = baseDirPath.resolve("testLayer.csv");
 
-        System.out.println("GeoJSON exists: " + Files.exists(geojsonPath));
-        System.out.println("CSV exists: " + Files.exists(csvPath));
+        log.info("GeoJSON exists: {}", Files.exists(geojsonPath));
+        log.info("CSV exists: {}", Files.exists(csvPath));
 
         Path geojsonDestPath = tempDirPath.resolve("test.geojson");
         Path csvDestPath = tempDirPath.resolve("testLayer.csv");

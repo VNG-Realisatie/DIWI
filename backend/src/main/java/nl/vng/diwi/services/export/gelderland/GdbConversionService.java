@@ -9,17 +9,19 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Log4j2
 public class GdbConversionService {
 
-    private static final String WORKING_DIR = System.getenv().getOrDefault("GDB_DOWNLOAD_WORKING_DIR", "gdb_download_working_dir");
-    private static final String GDB_NAME = System.getenv().getOrDefault("GDB_FOLDER_NAME", "outputTest.gdb");
-    private static final String ZIP_NAME = System.getenv().getOrDefault("ZIP_FOLDER_NAME", "outputTest.zip");
+    private static final Map<String, String> environment = System.getenv();
+    private static final String WORKING_DIR = environment.getOrDefault("GDB_DOWNLOAD_WORKING_DIR", "gdb_download_working_dir");
+    private static final String GDB_NAME = environment.getOrDefault("GDB_FOLDER_NAME", "outputTest.gdb");
+    private static final String ZIP_NAME = environment.getOrDefault("ZIP_FOLDER_NAME", "outputTest.zip");
     private static final int THREAD_COUNT = 4;
+    private static final int MAX_RETRIES = 3;
 
     private static final ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
 
@@ -35,7 +37,6 @@ public class GdbConversionService {
      * @throws VngServerErrorException if any error occurs during the conversion or ZIP creation
      */
     public static File convertToGdb(File geojsonFile, File csvFile) {
-        long startTime = System.nanoTime();
 
         validateFile(geojsonFile, "GeoJSON");
         validateFile(csvFile, "CSV");
@@ -56,18 +57,10 @@ public class GdbConversionService {
         CompletableFuture.allOf(geojsonFuture, csvFuture).join();
 
         // Delete old zip files
-        deleteFilesWithExtension(WORKING_DIR, ".zip");
-
-        // Create the ZIP in parallel
+        deleteFile(".zip");
         createZipAsync();
-
-        // Cleanup input files
         deleteFile(geojsonFile);
         deleteFile(csvFile);
-
-        long endTime = System.nanoTime();
-        long duration = endTime - startTime;
-        log.info("Conversion to GDB and ZIP completed successfully in {} ms. ZIP file at: {}", duration / 1_000_000, zipFile.getAbsolutePath()); // Convert to milliseconds
 
         return zipFile;
     }
@@ -90,7 +83,9 @@ public class GdbConversionService {
                  ZipArchiveOutputStream zos = new ZipArchiveOutputStream(fos);
                  Stream<Path> fileStream = Files.walk(gdbDirectory.toPath()).parallel()) {
 
-                List<Path> fileList = fileStream.filter(Files::isRegularFile).collect(Collectors.toList());
+                List<Path> fileList = fileStream.
+                    filter(Files::isRegularFile)
+                    .toList();
 
                 for (Path filePath : fileList) {
                     String zipEntryName = gdbDirectory.toPath().relativize(filePath).toString();
@@ -110,10 +105,29 @@ public class GdbConversionService {
     }
 
     private static void deleteFile(File file) {
-        if (file.exists() && file.delete()) {
-            log.info("Deleted file: {}", file.getName());
-        } else {
-            log.error("Failed to delete file: {}", file.getName());
+        int retryCount = 0;
+        boolean deleted = false;
+
+        while (retryCount < MAX_RETRIES && !deleted) {
+            if (file.exists() && file.delete()) {
+                log.info("Deleted file: {}", file.getName());
+                deleted = true;
+            } else {
+                retryCount++;
+                log.warn("Failed to delete file: {}. Attempt {}/{}", file.getName(), retryCount, MAX_RETRIES);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    log.error("Thread interrupted while waiting to retry file deletion", e);
+                    break;
+                }
+            }
+        }
+
+        if (!deleted) {
+            log.error("Failed to delete file after {} attempts: {}", MAX_RETRIES, file.getName());
+            throw new VngServerErrorException("Failed to delete file: " + file.getName());
         }
     }
 
@@ -141,8 +155,8 @@ public class GdbConversionService {
         }
     }
 
-    private static void deleteFilesWithExtension(String folderPath, String extension) {
-        File folder = new File(folderPath);
+    private static void deleteFile(String extension) {
+        File folder = new File(WORKING_DIR);
         if (!folder.exists() || !folder.isDirectory()) {
             throw new VngServerErrorException("The specified path does not exist or is not a directory.");
         }
@@ -153,7 +167,7 @@ public class GdbConversionService {
                 .map(Path::toFile)
                 .forEach(GdbConversionService::deleteFile);
         } catch (IOException e) {
-            throw new VngServerErrorException("Error deleting files in folder: " + folderPath, e);
+            throw new VngServerErrorException("Error deleting files in folder: " + WORKING_DIR, e);
         }
     }
 }
