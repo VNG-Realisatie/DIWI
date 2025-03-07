@@ -130,7 +130,7 @@ public class DataExchangeService {
         state.setProjectUrl(model.getProjectUrl());
         state.setChangeStartDate(zdtNow);
         state.setCreateUser(repo.getReferenceById(User.class, loggedUserUuid));
-        state.setValid(getDefaultValidTypes().contains(model.getType()) || (isUpdate && model.getType() == ESRI_ZUID_HOLLAND));
+        state.setValid(getDefaultValidTypes().contains(model.getType()) || model.getValid());
         repo.persist(state);
     }
 
