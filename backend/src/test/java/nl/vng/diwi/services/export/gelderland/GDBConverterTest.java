@@ -14,7 +14,7 @@ import java.util.Comparator;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-//@Disabled("We need to make sure the ogr tool is available on gitlab before enabling")
+@Disabled("We need to make sure the ogr tool is available on gitlab before enabling")
 public class GDBConverterTest {
 
     @Test
