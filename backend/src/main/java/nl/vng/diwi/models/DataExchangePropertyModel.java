@@ -61,6 +61,7 @@ public class DataExchangePropertyModel {
                 optionModel.getPropertyOrdinalValueIds().add(option.getPropertyOrdinalValueId());
             }
         });
+        this.options = new ArrayList<>();
         this.options.addAll(optionsMap.values());
         this.options.sort(Comparator.comparing(DataExchangeOptionModel::getName));
     }

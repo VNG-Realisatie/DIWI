@@ -5,7 +5,10 @@ import static nl.vng.diwi.services.DataExchangeExportError.EXPORT_ERROR.MISSING_
 import static nl.vng.diwi.services.DataExchangeExportError.EXPORT_ERROR.MULTIPLE_SINGLE_SELECT_VALUES;
 import static nl.vng.diwi.services.export.ExportUtil.getOwnershipCategory;
 
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -82,6 +85,14 @@ public class GdbGelderlandExport {
 
         // TODO: create .zip file from .gdb and place it inside the gdb_download_working_dir : GdbConversionService.createZip();
         // TODO: delete .zip file after download : GdbConversionService.deleteFile(zipFile);
+
+        try {
+            var tempDir = Files.createTempDirectory("GdbGelderlandExport");
+            var geojsonFile = new File(tempDir.toFile(), "geojson.geojson");
+            Json.mapper.writeValue(geojsonFile, exportObject);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         // For now just return the json
         return output -> {
@@ -251,9 +262,9 @@ public class GdbGelderlandExport {
 
         for (var b : project.getHouseblocks()) {
             final boolean gerealiseerd = b.getEndDate().isBefore(exportDate);
+            final boolean bouw = b.getMutationKind() == MutationType.CONSTRUCTION;
+            final int bouwFactor = bouw ? 1 : -1;
 
-            boolean bouw = b.getMutationKind() == MutationType.CONSTRUCTION;
-            int bouwFactor = bouw ? 1 : -1;
             // totals for construction and for house types (single family, etc)
             if (bouw) {
                 Totaal_bouw += b.getMutationAmount();
@@ -274,6 +285,8 @@ public class GdbGelderlandExport {
                 }
             }
 
+            int huur_resterend = 0;
+            int koop_resterend = 0;
             // totals for ownership
             for (var o : b.getOwnershipValueList()) {
                 var model = createOwnershipValueModel(
@@ -306,18 +319,23 @@ public class GdbGelderlandExport {
                 if (o.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE
                         || o.getOwnershipType() == OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER) {
                     if (!gerealiseerd) {
+                        huur_resterend += bouwFactor * o.getOwnershipAmount();
                         Totaal_huur_resterend += bouwFactor * o.getOwnershipAmount();
                     }
                 } else if (o.getOwnershipType() == OwnershipType.KOOPWONING) {
                     if (!gerealiseerd) {
+                        koop_resterend += bouwFactor * o.getOwnershipAmount();
                         Totaal_koop_resterend += bouwFactor * o.getOwnershipAmount();
                     }
                 }
             }
-
+            if (!gerealiseerd) {
+                int resterend = bouwFactor * b.getMutationAmount();
+                Totaal_koop_huur_onbekend_resterend += resterend - huur_resterend - koop_resterend;
+            }
         }
 
-        Totaal_koop_huur_onbekend_resterend += Totaal_resterend - Totaal_huur_resterend - Totaal_koop_resterend;
+        // Totaal_koop_huur_onbekend_resterend += Totaal_resterend - Totaal_huur_resterend - Totaal_koop_resterend;
         // Totaal_koop_resterend += koop_resterend;
         // Totaal_huur_resterend += huur_resterend;
         // Totaal_resterend += resterend;

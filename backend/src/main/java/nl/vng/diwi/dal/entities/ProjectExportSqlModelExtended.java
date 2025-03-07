@@ -198,6 +198,7 @@ public class ProjectExportSqlModelExtended {
 
     @Data
     @NoArgsConstructor
+    @AllArgsConstructor
     public static class TextPropertyModel {
         private UUID propertyId;
         private String textValue;
