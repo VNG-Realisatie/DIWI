@@ -27,4 +27,8 @@ end-to-end-tests/results.xml
 
 *.orig
 
+# Test files
 backend/src/test/resources/GdbGelderlandTest/feature.actual.json
+backend/src/test/resources/GdbExportFiles/temp/outputTest.gdb/
+backend/src/test/resources/GdbExportFiles/temp/test.geojson
+backend/src/test/resources/GdbExportFiles/temp/testLayer.csv

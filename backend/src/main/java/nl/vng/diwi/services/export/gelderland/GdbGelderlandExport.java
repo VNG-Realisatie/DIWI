@@ -20,8 +20,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.poi.ss.formula.eval.NotImplementedException;
-import org.checkerframework.checker.units.qual.A;
-import org.checkerframework.checker.units.qual.C;
 import org.geojson.Crs;
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
@@ -123,9 +121,9 @@ public class GdbGelderlandExport {
         feature.setProperty("OBJECTID", objectId);
         feature.setProperty("GlobalID", project.getProjectId());
 
-        // feature.setProperty("Created", project.getCreationDate()); // TODO add to query
+        feature.setProperty("Created", project.getCreation_date());
         feature.setProperty("Editor", user.getFirstName() + " " + user.getLastName());
-        // feature.setProperty("Edited", project.getCreationDate()); // TODO add to query
+        feature.setProperty("Edited", project.getLast_edit_date());
 
         feature.setProperty("plannaam", project.getName());
         feature.setProperty("provincie", "Gelderland");
@@ -165,10 +163,6 @@ public class GdbGelderlandExport {
                 .collect(Collectors.toMap(
                         ProjectExportSqlModelExtended.NumericPropertyModel::getPropertyId,
                         ProjectExportSqlModelExtended.NumericPropertyModel::getSingleValueOrRangeModel));
-        Map<UUID, Boolean> projectBooleanCustomProps = project.getBooleanProperties().stream()
-                .collect(Collectors.toMap(
-                        ProjectExportSqlModelExtended.BooleanPropertyModel::getPropertyId,
-                        ProjectExportSqlModelExtended.BooleanPropertyModel::getBooleanValue));
         Map<UUID, List<UUID>> projectCategoricalCustomProps = project.getCategoryProperties().stream()
                 .collect(Collectors.toMap(
                         ProjectExportSqlModelExtended.CategoryPropertyModel::getPropertyId,
@@ -190,37 +184,6 @@ public class GdbGelderlandExport {
                     templateProperty,
                     dxPropertyModel);
         }
-
-        // regio // custom prop
-        // gemeente // custom prop
-        // woonplaats // custom prop
-        // opdrachtgever_type // custom prop
-        // opdrachtgever_naam // custom prop
-        // opmerkingen_basis // custom prop
-        // masterplan // custom prop - text
-        // bestemmingsplan // custom prop - text
-        // zoekgebied // custom prop
-
-        // opmerkingen_status // custom prop - text
-        // beoogd_woonmilieu_ABF5 // custom prop - cat
-        // beoogd_woonmilieu_ABF13 // custom prop - cat
-        // knelpunten _meerkeuze // custom prop
-        // toelichting_knelpunten // custom prop
-        // verhuurder_type // custom prop
-        // opmerkingen_kwalitatief // custom prop
-
-        // aantal_tijdelijke_woningen // custom prop
-        // aantal_nultreden_woningen // custom prop
-        // aantal_geclusterde_woningen // custom prop
-        // aantal_zorggeschikte_woningen // custom prop
-
-        // energieconcept // custom prop
-        // tapwatervoorziening // custom prop
-        // realisatiekans // custom prop
-        // aandachtsgroepen// custom prop
-        // sleutelproject // custom prop
-        // aantal_middenhuur_corporatie
-        // onzelfstandige_wooneenheden // custom prop
 
         return feature;
     }
@@ -287,6 +250,7 @@ public class GdbGelderlandExport {
 
             int huur_resterend = 0;
             int koop_resterend = 0;
+
             // totals for ownership
             for (var o : b.getOwnershipValueList()) {
                 var model = createOwnershipValueModel(
@@ -340,11 +304,6 @@ public class GdbGelderlandExport {
             }
         }
 
-        // Totaal_koop_huur_onbekend_resterend += Totaal_resterend - Totaal_huur_resterend - Totaal_koop_resterend;
-        // Totaal_koop_resterend += koop_resterend;
-        // Totaal_huur_resterend += huur_resterend;
-        // Totaal_resterend += resterend;
-
         Totaal_netto = Totaal_bouw - Totaal_sloop;
         Totaal_netto_gerealiseerd = Totaal_gerealiseerd - Totaal_sloop_gerealiseerd;
         Totaal_netto_resterend = Totaal_resterend - Totaal_sloop_resterend;
@@ -379,7 +338,6 @@ public class GdbGelderlandExport {
         map.put("Totaal_eigendom_onbekend", Totaal_eigendom_onbekend);
         map.put("aantal_middenhuur_corporatie", aantal_middenhuur_corporatie);
         return map;
-
     }
 
     private static String mapPlanStatus(List<PlanStatus> planningPlanStatus) {

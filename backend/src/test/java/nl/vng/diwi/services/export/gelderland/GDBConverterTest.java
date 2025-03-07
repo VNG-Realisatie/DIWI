@@ -1,8 +1,8 @@
 package nl.vng.diwi.services.export.gelderland;
 
 import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
-import lombok.extern.slf4j.Slf4j;
+
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -14,7 +14,7 @@ import java.util.Comparator;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Log4j2
+@Disabled("We need to make sure the ogr tool is available on gitlab before enabling")
 public class GDBConverterTest {
 
     @Test
@@ -27,9 +27,6 @@ public class GDBConverterTest {
 
         Path geojsonPath = baseDirPath.resolve("test.geojson");
         Path csvPath = baseDirPath.resolve("testLayer.csv");
-
-        log.info("GeoJSON exists: {}", Files.exists(geojsonPath));
-        log.info("CSV exists: {}", Files.exists(csvPath));
 
         Path geojsonDestPath = tempDirPath.resolve("test.geojson");
         Path csvDestPath = tempDirPath.resolve("testLayer.csv");

@@ -26,7 +26,9 @@ CREATE OR REPLACE FUNCTION diwi.get_projects_export_list_extended (
         geometries TEXT[],
         houseblocks JSONB,
         projectPhaseStartDateList JSONB,
-        projectPlanStatusStartDateList JSONB
+        projectPlanStatusStartDateList JSONB,
+        creation_date DATE,
+        last_edit_date DATE
     )
     LANGUAGE plpgsql
 AS $$
@@ -52,7 +54,9 @@ SELECT  q.projectId,
         q.geometries,
         q.houseblocks,
         q.projectPhaseStartDateList,
-        q.projectPlanStatusStartDateList
+        q.projectPlanStatusStartDateList,
+        q.creation_date::date,
+        q.last_edit_date::date
 FROM (
 
     WITH
@@ -107,6 +111,16 @@ FROM (
                         WHEN _allowed_confidentialities_ IS NOT NULL THEN ps.confidentiality_level::TEXT = ANY(_allowed_confidentialities_)
                         WHEN _allowed_projects_ IS NOT NULL THEN p.id = ANY(_allowed_projects_)
                     END
+        ),
+        project_last_edit_date AS (
+            SELECT ps.project_id, max(ps.change_start_date) as last_edit_date
+            FROM diwi.project_state ps
+            GROUP BY ps.project_id
+        ),
+        project_creation_date AS (
+            SELECT ps.project_id, min(ps.change_start_date) as creation_date
+            FROM diwi.project_state ps
+            GROUP BY ps.project_id
         ),
         project_group_owners AS (
             WITH project_group_info AS (
@@ -498,26 +512,28 @@ FROM (
                 GROUP BY hb.project_id
         )
 
-    SELECT pp.id                    AS projectId,
-           ppn.name                 AS projectName,
-           pp.confidentiality       AS confidentiality,
-           pp.startDate             AS startDate,
-           pp.endDate               AS endDate,
-           pppt.plan_types          AS planType,
-           ppf.project_fase         AS projectPhase,
-           pgo.owners               AS ownerGroupList,
-           pppp.planning_planstatus AS planningPlanStatus,
-           pprp.realization_phase_start_date AS realizationPhaseDate,
-           pppp1.planstatus_phase1_date AS planStatusPhase1Date,
-           ppt.text_properties      AS textProperties,
-           ppnp.numeric_properties  AS numericProperties,
-           ppb.boolean_properties   AS booleanProperties,
-           ppc.category_properties  AS categoryProperties,
-           poc.ordinal_properties   AS ordinalProperties,
-           ppg.geometries           AS geometries,
-           pph.houseblocks          AS houseblocks,
-           pphl.phase_history       AS projectPhaseStartDateList,
-           ppshl.planstatus_history AS projectPlanStatusStartDateList
+    SELECT pp.id                                    AS projectId,
+           ppn.name                                 AS projectName,
+           pp.confidentiality                       AS confidentiality,
+           pp.startDate                             AS startDate,
+           pp.endDate                               AS endDate,
+           pppt.plan_types                          AS planType,
+           ppf.project_fase                         AS projectPhase,
+           pgo.owners                               AS ownerGroupList,
+           pppp.planning_planstatus                 AS planningPlanStatus,
+           pprp.realization_phase_start_date        AS realizationPhaseDate,
+           pppp1.planstatus_phase1_date             AS planStatusPhase1Date,
+           ppt.text_properties                      AS textProperties,
+           ppnp.numeric_properties                  AS numericProperties,
+           ppb.boolean_properties                   AS booleanProperties,
+           ppc.category_properties                  AS categoryProperties,
+           poc.ordinal_properties                   AS ordinalProperties,
+           ppg.geometries                           AS geometries,
+           pph.houseblocks                          AS houseblocks,
+           pphl.phase_history                       AS projectPhaseStartDateList,
+           ppshl.planstatus_history                 AS projectPlanStatusStartDateList,
+           project_creation_date.creation_date      AS creation_date,
+           project_last_edit_date.last_edit_date    AS last_edit_date
     FROM
         projects pp
             LEFT JOIN project_names ppn ON ppn.project_id = pp.id
@@ -536,6 +552,8 @@ FROM (
             LEFT JOIN project_phase_history pphl ON pphl.project_id = pp.id
             LEFT JOIN project_planstatus_history ppshl ON ppshl.project_id = pp.id
             LEFT JOIN project_group_owners pgo ON pgo.project_id = pp.id
+            LEFT JOIN project_creation_date project_creation_date ON project_creation_date.project_id = pp.id
+            LEFT JOIN project_last_edit_date project_last_edit_date ON project_last_edit_date.project_id = pp.id
 
 ) AS q
 

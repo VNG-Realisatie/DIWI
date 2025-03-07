@@ -81,6 +81,8 @@ public class GdbGelderlandExportTest {
         ProjectExportSqlModelExtended project = ProjectExportSqlModelExtended.builder()
                 .projectId(UUID.fromString("fdd87435-025f-48ed-a2b4-d765246040cd"))
                 .name("project name")
+                .creation_date(LocalDate.of(2025,1,1))
+                .last_edit_date(LocalDate.of(2025,2,1))
                 .geometries(List.of(ProjectsUtil.PLOT_JSON_STRING))
                 .confidentiality(Confidentiality.EXTERNAL_GOVERNMENTAL)
                 .projectPhase(ProjectPhase._5_PREPARATION)
@@ -134,13 +136,6 @@ public class GdbGelderlandExportTest {
                                 .endDate(LocalDate.of(2025, 3, 3))
                                 .build()))
                 .build();
-
-        // Create the mapping from custom props to dx props
-        // Map<String, DataExchangePropertyModel> dxPropertiesMap = new HashMap<>();
-        // dxPropertiesMap.put("opdrachtgever_naam", DataExchangePropertyModel.builder()
-        // .customPropertyId(customPropMap.get("text").getId())
-        // .name("opdrachtgever_naam")
-        // .build());
 
         var template = DataExchangeTemplate.templates.get(DataExchangeType.GDB_GELDERLAND);
         Map<String, DataExchangePropertyModel> dxPropertiesMap = template.getProperties().stream()
