@@ -234,10 +234,13 @@ public class GdbGelderlandExport {
                 if (gerealiseerd) {
                     Totaal_gerealiseerd += b.getMutationAmount();
                 } else {
+                    int eengezinswoning = b.getEengezinswoning() == null? 0:b.getEengezinswoning();
+                    int meergezinswoning = b.getMeergezinswoning() == null? 0:b.getMeergezinswoning();
+
                     Totaal_resterend += b.getMutationAmount();
-                    Totaal_meergezins_resterend += b.getMeergezinswoning();
-                    Totaal_eengezins_resterend += b.getEengezinswoning();
-                    Totaal_type_onbekend_resterend = b.getMutationAmount() - b.getMeergezinswoning() - b.getEengezinswoning();
+                    Totaal_meergezins_resterend += meergezinswoning;
+                    Totaal_eengezins_resterend += eengezinswoning;
+                    Totaal_type_onbekend_resterend = b.getMutationAmount() - meergezinswoning - eengezinswoning;
                 }
             } else {
                 Totaal_sloop += b.getMutationAmount();
