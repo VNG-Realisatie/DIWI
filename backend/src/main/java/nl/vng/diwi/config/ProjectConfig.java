@@ -59,6 +59,8 @@ public class ProjectConfig {
     private final ConfigModel configModel = new ConfigModel();
     private final MailConfig mailConfig;
 
+    private final String ogr2ogrPath;
+
     public ProjectConfig(Map<String, String> env) throws InvalidConfigException {
         this.baseUrl = getURL(env, "BASE_URL");
 
@@ -85,6 +87,7 @@ public class ProjectConfig {
         this.dbPass = env.getOrDefault("DIWI_DB_PASSWORD", "diwi");
 
         this.dataDir = env.getOrDefault("DATA_DIR", "/data");
+        this.ogr2ogrPath = env.getOrDefault("OGR2OGR_PATH", "/usr/bin/ogr2ogr");
 
         if (kcAuthServerUrl != null) {
             final KeycloakOidcConfiguration keycloakConfig = new KeycloakOidcConfiguration();

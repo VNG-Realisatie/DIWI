@@ -1,5 +1,6 @@
 package nl.vng.diwi.services.export.zuidholland;
 
+
 import jakarta.ws.rs.core.StreamingOutput;
 import nl.vng.diwi.dal.entities.DataExchangeType;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
@@ -18,6 +19,7 @@ import nl.vng.diwi.models.SelectModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
 import nl.vng.diwi.services.DataExchangeExportError;
 import nl.vng.diwi.services.export.ExportUtil;
+import nl.vng.diwi.services.export.OwnershipCategory;
 
 import org.apache.poi.ss.formula.eval.NotImplementedException;
 import org.geojson.Crs;
@@ -235,7 +237,7 @@ public class EsriZuidHollandExport {
                     for (var h : houseblockExportModels) {
                         for (var o : h.getOwnershipValueList()) {
                             if (o.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE &&
-                                (o.getOwnershipCategory() == EsriZuidHollandHouseblockExportModel.OwnershipCategory.huur1 || o.getOwnershipCategory() == EsriZuidHollandHouseblockExportModel.OwnershipCategory.huur2)) {
+                                (o.getOwnershipCategory() == OwnershipCategory.huur1 || o.getOwnershipCategory() == OwnershipCategory.huur2)) {
                                 if (h.getMutationKind() == MutationType.CONSTRUCTION) {
                                     phShor3Val += o.getAmount();
                                 } else {
@@ -250,7 +252,7 @@ public class EsriZuidHollandExport {
                     int phShor4Val = 0;
                     for (var h : houseblockExportModels) {
                         for (var o : h.getOwnershipValueList()) {
-                            if (o.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE && o.getOwnershipCategory() == EsriZuidHollandHouseblockExportModel.OwnershipCategory.huur3 ) {
+                            if (o.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE && o.getOwnershipCategory() == OwnershipCategory.huur3 ) {
                                 if (h.getMutationKind() == MutationType.CONSTRUCTION) {
                                     phShor4Val += o.getAmount();
                                 } else {
@@ -307,7 +309,7 @@ public class EsriZuidHollandExport {
         return projectFeature;
     }
 
-    private static void addMappedProperty(
+    public static void addMappedProperty(
             ProjectExportSqlModel project,
             Map<UUID, PropertyModel> customPropsMap,
             Map<String, DataExchangePropertyModel> dxPropertiesMap,
@@ -505,7 +507,6 @@ public class EsriZuidHollandExport {
 
         Map<EsriZuidHollandHouseblockProps, Integer> constructionValuesMap = constructionHbTotals.calculateHouseTypeOwnershipValuesMap();
         Map<EsriZuidHollandHouseblockProps, Integer> demolitionValuesMap = demolitionHbTotals.calculateHouseTypeOwnershipValuesMap();
-
 
         for (var prop : EsriZuidHollandHouseblockProps.values()) {
             switch (prop) {

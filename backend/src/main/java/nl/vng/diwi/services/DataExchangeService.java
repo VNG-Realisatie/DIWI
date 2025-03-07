@@ -277,13 +277,13 @@ public class DataExchangeService {
                 customProps);
 
             case GDB_GELDERLAND -> GdbGelderlandExport.buildExportObject(
-                configModel,
-                repo.getProjectsDAO().getProjectsExportList(dxExportModel, loggedUser),
+                repo.getProjectsDAO().getProjectsExportListExtended(dxExportModel, loggedUser),
                 customProps,
                 dxPropertiesMap,
                 dxExportModel.getExportDate(),
                 templateMinConfidentiality,
-                errors);
+                errors,
+                loggedUser);
         };
 
     }

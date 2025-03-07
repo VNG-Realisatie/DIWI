@@ -57,6 +57,25 @@ public class DataExchangeTemplate {
     public static final ImmutableMap<DataExchangeType, DataExchangeTemplate> templates;
 
     static {
+        var zuidHollandTemplate = createZuidHollandTemplate();
+
+        var gelderlandTemplate = createGelderlandTemplate();
+
+        var geoJSONTemplate = new DataExchangeTemplate();
+        geoJSONTemplate.setMinimumConfidentiality(Confidentiality.PRIVATE);
+
+        var excelTemplate = new DataExchangeTemplate();
+        excelTemplate.setMinimumConfidentiality(Confidentiality.PRIVATE);
+
+        templates = new ImmutableMap.Builder<DataExchangeType, DataExchangeTemplate>()
+                .put(DataExchangeType.ESRI_ZUID_HOLLAND, zuidHollandTemplate)
+                .put(DataExchangeType.GEO_JSON, geoJSONTemplate)
+                .put(DataExchangeType.EXCEL, excelTemplate)
+                .put(DataExchangeType.GDB_GELDERLAND, gelderlandTemplate)
+                .build();
+    }
+
+    private static DataExchangeTemplate createZuidHollandTemplate() {
         var zuidHollandTemplate = new DataExchangeTemplate();
 
         zuidHollandTemplate.properties.add(new TemplateProperty(
@@ -144,8 +163,11 @@ public class DataExchangeTemplate {
                 .add(new TemplateProperty(EsriZuidHollandProjectProps.ph_short8.name(), ObjectType.PROJECT, List.of(PropertyType.NUMERIC), false, null, null));
         zuidHollandTemplate.properties
                 .add(new TemplateProperty(EsriZuidHollandProjectProps.ph_short9.name(), ObjectType.PROJECT, List.of(PropertyType.NUMERIC), false, null, null));
+        return zuidHollandTemplate;
+    }
 
-        var gelderlandTemplate = DataExchangeTemplate.builder()
+    private static DataExchangeTemplate createGelderlandTemplate() {
+        return DataExchangeTemplate.builder()
                 .properties(ImmutableList.<TemplateProperty>builder()
                         .add(TemplateProperty.builder()
                                 .name("gemeente")
@@ -253,7 +275,7 @@ public class DataExchangeTemplate {
                                 .name("verhuurder_type")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.CATEGORY))
-                                .options(List.of()) // TODO: What options
+                                .options(List.of("Woningcorporatie", "Overig", "Combinatie", "Onbekend"))
                                 .build())
 
                         .add(TemplateProperty.builder()
@@ -347,7 +369,7 @@ public class DataExchangeTemplate {
                                 .name("sleutelproject")
                                 .objectType(ObjectType.PROJECT)
                                 .propertyTypes(List.of(PropertyType.CATEGORY))
-                                .options(List.of()) // TODO: What options
+                                .options(List.of("Ja", "Nee", "Onbekend"))
                                 .build())
                         .add(TemplateProperty.builder()
                                 .name("onzelfstandige_wooneenheden")
@@ -356,21 +378,11 @@ public class DataExchangeTemplate {
                                 .build())
                         .build())
                 .build();
-
-        var geoJSONTemplate = new DataExchangeTemplate();
-        geoJSONTemplate.setMinimumConfidentiality(Confidentiality.PRIVATE);
-
-        var excelTemplate = new DataExchangeTemplate();
-        excelTemplate.setMinimumConfidentiality(Confidentiality.PRIVATE);
-
-        templates = new ImmutableMap.Builder<DataExchangeType, DataExchangeTemplate>()
-                .put(DataExchangeType.ESRI_ZUID_HOLLAND, zuidHollandTemplate)
-                .put(DataExchangeType.GEO_JSON, geoJSONTemplate)
-                .put(DataExchangeType.EXCEL, excelTemplate)
-                .put(DataExchangeType.GDB_GELDERLAND, gelderlandTemplate)
-                .build();
     }
 
+    /*
+     * For e.g. loading a lot of options
+     */
     private static List<String> loadStringListFromResource(String name) {
         try {
             return Arrays.asList(ResourceUtil.getResourceAsString(name).split("\n"));
