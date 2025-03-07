@@ -708,6 +708,8 @@
         "error": {
           "required": "{{field}} is verplicht"
         },
+        "hideOptions": "Verberg opties",
+        "showOptions": "Toon opties",
         "deleteConfirmation": "Weet je zeker dat je deze export wilt verwijderen?",
         "notification": {
           "created": "Export succesvol aangemaakt",

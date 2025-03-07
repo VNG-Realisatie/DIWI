@@ -61,6 +61,14 @@ function ExportAdminPage() {
     const { allowedActions } = useContext(UserContext);
     const navigate = useNavigate();
     const [exportTypes, setExportTypes] = useState<ExportType[]>([]);
+    const [visibleOptions, setVisibleOptions] = useState<{ [key: string]: boolean }>({});
+
+    const toggleOptions = (propertyId: string) => {
+        setVisibleOptions((prev) => ({
+            ...prev,
+            [propertyId]: !prev[propertyId],
+        }));
+    };
 
     //can be mapped using exportTypes, but fields need to be clarified, so hardcoded for now.
     const typeConfig: TypeConfig = useMemo(
@@ -323,6 +331,17 @@ function ExportAdminPage() {
                                 error={error ? t(`exchangeData.validationErrors.${error.errorCode}`) : ""}
                             />
                             {selectedOption &&
+                                property.id &&
+                                (selectedOption.propertyType === "CATEGORY" || selectedOption.propertyType === "ORDINAL") &&
+                                property.options &&
+                                property.options.length > 0 && (
+                                    <Button onClick={() => property.id && toggleOptions(property.id)}>
+                                        {!visibleOptions[property.id] ? t("admin.export.hideOptions") : t("admin.export.showOptions")}
+                                    </Button>
+                                )}
+                            {property.id &&
+                                !visibleOptions[property.id] &&
+                                selectedOption &&
                                 (selectedOption.propertyType === "CATEGORY" || selectedOption.propertyType === "ORDINAL") &&
                                 property?.options?.map((option, optionIndex) => (
                                     <Box key={optionIndex} marginLeft={10}>
