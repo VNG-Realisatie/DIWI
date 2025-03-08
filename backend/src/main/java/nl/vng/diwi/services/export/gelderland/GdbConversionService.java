@@ -26,14 +26,12 @@ public class GdbConversionService {
 
     private static final ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
 
-
     /**
-     * Converts GeoJSON and CSV files to a GDB (Geodatabase) format and creates a ZIP archive.
-     * This method validates the input files, runs the conversion commands in parallel,
-     * deletes old ZIP files, creates a new ZIP archive, and cleans up the input files.
+     * Converts GeoJSON and CSV files to a GDB (Geodatabase) format and creates a ZIP archive. This method validates the input files, runs the conversion
+     * commands in parallel, deletes old ZIP files, creates a new ZIP archive, and cleans up the input files.
      *
      * @param geojsonFile the GeoJSON file to be converted
-     * @param csvFile the CSV file to be converted
+     * @param csvFile     the CSV file to be converted
      * @return the created ZIP file
      * @throws VngServerErrorException if any error occurs during the conversion or ZIP creation
      */
@@ -41,36 +39,21 @@ public class GdbConversionService {
         validateFile(geojsonFile, "GeoJSON");
         validateFile(csvFile, "CSV");
 
-        File gdbFile = new File(geojsonFile.getParent(), GDB_NAME);
-        File zipFile = new File(geojsonFile.getParent(), ZIP_NAME);
+        String workingDir = geojsonFile.getParent();
+        File gdbDir = new File(workingDir, GDB_NAME);
 
-        // Run ogr2ogr commands in parallel
-        CompletableFuture<Void> geojsonFuture = CompletableFuture.runAsync(() -> {
-            executeCommand(String.format("ogr2ogr -f OpenFileGDB %s %s", gdbFile.getAbsolutePath(), geojsonFile.getAbsolutePath()), geojsonFile.getParentFile());
-        }, executor);
-
-        CompletableFuture<Void> csvFuture = CompletableFuture.runAsync(() -> {
-            executeCommand(String.format("ogr2ogr -nln DetailPlanning -f OpenFileGDB %s %s -update", gdbFile.getAbsolutePath(), csvFile.getAbsolutePath()), csvFile.getParentFile());
-        }, executor);
-
-        // Wait for both processes to complete
-        CompletableFuture.allOf(geojsonFuture, csvFuture).join();
-
+        executeCommand(String.format("ogr2ogr -f OpenFileGDB %s %s", gdbDir.getAbsolutePath(), geojsonFile.getAbsolutePath()), geojsonFile.getParentFile());
+        executeCommand(String.format("ogr2ogr -nln DetailPlanning -f OpenFileGDB %s %s -update", gdbDir.getAbsolutePath(), csvFile.getAbsolutePath()),
+                csvFile.getParentFile());
         // Ensure GDB exists before proceeding
-        if (!gdbFile.exists() || !gdbFile.isDirectory()) {
+        if (!gdbDir.exists() || !gdbDir.isDirectory()) {
             throw new VngServerErrorException("Failed to create the Geodatabase (GDB) file.");
         }
 
-        deleteFile(ZIP_EXTENSION);
-
-        // Run ZIP creation and wait for it to finish
-        CompletableFuture<Void> zipFuture = CompletableFuture.runAsync(GdbConversionService::createZip, executor);
-        zipFuture.join();
+        var zipFile = createZip(gdbDir);
 
         deleteFile(geojsonFile);
         deleteFile(csvFile);
-
-        shutdownExecutor();
 
         return zipFile;
     }
@@ -81,35 +64,33 @@ public class GdbConversionService {
         }
     }
 
-    private static void createZip() {
-        File gdbDirectory = new File(WORKING_DIR + "/" + GDB_NAME);
-        if (!gdbDirectory.exists() || !gdbDirectory.isDirectory()) {
-            throw new VngServerErrorException("The specified directory does not exist or is not a valid .gdb directory.");
-        }
-
-        String zipFilePath = gdbDirectory.getParent() + "/" + ZIP_NAME;
-        try (FileOutputStream fos = new FileOutputStream(zipFilePath);
-             ZipArchiveOutputStream zos = new ZipArchiveOutputStream(fos);
-             Stream<Path> fileStream = Files.walk(gdbDirectory.toPath()).parallel()) {
+    private static File createZip(File gdbDir) {
+        var gdbDirPath = gdbDir.toPath();
+        var zipFile = new File(gdbDir.getAbsolutePath() + ".zip");
+        try (FileOutputStream fos = new FileOutputStream(zipFile);
+                ZipArchiveOutputStream zos = new ZipArchiveOutputStream(fos);
+                Stream<Path> fileStream = Files.walk(gdbDirPath).parallel()) {
 
             List<Path> fileList = fileStream
-                .filter(Files::isRegularFile)
-                .toList();
+                    .filter(Files::isRegularFile)
+                    .toList();
 
             for (Path filePath : fileList) {
-                String zipEntryName = gdbDirectory.toPath().relativize(filePath).toString();
+                String zipEntryName = gdbDirPath.relativize(filePath).toString();
                 ZipArchiveEntry entry = new ZipArchiveEntry(filePath.toFile(), zipEntryName);
                 zos.putArchiveEntry(entry);
                 Files.copy(filePath, zos);
                 zos.closeArchiveEntry();
             }
 
-            log.info("Successfully created ZIP file: {}", zipFilePath);
-            deleteFolder(gdbDirectory);
+            log.info("Successfully created ZIP file: {}", zipFile);
+            deleteFolder(gdbDir);
 
         } catch (IOException e) {
-            throw new VngServerErrorException("Error creating ZIP file: " + zipFilePath, e);
+            throw new VngServerErrorException("Error creating ZIP file: " + zipFile, e);
         }
+
+        return zipFile;
     }
 
     private static void deleteFile(File file) {
@@ -143,9 +124,9 @@ public class GdbConversionService {
         try {
             log.info("Executing command: {}", command);
             Process process = new ProcessBuilder("bash", "-c", command)
-                .directory(workingDir)
-                .inheritIO()
-                .start();
+                    .directory(workingDir)
+                    .inheritIO()
+                    .start();
             process.waitFor();
             log.info("Command executed successfully.");
         } catch (IOException | InterruptedException e) {
@@ -156,8 +137,8 @@ public class GdbConversionService {
     private static void deleteFolder(File folder) {
         try (Stream<Path> walk = Files.walk(folder.toPath())) {
             walk.sorted(Comparator.reverseOrder())
-                .map(Path::toFile)
-                .forEach(GdbConversionService::deleteFile);
+                    .map(Path::toFile)
+                    .forEach(GdbConversionService::deleteFile);
         } catch (IOException e) {
             throw new VngServerErrorException("Error deleting folder: " + folder.getName(), e);
         }
@@ -171,9 +152,9 @@ public class GdbConversionService {
 
         try (Stream<Path> fileStream = Files.list(folder.toPath())) {
             fileStream.parallel()
-                .filter(path -> path.toString().endsWith(extension))
-                .map(Path::toFile)
-                .forEach(GdbConversionService::deleteFile);
+                    .filter(path -> path.toString().endsWith(extension))
+                    .map(Path::toFile)
+                    .forEach(GdbConversionService::deleteFile);
         } catch (IOException e) {
             throw new VngServerErrorException("Error deleting files in folder: " + WORKING_DIR, e);
         }

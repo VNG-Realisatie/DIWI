@@ -3,6 +3,9 @@ package nl.vng.diwi.services.export.gelderland;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.StringReader;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -48,6 +51,137 @@ import nl.vng.diwi.testutil.ProjectsUtil;
 
 public class GdbGelderlandExportTest {
     @Test
+    void createGdb() throws Exception {
+        // Some constants
+        LocalDate exportDate = LocalDate.of(2025, 3, 2); // Same as middle house block so we have future and past blocks
+        Confidentiality minConfidentiality = Confidentiality.EXTERNAL_REGIONAL;
+        LoggedUser user = LoggedUser.builder()
+                .firstName("first")
+                .lastName("last")
+                .build();
+
+        // Create some custom props
+        List<PropertyModel> customProps = List.of(
+                PropertyModel.builder()
+                        .id(UUID.randomUUID())
+                        .name("text")
+                        .objectType(ObjectType.PROJECT)
+                        .propertyType(PropertyType.TEXT)
+                        .build(),
+                PropertyModel.builder()
+                        .id(UUID.randomUUID())
+                        .name(PropertyType.NUMERIC.name())
+                        .objectType(ObjectType.PROJECT)
+                        .propertyType(PropertyType.NUMERIC)
+                        .build());
+
+        // Make it easy to find the custom prop
+        var customPropMap = customProps.stream()
+                .collect(Collectors.toMap(PropertyModel::getName, p -> p));
+
+        // Create a project with some blocks
+        ProjectExportSqlModelExtended project = ProjectExportSqlModelExtended.builder()
+                .projectId(UUID.fromString("fdd87435-025f-48ed-a2b4-d765246040cd"))
+                .name("project name")
+                .creation_date(LocalDate.of(2025, 1, 1))
+                .last_edit_date(LocalDate.of(2025, 2, 1))
+                .geometries(List.of(ProjectsUtil.PLOT_JSON_STRING))
+                .confidentiality(Confidentiality.EXTERNAL_GOVERNMENTAL)
+                .projectPhase(ProjectPhase._5_PREPARATION)
+                .planType(List.of(PlanType.TRANSFORMATIEGEBIED))
+                .planningPlanStatus(List.of(PlanStatus._2B_VASTGESTELD_MET_UITWERKING_NODIG))
+                .textProperties(List.of(
+                        new TextPropertyModel(customPropMap.get("text").getId(), "text_value")))
+                .numericProperties(List.of(
+                        new NumericPropertyModel(customPropMap.get(PropertyType.NUMERIC.name()).getId(), BigDecimal.valueOf(17), null, null)))
+                .houseblocks(List.of(
+                        HouseblockExportSqlModel.builder()
+                                .name("block1")
+                                .mutationAmount(4)
+                                .mutationKind(MutationType.CONSTRUCTION)
+                                .ownershipValueList(List.of(
+                                        OwnershipValueSqlModel.builder()
+                                                .ownershipAmount(4)
+                                                .ownershipType(OwnershipType.HUURWONING_WONINGCORPORATIE)
+                                                .ownershipRentalValue(100l)
+                                                .build()))
+                                .meergezinswoning(4)
+                                .eengezinswoning(0)
+                                .endDate(LocalDate.of(2025, 3, 1))
+                                .build(),
+                        HouseblockExportSqlModel.builder()
+                                .name("block2")
+                                .mutationAmount(2)
+                                .mutationKind(MutationType.CONSTRUCTION)
+                                .ownershipValueList(List.of(
+                                        OwnershipValueSqlModel.builder()
+                                                .ownershipAmount(2)
+                                                .ownershipType(OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER)
+                                                .ownershipRentalValue(100l)
+                                                .build()))
+                                .meergezinswoning(0)
+                                .eengezinswoning(2)
+                                .endDate(LocalDate.of(2025, 3, 2))
+                                .build(),
+                        HouseblockExportSqlModel.builder()
+                                .name("block3")
+                                .mutationAmount(1)
+                                .mutationKind(MutationType.DEMOLITION)
+                                .ownershipValueList(List.of(
+                                        OwnershipValueSqlModel.builder()
+                                                .ownershipAmount(1)
+                                                .ownershipType(OwnershipType.KOOPWONING)
+                                                .ownershipValue(100l)
+                                                .build()))
+                                .meergezinswoning(0)
+                                .eengezinswoning(1)
+                                .endDate(LocalDate.of(2025, 3, 3))
+                                .build()))
+                .build();
+
+        var template = DataExchangeTemplate.templates.get(DataExchangeType.GDB_GELDERLAND);
+        Map<String, DataExchangePropertyModel> dxPropertiesMap = template.getProperties().stream()
+                .map(dxProp -> {
+                    DataExchangePropertyModelBuilder builder = DataExchangePropertyModel.builder()
+                            .name(dxProp.getName());
+                    if (dxProp.getPropertyTypes().contains(PropertyType.TEXT)) {
+                        return builder.customPropertyId(customPropMap.get("text").getId())
+                                .build();
+                    } else if (dxProp.getPropertyTypes().contains(PropertyType.NUMERIC)) {
+                        return builder.customPropertyId(customPropMap.get(PropertyType.NUMERIC.name()).getId())
+                                .build();
+                    }
+                    return null;
+                })
+                .filter(dxProp -> dxProp != null)
+                .collect(Collectors.toMap(DataExchangePropertyModel::getName, d -> d));
+
+        List<DataExchangeExportError> errors = new ArrayList<>();
+
+        var result = GdbGelderlandExport.buildExportObject(List.of(project), customProps, dxPropertiesMap, exportDate, minConfidentiality, errors, user);
+
+        File outputFile = new File("src/test/resources/GdbGelderlandTest/result.gdb.zip");
+        // FileWriter fileWriter = new FileWriter(outputFile);
+        try (FileOutputStream output = new FileOutputStream(outputFile)) {
+            result.write(output);
+        }
+        assertThat(errors).isEmpty();
+
+        var process = new ProcessBuilder(List.of("/usr/bin/ogrinfo", outputFile.getAbsolutePath()))
+                .start();
+
+        process.waitFor();
+
+        assertThat(new String(process.getInputStream().readAllBytes()))
+                .isEqualTo("""
+                        INFO: Open of `%s'
+                              using driver `OpenFileGDB' successful.
+                        Layer: geojson (Multi Polygon)
+                        Layer: DetailPlanning (None)
+                        """.formatted(outputFile.getAbsolutePath()));
+    }
+
+    @Test
     void testGetProjectFeature() throws Exception {
         // Some constants
         LocalDate exportDate = LocalDate.of(2025, 3, 2); // Same as middle house block so we have future and past blocks
@@ -81,8 +215,8 @@ public class GdbGelderlandExportTest {
         ProjectExportSqlModelExtended project = ProjectExportSqlModelExtended.builder()
                 .projectId(UUID.fromString("fdd87435-025f-48ed-a2b4-d765246040cd"))
                 .name("project name")
-                .creation_date(LocalDate.of(2025,1,1))
-                .last_edit_date(LocalDate.of(2025,2,1))
+                .creation_date(LocalDate.of(2025, 1, 1))
+                .last_edit_date(LocalDate.of(2025, 2, 1))
                 .geometries(List.of(ProjectsUtil.PLOT_JSON_STRING))
                 .confidentiality(Confidentiality.EXTERNAL_GOVERNMENTAL)
                 .projectPhase(ProjectPhase._5_PREPARATION)

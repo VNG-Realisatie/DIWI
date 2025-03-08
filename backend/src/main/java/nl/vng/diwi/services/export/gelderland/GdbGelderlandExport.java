@@ -7,6 +7,8 @@ import static nl.vng.diwi.services.DataExchangeExportError.EXPORT_ERROR.NUMERIC_
 import static nl.vng.diwi.services.export.ExportUtil.getOwnershipCategory;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
@@ -25,6 +27,8 @@ import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.geojson.MultiPolygon;
 import org.geojson.jackson.CrsType;
+
+import com.opencsv.CSVWriter;
 
 import jakarta.ws.rs.core.StreamingOutput;
 import nl.vng.diwi.dal.entities.DataExchangeType;
@@ -86,15 +90,29 @@ public class GdbGelderlandExport {
             var tempDir = Files.createTempDirectory("GdbGelderlandExport");
             var geojsonFile = new File(tempDir.toFile(), "geojson.geojson");
             Json.mapper.writeValue(geojsonFile, exportObject);
+
+            var csvFile = new File(tempDir.toFile(), "csv.csv");
+            try (CSVWriter writer = new CSVWriter(new FileWriter(csvFile))) {
+
+                String[] line = { "a", "b" };
+                writer.writeNext(line);
+                String[] line1 = { "1", "2" };
+                writer.writeNext(line1);
+            }
+
+            var gdbFile = GdbConversionService.convertToGdb(geojsonFile, csvFile);
+
+            return output -> {
+                try (FileInputStream fileInputStream = new FileInputStream(gdbFile)) {
+                    fileInputStream.transferTo(output);
+                    output.flush();
+                }
+            };
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        // For now just return the json
-        return output -> {
-            Json.mapper.writeValue(output, exportObject);
-            output.flush();
-        };
     }
 
     public static Feature getProjectFeature(
@@ -234,8 +252,8 @@ public class GdbGelderlandExport {
                 if (gerealiseerd) {
                     Totaal_gerealiseerd += b.getMutationAmount();
                 } else {
-                    int eengezinswoning = b.getEengezinswoning() == null? 0:b.getEengezinswoning();
-                    int meergezinswoning = b.getMeergezinswoning() == null? 0:b.getMeergezinswoning();
+                    int eengezinswoning = b.getEengezinswoning() == null ? 0 : b.getEengezinswoning();
+                    int meergezinswoning = b.getMeergezinswoning() == null ? 0 : b.getMeergezinswoning();
 
                     Totaal_resterend += b.getMutationAmount();
                     Totaal_meergezins_resterend += meergezinswoning;
@@ -617,10 +635,13 @@ public class GdbGelderlandExport {
     private static BigDecimal addProjectNumericCustomProperty(UUID projectUuid, Feature projectFeature, DataExchangeTemplate.TemplateProperty templateProperty,
             Map<String, DataExchangePropertyModel> dxPropertiesMap, Map<UUID, SingleValueOrRangeModel<BigDecimal>> projectNumericCustomProps,
             List<DataExchangeExportError> errors) {
-        UUID customPropUuid = dxPropertiesMap.get(templateProperty.getName()).getCustomPropertyId();
+        DataExchangePropertyModel dataExchangePropertyModel = dxPropertiesMap.get(templateProperty.getName());
+        UUID customPropUuid = dataExchangePropertyModel.getCustomPropertyId();
         BigDecimal ezhValue = null;
         if (customPropUuid == null) {
-            errors.add(new DataExchangeExportError(null, templateProperty.getName(), MISSING_DATAEXCHANGE_MAPPING));
+            if (dataExchangePropertyModel.getMandatory()) {
+                errors.add(new DataExchangeExportError(null, templateProperty.getName(), MISSING_DATAEXCHANGE_MAPPING));
+            }
         } else if (projectNumericCustomProps.containsKey(customPropUuid)) {
             var numericVal = projectNumericCustomProps.get(customPropUuid);
             if (numericVal.getValue() != null) {
