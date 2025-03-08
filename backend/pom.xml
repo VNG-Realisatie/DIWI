@@ -285,10 +285,15 @@
             <artifactId>angus-mail</artifactId>
             <version>2.0.3</version>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
             <version>5.9</version>
+        </dependency> -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>1.10.0</version>
         </dependency>
         <dependency>
             <groupId>org.quartz-scheduler</groupId>

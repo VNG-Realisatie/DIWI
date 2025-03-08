@@ -5,8 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.io.StringReader;
 import java.math.BigDecimal;
+import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +15,9 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
@@ -23,6 +26,7 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+// import com.opencsv.CSVWriter;
 
 import nl.vng.diwi.dal.entities.DataExchangeType;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended;
@@ -76,7 +80,7 @@ public class GdbGelderlandExportTest {
                         .build());
 
         // Make it easy to find the custom prop
-        var customPropMap = customProps.stream()
+        Map<String, PropertyModel> customPropMap = customProps.stream()
                 .collect(Collectors.toMap(PropertyModel::getName, p -> p));
 
         // Create a project with some blocks
@@ -99,6 +103,7 @@ public class GdbGelderlandExportTest {
                                 .name("block1")
                                 .mutationAmount(4)
                                 .mutationKind(MutationType.CONSTRUCTION)
+                                .deliveryYear(2025)
                                 .ownershipValueList(List.of(
                                         OwnershipValueSqlModel.builder()
                                                 .ownershipAmount(4)
@@ -113,6 +118,7 @@ public class GdbGelderlandExportTest {
                                 .name("block2")
                                 .mutationAmount(2)
                                 .mutationKind(MutationType.CONSTRUCTION)
+                                .deliveryYear(2025)
                                 .ownershipValueList(List.of(
                                         OwnershipValueSqlModel.builder()
                                                 .ownershipAmount(2)
@@ -127,6 +133,7 @@ public class GdbGelderlandExportTest {
                                 .name("block3")
                                 .mutationAmount(1)
                                 .mutationKind(MutationType.DEMOLITION)
+                                .deliveryYear(2025)
                                 .ownershipValueList(List.of(
                                         OwnershipValueSqlModel.builder()
                                                 .ownershipAmount(1)
@@ -161,7 +168,6 @@ public class GdbGelderlandExportTest {
         var result = GdbGelderlandExport.buildExportObject(List.of(project), customProps, dxPropertiesMap, exportDate, minConfidentiality, errors, user);
 
         File outputFile = new File("src/test/resources/GdbGelderlandTest/result.gdb.zip");
-        // FileWriter fileWriter = new FileWriter(outputFile);
         try (FileOutputStream output = new FileOutputStream(outputFile)) {
             result.write(output);
         }
@@ -208,7 +214,7 @@ public class GdbGelderlandExportTest {
                         .build());
 
         // Make it easy to find the custom prop
-        var customPropMap = customProps.stream()
+        Map<String, PropertyModel> customPropMap = customProps.stream()
                 .collect(Collectors.toMap(PropertyModel::getName, p -> p));
 
         // Create a project with some blocks
@@ -229,8 +235,10 @@ public class GdbGelderlandExportTest {
                 .houseblocks(List.of(
                         HouseblockExportSqlModel.builder()
                                 .name("block1")
+                                .houseblockId(UUID.fromString("0000000-0000-0000-0001-000000000001"))
                                 .mutationAmount(4)
                                 .mutationKind(MutationType.CONSTRUCTION)
+                                .deliveryYear(2025)
                                 .ownershipValueList(List.of(
                                         OwnershipValueSqlModel.builder()
                                                 .ownershipAmount(4)
@@ -243,8 +251,10 @@ public class GdbGelderlandExportTest {
                                 .build(),
                         HouseblockExportSqlModel.builder()
                                 .name("block2")
+                                .houseblockId(UUID.fromString("0000000-0000-0000-0001-000000000002"))
                                 .mutationAmount(2)
                                 .mutationKind(MutationType.CONSTRUCTION)
+                                .deliveryYear(2025)
                                 .ownershipValueList(List.of(
                                         OwnershipValueSqlModel.builder()
                                                 .ownershipAmount(2)
@@ -257,8 +267,10 @@ public class GdbGelderlandExportTest {
                                 .build(),
                         HouseblockExportSqlModel.builder()
                                 .name("block3")
+                                .houseblockId(UUID.fromString("0000000-0000-0000-0001-000000000003"))
                                 .mutationAmount(1)
                                 .mutationKind(MutationType.DEMOLITION)
+                                .deliveryYear(2025)
                                 .ownershipValueList(List.of(
                                         OwnershipValueSqlModel.builder()
                                                 .ownershipAmount(1)
@@ -320,10 +332,23 @@ public class GdbGelderlandExportTest {
                 .build()
                 .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
                 .writerWithDefaultPrettyPrinter()
-                .writeValue(new File("src/test/resources/GdbGelderlandTest/feature.actual.json"), result);
+                .writeValue(new File("src/test/resources/GdbGelderlandTest/feature.actual.json"), result.getPlanRegistration());
         var expected = ResourceUtil.getResourceAsString("GdbGelderlandTest/feature.expected.json");
 
-        JSONAssert.assertEquals(expected, Json.mapper.writeValueAsString(result), JSONCompareMode.NON_EXTENSIBLE);
-    }
+        JSONAssert.assertEquals(expected, Json.mapper.writeValueAsString(result.getPlanRegistration()), JSONCompareMode.NON_EXTENSIBLE);
 
+        var actualDetailPlanning = new File("src/test/resources/GdbGelderlandTest/detailPlanning.actual.csv");
+        try (CSVPrinter writer = new CSVPrinter(new FileWriter(actualDetailPlanning), CSVFormat.DEFAULT)) {
+            writer.printRecord(GdbGelderlandExport.detailPlanningHeaders);
+            for (var row : result.getDetailPlanning()) {
+                writer.printRecord(row);
+            }
+        }
+
+        var expectedDetailPlanning = new File("src/test/resources/GdbGelderlandTest/detailPlanning.expected.csv");
+
+        assertThat(actualDetailPlanning)
+                .content()
+                .isEqualTo(FileUtils.readFileToString(expectedDetailPlanning, "utf-8"));
+    }
 }
