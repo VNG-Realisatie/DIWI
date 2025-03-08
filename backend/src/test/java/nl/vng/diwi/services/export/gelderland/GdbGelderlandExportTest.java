@@ -176,7 +176,7 @@ public class GdbGelderlandExportTest {
                 .isEqualTo("""
                         INFO: Open of `%s'
                               using driver `OpenFileGDB' successful.
-                        Layer: geojson (Multi Polygon)
+                        Layer: Planregistratie (Multi Polygon)
                         Layer: DetailPlanning (None)
                         """.formatted(outputFile.getAbsolutePath()));
     }

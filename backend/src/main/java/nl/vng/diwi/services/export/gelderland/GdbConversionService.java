@@ -42,7 +42,7 @@ public class GdbConversionService {
         String workingDir = geojsonFile.getParent();
         File gdbDir = new File(workingDir, GDB_NAME);
 
-        executeCommand(String.format("ogr2ogr -f OpenFileGDB %s %s", gdbDir.getAbsolutePath(), geojsonFile.getAbsolutePath()), geojsonFile.getParentFile());
+        executeCommand(String.format("ogr2ogr -nln Planregistratie -f OpenFileGDB %s %s", gdbDir.getAbsolutePath(), geojsonFile.getAbsolutePath()), geojsonFile.getParentFile());
         executeCommand(String.format("ogr2ogr -nln DetailPlanning -f OpenFileGDB %s %s -update", gdbDir.getAbsolutePath(), csvFile.getAbsolutePath()),
                 csvFile.getParentFile());
         // Ensure GDB exists before proceeding
