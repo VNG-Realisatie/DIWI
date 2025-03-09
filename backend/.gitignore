@@ -207,6 +207,7 @@ fabric.properties
 *.nar
 *.ear
 *.zip
+!Gelderland.gdb.zip
 *.tar.gz
 *.rar
 

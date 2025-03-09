@@ -1,10 +1,9 @@
-package nl.vng.diwi.services.export.zuidholland;
+package nl.vng.diwi.services.export.gelderland;
 
 import static nl.vng.diwi.services.export.ExportUtil.*;
 
 import lombok.Data;
-import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
-import nl.vng.diwi.dal.entities.ProjectExportSqlModel.OwnershipValueSqlModel;
+import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.*;
 import nl.vng.diwi.dal.entities.enums.MutationType;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
 import nl.vng.diwi.models.PropertyModel;
@@ -19,7 +18,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Data
-public class EsriZuidHollandHouseblockExportModel {
+public class GdbGelderlandHouseblockExportModel {
 
     private UUID houseblockId;
     private Integer deliveryYear;
@@ -31,16 +30,18 @@ public class EsriZuidHollandHouseblockExportModel {
 
     private List<ExportUtil.OwnershipValueModel> ownershipValueList = new ArrayList<>();
 
-    public EsriZuidHollandHouseblockExportModel(UUID projectUuid,
-            ProjectExportSqlModel.HouseblockExportSqlModel sqlModel, PropertyModel priceRangeBuyFixedProp,
-            PropertyModel priceRangeRentFixedProp, List<DataExchangeExportError> errors) {
+    public GdbGelderlandHouseblockExportModel(UUID projectUuid,
+            HouseblockExportSqlModel sqlModel,
+            PropertyModel priceRangeBuyFixedProp,
+            PropertyModel priceRangeRentFixedProp,
+            List<DataExchangeExportError> errors) {
         this.houseblockId = sqlModel.getHouseblockId();
         this.deliveryYear = sqlModel.getDeliveryYear();
         this.mutationAmount = sqlModel.getMutationAmount();
         this.mutationKind = sqlModel.getMutationKind();
         this.meergezinswoning = sqlModel.getMeergezinswoning();
         this.eengezinswoning = sqlModel.getEengezinswoning();
-        var priceCategoryMap = ZuidHollandConstants.priceRangeMap;
+        var priceCategoryMap = GelderlandConstants.priceRangeMap;
 
         sqlModel.getOwnershipValueList()
                 .forEach(o -> {
@@ -51,7 +52,7 @@ public class EsriZuidHollandHouseblockExportModel {
 
     private ExportUtil.OwnershipValueModel createOwnershipValueModel(
             UUID projectUuid,
-            ProjectExportSqlModel.HouseblockExportSqlModel sqlModel,
+            HouseblockExportSqlModel sqlModel,
             PropertyModel priceRangeBuyFixedProp,
             PropertyModel priceRangeRentFixedProp,
             List<DataExchangeExportError> errors,
@@ -85,8 +86,8 @@ public class EsriZuidHollandHouseblockExportModel {
                             projectUuid,
                             sqlModel.getHouseblockId(),
                             o.getOwnershipType(),
-                            rangeOption.getMin().longValue(),
-                            rangeOption.getMax().longValue(),
+                            rangeOption.getMin() == null ? null : rangeOption.getMin().longValue(),
+                            rangeOption.getMax() == null ? null : rangeOption.getMax().longValue(),
                             priceCategoryMap,
                             errors));
                 }
@@ -118,8 +119,8 @@ public class EsriZuidHollandHouseblockExportModel {
                             ExportUtil.getOwnershipCategory(projectUuid,
                                     sqlModel.getHouseblockId(),
                                     o.getOwnershipType(),
-                                    rangeOption.getMin().longValue(),
-                                    rangeOption.getMax().longValue(),
+                                    rangeOption.getMin() == null ? null : rangeOption.getMin().longValue(),
+                                    rangeOption.getMax() == null ? null : rangeOption.getMax().longValue(),
                                     priceCategoryMap,
                                     errors));
                 }

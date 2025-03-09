@@ -1,5 +1,7 @@
 package nl.vng.diwi.models;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -16,7 +18,9 @@ import java.util.UUID;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode
+@Builder
 public class DataExchangePropertyModel {
 
     private UUID id;
@@ -33,6 +37,7 @@ public class DataExchangePropertyModel {
 
     private Boolean singleSelect;
 
+    @Builder.Default
     private List<DataExchangeOptionModel> options = new ArrayList<>();
 
     public DataExchangePropertyModel(DataExchangePropertySqlModel sqlProperty) {
@@ -56,6 +61,7 @@ public class DataExchangePropertyModel {
                 optionModel.getPropertyOrdinalValueIds().add(option.getPropertyOrdinalValueId());
             }
         });
+        this.options = new ArrayList<>();
         this.options.addAll(optionsMap.values());
         this.options.sort(Comparator.comparing(DataExchangeOptionModel::getName));
     }

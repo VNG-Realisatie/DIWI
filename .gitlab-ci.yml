@@ -41,6 +41,8 @@ backend:
     POSTGRES_PASSWORD: diwi
     DIWI_DB_HOST: postgres
   script:
+    - apt-get update
+    - apt-get install -y gdal-bin
     - cd backend
     - mvn $MAVEN_CLI_OPTS package
   artifacts:

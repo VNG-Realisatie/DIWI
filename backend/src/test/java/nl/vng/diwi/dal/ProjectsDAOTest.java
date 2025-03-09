@@ -24,6 +24,7 @@ import nl.vng.diwi.dal.entities.ProjectListSqlModel;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.PlanType;
 import nl.vng.diwi.dal.entities.enums.ProjectPhase;
+import nl.vng.diwi.models.DataExchangeExportModel;
 import nl.vng.diwi.models.ProjectListModel;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.security.UserRole;
@@ -109,19 +110,19 @@ public class ProjectsDAOTest {
         loggedUser.setRole(UserRole.UserPlus);
         List<ProjectListSqlModel> projects = repo.getProjectsDAO().getProjectsTable(filtering, loggedUser);
 
-        //There are 3 projects. One in the past, one ongoing, one in the future. All are returned.
+        // There are 3 projects. One in the past, one ongoing, one in the future. All are returned.
         assertThat(projects.size()).isEqualTo(3);
 
         ProjectListSqlModel currentProject = projects.get(1);
-        //Test that only the project_state with change_end_date = NULL is taken into account
+        // Test that only the project_state with change_end_date = NULL is taken into account
         assertThat(currentProject.getConfidentialityLevel()).isEqualTo(Confidentiality.PUBLIC);
         assertThat(currentProject.getProjectColor()).isEqualTo("#223344");
         assertThat(currentProject.getStartDate()).isEqualTo(LocalDate.now().minusDays(5));
         assertThat(currentProject.getEndDate()).isEqualTo(LocalDate.now().plusDays(15));
-        //Test that the name changelog with the milestones corresponding to the present moment is selected
+        // Test that the name changelog with the milestones corresponding to the present moment is selected
         assertThat(currentProject.getProjectName()).isEqualTo("Current project Phase 1");
         assertThat(currentProject.getProjectPhase()).isEqualTo(ProjectPhase._1_CONCEPT);
-        //Test that only the changelog value with milestones corresponding to the present moment are selected and values are sorted alphabetically
+        // Test that only the changelog value with milestones corresponding to the present moment are selected and values are sorted alphabetically
         assertThat(currentProject.getPlanType().size()).isEqualTo(2);
         assertThat(currentProject.getPlanType().get(0)).isEqualTo(PlanType.HERSTRUCTURERING);
         assertThat(currentProject.getPlanType().get(1)).isEqualTo(PlanType.PAND_TRANSFORMATIE);
@@ -134,10 +135,10 @@ public class ProjectsDAOTest {
         assertThat(futureProject.getProjectColor()).isEqualTo("#456456");
         assertThat(futureProject.getStartDate()).isEqualTo(LocalDate.now().plusDays(10));
         assertThat(futureProject.getEndDate()).isEqualTo(LocalDate.now().plusDays(20));
-        //Test that the name changelog at the project start milestone
+        // Test that the name changelog at the project start milestone
         assertThat(futureProject.getProjectName()).isEqualTo("Future project Phase 1");
         assertThat(futureProject.getProjectPhase()).isNull();
-        //Test that only the changelog values with the start milestone at the beginning of the project are selected
+        // Test that only the changelog values with the start milestone at the beginning of the project are selected
         assertThat(futureProject.getPlanType().size()).isEqualTo(1);
         assertThat(futureProject.getPlanType().get(0)).isEqualTo(PlanType.UITBREIDING_OVERIG);
         assertThat(futureProject.getMunicipality().size()).isEqualTo(1);
@@ -147,7 +148,7 @@ public class ProjectsDAOTest {
     @ParameterizedTest
     @MethodSource("roleConfidentialityCombos")
     public void getProjects_roleAndConfidentialityRestrictionsTest(UserRole loggedUserRole, Confidentiality confidentiality, boolean projectVisibility)
-        throws IOException {
+            throws IOException {
 
         try (var transaction = dal.beginTransaction()) {
             Path scriptPath = Path.of(ProjectsDAOTest.class.getClassLoader().getResource(PROJECT_TABLE_CONFIDENTIALITY_SCRIPT_PATH).getPath());
@@ -168,7 +169,6 @@ public class ProjectsDAOTest {
         List<ProjectListSqlModel> projects = repo.getProjectsDAO().getProjectsTable(filtering, loggedUser);
         ProjectListSqlModel project = repo.getProjectsDAO().getProjectByUuid(UUID.fromString("466da5e2-c96f-4856-aa17-6b37a1c21edc"), loggedUser);
 
-
         if (projectVisibility) {
             assertThat(projects).isNotEmpty();
             assertThat(project).isNotNull();
@@ -176,6 +176,17 @@ public class ProjectsDAOTest {
             assertThat(projects).isEmpty();
             assertThat(project).isNull();
         }
+    }
+
+    @Test
+    void testGetProjectsExportListExtended() {
+        LoggedUser loggedUser = new LoggedUser();
+        loggedUser.setRole(UserRole.UserPlus);
+
+        DataExchangeExportModel dxExportModel = new DataExchangeExportModel();
+
+        // Just a smoke test for the sql query syntax at the moment
+        repo.getProjectsDAO().getProjectsExportListExtended(dxExportModel, loggedUser);
     }
 
 }

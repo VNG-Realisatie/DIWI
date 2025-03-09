@@ -170,7 +170,7 @@ const ExportWizard = () => {
                                                             },
                                                         }}
                                                     >
-                                                        <PropertyListItem label={t("exchangeDatae.downloadErrorProperties.category")} value={error.cat1} />
+                                                        <PropertyListItem label={t("exchangeData.downloadErrorProperties.category")} value={error.cat1} />
                                                         <PropertyListItem label={t("exchangeData.downloadErrorProperties.category")} value={error.cat2} />
                                                         <PropertyListItem label={t("exchangeData.downloadErrorProperties.fieldName")} value={error.fieldName} />
                                                         <PropertyListItem

@@ -18,6 +18,8 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,6 +37,8 @@ import nl.vng.diwi.models.SingleValueOrRangeModel;
 @NoArgsConstructor
 @Getter
 @Setter
+@AllArgsConstructor
+@Builder
 public class ProjectExportSqlModelExtended {
 
     @Id
@@ -51,8 +55,10 @@ public class ProjectExportSqlModelExtended {
     @Getter(AccessLevel.NONE)
     private List<PlanType> planType;
 
-    private LocalDate startDate;
+    private LocalDate creation_date;
+    private LocalDate last_edit_date;
 
+    private LocalDate startDate;
     private LocalDate endDate;
 
     @Enumerated(EnumType.STRING)
@@ -194,6 +200,7 @@ public class ProjectExportSqlModelExtended {
 
     @Data
     @NoArgsConstructor
+    @AllArgsConstructor
     public static class TextPropertyModel {
         private UUID propertyId;
         private String textValue;
@@ -201,6 +208,7 @@ public class ProjectExportSqlModelExtended {
 
     @Data
     @NoArgsConstructor
+    @AllArgsConstructor
     public static class NumericPropertyModel {
         private UUID propertyId;
         private BigDecimal value;
@@ -244,6 +252,8 @@ public class ProjectExportSqlModelExtended {
 
     @Data
     @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class HouseblockExportSqlModel {
 
         private UUID houseblockId;
@@ -350,6 +360,8 @@ public class ProjectExportSqlModelExtended {
 
     @Data
     @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class OwnershipValueSqlModel {
         private UUID ownershipId;
         private OwnershipType ownershipType;

@@ -1,5 +1,6 @@
 package nl.vng.diwi.services.export.zuidholland;
 
+
 import jakarta.ws.rs.core.StreamingOutput;
 import nl.vng.diwi.dal.entities.DataExchangeType;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModel;
@@ -18,6 +19,7 @@ import nl.vng.diwi.models.SelectModel;
 import nl.vng.diwi.models.SingleValueOrRangeModel;
 import nl.vng.diwi.services.DataExchangeExportError;
 import nl.vng.diwi.services.export.ExportUtil;
+import nl.vng.diwi.services.export.OwnershipCategory;
 
 import org.apache.poi.ss.formula.eval.NotImplementedException;
 import org.geojson.Crs;
@@ -235,7 +237,7 @@ public class EsriZuidHollandExport {
                     for (var h : houseblockExportModels) {
                         for (var o : h.getOwnershipValueList()) {
                             if (o.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE &&
-                                (o.getOwnershipCategory() == EsriZuidHollandHouseblockExportModel.OwnershipCategory.huur1 || o.getOwnershipCategory() == EsriZuidHollandHouseblockExportModel.OwnershipCategory.huur2)) {
+                                (o.getOwnershipCategory() == OwnershipCategory.huur1 || o.getOwnershipCategory() == OwnershipCategory.huur2)) {
                                 if (h.getMutationKind() == MutationType.CONSTRUCTION) {
                                     phShor3Val += o.getAmount();
                                 } else {
@@ -250,7 +252,7 @@ public class EsriZuidHollandExport {
                     int phShor4Val = 0;
                     for (var h : houseblockExportModels) {
                         for (var o : h.getOwnershipValueList()) {
-                            if (o.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE && o.getOwnershipCategory() == EsriZuidHollandHouseblockExportModel.OwnershipCategory.huur3 ) {
+                            if (o.getOwnershipType() == OwnershipType.HUURWONING_WONINGCORPORATIE && o.getOwnershipCategory() == OwnershipCategory.huur3 ) {
                                 if (h.getMutationKind() == MutationType.CONSTRUCTION) {
                                     phShor4Val += o.getAmount();
                                 } else {
@@ -307,7 +309,7 @@ public class EsriZuidHollandExport {
         return projectFeature;
     }
 
-    private static void addMappedProperty(
+    public static void addMappedProperty(
             ProjectExportSqlModel project,
             Map<UUID, PropertyModel> customPropsMap,
             Map<String, DataExchangePropertyModel> dxPropertiesMap,
@@ -506,7 +508,6 @@ public class EsriZuidHollandExport {
         Map<EsriZuidHollandHouseblockProps, Integer> constructionValuesMap = constructionHbTotals.calculateHouseTypeOwnershipValuesMap();
         Map<EsriZuidHollandHouseblockProps, Integer> demolitionValuesMap = demolitionHbTotals.calculateHouseTypeOwnershipValuesMap();
 
-
         for (var prop : EsriZuidHollandHouseblockProps.values()) {
             switch (prop) {
                 case jaartal -> hbPropsByDeliveryYear.put(prop.name(), houseblockExportModels.get(0).getDeliveryYear());
@@ -640,6 +641,7 @@ public class EsriZuidHollandExport {
 
     public enum EsriZuidHollandHouseblockProps {
         jaartal,
+
         meergezins_koop1,
         meergezins_koop2,
         meergezins_koop3,
@@ -651,6 +653,7 @@ public class EsriZuidHollandExport {
         meergezins_huur4,
         meergezins_huur_onb,
         meergezins_onbekend,
+
         eengezins_koop1,
         eengezins_koop2,
         eengezins_koop3,
@@ -662,6 +665,7 @@ public class EsriZuidHollandExport {
         eengezins_huur4,
         eengezins_huur_onb,
         eengezins_onbekend,
+
         onbekend_koop1,
         onbekend_koop2,
         onbekend_koop3,
@@ -673,7 +677,9 @@ public class EsriZuidHollandExport {
         onbekend_huur4,
         onbekend_huur_onb,
         onbekend_onbekend,
+
         bouw_gerealiseerd,
+
         sloop_meergezins_koop1,
         sloop_meergezins_koop2,
         sloop_meergezins_koop3,
@@ -685,6 +691,7 @@ public class EsriZuidHollandExport {
         sloop_meergezins_huur4,
         sloop_meergezins_huur_onb,
         sloop_meergezins_onbekend,
+
         sloop_eengezins_koop1,
         sloop_eengezins_koop2,
         sloop_eengezins_koop3,
@@ -696,6 +703,7 @@ public class EsriZuidHollandExport {
         sloop_eengezins_huur4,
         sloop_eengezins_huur_onb,
         sloop_eengezins_onbekend,
+
         sloop_onbekend_koop1,
         sloop_onbekend_koop2,
         sloop_onbekend_koop3,
@@ -707,6 +715,7 @@ public class EsriZuidHollandExport {
         sloop_onbekend_huur4,
         sloop_onbekend_huur_onb,
         sloop_onbekend_onbekend,
+
         sloop_gerealiseerd;
     }
 }

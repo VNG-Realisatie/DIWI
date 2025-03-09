@@ -1,7 +1,8 @@
 package nl.vng.diwi.services;
 
-import java.time.ZonedDateTime;
+import static nl.vng.diwi.dal.entities.DataExchangeType.ESRI_ZUID_HOLLAND;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -42,10 +43,9 @@ import nl.vng.diwi.rest.VngServerErrorException;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.services.export.ArcGisProjectExporter;
 import nl.vng.diwi.services.export.excel.ExcelExport;
+import nl.vng.diwi.services.export.gelderland.GdbGelderlandExport;
 import nl.vng.diwi.services.export.geojson.GeoJSONExport;
 import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandExport;
-
-import static nl.vng.diwi.dal.entities.DataExchangeType.ESRI_ZUID_HOLLAND;
 
 @RequiredArgsConstructor
 @Log4j2
@@ -130,7 +130,7 @@ public class DataExchangeService {
         state.setProjectUrl(model.getProjectUrl());
         state.setChangeStartDate(zdtNow);
         state.setCreateUser(repo.getReferenceById(User.class, loggedUserUuid));
-        state.setValid(getDefaultValidTypes().contains(model.getType()) || (isUpdate && model.getType() == ESRI_ZUID_HOLLAND));
+        state.setValid(getDefaultValidTypes().contains(model.getType()) || model.getValid());
         repo.persist(state);
     }
 
@@ -275,6 +275,15 @@ public class DataExchangeService {
             case EXCEL -> ExcelExport.buildExportObject(
                 repo.getProjectsDAO().getProjectsExportListExtended(dxExportModel, loggedUser),
                 customProps);
+
+            case GDB_GELDERLAND -> GdbGelderlandExport.buildExportObject(
+                repo.getProjectsDAO().getProjectsExportListExtended(dxExportModel, loggedUser),
+                customProps,
+                dxPropertiesMap,
+                dxExportModel.getExportDate(),
+                templateMinConfidentiality,
+                errors,
+                loggedUser);
         };
 
     }

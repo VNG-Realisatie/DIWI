@@ -61,6 +61,14 @@ function ExportAdminPage() {
     const { allowedActions } = useContext(UserContext);
     const navigate = useNavigate();
     const [exportTypes, setExportTypes] = useState<ExportType[]>([]);
+    const [visibleOptions, setVisibleOptions] = useState<{ [key: string]: boolean }>({});
+
+    const toggleOptions = (propertyId: string) => {
+        setVisibleOptions((prev) => ({
+            ...prev,
+            [propertyId]: !prev[propertyId],
+        }));
+    };
 
     //can be mapped using exportTypes, but fields need to be clarified, so hardcoded for now.
     const typeConfig: TypeConfig = useMemo(
@@ -75,6 +83,9 @@ function ExportAdminPage() {
                 fields: [{ name: "name", label: t("admin.export.name"), type: "text", mandatory: true }],
             },
             EXCEL: {
+                fields: [{ name: "name", label: t("admin.export.name"), type: "text", mandatory: true }],
+            },
+            GDB_GELDERLAND: {
                 fields: [{ name: "name", label: t("admin.export.name"), type: "text", mandatory: true }],
             },
         }),
@@ -187,7 +198,7 @@ function ExportAdminPage() {
             const data = id ? await updateExportData(id, exportData) : await addExportData(exportData);
             setValidationErrors(data.validationErrors || []);
             setAlert(id ? t("admin.export.notification.updated") : t("admin.export.notification.created"), "success");
-            if (type.id !== "ESRI_ZUID_HOLLAND") {
+            if (type.id !== "ESRI_ZUID_HOLLAND" && type.id !== "GDB_GELDERLAND") {
                 navigate(exchangeimportdata.toPath());
             } else if (!id) {
                 navigate(updateExportSettings.toPath({ id: data.id }));
@@ -320,6 +331,17 @@ function ExportAdminPage() {
                                 error={error ? t(`exchangeData.validationErrors.${error.errorCode}`) : ""}
                             />
                             {selectedOption &&
+                                property.id &&
+                                (selectedOption.propertyType === "CATEGORY" || selectedOption.propertyType === "ORDINAL") &&
+                                property.options &&
+                                property.options.length > 0 && (
+                                    <Button onClick={() => property.id && toggleOptions(property.id)}>
+                                        {!visibleOptions[property.id] ? t("admin.export.hideOptions") : t("admin.export.showOptions")}
+                                    </Button>
+                                )}
+                            {property.id &&
+                                !visibleOptions[property.id] &&
+                                selectedOption &&
                                 (selectedOption.propertyType === "CATEGORY" || selectedOption.propertyType === "ORDINAL") &&
                                 property?.options?.map((option, optionIndex) => (
                                     <Box key={optionIndex} marginLeft={10}>

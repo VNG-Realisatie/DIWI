@@ -26,3 +26,10 @@ end-to-end-tests/results.xml
 .ucdetector_reports/
 
 *.orig
+
+# Test files
+*.actual.json
+*.actual.csv
+backend/src/test/resources/GdbExportFiles/temp/outputTest.gdb/
+backend/src/test/resources/GdbExportFiles/temp/test.geojson
+backend/src/test/resources/GdbExportFiles/temp/testLayer.csv

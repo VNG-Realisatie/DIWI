@@ -3,9 +3,9 @@ package nl.vng.diwi.services;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import nl.vng.diwi.services.export.OwnershipCategory;
 import lombok.Getter;
 import lombok.AccessLevel;
-import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandHouseblockExportModel.OwnershipCategory;
 
 import java.util.UUID;
 
