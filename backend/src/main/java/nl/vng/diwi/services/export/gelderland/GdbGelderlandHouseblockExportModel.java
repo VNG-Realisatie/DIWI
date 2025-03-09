@@ -3,7 +3,6 @@ package nl.vng.diwi.services.export.gelderland;
 import static nl.vng.diwi.services.export.ExportUtil.*;
 
 import lombok.Data;
-import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended.*;
 import nl.vng.diwi.dal.entities.enums.MutationType;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
