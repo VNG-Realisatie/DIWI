@@ -4,9 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.math.BigDecimal;
-import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,14 +13,9 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
-
-import com.fasterxml.jackson.databind.SerializationFeature;
 
 import nl.vng.diwi.dal.entities.DataExchangeType;
 import nl.vng.diwi.dal.entities.ProjectExportSqlModelExtended;
@@ -40,7 +33,6 @@ import nl.vng.diwi.dal.entities.enums.ProjectPhase;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
 import nl.vng.diwi.dataexchange.DataExchangeTemplate;
 import nl.vng.diwi.generic.Constants;
-import nl.vng.diwi.generic.Csv;
 import nl.vng.diwi.generic.Json;
 import nl.vng.diwi.generic.ResourceUtil;
 import nl.vng.diwi.models.DataExchangePropertyModel;
@@ -267,7 +259,7 @@ public class GdbGelderlandExportTest {
                                 .houseblockId(UUID.fromString("0000000-0000-0000-0001-000000000003"))
                                 .mutationAmount(1)
                                 .mutationKind(MutationType.DEMOLITION)
-                                .deliveryYear(2025)
+                                .deliveryYear(2026)
                                 .ownershipValueList(List.of(
                                         OwnershipValueSqlModel.builder()
                                                 .ownershipAmount(1)
@@ -323,33 +315,20 @@ public class GdbGelderlandExportTest {
 
         assertThat(errors).isEmpty();
 
+        // Use JSON for comparing the large objects as that makes comparing easier. e.g. using an external diff tool.
         Json.SORTED_MAPPER
                 .writerWithDefaultPrettyPrinter()
                 .writeValue(new File("src/test/resources/GdbGelderlandTest/feature.actual.json"), result.getPlanRegistration());
         var expected = ResourceUtil.getResourceAsString("GdbGelderlandTest/feature.expected.json");
 
-        JSONAssert.assertEquals(expected, Json.mapper.writeValueAsString(result.getPlanRegistration()), JSONCompareMode.NON_EXTENSIBLE);
+        JSONAssert.assertEquals(expected, Json.SORTED_MAPPER.writeValueAsString(result.getPlanRegistration()), JSONCompareMode.NON_EXTENSIBLE);
 
         Json.SORTED_MAPPER
                 .writerWithDefaultPrettyPrinter()
                 .writeValue(new File("src/test/resources/GdbGelderlandTest/detailPlanning.actual.json"), result.getDetailPlanning());
         var expectedDetailPlanningJson = ResourceUtil.getResourceAsString("GdbGelderlandTest/detailPlanning.expected.json");
+        var actualDetailPlanningJson = Json.SORTED_MAPPER.writeValueAsString(result.getDetailPlanning());
 
-        JSONAssert.assertEquals(expectedDetailPlanningJson, Json.SORTED_MAPPER.writeValueAsString(result.getDetailPlanning()), JSONCompareMode.NON_EXTENSIBLE);
-
-
-        var expectedDetailPlanning = new File("src/test/resources/GdbGelderlandTest/detailPlanning.expected.csv");
-        var actualDetailPlanning = new File("src/test/resources/GdbGelderlandTest/detailPlanning.actual.csv");
-        try (CSVPrinter writer = new CSVPrinter(new FileWriter(actualDetailPlanning), Csv.defaultFormat)) {
-            writer.printRecord(GdbGelderlandExport.detailPlanningHeaders);
-            for (var row : result.getDetailPlanning()) {
-
-                writer.printRecord(row.values());
-            }
-        }
-
-        assertThat(actualDetailPlanning)
-                .content()
-                .isEqualToNormalizingNewlines(FileUtils.readFileToString(expectedDetailPlanning, "utf-8"));
+        JSONAssert.assertEquals(expectedDetailPlanningJson, actualDetailPlanningJson, JSONCompareMode.NON_EXTENSIBLE);
     }
 }

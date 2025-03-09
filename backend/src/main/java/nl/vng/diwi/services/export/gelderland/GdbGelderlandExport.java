@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -58,6 +59,8 @@ import nl.vng.diwi.services.DataExchangeExportError;
 import nl.vng.diwi.services.export.ExportUtil;
 import nl.vng.diwi.services.export.ExportUtil.OwnershipValueModel;
 import nl.vng.diwi.services.export.OwnershipCategory;
+import nl.vng.diwi.services.export.gelderland.GelderlandConstants.DetailPlanningHeaders;
+import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandExport.EsriZuidHollandHouseblockProps;
 
 public class GdbGelderlandExport {
 
@@ -109,8 +112,8 @@ public class GdbGelderlandExport {
         detailPlanningHeaders.add("sloop_gerealiseerd");
     }
 
-    static Map<String, String> createEmptyDetailPlanningMap(Integer year) {
-        var map = new LinkedHashMap<String, String>();
+    static Map<String, Object> createEmptyDetailPlanningMap(Integer year) {
+        var map = new LinkedHashMap<String, Object>();
         for (var header : GelderlandConstants.DetailPlanningHeaders.values()) {
             map.put(header.name(), "");
         }
@@ -123,7 +126,7 @@ public class GdbGelderlandExport {
     @Data
     public static class ProjectExportData {
         Feature planRegistration;
-        List<Map<String, String>> detailPlanning;
+        List<Map<String, Object>> detailPlanning;
     }
 
     public static StreamingOutput buildExportObject(
@@ -157,7 +160,7 @@ public class GdbGelderlandExport {
             var csvFile = new File(tempDir.toFile(), "DetailPlanning.csv");
 
             try (CSVPrinter writer = new CSVPrinter(new FileWriter(csvFile), CSVFormat.DEFAULT)) {
-                writer.printRecord(detailPlanningHeaders);
+                writer.printRecord(Arrays.asList(GelderlandConstants.DetailPlanningHeaders.values()));
 
                 for (var project : projects) {
                     ProjectExportData projectExportData = getProjectFeature(project, customPropsMap, priceRangeBuyFixedProp, priceRangeRentFixedProp,
@@ -232,13 +235,13 @@ public class GdbGelderlandExport {
         // klopt_geom // has note check with province
         // SHAPE_Length // Auto generated?
         // SHAPE_Area // Auto generated?
-        var detailPlanningMap = new ArrayList<Map<String, String>>();
+        var detailYearMap = new TreeMap<Integer, Map<String, Object>>();
         var sums = calculateAggregations(
                 project,
                 exportDate,
                 priceRangeBuyFixedProp,
                 priceRangeRentFixedProp,
-                detailPlanningMap,
+                detailYearMap,
                 errors);
 
         // Add project level sums to object
@@ -280,19 +283,31 @@ public class GdbGelderlandExport {
                     dxPropertyModel);
         }
 
+        // Add detail planning pzh style
+        List<GdbGelderlandHouseblockExportModel> houseblockExportModels = project.getHouseblocks().stream()
+                .map(h -> new GdbGelderlandHouseblockExportModel(project.getProjectId(), h, priceRangeBuyFixedProp, priceRangeRentFixedProp, errors)).toList();
+        List<Map<String, Object>> houseblockProperties = getHouseblockProperties(houseblockExportModels);
+
+        for (var ba : houseblockProperties) {
+            var map = detailYearMap.get(ba.get(DetailPlanningHeaders.jaartal.name()));
+            for (var value: ba.entrySet()) {
+                map.put(value.getKey(), value.getValue());
+            }
+        }
+
         // Add project level info to detail planning
-        for (var detailPlanning : detailPlanningMap) {
+        for (var detailPlanning : detailYearMap.values()) {
             detailPlanning.put("Creator", user.getFirstName() + " " + user.getLastName());
             detailPlanning.put("Created", project.getCreation_date().toString());
             detailPlanning.put("Editor", user.getFirstName() + " " + user.getLastName());
             detailPlanning.put("Edited", project.getLast_edit_date().toString());
             detailPlanning.put("parent_globalid", project.getProjectId().toString());
-            detailPlanning.put("gemeente",feature.getProperty("gemeente"));
+            detailPlanning.put("gemeente", feature.getProperty("gemeente"));
             detailPlanning.put("regio", feature.getProperty("regio"));
-            detailPlanning.put("vertrouwelijkheid",mapConfidentiality(project.getConfidentiality()));
+            detailPlanning.put("vertrouwelijkheid", mapConfidentiality(project.getConfidentiality()));
         }
 
-        return new ProjectExportData(feature, detailPlanningMap);
+        return new ProjectExportData(feature, detailYearMap.values().stream().toList());
     }
 
     private static Map<String, Object> calculateAggregations(
@@ -300,7 +315,7 @@ public class GdbGelderlandExport {
             LocalDate exportDate,
             PropertyModel priceRangeBuyFixedProp,
             PropertyModel priceRangeRentFixedProp,
-            List<Map<String, String>> detailPlanning,
+            Map<Integer, Map<String, Object>> detailYearMap,
             List<DataExchangeExportError> errors) {
         int Totaal_aantal_huurwoningen_corporatie = 0;
         int Totaal_bouw = 0;
@@ -331,7 +346,6 @@ public class GdbGelderlandExport {
         int Totaal_eigendom_onbekend = 0;
         int aantal_middenhuur_corporatie = 0;
 
-        var detailYearMap = new HashMap<Integer, Map<String, String>>();
         for (var b : project.getHouseblocks()) {
             var detailMap = detailYearMap.computeIfAbsent(b.getDeliveryYear(), GdbGelderlandExport::createEmptyDetailPlanningMap);
             detailMap.put("GlobalID", b.getHouseblockId().toString());
@@ -452,10 +466,6 @@ public class GdbGelderlandExport {
         map.put("Totaal_huur_onbekend", Totaal_huur_onbekend);
         map.put("Totaal_eigendom_onbekend", Totaal_eigendom_onbekend);
         map.put("aantal_middenhuur_corporatie", aantal_middenhuur_corporatie);
-
-        for (var detailMap : detailYearMap.values()) {
-            detailPlanning.add(detailMap);
-        }
 
         return map;
     }
@@ -754,5 +764,134 @@ public class GdbGelderlandExport {
         projectFeature.getProperties().put(templateProperty.getName(), ezhValue);
 
         return ezhValue;
+    }
+
+    private static List<Map<String, Object>> getHouseblockProperties(List<GdbGelderlandHouseblockExportModel> houseblocks) {
+
+        Map<Integer, List<GdbGelderlandHouseblockExportModel>> houseblocksByDeliveryYear = new HashMap<>();
+        houseblocks.forEach(houseblock -> {
+            if (!houseblocksByDeliveryYear.containsKey(houseblock.getDeliveryYear())) {
+                houseblocksByDeliveryYear.put(houseblock.getDeliveryYear(), new ArrayList<>());
+            }
+            houseblocksByDeliveryYear.get(houseblock.getDeliveryYear()).add(houseblock);
+        });
+
+        List<Map<String, Object>> allHouseblockProperties = new ArrayList<>();
+
+        List<Integer> deliveryYears = houseblocksByDeliveryYear.keySet().stream().sorted().toList();
+        deliveryYears.forEach(deliveryYear -> {
+            allHouseblockProperties.add(getHouseblockPropertiesForDeliveryYear(houseblocksByDeliveryYear.get(deliveryYear)));
+        });
+
+        return allHouseblockProperties;
+    }
+
+    private static Map<String, Object> getHouseblockPropertiesForDeliveryYear(List<GdbGelderlandHouseblockExportModel> houseblockExportModels) {
+
+        Map<String, Object> hbPropsByDeliveryYear = new LinkedHashMap<>();
+
+        GdbGelderlandHouseblockModel constructionHbTotals = new GdbGelderlandHouseblockModel();
+        GdbGelderlandHouseblockModel demolitionHbTotals = new GdbGelderlandHouseblockModel();
+
+        houseblockExportModels.forEach(h -> {
+            if ((h.getMutationKind() == MutationType.CONSTRUCTION)) {
+                constructionHbTotals.addHouseblockData(h);
+            } else {
+                demolitionHbTotals.addHouseblockData(h);
+            }
+        });
+
+        Map<EsriZuidHollandHouseblockProps, Integer> constructionValuesMap = constructionHbTotals.calculateHouseTypeOwnershipValuesMap();
+        Map<EsriZuidHollandHouseblockProps, Integer> demolitionValuesMap = demolitionHbTotals.calculateHouseTypeOwnershipValuesMap();
+
+        for (var prop : EsriZuidHollandHouseblockProps.values()) {
+            switch (prop) {
+            case jaartal -> hbPropsByDeliveryYear.put(prop.name(), houseblockExportModels.get(0).getDeliveryYear());
+
+            case meergezins_koop1 -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.meergezins_koop1));
+            case meergezins_koop2 -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.meergezins_koop2));
+            case meergezins_koop3 -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.meergezins_koop3));
+            case meergezins_koop4 -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.meergezins_koop4));
+            case meergezins_koop_onb -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.meergezins_koop_onb));
+            case meergezins_huur1 -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.meergezins_huur1));
+            case meergezins_huur2 -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.meergezins_huur2));
+            case meergezins_huur3 -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.meergezins_huur3));
+            case meergezins_huur4 -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.meergezins_huur4));
+            case meergezins_huur_onb -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.meergezins_huur_onb));
+            case meergezins_onbekend -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.meergezins_onbekend));
+
+            case eengezins_koop1 -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.eengezins_koop1));
+            case eengezins_koop2 -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.eengezins_koop2));
+            case eengezins_koop3 -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.eengezins_koop3));
+            case eengezins_koop4 -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.eengezins_koop4));
+            case eengezins_koop_onb -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.eengezins_koop_onb));
+            case eengezins_huur1 -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.eengezins_huur1));
+            case eengezins_huur2 -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.eengezins_huur2));
+            case eengezins_huur3 -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.eengezins_huur3));
+            case eengezins_huur4 -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.eengezins_huur4));
+            case eengezins_huur_onb -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.eengezins_huur_onb));
+            case eengezins_onbekend -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.eengezins_onbekend));
+
+            case onbekend_koop1 -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.onbekend_koop1));
+            case onbekend_koop2 -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.onbekend_koop2));
+            case onbekend_koop3 -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.onbekend_koop3));
+            case onbekend_koop4 -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.onbekend_koop4));
+            case onbekend_koop_onb -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.onbekend_koop_onb));
+            case onbekend_huur1 -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.onbekend_huur1));
+            case onbekend_huur2 -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.onbekend_huur2));
+            case onbekend_huur3 -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.onbekend_huur3));
+            case onbekend_huur4 -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.onbekend_huur4));
+            case onbekend_huur_onb -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.onbekend_huur_onb));
+            case onbekend_onbekend -> hbPropsByDeliveryYear.put(prop.name(), constructionValuesMap.get(EsriZuidHollandHouseblockProps.onbekend_onbekend));
+
+            case bouw_gerealiseerd ->
+                hbPropsByDeliveryYear.put(prop.name(), LocalDate.now().getYear() < houseblockExportModels.get(0).getDeliveryYear() ? "Ja" : "Nee");
+
+            case sloop_meergezins_koop1 -> hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.meergezins_koop1));
+            case sloop_meergezins_koop2 -> hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.meergezins_koop2));
+            case sloop_meergezins_koop3 -> hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.meergezins_koop3));
+            case sloop_meergezins_koop4 -> hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.meergezins_koop4));
+            case sloop_meergezins_koop_onb ->
+                hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.meergezins_koop_onb));
+            case sloop_meergezins_huur1 -> hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.meergezins_huur1));
+            case sloop_meergezins_huur2 -> hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.meergezins_huur2));
+            case sloop_meergezins_huur3 -> hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.meergezins_huur3));
+            case sloop_meergezins_huur4 -> hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.meergezins_huur4));
+            case sloop_meergezins_huur_onb ->
+                hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.meergezins_huur_onb));
+            case sloop_meergezins_onbekend ->
+                hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.meergezins_onbekend));
+
+            case sloop_eengezins_koop1 -> hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.eengezins_koop1));
+            case sloop_eengezins_koop2 -> hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.eengezins_koop2));
+            case sloop_eengezins_koop3 -> hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.eengezins_koop3));
+            case sloop_eengezins_koop4 -> hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.eengezins_koop4));
+            case sloop_eengezins_koop_onb -> hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.eengezins_koop_onb));
+            case sloop_eengezins_huur1 -> hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.eengezins_huur1));
+            case sloop_eengezins_huur2 -> hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.eengezins_huur2));
+            case sloop_eengezins_huur3 -> hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.eengezins_huur3));
+            case sloop_eengezins_huur4 -> hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.eengezins_huur4));
+            case sloop_eengezins_huur_onb -> hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.eengezins_huur_onb));
+            case sloop_eengezins_onbekend -> hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.eengezins_onbekend));
+
+            case sloop_onbekend_koop1 -> hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.onbekend_koop1));
+            case sloop_onbekend_koop2 -> hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.onbekend_koop2));
+            case sloop_onbekend_koop3 -> hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.onbekend_koop3));
+            case sloop_onbekend_koop4 -> hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.onbekend_koop4));
+            case sloop_onbekend_koop_onb -> hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.onbekend_koop_onb));
+            case sloop_onbekend_huur1 -> hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.onbekend_huur1));
+            case sloop_onbekend_huur2 -> hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.onbekend_huur2));
+            case sloop_onbekend_huur3 -> hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.onbekend_huur3));
+            case sloop_onbekend_huur4 -> hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.onbekend_huur4));
+            case sloop_onbekend_huur_onb -> hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.onbekend_huur_onb));
+            case sloop_onbekend_onbekend -> hbPropsByDeliveryYear.put(prop.name(), demolitionValuesMap.get(EsriZuidHollandHouseblockProps.onbekend_onbekend));
+
+            case sloop_gerealiseerd ->
+                hbPropsByDeliveryYear.put(prop.name(), LocalDate.now().getYear() < houseblockExportModels.get(0).getDeliveryYear() ? "Ja" : "Nee");
+            }
+        }
+
+        return hbPropsByDeliveryYear;
+
     }
 }
