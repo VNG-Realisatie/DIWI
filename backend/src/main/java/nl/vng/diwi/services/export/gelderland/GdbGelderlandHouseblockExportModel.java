@@ -87,8 +87,8 @@ public class GdbGelderlandHouseblockExportModel {
                             projectUuid,
                             sqlModel.getHouseblockId(),
                             o.getOwnershipType(),
-                            rangeOption.getMin().longValue(),
-                            rangeOption.getMax().longValue(),
+                            rangeOption.getMin() == null ? null : rangeOption.getMin().longValue(),
+                            rangeOption.getMax() == null ? null : rangeOption.getMax().longValue(),
                             priceCategoryMap,
                             errors));
                 }
@@ -120,8 +120,8 @@ public class GdbGelderlandHouseblockExportModel {
                             ExportUtil.getOwnershipCategory(projectUuid,
                                     sqlModel.getHouseblockId(),
                                     o.getOwnershipType(),
-                                    rangeOption.getMin().longValue(),
-                                    rangeOption.getMax().longValue(),
+                                    rangeOption.getMin() == null ? null : rangeOption.getMin().longValue(),
+                                    rangeOption.getMax() == null ? null : rangeOption.getMax().longValue(),
                                     priceCategoryMap,
                                     errors));
                 }
