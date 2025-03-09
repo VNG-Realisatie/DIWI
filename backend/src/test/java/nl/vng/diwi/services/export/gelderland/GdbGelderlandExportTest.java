@@ -40,6 +40,7 @@ import nl.vng.diwi.models.DataExchangePropertyModel.DataExchangePropertyModelBui
 import nl.vng.diwi.models.PropertyModel;
 import nl.vng.diwi.security.LoggedUser;
 import nl.vng.diwi.services.DataExchangeExportError;
+import nl.vng.diwi.services.export.OwnershipCategory;
 import nl.vng.diwi.testutil.ProjectsUtil;
 
 public class GdbGelderlandExportTest {
@@ -89,22 +90,8 @@ public class GdbGelderlandExportTest {
                         new NumericPropertyModel(customPropMap.get(PropertyType.NUMERIC.name()).getId(), BigDecimal.valueOf(17), null, null)))
                 .houseblocks(List.of(
                         HouseblockExportSqlModel.builder()
-                                .name("block1")
-                                .mutationAmount(4)
-                                .mutationKind(MutationType.CONSTRUCTION)
-                                .deliveryYear(2025)
-                                .ownershipValueList(List.of(
-                                        OwnershipValueSqlModel.builder()
-                                                .ownershipAmount(4)
-                                                .ownershipType(OwnershipType.HUURWONING_WONINGCORPORATIE)
-                                                .ownershipRentalValue(100l)
-                                                .build()))
-                                .meergezinswoning(4)
-                                .eengezinswoning(0)
-                                .endDate(LocalDate.of(2025, 3, 1))
-                                .build(),
-                        HouseblockExportSqlModel.builder()
                                 .name("block2")
+                                .houseblockId(UUID.randomUUID())
                                 .mutationAmount(2)
                                 .mutationKind(MutationType.CONSTRUCTION)
                                 .deliveryYear(2025)
@@ -117,21 +104,6 @@ public class GdbGelderlandExportTest {
                                 .meergezinswoning(0)
                                 .eengezinswoning(2)
                                 .endDate(LocalDate.of(2025, 3, 2))
-                                .build(),
-                        HouseblockExportSqlModel.builder()
-                                .name("block3")
-                                .mutationAmount(1)
-                                .mutationKind(MutationType.DEMOLITION)
-                                .deliveryYear(2025)
-                                .ownershipValueList(List.of(
-                                        OwnershipValueSqlModel.builder()
-                                                .ownershipAmount(1)
-                                                .ownershipType(OwnershipType.KOOPWONING)
-                                                .ownershipValue(100l)
-                                                .build()))
-                                .meergezinswoning(0)
-                                .eengezinswoning(1)
-                                .endDate(LocalDate.of(2025, 3, 3))
                                 .build()))
                 .build();
 
@@ -230,9 +202,25 @@ public class GdbGelderlandExportTest {
                                 .deliveryYear(2025)
                                 .ownershipValueList(List.of(
                                         OwnershipValueSqlModel.builder()
-                                                .ownershipAmount(4)
+                                                .ownershipAmount(1)
                                                 .ownershipType(OwnershipType.HUURWONING_WONINGCORPORATIE)
                                                 .ownershipRentalValue(100l)
+                                                .build(),
+                                        OwnershipValueSqlModel.builder()
+                                                .ownershipAmount(1)
+                                                .ownershipType(OwnershipType.HUURWONING_WONINGCORPORATIE)
+                                                .ownershipRentalValueRangeMin(GelderlandConstants.priceRangeMap.get(OwnershipCategory.huur4))
+                                                .build(),
+                                        OwnershipValueSqlModel.builder()
+                                                .ownershipAmount(1)
+                                                .ownershipType(OwnershipType.HUURWONING_WONINGCORPORATIE)
+                                                .ownershipRentalValueRangeMax(100l)
+                                                .build(),
+                                        OwnershipValueSqlModel.builder()
+                                                .ownershipAmount(1)
+                                                .ownershipType(OwnershipType.HUURWONING_WONINGCORPORATIE)
+                                                .ownershipRentalValueRangeMin(100l)
+                                                .ownershipRentalValueRangeMax(120l)
                                                 .build()))
                                 .meergezinswoning(4)
                                 .eengezinswoning(0)
