@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import { Grid, Box, Typography, Alert, Stack, Accordion, AccordionSummary, AccordionDetails, List } from "@mui/material";
 import { downloadExportData, ExportData, exportProjects, ExportType, getExportDataById } from "../api/exportServices";
 import { t } from "i18next";
@@ -37,6 +37,7 @@ const ExportWizard = () => {
     const [exportData, setExportData] = useState<ExportData>();
     const [selectedConfidentialityLevel, setConfidentialityLevel] = useState<GenericOptionType<ConfidentialityLevelOptionsType>>();
     const { setAlert } = useAlert();
+    const errorSectionRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (!exportId) return;
@@ -72,6 +73,12 @@ const ExportWizard = () => {
             }
         }
     }, [params, exportData]);
+
+    useEffect(() => {
+        if (errors.length > 0 && errorSectionRef.current) {
+            errorSectionRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [errors]);
 
     if (!allowedActions.includes("VIEW_DATA_EXCHANGES")) {
         return <ActionNotAllowed errorMessage={t("admin.export.actionNotAllowed")} />;
@@ -144,7 +151,7 @@ const ExportWizard = () => {
                         clientId={exportData?.clientId}
                     />
                     {errors.length > 0 && (
-                        <Alert severity="error" sx={{ "& .MuiAlert-message": { width: "100%" } }}>
+                        <Alert severity="error" sx={{ "& .MuiAlert-message": { width: "100%" } }} ref={errorSectionRef}>
                             <Stack>
                                 {errors.map((error) => {
                                     return (
