@@ -233,8 +233,6 @@ public class GdbGelderlandExport {
         feature.setProperty("koppelid", project.getProjectId());
 
         // klopt_geom // has note check with province
-        // SHAPE_Length // Auto generated?
-        // SHAPE_Area // Auto generated?
         var detailYearMap = new TreeMap<Integer, Map<String, Object>>();
         var sums = calculateAggregations(
                 project,
