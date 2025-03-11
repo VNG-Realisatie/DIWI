@@ -202,6 +202,8 @@ function ExportAdminPage() {
                 navigate(exchangeimportdata.toPath());
             } else if (!id) {
                 navigate(updateExportSettings.toPath({ id: data.id }));
+            } else if (!data.validationErrors || data.validationErrors.length === 0) {
+                navigate(exchangeimportdata.toPath());
             }
         } catch (error: unknown) {
             if (error instanceof Error) setAlert(error.message, "error");
