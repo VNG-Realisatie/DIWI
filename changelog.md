@@ -1,5 +1,17 @@
 # Change log
 
+## DIWI RELEASE 1.11.0
+
+### ADDED
+
+### CHANGED
+
+### FIXED
+
+### UPDATED
+
+- Updated deprecated packages
+
 ## DIWI RELEASE 1.10.0
 
 This release focuses on exporting data for other purposes than provincial monitors.
