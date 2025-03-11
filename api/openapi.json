@@ -560,7 +560,7 @@
                   "type": "array",
                   "items": {
                     "type": "string",
-                    "enum": ["ESRI_ZUID_HOLLAND", "GEO_JSON"]
+                    "enum": ["ESRI_ZUID_HOLLAND", "GDB_GELDERLAND", "GEO_JSON", "EXCEL"]
                   }
                 }
               }
@@ -2083,10 +2083,6 @@
           },
           "provinceName": {
             "type": "string"
-          },
-          "minimumExportConfidentiality": {
-            "type": "string",
-            "enum": ["PRIVATE", "INTERNAL_CIVIL", "INTERNAL_MANAGEMENT", "INTERNAL_COUNCIL", "EXTERNAL_REGIONAL", "EXTERNAL_GOVERNMENTAL", "PUBLIC"]
           }
         }
       },
@@ -2283,9 +2279,16 @@
           },
           "type": {
             "type": "string",
-            "enum": ["ESRI_ZUID_HOLLAND", "GEO_JSON"]
+            "enum": ["ESRI_ZUID_HOLLAND", "GDB_GELDERLAND", "GEO_JSON", "EXCEL"]
+          },
+          "minimumConfidentiality": {
+            "type": "string",
+            "enum": ["PRIVATE", "INTERNAL_CIVIL", "INTERNAL_MANAGEMENT", "INTERNAL_COUNCIL", "EXTERNAL_REGIONAL", "EXTERNAL_GOVERNMENTAL", "PUBLIC"]
           },
           "apiKey": {
+            "type": "string"
+          },
+          "clientId": {
             "type": "string"
           },
           "projectUrl": {
@@ -2414,23 +2417,20 @@
               "enum": ["PRIVATE", "INTERNAL_CIVIL", "INTERNAL_MANAGEMENT", "INTERNAL_COUNCIL", "EXTERNAL_REGIONAL", "EXTERNAL_GOVERNMENTAL", "PUBLIC"]
             }
           },
+          "token": {
+            "type": "string"
+          },
+          "filename": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
           "confidentialityLevelsAsStrings": {
             "type": "array",
             "items": {
               "type": "string"
             }
-          },
-          "token": {
-            "type": "string",
-            "description": "Authentication token for the data exchange export"
-          },
-          "filename": {
-            "type": "string",
-            "description": "The name of the exported file"
-          },
-          "username": {
-            "type": "string",
-            "description": "The username of the account where the export should be performed"
           }
         }
       },

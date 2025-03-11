@@ -219,15 +219,6 @@ export interface components {
             municipalityName?: string;
             regionName?: string;
             provinceName?: string;
-            /** @enum {string} */
-            minimumExportConfidentiality?:
-                | "PRIVATE"
-                | "INTERNAL_CIVIL"
-                | "INTERNAL_MANAGEMENT"
-                | "INTERNAL_COUNCIL"
-                | "EXTERNAL_REGIONAL"
-                | "EXTERNAL_GOVERNMENTAL"
-                | "PUBLIC";
         };
         LocationModel: {
             /** Format: double */
@@ -296,8 +287,18 @@ export interface components {
             id: string;
             name: string;
             /** @enum {string} */
-            type: "ESRI_ZUID_HOLLAND" | "GEO_JSON";
+            type: "ESRI_ZUID_HOLLAND" | "GDB_GELDERLAND" | "GEO_JSON" | "EXCEL";
+            /** @enum {string} */
+            minimumConfidentiality?:
+                | "PRIVATE"
+                | "INTERNAL_CIVIL"
+                | "INTERNAL_MANAGEMENT"
+                | "INTERNAL_COUNCIL"
+                | "EXTERNAL_REGIONAL"
+                | "EXTERNAL_GOVERNMENTAL"
+                | "PUBLIC";
             apiKey?: string;
+            clientId?: string;
             projectUrl?: string;
             projectDetailUrl?: string;
             valid?: boolean;
@@ -343,6 +344,9 @@ export interface components {
                 | "EXTERNAL_GOVERNMENTAL"
                 | "PUBLIC"
             )[];
+            token?: string;
+            filename?: string;
+            username?: string;
             confidentialityLevelsAsStrings?: string[];
         };
         GeographyOptionModel: {
@@ -1206,7 +1210,7 @@ export interface operations {
             /** @description default response */
             default: {
                 content: {
-                    "application/json": ("ESRI_ZUID_HOLLAND" | "GEO_JSON")[];
+                    "application/json": ("ESRI_ZUID_HOLLAND" | "GDB_GELDERLAND" | "GEO_JSON" | "EXCEL")[];
                 };
             };
         };

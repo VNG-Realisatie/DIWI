@@ -36,6 +36,8 @@ public class DataExchangeTemplate {
     @Builder.Default
     private Confidentiality minimumConfidentiality = Confidentiality.EXTERNAL_REGIONAL;
 
+    private String fileExtension;
+
     @Data
     @NoArgsConstructor
     @EqualsAndHashCode
@@ -63,9 +65,11 @@ public class DataExchangeTemplate {
 
         var geoJSONTemplate = new DataExchangeTemplate();
         geoJSONTemplate.setMinimumConfidentiality(Confidentiality.PRIVATE);
+        geoJSONTemplate.setFileExtension("diwi.geojson");
 
         var excelTemplate = new DataExchangeTemplate();
         excelTemplate.setMinimumConfidentiality(Confidentiality.PRIVATE);
+        excelTemplate.setFileExtension("xlsx");
 
         templates = new ImmutableMap.Builder<DataExchangeType, DataExchangeTemplate>()
                 .put(DataExchangeType.ESRI_ZUID_HOLLAND, zuidHollandTemplate)
@@ -77,6 +81,7 @@ public class DataExchangeTemplate {
 
     private static DataExchangeTemplate createZuidHollandTemplate() {
         var zuidHollandTemplate = new DataExchangeTemplate();
+        zuidHollandTemplate.setFileExtension("pzh.geojson");
 
         zuidHollandTemplate.properties.add(new TemplateProperty(
                 EsriZuidHollandProjectProps.opdrachtgever_type.name(),
@@ -168,6 +173,7 @@ public class DataExchangeTemplate {
 
     private static DataExchangeTemplate createGelderlandTemplate() {
         return DataExchangeTemplate.builder()
+                .fileExtension("gdb.zip")
                 .properties(ImmutableList.<TemplateProperty>builder()
                         .add(TemplateProperty.builder()
                                 .name("gemeente")
