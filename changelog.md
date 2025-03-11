@@ -4,9 +4,16 @@
 
 ### ADDED
 
+- Added displaying of errors in regard to missing mandatory entries to the export page and have the UI jump to the errors section for clarity
+
 ### CHANGED
 
+- Filters on export pages now correspond to the export's minimum confidentiality level
+
 ### FIXED
+
+- Fixed an issue where deleted custom properties and deleted custom categories would be persisted in the project
+- Fixed a bug where the scroll bar would not appear on policy goals page when browser is custom sized
 
 ### UPDATED
 
