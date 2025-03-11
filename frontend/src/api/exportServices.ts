@@ -4,6 +4,13 @@ import { API_URI } from "../utils/urls";
 
 export type ExportType = "ESRI_ZUID_HOLLAND" | "GDB_GELDERLAND" | "GEO_JSON" | "EXCEL";
 
+const exportTypeToFileExtension: { [key in ExportType]: string } = {
+    ESRI_ZUID_HOLLAND: "geojson",
+    GDB_GELDERLAND: "zip",
+    GEO_JSON: "geojson",
+    EXCEL: "xlsx",
+};
+
 export type PropertyOption = {
     id: string;
     name: string;
@@ -69,7 +76,9 @@ export async function deleteExportData(id: string): Promise<void> {
 }
 
 export async function downloadExportData(id: string, body: DownloadType, type: ExportType): Promise<void> {
-    return downloadPost(`${API_URI}/dataexchange/${id}/download`, type === "EXCEL" ? "export.xlsx" : "export.geojson", body);
+    const fileExtension = exportTypeToFileExtension[type];
+    const fileName = `export.${fileExtension}`;
+    return downloadPost(`${API_URI}/dataexchange/${id}/download`, fileName, body);
 }
 
 export async function exportProjects(
