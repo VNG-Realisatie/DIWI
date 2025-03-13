@@ -1,10 +1,5 @@
 package nl.vng.diwi.services.export.gelderland;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import nl.vng.diwi.services.export.OwnershipCategory;
-
 public class GelderlandConstants {
 
     public static enum DetailPlanningHeaders {
