@@ -1,8 +1,13 @@
 package nl.vng.diwi.dataexchange;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,13 +17,8 @@ import nl.vng.diwi.dal.entities.DataExchangeType;
 import nl.vng.diwi.dal.entities.enums.Confidentiality;
 import nl.vng.diwi.dal.entities.enums.ObjectType;
 import nl.vng.diwi.dal.entities.enums.PropertyType;
-import nl.vng.diwi.generic.ResourceUtil;
+import nl.vng.diwi.services.export.OwnershipCategory;
 import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandExport.EsriZuidHollandProjectProps;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -38,6 +38,44 @@ public class DataExchangeTemplate {
 
     private String fileExtension;
 
+    /**
+     * Price categories can change over time. This is a list of price category definitions together with the last date they are valid.
+     *
+     * It is expected they are ordered from old to new.
+     */
+    private List<PriceCategoryPeriod> priceCategoryPeriods;
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @EqualsAndHashCode
+    @Builder
+    public static class PriceCategory {
+        OwnershipCategory category;
+
+        /**
+         * Note: Currencies are stored in cents e.g. €1 is stored as 100 null means unbounded, this is used for the highest category.
+         */
+        @Nullable
+        Long maxValue;
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @EqualsAndHashCode
+    @Builder
+    public static class PriceCategoryPeriod {
+        /**
+         * If set, only blocks with an end date earlier or on this date use these categories. If null, the rest of the blocks will use these categories
+         */
+        @Nullable
+        LocalDate validUntil;
+
+        List<PriceCategory> categoriesBuy;
+        List<PriceCategory> categoriesRent;
+    };
+
     @Data
     @NoArgsConstructor
     @EqualsAndHashCode
@@ -56,12 +94,11 @@ public class DataExchangeTemplate {
         private List<String> options;
     }
 
+    public static final DataExchangeTemplate gelderlandTemplate = createGelderlandTemplate();
     public static final ImmutableMap<DataExchangeType, DataExchangeTemplate> templates;
 
     static {
         var zuidHollandTemplate = createZuidHollandTemplate();
-
-        var gelderlandTemplate = createGelderlandTemplate();
 
         var geoJSONTemplate = new DataExchangeTemplate();
         geoJSONTemplate.setMinimumConfidentiality(Confidentiality.PRIVATE);
@@ -174,6 +211,41 @@ public class DataExchangeTemplate {
     private static DataExchangeTemplate createGelderlandTemplate() {
         return DataExchangeTemplate.builder()
                 .fileExtension("gdb.zip")
+                .priceCategoryPeriods(List.of(
+                        new PriceCategoryPeriod(
+                                null,
+                                List.of(
+                                        new PriceCategory(OwnershipCategory.koop2, 390_000_00l),
+                                        new PriceCategory(OwnershipCategory.koop4, null)),
+                                List.of(
+                                        new PriceCategory(OwnershipCategory.huur1, 697_00l),
+                                        new PriceCategory(OwnershipCategory.huur2, 880_00l),
+                                        new PriceCategory(OwnershipCategory.huur3, 1_158_00l),
+                                        new PriceCategory(OwnershipCategory.huur4, null)))))
+
+                // There will be multiple price categories for different periods in the future.
+                // This will probable cause issues when exporting, switch to different price categories later.
+                //
+                // new PriceCategoryPeriod(
+                // LocalDate.of(2024, 12, 31),
+                // List.of(
+                // new PriceCategory(OwnershipCategory.huur1, 697_00l),
+                // new PriceCategory(OwnershipCategory.huur2, 880_00l),
+                // new PriceCategory(OwnershipCategory.huur3, 1_158_00l),
+                // new PriceCategory(OwnershipCategory.huur4, null)),
+                // List.of(
+                // new PriceCategory(OwnershipCategory.koop2, 390_000_00l),
+                // new PriceCategory(OwnershipCategory.koop4, null))),
+                // new PriceCategoryPeriod(
+                // null,
+                // List.of(
+                // new PriceCategory(OwnershipCategory.huur1, 731_00l),
+                // new PriceCategory(OwnershipCategory.huur2, 900_00l),
+                // new PriceCategory(OwnershipCategory.huur3, 1_185_00l),
+                // new PriceCategory(OwnershipCategory.huur4, null)),
+                // List.of(
+                // new PriceCategory(OwnershipCategory.koop2, 405_000_00l),
+                // new PriceCategory(OwnershipCategory.koop4, null)))))
                 .properties(ImmutableList.<TemplateProperty>builder()
                         .add(TemplateProperty.builder()
                                 .name("gemeente")
@@ -409,16 +481,5 @@ public class DataExchangeTemplate {
                                 .build())
                         .build())
                 .build();
-    }
-
-    /*
-     * For e.g. loading a lot of options
-     */
-    private static List<String> loadStringListFromResource(String name) {
-        try {
-            return Arrays.asList(ResourceUtil.getResourceAsString(name).split("\n"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

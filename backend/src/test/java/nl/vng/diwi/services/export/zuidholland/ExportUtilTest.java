@@ -15,7 +15,7 @@ import nl.vng.diwi.services.DataExchangeExportError;
 import nl.vng.diwi.services.export.ExportUtil;
 import nl.vng.diwi.services.export.OwnershipCategory;
 
-public class EsriZuidHollandHouseblockExportModelTest {
+public class ExportUtilTest {
     private static Stream<Arguments> ranges() {
         return Stream.of(
             Arguments.of(OwnershipType.KOOPWONING, null, null, OwnershipCategory.koop_onb),

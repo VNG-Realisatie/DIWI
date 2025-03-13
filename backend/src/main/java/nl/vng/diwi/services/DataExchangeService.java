@@ -281,7 +281,7 @@ public class DataExchangeService {
                 customProps,
                 dxPropertiesMap,
                 dxExportModel.getExportDate(),
-                templateMinConfidentiality,
+                template,
                 errors,
                 loggedUser);
         };

@@ -17,6 +17,8 @@ import org.locationtech.proj4j.ProjCoordinate;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
+import nl.vng.diwi.dataexchange.DataExchangeTemplate.PriceCategory;
+import nl.vng.diwi.dataexchange.DataExchangeTemplate.PriceCategoryPeriod;
 import nl.vng.diwi.generic.Json;
 import nl.vng.diwi.services.DataExchangeExportError;
 import nl.vng.diwi.services.DataExchangeExportError.EXPORT_ERROR;
@@ -150,4 +152,68 @@ public class ExportUtil {
         }
     }
 
+    public static OwnershipCategory getOwnershipCategory(
+            OwnershipType ownershipType,
+            Long priceValue,
+            PriceCategoryPeriod pcp) {
+        if (ownershipType == OwnershipType.KOOPWONING) {
+            if (priceValue == null) {
+                return OwnershipCategory.koop_onb;
+            }
+            var cats = pcp.getCategoriesBuy();
+            for (var cat : cats) {
+
+                if (cat.getMaxValue() == null) {
+                    return cat.getCategory();
+                }
+                if (cat.getMaxValue() >= priceValue) {
+                    return cat.getCategory();
+                }
+            }
+            return OwnershipCategory.koop_onb;
+        } else {
+            if (priceValue == null) {
+                return OwnershipCategory.huur_onb;
+            }
+
+            var cats = pcp.getCategoriesRent();
+            for (var cat : cats) {
+                if (cat.getMaxValue() == null) {
+                    return cat.getCategory();
+                }
+                if (cat.getMaxValue() >= priceValue) {
+                    return cat.getCategory();
+                }
+            }
+            return OwnershipCategory.huur_onb;
+        }
+    }
+
+    public static OwnershipCategory getOwnershipCategory(
+            UUID projectUuid,
+            UUID houseblockUuid,
+            OwnershipType ownershipType,
+            Long priceValueMin,
+            Long priceValueMax,
+            PriceCategoryPeriod pcp,
+            List<DataExchangeExportError> errors) {
+        OwnershipCategory cat1 = getOwnershipCategory(ownershipType, priceValueMin, pcp);
+        OwnershipCategory cat2 = getOwnershipCategory(ownershipType, priceValueMax, pcp);
+
+        if (cat1 == cat2) {
+            return cat1;
+        } else if (ownershipType == OwnershipType.KOOPWONING &&
+                cat1 == OwnershipCategory.koop4 &&
+                cat2 == OwnershipCategory.koop_onb) {
+            return cat1;
+        } else if ((ownershipType == OwnershipType.HUURWONING_WONINGCORPORATIE || ownershipType == OwnershipType.HUURWONING_PARTICULIERE_VERHUURDER) &&
+                cat1 == OwnershipCategory.huur4 &&
+                cat2 == OwnershipCategory.huur_onb) {
+            return cat1;
+        } else {
+            errors.add(new DataExchangeExportError(projectUuid, houseblockUuid, EXPORT_ERROR.OWNERSHIP_RANGE_MAPPING_ERROR, cat1, cat2, priceValueMin,
+                    priceValueMax));
+            return ownershipType == OwnershipType.KOOPWONING ? OwnershipCategory.koop_onb : OwnershipCategory.huur_onb;
+        }
+    }
 }
