@@ -219,7 +219,7 @@ public class DataExchangeTemplate {
                                         new PriceCategory(OwnershipCategory.koop4, null)),
                                 List.of(
                                         new PriceCategory(OwnershipCategory.huur1, 697_00l),
-                                        new PriceCategory(OwnershipCategory.huur2, 880_00l),
+                                        new PriceCategory(OwnershipCategory.huur2, 879_66l),
                                         new PriceCategory(OwnershipCategory.huur3, 1_158_00l),
                                         new PriceCategory(OwnershipCategory.huur4, null)))))
 
