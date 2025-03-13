@@ -17,7 +17,6 @@ import org.locationtech.proj4j.ProjCoordinate;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import nl.vng.diwi.dal.entities.enums.OwnershipType;
-import nl.vng.diwi.dataexchange.DataExchangeTemplate.PriceCategory;
 import nl.vng.diwi.dataexchange.DataExchangeTemplate.PriceCategoryPeriod;
 import nl.vng.diwi.generic.Json;
 import nl.vng.diwi.services.DataExchangeExportError;
