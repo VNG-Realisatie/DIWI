@@ -23,7 +23,6 @@ import nl.vng.diwi.services.export.zuidholland.EsriZuidHollandExport.EsriZuidHol
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
 @Builder
 public class DataExchangeTemplate {
 
@@ -48,7 +47,6 @@ public class DataExchangeTemplate {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    @EqualsAndHashCode
     @Builder
     public static class PriceCategory {
         OwnershipCategory category;
@@ -66,7 +64,6 @@ public class DataExchangeTemplate {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    @EqualsAndHashCode
     @Builder
     public static class PriceCategoryPeriod {
         /**
@@ -81,7 +78,6 @@ public class DataExchangeTemplate {
 
     @Data
     @NoArgsConstructor
-    @EqualsAndHashCode
     @AllArgsConstructor
     @Builder
     public static class TemplateProperty {
