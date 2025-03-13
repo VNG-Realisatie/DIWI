@@ -54,7 +54,10 @@ public class DataExchangeTemplate {
         OwnershipCategory category;
 
         /**
-         * Note: Currencies are stored in cents e.g. €1 is stored as 100 null means unbounded, this is used for the highest category.
+         * Notes: <br/>
+         * - Currencies are stored in cents e.g. €1 is stored as 100.<br/>
+         * - Null means unbounded, this is used for the highest category.<br/>
+         * - This value is inclusive. A value equal to the maxValue is still part of this category.
          */
         @Nullable
         Long maxValue;
@@ -218,7 +221,6 @@ public class DataExchangeTemplate {
                                         new PriceCategory(OwnershipCategory.koop2, 390_000_00l),
                                         new PriceCategory(OwnershipCategory.koop4, null)),
                                 List.of(
-                                        new PriceCategory(OwnershipCategory.huur1, 697_00l),
                                         new PriceCategory(OwnershipCategory.huur2, 879_66l),
                                         new PriceCategory(OwnershipCategory.huur3, 1_158_00l),
                                         new PriceCategory(OwnershipCategory.huur4, null)))))
