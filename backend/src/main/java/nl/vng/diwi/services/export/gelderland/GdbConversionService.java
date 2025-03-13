@@ -1,17 +1,23 @@
 package nl.vng.diwi.services.export.gelderland;
 
-import lombok.extern.log4j.Log4j2;
-import nl.vng.diwi.rest.VngServerErrorException;
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
-import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
-
-import java.io.*;
-import java.nio.file.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
+
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+
+import lombok.extern.log4j.Log4j2;
+import nl.vng.diwi.rest.VngServerErrorException;
 
 @Log4j2
 public class GdbConversionService {
@@ -42,7 +48,7 @@ public class GdbConversionService {
         String workingDir = geojsonFile.getParent();
         File gdbDir = new File(workingDir, GDB_NAME);
 
-        executeCommand(String.format("ogr2ogr -nln Planregistratie -f OpenFileGDB %s %s", gdbDir.getAbsolutePath(), geojsonFile.getAbsolutePath()), geojsonFile.getParentFile());
+        executeCommand(String.format("ogr2ogr -nln Planregistratie -lco CREATE_SHAPE_AREA_AND_LENGTH_FIELDS=YES -f OpenFileGDB %s %s", gdbDir.getAbsolutePath(), geojsonFile.getAbsolutePath()), geojsonFile.getParentFile());
         executeCommand(String.format("ogr2ogr -nln DetailPlanning -f OpenFileGDB %s %s -update", gdbDir.getAbsolutePath(), csvFile.getAbsolutePath()),
                 csvFile.getParentFile());
         // Ensure GDB exists before proceeding
